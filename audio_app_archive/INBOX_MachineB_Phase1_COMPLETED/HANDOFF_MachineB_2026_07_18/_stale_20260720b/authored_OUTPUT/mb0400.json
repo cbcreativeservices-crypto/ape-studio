@@ -1,0 +1,328 @@
+{
+ "batch": 400,
+ "topic": "Preamp & Converter Engineering",
+ "authored": [
+  {
+   "id": "cca33c89-54a0-4b03-b071-5c877aa218d2",
+   "term": "Converter front end",
+   "fields": {
+    "definition": "The analog input circuitry of an analog-to-digital converter that conditions the signal before quantization: an input buffer or line driver, level scaling to the converter's full-scale reference, and anti-alias filtering, which in oversampling delta-sigma designs is handled mostly by oversampling plus the digital decimation filter with only a gentle analog filter ahead of the modulator.",
+    "plain_english": "It is the input stage that prepares an analog signal before the converter turns it into digital. Think of it as a doorway that shapes and sizes the sound so the converter can measure it cleanly.",
+    "purpose_function": "It matches the source signal to the converter's input range and impedance and blocks out-of-band energy, so the quantizer receives a clean, correctly scaled signal and the digital result is accurate.",
+    "practical_application": "Technicians deal with the front end when matching a preamp or DI output to a converter input, setting levels for full-scale without overloading the input buffer, and choosing balanced or unbalanced connections.",
+    "category": "Converter architecture",
+    "related_terms": [
+     "Anti-aliasing filter",
+     "Delta-sigma modulator",
+     "Full-scale (dBFS)",
+     "Converter reference voltage",
+     "Input buffer",
+     "Sample rate"
+    ],
+    "common_mistakes": [
+     "Assuming the analog anti-alias filter does all the work; in delta-sigma converters most alias rejection comes from oversampling and the digital decimation filter",
+     "Driving the front end past its input range and clipping the buffer before the quantizer even reaches full-scale",
+     "Ignoring source impedance and cable loading, which can degrade the front end's noise and frequency response"
+    ],
+    "scenario_contexts": [
+     "Interfacing a mic preamp output to an audio interface's line input at the right level",
+     "Choosing between a converter's mic, line and instrument input paths on a recording",
+     "Troubleshooting distortion that turns out to be front-end overload rather than quantizer clipping"
+    ]
+   },
+   "sources": [
+    "Cirrus Logic CS4271 audio codec datasheet",
+    "Analog Devices, Data Conversion Handbook (Kester, ed.)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2064c2b6-7a8a-44ea-b5ce-5596b9a1c9e7",
+   "term": "Converter health monitoring",
+   "fields": {
+    "definition": "The practice of continuously observing a converter's status indicators and telemetry, such as clock or PLL lock, sample-rate detection, sync-error flags, over/clip indicators and, where available, temperature or supply status, to confirm it is operating within specification and to catch faults such as loss of clock lock.",
+    "plain_english": "It means watching the converter status lights and readouts to make sure it is still working right. It is like checking the warning lights on a car dashboard while you drive.",
+    "purpose_function": "It exists so operators catch clocking, sync or overload problems early, before they cause clicks, dropouts or a silently degraded recording.",
+    "practical_application": "On the job a technician watches lock and sync indicators, meters and interface software status pages during setup and tracking, treating a flashing lock light or a sync error as a stop-and-fix warning.",
+    "category": "Diagnostics & monitoring",
+    "related_terms": [
+     "Converter synchronization input",
+     "Word clock",
+     "Clock lock",
+     "Sample rate",
+     "Converter verification",
+     "Jitter"
+    ],
+    "common_mistakes": [
+     "Ignoring a blinking clock-lock or sync-error indicator and recording anyway, which risks clicks and dropouts",
+     "Assuming a moving signal meter means the clock is locked; level and sync are separate things",
+     "Only checking status at power-up and never watching it during a long session"
+    ],
+    "scenario_contexts": [
+     "Confirming every converter shows clock lock before rolling a multitrack session",
+     "Diagnosing intermittent clicks by watching for momentary sync-error flags",
+     "Monitoring interface status pages during a long live-to-digital broadcast"
+    ]
+   },
+   "sources": [
+    "Cirrus Logic CS4271 audio codec datasheet",
+    "AES11-2009, AES recommended practice for digital audio engineering - Synchronization of digital audio equipment in studio operations",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a4813242-611a-4720-b202-b2d81e0804fd",
+   "term": "Converter latency",
+   "fields": {
+    "definition": "The processing delay a signal accrues passing through a converter, dominated in oversampling delta-sigma designs by the group delay of the digital decimation (ADC) or interpolation (DAC) FIR filters; it is fixed for a given mode and specified in samples (for example about 12/Fs at single speed) or the equivalent time.",
+    "plain_english": "It is the small, fixed delay a converter adds when it changes sound between analog and digital. Most of it comes from the digital filter inside. It is a bit like the short pause before a translator speaks.",
+    "purpose_function": "Knowing it lets engineers account for the fixed delay each conversion adds, which matters for round-trip monitoring latency and for keeping multiple signal paths time-aligned.",
+    "practical_application": "Technicians add ADC plus DAC group delay, plus any buffering, when estimating monitoring latency, and use converters with matched latency or delay compensation to keep phase-coherent sources aligned.",
+    "category": "Timing & latency",
+    "related_terms": [
+     "Group delay",
+     "Decimation filter",
+     "Interpolation filter",
+     "Delta-sigma modulator",
+     "Round-trip latency",
+     "Conversion delay"
+    ],
+    "common_mistakes": [
+     "Confusing converter latency with buffer or driver latency; the converter's group delay is fixed and separate from the DAW buffer setting",
+     "Assuming a linear-phase decimation filter is instantaneous when it adds a real, constant group delay",
+     "Forgetting that ADC and DAC delays add in a round trip and that they can differ between converters"
+    ],
+    "scenario_contexts": [
+     "Estimating monitoring latency for a singer tracking through an interface",
+     "Time-aligning a digital mic feed with an analog path in a hybrid rig",
+     "Choosing a low-latency converter mode for live in-ear monitoring"
+    ]
+   },
+   "sources": [
+    "Cirrus Logic CS4271 audio codec datasheet",
+    "Analog Devices, Data Conversion Handbook (Kester, ed.)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d5cfb00c-00be-4af1-9015-6cad8da82af1",
+   "term": "Converter linearity",
+   "fields": {
+    "definition": "The degree to which a converter's output tracks a straight-line proportional relationship to its input across the code range; deviations are characterized as integral nonlinearity (INL) and differential nonlinearity (DNL) and, in audio terms, as amplitude linearity, and they directly raise distortion and low-level noise.",
+    "plain_english": "It is how faithfully a converter keeps output exactly in step with input, quiet or loud. If it is not linear, soft and loud parts come out the wrong size and add distortion.",
+    "purpose_function": "Good linearity keeps the digital numbers a true scaled copy of the analog signal, which is what preserves low distortion and accurate low-level detail.",
+    "practical_application": "Technicians assess linearity from a converter's INL/DNL and THD-versus-level specs, and verify it in the field with a low-level amplitude-linearity sweep, such as the AES17 method, when qualifying gear.",
+    "category": "Converter performance",
+    "related_terms": [
+     "INL/DNL",
+     "THD+N",
+     "Amplitude linearity",
+     "Dynamic range",
+     "Converter verification",
+     "Monotonicity"
+    ],
+    "common_mistakes": [
+     "Judging a converter by SNR alone and ignoring low-level amplitude linearity, where audible errors often hide",
+     "Confusing linearity with frequency response; one is about level proportionality, the other about level versus frequency",
+     "Assuming more bits automatically means better linearity when real INL/DNL and analog design set the limit"
+    ],
+    "scenario_contexts": [
+     "Qualifying a new converter by running an amplitude-linearity sweep",
+     "Comparing two interfaces where THD rises differently at low levels",
+     "Investigating why quiet reverb tails sound grainy on a suspect converter"
+    ]
+   },
+   "sources": [
+    "Analog Devices, Data Conversion Handbook (Kester, ed.)",
+    "AES17-2020, AES standard method for digital audio engineering - Measurement of digital audio equipment",
+    "Texas Instruments SLAA114, Digital Audio Measurements application report"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ba5953c3-95f6-4b3f-8fc8-2869d820661b",
+   "term": "Converter operating mode",
+   "fields": {
+    "definition": "A user- or system-selectable configuration that sets how a converter runs, commonly its sample-rate range (single, double or quad speed), its clock role (master versus slave/synchronized), its data format and channel mapping (such as I2S or TDM), and filter or power options, with each mode changing behavior such as supported rates and group delay.",
+    "plain_english": "It is the setting that tells a converter how to run, like its sample-rate range or whether it makes or follows the clock. It is like picking a mode on a camera before you shoot.",
+    "purpose_function": "Operating modes let one converter fit different jobs and systems, so the same part can run at high sample rates, follow an external clock, or use a low-latency filter as needed.",
+    "practical_application": "A technician sets the operating mode when configuring an interface, choosing the sample-rate/speed mode, master or slave clocking, and the data format so it matches the rest of the digital system.",
+    "category": "Configuration",
+    "related_terms": [
+     "Sample rate",
+     "Master/slave clock",
+     "Converter synchronization input",
+     "Word clock",
+     "Converter latency",
+     "TDM"
+    ],
+    "common_mistakes": [
+     "Leaving two devices both set to master or internal clock instead of making one a slave, causing sync errors",
+     "Mismatching single/double/quad-speed mode to the session sample rate",
+     "Forgetting that some low-latency or high-speed modes change the converter's group delay and available features"
+    ],
+    "scenario_contexts": [
+     "Setting an interface to slave to house word clock in a facility",
+     "Switching a converter to double-speed mode for an 88.2 or 96 kHz session",
+     "Selecting TDM mode to carry many channels on one data line"
+    ]
+   },
+   "sources": [
+    "Cirrus Logic CS4271 audio codec datasheet",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1ecae2b5-e9f1-41ec-b85d-3319403cc81f",
+   "term": "Converter reference voltage",
+   "fields": {
+    "definition": "The precise, stable voltage a converter uses as its full-scale yardstick: the analog full-scale input (ADC) or output (DAC) range is set ratiometrically by this reference, so a digital full-scale code corresponds to the reference-defined voltage, and the reference's accuracy, noise and drift map directly onto gain accuracy, THD and SNR.",
+    "plain_english": "It is the fixed voltage a converter measures everything against, like the marks on a ruler. If that ruler is wrong or wobbles, every measurement the converter makes is off.",
+    "purpose_function": "It sets the converter's full-scale level and anchors its accuracy, so a clean, stable reference is essential for correct gain, low distortion and a good noise floor.",
+    "practical_application": "Engineers rarely adjust it directly but respect it through proper decoupling of the reference or filter pins and clean power, and they trace level-accuracy or added-noise problems back to a noisy or drifting reference.",
+    "category": "Converter architecture",
+    "related_terms": [
+     "Full-scale (dBFS)",
+     "Converter front end",
+     "THD+N",
+     "Dynamic range",
+     "Voltage reference",
+     "Power supply rejection"
+    ],
+    "common_mistakes": [
+     "Omitting or undersizing the reference or filter-pin decoupling capacitors, which raises the noise floor and distortion",
+     "Assuming digital full-scale equals a fixed voltage across all converters when it scales with the reference and analog design",
+     "Blaming the quantizer for gain-accuracy or level errors that actually come from a drifting or noisy reference"
+    ],
+    "scenario_contexts": [
+     "Following a datasheet's reference-pin decoupling layout when building or repairing a converter board",
+     "Diagnosing a channel that reads a consistent level error versus its neighbors",
+     "Understanding why two converters at the same dBFS deliver slightly different analog output voltages"
+    ]
+   },
+   "sources": [
+    "Analog Devices, Data Conversion Handbook (Kester, ed.)",
+    "Cirrus Logic CS4271 audio codec datasheet",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2e1b1850-42bb-47d9-b4bc-3ace9b8cb315",
+   "term": "Converter synchronization input",
+   "fields": {
+    "definition": "The clock-reference input by which a converter slaves its internal sample clock to an external timing source, typically a dedicated word clock input or an AES11 Digital Audio Reference Signal (DARS) or embedded AES3 clock, so its sampling instants align with the rest of a digital system.",
+    "plain_english": "It is the input where a converter takes in a timing signal so it runs in step with other gear. It is like a band all following one drummer.",
+    "purpose_function": "It lets many digital devices share one master clock, which prevents sample slips, clicks and dropouts when audio passes between them.",
+    "practical_application": "A technician patches house word clock or a DARS feed into each device's sync input, sets those devices to external or slave clock, and confirms each shows lock before recording.",
+    "category": "Clocking & sync",
+    "related_terms": [
+     "Word clock",
+     "Converter synchronization output",
+     "AES11 / DARS",
+     "Jitter",
+     "Converter operating mode",
+     "Converter clock input"
+    ],
+    "common_mistakes": [
+     "Feeding a sync input a clock at a different sample rate than the audio and expecting it to work",
+     "Leaving a device on internal clock while cabling its sync input, so it never actually slaves",
+     "Forgetting to terminate a word clock input at 75 ohms, causing reflections and added jitter"
+    ],
+    "scenario_contexts": [
+     "Slaving a group of converters to a studio's master word clock",
+     "Locking an interface to embedded clock from an incoming AES3 or ADAT stream",
+     "Adding 75-ohm termination on the last device in a word-clock chain"
+    ]
+   },
+   "sources": [
+    "AES11-2009, AES recommended practice for digital audio engineering - Synchronization of digital audio equipment in studio operations",
+    "Cirrus Logic CS4271 audio codec datasheet",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "05912570-a9ca-4fa2-b9e2-d56e32dbbc9d",
+   "term": "Converter synchronization output",
+   "fields": {
+    "definition": "The clock-reference output a converter provides so it can act as timing master for other devices, typically a word clock output or an AES11 DARS/AES3 output carrying the sample clock, letting downstream equipment slave to its sample rate.",
+    "plain_english": "It is the output a converter uses to send out its timing so other gear can follow it. It is like a drummer whose beat keeps the whole band in time.",
+    "purpose_function": "It designates one device as the clock master and distributes its timing, so a whole system samples in lockstep from a single reference.",
+    "practical_application": "A technician takes word clock or DARS from the chosen master's sync output, distributes it, often through a dedicated clock distributor, and slaves the other devices to it.",
+    "category": "Clocking & sync",
+    "related_terms": [
+     "Word clock",
+     "Converter synchronization input",
+     "AES11 / DARS",
+     "Clock distribution",
+     "Master/slave clock",
+     "Jitter"
+    ],
+    "common_mistakes": [
+     "Running two masters at once by leaving more than one device driving its sync output onto the same line",
+     "Splitting a word-clock output with passive T-connectors instead of a proper distribution amp, causing level and reflection problems",
+     "Assuming any device makes an equally good master when clock jitter quality varies between converters"
+    ],
+    "scenario_contexts": [
+     "Designating a master clock and feeding a word-clock distribution amp from its output",
+     "Using a converter's DARS output to sync an outboard digital effects unit",
+     "Choosing the lowest-jitter converter in a rig to serve as the system master"
+    ]
+   },
+   "sources": [
+    "AES11-2009, AES recommended practice for digital audio engineering - Synchronization of digital audio equipment in studio operations",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e0d65ee8-bb82-463e-87ee-dd572fc6c62a",
+   "term": "Converter verification",
+   "fields": {
+    "definition": "The process of confirming a converter meets its published specifications by measuring key parameters such as THD+N, SNR or dynamic range, frequency response, amplitude linearity and level calibration, typically using standardized methods (AES17) and precision test equipment, either at commissioning or as periodic maintenance.",
+    "plain_english": "It is testing a converter to prove it still performs the way the maker claims. It is like checking a measuring tool against a known standard before you trust it.",
+    "purpose_function": "It gives objective proof that a converter is healthy and accurate, so problems are caught before they spoil recordings and so gear can be trusted and calibrated.",
+    "practical_application": "A technician runs an AES17-based test set or an audio analyzer to measure THD+N, dynamic range and linearity, compares the results to the datasheet, and logs level calibration.",
+    "category": "Diagnostics & monitoring",
+    "related_terms": [
+     "AES17",
+     "THD+N",
+     "Dynamic range",
+     "Converter linearity",
+     "Converter health monitoring",
+     "Calibration"
+    ],
+    "common_mistakes": [
+     "Measuring THD+N or dynamic range without the standard bandwidth limit and AES17 filtering, which gives misleading numbers",
+     "Skipping level calibration so measurements are not referenced to a known full-scale",
+     "Trusting a quick listening test in place of measurement when qualifying or accepting gear"
+    ],
+    "scenario_contexts": [
+     "Commissioning new converters by verifying THD+N and dynamic range against the datasheet",
+     "Periodically checking a facility's converters as part of maintenance",
+     "Accepting rental or repaired gear by confirming it meets spec before a session"
+    ]
+   },
+   "sources": [
+    "AES17-2020, AES standard method for digital audio engineering - Measurement of digital audio equipment",
+    "Texas Instruments SLAA114, Digital Audio Measurements application report",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

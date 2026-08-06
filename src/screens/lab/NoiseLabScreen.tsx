@@ -31,7 +31,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import Animated, {
   Easing,
-  interpolateColor,
   useAnimatedProps,
   useSharedValue,
   withTiming,
@@ -44,7 +43,7 @@ import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../featu
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip, SpeakerOutputToggle, CollapsibleSection, HeaderPlayButton } from './LabShell';
+import { LabShell, SpeakerOutputToggle, CollapsibleSection, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -69,9 +68,6 @@ const NOISE_TINTS: Record<NoiseColor, string> = {
   blue: '#6fa8ff',
   violet: '#b98aff',
 };
-
-const PENDING_SOURCES =
-  'Grey · Speech noise · HVAC · Traffic · Wind · Hum · Buzz · RF · Crackle · Static · Ground loop';
 
 /** Honest summary of the interim per-color level guard (see speakerSafety.ts). */
 const NOISE_GUARD_LABEL = 'brown −14 dB, pink −6 dB, white/blue/violet unchanged';
@@ -175,11 +171,8 @@ export function NoiseLabScreen() {
         <SpeakerOutputToggle
           value={speakerView}
           onChange={setSpeakerView}
-          sub={
-            speakerView
-              ? `Selected color's slope with the ${SPEAKER_HPF_HZ} Hz high-pass applied — the low end the built-in speaker can't deliver.`
-              : 'Reference (ideal) slopes. Tick to see the speaker-output roll-off.'
-          }
+          title="PHONE SPEAKER OUTPUT (REALITY)"
+          sub={`The phone's built-in speakers cannot produce sounds below ${SPEAKER_HPF_HZ} Hz, so a high-pass filter has been applied.`}
         />
 
         {/* SLOPE CHART — the defining mathematics; speaker view adds the HPF. */}
@@ -210,16 +203,27 @@ export function NoiseLabScreen() {
 
       <CollapsibleSection title="CONTROLS">
         <Text style={styles.sectionHead}>NOISE COLOR</Text>
+        {/* Each noise chip is drawn in its OWN colour (owner 2026-08-05):
+            pink=pink, blue=blue, brown, etc. */}
         <View style={styles.chipRow}>
-          {COLORS.map((c) => (
-            <LabChip
-              key={c.key}
-              label={c.label}
-              selected={color === c.key}
-              onPress={() => pickColor(c.key)}
-              onLongPress={() => openLesson(c.key)}
-            />
-          ))}
+          {COLORS.map((c) => {
+            const tint = NOISE_TINTS[c.key];
+            const on = color === c.key;
+            return (
+              <Pressable
+                key={c.key}
+                style={[styles.noiseChip, { borderColor: tint }, on && { backgroundColor: tint }]}
+                onPress={() => pickColor(c.key)}
+                onLongPress={() => openLesson(c.key)}
+                delayLongPress={350}
+                accessibilityRole="button"
+                accessibilityState={{ selected: on }}
+                accessibilityLabel={c.label}
+              >
+                <Text style={[styles.noiseChipText, { color: on ? '#101014' : tint }]}>{c.label}</Text>
+              </Pressable>
+            );
+          })}
         </View>
       </CollapsibleSection>
 
@@ -230,23 +234,13 @@ export function NoiseLabScreen() {
               {`PLAY (header ▶) outputs ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
             </Text>
             <Text style={styles.advisory}>
-              {`Brown/pink are broadband, so this build reduces their overall LEVEL to protect the speaker ` +
-                `(${NOISE_GUARD_LABEL}); a true per-frequency high-pass on noise ships with the native engine ` +
-                `update. Tick PHONE SPEAKER OUTPUT to see the ${SPEAKER_HPF_HZ} Hz roll-off the speaker imposes.`}
+              {`Brown and pink are broadband and push energy into the sub-bass, so their overall level is ` +
+                `reduced to protect the built-in speaker (${NOISE_GUARD_LABEL}). Tick PHONE SPEAKER OUTPUT ` +
+                `(REALITY) to see the ${SPEAKER_HPF_HZ} Hz roll-off the speaker imposes.`}
             </Text>
             {genError ? <Text style={styles.error}>{genError}</Text> : null}
           </>
         ) : null}
-
-        {/* Textured sources — honest status, no dead chips (§1.7). */}
-        <View style={styles.devNote}>
-          <Text style={styles.devNoteHead}>REAL-WORLD SOURCES — IN DEVELOPMENT</Text>
-          <Text style={styles.caption}>
-            {PENDING_SOURCES} need new native sources or recorded assets and will appear here when
-            they land. Their theory (hum vs buzz vs ground loop on a spectrogram) is in this lab’s
-            lesson (ⓘ).
-          </Text>
-        </View>
       </CollapsibleSection>
 
       <GuidedLessonSheet
@@ -263,19 +257,19 @@ export function NoiseLabScreen() {
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-/** One ideal slope line whose emphasis EASES on selection change (visual
- *  standards 2026-07-29 — no snaps): stroke color and width tween between the
- *  dim reference look and the bright amber selected look. */
-function EasedSlopeLine({ d, active, dim }: { d: string; active: boolean; dim: boolean }) {
+/** One ideal slope line drawn in its noise's OWN colour (owner 2026-08-05).
+ *  Emphasis EASES on selection change (visual standards — no snaps): the line
+ *  brightens and thickens when selected, dims otherwise, hue constant. */
+function EasedSlopeLine({ d, color, active, dim }: { d: string; color: string; active: boolean; dim: boolean }) {
   const p = useSharedValue(active ? 1 : 0);
   useEffect(() => {
     p.value = withTiming(active ? 1 : 0, { duration: 320, easing: Easing.out(Easing.cubic) });
   }, [active, p]);
   const animatedProps = useAnimatedProps(() => ({
-    stroke: interpolateColor(p.value, [0, 1], ['#3a3a44', colors.amber]),
-    strokeWidth: 1.2 + p.value,
+    strokeWidth: 1.4 + p.value * 1.4,
+    strokeOpacity: 0.5 + p.value * 0.5,
   }));
-  return <AnimatedPath d={d} fill="none" opacity={dim ? 0.5 : 1} animatedProps={animatedProps} />;
+  return <AnimatedPath d={d} stroke={color} fill="none" opacity={dim ? 0.55 : 1} animatedProps={animatedProps} />;
 }
 
 /** Deterministic seeded hash — same idiom as the foundations viz jitter. */
@@ -371,10 +365,11 @@ function SlopeChart({
   const freqTicks = [20, 200, 1000, 2000, 20000];
   return (
     <Svg width="100%" height={H + 16} viewBox={`0 0 ${W} ${H + 16}`}>
-      <Rect x={0} y={0} width={W} height={H} fill="#0c0c0f" />
-      {/* 0 dB reference + 1 kHz anchor */}
-      <Line x1={padL} y1={H / 2} x2={W - padR} y2={H / 2} stroke="#22222a" strokeWidth={1} />
-      <Line x1={xAt(0)} y1={4} x2={xAt(0)} y2={H - 4} stroke="#22222a" strokeWidth={1} />
+      {/* GRAY plot background (owner 2026-08-05) — gives brown enough contrast. */}
+      <Rect x={0} y={0} width={W} height={H} fill="#4d4d53" />
+      {/* 0 dB reference + 1 kHz anchor (darker than the gray so they read) */}
+      <Line x1={padL} y1={H / 2} x2={W - padR} y2={H / 2} stroke="#2c2c32" strokeWidth={1} />
+      <Line x1={xAt(0)} y1={4} x2={xAt(0)} y2={H - 4} stroke="#2c2c32" strokeWidth={1} />
       {/* Live-noise shimmer — glow + core, BEHIND the ideal mathematics. */}
       <Path d={shimmerPath} stroke={tint} strokeWidth={3.5} fill="none" opacity={0.16} strokeLinecap="round" />
       <Path d={shimmerPath} stroke={tint} strokeWidth={1.2} fill="none" opacity={0.5} />
@@ -385,11 +380,12 @@ function SlopeChart({
         <EasedSlopeLine
           key={l.key}
           d={l.d}
+          color={NOISE_TINTS[l.key]}
           active={!speakerView && l.key === selectedKey}
           dim={speakerView}
         />
       ))}
-      {filteredPath ? <Path d={filteredPath} stroke={colors.amber} strokeWidth={2.4} fill="none" /> : null}
+      {filteredPath ? <Path d={filteredPath} stroke={tint} strokeWidth={2.4} fill="none" /> : null}
       {/* corner marker at the high-pass cutoff */}
       {speakerView ? (
         <Line
@@ -406,8 +402,9 @@ function SlopeChart({
           key={`t${l.key}`}
           x={W - padR + 3}
           y={Math.min(Math.max(l.endY + 3, 10), H - 4)}
-          fill={l.key === selectedKey ? colors.amber : colors.textSub}
+          fill={NOISE_TINTS[l.key]}
           fontSize={8}
+          fontWeight={l.key === selectedKey ? 'bold' : 'normal'}
         >
           {l.label}
         </SvgText>
@@ -443,13 +440,13 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
-  devNote: {
-    gap: 6,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
+  // Per-colour noise chip — outlined in the noise's own hue, filled when selected.
+  noiseChip: {
+    borderRadius: 8,
+    borderWidth: 1.5,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    backgroundColor: 'transparent',
   },
-  devNoteHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSecondary },
+  noiseChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1 },
 });

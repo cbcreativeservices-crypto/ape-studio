@@ -1,0 +1,81 @@
+{
+ "batch": 390,
+ "topic": "Foley Performance & Recording",
+ "terms": [
+  {
+   "id": "6b8d5c30-caa4-4997-bc00-d951af0faa98",
+   "term": "Foley pit",
+   "topic": "Foley Performance & Recording",
+   "seq": 1730,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "285341f7-9f62-4967-9ad9-02599858584a",
+   "term": "Foley prop area",
+   "topic": "Foley Performance & Recording",
+   "seq": 1730,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "c0a1024b-2cbd-41d2-9f02-96d5b838b61e",
+   "term": "Foley surface",
+   "topic": "Foley Performance & Recording",
+   "seq": 1730,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

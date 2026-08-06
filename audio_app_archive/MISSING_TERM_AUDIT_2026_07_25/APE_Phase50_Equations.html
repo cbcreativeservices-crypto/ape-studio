@@ -1,0 +1,827 @@
+<!DOCTYPE html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width, initial-scale=1">
+<title>Phase 50 — Audio Equations</title>
+<style>
+:root{--brand:#1f3864;--ink:#1f2733;--line:#e3e6ea;--sym:#0b3d2e;--wrd:#7a4b12}
+*{box-sizing:border-box}
+body{font:15px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;color:var(--ink);background:#fafbfc}
+header{position:sticky;top:0;background:var(--brand);color:#fff;padding:14px 16px;z-index:5}
+h1{font-size:18px;margin:0 0 4px} .sub{font-size:13px;opacity:.9}
+h2{font-size:14px;color:var(--brand);padding:14px 16px 4px;margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding:0 16px}
+.card{position:relative;border:1px solid var(--line);border-radius:12px;background:#fff;padding:18px 16px 30px;min-height:120px;cursor:pointer;transition:.12s;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.card:hover{box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.big{display:flex;align-items:center;justify-content:center;min-height:52px;text-align:center}
+.big .sym,.big .wrd{font-size:26px}
+.sym{font-family:'Cambria Math','Latin Modern Math','Times New Roman',Georgia,serif;font-style:italic;color:var(--sym);letter-spacing:.3px}
+.wrd{font-family:Georgia,serif;color:var(--wrd);font-weight:600;font-style:normal;font-size:16px !important;line-height:1.3}
+.name{text-align:center;font-size:12px;color:#6b727c;margin-top:8px}
+.small{position:absolute;right:8px;bottom:6px;max-width:62%;text-align:right;opacity:.9}
+.small .wrd,.small .sym{font-size:11px !important}
+.small .sym{font-size:12px !important}
+.card.swapped .big .sym{display:none} .card:not(.swapped) .big .wrd{display:none}
+.card.swapped .small .wrd{display:none} .card:not(.swapped) .small .sym{display:none}
+.hint{background:#eef4ff;border:1px solid #d6e4ff;color:#24406e;margin:12px 16px;padding:10px 12px;border-radius:10px;font-size:13px}
+footer{padding:22px 16px;color:#6b727c;font-size:12px}
+</style></head><body>
+<header><h1>Phase 50 — Audio Equations, Calculations &amp; Formulas</h1>
+<div class=sub>196 equations. Tap any card to swap the big formula between symbols and words.</div></header>
+<div class=hint><b>Feature demo:</b> each card shows the symbolic formula large, with the spelled-out (worded) version small in the lower-right corner. <b>Click the card</b> to swap them — the worded version becomes large and the symbols move to the corner. Click again to swap back. (Worded strings here are an auto-generated first pass; Machine B finalizes each.)</div>
+<h2>Frequency, period, wavelength, and propagation</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f = 1/T</span></div>
+<div class="name">1. Frequency-Period Relationship</div>
+<div class="small"><span class="wrd">Frequency = 1 ÷ Period</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">ω = 2πf</span></div>
+<div class="name">2. Angular Frequency</div>
+<div class="small"><span class="wrd">AngularFrequency = 2 Pi Frequency</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">c = fλ</span></div>
+<div class="name">3. Wave-Speed Equation</div>
+<div class="small"><span class="wrd">SpeedOfSound = Frequency Wavelength</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">λ = c/f</span></div>
+<div class="name">4. Wavelength</div>
+<div class="small"><span class="wrd">Wavelength = SpeedOfSound ÷ Frequency</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f = c/λ</span></div>
+<div class="name">5. Frequency from Wavelength</div>
+<div class="small"><span class="wrd">Frequency = SpeedOfSound ÷ Wavelength</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">t = d/c</span></div>
+<div class="name">6. Propagation Time</div>
+<div class="small"><span class="wrd">Time = Distance ÷ SpeedOfSound</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">d = ct</span></div>
+<div class="name">7. Propagation Distance</div>
+<div class="small"><span class="wrd">Distance = SpeedOfSound Time</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Δt = Δd/c</span></div>
+<div class="name">8. Delay from Distance Difference</div>
+<div class="small"><span class="wrd">TimeDifference = DistanceDifference ÷ SpeedOfSound</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Δd = cΔt</span></div>
+<div class="name">9. Distance from Measured Delay</div>
+<div class="small"><span class="wrd">DistanceDifference = SpeedOfSound TimeDifference</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">c ≈ 331.3 + 0.606T_C</span></div>
+<div class="name">10. Approximate Speed of Sound in Air versus Temperature</div>
+<div class="small"><span class="wrd">SpeedOfSound ≈ 331.3 + 0.606 Temperature_C</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">λ_ft ≈ 1130/f</span></div>
+<div class="name">11. Wavelength in Feet at Room Temperature</div>
+<div class="small"><span class="wrd">Wavelength_ft ≈ 1130 ÷ Frequency</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">λ_m ≈ 343/f</span></div>
+<div class="name">12. Wavelength in Meters at Room Temperature</div>
+<div class="small"><span class="wrd">Wavelength_m ≈ 343 ÷ Frequency</span></div>
+</div></div><h2>Phase, time, and distance</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">φ = 360°fΔt</span></div>
+<div class="name">13. Phase Shift from Time Delay</div>
+<div class="small"><span class="wrd">φ = 360° Frequency TimeDifference</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Δt = φ/(360°f)</span></div>
+<div class="name">14. Time Delay from Phase Shift</div>
+<div class="small"><span class="wrd">TimeDifference = φ ÷ (360° Frequency )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">φ = 360°(Δd/λ)</span></div>
+<div class="name">15. Phase Shift from Distance Difference</div>
+<div class="small"><span class="wrd">φ = 360°( DistanceDifference ÷ Wavelength )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Δd = λφ/360°</span></div>
+<div class="name">16. Distance Difference from Phase Shift</div>
+<div class="small"><span class="wrd">DistanceDifference = Wavelength φ ÷ 360°</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">φ = 2πfΔt</span></div>
+<div class="name">17. Phase in Radians</div>
+<div class="small"><span class="wrd">φ = 2 Pi Frequency TimeDifference</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">φ_rad = φ_deg(π/180)</span></div>
+<div class="name">18. Degrees-to-Radians Conversion</div>
+<div class="small"><span class="wrd">Phase_radians = Phase_degrees (Pi ÷ 180)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">φ_deg = φ_rad(180/π)</span></div>
+<div class="name">19. Radians-to-Degrees Conversion</div>
+<div class="small"><span class="wrd">Phase_degrees = Phase_radians (180 ÷ Pi)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">T = 1/f</span></div>
+<div class="name">20. One-Cycle Time</div>
+<div class="small"><span class="wrd">Period = 1 ÷ Frequency</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">t_180° = 1/(2f)</span></div>
+<div class="name">21. Half-Cycle Delay</div>
+<div class="small"><span class="wrd">HalfCycleTime = 1 ÷ (2 Frequency )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">t_90° = 1/(4f)</span></div>
+<div class="name">22. Quarter-Cycle Delay</div>
+<div class="small"><span class="wrd">QuarterCycleTime = 1 ÷ (4 Frequency )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">N = tf_s</span></div>
+<div class="name">23. Samples Corresponding to Delay</div>
+<div class="small"><span class="wrd">NumberOfSources = Time SampleRate</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">t = N/f_s</span></div>
+<div class="name">24. Delay from Sample Count</div>
+<div class="small"><span class="wrd">Time = NumberOfSources ÷ SampleRate</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">d_sample = c/f_s</span></div>
+<div class="name">25. Distance Represented by One Sample</div>
+<div class="small"><span class="wrd">DistancePerSample = SpeedOfSound ÷ SampleRate</span></div>
+</div></div><h2>Ratios and decibels</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">L = 10 log₁₀(P₂/P₁)</span></div>
+<div class="name">26. Power-Level Ratio</div>
+<div class="small"><span class="wrd">Level = 10 log₁₀ ( Power2 ÷ Power1 )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">L = 20 log₁₀(V₂/V₁)</span></div>
+<div class="name">27. Voltage-Level Ratio for Equal Impedances</div>
+<div class="small"><span class="wrd">Level = 20 log₁₀ ( Voltage ₂ ÷ Voltage ₁)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">ΔL_p = 20 log₁₀(p₂/p₁)</span></div>
+<div class="name">28. Sound-Pressure-Level Ratio</div>
+<div class="small"><span class="wrd">SPLChange = 20 log₁₀ ( Pressure2 ÷ Pressure1 )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P₂/P₁ = 10^(L/10)</span></div>
+<div class="name">29. Power Ratio from Decibels</div>
+<div class="small"><span class="wrd">Power2 ÷ Power1 = 10^( Level ÷ 10)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V₂/V₁ = 10^(L/20)</span></div>
+<div class="name">30. Voltage Ratio from Decibels</div>
+<div class="small"><span class="wrd">Voltage ₂ ÷ Voltage ₁ = 10^( Level ÷ 20)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">p₂/p₁ = 10^(ΔL_p/20)</span></div>
+<div class="name">31. Pressure Ratio from Decibels</div>
+<div class="small"><span class="wrd">Pressure2 ÷ Pressure1 = 10^( SPLChange ÷ 20)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">L_p = 20 log₁₀(p_rms/p₀)</span></div>
+<div class="name">32. Sound Pressure Level</div>
+<div class="small"><span class="wrd">SoundPressureLevel = 20 log₁₀ ( RMSPressure ÷ ReferencePressure )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">p₀ = 20 μPa</span></div>
+<div class="name">33. Airborne Reference Sound Pressure</div>
+<div class="small"><span class="wrd">ReferencePressure = 20 μ Power a</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">L_W = 10 log₁₀(W/W₀)</span></div>
+<div class="name">34. Sound Power Level</div>
+<div class="small"><span class="wrd">SoundPowerLevel = 10 log₁₀ ( AcousticPower ÷ ReferencePower )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">L_I = 10 log₁₀(I/I₀)</span></div>
+<div class="name">35. Sound Intensity Level</div>
+<div class="small"><span class="wrd">SoundIntensityLevel = 10 log₁₀ ( Intensity ÷ ReferenceIntensity )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">dBu = 20 log₁₀(V/0.775)</span></div>
+<div class="name">36. dBu from RMS Voltage</div>
+<div class="small"><span class="wrd">dBu = 20 log₁₀ ( Voltage ÷ 0.775)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V = 0.775 × 10^(dBu/20)</span></div>
+<div class="name">37. RMS Voltage from dBu</div>
+<div class="small"><span class="wrd">Voltage = 0.775 × 10^( dBu ÷ 20)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">dBV = 20 log₁₀(V/1.0)</span></div>
+<div class="name">38. dBV from RMS Voltage</div>
+<div class="small"><span class="wrd">dBV = 20 log₁₀ ( Voltage ÷ 1.0)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V = 10^(dBV/20)</span></div>
+<div class="name">39. RMS Voltage from dBV</div>
+<div class="small"><span class="wrd">Voltage = 10^( dBV ÷ 20)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">dBm = 10 log₁₀(P/1 mW)</span></div>
+<div class="name">40. dBm from Power</div>
+<div class="small"><span class="wrd">dBm = 10 log₁₀ ( Power ÷ 1 mW )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P_mW = 10^(dBm/10)</span></div>
+<div class="name">41. Power from dBm</div>
+<div class="small"><span class="wrd">Power_mW = 10^( dBm ÷ 10)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">dBFS = 20 log₁₀(A/A_FS)</span></div>
+<div class="name">42. dBFS Amplitude Ratio</div>
+<div class="small"><span class="wrd">dBFS = 20 log₁₀ ( Amplitude ÷ FullScaleAmplitude )</span></div>
+</div></div><h2>Combining sound levels and sources</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">L_total = 10 log₁₀(Σ 10^(L_i/10))</span></div>
+<div class="name">43. General Addition of Independent Sound Levels</div>
+<div class="small"><span class="wrd">TotalLevel = 10 log₁₀ (Σ 10^( Level(i) ÷ 10))</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">L_T = 10 log₁₀(10^(L₁/10) + 10^(L₂/10))</span></div>
+<div class="name">44. Addition of Two Sound Levels</div>
+<div class="small"><span class="wrd">TotalLevel = 10 log₁₀ (10^( Level1 ÷ 10) + 10^( Level2 ÷ 10))</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">L_T = L_single + 10 log₁₀(N)</span></div>
+<div class="name">45. Equal Incoherent Sources</div>
+<div class="small"><span class="wrd">TotalLevel = SingleSourceLevel + 10 log₁₀ ( NumberOfSources )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">ΔL ≈ +3 dB</span></div>
+<div class="name">46. Doubling Equal Incoherent Sources</div>
+<div class="small"><span class="wrd">LevelChange ≈ +3 dB</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">ΔL ≈ +6 dB</span></div>
+<div class="name">47. Coherent Equal-Amplitude Addition in Phase</div>
+<div class="small"><span class="wrd">LevelChange ≈ +6 dB</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">L_avg = 10 log₁₀[(1/N) Σ 10^(L_i/10)]</span></div>
+<div class="name">48. Energetic Average of Sound Levels</div>
+<div class="small"><span class="wrd">AverageLevel = 10 log₁₀ [(1 ÷ NumberOfSources ) Σ 10^( Level(i) ÷ 10)]</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">L_eq = 10 log₁₀[(1/T) ∫₀ᵀ 10^(L(t)/10) dt]</span></div>
+<div class="name">49. Time-Weighted Equivalent Level</div>
+<div class="small"><span class="wrd">EquivalentLevel = 10 log₁₀ [(1 ÷ Time ) ∫₀ᵀ 10^( Level ( Time ) ÷ 10) d Time ]</span></div>
+</div></div><h2>Distance loss, coverage, and source spreading</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">I ∝ 1/r²</span></div>
+<div class="name">50. Inverse-Square Intensity Relationship</div>
+<div class="small"><span class="wrd">Intensity ∝ 1 ÷ Distance ²</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">ΔL = 20 log₁₀(r₁/r₂)</span></div>
+<div class="name">51. Free-Field Level Change with Distance</div>
+<div class="small"><span class="wrd">LevelChange = 20 log₁₀ ( Distance ₁ ÷ Distance ₂)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">L₂ = L₁ - 20 log₁₀(r₂/r₁)</span></div>
+<div class="name">52. Predicted Level at a New Distance</div>
+<div class="small"><span class="wrd">Level2 = Level1 - 20 log₁₀ ( Distance ₂ ÷ Distance ₁)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">r₂/r₁ = 10^(-ΔL/20)</span></div>
+<div class="name">53. Distance Ratio from Level Change</div>
+<div class="small"><span class="wrd">Distance ₂ ÷ Distance ₁ = 10^(- LevelChange ÷ 20)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">A = 4πr²</span></div>
+<div class="name">54. Spherical Surface Area</div>
+<div class="small"><span class="wrd">Area = 4Pi Distance ²</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">A = 2πr²</span></div>
+<div class="name">55. Hemispherical Surface Area</div>
+<div class="small"><span class="wrd">Area = 2 Pi Distance ²</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">I = W/A</span></div>
+<div class="name">56. Intensity from Acoustic Power</div>
+<div class="small"><span class="wrd">Intensity = AcousticPower ÷ Area</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Q = I_direction/I_omnidirectional</span></div>
+<div class="name">57. Directivity Factor</div>
+<div class="small"><span class="wrd">DirectivityFactor = OnAxisIntensity ÷ OmniIntensity</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">DI = 10 log₁₀(Q)</span></div>
+<div class="name">58. Directivity Index</div>
+<div class="small"><span class="wrd">DI = 10 log₁₀ ( DirectivityFactor )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Q = 10^(DI/10)</span></div>
+<div class="name">59. Directivity Factor from Directivity Index</div>
+<div class="small"><span class="wrd">DirectivityFactor = 10^( DI ÷ 10)</span></div>
+</div></div><h2>Sound pressure, intensity, and acoustic power</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">I = p_rms²/(ρc)</span></div>
+<div class="name">60. Sound Intensity from RMS Pressure for a Plane Progressive Wave</div>
+<div class="small"><span class="wrd">Intensity = RMSPressure ² ÷ (ρ SpeedOfSound )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">p_rms = √(Iρc)</span></div>
+<div class="name">61. RMS Pressure from Intensity</div>
+<div class="small"><span class="wrd">RMSPressure = √( Intensity ρ SpeedOfSound )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Z₀ = ρc</span></div>
+<div class="name">62. Characteristic Acoustic Impedance</div>
+<div class="small"><span class="wrd">CharacteristicImpedance = ρ SpeedOfSound</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">i(t) = p(t)u(t)</span></div>
+<div class="name">63. Instantaneous Acoustic Intensity</div>
+<div class="small"><span class="wrd">i( Time ) = Pressure ( Time ) ParticleVelocity ( Time )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">I = average[p(t)u(t)]</span></div>
+<div class="name">64. Average Acoustic Intensity</div>
+<div class="small"><span class="wrd">Intensity = average [ Pressure ( Time ) ParticleVelocity ( Time )]</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">W = IA</span></div>
+<div class="name">65. Acoustic Power</div>
+<div class="small"><span class="wrd">AcousticPower = Intensity Area</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">I = W/A</span></div>
+<div class="name">66. Intensity from Power and Area</div>
+<div class="small"><span class="wrd">Intensity = AcousticPower ÷ Area</span></div>
+</div></div><h2>RMS, peak, crest factor, and waveform calculations</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">x_rms = √[(1/T) ∫₀ᵀ x²(t) dt]</span></div>
+<div class="name">67. General RMS Value</div>
+<div class="small"><span class="wrd">RMSValue = √[(1 ÷ T) ∫₀ᵀ x²( Time ) d Time ]</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">x_rms = √[(1/N) Σ x_n²]</span></div>
+<div class="name">68. Discrete RMS Value</div>
+<div class="small"><span class="wrd">RMSValue = √[(1 ÷ Number ) Σ Sample_n ²]</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_rms = V_peak/√2</span></div>
+<div class="name">69. Sine-Wave RMS Voltage</div>
+<div class="small"><span class="wrd">RMSVoltage = PeakVoltage ÷ √2</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_peak = √2 V_rms</span></div>
+<div class="name">70. Sine-Wave Peak Voltage</div>
+<div class="small"><span class="wrd">PeakVoltage = √2 RMSVoltage</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_pp = 2V_peak</span></div>
+<div class="name">71. Peak-to-Peak Voltage</div>
+<div class="small"><span class="wrd">PeakToPeakVoltage = 2 PeakVoltage</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_rms = V_pp/(2√2)</span></div>
+<div class="name">72. Sine-Wave RMS from Peak-to-Peak Voltage</div>
+<div class="small"><span class="wrd">RMSVoltage = PeakToPeakVoltage ÷ (2√2)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">CF = x_peak/x_rms</span></div>
+<div class="name">73. Crest Factor as a Ratio</div>
+<div class="small"><span class="wrd">CF = PeakValue ÷ RMSValue</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">CF_dB = 20 log₁₀(x_peak/x_rms)</span></div>
+<div class="name">74. Crest Factor in Decibels</div>
+<div class="small"><span class="wrd">CrestFactor_dB = 20 log₁₀ ( PeakValue ÷ RMSValue )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">PAPR = 10 log₁₀(P_peak/P_avg)</span></div>
+<div class="name">75. Peak-to-Average Power Ratio</div>
+<div class="small"><span class="wrd">PAPR = 10 log₁₀ ( PeakPower ÷ AveragePower )</span></div>
+</div></div><h2>Electrical fundamentals for audio repair and design</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V = IR</span></div>
+<div class="name">76. Ohm's Law - Voltage</div>
+<div class="small"><span class="wrd">Voltage = Current Resistance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">I = V/R</span></div>
+<div class="name">77. Ohm's Law - Current</div>
+<div class="small"><span class="wrd">Current = Voltage ÷ Resistance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">R = V/I</span></div>
+<div class="name">78. Ohm's Law - Resistance</div>
+<div class="small"><span class="wrd">Resistance = Voltage ÷ Current</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P = VI</span></div>
+<div class="name">79. DC Electrical Power</div>
+<div class="small"><span class="wrd">Power = Voltage Current</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P = I²R</span></div>
+<div class="name">80. Power from Current and Resistance</div>
+<div class="small"><span class="wrd">Power = Current ² Resistance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P = V²/R</span></div>
+<div class="name">81. Power from Voltage and Resistance</div>
+<div class="small"><span class="wrd">Power = Voltage ² ÷ Resistance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">I = √(P/R)</span></div>
+<div class="name">82. Current from Power and Resistance</div>
+<div class="small"><span class="wrd">Current = √( Power ÷ Resistance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V = √(PR)</span></div>
+<div class="name">83. Voltage from Power and Resistance</div>
+<div class="small"><span class="wrd">Voltage = √( Power Resistance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">E = Pt</span></div>
+<div class="name">84. Electrical Energy</div>
+<div class="small"><span class="wrd">Energy = Power Time</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">R_T = R₁ + R₂ + ... + R_n</span></div>
+<div class="name">85. Series Resistance</div>
+<div class="small"><span class="wrd">TotalResistance = Resistance ₁ + Resistance ₂ + ... + Resistance _n</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">1/R_T = 1/R₁ + 1/R₂ + ... + 1/R_n</span></div>
+<div class="name">86. Parallel Resistance</div>
+<div class="small"><span class="wrd">1 ÷ TotalResistance = 1 ÷ Resistance ₁ + 1 ÷ Resistance ₂ + ... + 1 ÷ Resistance _n</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">R_T = R₁R₂/(R₁ + R₂)</span></div>
+<div class="name">87. Two Resistors in Parallel</div>
+<div class="small"><span class="wrd">TotalResistance = Resistance ₁ Resistance ₂ ÷ ( Resistance ₁ + Resistance ₂)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">R_T = R/N</span></div>
+<div class="name">88. Equal Resistors in Parallel</div>
+<div class="small"><span class="wrd">TotalResistance = Resistance ÷ Number</span></div>
+</div></div><h2>AC impedance and reactive components</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V = IZ</span></div>
+<div class="name">89. AC Ohm's Law</div>
+<div class="small"><span class="wrd">Voltage = Current Impedance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">X_L = 2πfL</span></div>
+<div class="name">90. Inductive Reactance</div>
+<div class="small"><span class="wrd">InductiveReactance = 2 Pi Frequency Inductance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">X_C = 1/(2πfC)</span></div>
+<div class="name">91. Capacitive Reactance</div>
+<div class="small"><span class="wrd">CapacitiveReactance = 1 ÷ (2 Pi Frequency Capacitance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">|Z| = √(R² + X_L²)</span></div>
+<div class="name">92. Series RL Impedance Magnitude</div>
+<div class="small"><span class="wrd">| Impedance | = √( Resistance ² + InductiveReactance ²)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">|Z| = √(R² + X_C²)</span></div>
+<div class="name">93. Series RC Impedance Magnitude</div>
+<div class="small"><span class="wrd">| Impedance | = √( Resistance ² + CapacitiveReactance ²)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">X = X_L - X_C</span></div>
+<div class="name">94. Series RLC Net Reactance</div>
+<div class="small"><span class="wrd">Reactance = InductiveReactance - CapacitiveReactance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">|Z| = √[R² + (X_L - X_C)²]</span></div>
+<div class="name">95. Series RLC Impedance Magnitude</div>
+<div class="small"><span class="wrd">| Impedance | = √[ Resistance ² + ( InductiveReactance - CapacitiveReactance )²]</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Z_T = 1/(1/Z₁ + 1/Z₂ + ... + 1/Z_n)</span></div>
+<div class="name">96. Parallel Impedance</div>
+<div class="small"><span class="wrd">TotalImpedance = 1 ÷ (1 ÷ Impedance ₁ + 1 ÷ Impedance ₂ + ... + 1 ÷ Impedance _n)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">θ = tan⁻¹[(X_L - X_C)/R]</span></div>
+<div class="name">97. Impedance Phase Angle for Series RLC</div>
+<div class="small"><span class="wrd">PhaseAngle = tan⁻¹ [( InductiveReactance - CapacitiveReactance ) ÷ Resistance ]</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f₀ = 1/(2π√LC)</span></div>
+<div class="name">98. Series Resonant Frequency</div>
+<div class="small"><span class="wrd">CenterFrequency = 1 ÷ (2 Pi√ Inductance Capacitance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Q = ω₀L/R</span></div>
+<div class="name">99. Quality Factor of a Series RLC Circuit</div>
+<div class="small"><span class="wrd">Charge = ResonantAngularFreq Inductance ÷ Resistance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">R = ω₀L/Q</span></div>
+<div class="name">100. Equivalent Series Resistance from Q</div>
+<div class="small"><span class="wrd">Resistance = ResonantAngularFreq Inductance ÷ Charge</span></div>
+</div></div><h2>Capacitor, inductor, and power-supply calculations</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Q = CV</span></div>
+<div class="name">101. Capacitor Charge</div>
+<div class="small"><span class="wrd">Charge = Capacitance Voltage</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">E = ½CV²</span></div>
+<div class="name">102. Energy Stored in a Capacitor</div>
+<div class="small"><span class="wrd">Energy = ½ Capacitance Voltage ²</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">E = ½LI²</span></div>
+<div class="name">103. Energy Stored in an Inductor</div>
+<div class="small"><span class="wrd">Energy = ½ Inductance Current ²</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">τ = RC</span></div>
+<div class="name">104. RC Time Constant</div>
+<div class="small"><span class="wrd">TimeConstant = Resistance Capacitance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">τ = L/R</span></div>
+<div class="name">105. RL Time Constant</div>
+<div class="small"><span class="wrd">TimeConstant = Inductance ÷ Resistance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_C(t) = V_S(1 - e^(-t/RC))</span></div>
+<div class="name">106. Capacitor Charging Voltage</div>
+<div class="small"><span class="wrd">CapacitorVoltage ( Time ) = SupplyVoltage (1 - e^(- Time ÷ Resistance Capacitance ))</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_C(t) = V₀e^(-t/RC)</span></div>
+<div class="name">107. Capacitor Discharge Voltage</div>
+<div class="small"><span class="wrd">CapacitorVoltage ( Time ) = Voltage ₀e^(- Time ÷ Resistance Capacitance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_ripple = 2f_mains</span></div>
+<div class="name">108. Approximate Full-Wave Rectifier Ripple Frequency</div>
+<div class="small"><span class="wrd">RippleFrequency = 2 MainsFrequency</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">ΔV ≈ I_load/(f_ripple C)</span></div>
+<div class="name">109. Approximate Capacitor-Input Supply Ripple</div>
+<div class="small"><span class="wrd">VoltageChange ≈ LoadCurrent ÷ ( RippleFrequency Capacitance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_s/V_p = N_s/N_p</span></div>
+<div class="name">110. Transformer Turns Ratio</div>
+<div class="small"><span class="wrd">SecondaryVoltage ÷ PrimaryVoltage = SecondaryTurns ÷ PrimaryTurns</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">I_s/I_p = N_p/N_s</span></div>
+<div class="name">111. Ideal Transformer Current Ratio</div>
+<div class="small"><span class="wrd">Current _s ÷ Current _p = PrimaryTurns ÷ SecondaryTurns</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Z_p = (N_p/N_s)² Z_s</span></div>
+<div class="name">112. Impedance Reflected Through a Transformer</div>
+<div class="small"><span class="wrd">PrimaryImpedance = ( PrimaryTurns ÷ SecondaryTurns )² SecondaryImpedance</span></div>
+</div></div><h2>Voltage dividers, gain, and amplifier design</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_out = V_in[R₂/(R₁ + R₂)]</span></div>
+<div class="name">113. Voltage Divider</div>
+<div class="small"><span class="wrd">OutputVoltage = InputVoltage [ Resistance ₂ ÷ ( Resistance ₁ + Resistance ₂)]</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_out = V_in[(R₂ || R_L)/(R₁ + (R₂ || R_L))]</span></div>
+<div class="name">114. Loaded Voltage Divider</div>
+<div class="small"><span class="wrd">OutputVoltage = InputVoltage [( Resistance ₂ || LoadResistance ) ÷ ( Resistance ₁ + ( Resistance ₂ || LoadResistance ))]</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">A_v = V_out/V_in</span></div>
+<div class="name">115. Voltage Gain</div>
+<div class="small"><span class="wrd">VoltageGain = OutputVoltage ÷ InputVoltage</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">A_v,dB = 20 log₁₀|A_v|</span></div>
+<div class="name">116. Voltage Gain in Decibels</div>
+<div class="small"><span class="wrd">VoltageGain_dB = 20 log₁₀ | VoltageGain |</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">A_v = -R_f/R_in</span></div>
+<div class="name">117. Inverting Operational-Amplifier Gain</div>
+<div class="small"><span class="wrd">VoltageGain = - FeedbackResistor ÷ InputResistor</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">A_v = 1 + R_f/R_g</span></div>
+<div class="name">118. Noninverting Operational-Amplifier Gain</div>
+<div class="small"><span class="wrd">VoltageGain = 1 + FeedbackResistor ÷ GainResistor</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_o = -R_f(V₁/R₁ + V₂/R₂ + ...)</span></div>
+<div class="name">119. Summing-Amplifier Output</div>
+<div class="small"><span class="wrd">OutputVoltage = - FeedbackResistor ( Voltage ₁ ÷ Resistance ₁ + Voltage ₂ ÷ Resistance ₂ + ...)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">CMRR = 20 log₁₀(A_d/A_cm)</span></div>
+<div class="name">120. Common-Mode Rejection Ratio</div>
+<div class="small"><span class="wrd">CMRR = 20 log₁₀ ( DifferentialGain ÷ CommonModeGain )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">SR_min = 2πfV_peak</span></div>
+<div class="name">121. Slew Rate Requirement for a Sine Wave</div>
+<div class="small"><span class="wrd">MinSlewRate = 2 Pi Frequency PeakVoltage</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_max = SR/(2πV_peak)</span></div>
+<div class="name">122. Maximum Sine-Wave Frequency from Slew Rate</div>
+<div class="small"><span class="wrd">MaxFrequency = SlewRate ÷ (2 Pi PeakVoltage )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">η = (P_out/P_in) × 100%</span></div>
+<div class="name">123. Amplifier Efficiency</div>
+<div class="small"><span class="wrd">Efficiency = ( OutputPower ÷ InputPower ) × 100%</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P_heat = P_in - P_out</span></div>
+<div class="name">124. Thermal Dissipation</div>
+<div class="small"><span class="wrd">HeatDissipation = InputPower - OutputPower</span></div>
+</div></div><h2>Filter design</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_c = 1/(2πRC)</span></div>
+<div class="name">125. First-Order RC Low-Pass Cutoff</div>
+<div class="small"><span class="wrd">CutoffFrequency = 1 ÷ (2 Pi Resistance Capacitance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_c = 1/(2πRC)</span></div>
+<div class="name">126. First-Order RC High-Pass Cutoff</div>
+<div class="small"><span class="wrd">CutoffFrequency = 1 ÷ (2 Pi Resistance Capacitance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">R = 1/(2πf_cC)</span></div>
+<div class="name">127. Required Resistance for an RC Filter</div>
+<div class="small"><span class="wrd">Resistance = 1 ÷ (2 Pi CutoffFrequency Capacitance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">C = 1/(2πf_cR)</span></div>
+<div class="name">128. Required Capacitance for an RC Filter</div>
+<div class="small"><span class="wrd">Capacitance = 1 ÷ (2 Pi CutoffFrequency Resistance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Q = f₀/BW</span></div>
+<div class="name">129. Filter Quality Factor</div>
+<div class="small"><span class="wrd">QualityFactor = CenterFrequency ÷ BW</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">BW = f₀/Q</span></div>
+<div class="name">130. Bandwidth from Center Frequency and Q</div>
+<div class="small"><span class="wrd">BW = CenterFrequency ÷ QualityFactor</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Q = f₀/(f_H - f_L)</span></div>
+<div class="name">131. Quality Factor from Band Edges</div>
+<div class="small"><span class="wrd">QualityFactor = CenterFrequency ÷ ( UpperEdgeFreq - LowerEdgeFreq )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f₀ = √(f_Lf_H)</span></div>
+<div class="name">132. Geometric Center Frequency</div>
+<div class="small"><span class="wrd">CenterFrequency = √( LowerEdgeFreq UpperEdgeFreq )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f₂ = 2f₁</span></div>
+<div class="name">133. Octave Frequency Ratio</div>
+<div class="small"><span class="wrd">Frequency ₂ = 2 Frequency ₁</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">n = log₂(f₂/f₁)</span></div>
+<div class="name">134. Number of Octaves Between Frequencies</div>
+<div class="small"><span class="wrd">NumberOfOctaves = log₂ ( Frequency ₂ ÷ Frequency ₁)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f₂ = f₁ 2ⁿ</span></div>
+<div class="name">135. Frequency after a Number of Octaves</div>
+<div class="small"><span class="wrd">Frequency ₂ = Frequency ₁ 2ⁿ</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">n = 12 log₂(f₂/f₁)</span></div>
+<div class="name">136. Number of Semitones Between Frequencies</div>
+<div class="small"><span class="wrd">NumberOfOctaves = 12 log₂ ( Frequency ₂ ÷ Frequency ₁)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">r = 2^(1/12)</span></div>
+<div class="name">137. Equal-Tempered Frequency Ratio per Semitone</div>
+<div class="small"><span class="wrd">Ratio = 2^(1 ÷ 12)</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f = 440 × 2^((m - 69)/12)</span></div>
+<div class="name">138. Frequency from MIDI Note Number</div>
+<div class="small"><span class="wrd">Frequency = 440 × 2^(( MIDINote - 69) ÷ 12)</span></div>
+</div></div><h2>Loudspeaker and amplifier loading</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P = V_rms²/R</span></div>
+<div class="name">139. Amplifier Power into a Resistive Load</div>
+<div class="small"><span class="wrd">Power = RMSVoltage ² ÷ Resistance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_rms = √(PR)</span></div>
+<div class="name">140. Required RMS Voltage for Target Power</div>
+<div class="small"><span class="wrd">RMSVoltage = √( Power Resistance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">I_rms = √(P/R)</span></div>
+<div class="name">141. Required RMS Current for Target Power</div>
+<div class="small"><span class="wrd">RMSCurrent = √( Power ÷ Resistance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_peak = √(2PR)</span></div>
+<div class="name">142. Peak Voltage for a Sine-Wave Output</div>
+<div class="small"><span class="wrd">PeakVoltage = √(2 Power Resistance )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_load ≈ 2V_single channel</span></div>
+<div class="name">143. Bridge-Tied-Load Voltage Relationship</div>
+<div class="small"><span class="wrd">LoadVoltage ≈ 2 SecondaryVoltage ingle channel</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P_bridged ≈ 4P_single</span></div>
+<div class="name">144. Ideal Bridged Power Relationship at the Same Load</div>
+<div class="small"><span class="wrd">BridgedPower ≈ 4 SingleChannelPower</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">R_channel = R_load/2</span></div>
+<div class="name">145. Equivalent Load Seen by Each Amplifier Channel When Bridged</div>
+<div class="small"><span class="wrd">PerChannelLoad = LoadResistance ÷ 2</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Z_T = Z₁ + Z₂ + ...</span></div>
+<div class="name">146. Series Loudspeaker Impedance Approximation</div>
+<div class="small"><span class="wrd">TotalImpedance = Impedance ₁ + Impedance ₂ + ...</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Z_T = 1/(1/Z₁ + 1/Z₂ + ...)</span></div>
+<div class="name">147. Parallel Loudspeaker Impedance Approximation</div>
+<div class="small"><span class="wrd">TotalImpedance = 1 ÷ (1 ÷ Impedance ₁ + 1 ÷ Impedance ₂ + ...)</span></div>
+</div></div><h2>Constant-voltage distributed loudspeaker systems</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Z = V_line²/P_tap</span></div>
+<div class="name">148. Loudspeaker Tap Impedance</div>
+<div class="small"><span class="wrd">Impedance = LineVoltage ² ÷ TapPower</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P = V_line²/Z</span></div>
+<div class="name">149. Tap Power from Line Voltage and Impedance</div>
+<div class="small"><span class="wrd">Power = LineVoltage ² ÷ Impedance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P_T = P₁ + P₂ + ... + P_n</span></div>
+<div class="name">150. Total Distributed-System Tap Power</div>
+<div class="small"><span class="wrd">TotalPower = Power1 + Power2 + ... + Power _n</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P_amp ≥ P_T × H</span></div>
+<div class="name">151. Recommended Amplifier Capacity with Design Headroom</div>
+<div class="small"><span class="wrd">AmplifierPower ≥ TotalPower × HeadroomFactor</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">I = P_T/V_line</span></div>
+<div class="name">152. Approximate Line Current</div>
+<div class="small"><span class="wrd">Current = TotalPower ÷ LineVoltage</span></div>
+</div></div><h2>Cable and conductor calculations</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">R = ρℓ/A</span></div>
+<div class="name">153. Conductor Resistance</div>
+<div class="small"><span class="wrd">Resistance = Resistivity Length ÷ Area</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">R_loop = 2ρℓ/A</span></div>
+<div class="name">154. Two-Conductor Circuit Resistance</div>
+<div class="small"><span class="wrd">LoopResistance = 2 Resistivity Length ÷ Area</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_drop = IR_cable</span></div>
+<div class="name">155. Cable Voltage Drop</div>
+<div class="small"><span class="wrd">VoltageDrop = Current CableResistance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">V_load = V_source - V_drop</span></div>
+<div class="name">156. Load Voltage after Cable Loss</div>
+<div class="small"><span class="wrd">LoadVoltage = SourceVoltage - VoltageDrop</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">P_loss = I²R_cable</span></div>
+<div class="name">157. Cable Power Loss</div>
+<div class="small"><span class="wrd">PowerLoss = Current ² CableResistance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">%ΔV = (V_drop/V_source) × 100</span></div>
+<div class="name">158. Percentage Voltage Drop</div>
+<div class="small"><span class="wrd">% VoltageChange = ( VoltageDrop ÷ SourceVoltage ) × 100</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">DF = Z_load/Z_source</span></div>
+<div class="name">159. Damping Factor</div>
+<div class="small"><span class="wrd">DF = LoadImpedance ÷ SourceImpedance</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">DF_effective = Z_load/(Z_amp + R_cable)</span></div>
+<div class="name">160. Effective Damping Factor Including Cable</div>
+<div class="small"><span class="wrd">EffectiveDampingFactor = LoadImpedance ÷ ( AmplifierImpedance + CableResistance )</span></div>
+</div></div><h2>Digital audio calculations</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_N = f_s/2</span></div>
+<div class="name">161. Nyquist Frequency</div>
+<div class="small"><span class="wrd">NyquistFrequency = SampleRate ÷ 2</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">T_s = 1/f_s</span></div>
+<div class="name">162. Sampling Period</div>
+<div class="small"><span class="wrd">SamplingPeriod = 1 ÷ SampleRate</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">N = f_s t</span></div>
+<div class="name">163. Sample Count from Duration</div>
+<div class="small"><span class="wrd">Samples = SampleRate Time</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">R_b = f_s B N_c</span></div>
+<div class="name">164. Uncompressed PCM Bit Rate</div>
+<div class="small"><span class="wrd">BitRate = SampleRate BitDepth ChannelCount</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">S = R_b t</span></div>
+<div class="name">165. Uncompressed File Size in Bits</div>
+<div class="small"><span class="wrd">FileSize = BitRate Time</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">S_bytes = f_s B N_c t/8</span></div>
+<div class="name">166. Uncompressed File Size in Bytes</div>
+<div class="small"><span class="wrd">FileSize_bytes = SampleRate BitDepth ChannelCount Time ÷ 8</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">SNR_Q ≈ 6.02B + 1.76 dB</span></div>
+<div class="name">167. Approximate Ideal Quantization Signal-to-Noise Ratio</div>
+<div class="small"><span class="wrd">QuantizationSNR ≈ 6.02 BitDepth + 1.76 dB</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">Δf = f_s/N</span></div>
+<div class="name">168. FFT Frequency-Bin Spacing</div>
+<div class="small"><span class="wrd">BinSpacing = SampleRate ÷ Samples</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">T = N/f_s</span></div>
+<div class="name">169. FFT Record Duration</div>
+<div class="small"><span class="wrd">Duration = Samples ÷ SampleRate</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">k = fN/f_s</span></div>
+<div class="name">170. Bin Number for a Frequency</div>
+<div class="small"><span class="wrd">BinNumber = Frequency Samples ÷ SampleRate</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_k = kf_s/N</span></div>
+<div class="name">171. Frequency Represented by FFT Bin k</div>
+<div class="small"><span class="wrd">BinFrequency = BinNumber SampleRate ÷ Samples</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">t = N_buffer/f_s</span></div>
+<div class="name">172. Digital Latency from Buffer Size</div>
+<div class="small"><span class="wrd">Time = BufferSamples ÷ SampleRate</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">t_RT ≈ (N_in + N_out)/f_s + t_conversion + t_processing</span></div>
+<div class="name">173. Approximate Round-Trip Buffer Latency</div>
+<div class="small"><span class="wrd">RoundTripLatency ≈ ( InputBufferSamples + OutputBufferSamples ) ÷ SampleRate + ConversionTime + ProcessingTime</span></div>
+</div></div><h2>Room modes and basic room acoustics</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_n = nc/(2L)</span></div>
+<div class="name">174. Axial Room-Mode Frequency</div>
+<div class="small"><span class="wrd">ModeFrequency = ModeNumber SpeedOfSound ÷ (2 RoomDimension )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_nxny nz = (c/2)√[(n_x/L_x)² + (n_y/L_y)² + (n_z/L_z)²]</span></div>
+<div class="name">175. Rectangular-Room Mode Frequency</div>
+<div class="small"><span class="wrd">ModeFrequency x ModeNumber y ModeNumber z = ( SpeedOfSound ÷ 2)√[( ModeX ÷ RoomLengthX )² + ( ModeY ÷ RoomLengthY )² + ( ModeZ ÷ RoomLengthZ )²]</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">d = λ/4</span></div>
+<div class="name">176. Quarter-Wavelength Boundary Distance</div>
+<div class="small"><span class="wrd">Distance = Wavelength ÷ 4</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_cancel = c/(2Δd)</span></div>
+<div class="name">177. First Cancellation Frequency from Path Difference</div>
+<div class="small"><span class="wrd">CancellationFrequency = SpeedOfSound ÷ (2 DistanceDifference )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_n = (2n + 1)c/(2Δd)</span></div>
+<div class="name">178. Comb-Filter Null Frequencies</div>
+<div class="small"><span class="wrd">ModeFrequency = (2 ModeNumber + 1) SpeedOfSound ÷ (2 DistanceDifference )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_n = nc/Δd</span></div>
+<div class="name">179. Comb-Filter Peak Frequencies</div>
+<div class="small"><span class="wrd">ModeFrequency = ModeNumber SpeedOfSound ÷ DistanceDifference</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">RT₆₀ = 0.161V/A</span></div>
+<div class="name">180. Sabine Reverberation-Time Equation</div>
+<div class="small"><span class="wrd">ReverbTime_RT60 = 0.161 RoomVolume ÷ AbsorptionArea</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">A = Σ α_i S_i</span></div>
+<div class="name">181. Equivalent Absorption Area</div>
+<div class="small"><span class="wrd">AbsorptionArea = Σ Absorption_i SurfaceArea_i</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">ᾱ = A/S</span></div>
+<div class="name">182. Average Absorption Coefficient</div>
+<div class="small"><span class="wrd">Absorption ̄ = AbsorptionArea ÷ SurfaceArea</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">RT₆₀ = 0.161V/[-S ln(1 - ᾱ)]</span></div>
+<div class="name">183. Eyring Reverberation-Time Equation</div>
+<div class="small"><span class="wrd">ReverbTime_RT60 = 0.161 RoomVolume ÷ [- SurfaceArea ln (1 - Absorption ̄)]</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">f_s ≈ 2000√(RT₆₀/V)</span></div>
+<div class="name">184. Schroeder Frequency Approximation</div>
+<div class="small"><span class="wrd">SampleRate ≈ 2000√( ReverbTime_RT60 ÷ RoomVolume )</span></div>
+</div></div><h2>Signal, noise, distortion, and measurement</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">SNR = 20 log₁₀(V_signal/V_noise)</span></div>
+<div class="name">185. Signal-to-Noise Ratio</div>
+<div class="small"><span class="wrd">SNR = 20 log₁₀ ( SignalVoltage ÷ NoiseVoltage )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">SINAD = 20 log₁₀(V_signal/V_noise+distortion)</span></div>
+<div class="name">186. Signal-to-Noise-and-Distortion Ratio</div>
+<div class="small"><span class="wrd">SINAD = 20 log₁₀ ( SignalVoltage ÷ Noise+DistortionVoltage )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">THD = √(V₂² + V₃² + ... + V_n²)/V₁</span></div>
+<div class="name">187. Total Harmonic Distortion</div>
+<div class="small"><span class="wrd">THD = √( Voltage ₂² + Voltage ₃² + ... + Voltage _n²) ÷ Voltage ₁</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">THD_% = 100 × THD</span></div>
+<div class="name">188. THD Percentage</div>
+<div class="small"><span class="wrd">THD _% = 100 × THD</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">THD+N = V_noise+harmonics/V_total</span></div>
+<div class="name">189. THD+N</div>
+<div class="small"><span class="wrd">THD+N = Noise+HarmonicsVoltage ÷ TotalVoltage</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">DR = 20 log₁₀(V_max/V_min)</span></div>
+<div class="name">190. Dynamic Range</div>
+<div class="small"><span class="wrd">DR = 20 log₁₀ ( MaxVoltage ÷ MinVoltage )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">X_dB = 20 log₁₀(V_leakage/V_driven)</span></div>
+<div class="name">191. Channel Separation or Crosstalk</div>
+<div class="small"><span class="wrd">X_ dB = 20 log₁₀ ( LeakageVoltage ÷ DrivenVoltage )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">CMRR = 20 log₁₀(A_d/A_cm)</span></div>
+<div class="name">192. Common-Mode Rejection Ratio</div>
+<div class="small"><span class="wrd">CMRR = 20 log₁₀ ( DifferentialGain ÷ CommonModeGain )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">% error = |measured - reference|/|reference| × 100</span></div>
+<div class="name">193. Percentage Error</div>
+<div class="small"><span class="wrd">% error = | measured - reference | ÷ | reference | × 100</span></div>
+</div></div><h2>Occupational sound exposure</h2><div class=grid><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">D = 100 Σ(C_i/T_i)</span></div>
+<div class="name">194. OSHA Noise Dose</div>
+<div class="small"><span class="wrd">Dose = 100 Σ( Duration_i ÷ PermittedTime_i )</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">TWA = 16.61 log₁₀(D/100) + 90</span></div>
+<div class="name">195. OSHA TWA from Dose</div>
+<div class="small"><span class="wrd">TimeWeightedAverage = 16.61 log₁₀ ( Dose ÷ 100) + 90</span></div>
+</div><div class="card" onclick="swap(this)">
+<div class="big"><span class="sym">D = 100 × 2^((TWA - 90)/5)</span></div>
+<div class="name">196. OSHA Dose from TWA</div>
+<div class="small"><span class="wrd">Dose = 100 × 2^(( TimeWeightedAverage - 90) ÷ 5)</span></div>
+</div></div>
+<footer>Symbolic formulas are exactly as supplied. In production these render via MathJax/LaTeX for full typographic beauty. Each equation stores BOTH a symbolic and a fully-worded form for the click-to-swap toggle.</footer>
+<script>
+function swap(el){el.classList.toggle('swapped');}
+// build the corner copy: mirror big content into small opposite type
+document.querySelectorAll('.card').forEach(c=>{
+  const sym=c.querySelector('.big .sym').textContent;
+  const wrd=c.querySelector('.small .wrd').textContent;
+  // add hidden worded to big and hidden sym to small for swap
+  const big=c.querySelector('.big'); const small=c.querySelector('.small');
+  const bw=document.createElement('span'); bw.className='wrd'; bw.textContent=wrd; big.appendChild(bw);
+  const ss=document.createElement('span'); ss.className='sym'; ss.textContent=sym; small.appendChild(ss);
+});
+</script></body></html>

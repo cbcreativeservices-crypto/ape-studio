@@ -1,0 +1,87 @@
+{
+  "course": "AUDI201",
+  "topic": "Assisted Listening Systems",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "0457cbbb-178c-456d-96e8-6202fb369425",
+      "term": "Auracast",
+      "fields": {
+        "plain_english": "It works like a radio station for sound: a venue creates a labeled audio broadcast and anyone with compatible earbuds, hearing aids, or a phone can tune in and hear it straight in their ears.",
+        "purpose_function": "It uses Bluetooth LE Audio to send one program stream to an unlimited number of nearby listeners at once, bypassing room acoustics and background noise so audio arrives clearly. It exists to give hearing-aid, cochlear-implant, and mainstream earbud users a single shared assistive-listening path without proprietary receivers.",
+        "practical_application": "A tech feeds a venue mix into an Auracast transmitter and publishes named broadcasts (e.g. 'Main Auditorium' or 'Language: Spanish') that patrons select from their phone or hearing aids; QR codes or on-screen prompts help users join public or password-protected streams.",
+        "category": "Assistive Listening",
+        "related_terms": ["Bluetooth LE Audio", "Telecoil", "Wi-Fi Assistive Streaming", "Induction Loop", "Infrared Assistive Listening"],
+        "common_mistakes": ["Assuming any Bluetooth device works. Auracast requires Bluetooth LE Audio (5.2+) hardware; Classic Bluetooth cannot receive broadcasts.", "Treating it like one-to-one pairing. Auracast is one-to-many broadcast, so listeners join a stream rather than 'connecting' the way earbuds pair to a phone.", "Forgetting it does not replace the ADA assistive-listening obligation on its own until compatible receivers are provided for patrons who lack their own devices.", "Leaving broadcasts unencrypted when privacy is needed. Sensitive audio should use a passphrase-protected stream."],
+        "scenario_contexts": ["A theater broadcasts the stage mix so hearing-aid users receive dialogue directly instead of relying on the house PA.", "An airport gate publishes an Auracast stream so travelers hear boarding announcements clearly over ambient noise.", "A gym lets patrons tune each TV's audio into their own earbuds via labeled broadcasts.", "A house of worship offers multi-language Auracast channels for simultaneous interpretation."]
+      },
+      "sources": ["Bluetooth SIG - Auracast Broadcast Audio / Assistive Listening (bluetooth.com/auracast)", "Listen Technologies - The Power of Auracast in Assistive Listening (listentech.com)", "HearingTracker - Auracast in Hearing Aids and Hearables (hearingtracker.com/auracast)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "c9b2f81a-b99b-47d8-aec7-1c5db19ba8a9",
+      "term": "Closed Captioning",
+      "fields": {
+        "plain_english": "It is the on-screen text of what is being said and heard in a video, which the viewer can switch on or off. Unlike 'open' captions, closed captions are hidden until the user turns them on.",
+        "purpose_function": "It presents dialogue, speaker identity, and relevant non-speech sounds as synchronized text so people who are deaf or hard of hearing can follow program content. It complements assistive-audio systems by covering the information that amplified sound alone cannot convey.",
+        "practical_application": "An AV tech enables a decoder, caption channel, or caption encoder in the signal chain and verifies captions are accurate, synchronized, complete, and correctly placed; in live events this often means routing a CART/captioner feed to displays or a caption bar.",
+        "category": "Assistive Listening",
+        "related_terms": ["Assistive Listening System", "Auracast", "Wi-Fi Assistive Streaming", "Telecoil", "Induction Loop"],
+        "common_mistakes": ["Confusing closed captions with subtitles. Subtitles assume the viewer can hear and only translate dialogue, while closed captions also convey speaker IDs and non-speech sounds for deaf/HOH viewers.", "Confusing closed with open captions. Open (burned-in) captions cannot be turned off; closed captions are user-toggleable.", "Assuming captions satisfy accessibility on their own. The ADA requires an assistive-listening (audio) system in most assembly areas in addition to visual access.", "Neglecting synchronization and accuracy, which FCC quality rules require captions to be accurate, synchronous, complete, and properly placed."],
+        "scenario_contexts": ["A stadium enables captions on video boards so announcements reach deaf and hard-of-hearing fans.", "A lecture hall displays live CART captions alongside an audio assistive-listening feed.", "A broadcast facility inserts a caption channel into the program stream to meet FCC television requirements.", "A museum exhibit video provides closed captions viewers toggle at a kiosk."]
+      },
+      "sources": ["FCC - Closed Captioning on Television (fcc.gov/consumers/guides/closed-captioning-television)", "ADA / Section 508 video accessibility guidance (3playmedia.com/blog/us-laws-video-accessibility)", "U.S. ADA 2010 Standards for Accessible Design - assembly area assistive listening (ada.gov)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "6e868a38-3bab-4444-9522-4dc0ce3bf313",
+      "term": "Field Strength Meter",
+      "fields": {
+        "plain_english": "It is a handheld tester that measures how strong and even the magnetic signal from a hearing loop is, so you can prove the loop actually works for hearing-aid users. Think of it as a level meter for the invisible magnetic field a loop produces.",
+        "purpose_function": "It measures induction-loop magnetic field strength (referenced to 400 mA/m = 0 dB), frequency response, and background magnetic noise so a system can be verified against IEC 60118-4. It exists because a loop's performance is invisible and inaudible without a calibrated instrument, and telecoil users depend on correct, uniform field levels.",
+        "practical_application": "During commissioning and maintenance a tech feeds a 1 kHz reference tone, then walks the listening area taking readings at the center and several positions, adjusting loop-amplifier gain and metal-loss compensation until the field is 400 mA/m within +/-3 dB and response is flat 100 Hz-5 kHz.",
+        "category": "Assistive Listening",
+        "related_terms": ["IEC 60118-4", "Induction Loop", "Telecoil", "Loop Amplifier", "Assistive Listening System"],
+        "common_mistakes": ["Judging a loop by ear or by hearing-aid reception instead of a calibrated meter, which cannot confirm the 400 mA/m level or uniformity.", "Measuring at only one spot. IEC 60118-4 requires checking multiple listening positions because field strength must stay within +/-3 dB across the area.", "Ignoring background magnetic noise, which must be low enough (typically no worse than -32 dB, ideally -47 dB(A)) or intelligibility suffers.", "Forgetting to set/verify the 1 kHz reference tone before reading, giving meaningless field-strength numbers."],
+        "scenario_contexts": ["An installer certifies a new theater hearing loop to IEC 60118-4 before handover.", "A maintenance tech investigates a complaint that a loop is too quiet and finds the amplifier gain drifted below 400 mA/m.", "A commissioning engineer maps field uniformity across a large looped auditorium to locate dead zones.", "A tech surveys a room for existing magnetic noise (from dimmers or transformers) before installing a loop."]
+      },
+      "sources": ["Ampetronic - FSM Field Strength Meter / commissioning to IEC 60118-4 (ampetronic.com)", "Williams AV - ProLoop FSM Plus and Loop Certification per IEC 60118-4 (williamsav.com)", "IEC 60118-4:2014 Electroacoustics - Hearing aid induction-loop systems (iec.ch / iteh.ai)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "59f0b8a6-acc2-4857-b112-cbb744c9169f",
+      "term": "IEC 60118-4",
+      "fields": {
+        "plain_english": "It is the international rulebook that says how strong, how clear, and how quiet a hearing loop's signal must be to count as 'good enough' for hearing-aid users. If a loop passes IEC 60118-4, a telecoil user should hear it well anywhere in the looped area.",
+        "purpose_function": "It specifies the required magnetic field strength (0 dB = 400 mA/m), the minimum frequency response for intelligibility, and acceptable background magnetic-noise limits for audio-frequency induction-loop systems feeding hearing-aid telecoils. It exists to give a measurable, verifiable performance benchmark so loops deliver adequate signal-to-noise without overloading the hearing aid.",
+        "practical_application": "Installers commission and certify loops against this standard using a field strength meter, verifying the field reaches 400 mA/m (+/-3 dB) at 1 kHz, response stays within +/-3 dB from 100 Hz to 5 kHz, and background noise is within limits at multiple listening positions.",
+        "category": "Assistive Listening",
+        "related_terms": ["Field Strength Meter", "Induction Loop", "Telecoil", "Loop Amplifier", "Assistive Listening System"],
+        "common_mistakes": ["Assuming a loop is compliant just because it is installed. Compliance requires measured verification against the standard's field-strength, response, and noise limits.", "Reading 400 mA/m as the peak. It is the long-term reference level (0 dB), with peaks allowed above it, and the design target is +/-3 dB at 1 kHz.", "Checking only field strength and skipping frequency response (100 Hz-5 kHz within +/-3 dB) and background-noise requirements.", "Confusing IEC 60118-4 (loop performance) with ADA rules, which mandate that assistive listening be provided but reference this standard for loop quality."],
+        "scenario_contexts": ["An engineer certifies a ticket-counter or auditorium loop to IEC 60118-4 for handover documentation.", "A consultant writes the standard into an AV specification so bidders must deliver a compliant loop.", "A tech troubleshoots poor telecoil reception by re-testing the loop against the standard's noise and response limits.", "An inspector confirms an assembly-area loop meets the referenced performance standard for accessibility compliance."]
+      },
+      "sources": ["IEC 60118-4:2014 Electroacoustics - Hearing aid induction-loop system requirements (webstore.iec.ch)", "Univox / Ampetronic technical guides to IEC 60118-4 performance (field strength, response, noise)", "Williams AV Loop Certification per BS EN / IEC 60118-4 (williamsav.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "4dd20588-f9ef-436c-a03b-d0e30bc0aafe",
+      "term": "Wi-Fi Assistive Streaming",
+      "fields": {
+        "plain_english": "It sends the venue's audio over Wi-Fi to a free app on the listener's own phone, so people use their own device and earbuds to hear clearly. No special receiver hardware is handed out because the phone is the receiver.",
+        "purpose_function": "A server on the venue network encodes one or more program channels and streams low-latency audio to patrons' smartphones over Wi-Fi, letting listeners choose channels (e.g. program, interpretation) and hear directly. It exists to provide assistive listening and language interpretation using devices patrons already own, lowering per-receiver cost.",
+        "practical_application": "A tech connects program audio to the streaming server, joins it to the house Wi-Fi with adequate access-point coverage, configures channels, and tests latency for lip-sync; because patrons use their own phones, the venue still stocks loaner receivers and neck loops plus signage to meet ADA counts.",
+        "category": "Assistive Listening",
+        "related_terms": ["Auracast", "Assistive Listening System", "Neck Loop", "Telecoil", "Closed Captioning"],
+        "common_mistakes": ["Assuming the app alone satisfies the ADA. Compliance requires the correct number of receivers/loaner devices, neck loops, and signage in addition to the streaming system.", "Underprovisioning Wi-Fi. Insufficient access-point coverage or bandwidth causes dropouts and defeats the assistive purpose.", "Ignoring latency, which excessive lag breaks lip-sync between the streamed audio and the live/stage source.", "Assuming telecoil users are served automatically. Hearing-aid users need a neck loop paired to the phone to reach their telecoil."],
+        "scenario_contexts": ["A house of worship streams the sermon and a Spanish interpretation channel to congregants' phones.", "A sports bar sends each TV's audio to patrons who select the game they want in the app.", "A lecture hall provides the instructor's mic feed to students' phones for clearer speech.", "A museum offers multi-language tour audio over Wi-Fi without distributing dedicated players."]
+      },
+      "sources": ["Listen Technologies - ListenWIFI / Listen EVERYWHERE ADA-compliant Wi-Fi assistive listening (listentech.com)", "Listen Technologies press - ADA Compliant Wi-Fi Assistive Listening Systems (listentech.com/news)", "AudioFetch - Audio over Wi-Fi assistive listening (audiofetch.com)"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

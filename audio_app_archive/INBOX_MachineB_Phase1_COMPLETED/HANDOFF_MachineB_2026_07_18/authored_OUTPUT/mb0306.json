@@ -1,0 +1,80 @@
+{
+ "batch": 306,
+ "topic": "Psychoacoustics",
+ "authored": [
+  {
+   "id": "18f3d254-1178-49ea-893f-671e9b5b738a",
+   "term": "Spatial perception study",
+   "fields": {
+    "definition": "The branch of psychoacoustics research that investigates how listeners perceive the direction, distance, and spatial extent of sound sources and the acoustic environment. It examines the auditory cues that support localization and spatial hearing, chiefly interaural time differences (ITD), interaural level differences (ILD), and the spectral shaping imposed by the head and outer ears (head-related transfer functions), together with the precedence effect that governs how early reflections are fused with the direct sound.",
+    "plain_english": "This is the study of how our ears work out where a sound is coming from. It looks at the tiny gaps in time and loudness between your two ears that tell your brain a sound's direction and distance. It is like how you can shut your eyes and still point at someone talking.",
+    "purpose_function": "It exists to explain how humans build a mental map of sound in space, which grounds the design of stereo, surround, and immersive audio, room acoustics, and 3D or binaural rendering. Understanding these cues lets engineers reproduce or steer apparent source positions convincingly over speakers and headphones.",
+    "practical_application": "A technician draws on these findings when placing stereo microphones, setting pan positions and delay times, aligning surround and immersive speaker layouts, or checking a binaural mix so listeners hear sources in the intended locations.",
+    "category": "Spatial Hearing",
+    "related_terms": [
+     "Interaural time difference",
+     "Interaural level difference",
+     "Head-related transfer function",
+     "Precedence effect",
+     "Binaural hearing",
+     "Localization"
+    ],
+    "common_mistakes": [
+     "Assuming loudness (level) difference alone fixes perceived position, and ignoring the arrival-time cues that dominate at low frequencies",
+     "Confusing left-right localization cues with front-back and elevation cues, which depend mainly on outer-ear spectral shaping",
+     "Treating headphone spatial impressions as identical to loudspeaker ones, forgetting that headphones bypass the natural crosstalk and room cues",
+     "Believing more reverb automatically means better spatial realism, rather than the timing and spectrum of early reflections"
+    ],
+    "scenario_contexts": [
+     "Choosing and spacing a stereo microphone pair so the recorded image matches the real ensemble layout",
+     "Calibrating a surround or Dolby Atmos room so phantom images sit where the mixer intends",
+     "Producing a binaural mix for headphones using HRTF-based processing",
+     "Diagnosing why a live mix collapses to one side because early reflections or delays confuse localization"
+    ]
+   },
+   "sources": [
+    "Blauert, Spatial Hearing: The Psychophysics of Human Sound Localization (MIT Press)",
+    "Moore, An Introduction to the Psychology of Hearing"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a9167fcc-0d41-48da-a8ac-2f74c905d6a5",
+   "term": "Temporal perception study",
+   "fields": {
+    "definition": "The branch of psychoacoustics research that investigates how the auditory system perceives the timing of sound over time, including temporal resolution, temporal integration, and temporal masking. It covers phenomena such as gap detection, the fusion of closely spaced events, forward and backward masking, and the way loudness and pitch build up over the duration of a sound.",
+    "plain_english": "This is the study of how our ears sense the timing of sounds. It looks at how fast we can tell two clicks apart, and how a loud sound can hide a soft one that comes just before or after it. It is like your eyes needing a moment to adjust after a camera flash, but for hearing.",
+    "purpose_function": "It exists to explain the limits of human hearing in time, which underpins how we perceive rhythm, transients, and speech clarity. This knowledge guides the design of audio codecs, dynamics processing, and reverberation, and sets realistic targets for timing accuracy in reproduction systems.",
+    "practical_application": "A technician relies on these findings when setting compressor and gate attack and release times, judging how tight a delay or reverb early-reflection pattern should be, and understanding why perceptual codecs can discard sounds hidden by temporal masking.",
+    "category": "Temporal Hearing",
+    "related_terms": [
+     "Temporal masking",
+     "Temporal resolution",
+     "Gap detection",
+     "Temporal integration",
+     "Precedence effect",
+     "Auditory masking"
+    ],
+    "common_mistakes": [
+     "Confusing temporal masking (hiding in time) with simultaneous frequency masking (hiding by pitch overlap)",
+     "Assuming the ear resolves events far faster than it does, and expecting listeners to hear timing errors below a few milliseconds",
+     "Thinking loudness is judged instantly, when short sounds are perceived as quieter because loudness integrates over time",
+     "Overlooking that very fast compressor attack times can audibly dull transients the ear would otherwise perceive"
+    ],
+    "scenario_contexts": [
+     "Setting attack and release on a compressor so drum transients stay punchy without pumping",
+     "Understanding why a lossy codec like AAC or MP3 discards audio masked just before or after a loud transient",
+     "Timing delay and early reflections so echoes fuse with the direct sound instead of being heard separately",
+     "Judging speech intelligibility in a reverberant room where late energy smears the timing of syllables"
+    ]
+   },
+   "sources": [
+    "Moore, An Introduction to the Psychology of Hearing",
+    "Zwicker & Fastl, Psychoacoustics: Facts and Models (Springer)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

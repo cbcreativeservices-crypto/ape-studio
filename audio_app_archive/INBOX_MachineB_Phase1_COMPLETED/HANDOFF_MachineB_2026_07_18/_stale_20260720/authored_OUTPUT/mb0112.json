@@ -1,0 +1,159 @@
+{
+ "batch": 112,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "d8ac12c9-dd73-41b8-a345-0fb3b6174d5d",
+   "term": "Locators",
+   "fields": {
+    "definition": "In a DAW, the left and right locators are two position markers that define a start point and an end point on the timeline, delimiting a range used for cycle (loop) playback and recording, punch in/out, and range-based export or processing.",
+    "plain_english": "Locators are two markers that set the start and end of a section on the timeline. You use them to loop a part, record over a set range, or choose what to export. Think of them like brackets around the piece of a song you want to work on.",
+    "purpose_function": "They give the engineer one defined time range that many DAW functions act on, so looping, cycle recording, punch, and export all share a single consistent selection instead of needing separate settings.",
+    "practical_application": "An engineer sets the left and right locators around a chorus to loop it while adjusting the mix, or brackets a whole song to bounce it down between those two points.",
+    "category": "Editing & Navigation",
+    "related_terms": ["Loop points", "Cycle mode", "Punch recording", "Marker", "Bounce"],
+    "common_mistakes": ["Confusing locators with markers, when locators define an active range and markers are just named position flags", "Forgetting the locators are still set when exporting, so only the bracketed range bounces instead of the whole song", "Setting the right locator before the left, which can leave a reversed or empty range"],
+    "scenario_contexts": ["Looping an eight-bar section for cycle recording of a guitar overdub", "Bracketing the final mix from start to end to export a stereo bounce", "Setting a punch range so recording only replaces a flubbed vocal line"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5efe9979-2aba-430a-b0c4-dc387331d0d1",
+   "term": "Logic Pro project",
+   "fields": {
+    "definition": "A Logic Pro project is Apple Logic Pro's main document that stores an entire production, including audio and MIDI tracks, software instruments and plug-ins, mixer and routing settings, automation, and tempo and key information, in a single package file (.logicx).",
+    "plain_english": "A Logic Pro project is the one file that holds your whole song in Logic Pro. It keeps your tracks, instruments, effects, and mix settings together. It works like a folder that packs everything about the song into a single item you open.",
+    "purpose_function": "It keeps every part of a production together and recallable, so an engineer can close a session and later reopen it with all tracks, settings, and automation exactly as they were left.",
+    "practical_application": "An engineer opens a Logic Pro project to continue a mix, and can save versions or use Save As to branch the work without losing the original.",
+    "category": "Project Management",
+    "related_terms": ["Logic Pro project template", "Track", "Bounce", "Automation", "Channel strip"],
+    "common_mistakes": ["Assuming the project always contains its audio, when it may only reference external files, so moving the .logicx alone can break the session", "Not consolidating or saving assets into the project before archiving or handing it off", "Confusing a project with a single bounced audio file"],
+    "scenario_contexts": ["Reopening a client's project a month later to make mix revisions", "Saving incremental project versions before a big arrangement change", "Handing off a project with assets included so it opens on another machine"]
+   },
+   "sources": ["Apple Logic Pro User Guide", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9891c0a9-97c3-4a04-83a9-2de926ec69e1",
+   "term": "Logic Pro project template",
+   "fields": {
+    "definition": "A Logic Pro project template is a pre-configured starting project, with tracks, instruments, plug-ins, routing, and settings already set up, that Logic Pro opens as a new untitled project so recurring session types can be started without rebuilding them each time.",
+    "plain_english": "A project template is a ready-made Logic Pro starting point. It already has the tracks, instruments, and effects you use most set up for you. It is like a blank form with the common boxes already drawn in, so you just fill in the rest.",
+    "purpose_function": "It saves setup time and keeps workflows consistent by letting an engineer reuse a standard track layout and signal routing every time a similar project begins.",
+    "practical_application": "A podcast editor keeps a template with mic tracks, EQ, and a compressor already loaded, and starts each episode from it instead of building the session from scratch.",
+    "category": "Project Management",
+    "related_terms": ["Logic Pro project", "Channel strip", "Preset", "Routing", "Track stack"],
+    "common_mistakes": ["Editing the template's contents inside a working session and accidentally overwriting the template itself", "Building overly complex templates that load many unused tracks and plug-ins", "Forgetting to save a new project under a fresh name, then working on the template file directly"],
+    "scenario_contexts": ["Starting every mixing session with a standard bus and reference-track layout", "Setting up a band-tracking template with pre-labeled drum, bass, and vocal inputs", "Creating a mastering template with metering and a set gain-staging chain"]
+   },
+   "sources": ["Apple Logic Pro User Guide", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "381943e5-86df-4dae-a728-6075d3c0e6c7",
+   "term": "Logical Editor",
+   "fields": {
+    "definition": "In Steinberg Cubase, the Logical Editor is a tool that processes MIDI data by first selecting events that meet user-defined filter conditions, then applying chosen functions or transformations, such as changing pitch, velocity, or position, or deleting the matching events.",
+    "plain_english": "The Logical Editor is a Cubase tool that finds MIDI notes matching rules you set, then changes them automatically. For example, find every note softer than a set level and make it louder. It works like search-and-replace, but for MIDI performance data.",
+    "purpose_function": "It automates repetitive or conditional MIDI edits that would be slow to do by hand, letting an engineer target exactly the events they want and transform them in one pass.",
+    "practical_application": "An engineer uses it to raise the velocity of all notes below a threshold, strip out a stuck controller message, or shift only the notes on one MIDI channel.",
+    "category": "MIDI Editing",
+    "related_terms": ["MIDI", "Velocity", "Quantize", "Key Editor", "Controller data"],
+    "common_mistakes": ["Setting filter conditions with the wrong logic, so the editor selects far more or fewer events than intended", "Applying a transform to the whole part when only a selection was meant, altering unintended notes", "Confusing Cubase's Logical Editor with Logic Pro, which are unrelated products"],
+    "scenario_contexts": ["Boosting the velocity of all quiet MIDI notes across a programmed drum part", "Deleting every stray pitch-bend event a controller left behind", "Selecting and nudging only the notes on a specific MIDI channel"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1681b358-3af6-4be3-b4dd-0fef504db6b3",
+   "term": "Long-term listening balance",
+   "fields": {
+    "definition": "Long-term listening balance is how the relative levels and tonal weighting of elements in a mix hold up when heard over an extended, sustained listen rather than in brief moments, revealing whether each part stays intelligible and comfortable across a whole program.",
+    "plain_english": "Long-term listening balance is how a mix feels over a full, long listen instead of a quick check. Some parts can sound fine for a few seconds but get tiring or hard to hear over a whole song. Engineers listen the long way to catch that.",
+    "purpose_function": "It helps an engineer make balance decisions that stay right for a full track and repeated plays, avoiding choices driven by momentary impressions or ear fatigue.",
+    "practical_application": "An engineer plays a full mix from start to finish, often at a low level, to check that vocals, bass, and drums stay balanced rather than judging from a few loud seconds of a chorus.",
+    "category": "Mix Evaluation",
+    "related_terms": ["Loudness balancing", "Reference track", "Monitoring level", "Gain staging", "Masking"],
+    "common_mistakes": ["Judging balance only from short, loud snippets, which hides parts that become fatiguing over time", "Mixing at high levels for long stretches, letting ear fatigue skew balance decisions", "Never checking the mix at low volume, where long-term balance problems often show up"],
+    "scenario_contexts": ["Checking a mix over a full playthrough before committing to fader levels", "Comparing balance at quiet monitoring levels to catch masking that builds over time", "Revisiting a mix the next day with fresh ears to confirm the balance still holds"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Katz, Mastering Audio", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "717cc29b-72a1-4758-854c-97678469a279",
+   "term": "Long-term preservation review",
+   "fields": {
+    "definition": "Long-term preservation review is the periodic reassessment of archived digital audio and its metadata to confirm that files remain intact, readable, and stored in viable formats, so recordings stay accessible as storage media, file formats, and playback systems change over time.",
+    "plain_english": "Long-term preservation review is a regular check-up on archived recordings. You make sure the files are not damaged, can still be opened, and are saved in formats future systems can read. It is like checking old photos in storage so they have not faded or gotten stuck in a dead format.",
+    "purpose_function": "It exists to prevent slow loss of archived audio from bit errors, failing media, or obsolete formats by catching problems early and migrating or re-copying material before it becomes unrecoverable.",
+    "practical_application": "An archivist runs scheduled integrity checks such as checksums on stored audio, verifies backups, and migrates files to current formats when the old ones near obsolescence.",
+    "category": "Archiving",
+    "related_terms": ["Checksum", "File format migration", "Backup", "Metadata", "Bit depth"],
+    "common_mistakes": ["Assuming a single stored copy is safe, when media degrade and formats become unreadable over time", "Skipping integrity checks, so file corruption goes unnoticed until the audio is needed", "Not keeping metadata with the files, which makes archived audio hard to identify later"],
+    "scenario_contexts": ["Running annual checksum verification on a studio's master archive", "Migrating older audio files to a current preservation format before the old codec is unsupported", "Auditing offsite backup copies to confirm they are still readable"]
+   },
+   "sources": ["IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects", "AES technical documents on digital audio preservation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4638813d-53ec-4af1-b2bb-8de9a86cacc6",
+   "term": "Loop Browser",
+   "fields": {
+    "definition": "The Loop Browser is the Logic Pro and GarageBand panel used to find, preview, and add Apple Loops, which are pre-recorded loops that match the project tempo and key, with searching and filtering by instrument, genre, and mood.",
+    "plain_english": "The Loop Browser is the part of Logic Pro where you find ready-made loops to drop into your song. You can search by instrument, style, or mood, and preview them in time with your track before adding one. It is like a sound library you shop from inside the app.",
+    "purpose_function": "It gives quick access to a large library of ready-made musical parts that automatically follow the project tempo and key, letting an engineer build or sketch arrangements without recording every part.",
+    "practical_application": "A producer opens the Loop Browser, filters for a drum loop by genre, previews a few in time with the song, then drags the chosen one onto a track.",
+    "category": "Content Browser",
+    "related_terms": ["Logic Pro project", "Loop points", "Tempo", "Library", "Region"],
+    "common_mistakes": ["Not realizing Apple Loops follow the project tempo and key, then being surprised when a loop changes pitch or speed", "Overusing stock loops, so tracks end up sounding generic", "Confusing audio loops and software-instrument loops, which edit differently"],
+    "scenario_contexts": ["Auditioning drum loops in tempo while sketching a song idea", "Layering a percussion loop under a live recording", "Searching by mood to find a pad that fits a scene"]
+   },
+   "sources": ["Apple Logic Pro User Guide", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bf65770b-e172-4bba-8300-1877889a47e4",
+   "term": "Loop points",
+   "fields": {
+    "definition": "Loop points are the start and end markers that define the portion of audio or a region that repeats: in a sampler they bracket the sustained segment of a sample that loops to hold a note, and in a DAW they set the boundaries of a cycled playback or recording region.",
+    "plain_english": "Loop points are the start and end marks of the part that repeats. In a sampler, they pick the middle chunk of a sound that loops, so a held note can last as long as you want. In a DAW, they set the section that plays over and over.",
+    "purpose_function": "They let a short recording sustain or repeat seamlessly, extending a sampled note indefinitely or cycling a section for practice, layering, and recording, without needing longer source material.",
+    "practical_application": "A sound designer sets loop points inside the steady part of a sampled string so a held key sustains smoothly, while a mix engineer sets loop points to cycle a chorus during editing.",
+    "category": "Editing & Navigation",
+    "related_terms": ["Locators", "Cycle mode", "Crossfade", "Sample", "Sustain"],
+    "common_mistakes": ["Placing sampler loop points where the waveform level or phase does not match, causing an audible click or thump at the seam", "Setting loop points across a changing part of the sound, so the loop sounds unnatural", "Confusing a DAW cycle loop with a sampler's sustain loop"],
+    "scenario_contexts": ["Setting a seamless sustain loop inside a sampled organ note", "Cycling a two-bar drum section to overdub a part", "Trimming loop points to remove a click at the loop seam"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2cbb270a-d359-4b7a-ab99-56aa63381dfa",
+   "term": "Loudness balancing",
+   "fields": {
+    "definition": "Loudness balancing is adjusting the relative loudness of elements or programs so they sit at intended levels, either setting the levels of parts within a mix or matching perceived loudness across songs or program segments, typically judged by ear and by loudness meters reading LUFS/LKFS per ITU-R BS.1770 and EBU R128.",
+    "plain_english": "Loudness balancing means setting how loud things are compared to each other. Inside a mix, it keeps each part at the right level. Across songs, it makes them feel equally loud, so listeners do not keep reaching for the volume knob. Engineers judge it by ear and with loudness meters.",
+    "purpose_function": "It ensures no element is too loud or buried and that a set of tracks plays back at a consistent, comfortable loudness, which matters for both mix clarity and delivery standards.",
+    "practical_application": "A mastering engineer uses a LUFS meter to match integrated loudness across an album, while a mix engineer balances vocal loudness so it stays consistent from verse to chorus.",
+    "category": "Level & Loudness",
+    "related_terms": ["LUFS", "Gain staging", "Long-term listening balance", "Dynamic range", "Reference track"],
+    "common_mistakes": ["Judging loudness with peak meters instead of loudness (LUFS) meters, which do not reflect perceived loudness", "Balancing at different monitor volumes, so relative levels shift when the reference level changes", "Pushing overall loudness so hard that dynamics and balance are crushed"],
+    "scenario_contexts": ["Matching integrated loudness across all tracks on an album", "Balancing dialog, music, and effects to a broadcast loudness target", "Setting element levels so the vocal stays consistent across a song's sections"]
+   },
+   "sources": ["ITU-R BS.1770", "EBU R128", "Katz, Mastering Audio"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

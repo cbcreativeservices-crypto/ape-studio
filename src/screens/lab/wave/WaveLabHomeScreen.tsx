@@ -32,14 +32,19 @@ export function WaveLabHomeScreen() {
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
+        {/* Guided Lessons at the very top, before the module list (owner 2026-08-05). */}
+        <Pressable
+          style={styles.lessonBtnTop}
+          onPress={() => setLessonOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Open the guided lesson"
+        >
+          <Text style={styles.lessonText}>ⓘ GUIDED LESSON</Text>
+        </Pressable>
         <Text style={styles.body}>
           Place sound sources in a room, move the walls, change the materials — and watch
           wavefronts, interference, reflections and coverage evolve live. Every module below is a
           preset of the same Room Builder engine.
-        </Text>
-        <Text style={styles.futureNote}>
-          Geometric + analytic wave models drawn live (illustrative, never a measurement). The
-          real-time pressure-field simulation is a future native release.
         </Text>
         <Text style={styles.sectionTitle}>THE 15 MODULES</Text>
         {modules.map((m) => (
@@ -63,9 +68,6 @@ export function WaveLabHomeScreen() {
             </Pressable>
           </>
         )}
-        <Pressable style={styles.lessonBtn} onPress={() => setLessonOpen(true)}>
-          <Text style={styles.lessonText}>ⓘ GUIDED LESSON</Text>
-        </Pressable>
       </ScrollView>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('wave')} onClose={() => setLessonOpen(false)} />
     </View>
@@ -87,6 +89,6 @@ const styles = StyleSheet.create({
   cardTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.amber, width: 26, textAlign: 'center' },
   cardName: { fontFamily: fonts.oswaldMedium, fontSize: 15.5, letterSpacing: 0.5, color: colors.textPrimary },
   futureNote: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: colors.textSub, borderRadius: 8, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#101014', padding: 10 },
-  lessonBtn: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#17171c', marginTop: 4 },
-  lessonText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
+  lessonBtnTop: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.5)', paddingHorizontal: 14, paddingVertical: 9, backgroundColor: '#17150f' },
+  lessonText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.9, color: colors.amber },
 });

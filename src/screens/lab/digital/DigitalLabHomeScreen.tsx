@@ -4,12 +4,10 @@
  * lesson). Layout per spec: animated signal path → eight module cards →
  * secondary tools → learning section.
  */
-import { useEffect } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useState } from 'react';
@@ -18,27 +16,16 @@ import { DIGITAL_MODULES, type DigitalModuleId } from './modules/registry';
 
 const PATH = ['SOUND', 'ANALOG', 'SAMPLES', 'NUMBERS', 'PROCESSING', 'RECONSTRUCTION', 'SOUND'];
 
-/** The traveling signal dot over the path chips — the lab's promise in one row. */
+/** The static signal-path labels — the lab's chain in one row. */
 function SignalPathBanner() {
-  const t = useSharedValue(0);
-  useEffect(() => {
-    t.value = 0;
-    t.value = withRepeat(withTiming(1, { duration: 5200, easing: Easing.inOut(Easing.quad) }), -1, false);
-  }, [t]);
-  const dot = useAnimatedStyle(() => ({ left: `${4 + t.value * 90}%` }));
   return (
-    <View style={styles.pathWrap}>
-      <View style={styles.pathRow}>
-        {PATH.map((p, i) => (
-          <View key={`${p}${i}`} style={styles.pathStep}>
-            <Text style={styles.pathText}>{p}</Text>
-            {i < PATH.length - 1 ? <Text style={styles.pathArrow}>›</Text> : null}
-          </View>
-        ))}
-      </View>
-      <View style={styles.pathTrack}>
-        <Animated.View style={[styles.pathDot, dot]} />
-      </View>
+    <View style={styles.pathRow}>
+      {PATH.map((p, i) => (
+        <View key={`${p}${i}`} style={styles.pathStep}>
+          <Text style={styles.pathText}>{p}</Text>
+          {i < PATH.length - 1 ? <Text style={styles.pathArrow}>›</Text> : null}
+        </View>
+      ))}
     </View>
   );
 }
@@ -66,11 +53,6 @@ export function DigitalLabHomeScreen() {
           Follow the complete chain — acoustic sound → microphone → analog voltage → anti-aliasing
           filter → sampling → quantization → binary data → processing → reconstruction → sound —
           in eight connected modules. Take them in order, or jump straight to what you need.
-        </Text>
-        <Text style={styles.futureNote}>
-          🔈 Full listening tests (bit depth, dither, conversion quality) arrive with a future
-          audio release — one honest exception is live now: the aliasing demo really plays the
-          input tone and its predicted alias. Every drawing is an illustrative model.
         </Text>
         <Text style={styles.sectionTitle}>THE EIGHT MODULES</Text>
         {DIGITAL_MODULES.map((m, i) => (
@@ -133,12 +115,8 @@ const styles = StyleSheet.create({
   toolWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   toolChip: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 11, paddingVertical: 8, backgroundColor: '#17171c' },
   toolText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
-  futureNote: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: colors.textSub, borderRadius: 8, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#101014', padding: 10 },
-  pathWrap: { gap: 6 },
   pathRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4 },
   pathStep: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   pathText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1, color: colors.textSecondary },
   pathArrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amber },
-  pathTrack: { height: 4, borderRadius: 2, backgroundColor: '#1c1c22', overflow: 'hidden' },
-  pathDot: { position: 'absolute', top: 0, width: 26, height: 4, borderRadius: 2, backgroundColor: colors.amber },
 });

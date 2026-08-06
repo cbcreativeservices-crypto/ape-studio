@@ -1,0 +1,260 @@
+{
+ "batch": 347,
+ "topic": "Strings, Guitar & Keys",
+ "authored": [
+  {
+   "id": "c598f20f-597e-44b7-8fe7-31d34645a53a",
+   "term": "Dan bau whammy-bend",
+   "fields": {
+    "definition": "On the Vietnamese dan bau, a single-string monochord, the technique of flexing the instrument's whippy rod (can dan), to which the string is anchored, to raise or lower the pitch of a plucked harmonic and add vibrato, glissando, or expressive pitch bends.",
+    "plain_english": "The dan bau is a Vietnamese one-string instrument. A bendy rod holds the string. The player pushes or pulls this rod to slide the note up or down, a bit like a guitar whammy bar.",
+    "purpose_function": "It lets a single string produce a wide, smooth range of pitches and expressive inflections, giving the dan bau its speech-like, sliding voice from just plucked harmonics.",
+    "practical_application": "A player sounds a harmonic on the open string, then works the flexible rod with the picking hand to bend into the target pitch, add vibrato, or connect notes with slides.",
+    "category": "Playing technique",
+    "related_terms": ["Portamento", "Vibrato", "Harmonic", "Glissando", "Pitch bend"],
+    "common_mistakes": [
+     "Thinking the dan bau is fretted or stopped like a guitar, when its pitch comes mainly from harmonics plus rod bending.",
+     "Over-flexing the rod so notes overshoot the intended pitch.",
+     "Confusing the rod bend, which changes pitch, with a guitar tremolo effect that changes volume."
+    ],
+    "scenario_contexts": [
+     "Performing traditional Vietnamese melodies that imitate the sliding contours of the spoken language.",
+     "Recording dan bau for a film score and capturing its expressive pitch bends.",
+     "Amplifying a modern pickup-equipped dan bau in a live ensemble."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Musical Instruments (dan bau)",
+    "Garland Encyclopedia of World Music, Vol. 4: Southeast Asia"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "493cf423-89ec-464b-ab6d-bad151ffbeda",
+   "term": "Domra tremolo",
+   "fields": {
+    "definition": "A right-hand technique on the domra, a round-bodied Russian plucked lute, in which the plectrum rapidly alternates down-and-up strokes on a string to sustain an otherwise quickly decaying plucked tone into a continuous, singing line.",
+    "plain_english": "The domra is a round Russian string instrument played with a pick. Its plucked notes fade fast. So the player flicks the pick up and down very quickly to hold a note out and make it sing.",
+    "purpose_function": "It overcomes the short natural decay of a plucked string, letting the domra play smooth, sustained melodies and long held notes much like a bowed instrument.",
+    "practical_application": "A domra player uses steady tremolo for lyrical passages and long notes, switching to single strokes for faster, detached figures.",
+    "category": "Playing technique",
+    "related_terms": ["Tremolo", "Plectrum", "Sustain", "Balalaika", "Mandolin"],
+    "common_mistakes": [
+     "Playing tremolo unevenly, so the note pulses instead of sounding smooth.",
+     "Gripping the plectrum too tightly, which tires the hand and roughens the tremolo.",
+     "Confusing this continuous tremolo with a measured, notated tremolo rhythm."
+    ],
+    "scenario_contexts": [
+     "Playing a slow, singing melody in a Russian folk orchestra.",
+     "Sustaining a long held note that a single pluck could not carry.",
+     "Blending domra with balalaika in an ensemble arrangement."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Musical Instruments (domra)",
+    "Garland Encyclopedia of World Music, Vol. 8: Europe"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "78f51ff2-a611-492f-a43d-a8a1500e9cd9",
+   "term": "Drone-wheel sustain",
+   "fields": {
+    "definition": "On the hurdy-gurdy, the continuous, organ-like sustain produced when the hand-cranked rosined wheel acts as a rotating bow, keeping the drone (bourdon) strings, and the melody strings, in steady vibration for as long as the wheel turns.",
+    "plain_english": "A hurdy-gurdy has a spinning wheel turned by a crank. The wheel rubs the strings like a never-ending bow. This keeps the drone strings humming steadily, so the sound never stops while you crank.",
+    "purpose_function": "The turning wheel replaces a bow, so the instrument can hold unbroken drones and melody notes indefinitely, giving the hurdy-gurdy its steady, bagpipe-like backdrop.",
+    "practical_application": "A player keeps the crank turning at an even speed to sustain the drones, adjusting cotton and rosin on the wheel to control tone and volume.",
+    "category": "Playing technique",
+    "related_terms": ["Drone", "Bourdon", "Rosin", "Sustain", "Sympathetic resonance"],
+    "common_mistakes": [
+     "Cranking unevenly, which makes the drone wobble in pitch and volume.",
+     "Neglecting to rosin or cotton the wheel, causing a weak or scratchy tone.",
+     "Assuming the drone strings are plucked rather than bowed by the wheel."
+    ],
+    "scenario_contexts": [
+     "Providing a steady drone under a dance tune in European folk music.",
+     "Setting up a hurdy-gurdy by adjusting wheel rosin for even sustain.",
+     "Recording the instrument's continuous drone as a bed for other parts."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Musical Instruments (hurdy-gurdy)",
+    "Marcuse, Musical Instruments: A Comprehensive Dictionary"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b9fd143e-83e9-49d5-9635-2c728e095aec",
+   "term": "Electrostatic buzz",
+   "fields": {
+    "definition": "Unwanted electrical noise, harmonically richer and edgier than smooth power-line hum, induced in an electric instrument's pickups and high-impedance wiring by capacitive (electrostatic) coupling to nearby alternating-current fields such as light dimmers, fluorescent ballasts, and displays; it typically drops when the player touches the grounded strings.",
+    "plain_english": "This is a harsh electrical buzz in an electric guitar. Nearby power wiring and lights leak their electric field into the pickups. Touching the metal strings often makes it fade, because your body helps send the noise to ground.",
+    "purpose_function": "Recognizing it as electrostatic (capacitive) noise rather than magnetic hum tells a technician to fix it with shielding and proper grounding instead of just repositioning the instrument.",
+    "practical_application": "A tech reduces it by shielding the guitar's control and pickup cavities with grounded conductive foil, confirming the bridge-to-string ground, and moving away from dimmers or fluorescent fixtures.",
+    "category": "Electrical noise",
+    "related_terms": ["Hum", "Shielding", "Grounding", "Single-coil pickup", "Electromagnetic interference"],
+    "common_mistakes": [
+     "Confusing electrostatic buzz with magnetic hum, which shielding alone will not fix.",
+     "UNSAFE: Lifting the mains earth/ground pin to chase the buzz, which defeats safety grounding and can leave a chassis live and lethal.",
+     "Assuming humbucking pickups remove all buzz, when capacitively coupled noise still needs shielding and grounding."
+    ],
+    "scenario_contexts": [
+     "A single-coil guitar buzzing on a stage lit by dimmer packs.",
+     "Recording near a computer monitor or fluorescent light and hearing edgy buzz.",
+     "Shielding a guitar's cavities to cure buzz that touching the strings reduces."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (grounding and interfacing)",
+    "Rane Technical Note: Sound System Interconnection",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "707a845d-c61a-4d6d-86a3-44a466bb5572",
+   "term": "Erhu horse-whinny",
+   "fields": {
+    "definition": "A programmatic sound effect on the erhu, the Chinese two-string bowed fiddle, in which fast, oscillating finger slides combined with firm bow pressure imitate the neighing or whinnying of a horse; it is most famous from the closing passage of the solo piece 'Horse Racing' (Sai ma).",
+    "plain_english": "The erhu is a Chinese two-string fiddle. By sliding the fingers fast up and down while bowing hard, the player can make it sound like a horse neighing. This trick is famous in the piece 'Horse Racing.'",
+    "purpose_function": "It showcases the erhu's strong power to imitate voices and animal sounds, adding drama and a vivid picture to descriptive, programmatic pieces.",
+    "practical_application": "A player produces it with quick back-and-forth finger slides and firm bowing near the end of 'Horse Racing' to mimic a whinnying horse.",
+    "category": "Playing technique",
+    "related_terms": ["Portamento", "Glissando", "Vibrato", "Bowing", "Tremolo"],
+    "common_mistakes": [
+     "Sliding too slowly, so the effect sounds like a plain glissando instead of a whinny.",
+     "Using too little bow pressure, which weakens the braying, vocal quality.",
+     "Treating it as fixed notes rather than a free, imitative gesture."
+    ],
+    "scenario_contexts": [
+     "Performing the finale of 'Horse Racing' in a recital.",
+     "Scoring an erhu part that needs an animal or vocal imitation.",
+     "Teaching students expressive glissando control through the whinny effect."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Musical Instruments (erhu)",
+    "Garland Encyclopedia of World Music, Vol. 7: East Asia"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3e6dd299-f638-4966-b07c-0082c030a136",
+   "term": "Erhu portamento",
+   "fields": {
+    "definition": "The smooth, continuous slide in pitch between two notes on the fretless erhu, produced by moving a stopping finger along the string while bowing; it is a central expressive device that gives erhu melody its vocal, speech-like inflection.",
+    "plain_english": "The erhu has no frets, so the finger can slide along the string. This makes the note glide smoothly from one pitch to the next. It gives the erhu its crying, voice-like sound.",
+    "purpose_function": "Portamento lets the erhu bend and connect notes like a singing voice, carrying much of the emotion and regional style of the music.",
+    "practical_application": "A player controls the speed and width of the slide with the left hand to shape phrases, imitate vocal ornaments, or match a regional style.",
+    "category": "Playing technique",
+    "related_terms": ["Glissando", "Vibrato", "Fingering", "Bowing", "Huqin"],
+    "common_mistakes": [
+     "Sliding on every note, which makes playing sound sloppy rather than expressive.",
+     "Rushing the slide so it loses its smooth, vocal shape.",
+     "Confusing portamento, a connecting slide, with vibrato, a small pitch wobble."
+    ],
+    "scenario_contexts": [
+     "Shaping a lyrical erhu melody to sound like a human voice.",
+     "Matching the slides typical of a particular regional Chinese style.",
+     "Connecting two widely spaced notes smoothly in a slow piece."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Musical Instruments (erhu)",
+    "Garland Encyclopedia of World Music, Vol. 7: East Asia"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "47ea0a2e-b383-46a9-8e7b-09c0cdc0e83b",
+   "term": "Esraj/dilruba sympathetic ring",
+   "fields": {
+    "definition": "The shimmering, sustained resonance heard on the esraj and dilruba, North Indian bowed instruments, when their numerous under-strings (tarab), tuned to the notes of the raga, vibrate sympathetically in response to the bowed melody strings without being touched.",
+    "plain_english": "The esraj and dilruba are Indian bowed instruments. Under the main strings sit many thin extra strings. When you bow a note, the matching extra strings hum on their own. This adds a soft, ringing halo around the sound.",
+    "purpose_function": "The sympathetic strings enrich and sustain the tone, surrounding each bowed note with a resonant halo tuned to the raga, which reinforces the mode and adds depth.",
+    "practical_application": "A player tunes the sympathetic strings to the current raga so they ring correctly, and uses mic placement or damping to balance that resonance in performance or recording.",
+    "category": "Acoustic resonance",
+    "related_terms": ["Sympathetic resonance", "Tarab", "Drone", "Sarangi", "Sustain"],
+    "common_mistakes": [
+     "Leaving the sympathetic strings out of tune, so their ringing clashes with the raga.",
+     "Assuming the extra strings are bowed or plucked directly, when they sound on their own.",
+     "Ignoring how strongly the sympathetic ring bleeds into a close microphone."
+    ],
+    "scenario_contexts": [
+     "Tuning the tarab strings to a raga before a Hindustani performance.",
+     "Close-miking a dilruba and managing the wash of sympathetic resonance.",
+     "Comparing the fuller ring of a dilruba with the lighter esraj."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Musical Instruments (dilruba, esraj)",
+    "Garland Encyclopedia of World Music, Vol. 5: South Asia",
+    "Fletcher & Rossing, The Physics of Musical Instruments (sympathetic strings)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "06da211b-7b1f-4727-b15c-a870d072d42a",
+   "term": "Fifth-string drone",
+   "fields": {
+    "definition": "On the five-string banjo, the sustained, unchanging note sounded by the short fifth (thumb) string, which runs only from a peg at the fifth fret to the bridge and is tuned to a high pitch (commonly g'); repeatedly struck by the thumb, it provides a constant drone above the melody.",
+    "plain_english": "A five-string banjo has one short string that starts partway up the neck. It is tuned to a high note and is usually left open. The player's thumb keeps hitting it, so the same note rings again and again like a drone.",
+    "purpose_function": "The fifth string adds a steady high drone that drives the rhythm and gives clawhammer and bluegrass banjo their characteristic rolling, ringing sound.",
+    "practical_application": "A player sounds the open fifth string with the thumb on offbeats in rolls and frailing patterns, usually leaving it unfretted as a fixed drone.",
+    "category": "Playing technique",
+    "related_terms": ["Drone", "Open string", "Clawhammer", "Roll", "Capo"],
+    "common_mistakes": [
+     "Trying to fret the fifth string like the others, when it usually stays open as a drone.",
+     "Changing key without spiking or capoing the fifth string, so the drone clashes.",
+     "Overpowering the melody by striking the drone string too hard."
+    ],
+    "scenario_contexts": [
+     "Playing a bluegrass roll where the thumb keeps sounding the drone string.",
+     "Frailing an old-time tune with a steady fifth-string drone.",
+     "Using fifth-string spikes or a capo to change the drone's pitch for a new key."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Musical Instruments (banjo)",
+    "Gura & Bollman, America's Instrument: The Banjo in the Nineteenth Century"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2d339430-2d1d-4d7f-860b-cef7e6be80d6",
+   "term": "Fingerboard slap",
+   "fields": {
+    "definition": "A percussive string technique in which the player pulls a string away from the fingerboard and releases it, or strikes it down, so it snaps back against the fingerboard and frets to produce a sharp click alongside the note; on the upright (double) bass it is the basis of rockabilly slap bass, and on electric bass it forms part of slap-and-pop playing.",
+    "plain_english": "The player pulls a string and lets it snap back onto the fingerboard. This makes a sharp clicking sound along with the note. It adds a drum-like beat to the bass line, as heard in rockabilly.",
+    "purpose_function": "It adds a built-in percussive click to each note, letting a bassist supply both the bass line and a drum-like rhythmic drive at once.",
+    "practical_application": "An upright player slaps the strings against the fingerboard between notes for a rockabilly groove; an electric player combines thumb slaps and finger pops for funk.",
+    "category": "Playing technique",
+    "related_terms": ["Slap bass", "Pizzicato", "Pop", "Percussive attack", "Double bass"],
+    "common_mistakes": [
+     "Slapping so hard that the strings and fingerboard wear or the instrument is damaged.",
+     "Letting the click drown out the pitch, so the bass line loses its note.",
+     "Confusing upright slap with electric thumb-slap, which use different hand motions."
+    ],
+    "scenario_contexts": [
+     "Driving a rockabilly tune with slap on an amplified upright bass.",
+     "Adding funk rhythm with slap-and-pop on electric bass.",
+     "Miking or using a pickup on an upright to capture the slap click cleanly."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Musical Instruments (double bass; slap)",
+    "Fletcher & Rossing, The Physics of Musical Instruments (plucked and struck strings)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

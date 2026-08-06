@@ -1,0 +1,321 @@
+{
+ "batch": 84,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "af41f37e-23ee-4dec-8d33-4db11f55da66",
+   "term": "Automation history",
+   "fields": {
+    "definition": "The stored record of automation edits and moves applied to a track's parameters during a mix, letting an engineer review, compare, or revert changes to levels, panning, mutes, and plug-in settings over time.",
+    "plain_english": "It is a list of the volume, pan, and effect moves you made on a track. You can look back at these moves and undo the ones you do not like, much like the edit history in a word processor.",
+    "purpose_function": "It preserves a trail of automation changes so an engineer can undo mistakes and recover earlier moves rather than losing work. This makes automated mixing safe to experiment with.",
+    "practical_application": "When a written fader move sounds wrong, the engineer steps back through the automation history to restore the previous version instead of redrawing it by hand.",
+    "category": "Mix Automation",
+    "related_terms": [
+     "Automation pass review",
+     "Automation paste",
+     "Write mode",
+     "Read mode",
+     "Breakpoint",
+     "Undo history"
+    ],
+    "common_mistakes": [
+     "Assuming automation moves are permanent and cannot be undone once written",
+     "Confusing the automation history with the arrangement's clip edit history",
+     "Relying on history recovery instead of saving named versions of the session"
+    ],
+    "scenario_contexts": [
+     "Reverting a bad vocal ride after a fresh automation pass overwrote a good one",
+     "Comparing two automation approaches on the same chorus before committing",
+     "Recovering earlier plug-in automation after an accidental clear"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (automation and undo history)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "07f11e55-b5bb-4711-85f5-b5baedf4c5bc",
+   "term": "Automation interpolation",
+   "fields": {
+    "definition": "The method a DAW uses to calculate a parameter's values between two automation breakpoints, such as linear, stepped/hold, or curved (bezier) transitions, which determines how the parameter moves from one point to the next.",
+    "plain_english": "This is how the software fills in the values between two automation points. It can jump straight, hold flat, or curve smoothly, like choosing to draw a straight line or a bend between two dots.",
+    "purpose_function": "It defines the shape of the change between points so a move can be smooth, sudden, or curved to fit the music. Without it a fader could only sit at fixed points.",
+    "practical_application": "An engineer switches a segment from linear to a curved interpolation so a level rise eases in gently instead of climbing at a constant rate.",
+    "category": "Mix Automation",
+    "related_terms": [
+     "Breakpoint",
+     "Automation ramp",
+     "Automation curve",
+     "Write mode",
+     "Fader",
+     "Snapshot automation"
+    ],
+    "common_mistakes": [
+     "Thinking all automation between points is always a straight line",
+     "Using stepped interpolation where a smooth ramp was intended, causing audible jumps",
+     "Adding many extra breakpoints instead of changing the curve type to shape a move"
+    ],
+    "scenario_contexts": [
+     "Smoothing a volume swell on a synth pad with a curved transition",
+     "Creating an instant mute change using stepped/hold interpolation",
+     "Shaping a filter sweep so it accelerates toward the end"
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Pro Operation Manual (automation curves)",
+    "Avid Pro Tools Reference Guide (automation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "180a4c29-db34-40a4-a347-1e90f8b74a80",
+   "term": "Automation merge",
+   "fields": {
+    "definition": "An automation behavior that combines newly written or edited moves with the existing automation on the same parameter instead of replacing it, so successive passes and edits accumulate into one set of data.",
+    "plain_english": "This blends your new automation moves with the ones already there. Nothing gets erased, so both sets of moves are kept together.",
+    "purpose_function": "It lets an engineer build up complex automation over several passes without wiping earlier work each time. This supports layering moves for different sections.",
+    "practical_application": "After riding the verse levels, the engineer merges a second pass that adds chorus moves so both stay on the same track.",
+    "category": "Mix Automation",
+    "related_terms": [
+     "Write mode",
+     "Latch mode",
+     "Touch mode",
+     "Automation pass review",
+     "Automation paste",
+     "Breakpoint"
+    ],
+    "common_mistakes": [
+     "Expecting a merge when the mode is actually set to overwrite existing data",
+     "Merging conflicting moves that fight each other on the same parameter",
+     "Forgetting which passes were merged and losing track of the final result"
+    ],
+    "scenario_contexts": [
+     "Adding new fills to existing drum-bus automation across several passes",
+     "Combining separately drawn moves for verse and chorus on one fader",
+     "Layering a manual ride onto previously written level automation"
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Pro Operation Manual (automation modes)",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7d774c80-127d-47f9-9fe2-496871eab850",
+   "term": "Automation offset",
+   "fields": {
+    "definition": "A fixed shift applied to existing automation data, either in value (raising or lowering all points together) or in time (moving events earlier or later), used to adjust overall balance or correct timing without redrawing each point.",
+    "plain_english": "This shifts all your automation moves at once, either up or down in level, or earlier or later in time. It is like sliding a whole drawing up or sideways without changing its shape.",
+    "purpose_function": "It lets an engineer nudge an entire set of moves as a group, so the balance or timing of a part can change while its relative shape stays intact. This saves editing every point by hand.",
+    "practical_application": "When a whole automated vocal sits a little quiet, the engineer applies a small value offset (often via trim mode) to lift every move together.",
+    "category": "Mix Automation",
+    "related_terms": [
+     "Trim mode",
+     "Automation ramp",
+     "Breakpoint",
+     "Write mode",
+     "Fader",
+     "Gain staging"
+    ],
+    "common_mistakes": [
+     "Confusing a value offset with a time offset and shifting the wrong axis",
+     "Offsetting into clipping by pushing all levels up too far",
+     "Forgetting an offset is still applied and layering another on top"
+    ],
+    "scenario_contexts": [
+     "Trimming a full vocal automation lane up a couple of dB in one move",
+     "Sliding automation earlier to compensate for plug-in latency",
+     "Nudging a whole panning ride to sit slightly wider"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (Trim automation)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "96698e4b-e65e-4d97-b437-01cad549253c",
+   "term": "Automation pass review",
+   "fields": {
+    "definition": "The step of playing back a recorded automation pass to audition and evaluate the written moves before accepting, keeping, adjusting, or re-recording them.",
+    "plain_english": "After you record a set of automation moves, you play them back to check them. You listen to make sure the moves sound right before you keep them.",
+    "purpose_function": "It gives the engineer a chance to confirm that live-written moves actually work in context before committing. This catches overshoots and timing errors early.",
+    "practical_application": "After latching a fader ride on the lead vocal, the engineer plays the section back in read mode to review the pass and fix any spots that jumped too far.",
+    "category": "Mix Automation",
+    "related_terms": [
+     "Read mode",
+     "Write mode",
+     "Latch mode",
+     "Touch mode",
+     "Automation history",
+     "Automation merge"
+    ],
+    "common_mistakes": [
+     "Skipping the review and moving on before hearing the written moves in context",
+     "Reviewing while still in write mode and accidentally overwriting the pass",
+     "Judging a pass in solo instead of within the full mix"
+    ],
+    "scenario_contexts": [
+     "Checking a vocal fader ride against the full band before the next section",
+     "Auditioning a written mute pattern to confirm the timing is clean",
+     "Reviewing an automated reverb send change during a chorus lift"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Avid Pro Tools Reference Guide (automation modes)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8de20a87-8819-4e50-b8ca-8bf65bf150cb",
+   "term": "Automation paste",
+   "fields": {
+    "definition": "An edit operation that inserts previously copied automation data at a new timeline location, or onto another track or parameter, reproducing the copied breakpoints and their values there.",
+    "plain_english": "This copies automation moves from one spot and drops them somewhere else. It works like copy and paste in a document, but for fader and knob moves.",
+    "purpose_function": "It lets an engineer reuse a set of moves instead of redrawing them, keeping repeated sections consistent. This speeds up automating songs with recurring parts.",
+    "practical_application": "The engineer copies a polished chorus fader ride and pastes it onto the following choruses so every one matches.",
+    "category": "Mix Automation",
+    "related_terms": [
+     "Automation history",
+     "Breakpoint",
+     "Write mode",
+     "Automation merge",
+     "Snapshot automation",
+     "Automation offset"
+    ],
+    "common_mistakes": [
+     "Pasting to the wrong parameter so values land on an unintended control",
+     "Pasting at the wrong timeline position and shifting the moves off the beat",
+     "Overwriting existing automation when a merge was intended"
+    ],
+    "scenario_contexts": [
+     "Copying verse mute automation to every verse in the arrangement",
+     "Reusing a filter sweep across repeated drops",
+     "Duplicating a pan move onto a doubled guitar track"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (copy/paste automation)",
+    "Steinberg Cubase Pro Operation Manual (editing automation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "45d0e4cc-3ef6-490b-a57e-4cc19581a5d5",
+   "term": "Automation Playlist",
+   "fields": {
+    "definition": "In Pro Tools, the data lane that holds the breakpoint automation for a single automatable parameter, such as volume, pan, mute, or a plug-in control; each parameter on a track has its own automation playlist.",
+    "plain_english": "Each thing you automate, like volume or pan, gets its own lane of moves. That lane is called an automation playlist, and it holds all the points for that one control.",
+    "purpose_function": "It keeps each parameter's moves separate so they can be edited, viewed, and cleared on their own. This organizes a track's automation into manageable lanes.",
+    "practical_application": "The engineer opens the volume automation playlist on a vocal track to see and edit only the level breakpoints, leaving pan and send lanes untouched.",
+    "category": "Mix Automation",
+    "related_terms": [
+     "Breakpoint",
+     "Read mode",
+     "Write mode",
+     "Automation paste",
+     "Automation history",
+     "Track lane"
+    ],
+    "common_mistakes": [
+     "Editing points in the wrong parameter's playlist",
+     "Assuming clearing one lane removes automation from all parameters",
+     "Confusing the automation playlist with an audio takes playlist"
+    ],
+    "scenario_contexts": [
+     "Displaying the pan automation lane to fine-tune a stereo move",
+     "Clearing only the mute automation playlist on a track",
+     "Viewing a plug-in parameter's lane to edit a filter automation"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (automation playlists)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a204cb82-6925-450e-96ed-af2339fcebb4",
+   "term": "Automation preview buffer",
+   "fields": {
+    "definition": "In Pro Tools Preview automation, the temporary hold of proposed parameter values that lets an engineer audition changes to a control before punching or writing them to the track's automation.",
+    "plain_english": "This lets you try out new automation values before you save them. You can hear the change first, then decide whether to write it in or throw it away.",
+    "purpose_function": "It separates trying a value from committing it, so an engineer can find the right setting by ear before it becomes part of the mix. This reduces guesswork and wasted passes.",
+    "practical_application": "In Preview mode the engineer holds a new reverb-send level to hear it in context, then punches it in only once it sounds right.",
+    "category": "Mix Automation",
+    "related_terms": [
+     "Write mode",
+     "Latch mode",
+     "Automation pass review",
+     "Snapshot automation",
+     "Breakpoint",
+     "Automation merge"
+    ],
+    "common_mistakes": [
+     "Forgetting a previewed value is not saved until it is written",
+     "Leaving preview active and being surprised the change did not stick",
+     "Punching in a previewed value at the wrong point on the timeline"
+    ],
+    "scenario_contexts": [
+     "Auditioning a new fader level before committing it in Preview mode",
+     "Testing a send amount for a chorus before writing it",
+     "Trying different pan positions on a part before punching one in"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (Preview automation)",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "56dedb55-ac13-4901-aadb-d8e6b8ac3752",
+   "term": "Automation ramp",
+   "fields": {
+    "definition": "A gradual, continuous transition of an automated parameter from one value to another over a span of time, defined by the slope between two breakpoints.",
+    "plain_english": "A ramp is a smooth slide from one value to another over time. An example is a fader slowly moving up so a part gradually gets louder.",
+    "purpose_function": "It creates a controlled change over time rather than a sudden jump, so levels, panning, or effects can build or fade naturally. This shapes the flow of a mix.",
+    "practical_application": "The engineer draws a ramp on the master or a bus to fade a section out smoothly over several bars instead of cutting it abruptly.",
+    "category": "Mix Automation",
+    "related_terms": [
+     "Breakpoint",
+     "Automation interpolation",
+     "Automation curve",
+     "Fader",
+     "Write mode",
+     "Fade out"
+    ],
+    "common_mistakes": [
+     "Placing breakpoints too far apart so a ramp changes faster than intended",
+     "Confusing a linear ramp with a curved transition",
+     "Making a ramp so steep it causes an audible zipper or jump"
+    ],
+    "scenario_contexts": [
+     "Ramping a synth pad up into a chorus",
+     "Drawing a slow fade-out at the end of a song",
+     "Sweeping an automated filter open across a build-up"
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Pro Operation Manual (automation)",
+    "Avid Pro Tools Reference Guide (automation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

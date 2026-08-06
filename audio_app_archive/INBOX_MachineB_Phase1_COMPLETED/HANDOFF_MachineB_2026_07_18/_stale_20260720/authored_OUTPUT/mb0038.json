@@ -1,0 +1,267 @@
+{
+ "batch": 38,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "8174bbc2-baed-413f-b5b8-b1e8a3bdfef3",
+   "term": "Center doubling",
+   "fields": {
+    "definition": "The practice of recording a part twice (double-tracking) and keeping both takes panned to the center of the stereo image, so the two performances reinforce one another to thicken and strengthen a central element such as a lead vocal or main line.",
+    "plain_english": "It means playing or singing the same part twice and putting both takes in the middle. The two copies stack up to make that part sound fuller and stronger.",
+    "purpose_function": "It thickens and reinforces a central part without spreading it wide, so a lead vocal or main line sits solid in the middle of the mix.",
+    "practical_application": "To beef up a lead vocal, an engineer records a second identical take and keeps both centered so the vocal sounds fuller.",
+    "category": "Arrangement technique",
+    "related_terms": ["Double-tracking", "Stereo image", "Panning", "Centered harmony", "Center guitar layer", "Layering"],
+    "common_mistakes": [
+     "Thinking a copy-and-paste of one take gives the same thickening as a real second performance",
+     "Spreading the two takes wide when the goal is a solid center",
+     "Doubling a part that is already busy, which muddies the middle of the mix"
+    ],
+    "scenario_contexts": [
+     "Double-tracking a lead vocal and keeping both takes centered for a fuller sound",
+     "Stacking two center guitar takes to strengthen a main riff",
+     "Reinforcing a synth bass line by centering a doubled take"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4c78bc54-9dfd-4774-a934-0f58e27cf796",
+   "term": "Center guitar layer",
+   "fields": {
+    "definition": "A guitar part placed in the center of the stereo image—often a rhythm or lead layer—that anchors the arrangement while other guitars are panned left and right for width.",
+    "plain_english": "It is a guitar part set in the middle of the mix, not to the left or right. It gives the song a solid guitar center while other guitars sit out to the sides.",
+    "purpose_function": "It anchors the guitar arrangement in the middle so the song has a strong central foundation, leaving the sides open for panned parts.",
+    "practical_application": "When layering guitars, an engineer keeps the main rhythm part centered and pans the doubles left and right to build width around it.",
+    "category": "Arrangement technique",
+    "related_terms": ["Panning", "Stereo image", "Double-tracking", "Center doubling", "Rhythm guitar", "Layering"],
+    "common_mistakes": [
+     "Centering several loud guitars at once, which crowds the middle with the vocal and bass",
+     "Forgetting to pan the supporting guitars, so the whole guitar section stacks in the center",
+     "Confusing a single centered layer with a fully mono guitar mix"
+    ],
+    "scenario_contexts": [
+     "Keeping a main rhythm guitar centered while panning its doubles wide",
+     "Placing a lead guitar in the center to sit with the vocal",
+     "Anchoring an acoustic layer in the middle of a dense rock mix"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "76d64342-5def-47bc-b56d-566d04a0ee86",
+   "term": "Centered harmony",
+   "fields": {
+    "definition": "Harmony vocal or instrumental parts placed in the center of the stereo image rather than panned to the sides, keeping the supporting harmony aligned directly with the lead.",
+    "plain_english": "It means putting harmony parts in the middle of the mix instead of out to the sides. The harmony then lines up right behind the lead voice.",
+    "purpose_function": "It keeps harmony parts tight against the lead so they support it directly, useful when a solid central blend matters more than stereo width.",
+    "practical_application": "For a close vocal blend, an engineer keeps the harmony stacks centered under the lead rather than spreading them left and right.",
+    "category": "Arrangement technique",
+    "related_terms": ["Harmony", "Panning", "Stereo image", "Center doubling", "Backing vocals", "Choir blend"],
+    "common_mistakes": [
+     "Piling many centered harmonies onto the lead, which clutters the middle",
+     "Assuming centered harmony always sounds better than panned harmony",
+     "Letting a centered harmony fight the lead for the same space"
+    ],
+    "scenario_contexts": [
+     "Keeping a two-part harmony centered under a lead vocal for a tight blend",
+     "Centering a background vocal to thicken the lead without adding width",
+     "Placing a harmony line in the middle so it stays glued to the melody"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "78a3fbde-8ce3-470d-bbac-ecdd68a1114a",
+   "term": "Choir ambience",
+   "fields": {
+    "definition": "The sense of room and space captured or added around a recorded choir—from natural room reflections and reverberation picked up by distant or ambient microphones, or from added reverb—that conveys the acoustic environment the ensemble sings in.",
+    "plain_english": "It is the roomy, echoing sound around a choir. It comes from the real space the choir sings in, or from added reverb, and it makes the singing feel like a live hall.",
+    "purpose_function": "It places the choir in a believable space and adds a sense of size and blend, so the voices sound like a unified group in a room rather than dry and close.",
+    "practical_application": "To capture choir ambience, an engineer sets a pair of room mics back from the group, or adds hall reverb to the close mics in the mix.",
+    "category": "Recording technique",
+    "related_terms": ["Room microphone", "Reverberation", "Ambient miking", "Choir depth", "Choir blend", "Spaced pair"],
+    "common_mistakes": [
+     "Placing ambient mics too far back, so the choir sounds distant and washed out",
+     "Adding heavy reverb to tracks that are already ambient, which smears the words",
+     "Ignoring the room's own sound and expecting reverb plug-ins to fix a dead space"
+    ],
+    "scenario_contexts": [
+     "Setting room mics in a church to capture the natural ambience of a choir",
+     "Adding hall reverb to close-miked choir tracks to restore a sense of space",
+     "Balancing close and ambient choir mics for the right amount of room sound"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "DPA Microphones technical documentation (choir and ensemble miking)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "abdb4ecc-b944-4812-a860-c934e15ee2ae",
+   "term": "Choir automation",
+   "fields": {
+    "definition": "The use of mix automation—recorded moves of level, mute, panning, or plug-in settings over time—applied to choir tracks so their balance and processing follow the changing dynamics of an arrangement.",
+    "plain_english": "It means setting the mixer to change the choir's volume and settings on its own as the song plays. The moves are saved once and then repeat exactly every time.",
+    "purpose_function": "It lets an engineer ride the choir's level and effects through a song—up in the choruses, down under a solo—without redoing fader moves by hand on every pass.",
+    "practical_application": "An engineer draws fader automation so the choir swells in the final chorus and drops back during the verses.",
+    "category": "Mix automation",
+    "related_terms": ["Automation", "Fader ride", "Mute automation", "Choir compression", "Subgroup", "Mixdown"],
+    "common_mistakes": [
+     "Writing jumpy automation moves that cause audible level steps",
+     "Automating each choir channel when one subgroup fader would do the job",
+     "Forgetting that a later manual fader move can overwrite the written automation"
+    ],
+    "scenario_contexts": [
+     "Automating a choir swell into the last chorus of a song",
+     "Pulling the choir down automatically under a lead vocal line",
+     "Muting the choir bus automatically in sections where it does not sing"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "084b1342-fde2-4bd4-8546-7365cd545e49",
+   "term": "Choir blend",
+   "fields": {
+    "definition": "The degree to which individual voices in a choir merge into a single, unified sound rather than standing out separately, shaped by the singers' balance and tuning and by recording choices such as microphone type and distance.",
+    "plain_english": "It is how well the singers' voices melt together into one smooth sound. Good blend means you hear a single choir, not a bunch of separate voices.",
+    "purpose_function": "It creates the impression of one cohesive ensemble, so the choir reads as a unified section instead of a set of competing soloists.",
+    "practical_application": "To improve blend, an engineer backs the mics off a little and lets the singers balance themselves in the room before capturing them.",
+    "category": "Recording technique",
+    "related_terms": ["Choir ambience", "Choir depth", "Ensemble balance", "Spaced pair", "Centered harmony", "Room microphone"],
+    "common_mistakes": [
+     "Close-miking individual singers, which breaks up the natural blend",
+     "Expecting the mix to fix a blend the choir never achieved in the room",
+     "Boosting one section so hard that it pulls out of the ensemble"
+    ],
+    "scenario_contexts": [
+     "Using a distant stereo pair so a choir blends into one sound",
+     "Arranging singers by section to improve blend before recording",
+     "Balancing the choir sections so no single part sticks out"
+    ]
+   },
+   "sources": [
+    "DPA Microphones technical documentation (choir and ensemble miking)",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "11222dfb-f7d7-415e-999b-c4fc0927aa76",
+   "term": "Choir compression",
+   "fields": {
+    "definition": "The application of dynamic-range compression to a choir recording, reducing the difference between its loudest and softest passages so the ensemble sits at a steadier level in the mix.",
+    "plain_english": "It means using a compressor to even out how loud a choir gets. It gently turns down the loudest parts so soft and loud passages stay closer in volume.",
+    "purpose_function": "It controls the wide dynamics of a choir so quiet passages stay audible and loud swells do not jump out, helping the choir sit consistently in a mix.",
+    "practical_application": "An engineer puts gentle bus compression on the choir subgroup to smooth its dynamics before setting its level in the mix.",
+    "category": "Dynamics processing",
+    "related_terms": ["Compression", "Bus compression", "Choir automation", "Threshold", "Makeup gain", "Subgroup"],
+    "common_mistakes": [
+     "Using a fast, heavy setting that pumps and pulls up room noise between phrases",
+     "Squashing the choir so hard it loses its natural swells and expression",
+     "Compressing on the channels and again on the bus until the sound is lifeless"
+    ],
+    "scenario_contexts": [
+     "Applying gentle compression to a choir bus to even out its dynamics",
+     "Taming loud choral swells so they do not overpower a lead vocal",
+     "Keeping soft choir passages audible in a dense mix"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "604cf70b-e448-47b7-ae0f-616246b68ea4",
+   "term": "Choir de-essing",
+   "fields": {
+    "definition": "The use of a de-esser—a frequency-selective compressor targeting the sibilant range—to reduce harsh \"s,\" \"sh,\" and \"t\" sounds on a choir recording, where many voices singing consonants together can build up exaggerated sibilance.",
+    "plain_english": "It means taming the harsh, hissy \"s\" sounds in a choir recording. A de-esser turns down just those sharp sounds when many singers hit an \"s\" at once.",
+    "purpose_function": "It softens exaggerated sibilance that piles up when a whole choir sings consonants together, keeping the top end smooth without dulling the overall tone.",
+    "practical_application": "When a choir's \"s\" sounds turn harsh, an engineer inserts a de-esser tuned to the sibilant range and eases the level of those peaks.",
+    "category": "Dynamics processing",
+    "related_terms": ["De-esser", "Sibilance", "Compression", "Choir compression", "High-frequency EQ", "Choir blend"],
+    "common_mistakes": [
+     "Setting the de-esser too strong, which gives the choir a lisping, dull sound",
+     "Targeting the wrong frequency, so the sibilance is not actually reduced",
+     "Cutting all the highs with broad EQ instead of de-essing only the harsh peaks"
+    ],
+    "scenario_contexts": [
+     "De-essing a close-miked choir where the \"s\" sounds have piled up",
+     "Smoothing harsh consonants on a choir bus in a bright mix",
+     "Taming sibilance on layered choir stacks before adding reverb"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "847cb51c-d05f-4e6e-bbb3-205ad69355a7",
+   "term": "Choir depth",
+   "fields": {
+    "definition": "The sense of front-to-back distance and layering in a recorded choir, created by the placement of singers and microphones and by cues such as level, ambience, and reflection that make some voices seem nearer and others farther away.",
+    "plain_english": "It is the feeling of near and far in a choir recording, the sense that some voices sit closer and some sit deeper back. It makes the choir sound three-dimensional instead of flat.",
+    "purpose_function": "It gives a choir a realistic three-dimensional space, so the ensemble sounds layered from front to back rather than pinned to one flat plane.",
+    "practical_application": "An engineer builds depth by blending close mics with a distant ambient pair, letting reflections and level place the sections at different distances.",
+    "category": "Recording technique",
+    "related_terms": ["Choir ambience", "Reverberation", "Ambient miking", "Choir blend", "Stereo image", "Room microphone"],
+    "common_mistakes": [
+     "Using only close mics, which flattens the choir with no sense of distance",
+     "Adding reverb but no level or ambience cues, so the depth still sounds fake",
+     "Placing every section at the same distance, which loses front-to-back layering"
+    ],
+    "scenario_contexts": [
+     "Blending close and distant mics to give a choir front-to-back depth",
+     "Using room reflections to place back rows farther away than the front",
+     "Layering ambience so a choir sounds three-dimensional in a mix"
+    ]
+   },
+   "sources": [
+    "DPA Microphones technical documentation (choir and ensemble miking)",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

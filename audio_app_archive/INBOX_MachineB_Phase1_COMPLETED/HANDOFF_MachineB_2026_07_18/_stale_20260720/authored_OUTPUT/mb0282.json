@@ -1,0 +1,159 @@
+{
+ "batch": 282,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "5e5a8e75-43bd-4082-a78b-9bd8977ae47f",
+   "term": "Sample preload",
+   "fields": {
+    "definition": "The technique of loading a short initial portion of each sample into RAM ahead of playback so a note sounds instantly when triggered, while the remainder of the sample streams from disk. It removes the start-of-note gaps or clicks that occur when audio must be fetched from storage only after the note begins.",
+    "plain_english": "A sampler loads just the start of each sound into fast memory before you play. That way the note begins right away, and the rest is read from the drive as it plays. It is like a video that buffers its first second so it can start at once.",
+    "purpose_function": "It guarantees clean, low-latency note starts in disk-streaming instruments by keeping the crucial attack already in memory, while sparing the RAM that holding every full sample would cost.",
+    "practical_application": "When loading a large orchestral or drum library, a technician sets the preload buffer size in the sampler's options so notes trigger cleanly without running the computer out of memory.",
+    "category": "Sample playback",
+    "related_terms": ["Sample streaming", "Sample purge", "Sample triggering", "Sample replay", "Preload buffer"],
+    "common_mistakes": ["Setting the preload buffer too small, which starves streaming voices and causes clicks or dropouts on fast passages", "Assuming preload holds the whole sample in RAM and so badly misjudging how much memory a large library needs"],
+    "scenario_contexts": ["Loading a multi-gigabyte string library on a laptop and tuning preload size to balance memory use against clean note starts", "Troubleshooting attack clicks in a live keyboard rig by increasing the sampler's preload buffer"]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Steinberg HALion Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "de0f623d-396f-40bb-aa5e-882704d150ac",
+   "term": "Sample purge",
+   "fields": {
+    "definition": "A memory-management operation in disk-streaming samplers that unloads from RAM any samples not currently in use, keeping only those actually triggered by the loaded part or performance. It frees memory so very large instruments can be used without loading every mapped zone.",
+    "plain_english": "Purging tells the sampler to drop any sounds you are not using out of memory. It keeps only the notes your part actually plays. It is like closing apps you never open to free up space on a phone.",
+    "purpose_function": "It reclaims RAM in big sample libraries by discarding unused zones, letting a computer run instruments far larger than its physical memory would otherwise allow.",
+    "practical_application": "After recording a MIDI part, an engineer runs 'purge unused samples' so the project keeps only the handful of notes played, cutting memory load before mixing.",
+    "category": "Sample playback",
+    "related_terms": ["Sample preload", "Sample streaming", "Sample triggering", "Sample replay"],
+    "common_mistakes": ["Purging unused samples, then editing the MIDI to play new notes, which sound silent until the samples are reloaded", "Confusing purge (unload from RAM) with deleting the sample files from disk"],
+    "scenario_contexts": ["Freeing memory mid-session in a template that has hundreds of loaded instruments", "Reducing an orchestral template's RAM footprint before bouncing on an older machine"]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Steinberg HALion Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "da690ce8-8810-44e5-b3af-e2bf7c26c993",
+   "term": "Sample replay",
+   "fields": {
+    "definition": "The playback of stored digital audio samples, in which recorded sound is read from memory or disk and reproduced, typically triggered and pitched from a keyboard or sequencer. Sample-replay instruments (romplers) sound only from fixed recordings rather than generating tones from scratch.",
+    "plain_english": "Sample replay just means playing back sounds that were already recorded and stored. A key press calls up the recording and plays it at the pitch you want. It is like a jukebox that plays a saved clip instead of a live band.",
+    "purpose_function": "It lets an instrument reproduce real recorded sounds on demand, giving realistic tones without having to build them from scratch by synthesis.",
+    "practical_application": "A player uses a sample-replay sound module to lay down realistic piano or drum parts by triggering its stored recordings from a MIDI keyboard.",
+    "category": "Sample playback",
+    "related_terms": ["Sample triggering", "Sample-based oscillator", "Sample root note", "Sample streaming"],
+    "common_mistakes": ["Assuming a sample-replay instrument can invent wholly new timbres like a synthesizer, when it only replays stored recordings", "Expecting extreme transposition of a replayed sample to stay natural, ignoring the speed and formant artifacts it creates"],
+    "scenario_contexts": ["Programming a backing track with a rompler that replays multisampled instruments", "Using a hardware sound module for live sample replay of orchestral hits"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Roads, The Computer Music Tutorial"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f78e6e16-46e0-4a9c-8654-ba1bf5689fbb",
+   "term": "Sample root note",
+   "fields": {
+    "definition": "The pitch (key) at which a sample plays back at its original recorded speed and frequency, serving as the reference from which the sampler transposes the sample up or down across the keymap. It is also called the original pitch, unity pitch, or root key.",
+    "plain_english": "The root note is the key that plays a sample at its true, recorded pitch. Play a higher or lower key and the sampler speeds the sound up or slows it down from there. It is the 'home' note the sound was recorded at.",
+    "purpose_function": "It tells the sampler the sample's true pitch so it can work out the correct transposition for every other key, keeping a mapped instrument in tune across the keyboard.",
+    "practical_application": "When mapping a new recording, a technician sets the root note to the pitch that was actually played so the sample tracks the keyboard correctly.",
+    "category": "Sample mapping",
+    "related_terms": ["Sample replay", "Sample triggering", "Sample-based oscillator", "Multisample", "Key zone"],
+    "common_mistakes": ["Leaving the root note at a default value so the whole instrument plays sharp or flat", "Confusing the root note (original pitch) with the lowest key of the sample's assigned range"],
+    "scenario_contexts": ["Building a multisample keymap and assigning each recording its correct root note", "Fixing an out-of-tune sampled patch by correcting a wrong root note"]
+   },
+   "sources": ["Steinberg HALion Operation Manual", "Akai MPC Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "976dea6b-22af-4ed9-81ea-51be85e75882",
+   "term": "Sample slicing",
+   "fields": {
+    "definition": "The process of dividing a sample, usually a rhythmic loop, into smaller segments at transient or beat points, with each slice assigned to its own trigger such as a MIDI note or pad. This frees the loop to be re-sequenced, quantized, or played at a new tempo without changing its pitch.",
+    "plain_english": "Slicing chops a loop into separate hits, like putting each drum beat on its own pad. Then you can rearrange them or change the speed without the pitch going wrong. It is like cutting a song into pieces you can shuffle around.",
+    "purpose_function": "It releases a recorded loop from its fixed tempo and order, letting a producer change speed, rearrange hits, and quantize timing while keeping the original pitch.",
+    "practical_application": "A producer slices a breakbeat across pads, then re-triggers the slices to build a new drum pattern that locks to the project tempo.",
+    "category": "Sampling technique",
+    "related_terms": ["Sample trimming", "Sample triggering", "Sample replay", "Transient", "Time stretching"],
+    "common_mistakes": ["Placing slice markers off the transients so hits start late or include the tail of the previous beat", "Slicing too finely and creating audible clicks at each segment boundary"],
+    "scenario_contexts": ["Converting a drum loop into a sliced, tempo-flexible kit inside an MPC or DAW sampler", "Repitching and reordering a vocal chop from its sliced segments"]
+   },
+   "sources": ["Akai MPC Reference Manual", "Roads, The Computer Music Tutorial"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6436ebd3-c563-435d-af59-d2232273824b",
+   "term": "Sample streaming",
+   "fields": {
+    "definition": "A playback method, also called direct-from-disk streaming, that reads sample audio continuously from a storage drive during playback instead of loading whole samples into RAM, with only a short preload buffer held in memory. It lets instruments be far larger than the available RAM.",
+    "plain_english": "Streaming plays a sound straight off the drive as it goes, instead of loading the whole thing into memory first. Only a tiny start is kept in memory. It is like streaming a movie online rather than downloading all of it first.",
+    "purpose_function": "It allows huge sample libraries to play on ordinary computers by trading RAM use for continuous disk reads, keeping memory demand low even for enormous instruments.",
+    "practical_application": "An engineer stores a large sample library on a fast SSD so the sampler can stream dozens of multi-gigabyte instruments at once without exhausting RAM.",
+    "category": "Sample playback",
+    "related_terms": ["Sample preload", "Sample purge", "Preload buffer", "Sample replay", "Disk streaming"],
+    "common_mistakes": ["Streaming a big library from a slow or heavily fragmented hard drive, causing dropouts and voice starvation", "Assuming streaming removes all RAM use, when a preload buffer per voice still consumes memory"],
+    "scenario_contexts": ["Running a large orchestral template by streaming from an SSD instead of loading everything into RAM", "Diagnosing playback stutters traced to disk streaming bandwidth limits"]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Steinberg HALion Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e71599df-efcc-43f0-a385-20fc2a1e8e2c",
+   "term": "Sample triggering",
+   "fields": {
+    "definition": "The act of starting playback of a sample in response to an event such as a MIDI note-on, pad strike, sequencer step, or detected audio transient. The trigger determines when a sample begins, and often which sample and velocity layer plays.",
+    "plain_english": "Triggering is whatever starts a sample playing. A key press, a pad hit, or a drum signal tells it to sound. It is like pressing play on one clip at the exact moment you want it.",
+    "purpose_function": "It links a performance or control event to sample playback, deciding the instant a stored sound plays and, through velocity, how loud it is or which layer is chosen.",
+    "practical_application": "A drummer triggers sampled sounds live by striking pads on an electronic kit, each hit firing the mapped sample at the played velocity.",
+    "category": "Sample playback",
+    "related_terms": ["Sample replay", "Sample root note", "Sample-based oscillator", "Sample slicing", "Velocity layer"],
+    "common_mistakes": ["Double-triggering a sample from a noisy drum trigger, producing flams or machine-gun repeats", "Ignoring velocity so every triggered hit plays the same layer and sounds unnatural"],
+    "scenario_contexts": ["Setting trigger thresholds on an electronic drum module to avoid false hits", "Triggering sampled one-shots from a sequencer during a live set"]
+   },
+   "sources": ["Akai MPC Reference Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4d45d6ae-e420-4ab7-9f33-1ec4075c23a4",
+   "term": "Sample trimming",
+   "fields": {
+    "definition": "Editing a sample by moving its start and end points to remove unwanted silence or audio at the beginning and end, tightening the usable region without altering the audio between them. It sets where playback begins and stops.",
+    "plain_english": "Trimming cuts the dead space or extra sound off the start and end of a sample. What is left is just the part you want to play. It is like cropping the empty edges off a photo.",
+    "purpose_function": "It removes leading silence and unwanted tails so samples trigger tightly on time and loop or map cleanly.",
+    "practical_application": "After recording a one-shot, a technician trims the silence before the attack so the sound fires the instant the pad is hit.",
+    "category": "Sample editing",
+    "related_terms": ["Sample slicing", "Sample root note", "Sample triggering", "Zero crossing", "One-shot"],
+    "common_mistakes": ["Trimming into the attack transient and cutting off the punch of the sound", "Trimming at a point that is not a zero crossing, so the start or end produces an audible click"],
+    "scenario_contexts": ["Cleaning up recorded one-shots by trimming silence before assigning them to pads", "Tightening a sampled vocal phrase by trimming the breath before the first word"]
+   },
+   "sources": ["Steinberg HALion Operation Manual", "Akai MPC Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e568762b-375e-4c11-a4da-d54e529e94f9",
+   "term": "Sample-based oscillator",
+   "fields": {
+    "definition": "A synthesizer sound source that generates its output by reading back a stored digital sample, such as a recorded waveform or single-cycle wave, rather than computing a waveform mathematically. It is the core of sample-based (S+S) synthesis, where sampled sources feed conventional filters, envelopes, and amplifiers.",
+    "plain_english": "This is a synth sound source that plays a recorded sound instead of a made-up wave. That recording is then shaped by the synth's filters and envelopes. It is like starting from a real sound clip and bending it with the synth's controls.",
+    "purpose_function": "It provides realistic or complex starting tones from recordings, which the rest of the synth then filters and shapes, combining sampled realism with synth-style control.",
+    "practical_application": "A sound designer picks a sampled waveform as the oscillator in a workstation synth, then applies filter and envelope moves to craft a new patch.",
+    "category": "Sample synthesis",
+    "related_terms": ["Sample replay", "Sample root note", "Sample triggering", "Wavetable", "Rompler"],
+    "common_mistakes": ["Confusing a sample-based oscillator with a full sampler, when it is one voice element inside a synth engine", "Expecting a short looped sample oscillator to hold long sustains without an audible loop point"],
+    "scenario_contexts": ["Programming a rompler-style patch built on sampled oscillators fed into resonant filters", "Layering a sample-based oscillator with a virtual-analog one for a hybrid tone"]
+   },
+   "sources": ["Roads, The Computer Music Tutorial", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

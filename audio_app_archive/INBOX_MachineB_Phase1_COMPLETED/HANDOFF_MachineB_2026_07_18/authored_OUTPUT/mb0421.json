@@ -1,0 +1,321 @@
+{
+ "batch": 421,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "235166a2-baa1-4f76-be76-e591d1374195",
+   "term": "Latent diffusion",
+   "fields": {
+    "definition": "Latent diffusion is a generative modeling approach in which a diffusion model is trained and run not on raw high-dimensional data such as pixels or audio samples but in the compressed latent space produced by a pretrained autoencoder. A network learns to reverse a gradual noising process on these compact latent codes, and the autoencoder's decoder then maps a generated latent back to the full-resolution signal, greatly reducing computation compared with diffusion in the original data space.",
+    "plain_english": "Latent diffusion is a way for AI to make new images or sounds. It first squeezes data into a small coded form, learns to build that code up from noise, then expands the code back into a full image or sound.",
+    "purpose_function": "It exists to make diffusion-based generation far more efficient by moving the costly denoising steps into a small latent space, so high-quality images or audio can be synthesized with much less memory and compute than sample-space diffusion.",
+    "practical_application": "A technician meets latent diffusion inside text-to-audio and text-to-music generators and inside image tools, where it powers systems that create sound effects, music, or artwork from a prompt.",
+    "category": "Generative modeling",
+    "related_terms": [
+     "Latent space",
+     "Diffusion model",
+     "Autoencoder",
+     "Variational autoencoder",
+     "Generative model",
+     "Text-to-audio"
+    ],
+    "common_mistakes": [
+     "Assuming the diffusion runs on the raw waveform or pixels; in latent diffusion the denoising happens in a compressed latent space, not the original signal",
+     "Confusing the diffusion model with the autoencoder; the autoencoder compresses and reconstructs, while the diffusion model generates new latent codes",
+     "Expecting the decoder to reconstruct detail perfectly; the autoencoder is lossy, so fine detail can be lost or altered"
+    ],
+    "scenario_contexts": [
+     "Generating a sound effect or music clip from a text prompt",
+     "Using a text-to-image tool built on a latent diffusion backbone",
+     "Fine-tuning a latent diffusion audio model on a custom sound library"
+    ]
+   },
+   "sources": [
+    "Rombach, Blattmann, Lorenz, Esser & Ommer, High-Resolution Image Synthesis with Latent Diffusion Models, IEEE/CVF CVPR 2022",
+    "Liu et al., AudioLDM: Text-to-Audio Generation with Latent Diffusion Models, ICML 2023"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9240b4f0-89b9-4754-9f48-2961ac144216",
+   "term": "Latent space",
+   "fields": {
+    "definition": "In machine learning, a latent space is a learned, typically lower-dimensional vector space in which a model represents its inputs as points, or embeddings, so that the geometry of the space captures meaningful structure or factors of variation in the data. Models such as autoencoders, variational autoencoders, and the intermediate layers of neural networks map observations into this space, where similar inputs tend to lie close together.",
+    "plain_english": "A latent space is a kind of hidden map an AI builds to organize what it learns. Similar things end up near each other on this map, so the model can compare, group, or create new examples.",
+    "purpose_function": "It exists to give a model a compact, structured representation of complex data, so that meaningful operations such as measuring similarity, interpolating between examples, or generating new samples become simple geometric operations on vectors.",
+    "practical_application": "A technician encounters latent spaces when using embeddings for audio search or classification, when morphing between sounds in a neural synthesizer, or when a generative model samples a point in latent space to create new audio.",
+    "category": "Machine learning concept",
+    "related_terms": [
+     "Embedding",
+     "Autoencoder",
+     "Variational autoencoder",
+     "Latent diffusion",
+     "Dimensionality reduction",
+     "Feature extraction"
+    ],
+    "common_mistakes": [
+     "Assuming every latent dimension has a clear human meaning; the axes are usually entangled and not directly interpretable",
+     "Confusing the latent space with the raw input; latent vectors are learned encodings, not the original samples",
+     "Assuming two different models share a latent space; each model learns its own, so their vectors are not interchangeable"
+    ],
+    "scenario_contexts": [
+     "Searching a sample library by similarity using audio embeddings",
+     "Morphing between two timbres in a neural synthesizer",
+     "Sampling a latent vector to generate a new sound with a generative model"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning",
+    "Bishop, Pattern Recognition and Machine Learning"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5d5d828b-1508-4ff3-8621-8c8b29b7823b",
+   "term": "Least mean squares filter",
+   "fields": {
+    "definition": "A least mean squares (LMS) filter is an adaptive digital filter that iteratively adjusts its coefficients using the LMS algorithm, a stochastic gradient-descent method introduced by Widrow and Hoff that updates the weights at each sample in proportion to the instantaneous error and the input, so as to minimize the mean square error between the filter output and a desired signal. Its convergence speed and stability are governed by a step-size parameter.",
+    "plain_english": "An LMS filter is a filter that tunes itself. It compares its output to a target, then nudges its settings a little at each step to shrink the error, slowly learning the best settings on its own.",
+    "purpose_function": "It exists to let a filter adapt automatically to unknown or changing signal conditions, learning the coefficients that best match a desired response without the designer having to compute them in advance.",
+    "practical_application": "A technician encounters LMS adaptation in acoustic echo cancellers, adaptive noise cancellation, feedback suppression, and channel equalization, where the filter must track changing acoustics in real time.",
+    "category": "Adaptive filtering",
+    "related_terms": [
+     "Adaptive filter",
+     "Acoustic echo cancellation",
+     "Gradient descent",
+     "Finite impulse response filter",
+     "Mean squared error",
+     "Recursive least squares"
+    ],
+    "common_mistakes": [
+     "Setting the step size too large, which makes the filter unstable or diverge, or too small, which makes it adapt too slowly",
+     "Assuming it always reaches the optimal solution; LMS only approximates the Wiener solution and leaves a residual misadjustment",
+     "Forgetting that adaptation needs a proper desired or reference signal; without it the filter cannot know what error to minimize"
+    ],
+    "scenario_contexts": [
+     "Cancelling acoustic echo on a conferencing or hands-free system",
+     "Reducing steady background noise with a reference microphone",
+     "Equalizing a communication channel that changes over time"
+    ]
+   },
+   "sources": [
+    "Haykin, Adaptive Filter Theory",
+    "Widrow & Stearns, Adaptive Signal Processing"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b9c1e6d3-c3a9-4f70-aa0a-516ba5f77812",
+   "term": "Linear interpolation",
+   "fields": {
+    "definition": "Linear interpolation is a method of estimating an unknown value between two known data points by assuming a straight line between them, so the estimate is a weighted average of the two neighbors based on the fractional distance to each. In audio DSP it is the simplest form of interpolation used for resampling and for fractional-delay reads from a delay line.",
+    "plain_english": "Linear interpolation guesses a value between two known points by drawing a straight line between them. Say you know a sound's value at two moments. It estimates the value in between as a simple blend of the two.",
+    "purpose_function": "It exists to provide a fast, low-cost way to estimate in-between values, which lets systems resample signals or read a delay line at a non-integer position with minimal computation.",
+    "practical_application": "A technician meets linear interpolation inside delay-based effects, wavetable and sample playback, pitch shifting, and simple sample-rate conversion, wherever a value is needed between existing samples.",
+    "category": "Interpolation",
+    "related_terms": [
+     "Interpolation",
+     "Lagrange interpolation",
+     "Sample rate conversion",
+     "Delay line",
+     "Fractional delay filter",
+     "Wavetable synthesis"
+    ],
+    "common_mistakes": [
+     "Assuming it is high quality; linear interpolation attenuates high frequencies and adds distortion compared with higher-order or bandlimited methods",
+     "Confusing it with no interpolation; rounding to the nearest sample instead causes far worse artifacts",
+     "Expecting accuracy on curved data; the straight-line assumption introduces error when the signal changes nonlinearly between points"
+    ],
+    "scenario_contexts": [
+     "Reading a delay line at a fractional sample position for a chorus or vibrato effect",
+     "Playing back a sample at a changed pitch or speed",
+     "Doing a quick, low-cost sample-rate conversion"
+    ]
+   },
+   "sources": [
+    "Oppenheim & Schafer, Discrete-Time Signal Processing",
+    "Mueller, Fundamentals of Music Processing"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a9811690-f5d3-431b-8488-04844b8eb018",
+   "term": "Linear predictive coding",
+   "fields": {
+    "definition": "Linear predictive coding (LPC) is a technique that models each sample of a signal as a linear combination of a number of previous samples, representing the signal by the prediction coefficients plus a residual, or error, signal. Applied to speech, it embodies a source-filter model in which the coefficients describe an all-pole filter approximating the vocal tract, enabling efficient analysis, low-bit-rate coding, and synthesis.",
+    "plain_english": "Linear predictive coding guesses the next bit of a sound from the bits just before it. It stores only the small guessing rules and the leftover error, which is a compact way to describe and rebuild speech.",
+    "purpose_function": "It exists to compactly represent a signal, especially speech, by capturing its spectral shape in a few filter coefficients, which supports low-bit-rate transmission, speech synthesis, and spectral analysis such as formant estimation.",
+    "practical_application": "A technician encounters LPC in speech codecs and voice communication, in formant analysis, and as the basis of talk-box and vocoder-style cross-synthesis effects in music production.",
+    "category": "Speech processing",
+    "related_terms": [
+     "Source-filter model",
+     "Formant",
+     "Vocoder",
+     "Speech coding",
+     "All-pole filter",
+     "Linear prediction"
+    ],
+    "common_mistakes": [
+     "Assuming LPC models any sound equally well; its all-pole model suits speech and resonant sounds but poorly captures sharp spectral notches",
+     "Confusing the coefficients with the audio; LPC stores prediction coefficients and a residual, not the waveform itself",
+     "Choosing the filter order carelessly; too few coefficients miss formants, while too many fit noise and waste bits"
+    ],
+    "scenario_contexts": [
+     "Encoding speech at a low bit rate for radio or telephony",
+     "Estimating formant frequencies in a speech-analysis tool",
+     "Building a talk-box or vocoder effect that imposes speech resonances on another sound"
+    ]
+   },
+   "sources": [
+    "Makhoul, Linear Prediction: A Tutorial Review, Proceedings of the IEEE, 1975",
+    "Rabiner & Schafer, Digital Processing of Speech Signals"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1349e617-8b42-468f-b0c5-2cc03d023471",
+   "term": "LoRA fine-tuning",
+   "fields": {
+    "definition": "LoRA (Low-Rank Adaptation) fine-tuning is a parameter-efficient fine-tuning method that adapts a large pretrained neural network by freezing its original weights and inserting small trainable low-rank matrices into selected layers, so that only these few added parameters are learned. The learned low-rank update is added to the frozen weights, achieving task adaptation while training a tiny fraction of the parameters and storing only a small adapter.",
+    "plain_english": "LoRA is a cheap way to teach a big AI model a new skill. Instead of retraining the whole model, it freezes the original and trains a small add-on. The add-on file is tiny and easy to share or swap.",
+    "purpose_function": "It exists to make fine-tuning large models affordable, cutting the memory, compute, and storage needed by training only small low-rank adapters instead of all the model's weights, while keeping quality close to full fine-tuning.",
+    "practical_application": "A technician uses LoRA to specialize a large audio, music, or speech model for a particular voice, style, or dataset, then loads or swaps the small adapter at run time without duplicating the whole model.",
+    "category": "Model training",
+    "related_terms": [
+     "Fine-tuning",
+     "Transfer learning",
+     "Parameter-efficient fine-tuning",
+     "Pretrained model",
+     "Neural network",
+     "Latent diffusion"
+    ],
+    "common_mistakes": [
+     "Thinking LoRA changes the base model's weights; the original weights stay frozen and the adapter is added separately",
+     "Assuming a higher rank is always better; too large a rank loses the efficiency benefit, while too small a rank may underfit the task",
+     "Applying an adapter to the wrong base model; a LoRA adapter is trained for a specific base and will not work correctly on a different one"
+    ],
+    "scenario_contexts": [
+     "Adapting a text-to-music model to a specific genre or artist style",
+     "Fine-tuning a speech model for a particular speaker or accent on limited data",
+     "Sharing a small style adapter that others load onto the same base model"
+    ]
+   },
+   "sources": [
+    "Hu et al., LoRA: Low-Rank Adaptation of Large Language Models, ICLR 2022",
+    "Hugging Face PEFT (Parameter-Efficient Fine-Tuning) technical documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "592deea2-b049-4eab-9ccf-4b52a34a7825",
+   "term": "Loudness prediction",
+   "fields": {
+    "definition": "Loudness prediction is the computational estimation of the loudness a listener will perceive from an audio signal, as opposed to its raw physical level. It is performed either by psychoacoustic loudness models that simulate the ear's frequency weighting and spectral and temporal integration, or by standardized meters and machine-learned estimators that map signal features to a perceived-loudness value.",
+    "plain_english": "Loudness prediction means estimating how loud a sound will really seem to a person. It is not the same as how strong the signal is. A soft bright tone and a deep bass can measure the same, so a model judges how loud each one feels.",
+    "purpose_function": "It exists because perceived loudness differs from measured level, so a model is needed to judge how loud material will sound, supporting consistent levels across programs, tracks, and platforms.",
+    "practical_application": "A technician encounters loudness prediction in loudness meters and normalization used for broadcast and streaming delivery, and in mastering and dynamics tools that target a consistent perceived level.",
+    "category": "Perceptual modeling",
+    "related_terms": [
+     "Loudness",
+     "Psychoacoustics",
+     "Loudness normalization",
+     "Equal-loudness contour",
+     "Dynamic range",
+     "Feature extraction"
+    ],
+    "common_mistakes": [
+     "Confusing loudness with signal level; peak or RMS level does not equal perceived loudness because hearing is frequency dependent",
+     "Assuming all loudness measures agree; different models and standards can give different values for the same audio",
+     "Trusting a predicted number blindly; models approximate average hearing and may not match a specific listener or unusual material"
+    ],
+    "scenario_contexts": [
+     "Normalizing programs to a target loudness for broadcast or streaming delivery",
+     "Matching perceived level between songs on an album during mastering",
+     "Checking that a mix meets a platform's loudness specification before upload"
+    ]
+   },
+   "sources": [
+    "Moore, Glasberg & Baer, A Model for the Prediction of Thresholds, Loudness, and Partial Loudness, Journal of the Audio Engineering Society 45(4), 1997",
+    "ITU-R BS.1770, Algorithms to measure audio programme loudness and true-peak audio level"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f3b14ffc-a1a2-410b-b34a-390c0e41f553",
+   "term": "Low-latency inference",
+   "fields": {
+    "definition": "Low-latency inference is the execution of a trained machine-learning model so that the delay between receiving an input and producing an output is small enough for real-time or interactive use. It is achieved through techniques such as model compression, quantization, efficient architectures, streaming or block-wise processing, and hardware acceleration, and it trades off against throughput, accuracy, and cost.",
+    "plain_english": "Low-latency inference means running an AI model fast enough that the answer comes back almost at once. This matters for live audio. Even a tiny delay between input and output is easy to hear.",
+    "purpose_function": "It exists to make trained models usable in real-time settings, keeping the delay from input to output short enough that the result arrives in time to act on, such as processing a live audio stream.",
+    "practical_application": "A technician deals with low-latency inference when running neural noise suppression, source separation, or effects on a live signal, tuning buffer sizes, model size, and hardware to keep round-trip delay acceptable.",
+    "category": "Model deployment",
+    "related_terms": [
+     "Inference",
+     "Latency",
+     "Real-time processing",
+     "Quantization",
+     "Model compression",
+     "Buffer size"
+    ],
+    "common_mistakes": [
+     "Measuring only the model's compute time; end-to-end latency also includes buffering, data transfer, and pre- and post-processing",
+     "Assuming a smaller model is always the answer; aggressive compression can cut accuracy too far for the task",
+     "Confusing latency with throughput; a system can process many items per second yet still add too much delay for live use"
+    ],
+    "scenario_contexts": [
+     "Running real-time neural noise suppression on a live microphone feed",
+     "Deploying a low-delay source-separation or effect plugin for live monitoring",
+     "Fitting a model onto embedded hardware that must respond within a few milliseconds"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning (inference and practical methodology)",
+    "NVIDIA TensorRT Developer Guide (inference optimization)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "756e9b05-d066-4378-bcc8-2373a068e95b",
+   "term": "LSTM",
+   "fields": {
+    "definition": "A Long Short-Term Memory (LSTM) network is a type of recurrent neural network whose units contain a memory cell regulated by multiplicative input, forget, and output gates. These gates control what information is written to, retained in, and read from the cell, letting the network maintain information over long sequences and largely overcoming the vanishing-gradient problem that limits simple recurrent networks.",
+    "plain_english": "An LSTM is a neural network built to remember patterns over time. It uses gates that decide what to keep, forget, and pass on, so it can hold onto useful clues from earlier in a sequence.",
+    "purpose_function": "It exists to model long-range dependencies in sequential data, using gated memory cells so that important information can persist across many time steps without the gradients vanishing that hamper plain recurrent networks.",
+    "practical_application": "A technician encounters LSTMs in sequence tasks such as speech recognition, music generation and transcription, audio event detection, and time-series modeling, though transformers now often replace them.",
+    "category": "Neural network architecture",
+    "related_terms": [
+     "Recurrent neural network",
+     "Vanishing gradient",
+     "Gated recurrent unit",
+     "Transformer",
+     "Sequence modeling",
+     "Neural network"
+    ],
+    "common_mistakes": [
+     "Assuming an LSTM has unlimited memory; it retains information far longer than a simple RNN but still forgets over very long sequences",
+     "Confusing the cell state with the output; the internal memory cell and the exposed hidden output are distinct",
+     "Treating LSTMs as always best for sequences; transformers often outperform them on long contexts given enough data"
+    ],
+    "scenario_contexts": [
+     "Modeling audio or speech frames over time in a recognition system",
+     "Generating or transcribing music note sequences",
+     "Detecting sound events across a continuous audio stream"
+    ]
+   },
+   "sources": [
+    "Hochreiter & Schmidhuber, Long Short-Term Memory, Neural Computation 9(8), 1997",
+    "Goodfellow, Bengio & Courville, Deep Learning (recurrent and recursive nets)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

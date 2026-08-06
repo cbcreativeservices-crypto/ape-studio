@@ -1,0 +1,116 @@
+{
+  "batch": 389,
+  "topic": "Dubbing & Localization",
+  "authored": [
+    {
+      "id": "8a135eb7-c0f7-4ad2-b63a-55ed2a087d7b",
+      "term": "Dubbing stage",
+      "fields": {
+        "definition": "A large, acoustically controlled mixing theatre in which the final re-recording (the 'dub') of a film or television programme is performed, combining the dialogue, music and sound-effects premixes into the finished soundtrack. It is aligned to a cinema monitoring reference (the wide-range 'X-curve' B-chain response of SMPTE ST 202 / ISO 2969) so the mix translates to release venues, and it is used to build both the original mix and the music-and-effects (M&E) stem that localized-language versions are dubbed against.",
+        "plain_english": "A big, sound-treated theatre where a movie final soundtrack is mixed. Here the speech, music, and effects are blended into one track. The speakers are set to a cinema standard so the mix sounds right in real theatres.",
+        "purpose_function": "It provides a calibrated, cinema-like listening environment where re-recording mixers balance every sound element into a final mix that plays back consistently across theatres and home systems, and it produces the M&E stem needed for foreign-language dubbing.",
+        "practical_application": "A re-recording mixer works at a large console in the dubbing stage, mixing dialogue, music and effects to picture while checking the mix against the room's reference alignment; a localization team later reuses the stage's M&E stem when recording and mixing dubbed dialogue.",
+        "category": "Post-production facility",
+        "related_terms": [
+          "Re-recording mixer",
+          "M&E stem",
+          "X-curve",
+          "ADR",
+          "Localization studio",
+          "Final mix"
+        ],
+        "common_mistakes": [
+          "Confusing the dubbing stage (the mixing theatre) with a voice booth where dialogue is recorded; the stage is for mixing, not tracking.",
+          "Assuming 'dubbing' here means language replacement; on a dubbing stage it refers to the final re-recording mix.",
+          "Treating any large room as a dubbing stage even though it is not aligned to the cinema monitoring reference (X-curve), so the mix will not translate to release venues.",
+          "UNSAFE: Monitoring at excessive SPL for long mixing sessions without level limits or hearing breaks, risking noise-induced hearing loss."
+        ],
+        "scenario_contexts": [
+          "Performing the final re-recording mix of a feature film, blending the dialogue, music and effects premixes.",
+          "Creating and checking the M&E stem that overseas dubbing houses will mix localized dialogue against.",
+          "Aligning the room's B-chain to the X-curve before a mixing session.",
+          "Reviewing a completed mix in the calibrated theatre to confirm it translates to release cinemas."
+        ]
+      },
+      "sources": [
+        "SMPTE ST 202:2010, Motion-Picture Sound — Dubbing Theaters, Review Rooms and Indoor Theaters — B-Chain Electroacoustic Response",
+        "ISO 2969, Cinematography — B-chain electro-acoustic response of motion-picture control rooms and indoor theatres",
+        "Ballou, Handbook for Sound Engineers (Focal Press) — film/television post-production and re-recording"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "048f7884-2391-4c15-8d22-309e478c0e1b",
+      "term": "Localization booth",
+      "fields": {
+        "definition": "A sound-isolated recording booth, within a dubbing or localization facility, in which voice talent records target-language dialogue to picture so it can replace the original-language performance. It provides acoustic isolation and a synchronized picture/audio reference feed so the actor can watch the scene and match timing and lip-sync while a director and engineer monitor from the control room.",
+        "plain_english": "A small, soundproof room where voice actors record lines in another language while watching the film. It keeps outside noise out so their voice can cleanly replace the original speech.",
+        "purpose_function": "It exists to capture clean, isolated dialogue in the target language, free of room noise and spill, that will be edited and mixed in place of the original dialogue during localization.",
+        "practical_application": "An engineer sets up a large-diaphragm mic, headphone monitoring and a video feed in the booth, then records the voice actor line by line to picture, watching levels and lip-sync while keeping the booth quiet between takes.",
+        "category": "Post-production facility",
+        "related_terms": [
+          "Localization studio",
+          "Dubbing stage",
+          "ADR",
+          "Lip-sync",
+          "M&E stem",
+          "Voice actor"
+        ],
+        "common_mistakes": [
+          "Treating the localization booth like a mixing room; it is for recording clean dialogue, not for the final mix.",
+          "Ignoring lip-sync and timing against the picture, so recorded lines do not fit the on-screen mouth movements.",
+          "Allowing headphone bleed or booth noise into the take, contaminating dialogue that must sit cleanly over the M&E stem."
+        ],
+        "scenario_contexts": [
+          "Recording an actor's target-language lines to picture for a dubbed film.",
+          "Re-recording an actor's own dialogue (ADR) to replace noisy or unusable production sound.",
+          "Capturing isolated voice-over narration for a localized version of a documentary."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (Focal Press) — film/television post-production",
+        "Holman, Sound for Film and Television (Focal Press)",
+        "Yewdall, The Practical Art of Motion Picture Sound (Focal Press) — ADR/dialogue recording"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "d6f9eadc-987d-4207-8308-882eb5a4bd09",
+      "term": "Localization studio",
+      "fields": {
+        "definition": "A post-production facility that adapts audiovisual content for other languages and markets, carrying out dubbing, voice-over and often subtitling work; it typically houses recording booths for target-language dialogue and mixing rooms where that dialogue is combined with the programme's supplied music-and-effects (M&E) stem to produce the localized soundtrack.",
+        "plain_english": "A studio that adapts films and shows for other countries. It records new speech in different languages. Then it mixes that speech with the original music and sound effects to make a local version.",
+        "purpose_function": "It exists to turn a finished programme into versions for other languages and regions, providing the rooms, tools and staff to record localized dialogue and remix it with the supplied M&E stem so the new soundtrack matches the original.",
+        "practical_application": "A technician at a localization studio ingests the M&E stem and reference mix, records target-language dialogue in the booth, then edits and mixes it to picture to deliver a broadcast- or cinema-ready localized soundtrack.",
+        "category": "Post-production facility",
+        "related_terms": [
+          "Localization booth",
+          "Dubbing stage",
+          "M&E stem",
+          "ADR",
+          "Subtitling",
+          "Voice-over"
+        ],
+        "common_mistakes": [
+          "Confusing a localization studio with the original dubbing stage; the localization studio remixes against the delivered M&E stem rather than the original premixes.",
+          "Assuming localization is only translation, when it also requires recording, editing and mixing dialogue to picture.",
+          "Delivering a localized mix that ignores the loudness and format specs (such as the target market's broadcast loudness targets) required for delivery."
+        ],
+        "scenario_contexts": [
+          "Producing foreign-language dubbed versions of a streaming series from the supplied M&E stem.",
+          "Recording and mixing localized voice-over for a documentary or corporate release.",
+          "Preparing multiple language versions of a film for international theatrical or broadcast distribution."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (Focal Press) — film/television post-production",
+        "Holman, Sound for Film and Television (Focal Press)",
+        "Yewdall, The Practical Art of Motion Picture Sound (Focal Press)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    }
+  ]
+}

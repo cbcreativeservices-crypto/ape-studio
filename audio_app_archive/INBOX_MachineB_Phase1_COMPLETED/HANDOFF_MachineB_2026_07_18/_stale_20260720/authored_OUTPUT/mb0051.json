@@ -1,0 +1,159 @@
+{
+ "batch": 51,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "8197e78b-7747-4415-a866-d3b5ecd19eb3",
+   "term": "Hard-panned guitars",
+   "fields": {
+    "definition": "The practice of placing two (usually double-tracked) rhythm guitar parts at or near the extreme left and right of the stereo field, one fully left and the other fully right. It produces a wide guitar image while leaving the center free for vocals, bass, kick and snare.",
+    "plain_english": "This means sending two guitar tracks to far opposite sides, one all the way left and one all the way right. It makes the guitars sound wide and keeps the middle clear for the vocals and drums.",
+    "purpose_function": "It widens the stereo image and separates the guitars from center-panned elements, so a dense rhythm-guitar sound does not mask the lead vocal, bass and drums. The technique relies on two separate performances rather than one signal split to both sides.",
+    "practical_application": "An engineer records the same rhythm part twice, then pans take one hard left and take two hard right; on a mixer or DAW this is a pan control set to 100 percent L and 100 percent R. They check the balance in mono to confirm both sides still hold up.",
+    "category": "Stereo Imaging",
+    "related_terms": ["Double-tracking", "Panning", "Stereo image", "Rhythm guitar", "Mono compatibility"],
+    "common_mistakes": ["Hard-panning a single guitar take, which leaves one side of the mix empty and lopsided", "Copying one performance to both sides instead of recording two takes, so the image collapses to the center and gains no real width", "Never checking the result in mono, where poorly captured double-tracks can partly cancel"],
+    "scenario_contexts": ["Mixing a rock or metal song with two rhythm guitar tracks that need to sound wide", "Freeing up center space so a lead vocal and bass stay clear under heavy guitars", "Setting up a stereo guitar bed during tracking so overdubs can be panned apart"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5a147ec1-6b84-4520-b743-bbb467364730",
+   "term": "Hard-panned harmonies",
+   "fields": {
+    "definition": "Backing-vocal harmony parts placed at or near the extreme left and right of the stereo field rather than in the center. This spreads the harmonies wide and keeps them separated from the center-panned lead vocal.",
+    "plain_english": "Backing vocal parts are placed at the far left and far right, away from the center. This spreads them wide so they wrap around the main singer instead of crowding it.",
+    "purpose_function": "It widens the vocal image and stops the harmony parts from competing with the lead vocal for the same center space, giving the arrangement depth and clarity. It works best when there are paired parts that can be balanced left against right.",
+    "practical_application": "An engineer pans one harmony take hard left and its double or a second part hard right, then trims levels so neither side pulls the image off-center. They confirm the lead stays anchored in the middle and check mono balance.",
+    "category": "Stereo Imaging",
+    "related_terms": ["Backing vocals", "Panning", "Double-tracking", "Stereo image", "Lead vocal"],
+    "common_mistakes": ["Hard-panning a single harmony part so one side of the stereo image is empty", "Panning harmonies so wide that they overpower and distract from the lead vocal", "Ignoring level differences between the two sides, which shifts the whole vocal image left or right"],
+    "scenario_contexts": ["Widening a chorus by spreading doubled harmony vocals to the sides", "Keeping a lead vocal clear in the center while backing parts fill the edges", "Building a big layered vocal section in a pop or rock mix"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Owsinski, The Recording Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "34d5a9ab-9287-418c-9309-9956c034c98e",
+   "term": "Harmonic layering",
+   "fields": {
+    "definition": "An arrangement technique that stacks multiple parts sharing related pitch or chord content, using different instruments, voices or registers to build a fuller, richer harmonic texture. The layered parts reinforce the same underlying harmony rather than adding new melodic lines.",
+    "plain_english": "This means stacking several parts that share the same notes or chords to build a bigger, fuller sound. It is like adding more voices to a choir so the music feels thicker.",
+    "purpose_function": "It adds weight, width and richness to a section by combining timbres that reinforce the harmony, so a part sounds larger than a single instrument or voice could. It gives the arranger control over how full or sparse a moment feels.",
+    "practical_application": "A producer might stack a pad, a doubled guitar and a vocal harmony that all outline the same chord, choosing registers so the parts do not clash. During tracking they record complementary layers and balance them so each is felt but none dominates.",
+    "category": "Arrangement",
+    "related_terms": ["Double-tracking", "Harmony arrangement", "Voicing", "Overdub", "Arrangement"],
+    "common_mistakes": ["Piling on too many layers in the same register, which turns a full sound into a muddy one", "Assuming more layers always sound bigger, when clashing pitches can shrink the impact", "Failing to spread layers across registers so they mask each other"],
+    "scenario_contexts": ["Thickening a chorus by adding stacked instrument and vocal parts", "Building a lush pad-and-vocal texture behind a sparse verse", "Arranging overdubs so several parts reinforce one chord progression"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "440a93b3-3e56-4ccd-b8a0-333c24125805",
+   "term": "Harmony alignment",
+   "fields": {
+    "definition": "The editing process of matching the timing (and often the tuning) of harmony parts to the lead or to each other, so note onsets, phrasing and consonants line up tightly. It is typically done with region editing, time-warping or pitch-correction tools.",
+    "plain_english": "This means lining up the timing and tuning of backing vocals so they match the lead singer. Tight matching makes the parts sound like one blended group, not a sloppy crowd.",
+    "purpose_function": "It makes stacked harmonies sound like a single cohesive unit by removing timing and tuning discrepancies that would otherwise smear the blend. Well-aligned parts sit together instead of flamming or drifting.",
+    "practical_application": "An engineer nudges or time-warps harmony phrases so word endings and breaths hit at the same moment as the lead, and may apply gentle pitch correction so parts agree in tune. They listen for tight consonants and a unified stereo blend.",
+    "category": "Editing",
+    "related_terms": ["Comping", "Time alignment", "Pitch correction", "Backing vocals", "Double-tracking"],
+    "common_mistakes": ["Over-editing until harmonies sound robotic and lose their natural human feel", "Aligning timing but ignoring tuning, so parts stay tight yet still clash pitch-wise", "Quantizing every consonant so hard that the vocals lose energy and phrasing"],
+    "scenario_contexts": ["Tightening stacked backing vocals in a chorus so they lock to the lead", "Cleaning up doubled harmony takes that drift in timing", "Preparing layered vocals for a wide, blended mix"]
+   },
+   "sources": ["Owsinski, The Recording Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4269b1e9-6db0-49c3-a130-2d13e3d8fb1b",
+   "term": "Harmony arrangement",
+   "fields": {
+    "definition": "The compositional and production task of writing and organizing the supporting harmony parts around a main melody, including how many parts there are, their intervals, voicings and registers. It shapes how full, tense or open a section feels.",
+    "plain_english": "This is the work of writing the extra vocal or instrument parts that sit above or below the main tune. You choose how many parts there are and which notes each one sings.",
+    "purpose_function": "It gives a song depth and emotional lift by adding supporting pitches around the lead, and it controls the density of a section so a chorus can feel bigger than a verse. Good voicing keeps the parts clear rather than cluttered.",
+    "practical_application": "An arranger decides where to add a third above or a sixth below the melody, how many stacked voices a chorus needs, and how to spread them across registers before parts are tracked. They may sketch the parts and have singers or players record each one.",
+    "category": "Arrangement",
+    "related_terms": ["Voicing", "Harmonic layering", "Backing vocals", "Counterpoint", "Arrangement"],
+    "common_mistakes": ["Writing harmony parts in the same register as the lead so they crowd and mask it", "Adding harmonies everywhere, which removes the contrast that makes a chorus feel bigger", "Using intervals that clash with the underlying chords"],
+    "scenario_contexts": ["Planning vocal harmony stacks before a tracking session", "Deciding how dense a chorus should be compared with the verses", "Arranging backing-vocal parts to lift the emotional peak of a song"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Recording Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0e4d4afc-49aa-4a44-8cdd-849721ac563d",
+   "term": "Harmony automation",
+   "fields": {
+    "definition": "The use of mix automation, such as volume, pan, mute or effect-send moves, applied to harmony tracks so their level and presence change over the course of a song. The moves are recorded in the DAW or console and replayed on every pass.",
+    "plain_english": "This means writing moves that change the harmony tracks over time, like turning them up in the chorus and down in the verse. The computer replays those moves on every playback.",
+    "purpose_function": "It lets the harmonies rise and fall with the arrangement, so they support the lead where needed and step back where they would clutter, without a human riding faders every time. It keeps balance consistent across the whole mix.",
+    "practical_application": "An engineer draws or records automation to bring harmony vocals up in choruses, mute them in verses, or open a reverb send on a held note. They fine-tune the curves until the harmonies breathe with the song.",
+    "category": "Mix Automation",
+    "related_terms": ["Fader automation", "Mute automation", "Harmony bus", "Backing vocals", "Mixing"],
+    "common_mistakes": ["Setting one static level for harmonies instead of automating them, so they either fight the verse or vanish in the chorus", "Making automation jumps so abrupt that levels audibly lurch", "Automating individual tracks when a single move on a harmony bus would be cleaner"],
+    "scenario_contexts": ["Lifting backing vocals only during the chorus of a song", "Muting harmony tracks in verses to keep them clean", "Opening an effect send on a specific held harmony note"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b9049e41-2a0f-49e4-ba55-93b1e647da9c",
+   "term": "Harmony bus",
+   "fields": {
+    "definition": "An auxiliary or subgroup bus to which all harmony tracks are routed so they can be processed and controlled together, for example with shared EQ, compression, effects or a single level fader. It groups the harmonies into one manageable stereo or mono submix.",
+    "plain_english": "This is one channel that all the harmony tracks are sent to together. It lets you shape or turn up every harmony at once instead of one at a time.",
+    "purpose_function": "It simplifies mixing by letting an engineer balance, process and automate the whole harmony group with one set of controls, and it can glue the parts together with shared processing. It also saves CPU and console channels compared with processing each track alone.",
+    "practical_application": "An engineer routes every harmony track's output to an aux bus, then places a compressor and EQ on that bus and rides one fader for the group. They can send the whole bus to a shared reverb for a unified space.",
+    "category": "Signal Routing",
+    "related_terms": ["Bus", "Subgroup", "Aux send", "Harmony compression", "Mixing"],
+    "common_mistakes": ["Processing each harmony track separately when bus processing would blend them better and save effort", "Forgetting that heavy bus compression affects every harmony at once, including quiet parts", "Routing dry and effected sends incorrectly so the bus double-counts a signal"],
+    "scenario_contexts": ["Grouping a stack of backing vocals under one fader for easy balance", "Applying shared compression to glue harmony parts together", "Sending all harmonies to one reverb for a unified sense of space"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9049c626-565a-436e-b1e8-d50ba9882ba1",
+   "term": "Harmony compression",
+   "fields": {
+    "definition": "Dynamic-range compression applied to harmony vocal tracks, either individually or across a harmony bus, to reduce the difference between loud and soft passages. It evens out levels so the stacked parts stay consistent and blend under the lead.",
+    "plain_english": "This tames the loud and soft spots in backing vocals so they stay even. It helps the harmony parts blend and sit smoothly under the main singer.",
+    "purpose_function": "It keeps harmony levels steady so quiet notes are not lost and loud ones do not jump out, which helps a stack of voices read as one controlled unit. It also lets the harmonies sit at a stable level beneath the lead vocal.",
+    "practical_application": "An engineer sets a moderate ratio and threshold on each harmony track or on the harmony bus, adjusting attack and release so the parts stay natural while the peaks are tamed. They watch gain reduction and listen for a smooth, even blend.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Compression", "Harmony bus", "Vocal compression", "Gain reduction", "Backing vocals"],
+    "common_mistakes": ["Over-compressing until the harmonies sound squashed and lifeless", "Using fast settings that pump or dull the vocal transients", "Compressing every track hard and then again on the bus, stacking too much gain reduction"],
+    "scenario_contexts": ["Evening out an uneven backing-vocal performance", "Gluing a harmony stack together with gentle bus compression", "Keeping harmonies at a steady level under a dynamic lead vocal"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3c5621a0-45a2-4962-b461-5f64aa822014",
+   "term": "Harmony de-essing",
+   "fields": {
+    "definition": "De-essing applied to harmony vocal tracks, using a frequency-dependent compressor or dynamic EQ to reduce excessive sibilance in the 's', 'sh' and 't' sounds. It is often needed because stacked harmonies pile up sibilant energy that a single voice would not produce.",
+    "plain_english": "This softens the harsh 's' and 'sh' sounds in backing vocals. When many voices sing together those sounds pile up, so this tool turns them down.",
+    "purpose_function": "It controls the harsh, whistling sibilance that becomes exaggerated when several harmony parts sing the same words, keeping the stack smooth and easy to listen to. It preserves clarity without dulling the whole vocal.",
+    "practical_application": "An engineer places a de-esser on each harmony track or the harmony bus, tunes it to the sibilant frequency band and sets the threshold so only the harsh peaks are reduced. They check that speech stays clear and the 's' sounds are softened, not lisped.",
+    "category": "Dynamics Processing",
+    "related_terms": ["De-esser", "Sibilance", "Harmony bus", "Harmony compression", "Backing vocals"],
+    "common_mistakes": ["Setting the de-esser too aggressively so the vocals lisp and lose their consonants", "De-essing only the lead and forgetting the stacked sibilance from the harmony parts", "Targeting the wrong frequency band so real sibilance is missed while body is dulled"],
+    "scenario_contexts": ["Taming harsh sibilance in a chorus full of stacked harmony vocals", "Smoothing bright backing vocals recorded with a condenser mic", "Cleaning up sibilant peaks on a harmony bus before final mix"]
+   },
+   "sources": ["Owsinski, The Recording Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

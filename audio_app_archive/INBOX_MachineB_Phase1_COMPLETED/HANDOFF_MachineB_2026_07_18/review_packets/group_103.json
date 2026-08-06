@@ -1,0 +1,998 @@
+{
+ "group": 103,
+ "terms": [
+  {
+   "id": "8ea4df99-e305-4900-b0d7-415a087407ff",
+   "term": "Platform optimization",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "Platform optimization is the process of tailoring a master or deliverable to the loudness-normalization target, codec, sample rate, bit depth, and metadata requirements of a specific distribution platform, such as a streaming service, broadcaster, or video site, so it plays back as intended after the platform's own processing.",
+   "plain_english": "Platform optimization means getting a song ready for the exact place it will play, such as Spotify or YouTube. Each service adjusts loudness and file type in its own way, so you prepare the file to fit and still sound good.",
+   "purpose_function": "It exists because each platform normalizes loudness to its own target and re-encodes audio, so matching those targets and formats prevents unwanted turn-down, distortion, or quality loss and keeps playback consistent for listeners.",
+   "practical_application": "A mastering engineer sets an integrated loudness and true-peak ceiling suited to a platform and delivers in its required format, for example allowing extra true-peak headroom for lossy codecs and aiming near the service's normalization level.",
+   "category": "Mastering & Delivery",
+   "related_terms": [
+    "Loudness normalization",
+    "Integrated loudness",
+    "True peak",
+    "LUFS",
+    "Mastering",
+    "Peak validation"
+   ],
+   "common_mistakes": [
+    "Mastering as loud as possible when platform loudness normalization simply turns it down, sacrificing dynamics for no benefit",
+    "Ignoring the extra true-peak headroom lossy codecs need and getting encoder distortion",
+    "Delivering one identical file to every platform without checking each one's target and format"
+   ],
+   "scenario_contexts": [
+    "Setting integrated loudness and true peak appropriate for Spotify or Apple Music",
+    "Preparing an alternate louder master a client wants for a specific use",
+    "Choosing loudness and file format for a podcast or video platform"
+   ]
+  },
+  {
+   "id": "e6d2574e-645a-45c1-a3df-2e32510fa597",
+   "term": "Production audit",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "A production audit is a systematic review of a production project, covering its session files, track organization, edits, levels, plug-in use, and deliverables, to verify technical integrity, consistency, and compliance with the project's specification before it advances to the next stage or is delivered.",
+   "plain_english": "A production audit is a careful check of a whole project before it moves on. You go through the files, edits, and levels to make sure nothing is broken or missing, like a checklist before you hand in your work.",
+   "purpose_function": "It exists to catch errors, missing files, and spec problems early, giving a documented, repeatable checkpoint that keeps quality high and reduces costly fixes later in the workflow.",
+   "practical_application": "An engineer works through a checklist, confirming file naming, sample rate, absence of clipping, correct routing, and complete deliverables, and logs any issues to fix before sign-off.",
+   "category": "Quality Control",
+   "related_terms": [
+    "Production quality assurance",
+    "Peak validation",
+    "Output validation",
+    "Deliverables",
+    "Session management",
+    "Stem"
+   ],
+   "common_mistakes": [
+    "Treating the audit as a formality and skimming instead of following a defined checklist",
+    "Auditing only the audio and ignoring file organization, naming, and metadata",
+    "Running the audit too late, after the point where problems are cheap to fix"
+   ],
+   "scenario_contexts": [
+    "Reviewing a mix session before delivering stems to mastering",
+    "Checking a post-production project against a broadcast delivery spec",
+    "Verifying an archived project is complete and can be reopened later"
+   ]
+  },
+  {
+   "id": "04105933-0f8c-4e60-8aae-c968653af587",
+   "term": "Production completion report",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "A production completion report is a document that summarizes a finished production, listing the delivered files and formats, the technical specifications met (such as sample rate, bit depth, loudness, and true peak), version history, and any notes or approvals, providing a record that the work is complete and to specification.",
+   "plain_english": "A production completion report is a short write-up that says a project is done. It lists what was delivered, the file details, and who signed off, so everyone has a clear record.",
+   "purpose_function": "It exists to close out a project with a clear, shareable record of what was delivered and to what standard, supporting hand-off, billing, archiving, and future reference.",
+   "practical_application": "At delivery, an engineer or coordinator fills out the report with file names, formats, loudness and true-peak figures, and client approval, then stores it with the project archive.",
+   "category": "Documentation",
+   "related_terms": [
+    "Production audit",
+    "Production quality assurance",
+    "Deliverables",
+    "Session management",
+    "Integrated loudness",
+    "Master"
+   ],
+   "common_mistakes": [
+    "Leaving out the exact technical specs of the deliverables, making the report hard to verify later",
+    "Writing the report from memory instead of from the actual delivered files",
+    "Failing to store the report with the project archive, so it is lost when needed"
+   ],
+   "scenario_contexts": [
+    "Documenting final masters delivered to a label with their formats and loudness values",
+    "Recording sign-off and specs at the end of a post-production job",
+    "Providing a hand-off summary when a project passes between teams"
+   ]
+  },
+  {
+   "id": "5bd114ca-c9fc-47fe-90b1-8fefa1a6dc05",
+   "term": "Production quality assurance",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "Production quality assurance (QA) is the set of processes and checks applied throughout a production to ensure the final audio meets defined technical and creative standards, covering aspects such as levels, noise, edits, phase/polarity, format compliance, and translation across playback systems.",
+   "plain_english": "Production quality assurance means checking the work at every step, so the final sound meets the required standard. It is like quality control in a factory, but for audio. The goal is to catch problems before you release the work.",
+   "purpose_function": "It exists to build quality into the workflow rather than relying on a single final check, reducing errors, rework, and rejected deliverables.",
+   "practical_application": "A technician applies QA steps such as reference listening on several systems, metering for loudness and true peak, and checking for clicks, noise, and phase issues before signing off each stage.",
+   "category": "Quality Control",
+   "related_terms": [
+    "Production audit",
+    "Peak validation",
+    "Output validation",
+    "Playback translation",
+    "Loudness normalization",
+    "Deliverables"
+   ],
+   "common_mistakes": [
+    "Confusing quality assurance, which builds in checks throughout, with a single quality-control pass at the very end",
+    "Checking on one set of speakers only and missing problems that appear on other systems",
+    "Relying on meters alone without critical listening, or on listening alone without meters"
+   ],
+   "scenario_contexts": [
+    "Setting up a checklist and metering standard for a studio's deliverables",
+    "Cross-checking a mix on multiple playback systems before release",
+    "Verifying broadcast deliverables meet a loudness standard as part of routine QA"
+   ]
+  },
+  {
+   "id": "8335bcd5-c5ca-4eb7-9682-e4ab739e969f",
+   "term": "Public-address contribution",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "Public-address contribution refers to the portion of the total sound at a venue supplied by the public-address (sound-reinforcement) system, as distinct from the direct acoustic sound of the source; it can also describe the amount of PA signal captured in a live recording or broadcast feed.",
+   "plain_english": "Public-address contribution is how much of what people hear comes from the speakers, not straight from the performers. In a small room the PA adds a little; in a big venue it supplies most of the sound.",
+   "purpose_function": "Thinking in terms of PA contribution helps a system designer decide how much reinforcement is needed for even coverage and intelligibility while keeping a natural balance with the acoustic source.",
+   "practical_application": "A live engineer judges how much level the PA should add relative to stage volume and room acoustics, raising reinforcement in large or noisy spaces and easing it where the acoustic source already carries.",
+   "category": "Sound Reinforcement",
+   "related_terms": [
+    "Sound reinforcement",
+    "Coverage",
+    "Gain before feedback",
+    "Stage volume",
+    "Intelligibility",
+    "Direct-to-reverberant ratio"
+   ],
+   "common_mistakes": [
+    "Assuming more PA level always improves clarity, when excess contribution can worsen feedback and muddiness",
+    "Ignoring the acoustic contribution of loud stage sources when setting PA level",
+    "Over-reinforcing a small, lively acoustic space as if it were a large venue"
+   ],
+   "scenario_contexts": [
+    "Deciding how much reinforcement a room needs for even coverage and speech intelligibility",
+    "Balancing PA level against a loud acoustic drum kit on a small stage",
+    "Assessing how much PA spill is captured in a live broadcast or recording"
+   ]
+  },
+  {
+   "id": "0d83b565-8808-4701-9a0d-5a2b62595c99",
+   "term": "Punch Guard",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "Punch Guard is a MOTU Digital Performer feature that records extra audio before the punch-in point and after the punch-out point during a punch recording, capturing guard (pre- and post-roll) material beyond the punch region so that missed note attacks or tails can be recovered by dragging out the resulting soundbite's edges.",
+   "plain_english": "Punch Guard records a few extra seconds before and after a punch take. If you start recording a touch late or stop too soon, you can drag the clip's edge out to get the missing part back.",
+   "purpose_function": "It exists as a safety net for punch recording, letting an engineer fix slightly early or late punch points and build clean crossfades without asking the performer for another take.",
+   "practical_application": "With Punch Guard on, a technician punches in over a section and, if an attack or tail was clipped, drags out the soundbite edge to reveal the guard audio instead of re-recording.",
+   "category": "Recording Workflow",
+   "related_terms": [
+    "Punch in/out",
+    "Pre-roll",
+    "Soundbite",
+    "Crossfade",
+    "Take",
+    "Punch automation mode"
+   ],
+   "common_mistakes": [
+    "Assuming the guard audio is unlimited, when it is bounded by the pre- and post-roll times set in Preferences",
+    "Forgetting Punch Guard is enabled and being surprised by extra recorded material around punches",
+    "Relying on it to rescue grossly mistimed punches instead of setting sensible punch points"
+   ],
+   "scenario_contexts": [
+    "Recovering a clipped word at the start of a punched vocal line",
+    "Extending a punched guitar note's tail to build a smooth crossfade",
+    "Fixing a slightly early punch-out on an instrumental overdub"
+   ]
+  },
+  {
+   "id": "551aea62-5166-45a8-b485-739803dca8e4",
+   "term": "PureDSP pitch correction",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "PureDSP pitch correction is pitch editing performed with MOTU's PureDSP engine in Digital Performer, which analyzes a monophonic soundbite and can alter its pitch, formant, and tempo independently, allowing tuning correction of individual notes while preserving natural timbre.",
+   "plain_english": "PureDSP pitch correction is a tool in Digital Performer that fixes the tuning of one melody line. It can move notes in tune and still keep the sound natural.",
+   "purpose_function": "It exists to correct or reshape the pitch of monophonic material without the artifacts of simple pitch shifting, by handling pitch, formant, and time separately so the result still sounds realistic.",
+   "practical_application": "An engineer selects a monophonic vocal or instrument soundbite and uses Digital Performer's pitch-editing tools, driven by PureDSP, to nudge off-key notes to the correct pitch while keeping formants natural.",
+   "category": "Pitch & Time Editing",
+   "related_terms": [
+    "Pitch correction",
+    "Formant",
+    "Monophonic",
+    "Time stretching",
+    "Soundbite",
+    "Quantize audio"
+   ],
+   "common_mistakes": [
+    "Trying to use it on polyphonic (chordal) material, when PureDSP pitch editing targets monophonic soundbites",
+    "Over-correcting every note to perfect pitch and losing natural expression",
+    "Thinking of it as a real-time tuning plug-in rather than an edit applied to the soundbite"
+   ],
+   "scenario_contexts": [
+    "Tuning a lead vocal take note by note in Digital Performer",
+    "Correcting a few sour notes in a monophonic sax or synth line",
+    "Adjusting the pitch and formant of a sampled phrase to fit a new key"
+   ]
+  },
+  {
+   "id": "1f60400d-8854-4284-a897-47156b93165e",
+   "term": "Q-Range",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "Q-Range is an advanced quantization parameter in Logic Pro, set in ticks, that restricts quantization according to how far each note lies from the nearest grid position. A value of 0 quantizes every note; positive values quantize only notes already within the range of the grid, while negative values quantize only notes falling outside the range, moving badly-timed notes to the grid while leaving those close to it untouched to preserve the original feel.",
+   "plain_english": "Q-Range decides which notes get fixed based on how far off the beat they are. Set to a negative value, it pulls only the badly-timed notes onto the grid and leaves the close ones alone, so the groove still feels natural.",
+   "purpose_function": "It exists to quantize selectively, correcting only notes that are noticeably off while protecting intentional timing, so a part with a good groove can be tightened without being flattened.",
+   "practical_application": "On a part that grooves but has a few rushed or dragged notes, an engineer sets a negative Q-Range so only the worst-timed notes snap to the grid and the rest keep their feel.",
+   "category": "Quantization",
+   "related_terms": [
+    "Quantize",
+    "Q-Strength",
+    "Grid",
+    "Groove",
+    "Swing",
+    "Tick"
+   ],
+   "common_mistakes": [
+    "Confusing Q-Range (which notes are affected, by distance) with Q-Strength (how far notes move)",
+    "Expecting a positive value to protect off-grid notes, when it targets notes already near the grid",
+    "Leaving Q-Range at 0 and quantizing everything when only a few notes needed fixing"
+   ],
+   "scenario_contexts": [
+    "Fixing a few rushed notes in an otherwise well-timed drum take",
+    "Tightening only the loose notes in a live bass performance",
+    "Preserving a swung MIDI groove while correcting obvious mistakes"
+   ]
+  },
+  {
+   "id": "c99ecb6b-e64e-47c2-8d15-38d1a6c23f6b",
+   "term": "Q-Strength",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "Q-Strength is an advanced quantization parameter in Logic Pro, expressed as a percentage, that sets how far each note or transient marker is moved toward its nearest grid position: 100% snaps notes fully to the grid, 0% leaves them at their recorded timing, and intermediate values move them proportionally, tightening timing while retaining some of the original feel.",
+   "plain_english": "Q-Strength sets how hard notes are pulled toward the beat grid. At 100% they land exactly on the grid; at lower settings they move only part of the way, so the take still feels human.",
+   "purpose_function": "It exists to let an engineer tighten timing without making a part sound rigid, by controlling the amount of correction instead of forcing every note fully onto the grid.",
+   "practical_application": "After choosing a quantize value, a producer lowers Q-Strength, for example to around 80 to 90 percent, so notes move closer to the grid but keep a natural feel rather than sounding mechanical.",
+   "category": "Quantization",
+   "related_terms": [
+    "Quantize",
+    "Q-Range",
+    "Quantize strength",
+    "Grid",
+    "Swing",
+    "Groove"
+   ],
+   "common_mistakes": [
+    "Leaving Q-Strength at 100% by habit, which can make parts sound stiff",
+    "Setting a very low strength and then expecting tight timing",
+    "Confusing Q-Strength (the amount of pull) with the quantize value (the grid resolution)"
+   ],
+   "scenario_contexts": [
+    "Tightening a live drum performance while keeping its groove",
+    "Partially correcting a bass line that is slightly loose",
+    "Applying gentle timing correction to keep a natural feel on recorded MIDI"
+   ]
+  },
+  {
+   "id": "1b796314-46b9-45e1-8f32-de5c9223bc5c",
+   "term": "Rack zone",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "In an Ableton Live Rack, a zone is a data filter at the input of each chain that determines whether incoming MIDI notes, velocities, or macro data reach that chain's devices; the three zone types, edited in the Rack's zone editors, are the Key Zone (note range), the Velocity Zone (velocity range), and the Chain Select Zone (position relative to the Chain Selector).",
+   "plain_english": "A Rack zone is a range setting that decides which sounds inside a Rack will play. For example, a Key Zone can make low notes play a bass and high notes play a lead, like splitting a keyboard.",
+   "purpose_function": "Zones exist so one Rack can hold many chains and route notes, velocities, or macro positions to the right ones, enabling keyboard splits, velocity layers, and switchable preset banks.",
+   "practical_application": "A producer drags the Key, Velocity, or Chain Select zone edges in the Rack's Chain List to split a keyboard, layer sounds by playing strength, or crossfade between chains with the Chain Selector.",
+   "category": "Instrument Racks",
+   "related_terms": [
+    "Instrument Rack",
+    "Chain",
+    "Chain Selector",
+    "Key zone",
+    "Velocity",
+    "Macro control"
+   ],
+   "common_mistakes": [
+    "Confusing the three zone types (Key, Velocity, and Chain Select) and editing the wrong one",
+    "Setting a chain's zone so it does not overlap the current value, leaving that chain silent",
+    "Overlooking zone fade ranges, which attenuate at the edges rather than hard-cutting"
+   ],
+   "scenario_contexts": [
+    "Splitting a keyboard so different note ranges trigger different instruments",
+    "Building velocity layers so soft and hard hits play different samples",
+    "Setting up a Chain Select bank to switch or crossfade presets live"
+   ]
+  },
+  {
+   "id": "54644df4-a221-4fc2-aa80-8e114e5dae0c",
+   "term": "Right Zone",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "The Right Zone is a dockable panel on the right side of the Cubase/Nuendo Project window that gives tabbed access to production tools without leaving the arrangement view, typically containing the VSTi Rack, the Media Rack (MediaBay), the Control Room (CR), and the Meter tab.",
+   "plain_english": "The Right Zone is a panel on the right side of the Cubase project window. It holds handy tools, like your instruments, media, and meters, so you can reach them without opening extra windows.",
+   "purpose_function": "It exists to keep frequently used tools docked next to the arrangement, streamlining workflow by reducing the number of floating windows an engineer has to manage.",
+   "practical_application": "An engineer shows or hides the Right Zone and its tabs from the toolbar to add a VST instrument, drag in media, or watch the Control Room and metering while arranging, all within one window.",
+   "category": "DAW Interface",
+   "related_terms": [
+    "Left Zone",
+    "Lower Zone",
+    "VSTi Rack",
+    "MediaBay",
+    "Control Room",
+    "Project window"
+   ],
+   "common_mistakes": [
+    "Confusing the Right Zone with the Left Zone (Inspector/Visibility) or the Lower Zone (MixConsole and editors)",
+    "Not realizing individual tabs can be hidden, then thinking a feature is missing",
+    "Searching for the standalone VST Instruments window when the Right Zone's rack offers the same access"
+   ],
+   "scenario_contexts": [
+    "Adding and tweaking a VST instrument from the VSTi Rack while arranging",
+    "Dragging loops or presets from the Media Rack into the project",
+    "Monitoring the Control Room and metering during mixing without a separate window"
+   ]
+  },
+  {
+   "id": "40ec5efd-47d2-40c9-bbc8-5c0d4be61950",
+   "term": "Speed mode",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "In Logic Pro's Flex Time, the Speed algorithm time-stretches audio by changing playback speed like a tape machine, so the material's pitch rises or falls together with its tempo instead of being held constant.",
+   "plain_english": "Speed mode stretches or shrinks audio by playing it faster or slower, like speeding up a tape. When it plays faster the pitch goes up, and when it plays slower the pitch goes down.",
+   "purpose_function": "It provides a resampling-style, varispeed time-stretch that deliberately couples pitch to tempo, giving vintage tape character that pitch-preserving algorithms remove; it exists as a creative/FX option in the Flex Time algorithm set.",
+   "practical_application": "An engineer selects the Speed algorithm on a Flex-enabled region when they want tape-style pitch-and-tempo shifts on drums or effects rather than a transparent tempo change.",
+   "category": "Time-Stretch Algorithm",
+   "related_terms": [
+    "Tempophone mode",
+    "Flex Time",
+    "Varispeed",
+    "Time stretching",
+    "Tempo set"
+   ],
+   "common_mistakes": [
+    "Assuming Speed keeps the original pitch; it deliberately changes pitch with tempo, unlike the Monophonic or Polyphonic modes.",
+    "Using it on tonal, harmonic material and expecting a clean result, when it is best suited to percussive or effect sounds.",
+    "Confusing the Flex Time Speed algorithm with a global transport or project varispeed."
+   ],
+   "scenario_contexts": [
+    "Speeding up a drum loop so it rises in pitch like a classic tape pull-up.",
+    "Creating a downward pitch-and-tempo drop as a transition effect.",
+    "Fitting a percussive sample to the session tempo when the retro pitch shift is wanted."
+   ]
+  },
+  {
+   "id": "e4d388d0-8bce-4e8f-a4f2-f41f4f10259f",
+   "term": "Stage wash",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "A stage wash is a broad, even, relatively soft field of light that covers the whole stage or a large area of it, produced with wash or flood fixtures rather than tightly focused spotlights, to supply general illumination and overall colour or tone for a scene.",
+   "plain_english": "A stage wash is a wide, even blanket of light that covers the whole stage at once. It lights everything softly instead of pointing a tight beam at one spot.",
+   "purpose_function": "It provides the base layer of visibility and colour across the performance area so performers can be seen everywhere, on top of which sharper specials and spotlights are added.",
+   "practical_application": "A lighting technician builds a stage wash by hanging and focusing wash fixtures to blend into even coverage, often in a chosen colour, then balances specials and spots against it.",
+   "category": "Stage Lighting",
+   "related_terms": [
+    "Front of house",
+    "Backlight",
+    "Spotlight",
+    "Colour wash",
+    "Lighting cue"
+   ],
+   "common_mistakes": [
+    "Confusing a wash (broad, soft coverage) with a spot (narrow, focused beam).",
+    "Assuming 'stage wash' is an audio term; it is a stage-lighting term and appears here under a mismatched topic.",
+    "Relying on a wash alone with no specials, leaving the scene flat and without focus."
+   ],
+   "scenario_contexts": [
+    "Lighting a full band evenly before adding solo spotlights.",
+    "Setting a coloured wash to establish the mood of a theatrical scene.",
+    "Providing overall even visibility across a conference stage for camera."
+   ]
+  },
+  {
+   "id": "c9fad748-eca7-42ed-b105-2e2e9d436714",
+   "term": "Stealth music",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "Stealth music is a low-intensity, tense music state used in games and stealth-themed media that plays while the player is sneaking or avoiding detection; it is typically quiet and sparse to convey caution, and is designed to transition into combat or alert music if the player is discovered.",
+   "plain_english": "Stealth music is the quiet, tense music that plays in a game while you sneak around trying not to be seen. If a guard spots you, it usually switches to louder action music.",
+   "purpose_function": "It reinforces the sneaking gameplay state and player caution, and serves as one node in an adaptive music system that changes with the player's situation.",
+   "practical_application": "A game-audio implementer sets up a stealth cue as a music state in middleware such as Wwise or FMOD, then defines transitions to combat or exploration music based on game parameters.",
+   "category": "Score Cue Type",
+   "related_terms": [
+    "Suspense music",
+    "Victory music",
+    "Transition matrix",
+    "Transition segment",
+    "Tension layer"
+   ],
+   "common_mistakes": [
+    "Making stealth music too busy or loud, which undercuts the tense, quiet feel.",
+    "Failing to author smooth transitions to combat music, causing an abrupt jump when the player is detected.",
+    "Treating it as a fixed track rather than an adaptive state that responds to gameplay."
+   ],
+   "scenario_contexts": [
+    "Sneaking past guards in a stealth action game.",
+    "Infiltrating a base while avoiding detection.",
+    "Switching from stealth to combat music the moment an alarm triggers."
+   ]
+  },
+  {
+   "id": "19921ded-9e00-4d3c-9d78-d7092fd16706",
+   "term": "Suspense music",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "Suspense music is underscore written to build and sustain tension, unease, or anticipation in the audience during a film, television, or game scene, typically using sustained dissonance, low drones, sparse rhythmic pulses, and gradual dynamic build rather than clear melody or resolution.",
+   "plain_english": "Suspense music is background music that makes a scene feel tense, so you feel something bad might happen. It often uses low, uneasy sounds that slowly grow.",
+   "purpose_function": "It shapes the audience's emotional response, signalling threat or anticipation and heightening dramatic tension in step with the on-screen action.",
+   "practical_application": "A composer or music editor places a suspense cue under a stalking or countdown scene and mixes it to swell as tension peaks, often resolving into a stinger or a sudden release.",
+   "category": "Score Cue Type",
+   "related_terms": [
+    "Stealth music",
+    "Victory music",
+    "Tension layer",
+    "Stinger",
+    "Underscore"
+   ],
+   "common_mistakes": [
+    "Overloading a suspense cue with melody or resolution, which releases the tension too early.",
+    "Mixing it too loud so it competes with dialogue instead of supporting the scene.",
+    "Confusing suspense (building anticipation) with a jump-scare stinger (a single sudden hit)."
+   ],
+   "scenario_contexts": [
+    "Underscoring a character creeping through a dark house.",
+    "Building tension during a bomb-defusal countdown.",
+    "Scoring the slow reveal of a threat in a thriller."
+   ]
+  },
+  {
+   "id": "c1346793-79b5-4a64-91bf-d0d491779ac1",
+   "term": "Take a lap",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "\"Take a lap\" is informal studio slang for stepping away from a session for a short break, leaving the room or building, to rest fatigued ears and regain objective perspective before making further mixing or performance decisions.",
+   "plain_english": "Take a lap means step away and take a short break during a session. Resting your ears helps you hear the mix clearly again when you come back.",
+   "purpose_function": "It counteracts the ear fatigue and loss of objectivity that build up over a long session, so decisions are made with fresh, reliable hearing.",
+   "practical_application": "When a mix stops improving or the room grows tense, an engineer or producer calls a short break, leaves the control room, then returns with fresh ears and quickly notes any problems.",
+   "category": "Studio Workflow",
+   "related_terms": [
+    "Ear fatigue",
+    "Reference track",
+    "Monitoring level",
+    "Fresh ears",
+    "Mixdown"
+   ],
+   "common_mistakes": [
+    "Staying at the desk on a phone instead of truly leaving the acoustic space, which does not reset your hearing.",
+    "Ignoring fatigue and pushing on, then making changes you regret once your ears are rested.",
+    "Forgetting that fresh ears last only a short time, so failing to note issues quickly on return."
+   ],
+   "scenario_contexts": [
+    "Pausing a long mix session to rest the ears before final balancing.",
+    "Stepping out after many tracking takes to reset before overdubs.",
+    "Leaving the control room to break tension during a difficult session."
+   ]
+  },
+  {
+   "id": "920d744f-541a-4a3a-9b31-5ff0da3c7a65",
+   "term": "Tempophone mode",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "In Logic Pro's Flex Time, the Tempophone algorithm time-stretches audio using grain-based (granular) processing that emulates the Springer Tempophone, a historical tape machine with a rotating head drum; it holds pitch while changing timing but adds pronounced mechanical, grainy artifacts.",
+   "plain_english": "Tempophone mode stretches audio into tiny grains, like chopping it into small pieces and spacing them out. It keeps the pitch but adds a rough, choppy, robot-like sound on purpose.",
+   "purpose_function": "It recreates the artifact-rich character of the mechanical Tempophone/Springer time-stretcher, giving mixers a deliberately lo-fi, granular time-stretch as a creative effect rather than a transparent one.",
+   "practical_application": "A technician selects the Tempophone algorithm on a Flex region, then adjusts the grain-size and crossfade parameters, when they want a gritty, granular stretch on vocals, pads, or sound design.",
+   "category": "Time-Stretch Algorithm",
+   "related_terms": [
+    "Speed mode",
+    "Flex Time",
+    "Granular synthesis",
+    "Time stretching",
+    "Tempo set"
+   ],
+   "common_mistakes": [
+    "Expecting clean, transparent stretching; Tempophone is designed to add granular artifacts.",
+    "Ignoring the grain-size and crossfade controls, which strongly shape the resulting sound.",
+    "Choosing it for routine tempo matching instead of the Rhythmic, Monophonic, or Polyphonic modes."
+   ],
+   "scenario_contexts": [
+    "Designing a gritty, mechanical texture from a sustained vocal note.",
+    "Stretching a pad far beyond its length for an ambient sound-design bed.",
+    "Adding vintage granular character to a sample as a creative effect."
+   ]
+  },
+  {
+   "id": "fe704389-053f-487e-95a3-ab0c60ce6b9e",
+   "term": "Transition matrix",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "In interactive game music, such as in Audiokinetic Wwise, the transition matrix is a grid inside a music switch container in which each row is a possible source (currently playing) music object and each column a destination (next) music object; every cell defines the rules for moving between that source-destination pair.",
+   "plain_english": "A transition matrix is a grid that tells game music how to move from one piece to another. Each box sets the rules for going from the music playing now to the music that plays next.",
+   "purpose_function": "It lets a sound designer control musical transitions between game states smoothly, setting exit and entry points, fades, and optional bridging segments so the score changes without jarring the player.",
+   "practical_application": "A game-audio implementer fills the matrix cells to choose where the current cue exits (immediately, on the next bar, or at an exit cue), which transition segment plays, and where the next cue enters, then tests it in-game.",
+   "category": "Interactive Music",
+   "related_terms": [
+    "Transition segment",
+    "Stealth music",
+    "Victory music",
+    "Stinger",
+    "Music switch container"
+   ],
+   "common_mistakes": [
+    "Assuming it is a mathematical Markov table; here it is a Wwise-style grid of musical transition rules.",
+    "Leaving cells at abrupt defaults, so the music cuts harshly between states.",
+    "Forgetting to set entry and exit cues, which breaks musical timing during transitions."
+   ],
+   "scenario_contexts": [
+    "Moving smoothly from exploration to combat music when an enemy appears.",
+    "Bridging two cues with a short transition segment on a beat boundary.",
+    "Returning to calm music with a musical fade after a fight ends."
+   ]
+  },
+  {
+   "id": "cef9722a-a9a6-45a8-91a3-19115541c891",
+   "term": "Victory music",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "Victory music is a short, triumphant cue, often a fanfare or upbeat stinger, played to mark a win, level completion, boss defeat, or successful outcome in games, film, sports, and other media.",
+   "plain_english": "Victory music is the happy, triumphant music that plays when you win or finish something, like a level in a game. It tells you that you succeeded.",
+   "purpose_function": "It rewards and signals success to the audience or player, providing clear emotional payoff and closure at the end of a challenge.",
+   "practical_application": "A game-audio implementer triggers a victory stinger when a win condition is met, ducking or stopping the current music so the fanfare lands cleanly.",
+   "category": "Score Cue Type",
+   "related_terms": [
+    "Suspense music",
+    "Stealth music",
+    "Stinger",
+    "Transition matrix",
+    "Underscore"
+   ],
+   "common_mistakes": [
+    "Letting the previous cue clash with the victory stinger instead of ducking or stopping it.",
+    "Making the cue too long, so it drags past the moment of triumph.",
+    "Reusing the same victory cue so often that it loses its impact."
+   ],
+   "scenario_contexts": [
+    "Playing a fanfare when the player defeats a boss.",
+    "Marking level completion in a mobile game.",
+    "Underscoring a team's win in a sports broadcast."
+   ]
+  },
+  {
+   "id": "116f1f52-a188-45f1-91f9-a243fe251e2b",
+   "term": "Far binaural setting",
+   "topic": "Mastering Fundamentals & Chain",
+   "difficulty": "intermediate",
+   "definition": "In the Dolby Atmos binaural render mode, Far is the setting that renders an object or bed with the greatest amount of binaural (HRTF-based) processing, so it is perceived as the most distant from the listener when the mix is folded down to a binaural headphone stream.",
+   "plain_english": "The Far setting makes a sound feel far away from you when you listen on headphones. It adds the most space processing so the sound seems distant.",
+   "purpose_function": "It lets the mixer assign a distant spatial impression to specific objects in a binaural headphone render, adding depth and separation between near and far sounds.",
+   "practical_application": "In the Dolby Atmos Renderer, a mixer sets ambience, reverb returns, or background elements to Far so they sit back in the binaural image while close elements stay nearer.",
+   "category": "Binaural Render Mode",
+   "related_terms": [
+    "Near binaural setting",
+    "Mid binaural setting",
+    "Binaural render mode",
+    "HRTF",
+    "Dolby Atmos"
+   ],
+   "common_mistakes": [
+    "Assuming Far changes level or panning; it only sets the perceived binaural distance for the headphone folddown.",
+    "Expecting the setting to affect the loudspeaker (multichannel) render, when it applies to the binaural stream.",
+    "Forgetting that binaural render mode is set per object and is not automatable during the mix."
+   ],
+   "scenario_contexts": [
+    "Placing reverb and ambience beds far back in a binaural music mix.",
+    "Pushing crowd or room tone into the distance on a headphone render.",
+    "Contrasting a close lead vocal (Near) against distant instruments (Far)."
+   ]
+  },
+  {
+   "id": "0a012a67-197e-4b04-abb0-8087d16126c8",
+   "term": "Featured-score mix",
+   "topic": "Mastering Fundamentals & Chain",
+   "difficulty": "beginner",
+   "definition": "A featured-score mix is a version of the score mix in which the music is brought forward as a featured, foreground element of the soundtrack, mixed to sit prominently rather than as subtle background underscore, for moments or deliverables where the score is meant to be the focus.",
+   "plain_english": "A featured-score mix is a version where the music is turned up front and center, not kept quietly in the background. It is used when the score is meant to stand out.",
+   "purpose_function": "It gives the dub or picture editor a version with the score foregrounded, so music-led moments land with full impact without rebalancing from scratch.",
+   "practical_application": "A scoring mixer supplies a featured-score mix for montage or music-driven sequences, where the re-recording mixer wants the score prominent over reduced dialogue and effects.",
+   "category": "Score Deliverable",
+   "related_terms": [
+    "Full score mix",
+    "Music stem",
+    "Underscore",
+    "Music-only master",
+    "Theatrical printmaster"
+   ],
+   "common_mistakes": [
+    "Confusing a featured-score mix (score foregrounded) with a full score mix (all elements combined at standard balance).",
+    "Pushing the score so far forward that it buries essential dialogue.",
+    "Assuming every scene wants a featured balance, when most underscore should sit under dialogue."
+   ],
+   "scenario_contexts": [
+    "Mixing a music-led montage where the score carries the scene.",
+    "Providing a score-forward version for a trailer or promo.",
+    "Featuring the main theme prominently during an emotional climax."
+   ]
+  },
+  {
+   "id": "c508a9da-73fc-4ac2-8b5b-7113941ef015",
+   "term": "Full score mix",
+   "topic": "Mastering Fundamentals & Chain",
+   "difficulty": "beginner",
+   "definition": "A full score mix is the complete, balanced mix of a musical score or cue containing all of its instrument groups together (for example strings, brass, percussion, choir, and soloists), as opposed to individual stems or reduced alternate versions.",
+   "plain_english": "A full score mix is the whole piece of music mixed together with every instrument included. It is the complete version, not a stripped-down one.",
+   "purpose_function": "It serves as the primary, reference version of the music for the dub or final mix, giving editors and re-recording mixers the composer's intended balance in a single stereo or multichannel file.",
+   "practical_application": "A composer or scoring mixer delivers the full score mix alongside stems and alternate mixes, and the re-recording mixer places it under picture, adjusting level against dialogue and effects.",
+   "category": "Score Deliverable",
+   "related_terms": [
+    "Featured-score mix",
+    "Music stem",
+    "Music-only master",
+    "Theatrical printmaster",
+    "Stem"
+   ],
+   "common_mistakes": [
+    "Confusing the full score mix (everything combined) with individual score stems (separate element groups).",
+    "Delivering only the full mix when the dub also needs stems and alternates for flexibility.",
+    "Assuming the full-mix level is final, when it is still balanced against dialogue and effects at the dub."
+   ],
+   "scenario_contexts": [
+    "Delivering the composer's complete cue for the final dub.",
+    "Referencing the intended balance before rebalancing stems.",
+    "Supplying a full mix for a soundtrack album master."
+   ]
+  },
+  {
+   "id": "d5bde576-7fb9-4c30-9314-9616303014f0",
+   "term": "Mid binaural setting",
+   "topic": "Mastering Fundamentals & Chain",
+   "difficulty": "intermediate",
+   "definition": "In the Dolby Atmos binaural render mode, Mid is the middle setting between Near and Far: it renders an object or bed with a moderate amount of binaural (HRTF-based) processing, giving a medium perceived distance from the listener in the binaural headphone folddown.",
+   "plain_english": "The Mid setting makes a sound feel a medium distance away on headphones, not right next to you and not far off. It adds a middle amount of space processing.",
+   "purpose_function": "It offers an intermediate distance option so the mixer can place elements between the close Near sound and the distant Far sound in the binaural image.",
+   "practical_application": "In the Dolby Atmos Renderer, a mixer assigns Mid to supporting instruments or backing elements that should sit behind the lead but in front of far ambience in the headphone render.",
+   "category": "Binaural Render Mode",
+   "related_terms": [
+    "Near binaural setting",
+    "Far binaural setting",
+    "Binaural render mode",
+    "HRTF",
+    "Dolby Atmos"
+   ],
+   "common_mistakes": [
+    "Thinking Mid is a level or pan control rather than a perceived-distance setting for headphones.",
+    "Expecting it to affect the loudspeaker render, when it applies to the binaural folddown.",
+    "Using one distance for everything, which loses the depth that Near/Mid/Far contrast provides."
+   ],
+   "scenario_contexts": [
+    "Placing rhythm instruments at a middle depth behind the lead vocal.",
+    "Giving backing vocals a moderate distance in a binaural music mix.",
+    "Balancing depth across a mix using Near, Mid, and Far together."
+   ]
+  },
+  {
+   "id": "ea44279a-5a8b-4f29-bdd0-970ca90a9860",
+   "term": "Near binaural setting",
+   "topic": "Mastering Fundamentals & Chain",
+   "difficulty": "intermediate",
+   "definition": "In the Dolby Atmos binaural render mode, Near is the setting that renders an object or bed with the least amount of binaural (HRTF-based) processing, so it is perceived as the closest to the listener in the binaural headphone folddown.",
+   "plain_english": "The Near setting makes a sound feel close to you on headphones. It uses the least space processing, so the sound seems right up front.",
+   "purpose_function": "It lets the mixer keep chosen objects intimate and up-front in a binaural render, which helps lead elements stay clear and present.",
+   "practical_application": "In the Dolby Atmos Renderer, a mixer sets lead vocals or close instruments to Near so they stay forward in the binaural image, contrasted against Mid and Far elements.",
+   "category": "Binaural Render Mode",
+   "related_terms": [
+    "Mid binaural setting",
+    "Far binaural setting",
+    "Binaural render mode",
+    "HRTF",
+    "Dolby Atmos"
+   ],
+   "common_mistakes": [
+    "Assuming Near boosts level; it sets perceived closeness for the binaural render, not gain.",
+    "Expecting it to change the loudspeaker render rather than the headphone folddown.",
+    "Setting everything to Near, which flattens depth and crowds the image."
+   ],
+   "scenario_contexts": [
+    "Keeping a lead vocal close and present in a binaural music mix.",
+    "Placing a narrator up front on a headphone render.",
+    "Contrasting a Near lead against Far ambience for depth."
+   ]
+  },
+  {
+   "id": "ced5b08b-055a-44dd-bd05-8cb2df985ec8",
+   "term": "Cone attenuation",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "In 3D and game audio, the reduction in a directional sound source's gain applied as the listener moves off the source's projection axis: full gain applies within the inner cone angle, gain is interpolated across the transition zone between the inner and outer cone angles, and the source drops to a set outer-cone gain factor beyond the outer cone angle.",
+   "plain_english": "A way to make a sound quieter when you are off to the side of what makes it. A sound source can aim like a flashlight beam. You hear it at full volume in the beam, and it fades as you step out of it.",
+   "purpose_function": "It models the directivity of real sources such as a speaking mouth, a horn, or a TV, so a 3D sound softens when the listener is off-axis, adding realism and useful spatial cues to an interactive scene.",
+   "practical_application": "A game-audio designer sets a source's inner cone angle, outer cone angle, and outer-cone gain in middleware or a game engine (Wwise, FMOD, Unreal, or OpenAL) so a directional emitter quiets down as the player moves out of its cone.",
+   "category": "Spatial Audio",
+   "related_terms": [
+    "Falloff distance",
+    "Emitter position",
+    "Attenuation curve",
+    "Far-field spatialization",
+    "Audio middleware",
+    "Doppler effect simulation"
+   ],
+   "common_mistakes": [
+    "Confusing cone attenuation with distance falloff; the cone sets level by the listener's angle to the source, while falloff sets level by distance.",
+    "Leaving the outer-cone gain at zero by accident, so the source goes fully silent the instant the listener steps outside the cone.",
+    "Setting the inner and outer cone angles equal, which removes the smooth transition zone and causes an abrupt level jump off-axis."
+   ],
+   "scenario_contexts": [
+    "Making an NPC's voice quieter when the player walks around behind them.",
+    "Aiming a loudspeaker or television emitter in a level so it projects sound forward.",
+    "Tuning a directional machine or vent so it only reads loud when faced head-on."
+   ]
+  },
+  {
+   "id": "1aeae003-1e78-4ae3-8496-e05cbe33ebf1",
+   "term": "Exploration-state parameter",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "In interactive game audio, a game-sync value (a Wwise State, a switch, or an engine parameter) that flags the player as being in an exploration, non-combat context, used by the audio system to select or blend the ambience and adaptive-music layers appropriate to that state.",
+   "plain_english": "A setting that tells the game you are just exploring, not fighting. The game reads it and plays calmer background music. When the state changes, the music changes to match what you do.",
+   "purpose_function": "It lets the soundtrack respond to gameplay by tying a named game state to the right music and ambience, so the mood shifts automatically as the player moves between exploring and other situations such as combat.",
+   "practical_application": "A game-audio designer maps the game's exploration state to a State or parameter in middleware such as Wwise or FMOD, then routes it to a music switch container so exploration music plays and transitions out when combat begins.",
+   "category": "Game Audio",
+   "related_terms": [
+    "Combat-state parameter",
+    "Event-driven audio",
+    "Conditional playback",
+    "Game audio",
+    "Audio middleware",
+    "Adaptive music"
+   ],
+   "common_mistakes": [
+    "Thinking the parameter itself makes sound; it only reports the game state, and the audio system must be set up to react to it.",
+    "Forgetting to define musical transitions, so the switch from exploration to combat music cuts abruptly instead of blending.",
+    "Confusing a discrete state (a game context like exploration) with a continuous parameter such as distance or intensity."
+   ],
+   "scenario_contexts": [
+    "Playing calm exploration music that swells into combat music when enemies appear.",
+    "Switching ambient beds as the player leaves a safe town and enters open wilderness.",
+    "Debugging why exploration music keeps playing after a fight has already started."
+   ]
+  },
+  {
+   "id": "3eba25e6-a019-4e1d-a5e7-d26035458016",
+   "term": "Hand synchronization",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "In Foley, the practice of performing and editing hand-related sounds — grabs, pats, claps and prop contacts — so they line up precisely, frame by frame, with the actor's hand movements on screen.",
+   "plain_english": "It means making the sound of hands match what the hands do on screen. If the actor claps, the clap sound must land at the exact same moment.",
+   "purpose_function": "It restores believable, sync-accurate hand sounds that the production microphone missed or captured poorly, keeping what the audience sees and hears in agreement.",
+   "practical_application": "A Foley artist loops the picture and re-performs each hand action to a monitor, then the Foley editor nudges the takes in the DAW until every contact hits its frame.",
+   "category": "Foley",
+   "related_terms": [
+    "Hand contact",
+    "Hand slap",
+    "Picture synchronization",
+    "Hit point",
+    "Heel strike"
+   ],
+   "common_mistakes": [
+    "Treating rough sync as good enough — hand sounds even a frame or two off read as fake to the audience.",
+    "Performing the motion without watching the picture, so the rhythm of the sounds drifts from the on-screen action.",
+    "Doubling hand sounds that already exist in usable production audio."
+   ],
+   "scenario_contexts": [
+    "Adding clap and handshake sounds to a dialogue scene shot on a noisy location.",
+    "Re-syncing hand pats and applause for a crowd insert.",
+    "Matching prop-handling hand contacts in an ADR-heavy scene where production audio was discarded."
+   ]
+  },
+  {
+   "id": "634e9e21-d40c-4fd9-a6ec-dc1d2b764f3f",
+   "term": "Headphone translation room",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "A dedicated listening space used to audition a finished mix over reference headphones, confirming that its balance, dialogue clarity and spatial imaging translate for the large audience that listens on headphones and earbuds.",
+   "plain_english": "It is a room set up to check how a mix sounds through headphones. Many people watch shows with earbuds, so mixers make sure it still sounds right there.",
+   "purpose_function": "It exists because a mix balanced on room monitors can shift on headphones, so a controlled headphone check protects dialogue and spatial cues for headphone listeners.",
+   "practical_application": "A re-recording mixer takes a near-final mix into this space, plays it on calibrated headphones, and flags any dialogue, bass or panning that only works on the main monitors.",
+   "category": "Post Facilities",
+   "related_terms": [
+    "Immersive-audio mixing room",
+    "Screening room",
+    "Picture monitor",
+    "Post-production suite",
+    "Post-production facility"
+   ],
+   "common_mistakes": [
+    "Assuming a mix that sounds great on studio monitors will automatically translate to headphones.",
+    "Judging headphone translation on random consumer earbuds instead of a known reference set.",
+    "Monitoring too loud on headphones, which hides balance problems that appear at normal listening levels."
+   ],
+   "scenario_contexts": [
+    "Checking a streaming series mix that most viewers will hear on earbuds.",
+    "Confirming a binaural or immersive headphone render before delivery.",
+    "Spotting a boosted low end that only becomes obvious on closed-back headphones."
+   ]
+  },
+  {
+   "id": "9b833db6-04ac-4844-95ec-6bd248452b7f",
+   "term": "Health parameter",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "A game parameter (real-time parameter control) that reports a character's or object's remaining health to the audio engine, letting the game's sound change continuously as that health value rises or falls.",
+   "plain_english": "It is a number from the game that tells the sound system how healthy a character is. As health drops, the audio can change, like a heartbeat that gets louder when you are hurt.",
+   "purpose_function": "It links game state to sound so audio can react to health in real time — muffling the mix, adding a heartbeat, or shifting the music when a player nears death.",
+   "practical_application": "A game-audio implementer maps the health parameter to a low-pass filter and a heartbeat loop in Wwise or FMOD, so the mix darkens and the pulse rises as health falls toward zero.",
+   "category": "Interactive Audio",
+   "related_terms": [
+    "Parameter-driven audio",
+    "Positional audio",
+    "Procedural ambience",
+    "Playback behavior",
+    "Physics-driven sound"
+   ],
+   "common_mistakes": [
+    "Confusing the health parameter (a game value) with the audio effects it drives, such as the heartbeat itself.",
+    "Mapping health to sound with an abrupt curve, so the audio jumps instead of changing smoothly.",
+    "Updating the parameter too infrequently, causing audible stepping as health changes."
+   ],
+   "scenario_contexts": [
+    "Adding a rising heartbeat as a player's health drops in a shooter.",
+    "Muffling and desaturating the mix during a low-health near-death state.",
+    "Switching music intensity when a boss's health crosses a threshold."
+   ]
+  },
+  {
+   "id": "03d52bdc-e0fd-4487-9eee-cd697d3c7de0",
+   "term": "Impact system",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": "beginner",
+   "definition": "A game-audio system that generates collision and impact sounds at runtime by taking physics data — such as material type, velocity and mass — and selecting or shaping the appropriate hit, thud or crash.",
+   "plain_english": "It is a set-up that makes crash and bump sounds by itself when things collide in a game. It picks the right sound based on what hit what and how hard.",
+   "purpose_function": "It exists so that unpredictable, physics-driven collisions still produce believable, varied impact sounds without a sound designer hand-placing every hit.",
+   "practical_application": "An implementer connects the physics engine's collision events to sound containers keyed by material and velocity, so a light tap and a heavy crash draw from different samples.",
+   "category": "Interactive Audio",
+   "related_terms": [
+    "Physics-driven sound",
+    "Impact tail",
+    "Parameter-driven audio",
+    "Positional audio",
+    "Procedural ambience"
+   ],
+   "common_mistakes": [
+    "Triggering one impact sound regardless of velocity, so gentle and violent hits sound identical.",
+    "Not limiting simultaneous impacts, so a pile-up of collisions creates a harsh, distorted burst.",
+    "Ignoring material data, so a metal-on-stone hit plays a wood sound."
+   ],
+   "scenario_contexts": [
+    "Generating debris and impact sounds as a physics-driven structure collapses.",
+    "Playing correct hit sounds when objects of different materials collide in a sandbox game.",
+    "Scaling impact loudness with collision force in a racing or combat title."
+   ]
+  },
+  {
+   "id": "933bb6a0-7810-491c-820d-2205668f3e86",
+   "term": "Layer container",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": "beginner",
+   "definition": "A container in game-audio middleware that holds several child sounds and plays them together as simultaneous layers, so a single event outputs a blended, composite sound rather than one file.",
+   "plain_english": "It is a holder that plays several sounds at once, stacked on top of each other. It is like layering a few tracks so they blend into one bigger sound.",
+   "purpose_function": "It lets designers build one rich sound from stacked elements — such as a low rumble, a mid body and a high detail — and control or crossfade those layers together.",
+   "practical_application": "A designer drops the sub, body and detail layers of an explosion into a layer container so they always trigger together and can be blended with one game parameter.",
+   "category": "Interactive Audio",
+   "related_terms": [
+    "Sequence container",
+    "Playlist container",
+    "Hybrid layering",
+    "Parameter-driven audio",
+    "Sound asset"
+   ],
+   "common_mistakes": [
+    "Confusing a layer container (plays sounds together) with a sequence or random container (plays sounds one at a time).",
+    "Stacking too many layers, wasting voices and muddying the sound.",
+    "Leaving layers phase-misaligned, so combining them thins the sound instead of thickening it."
+   ],
+   "scenario_contexts": [
+    "Building a layered weapon or explosion sound from separate low, mid and high elements.",
+    "Crossfading engine layers with RPM using one game parameter.",
+    "Combining a base ambience with intermittent detail layers for a location."
+   ]
+  },
+  {
+   "id": "37be77ba-a6ab-4a5a-b957-da33dfb4beae",
+   "term": "Noise transition",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "A transitional sound-design element built largely from filtered or swept noise — such as a riser, whoosh or sweep — used to bridge two scenes, shots or sections and carry the ear across the cut.",
+   "plain_english": "It is a whoosh or sweep sound made from noise that carries the viewer from one scene to the next. It smooths over the jump between shots.",
+   "purpose_function": "It smooths and energises edits by giving the audience an audible bridge across a picture change, hiding the seam and building or releasing tension.",
+   "practical_application": "An editor places a rising noise sweep a few frames before a hard cut so its peak lands on the new shot, gluing the transition together.",
+   "category": "Sound Design",
+   "related_terms": [
+    "Hard sound effect",
+    "Hybrid sound design",
+    "Picture-change conform",
+    "Hit point",
+    "Impact tail"
+   ],
+   "common_mistakes": [
+    "Making the transition so loud it overwhelms the dialogue or music around the cut.",
+    "Peaking the sweep at the wrong moment, so it fights rather than supports the picture change.",
+    "Overusing noise whooshes until every edit sounds the same."
+   ],
+   "scenario_contexts": [
+    "Bridging a flashback with a filtered noise sweep in a trailer.",
+    "Whooshing between locations in a fast montage.",
+    "Adding a riser into a reveal or title card."
+   ]
+  },
+  {
+   "id": "b135965f-78ef-4fac-9217-389ffafa1964",
+   "term": "Object pickup",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "A Foley or sound-effect element covering the sound of a character picking up or setting down a handled object — the contact, grip and material movement of the prop as it leaves or meets a surface.",
+   "plain_english": "It is the sound of someone picking something up or putting it down. Think of the small clink and rustle when a hand grabs a cup off a table.",
+   "purpose_function": "It adds tactile realism to on-screen handling, telling the audience an object has weight and material even when the production mic missed the contact.",
+   "practical_application": "A Foley artist handles a matching prop in sync with the picture, capturing the pick-up and set-down contacts that the editor then places to frame.",
+   "category": "Foley",
+   "related_terms": [
+    "Object placement",
+    "Hand contact",
+    "Paper handling",
+    "Key jingle",
+    "Pocket movement"
+   ],
+   "common_mistakes": [
+    "Using a generic clink for every object instead of matching the prop's real material and weight.",
+    "Placing the pick-up sound off the frame where the hand actually grips the object.",
+    "Forgetting the set-down sound, so objects seem to vanish rather than be placed."
+   ],
+   "scenario_contexts": [
+    "Adding the sound of a character picking up a coffee mug.",
+    "Covering a character lifting and holstering a prop weapon.",
+    "Selling the weight of a heavy box as it is lifted off the floor."
+   ]
+  },
+  {
+   "id": "cf3b6df7-e3ea-47c8-9aca-6920ec784691",
+   "term": "Paper handling",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "A Foley category covering the sounds of manipulating paper materials — rustling, folding, crumpling, sorting and page movement — performed to match on-screen handling of documents, books, letters or packaging.",
+   "plain_english": "It is the rustle and crinkle sound of someone handling paper. Like the noise a letter makes when it is unfolded or a stack of pages is shuffled.",
+   "purpose_function": "It gives paper actions audible texture and weight, making documents, books and letters feel real and reinforcing the pace of the on-screen handling.",
+   "practical_application": "A Foley artist rustles and folds matching paper stock in sync with the picture, choosing weight and stiffness to suit the document shown.",
+   "category": "Foley",
+   "related_terms": [
+    "Page turn",
+    "Object pickup",
+    "Plastic movement",
+    "Jacket movement",
+    "Hand contact"
+   ],
+   "common_mistakes": [
+    "Using the wrong paper weight, so a thin note sounds like heavy cardstock.",
+    "Over-performing rustles until routine handling sounds distractingly busy.",
+    "Letting the paper sound drift off sync with the visible page or fold."
+   ],
+   "scenario_contexts": [
+    "Covering a character reading and folding a letter.",
+    "Adding page rustles as someone flips through a report.",
+    "Selling the handling of a newspaper or map in a dialogue scene."
+   ]
+  },
+  {
+   "id": "23298695-4a13-4892-a927-67fc14d70482",
+   "term": "Plastic movement",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": "beginner",
+   "definition": "A Foley movement category covering the crinkle, creak and rustle of plastic materials — bags, packaging, rain gear, tarps and hard plastic props — performed to match on-screen handling or body movement.",
+   "plain_english": "It is the crinkle and creak sound of plastic being moved. Like the noise a shopping bag or a raincoat makes when someone shifts around.",
+   "purpose_function": "It adds material-specific texture to movement, distinguishing plastic from cloth or leather and reinforcing what a character is wearing or handling.",
+   "practical_application": "A Foley artist manipulates matching plastic — a bag, a tarp or a raincoat — in sync with the actor, layering it under footsteps or handling as needed.",
+   "category": "Foley",
+   "related_terms": [
+    "Jacket movement",
+    "Pocket movement",
+    "Paper handling",
+    "Jewelry movement",
+    "Object pickup"
+   ],
+   "common_mistakes": [
+    "Choosing plastic with the wrong stiffness, so soft film sounds like a rigid crate.",
+    "Performing plastic crinkle louder than the scene warrants, pulling focus from dialogue.",
+    "Reusing the same plastic rustle for every material instead of matching the prop."
+   ],
+   "scenario_contexts": [
+    "Adding raincoat crinkle to a character walking in a storm.",
+    "Covering the handling of a plastic shopping bag.",
+    "Layering tarp movement over a construction-site scene."
+   ]
+  }
+ ]
+}

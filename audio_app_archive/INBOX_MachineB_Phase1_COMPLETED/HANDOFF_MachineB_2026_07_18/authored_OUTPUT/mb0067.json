@@ -1,0 +1,231 @@
+{
+ "batch": 67,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "3856554a-3087-4b71-90b7-4c43facbc8b2",
+   "term": "String layering",
+   "fields": {
+    "definition": "An arrangement and production technique in which multiple string parts or string recordings are stacked together, such as separate violin, viola, and cello lines or several passes of the same part, to build a fuller and richer string sound. The layers may be real players, sampled libraries, or synthesized strings blended into one section.",
+    "plain_english": "It means stacking several string parts on top of each other to make one big, full string sound. It works like many singers on the same tune instead of just one.",
+    "purpose_function": "It thickens and enriches a string section so it sounds larger and more emotional than a single part, and it fills out the arrangement behind the main instruments. Layering also lets a producer combine real and sampled strings to get both realism and size.",
+    "practical_application": "A technician records or programs several string lines, tunes and times them together, then balances their levels and panning so the layers blend into one cohesive section without sounding cluttered.",
+    "category": "Arrangement Layering",
+    "related_terms": ["Octave layering", "Synthesizer layering", "Doubling", "Sustain reinforcement", "Panning"],
+    "common_mistakes": [
+     "Stacking so many string layers that they mask the vocals and mid-range instruments in the mix.",
+     "Leaving layered parts slightly out of tune or out of time, which makes the section sound smeared instead of full.",
+     "Piling on layers to fix a weak arrangement instead of choosing parts that actually complement each other."
+    ],
+    "scenario_contexts": [
+     "Building a lush string pad under a ballad chorus by combining sampled strings with a live quartet.",
+     "Layering octave copies of a cello line to give a film cue more weight and depth.",
+     "Blending synthesized strings with recorded strings so a small session sounds like a larger ensemble."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fb65f643-3f5a-4fd8-b4f8-838a8dd24d84",
+   "term": "Subkick processing",
+   "fields": {
+    "definition": "The EQ, compression, gating, and phase alignment applied to a subkick signal, which is the output of a large-diaphragm transducer (often a repurposed loudspeaker such as a Yamaha SubKick) placed near the kick drum to capture very low sub-bass energy. It is processed and blended with the close kick mic to add weight and low-end extension.",
+    "plain_english": "A subkick is a big speaker used like a mic to catch the deep low boom of a kick drum. Subkick processing is the EQ and other treatment on that signal, mixed under the normal kick mic to add extra low-end power.",
+    "purpose_function": "It captures and shapes the very low frequencies a normal kick mic can miss, giving the drum extra depth and body in the mix. Careful processing and phase alignment keep this sub layer tight and in step with the main kick so it adds power without muddiness.",
+    "practical_application": "A technician high-cut filters the subkick to keep only the lows, checks its phase against the close kick mic, and blends a controlled amount underneath to reinforce the bottom end of the drum.",
+    "category": "Drum Processing",
+    "related_terms": ["Kick drum miking", "Phase alignment", "Low-pass filter", "Parallel compression", "Gating"],
+    "common_mistakes": [
+     "Blending the subkick without checking polarity, so it fights the close kick mic and thins out the low end.",
+     "Leaving the subkick full-range instead of filtering it, which adds boxy mid-range and clutter.",
+     "Pushing the subkick too loud so the kick becomes boomy and swamps the bass guitar."
+    ],
+    "scenario_contexts": [
+     "Adding weight to a rock kick drum by blending a filtered subkick under the beater mic.",
+     "Checking and flipping polarity between the subkick and inside kick mic to keep the low end solid.",
+     "Reinforcing sub energy on a metal kick so it translates on large club systems."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3cfea395-86fc-420e-8fcd-10fd269da076",
+   "term": "Supporting motif",
+   "fields": {
+    "definition": "A short, recurring melodic or rhythmic figure that reinforces the main theme of an arrangement without competing with it, often placed in a secondary instrument or lower in the mix. It adds interest and continuity while leaving the lead line as the focus.",
+    "plain_english": "It is a small musical phrase that repeats to back up the main tune. It supports the melody the way a background chant supports a lead singer, without stealing attention.",
+    "purpose_function": "It gives an arrangement extra depth and forward motion by echoing or answering the main theme, tying sections together. Because it sits behind the lead, it keeps the listener engaged without cluttering the focus of the song.",
+    "practical_application": "An arranger writes a simple repeating figure for a guitar, synth, or string part, then places it lower in the mix and in a different register so it supports rather than masks the lead melody.",
+    "category": "Arrangement",
+    "related_terms": ["Counter-melody", "Hook", "Ostinato", "Call and response", "Sustain reinforcement"],
+    "common_mistakes": [
+     "Writing a supporting motif that is as loud or busy as the lead, so the two parts fight for attention.",
+     "Placing the motif in the same register as the vocal, which masks both parts.",
+     "Repeating the figure so often with no variation that it becomes tiring instead of supportive."
+    ],
+    "scenario_contexts": [
+     "Adding a repeating guitar figure under the verses to keep energy moving beneath the vocal.",
+     "Writing a short synth phrase that answers the chorus melody in the gaps between vocal lines.",
+     "Using a low string motif to tie the intro, verse, and bridge of a song together."
+    ]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "03e11e19-eab0-43b5-a535-28d11be6b16c",
+   "term": "Sustain reinforcement",
+   "fields": {
+    "definition": "Techniques used to extend or strengthen the sustained portion of a note or instrument, such as layering a pad or held part underneath, using compression to hold the tail up, or adding a sustaining effect. It fills the space between note attacks so a part rings out longer and more evenly.",
+    "plain_english": "It means making a note hold and ring out longer and steadier. You can do this by layering a held sound under it or using a compressor, like adding a soft pad behind a piano chord so it does not fade too fast.",
+    "purpose_function": "It keeps a part from dropping out or feeling thin between hits, giving the arrangement a smoother and more connected sound. Reinforcing sustain helps short, plucky, or decaying instruments sit fuller in a mix.",
+    "practical_application": "A technician layers a quiet pad or long sample under a sparse part, or uses compression and reverb, so the sustained portion of the sound holds up and the gaps between notes feel filled.",
+    "category": "Arrangement Layering",
+    "related_terms": ["Pad", "Compression", "String layering", "Reverb", "Supporting motif"],
+    "common_mistakes": [
+     "Adding so much sustain or reverb that note articulation and rhythm get lost.",
+     "Layering a sustaining pad that clashes in pitch or tuning with the original part.",
+     "Over-compressing to force sustain, which pulls up noise and dulls the natural dynamics."
+    ],
+    "scenario_contexts": [
+     "Layering a soft synth pad under a staccato piano part so the chords do not feel empty between hits.",
+     "Using compression on a clean guitar so its notes ring out longer and more evenly.",
+     "Adding a held string layer under a plucked instrument to smooth over the gaps in an arrangement."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1c8235c7-48db-4fb4-a75e-e7dfcad164b4",
+   "term": "Synth layering",
+   "fields": {
+    "definition": "The production technique of stacking two or more synthesizer sounds or patches together to create one richer, fuller composite tone. Layers are often chosen to cover different frequency ranges, such as a sub layer, a body layer, and a bright top layer, and are blended and tuned to sit as a single sound.",
+    "plain_english": "It means stacking two or more synth sounds to make one bigger sound. Each layer covers a different job, like one for the deep lows and one for the bright top, blended together like ingredients in a recipe.",
+    "purpose_function": "It builds a wider and more powerful synth tone than a single patch can give, letting a producer combine the best parts of several sounds. Splitting layers by frequency range also keeps the composite clear instead of muddy.",
+    "practical_application": "A technician stacks a sub-bass patch, a mid-body patch, and a bright layer, matches their tuning and timing, then filters and balances each so they fuse into one sound rather than clashing.",
+    "category": "Arrangement Layering",
+    "related_terms": ["Synthesizer layering", "Octave layering", "String layering", "Synthesizer subgroup", "Filtering"],
+    "common_mistakes": [
+     "Stacking layers that all occupy the same frequency range, which builds mud instead of richness.",
+     "Leaving layers slightly detuned or out of time so the combined sound smears or beats unpleasantly.",
+     "Using too many layers, making the sound huge in solo but impossible to fit in the full mix."
+    ],
+    "scenario_contexts": [
+     "Combining a sub patch and a bright saw patch to build one powerful lead sound.",
+     "Layering a warm pad under a plucky synth so a hook has both attack and body.",
+     "Splitting a big synth sound across sub, mid, and top layers to keep it clear in a busy mix."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "917c8272-ef6f-4f43-bb75-afdfcc6109aa",
+   "term": "Synth-bass mixing",
+   "fields": {
+    "definition": "The process of balancing and processing a synthesizer bass part so it sits properly in a mix, covering EQ, compression, level, and its relationship to the kick drum and other low-end sources. It focuses on controlling the low frequencies so the synth bass is powerful yet clear and translates across playback systems.",
+    "plain_english": "It is the work of getting a synth bass to sit right in a song. You use EQ, compression, and level so it feels powerful but stays clear, and share the low space with the kick drum instead of fighting it.",
+    "purpose_function": "It makes the synth bass anchor the low end with a solid, even level while staying out of the way of the kick drum. Good processing also helps the bass sound consistent on big speakers, earbuds, and phone speakers alike.",
+    "practical_application": "A technician EQs and compresses the synth bass, carves space so it and the kick each own part of the low end, and checks the mix on several systems to confirm the low end holds up.",
+    "category": "Mixing Technique",
+    "related_terms": ["Synthesizer mixing", "Sidechain compression", "Low-pass filter", "Kick drum miking", "Subkick processing"],
+    "common_mistakes": [
+     "Letting the synth bass and kick occupy the exact same frequencies so the low end turns muddy and weak.",
+     "Mixing the bass only on one set of speakers, so it disappears or booms on other systems.",
+     "Adding heavy sub without checking mono, causing the bass to vanish on club and phone speakers."
+    ],
+    "scenario_contexts": [
+     "Sidechaining a synth bass to the kick so both punch through cleanly in an electronic track.",
+     "EQing a synth bass to sit under a vocal and guitars without clouding the mix.",
+     "Checking a synth-bass mix on headphones, monitors, and a phone to confirm it translates."
+    ]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Sound on Sound technical articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "91d659ee-e5e4-4f4e-9d9a-5f3c0e71a860",
+   "term": "Synthesizer layering",
+   "fields": {
+    "definition": "The production technique of stacking two or more synthesizer sounds or patches into one composite tone that is fuller and richer than any single sound. Layers are commonly assigned to different frequency ranges and are tuned, timed, and filtered so they blend into a single perceived instrument.",
+    "plain_english": "It means playing several synth sounds together so they act as one bigger sound. Each layer does a different job, like the deep low, the middle body, and the bright top, mixed into one.",
+    "purpose_function": "It creates a larger, more complex synth tone than one patch could produce and lets a producer combine the strengths of several sounds. Dividing the layers by frequency keeps the result clear rather than cluttered.",
+    "practical_application": "A technician stacks patches such as a sub, a body, and a bright layer, matches their tuning and timing, then balances and filters each so they fuse into one cohesive sound.",
+    "category": "Arrangement Layering",
+    "related_terms": ["Synth layering", "Octave layering", "String layering", "Synthesizer subgroup", "Synthesizer mixing"],
+    "common_mistakes": [
+     "Layering patches that share the same frequency range, which builds mud instead of size.",
+     "Leaving the layers detuned or out of time so the combined sound smears.",
+     "Using too many layers, so the sound is huge alone but will not fit in the full mix."
+    ],
+    "scenario_contexts": [
+     "Stacking a sub patch, a saw body, and a bright top to build one wide lead sound.",
+     "Blending a warm pad with a sharp pluck so a hook has both punch and body.",
+     "Dividing a big synth across sub, mid, and top layers to keep it clear in a busy arrangement."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7696a1bc-369b-4381-9bc4-7810d52d4908",
+   "term": "Synthesizer mixing",
+   "fields": {
+    "definition": "The balancing and processing of synthesizer parts within a mix, using level, panning, EQ, compression, and effects so each synth occupies its own space and supports the arrangement. It addresses how synth sounds, which are often wide and full-range, fit alongside vocals, guitars, drums, and bass.",
+    "plain_english": "It is the work of fitting synth parts into a song. You use level, panning, EQ, and effects so each synth has its own space and does not cover the vocals or other instruments.",
+    "purpose_function": "It keeps rich, full-range synth sounds from masking each other and the rest of the band, so the mix stays clear and balanced. Careful processing lets synths add color and size without swamping the arrangement.",
+    "practical_application": "A technician EQs and pans each synth, controls its dynamics, and carves space around vocals and drums so the synth parts blend into the mix instead of dominating it.",
+    "category": "Mixing Technique",
+    "related_terms": ["Synth-bass mixing", "Synthesizer subgroup", "Equalization", "Panning", "Synthesizer layering"],
+    "common_mistakes": [
+     "Leaving wide, full-range synth patches unfiltered so they mask vocals and guitars.",
+     "Panning every synth to the center, which crowds the middle of the mix.",
+     "Judging synth levels in solo instead of against the full mix, so they end up too loud."
+    ],
+    "scenario_contexts": [
+     "EQing a lead synth to sit above the guitars while a pad fills the background.",
+     "Panning layered synths across the stereo field to open up space for the vocal.",
+     "Automating synth levels so they support the verse quietly and lift into the chorus."
+    ]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Sound on Sound technical articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "54bcc344-2ab6-4deb-baa0-438cc4188883",
+   "term": "Synthesizer subgroup",
+   "fields": {
+    "definition": "A subgroup or bus to which several synthesizer tracks are routed so they can be controlled and processed together as one unit. It allows shared level control, EQ, compression, or effects across all the grouped synths and simplifies balancing them against the rest of the mix.",
+    "plain_english": "It is one bus that several synth tracks feed into so you can treat them as a group. It works like a single fader and set of effects for all the synths at once, so you can adjust them together.",
+    "purpose_function": "It lets an engineer set the overall level and apply shared processing to a whole group of synths with one control instead of many. Grouping also helps glue the synths together and keeps the main mix session organized.",
+    "practical_application": "A technician routes all the synth tracks to a subgroup bus, then uses that bus fader to balance the synths against the band and adds bus compression or EQ to glue and shape them as a unit.",
+    "category": "Signal Routing",
+    "related_terms": ["Subgroup", "Bus", "Bus compression", "Synthesizer mixing", "Synth layering"],
+    "common_mistakes": [
+     "Routing synths to a subgroup but still adjusting each track's fader, losing the benefit of one shared control.",
+     "Applying heavy bus processing that suits some synths but crushes others in the group.",
+     "Forgetting that muting or automating the subgroup affects every synth routed to it at once."
+    ],
+    "scenario_contexts": [
+     "Routing all synth parts to one subgroup so a single fader rides them under the vocal.",
+     "Adding gentle bus compression on a synth subgroup to glue the layers into one texture.",
+     "Muting the synth subgroup in a breakdown to drop out every synth part together."
+    ]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

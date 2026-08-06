@@ -1,0 +1,119 @@
+{
+ "batch": 429,
+ "topic": "Live Sound — Crew Roles & Departments",
+ "authored": [
+  {
+   "id": "ba26d07e-6059-45b5-9d27-2b50961b7a67",
+   "term": "Crew chief",
+   "fields": {
+    "definition": "The lead technician who supervises a work crew or department during a live event's load-in, setup, show operation, and load-out, coordinating the crew's tasks, schedule, and safety while serving as the department's point of contact for the production manager and stage manager.",
+    "plain_english": "A crew chief is the boss of a small work team on a show. They plan what each person does, keep everyone on schedule, and make sure the work is done safely.",
+    "purpose_function": "The role gives each department a single accountable leader who directs the crew's work, keeps the schedule and safety plan on track, and provides a clear line of communication up to production management.",
+    "practical_application": "On a show day the crew chief assigns tasks at load-in, oversees rigging, staging, or audio setup, calls breaks, tracks progress against the schedule, and reports readiness to the production or stage manager.",
+    "category": "Crew Leadership",
+    "related_terms": ["Production manager", "Stage manager", "Stagehand", "Systems engineer", "Rigger", "Local crew"],
+    "common_mistakes": [
+     "Assuming the crew chief personally does all the technical work rather than directing and coordinating the crew.",
+     "Confusing the crew chief with the production manager; the crew chief leads one crew or department, while the production manager oversees the whole production.",
+     "UNSAFE: Treating the crew chief's safety oversight as optional and skipping crew briefings on rigging, fall protection, and manual handling before load-in."
+    ],
+    "scenario_contexts": [
+     "Leading a local stagehand crew through a festival stage load-in and changeover.",
+     "Directing the audio department's setup and reporting readiness to the production manager.",
+     "Overseeing a load-out so gear is safely struck, cased, and loaded on schedule."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "61652e70-ccb9-42a1-93c0-2d2d4cf67f81",
+   "term": "Guest engineer",
+   "fields": {
+    "definition": "A visiting mix engineer who travels with a performing act, or is brought in for a specific event, and mixes on the venue's provided sound system rather than being employed by the venue; also called a visiting or touring engineer.",
+    "plain_english": "A guest engineer is a sound mixer who comes in with the band instead of working for the venue. They mix the show on the venue gear that they did not set up.",
+    "purpose_function": "The role lets a touring act keep a consistent mix and a trusted engineer who knows the show, while still using whatever installed or supplied sound system each venue provides.",
+    "practical_application": "A guest engineer arrives at load-in, meets the house engineer, learns the venue's system, patch, and limits, then mixes front-of-house or monitors for their act through soundcheck and the show.",
+    "category": "Mix Engineers",
+    "related_terms": ["House engineer", "Front of house engineer", "Monitor engineer", "Systems engineer", "Tour manager", "Soundcheck"],
+    "common_mistakes": [
+     "Confusing the guest engineer with the house engineer; the guest travels with the act while the house engineer works for the venue.",
+     "Assuming the guest engineer is responsible for setting up or maintaining the venue system, which is the house engineer's or systems engineer's job.",
+     "UNSAFE: Driving an unfamiliar house PA past its rated limits or safe SPL exposure levels without checking the system's headroom, limiter settings, and the operator's own hearing protection."
+    ],
+    "scenario_contexts": [
+     "A touring band's engineer mixing front-of-house on a club's installed system.",
+     "Meeting the house engineer at load-in to review the patch and system limits.",
+     "Taking over the mix from the house engineer after the opening act's set."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ddb0d8fc-a69a-4d88-afc3-e175121e95dc",
+   "term": "House engineer",
+   "fields": {
+    "definition": "The audio engineer employed by or resident at a venue who operates and maintains the venue's installed sound system, mixes acts that arrive without their own engineer, and provides technical support and orientation to visiting guest engineers.",
+    "plain_english": "A house engineer works for the venue, not the band. They know the venue sound system, mix acts that have no engineer, and help visiting engineers use the gear.",
+    "purpose_function": "The role gives the venue an in-house expert who keeps the sound system working, ensures a reliable mix for every act, and helps touring engineers get up to speed quickly on the local rig.",
+    "practical_application": "A house engineer sets up and line-checks the venue PA, mixes opening or unrepresented acts, and walks guest engineers through the console, patch, and system limits at load-in.",
+    "category": "Mix Engineers",
+    "related_terms": ["Guest engineer", "Front of house engineer", "Monitor engineer", "Systems engineer", "Stage tech", "Load-in"],
+    "common_mistakes": [
+     "Confusing the house engineer with a touring or guest engineer; the house engineer is tied to the venue and its installed system.",
+     "Assuming the house engineer only mixes, when they also maintain, troubleshoot, and often manage the venue's audio inventory.",
+     "UNSAFE: Defeating protective measures such as system limiters or the correct power-up and power-down order to gain more level, risking driver damage and unsafe SPL for audience and crew."
+    ],
+    "scenario_contexts": [
+     "Mixing a local opening act that arrived without its own engineer.",
+     "Orienting a touring guest engineer to the venue's console and patch at load-in.",
+     "Troubleshooting a dead channel in the installed PA before doors."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8455d1e4-157b-49a0-8fb0-6eac38aae170",
+   "term": "Stage tech",
+   "fields": {
+    "definition": "A technician assigned to the stage who sets up, maintains, and operates onstage equipment during a live event — running and patching microphone and instrument lines, positioning mics, monitors, and backline, managing stage cabling, and assisting performers and the monitor engineer through setup, changeovers, and the performance.",
+    "plain_english": "A stage tech is the crew member who works up on the stage. They set up mics, monitors, and cables, and help the band and the monitor mixer during the show.",
+    "purpose_function": "The role keeps the stage set up correctly and running smoothly so performers have working mics, monitors, and instruments, and so changeovers between acts stay fast and organized.",
+    "practical_application": "A stage tech runs the stage patch, dresses and tapes down cable, resets mics and backline between acts, and fixes onstage problems like a dead mic or fallen stand during the show, taking direction from the monitor engineer or stage manager.",
+    "category": "Stage Crew",
+    "related_terms": ["Monitor engineer", "Stage manager", "Backline", "Stage patch", "Systems engineer", "House engineer"],
+    "common_mistakes": [
+     "Thinking the stage tech mixes sound; they set up and support the stage while the monitor and front-of-house engineers do the mixing.",
+     "Neglecting cable management, leaving trip hazards and unmarked lines that slow changeovers and troubleshooting.",
+     "UNSAFE: Running mains or audio cable across walkways without taping, ramping, or matting it, creating trip-and-fall hazards on a dark stage.",
+     "UNSAFE: Lifting or moving heavy backline and cabinets alone instead of using team lifts or dollies, risking back and musculoskeletal injury."
+    ],
+    "scenario_contexts": [
+     "Setting the stage patch and placing mics before a festival changeover.",
+     "Dressing and taping down cable runs across the stage before doors.",
+     "Quickly replacing a failed vocal mic mid-set at the monitor engineer's call."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

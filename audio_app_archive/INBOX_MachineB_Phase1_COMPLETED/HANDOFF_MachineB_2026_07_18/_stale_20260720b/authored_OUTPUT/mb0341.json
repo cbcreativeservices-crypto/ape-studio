@@ -1,0 +1,264 @@
+{
+ "batch": 341,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "ed64219e-4719-4b06-9448-5ae3cfbd58db",
+   "term": "Short decay",
+   "fields": {
+    "definition": "A decay stage that is brief, meaning the sound falls from its peak level down to its sustain level (or to silence) very quickly after the initial attack. Short decay produces tight, articulate notes with little ring-out, as heard in damped, muted, or staccato playing.",
+    "plain_english": "Short decay means a sound fades away fast right after it starts. Think of a hand clap or a tightly muted drum: it hits, then it is gone almost at once.",
+    "purpose_function": "The decay portion of a sound's amplitude envelope controls how long a note rings after its attack; a short decay keeps sounds tight and defined and stops them from cluttering a busy mix.",
+    "practical_application": "Engineers shorten decay with damping, gating, or a synth's envelope controls to tighten drums, palm-muted guitars, and plucked notes so each hit stays clean.",
+    "category": "Amplitude Envelope",
+    "related_terms": ["Attack", "Sustain", "Release", "Amplitude envelope", "Damping"],
+    "common_mistakes": [
+     "Confusing decay with release; decay is the fall right after the attack peak, while release is the fade after the note is let go.",
+     "Assuming a short decay always means a short overall note, when a high sustain level can still let the sound ring on.",
+     "Using heavy gating to force a short decay and accidentally chopping off natural tails, leaving clipped, unnatural notes."
+    ],
+    "scenario_contexts": [
+     "Programming a tight, punchy synth bass by setting a fast decay on the amplitude envelope.",
+     "Palm-muting an electric guitar so each chord stops quickly for a percussive rhythm part.",
+     "Gating close-miked drums so cymbal bleed and room ring are cut short between hits."
+    ]
+   },
+   "sources": [
+    "Ballou, 'Handbook for Sound Engineers' (amplitude envelope, psychoacoustics)",
+    "Huber & Runstein, 'Modern Recording Techniques' (amplitude envelope, ADSR)",
+    "Yamaha Sound Reinforcement Handbook (envelope of sounds)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "377acd82-a71a-4f0f-8a17-396f6dccba2b",
+   "term": "Sizzle",
+   "fields": {
+    "definition": "A timbral quality of bright, sustained, finely grained high-frequency energy that gives a sound a shimmering, hissing top end. It is heard in cymbals (notably the rivet-fitted 'sizzle cymbal'), overdriven guitars, and airy vocal material, and it sits in the upper-treble and 'air' bands.",
+    "plain_english": "Sizzle is the bright, fizzy shine at the very top of a sound, like the hiss of a cymbal or a frying pan. It is that crisp, sparkly high end you hear more than you feel.",
+    "purpose_function": "'Sizzle' is a listening descriptor engineers use to name and judge the high-frequency energy that adds air, excitement, and presence to a mix, or that turns harsh when overdone.",
+    "practical_application": "A mix engineer may add sizzle with a high-shelf boost or a saturation/exciter, or tame it when cymbals and vocals get too edgy and fatiguing.",
+    "category": "Timbral Descriptor",
+    "related_terms": ["Air", "Presence", "Sibilance", "Brightness", "Sizzle cymbal", "High-frequency content"],
+    "common_mistakes": [
+     "Confusing musical sizzle with harsh sibilance or distortion, then boosting highs when the real fix is de-essing or cleaning up the source.",
+     "UNSAFE: Chasing more 'sizzle' by monitoring cymbals and highs at very high SPL for long stretches, risking noise-induced hearing loss without hearing protection or level breaks.",
+     "Adding broad high-shelf boosts on every track, so the summed sizzle becomes fatiguing and masks detail."
+    ],
+    "scenario_contexts": [
+     "Deciding whether an overhead cymbal mix has enough sizzle without becoming harsh.",
+     "Using a high-shelf EQ or exciter to add air and sizzle to a dull vocal or acoustic guitar.",
+     "Identifying excess sizzle from a cheap condenser mic's peaky top end during tracking."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (cymbal / sizzle cymbal)",
+    "Fletcher & Rossing, 'The Physics of Musical Instruments' (cymbals, high-frequency response)",
+    "Huber & Runstein, 'Modern Recording Techniques' (high-frequency content, EQ descriptors)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b0bf05e2-9b62-4390-b292-9f743d01de16",
+   "term": "Slap",
+   "fields": {
+    "definition": "A single, distinct delayed repetition of a sound heard shortly after the original, either as a discrete reflection off a hard parallel surface in a room or as a deliberately created short delay (roughly 40-200 ms) with little or no feedback. Also called slapback or slap echo.",
+    "plain_english": "A slap is one clear echo that bounces back a moment after a sound, like a quick hand-clap answer off a far wall. In the studio it is often added on purpose to vocals to make them sound lively.",
+    "purpose_function": "As a room artifact, slap echo signals a reflection problem a technician must find and treat; as an effect, a short slapback delay adds depth and vintage 'live' character without the smearing of long reverb.",
+    "practical_application": "A technician claps or talks in an empty room to hear slap echo off parallel walls, then adds absorption or angled surfaces; a mix engineer dials a 60-150 ms delay for a rockabilly-style vocal slap.",
+    "category": "Acoustic Artifact",
+    "related_terms": ["Slapback delay", "Flutter echo", "Reflection", "Delay", "Reverberation", "Comb filtering"],
+    "common_mistakes": [
+     "Confusing slap echo (one discrete repeat) with flutter echo (a rapid series of repeats between parallel surfaces).",
+     "Setting slapback delay time too long so it drifts into rhythmic echo and muddies the timing instead of thickening the sound.",
+     "Treating a room's slap echo with bass trapping alone, when the fix is absorption or diffusion on the parallel reflecting surfaces."
+    ],
+    "scenario_contexts": [
+     "Diagnosing a distinct echo when clapping between two bare parallel walls in an untreated room.",
+     "Adding a short slapback delay to a lead vocal for a 1950s rockabilly feel.",
+     "Identifying slap echo off a rear wall that is blurring speech intelligibility in a live venue."
+    ]
+   },
+   "sources": [
+    "Everest, 'Master Handbook of Acoustics' (echoes, reflections)",
+    "Ballou, 'Handbook for Sound Engineers' (room acoustics, echo)",
+    "Julius O. Smith, 'Physical Audio Signal Processing' (CCRMA, Stanford - doubling and slap-back)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6c63e663-1e19-4050-900b-3c3dfa4590e5",
+   "term": "Slide noise",
+   "fields": {
+    "definition": "The incidental scraping or squeaking sound produced when a finger, or a slide, moves lengthwise along a wound string, as on guitar or bass. It is a broadband friction noise from the fingertip crossing the string's ridged winding, distinct from the fretted musical tone.",
+    "plain_english": "Slide noise is the squeak you hear when a player's fingers slide along guitar strings. It comes from skin dragging over the ridged, wound strings, a bit like rubbing a finger across a comb.",
+    "purpose_function": "Recognizing slide noise as a performance artifact lets an engineer decide when it is natural expressive detail to keep and when it is a distraction to reduce.",
+    "practical_application": "Engineers reduce slide noise by choosing flatwound or coated strings, adjusting mic placement, or using spectral-repair and de-noise tools in post to soften the squeaks.",
+    "category": "Performance Artifact",
+    "related_terms": ["Fret noise", "String squeak", "Fingerboard", "Wound strings", "Spectral repair"],
+    "common_mistakes": [
+     "Trying to EQ out slide noise, which shares frequencies with the guitar's body and rarely works without dulling the tone.",
+     "Assuming all slide noise is a mistake, when tasteful finger squeaks are part of a natural acoustic-guitar performance.",
+     "Blaming the microphone for squeaks that are actually caused by string type and playing technique."
+    ],
+    "scenario_contexts": [
+     "Cleaning up finger squeaks on a close-miked acoustic guitar during mixing.",
+     "Choosing coated or flatwound strings to cut slide noise before tracking.",
+     "Deciding to keep light slide noise on a solo fingerstyle piece for realism."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, 'Modern Recording Techniques' (recording guitar, string/fret noise)",
+    "Ballou, 'Handbook for Sound Engineers' (musical instrument recording)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f402af48-b389-438d-8c9f-a14be3e47bcb",
+   "term": "Soft attack",
+   "fields": {
+    "definition": "An amplitude envelope with a slow, gradual onset, meaning the sound takes a relatively long time to rise from silence to its peak level rather than starting abruptly. This gives a gentle, non-percussive beginning to each note, the opposite of a sharp or hard attack.",
+    "plain_english": "A soft attack means a sound eases in gently instead of starting with a sudden punch. It is like slowly turning up a dimmer switch rather than flipping a light on.",
+    "purpose_function": "The attack portion of the envelope sets how a note begins; a soft attack removes the initial transient's bite, giving pads, strings, and swells a smooth, blended feel.",
+    "practical_application": "A technician creates a soft attack with a synth's attack control, volume swells, or slow fade-ins, and can also round off transients with a slow compressor attack time.",
+    "category": "Amplitude Envelope",
+    "related_terms": ["Attack", "Transient", "Amplitude envelope", "Decay", "Compressor attack time"],
+    "common_mistakes": [
+     "Confusing a soft attack (slow envelope onset) with low volume; a soft attack can still be loud once it reaches its peak.",
+     "Using a very slow compressor attack to soften transients and accidentally letting unwanted initial spikes through.",
+     "Applying a soft attack to percussive parts that need punch, which makes them feel late and lifeless."
+    ],
+    "scenario_contexts": [
+     "Programming a synth pad with a long attack so it swells in under a vocal.",
+     "Setting a slow compressor attack to gently round off a bass without killing its punch.",
+     "Automating volume fade-ins to give a string section a soft, breathing entrance."
+    ]
+   },
+   "sources": [
+    "Ballou, 'Handbook for Sound Engineers' (amplitude envelope)",
+    "Huber & Runstein, 'Modern Recording Techniques' (attack/ADSR, compressor attack)",
+    "Yamaha Sound Reinforcement Handbook (envelope of sounds)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "46a98700-7abf-4bc5-bc9a-5d157f58f73c",
+   "term": "Soundboard resonance",
+   "fields": {
+    "definition": "The resonant vibration of an instrument's soundboard (the thin top plate of a guitar, piano, violin, or similar), driven by the strings and radiating their energy into the air. Its characteristic resonant modes and coupled body/air resonances shape the instrument's loudness, tone, and sustain.",
+    "plain_english": "Soundboard resonance is the way an instrument's thin wooden top vibrates and amplifies the strings. Without it the strings alone would be almost too quiet to hear, like a rubber band stretched in open air.",
+    "purpose_function": "The soundboard turns a string's tiny vibration into a much louder radiated sound and colors the tone through its own resonances, which is why body size and bracing so strongly affect an acoustic instrument's voice.",
+    "practical_application": "When miking an acoustic guitar or piano, engineers position mics to balance bright string detail against boomy low-mid soundboard resonances, often avoiding the body 'hot spot' near the sound hole.",
+    "category": "Instrument Resonance",
+    "related_terms": ["Resonance", "Helmholtz resonance", "Body resonance", "Sympathetic resonance", "Sustain", "Miking technique"],
+    "common_mistakes": [
+     "Miking straight at an acoustic guitar's sound hole, which captures a boomy soundboard/air resonance instead of a balanced tone.",
+     "Confusing the soundboard's air (Helmholtz) resonance with its wood-plate resonances, though both shape the low end.",
+     "Assuming a bigger body always sounds better, when soundboard resonances can also make an instrument boomy or uneven."
+    ],
+    "scenario_contexts": [
+     "Positioning a microphone off-axis from a guitar's sound hole to tame low-end soundboard resonance.",
+     "Hearing a specific note 'bloom' louder on a piano due to a soundboard resonance.",
+     "Diagnosing a boomy, uneven peak on an acoustic instrument during tracking."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, 'The Physics of Musical Instruments' (guitar/piano soundboard resonances)",
+    "Grove Dictionary of Music (soundboard)",
+    "Ballou, 'Handbook for Sound Engineers' (acoustics of musical instruments)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fe3ea9af-9372-483b-8364-7bad4151bac0",
+   "term": "Spiccato attack",
+   "fields": {
+    "definition": "The crisp, percussive onset produced by spiccato bowing, a string technique in which the bow is bounced lightly off the string so each note sounds short and detached. Each stroke gives a clean, articulate attack followed by a very short decay, with the bow leaving the string between notes.",
+    "plain_english": "A spiccato attack is the sharp, bouncy start of each note when a string player lets the bow hop off the string. Every note gets a quick, crisp tap, like lightly bouncing a ball so it barely touches the ground.",
+    "purpose_function": "Spiccato gives rapid string passages a light, rhythmic, clearly separated articulation, and its sharp attack helps each note cut through and stay distinct at speed.",
+    "practical_application": "When recording or programming strings, engineers pick spiccato articulations or samples for fast detached lines and preserve their sharp transients by avoiding heavy compression or slow attack settings.",
+    "category": "Bowing Articulation",
+    "related_terms": ["Staccato", "Sautille", "Detache", "Pizzicato", "Transient", "Articulation"],
+    "common_mistakes": [
+     "Confusing spiccato (bow bounces off the string) with staccato (short notes usually kept on the string).",
+     "Over-compressing spiccato strings, which flattens the sharp attack that gives the technique its bite.",
+     "Choosing a legato string sample for a fast detached line, losing the crisp spiccato attack the part needs."
+    ],
+    "scenario_contexts": [
+     "Selecting a spiccato articulation in a sample library for a fast, bouncy string ostinato.",
+     "Close-miking a string section to capture the crisp attack of spiccato passages.",
+     "Preserving spiccato transients by using light, fast-release compression during mixing."
+    ]
+   },
+   "sources": [
+    "Adler, 'The Study of Orchestration' (bowing techniques)",
+    "Grove Dictionary of Music (spiccato)",
+    "Fletcher & Rossing, 'The Physics of Musical Instruments' (bowed-string articulation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a357022a-c883-4561-8341-f9b5eeb048ed",
+   "term": "Splash",
+   "fields": {
+    "definition": "The short, bright, quickly decaying accent sound of a splash cymbal, a small, thin cymbal (commonly about 6-12 inches) that speaks almost instantly and dies away fast. The term names both this small cymbal type and its sharp, watery burst of high-frequency sound.",
+    "plain_english": "A splash is the quick, bright burst from a small, thin cymbal that sounds and then vanishes fast. It is a short accent, like a tiny splash of water compared with a big crash.",
+    "purpose_function": "The splash cymbal gives a fast, colorful accent that punctuates a moment without the long wash of a crash, so it adds sparkle while staying out of the way.",
+    "practical_application": "A drummer places a splash near the hi-hat for quick accents, and an engineer captures it with the overhead mics, watching that its sharp transient does not overload the channel.",
+    "category": "Cymbal Sound",
+    "related_terms": ["Crash cymbal", "Ride cymbal", "Sizzle", "Transient", "Overhead miking", "Decay"],
+    "common_mistakes": [
+     "Confusing a splash (short, fast decay) with a crash cymbal (louder, with longer sustain).",
+     "Setting overhead levels for the crash and then clipping on the splash's fast, sharp transient.",
+     "Gating overheads so tightly that the splash's quick decay is cut off unnaturally."
+    ],
+    "scenario_contexts": [
+     "Miking a drum kit's overheads to capture bright splash accents cleanly.",
+     "Identifying a splash cymbal's fast decay when editing drum transients.",
+     "Choosing a splash instead of a crash for a quick accent that will not wash over a vocal."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (cymbal)",
+    "Fletcher & Rossing, 'The Physics of Musical Instruments' (cymbals)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "57d20619-ad03-47ae-90a6-7028bc197951",
+   "term": "Spring noise",
+   "fields": {
+    "definition": "The characteristic mechanical artifacts of a spring reverb, in which coiled springs delay and disperse the signal. It includes the twangy, metallic 'boing' or 'sproing' heard on transients and, notably, the loud crashing sound produced when the unit is bumped or moved and the springs are physically jostled.",
+    "plain_english": "Spring noise is the boingy, metallic sound a spring reverb makes, and the loud crash you hear if you knock the unit. It happens because the sound really does travel down metal springs that rattle when bumped.",
+    "purpose_function": "The springs create reverb cheaply, but their bouncing adds a signature twang and makes the unit sensitive to vibration, so knowing this helps a technician expect and manage the noise.",
+    "practical_application": "Technicians isolate spring reverb tanks from stage vibration and shock, since footsteps or knocks make the springs crash audibly, and they may gate or edit out the boing on transient-heavy material.",
+    "category": "Effect Artifact",
+    "related_terms": ["Spring reverb", "Reverberation", "Plate reverb", "Transient", "Dispersion", "Flutter echo"],
+    "common_mistakes": [
+     "Mounting a spring reverb tank on a vibrating surface or amp, so stage bumps make the springs crash into the mix.",
+     "Confusing the spring's twangy dispersion 'chirp' with a fault, when it is normal spring-reverb behavior.",
+     "Sending sharp transients into a spring reverb and being surprised by the exaggerated boing it adds."
+    ],
+    "scenario_contexts": [
+     "Hearing a loud crash from a guitar amp's built-in spring reverb when the cabinet is bumped.",
+     "Identifying the metallic boing of a spring reverb on a surf-guitar recording.",
+     "Isolating a spring reverb unit from floor vibration during a live show."
+    ]
+   },
+   "sources": [
+    "Ballou, 'Handbook for Sound Engineers' (reverberation devices, spring reverb)",
+    "Julius O. Smith, 'Physical Audio Signal Processing' (CCRMA, Stanford - spring reverberation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

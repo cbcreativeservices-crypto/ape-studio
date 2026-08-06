@@ -1,0 +1,319 @@
+{
+ "packet": "add_09_dac_clocking.json",
+ "group": "Digital / DAC & Clocking",
+ "primary_topic": "Preamp & Converter Engineering",
+ "difficulty": "advanced",
+ "terms": [
+  {
+   "id": "a5ff2f76-866c-45e9-919e-c0d96da67bf7",
+   "term": "Apodizing Filter",
+   "topic": "Preamp & Converter Engineering",
+   "topic_id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+     "name": "HiFi Consumer Audio"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "4d673ad3-c7ed-419f-984b-b9eb004eafe4",
+   "term": "Bit-Perfect Playback",
+   "topic": "Preamp & Converter Engineering",
+   "topic_id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+     "name": "HiFi Consumer Audio"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "11485942-78ab-4bbf-85c9-b20c55eb5587",
+   "term": "Clock Jitter",
+   "topic": "Preamp & Converter Engineering",
+   "topic_id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+     "name": "HiFi Consumer Audio"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "b78b8627-1b27-49a2-a258-87782182ba79",
+   "term": "Delta-Sigma DAC",
+   "topic": "Preamp & Converter Engineering",
+   "topic_id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+     "name": "HiFi Consumer Audio"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "8cf17050-4d62-4eb5-9ad4-7fbf901cdd24",
+   "term": "DSD Native",
+   "topic": "Preamp & Converter Engineering",
+   "topic_id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+     "name": "HiFi Consumer Audio"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "authoring_note": "Author as 'DSD (Direct Stream Digital)'."
+  },
+  {
+   "id": "62fc5408-efc0-4580-ac71-6a17b19740f6",
+   "term": "Femto Clock",
+   "topic": "Preamp & Converter Engineering",
+   "topic_id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+     "name": "HiFi Consumer Audio"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "700a5afe-b59e-4b27-9fd5-222ba94ac703",
+   "term": "Ladder DAC",
+   "topic": "Preamp & Converter Engineering",
+   "topic_id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+     "name": "HiFi Consumer Audio"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "ba4b626e-dcef-4466-bcc5-4010e5159ee1",
+   "term": "Minimum Phase Filter",
+   "topic": "Preamp & Converter Engineering",
+   "topic_id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+     "name": "HiFi Consumer Audio"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "91611cc4-c168-4d55-8891-80015adc4772",
+   "term": "NOS DAC (Non-Oversampling DAC)",
+   "topic": "Preamp & Converter Engineering",
+   "topic_id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+     "name": "HiFi Consumer Audio"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "f97c5abc-514c-45b5-b1f0-a6fd3ba9767f",
+   "term": "R-2R DAC",
+   "topic": "Preamp & Converter Engineering",
+   "topic_id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+     "name": "HiFi Consumer Audio"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

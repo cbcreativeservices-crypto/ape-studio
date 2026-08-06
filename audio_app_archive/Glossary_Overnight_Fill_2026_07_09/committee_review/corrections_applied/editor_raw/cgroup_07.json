@@ -1,0 +1,102 @@
+{
+ "group": 7,
+ "corrections": [
+  {
+   "id": "a2045c4c-e658-43f6-8ad1-be03be43844c",
+   "term": "Phase Rotation",
+   "corrected": {
+    "common_mistakes": [
+     "UNSAFE: Swapping phase legs to correct rotation while the system is energized; de-energize before changing any connection.",
+     "Never verifying rotation on a new tie-in or generator, then damaging motors, chain hoists, or HVAC that run backward.",
+     "Confusing phase rotation (the sequence of the three phases) with polarity or with single-phase hot/neutral orientation.",
+     "Assuming two sources or distros share the same rotation without checking before cross-patching them; note that matching rotation is necessary but not sufficient to parallel two live sources, which additionally requires full synchronization of voltage, frequency, and phase angle. Matching rotation alone chiefly matters when cross-patching distros fed from a common service."
+    ]
+   },
+   "notes": [
+    "common_mistakes: reworked the final bullet to clarify that matched rotation is necessary but not sufficient to parallel live three-phase sources. Verified via WebSearch: paralleling AC sources requires synchronization of voltage magnitude, frequency, phase angle, and phase sequence/rotation; matched rotation alone only supports cross-patching distros fed from a common service. Other three bullets unchanged (UNSAFE prefix preserved)."
+   ]
+  },
+  {
+   "id": "0f7540a0-4c6d-4eef-bce5-33e7a0732946",
+   "term": "Portable Generator (Genset)",
+   "corrected": {
+    "practical_application": "Techs size the genset to the load, connect feeder and distro via camlocks, ground and bond it per NEC 250.34, keep it outdoors and clear of air intakes, and refuel only when it is off and cool.",
+    "common_mistakes": [
+     "UNSAFE: Running a generator indoors, in a tent, or near doors and air intakes; engine-exhaust carbon monoxide is a leading cause of non-fire CO deaths.",
+     "UNSAFE: Refueling while the generator is running or hot, risking fire from fuel spilled on hot surfaces.",
+     "Getting the neutral bonding wrong. The correct bonding depends on how the genset is used. Feeding cord-and-plug tools, it is typically neutral-bonded to its frame. Feeding a distro or transfer switch as a separately derived system, the bonding and grounding must follow NEC 250.34/250.30 so GFCIs and breakers still trip.",
+     "Overloading the genset or leaving legs badly unbalanced, causing voltage sag, overheating, and dropouts."
+    ]
+   },
+   "notes": [
+    "practical_application: fixed the dangling modifier and split the jammed rules per the Language/Communications flag: '...keep it outdoors and clear of air intakes, and refuel only when it is off and cool.'",
+    "common_mistakes: reconciled the Learning/Cognition (Medium) and Language/Communications (Low) flags on the neutral-bonding bullet into short sentences that name each case first, then the consequence, keeping both NEC 250.34/250.30 citations. Other three bullets unchanged (UNSAFE prefixes preserved)."
+   ]
+  },
+  {
+   "id": "075e14f2-8db4-4a9e-aef5-4fbe457d61ec",
+   "term": "Ambisonic Microphone",
+   "corrected": {
+    "plain_english": "A microphone with four capsules arranged like the faces of a tetrahedron (a triangular, four-sided pyramid) that captures sound from every direction at once, so the 'listening direction' can be steered afterward. It is the go-to tool for 360 video and VR audio."
+   },
+   "notes": [
+    "plain_english: replaced the misleading 'pyramid' analogy with 'tetrahedron (a triangular, four-sided pyramid),' aligning the intro with the 'tetrahedral' language used in purpose_function and common_mistakes. Four-capsule tetrahedral array is correct for A-format ambisonic mics."
+   ]
+  },
+  {
+   "id": "8f0db471-6f18-48b4-8ee3-04dd65a724a4",
+   "term": "Noise-Canceling Microphone",
+   "corrected": {
+    "purpose_function": "It is a differential (noise-canceling) design that senses sound at two ports so distant far-field noise, which arrives nearly equally at both, cancels while close-up near-field speech does not, greatly improving the speech-to-background ratio in loud environments.",
+    "common_mistakes": [
+     "Using it at a distance from the mouth, where it loses both level and its noise-rejecting benefit; it is designed for near-lip use.",
+     "Confusing an acoustic differential (noise-canceling) mic with DSP-based active/ENC noise cancellation, which are different mechanisms.",
+     "Expecting full-range, hi-fi response; the differential design deliberately shapes the response to favor close-speech intelligibility.",
+     "Blaming the mic for room bleed on loud stages when the real fix is closer, consistent placement."
+    ]
+   },
+   "notes": [
+    "purpose_function and common_mistakes: standardized British 'noise-cancelling' to the headword's American 'noise-canceling' per the Language/Communications flag. The single suggestion explicitly names both the purpose_function phrase and the second common_mistakes bullet, so both were corrected to achieve the entry-wide spelling consistency the flag requires; no other wording changed."
+   ]
+  },
+  {
+   "id": "91e47196-7979-455e-a29a-d8637d61e080",
+   "term": "In-Line Console",
+   "corrected": {
+    "common_mistakes": [
+     "Confusing the channel (record) fader with the monitor fader and adjusting the wrong one, so the tracked level or the monitor balance changes unexpectedly.",
+     "Assuming an in-line strip is truly two independent channels rather than one strip sharing preamp, EQ, and routing resources between two paths.",
+     "Forgetting to flip EQ or dynamics assignment between the channel path and monitor path, then wondering why processing isn't landing where expected."
+    ],
+    "scenario_contexts": [
+     "A commercial studio tracking a full band on a 48-input SSL or Neve in-line desk, recording and monitoring 24+ tracks from one operating position.",
+     "An engineer flipping the console into 'mix mode' so both faders feed the mix bus, doubling available inputs at mixdown.",
+     "Teaching students signal flow by tracing a mic through the channel path to tape and back through the monitor path on the same strip."
+    ]
+   },
+   "notes": [
+    "common_mistakes and scenario_contexts: added terminal periods to each bullet for consistency with the glossary's other list fields per the Language/Communications flag. The single suggestion explicitly names both common_mistakes and scenario_contexts, so both were corrected to the house style; wording unchanged."
+   ]
+  },
+  {
+   "id": "27f9a60a-f2d0-4527-b87f-585cafa8eb48",
+   "term": "Split Console",
+   "corrected": {
+    "purpose_function": "By keeping the recording (channel) path and the monitor path in physically separate sections, a split console makes signal flow obvious and keeps tracking and monitoring workflows distinct, which is why it is common on teaching and smaller-format desks."
+   },
+   "notes": [
+    "purpose_function: merged the two redundant 'easy to follow/understand' sentences into one per the Language/Communications flag, preserving all substantive content (separate sections, obvious signal flow, distinct workflows, common on teaching/smaller-format desks)."
+   ]
+  },
+  {
+   "id": "e53f1402-952e-4d52-ba70-a695a0ce258b",
+   "term": "Peak Hold",
+   "corrected": {
+    "purpose_function": "It captures the maximum peak value and holds it briefly—or indefinitely—so transients too fast to see on a falling meter stay visible, helping catch clipping and set headroom."
+   },
+   "notes": [
+    "purpose_function: recast so the verb phrase stays together ('captures the maximum peak value and holds it briefly—or indefinitely—'), removing the interjection that split 'captures and ... retains.' Meaning unchanged."
+   ]
+  }
+ ]
+}

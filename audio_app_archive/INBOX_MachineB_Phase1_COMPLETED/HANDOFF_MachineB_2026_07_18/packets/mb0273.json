@@ -1,0 +1,56 @@
+{
+ "batch": 273,
+ "topic": "Editing & Comping",
+ "terms": [
+  {
+   "id": "4645c07b-66d3-4e07-84d6-14b7301e67c1",
+   "term": "Automatic Delay Compensation",
+   "topic": "Editing & Comping",
+   "seq": 1250,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "bf8984c9-a53d-436a-bfc9-773b00dd1527",
+   "term": "Link Timeline and Edit Selection",
+   "topic": "Editing & Comping",
+   "seq": 1250,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

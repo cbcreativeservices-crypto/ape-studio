@@ -1,0 +1,159 @@
+{
+ "batch": 223,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "d7844f0d-62c8-4950-9dbb-a4249d88ebda",
+   "term": "Dubbing mixer",
+   "fields": {
+    "definition": "In film and television post-production—chiefly British and European usage—the sound engineer who creates the final mix of a soundtrack, balancing dialogue, ADR, Foley, sound effects, and music in a dubbing theatre. It is the equivalent of the American term re-recording mixer.",
+    "plain_english": "A dubbing mixer is the sound engineer who blends all of a film's sounds into one final soundtrack. They balance the voices, effects, and music so everything sounds right together.",
+    "purpose_function": "It exists to combine all the separate sound elements of a production into one balanced, coherent final mix that meets the loudness, format, and artistic needs of the deliverable. Doing this in one skilled pass keeps dialogue clear against music and effects.",
+    "practical_application": "Working in a dubbing theatre from prepared tracks or stems, the dubbing mixer rides levels, applies EQ, dynamics, and reverb to picture, then prints the final mix plus the required stems and deliverable versions.",
+    "category": "Post Roles",
+    "related_terms": ["Re-recording mixer", "Dubbing studio", "Dubbing session", "Final mix", "ADR", "Stems"],
+    "common_mistakes": ["Confusing the dubbing mixer with the sound editor; the editor prepares and places sounds, while the mixer balances and finalizes them", "Assuming 'dubbing' here means foreign-language dubbing, when in this British sense it means the final re-recording mix", "Thinking one pass yields the deliverable, when the mixer usually creates a print master plus separate stems and versions"],
+    "scenario_contexts": ["Mixing the final 5.1 soundtrack of a feature film in a dubbing theatre", "Balancing dialogue against a loud music cue so key lines stay intelligible", "Delivering a print master plus dialogue, music, and effects stems to the distributor"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, The Practical Art of Motion Picture Sound", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4fd452c3-4e0f-41b6-8a09-8233fc4ef8f7",
+   "term": "Dubbing pickup",
+   "fields": {
+    "definition": "A short, supplementary dubbing recording made after the main session to capture lines or sections that were missed, unusable, or changed later, without repeating the whole session. It supplies the small amount of additional material needed to complete or correct the dubbed dialogue.",
+    "plain_english": "A dubbing pickup is a quick extra recording to fix or add a few lines that were missed the first time. It saves booking the whole cast and studio again just for a small change.",
+    "purpose_function": "It exists so a small part of a dubbed performance can be corrected or completed efficiently, so a few problem lines do not force a re-do of the entire session. This saves cost and studio time.",
+    "practical_application": "When review reveals a flubbed or newly rewritten line, the technician schedules a pickup, cues the actor to the exact timecode, and records just that portion to drop into the edit.",
+    "category": "Recording Workflow",
+    "related_terms": ["Dubbing retake", "Dubbing take", "Dubbing session", "ADR", "Pickup"],
+    "common_mistakes": ["Confusing a pickup with a retake; a pickup captures a missing or added section, while a retake re-records an existing one", "Not matching the microphone, distance, and level of the original session, so the pickup does not cut together cleanly", "Failing to log the exact timecode of the pickup, making it hard to place in the edit"],
+    "scenario_contexts": ["Recording one corrected line a week after the main dubbing session", "Capturing a newly added line of dialogue after a picture change", "Grabbing a missed reaction line the director wants added"]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "68c110e9-325b-4f61-a36a-f8a677203e7f",
+   "term": "Dubbing retake",
+   "fields": {
+    "definition": "A repeated recording of a line or passage during dubbing, made because the previous take was unsatisfactory in performance, timing, or technical quality. It produces a fresh version of the same material to picture.",
+    "plain_english": "A dubbing retake is another go at recording a line that was not good enough the first time. It is like re-doing one sentence until it matches the picture and sounds right.",
+    "purpose_function": "It exists to give the editor a better version of a specific take where the earlier attempt failed on performance or sync. Having a usable alternative avoids a costly return session later.",
+    "practical_application": "If a take drifts out of sync or the delivery falls flat, the mixer or director calls a retake, and the actor performs the same line again to picture until it works.",
+    "category": "Recording Workflow",
+    "related_terms": ["Dubbing take", "Dubbing pickup", "Dubbing session", "ADR", "Lip sync"],
+    "common_mistakes": ["Assuming every retake replaces the last, when good practice keeps earlier takes in case they read better in the edit", "Confusing a retake with a pickup; a retake redoes an existing line, a pickup adds a missing one", "Not resetting to the same start cue, so the retake no longer matches the timing of the picture"],
+    "scenario_contexts": ["Re-recording a line that landed a frame late against the actor's lip movements", "Doing another take because the first reading lacked emotion", "Repeating a take spoiled by a mouth click or background noise"]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ecd8b294-c154-48c4-a756-06ce44520251",
+   "term": "Dubbing script",
+   "fields": {
+    "definition": "A script prepared for a dubbing session that sets out each line to be recorded with its character, its timecode or footage cue, and any adaptation needed to match lip movement and timing. It is used for both ADR and foreign-language dubbing.",
+    "plain_english": "A dubbing script is the marked-up script the cast reads from in a dubbing session. It shows each line, who says it, and exactly when it must be spoken to match the picture.",
+    "purpose_function": "It exists to give the actors, director, and engineer a shared reference so each line is recorded in the right order and timed to the picture. Clear cues keep a long session organised and in sync.",
+    "practical_application": "The technician loads the dubbing script alongside the picture, cues the actor to the marked timecode, and records each line in script order, checking it against the image.",
+    "category": "Post Documentation",
+    "related_terms": ["Dubbing session", "ADR", "Timecode", "Lip sync", "Continuity script"],
+    "common_mistakes": ["Treating it as the original screenplay, when a dubbing script is reorganised by line and timecode for recording", "Ignoring the timing cues, which are what keep the recording in sync with the picture", "Not updating the script after picture changes, so the cues no longer match the edit"],
+    "scenario_contexts": ["Recording foreign-language dialogue matched to the original actors' lip movements", "Running an ADR session line by line from the marked script", "Updating cue timecodes after the picture is re-edited"]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "70c1006d-efc5-4dc5-9d71-eab90c81a198",
+   "term": "Dubbing session",
+   "fields": {
+    "definition": "A scheduled recording session in which dialogue is dubbed to picture—either replacement dialogue (ADR) or foreign-language dialogue—with actors performing lines in sync with the edited image. Multiple takes are usually recorded for later selection.",
+    "plain_english": "A dubbing session is a booked studio session where actors record voices in time with the picture. It is used to replace unclear lines or to record dialogue in another language.",
+    "purpose_function": "It exists to provide a controlled setting for capturing clean, well-synced dialogue that replaces or adds to the production sound. A booked session gathers the cast, gear, and picture in one place efficiently.",
+    "practical_application": "The engineer sets up the microphone and playback, cues the actor to each line against picture, and records several takes until both performance and sync are right.",
+    "category": "Recording Workflow",
+    "related_terms": ["ADR", "Dubbing take", "Dubbing script", "Dubbing studio", "Lip sync"],
+    "common_mistakes": ["Confusing a dubbing session with the final mix; here it means recording dialogue, not balancing the whole soundtrack", "Not checking sync against picture during the session, only to find drift later", "Failing to keep a consistent microphone setup between sessions, so retakes and pickups do not match"],
+    "scenario_contexts": ["Booking actors to re-voice lines lost to on-set noise", "Recording a full foreign-language version of a film", "Adding crowd and background voices to match a scene"]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "853525f5-6799-4c40-982f-5afe3bd3f229",
+   "term": "Dubbing studio",
+   "fields": {
+    "definition": "A studio designed and equipped for dubbing work, providing an acoustically controlled recording space, picture playback locked in sync with the audio, and accurate monitoring. It is used to record ADR and foreign-language dialogue and, in larger rooms, the final re-recording mix.",
+    "plain_english": "A dubbing studio is a quiet, sound-treated room built for recording voices to picture. It has screens and playback gear so actors can speak their lines exactly in time with the film.",
+    "purpose_function": "It exists to give a distraction-free, acoustically neutral space with synced picture so dubbed dialogue can be recorded cleanly and matched to the image. Its treatment keeps room sound from leaking into takes.",
+    "practical_application": "A technician runs the recording and playback systems in the dubbing studio, keeps audio locked to picture, and delivers clean, well-labelled takes to the editor.",
+    "category": "Post Facilities",
+    "related_terms": ["Dubbing theatre", "ADR", "Dubbing session", "Edit suite", "Re-recording mixer"],
+    "common_mistakes": ["Confusing a dubbing studio with a music recording studio, when it is optimised for dialogue and synced picture", "Overlooking acoustic treatment, which lets room tone contaminate takes", "Assuming any control room can lock cleanly to picture without proper sync equipment"],
+    "scenario_contexts": ["Recording ADR lines against a projected picture", "Producing a dubbed foreign-language version of a program", "Mixing the final soundtrack in a large dubbing studio or theatre"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fbe0217a-0c3b-43f5-b25b-863ddda05d4d",
+   "term": "Dubbing take",
+   "fields": {
+    "definition": "A single recorded attempt at a line or passage during a dubbing session. Each performance to picture is numbered as a separate take so the best one can be chosen or combined in the edit.",
+    "plain_english": "A dubbing take is one recorded try at a line during a dubbing session. Actors usually do several takes, and the editor later picks the best one.",
+    "purpose_function": "It exists to capture each attempt separately so the director and editor can compare performances and choose the best sync and delivery. Keeping takes distinct makes later selection reliable.",
+    "practical_application": "The engineer labels and logs each take by number, records several per line, and notes which ones the director circles as preferred for the edit.",
+    "category": "Recording Workflow",
+    "related_terms": ["Dubbing retake", "Dubbing pickup", "Dubbing session", "ADR", "Circled take"],
+    "common_mistakes": ["Not clearly numbering takes, which makes the preferred one hard to find in the edit", "Deleting earlier takes too soon, before the edit confirms which one is best", "Confusing a take with a retake, when a retake is simply another take called after an unsatisfactory one"],
+    "scenario_contexts": ["Recording takes one through five of a single line for the director to choose from", "Logging the circled takes the director marks as keepers", "Comparing takes for the best lip sync during the edit"]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5a96939f-050a-4608-919e-85e7d8161bab",
+   "term": "Dynamic music system",
+   "fields": {
+    "definition": "An interactive audio system, common in games and other real-time media, in which music is built from segments, layers, or variations that change in real time in response to events, player state, or other inputs, rather than playing as a fixed linear track. It is typically implemented with audio middleware that manages transitions and synchronisation.",
+    "plain_english": "A dynamic music system is music that changes as things happen, instead of playing one fixed track. In a game, the music can grow tense when danger appears and calm down when it passes.",
+    "purpose_function": "It exists to keep music matched to unpredictable, interactive action so the score responds to what the user does rather than being locked to a single timeline. This keeps the music feeling connected to the moment.",
+    "practical_application": "Using middleware such as Wwise or FMOD, a technician builds the music in stems and segments with rules and transitions, so the engine can switch layers or cues smoothly as gameplay changes.",
+    "category": "Interactive Audio",
+    "related_terms": ["Adaptive music", "Audio middleware", "Stems", "Vertical layering", "Horizontal re-sequencing"],
+    "common_mistakes": ["Confusing dynamic music with simply lowering the volume, when it changes what plays and not just the level", "Ignoring transition and sync rules, so layers switch with audible jumps", "Exporting one flat mix instead of the separate stems the engine needs to control"],
+    "scenario_contexts": ["Building game music that intensifies during combat and relaxes when it ends", "Layering instruments in as the player nears an objective", "Switching musical themes as a player moves between areas"]
+   },
+   "sources": ["Audiokinetic Wwise technical documentation", "Firelight FMOD Studio technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c48c1a34-ea62-4b7b-a66a-06e1b0f351d5",
+   "term": "Edit suite",
+   "fields": {
+    "definition": "A room equipped for editing picture and/or sound, containing the editing workstation, any control surfaces, calibrated video and audio monitoring, and playback systems used to assemble and refine a program before final mixing and delivery.",
+    "plain_english": "An edit suite is a room set up for editing a film or show. It has the computer, screens, and speakers an editor needs to cut and arrange the picture and sound.",
+    "purpose_function": "It exists to give a controlled, well-monitored space where an editor can assemble, trim, and refine material accurately before it moves on to mixing and delivery. Consistent monitoring keeps editing decisions reliable.",
+    "practical_application": "An editor works in the edit suite to build the cut, sync sound to picture, and prepare sequences and exports that hand off cleanly to the dubbing or grading stage.",
+    "category": "Post Facilities",
+    "related_terms": ["Dubbing studio", "Timecode", "Picture lock", "Conform", "Non-linear editor"],
+    "common_mistakes": ["Assuming edit-suite monitoring is calibrated for final mixing, when critical loudness and balance decisions belong in the dubbing theatre", "Not maintaining consistent timecode and frame rate, which causes sync problems downstream", "Treating an edit-suite export as a final deliverable rather than a handoff to the mix"],
+    "scenario_contexts": ["Cutting a television episode to picture lock in the edit suite", "Syncing production sound to picture before an ADR session", "Preparing a conformed sequence to hand to the dubbing stage"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,153 @@
+{
+  "expert": "LANGUAGE / COMMUNICATIONS EXPERT",
+  "group": 2,
+  "reviews": [
+    {
+      "id": "6e868a38-3bab-4444-9522-4dc0ce3bf313",
+      "term": "Field Strength Meter",
+      "verdict": "MINOR",
+      "suggestions": [
+        {
+          "field": "common_mistakes",
+          "severity": "Medium",
+          "issue": "Item 1 has a misplaced relative clause: 'Judging a loop by ear or by hearing-aid reception instead of a calibrated meter, which cannot confirm the 400 mA/m level or uniformity.' Grammatically 'which cannot confirm' attaches to the nearest noun ('a calibrated meter'), the opposite of the intended meaning (it is judging by ear/reception that cannot confirm).",
+          "suggestion": "Rewrite to fix the referent, e.g. 'Judging a loop by ear or by hearing-aid reception, neither of which can confirm the 400 mA/m level or field uniformity, instead of using a calibrated meter.'"
+        }
+      ]
+    },
+    {
+      "id": "59f0b8a6-acc2-4857-b112-cbb744c9169f",
+      "term": "IEC 60118-4",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "4dd20588-f9ef-436c-a03b-d0e30bc0aafe",
+      "term": "Wi-Fi Assistive Streaming",
+      "verdict": "MINOR",
+      "suggestions": [
+        {
+          "field": "common_mistakes",
+          "severity": "Medium",
+          "issue": "Item 3 is ungrammatical: 'Ignoring latency, which excessive lag breaks lip-sync between the streamed audio and the live/stage source.' The clause 'which excessive lag breaks lip-sync' is garbled and does not parse.",
+          "suggestion": "Split into two clauses, e.g. 'Ignoring latency; excessive lag breaks lip-sync between the streamed audio and the live or stage source.'"
+        }
+      ]
+    },
+    {
+      "id": "e83682ef-f7dc-4b5c-8f32-ba8cff9fe37c",
+      "term": "Exponential Sine Sweep",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "b5ec4235-2a22-4cef-b024-d47beb9e231d",
+      "term": "Ground-Plane Measurement",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "3a256cd5-56fc-4c71-833c-0270cb19d74a",
+      "term": "Maximum Length Sequence (MLS)",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "3cd842ed-ebd9-4b2c-8780-5beb93cf3461",
+      "term": "Quasi-Anechoic Measurement",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "4bd361bd-c81d-4ab6-b821-71d093095f87",
+      "term": "Waterfall Plot (CSD)",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "4fe68566-652e-479c-a375-7199f1e8ce7a",
+      "term": "Ambient Noise Sensor",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "8a3312ea-9567-4357-a424-7bb318e0f299",
+      "term": "End-of-Line Resistor",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "2ee58f33-b85a-4ae4-b543-61db9da94b2e",
+      "term": "Mass Notification System",
+      "verdict": "MINOR",
+      "suggestions": [
+        {
+          "field": "purpose_function",
+          "severity": "Low",
+          "issue": "Nested parentheses read awkwardly: 'tune DSP for intelligibility (an STI target near 0.50 (≈0.70 CIS))'. A parenthetical inside a parenthetical is hard to scan.",
+          "suggestion": "Flatten to a single set, e.g. 'tune DSP for intelligibility (an STI target near 0.50, ≈0.70 CIS)'."
+        }
+      ]
+    },
+    {
+      "id": "35dfd660-c03a-4064-a49f-6c58b50b71ce",
+      "term": "Music-on-Hold (MOH)",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "318a74c5-0562-4dc1-a1ec-6b4c9579ba87",
+      "term": "Speech Privacy",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "8672e63d-0a52-4bb4-99b5-bc9b8989447f",
+      "term": "Anti-Skate",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "5352cf8a-7a6c-44d3-90ea-76ff75f3a1d1",
+      "term": "Bass Shaker (Tactile Transducer)",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "03f944ae-d8e9-4ea0-a8c1-2f61fa52c439",
+      "term": "Belt Drive",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "b051f7fb-bfe4-4ad4-96a7-f66e587bad48",
+      "term": "Direct Drive",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "ff5faf7b-1e86-47f7-8dee-f7e11bfc1dab",
+      "term": "MQA",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "4305a61f-12a8-4f2f-b7a7-68c9b2be3b88",
+      "term": "Network Streamer",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "a71c9c9e-2c7b-4e9e-a4e7-536c1fbc30b7",
+      "term": "Platter",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "d5523d8c-27f8-4871-b3ed-2b1498543a8f",
+      "term": "Tonearm",
+      "verdict": "OK",
+      "suggestions": []
+    }
+  ]
+}

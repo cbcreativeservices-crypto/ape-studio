@@ -64,18 +64,27 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
+import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 
 // House palette for the model views.
 const PARTICLE = '#cfd2d8';
 const WAVE = colors.amber;
+// MIDI amplitude ramp (loudness standard) as Skia gradient stops — blue at the
+// zero line → red at ±full scale. Applied to the pressure waveform's level.
+const MIDI_STOP_COLORS = WAVE_LEVEL_STOPS.map((s) => s.color);
+const MIDI_STOP_POS = WAVE_LEVEL_STOPS.map((s) => s.offset);
+// MONOTONIC MIDI level scale for a vertical volume bar — TOP = loud (red),
+// BOTTOM = quiet (blue).
+const MIDI_VSCALE_COLORS = [1, 0.75, 0.5, 0.25, 0].map(levelColor);
+const MIDI_VSCALE_POS = [0, 0.25, 0.5, 0.75, 1];
 const CONE = '#8a8c94';
-const ACCENT_GREEN = '#5bff85';
+const ACCENT_GREEN = '#37e05f';
 const ACCENT_BLUE = '#6fa8ff';
-const GRID = '#2c2c33';
-const GHOST = '#232329';
+const GRID = '#3a3b46';
+const GHOST = '#2e2f38';
 /** Brighter zero/reference line (house idiom — micspeaker ResponseCurveView). */
 const ZERO_REF = '#4b4e58';
-const AXIS_TEXT = '#767a85';
+const AXIS_TEXT = '#9a9ca8';
 const BG = '#0c0c0f';
 // Illustration tones (light source: upper-left — house scene convention).
 const METAL_HI = '#c6cad4';
@@ -213,6 +222,70 @@ function hash(n: number): number {
   return s - Math.floor(s);
 }
 
+// Three colour-tracked reference molecules (owner 2026-08-05): spread across
+// the field, almost-even but not perfectly, each a distinct colour. They obey
+// the SAME motion as every white particle — so watching them makes the point
+// that each molecule only oscillates BACK AND FORTH in place; the pattern
+// travels, the particles do not. Home fractions of width / height + colour.
+const AIR_TRACERS: { fx: number; fy: number; color: string }[] = [
+  { fx: 0.22, fy: 0.3, color: '#37e05f' }, // green
+  { fx: 0.49, fy: 0.66, color: '#6fa8ff' }, // blue
+  { fx: 0.78, fy: 0.42, color: '#ffb14d' }, // amber
+];
+
+/** One colour-tracked molecule: a faint HOME ring at its rest position + the
+ *  bright dot that oscillates around it (never travels). Same displacement law
+ *  as the particle field. */
+function AirTracer({
+  clock,
+  visHz,
+  amp,
+  dispMax,
+  lambda,
+  phasePx,
+  mode,
+  homeX,
+  homeY,
+  color,
+}: {
+  clock: SharedValue<number>;
+  visHz: number;
+  amp: number;
+  dispMax: number;
+  lambda: number;
+  phasePx: number;
+  mode: AirMode;
+  homeX: number;
+  homeY: number;
+  color: string;
+}) {
+  const dot = useDerivedValue(() => {
+    const t = clock.value;
+    let dx = 0;
+    if (mode === 'wave') {
+      const k = (2 * Math.PI) / lambda;
+      const om = 2 * Math.PI * visHz;
+      dx = amp * dispMax * Math.sin(om * t - k * (homeX + phasePx));
+    } else if (mode === 'noise') {
+      const tq = Math.floor(t * 22);
+      dx = amp * dispMax * 0.9 * (hash(homeX * 0.7 + tq * 311.7) - 0.5) * 2;
+    }
+    const p = Skia.Path.Make();
+    p.addCircle(homeX + dx, homeY, 2.2); // SAME radius as the white particles
+    return p;
+  }, [clock, visHz, amp, dispMax, lambda, phasePx, mode, homeX, homeY]);
+  return (
+    <Group>
+      {/* Coloured tracer at ~50% so it still reads among the white particles
+          (owner 2026-08-05) — and NO static outline twin. */}
+      <Path path={dot} color={color} opacity={0.2}>
+        <BlurMask blur={3} style="normal" />
+      </Path>
+      <Path path={dot} color={color} opacity={0.5} />
+    </Group>
+  );
+}
+
 export function AirParticlesView({
   clock,
   width,
@@ -221,7 +294,9 @@ export function AirParticlesView({
   amp,
   mode = 'wave',
   showEar = false,
+  showZones = true,
   lambdaPx,
+  phasePx = 0,
 }: {
   clock: SharedValue<number>;
   width: number;
@@ -232,6 +307,13 @@ export function AirParticlesView({
   amp: number;
   mode?: AirMode;
   showEar?: boolean;
+  /** Show the warm/cool compression-rarefaction pressure colour bands (owner
+   *  2026-08-05: M1–M4 can toggle these off). */
+  showZones?: boolean;
+  /** Spatial phase offset (px) added to x in cos(ωt − k(x + phasePx)) so this
+   *  view aligns with a co-drawn graph whose wave originates elsewhere on the
+   *  shared screen (owner 2026-08-05: wave born at the speaker). */
+  phasePx?: number;
   /** Optional spatial wavelength in px. When the caller drives frequency
    *  (Playground), pass a value that TIGHTENS with pitch so the drawn spacing
    *  matches the wavelength readout. Default ~2 visible wavelengths across w.
@@ -242,22 +324,30 @@ export function AirParticlesView({
   const ROWS = 6;
   const w = width;
   const h = height;
+  // Reserve a little clear zone on the far RIGHT for a LARGER ear (owner
+  // 2026-08-05) — like the speaker's own space on the left. Only when showEar.
+  const earW = showEar ? 50 : 0;
+  const earScale = 1.55;
 
   // Rest grid + per-particle jitter (deterministic — stable across renders).
+  // Particles that would fall in the ear zone are dropped so the ear reads
+  // clearly (the wave math/λ is unchanged — alignment is preserved).
   const rest = useMemo(() => {
     const pts: { x: number; y: number }[] = [];
     for (let r = 0; r < ROWS; r++) {
       for (let c = 0; c < COLS; c++) {
         const jx = (hashJs(r * COLS + c) - 0.5) * (w / COLS) * 0.55;
         const jy = (hashJs(r * COLS + c + 999) - 0.5) * (h / ROWS) * 0.55;
+        const px = ((c + 0.5) / COLS) * w + jx;
+        if (px > w - earW) continue; // leave the ear zone clear
         pts.push({
-          x: ((c + 0.5) / COLS) * w + jx,
+          x: px,
           y: ((r + 0.5) / ROWS) * (h - 8) + 4 + jy,
         });
       }
     }
     return pts;
-  }, [w, h]);
+  }, [w, h, earW]);
   // Flat arrays capture cleanly into the worklet.
   const xs = useMemo(() => rest.map((p) => p.x), [rest]);
   const ys = useMemo(() => rest.map((p) => p.y), [rest]);
@@ -276,7 +366,7 @@ export function AirParticlesView({
       let dy = 0;
       if (mode === 'wave') {
         // Longitudinal ONLY — along the travel axis. That IS the lesson.
-        dx = amp * dispMax * Math.sin(om * t - k * xs[i]);
+        dx = amp * dispMax * Math.sin(om * t - k * (xs[i] + phasePx));
       } else if (mode === 'noise') {
         // Random agitation (noise has no single frequency) — quantized-time
         // hash jitter. STILL LONGITUDINAL (along the travel axis only): real
@@ -289,7 +379,7 @@ export function AirParticlesView({
       p.addCircle(xs[i] + dx, ys[i] + dy, 2.2);
     }
     return p;
-  }, [clock, xs, ys, visHz, amp, mode, lambda, dispMax]);
+  }, [clock, xs, ys, visHz, amp, mode, lambda, dispMax, phasePx]);
 
   // Compression/rarefaction ZONE SHADING — pressure p ∝ cos(ωt − kx), the SAME
   // law the co-drawn PressureGraphView plots, so the warm bands sit exactly
@@ -302,15 +392,15 @@ export function AirParticlesView({
       const t = clock.value;
       const k = (2 * Math.PI) / lambda;
       const om = 2 * Math.PI * visHz;
-      // Compression centres: cos(ωt − kx) = 1 → x ≡ ωt/k (mod λ).
-      const x0 = ((((om * t) / k) % lambda) + lambda) % lambda;
+      // Compression centres: cos(ωt − k(x+φ)) = 1 → x ≡ ωt/k − φ (mod λ).
+      const x0 = (((((om * t) / k - phasePx) % lambda) + lambda) % lambda);
       for (let x = x0 - lambda; x < w + lambda; x += lambda) {
         p.moveTo(x, 3);
         p.lineTo(x, h - 3);
       }
     }
     return p;
-  }, [clock, visHz, mode, lambda, w, h]);
+  }, [clock, visHz, mode, lambda, w, h, phasePx]);
   const coolBands = useDerivedValue(() => {
     const p = Skia.Path.Make();
     if (mode === 'wave') {
@@ -318,20 +408,20 @@ export function AirParticlesView({
       const k = (2 * Math.PI) / lambda;
       const om = 2 * Math.PI * visHz;
       // Rarefaction centres: half a wavelength from the compressions.
-      const x0 = ((((om * t) / k + lambda / 2) % lambda) + lambda) % lambda;
+      const x0 = (((((om * t) / k - phasePx + lambda / 2) % lambda) + lambda) % lambda);
       for (let x = x0 - lambda; x < w + lambda; x += lambda) {
         p.moveTo(x, 3);
         p.lineTo(x, h - 3);
       }
     }
     return p;
-  }, [clock, visHz, mode, lambda, w, h]);
+  }, [clock, visHz, mode, lambda, w, h, phasePx]);
 
   // The EAR — a recognizable illustrated ear at the receiving end (standards
   // rule 1: no circle standing in for a body part). Static geometry: organic
   // helix outline, inner ridge + tragus, skin gradient lit from upper-left.
   const ear = useMemo(() => {
-    const cx = w - 13;
+    const cx = w - earW / 2; // centred in the reserved ear zone
     const cy = h / 2;
     const outline = Skia.Path.Make();
     outline.moveTo(cx - 4, cy - 13);
@@ -351,24 +441,47 @@ export function AirParticlesView({
     ridges.moveTo(cx - 4.6, cy - 2);
     ridges.quadTo(cx - 1.6, cy - 0.5, cx - 2.2, cy + 3.5);
     return { outline, ridges, cx, cy };
-  }, [w, h]);
+  }, [w, h, earW]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-      {/* Zone shading BEHIND the particles: warm squeeze / cool stretch. */}
-      <Path path={warmBands} color={WARM_BAND} style="stroke" strokeWidth={bandW} opacity={0.05 + 0.1 * amp}>
-        <BlurMask blur={9} style="normal" />
-      </Path>
-      <Path path={coolBands} color={COOL_BAND} style="stroke" strokeWidth={bandW} opacity={0.04 + 0.08 * amp}>
-        <BlurMask blur={9} style="normal" />
-      </Path>
+      {/* Zone shading BEHIND the particles: warm squeeze / cool stretch.
+          Toggleable (owner 2026-08-05). */}
+      {showZones ? (
+        <>
+          <Path path={warmBands} color={WARM_BAND} style="stroke" strokeWidth={bandW} opacity={0.05 + 0.1 * amp}>
+            <BlurMask blur={9} style="normal" />
+          </Path>
+          <Path path={coolBands} color={COOL_BAND} style="stroke" strokeWidth={bandW} opacity={0.04 + 0.08 * amp}>
+            <BlurMask blur={9} style="normal" />
+          </Path>
+        </>
+      ) : null}
       {/* Particles: soft halo layer + crisp cores (tube-lab electron idiom). */}
       <Path path={path} color={PARTICLE} opacity={0.35}>
         <BlurMask blur={4} style="normal" />
       </Path>
       <Path path={path} color={PARTICLE} />
+      {/* Three COLOUR-TRACKED reference molecules — each oscillates in place
+          around its home ring, proving the particles only move back and forth. */}
+      {AIR_TRACERS.map((tr) => (
+        <AirTracer
+          key={tr.color}
+          clock={clock}
+          visHz={visHz}
+          amp={amp}
+          dispMax={dispMax}
+          lambda={lambda}
+          phasePx={phasePx}
+          mode={mode}
+          homeX={tr.fx * w}
+          homeY={tr.fy * (h - 8) + 4}
+          color={tr.color}
+        />
+      ))}
       {showEar ? (
-        <>
+        // Scaled up around its centre (owner 2026-08-05) so the ear reads clearly.
+        <Group transform={[{ translateX: ear.cx }, { translateY: ear.cy }, { scale: earScale }, { translateX: -ear.cx }, { translateY: -ear.cy }]}>
           {/* Receiving glow — the ear is where the wave lands. */}
           <Circle cx={ear.cx} cy={ear.cy} r={16} color={ACCENT_GREEN} opacity={0.14}>
             <BlurMask blur={12} style="normal" />
@@ -383,7 +496,7 @@ export function AirParticlesView({
           </Path>
           <Path path={ear.outline} color={SKIN_LO} style="stroke" strokeWidth={1.2} opacity={0.9} />
           <Path path={ear.ridges} color="#1c130d" style="stroke" strokeWidth={1.4} strokeCap="round" opacity={0.55} />
-        </>
+        </Group>
       ) : null}
       <Vignette w={w} h={h} />
     </Canvas>
@@ -416,19 +529,44 @@ export function SpeakerConeView({
 }) {
   const w = width;
   const h = height;
-  // Side view, firing RIGHT (into the air window below/beside it): magnet at
-  // the left, cone apex → mouth opening rightward.
-  const magW = Math.min(46, w * 0.16);
-  const coneBaseX = magW + 8;
-  const mouthX = Math.min(w * 0.42, coneBaseX + 96);
-  const excMax = 13; // px excursion at amp = 1
   const cy = h / 2;
-  const mh = h * 0.36; // mouth half-height (same flare extent as ever)
+  const clampN = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+  // Smaller excursion + a bigger rim margin (owner 2026-08-05) so the cone and
+  // its surround clearly vibrate WITHIN the basket, never through it.
+  const excMax = clampN(w * 0.055, 4, 8) * 0.81; // px excursion at amp = 1 (−19% travel, owner 2026-08-05)
 
-  // THE MOTION — the same excursion law as the pre-retrofit trapezoid (wave:
-  // amp·excMax·sin(ωt); noise: quantized hash jitter). The whole illustrated
-  // cone/former/dust-cap assembly rides ONE translateX per frame, so the
-  // gradients live on static geometry (standards rule 6: cheap per-frame work).
+  // Side CUTAWAY firing RIGHT, proportioned from the owner's reference images
+  // (2026-08-05): steel back plate · magnet ring (warm, as in the cutaways) ·
+  // front plate → LONG voice-coil former with tight copper turns riding the
+  // gap → corrugated SPIDER suspension former→basket → SHALLOW wide cone +
+  // dust cap → surround ROLL bridging the moving cone to the fixed basket rim.
+  // Deliberately THIN overall so it can sit beside the air animation.
+  const magW = clampN(w * 0.22, 14, 26);
+  const gapX = 3 + magW - 2; // the former slides over the pole piece here
+  const coilLen = clampN(w * 0.17, 12, 19); // long former, reference-like
+  const formerFront = gapX + coilLen;
+  const apexX = formerFront - 1; // cone apex meets the former's front end
+  const coneDepth = clampN(w * 0.3, 20, 40); // SHALLOW — real drivers have little depth
+  const mouthX = apexX + coneDepth;
+  // Fixed basket rim sits BEYOND the cone's full forward excursion + a margin
+  // (owner 2026-08-05) so the basket cage is always outside the moving cone and
+  // its elastic surround band — they never collide at peak travel.
+  const rimX = mouthX + excMax + clampN(w * 0.04, 3, 5); // small gap → a SHORT, thin surround
+  const apexHalf = 5;
+  const mh = h * 0.42; // TALL mouth — the wide flare of the reference cone
+  const gapH = clampN(h * 0.13, 10, 14);
+  const poleHalf = gapH * 0.26; // inner STATIC pole half-height
+  const coilOuter = gapH * 0.56; // voice-coil former outer half-height (OUTSIDE the pole)
+  // The basket FRAME sits OUTSIDE the cone mouth (owner 2026-08-05): the cone and
+  // its elastic surround must never extend past this — the frame contains them.
+  const frameHalf = mh + clampN(h * 0.06, 4, 8);
+  // The static pole's right end — extended toward the coil front (owner
+  // 2026-08-05) but still short enough that a GAP opens past it when the coil
+  // slides fully out.
+  const poleRight = formerFront - excMax * 0.5;
+
+  // THE MOTION — cone excursion (wave: amp·excMax·sin ωt; noise: hash jitter).
+  // The illustrated coil/cone/dust-cap assembly rides ONE translateX per frame.
   const coneShift = useDerivedValue(() => {
     const t = clock.value;
     let off = 0;
@@ -440,93 +578,183 @@ export function SpeakerConeView({
     return [{ translateX: off }];
   }, [clock, visHz, amp, mode]);
 
-  // Motor assembly + basket (STATIC — only the moving assembly translates).
+  // Motor assembly + basket struts (STATIC — only the cone assembly translates).
   const motor = useMemo(() => {
-    const backW = magW * 0.24;
-    const ringW = magW * 0.46;
-    const poleW = magW * 0.3;
+    const backW = magW * 0.3;
+    const ringW = magW * 0.42;
+    const poleW = magW * 0.28;
+    // Basket cage arms out to the FRONT frame edge (OUTSIDE the cone mouth).
     const struts = Skia.Path.Make();
     for (const sgn of [-1, 1]) {
-      struts.moveTo(4 + magW, cy + sgn * h * 0.16);
-      struts.lineTo(mouthX + 3, cy + sgn * (mh + 2));
-      struts.moveTo(4 + magW, cy + sgn * h * 0.05);
-      struts.lineTo(mouthX + 3, cy + sgn * mh * 0.55);
+      struts.moveTo(3 + magW, cy + sgn * h * 0.16);
+      struts.lineTo(rimX, cy + sgn * frameHalf);
     }
     return { backW, ringW, poleW, struts };
-  }, [magW, cy, h, mouthX, mh]);
+  }, [magW, cy, h, rimX, frameHalf]);
 
-  // The moving assembly, at rest coordinates: curved cone flare (organic
-  // silhouette, not a trapezoid), voice-coil former, surround lip, top rim.
+  // Moving assembly (rest coordinates): shallow CONCAVE cone flare, long
+  // voice-coil former, tight vertical copper turns (each winding seen edge-on,
+  // as in the reference cutaway), top rim light.
   const coneParts = useMemo(() => {
-    const midX = coneBaseX + (mouthX - coneBaseX) * 0.55;
+    const midX = apexX + coneDepth * 0.5;
+    // Concave flare: control points pulled toward the axis so the profile
+    // curves like a real cone, not a straight trapezoid.
+    const ctrl = apexHalf + (mh - apexHalf) * 0.32;
     const cone = Skia.Path.Make();
-    cone.moveTo(coneBaseX, cy - 6);
-    cone.quadTo(midX, cy - 10, mouthX, cy - mh);
+    cone.moveTo(apexX, cy - apexHalf);
+    cone.quadTo(midX, cy - ctrl, mouthX, cy - mh);
     cone.lineTo(mouthX, cy + mh);
-    cone.quadTo(midX, cy + 10, coneBaseX, cy + 6);
+    cone.quadTo(midX, cy + ctrl, apexX, cy + apexHalf);
     cone.close();
-    // Rim light along the top flare (upper-left light).
     const topEdge = Skia.Path.Make();
-    topEdge.moveTo(coneBaseX, cy - 6);
-    topEdge.quadTo(midX, cy - 10, mouthX, cy - mh);
-    // Surround: the rubber lip at the cone's mouth edge.
-    const surround = Skia.Path.Make();
-    surround.moveTo(mouthX, cy - mh + 1);
-    surround.lineTo(mouthX, cy + mh - 1);
-    // Voice-coil former sliding over the pole piece.
+    topEdge.moveTo(apexX, cy - apexHalf);
+    topEdge.quadTo(midX, cy - ctrl, mouthX, cy - mh);
+    // Voice-coil former = the bobbin walls that ride OUTSIDE the centre pole:
+    // a TOP wall and a BOTTOM wall, with the static pole showing between them
+    // (owner 2026-08-05 — the coil wraps the pole, it is not under it).
     const former = Skia.Path.Make();
-    former.addRRect(Skia.RRectXY(Skia.XYWHRect(coneBaseX - 9, cy - 5, 10, 10), 2, 2));
-    return { cone, topEdge, surround, former };
-  }, [coneBaseX, mouthX, cy, mh]);
+    former.addRRect(Skia.RRectXY(Skia.XYWHRect(gapX, cy - coilOuter, coilLen, coilOuter - poleHalf), 1.2, 1.2));
+    former.addRRect(Skia.RRectXY(Skia.XYWHRect(gapX, cy + poleHalf, coilLen, coilOuter - poleHalf), 1.2, 1.2));
+    // Copper turns — tight vertical striations on BOTH walls (edge-on).
+    const windings = Skia.Path.Make();
+    for (let x = gapX + 2; x <= gapX + coilLen - 2; x += 2.1) {
+      windings.moveTo(x, cy - coilOuter + 1);
+      windings.lineTo(x, cy - poleHalf - 1);
+      windings.moveTo(x, cy + poleHalf + 1);
+      windings.lineTo(x, cy + coilOuter - 1);
+    }
+    return { cone, topEdge, former, windings };
+  }, [apexX, coneDepth, mouthX, cy, mh, gapX, coilLen, apexHalf, coilOuter, poleHalf]);
 
-  // Sound "rays" leaving the mouth (static hint of direction — same arcs).
-  const rays = useMemo(() => {
+  // CORRUGATED SPIDER (reference: the yellow accordion suspension) — links the
+  // MOVING former to the FIXED basket, top and bottom. Redrawn per frame so its
+  // folds visibly flex with the excursion.
+  const spider = useDerivedValue(() => {
+    const t = clock.value;
+    let off = 0;
+    if (mode === 'wave') off = amp * excMax * Math.sin(2 * Math.PI * visHz * t);
+    else if (mode === 'noise') {
+      const tq = Math.floor(t * 22);
+      off = amp * excMax * 0.8 * (hash(tq * 97.7) - 0.5) * 2;
+    }
     const p = Skia.Path.Make();
-    for (let i = 0; i < 3; i++) {
-      const r = 16 + i * 13;
-      p.addArc({ x: mouthX + 6 - r, y: cy - r, width: 2 * r, height: 2 * r }, -38, 76);
+    const N = 4; // corrugation folds
+    for (const sgn of [-1, 1]) {
+      const x0 = formerFront + off - 3; // moving inner edge
+      const y0 = cy + sgn * (coilOuter + 1);
+      const x1 = formerFront + 5; // fixed basket anchor
+      const y1 = cy + sgn * (coilOuter + h * 0.2);
+      p.moveTo(x0, y0);
+      for (let i = 1; i <= N; i++) {
+        const f = i / N;
+        const zig = i < N ? (i % 2 === 1 ? 3 : -3) : 0;
+        p.lineTo(x0 + (x1 - x0) * f + zig, y0 + (y1 - y0) * f);
+      }
     }
     return p;
-  }, [mouthX, cy]);
+  }, [clock, visHz, amp, mode, formerFront, cy, coilOuter, h]);
+
+  // FLEXING SURROUND (the membrane) — bridges the MOVING cone mouth edge to the
+  // FIXED basket rim, redrawn per frame so it visibly stretches / compresses as
+  // the cone travels. Drawn OUTSIDE the translate group (it connects moving to
+  // fixed). Two half-rolls, top and bottom.
+  const surround = useDerivedValue(() => {
+    const t = clock.value;
+    let off = 0;
+    if (mode === 'wave') off = amp * excMax * Math.sin(2 * Math.PI * visHz * t);
+    else if (mode === 'noise') {
+      const tq = Math.floor(t * 22);
+      off = amp * excMax * 0.8 * (hash(tq * 97.7) - 0.5) * 2;
+    }
+    const innerX = mouthX + off; // moving cone edge
+    // Small half-roll that stays BETWEEN the cone edge (cy±mh) and the frame
+    // rim (both at the mouth height) — its peak never reaches the frame rail at
+    // cy±frameHalf, so the surround can't exceed the basket (owner 2026-08-05).
+    const bulge = 2 + Math.abs(off) * 0.15;
+    const p = Skia.Path.Make();
+    p.moveTo(innerX, cy - mh);
+    p.quadTo((innerX + rimX) / 2, cy - mh - bulge, rimX, cy - mh);
+    p.moveTo(innerX, cy + mh);
+    p.quadTo((innerX + rimX) / 2, cy + mh + bulge, rimX, cy + mh);
+    return p;
+  }, [clock, visHz, amp, mode, mouthX, rimX, cy, mh]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-      {/* ── Motor: back plate, magnet ring, front pole plate (gradient steel). */}
-      <RoundedRect x={4} y={cy - h * 0.3} width={motor.backW} height={h * 0.6} r={2}>
-        <LinearGradient start={vec(4, cy - h * 0.3)} end={vec(4, cy + h * 0.3)} colors={[METAL_MID, METAL_LO]} />
+      {/* ── Motor: steel back plate · WARM magnet ring (reference cutaway) ·
+          steel front plate. */}
+      <RoundedRect x={3} y={cy - h * 0.3} width={motor.backW} height={h * 0.6} r={2}>
+        <LinearGradient start={vec(3, cy - h * 0.3)} end={vec(3, cy + h * 0.3)} colors={[METAL_MID, METAL_LO]} />
       </RoundedRect>
-      <RoundedRect x={4 + motor.backW} y={cy - h * 0.24} width={motor.ringW} height={h * 0.48} r={2}>
+      <RoundedRect x={3 + motor.backW} y={cy - h * 0.24} width={motor.ringW} height={h * 0.48} r={2}>
         <LinearGradient
-          start={vec(4 + motor.backW, cy - h * 0.24)}
-          end={vec(4 + motor.backW, cy + h * 0.24)}
-          colors={['#4a4d58', '#1e1f26']}
+          start={vec(3 + motor.backW, cy - h * 0.24)}
+          end={vec(3 + motor.backW, cy + h * 0.24)}
+          colors={['#8a5a20', '#3a2410']}
         />
       </RoundedRect>
-      <RoundedRect x={4 + motor.backW + motor.ringW} y={cy - h * 0.3} width={motor.poleW} height={h * 0.6} r={2}>
+      <RoundedRect x={3 + motor.backW + motor.ringW} y={cy - h * 0.3} width={motor.poleW} height={h * 0.6} r={2}>
         <LinearGradient
-          start={vec(4 + motor.backW + motor.ringW, cy - h * 0.3)}
-          end={vec(4 + motor.backW + motor.ringW, cy + h * 0.3)}
+          start={vec(3 + motor.backW + motor.ringW, cy - h * 0.3)}
+          end={vec(3 + motor.backW + motor.ringW, cy + h * 0.3)}
           colors={[METAL_HI, METAL_MID, METAL_LO]}
         />
       </RoundedRect>
       {/* Basket struts out to the fixed mounting rim. */}
       <Path path={motor.struts} color="#3a3a42" style="stroke" strokeWidth={1.6} />
-      {/* Fixed mounting flange above/below the mouth. */}
-      <RoundedRect x={mouthX + 2} y={cy - mh - 7} width={5} height={9} r={1.5}>
-        <LinearGradient start={vec(mouthX + 2, 0)} end={vec(mouthX + 7, 0)} colors={[METAL_MID, METAL_LO]} />
+      {/* FIXED basket front rim/lip — spans from the frame edge (outside the
+          cone) DOWN to the mouth, where the surround attaches. The cone + roll
+          stay inside it (owner 2026-08-05). */}
+      <RoundedRect x={rimX} y={cy - frameHalf} width={5} height={frameHalf - mh + 2} r={1.5}>
+        <LinearGradient start={vec(rimX, 0)} end={vec(rimX + 5, 0)} colors={[METAL_MID, METAL_LO]} />
       </RoundedRect>
-      <RoundedRect x={mouthX + 2} y={cy + mh - 2} width={5} height={9} r={1.5}>
-        <LinearGradient start={vec(mouthX + 2, 0)} end={vec(mouthX + 7, 0)} colors={[METAL_MID, METAL_LO]} />
+      <RoundedRect x={rimX} y={cy + mh - 2} width={5} height={frameHalf - mh + 2} r={1.5}>
+        <LinearGradient start={vec(rimX, 0)} end={vec(rimX + 5, 0)} colors={[METAL_MID, METAL_LO]} />
       </RoundedRect>
 
-      {/* ── The moving assembly: former + cone + surround + dust cap. */}
+      {/* CORRUGATED SPIDER — accordion suspension, moving former → fixed
+          basket (drawn behind the cone; flexes per frame). */}
+      <Path path={spider} color="#a8862e" style="stroke" strokeWidth={1.6} opacity={0.9} />
+
+      {/* STATIC CENTRE POLE PIECE — the fixed steel core. The voice coil rides
+          OUTSIDE it (walls above & below), so this is drawn BEHIND the moving
+          coil and shows THROUGH the gap between the coil walls (owner
+          2026-08-05: coil is outside the pole, not under it). */}
+      {/* The pole ends SHORT of the coil front (owner 2026-08-05) so that when
+          the cone/coil slides fully OUT there is a visible GAP past the pole's
+          right end — proving the core is STATIC while the coil moves over it. */}
+      <RoundedRect
+        x={3 + motor.backW + motor.ringW}
+        y={cy - poleHalf}
+        width={poleRight - (3 + motor.backW + motor.ringW)}
+        height={poleHalf * 2}
+        r={1.5}
+      >
+        <LinearGradient
+          start={vec(0, cy - poleHalf)}
+          end={vec(0, cy + poleHalf)}
+          colors={[METAL_HI, METAL_MID, METAL_LO]}
+          positions={[0, 0.45, 1]}
+        />
+      </RoundedRect>
+      <SkLine
+        p1={{ x: 3 + motor.backW + motor.ringW, y: cy - poleHalf + 1 }}
+        p2={{ x: poleRight, y: cy - poleHalf + 1 }}
+        color="#ffffff"
+        strokeWidth={0.7}
+        opacity={0.25}
+      />
+
+      {/* ── The moving assembly: voice coil (OUTSIDE the pole) + cone + cap. */}
       <Group transform={coneShift}>
         <Path path={coneParts.former}>
-          <LinearGradient start={vec(coneBaseX - 9, cy - 5)} end={vec(coneBaseX - 9, cy + 5)} colors={['#565a64', '#26272e']} />
+          <LinearGradient start={vec(gapX, cy - coilOuter)} end={vec(gapX, cy + coilOuter)} colors={['#565a64', '#26272e']} />
         </Path>
+        {/* Copper voice-coil turns — tight vertical striations (edge-on). */}
+        <Path path={coneParts.windings} color="#c9772e" style="stroke" strokeWidth={1.1} opacity={0.95} />
         <Path path={coneParts.cone}>
           <LinearGradient
-            start={vec(coneBaseX, cy - mh)}
+            start={vec(apexX, cy - mh)}
             end={vec(mouthX, cy + mh)}
             colors={[CONE_HI, CONE_MID, CONE_LO]}
             positions={[0, 0.5, 1]}
@@ -534,20 +762,19 @@ export function SpeakerConeView({
         </Path>
         <Path path={coneParts.cone} color="#14151a" style="stroke" strokeWidth={1} opacity={0.8} />
         <Path path={coneParts.topEdge} color="#ffffff" style="stroke" strokeWidth={1.2} opacity={0.22} />
-        {/* Surround: rubber lip (round-capped thick stroke) + highlight. */}
-        <Path path={coneParts.surround} color="#1c1d23" style="stroke" strokeWidth={6} strokeCap="round" />
-        <Path path={coneParts.surround} color="#ffffff" style="stroke" strokeWidth={1.2} strokeCap="round" opacity={0.12} />
-        {/* Dust cap: radial-gradient dome, lit from the upper-left. */}
-        <Circle cx={coneBaseX + 4} cy={cy} r={7.5}>
-          <RadialGradient c={vec(coneBaseX + 1.5, cy - 2.5)} r={11} colors={['#9ba0ac', '#3f424b']} />
+        {/* Dust cap: radial-gradient dome over the apex, lit from upper-left. */}
+        <Circle cx={apexX + 3} cy={cy} r={6.5}>
+          <RadialGradient c={vec(apexX + 1, cy - 2.5)} r={10} colors={['#9ba0ac', '#3f424b']} />
         </Circle>
       </Group>
 
-      {/* Sound rays: soft glow pass + crisp pass (same arc geometry). */}
-      <Path path={rays} color={WAVE} style="stroke" strokeWidth={3.6} opacity={0.16}>
-        <BlurMask blur={4} style="normal" />
-      </Path>
-      <Path path={rays} color={WAVE} style="stroke" strokeWidth={1.4} opacity={0.55} />
+      {/* FLEXING surround roll — a THIN elastic band bridging the moving cone
+          to the fixed rim (owner 2026-08-05: was too long/thick). */}
+      <Path path={surround} color="#1c1d23" style="stroke" strokeWidth={3.2} strokeCap="round" />
+      <Path path={surround} color="#ffffff" style="stroke" strokeWidth={0.9} strokeCap="round" opacity={0.16} />
+
+      {/* No emanating "sound rays" (owner 2026-08-05) — the air window shows
+          the propagation; nothing decorative is drawn leaving the speaker. */}
       <Vignette w={w} h={h} />
     </Canvas>
   );
@@ -563,6 +790,8 @@ export function PressureGraphView({
   visHz,
   amp,
   mode = 'wave',
+  lambdaPx,
+  originX = 0,
 }: {
   clock: SharedValue<number>;
   width: number;
@@ -570,12 +799,22 @@ export function PressureGraphView({
   visHz: number;
   amp: number;
   mode?: AirMode;
+  /** Spatial scale in px — pass the air window's λ so crests align. */
+  lambdaPx?: number;
+  /** The wave is BORN here (px) and travels right; flat (atmospheric) to the
+   *  left of it. Set to the speaker's mouth x so the speaker "creates" the wave
+   *  (owner 2026-08-05). */
+  originX?: number;
 }) {
   const w = width;
   const h = height;
-  const lambda = w / 2.2; // SAME spatial scale as the particle window — the
-  // drawn pressure peaks align with the compression bands above.
+  const lambda = lambdaPx && lambdaPx > 8 ? lambdaPx : w / 2.2; // SAME spatial
+  // scale as the particle window — the drawn pressure peaks align with the
+  // compression bands above.
   const N = 90;
+  const mid = h / 2;
+  const fullA = h * 0.36; // pixel excursion at full scale (amp = 1) — the MIDI
+  // gradient maps over ±fullA so a quiet wave stays blue and a loud one reaches red.
 
   const trace = useDerivedValue(() => {
     const t = clock.value;
@@ -587,18 +826,21 @@ export function PressureGraphView({
     for (let i = 0; i <= N; i++) {
       const x = (i / N) * w;
       let y: number;
-      if (mode === 'noise') {
+      if (x < originX) {
+        y = mid; // atmospheric — the wave hasn't been created here yet
+      } else if (mode === 'noise') {
         const tq = Math.floor(t * 22);
         y = mid - a * 0.8 * (hash(i * 91.3 + tq * 57.1) - 0.5) * 2;
       } else {
-        // p ∝ cos(ωt − kx): peaks sit exactly under the compression bands.
-        y = mid - a * Math.cos(om * t - k * x);
+        // p ∝ cos(ωt − k(x−x0)): born at the speaker mouth, travels right, and
+        // its peaks sit under the compression bands.
+        y = mid - a * Math.cos(om * t - k * (x - originX));
       }
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [clock, visHz, amp, mode, w, h, lambda]);
+  }, [clock, visHz, amp, mode, w, h, lambda, originX]);
 
   // Gradient underfill: the SAME p ∝ cos(ωt − kx) samples, closed back to the
   // atmospheric zero line (styling only — identical pressure law).
@@ -613,18 +855,20 @@ export function PressureGraphView({
     for (let i = 0; i <= N; i++) {
       const x = (i / N) * w;
       let y: number;
-      if (mode === 'noise') {
+      if (x < originX) {
+        y = mid;
+      } else if (mode === 'noise') {
         const tq = Math.floor(t * 22);
         y = mid - a * 0.8 * (hash(i * 91.3 + tq * 57.1) - 0.5) * 2;
       } else {
-        y = mid - a * Math.cos(om * t - k * x);
+        y = mid - a * Math.cos(om * t - k * (x - originX));
       }
       p.lineTo(x, y);
     }
     p.lineTo(w, mid);
     p.close();
     return p;
-  }, [clock, visHz, amp, mode, w, h, lambda]);
+  }, [clock, visHz, amp, mode, w, h, lambda, originX]);
 
   // Styled axis ticks along the zero line (static chrome).
   const ticks = useMemo(() => {
@@ -638,22 +882,45 @@ export function PressureGraphView({
   }, [w, h]);
 
   return (
+    <View style={{ width: w, height: h }}>
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-      {/* Underfill: pressure above/below atmospheric, hottest at the zero line. */}
-      <Path path={under} opacity={0.85}>
-        <LinearGradient
-          start={vec(0, 0)}
-          end={vec(0, h)}
-          colors={[withAlpha(WAVE, 0), withAlpha(WAVE, 0.2), withAlpha(WAVE, 0)]}
-        />
+      {/* Underfill — MIDI level ramp (blue at the zero line → red at the peaks). */}
+      <Path path={under} opacity={0.42}>
+        <LinearGradient start={vec(0, mid - fullA)} end={vec(0, mid + fullA)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
       </Path>
       <Path path={ticks} color={GRID} style="stroke" strokeWidth={1.2} />
       {/* Atmospheric-pressure zero line — brighter than the grid (reference). */}
       <SkLine p1={{ x: 0, y: h / 2 }} p2={{ x: w, y: h / 2 }} color={ZERO_REF} strokeWidth={1.4} />
-      <GlowStroke path={trace} color={WAVE} width={2.2} />
+      {/* Trace: glow + crisp, BOTH coloured by the MIDI amplitude gradient
+          (owner 2026-08-05: level shown in the MIDI scheme). */}
+      <Path path={trace} style="stroke" strokeWidth={5.4} strokeCap="round" strokeJoin="round" opacity={0.22}>
+        <BlurMask blur={4} style="normal" />
+        <LinearGradient start={vec(0, mid - fullA)} end={vec(0, mid + fullA)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
+      </Path>
+      <Path path={trace} style="stroke" strokeWidth={2.2} strokeCap="round" strokeJoin="round">
+        <LinearGradient start={vec(0, mid - fullA)} end={vec(0, mid + fullA)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
+      </Path>
     </Canvas>
+      {/* +/- PRESSURE metrics on the LEFT (owner 2026-08-05): above the zero
+          line = compression (+), below = rarefaction (−). */}
+      <Text style={[pgStyles.pLabel, pgStyles.pPlus, { top: h / 2 - 16 }]}>+ PRESSURE</Text>
+      <Text style={[pgStyles.pLabel, pgStyles.pMinus, { top: h / 2 + 5 }]}>− PRESSURE</Text>
+    </View>
   );
 }
+
+const pgStyles = StyleSheet.create({
+  pLabel: {
+    position: 'absolute',
+    left: 4,
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 8.5,
+    letterSpacing: 0.8,
+  },
+  // Both pressure labels amber (owner 2026-08-05) — not red/blue.
+  pPlus: { color: WAVE },
+  pMinus: { color: WAVE },
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // The three-window composite — Module 2's centerpiece
@@ -665,6 +932,7 @@ export function ThreeWindowView({
   running,
   mode = 'wave',
   showEar = true,
+  showZones = true,
 }: {
   width: number;
   visHz: number;
@@ -672,17 +940,52 @@ export function ThreeWindowView({
   running: boolean;
   mode?: AirMode;
   showEar?: boolean;
+  showZones?: boolean;
 }) {
   // ONE clock — all three windows phase-locked (the whole point).
   const clock = useVizClock(running);
+  // Side-by-side (owner 2026-08-05): THIN speaker on the LEFT firing into the
+  // air animation on the RIGHT — source → medium reads left-to-right. The
+  // pressure graph sits DIRECTLY UNDER the air at the SAME width/x-origin so
+  // its crests line up vertically with the particle compressions above (same
+  // lambda + same cos(ωt−kx) phase → aligned across the screen).
+  // Wider speaker now that no sound-rays take space (owner 2026-08-05) — better
+  // proportions, less squished. Clamped so a narrow panel still leaves room for
+  // the air animation on the right.
+  const spkW = Math.min(120, Math.max(96, width * 0.36));
+  const gap = 6;
+  const airW = Math.max(60, width - spkW - gap);
+  const originX = spkW * 0.72; // the speaker's cone-mouth x — the wave is born here
+  const lambdaPx = airW / 2.2; // one spatial scale shared by air + graph
+  // Shift the air's phase so its compressions line up with the FULL-WIDTH graph
+  // whose wave starts at originX: air-local x=0 sits at screen (spkW+gap).
+  const airPhasePx = spkW + gap - originX;
   return (
     <View style={{ gap: 4 }}>
-      <Text style={twStyles.winLabel}>SPEAKER — electricity → motion</Text>
-      <SpeakerConeView clock={clock} width={width} visHz={visHz} amp={amp} mode={mode} />
-      <Text style={twStyles.winLabel}>AIR — what actually exists (molecules, moving)</Text>
-      <AirParticlesView clock={clock} width={width} visHz={visHz} amp={amp} mode={mode} showEar={showEar} />
-      <Text style={twStyles.winLabel}>THE GRAPH — pressure vs position/time (NOT the shape of sound)</Text>
-      <PressureGraphView clock={clock} width={width} visHz={visHz} amp={amp} mode={mode} />
+      <View style={{ flexDirection: 'row', gap }}>
+        <View style={{ gap: 4 }}>
+          <Text style={twStyles.winLabel}>SPEAKER</Text>
+          <SpeakerConeView clock={clock} width={spkW} height={116} visHz={visHz} amp={amp} mode={mode} />
+        </View>
+        <View style={{ gap: 4 }}>
+          <Text style={twStyles.winLabel}>AIR — molecules, moving</Text>
+          <AirParticlesView
+            clock={clock}
+            width={airW}
+            visHz={visHz}
+            amp={amp}
+            mode={mode}
+            showEar={showEar}
+            showZones={showZones}
+            phasePx={airPhasePx}
+          />
+        </View>
+      </View>
+      {/* THE GRAPH — full width UNDER the speaker + air. The wave is created at
+          the speaker mouth and travels right; its crests sit under the
+          compressions above. */}
+      <Text style={twStyles.winLabel}>THE GRAPH — the speaker creates the wave; it travels right</Text>
+      <PressureGraphView clock={clock} width={width} visHz={visHz} amp={amp} mode={mode} lambdaPx={lambdaPx} originX={originX} />
     </View>
   );
 }
@@ -1028,6 +1331,45 @@ export function RateComparatorView({
 
 export const RULER_ROOM_M = 7;
 
+/** A colour-tracked reference molecule for the wavelength view — oscillates in
+ *  place with the wave (same law as the field dots), never travels. */
+function WaveTracer({
+  phase,
+  amp,
+  disp,
+  lambdaPx,
+  homeX,
+  homeY,
+  color,
+  opacity,
+}: {
+  phase: SharedValue<number>;
+  amp: number;
+  disp: number;
+  lambdaPx: number;
+  homeX: number;
+  homeY: number;
+  color: string;
+  opacity: number;
+}) {
+  const dot = useDerivedValue(() => {
+    const ph = phase.value;
+    const k = (2 * Math.PI) / Math.max(10, lambdaPx);
+    const dx = amp * disp * Math.sin(ph - k * homeX);
+    const p = Skia.Path.Make();
+    p.addCircle(homeX + dx, homeY, 1.9); // SAME radius as the field particles
+    return p;
+  }, [phase, amp, disp, lambdaPx, homeX, homeY]);
+  return (
+    <Group>
+      <Path path={dot} color={color} opacity={opacity * 0.4}>
+        <BlurMask blur={3} style="normal" />
+      </Path>
+      <Path path={dot} color={color} opacity={opacity} />
+    </Group>
+  );
+}
+
 export function WavelengthRulerView({
   phase,
   width,
@@ -1047,6 +1389,16 @@ export function WavelengthRulerView({
   const floorY = h - 18;
   const lambdaM = 343 / Math.max(20, freqHz);
   const lambdaPx = (lambdaM / RULER_ROOM_M) * w;
+  const tracerDisp = Math.min(9, lambdaPx / 7); // same excursion as the field dots
+  // Colour-tracked molecules (owner 2026-08-05): the standard three + a FOURTH
+  // above the listener's head — each just oscillates in place with the wave.
+  const headX = w - 26;
+  const waveTracers = [
+    { hx: w * 0.2, hy: 10 + 0.32 * (floorY - 56), color: '#37e05f', op: 0.55 },
+    { hx: w * 0.45, hy: 10 + 0.62 * (floorY - 56), color: '#6fa8ff', op: 0.55 },
+    { hx: w * 0.66, hy: 10 + 0.44 * (floorY - 56), color: '#ffb14d', op: 0.55 },
+    { hx: headX, hy: floorY - 58, color: '#ff5a8a', op: 0.9 }, // the molecule at the listener
+  ];
 
   // Dense particle field — compression bands are the star.
   const COLS = 38;
@@ -1161,6 +1513,21 @@ export function WavelengthRulerView({
           <BlurMask blur={3.5} style="normal" />
         </Path>
         <Path path={dots} color={PARTICLE} />
+        {/* Colour-tracked molecules: the standard three + a FOURTH above the
+            listener's head (owner 2026-08-05). */}
+        {waveTracers.map((tr, i) => (
+          <WaveTracer
+            key={i}
+            phase={phase}
+            amp={amp}
+            disp={tracerDisp}
+            lambdaPx={lambdaPx}
+            homeX={tr.hx}
+            homeY={tr.hy}
+            color={tr.color}
+            opacity={tr.op}
+          />
+        ))}
         {/* Floor: gradient ground strip + edge line (house Floor idiom). */}
         <RoundedRect x={0} y={floorY} width={w} height={h - floorY} r={0}>
           <LinearGradient start={vec(0, floorY)} end={vec(0, h)} colors={['#17181d', '#0d0d10']} />
@@ -1464,13 +1831,14 @@ export function OctaveSpiralView({
         <Circle cx={cx} cy={cy} r={3.4}>
           <RadialGradient c={vec(cx - 1, cy - 1)} r={5} colors={[METAL_HI, METAL_LO]} />
         </Circle>
-        {/* Marker ray + ring: glow + crisp. */}
-        <GlowStroke path={markerLine} color={WAVE} width={2.4} />
+        {/* Marker ray + ring: glow + crisp. GREEN — this is the node you drag
+            (owner 2026-08-05). */}
+        <GlowStroke path={markerLine} color={ACCENT_GREEN} width={2.4} />
         {/* Satellite + pulsing core: soft halo + crisp (one lap = one cycle). */}
-        <Path path={markerAnim} color={WAVE} opacity={0.4}>
+        <Path path={markerAnim} color={ACCENT_GREEN} opacity={0.4}>
           <BlurMask blur={6} style="normal" />
         </Path>
-        <Path path={markerAnim} color={WAVE} />
+        <Path path={markerAnim} color={ACCENT_GREEN} />
         <Vignette w={w} h={h} />
       </Canvas>
       {/* Octave labels along the doubling ray (mono ticks — ×2 each lap). */}
@@ -1593,7 +1961,8 @@ export function EqualLoudnessView({
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        <Path path={grid} color={GHOST} style="stroke" strokeWidth={1} />
+        {/* Frequency grid — brighter for contrast (owner 2026-08-05). */}
+        <Path path={grid} color="#4a4c56" style="stroke" strokeWidth={1.2} />
         {/* 1 kHz reference line (sensitivity 0 dB) — brighter reference. */}
         <SkLine p1={{ x: 0, y: yOf(0) }} p2={{ x: w, y: yOf(0) }} color={ZERO_REF} strokeWidth={1.4} />
         {/* Gradient underfill gives the sensitivity region a body. */}
@@ -1608,17 +1977,36 @@ export function EqualLoudnessView({
         {/* The signal lane: subtle panel + divider between ear and signal. */}
         <RoundedRect x={0} y={h - stripH - 5} width={w} height={stripH + 5} r={0} color="#101117" />
         <SkLine p1={{ x: 0, y: h - stripH - 6 }} p2={{ x: w, y: h - stripH - 6 }} color={GRID} strokeWidth={1.6} />
-        <Path path={strip} color={CONE} style="stroke" strokeWidth={3.4} opacity={0.25}>
+        {/* THE SIGNAL waveform — coloured by AMPLITUDE via the MIDI ramp (owner
+            2026-08-05): blue at the zero line → red at the peaks. */}
+        <Path path={strip} style="stroke" strokeWidth={3.4} opacity={0.3}>
           <BlurMask blur={3} style="normal" />
+          <LinearGradient start={vec(0, stripMid - 11)} end={vec(0, stripMid + 11)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
         </Path>
-        <Path path={strip} color={CONE} style="stroke" strokeWidth={1.8} />
-        {/* The riding dot: soft halo + crisp pulsing core. */}
-        <Path path={anim} color={WAVE} opacity={0.4}>
+        <Path path={strip} style="stroke" strokeWidth={1.8}>
+          <LinearGradient start={vec(0, stripMid - 11)} end={vec(0, stripMid + 11)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
+        </Path>
+        {/* The riding dot: GREEN (owner 2026-08-05) — matches the frequency
+            slider; soft halo + crisp pulsing core. */}
+        <Path path={anim} color={ACCENT_GREEN} opacity={0.4}>
           <BlurMask blur={6} style="normal" />
         </Path>
-        <Path path={anim} color={WAVE} />
+        <Path path={anim} color={ACCENT_GREEN} />
+        {/* VERTICAL VOLUME scale (MIDI colours) on the far LEFT + a level marker
+            (owner 2026-08-05): top = loud (red), bottom = quiet (blue). */}
+        <RoundedRect x={0} y={6} width={7} height={h - stripH - 14} r={2}>
+          <LinearGradient start={vec(0, 6)} end={vec(0, h - stripH - 8)} colors={MIDI_VSCALE_COLORS} positions={MIDI_VSCALE_POS} />
+        </RoundedRect>
+        <SkLine
+          p1={{ x: 0, y: 6 + (1 - Math.max(0, Math.min(1, level01))) * (h - stripH - 14) }}
+          p2={{ x: 11, y: 6 + (1 - Math.max(0, Math.min(1, level01))) * (h - stripH - 14) }}
+          color="#ffffff"
+          strokeWidth={2}
+        />
       </Canvas>
-      {/* Log-frequency tick labels (mono). */}
+      {/* VOL label above the vertical scale. */}
+      <Text style={[tickText, { left: 0, top: 0, width: 22, color: '#c8ccd4' }]}>VOL</Text>
+      {/* Log-frequency tick labels (mono) — brighter for contrast. */}
       {[
         { f: 100, label: '100' },
         { f: 1000, label: '1k' },
@@ -1626,7 +2014,7 @@ export function EqualLoudnessView({
       ].map((t) => (
         <Text
           key={t.f}
-          style={[tickText, { left: Math.max(0, Math.min(w - 24, xOf(t.f) - 12)), width: 24, textAlign: 'center' as const, top: 0 }]}
+          style={[tickText, { left: Math.max(0, Math.min(w - 24, xOf(t.f) - 12)), width: 24, textAlign: 'center' as const, top: 0, color: '#c8ccd4' }]}
         >
           {t.label}
         </Text>
@@ -1664,6 +2052,9 @@ export function PhaseOverlayView({
   const unit = h * 0.095;
   const CYC = 2.2;
   const phi = (phaseDeg * Math.PI) / 180;
+  // Near 180° the two inputs cancel — the sum collapses to the centerline; flag
+  // it so the sum draws as a glowing RED flat line (owner 2026-08-05: "bad").
+  const cancelled = Math.abs((((phaseDeg % 360) + 360) % 360) - 180) < 12;
 
   const pathA = useDerivedValue(() => {
     const t = clock.value;
@@ -1735,24 +2126,41 @@ export function PhaseOverlayView({
         <SkLine p1={{ x: 0, y: midTop }} p2={{ x: w, y: midTop }} color={ZERO_REF} strokeWidth={1.2} />
         <SkLine p1={{ x: 0, y: midBot }} p2={{ x: w, y: midBot }} color={ZERO_REF} strokeWidth={1.2} />
         <SkLine p1={{ x: 0, y: h * 0.52 }} p2={{ x: w, y: h * 0.52 }} color="#1c1c22" strokeWidth={2} />
-        {/* Inputs: A steel, B blue — light glow so the SUM stays the star. */}
-        <Path path={pathA} color="#8a8c94" style="stroke" strokeWidth={4.5} opacity={0.16}>
+        {/* Inputs: A PURPLE, B BLUE (owner 2026-08-05) — light glow so the SUM
+            stays the star. */}
+        <Path path={pathA} color="#b45bff" style="stroke" strokeWidth={4.5} opacity={0.18}>
           <BlurMask blur={4} style="normal" />
         </Path>
-        <Path path={pathA} color="#8a8c94" style="stroke" strokeWidth={2} />
+        <Path path={pathA} color="#b45bff" style="stroke" strokeWidth={2} />
         <Path path={pathB} color={ACCENT_BLUE} style="stroke" strokeWidth={4.5} opacity={0.16}>
           <BlurMask blur={4} style="normal" />
         </Path>
         <Path path={pathB} color={ACCENT_BLUE} style="stroke" strokeWidth={2} />
-        {/* THE SUM: gradient underfill + full glow stroke. */}
-        <Path path={sumUnder} opacity={0.85}>
-          <LinearGradient
-            start={vec(0, midBot - unit * 2.2)}
-            end={vec(0, midBot + unit * 2.2)}
-            colors={[withAlpha(WAVE, 0), withAlpha(WAVE, 0.2), withAlpha(WAVE, 0)]}
-          />
-        </Path>
-        <GlowStroke path={pathS} color={WAVE} width={2.8} />
+        {/* THE SUM. Normally coloured by the MIDI amplitude ramp (blue at the
+            midline → red at the peaks). At full cancellation (~180°) it collapses
+            to the centerline and glows RED — the "bad, they cancelled" signal
+            (owner 2026-08-05). */}
+        {cancelled ? (
+          <>
+            <Path path={pathS} color="#ff3b30" style="stroke" strokeWidth={8} strokeCap="round" opacity={0.45}>
+              <BlurMask blur={8} style="normal" />
+            </Path>
+            <Path path={pathS} color="#ff5a48" style="stroke" strokeWidth={2.8} strokeCap="round" />
+          </>
+        ) : (
+          <>
+            <Path path={sumUnder} opacity={0.5}>
+              <LinearGradient start={vec(0, midBot - unit * 2.1)} end={vec(0, midBot + unit * 2.1)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
+            </Path>
+            <Path path={pathS} style="stroke" strokeWidth={6.5} strokeCap="round" strokeJoin="round" opacity={0.2}>
+              <BlurMask blur={5} style="normal" />
+              <LinearGradient start={vec(0, midBot - unit * 2.1)} end={vec(0, midBot + unit * 2.1)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
+            </Path>
+            <Path path={pathS} style="stroke" strokeWidth={2.8} strokeCap="round" strokeJoin="round">
+              <LinearGradient start={vec(0, midBot - unit * 2.1)} end={vec(0, midBot + unit * 2.1)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
+            </Path>
+          </>
+        )}
       </Canvas>
       <Text style={[tickText, { left: 4, top: 2 }]}>INPUTS</Text>
       <Text style={[tickText, { left: 4, top: h * 0.52 + 3 }]}>SUM = A + B</Text>
@@ -1763,144 +2171,148 @@ export function PhaseOverlayView({
 // ─────────────────────────────────────────────────────────────────────────────
 // Module 11 — Harmonic stacker: six sine layers (1/n amplitudes) + their SUM.
 
-export function HarmonicStackerView({
+const HSTACK_ROWS = 6;
+const HSTACK_ROW_H = 30; // taller rows so the harmonics are well spaced (owner 2026-08-05)
+const HSTACK_SUM_H = 86;
+const HSTACK_TOP = 4;
+const HSTACK_GAP = 12;
+const HSTACK_ROWS_BOTTOM = HSTACK_TOP + HSTACK_ROWS * HSTACK_ROW_H;
+const HSTACK_MIDS = HSTACK_ROWS_BOTTOM + HSTACK_GAP + HSTACK_SUM_H / 2;
+// H1 (fundamental) at the BOTTOM, H6 at the top (owner 2026-08-05).
+const hstackMid = (n: number) => HSTACK_TOP + (HSTACK_ROWS - n + 0.5) * HSTACK_ROW_H;
+
+/** One harmonic layer — a travelling sine whose drawn amplitude AND colour both
+ *  follow its amplitude (MIDI ramp: quiet = blue → loud = red). */
+function HStackRow({
   clock,
   width,
-  on,
+  n,
+  amp,
   visHz,
 }: {
   clock: SharedValue<number>;
   width: number;
-  /** Six booleans — harmonics 1..6 in/out of the stack. */
-  on: boolean[];
-  /** Slowed fundamental rate. Every layer travels PHASE-LOCKED (ωₙ = n·ω₀,
-   *  kₙ = n·k₀ → same phase velocity), so the summed SHAPE glides rigidly —
-   *  the visual reason a harmonic recipe is one stable repeating waveform. */
+  n: number;
+  amp: number;
+  visHz: number;
+}) {
+  const mid = hstackMid(n);
+  const path = useDerivedValue(() => {
+    const t = clock.value;
+    const om = 2 * Math.PI * visHz;
+    const a = amp * (HSTACK_ROW_H * 0.42); // drawn amplitude tracks the level
+    const p = Skia.Path.Make();
+    const N = 140;
+    for (let i = 0; i <= N; i++) {
+      const x = (i / N) * width;
+      const y = mid - a * Math.sin(2 * Math.PI * 1.6 * n * (i / N) - n * om * t);
+      if (i === 0) p.moveTo(x, y);
+      else p.lineTo(x, y);
+    }
+    return p;
+  }, [clock, width, mid, n, amp, visHz]);
+  const on = amp > 0.02;
+  const col = on ? levelColor(amp) : '#2a2a30';
+  return (
+    <Group>
+      <SkLine p1={{ x: 0, y: mid }} p2={{ x: width, y: mid }} color="#161619" strokeWidth={1} />
+      {on ? (
+        <Path path={path} color={col} style="stroke" strokeWidth={3.4} opacity={0.16}>
+          <BlurMask blur={4} style="normal" />
+        </Path>
+      ) : null}
+      <Path path={path} color={col} style="stroke" strokeWidth={on ? 2 : 1.2} opacity={on ? 1 : 0.5} />
+    </Group>
+  );
+}
+
+export function HarmonicStackerView({
+  clock,
+  width,
+  amps,
+  visHz,
+}: {
+  clock: SharedValue<number>;
+  width: number;
+  /** Six per-harmonic amplitudes 0..1 (H1..H6). */
+  amps: number[];
+  /** Slowed fundamental rate. Every layer travels PHASE-LOCKED (ωₙ = n·ω₀). */
   visHz: number;
 }) {
   const w = width;
-  const rowH = 21;
-  const sumH = 66;
-  const h = 6 * rowH + 10 + sumH;
-
-  const rowsOn = useDerivedValue(() => {
-    const t = clock.value;
-    const om = 2 * Math.PI * visHz;
-    const p = Skia.Path.Make();
-    const N = 140;
-    for (let n = 1; n <= 6; n++) {
-      if (!on[n - 1]) continue;
-      const mid = (n - 0.5) * rowH;
-      const a = 8.5 * Math.pow(1 / n, 0.6); // visual hint of 1/n without vanishing
-      for (let i = 0; i <= N; i++) {
-        const x = (i / N) * w;
-        const y = mid - a * Math.sin(2 * Math.PI * 1.6 * n * (i / N) - n * om * t);
-        if (i === 0) p.moveTo(x, y);
-        else p.lineTo(x, y);
-      }
-    }
-    return p;
-  }, [clock, w, on, visHz]);
-
-  const rowsOff = useDerivedValue(() => {
-    const t = clock.value;
-    const om = 2 * Math.PI * visHz;
-    const p = Skia.Path.Make();
-    const N = 140;
-    for (let n = 1; n <= 6; n++) {
-      if (on[n - 1]) continue;
-      const mid = (n - 0.5) * rowH;
-      const a = 8.5 * Math.pow(1 / n, 0.6);
-      for (let i = 0; i <= N; i++) {
-        const x = (i / N) * w;
-        const y = mid - a * Math.sin(2 * Math.PI * 1.6 * n * (i / N) - n * om * t);
-        if (i === 0) p.moveTo(x, y);
-        else p.lineTo(x, y);
-      }
-    }
-    return p;
-  }, [clock, w, on, visHz]);
+  const h = HSTACK_ROWS_BOTTOM + HSTACK_GAP + HSTACK_SUM_H;
+  const a6 = amps;
 
   const sum = useDerivedValue(() => {
     const t = clock.value;
     const om = 2 * Math.PI * visHz;
     const p = Skia.Path.Make();
     const N = 140;
-    // SUM — true 1/n weights, engine-style peak normalization.
-    const midS = 6 * rowH + 10 + sumH / 2;
     let wsum = 0;
-    for (let n = 1; n <= 6; n++) if (on[n - 1]) wsum += 1 / n;
+    for (let n = 1; n <= HSTACK_ROWS; n++) wsum += a6[n - 1] ?? 0;
     const norm = 1 / Math.max(1, wsum);
     for (let i = 0; i <= N; i++) {
       const x = (i / N) * w;
       let s = 0;
-      for (let n = 1; n <= 6; n++) {
-        if (on[n - 1]) s += (1 / n) * Math.sin(2 * Math.PI * 1.6 * n * (i / N) - n * om * t);
-      }
-      const y = midS - sumH * 0.42 * s * norm;
+      for (let n = 1; n <= HSTACK_ROWS; n++) s += (a6[n - 1] ?? 0) * Math.sin(2 * Math.PI * 1.6 * n * (i / N) - n * om * t);
+      const y = HSTACK_MIDS - HSTACK_SUM_H * 0.42 * s * norm;
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [clock, w, on, visHz]);
+  }, [clock, w, a6, visHz]);
 
-  // Sum underfill — the SAME true-1/n, peak-normalized sum, closed to the sum
-  // midline (styling only; the exact-sum math is untouched).
   const sumUnder = useDerivedValue(() => {
     const t = clock.value;
     const om = 2 * Math.PI * visHz;
     const p = Skia.Path.Make();
     const N = 140;
-    const midS = 6 * rowH + 10 + sumH / 2;
     let wsum = 0;
-    for (let n = 1; n <= 6; n++) if (on[n - 1]) wsum += 1 / n;
+    for (let n = 1; n <= HSTACK_ROWS; n++) wsum += a6[n - 1] ?? 0;
     const norm = 1 / Math.max(1, wsum);
-    p.moveTo(0, midS);
+    p.moveTo(0, HSTACK_MIDS);
     for (let i = 0; i <= N; i++) {
       const x = (i / N) * w;
       let s = 0;
-      for (let n = 1; n <= 6; n++) {
-        if (on[n - 1]) s += (1 / n) * Math.sin(2 * Math.PI * 1.6 * n * (i / N) - n * om * t);
-      }
-      p.lineTo(x, midS - sumH * 0.42 * s * norm);
+      for (let n = 1; n <= HSTACK_ROWS; n++) s += (a6[n - 1] ?? 0) * Math.sin(2 * Math.PI * 1.6 * n * (i / N) - n * om * t);
+      p.lineTo(x, HSTACK_MIDS - HSTACK_SUM_H * 0.42 * s * norm);
     }
-    p.lineTo(w, midS);
+    p.lineTo(w, HSTACK_MIDS);
     p.close();
     return p;
-  }, [clock, w, on, visHz]);
+  }, [clock, w, a6, visHz]);
 
-  const midS = 6 * rowH + 10 + sumH / 2;
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        {/* Divider between the layer rows and the sum — brighter reference. */}
-        <SkLine p1={{ x: 0, y: 6 * rowH + 5 }} p2={{ x: w, y: 6 * rowH + 5 }} color={ZERO_REF} strokeWidth={1.4} />
-        {/* Ghost rows (out of the stack) stay dim; live rows glow amber. */}
-        <Path path={rowsOff} color="#26262c" style="stroke" strokeWidth={1.4} />
-        <Path path={rowsOn} color={WAVE} style="stroke" strokeWidth={3.6} opacity={0.16}>
-          <BlurMask blur={4} style="normal" />
+        {/* Divider between the layer rows and the sum. */}
+        <SkLine p1={{ x: 0, y: HSTACK_ROWS_BOTTOM + HSTACK_GAP / 2 }} p2={{ x: w, y: HSTACK_ROWS_BOTTOM + HSTACK_GAP / 2 }} color={ZERO_REF} strokeWidth={1.4} />
+        {/* Harmonic layers — each coloured by its own amplitude (MIDI). */}
+        {a6.slice(0, HSTACK_ROWS).map((a, i) => (
+          <HStackRow key={i} clock={clock} width={w} n={i + 1} amp={a} visHz={visHz} />
+        ))}
+        {/* THE SUM — MIDI amplitude gradient. */}
+        <Path path={sumUnder} opacity={0.5}>
+          <LinearGradient start={vec(0, HSTACK_MIDS - HSTACK_SUM_H * 0.45)} end={vec(0, HSTACK_MIDS + HSTACK_SUM_H * 0.45)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
         </Path>
-        <Path path={rowsOn} color="rgba(255,198,77,.6)" style="stroke" strokeWidth={1.6} />
-        {/* THE SUM: gradient underfill + glow stroke. */}
-        <Path path={sumUnder} opacity={0.85}>
-          <LinearGradient
-            start={vec(0, midS - sumH * 0.45)}
-            end={vec(0, midS + sumH * 0.45)}
-            colors={[withAlpha(WAVE, 0), withAlpha(WAVE, 0.2), withAlpha(WAVE, 0)]}
-          />
+        <Path path={sum} style="stroke" strokeWidth={6} strokeCap="round" strokeJoin="round" opacity={0.2}>
+          <BlurMask blur={5} style="normal" />
+          <LinearGradient start={vec(0, HSTACK_MIDS - HSTACK_SUM_H * 0.45)} end={vec(0, HSTACK_MIDS + HSTACK_SUM_H * 0.45)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
         </Path>
-        <GlowStroke path={sum} color={WAVE} width={2.6} />
+        <Path path={sum} style="stroke" strokeWidth={2.6} strokeCap="round" strokeJoin="round">
+          <LinearGradient start={vec(0, HSTACK_MIDS - HSTACK_SUM_H * 0.45)} end={vec(0, HSTACK_MIDS + HSTACK_SUM_H * 0.45)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
+        </Path>
       </Canvas>
-      {/* Harmonic row numbers (mono): amber when in the stack, ghost when out. */}
-      {Array.from({ length: 6 }, (_, i) => (
-        <Text
-          key={i}
-          style={[tickText, { left: 3, top: (i + 0.5) * rowH - 6, color: on[i] ? withAlpha(WAVE, 0.9) : '#4a4a54' }]}
-        >
-          {i + 1}
-        </Text>
-      ))}
-      <Text style={[tickText, { left: 3, top: 6 * rowH + 8 }]}>SUM</Text>
+      {/* Harmonic row numbers (H1 at the bottom) — coloured by level. */}
+      {Array.from({ length: HSTACK_ROWS }, (_, i) => {
+        const a = a6[i] ?? 0;
+        return (
+          <Text key={i} style={[tickText, { left: 3, top: hstackMid(i + 1) - 6, color: a > 0.02 ? levelColor(a) : '#4a4a54' }]}>
+            {`H${i + 1}`}
+          </Text>
+        );
+      })}
+      <Text style={[tickText, { left: 3, top: HSTACK_MIDS - 6 }]}>SUM</Text>
     </View>
   );
 }
@@ -2043,32 +2455,18 @@ export function SignalPathView({
   const w = width;
   const h = height;
   const mid = h / 2;
-  const micX = w - 22;
-  const waveX0 = 52;
-  const waveX1 = micX - 20;
+  // Source is the SAME speaker used everywhere else (owner 2026-08-05) — a small
+  // SpeakerConeView on the left; the air + mic live in the canvas to its right.
+  const spkW = Math.min(88, Math.max(70, w * 0.34));
+  const airW = w - spkW;
+  // Mic moved IN from the right edge (owner 2026-08-05) so more of its BARREL
+  // shows — it reads more like a microphone.
+  const micX = airW - 42;
+  const barrelRight = airW - 4;
+  const waveX0 = 6;
+  const waveX1 = micX - 18;
 
-  // The source — the SAME excursion law as ever (off = 6·sin(ωt)), now
-  // translating an ILLUSTRATED mini speaker (magnet, curved gradient cone,
-  // surround, dust cap) instead of a bare trapezoid outline.
-  const coneShift = useDerivedValue(() => {
-    const t = clock.value;
-    return [{ translateX: 6 * Math.sin(2 * Math.PI * visHz * t) }];
-  }, [clock, visHz]);
-
-  const coneParts = useMemo(() => {
-    const cone = Skia.Path.Make();
-    cone.moveTo(13, mid - 5);
-    cone.quadTo(27, mid - 8, 40, mid - h * 0.3);
-    cone.lineTo(40, mid + h * 0.3);
-    cone.quadTo(27, mid + 8, 13, mid + 5);
-    cone.close();
-    const surround = Skia.Path.Make();
-    surround.moveTo(40, mid - h * 0.3 + 1);
-    surround.lineTo(40, mid + h * 0.3 - 1);
-    return { cone, surround };
-  }, [mid, h]);
-
-  // The air — a pressure wave traveling source → mic.
+  // The air — a pressure wave traveling source → mic (air-canvas coords).
   const trace = useDerivedValue(() => {
     const t = clock.value;
     const om = 2 * Math.PI * visHz;
@@ -2089,7 +2487,6 @@ export function SignalPathView({
   const diaphragm = useDerivedValue(() => {
     const t = clock.value;
     const om = 2 * Math.PI * visHz;
-    // Phase at the mic = the wave evaluated at x = waveX1.
     const arr = Math.cos(om * t - 2 * Math.PI * 2.2);
     const p = Skia.Path.Make();
     const x = micX - 3 + 3 * arr;
@@ -2114,53 +2511,37 @@ export function SignalPathView({
   }, [micX, mid]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-      {/* Travel axis. */}
-      <SkLine p1={{ x: waveX0, y: mid }} p2={{ x: waveX1, y: mid }} color="#1c1c22" strokeWidth={1.2} />
-
-      {/* ── The source: illustrated mini speaker (magnet stays fixed). ── */}
-      <RoundedRect x={2} y={mid - h * 0.22} width={10} height={h * 0.44} r={2}>
-        <LinearGradient start={vec(2, mid - h * 0.22)} end={vec(2, mid + h * 0.22)} colors={[METAL_MID, METAL_LO]} />
-      </RoundedRect>
-      <Group transform={coneShift}>
-        <Path path={coneParts.cone}>
-          <LinearGradient
-            start={vec(13, mid - h * 0.3)}
-            end={vec(40, mid + h * 0.3)}
-            colors={[CONE_HI, CONE_MID, CONE_LO]}
-          />
-        </Path>
-        <Path path={coneParts.surround} color="#1c1d23" style="stroke" strokeWidth={4} strokeCap="round" />
-        <Circle cx={16} cy={mid} r={4.5}>
-          <RadialGradient c={vec(14.5, mid - 1.5)} r={7} colors={['#9ba0ac', '#3f424b']} />
+    <View style={{ width: w, height: h, flexDirection: 'row' }}>
+      {/* The SOURCE — the shared SpeakerConeView, firing right into the air. */}
+      <SpeakerConeView clock={clock} width={spkW} height={h} visHz={visHz} amp={0.7} />
+      <Canvas style={{ width: airW, height: h, backgroundColor: BG }}>
+        {/* Travel axis. */}
+        <SkLine p1={{ x: waveX0, y: mid }} p2={{ x: waveX1, y: mid }} color="#1c1c22" strokeWidth={1.2} />
+        {/* ── The air: glowing pressure wave (cos(ωt − kx) trace). ── */}
+        <GlowStroke path={trace} color={WAVE} width={2} />
+        {/* ── The mic: mesh grille ball + a longer gradient BARREL behind it. ── */}
+        <Circle cx={micX} cy={mid} r={17} color={ACCENT_GREEN} opacity={0.1}>
+          <BlurMask blur={10} style="normal" />
         </Circle>
-      </Group>
-
-      {/* ── The air: glowing pressure wave (same cos(ωt − kx) trace). ── */}
-      <GlowStroke path={trace} color={WAVE} width={2} />
-
-      {/* ── The mic: illustrated capsule — mesh grille ball + gradient body,
-             capture-green accents (not a bare circle). ── */}
-      <Circle cx={micX} cy={mid} r={17} color={ACCENT_GREEN} opacity={0.1}>
-        <BlurMask blur={10} style="normal" />
-      </Circle>
-      <RoundedRect x={micX + 6} y={mid - 8} width={w - micX - 8} height={16} r={4}>
-        <LinearGradient start={vec(micX + 6, mid - 8)} end={vec(micX + 6, mid + 8)} colors={[METAL_HI, METAL_MID, METAL_LO]} />
-      </RoundedRect>
-      <Circle cx={micX} cy={mid} r={11}>
-        <RadialGradient c={vec(micX - 4, mid - 4)} r={19} colors={['#dde0e7', '#8a8c94', '#33343c']} />
-      </Circle>
-      <Path path={micMesh} color="#101116" style="stroke" strokeWidth={0.7} opacity={0.55} />
-      {/* Specular hotspot (upper-left light). */}
-      <Circle cx={micX - 3.8} cy={mid - 4.2} r={2.6} color="#ffffff" opacity={0.4}>
-        <BlurMask blur={2.5} style="normal" />
-      </Circle>
-      {/* Diaphragm riding the arriving pressure: green glow + crisp core. */}
-      <Path path={diaphragm} color={ACCENT_GREEN} style="stroke" strokeWidth={5} opacity={0.35}>
-        <BlurMask blur={4} style="normal" />
-      </Path>
-      <Path path={diaphragm} color={ACCENT_GREEN} style="stroke" strokeWidth={2.4} strokeCap="round" />
-      <Vignette w={w} h={h} />
-    </Canvas>
+        <RoundedRect x={micX + 5} y={mid - 8} width={barrelRight - (micX + 5)} height={16} r={4}>
+          <LinearGradient start={vec(micX + 5, mid - 8)} end={vec(micX + 5, mid + 8)} colors={[METAL_HI, METAL_MID, METAL_LO]} />
+        </RoundedRect>
+        {/* barrel body seam lines so it reads as a mic barrel */}
+        <SkLine p1={{ x: micX + 12, y: mid - 8 }} p2={{ x: micX + 12, y: mid + 8 }} color="#0d0d10" strokeWidth={1} opacity={0.5} />
+        <Circle cx={micX} cy={mid} r={11}>
+          <RadialGradient c={vec(micX - 4, mid - 4)} r={19} colors={['#dde0e7', '#8a8c94', '#33343c']} />
+        </Circle>
+        <Path path={micMesh} color="#101116" style="stroke" strokeWidth={0.7} opacity={0.55} />
+        <Circle cx={micX - 3.8} cy={mid - 4.2} r={2.6} color="#ffffff" opacity={0.4}>
+          <BlurMask blur={2.5} style="normal" />
+        </Circle>
+        {/* Diaphragm riding the arriving pressure: green glow + crisp core. */}
+        <Path path={diaphragm} color={ACCENT_GREEN} style="stroke" strokeWidth={5} opacity={0.35}>
+          <BlurMask blur={4} style="normal" />
+        </Path>
+        <Path path={diaphragm} color={ACCENT_GREEN} style="stroke" strokeWidth={2.4} strokeCap="round" />
+        <Vignette w={airW} h={h} />
+      </Canvas>
+    </View>
   );
 }

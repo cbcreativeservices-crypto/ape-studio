@@ -1,0 +1,230 @@
+{
+ "expert": "cognition",
+ "group": 13,
+ "reviews": [
+  {
+   "id": "dd172c48-f7ed-4abf-b0bc-c628129cf709",
+   "term": "Crystal Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "351271f5-338b-4ece-9e09-705bd6bd34a4",
+   "term": "Cue",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "26622d1a-30dc-4f1e-91d2-334e5437e1fb",
+   "term": "Cue / Cue Light",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0a663483-c028-458a-ba21-7675aefa4ac8",
+   "term": "Cue Calling",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8f5108b0-efee-4102-9bb9-d8ab9ba2f610",
+   "term": "Cue Output",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ea588f15-bb4a-4e9a-9e7b-382a8417eaba",
+   "term": "Cue Sheet",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9883e741-4560-4795-856d-0e5efc05b145",
+   "term": "Current",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c98d8e1b-4891-4c0c-90fa-4c951b08a694",
+   "term": "Current draw measurement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "569622fc-5abd-4566-a313-edb0d3d69c5e",
+   "term": "Cursor readout",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6245c4f9-b390-42d8-ae2b-58e0322fadad",
+   "term": "cutoff frequency",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0a2fd7e7-0db5-455a-aa40-fd02cd2bb028",
+   "term": "Cycles",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e6bd3734-5651-4d69-a286-5e7ec3b48dc2",
+   "term": "D/A converter (DAC)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "677022db-5b11-4552-b88b-47a9d53ed9ed",
+   "term": "Daisy Chain",
+   "verdict": "NEEDS_REVISION",
+   "suggestions": [
+    {
+     "field": "definition",
+     "severity": "Medium",
+     "issue": "The definition opens \"Wiring devices in series, looping from one to the next,\" but practical_application then says each 70V speaker transformer is connected \"in parallel as the cable passes by,\" and a listed common_mistake warns against \"Confusing parallel 70V tap connections with series low-impedance wiring.\" A beginner is told series, then parallel, then warned about confusing the two within one entry \u2014 a genuine learning trap about the term itself.",
+     "suggestion": "Separate the cabling topology from the electrical connection: e.g. \"A daisy chain runs one cable device-to-device in a chained (looped) path rather than a home run to each device. Note the cabling path being chained does not mean the loads are wired electrically in series \u2014 on a 70V/100V line the speaker taps sit electrically in parallel across the shared pair.\" Drop the bare word \"series\" from the opening or qualify it as the cable path, not the electrical connection."
+    }
+   ]
+  },
+  {
+   "id": "bbf64393-ccc7-409c-98a4-851f7a871c93",
+   "term": "Damaged Jacket",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f730731f-f64d-4dae-b9ad-d1603289bb3d",
+   "term": "Damping",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cff858fb-d418-4235-a5e4-dc649e22666d",
+   "term": "damping factor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9ed8baed-e81d-41d2-9062-d7c59609f036",
+   "term": "Damping Material",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d4f4fdbd-58b0-456e-b4e3-bd58114e9796",
+   "term": "Dance Floor Mix",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1c16d63e-ff5f-4bca-8ed0-be0a11c2e7be",
+   "term": "Dante",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "aabbc989-ddc4-46e8-878d-d3db54717f30",
+   "term": "Dash Kit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3665d75f-5e66-433d-bfe0-f3a079910088",
+   "term": "Data register",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a973c618-1d27-44a5-9ec6-1f0f40bc201f",
+   "term": "DAW (Digital Audio Workstation)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1eec1afa-4043-40d0-883c-9bb5fffd8a58",
+   "term": "dB SPL",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1d93bf7d-31b3-4930-bfee-d0a2392a028e",
+   "term": "DB15",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "99778f40-6798-448e-a76f-259bd776dfa7",
+   "term": "DB25 (D-sub)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f44b10a3-7404-451e-92aa-f2ebe03880c8",
+   "term": "DB9",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "456d489a-c25e-41ba-a168-d9892e5f5835",
+   "term": "dBFS",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e4eee503-648e-423a-a08c-a0a4f210f35b",
+   "term": "dBm",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d75c9887-2203-41fe-8828-680629fbd05f",
+   "term": "dBu",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ccec7900-5dfe-4691-8b71-953003025c3e",
+   "term": "dBV",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "18008c21-c394-494e-b0fa-14f8858acc72",
+   "term": "DC offset",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "77c7092f-bd50-4201-8b99-90876ac3af4d",
+   "term": "DCA (Digitally Controlled Amplifier)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "320f5fb4-09d4-4c42-8e4b-0953f95115a9",
+   "term": "DCA Group",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "13de599c-2d67-45b9-8e64-d1a6ebb9219f",
+   "term": "De-esser",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "\"Compression / Compressor\" appears twice in the related_terms list \u2014 a duplicate entry that clutters the knowledge map and looks like an error to a learner.",
+     "suggestion": "Remove the duplicate so the list reads: Sibilance, Compression / Compressor, High-Pass Filter (HPF / Low-Cut Filter), Frequency Response (optionally add a distinct fifth term such as Dynamic EQ, which the plain_english already references)."
+    }
+   ]
+  },
+  {
+   "id": "a60c3680-12b4-41dd-abb7-27958edcb928",
+   "term": "Dead Cat (Windjammer)",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

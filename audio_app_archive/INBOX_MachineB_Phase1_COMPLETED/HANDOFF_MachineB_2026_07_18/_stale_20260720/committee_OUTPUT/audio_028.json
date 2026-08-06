@@ -1,0 +1,216 @@
+{
+ "expert": "Audio Technical",
+ "group": 28,
+ "reviews": [
+  {
+   "id": "381943e5-86df-4dae-a728-6075d3c0e6c7",
+   "term": "Logical Editor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1681b358-3af6-4be3-b4dd-0fef504db6b3",
+   "term": "Long-term listening balance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "717cc29b-72a1-4758-854c-97678469a279",
+   "term": "Long-term preservation review",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4638813d-53ec-4af1-b2bb-8de9a86cacc6",
+   "term": "Loop Browser",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bf65770b-e172-4bba-8300-1877889a47e4",
+   "term": "Loop points",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2cbb270a-d359-4b7a-ab99-56aa63381dfa",
+   "term": "Loudness balancing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "15bf9ee5-ba3a-48b2-90c0-abb34bfb4ad7",
+   "term": "Loudness consistency",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a17a83c8-ee15-4d8c-8225-a2295b57b59b",
+   "term": "Loudness contour",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fec0bbfa-2c95-4a9d-9f6d-82e9b2873b92",
+   "term": "Loudness validation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bc62385b-74aa-42b1-9a93-ea4bc65b39f8",
+   "term": "Low-frequency layer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "77986925-d523-4ec1-b2d7-fe1fc0d91dda",
+   "term": "Lower Zone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3d70390a-e8d8-4719-a399-37f2b454684f",
+   "term": "Macro variation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dd908d12-99e3-45b1-b613-12b52549447c",
+   "term": "Main Mixer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fd606cd4-fcae-42d6-ab69-2efb6f3ed026",
+   "term": "Main window",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8ba43b12-06ac-44b1-848d-977662bf19a4",
+   "term": "Marker List",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "10b68ba3-41c6-455c-a191-de3bd533c175",
+   "term": "Marker Memory Location",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c28a5bb6-9ae7-4f50-a595-7f061fffb249",
+   "term": "Marker track (Logic)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ae190748-c18d-4168-8e9e-268b9e027cac",
+   "term": "Marquee selection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d5dc96ac-67f2-456f-9314-b93b94122339",
+   "term": "Master approval checklist",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e412bec3-ceda-4639-9184-6fc9c9fbe96f",
+   "term": "Master Assistant",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5883227f-0b57-49c4-9069-3d7cf8c09c22",
+   "term": "Master FX",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8d712277-6a79-438e-9d8a-1716d126a612",
+   "term": "Master readiness",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bc4ee777-58f5-4164-9326-e71a3e6fe45c",
+   "term": "Master track (Live)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1ced54d9-73eb-4f73-9b1b-b8ff126a53ff",
+   "term": "Master-bus compression",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9e536c6a-8f79-451e-a32b-7e1872c61bce",
+   "term": "Media Explorer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0ff0319f-ca7a-40a4-a172-96076131af31",
+   "term": "Media item",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4beff751-2070-4f18-a253-9fb487f0c5e8",
+   "term": "MediaBay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1e1f49c6-1927-47f8-9a06-6763fa524d42",
+   "term": "Melody layer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "63bdb03b-b5f7-40d3-94e2-2f8b124095c6",
+   "term": "Menu music",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "93ef30dc-c66f-4fd9-99a9-a079d090d038",
+   "term": "Metadata validation report",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f96904b8-9222-4ab3-8aea-cf3eb869f378",
+   "term": "Microtiming",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dcc754a1-9fd0-4dbb-baac-38f365851fb2",
+   "term": "MIDI Editor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "288d11ae-7d7c-4dd0-b4a2-24575c0b4401",
+   "term": "MIDI From routing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c3b7b122-71f6-4240-8cda-77bb7c297054",
+   "term": "MIDI part (Cubase)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f1777319-c7e5-4ec5-9006-9f2877965cc0",
+   "term": "MIDI To routing",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

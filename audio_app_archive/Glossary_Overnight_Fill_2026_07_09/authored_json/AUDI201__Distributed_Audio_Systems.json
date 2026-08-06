@@ -1,0 +1,71 @@
+{
+  "course": "AUDI201",
+  "topic": "Distributed Audio Systems",
+  "safety_critical": true,
+  "authored": [
+    {
+      "id": "0e8c97ef-3184-49d4-9c24-4f203ae133bb",
+      "term": "AVB (Audio Video Bridging)",
+      "fields": {
+        "plain_english": "AVB is a set of Ethernet rules that reserve a guaranteed 'lane' and share a common clock so audio arrives on time without dropouts, unlike ordinary best-effort network traffic.",
+        "purpose_function": "It exists to give professional audio and video streams deterministic, low-latency, time-synchronized delivery over standard Ethernet by reserving bandwidth end-to-end and tightly synchronizing device clocks, so media plays glitch-free even when the network carries other traffic.",
+        "practical_application": "A tech patches AVB-capable endpoints (consoles, amplifiers, stage boxes) through AVB/TSN-capable switches and verifies that stream reservations are established and gPTP clock sync is locked before relying on the link for a show.",
+        "category": "Audio Networking",
+        "related_terms": ["Milan", "Dante", "AES67", "PTP (Precision Time Protocol)", "TSN (Time-Sensitive Networking)", "RTP (Real-time Transport Protocol)"],
+        "common_mistakes": ["Assuming any Ethernet switch works: AVB requires AVB/TSN-capable switches supporting gPTP (802.1AS), stream reservation (SRP/MSRP, 802.1Qat), and credit-based shaping (802.1Qav)", "Confusing AVB with Dante or AES67; they are distinct transport technologies with different discovery, clocking, and switch requirements", "Forgetting that an AVB stream will not start until bandwidth reservation succeeds along the entire path", "Overlooking that gPTP clock synchronization must be established and stable for glitch-free audio"],
+        "scenario_contexts": ["A theater installs Biamp Tesira processors and Lab.gruppen amplifiers on an AVB backbone for zoned distributed audio", "A live-sound rig uses AVB-capable switches to carry redundant multichannel audio between stage and front-of-house", "An AV integrator specifies AVB/TSN switches so audio streams receive guaranteed bandwidth alongside control and video data"]
+      },
+      "sources": ["IEEE SA 802.1BA / 802.1AS / 802.1Qav / 802.1Qat standards (standards.ieee.org)", "Avnu Alliance FAQ and technical resources (avnu.org)", "Aruba/HPE AOS-CX AVB technical documentation (arubanetworking.hpe.com)", "Cisco Audio Video Bridging for AVoIP white paper (cisco.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "6c46b314-34e8-44d9-898d-a42c36f2fc59",
+      "term": "Milan",
+      "fields": {
+        "plain_english": "Milan is a certification layer on top of AVB that guarantees gear from different brands connects and works together reliably, like a stricter shared rulebook so everyone's equipment speaks the same dialect.",
+        "purpose_function": "It exists to remove interoperability guesswork from AVB by adding mandatory agreements on media formats, media clocking, redundancy, and device control (AVDECC), all enforced through certification testing, so certified devices from different manufacturers are effectively plug-and-play.",
+        "practical_application": "A tech building a multi-brand pro-audio network selects Milan-certified devices so consoles, processors, and amplifiers interoperate with predictable user-set latency and seamless network redundancy.",
+        "category": "Audio Networking",
+        "related_terms": ["AVB (Audio Video Bridging)", "TSN (Time-Sensitive Networking)", "Dante", "AES67", "PTP (Precision Time Protocol)", "RTP (Real-time Transport Protocol)"],
+        "common_mistakes": ["Thinking Milan is a separate network from AVB; it is a certified profile built on top of AVB/TSN open standards", "Assuming all AVB devices are automatically Milan-compatible; only certified devices carry the interoperability guarantee", "Expecting Milan to interoperate directly with Dante without a bridge or gateway", "Ignoring the configurable presentation-time offset (0.25 ms to 2 ms) that sets and guarantees stream latency"],
+        "scenario_contexts": ["A touring PA system uses Milan-certified amplifiers and consoles for guaranteed latency and redundant network paths", "A stadium installs Milan devices from multiple vendors (e.g., d&b, Meyer Sound, L-Acoustics) to ensure cross-brand interoperability", "A live show relies on Milan seamless redundancy so a single cable or switch failure does not drop audio"]
+      },
+      "sources": ["Avnu Alliance Milan Baseline Interoperability Specification 2.0a and Milan white paper (avnu.org)", "Meyer Sound Milan technical overview (meyersound.com)", "d&b audiotechnik Milan / signal distribution documentation (dbaudio.com)", "Sound & Communications, 'An Introduction to Milan' (soundandcommunications.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "da74bad3-8c24-4c1d-be3b-f9755a22abbc",
+      "term": "Ravenna",
+      "fields": {
+        "plain_english": "Ravenna is a way to send many channels of studio-quality audio over ordinary IP networks with very low delay, widely used in broadcast; it works with the AES67 standard so it can talk to other audio-over-IP gear.",
+        "purpose_function": "It exists to move high-channel-count, low-latency, sample-accurate audio across standard IP infrastructure (LAN and WAN) for broadcast and installation use, relying on PTP for synchronization and standard IP protocols (RTP, SDP, RTSP) to remain open and AES67-interoperable.",
+        "practical_application": "A broadcast engineer uses Ravenna to link consoles, stage boxes, and studios (e.g., Lawo, Merging, DirectOut), managing stream connections via SDP/RTSP and locking all devices to a common PTP grandmaster.",
+        "category": "Audio Networking",
+        "related_terms": ["AES67", "RTP (Real-time Transport Protocol)", "Dante", "PTP (Precision Time Protocol)", "AVB (Audio Video Bridging)", "SMPTE ST 2110"],
+        "common_mistakes": ["Assuming Ravenna and AES67 are identical; Ravenna is a full ecosystem that is AES67-compatible, whereas AES67 is an interoperability profile/subset", "Forgetting that a correctly configured PTP (IEEE 1588) grandmaster is required for synchronization", "Expecting plug-and-play with Dante; bridging requires correct AES67 setup and manual SDP handling", "Neglecting network QoS/DiffServ and IGMP multicast configuration, which causes dropouts and flooding"],
+        "scenario_contexts": ["A broadcast facility distributes audio between studios and OB vans over a Ravenna/AES67 IP backbone", "An outside-broadcast truck carries multichannel audio on Ravenna synchronized by PTP", "A radio station integrates Lawo consoles and Merging interfaces via Ravenna for all-IP audio routing"]
+      },
+      "sources": ["Ravenna (networking) overview and ALC NetworX/Lawo documentation (ravenna-network.com)", "AES67 standard, Audio Engineering Society (published Sept 2013)", "The Broadcast Bridge, 'Your Practical Guide to AES67' (thebroadcastbridge.com)", "Merging Technologies 'Configure Merging and AES67 Devices' (merging.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "22bca3ec-6362-475e-98de-923e6ec2a39c",
+      "term": "RTP (Real-time Transport Protocol)",
+      "fields": {
+        "plain_english": "RTP is the packet format that actually carries the audio (or video) across an IP network, adding timestamps and sequence numbers so the receiver can reassemble the samples in the right order and play them on time.",
+        "purpose_function": "It exists to provide end-to-end real-time media delivery over IP by adding payload-type identification, sequence numbering, and timestamps on top of UDP, letting receivers detect lost or out-of-order packets and reconstruct correct playout timing; it is the transport layer underneath AES67, Ravenna, and most audio-over-IP.",
+        "practical_application": "A tech rarely configures RTP directly but relies on it inside AoIP systems; when troubleshooting, they inspect RTP streams for packet loss, sequence-number gaps, or timestamp/jitter problems to diagnose audio dropouts.",
+        "category": "Audio Networking",
+        "related_terms": ["AES67", "Ravenna", "PTP (Precision Time Protocol)", "RTP Control Protocol (RTCP)", "AVB (Audio Video Bridging)", "Dante"],
+        "common_mistakes": ["Treating RTP as a reliable protocol; it runs over UDP and does not guarantee delivery, and lost packets are generally not retransmitted", "Overlooking RTCP, the companion control protocol used to monitor stream quality and timing", "Assuming RTP alone provides synchronization; accurate playout in AoIP depends on PTP-referenced timestamps", "Configuring an undersized jitter buffer, causing audible dropouts on networks with timing variation"],
+        "scenario_contexts": ["An engineer uses a packet analyzer to spot RTP sequence-number gaps while diagnosing dropouts on an AES67 link", "An AoIP stream carries L24 PCM audio as RTP payload over multicast UDP", "A studio's Ravenna/AES67 devices exchange audio as RTP streams synchronized to a common PTP clock"]
+      },
+      "sources": ["IETF RFC 3550 (RTP) and RFC 3551 (RTP A/V Profile), rfc-editor.org / datatracker.ietf.org", "AES67 standard, Audio Engineering Society (uses RTP over UDP/IP)", "AIMS Alliance 'AES67-101: the basics of AES67' (aimsalliance.org)", "Real-time Transport Protocol reference overview (en.wikipedia.org / RFC citations)"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

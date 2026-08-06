@@ -1,0 +1,231 @@
+{
+ "batch": 276,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "9f054e39-3a8e-4acd-be02-cf86a545b1c3",
+   "term": "Exponential frequency modulation",
+   "fields": {
+    "definition": "A form of frequency modulation in which the modulating signal drives an oscillator whose frequency responds exponentially to control voltage, typically on a 1 volt-per-octave scale. Because the exponential response is asymmetric, the perceived pitch center tends to shift as modulation depth increases, so exponential FM suits vibrato, sweeps, and gritty effects rather than the stable, harmonically precise timbres for which linear FM is preferred.",
+    "plain_english": "This changes a sound's pitch using another signal. On many older synths, pitch follows a curve, not a straight line. Because of that curve, the note can seem to slide out of tune as you add more of the effect. People use it for wobble and rough, buzzy sounds.",
+    "purpose_function": "It lets one signal continuously vary an oscillator's pitch on synthesizers that track pitch exponentially. It exists because most analog synths use a 1 V/octave exponential pitch scale, making exponential FM the natural route to vibrato and dynamic pitch movement.",
+    "practical_application": "A technician patches an LFO or a second oscillator into an analog synth's exponential pitch input to create vibrato or clangorous tones, and switches to a linear FM input when a stable, in-tune FM timbre is needed.",
+    "category": "Synthesis",
+    "related_terms": ["Frequency modulation", "Free-running oscillator", "Hard synchronization", "Voltage-controlled oscillator", "Low-frequency oscillator"],
+    "common_mistakes": [
+     "Assuming exponential FM keeps the note in tune; deep exponential FM shifts the average pitch flat or sharp.",
+     "Confusing exponential FM with linear FM, then wondering why classic bell-like FM tones will not stay in tune.",
+     "Setting modulation depth too high and treating the resulting detune as a broken oscillator."
+    ],
+    "scenario_contexts": [
+     "Adding vibrato to a lead patch by routing an LFO to an analog synth's exponential pitch input.",
+     "Creating aggressive, atonal sound-effect sweeps on a modular synth.",
+     "Troubleshooting why an oscillator drifts flat when a modulator is patched to its 1 V/octave input."
+    ]
+   },
+   "sources": ["Roads, The Computer Music Tutorial (MIT Press)", "Doepfer A-100 modular technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "89de0ef6-d679-4277-ad45-29018bd1f15f",
+   "term": "Forward loop",
+   "fields": {
+    "definition": "A sample loop that repeatedly plays a defined section from its start point to its end point in the normal forward direction, then jumps back to the start to repeat, allowing a sampled sound to sustain for as long as a note is held.",
+    "plain_english": "A loop is a chosen chunk of a sound that repeats. A forward loop plays that chunk from start to end, then jumps back and plays it again the same way. This lets one short recording hold a note for as long as you press the key.",
+    "purpose_function": "It sustains a sampled sound indefinitely without needing a long recording. It exists so a short recorded segment can be held for any note length while sounding continuous.",
+    "practical_application": "A technician sets loop start and end points inside the steady part of a sampled note so a forward loop repeats smoothly without clicks, sustaining pads, strings, or organ samples.",
+    "category": "Sampling",
+    "related_terms": ["Loop point", "Sustain loop", "Crossfade loop", "Keyboard mapping", "Instrument library"],
+    "common_mistakes": [
+     "Placing loop points where volume or tone changes, causing an audible click or pulsing.",
+     "Confusing a forward loop with a bidirectional (alternating) loop, which reverses direction each pass.",
+     "Looping across a transient or vibrato peak so the repeat sounds unnatural."
+    ],
+    "scenario_contexts": [
+     "Looping the sustain of a sampled string note so it holds while a key is pressed.",
+     "Building an organ patch that must sustain forever from only a few seconds of recording.",
+     "Fixing a clicking loop by moving the loop points to zero crossings."
+    ]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "44e9a6ec-316b-4351-b78b-11dbd777d0d2",
+   "term": "Free-running oscillator",
+   "fields": {
+    "definition": "An oscillator that runs continuously and independently, with its phase not reset or retriggered by note-on events, so each note begins at whatever point in the waveform the oscillator happens to be at that moment.",
+    "plain_english": "An oscillator is the part that makes the raw tone. A free-running one never stops or restarts. So each time you play a note, the wave starts at a random spot in its cycle. This gives small natural changes from note to note, like a real instrument.",
+    "purpose_function": "It provides natural, slightly varying note starts and a lively analog character by never resetting its phase. It exists to mimic real oscillators and to allow phase differences between voices that thicken the sound.",
+    "practical_application": "A technician chooses free-running mode when they want subtle variation and analog feel, and switches to retrigger mode when they need consistent, repeatable attacks such as a tight bass or a punchy kick.",
+    "category": "Synthesis",
+    "related_terms": ["Voltage-controlled oscillator", "Hard synchronization", "Frequency modulation", "Exponential frequency modulation", "Low-frequency oscillator"],
+    "common_mistakes": [
+     "Expecting identical attacks every time; a free-running oscillator starts at a different phase on each note.",
+     "Blaming inconsistent bass or kick punch on a fault when it is simply free-running phase.",
+     "Confusing free-running behavior with hard sync, which forces a phase reset."
+    ],
+    "scenario_contexts": [
+     "Getting a warmer, less static analog pad by leaving oscillators free-running.",
+     "Diagnosing why a plucky bass lacks consistent punch and switching to phase retrigger.",
+     "Layering two free-running oscillators so their drifting phase creates movement."
+    ]
+   },
+   "sources": ["Roads, The Computer Music Tutorial (MIT Press)", "Doepfer A-100 modular technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "25c467a9-8137-4691-9e99-16ece7d62909",
+   "term": "Frequency modulation",
+   "fields": {
+    "definition": "A synthesis and signal-processing technique in which the instantaneous frequency of a carrier oscillator is varied by a modulating signal; when the modulator is in the audio range, this generates additional sidebands that produce complex, often inharmonic timbres.",
+    "plain_english": "This means using one signal to change the pitch of another very fast. When the change is slow, you hear vibrato. When it is fast, it adds new tones and can make metallic, bell, or electric-piano sounds. It builds rich tones from simple ones.",
+    "purpose_function": "It creates rich, evolving spectra from just a few oscillators by adding sidebands. It exists as an efficient way to synthesize bright, bell-like, metallic, and dynamic sounds that are hard to make with basic subtractive methods.",
+    "practical_application": "A technician routes one oscillator (the modulator) to the frequency of another (the carrier) and adjusts modulation depth and frequency ratio to dial in bell, bass, or electric-piano tones on synths such as the Yamaha DX series.",
+    "category": "Synthesis",
+    "related_terms": ["Exponential frequency modulation", "Hard synchronization", "Free-running oscillator", "Voltage-controlled oscillator", "Low-frequency oscillator"],
+    "common_mistakes": [
+     "Confusing slow vibrato FM with audio-rate FM that changes timbre.",
+     "Ignoring the carrier-to-modulator frequency ratio, which controls whether the result sounds harmonic or clangorous.",
+     "Assuming FM only makes harsh sounds; gentle settings give warm electric-piano and bell tones."
+    ],
+    "scenario_contexts": [
+     "Programming an electric-piano patch on an FM synth.",
+     "Adding metallic bite to a bass by increasing modulation depth.",
+     "Using audio-rate FM in a modular system to create bell and gong textures."
+    ]
+   },
+   "sources": ["Chowning, The Synthesis of Complex Audio Spectra by Means of Frequency Modulation, JAES (AES)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5096e3fb-d021-432b-9ad1-02c1a549ece0",
+   "term": "Hard synchronization",
+   "fields": {
+    "definition": "An oscillator technique in which a master oscillator forcibly resets the phase of a slave oscillator at the start of each of its own cycles, locking the slave to the master's frequency and producing a characteristic bright, harmonically rich timbre as the slave's tuning is swept.",
+    "plain_english": "Two oscillators are used together. One is the boss and restarts the other every cycle. This forces them to lock to the same base pitch. As you change the tuning of the second one, you get a sharp, tearing sound often heard in lead synth solos.",
+    "purpose_function": "It ties a slave oscillator's pitch to a master while letting its waveform shape change, so sweeping the slave's tuning creates dramatic, vocal or tearing timbres. It exists to produce aggressive, expressive lead sounds.",
+    "practical_application": "A technician enables hard sync, then modulates the synced oscillator's pitch with an envelope or LFO to create classic screaming sync-lead sounds, letting the master oscillator set the played pitch.",
+    "category": "Synthesis",
+    "related_terms": ["Free-running oscillator", "Voltage-controlled oscillator", "Frequency modulation", "Exponential frequency modulation", "Low-frequency oscillator"],
+    "common_mistakes": [
+     "Expecting the synced oscillator to change the played pitch; the master sets pitch while the slave changes tone.",
+     "Not modulating the synced oscillator's frequency, so the dramatic sweeping effect never appears.",
+     "Confusing hard sync with soft sync, which resets phase less forcefully and sounds gentler."
+    ],
+    "scenario_contexts": [
+     "Programming a screaming sync-lead for a solo.",
+     "Sweeping a synced oscillator with an envelope for an aggressive attack.",
+     "Recreating classic 1980s sync tones on a modern synth."
+    ]
+   },
+   "sources": ["Roads, The Computer Music Tutorial (MIT Press)", "Doepfer A-100 modular technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5fcca67b-d065-4999-b42f-846641e98e65",
+   "term": "Instrument library",
+   "fields": {
+    "definition": "A curated collection of sampled or programmed sounds for a specific instrument or group of instruments, packaged as patches or presets that load into a sampler or virtual instrument.",
+    "plain_english": "This is a ready-made set of sounds for a software instrument. It might hold a grand piano, a full string section, or a drum kit, recorded in detail. You load it up and play those sounds from your keyboard.",
+    "purpose_function": "It gives musicians realistic, ready-to-play instrument sounds without recording them from scratch. It exists to package professionally recorded samples and their mappings into an easily loaded product.",
+    "practical_application": "A technician installs an instrument library, points the sampler to its sample folder, and loads its patches to play orchestral, drum, or keyboard sounds in a session.",
+    "category": "Virtual Instruments",
+    "related_terms": ["Instrument rack", "Keyboard mapping", "Keyswitch articulation", "Forward loop", "Velocity layer"],
+    "common_mistakes": [
+     "Moving or renaming the sample folder after install, so patches load with missing samples.",
+     "Confusing an instrument library with the sampler engine that plays it; the library needs a host such as Kontakt.",
+     "Underestimating the disk and RAM needs of large multi-gigabyte libraries."
+    ],
+    "scenario_contexts": [
+     "Loading a sampled string library to mock up an orchestral cue.",
+     "Relinking a library's samples after moving them to a new drive.",
+     "Choosing a drum library that fits a session's genre."
+    ]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "046aa211-b702-45e0-a730-72eec92575ad",
+   "term": "Instrument rack",
+   "fields": {
+    "definition": "A container device that groups one or more instruments and their effects into parallel or layered chains under a single set of macro controls, letting several sounds be combined, split across key or velocity ranges, and played together as one instrument.",
+    "plain_english": "This is a box that holds several instruments together and plays them as one. You can stack sounds, or split them so low keys play one and high keys play another. A few big knobs, called macros, control them all at once.",
+    "purpose_function": "It lets a technician layer, split, and control multiple instruments as a single patch through simplified macro knobs. It exists to build rich combined sounds while keeping complex setups easy to play and automate.",
+    "practical_application": "A technician builds an instrument rack to layer a piano under a pad, maps its key controls to macro knobs, and splits chains by key or velocity so one MIDI part triggers a full combined sound.",
+    "category": "Virtual Instruments",
+    "related_terms": ["Instrument library", "Keyboard mapping", "Keyswitch articulation", "Velocity layer", "Forward loop"],
+    "common_mistakes": [
+     "Confusing an instrument rack with an effects rack; the instrument rack must contain a sound source.",
+     "Forgetting to map the macro knobs, so the rack's simple controls do nothing.",
+     "Setting overlapping key or velocity zones by accident, so chains trigger together unexpectedly."
+    ],
+    "scenario_contexts": [
+     "Layering a piano and a pad into one playable patch.",
+     "Splitting a keyboard so the left hand plays bass and the right plays lead.",
+     "Assigning macro knobs to control several instruments at once during a performance."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual", "Native Instruments Kontakt Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7482258a-c8c6-480b-9816-fbfeb1331afe",
+   "term": "Keyboard mapping",
+   "fields": {
+    "definition": "The assignment of samples or sounds to specific key (note) ranges, and often velocity ranges, across a MIDI keyboard, so that each key or zone triggers the correct sample at the correct pitch.",
+    "plain_english": "This decides which key plays which recorded sound. A sampled note is spread across nearby keys so each one plays at the right pitch. It can also pick different recordings depending on how hard you hit the key.",
+    "purpose_function": "It tells the sampler which sample to play for each note and velocity, spreading recordings across the keyboard. It exists so a limited number of recorded notes can cover the whole playable range convincingly.",
+    "practical_application": "A technician creates key zones and velocity layers when building a sampled instrument, assigning each recorded note to a range of keys so the instrument sounds even and natural across the keyboard.",
+    "category": "Sampling",
+    "related_terms": ["Keyswitch articulation", "Instrument library", "Forward loop", "Velocity layer", "Instrument rack"],
+    "common_mistakes": [
+     "Stretching one sample across too many keys, causing unnatural pitch (the chipmunk effect).",
+     "Leaving gaps between zones, so some keys make no sound.",
+     "Confusing key mapping with keyswitching, which uses keys to change articulations rather than pitch."
+    ],
+    "scenario_contexts": [
+     "Building a sampled piano by mapping each recorded note to a small group of keys.",
+     "Setting velocity layers so soft and hard hits load different samples.",
+     "Fixing silent keys caused by a gap in the mapping."
+    ]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "43f1dfef-86fd-4433-9ed9-26ec04e37f82",
+   "term": "Keyswitch articulation",
+   "fields": {
+    "definition": "A technique in sampled instruments where dedicated MIDI keys, usually placed below or above the playable range, are used to switch between different performance articulations (such as legato, staccato, pizzicato, or tremolo) within a single loaded patch.",
+    "plain_english": "Sampled instruments often include many playing styles, like short or smooth notes. Keyswitching uses special keys, usually the very low ones, to pick the style. You press one of those keys to change how the next notes sound, without loading a new patch.",
+    "purpose_function": "It lets a player change playing styles instantly from the keyboard within one patch. It exists so realistic performances can mix articulations without reloading sounds or juggling many separate tracks.",
+    "practical_application": "A technician plays or programs keyswitches to move a string patch between sustain, staccato, and pizzicato mid-phrase, often drawing the keyswitch notes into the MIDI track so articulations change on cue.",
+    "category": "Sampling",
+    "related_terms": ["Keyboard mapping", "Instrument library", "Instrument rack", "Velocity layer", "Forward loop"],
+    "common_mistakes": [
+     "Accidentally playing keyswitch notes as music, adding unwanted low notes to the part.",
+     "Forgetting to set the articulation before a phrase, so it plays with the wrong style.",
+     "Confusing keyswitches with normal mapped notes; keyswitch keys select articulations, not pitches."
+    ],
+    "scenario_contexts": [
+     "Switching a sampled violin between legato and staccato during a line.",
+     "Drawing keyswitch notes into a MIDI track so articulations change automatically.",
+     "Setting up a brass patch to jump between sustains and short stabs live."
+    ]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Ableton Live Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

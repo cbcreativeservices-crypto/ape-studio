@@ -1,0 +1,262 @@
+{
+  "batch": 357,
+  "topic": "Drums & Percussion",
+  "authored": [
+    {
+      "id": "5b97cdfc-491c-4de7-815c-fb88162d009a",
+      "term": "Abanico",
+      "fields": {
+        "definition": "A timbales flourish, its name Spanish for 'fan,' used to announce a change of section in Afro-Cuban dance music. It typically opens with an accented rimshot on the paila, continues with a short buzz (press) roll, and ends with another accent, cueing the band into the next passage such as the montuno or mambo.",
+        "plain_english": "A quick timbales fill that tells the band a new part is coming. The player hits a sharp rim shot, adds a short buzzing roll, then a final hit, like waving everyone into the next section.",
+        "purpose_function": "It serves as an audible cue that leads the ensemble from one section of an arrangement into the next, giving the band a clear, rhythmic hand-off.",
+        "practical_application": "A timbalero plays an abanico to launch the montuno or to mark the top of a chorus, and a live engineer learns to expect a loud rimshot-plus-roll transient at those moments.",
+        "category": "Playing technique",
+        "related_terms": ["Timbales", "Rimshot", "Buzz roll", "Cascara", "Montuno", "Paila"],
+        "common_mistakes": [
+          "Playing the abanico as a long solo instead of a short, clear cue that leads into the next section.",
+          "Burying the opening rimshot so the band cannot hear the signal.",
+          "Rushing the buzz roll so it loses its even, sustained sound."
+        ],
+        "scenario_contexts": [
+          "A timbalero cueing a salsa band from the verse into the montuno section.",
+          "Marking the entrance of the horn mambo in a live dance set.",
+          "Signalling the top of a coro (call-and-response chorus) so singers enter together."
+        ]
+      },
+      "sources": [
+        "Ed Uribe, The Essence of Afro-Cuban Percussion & Drum Set (Alfred/Warner Bros.)",
+        "Rebeca Mauleon, The Salsa Guidebook for Piano and Ensemble (Sher Music)",
+        "Victor Rendon, The Art of Playing Timbales (instructional method text)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "ad0720e9-f1e8-4b3d-ac43-424921ccf133",
+      "term": "Agogô click",
+      "fields": {
+        "definition": "The short, dry clicking sound produced on an agogô (a joined pair of pitched metal bells) by squeezing the two bells together with their springy connecting handle, rather than striking them with the beater. It gives a percussive, unpitched accent between the bells' struck tones in samba and other Afro-Brazilian rhythms.",
+        "plain_english": "A quick tapping sound made by pressing the two joined bells of an agogo together instead of hitting them. It adds a light click between the ringing bell notes, like tapping two spoons together.",
+        "purpose_function": "The click adds an extra rhythmic layer and subtle syncopation to an agogô pattern without introducing another pitch, filling the gaps between the struck bell tones.",
+        "practical_application": "A samba percussionist works clicks into the agogô part to keep the pattern lively, and an engineer capturing the agogô allows for these soft, transient clicks alongside the brighter struck notes.",
+        "category": "Playing technique",
+        "related_terms": ["Agogô", "Samba", "Idiophone", "Caixa", "Ganzá", "Repinique"],
+        "common_mistakes": [
+          "Squeezing so hard that the bells ring rather than give a clean, muted click.",
+          "Confusing the click with a struck bell tone; the click has no clear pitch.",
+          "Playing only struck notes and dropping the click, losing the pattern's inner rhythm."
+        ],
+        "scenario_contexts": [
+          "Adding clicks between bell tones in a samba bateria agogô part.",
+          "Playing a maracatu or capoeira groove where the agogô drives the pulse.",
+          "Micing an agogô in the studio and balancing soft clicks against loud struck notes."
+        ]
+      },
+      "sources": [
+        "Ed Uribe, The Essence of Brazilian Percussion & Drum Set (Alfred/Warner Bros.)",
+        "The New Grove Dictionary of Music and Musicians, entry 'Agogô'"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "d4374381-ee49-48a6-9f46-c133edf90fa5",
+      "term": "Bar resonance",
+      "fields": {
+        "definition": "The vibration of a tuned bar (as in a marimba, xylophone, vibraphone, or glockenspiel) in its transverse flexural (bending) modes, which set the instrument's pitch and timbre. Makers undercut the underside of the bar to shift its naturally inharmonic overtones toward musical ratios such as the twelfth (xylophone) or the double octave (marimba and vibraphone), and a tuned tube beneath the bar resonates to reinforce the fundamental.",
+        "plain_english": "The way a tuned bar on a marimba or xylophone shakes and rings when you hit it, which sets its note. Makers carve the underside to fix the overtones, and a tube under the bar makes the note louder.",
+        "purpose_function": "Bar resonance is what turns a struck bar into a definite musical note; shaping the bar and adding tube resonators controls its pitch, sustain, and characteristic warm tone.",
+        "practical_application": "A technician tuning or repairing mallet bars checks that undercut bars sound their intended pitch and that resonator tubes are the right length and aligned under each bar for full tone.",
+        "category": "Acoustics",
+        "related_terms": ["Marimba", "Xylophone", "Vibraphone", "Resonator", "Fundamental frequency", "Overtone"],
+        "common_mistakes": [
+          "Thinking a bar makes only one pure pitch, when it also produces inharmonic overtones that must be tuned.",
+          "Sanding the top of a bar to tune it, which lowers pitch and thins the bar, instead of undercutting the underside.",
+          "Assuming resonator length does not matter, when a mistuned tube weakens the note."
+        ],
+        "scenario_contexts": [
+          "Tuning marimba bars so their overtones line up with the fundamental.",
+          "Aligning and adjusting resonator tubes under a vibraphone.",
+          "Diagnosing a dull-sounding bar that has cracked or lost its tuning."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "Thomas D. Rossing, Science of Percussion Instruments (World Scientific)",
+        "Chaigne & Doutaut / Rossing, 'Basic physics of xylophone and marimba bars,' American Journal of Physics 69(7)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "2a1e5d92-f605-4141-92ec-9dfdf4c00a76",
+      "term": "Bass tone",
+      "fields": {
+        "definition": "The low, full-bodied stroke on a hand drum such as a conga or djembe, produced by striking near the center of the head with the flat hand or palm and letting it rebound so the whole head resonates. It is the deepest of the basic hand-drum sounds, contrasting with the higher open tone and the sharp slap.",
+        "plain_english": "The deep, booming sound of a hand drum, made by hitting the middle of the head with a flat hand and lifting off so it rings. It is the lowest of the drum's basic sounds, like a thump you feel in your chest.",
+        "purpose_function": "The bass tone supplies the low end and underlying pulse of a hand-drum part, anchoring the rhythm beneath the brighter open tones and slaps.",
+        "practical_application": "A conga or djembe player uses bass tones to mark the main beats of a groove, and an engineer mics the drum to capture that low thump without losing the higher strokes.",
+        "category": "Drum stroke",
+        "related_terms": ["Open tone", "Slap", "Conga", "Djembe", "Bongo slap", "Tumbao"],
+        "common_mistakes": [
+          "Leaving the hand pressed on the head after the strike, which deadens the low ring.",
+          "Striking too close to the rim, which thins the bass instead of hitting near the center.",
+          "Playing bass tones too hard, which chokes the tone and tires the hand."
+        ],
+        "scenario_contexts": [
+          "Marking the downbeats of a djembe groove with deep bass tones.",
+          "Playing tumbao on congas where bass tones anchor the pattern.",
+          "Recording a hand drum and balancing bass thump against slaps and open tones."
+        ]
+      },
+      "sources": [
+        "Trevor Salloum, The Conga Drummer's Guidebook (Mel Bay)",
+        "Ed Uribe, The Essence of Afro-Cuban Percussion & Drum Set (Alfred/Warner Bros.)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "8a7e7384-ad75-46e8-86e0-2f55786a10e0",
+      "term": "Bendir buzz",
+      "fields": {
+        "definition": "The buzzing, rattling timbre of a bendir, a North African frame drum, produced by one or more gut or nylon snares stretched across the inside of the drumhead that vibrate against it when the head is struck. The snares add a sustained sizzle to each stroke, much like the snares on a snare drum.",
+        "plain_english": "The buzzing rattle of a bendir frame drum. Strings stretched under the skin shake against it when you hit the drum, adding a fuzzy sizzle to each beat, like the snare wires on a snare drum.",
+        "purpose_function": "The snare buzz gives the bendir its characteristic voice, blending pitch and noise so a single frame drum can carry a rhythm with a rich, sustaining texture.",
+        "practical_application": "A player adjusts how the snares sit and where the head is struck to control how much buzz sounds, and an engineer positions a mic to balance the drum's low tone against that sizzle.",
+        "category": "Instrument timbre",
+        "related_terms": ["Bendir", "Frame drum", "Snare", "Riq", "Membranophone", "Daf"],
+        "common_mistakes": [
+          "Assuming the buzz is a defect or loose fitting rather than the drum's intended snare sound.",
+          "Over-tightening or muting the snares so the drum loses its signature buzz.",
+          "Gating the buzz away in a mix and stripping the drum of its natural character."
+        ],
+        "scenario_contexts": [
+          "Playing North African or Sufi rhythms where the bendir's buzz drives the groove.",
+          "Recording a frame drum and deciding how much snare sizzle to capture.",
+          "Comparing a bendir with a plain frame drum such as a daf to hear the added buzz."
+        ]
+      },
+      "sources": [
+        "James Blades, Percussion Instruments and Their History (Faber / Bold Strummer)",
+        "The New Grove Dictionary of Music and Musicians, entry 'Bendir' / frame drums"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "57f5e976-7e5e-47e6-95e5-d13279d074df",
+      "term": "Berimbau buzz",
+      "fields": {
+        "definition": "A nonpitched, rattling sound on the berimbau (a Brazilian musical bow), produced by letting the dobrão, a coin or stone, rest lightly against the wire as it is struck so the wire buzzes rather than ringing to a clear pitch. It is one of the instrument's basic sounds, alongside the open low tone and the pressed higher tone.",
+        "plain_english": "A buzzy sound on the berimbau with no clear note. The player lets the coin barely touch the wire as they hit it, so the string rattles instead of ringing, a bit like a lightly muted guitar string.",
+        "purpose_function": "The buzz adds rhythmic color and a percussive, unpitched accent to berimbau patterns, expanding the bow's small set of sounds beyond its two main pitches.",
+        "practical_application": "A capoeira musician weaves buzz strokes into a toque (rhythm) for variety, and anyone recording the berimbau captures this soft, noisy sound as part of its full character.",
+        "category": "Playing technique",
+        "related_terms": ["Berimbau", "Dobrão", "Berimbau open tone", "Berimbau muted (dobrão)", "Caxixi", "Capoeira"],
+        "common_mistakes": [
+          "Pressing the coin too hard, which gives the pressed pitched tone instead of a buzz.",
+          "Pulling the coin fully off the wire, which gives the open tone with no buzz.",
+          "Expecting a clear note from the buzz, when it is meant to be unpitched."
+        ],
+        "scenario_contexts": [
+          "Adding buzz strokes to a capoeira berimbau toque for rhythmic variety.",
+          "Teaching a beginner the three basic berimbau sounds side by side.",
+          "Recording a berimbau and balancing the soft buzz against its ringing tones."
+        ]
+      },
+      "sources": [
+        "Encyclopaedia Britannica, entry 'Berimbau'",
+        "The New Grove Dictionary of Music and Musicians, entry 'Berimbau'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "7561d0c2-abab-4bb8-b262-f2c134c99e90",
+      "term": "Berimbau muted (dobrão)",
+      "fields": {
+        "definition": "The pressed, higher-pitched tone of the berimbau, produced by pressing the dobrão (a coin or stone) firmly against the wire while striking it. Stopping the wire this way raises the pitch roughly a step above the open tone and shortens its ring, making it the 'closed' counterpart to the open sound.",
+        "plain_english": "A higher, shorter note on the berimbau made by pressing the coin firmly onto the wire as you strike it. Pressing down raises the pitch and cuts the ring short, like pressing a guitar string against a fret.",
+        "purpose_function": "The pressed tone gives the berimbau a second, higher pitch, so the single-string bow can play the two-note melodic patterns that define the capoeira rhythms it accompanies.",
+        "practical_application": "A capoeira musician alternates open and pressed tones to play a toque, and a recordist notes that pressed strokes sound higher and shorter than open ones when setting levels.",
+        "category": "Playing technique",
+        "related_terms": ["Berimbau", "Dobrão", "Berimbau open tone", "Berimbau buzz", "Cabaça", "Capoeira"],
+        "common_mistakes": [
+          "Pressing the coin only lightly, which gives a buzz instead of a clear pressed pitch.",
+          "Expecting a large pitch jump, when the pressed tone rises only about a step above the open tone.",
+          "Confusing 'muted' with silencing the string, when it actually sounds a higher, shorter note."
+        ],
+        "scenario_contexts": [
+          "Alternating open and pressed tones to play the São Bento Grande toque.",
+          "Teaching the two main berimbau pitches to a new capoeira student.",
+          "Recording a berimbau and tracking the pitch change between open and pressed strokes."
+        ]
+      },
+      "sources": [
+        "Encyclopaedia Britannica, entry 'Berimbau'",
+        "The New Grove Dictionary of Music and Musicians, entry 'Berimbau'"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "cc198314-dad0-4c3a-b68f-e20777273b3e",
+      "term": "Berimbau open tone",
+      "fields": {
+        "definition": "The low, open, ringing tone of the berimbau, sounded by striking the wire while the dobrão is held away from it so the full length of the wire vibrates freely. It is the instrument's lowest and most resonant basic sound, contrasting with the higher pressed tone and the nonpitched buzz.",
+        "plain_english": "The low, ringing note of the berimbau, played by hitting the wire while the coin is held off it so the string rings freely. It is the deepest of the bow's sounds, like an open guitar string left to ring.",
+        "purpose_function": "The open tone provides the berimbau's fundamental low pitch, forming the base against which the higher pressed tone and the buzz are heard within a rhythm.",
+        "practical_application": "A capoeira musician uses open tones as the low note of a two-tone pattern, and an engineer treats them as the loudest, most sustained sound the bow produces.",
+        "category": "Playing technique",
+        "related_terms": ["Berimbau", "Dobrão", "Berimbau muted (dobrão)", "Berimbau buzz", "Cabaça", "Capoeira"],
+        "common_mistakes": [
+          "Letting the coin touch the wire, which turns the open tone into a buzz or pressed note.",
+          "Damping the wire or gourd too soon, which cuts the natural ring short.",
+          "Assuming the open tone can be pitched at will, when it is fixed by the wire's full length."
+        ],
+        "scenario_contexts": [
+          "Sounding the low note of a berimbau toque in a capoeira roda.",
+          "Demonstrating the lowest of the three basic berimbau sounds.",
+          "Recording the berimbau and capturing the long ring of the open tone."
+        ]
+      },
+      "sources": [
+        "Encyclopaedia Britannica, entry 'Berimbau'",
+        "The New Grove Dictionary of Music and Musicians, entry 'Berimbau'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "81e0a538-3000-44b4-a031-6e727681a454",
+      "term": "Bongo slap",
+      "fields": {
+        "definition": "A sharp, high-pitched, cracking stroke on the bongos, produced by striking the head with a relaxed, slightly cupped hand so the fingertips snap against it, usually on the larger drum (hembra). It is the accented sound that punctuates the steady martillo pattern in Afro-Cuban music.",
+        "plain_english": "A sharp, cracking hit on the bongos made with a loose, slightly cupped hand so the fingers snap the head. It is the loud accent that pops out of the steady bongo pattern, like a hand clap.",
+        "purpose_function": "The slap provides a bright, cutting accent that marks key points in a bongo pattern, adding contrast and drive above the softer heel-and-finger strokes of the martillo.",
+        "practical_application": "A bongocero drops slaps into the martillo to accent the groove, and a live engineer expects these sharp transients to peak louder than the surrounding strokes when setting the bongo mic.",
+        "category": "Drum stroke",
+        "related_terms": ["Bongos", "Martillo", "Slap", "Open tone", "Hembra", "Bongocero"],
+        "common_mistakes": [
+          "UNSAFE: Playing loud slaps close to the head over long sets without hearing protection; sustained percussion transients can exceed safe exposure levels (OSHA 29 CFR 1910.95), so use earplugs.",
+          "Tensing the hand, which bruises the fingers and gives a dull, weak slap.",
+          "Slapping the center instead of near the edge, which muddies the sharp crack.",
+          "Playing every stroke as a slap, burying the accent it is meant to provide."
+        ],
+        "scenario_contexts": [
+          "Accenting a salsa groove with slaps over the martillo pattern.",
+          "Trading loud slaps in a percussion solo or descarga.",
+          "Micing bongos live and taming the loud slap transients in the mix."
+        ]
+      },
+      "sources": [
+        "Ed Uribe, The Essence of Afro-Cuban Percussion & Drum Set (Alfred/Warner Bros.)",
+        "Trevor Salloum, Bongo Drumming: Beginner to Advanced (Mel Bay)",
+        "OSHA 29 CFR 1910.95, Occupational Noise Exposure"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

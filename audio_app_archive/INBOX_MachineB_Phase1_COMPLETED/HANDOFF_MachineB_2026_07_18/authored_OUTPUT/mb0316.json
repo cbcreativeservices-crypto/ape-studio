@@ -1,0 +1,312 @@
+{
+ "batch": 316,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "8cde8c95-ab2c-4e71-b5b9-7ea00c927eae",
+   "term": "laid-back",
+   "fields": {
+    "definition": "A subjective tonal descriptor for sound with a relaxed, unaggressive character created by reduced energy in the upper-midrange/presence region (roughly 2-6 kHz), so vocals and lead instruments sit slightly back rather than forward. It is the opposite of a forward or aggressive presentation, giving a smooth, easy overall balance.",
+    "plain_english": "A laid-back sound feels calm and easygoing. The middle-high tones that make things sound close and in-your-face are pulled back a bit, so the music sits a little farther away, like a singer who steps back from the mic.",
+    "purpose_function": "It describes where a sound sits front-to-back in a mix, helping engineers say that a source is too soft in its presence range or that a relaxed feel is wanted.",
+    "practical_application": "An engineer may call a mix laid-back when the vocal lacks presence, then add a gentle boost around 3-5 kHz to bring it forward, or keep it laid-back on purpose for a mellow ballad.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "forward",
+     "presence",
+     "dark",
+     "smooth",
+     "midrangey"
+    ],
+    "common_mistakes": [
+     "Confusing laid-back with dark or dull; laid-back mainly means reduced presence and a back-of-the-mix placement, not an overall loss of highs.",
+     "Assuming laid-back is always a fault, when it is often a deliberate, pleasing choice for relaxed material.",
+     "Trying to fix a laid-back vocal with volume alone when the real issue is a lack of presence-range energy."
+    ],
+    "scenario_contexts": [
+     "A client says the lead vocal sounds too laid-back and wants it more up-front.",
+     "Describing a monitor whose relaxed presence region makes mixes sound distant.",
+     "Choosing a laid-back balance on purpose for a mellow acoustic or jazz ballad."
+    ]
+   },
+   "sources": [
+    "Bruce Bartlett & Jenny Bartlett, Practical Recording Techniques",
+    "Rane Professional Audio Reference (Dennis Bohn)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "110baae8-610e-411a-ba2a-384366d4f05c",
+   "term": "lifeless",
+   "fields": {
+    "definition": "A subjective descriptor for sound that lacks energy, dynamics, brightness, and a sense of ambience, so it seems dull, flat, and unengaging. It is the opposite of lively or open, and often results from rolled-off highs, heavy compression, or a dead acoustic space.",
+    "plain_english": "A lifeless sound is dull and flat, with no spark. It has little brightness, little bounce, and no sense of air or room, like a song playing through a thick blanket.",
+    "purpose_function": "The term flags a recording or playback that fails to excite the listener, prompting the engineer to find and fix what is draining its energy.",
+    "practical_application": "Hearing a lifeless drum track, a technician may restore high-frequency detail, ease off heavy compression, or add reverb to bring back a sense of life.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "dull",
+     "dead",
+     "flat",
+     "dark",
+     "lively"
+    ],
+    "common_mistakes": [
+     "Fixing lifeless sound with volume alone, when the problem is missing highs, dynamics, or ambience.",
+     "Confusing lifeless, which lacks energy overall, with dark, which specifically lacks high frequencies.",
+     "Over-compressing while tracking or mixing and then wondering why the result sounds lifeless."
+    ],
+    "scenario_contexts": [
+     "A mix comes back from heavy limiting sounding lifeless and squashed.",
+     "A vocal recorded in a dead, over-treated booth sounds lifeless and needs ambience.",
+     "Comparing a lifeless reference speaker with a livelier one during monitor selection."
+    ]
+   },
+   "sources": [
+    "Bruce Bartlett & Jenny Bartlett, Practical Recording Techniques",
+    "Glenn Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "304c5f68-261a-46cc-83f1-60c4ce22eb1c",
+   "term": "Loose",
+   "fields": {
+    "definition": "A subjective descriptor, applied mainly to low frequencies, for bass that is poorly controlled or undamped, with blurred, drawn-out transients and imprecise pitch definition. It is the opposite of tight, where notes start and stop cleanly.",
+    "plain_english": "Loose bass is sloppy and boomy. The low notes smear together and ring on instead of starting and stopping cleanly, like a drum with a floppy, untuned skin.",
+    "purpose_function": "It describes a lack of control or damping in the low end so engineers can target the cause, such as room resonance, tuning, or gear, and tighten it up.",
+    "practical_application": "Faced with loose bass, a technician may treat room modes, retune a kick, gate or EQ the low end, or improve speaker damping to tighten the sound.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "tight",
+     "boomy",
+     "muddy",
+     "flabby",
+     "damping"
+    ],
+    "common_mistakes": [
+     "Assuming loose just means too much bass; the issue is control and timing, not only level.",
+     "Cutting low-end level to fix loose bass when the real fix is transient control, tuning, or room treatment.",
+     "Confusing a player's loose timing with loose low-frequency tone; here the term describes the sound, not the performance."
+    ],
+    "scenario_contexts": [
+     "A subwoofer in an untreated room produces loose, boomy bass at certain notes.",
+     "A kick-and-bass combination sounds loose and undefined until gated and EQ'd.",
+     "Describing an amplifier or speaker with poor damping factor as sounding loose in the low end."
+    ]
+   },
+   "sources": [
+    "Bruce Bartlett & Jenny Bartlett, Practical Recording Techniques",
+    "Glenn Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7d464080-1759-409f-b38d-70c3913953ea",
+   "term": "Make it pretty",
+   "fields": {
+    "definition": "A subjective studio instruction to make a sound or mix more sonically pleasing and refined, typically by smoothing harshness, adding warmth, sheen, or ambience, and correcting tuning or timing, rather than by any single defined process. It states an aesthetic goal, an attractive and polished result, instead of a specific technical operation.",
+    "plain_english": "It means make it sound nicer and more polished. The person is not naming exact tools; they just want a smooth, easy-to-enjoy sound.",
+    "purpose_function": "It gives a producer or client a quick way to ask for a more attractive, finished sound without naming tools. Understanding it lets the engineer turn a vague aesthetic request into concrete moves like de-essing, gentle EQ, reverb, or tuning.",
+    "practical_application": "When a client says 'make it pretty' on a vocal, the engineer may tame sibilance and harsh mids, add a little high-end air and reverb, and tune stray notes to deliver a smoother, more flattering sound.",
+    "category": "Mixing Direction",
+    "related_terms": [
+     "Make it sit",
+     "Make it speak",
+     "Sweetening",
+     "Air",
+     "Sibilance"
+    ],
+    "common_mistakes": [
+     "Treating 'make it pretty' as one fixed process rather than asking what the client finds unpleasant.",
+     "Over-processing with heavy reverb or bright EQ until the sound is thin or washed out.",
+     "Assuming 'pretty' means the same thing in every genre, when an aggressive style may want grit, not gloss."
+    ],
+    "scenario_contexts": [
+     "A client asks an engineer to 'make it pretty' on a lead vocal during a mix revision.",
+     "A producer requests a smoother, more polished sound on a piano or string pad.",
+     "A mastering client asks for a glossier, more flattering overall tone on a ballad."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Bruce Bartlett & Jenny Bartlett, Practical Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2e7dffe5-94f7-4fb4-9e8c-e7c025cad195",
+   "term": "Make it sit",
+   "fields": {
+    "definition": "A mixing instruction to adjust an element so it blends into the mix and occupies its own space, balanced in level, tone, and stereo position, without masking other parts or sticking out unnaturally. It is commonly achieved with level, EQ, compression, panning, and reverb.",
+    "plain_english": "Making something sit means getting it to fit smoothly into the song. You set its volume and tone so it takes its own spot, neither buried under other parts nor jumping out, like a puzzle piece that clicks in next to the rest.",
+    "purpose_function": "It captures the core goal of mixing, blending each part into a cohesive whole, and tells the engineer to focus on fit rather than isolated tone.",
+    "practical_application": "To make a vocal sit, an engineer may carve competing frequencies with EQ, add light compression to steady its level, and use reverb to place it at the right depth.",
+    "category": "Mixing Direction",
+    "related_terms": [
+     "masking",
+     "balance",
+     "EQ",
+     "compression",
+     "blend"
+    ],
+    "common_mistakes": [
+     "Only turning an element up or down, when making it sit usually needs EQ and compression too.",
+     "Carving so much frequency space that the element loses its own character.",
+     "Judging how an element sits while soloed instead of in the full mix."
+    ],
+    "scenario_contexts": [
+     "A producer asks to make the rhythm guitar sit better under the vocal.",
+     "A synth pad clashes with the piano until EQ helps it sit in its own range.",
+     "Making a loud lead vocal sit by taming its peaks with compression."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Bruce Bartlett & Jenny Bartlett, Practical Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6447e734-4dbc-4718-aece-554573b74477",
+   "term": "Make it speak",
+   "fields": {
+    "definition": "A direction to bring out the clarity, articulation, and projection of a sound so its note onsets and character come through clearly and it asserts itself in the mix. It is commonly achieved by emphasizing transients and presence-range detail and by ensuring adequate level and space.",
+    "plain_english": "Making something speak means helping it come through clearly and say its part. You bring out the attack and detail so each note is easy to hear, like turning up someone who is mumbling so their words are clear.",
+    "purpose_function": "It tells the engineer to improve the clarity and presence of a part that sounds buried, dull, or indistinct so it communicates its role.",
+    "practical_application": "To make a snare speak, a technician may boost presence-range frequencies, sharpen the transient, or raise its level so each hit cuts through.",
+    "category": "Mixing Direction",
+    "related_terms": [
+     "presence",
+     "articulation",
+     "transient",
+     "clarity",
+     "attack"
+    ],
+    "common_mistakes": [
+     "Only raising level, when clarity often depends more on transient and presence-range detail.",
+     "Adding a harsh high boost that makes a part edgy instead of clear.",
+     "Confusing making a part speak, which is about clarity and projection, with simply making it louder."
+    ],
+    "scenario_contexts": [
+     "A guitar solo sounds dull and buried, and the producer asks to make it speak.",
+     "Getting a soft-spoken voiceover to speak clearly over background music.",
+     "Sharpening a kick drum's attack so it speaks through a dense mix."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Bruce Bartlett & Jenny Bartlett, Practical Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ae4b7198-003f-4777-9758-f59580cf7660",
+   "term": "Metallic",
+   "fields": {
+    "definition": "A subjective descriptor for a hard, ringing, bell- or tin-like coloration in the upper midrange and highs, often caused by narrow resonances, artificial-reverb ringing, aliasing, or digital clipping. It gives sound an unnatural, clangy edge.",
+    "plain_english": "A metallic sound has a hard, ringing, tinny edge, like tapping on metal. Certain high tones ring out in an unnatural way, making things sound cold and clangy instead of natural.",
+    "purpose_function": "The term points to an unwanted resonant or distortion artifact so the engineer can track down its source and remove it.",
+    "practical_application": "When a reverb or pitch-shifter sounds metallic, an engineer changes the algorithm or settings; when a converter or plugin aliases, they lower levels or use higher-quality processing.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "ringing",
+     "resonance",
+     "harsh",
+     "edgy",
+     "aliasing"
+    ],
+    "common_mistakes": [
+     "Blaming the source when a metallic sound actually comes from reverb, pitch processing, or clipping.",
+     "Boosting highs for air and unintentionally exciting metallic resonances.",
+     "Confusing metallic, which is ringing and resonant, with simply bright or harsh."
+    ],
+    "scenario_contexts": [
+     "A cheap plate-reverb setting adds a metallic ring to a vocal.",
+     "A pitch-shifted harmony sounds metallic and robotic.",
+     "Digital clipping on a cymbal track gives it a metallic, clangy edge."
+    ]
+   },
+   "sources": [
+    "Bruce Bartlett & Jenny Bartlett, Practical Recording Techniques",
+    "Rane Professional Audio Reference (Dennis Bohn)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ae427297-c0b2-40c2-930f-859161535f5d",
+   "term": "midrangey",
+   "fields": {
+    "definition": "An informal descriptor for sound with an emphasized midrange (roughly 250 Hz-2 kHz) relative to the lows and highs, giving a boxy, nasal, or honky character and a lack of low-end weight and high-end air. It is often likened to a small speaker or a telephone.",
+    "plain_english": "A midrangey sound is heavy in the middle tones and light on deep lows and airy highs. It can sound boxy or nasal, a bit like a small phone speaker.",
+    "purpose_function": "It flags a tonal imbalance tilted toward the mids so engineers know to add low and high extension or trim the middle.",
+    "practical_application": "Calling a mix midrangey, an engineer may gently cut around 500 Hz-1 kHz and add low-end body and high-end air to open it up.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "boxy",
+     "nasal",
+     "honky",
+     "midrange",
+     "thin"
+    ],
+    "common_mistakes": [
+     "Cutting mids so hard the mix becomes scooped and lifeless.",
+     "Confusing midrangey, a broad mid emphasis, with harsh, which is an aggressive high-mid peak.",
+     "Judging tone on midrangey small speakers and missing the real low and high balance."
+    ],
+    "scenario_contexts": [
+     "A laptop or phone speaker makes any mix sound midrangey.",
+     "A guitar tone is too midrangey and honky, needing low and high shaping.",
+     "A vocal chain leaves the voice midrangey and boxy until the low-mids are trimmed."
+    ]
+   },
+   "sources": [
+    "Bruce Bartlett & Jenny Bartlett, Practical Recording Techniques",
+    "Rane Professional Audio Reference (Dennis Bohn)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bcb1faf4-8c50-4898-aa1e-ab94cb937f7a",
+   "term": "modern",
+   "fields": {
+    "definition": "A subjective descriptor for a contemporary production tonality, typically extended and controlled low end, clean and scooped low-mids, bright airy highs, and a loud, polished, precise character. It is used in contrast with a warmer, more colored vintage sound.",
+    "plain_english": "A modern sound is the clean, bright, punchy tone of today's recordings. It has tight deep lows, clear mids, crisp airy highs, and a loud, polished feel, unlike the warmer vintage sound.",
+    "purpose_function": "It communicates a target style, today's polished, hi-fi production sound, so gear and processing choices can aim for that goal.",
+    "practical_application": "Asked for a modern sound, an engineer may tighten the lows, clean the low-mids, add high-end air, and use precise digital processing and heavier loudness.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "vintage",
+     "bright",
+     "clean",
+     "airy",
+     "punchy"
+    ],
+    "common_mistakes": [
+     "Treating modern as a fixed EQ setting rather than a broad style that varies by genre.",
+     "Chasing a modern loud sound with over-limiting that squashes the dynamics.",
+     "Assuming modern always means better, when a vintage tone is often the right choice."
+    ],
+    "scenario_contexts": [
+     "A client asks for a modern pop vocal sound with bright air and tight low end.",
+     "Choosing between vintage and modern voicings on an amp sim or console emulation.",
+     "Mastering a track for a modern, loud, competitive level."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Bruce Bartlett & Jenny Bartlett, Practical Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

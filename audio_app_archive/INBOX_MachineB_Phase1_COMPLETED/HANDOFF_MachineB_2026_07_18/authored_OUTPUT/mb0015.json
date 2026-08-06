@@ -1,0 +1,115 @@
+{
+ "batch": 15,
+ "topic": "Instrument Recording — Strings & Guitar",
+ "authored": [
+  {
+   "id": "4d68e59a-b5b7-42f3-be0d-bfba229a38bc",
+   "term": "Wah-wah mute",
+   "fields": {
+    "definition": "A hollow metal mute for brass instruments — better known as the Harmon mute — held in the bell by a ring of cork and fitted with a movable central stem or tube; covering and uncovering the end of the stem with a hand or plunger while playing produces the vowel-like 'wah-wah' effect, and the stem may be removed for a thinner, buzzier stemless sound.",
+    "plain_english": "A metal mute for a trumpet or trombone. It has a little tube sticking out of it. The player waves a hand over the tube. This makes the horn talk with a wah-wah sound.",
+    "purpose_function": "It seals the bell and concentrates the brass tone into a thin, nasal, buzzy timbre, and its movable stem lets the player shape expressive, vocal-like 'wah' inflections, a sound closely associated with jazz brass playing.",
+    "practical_application": "On a jazz or big-band session a technician close-mics a trumpet or trombone using a Harmon (wah-wah) mute; because the muted tone is bright and concentrated, mic choice and working distance are set to tame the piercing highs and any low-end proximity buildup.",
+    "category": "Brass mute",
+    "related_terms": [
+     "Harmon mute",
+     "Straight mute",
+     "Cup mute",
+     "Plunger mute",
+     "Bucket mute"
+    ],
+    "common_mistakes": [
+     "Assuming the mute produces 'wah' on its own — the effect comes from the player covering and uncovering the stem with a hand or plunger.",
+     "Confusing the Harmon/wah-wah mute with the rubber plunger mute; both give vocal effects but are different tools with different tone.",
+     "Forgetting the stem is removable, so the classic diffuse 'stemless Harmon' tone and the wah-wah technique are two distinct uses of the same mute.",
+     "Miking it like an open horn and being surprised by the harsh, concentrated high-frequency beam a Harmon mute produces."
+    ],
+    "scenario_contexts": [
+     "A jazz session where the arranger calls for a Harmon (wah-wah) mute on a muted trumpet solo.",
+     "A big-band brass section using wah-wah mutes with plunger-style hand movement for a talking, expressive line.",
+     "A recording engineer positioning a mic on a Harmon-muted trumpet to control its thin, nasal, piercing tone."
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration (brass mutes — Harmon/wah-wah mute)",
+    "Piston, Orchestration (mutes)",
+    "Baines, Brass Instruments: Their History and Development (mutes)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e8834edd-e094-4cf7-a7dc-4531fd252340",
+   "term": "Wet tuning",
+   "fields": {
+    "definition": "The intentional detuning of one sound source slightly sharp or flat relative to a nearly identical one — such as two organ ranks, two accordion reed banks, or two synthesizer oscillators — so the pitches beat against each other and produce an undulating, shimmering 'chorused' tone; heavier detuning and faster beating give a 'wetter' sound, while near-unison tuning is 'dry'.",
+    "plain_english": "You tune two voices of an instrument a bit apart on purpose. Then they gently wobble against each other. This gives a rich, shimmering sound. A plain, flat tone would sound dull instead.",
+    "purpose_function": "It thickens and animates an otherwise static tone by exploiting the acoustic beating between two almost-identical pitches, an undulation the ear tends to hear as warm and pleasant.",
+    "practical_application": "An accordionist selects musette (wet) tuning for a French-café sound, an organist draws a celeste stop, or a producer detunes synth oscillators; when recording such a source the engineer preserves the intended beating rather than 'correcting' it with a tuner or pitch software.",
+    "category": "Tuning",
+    "related_terms": [
+     "Celeste",
+     "Voix céleste",
+     "Beating",
+     "Detune",
+     "Chorus effect",
+     "Musette tuning"
+    ],
+    "common_mistakes": [
+     "Confusing 'wet' meaning detuned/beating with 'wet' meaning the effected (reverb/delay) signal in a mix.",
+     "Hearing the deliberate beating as an instrument being simply out of tune or defective, rather than an intended effect.",
+     "Over-detuning until the shimmer becomes an unpleasant, seasick warble instead of a gentle undulation.",
+     "Trying to 'fix' the beating in a recording with a tuner or pitch correction, which destroys the intended sound produced between the two sources."
+    ],
+    "scenario_contexts": [
+     "Selecting musette (wet) tuning on an accordion to get a bright, shimmering French-café sound.",
+     "Drawing an organ's celeste / voix céleste stop to add shimmer to a string rank.",
+     "Building a synth pad from detuned oscillators for a 'fat', chorused texture.",
+     "Recording a celeste or detuned source and choosing not to correct the beating, since it is the desired effect."
+    ]
+   },
+   "sources": [
+    "Acta Acustica (peer-reviewed), 'Targeted detuning aiming for sensory pleasantness — Pipe Organs and Accordions' (wet vs dry tuning, beat frequencies at A4)",
+    "Audsley, The Art of Organ Building (voix céleste / celeste ranks and their detuning)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fcd61c4e-476c-41b8-b1df-5dd68032c99f",
+   "term": "Wolf tone",
+   "fields": {
+    "definition": "An unstable, warbling or stuttering note on a bowed string instrument — most notoriously the cello, but also viola and double bass — that occurs when the frequency of a played note nearly coincides with a strong resonance of the instrument body, so energy cycles between the string and the body and the note breaks up into periodic beating; on the cello it typically appears around E to F-sharp on the G or C string.",
+    "plain_english": "A note on a cello that seems to fight back. Instead of a clean tone, you get a shaky, stuttering sound. It happens because that pitch matches a strong buzz in the body of the instrument.",
+    "purpose_function": "It is not a designed feature but a coupling phenomenon; recognizing it explains why certain notes on certain instruments break up, and why devices such as wolf eliminators are fitted to tame them.",
+    "practical_application": "A luthier or technician identifies the offending pitch and fits a wolf eliminator (a small tuned mass) on the string's afterlength below the bridge, while the engineer may adjust mic placement and the player alters bow pressure and contact point to minimize the wolf during a take.",
+    "category": "String acoustics",
+    "related_terms": [
+     "Wolf eliminator",
+     "Body resonance",
+     "Helmholtz resonance",
+     "Sympathetic resonance",
+     "Beating",
+     "Sustain"
+    ],
+    "common_mistakes": [
+     "Blaming the player's bowing or a poor setup for the warble, when a wolf tone is a structural resonance of the instrument itself.",
+     "Believing a wolf eliminator removes the body resonance, when it actually shifts and damps it away from the played pitch.",
+     "Assuming only cheap instruments have wolf tones — fine, responsive cellos often exhibit pronounced ones.",
+     "Trying to fix a wolf in the mix with EQ, when it is a time-varying instability at the source rather than a fixed frequency imbalance."
+    ],
+    "scenario_contexts": [
+     "Recording a cello and hearing a warbling, stuttering note near F to F-sharp; a wolf eliminator is fitted on the afterlength to tame it.",
+     "A player and engineer adjusting bow pressure, contact point and mic position to minimize a wolf on a sustained note during a take.",
+     "A double bass or cello breaking up when a held note matches the instrument's main air or body resonance."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (bowed string instruments — the wolf note)",
+    "Journal of the Acoustical Society of America (ASA), study on eliminating the wolf note on a cello"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

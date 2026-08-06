@@ -1,0 +1,267 @@
+{
+ "batch": 37,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "ff8b323d-ce26-44cb-b837-5c0b10b3fa58",
+   "term": "Bass subgroup",
+   "fields": {
+    "definition": "A subgroup (group bus) that combines the bass-related channels—such as a direct (DI) feed and a miked amp, or several bass tracks—onto a single fader for shared level, processing, and routing control.",
+    "plain_english": "It is one fader that controls all the bass tracks at once. It is like putting every bass sound in one folder so you can turn them up or down together and treat them as a group.",
+    "purpose_function": "It lets an engineer balance and process every bass source as a single unit, so the whole low end moves together and shared effects like compression are set once instead of on each channel.",
+    "practical_application": "When tracking a band, an engineer routes the bass DI and amp mic to a bass subgroup, then compresses or rides that one bus rather than each channel separately.",
+    "category": "Signal routing",
+    "related_terms": ["Subgroup", "Direct guitar track", "Bus compression", "VCA group", "Gain staging", "Aux send"],
+    "common_mistakes": [
+     "Routing the individual bass channels to both the subgroup and the main mix, so the signal is counted twice and gets too loud",
+     "Overcompressing on the subgroup without watching gain staging, which squashes the low end",
+     "Confusing a subgroup, which carries audio, with a VCA group, which only links faders"
+    ],
+    "scenario_contexts": [
+     "Grouping a bass DI and miked amp to one fader so they can be balanced together during a live band tracking session",
+     "Applying one compressor across the bass subgroup to glue the low end before it hits the mix bus",
+     "Muting the whole bass part quickly by pulling down a single subgroup fader"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e05a43bd-43c3-4bf8-b8c6-d412205ea517",
+   "term": "Bass subsonic filtering",
+   "fields": {
+    "definition": "A high-pass (low-cut) filter applied to a bass signal to remove very low, largely inaudible energy below roughly 20–40 Hz that carries no musical content but wastes headroom and can drive loudspeakers into excessive cone excursion.",
+    "plain_english": "It means cutting out the super-low rumble under the bass that you cannot really hear. Clearing that useless deep energy gives your mix and your speakers more room to work.",
+    "purpose_function": "It protects headroom and loudspeakers by stripping subsonic rumble—from handling, stage vibration, or DC offset—before it inflates levels or pushes woofers past their safe limits.",
+    "practical_application": "An engineer sets a steep high-pass around 30 Hz on the bass channel to keep stage rumble and cone flap out of the low end.",
+    "category": "Filtering",
+    "related_terms": ["High-pass filter", "Rumble filter", "Headroom", "Cone excursion", "DC offset", "Bass subgroup"],
+    "common_mistakes": [
+     "Setting the cutoff too high, which thins out the real fundamental notes of the bass",
+     "Using a gentle slope that barely touches the rumble, so subsonic energy still eats headroom",
+     "UNSAFE: Feeding unfiltered subsonic energy to a PA at high level, which can drive woofers past their excursion limit and damage the drivers"
+    ],
+    "scenario_contexts": [
+     "High-passing the bass channel at a live show to stop stage-borne rumble from muddying the low end",
+     "Removing DC offset and sub-rumble from a bass DI before compression",
+     "Protecting subwoofers by cutting inaudible sub-20 Hz energy in a loud mix"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Rane technical notes",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0dd6553a-cc3e-4a69-a45f-476b0ed4488d",
+   "term": "Bass sustain control",
+   "fields": {
+    "definition": "The management of how long bass notes ring out, achieved through playing technique such as muting or damping, instrument setup, or processing such as compression, gating, or the sustain stage of a transient shaper.",
+    "plain_english": "It is deciding how long each bass note keeps ringing before it fades. You can shorten notes by muting the strings, or stretch them out with a compressor.",
+    "purpose_function": "It lets an engineer or player match note length to the song, so the bass either locks tightly with the kick or holds long, even notes under the arrangement.",
+    "practical_application": "To even out a part where some notes die early, an engineer adds gentle compression that raises the tail, lengthening the sustain of the bass.",
+    "category": "Dynamics processing",
+    "related_terms": ["Compression", "Bass transient shaping", "Gating", "Palm muting", "Bass subgroup", "Envelope"],
+    "common_mistakes": [
+     "Using heavy compression to add sustain, which also pulls up hiss and amp noise in the gaps",
+     "Blaming the instrument for uneven sustain when the real fix is playing technique or damping",
+     "Gating too tightly and chopping off the natural decay of held notes"
+    ],
+    "scenario_contexts": [
+     "Compressing a bass take so short, uneven notes ring long enough to sit under the vocal",
+     "Palm muting during tracking to tighten sustain so the bass locks with the kick drum",
+     "Shaping note length on a synth bass so pads and bass do not smear together"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a8b8f302-a6df-4c22-a31e-9e9451405a39",
+   "term": "Bass transient shaping",
+   "fields": {
+    "definition": "The use of a transient designer or shaper to independently adjust the attack (initial pluck or pick) and sustain portions of a bass signal, changing its punch and note length without relying on a traditional threshold-based compressor.",
+    "plain_english": "It means changing the punch of the bass's first hit and how long each note holds, using a tool made for that job. It is like a volume knob just for the thump at the start of each note.",
+    "purpose_function": "It gives level-independent control over punch and decay, so an engineer can add attack for definition or soften it for a rounder feel regardless of how loud the part is.",
+    "practical_application": "To make a soft bass line cut through, an engineer boosts the attack with a transient shaper so each note's pluck is clearer in the mix.",
+    "category": "Dynamics processing",
+    "related_terms": ["Transient designer", "Bass sustain control", "Compression", "Attack", "Envelope", "Bass subgroup"],
+    "common_mistakes": [
+     "Pushing the attack too far, so the bass clicks and loses body",
+     "Assuming a transient shaper works like a compressor, when it responds to the shape of the note rather than a level threshold",
+     "Boosting attack and sustain heavily at once, which raises noise and overloads the channel"
+    ],
+    "scenario_contexts": [
+     "Adding attack to a dull bass DI so each note's pluck reads clearly in a dense mix",
+     "Softening a spiky slap-bass part by pulling down its attack",
+     "Tightening a boomy bass by reducing sustain instead of cutting low EQ"
+    ]
+   },
+   "sources": [
+    "Sound on Sound",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "73100af9-9084-48fe-9505-5e33bd28da11",
+   "term": "Batter head",
+   "fields": {
+    "definition": "The drumhead mounted on the top, playing side of a drum, struck directly by the stick, mallet, or beater, as distinct from the resonant head on the bottom.",
+    "plain_english": "It is the top skin of a drum, the one you actually hit. The other head, on the bottom, is not struck and just rings along with it.",
+    "purpose_function": "It is the drum's main sound-producing and playing surface; its type—coated or clear, single or double ply—shapes the attack, tone, sustain, and durability of the drum.",
+    "practical_application": "When micing a snare, an engineer places the top mic just over the edge of the batter head and tunes or dampens that head to control ring.",
+    "category": "Drum component",
+    "related_terms": ["Resonant head", "Bearing-edge problem", "Beater impact", "Drum tuning", "Snare drum", "Coated head"],
+    "common_mistakes": [
+     "Mixing up the batter head with the resonant head when tuning, and changing the wrong side",
+     "Over-tightening tension rods unevenly, so the batter head chokes and will not seat in tune",
+     "Assuming a single mic over the batter head captures the full drum without the resonant side's tone"
+    ],
+    "scenario_contexts": [
+     "Choosing a coated batter head to soften attack when tracking a warm snare sound",
+     "Tuning the batter head to change the pitch and feel of a tom during a session",
+     "Placing the close mic over the batter head edge to capture stick attack"
+    ]
+   },
+   "sources": [
+    "Remo technical documentation (drumhead construction)",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "91fc1460-a6c8-4f21-b5fa-912ae18966c9",
+   "term": "Bearing-edge problem",
+   "fields": {
+    "definition": "A defect at the bearing edge—the shaped rim of a drum shell where the head makes contact—such as a nick, warp, or out-of-round or uneven edge, which prevents the head from seating evenly and causes tuning instability, poor tone, and unwanted overtones.",
+    "plain_english": "It is trouble at the rim of the drum shell where the skin rests. If that edge is dented or uneven, the head cannot sit flat, so the drum sounds bad and will not stay in tune.",
+    "purpose_function": "Recognizing a bearing-edge problem explains why a drum resists tuning or rings oddly, pointing to a shell or edge fault rather than the head or hardware.",
+    "practical_application": "When a drum will not tune out despite fresh heads, a technician checks the bearing edge on a flat surface for high spots or warping before recutting or leveling it.",
+    "category": "Drum maintenance",
+    "related_terms": ["Bearing edge", "Batter head", "Resonant head", "Drum tuning", "Drum shell", "Beater impact"],
+    "common_mistakes": [
+     "Blaming the drumhead or lugs for tuning trouble when the bearing edge is the real fault",
+     "Cranking tension to force a warped edge to seat, which only chokes the drum and stresses the shell",
+     "Setting a drum on a rough surface and chipping the bearing edge"
+    ],
+    "scenario_contexts": [
+     "Diagnosing why a snare rings unevenly and will not hold tune after a head change",
+     "Checking a used drum's bearing edges before a recording session",
+     "Sending a shell out to have a damaged bearing edge re-cut and leveled"
+    ]
+   },
+   "sources": [
+    "Remo technical documentation (drum shell and bearing edge)",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a0aef90c-e718-4e8e-8a14-6cd0b5b244e7",
+   "term": "Beater impact",
+   "fields": {
+    "definition": "The strike of a bass-drum pedal beater against the batter head; its character—set by the beater's material (felt, wood, or plastic), hardness, and force—determines the attack, click, and tone of the kick drum.",
+    "plain_english": "It is the moment the kick pedal's beater hits the bass drum skin. A hard plastic beater gives a sharp click, while a soft felt one gives a rounder thump.",
+    "purpose_function": "It shapes the kick's attack and definition, so the choice of beater and how hard it strikes controls how much the kick cuts through a mix.",
+    "practical_application": "To get a kick to punch through a loud band, an engineer or drummer switches to a harder beater and often adds a click pad at the impact point.",
+    "category": "Drum component",
+    "related_terms": ["Batter head", "Kick drum", "Bearing-edge problem", "Drum tuning", "Beater", "Bass subgroup"],
+    "common_mistakes": [
+     "Expecting more click from EQ alone when a softer beater is limiting the attack at the source",
+     "Letting the beater rest buried in the head, which deadens the impact and tone",
+     "Ignoring a worn beater that leaves an uneven or dull impact on the head"
+    ],
+    "scenario_contexts": [
+     "Swapping to a plastic beater so the kick clicks through a heavy guitar mix",
+     "Adding a felt impact pad to soften a harsh beater sound for a jazz session",
+     "Adjusting beater force and pedal tension to even out the kick's attack"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "076433b0-b0b2-4a6f-9a2d-7665f87be505",
+   "term": "Body resonance control",
+   "fields": {
+    "definition": "Techniques for managing the natural resonant modes of an acoustic instrument's body—such as an acoustic guitar or double bass—during recording, using microphone placement, damping, or EQ to tame boomy or boxy frequencies while keeping the instrument's character.",
+    "plain_english": "It means taming the boomy sounds that an instrument's hollow body makes when you record it. You move the mic or dip a frequency so it does not sound boxy.",
+    "purpose_function": "It keeps one or two strong body resonances from dominating the recorded tone, so the instrument sounds balanced rather than boomy or honky in the mix.",
+    "practical_application": "When an acoustic guitar sounds boomy near the sound hole, an engineer moves the mic toward the neck or dips the offending low-mid frequency to calm the body resonance.",
+    "category": "Recording technique",
+    "related_terms": ["Microphone placement", "Proximity effect", "Parametric EQ", "Bow-noise control", "Sound hole", "Acoustic guitar"],
+    "common_mistakes": [
+     "Micing straight at the sound hole and then fighting the boom with heavy EQ",
+     "Cutting so much low-mid that the instrument loses its natural body and warmth",
+     "Confusing a room resonance with the instrument's own body resonance and treating the wrong one"
+    ],
+    "scenario_contexts": [
+     "Moving an acoustic guitar mic off the sound hole to reduce a boomy body resonance",
+     "Dipping a narrow low-mid band on a double bass to control a boxy note",
+     "Placing a small damper inside a resonant instrument to tame a ringing mode"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers",
+    "Fletcher & Rossing, The Physics of Musical Instruments"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "411febe6-0d68-4214-9563-f5f44639f197",
+   "term": "Bow-noise control",
+   "fields": {
+    "definition": "Techniques for reducing the scratchy, scraping bow-on-string noise captured when recording bowed string instruments, using microphone placement and distance, bow technique, rosin management, and selective high-frequency EQ.",
+    "plain_english": "It means cutting down the scratchy sound a bow makes as it drags across the strings. You back the mic off a little or ease off the harsh high frequencies.",
+    "purpose_function": "It keeps unwanted bow scrape from masking the pure tone of a violin, viola, cello, or bass, so the recorded string sound stays smooth and musical.",
+    "practical_application": "When a close-miked violin sounds scratchy, an engineer moves the mic back and slightly off the bow contact point, then gently tames the harsh highs.",
+    "category": "Recording technique",
+    "related_terms": ["Microphone placement", "Body resonance control", "De-esser", "High-frequency EQ", "Rosin", "Close miking"],
+    "common_mistakes": [
+     "Placing the mic too close and right over the bow, which exaggerates the scrape",
+     "Using too much rosin, so the bow grabs the string and adds noise",
+     "Cutting the highs so hard that the strings lose their air and bite"
+    ],
+    "scenario_contexts": [
+     "Backing a mic away from a close-miked cello to reduce bow scrape",
+     "Guiding a player to lighten bow pressure during a quiet passage to cut noise",
+     "Taming harsh bow noise on a violin overdub with gentle high-frequency EQ"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

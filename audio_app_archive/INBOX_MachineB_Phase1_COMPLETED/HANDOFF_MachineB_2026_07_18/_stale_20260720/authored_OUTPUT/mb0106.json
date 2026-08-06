@@ -1,0 +1,159 @@
+{
+ "batch": 106,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "925184f3-3c7d-4458-877a-b35a50431f9e",
+   "term": "Grabber Tool",
+   "fields": {
+    "definition": "In Avid Pro Tools, an edit-mode tool used to select, move, separate, and place audio or MIDI clips (regions) within a track or between tracks; it has Time, Separation, and Object variants for different selection behaviors.",
+    "plain_english": "The Grabber is a Pro Tools tool that works like a hand for sound clips. You click a clip and drag it to move it where you want on the timeline.",
+    "purpose_function": "It gives the editor a direct way to grab and reposition clips on the timeline, which is essential for arranging takes and edits.",
+    "practical_application": "An editor switches to the Grabber to drag a vocal clip into time, move a sound effect to line up with picture, or relocate a section during editing.",
+    "category": "Editing Tool",
+    "related_terms": ["Selector Tool", "Smart Tool", "Trim Tool", "Clip (Region)", "Edit Window", "Nudge"],
+    "common_mistakes": ["Confusing the Grabber with the Selector, which makes a timeline selection rather than moving a clip", "Using the Time Grabber when the Object Grabber is needed to pick several non-adjacent clips", "Dragging a clip off the grid because Grid mode is not enabled"],
+    "scenario_contexts": ["Dragging a comped vocal clip earlier to fix timing", "Moving a sound effect to line up with picture", "Relocating a chorus section in an arrangement"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2584d96c-a628-4b77-ba6b-3d9d8282bc66",
+   "term": "Groove amount",
+   "fields": {
+    "definition": "A groove-quantize parameter that sets how strongly the timing (and sometimes velocity and duration) of events is pulled toward a groove template's reference positions, typically expressed as a percentage from 0% (no change) to 100% (full match).",
+    "plain_english": "Groove amount controls how much a groove is applied to your notes. At a low setting the notes barely move; at full the notes lock right onto the groove's feel.",
+    "purpose_function": "It lets you blend a part's original timing with a groove template, so you can add feel without making the performance sound stiff or fully machine-locked.",
+    "practical_application": "When applying a swing groove to programmed drums, an engineer lowers the groove amount so the hats keep some of their original feel instead of snapping hard to the template.",
+    "category": "Groove Editing",
+    "related_terms": ["Groove application", "Groove template extraction", "Groove track", "Quantize", "Swing", "Velocity"],
+    "common_mistakes": ["Setting the amount to 100% and losing all natural feel", "Confusing groove amount (strength) with the groove's own swing value", "Expecting amount to fix notes that are far off the grid, which may still need manual editing"],
+    "scenario_contexts": ["Dialing in partial swing on a hi-hat pattern", "Blending a real drummer's feel onto programmed percussion", "Softening tightly quantized MIDI to sound more human"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "Avid Pro Tools Reference Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d63cd173-d580-4e72-aed1-308e5319f71d",
+   "term": "Groove application",
+   "fields": {
+    "definition": "The process of imposing a groove template's timing (and optionally velocity and duration) onto MIDI or audio events, shifting them toward the template's rhythmic feel by a chosen amount.",
+    "plain_english": "Groove application means putting a chosen groove onto your notes so they take on that rhythmic feel. It is like copying the timing swing of one part onto another.",
+    "purpose_function": "It exists so a programmed or recorded part can borrow the timing feel of a reference groove, helping separate tracks lock together rhythmically.",
+    "practical_application": "A producer applies a groove taken from the drum loop to the bass part so both parts breathe together.",
+    "category": "Groove Editing",
+    "related_terms": ["Groove template extraction", "Groove amount", "Groove track", "Quantize", "Swing", "MIDI"],
+    "common_mistakes": ["Applying a groove at full strength and flattening the part's natural feel", "Applying a groove built at a different tempo or meter and getting odd timing", "Forgetting to set the amount, so the shift is stronger or weaker than expected"],
+    "scenario_contexts": ["Matching a bass line to a drum loop's feel", "Adding a swung feel to straight programmed percussion", "Locking a keyboard part to the drummer's timing"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "Avid Pro Tools Reference Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "75af7b7c-1cb1-4401-811e-92868449a8f6",
+   "term": "Groove template extraction",
+   "fields": {
+    "definition": "The process of analyzing an existing audio or MIDI performance and capturing its timing (and often velocity and duration) into a reusable groove template that can later be applied to other material.",
+    "plain_english": "This means pulling the timing feel out of one performance and saving it as a template. Later you can stamp that same feel onto other tracks.",
+    "purpose_function": "It lets an engineer reuse the natural feel of a good take, or match new parts to the timing of an existing groove.",
+    "practical_application": "Using a tool such as Beat Detective, an engineer extracts the groove from a live drum take and applies it to the programmed percussion.",
+    "category": "Groove Editing",
+    "related_terms": ["Groove application", "Groove amount", "Groove track", "Beat Detective", "Quantize", "MIDI"],
+    "common_mistakes": ["Extracting from a poorly timed take and spreading its errors to other tracks", "Extracting with an incorrect grid or tempo, so the template does not line up", "Confusing extracting a groove with simply quantizing to the grid"],
+    "scenario_contexts": ["Capturing the feel of a live drum take for reuse", "Building a house groove template from a favorite loop", "Extracting a bassist's timing to apply to synth parts"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "66362eea-b7a7-4424-8ebc-856e65424ccb",
+   "term": "Groove track",
+   "fields": {
+    "definition": "In Apple Logic Pro, a track designated as the timing reference so that the timing of other selected tracks is matched to (follows) its feel; only one Groove Track can be active at a time.",
+    "plain_english": "A Groove Track is one track you pick as the timing boss in Logic Pro. Other tracks you tie to it will follow its rhythmic feel.",
+    "purpose_function": "It provides a quick way to lock several tracks to the feel of a single reference part, without extracting and applying groove templates by hand.",
+    "practical_application": "A Logic user sets the drum track as the Groove Track and enables other tracks to follow it, tightening the whole arrangement to the drummer's feel.",
+    "category": "Groove Editing",
+    "related_terms": ["Groove application", "Groove template extraction", "Groove amount", "Quantize", "Flex Time", "Track"],
+    "common_mistakes": ["Expecting more than one Groove Track at a time, when only one can be active", "Forgetting to enable follow tracks, so nothing changes", "Choosing a loosely timed track as the reference and dragging others off"],
+    "scenario_contexts": ["Making all tracks follow the drummer's feel in Logic", "Tightening a band recording to one reference part", "Locking overdubs to the groove of the rhythm section"]
+   },
+   "sources": ["Apple Logic Pro User Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8ac1feda-72ac-4c8e-b37f-24fb0a74ca49",
+   "term": "Group ADR premix",
+   "fields": {
+    "definition": "In post-production dubbing, a premix (predub) that combines and processes the ADR (re-recorded studio dialogue) tracks as a group into a submixed stem, ready to be balanced against production dialogue, effects, and music in the final mix.",
+    "plain_english": "This is a combined rough mix of all the re-recorded studio dialogue lines, bundled together before the final movie mix. ADR means lines actors re-record in a studio. It tidies those redone voice tracks into one neat bundle.",
+    "purpose_function": "It reduces track count and pre-balances re-recorded dialogue so the re-recording mixer can handle it as one manageable element in the final mix.",
+    "practical_application": "A dialogue editor delivers a group ADR premix so the re-recording mixer can blend the studio-recorded lines smoothly with the on-set dialogue.",
+    "category": "Post Production",
+    "related_terms": ["ADR", "Premix (Predub)", "Dialogue editing", "Stem", "Submix", "Re-recording mixer"],
+    "common_mistakes": ["Confusing a premix or predub with the finished final mix", "Not matching ADR level and tone to the production dialogue before premixing", "Over-committing processing so elements can no longer be adjusted in the final"],
+    "scenario_contexts": ["Preparing dialogue stems for a film final dub", "Grouping many ADR lines for a TV episode before the final mix", "Delivering a dialogue predub to the re-recording stage"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Avid Pro Tools Reference Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ba3b5c4c-8574-4323-aba1-db2ff5bf1913",
+   "term": "Group Attributes",
+   "fields": {
+    "definition": "In Avid Pro Tools, the settable properties of a Mix or Edit group that determine which tracks belong to it and which controls (such as volume, mute, solo, automation mode, and record/input) are linked across the grouped tracks.",
+    "plain_english": "Group attributes are the settings that say which tracks are in a group and which of their controls move together. It is like choosing which buttons on several channels are tied to the same string.",
+    "purpose_function": "They let you control exactly how tightly grouped tracks behave together, so you can link only the functions you want, for example volumes but not mutes.",
+    "practical_application": "In the Modify Groups dialog, an engineer sets group attributes so one drum fader moves them all, while leaving solo buttons independent.",
+    "category": "Track Grouping",
+    "related_terms": ["Mix Group", "Edit Group", "Group Override", "VCA Master", "Submix", "Fader"],
+    "common_mistakes": ["Assuming a group links every control, when attributes may link only some", "Forgetting that changing attributes affects all member tracks", "Confusing Mix group attributes with Edit group attributes"],
+    "scenario_contexts": ["Setting a drum group to link faders but not mutes", "Editing which tracks belong to a group", "Choosing whether automation mode is linked across a group"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b839f670-5dad-4b03-990c-0c8f19db19db",
+   "term": "Group Channel track",
+   "fields": {
+    "definition": "In Steinberg Cubase and Nuendo, a track type that creates a group (submix) bus to which several audio channels can be routed, allowing them to be processed and level-controlled together before reaching the output.",
+    "plain_english": "A Group Channel track is a single fader that several tracks feed into, so you can control them all at once. Think of routing all your drum mics into one drums fader.",
+    "purpose_function": "It lets you submix related tracks, apply shared processing, and control their combined level with one fader, which simplifies the mix.",
+    "practical_application": "A Cubase user routes all backing-vocal tracks to a Group Channel track to add one shared reverb and ride the whole group's level together.",
+    "category": "Track Grouping",
+    "related_terms": ["Submix", "Bus", "Group Attributes", "VCA Master", "Send", "Output Routing"],
+    "common_mistakes": ["Confusing a Group Channel (an audio summing bus) with a VCA or mix group that only links faders", "Adding the same plug-in on every channel instead of once on the group", "Forgetting to route channels to the group, so it stays silent"],
+    "scenario_contexts": ["Summing all drum mics to one drum group", "Bussing backing vocals for shared compression", "Grouping instrument tracks to control a submix level"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "768f714e-fad1-4363-b18b-b014349b46b3",
+   "term": "Group Override",
+   "fields": {
+    "definition": "In Avid Pro Tools, temporarily suspending a group's linking for a single action so that an adjustment (for example to one fader) affects only that track rather than all members, typically done by holding a modifier key while making the move.",
+    "plain_english": "Group override lets you tweak just one track in a group without the others moving with it. It is like briefly untying one channel from the group so you can adjust it alone.",
+    "purpose_function": "It lets an engineer make a quick fix to a single grouped track without having to disable and re-enable the whole group.",
+    "practical_application": "With a drum group active, an engineer holds the override modifier to nudge only the snare fader while the rest of the group stays put.",
+    "category": "Track Grouping",
+    "related_terms": ["Mix Group", "Edit Group", "Group Attributes", "Suspend Groups", "Fader", "Solo"],
+    "common_mistakes": ["Expecting an override to stick, when it only affects the single move", "Adjusting a grouped control without overriding and accidentally moving every member", "Confusing a group override with suspending all groups globally"],
+    "scenario_contexts": ["Nudging one fader within an active mix group", "Fixing the level of a single mic in a grouped drum kit", "Making a quick change to one member of a group"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "batch": 262,
+ "topic": "Re-Recording & Final Mix",
+ "terms": [
+  {
+   "id": "92e09153-e833-4598-883e-3fc0c3619d5b",
+   "term": "Re-recording stage",
+   "topic": "Re-Recording & Final Mix",
+   "seq": 1234,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

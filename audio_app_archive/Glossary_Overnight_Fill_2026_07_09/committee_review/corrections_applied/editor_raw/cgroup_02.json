@@ -1,0 +1,93 @@
+{
+ "group": 2,
+ "corrections": [
+  {
+   "id": "4dd20588-f9ef-436c-a03b-d0e30bc0aafe",
+   "term": "Wi-Fi Assistive Streaming",
+   "corrected": {
+    "common_mistakes": [
+     "Assuming the app alone satisfies the ADA. Compliance requires the correct number of receivers/loaner devices, neck loops, and signage in addition to the streaming system.",
+     "Underprovisioning Wi-Fi. Insufficient access-point coverage or bandwidth causes dropouts and defeats the assistive purpose.",
+     "Ignoring latency: excessive lag breaks lip-sync between the streamed audio and the live source on stage, so listeners hear words out of step with what they see.",
+     "Assuming telecoil users are served automatically. Hearing-aid users need a neck loop paired to the phone to reach their telecoil."
+    ]
+   },
+   "notes": [
+    "common_mistakes: rewrote the garbled latency bullet (item 3) as a clean cause-effect sentence, satisfying both the Learning/Cognition and Language/Communications flags; other three items unchanged."
+   ]
+  },
+  {
+   "id": "e83682ef-f7dc-4b5c-8f32-ba8cff9fe37c",
+   "term": "Exponential Sine Sweep",
+   "corrected": {
+    "practical_application": "It is the default stimulus in tools like REW and ARTA for capturing a loudspeaker or room impulse response and, in the same pass, reading off the harmonic distortion of the device under test; real-time analyzers such as Smaart can also drive sweeps to capture an IR but do not separate distortion products this way."
+   },
+   "notes": [
+    "practical_application: removed Smaart from the claim that the log sweep is the default stimulus for reading off harmonic distortion in one pass. Verified Smaart is a dual-channel FFT transfer-function analyzer whose default workflow is real-time measurement with pink noise/program material; with log sweeps its distortion products wrap around as pre-arrivals rather than being resolved into separate harmonic orders (Farina ESS deconvolution). REW and ARTA do provide that ESS distortion analysis, so they are kept; Smaart is moved to a note that it also supports sweeps for IR capture."
+   ]
+  },
+  {
+   "id": "2ee58f33-b85a-4ae4-b543-61db9da94b2e",
+   "term": "Mass Notification System",
+   "corrected": {
+    "practical_application": "Integrators lay out speakers and tune DSP for intelligibility toward an STI of about 0.50, equivalent to roughly 0.70 on the CIS scale, install a UL 2572-listed control unit with backup power and supervised circuits, and set message priority so emergency notification overrides paging and background music; commissioning includes intelligibility (STI/CIS) verification at occupant locations."
+   },
+   "notes": [
+    "practical_application: unpacked the nested parentheses 'an STI target near 0.50 (=0.70 CIS)' into plain prose. Verified the dual-metric fact: CIS = 1 + log10(STI), so STI 0.50 corresponds to CIS 0.699 (~0.70); numbers preserved as correct.",
+    "purpose_function: DECLINED to change. The Language/Communications expert labeled this field but quoted the nested-parentheses phrase 'tune DSP for intelligibility (an STI target near 0.50 (=0.70 CIS))', which actually appears in practical_application; purpose_function contains no such text. Both suggestions concern the same real phrase, so both were applied to practical_application. Altering purpose_function would fabricate content that was never there."
+   ]
+  },
+  {
+   "id": "5352cf8a-7a6c-44d3-90ea-76ff75f3a1d1",
+   "term": "Bass Shaker (Tactile Transducer)",
+   "corrected": {
+    "related_terms": [
+     "Subwoofer",
+     "LFE Channel",
+     "Crossover",
+     "Amplifier",
+     "AV Receiver"
+    ]
+   },
+   "notes": [
+    "related_terms: replaced the stray cross-link 'Network Streamer' (a source/transport unrelated to seat-mounted tactile vibration) with 'AV Receiver', a genuinely related home-theater component; other four terms unchanged."
+   ]
+  },
+  {
+   "id": "b051f7fb-bfe4-4ad4-96a7-f66e587bad48",
+   "term": "Direct Drive",
+   "corrected": {
+    "practical_application": "A tech relies on its instant torque for cueing, back-cueing, and scratching, and can use its speed stability and quartz-lock pitch control (an electronic speed reference that holds the platter exactly on speed) for reliable playback and mixing."
+   },
+   "notes": [
+    "practical_application: added a plain-language gloss for 'quartz-lock pitch control' so the beginner-level term stays depth-consistent; wording otherwise unchanged."
+   ]
+  },
+  {
+   "id": "4305a61f-12a8-4f2f-b7a7-68c9b2be3b88",
+   "term": "Network Streamer",
+   "corrected": {
+    "related_terms": [
+     "DAC",
+     "MQA",
+     "Amplifier",
+     "NAS",
+     "Streaming Service"
+    ]
+   },
+   "notes": [
+    "related_terms: replaced the reciprocal stray cross-link 'Bass Shaker (Tactile Transducer)' with 'Streaming Service', which reinforces the streaming knowledge map; satisfies both the Audio Technical and Learning/Cognition flags. The reciprocal link was also removed from the Bass Shaker term. Other four terms unchanged."
+   ]
+  },
+  {
+   "id": "53f756da-bd36-46e9-8977-976ac856b84d",
+   "term": "Tracking Force",
+   "corrected": {
+    "purpose_function": "It sets the downward stylus weight so the stylus stays properly seated in the groove. Too little causes mistracking and skipping; too much increases groove and stylus wear, so it is set to the cartridge maker's specified value."
+   },
+   "notes": [
+    "purpose_function: split the single semicolon-chained sentence into two for easier parsing; content and meaning unchanged."
+   ]
+  }
+ ]
+}

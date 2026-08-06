@@ -1,0 +1,159 @@
+{
+ "batch": 201,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "8b653777-304b-49df-ac3e-b2e3fb2d0396",
+   "term": "Silence detector",
+   "fields": {
+    "definition": "A device or software function in the broadcast air chain that monitors program audio and triggers an alarm or automatic action when the level falls below a set threshold for a defined time, indicating unintended dead air. Recovery actions can include switching to a backup audio source, alerting staff, or logging the fault.",
+    "plain_english": "It listens to what the station is putting on air. If the sound drops out for too long, it sets off an alarm or plays a backup so the station is not left silent.",
+    "purpose_function": "It detects prolonged dead air caused by a fault upstream and prompts recovery, so the station does not broadcast long stretches of silence unnoticed.",
+    "practical_application": "An engineer sets the level threshold and time delay, wires the detector to switch to a backup playlist or alert on-call staff, and tests it during maintenance.",
+    "category": "Broadcast Equipment",
+    "related_terms": ["Dead air", "Studio-transmitter link", "Air chain", "Automation", "Backup audio"],
+    "common_mistakes": ["Setting the silence threshold so high that quiet passages trigger false alarms.", "Setting the delay so long that noticeable dead air airs before any action is taken.", "Assuming the detector fixes the fault when it only alerts to it or switches sources."],
+    "scenario_contexts": ["Overnight automation stalls and the detector switches to a backup playlist.", "A satellite or network feed drops and the detector alerts the on-call engineer.", "A studio source fails and the detector logs the silence for review."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "204d28fa-963e-4c46-a2dd-8c3b768ed3c6",
+   "term": "Simulcast audio mix",
+   "fields": {
+    "definition": "A single audio mix prepared for simultaneous broadcast across two or more outlets or formats, such as television and radio, or FM and a webstream. It is balanced so the same content and levels work within the technical constraints of every distribution path at once.",
+    "plain_english": "One sound mix made to go out on more than one channel at the same time, like radio and TV together. It has to sound right on all of them at once.",
+    "purpose_function": "It lets one program air on several platforms at once while keeping content and loudness correct for each, avoiding the cost and mismatch of separate mixes.",
+    "practical_application": "A broadcast mixer folds a stereo or surround mix so it also translates to the radio simulcast, checking mono compatibility and meeting each outlet's loudness target.",
+    "category": "Radio Production",
+    "related_terms": ["Loudness normalization", "Mono compatibility", "Downmix", "Air chain", "Stadium ambience array"],
+    "common_mistakes": ["Skipping the mono compatibility check, so the radio simulcast loses key content or cancels out.", "Mixing only for one platform's loudness target and leaving the others too loud or too quiet.", "Forgetting that a surround mix must fold down cleanly for the radio outlet."],
+    "scenario_contexts": ["A televised concert also carried live on FM radio from one mix.", "A sports broadcast fed to TV, radio, and a streaming app at the same time.", "An awards show simulcast on a network and its companion webstream."]
+   },
+   "sources": ["ITU-R BS.775 (multichannel and downmix)", "ATSC A/85 / ITU-R BS.1770 loudness practice", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f3f43c4d-703a-4cbe-bab7-90b3ffacdef1",
+   "term": "Stadium ambience array",
+   "fields": {
+    "definition": "A set of microphones placed around a stadium or arena to capture crowd noise and venue ambience for a sports or event broadcast. Their signals are combined into an ambience bed that sits under the commentary and on-field effects microphones.",
+    "plain_english": "A group of microphones spread around a stadium to pick up the crowd and the sound of the place. Mixed together, they make the broadcast feel like you are really there.",
+    "purpose_function": "It captures the sense of the live venue, crowd reaction and room sound, so the broadcast feels immersive rather than dry and distant.",
+    "practical_application": "A broadcast mixer places and levels several crowd microphones around the bowl, riding them up to lift the ambience during big moments without burying the commentators.",
+    "category": "Broadcast Production",
+    "related_terms": ["Effects microphone", "Commentary mix", "Ambience bed", "Simulcast audio mix", "Air chain"],
+    "common_mistakes": ["Pushing crowd microphones so hot that commentary becomes hard to hear.", "Placing microphones where they mainly pick up the venue PA rather than the crowd.", "Ignoring phase problems when many spaced microphones are summed together."],
+    "scenario_contexts": ["A televised football match where crowd noise swells after a goal.", "A basketball broadcast lifting arena ambience during a close finish.", "A concert broadcast needing audience response captured between songs."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "36bf4679-0c72-42b6-b77b-836e92462e1e",
+   "term": "Station identification",
+   "fields": {
+    "definition": "The on-air announcement that identifies a broadcast station by its call sign and community of license. In the United States, FCC rules require an official station identification at the beginning of each hour of operation, made at a natural programming break near the top of the hour.",
+    "plain_english": "The short on-air message that tells listeners which station they are hearing, using its call letters and city. Stations must give it by law at set times.",
+    "purpose_function": "It legally identifies the licensed station to listeners and regulators at required times and reinforces the station's brand on air.",
+    "practical_application": "Engineers and automation schedule the legal ID to fire close to the top of each hour, and live hosts make sure it airs even during continuous programming.",
+    "category": "Broadcast Regulation",
+    "related_terms": ["Call sign", "Stopset", "Sweep production", "Automation", "Air chain"],
+    "common_mistakes": ["Confusing a branded promo or sweeper with the required legal identification.", "Airing the legal ID outside the required window near the top of the hour.", "Leaving the community of license out of the official identification."],
+    "scenario_contexts": ["Automation fires the legal ID at 11:59 just before the news.", "A live host reads the station ID at the top of the hour.", "An engineer verifies the ID timing during a compliance review."]
+   },
+   "sources": ["FCC 47 CFR 73.1201 (Station identification)", "NAB Engineering Handbook (National Association of Broadcasters)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ef74499d-16ad-43ff-b42c-3a628bbd299d",
+   "term": "Stopset",
+   "fields": {
+    "definition": "A scheduled cluster of non-program content, such as commercials, promos, and sponsor messages, aired together as a single break between segments of programming on a radio station. Stopsets are placed at planned positions in the hourly clock.",
+    "plain_english": "A commercial break on the radio: the block where ads and promos all play in a row. The programming stops for it, then picks back up.",
+    "purpose_function": "It groups paid and promotional spots into planned breaks so program segments run uninterrupted and airtime is sold and scheduled efficiently.",
+    "practical_application": "Traffic and programming staff build stopsets into the log, and live hosts or automation trigger them at set clock positions each hour.",
+    "category": "Programming",
+    "related_terms": ["Traffic insert", "Sweep production", "Hot clock", "Recorded spot", "Station identification"],
+    "common_mistakes": ["Running a stopset long so the hour drifts off its scheduled clock.", "Stacking too many spots in one break and driving listeners away.", "Airing spots in the wrong stopset compared with the log."],
+    "scenario_contexts": ["A music station plays a four-minute stopset at :20 and :50 each hour.", "Automation rejoins network programming right after the local stopset.", "A host counts down to the stopset before a segue."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "860a04e4-5f86-473a-b896-06d263198a08",
+   "term": "Studio-transmitter link",
+   "fields": {
+    "definition": "The communication link that carries a station's program audio, and often control and telemetry data, from the studio to the transmitter site. It may be implemented over a licensed aural microwave path (in the US, the 950 MHz band), a leased line, an IP network, or another transport, usually with a backup path.",
+    "plain_english": "It carries the station audio from the studio to the transmitter. The transmitter is often far away. The link can run over a radio hop or over the internet.",
+    "purpose_function": "It reliably delivers finished program audio from where it is produced to the transmitter that broadcasts it, since the two are usually in different locations.",
+    "practical_application": "An engineer installs and monitors the STL, whether a licensed 950 MHz microwave path or an IP codec link, and keeps a backup path so audio keeps reaching the transmitter.",
+    "category": "Broadcast Equipment",
+    "related_terms": ["Air chain", "Transmitter", "Silence detector", "Remote broadcast codec", "Backup audio"],
+    "common_mistakes": ["UNSAFE: Working near STL antennas or the transmitter without observing RF exposure limits and lockout/tagout procedures.", "Running no backup STL path, so any single failure results in dead air.", "Ignoring the latency difference between the main and backup STL when switching."],
+    "scenario_contexts": ["A 950 MHz microwave STL carries FM program audio to a mountaintop transmitter.", "An IP codec STL fails over to a backup internet path during an outage.", "An engineer aligns a new microwave STL dish during a site upgrade."]
+   },
+   "sources": ["FCC 47 CFR Part 74 Subpart D (aural broadcast STL, 950 MHz)", "NAB Engineering Handbook (National Association of Broadcasters)", "FCC OET Bulletin 65 / OSHA 29 CFR 1910 (RF exposure and lockout)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a1c275e1-a0c4-4b4a-bd48-87fe82680b77",
+   "term": "Sweep production",
+   "fields": {
+    "definition": "The production of sweeps: short, produced station-imaging elements built from music beds, sound design, and voiceover that transition between songs or segments while reinforcing the station brand without a full stop in programming.",
+    "plain_english": "Making the quick station clips that play between songs. They mix a voice, music, and sound effects to keep the flow going and remind you which station you are on.",
+    "purpose_function": "It keeps programming moving and branded across transitions, tying songs together and reinforcing station identity between stopsets.",
+    "practical_application": "An imaging producer builds sweeps in a DAW, timing the voiceover to a song's intro ramp so the voice ends just as the vocal begins.",
+    "category": "Radio Production",
+    "related_terms": ["Station identification", "Radio imaging session", "Sweeper", "Stopset", "Voice tracking"],
+    "common_mistakes": ["Timing the sweep so the voice talks over the vocal of the next song.", "Making sweeps so long they slow down the segue.", "Leaving loudness inconsistent between the sweep and the surrounding music."],
+    "scenario_contexts": ["A hit-music station runs a produced sweep over each song intro.", "An imaging producer cuts a themed sweep package for a holiday weekend.", "A programmer refreshes daily sweeps to match a format change."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c27d02fd-b1b3-4142-9de7-16974201a242",
+   "term": "Time announcement",
+   "fields": {
+    "definition": "An on-air element that states the current time to listeners, delivered live by a presenter or as an automated or produced time check. It is often placed at set points in the hour and is sometimes sponsored.",
+    "plain_english": "The moment on air when the current time is given, like saying it is now 8:15. A host may read it, or it can be automated.",
+    "purpose_function": "It gives listeners a regular time reference, which serves commuters during drive time and reinforces the station's live, local feel.",
+    "practical_application": "Presenters give time checks at set points each hour, and automation can insert a spoken or produced time announcement tied to the station clock.",
+    "category": "Programming Element",
+    "related_terms": ["Station identification", "Sweep production", "Traffic insert", "Hot clock", "Automation"],
+    "common_mistakes": ["Reading a time check that is wrong because the studio clock has drifted.", "Giving time checks so often that they clutter the break.", "Airing a pre-recorded time announcement at the wrong minute."],
+    "scenario_contexts": ["A morning host gives frequent time checks for commuters.", "A sponsored time announcement airs just before the traffic report.", "Automation inserts a time check tied to the on-air clock overnight."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c2e8bc21-e674-46f5-868b-d001f65ba0ba",
+   "term": "Traffic insert",
+   "fields": {
+    "definition": "A road-traffic report inserted into a station's programming at scheduled times, covering current road and commute conditions. It is often supplied by a traffic-reporting service or read by staff and placed at fixed positions in the hourly clock, such as on the tens.",
+    "plain_english": "A short road-traffic report dropped into the broadcast at set times. It tells drivers about jams, crashes, and delays, often on a regular schedule.",
+    "purpose_function": "It gives listeners timely commute information at predictable points in the hour, serving drive-time audiences and often carrying sponsorship.",
+    "practical_application": "A producer schedules traffic inserts at fixed clock positions and cues the reporter or automation to drop the report in ahead of the stopset.",
+    "category": "Programming Element",
+    "related_terms": ["Time announcement", "Stopset", "Hot clock", "Station identification", "Automation"],
+    "common_mistakes": ["Airing stale traffic information that no longer matches actual road conditions.", "Placing the insert off its scheduled clock position so listeners miss it.", "Confusing the on-air traffic report with the traffic (commercial scheduling) log."],
+    "scenario_contexts": ["A morning show runs traffic inserts every ten minutes during rush hour.", "A sponsored traffic report airs just before the top-of-hour news.", "Automation drops a service-supplied traffic report into the drive-time clock."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

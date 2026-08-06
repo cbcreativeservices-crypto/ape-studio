@@ -1,0 +1,314 @@
+{
+ "batch": 100,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "ccfa686b-4e4a-4e15-82c7-b0c0454ad3c9",
+   "term": "Electronic score mix",
+   "fields": {
+    "definition": "The process of balancing and blending the individual tracks of a musical score built mainly from electronic and synthesized sources - synths, drum machines, samplers, and programmed parts - into a finished stereo or surround mix for film, television, or games. It applies standard mixing craft (level, panning, EQ, dynamics, and effects) to primarily electronic material rather than acoustically recorded ensembles.",
+    "plain_english": "This is mixing a piece of music built mostly from synths, drum machines, and computer sounds. You set each part's volume, place it left or right, and shape its tone. The goal is one clear, balanced track for a film, show, or game.",
+    "purpose_function": "It turns a collection of separate electronic parts into a cohesive, release-ready piece of music, so every element sits at the right level and tone and the score supports the picture without masking dialogue or effects.",
+    "practical_application": "A technician loads the composer's session, groups the synth, bass, drum, and pad tracks, and uses faders, panning, EQ, and compression to balance them, then delivers stems and a final mix that meet the project's loudness and format specs.",
+    "category": "Mixing",
+    "related_terms": [
+     "Stems",
+     "Automation",
+     "Panning",
+     "Bus",
+     "Loudness normalization"
+    ],
+    "common_mistakes": [
+     "Treating loud synth patches as raw material and stacking more EQ and compression on top, when many electronic sounds are already processed and turn harsh.",
+     "Letting several sub and bass patches pile up in the same low range until the mix overloads and loses clarity.",
+     "Mixing too loud and clipping the master bus instead of leaving headroom for mastering.",
+     "Forgetting to leave space for dialogue and effects when the score is for picture."
+    ],
+    "scenario_contexts": [
+     "Mixing a synth-based cue for a sci-fi film so it sits under the dialogue.",
+     "Balancing programmed drums, bass, and pads for a game's menu music.",
+     "Preparing stems of an electronic TV theme for the dub stage."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c25caee0-8614-416f-970e-508a0c0ae1ac",
+   "term": "eMastered",
+   "fields": {
+    "definition": "eMastered is a commercial cloud-based automated mastering platform that uses machine-learning algorithms to analyze an uploaded mix and apply mastering processing such as EQ, compression, stereo-width, and level adjustment, producing a finished master with user controls for intensity and reference-track matching.",
+    "plain_english": "It is an online service that masters your song for you using software instead of a person. You upload your mix, and it polishes the sound and gives you a finished, louder version.",
+    "purpose_function": "It offers a fast, low-cost route to a release-ready master without booking a mastering engineer, aimed mainly at independent artists working to a budget.",
+    "practical_application": "A producer uploads a stereo mixdown, picks a mastering intensity or a reference track, previews the result, and downloads the master, often as a quick check before deciding whether to hire a human engineer.",
+    "category": "Mastering Tools",
+    "related_terms": [
+     "Mastering",
+     "Reference track",
+     "Loudness normalization",
+     "Dynamic-range validation",
+     "Final release authorization"
+    ],
+    "common_mistakes": [
+     "Treating an automated master as a fix for a poor mix, when mastering cannot repair balance or arrangement problems",
+     "Chasing maximum loudness and losing dynamic range and transient punch",
+     "Skipping a critical listen and QC of the returned master on trusted monitors"
+    ],
+    "scenario_contexts": [
+     "An independent artist mastering a single on a tight budget before a streaming release",
+     "A producer generating a quick reference master to gauge how a mix compares to commercial tracks",
+     "A songwriter creating a polished demo to pitch to a label"
+    ]
+   },
+   "sources": [
+    "eMastered official documentation, 'What Is AI Mastering' (emastered.com)",
+    "Bob Katz, 'Mastering Audio: The Art and the Science' (mastering process: EQ, compression, limiting, loudness)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "91d3b84b-39a0-4128-b8c8-31d3b262cc08",
+   "term": "Emergency playback",
+   "fields": {
+    "definition": "Pre-prepared audio held ready to play - automatically or manually - the moment a program's main source fails or falls silent, so a broadcast, performance, or installation is never left in dead air. It is the contingency layer of a playback chain, often triggered by a silence detector that switches to a backup player when the primary signal drops.",
+    "plain_english": "This is backup audio kept ready in case the main sound suddenly stops. If the live feed or main player fails, the backup starts so the audience never hears silence. Think of it like a spare tire that swaps in the moment the main one goes flat.",
+    "purpose_function": "It protects a show or station from dead air by guaranteeing that approved audio keeps playing when the primary source drops out, buying the operator time to find and fix the fault.",
+    "practical_application": "A broadcast engineer loads a backup playlist into a silence-monitoring player so that, if the studio feed goes quiet for a set number of seconds, the unit automatically switches to the emergency audio and raises an alarm.",
+    "category": "Playback",
+    "related_terms": [
+     "Dead air",
+     "Silence detection",
+     "Backup player",
+     "Redundancy",
+     "Playback cue"
+    ],
+    "common_mistakes": [
+     "Loading emergency audio but never testing the automatic switchover, so it fails when actually needed.",
+     "Setting the silence threshold or delay wrong, so the backup either triggers on quiet passages or waits too long.",
+     "Forgetting to update the backup content, leaving stale or wrong material to air during a failure."
+    ],
+    "scenario_contexts": [
+     "A radio station's studio link drops and a silence monitor rolls the backup playlist automatically.",
+     "A live show's playback laptop crashes and the operator fires a redundant machine holding the same tracks.",
+     "An installed AV system loses its media server and falls back to a looped emergency message."
+    ]
+   },
+   "sources": [
+    "DEVA Broadcast DB8000 Silence Monitor & Backup Audio Player - technical manual",
+    "Broadcast Tools SS 4.1 Silence Sensor - user manual",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "eb9da154-a60f-4f7c-84dc-f4fa9f336370",
+   "term": "Empty-room effect",
+   "fields": {
+    "definition": "The audible change in a room's sound when it is empty of people and soft furnishings: with little absorptive material present, reflections build up, reverberation time lengthens, and the space sounds brighter, boomier, and more echoey than when occupied. Adding an audience, seating, and drapes raises absorption and shortens reverberation, which is why a room measured empty behaves differently once it is full.",
+    "plain_english": "An empty room sounds more echoey than a full one. With no people, curtains, or soft seats to soak up sound, the noise bounces around longer and the room rings. This is why a hall can sound boomy at soundcheck but tighter once the crowd fills it, because bodies and coats absorb sound.",
+    "purpose_function": "Knowing about it lets engineers predict how a space will sound once occupied, so they tune and set levels for the full-room condition instead of being fooled by the livelier empty-room measurement.",
+    "practical_application": "During an empty-hall soundcheck a technician expects the room to deaden and lose some high-frequency ring once the audience arrives, so they avoid over-damping the system and re-check EQ and levels after doors open.",
+    "category": "Acoustics",
+    "related_terms": [
+     "Reverberation time",
+     "Absorption coefficient",
+     "Room modes",
+     "Early reflections",
+     "Soundcheck"
+    ],
+    "common_mistakes": [
+     "Tuning the PA to sound perfect in the empty room, then finding it dull and quiet once the crowd absorbs the highs.",
+     "Assuming reverberation time is fixed, when occupancy and furnishings change it significantly.",
+     "Confusing the empty-room liveliness with a system EQ problem and over-correcting."
+    ],
+    "scenario_contexts": [
+     "Sound-checking a PA in an empty theatre before a full-house show.",
+     "Measuring reverberation time in an unoccupied hall for acoustic treatment planning.",
+     "Setting up a house-of-worship system that must work both sparsely and fully attended."
+    ]
+   },
+   "sources": [
+    "Everest & Pohlmann, Master Handbook of Acoustics",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "74b5531a-09bd-40d0-848f-ab394dab27cb",
+   "term": "Engineering sign-off",
+   "fields": {
+    "definition": "The formal, documented approval by the responsible engineer that a mix, master, or installed system meets its agreed technical specification and is cleared for delivery, broadcast, or client use. It marks the transition from work-in-progress to accepted deliverable and typically records who approved it, against what specification, and when.",
+    "plain_english": "This is the moment an engineer officially says the work is done and passes. They check it against the agreed rules, like loudness limits or system tests, and then approve it in writing. It is like a final inspection stamp before the job is handed over.",
+    "purpose_function": "It creates a clear point of accountability and quality control, confirming the deliverable met spec so responsibility passes cleanly to the next stage and any dispute traces back to a documented decision.",
+    "practical_application": "Before a mix goes to the client, an engineer checks it against the delivery spec - format, sample rate, and loudness target - and records a sign-off, or completes a system-verification checklist and signs the handover on an install job.",
+    "category": "Workflow",
+    "related_terms": [
+     "Delivery specification",
+     "Quality control",
+     "Loudness normalization",
+     "Commissioning",
+     "Session archiving"
+    ],
+    "common_mistakes": [
+     "Signing off without checking against the written delivery spec, so a format or loudness error slips through.",
+     "Skipping documentation, leaving no record of what was approved or by whom.",
+     "Treating sign-off as a formality rather than a real quality-control gate."
+    ],
+    "scenario_contexts": [
+     "Approving a finished master against a streaming platform's loudness and format spec.",
+     "Completing a system-verification checklist before handing a new install to the client.",
+     "Clearing a broadcast deliverable through QC before it airs."
+    ]
+   },
+   "sources": [
+    "EBU R128 (loudness normalisation delivery specification)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "10bc385c-72fe-4fa6-96d2-8feceb302d44",
+   "term": "Entry cue",
+   "fields": {
+    "definition": "A prearranged signal that tells a performer, operator, or playback element exactly when to begin. In live and studio production it may be a conductor's gesture, a talkback or light cue, or a marked point in a session or show-control list that triggers a track, sound, or musician's entrance.",
+    "plain_english": "An entry cue is the 'go' signal that tells someone or something when to start. It might be a nod from the conductor, a light, a word in the headphones, or a marker in the software. It works like a green light for the exact moment to come in.",
+    "purpose_function": "It keeps everyone tightly in sync by defining the precise start moment for each part, so entrances land together and nothing comes in early or late.",
+    "practical_application": "An engineer places entry cues as session markers so a backing track, sample, or overdub starts on the right beat, or gives a talkback count-in so a musician knows exactly when to play.",
+    "category": "Cueing",
+    "related_terms": [
+     "Exit cue",
+     "Count-in",
+     "Talkback",
+     "Session marker",
+     "Click track"
+    ],
+    "common_mistakes": [
+     "Placing the cue marker slightly off the beat, so the entrance feels early or late.",
+     "Relying on a spoken cue without a click, so timing drifts.",
+     "Not agreeing the cue with the performer beforehand, causing missed entrances."
+    ],
+    "scenario_contexts": [
+     "Cueing a vocalist's first line during a live broadcast.",
+     "Marking the exact bar where a sampled hit must trigger in a DAW.",
+     "Giving a count-in so a session player enters on the downbeat."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "eeffdc4d-16b5-4961-9356-f96e2be6105a",
+   "term": "Euclidean rhythm",
+   "fields": {
+    "definition": "A rhythmic pattern in which a given number of onsets (hits) is spread as evenly as possible across a fixed number of steps, produced by applying the Euclidean algorithm. Described by Godfried Toussaint, these maximally even distributions coincide with many traditional world-music patterns and are widely built into sequencers, which generate the rhythm from two numbers: hits and steps.",
+    "plain_english": "A Euclidean rhythm spreads a set number of beats as evenly as possible over a set number of steps. You pick two numbers, how many hits and how many slots, and the math spaces the hits out for you. For example, 3 hits over 8 steps gives a common, danceable pattern found in music worldwide.",
+    "purpose_function": "It lets musicians and machines generate balanced, musical rhythms instantly from two simple settings, so you can create and vary grooves without programming every step by hand.",
+    "practical_application": "On a drum machine or modular sequencer a technician sets the hit and step counts (and often a rotation) to dial in kick, hi-hat, or percussion patterns, then layers several Euclidean tracks to build a full groove.",
+    "category": "Sequencing",
+    "related_terms": [
+     "Step sequencer",
+     "Polyrhythm",
+     "Onset",
+     "Rotation",
+     "Gate"
+    ],
+    "common_mistakes": [
+     "Assuming the hits are placed randomly, when they are spaced as evenly as the numbers allow.",
+     "Forgetting that rotating the pattern changes where the first hit lands, which shifts the feel.",
+     "Overlapping several dense Euclidean tracks until the groove becomes cluttered."
+    ],
+    "scenario_contexts": [
+     "Programming an interlocking percussion groove on a Eurorack Euclidean module.",
+     "Using a drum machine's Euclidean mode to quickly sketch a beat.",
+     "Generating evolving hi-hat patterns by rotating a Euclidean sequence."
+    ]
+   },
+   "sources": [
+    "Toussaint, G. (2005), 'The Euclidean Algorithm Generates Traditional Musical Rhythms'",
+    "ALM Busy Circuits Pamela's NEW Workout - user manual (Euclidean patterns)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b4e1dabf-efb4-413e-ae00-68cd6602b8d1",
+   "term": "Exit cue",
+   "fields": {
+    "definition": "A prearranged signal that tells a performer, operator, or playback element exactly when to stop or leave. In production it marks the end point of a section, track, or performer's part - a gesture, spoken cue, light, or marked point in a session or show-control list that ends or fades an element cleanly.",
+    "plain_english": "An exit cue is the 'stop' signal that tells someone or something when to finish. It might be a hand signal, a word in the headphones, a light, or a marker in the software. It works like a red light for the exact moment to come out.",
+    "purpose_function": "It makes sure elements end together and on time, so fades, cutoffs, and performer exits happen cleanly instead of trailing off or overlapping the next section.",
+    "practical_application": "An engineer sets an exit cue as a session marker to end a backing track or trigger a fade, or signals a performer over talkback so they stop exactly on the agreed beat.",
+    "category": "Cueing",
+    "related_terms": [
+     "Entry cue",
+     "Fade-out",
+     "Session marker",
+     "Talkback",
+     "Crossfade"
+    ],
+    "common_mistakes": [
+     "Placing the exit marker late, so the element overruns into the next section.",
+     "Cutting a track dead instead of fading, causing an abrupt or clicky ending.",
+     "Not rehearsing the cue, so a performer misses the exit."
+    ],
+    "scenario_contexts": [
+     "Fading out a backing track on cue at the end of a live song.",
+     "Marking where a sound effect must stop in a show-control list.",
+     "Signaling a presenter to wrap up before a hard break."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0438361c-97f4-440f-bf92-adc7cf61ebee",
+   "term": "Exploration music",
+   "fields": {
+    "definition": "In game audio, the music cue or state that plays while the player is freely exploring the game world, as distinct from combat, menu, or cutscene music. It is usually calmer and more ambient, and in adaptive scores it transitions to and from other states, such as combat, as gameplay changes.",
+    "plain_english": "This is the background music that plays while you wander and explore in a video game. It is usually calm and atmospheric, setting the mood without grabbing your attention. When the action starts, the game swaps it for tenser combat music.",
+    "purpose_function": "It sets the mood of the game world during low-tension play and, in adaptive scores, gives a musical baseline the game shifts away from and back to as the situation changes, keeping the soundtrack matched to what the player is doing.",
+    "practical_application": "A game-audio implementer authors an exploration track as a loop or layered stems in middleware, then sets the rules that fade it up during free roaming and cross-fade to combat music when a fight begins.",
+    "category": "Game audio",
+    "related_terms": [
+     "Adaptive music",
+     "Vertical layering",
+     "Music state",
+     "Combat music",
+     "Middleware"
+    ],
+    "common_mistakes": [
+     "Making exploration music too busy or catchy, so it tires the player over long sessions.",
+     "Forgetting smooth transitions, so the switch to combat music feels jarring.",
+     "Looping a track with an audible seam, so the join is obvious."
+    ],
+    "scenario_contexts": [
+     "Scoring an open-world game's overworld where players roam between quests.",
+     "Setting up a middleware music system that fades from exploration to combat states.",
+     "Composing a calm ambient loop for a puzzle or adventure exploration area."
+    ]
+   },
+   "sources": [
+    "Karen Collins, Game Sound (MIT Press)",
+    "Karen Collins, Playing with Sound (MIT Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

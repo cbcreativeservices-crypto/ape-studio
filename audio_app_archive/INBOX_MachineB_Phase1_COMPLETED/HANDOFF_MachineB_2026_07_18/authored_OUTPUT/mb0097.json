@@ -1,0 +1,231 @@
+{
+ "batch": 97,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "78795921-4158-4b91-8776-348463fc4f8f",
+   "term": "Drum one-shot",
+   "fields": {
+    "definition": "A drum one-shot is a single audio sample containing one isolated drum hit, such as a kick, snare, or hi-hat, that plays through once each time it is triggered rather than looping.",
+    "plain_english": "A drum one-shot is a short sound file of a single drum hit. You press a pad and it plays once, like tapping a drum one time.",
+    "purpose_function": "One-shots let a producer trigger individual drum sounds on demand and arrange them freely, which makes them the basic building block of programmed drum kits.",
+    "practical_application": "A technician loads one-shots onto sampler pads or a drum rack and sequences them into beats, or swaps one snare one-shot for another to change a kit's sound.",
+    "category": "Drum Sampling",
+    "related_terms": ["Drum sample layering", "Drum Rack", "Drum programming", "Drum pattern", "Drum sample blending"],
+    "common_mistakes": [
+     "Confusing a one-shot with a loop; a one-shot is a single hit, not a repeating bar of rhythm.",
+     "Leaving a long tail or silence on the sample, which wastes memory and can cause overlap or timing issues.",
+     "Forgetting to set the sample to one-shot (non-looping) mode, so held notes retrigger or sustain oddly."
+    ],
+    "scenario_contexts": [
+     "Building a custom kit by loading individual kick, snare, and hat one-shots onto a sampler.",
+     "Replacing a weak recorded snare with a one-shot sample during mixing.",
+     "Programming a hip-hop beat by sequencing one-shots on a step sequencer."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Ableton Live Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "30dab431-e34c-4496-a871-5154e8f513c7",
+   "term": "Drum pattern",
+   "fields": {
+    "definition": "A drum pattern is a defined rhythmic sequence of drum hits, such as kick, snare, and hats, arranged over a set number of beats or bars and usually repeated as the rhythmic foundation of a section.",
+    "plain_english": "A drum pattern is a set rhythm made from drum hits, played over a bar or two and then repeated. It is the beat you tap your foot to.",
+    "purpose_function": "It provides the steady groove and timing framework that the rest of a track locks to.",
+    "practical_application": "A producer builds a drum pattern on a step sequencer or in a piano roll, then loops and varies it across a song's sections.",
+    "category": "Drum Programming",
+    "related_terms": ["Drum programming", "Drum one-shot", "Drum Rack", "Drum sample layering", "Drum pitch envelope"],
+    "common_mistakes": [
+     "Programming every hit at the same velocity, which makes the pattern sound stiff and robotic.",
+     "Over-quantizing until the groove loses its natural feel.",
+     "Cluttering the pattern with too many hits instead of leaving space."
+    ],
+    "scenario_contexts": [
+     "Laying down a basic four-on-the-floor kick pattern for a dance track.",
+     "Copying a drum pattern to a new section and adding fills for variation.",
+     "Auditioning preset patterns in a drum machine to find a starting groove."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Ableton Live Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4016c250-88f1-461b-aa0e-6bfcfb4f6f7f",
+   "term": "Drum pitch envelope",
+   "fields": {
+    "definition": "A drum pitch envelope is a time-based modulation of a drum sound's pitch, typically a brief sweep from a higher to a lower pitch at the onset, used to shape the attack and body of the hit.",
+    "plain_english": "A pitch envelope makes a drum's pitch slide over time, usually dropping fast right after the hit. That quick drop is what gives an 808 kick its deep boom.",
+    "purpose_function": "It adds punch, weight, and character to synthesized or sampled drums by controlling how their pitch changes during a hit.",
+    "practical_application": "A producer dials in a short pitch drop on a kick or tom to make it hit harder, adjusting the envelope's amount and time to suit the track.",
+    "category": "Sound Design",
+    "related_terms": ["Drum programming", "Drum one-shot", "Drum sample layering", "Drum Rack", "Drum pattern"],
+    "common_mistakes": [
+     "Setting the pitch drop too slow, which makes the kick sound like it is bending out of tune.",
+     "Using so much pitch modulation that the drum loses a clear fundamental pitch.",
+     "Confusing the pitch envelope with the volume (amplitude) envelope."
+    ],
+    "scenario_contexts": [
+     "Designing an 808-style kick with a fast downward pitch sweep.",
+     "Adding a short pitch drop to a tom sample for extra punch.",
+     "Tuning a kick's pitch envelope so its low note fits the song's key."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fcac2cb0-7765-42e2-8e1c-fcb16c3cbed7",
+   "term": "Drum programming",
+   "fields": {
+    "definition": "Drum programming is the practice of creating drum parts by sequencing samples or MIDI notes in software or hardware, rather than recording a live drummer performing an acoustic kit.",
+    "plain_english": "Drum programming means building a drum part by placing hits into a sequencer instead of recording a real drummer. It is like typing out a beat step by step.",
+    "purpose_function": "It lets one person create precise, editable, and repeatable drum parts without a drummer, room, or microphones.",
+    "practical_application": "A producer programs drums by drawing notes in a piano roll or tapping pads, then edits velocity and timing so the part feels natural.",
+    "category": "Drum Programming",
+    "related_terms": ["Drum pattern", "Drum one-shot", "Drum Rack", "Drum pitch envelope", "Drum sample layering"],
+    "common_mistakes": [
+     "Leaving every note at identical velocity and timing, which sounds mechanical.",
+     "Programming parts a real drummer could never physically play when realism is the goal.",
+     "Relying only on quantization and never adding humanizing timing or velocity changes."
+    ],
+    "scenario_contexts": [
+     "Programming a full drum kit part for a demo when no drummer is available.",
+     "Building electronic beats entirely from samples in a DAW.",
+     "Programming a scratch drum track to record other instruments against."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "07b883e4-1abe-419f-8bb8-85ebb37bf267",
+   "term": "Drum Rack",
+   "fields": {
+    "definition": "In Ableton Live, a Drum Rack is an instrument device hosting a grid of pads, where each pad maps an incoming MIDI note to its own sample or instrument chain with independent volume, panning, and effects, letting a user assemble a complete drum kit in one device.",
+    "plain_english": "A Drum Rack is a tool in Ableton Live that lays out drum sounds on a grid of pads. Each pad holds one sound, so you can build a whole kit in one place.",
+    "purpose_function": "It organizes many individual drum sounds into a single playable, mixable instrument, so a producer can trigger and process a full kit from one device.",
+    "practical_application": "A producer drags samples onto Drum Rack pads, plays them from a MIDI controller, and adds per-pad effects or routes pads to separate mixer channels.",
+    "category": "Sampling Instrument",
+    "related_terms": ["Drum one-shot", "Drum sample layering", "Drum programming", "Drum pattern", "Drum sample blending"],
+    "common_mistakes": [
+     "Assuming Drum Rack is a generic term when it is a specific Ableton Live device.",
+     "Not knowing pads can be routed to separate return or mixer channels for individual processing.",
+     "Overloading one pad instead of using clean layered chains."
+    ],
+    "scenario_contexts": [
+     "Assembling a custom kit by dropping one-shots onto Drum Rack pads.",
+     "Routing the kick pad to its own audio channel for separate mixing.",
+     "Layering two samples on a single pad to fatten a snare."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7929f22e-af3b-4b47-b945-c3fe388679af",
+   "term": "Drum sample blending",
+   "fields": {
+    "definition": "Drum sample blending is the mixing together of two or more drum samples of the same type, such as two kick samples, in balanced proportion to create a single composite sound with the desired tonal character.",
+    "plain_english": "Drum sample blending means mixing two or more drum sounds of the same kind into one. You might blend one kick's deep low end with another kick's sharp click.",
+    "purpose_function": "It lets a producer combine the best qualities of several samples, such as the body of one and the attack of another, into one stronger drum sound.",
+    "practical_application": "A technician stacks two or three kick samples, then balances their levels and EQ so they fuse into a single punchy kick.",
+    "category": "Drum Sampling",
+    "related_terms": ["Drum sample layering", "Drum sample phase alignment", "Drum sample polarity", "Drum one-shot", "Drum Rack"],
+    "common_mistakes": [
+     "Blending samples without checking phase, so the combined sound is thinner than either sample alone.",
+     "Choosing samples that occupy the same frequency range, so nothing new is gained.",
+     "Not matching the samples' tuning, which causes a dissonant blend."
+    ],
+    "scenario_contexts": [
+     "Blending a sub-heavy kick with a clicky kick to get both weight and attack.",
+     "Combining two snare samples to add body and crack.",
+     "Blending an acoustic and an electronic clap for a hybrid sound."
+    ]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ab20e105-d832-4ef6-b878-a2e0d22a576c",
+   "term": "Drum sample layering",
+   "fields": {
+    "definition": "Drum sample layering is the technique of stacking two or more drum samples so they play simultaneously, combining their sounds to build a fuller or more characterful composite hit.",
+    "plain_english": "Drum sample layering is stacking drum sounds so they play at the same time. Like layering clothes, each sample adds something: one gives punch, another gives body.",
+    "purpose_function": "It creates a richer, more powerful drum sound than a single sample by combining complementary layers such as attack, body, and sub.",
+    "practical_application": "A producer stacks a click layer, a body layer, and a sub layer on one trigger, then balances and phase-aligns them into a single hit.",
+    "category": "Drum Sampling",
+    "related_terms": ["Drum sample blending", "Drum sample phase alignment", "Drum sample polarity", "Drum one-shot", "Drum Rack"],
+    "common_mistakes": [
+     "Stacking layers without aligning their phase, causing frequency cancellation and a weaker sound.",
+     "Adding too many layers, which muddies the hit instead of strengthening it.",
+     "Layering samples in clashing keys so the tuned parts sound dissonant."
+    ],
+    "scenario_contexts": [
+     "Building a big snare from a crack layer plus a body layer.",
+     "Adding a sub layer under a kick to extend its low end.",
+     "Layering a noise sample over a hi-hat for extra sizzle."
+    ]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8d7f2f88-bb8b-45df-8053-85b5d9ee59ec",
+   "term": "Drum sample phase alignment",
+   "fields": {
+    "definition": "Drum sample phase alignment is the process of time-shifting or polarity-adjusting layered drum samples so their waveforms line up, preventing frequency cancellation and ensuring the layers reinforce rather than weaken each other.",
+    "plain_english": "Phase alignment means lining up stacked drum sounds so their waves match. If they do not match, they cancel out and the drum sounds thin and weak.",
+    "purpose_function": "It ensures that layered samples add together constructively, keeping the combined low end and punch full instead of hollow.",
+    "practical_application": "A technician nudges one layer earlier or later, or flips its polarity, until the stacked kick sounds fullest and its waveform peaks align.",
+    "category": "Drum Sampling",
+    "related_terms": ["Drum sample layering", "Drum sample polarity", "Drum sample blending", "Drum one-shot", "Drum Rack"],
+    "common_mistakes": [
+     "Confusing phase (a timing relationship) with polarity (a simple positive or negative flip).",
+     "Layering samples and never checking phase, then wondering why the low end disappears.",
+     "Aligning by eye only and ignoring how the combined sound actually changes by ear."
+    ],
+    "scenario_contexts": [
+     "Aligning a sub-kick layer with the main kick so their low ends add up.",
+     "Zooming into two snare waveforms to line up their transients.",
+     "Flipping one layer's polarity to fix cancellation in a stacked kick."
+    ]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Rane Pro Audio Reference"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fd6b756b-6d44-4574-a9c8-0fa0462f2229",
+   "term": "Drum sample polarity",
+   "fields": {
+    "definition": "Drum sample polarity refers to whether a sample's waveform is in its original orientation or inverted, with the positive and negative halves swapped; flipping polarity 180 degrees can strengthen or weaken the result when the sample is combined with another signal.",
+    "plain_english": "Polarity is whether a drum sample's waveform is normal or flipped upside down. Flipping it can make two stacked samples add up better or cancel out.",
+    "purpose_function": "Controlling polarity lets a producer stop layered samples from cancelling each other, keeping the combined drum sound full.",
+    "practical_application": "When a stacked kick sounds thin, a technician flips one sample's polarity and keeps whichever version sounds fuller.",
+    "category": "Drum Sampling",
+    "related_terms": ["Drum sample phase alignment", "Drum sample layering", "Drum sample blending", "Drum one-shot", "Drum Rack"],
+    "common_mistakes": [
+     "Calling a polarity flip a phase change; polarity is a fixed 180-degree inversion, not a time shift.",
+     "Flipping polarity by habit without listening to whether it actually helps.",
+     "Assuming polarity matters for a single sample; it only matters relative to other combined signals."
+    ],
+    "scenario_contexts": [
+     "Flipping a layered kick's polarity to fix a hollow low end.",
+     "Checking polarity when blending two snare samples that partly cancel.",
+     "Matching the polarity of a replacement sample to the original during drum replacement."
+    ]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Rane Pro Audio Reference"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

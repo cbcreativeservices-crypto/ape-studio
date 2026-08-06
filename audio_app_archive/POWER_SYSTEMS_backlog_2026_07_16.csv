@@ -1,0 +1,186 @@
+category,term,status,current_topics
+1 — Electrical Fundamentals,Electricity,NEW,
+1 — Electrical Fundamentals,Electric charge,NEW,
+1 — Electrical Fundamentals,Voltage,EXISTS,Grounding & Electrical
+1 — Electrical Fundamentals,Current,EXISTS,Grounding & Electrical
+1 — Electrical Fundamentals,Resistance,EXISTS,Grounding & Electrical
+1 — Electrical Fundamentals,Conductance,NEW,
+1 — Electrical Fundamentals,Impedance,EXISTS,"Amps & Loudspeakers, Commercial Audio Systems, Connectors & I/O Connections, Signal Path & Levels"
+1 — Electrical Fundamentals,Reactance,NEW,
+1 — Electrical Fundamentals,Capacitance,NEW,
+1 — Electrical Fundamentals,Inductance,NEW,
+1 — Electrical Fundamentals,Power,NEW,
+1 — Electrical Fundamentals,Apparent power,NEW,
+1 — Electrical Fundamentals,Real power,NEW,
+1 — Electrical Fundamentals,Reactive power,NEW,
+1 — Electrical Fundamentals,Watt,EXISTS,"Amplifiers, Amps & Loudspeakers, Grounding & Electrical"
+1 — Electrical Fundamentals,Volt,NEW,
+1 — Electrical Fundamentals,Ampere,NEW,
+1 — Electrical Fundamentals,Ohm,EXISTS,Amps & Loudspeakers
+1 — Electrical Fundamentals,Hertz,EXISTS,"Ear Training, Sound & Acoustics"
+1 — Electrical Fundamentals,Alternating current (AC),NEW,
+1 — Electrical Fundamentals,Direct current (DC),EXISTS,Grounding & Electrical
+1 — Electrical Fundamentals,RMS voltage,EXISTS,Grounding & Electrical
+1 — Electrical Fundamentals,Peak voltage,NEW,
+1 — Electrical Fundamentals,Peak-to-peak voltage,NEW,
+1 — Electrical Fundamentals,Frequency,EXISTS,"Sound & Acoustics, Synthesis"
+1 — Electrical Fundamentals,Phase,EXISTS,Sound & Acoustics
+1 — Electrical Fundamentals,Polarity,EXISTS,"Mixers & Recorders, Signal Path & Levels"
+1 — Electrical Fundamentals,Circuit,NEW,
+1 — Electrical Fundamentals,Open circuit,EXISTS,Troubleshooting
+1 — Electrical Fundamentals,Closed circuit,NEW,
+1 — Electrical Fundamentals,Short circuit,EXISTS,Troubleshooting
+1 — Electrical Fundamentals,Load,NEW,
+2 — AC Power Fundamentals,Single-phase power,NEW,
+2 — AC Power Fundamentals,Split-phase power,NEW,
+2 — AC Power Fundamentals,Three-phase power,EXISTS,Grounding & Electrical
+2 — AC Power Fundamentals,Line-to-line voltage,NEW,
+2 — AC Power Fundamentals,Line-to-neutral voltage,NEW,
+2 — AC Power Fundamentals,Neutral conductor,EXISTS,Grounding & Electrical
+2 — AC Power Fundamentals,Grounding conductor,NEW,
+2 — AC Power Fundamentals,Bonding,EXISTS,Grounding & Electrical
+2 — AC Power Fundamentals,Earth ground,EXISTS,Grounding & Electrical
+2 — AC Power Fundamentals,Equipment grounding,NEW,
+2 — AC Power Fundamentals,Ground fault,EXISTS,Grounding & Electrical
+2 — AC Power Fundamentals,Ground loop,EXISTS,"Connectors & I/O Connections, Grounding & Electrical, Signal Path & Levels, Troubleshooting"
+2 — AC Power Fundamentals,Power factor,EXISTS,Grounding & Electrical
+2 — AC Power Fundamentals,Balanced load,NEW,
+2 — AC Power Fundamentals,Unbalanced load,NEW,
+2 — AC Power Fundamentals,Voltage drop,EXISTS,"Grounding & Electrical, Vehicle Audio"
+2 — AC Power Fundamentals,Service entrance,NEW,
+2 — AC Power Fundamentals,Utility service,NEW,
+3 — Power Distribution,Power distribution unit (PDU),EXISTS,Audio Equipment & Infrastructure
+3 — Power Distribution,Power distro,EXISTS,Grounding & Electrical
+3 — Power Distribution,Distro rack,NEW,
+3 — Power Distribution,Company switch,NEW,
+3 — Power Distribution,Disconnect switch,NEW,
+3 — Power Distribution,Main breaker,NEW,
+3 — Power Distribution,Branch circuit,NEW,
+3 — Power Distribution,Feeder cable,EXISTS,Grounding & Electrical
+3 — Power Distribution,Cam-Lok connector,NEW,
+3 — Power Distribution,Edison connector,NEW,
+3 — Power Distribution,NEMA connector,EXISTS,Connectors & I/O Connections
+3 — Power Distribution,Twist-lock connector,EXISTS,Connectors & I/O Connections
+3 — Power Distribution,IEC connector,EXISTS,Connectors & I/O Connections
+3 — Power Distribution,PowerCON connector,NEW,
+3 — Power Distribution,PowerCON TRUE1 connector,NEW,
+3 — Power Distribution,Socapex connector,NEW,
+3 — Power Distribution,Cable ramp,EXISTS,Connectors & I/O Connections
+3 — Power Distribution,Cable protector,NEW,
+3 — Power Distribution,Generator feeder,NEW,
+3 — Power Distribution,Spider box,NEW,
+3 — Power Distribution,Breaker panel,EXISTS,Grounding & Electrical
+3 — Power Distribution,Electrical panel,NEW,
+3 — Power Distribution,Subpanel,NEW,
+3 — Power Distribution,Circuit breaker,EXISTS,"Grounding & Electrical, Professional Audio Safety"
+3 — Power Distribution,Fuse,EXISTS,Grounding & Electrical
+3 — Power Distribution,Fuse holder,EXISTS,Vehicle Audio
+3 — Power Distribution,Bus bar,EXISTS,Audio Equipment & Infrastructure
+5 — Power Supplies & Conversion,Linear power supply,NEW,
+5 — Power Supplies & Conversion,Switching power supply,NEW,
+5 — Power Supplies & Conversion,Regulated power supply,NEW,
+5 — Power Supplies & Conversion,Unregulated power supply,NEW,
+5 — Power Supplies & Conversion,External power supply,NEW,
+5 — Power Supplies & Conversion,Internal power supply,NEW,
+5 — Power Supplies & Conversion,Wall adapter,NEW,
+5 — Power Supplies & Conversion,AC adapter,NEW,
+5 — Power Supplies & Conversion,DC power supply,NEW,
+5 — Power Supplies & Conversion,DC-DC converter,NEW,
+5 — Power Supplies & Conversion,AC-DC converter,NEW,
+5 — Power Supplies & Conversion,DC-AC inverter,NEW,
+5 — Power Supplies & Conversion,Pure sine wave inverter,NEW,
+5 — Power Supplies & Conversion,Modified sine wave inverter,NEW,
+5 — Power Supplies & Conversion,Phantom power,EXISTS,"Connectors & I/O Connections, Microphones, Signal Path & Levels"
+5 — Power Supplies & Conversion,Plug-in power,EXISTS,Connectors & I/O Connections
+5 — Power Supplies & Conversion,Bias voltage,NEW,
+5 — Power Supplies & Conversion,Power over Ethernet (PoE),NEW,
+5 — Power Supplies & Conversion,USB Power Delivery,NEW,
+5 — Power Supplies & Conversion,Constant-voltage power supply,NEW,
+5 — Power Supplies & Conversion,Constant-current power supply,NEW,
+6 — Backup & Emergency Power,Uninterruptible power supply (UPS),EXISTS,Grounding & Electrical
+6 — Backup & Emergency Power,Standby UPS,NEW,
+6 — Backup & Emergency Power,Line-interactive UPS,NEW,
+6 — Backup & Emergency Power,Online UPS,NEW,
+6 — Backup & Emergency Power,Battery backup,NEW,
+6 — Backup & Emergency Power,Rackmount UPS,NEW,
+6 — Backup & Emergency Power,External battery pack,NEW,
+6 — Backup & Emergency Power,Automatic transfer switch,NEW,
+6 — Backup & Emergency Power,Manual transfer switch,NEW,
+6 — Backup & Emergency Power,Standby generator,NEW,
+6 — Backup & Emergency Power,Redundant power system,NEW,
+6 — Backup & Emergency Power,N+1 redundancy,NEW,
+6 — Backup & Emergency Power,Dual power supply,NEW,
+6 — Backup & Emergency Power,Runtime,NEW,
+6 — Backup & Emergency Power,Emergency power,NEW,
+6 — Backup & Emergency Power,Critical load,NEW,
+7 — Generators,Portable generator,EXISTS,Grounding & Electrical
+7 — Generators,Towable generator,NEW,
+7 — Generators,Diesel generator,NEW,
+7 — Generators,Inverter generator,NEW,
+7 — Generators,Generator synchronization,NEW,
+7 — Generators,Generator grounding,NEW,
+7 — Generators,Generator bonding,NEW,
+7 — Generators,Floating neutral,NEW,
+7 — Generators,Ground rod,EXISTS,Grounding & Electrical
+7 — Generators,Frequency regulation,NEW,
+7 — Generators,Voltage regulation,NEW,
+7 — Generators,Load bank,NEW,
+7 — Generators,Generator capacity,NEW,
+7 — Generators,Generator derating,NEW,
+8 — Power Quality,Surge protector,EXISTS,Grounding & Electrical
+8 — Power Quality,Surge suppression,NEW,
+8 — Power Quality,Surge arrestor,NEW,
+8 — Power Quality,Power conditioner,EXISTS,Grounding & Electrical
+8 — Power Quality,Voltage regulator,EXISTS,Grounding & Electrical
+8 — Power Quality,Voltage stabilizer,NEW,
+8 — Power Quality,Brownout,EXISTS,Troubleshooting
+8 — Power Quality,Blackout,NEW,
+8 — Power Quality,Sag,NEW,
+8 — Power Quality,Swell,NEW,
+8 — Power Quality,Transient,EXISTS,"Dynamics Processing, Sampling, Sound & Acoustics"
+8 — Power Quality,Electrical noise,NEW,
+8 — Power Quality,EMI (Electromagnetic interference),EXISTS,"Connectors & I/O Connections, Troubleshooting"
+8 — Power Quality,RFI (Radio-frequency interference),NEW,
+8 — Power Quality,Harmonic distortion,EXISTS,"Audio Measurement & Optimization, Signal Path & Levels, Troubleshooting"
+8 — Power Quality,Total harmonic distortion (THD),NEW,
+8 — Power Quality,Isolation transformer,EXISTS,Grounding & Electrical
+8 — Power Quality,Noise filter,NEW,
+9 — Electrical Safety,Lockout/tagout (LOTO),NEW,
+9 — Electrical Safety,Arc flash,NEW,
+9 — Electrical Safety,Arc blast,NEW,
+9 — Electrical Safety,Ground-fault circuit interrupter (GFCI),NEW,
+9 — Electrical Safety,Residual current device (RCD),NEW,
+9 — Electrical Safety,Arc-fault circuit interrupter (AFCI),NEW,
+9 — Electrical Safety,Shock hazard,NEW,
+9 — Electrical Safety,Electrocution,EXISTS,Professional Audio Safety
+9 — Electrical Safety,Electrical burn,NEW,
+9 — Electrical Safety,Flash burn,NEW,
+9 — Electrical Safety,Insulated tools,NEW,
+9 — Electrical Safety,Voltage tester,NEW,
+9 — Electrical Safety,Non-contact voltage tester,NEW,
+9 — Electrical Safety,Lockout device,NEW,
+9 — Electrical Safety,Tagout device,NEW,
+9 — Electrical Safety,Live circuit,NEW,
+9 — Electrical Safety,De-energized circuit,NEW,
+9 — Electrical Safety,Electrically safe work condition,NEW,
+9 — Electrical Safety,Energized work,NEW,
+9 — Electrical Safety,PPE for electrical work,NEW,
+9 — Electrical Safety,Limited approach boundary,NEW,
+9 — Electrical Safety,Restricted approach boundary,NEW,
+9 — Electrical Safety,Electrical hazard assessment,NEW,
+10 — Touring & Live Event Power,Power tie-in,NEW,
+10 — Touring & Live Event Power,Cam-Lok feeder,NEW,
+10 — Touring & Live Event Power,Generator tie-in,NEW,
+10 — Touring & Live Event Power,Load calculation,NEW,
+10 — Touring & Live Event Power,Load balancing,NEW,
+10 — Touring & Live Event Power,Phase balancing,NEW,
+10 — Touring & Live Event Power,Temporary power,NEW,
+10 — Touring & Live Event Power,Festival power,NEW,
+10 — Touring & Live Event Power,Show power,NEW,
+10 — Touring & Live Event Power,Shore power,NEW,
+10 — Touring & Live Event Power,Power drop,NEW,
+10 — Touring & Live Event Power,Distro technician,NEW,
+10 — Touring & Live Event Power,Power sequencing,EXISTS,Amplifiers
+10 — Touring & Live Event Power,Inrush current,EXISTS,Grounding & Electrical
+10 — Touring & Live Event Power,Sequenced startup,NEW,
+10 — Touring & Live Event Power,Sequenced shutdown,NEW,

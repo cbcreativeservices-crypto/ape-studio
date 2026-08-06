@@ -1,0 +1,231 @@
+{
+ "batch": 53,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "5e6a6352-008a-4bc4-887f-2c53bd8e393c",
+   "term": "Hi-hat bark",
+   "fields": {
+    "definition": "A sharp, cutting, aggressive attack character in a hi-hat's sound, produced by striking it hard or with the two cymbals held slightly open so they rebound against each other. Engineers use the term to describe a hi-hat that projects an edgy, forward high-mid and high-frequency bite in a recording.",
+    "plain_english": "Bark is the sharp, snappy crack a hi-hat makes when it is hit hard or left a little open. It cuts through a mix the way a dog's bark cuts through other noise.",
+    "purpose_function": "The term gives players and engineers a way to talk about how aggressive or cutting a hi-hat's attack sounds. Shaping the amount of bark helps a hi-hat sit right in a busy arrangement.",
+    "practical_application": "A tracking engineer may angle or move the hi-hat mic, or ask the drummer to play more closed, to add or tame bark. In the mix, EQ around the high-mids and highs controls how much bark comes through.",
+    "category": "Cymbal Tone",
+    "related_terms": ["Hi-hat opening", "Hi-hat bleed", "Cymbal wash", "Transient", "High-frequency reinforcement"],
+    "common_mistakes": [
+     "Piling on high-frequency EQ to force bark, which also lifts hiss and mic bleed from other drums.",
+     "Blaming the hi-hat mic for a harsh bark when the sound is really bleed from the overhead mics.",
+     "Confusing bark (an aggressive attack tone) with wash (the sustained shimmer of an open hi-hat)."
+    ],
+    "scenario_contexts": [
+     "A metal drummer plays a tight, hard hi-hat and the engineer wants extra bark to cut through distorted guitars.",
+     "During mixing a hi-hat sounds dull, so the engineer lifts the high-mids to bring back its bark.",
+     "A producer asks the drummer to play the hi-hat slightly open to add bark to a chorus."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0003c0f8-e86c-475c-9f6d-ed0278dfd17a",
+   "term": "Hi-hat bleed",
+   "fields": {
+    "definition": "Hi-hat sound that leaks into microphones other than the dedicated hi-hat mic, most often the snare, tom, and overhead mics, because the hi-hat sits close to them and is loud and bright. It is a common form of microphone spill in drum recording.",
+    "plain_english": "Bleed is hi-hat sound sneaking into the other drum mics, not just its own. It is like one person's voice getting picked up by everyone's phone on a group call.",
+    "purpose_function": "Naming this spill helps engineers plan mic placement and mixing so the hi-hat does not smear the whole kit. Managing it keeps each drum clean and separately controllable.",
+    "practical_application": "Engineers cut hi-hat bleed by using tight cardioid or hypercardioid mics, aiming a mic's null at the hi-hat, and gating or editing tracks. Heavy snare EQ or compression at mixdown can expose bleed, so it is checked early.",
+    "category": "Mic Bleed",
+    "related_terms": ["Snare bleed", "Microphone spill", "Overhead microphones", "Noise gate", "Off-axis rejection", "Hi-hat bark"],
+    "common_mistakes": [
+     "Assuming a gate fully removes hi-hat bleed from the snare track, when fast snare hits often open the gate and let bleed through.",
+     "Boosting snare-mic highs without noticing it also lifts the bleeding hi-hat.",
+     "Pointing the snare mic straight at the hi-hat instead of using its off-axis null to reject it."
+    ],
+    "scenario_contexts": [
+     "A close snare mic picks up so much hi-hat that soloing the snare sounds like a hi-hat track.",
+     "During overdubs a loud hi-hat bleeds into the tom mics and muddies the fills.",
+     "An engineer aims the snare mic's rear null toward the hi-hat to cut bleed at the source."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers", "Sound on Sound (technical articles)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9bb5623b-f3c9-4cff-b4a4-aee27a8a31e5",
+   "term": "Hi-hat clutch",
+   "fields": {
+    "definition": "A small clamp assembly, threaded onto a hi-hat stand's upper pull rod, that grips the top cymbal between felt washers so it moves up and down with the foot pedal. It sets the top cymbal's playing height and how tightly it meets the fixed bottom cymbal.",
+    "plain_english": "The clutch is the clamp that holds the top hi-hat cymbal onto the moving rod. It works like a nut and washers that grip the cymbal so the pedal can lift it and drop it.",
+    "purpose_function": "It connects the top cymbal to the pedal mechanism so the drummer can open and close the hi-hat, and it sets playing height and cymbal tension. Without it the top cymbal could not be controlled by the foot.",
+    "practical_application": "A drum tech tightens the clutch's felts and locknut so the cymbal does not slip or rattle, and adjusts the height for the player. A loose clutch is a common cause of buzzes and an inconsistent chick sound during tracking.",
+    "category": "Drum Hardware",
+    "related_terms": ["Hi-hat stand", "Hi-hat opening", "Drop clutch", "Cymbal felt", "Pull rod", "Hi-hat pedal"],
+    "common_mistakes": [
+     "Over-tightening the clutch against the cymbal so it chokes the sound and can crack the cymbal over time.",
+     "Leaving the locknut loose, letting the clutch spin down during play and slowly closing the hi-hat.",
+     "Forgetting the felt washers, so metal touches the cymbal and causes buzzing or edge cracks."
+    ],
+    "scenario_contexts": [
+     "Between takes a drum tech resets a slipped clutch that let the hi-hat close on its own.",
+     "A drummer fits a drop clutch to lock the hi-hat closed for two-handed double-bass sections.",
+     "Setting up a kit, the tech dials in hi-hat height and felt tension using the clutch."
+    ]
+   },
+   "sources": ["Tama drum hardware manual (technical documentation)", "Pearl drum hardware setup guide", "DW drum hardware documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0b7d70c7-fec8-498f-80ad-425efa14a603",
+   "term": "Hi-hat opening",
+   "fields": {
+    "definition": "The distance the two hi-hat cymbals are held apart, controlled by pedal pressure or stand adjustment, which sets how loosely they vibrate together and how much sustain and wash the hi-hat produces. It ranges from fully closed (a tight chick) to fully open (a loose, sizzling sound).",
+    "plain_english": "Opening is how far apart the two hi-hat cymbals are held. A small gap gives a tight tick, and a big gap gives a loud, splashy sizzle, like a light clap versus a hard one.",
+    "purpose_function": "It lets the drummer vary the hi-hat's tone and loudness within a groove, from crisp closed notes to open accents. Engineers care because it changes level, brightness, and how much the hi-hat spills into other mics.",
+    "practical_application": "During tracking an engineer may ask for a more closed hi-hat to get a cleaner sound with less bleed. Big openings raise the level and wash, so faders, gates, and automation must allow for them.",
+    "category": "Hi-hat Technique",
+    "related_terms": ["Hi-hat clutch", "Hi-hat bleed", "Cymbal wash", "Hi-hat bark", "Hi-hat pedal", "Dynamics"],
+    "common_mistakes": [
+     "Recording big open-hat accents at the same level as closed notes, causing sudden peaks and clipping.",
+     "Setting a gate for the closed hi-hat, then cutting off open notes when their longer sustain trips it shut.",
+     "Confusing hi-hat opening (cymbal spacing) with the clutch, which is the hardware that holds the cymbal."
+    ],
+    "scenario_contexts": [
+     "A drummer opens the hi-hat on the last beat of each bar for a splashy accent the engineer must ride.",
+     "To reduce bleed, the producer asks for a tighter, more closed hi-hat during a quiet verse.",
+     "An engineer writes automation to tame loud open-hat notes that jump out of the groove."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Recording Engineer's Handbook", "Sound on Sound (technical articles)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c55d463a-3d31-48cc-b3c3-2a4340fc57f6",
+   "term": "High-frequency reinforcement",
+   "fields": {
+    "definition": "The deliberate boosting or supplementing of a signal's upper-frequency content, roughly above 5 to 8 kHz, using EQ, a harmonic exciter, or added program material to improve clarity, presence, and air. In a mix it strengthens fine detail such as cymbal shimmer, breath, and string or pick attack.",
+    "plain_english": "This means adding or boosting the very high sounds in a track to make it crisper and more detailed. It is like turning up the treble so the top-end sparkle stands out.",
+    "purpose_function": "It exists to recover or emphasize the brightness and detail that make a sound feel clear and open, especially when recording chains or dull sources soften the top end. Used well, it helps a part cut through a full band mix.",
+    "practical_application": "An engineer adds a gentle high-shelf boost or an exciter to acoustic guitar, vocals, or drum overheads to bring back sparkle. It is used sparingly because too much lifts hiss, sibilance, and cymbal harshness.",
+    "category": "Tone Shaping",
+    "related_terms": ["Instrument air enhancement", "Equalization", "Harmonic exciter", "High-shelf filter", "Presence", "De-essing"],
+    "common_mistakes": [
+     "Boosting highs so hard that hiss, sibilance, and cymbal harshness become obvious.",
+     "Adding top end to a noisy source instead of first fixing the noise or the dull recording.",
+     "Reinforcing highs on every track, which stacks up into a harsh, tiring mix."
+    ],
+    "scenario_contexts": [
+     "A dull-sounding vocal gets a high-shelf lift so its consonants and breath read clearly.",
+     "Overheads recorded with a soft mic get an exciter to restore cymbal sparkle.",
+     "An acoustic guitar needs more pick detail to cut through a dense arrangement."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers", "Rane technical notes"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dd5d0cf6-b330-4e9b-b614-2a8e2fd38f51",
+   "term": "Instrument air enhancement",
+   "fields": {
+    "definition": "Boosting the extreme top end of an instrument, typically a broad, gentle lift above about 10 kHz (the air band), to add openness, sheen, and a sense of space. It is usually done with a high-shelf EQ or a dedicated air band on a channel or plugin.",
+    "plain_english": "This is adding a touch of the highest, airiest sounds to an instrument so it feels open and spacious. It is like opening a window to let a room breathe.",
+    "purpose_function": "It exists to give a source a polished, hi-fi sense of space without changing its core tone. A little air makes vocals and acoustic instruments feel expensive and close.",
+    "practical_application": "Engineers use a broad high-shelf around 10 to 16 kHz, or a mastering-style air EQ, on vocals, acoustic guitar, and overheads. It is dialed in gently while listening for added hiss or sibilance.",
+    "category": "Tone Shaping",
+    "related_terms": ["High-frequency reinforcement", "Equalization", "High-shelf filter", "Presence", "Harmonic exciter", "Instrument articulation enhancement"],
+    "common_mistakes": [
+     "Adding air to a hissy or noisy track, which makes the noise stand out.",
+     "Confusing air (very top-end openness) with presence (upper-mid clarity around 3 to 5 kHz).",
+     "Pushing the air band so far that vocals turn sibilant and cymbals get brittle."
+    ],
+    "scenario_contexts": [
+     "A lead vocal sounds closed-in, so the engineer adds a gentle air-band lift for sheen.",
+     "An acoustic guitar needs a more open, expensive top end in a sparse ballad.",
+     "A mix bus gets a touch of air to make the whole record feel more spacious."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1682248f-ab66-4f11-b01f-347fc4189c25",
+   "term": "Instrument ambience blend",
+   "fields": {
+    "definition": "The balancing of an instrument's close-mic signal against room or ambient microphone signals to control how much natural space and reverberation is heard. Blending in more ambience adds depth and size, while less keeps the sound tight and dry.",
+    "plain_english": "This is mixing the close-up mic with a room mic to decide how roomy an instrument sounds. It is like choosing how much of the room's echo you let into the recording.",
+    "purpose_function": "It exists to place an instrument in a believable space and add depth without artificial reverb. The blend sets how big and live, or tight and controlled, the source feels.",
+    "practical_application": "An engineer rides the level of room mics against close mics on drums, guitar amps, or piano to taste. Room mics can be compressed for extra size, and their timing is checked for phase against the close mics.",
+    "category": "Room Sound",
+    "related_terms": ["Room microphone", "Close miking", "Reverberation", "Phase", "Overhead microphones", "Instrument air enhancement"],
+    "common_mistakes": [
+     "Blending in room mics without checking phase, which thins or hollows the close-mic sound.",
+     "Adding so much ambience that the instrument loses punch and sits too far back.",
+     "Confusing natural room-mic ambience with plugin reverb added after the fact."
+    ],
+    "scenario_contexts": [
+     "A drum kit needs more size, so the engineer brings up compressed room mics under the close mics.",
+     "A guitar amp sounds too dry, and a blend of a distant mic adds natural space.",
+     "Tracking piano, the engineer balances close and room pairs for the right sense of depth."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Recording Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5a9a1c99-949f-4032-9da1-2711c05463e9",
+   "term": "Instrument articulation enhancement",
+   "fields": {
+    "definition": "Processing that makes an instrument's note attacks and note-to-note definition clearer, so individual notes and rhythms are easy to follow. It is commonly done with transient shaping, attack-friendly compression settings, or EQ that lifts the attack region.",
+    "plain_english": "This means making the start of each note sharper and easier to hear, so playing sounds clear and defined. It is like sharpening the edges of the sound so notes do not blur together.",
+    "purpose_function": "It exists to keep fast or detailed parts intelligible in a busy mix, where soft or smeared attacks would get lost. Clear articulation helps rhythms lock and melody lines stay readable.",
+    "practical_application": "An engineer uses a transient shaper or a slower compressor attack to emphasize pick, mallet, or key strikes, or lifts EQ around the attack frequencies. It is common on bass, acoustic guitar, and percussive keys.",
+    "category": "Transient Shaping",
+    "related_terms": ["Transient shaping", "Compression", "Attack time", "Equalization", "High-frequency reinforcement", "Instrument air enhancement"],
+    "common_mistakes": [
+     "Setting a fast compressor attack that squashes transients and dulls articulation instead of sharpening it.",
+     "Over-emphasizing the attack until notes click and sound unnatural.",
+     "Trying to fix a muddy arrangement with attack EQ instead of fixing masking between parts."
+    ],
+    "scenario_contexts": [
+     "A fingered bass line disappears in the mix, so the engineer shapes its transients to define each note.",
+     "Fast acoustic-guitar strumming needs clearer pick attack to cut through a band.",
+     "A synth part's soft attacks blur, so a transient shaper adds definition."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4eebcf4b-c60b-43f9-90c7-28735b798bb6",
+   "term": "Instrument automation",
+   "fields": {
+    "definition": "The recording and automatic playback of parameter changes, such as volume, pan, mute, or plugin settings, on an instrument track over the course of a song. In a DAW these moves are drawn or written as automation data and replayed exactly on each pass.",
+    "plain_english": "Automation lets the software record and replay changes to a track. It can turn a part up in the chorus or move it across the mix during a fill. It works like a player piano that repeats your fader moves the same way every time.",
+    "purpose_function": "It exists so mix moves happen the same way every time and hands-free, letting one engineer control many changes across a whole song. It turns a static mix into one that breathes with the arrangement.",
+    "practical_application": "Engineers write volume rides to keep a part even, automate mutes to clean up unused sections, and sweep filter or effect settings for transitions. Moves are drawn with the mouse or recorded live from a fader and then fine-tuned.",
+    "category": "Mix Automation",
+    "related_terms": ["Volume automation", "Fader ride", "DAW", "Mute automation", "Plugin automation", "Instrument articulation enhancement"],
+    "common_mistakes": [
+     "Leaving a track in write or latch mode and accidentally overwriting good automation.",
+     "Automating a plugin, then changing the plugin so the saved moves point at the wrong parameter.",
+     "Drawing choppy volume jumps that click instead of smooth ramps."
+    ],
+    "scenario_contexts": [
+     "An engineer automates a guitar to rise slightly in the chorus and drop back in the verse.",
+     "Mute automation cleans up an instrument track between its parts to remove bleed and noise.",
+     "A filter sweep is automated to build tension into a drop."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Avid Pro Tools Reference Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 22,
+ "topic": "Studio Recording Craft — Advanced",
+ "authored": [
+  {
+   "id": "ea51e527-2d0d-4506-9086-1354e69b6bd3",
+   "term": "Acoustic shield",
+   "fields": {
+    "definition": "A portable, freestanding acoustic device placed around a microphone or sound source to absorb and block room reflections and unwanted spill, giving a drier, more controlled recording.",
+    "plain_english": "A movable padded screen you set behind or around a mic. It soaks up echoes from the room so the recording sounds cleaner.",
+    "purpose_function": "It reduces early reflections and bleed reaching the microphone, so a source can be recorded cleanly without treating the whole room.",
+    "practical_application": "An engineer stands or clamps a shield behind a vocal or amp mic in an untreated room to cut room sound and get a tighter, more usable take.",
+    "category": "Acoustic treatment",
+    "related_terms": ["Reflection control panel", "Portable vocal screen", "Gobos", "Bleed", "Acoustic treatment", "Early reflections"],
+    "common_mistakes": ["Expecting a small shield to soundproof a room; it only reduces nearby reflections and spill, not sound passing through walls.", "Placing the shield too far from the mic, so it has little effect on reflections.", "Over-absorbing close to the mic, which can make a source sound dull or boxy."],
+    "scenario_contexts": ["Recording vocals in an untreated bedroom or project studio.", "Tightening up a guitar amp mic in a live tracking room.", "Capturing voiceover or podcast audio in a reflective office."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4eab1066-58de-4943-ad05-1a384452c08b",
+   "term": "Drum shield",
+   "fields": {
+    "definition": "A barrier of transparent acrylic or polycarbonate panels placed in front of or around a drum kit to acoustically isolate it, reducing sound spill into other microphones and lowering the drums' loudness in the room.",
+    "plain_english": "Clear plastic walls set around a drum kit. They work like a see-through fence that keeps the loud drum sound from leaking everywhere.",
+    "purpose_function": "It contains and blocks the drums' high sound level so nearby mics pick up less drum bleed and the stage or room stays quieter.",
+    "practical_application": "In tracking or on a live or worship stage, a tech positions acrylic panels around the kit to control bleed and tame stage volume for the mix.",
+    "category": "Acoustic isolation",
+    "related_terms": ["Gobos", "Bleed", "Isolation screen", "Acoustic isolation", "Stage volume", "Baffle"],
+    "common_mistakes": ["UNSAFE: Fully enclosing a drummer with panels and a lid can raise sound levels and heat inside the enclosure; watch hearing exposure and ventilation.", "Thinking a shield soundproofs the drums; hard panels mostly reflect and redirect sound rather than absorb it.", "Placing panels too close to cymbals, creating harsh reflections back at the drummer."],
+    "scenario_contexts": ["Isolating a loud kit during multitrack studio tracking.", "Reducing drum volume on a church or theater stage.", "Cutting drum bleed into vocal and acoustic mics in a small room."]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers", "OSHA 29 CFR 1910.95 (Occupational Noise Exposure)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0e7e149e-8b57-404c-9e0f-3c5f9a643aaf",
+   "term": "Gobos",
+   "fields": {
+    "definition": "Freestanding, movable acoustic baffles positioned between performers or instruments in a studio to reduce sound leakage between sources and control reflections; the name comes from 'go-between', and many have an absorptive side and a harder reflective side.",
+    "plain_english": "Movable padded panels you stand between players. They work like room dividers that stop each instrument's sound from spilling into the other mics.",
+    "purpose_function": "They provide acoustic separation so instruments recorded together bleed less into each other's mics, giving cleaner isolated tracks and easier mixing.",
+    "practical_application": "When a band tracks live in one room, the engineer arranges gobos around the drums, amp, or vocalist to keep each mic focused on its own source.",
+    "category": "Acoustic isolation",
+    "related_terms": ["Studio gobo", "Bleed", "Isolation screen", "Acoustic shield", "Baffle", "Live tracking"],
+    "common_mistakes": ["Expecting gobos to fully soundproof sources; they reduce bleed but do not stop all sound.", "Using only the reflective side and adding harshness when absorption is needed.", "Leaving large gaps or low panels, so sound simply travels over or around them."],
+    "scenario_contexts": ["Separating a drum kit from guitar amps during live band tracking.", "Building a temporary vocal area in an open live room.", "Controlling reflections around a brass or string section."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers", "Owsinski, The Recording Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f9790cd4-42e0-4712-bc38-11d52b911cf3",
+   "term": "Isolation screen",
+   "fields": {
+    "definition": "A portable acoustic panel or screen used to isolate a microphone or sound source from the rest of the room, reducing bleed from other instruments and unwanted room reflections.",
+    "plain_english": "A standalone panel you place by a mic or player. It blocks sound from other instruments and cuts room echo so the recording is cleaner.",
+    "purpose_function": "It creates local acoustic separation so a source can be recorded with less spill and room sound, without needing a separate isolation room.",
+    "practical_application": "An engineer stands an isolation screen between a singer and a drum kit, or around an amp, to keep each mic focused on its intended source.",
+    "category": "Acoustic isolation",
+    "related_terms": ["Gobos", "Acoustic shield", "Portable vocal screen", "Bleed", "Vocal booth panel", "Acoustic isolation"],
+    "common_mistakes": ["Assuming a screen soundproofs the source; it lowers bleed and reflections but sound still passes around it.", "Positioning it too far from the mic or source to be effective.", "Confusing isolation, which blocks spill, with full room treatment."],
+    "scenario_contexts": ["Recording a vocalist and guitarist together in one room.", "Reducing amp bleed into overhead drum mics.", "Capturing a cleaner overdub in a shared, untreated space."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "40d1cdda-55d1-4290-8a08-60dd884c4b8a",
+   "term": "Portable acoustic panel",
+   "fields": {
+    "definition": "A freestanding, movable sound-absorbing panel used to temporarily treat a space, controlling reflections and reverberation around a microphone or listening position.",
+    "plain_english": "A padded panel on a stand that you can move where you need it. It soaks up echoes so a room or mic spot sounds less boomy.",
+    "purpose_function": "It provides on-demand absorption to tame reflections and room ring where fixed acoustic treatment is not installed or is not enough.",
+    "practical_application": "A tech sets a few portable panels around a vocal or drum position, or beside monitors, to improve the sound of an untreated or temporary space.",
+    "category": "Acoustic treatment",
+    "related_terms": ["Reflection control panel", "Acoustic treatment", "Portable vocal screen", "Absorption", "Early reflections", "Gobos"],
+    "common_mistakes": ["Expecting absorption panels to block sound between rooms; they treat reflections, not transmission through walls.", "Placing too few panels to make an audible difference.", "Over-damping a space, so recordings sound dead and lifeless."],
+    "scenario_contexts": ["Treating a hotel or location room for a remote recording.", "Improving a home studio's vocal area.", "Reducing reflections near nearfield monitors at the mix position."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "693cf381-d9f3-41ac-afcc-5d9415315ff8",
+   "term": "Portable vocal screen",
+   "fields": {
+    "definition": "A portable absorptive panel positioned around a vocal microphone to reduce room reflections reaching the mic, producing a drier, more focused vocal recording; it is often called a reflection filter.",
+    "plain_english": "A curved padded shield that wraps behind a vocal mic. It catches echoes from the room so the singer's voice sounds clean and close.",
+    "purpose_function": "It controls early reflections and some spill near the mic so vocals can be tracked cleanly in rooms that lack proper acoustic treatment.",
+    "practical_application": "A vocalist records with a portable vocal screen mounted on the mic stand just behind the microphone in a home or project studio.",
+    "category": "Acoustic treatment",
+    "related_terms": ["Reflection control panel", "Acoustic shield", "Isolation screen", "Bleed", "Early reflections", "Vocal booth panel"],
+    "common_mistakes": ["Believing it soundproofs the room; it mainly reduces reflections just behind and beside the mic.", "Mounting it too far behind the mic to be effective.", "Relying on it alone in a very loud or very reflective space."],
+    "scenario_contexts": ["Tracking lead vocals in an untreated bedroom studio.", "Recording voiceover or podcasts on location.", "Adding reflection control to a mobile or temporary vocal setup."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Recording Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "09cbb47c-df68-4c72-9f10-d9ae0a7747ad",
+   "term": "Reflection control panel",
+   "fields": {
+    "definition": "An absorptive acoustic panel designed to control early reflections around a microphone, source, or listening position, reducing the amount of reflected room sound in the signal.",
+    "plain_english": "A sound-soaking panel aimed at the first echoes off nearby surfaces. It stops those early bounces from muddying the recording or the mix.",
+    "purpose_function": "It targets early reflections that blur clarity and imaging, cleaning up a recorded source or tightening a monitoring position.",
+    "practical_application": "An engineer places reflection control panels at the first reflection points beside a mic or between the speakers and the mix position.",
+    "category": "Acoustic treatment",
+    "related_terms": ["Portable acoustic panel", "Portable vocal screen", "Acoustic treatment", "Early reflections", "Absorption", "Acoustic shield"],
+    "common_mistakes": ["Treating them as soundproofing; they absorb reflections but do not block transmission.", "Ignoring the actual first reflection points, so panels sit where they do little.", "Over-treating and making the sound unnaturally dead."],
+    "scenario_contexts": ["Cleaning up a vocal or instrument recording in a live-sounding room.", "Treating first reflection points around a mix position.", "Reducing comb filtering from a nearby hard surface during tracking."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4697d78a-637c-4c27-a7d1-a7866cb6ed88",
+   "term": "Studio gobo",
+   "fields": {
+    "definition": "A freestanding acoustic baffle used in a recording studio to provide separation between instruments or performers and to control reflections; typically a movable panel, often with one absorptive and one reflective face. 'Gobo' derives from 'go-between'.",
+    "plain_english": "A movable studio panel placed between players. It acts like a portable wall that keeps sounds from bleeding into the wrong mics.",
+    "purpose_function": "It gives acoustic separation during multi-source recording so each microphone captures mostly its own instrument, aiding cleaner tracks.",
+    "practical_application": "During live band tracking, an engineer arranges studio gobos around the kit, amps, or a singer to reduce bleed and shape the local sound.",
+    "category": "Acoustic isolation",
+    "related_terms": ["Gobos", "Isolation screen", "Acoustic shield", "Bleed", "Baffle", "Live tracking"],
+    "common_mistakes": ["Expecting full isolation; a gobo reduces bleed but does not fully block sound.", "Using the reflective face when absorption is needed, which adds harshness.", "Setting panels too low or with gaps, so sound passes over and around them."],
+    "scenario_contexts": ["Isolating drums from guitar amps in one-room tracking.", "Making a temporary vocal spot in an open live room.", "Shaping reflections around a horn or string section."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers", "Owsinski, The Recording Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6e37d51f-68a9-431f-812e-bbea252dbddb",
+   "term": "Vocal booth panel",
+   "fields": {
+    "definition": "An acoustic panel used to build, line, or form a vocal isolation booth, providing absorption and some isolation so a vocalist can be recorded with minimal room sound and spill.",
+    "plain_english": "A padded panel used to make or line a small singing booth. It soaks up echoes and helps block outside noise so vocals record clean.",
+    "purpose_function": "It supplies the absorption and partial isolation that make a booth's interior dry and quiet, keeping room reflections and bleed out of the vocal.",
+    "practical_application": "A studio assembles vocal booth panels into a small enclosure, or lines an existing booth with them, so singers can track cleanly.",
+    "category": "Acoustic treatment",
+    "related_terms": ["Portable vocal screen", "Isolation screen", "Acoustic treatment", "Absorption", "Reflection control panel", "Bleed"],
+    "common_mistakes": ["Thinking absorptive panels alone make a booth soundproof; blocking outside noise needs mass and sealing, not just absorption.", "Over-damping a booth, so vocals sound lifeless and boxy.", "Leaving gaps and reflective surfaces that let bleed and echo in."],
+    "scenario_contexts": ["Assembling a portable vocal booth in a project studio.", "Lining a closet or small room for vocal overdubs.", "Setting up a temporary iso booth on a remote session."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

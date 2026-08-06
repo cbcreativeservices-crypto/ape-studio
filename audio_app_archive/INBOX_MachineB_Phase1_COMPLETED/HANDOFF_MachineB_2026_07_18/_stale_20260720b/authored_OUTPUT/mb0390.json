@@ -1,0 +1,114 @@
+{
+  "batch": 390,
+  "topic": "Foley Performance & Recording",
+  "authored": [
+    {
+      "id": "6b8d5c30-caa4-4997-bc00-d951af0faa98",
+      "term": "Foley pit",
+      "fields": {
+        "definition": "A recessed section built into a Foley stage floor and filled with a specific walking-surface material—such as gravel, sand, dirt, concrete, wood, tile, or water—so a Foley artist can perform footsteps and other movement sounds directly on that surface. A stage normally has several pits holding different materials side by side.",
+        "plain_english": "A sunken box built into the floor of a Foley studio and filled with a surface like gravel, sand, or wood. A Foley artist steps into it to make footstep sounds that match the picture on screen.",
+        "purpose_function": "Foley pits let an artist reproduce footsteps and movement on the many surfaces seen on screen without leaving the stage, supplying the mixer with authentic, picture-synced surface sounds that replace or reinforce the production recording.",
+        "practical_application": "A Foley artist selects the pit whose material best matches the on-screen surface—gravel for an outdoor path, wood for a porch—and performs the footsteps in sync while watching the picture and monitoring the recorded take.",
+        "category": "Foley stage",
+        "related_terms": [
+          "Foley surface",
+          "Foley prop area",
+          "Foley stage",
+          "Foley artist",
+          "Footsteps (Foley)",
+          "Spotting"
+        ],
+        "common_mistakes": [
+          "Treating the pit's material as fixed rather than choosing or dressing it to match the exact on-screen surface.",
+          "Ignoring how loose material like gravel or sand migrates during a session, changing the sound and requiring reset between takes.",
+          "Miking the pit at a fixed spot instead of adjusting distance and angle to capture the character of that particular surface."
+        ],
+        "scenario_contexts": [
+          "Performing a character's walk along a gravel road using the stage's gravel pit.",
+          "Switching from the wood pit to the concrete pit as a scene moves from a porch to a sidewalk.",
+          "Using the water pit to create splashing and wet footstep sounds for a rain sequence."
+        ]
+      },
+      "sources": [
+        "Vanessa Theme Ament, The Foley Grail: The Art of Performing Sound for Film, Games, and Animation (Focal Press)",
+        "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)",
+        "Ric Viers, The Sound Effects Bible (Michael Wiese Productions)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "285341f7-9f62-4967-9ad9-02599858584a",
+      "term": "Foley prop area",
+      "fields": {
+        "definition": "The dedicated storage and staging space on or beside a Foley stage where the props used to create sound effects—shoes, cloth, dishes, doors, hardware, keys, and countless found objects—are organized and kept within reach of the performer. It keeps the working collection sorted so props can be selected quickly during a session.",
+        "plain_english": "The spot on a Foley stage where all the props are kept, like shoes, dishes, and doors. The artist grabs objects from here to make the sounds a scene needs.",
+        "purpose_function": "It organizes the large, varied collection of sound-making objects a Foley artist needs so the right prop can be found and performed quickly, keeping the session efficient and matched to the picture.",
+        "practical_application": "A Foley artist and editor stage the props a cue will need from the prop area before rolling, then return and re-sort them afterward so the collection stays usable for the next session.",
+        "category": "Foley stage",
+        "related_terms": [
+          "Foley pit",
+          "Foley surface",
+          "Foley stage",
+          "Foley artist",
+          "Props (Foley)",
+          "Spotting"
+        ],
+        "common_mistakes": [
+          "Leaving props scattered instead of returning them, so time is lost hunting for objects mid-session.",
+          "Assuming a real-world object always sounds correct on screen rather than testing several props to find the convincing one.",
+          "UNSAFE: storing sharp tools, broken glass, or heavy metal props loosely in the prop area, creating cut and crush hazards for performers reaching for objects."
+        ],
+        "scenario_contexts": [
+          "Pulling several pairs of shoes from the prop area to match different characters' footsteps.",
+          "Selecting cloth and leather from the prop area to perform clothing movement (cloth pass) for a scene.",
+          "Gathering dishes, cutlery, and glassware from the prop area to cover a kitchen sequence."
+        ]
+      },
+      "sources": [
+        "Vanessa Theme Ament, The Foley Grail: The Art of Performing Sound for Film, Games, and Animation (Focal Press)",
+        "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)",
+        "Tomlinson Holman, Sound for Film and Television (Focal Press)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "c0a1024b-2cbd-41d2-9f02-96d5b838b61e",
+      "term": "Foley surface",
+      "fields": {
+        "definition": "The specific material an artist walks or moves on to generate a Foley sound—for example wood, tile, marble, concrete, gravel, sand, grass, carpet, or metal—chosen to match the surface depicted on screen. Foley surfaces are held in the stage's pits or laid out as loose panels and materials for the performer.",
+        "plain_english": "The material a Foley artist walks or moves on to make a sound, such as tile, wood, or grass. It is picked to match the floor you see on screen so the footsteps sound right.",
+        "purpose_function": "The surface determines the timbre and character of footstep and movement sounds, so matching it to the on-screen material is what makes the Foley read as believable and locked to the picture.",
+        "practical_application": "A Foley artist auditions and swaps surfaces—laying a tile panel over a pit or moving to the gravel pit—until the recorded footsteps match the on-screen floor in tone, weight, and rhythm.",
+        "category": "Foley stage",
+        "related_terms": [
+          "Foley pit",
+          "Foley prop area",
+          "Foley stage",
+          "Foley artist",
+          "Footsteps (Foley)",
+          "Sync"
+        ],
+        "common_mistakes": [
+          "Choosing a surface by name alone rather than by how it actually sounds under a given shoe and performance.",
+          "Overlooking how a performer's shoe, weight, and walking rhythm interact with the surface to shape the final sound.",
+          "Forgetting that a hard surface's brightness and reflections change with mic distance, so surface choice and mic placement must be set together."
+        ],
+        "scenario_contexts": [
+          "Laying a hardwood panel over a pit to match footsteps on a wooden floor.",
+          "Choosing a marble or tile surface to give a character's steps a hard, ringing quality in a lobby scene.",
+          "Performing on grass or leaf litter to match a character walking through a park."
+        ]
+      },
+      "sources": [
+        "Vanessa Theme Ament, The Foley Grail: The Art of Performing Sound for Film, Games, and Animation (Focal Press)",
+        "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)",
+        "Ric Viers, The Sound Effects Bible (Michael Wiese Productions)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    }
+  ]
+}

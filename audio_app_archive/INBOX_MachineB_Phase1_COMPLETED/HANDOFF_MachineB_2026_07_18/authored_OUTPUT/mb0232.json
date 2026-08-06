@@ -1,0 +1,159 @@
+{
+ "batch": 232,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "943790d2-7b2b-4416-a284-276efa28b0a7",
+   "term": "Impact timing",
+   "fields": {
+    "definition": "The precise placement of an impact sound — a hit, collision, footfall accent, or blow — so it lands in sync with the visual event or musical beat it supports. Editors may push it a frame or two early or late so the moment reads with the right weight and force.",
+    "plain_english": "This is lining up a hit sound with the moment you see the hit on screen. The editor moves the sound a little until the punch or crash feels solid.",
+    "purpose_function": "It exists to make on-screen hits and accents feel powerful and believable by matching their sound tightly to the picture or the beat.",
+    "practical_application": "An editor nudges an impact sound against the picture frame by frame until the hit feels right, then locks it to the cut.",
+    "category": "Sound Editing",
+    "related_terms": ["Sync point", "Spotting", "Sound effects editing", "Foley", "Hit point"],
+    "common_mistakes": ["Placing the sound exactly on the contact frame when leading it slightly would feel more powerful.", "Ignoring the sound's own attack time, so the hit feels late even when it looks aligned.", "Using identical timing on every hit, which flattens the sense of weight and variation."],
+    "scenario_contexts": ["Syncing a punch to the frame a fist connects in a fight scene.", "Timing a car crash so the metal and glass land together.", "Aligning a weapon impact to the moment a projectile strikes in a game."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "869fb0ed-6799-4038-9f12-6d791e4222fc",
+   "term": "In-game mix",
+   "fields": {
+    "definition": "The real-time audio mix heard during active gameplay, produced by the game engine or middleware as it balances dialogue, music, effects, and ambience in response to player actions. It differs from the fixed mix of pre-rendered cinematics or trailers because the exact combination of sounds is not known in advance.",
+    "plain_english": "This is how a game sounds while you are actually playing it. The game balances the voices, music, and effects live, so the mix changes as you move and act.",
+    "purpose_function": "It exists to keep a game's sounds clear and well balanced during unpredictable, interactive play, where the exact set of sounds cannot be planned ahead.",
+    "practical_application": "A game mixer sets bus levels, voice priorities, and ducking rules in middleware so the in-game mix holds up across busy fights and quiet exploration alike.",
+    "category": "Game Audio",
+    "related_terms": ["Interactive audio", "Game-audio mixer", "Real-time mixing", "Interactive mix bus", "Cinematic mix"],
+    "common_mistakes": ["Mixing for one playthrough only, so the balance breaks when players act differently.", "Confusing the in-game mix with the cinematic mix, which is fixed and pre-rendered.", "Skipping ducking or priority, so key dialogue gets buried under effects."],
+    "scenario_contexts": ["Balancing gunfire, music, and voice during a live firefight.", "Ducking music under mission dialogue while the player keeps moving.", "Checking the mix on both TV speakers and headphones."]
+   },
+   "sources": ["Audiokinetic Wwise SDK Documentation", "Stevens & Raybould, The Game Audio Tutorial"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2d29e75b-e53e-4517-906a-5947dc4ac9d3",
+   "term": "Intensity parameter",
+   "fields": {
+    "definition": "A continuously variable game parameter that represents how intense the current gameplay is — such as combat level, threat, or excitement — and is mapped to audio behavior so music and effects respond in real time. In Wwise it is typically a Game Parameter driving an RTPC; in FMOD it is a parameter.",
+    "plain_english": "This is a number the game raises and lowers to show how tense things are, like how much fighting is going on. The sound system watches it and makes the music build up or calm down to match.",
+    "purpose_function": "It exists to let music and sound follow the heat of the moment automatically, rising during action and easing off when things settle.",
+    "practical_application": "A composer or integrator maps the intensity value to music layers or filters so the score swells as combat ramps up and thins out when it ends.",
+    "category": "Game Audio",
+    "related_terms": ["Interactive music system", "Game-state parameter", "Interactive audio", "Vertical layering", "RTPC"],
+    "common_mistakes": ["Confusing the smooth intensity value with a simple on or off event trigger.", "Setting jumpy curves, so the music steps abruptly instead of building smoothly.", "Not clamping the value range, so extreme game states push audio to unintended settings."],
+    "scenario_contexts": ["Adding music layers as combat intensity climbs.", "Easing tense strings back as a chase winds down.", "Driving reverb or filtering from a rising threat value."]
+   },
+   "sources": ["Audiokinetic Wwise SDK Documentation", "FMOD Studio API Documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c25d86a4-5b96-4f68-8509-25814bdc1856",
+   "term": "Interactive audio",
+   "fields": {
+    "definition": "Audio that responds in real time to user input or system state, changing what plays and how it is mixed based on events and parameters rather than following a fixed timeline. It is the defining characteristic of game and other real-time audio, as opposed to linear, pre-rendered playback.",
+    "plain_english": "This is sound that reacts to what you do. Instead of playing the same fixed track every time, it changes live based on your actions and the situation.",
+    "purpose_function": "It exists to make sound respond to the user and the current situation, so audio reflects actions and changing conditions instead of repeating one set recording.",
+    "practical_application": "A sound designer authors events and parameters in middleware such as Wwise or FMOD so audio triggers, adapts, and mixes itself as the user plays.",
+    "category": "Game Audio",
+    "related_terms": ["Interactive music system", "Game-audio engine", "Game-state parameter", "Adaptive audio", "In-game mix"],
+    "common_mistakes": ["Treating interactive audio like a linear mix that plays the same way every time.", "Forgetting that repeated sounds need variation to avoid an obvious loop.", "Confusing interactive audio, which reacts to input, with a simple background loop."],
+    "scenario_contexts": ["Footsteps changing with surface and speed as a player moves.", "A menu sound firing the moment a button is pressed.", "Music shifting when the player enters combat."]
+   },
+   "sources": ["Stevens & Raybould, The Game Audio Tutorial", "Audiokinetic Wwise SDK Documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "084967d0-2d8d-480d-b28e-208506a591a8",
+   "term": "Interactive mix bus",
+   "fields": {
+    "definition": "A mix bus in a game audio engine whose levels, processing, or routing change in real time in response to game state — for example a bus that ducks, boosts, or filters a group of sounds when the player opens a menu, goes underwater, or takes damage. It groups related sounds so the interactive mix can act on them together.",
+    "plain_english": "This is a channel that several game sounds share, and its settings change live as you play. For example, it can quiet all the world sounds at once the moment you open a menu.",
+    "purpose_function": "It exists to let the game adjust whole groups of sounds together in real time, keeping the mix balanced as conditions change.",
+    "practical_application": "An integrator routes sounds to interactive buses and sets mix states or side-chains so the engine reshapes the balance automatically during play.",
+    "category": "Game Audio",
+    "related_terms": ["In-game mix", "Real-time mixing", "Ducking", "Interactive audio", "Game-audio mixer"],
+    "common_mistakes": ["Treating the bus as a fixed group when its whole point is to change with game state.", "Not testing overlapping states, so two mix changes fight and cause level jumps.", "Routing a sound to the wrong bus, so a mix change affects the wrong group."],
+    "scenario_contexts": ["Ducking a world-sound bus when a menu opens.", "Low-pass filtering an effects bus while the player is underwater.", "Boosting a music bus during a scripted set piece."]
+   },
+   "sources": ["Audiokinetic Wwise SDK Documentation", "Stevens & Raybould, The Game Audio Tutorial"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "af64ee25-eb09-4ddd-87f0-4c407de1c9a1",
+   "term": "Interactive music system",
+   "fields": {
+    "definition": "A system that changes a game's music in real time to match gameplay, using techniques such as vertical layering (adding or removing instrument layers) and horizontal re-sequencing (switching between musical segments) driven by game events and parameters. It keeps the score musical while adapting to unpredictable play.",
+    "plain_english": "This is the part of a game that changes the music as you play. It can add instruments or switch to a new section when the action heats up, instead of looping one fixed track.",
+    "purpose_function": "It exists to keep a game's music matched to the mood and action while staying smooth and musical, even though the player's path is not known in advance.",
+    "practical_application": "A composer builds layers and segments, and an integrator wires them to parameters like intensity so the music transitions cleanly as the game changes.",
+    "category": "Game Audio",
+    "related_terms": ["Interactive audio", "Intensity parameter", "Vertical layering", "Horizontal re-sequencing", "Adaptive music"],
+    "common_mistakes": ["Writing music that only works as one fixed loop, so transitions sound abrupt.", "Ignoring musical timing on switches, so changes land off the beat.", "Building so many layers that the system becomes hard to balance and test."],
+    "scenario_contexts": ["Adding a percussion layer as combat intensity rises.", "Switching from an exploration theme to a battle theme on a musical bar.", "Fading music down to a calm layer when the player reaches safety."]
+   },
+   "sources": ["Stevens & Raybould, The Game Audio Tutorial", "FMOD Studio API Documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "10f4eec6-16f7-4d8f-8ab8-3cc0b4469c23",
+   "term": "Intercom voice processing",
+   "fields": {
+    "definition": "Processing applied to a voice recording to make it sound as if it is coming through an intercom or communication device, typically by band-limiting the frequency range and adding compression, light distortion, and sometimes noise. It is a form of source or \"futz\" treatment used to place dialogue inside a speaker, radio, or headset within the story world.",
+    "plain_english": "This is the effect that makes a voice sound like it is coming through an intercom or radio. It cuts the low and high tones and adds a little grit so the voice seems to come from a small speaker.",
+    "purpose_function": "It exists to make a character's dialogue believably match an on-screen or in-world speaker, radio, or headset instead of sounding like a clean studio recording.",
+    "practical_application": "A dialogue editor or mixer runs the line through EQ, compression, and distortion — often a dedicated futz plug-in — to place the voice inside the device the scene shows.",
+    "category": "Dialogue Editing",
+    "related_terms": ["Futz", "Worldizing", "Dialogue editing", "Band-pass filter", "Production dialogue"],
+    "common_mistakes": ["Cutting too much frequency, so the line becomes hard to understand.", "Applying the same treatment to every device, ignoring how a radio, phone, and PA differ.", "Processing the original file with no clean copy kept for later changes."],
+    "scenario_contexts": ["Making a pilot's voice sound like it comes over a cockpit intercom.", "Treating a guard's line heard over a building PA speaker.", "Creating radio chatter for soldiers talking over headsets."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ada439d8-42df-46f8-aa55-0268edb303c5",
+   "term": "Interface sound",
+   "fields": {
+    "definition": "A sound that gives feedback for a user-interface action in a game or application — such as a menu move, button press, confirmation, or error — usually short, non-diegetic, and triggered directly by the interface rather than by the game world.",
+    "plain_english": "This is a short sound that plays when you use a menu, like a click when you press a button or a beep when you choose something. It tells you your action worked.",
+    "purpose_function": "It exists to confirm and guide a user's interface actions with clear, immediate audio feedback, making menus feel responsive and easy to use.",
+    "practical_application": "A sound designer creates and assigns interface sounds to events like hover, select, confirm, and cancel, then balances them so they are noticeable but not tiring.",
+    "category": "Game Audio",
+    "related_terms": ["Interactive audio", "Gameplay audio", "Non-diegetic sound", "Sound effect", "User feedback"],
+    "common_mistakes": ["Making interface sounds too loud or harsh, so they tire the user quickly.", "Reusing one sound for different actions, so the user cannot tell them apart.", "Forgetting hover or error sounds, leaving some actions with no feedback."],
+    "scenario_contexts": ["A click as the player moves through a menu.", "A confirmation chime when a purchase completes.", "An error buzz when an action is not allowed."]
+   },
+   "sources": ["Stevens & Raybould, The Game Audio Tutorial", "Audiokinetic Wwise SDK Documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dbf99a52-21db-422c-8b1b-61dba87c64a0",
+   "term": "International version mix",
+   "fields": {
+    "definition": "A version of a program's final mix that omits the original-language dialogue while keeping music and effects — a music-and-effects (M&E) mix — so the dialogue can be replaced with a dubbed foreign-language track. It is a standard deliverable that lets a film or show be released in other languages without remaking the whole soundtrack.",
+    "plain_english": "This is a version of the soundtrack that keeps the music and sound effects but drops the spoken lines. Other countries add their own language over it, so the film can be shown around the world.",
+    "purpose_function": "It exists to let a program be dubbed into other languages by supplying a full soundtrack minus dialogue, ready for a new voice track.",
+    "practical_application": "A re-recording mixer prints an M&E stem alongside the main mix, checking that effects and Foley cover any sounds that were tied to the removed dialogue.",
+    "category": "Deliverables",
+    "related_terms": ["M&E", "Stem", "Dubbing", "Foley", "Re-recording mix"],
+    "common_mistakes": ["Leaving dialogue-linked effects only in the dialogue stem, so the M&E has gaps.", "Forgetting on-camera vocals like efforts or crowd walla that a dub still needs.", "Confusing the international mix with a full mix that still contains the original dialogue."],
+    "scenario_contexts": ["Delivering an M&E mix so a film can be dubbed into Spanish and French.", "Filling effects gaps left where original dialogue also carried a sound.", "Supplying music-and-effects stems to a streaming platform's localization team."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

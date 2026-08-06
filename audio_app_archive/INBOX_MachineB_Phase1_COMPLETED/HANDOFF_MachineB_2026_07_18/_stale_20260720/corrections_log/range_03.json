@@ -1,0 +1,117 @@
+{
+ "range": 3,
+ "applied": [
+  {
+   "pkt": "mb0142",
+   "term": "Streaming compliance",
+   "field": "definition",
+   "severity": "Medium",
+   "summary": "Corrected factual misattribution: -14 LUFS was wrongly credited to AES streaming recommendations. Web-verified against AES TD1008 (v3.13) and Production Expert's summary: AES recommends ~-16 LUFS (music)/-18 LUFS (speech); -14 LUFS is a platform (Spotify/YouTube/Tidal) normalization target. Reattributed -14 LUFS to platforms and noted AES's quieter ~-16 LUFS target; -1 dBTP left as-is (correct)."
+  },
+  {
+   "pkt": "mb0137",
+   "term": "Send automation pass",
+   "field": "common_mistakes",
+   "severity": "Medium",
+   "summary": "Reworded the pre-fader mistake item so it no longer implies pre-fader is the norm; made explicit that post-fader is the usual default, removing the misconception trap. List preserved; only the offending item replaced."
+  },
+  {
+   "pkt": "mb0138",
+   "term": "Slicing mode",
+   "field": "practical_application",
+   "severity": "Low",
+   "summary": "Fixed a garbled half-sentence ('uses Slice to a new MIDI track') by naming the Ableton command explicitly: 'uses Ableton's Slice to New MIDI Track command'. Addresses both cognition and language suggestions with one edit."
+  },
+  {
+   "pkt": "mb0149",
+   "term": "Transposition track",
+   "field": "common_mistakes",
+   "severity": "Low",
+   "summary": "Fixed ungrammatical 'names and behaves this feature the same way' -> 'names and implements this feature the same way'. List preserved; only the offending item replaced. Covers both cognition and language suggestions."
+  },
+  {
+   "pkt": "mb0122",
+   "term": "Output validation",
+   "field": "practical_application",
+   "severity": "Low",
+   "summary": "Fixed non-idiomatic zeugma ('the render hits ... the correct format') -> '... and is in the correct format'."
+  },
+  {
+   "pkt": "mb0129",
+   "term": "Push the vocal",
+   "field": "scenario_contexts",
+   "severity": "Low",
+   "summary": "Fixed garbled clause 'after a note that the singer sounds buried' -> 'after noting that the lead vocal sounds buried'. List preserved; only the offending item replaced."
+  },
+  {
+   "pkt": "mb0135",
+   "term": "Scene automation",
+   "field": "practical_application",
+   "severity": "Low",
+   "summary": "Resolved 'scene' collision (console scene vs theatrical scene): 'each song or scene of a musical' -> 'each song or each section of a musical'."
+  },
+  {
+   "pkt": "mb0150",
+   "term": "Vertical layering",
+   "field": "practical_application",
+   "severity": "Low",
+   "summary": "Fixed unclear referent: layers named 'rhythm, harmony, and lead' but text faded in 'lead and percussion'. Changed 'percussion' to 'rhythm layers' to match the named layers."
+  }
+ ],
+ "declined": [
+  {
+   "pkt": "mb0122",
+   "term": "Pan View",
+   "field": "common_mistakes",
+   "reason": "Enrichment/style. The item ('some views display pan law or level compensation differently') is technically correct and already offers 'level compensation' as a plainer alternative to the jargon. Adding an inline gloss is a 'consider adding more' clarity preference, not an error fix."
+  },
+  {
+   "pkt": "mb0134",
+   "term": "Routing validation",
+   "field": "difficulty",
+   "reason": "Out of scope. 'difficulty' is packet-level term metadata, not part of the authored_OUTPUT fields object (which only carries authored empty_fields). There is no difficulty field in the authored content; adding one would violate the no-new-fields constraint and fail verify.py."
+  },
+  {
+   "pkt": "mb0134",
+   "term": "Routing window",
+   "field": "difficulty",
+   "reason": "Out of scope. Same as above: difficulty is packet metadata, not an authored_OUTPUT field; adding it would break verify.py and violate the no-new-fields constraint."
+  },
+  {
+   "pkt": "mb0135",
+   "term": "Sampler track",
+   "field": "difficulty",
+   "reason": "Out of scope. Difficulty is packet metadata, not an authored_OUTPUT field; adding it would break verify.py and violate the no-new-fields constraint."
+  },
+  {
+   "pkt": "mb0136",
+   "term": "Scratch Pad",
+   "field": "difficulty",
+   "reason": "Out of scope. Difficulty is packet metadata, not an authored_OUTPUT field; adding it would break verify.py and violate the no-new-fields constraint."
+  },
+  {
+   "pkt": "mb0136",
+   "term": "Screenset",
+   "field": "difficulty",
+   "reason": "Out of scope. Difficulty is packet metadata, not an authored_OUTPUT field; adding it would break verify.py and violate the no-new-fields constraint."
+  },
+  {
+   "pkt": "mb0137",
+   "term": "Session View",
+   "field": "difficulty",
+   "reason": "Out of scope. Difficulty is packet metadata, not an authored_OUTPUT field; adding it would break verify.py and violate the no-new-fields constraint."
+  },
+  {
+   "pkt": "mb0150",
+   "term": "Vertical remixing",
+   "field": "plain_english",
+   "reason": "Enrichment. The current plain_english is accurate and readable; the suggestion is to ADD a clause distinguishing it from 'vertical layering'. That is a 'consider adding more' improvement, not an error fix, and the distinction properly belongs to the definition field."
+  },
+  {
+   "pkt": "mb0157",
+   "term": "Binaural metadata",
+   "field": "plain_english",
+   "reason": "Enrichment. The current plain_english is accurate; the suggestion asks to ADD a clause explaining the unmentioned 'Off' render mode. That is a 'consider adding more' completeness improvement, not a correction of an error."
+  }
+ ]
+}

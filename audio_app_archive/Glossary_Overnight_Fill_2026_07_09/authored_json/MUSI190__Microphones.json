@@ -1,0 +1,153 @@
+{
+  "course": "MUSI190",
+  "topic": "Microphones",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "075e14f2-8db4-4a9e-aef5-4fbe457d61ec",
+      "term": "Ambisonic Microphone",
+      "fields": {
+        "plain_english": "A microphone with several capsules clustered like the faces of a pyramid that captures sound from every direction at once, so the 'listening direction' can be steered afterward. It is the go-to tool for 360 video and VR audio.",
+        "purpose_function": "It captures a full-sphere sound field, encoded after conversion as four-channel B-format (a W omnidirectional channel plus X, Y and Z figure-8 channels), so that direction can be rotated and decoded to any speaker or headphone layout in post. It exists to produce immersive audio that stays locked to picture as a listener turns their head.",
+        "practical_application": "A tech records the raw four-capsule A-format, runs it through the manufacturer's A-to-B format converter, then decodes to binaural or surround; on set they keep the mic's marked reference axis pointed to picture-front and log its orientation so rotation is accurate later.",
+        "category": "Microphone Types",
+        "related_terms": ["Condenser Microphone", "Polar Pattern", "Binaural Recording", "Stereo Microphone Techniques", "Phantom Power", "Surround Sound"],
+        "common_mistakes": [
+          "Confusing A-format (the raw capsule output) with B-format (W/X/Y/Z) and feeding un-converted A-format into a decoder.",
+          "Failing to log the mic's physical orientation on set, which makes aligning and rotating the soundfield to picture guesswork.",
+          "Treating the four capsules as independent stereo mics rather than a matched, calibrated tetrahedral set.",
+          "UNSAFE (gear/signal): it is a phantom-powered condenser array requiring 48V on all four channels, so patching phantom to only some channels or hot-plugging with phantom live yields corrupt/missing channels and loud transients that can damage monitors or hearing."
+        ],
+        "scenario_contexts": [
+          "Capturing 360-degree ambience for a VR film or 360 video.",
+          "Recording an immersive soundfield of a concert or room for headphone/binaural playback.",
+          "Gathering field ambience for game audio that responds to head-tracking.",
+          "Documentary work needing a rotatable, decode-anywhere immersive bed."
+        ]
+      },
+      "sources": [
+        "Sennheiser AMBEO VR Mic Instruction Manual (docs.cloud.sennheiser.com)",
+        "Sennheiser AMBEO VR Mic product page and specifications (sennheiser.com)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "dd172c48-f7ed-4abf-b0bc-c628129cf709",
+      "term": "Crystal Microphone",
+      "fields": {
+        "plain_english": "An old-style microphone that makes electricity directly from a vibrating crystal, so it needs no power and puts out a strong signal, but it is fragile and lo-fi. You mostly meet them in vintage gear today.",
+        "purpose_function": "It uses the piezoelectric effect of a Rochelle-salt (later ceramic) crystal to convert sound pressure directly into a voltage without any external power, and historically it delivered high output cheaply for public address, telephony, two-way radio and home recorders.",
+        "practical_application": "A tech encounters them in vintage or deliberately lo-fi contexts (old PA mics, harmonica 'bullet' tones, amateur radio) and must feed them into a very high-impedance input to preserve their level and low end.",
+        "category": "Microphone Types",
+        "related_terms": ["Dynamic Microphone", "Condenser Microphone", "Ribbon Microphone", "Ceramic Microphone", "Impedance", "Frequency Response"],
+        "common_mistakes": [
+          "Loading a crystal mic into a low-impedance input (a few hundred ohms to a couple of kilohms), which collapses its low end and output; it needs megohm-range loading.",
+          "UNSAFE (gear): assuming it needs power and routing 48V phantom into a vintage high-impedance/unbalanced crystal element, which is incompatible with balanced phantom circuits and can damage the crystal; it is passive and generates its own voltage.",
+          "Storing or using it in heat or humidity, which degrades the Rochelle salt element and destroys the mic.",
+          "Expecting studio-grade fidelity from its narrow, uneven response (roughly 100 Hz to 5 kHz)."
+        ],
+        "scenario_contexts": [
+          "Restoring or servicing vintage PA and broadcast equipment.",
+          "Deliberately creating a lo-fi or harmonica 'bullet' mic tone.",
+          "Amateur (ham) radio and early two-way communication gear.",
+          "Museum, archive, or historical audio demonstrations."
+        ]
+      },
+      "sources": [
+        "Shure - 'The History of Crystal Microphones and Artifacts from the Shure Archives' (shure.com)",
+        "ScienceDirect - Rochelle Salt overview (sciencedirect.com)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "a93948dc-c4c3-4588-a1ab-48ecd3d41877",
+      "term": "Microphone Modeling",
+      "fields": {
+        "plain_english": "Software that makes one neutral microphone sound like a range of famous vintage mics by reshaping its tone, so you can effectively 'swap' mic sounds even after recording.",
+        "purpose_function": "It uses the known response of a reference capsule and applies DSP filters and transforms to emulate the frequency, polar, and often proximity/off-axis behavior of classic microphones, giving access to many mic voices from one capsule and letting the choice be revisited in the mix.",
+        "practical_application": "An engineer records through the system's reference mic (often a dual-capsule condenser), then auditions models such as a U47 or C12 in the plugin, sometimes changing polar pattern or model after tracking; they must keep clean, uncolored gain staging on the reference signal for the models to track correctly.",
+        "category": "Microphone Technology",
+        "related_terms": ["Condenser Microphone", "Large-Diaphragm Condenser", "Polar Pattern", "Proximity Effect", "Frequency Response", "Preamp"],
+        "common_mistakes": [
+          "Coloring the reference-mic signal with EQ or a heavily voiced preamp before modeling, which breaks the model's calibration.",
+          "Assuming every 'modeling mic' does the processing onboard; most systems (e.g., Slate VMS, Townsend Sphere, Antelope Edge) model in software, so you must record the clean reference signal.",
+          "Expecting a model to be acoustically identical to the original mic; it emulates response, not the exact physical capsule/room interaction.",
+          "Printing the modeled tone destructively when the whole point is to keep the choice flexible in post."
+        ],
+        "scenario_contexts": [
+          "A home or project studio wanting many vintage mic sounds without owning the originals.",
+          "Deciding a vocal's mic character after the session rather than committing on the day.",
+          "Matching the tone of a classic mic the engineer does not have on hand.",
+          "Keeping a consistent mic voice across different rooms or sessions."
+        ]
+      },
+      "sources": [
+        "Slate Digital VMS (Virtual Microphone System) product documentation (slatedigital.com)",
+        "Antelope Audio Edge series product documentation (en.antelopeaudio.com)",
+        "Townsend Labs Sphere product documentation (townsendlabs.com)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "8f0db471-6f18-48b4-8ee3-04dd65a724a4",
+      "term": "Noise-Canceling Microphone",
+      "fields": {
+        "plain_english": "A close-up microphone built to hear only the voice right in front of it and ignore the loud room around it, like the mics on aviation and intercom headsets.",
+        "purpose_function": "It is a differential (noise-cancelling) design that senses sound at two ports so distant far-field noise, which arrives nearly equally at both, cancels while close-up near-field speech does not, greatly improving the speech-to-background ratio in loud environments.",
+        "practical_application": "A tech positions it right at the lips (a few millimeters away) on a headset boom or handheld; because it only rejects noise when used close, placement and mic technique are critical, and it is common on comms, aviation, and stage talkback.",
+        "category": "Microphone Types",
+        "related_terms": ["Dynamic Microphone", "Cardioid Polar Pattern", "Proximity Effect", "Headset Microphone", "Intercom", "Gain Before Feedback"],
+        "common_mistakes": [
+          "Using it at a distance from the mouth, where it loses both level and its noise-rejecting benefit; it is designed for near-lip use.",
+          "Confusing an acoustic differential (noise-cancelling) mic with DSP-based active/ENC noise cancellation, which are different mechanisms.",
+          "Expecting full-range, hi-fi response; the differential design deliberately shapes the response to favor close-speech intelligibility.",
+          "Blaming the mic for room bleed on loud stages when the real fix is closer, consistent placement."
+        ],
+        "scenario_contexts": [
+          "Pilot, motorsport, or military communication headsets in high-noise cabins.",
+          "Broadcast and live-production intercom and talkback.",
+          "Loud-stage lead vocals or announcer mics needing strong ambient rejection.",
+          "Factory-floor or emergency two-way radio communication."
+        ]
+      },
+      "sources": [
+        "Shure 562 Close-Talk Noise-Canceling Dynamic Microphone documentation (shure.com)",
+        "Shure BRH440M / BRH441M Intercom Headset documentation (shure.com)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "96b46617-f019-4430-bcee-1329c4f0ed42",
+      "term": "Parabolic Microphone",
+      "fields": {
+        "plain_english": "A microphone sitting at the focus of a dish that acts like a 'sound telescope,' concentrating far-away sound from one direction so it can be captured clearly from a distance.",
+        "purpose_function": "A parabolic reflector collects sound arriving along its axis and focuses it onto a mic at the focal point, providing passive acoustic gain and very high directivity so distant on-axis sources are captured over off-axis noise, all without adding electronic noise.",
+        "practical_application": "A tech aims the dish precisely at the target (a sideline play, a distant bird) and monitors on headphones to 'find' the focus; they must accept limited low-frequency response on smaller dishes and keep the aim steady on a moving subject.",
+        "category": "Microphone Types",
+        "related_terms": ["Shotgun Microphone", "Polar Pattern", "Directivity", "Off-Axis Rejection", "Condenser Microphone", "Frequency Response"],
+        "common_mistakes": [
+          "Expecting flat, extended low-frequency response; portable dishes have poor bass because low-frequency wavelengths exceed the dish diameter.",
+          "Aiming imprecisely; even small angular errors move the source off the focal point and lose the target.",
+          "Thinking the dish amplifies electronically; the gain is passive geometry, and off-axis sound is attenuated rather than electronically filtered.",
+          "Confusing it with a shotgun mic; parabolics give more gain and a narrower pickup at long range but are bulkier and more bass-limited."
+        ],
+        "scenario_contexts": [
+          "Capturing on-field sound from the sidelines of a sporting event.",
+          "Recording birdsong and wildlife in the field from a distance.",
+          "Long-range surveillance or security audio pickup.",
+          "Nature and documentary production needing isolated distant sources."
+        ]
+      },
+      "sources": [
+        "Klover Products - 'What Is a Parabolic Mic and How Does It Work?' (kloverproducts.com)",
+        "EDN - 'A quick primer demystifies parabolic microphones' (edn.com)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

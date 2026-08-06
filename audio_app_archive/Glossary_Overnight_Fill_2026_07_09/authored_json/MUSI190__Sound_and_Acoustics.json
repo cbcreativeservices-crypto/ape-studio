@@ -1,0 +1,385 @@
+{
+  "course": "MUSI190",
+  "topic": "Sound & Acoustics",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "8d35a94d-e330-4da1-9640-577e0943f994",
+      "term": "Antinode",
+      "fields": {
+        "plain_english": "In a standing wave, an antinode is the spot where the sound pressure swings back and forth the most — the point of maximum pressure change, the opposite of a dead spot (node).",
+        "purpose_function": "Antinodes mark where a standing wave concentrates its pressure energy, which explains why certain positions in a room or points in a pipe show an exaggerated response at particular frequencies.",
+        "practical_application": "Techs meet pressure antinodes at room boundaries and corners where low-frequency modes pile up, so they choose sub, mic, and listening positions — and place bass traps — with modal antinodes and nodes in mind.",
+        "category": "Wave Physics",
+        "related_terms": [
+          "Node",
+          "Standing Wave",
+          "Room Modes",
+          "Superposition",
+          "Wavelength",
+          "Resonance"
+        ],
+        "common_mistakes": [
+          "Confusing an antinode (maximum) with a node (minimum)",
+          "Assuming a pressure antinode coincides with a velocity antinode — for sound, pressure maxima line up with velocity minima",
+          "Thinking antinodes exist only in instruments and pipes, not in rooms — room modes create pressure antinodes at boundaries"
+        ],
+        "scenario_contexts": [
+          "Finding a bass 'boom spot' where a room mode places a pressure antinode at the mix position",
+          "Explaining why low end builds up in room corners, which are pressure antinodes for several modes at once",
+          "Coupling a subwoofer into a room mode by placing it at that mode's pressure antinode"
+        ]
+      },
+      "sources": [
+        "F. Alton Everest & Ken Pohlmann, Master Handbook of Acoustics",
+        "Glen Ballou (ed.), Handbook for Sound Engineers"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "f4b9db47-cab2-4995-b280-c2a3b8073047",
+      "term": "Cocktail Party Effect",
+      "fields": {
+        "plain_english": "Your ability to lock onto one person's voice in a noisy, crowded room and tune out all the competing talkers.",
+        "purpose_function": "It describes how the brain uses two-ear (binaural) cues plus spectral and linguistic context to separate one talker from many, which is why intelligibility — not just loudness — determines whether a system actually communicates.",
+        "practical_application": "Because a live listener can do this but a single microphone cannot, techs protect intelligibility with directional mics, adequate gain-before-feedback, good coverage design, and control of reverberation and background noise.",
+        "category": "Psychoacoustics",
+        "related_terms": [
+          "Sound Localization",
+          "Interaural Time Difference (ITD)",
+          "Interaural Level Difference (ILD)",
+          "Speech Intelligibility",
+          "Signal-to-Noise Ratio",
+          "Reverberation"
+        ],
+        "common_mistakes": [
+          "Assuming a microphone hears the way a person does — a mic cannot perform the brain's source separation",
+          "Thinking louder always means clearer; excess level and reverberation can actually reduce intelligibility",
+          "Believing binaural separation survives a mono PA — a single loudspeaker collapses the spatial cues listeners rely on"
+        ],
+        "scenario_contexts": [
+          "Explaining why a recording of a noisy party is far harder to follow than being there in person",
+          "Designing a restaurant or lobby system where patrons must follow paging or speech over background chatter",
+          "Choosing directional microphones and taming reverberation to preserve intelligibility in a busy venue"
+        ]
+      },
+      "sources": [
+        "E. Colin Cherry (1953), 'Some Experiments on the Recognition of Speech, with One and with Two Ears', JASA 25(5)",
+        "Albert Bregman, Auditory Scene Analysis (MIT Press)",
+        "Barry Arons, 'A Review of the Cocktail Party Effect', MIT Media Lab"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "2be28697-a5cf-42e2-9e72-14d4be212846",
+      "term": "Concert Pitch (A440)",
+      "fields": {
+        "plain_english": "The agreed 'master tuning note' — the A above middle C set to 440 vibrations per second — that ensembles tune to so everyone plays in tune together.",
+        "purpose_function": "It gives musicians and equipment a common reference frequency so instruments match each other and so tuners, tone generators, and calibration gear share one standard.",
+        "practical_application": "Techs set tuners, keyboards, and reference-tone generators to A=440 Hz (bumping to 442 or 443 Hz when an orchestra requests it) and use it to check pitch and calibrate gear.",
+        "category": "Pitch & Tuning",
+        "related_terms": [
+          "Frequency",
+          "Fundamental Frequency",
+          "Octave",
+          "Hertz",
+          "Equal Temperament",
+          "Missing Fundamental"
+        ],
+        "common_mistakes": [
+          "Assuming every ensemble tunes to exactly 440 Hz — many European orchestras use 442 or 443 Hz",
+          "Confusing A440 (A4) with A in another octave, such as A5 at 880 Hz",
+          "Thinking A440 defines the whole scale by itself — it is only the reference from which other pitches are derived through a temperament"
+        ],
+        "scenario_contexts": [
+          "Setting a stage tuner or synth master tune before a performance",
+          "Calibrating a signal generator or verifying a reference oscillator against 440 Hz",
+          "Matching a click track or backing track to an orchestra tuning to 442 Hz"
+        ]
+      },
+      "sources": [
+        "ISO 16:1975, Acoustics — Standard tuning frequency (Standard musical pitch)",
+        "1939 London International Conference on pitch standardization (A=440 Hz)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "fb84ea48-9be6-4bce-8be9-fa393167a49f",
+      "term": "Interaural Level Difference (ILD)",
+      "fields": {
+        "plain_english": "A sound off to one side reaches the near ear louder than the far ear because your head blocks (shadows) part of it, and your brain uses that loudness gap to judge direction — mainly for higher-pitched sounds.",
+        "purpose_function": "The head-shadow level difference gives the brain the dominant left/right cue at high frequencies, complementing the timing cues (ITD) that dominate at low frequencies — together the duplex theory of localization.",
+        "practical_application": "Techs rely on ILD when panning by level in a mix and when spacing or aiming mics, since inter-channel level differences translate to perceived horizontal position on playback.",
+        "category": "Psychoacoustics",
+        "related_terms": [
+          "Interaural Time Difference (ITD)",
+          "Sound Localization",
+          "Head Shadow",
+          "Panning",
+          "Binaural",
+          "Cocktail Party Effect"
+        ],
+        "common_mistakes": [
+          "Thinking ILD works equally at all frequencies — head shadowing is weak below roughly 1500 Hz, where long wavelengths bend around the head",
+          "Confusing ILD (a level difference) with ITD (a timing difference)",
+          "Assuming level panning alone recreates natural localization — real cues combine level and time differences"
+        ],
+        "scenario_contexts": [
+          "Panning a hi-hat or tambourine by level to place it left or right in a stereo image",
+          "Explaining why high-frequency sources are easier to pinpoint than deep bass",
+          "Designing binaural or HRTF processing that reproduces head-shadow level cues"
+        ]
+      },
+      "sources": [
+        "Lord Rayleigh, duplex theory of sound localization",
+        "Brian C. J. Moore, An Introduction to the Psychology of Hearing",
+        "Wikipedia/Sound localization (ILD, ~1500 Hz boundary), cross-checked against JASA"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "2bcaa48b-e606-41a5-b994-59a76cb00db7",
+      "term": "Interaural Time Difference (ITD)",
+      "fields": {
+        "plain_english": "A sound from your left reaches your left ear a fraction of a millisecond sooner than your right ear, and your brain uses that tiny timing gap to locate it — mostly for lower-pitched sounds.",
+        "purpose_function": "The arrival-time difference between the ears (up to roughly 0.6–0.7 ms across a human head) is the brain's dominant direction cue below about 1500 Hz, forming half of the duplex theory of localization.",
+        "practical_application": "Techs shape ITD-type timing cues through mic spacing (e.g., spaced-pair stereo) and watch inter-channel delay carefully, since small time offsets shift or smear the stereo image and cause comb filtering when summed.",
+        "category": "Psychoacoustics",
+        "related_terms": [
+          "Interaural Level Difference (ILD)",
+          "Sound Localization",
+          "Precedence Effect",
+          "Comb Filtering",
+          "Binaural",
+          "Phase"
+        ],
+        "common_mistakes": [
+          "Confusing ITD (timing) with ILD (level)",
+          "Assuming ITD dominates at all frequencies — above about 1500 Hz the wavelength is shorter than the head width and the phase timing becomes ambiguous",
+          "Ignoring that summing time-offset signals to mono can cause comb filtering and image collapse"
+        ],
+        "scenario_contexts": [
+          "Setting the spacing of a spaced-pair (A/B) stereo microphone array",
+          "Diagnosing image shift or comb filtering caused by misaligned delay between channels",
+          "Modeling binaural localization for immersive or headphone mixes"
+        ]
+      },
+      "sources": [
+        "Lord Rayleigh, duplex theory of sound localization",
+        "Brian C. J. Moore, An Introduction to the Psychology of Hearing",
+        "Wikipedia/Interaural time difference (max ~660 us; ~1500 Hz boundary), cross-checked against JASA"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "442baa71-f739-4c50-9b9f-863a1743a2d0",
+      "term": "Missing Fundamental",
+      "fields": {
+        "plain_english": "If you play only the overtones of a low note but leave out the low note itself, your brain still 'hears' the low pitch — which is how a tiny speaker can seem to produce deep bass.",
+        "purpose_function": "It shows the ear derives pitch from the spacing and periodicity of the upper harmonics rather than needing the fundamental to be present, a fact exploited to imply bass on systems that cannot reproduce it.",
+        "practical_application": "Techs use psychoacoustic bass enhancers (harmonic-synthesis processors) to add higher harmonics of a low note so small drivers or earbuds convey bass the driver cannot physically radiate.",
+        "category": "Psychoacoustics",
+        "related_terms": [
+          "Fundamental Frequency",
+          "Harmonics",
+          "Overtone",
+          "Concert Pitch (A440)",
+          "Timbre",
+          "Frequency"
+        ],
+        "common_mistakes": [
+          "Believing the low frequency is physically present — it is perceptually reconstructed, so a spectrum analyzer shows no energy there",
+          "Assuming a harmonic bass enhancer replaces a real subwoofer for level and physical impact",
+          "Confusing the perceived (virtual) pitch with the actual lowest partial present in the signal"
+        ],
+        "scenario_contexts": [
+          "Using a psychoacoustic bass processor so a phone or laptop speaker conveys a bass line",
+          "Explaining why a telephone (roughly 300 Hz–3.4 kHz) still conveys a male voice's low pitch",
+          "Designing small-format speakers that imply low end without deep-tuned drivers"
+        ]
+      },
+      "sources": [
+        "J. F. Schouten, residue-pitch experiments (1940)",
+        "Brian C. J. Moore, An Introduction to the Psychology of Hearing",
+        "acousticslab.org Introduction to Psychoacoustics (Module 05)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "0d41b240-d37f-47d3-8577-98915df4ff04",
+      "term": "Plane Wave",
+      "fields": {
+        "plain_english": "A sound wave whose ripples have flattened into straight, parallel sheets instead of expanding spheres — roughly what you get far from a source or right in front of a tall line array.",
+        "purpose_function": "It is an idealized model in which the wavefronts are flat and level falls off slowly, used to analyze propagation in tubes, in the far field, and in the near field of line arrays.",
+        "practical_application": "Techs invoke plane-wave behavior to understand why a well-designed line array's cylindrical/near-plane wavefront loses only about 3 dB per doubling of distance in its near field, instead of the 6 dB of a point source.",
+        "category": "Wave Physics",
+        "related_terms": [
+          "Wavefront",
+          "Spherical Wave",
+          "Line Array",
+          "Inverse Square Law",
+          "Near Field",
+          "Wavelength"
+        ],
+        "common_mistakes": [
+          "Treating a plane wave as physically exact rather than an idealization valid only over a limited region or distance",
+          "Assuming plane-wave (line-array near-field) attenuation follows the 6 dB-per-doubling inverse-square law — it is closer to 3 dB",
+          "Confusing a plane wave (flat fronts) with a spherical wave (expanding fronts)"
+        ],
+        "scenario_contexts": [
+          "Predicting throw and level loss in a line array's near field",
+          "Analyzing sound propagation inside a duct or impedance (standing-wave) tube",
+          "Approximating a distant point source as locally plane at the listening position"
+        ]
+      },
+      "sources": [
+        "Lawrence Kinsler et al., Fundamentals of Acoustics",
+        "David McCarthy, Sound Systems: Design and Optimization"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "963d12c2-7824-477c-8819-d9cc81d57bf6",
+      "term": "Sound Localization",
+      "fields": {
+        "plain_english": "How your hearing works out where a sound is coming from — its direction and roughly how far away it is.",
+        "purpose_function": "It lets listeners place sources in space using two-ear timing and level differences plus spectral (pinna) cues, which is the basis of stereo and surround imaging as well as everyday situational awareness.",
+        "practical_application": "Techs exploit localization when panning, when time-aligning a system, and when using the precedence (Haas) effect so a delayed fill loudspeaker doesn't pull the image away from the stage.",
+        "category": "Psychoacoustics",
+        "related_terms": [
+          "Interaural Time Difference (ITD)",
+          "Interaural Level Difference (ILD)",
+          "Precedence Effect",
+          "Panning",
+          "Binaural",
+          "Cocktail Party Effect"
+        ],
+        "common_mistakes": [
+          "Assuming localization uses only one cue — it combines ITD, ILD, and spectral pinna cues across frequency",
+          "Forgetting the precedence effect: the first arrival dominates perceived direction even when a later arrival is louder",
+          "Believing left/right panning conveys front/back or height, which actually require spectral cues"
+        ],
+        "scenario_contexts": [
+          "Setting delay on a fill or delay loudspeaker so listeners still localize to the stage (Haas effect)",
+          "Panning instruments to build a coherent stereo image",
+          "Designing surround or immersive playback that reproduces directional cues"
+        ]
+      },
+      "sources": [
+        "Jens Blauert, Spatial Hearing (MIT Press)",
+        "Brian C. J. Moore, An Introduction to the Psychology of Hearing"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "80bf397c-14e1-4b42-948a-3e37ff88bc84",
+      "term": "Superposition",
+      "fields": {
+        "plain_english": "When two sound waves overlap they simply add together point by point — crests reinforcing to get louder, or a crest meeting a trough to cancel out.",
+        "purpose_function": "This linear-addition principle explains interference, standing waves, comb filtering, and beats, and it underlies how multiple sources combine at a listener's position.",
+        "practical_application": "Techs use superposition to predict constructive and destructive summation between loudspeakers, between direct and reflected sound, or between two mics — the cause of power alley, comb filtering, and coverage lobing they must align out.",
+        "category": "Wave Physics",
+        "related_terms": [
+          "Interference",
+          "Comb Filtering",
+          "Standing Wave",
+          "Phase",
+          "Antinode",
+          "Wavefront"
+        ],
+        "common_mistakes": [
+          "Thinking overlapping sounds always get louder — they cancel where they are out of phase",
+          "Assuming acoustic summation is always +6 dB — the result depends on phase relationship and correlation",
+          "Forgetting that reflections superpose with the direct sound to create comb filtering"
+        ],
+        "scenario_contexts": [
+          "Diagnosing comb filtering where direct and reflected (or two-mic) signals sum",
+          "Predicting the 'power alley' buildup between two spaced subwoofers",
+          "Time-aligning loudspeakers so overlapping arrivals sum constructively across the coverage area"
+        ]
+      },
+      "sources": [
+        "Lawrence Kinsler et al., Fundamentals of Acoustics",
+        "David McCarthy, Sound Systems: Design and Optimization"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "2fdcd186-cd26-42d5-8539-202acb6157fb",
+      "term": "Transverse Wave",
+      "fields": {
+        "plain_english": "A wave that wiggles sideways relative to the way it travels — like a shaken rope or a vibrating guitar string — unlike sound in air, which pushes back and forth along its path.",
+        "purpose_function": "The concept distinguishes string, membrane, and surface vibrations (transverse) from sound propagation in air (longitudinal), clarifying how a source vibrates versus how airborne sound actually moves.",
+        "practical_application": "Techs meet transverse motion in vibrating strings, speaker-cone surrounds, and structure-borne vibration, while remembering the radiated airborne sound itself is longitudinal.",
+        "category": "Wave Physics",
+        "related_terms": [
+          "Longitudinal Wave",
+          "Wavelength",
+          "Frequency",
+          "Standing Wave",
+          "Wavefront",
+          "Resonance"
+        ],
+        "common_mistakes": [
+          "Believing sound in air is transverse — airborne sound is longitudinal, made of compressions and rarefactions along the direction of travel",
+          "Confusing the transverse motion of a string with the longitudinal sound it radiates",
+          "Assuming all waves are transverse because rope and water waves are the usual classroom examples"
+        ],
+        "scenario_contexts": [
+          "Explaining how a plucked string vibrates versus how its sound reaches the ear",
+          "Understanding structure-borne (bending/transverse) vibration transmitted through a stage or floor",
+          "Teaching the difference between string motion and air-pressure waves in an acoustics class"
+        ]
+      },
+      "sources": [
+        "Lawrence Kinsler et al., Fundamentals of Acoustics",
+        "Thomas Rossing, The Science of Sound"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "3ad2d190-c941-4a3e-b219-f0a3213bed14",
+      "term": "Wavefront",
+      "fields": {
+        "plain_english": "An imaginary surface connecting all the points of a sound wave that are 'in step' (same phase) as it spreads out — its shape can be a flat sheet or an expanding bubble.",
+        "purpose_function": "Wavefront shape (plane versus spherical) governs how sound spreads and how quickly level drops, which is central to array design and coverage prediction.",
+        "practical_application": "Techs shape and combine wavefronts in line arrays and steerable columns (via splay and DSP beam steering) to control coverage and keep arrivals coherent across a listening area.",
+        "category": "Wave Physics",
+        "related_terms": [
+          "Plane Wave",
+          "Spherical Wave",
+          "Line Array",
+          "Phase",
+          "Superposition",
+          "Wavelength"
+        ],
+        "common_mistakes": [
+          "Confusing a wavefront (a surface of equal phase) with a single ray or with the direction of travel",
+          "Assuming all wavefronts are spherical — near a large or line source they approximate plane fronts",
+          "Thinking a curved-array grid automatically produces one coherent wavefront without correct splay and processing"
+        ],
+        "scenario_contexts": [
+          "Designing line-array splay so element outputs merge into a coherent wavefront",
+          "Explaining spherical spreading and the 6 dB-per-doubling loss from a point source",
+          "Using DSP beam steering to shape the radiated wavefront of a column loudspeaker"
+        ]
+      },
+      "sources": [
+        "Lawrence Kinsler et al., Fundamentals of Acoustics",
+        "David McCarthy, Sound Systems: Design and Optimization"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

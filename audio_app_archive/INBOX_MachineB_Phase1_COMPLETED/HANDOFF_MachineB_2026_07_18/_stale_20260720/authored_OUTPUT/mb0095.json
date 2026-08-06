@@ -1,0 +1,159 @@
+{
+ "batch": 95,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "66964129-22d9-41a8-b624-7e4eb3aa9e1a",
+   "term": "Device activator",
+   "fields": {
+    "definition": "In Ableton Live, the Device Activator is the toggle switch in a device's title bar that turns that instrument or effect on or off within the track. When a device is switched off, its signal passes through unprocessed and it stops consuming CPU, without being removed from the set.",
+    "plain_english": "It is the on/off switch at the top of each effect in Ableton Live. Turn it off and that effect stops working. It is like clicking off one pedal in a guitar chain while the others stay on.",
+    "purpose_function": "It lets you bypass a device to compare processed and unprocessed sound and to free up CPU, all without losing the device's settings or its place in the chain.",
+    "practical_application": "A technician clicks the activator to A/B a compressor or EQ against the raw signal, or to switch off a heavy device that is straining the computer during playback.",
+    "category": "DAW Interface",
+    "related_terms": ["Device chain", "Device View", "Device preset", "Device hot-swap"],
+    "common_mistakes": ["Confusing the Device Activator, which affects one device, with the Track Activator, which mutes the whole track", "Thinking a switched-off device still colors the sound, when its processing is fully bypassed", "Deleting a device instead of just deactivating it, and losing its dialed-in settings"],
+    "scenario_contexts": ["A/B-ing an EQ against the raw track to judge whether the boost helps", "Disabling a CPU-heavy reverb during tracking to keep latency low", "Bypassing a saturation device to check how much color it is adding"]
+   },
+   "sources": ["Ableton Live 12 Reference Manual — Working with Instruments and Effects", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8c23b53a-2c18-45e8-8aa3-9ba6b0a5bd77",
+   "term": "Device chain",
+   "fields": {
+    "definition": "In Ableton Live, a device chain is the left-to-right series of instruments and effects on a single track, through which the signal always travels in order. On MIDI tracks, devices placed before the instrument process MIDI, while devices after it process the resulting audio.",
+    "plain_english": "It is the row of effects and instruments on one track, lined up in the order the sound flows through them. Think of guitar pedals in a row: the signal hits the first, then the next, then the next.",
+    "purpose_function": "It sets the processing order, which matters because each device shapes the signal in sequence and changing the order changes the final sound.",
+    "practical_application": "A technician arranges devices along the chain, for example placing EQ before or after compression, and drags device title bars to reorder them for the sound they want.",
+    "category": "Signal Flow",
+    "related_terms": ["Device activator", "Device View", "Device preset", "Device hot-swap"],
+    "common_mistakes": ["Ignoring device order, not realizing EQ-then-compressor sounds different from compressor-then-EQ", "On a MIDI track, placing an audio effect before the instrument, where it has no audio to process", "Confusing a track's device chain with the internal chains inside a Rack"],
+    "scenario_contexts": ["Deciding whether to place a de-esser before or after the vocal compressor", "Reordering EQ and reverb to change how a track sits in the mix", "Building a MIDI effect, instrument, and audio effect together on one track"]
+   },
+   "sources": ["Ableton Live 12 Reference Manual — Working with Instruments and Effects", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9f1b6dd2-cf2c-4e05-90e5-c71955a04891",
+   "term": "Device hot-swap",
+   "fields": {
+    "definition": "In Ableton Live, Hot-Swap Mode temporarily links a selected device to the browser so presets, samples, or other content can be auditioned and exchanged in place, without adding a new device. It is entered with the Q key or the Hot-Swap button and exited with Q, Esc, or the close button.",
+    "plain_english": "It is a quick way to try different presets or samples on an effect without removing it. You browse options and each one loads into the device. You hear it right away, like flipping through TV channels to find one you like.",
+    "purpose_function": "It speeds up sound selection by letting you compare many presets or samples in the same slot, keeping the workflow fast during sound design.",
+    "practical_application": "A technician hot-swaps through drum samples in a Simpler or presets in an effect, arrow-keying down the list until the right sound is found, then exits to keep it.",
+    "category": "DAW Workflow",
+    "related_terms": ["Device preset", "Device chain", "Device activator", "Device View"],
+    "common_mistakes": ["Forgetting to exit Hot-Swap Mode, so later browser clicks keep replacing content", "Expecting hot-swap to add a device, when it replaces content in the existing one", "Losing custom tweaks by swapping in a preset that overwrites the current settings"],
+    "scenario_contexts": ["Auditioning kick samples to find one that fits the track", "Cycling through reverb presets to pick a room sound quickly", "Swapping a synth preset during sound design without breaking the chain"]
+   },
+   "sources": ["Ableton Live 12 Reference Manual — Working with Instruments and Effects", "Ableton Live 12 Reference Manual — Working with the Browser"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5ac84a2b-4243-4675-9cab-def4d8e994b9",
+   "term": "Device preset",
+   "fields": {
+    "definition": "A device preset is a saved set of parameter values for an instrument or effect that can be recalled to instantly restore that configuration. In Ableton Live, presets are stored in and loaded from the browser, and users can save their own to the User Library.",
+    "plain_english": "It is a saved snapshot of all the knob and slider settings on an effect or instrument. Load it and every control jumps back to those saved spots, like a recipe that makes the same dish every time.",
+    "purpose_function": "It saves time and keeps results consistent by letting you recall a known-good sound instead of dialing every parameter from scratch.",
+    "practical_application": "A technician loads a factory preset as a starting point, tweaks it for the track, and saves the result to the User Library to reuse in future sessions.",
+    "category": "DAW Workflow",
+    "related_terms": ["Device hot-swap", "Device chain", "Device activator", "Device View"],
+    "common_mistakes": ["Treating a preset as a finished sound rather than a starting point to adjust for the track", "Saving over a factory preset instead of saving a new user copy", "Assuming a preset sounds the same on every source, ignoring level and context"],
+    "scenario_contexts": ["Recalling a vocal chain preset at the start of a session", "Saving a custom synth patch to reuse across projects", "Loading a factory EQ preset as a starting point before fine-tuning"]
+   },
+   "sources": ["Ableton Live 12 Reference Manual — Working with Instruments and Effects", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7d356379-cad5-4adf-8015-d823a117ab0f",
+   "term": "Device translation",
+   "fields": {
+    "definition": "Device translation is how consistently a finished mix holds up when played back on different devices — studio monitors, headphones, phone speakers, car systems, and earbuds — each with its own frequency response and limitations. A mix with good device translation keeps its balance and clarity across all of them.",
+    "plain_english": "It is how well a mix still sounds right when you play it on different gear, from big speakers to phone speakers to earbuds. A mix that translates well sounds balanced everywhere, not just on the system you mixed it on.",
+    "purpose_function": "It matters because listeners use many different playback devices, so a mix must survive small speakers and cheap earbuds, not only sound great in the studio.",
+    "practical_application": "A technician checks a mix on monitors, headphones, a phone, and a car to catch problems like weak bass or harsh highs before finalizing.",
+    "category": "Mix Translation",
+    "related_terms": ["Reference track", "Monitoring", "Frequency balance", "Dial in the mix"],
+    "common_mistakes": ["Mixing only on one flattering system and being surprised when the mix falls apart elsewhere", "Judging bass on speakers that cannot reproduce it, so the low end is wrong on other devices", "Mixing too loud, which hides balance problems that appear on quiet playback"],
+    "scenario_contexts": ["Bouncing a mix to a phone to check it on a small speaker", "Comparing the mix to a reference track on the same devices", "Auditioning a master in a car to test real-world playback"]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bc0788a1-50f7-4202-bc7d-06224afba0bb",
+   "term": "Device View",
+   "fields": {
+    "definition": "In Ableton Live, the Device View is the panel at the bottom of the window that displays and lets you edit the devices on the selected track. It is opened by double-clicking a track's title bar and can share the lower area with the Clip View.",
+    "plain_english": "It is the strip at the bottom of Ableton Live. It shows all the effects and instruments on the track you picked. It is where you turn the knobs and change their settings.",
+    "purpose_function": "It gives one place to insert, view, and adjust a track's devices, keeping instrument and effect controls together for editing.",
+    "practical_application": "A technician opens the Device View to tweak an EQ curve or compressor on the selected track, and switches tracks to see each one's devices.",
+    "category": "DAW Interface",
+    "related_terms": ["Device chain", "Device activator", "Device preset", "Device hot-swap"],
+    "common_mistakes": ["Not realizing the Device View follows track selection, so it shows a different track's devices than expected", "Confusing the Device View with the Clip View, which edits clip content, not devices", "Looking for devices in the Device View when they are nested inside a Rack"],
+    "scenario_contexts": ["Adjusting a compressor's threshold while watching its display", "Inserting and ordering effects on a vocal track", "Opening a synth's controls to edit a patch"]
+   },
+   "sources": ["Ableton Live 12 Reference Manual — Working with Instruments and Effects", "Ableton Live 12 Reference Manual — Live Concepts"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b9ba74f9-4ee7-4829-a27a-9da94b16857c",
+   "term": "Dial in the mix",
+   "fields": {
+    "definition": "\"Dial in the mix\" is studio shorthand for the process of carefully adjusting levels, panning, EQ, dynamics, and effects until the balance of all elements sounds right. It describes fine-tuning many small settings by ear to reach a polished, intentional result.",
+    "plain_english": "It means to carefully tweak all the settings until the mix sounds just right. It is like slowly adjusting the taps on a shower until the water is the perfect temperature.",
+    "purpose_function": "The phrase names the hands-on tuning stage of mixing, where small repeated adjustments turn a rough balance into a finished sound.",
+    "practical_application": "A technician dials in the mix by nudging fader levels, tweaking EQ, and setting reverb amounts, checking each change against the whole balance.",
+    "category": "Mixing Workflow",
+    "related_terms": ["Balance", "Panning", "Reference track", "Device translation"],
+    "common_mistakes": ["Endlessly tweaking without a reference, chasing a target that keeps moving", "Making big moves when small ones are needed, and undoing a good balance", "Dialing in at very high volume, which tires the ears and skews decisions"],
+    "scenario_contexts": ["Fine-tuning vocal level against the instrumental until it sits right", "Adjusting drum and bass balance to lock in the low end", "Tweaking reverb and delay amounts to set the sense of space"]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "398abddd-eb60-4c00-9d71-471bf78b7dcd",
+   "term": "Dialogue mixer",
+   "fields": {
+    "definition": "A dialogue mixer is the audio engineer in film or television post-production responsible for balancing, cleaning, and blending the spoken-word elements — production dialogue, ADR, and voice-over — into the final mix. On larger mixes this person handles the dialogue stem while other re-recording mixers cover music and effects.",
+    "plain_english": "It is the sound engineer in film and TV who makes sure all the talking is clear, even, and easy to follow. They balance the voices and smooth them out so lines recorded at different times fit together.",
+    "purpose_function": "The role exists because clear, intelligible dialogue is the most important part of most film and TV soundtracks, and it needs focused, expert handling.",
+    "practical_application": "A dialogue mixer evens out level differences between lines, removes noise, and blends ADR with production sound so the audience never notices the joins.",
+    "category": "Post Production",
+    "related_terms": ["Dialogue-only stem", "Re-recording mixer", "ADR", "Production sound"],
+    "common_mistakes": ["Confusing the dialogue mixer, who works in post, with the production sound mixer, who records on set", "Prioritizing effects and music loudness over dialogue clarity", "Assuming one mixer handles everything, when large films split dialogue, music, and effects across mixers"],
+    "scenario_contexts": ["Smoothing level jumps between two actors in a scene", "Blending ADR lines with the original production dialogue", "Balancing dialogue against music and effects on the dub stage"]
+   },
+   "sources": ["Tomlinson Holman, Sound for Film and Television", "Jay Rose, Producing Great Sound for Film and Video"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d3ffcdfe-d4de-4736-9481-47eed9d5680e",
+   "term": "Dialogue-only stem",
+   "fields": {
+    "definition": "A dialogue-only stem is a submix containing just the dialogue elements of a program — production dialogue, ADR, and voice-over — with music and effects removed. It is delivered alongside the music and effects stems so the mix can be re-balanced, and it supports foreign-language versions when paired with an M&E stem.",
+    "plain_english": "It is a version of the soundtrack that has only the talking in it, with the music and sound effects taken out. Keeping the voices on their own track makes it easy to fix them later or swap in a different language.",
+    "purpose_function": "It exists so the dialogue can be adjusted, replaced, or removed on its own without touching music and effects, which is essential for edits, dubbing, and delivery specs.",
+    "practical_application": "A technician delivers the dialogue stem with the music and effects stems so a broadcaster can re-balance dialogue level or drop it for a foreign-language dub.",
+    "category": "Post Production",
+    "related_terms": ["Dialogue mixer", "Stem", "Re-recording mixer", "ADR"],
+    "common_mistakes": ["Confusing the dialogue-only stem with the full mix, when it has no music or effects", "Leaving music or effects bleed in the dialogue stem, which breaks foreign-language dubbing", "Forgetting to deliver matching stems, so the mix cannot be re-balanced later"],
+    "scenario_contexts": ["Delivering separated stems to a streaming platform per spec", "Re-balancing dialogue level for a TV broadcast without a full remix", "Replacing dialogue with a dubbed language while keeping music and effects"]
+   },
+   "sources": ["Tomlinson Holman, Sound for Film and Television", "Jay Rose, Producing Great Sound for Film and Video"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

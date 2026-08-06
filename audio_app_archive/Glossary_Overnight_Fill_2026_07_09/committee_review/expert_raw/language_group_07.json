@@ -1,0 +1,36 @@
+{
+ "expert": "LANGUAGE / COMMUNICATIONS EXPERT",
+ "group": 7,
+ "reviews": [
+  {"id": "617de673-d2be-4831-b5ae-52aa42718e6e", "term": "Ground Rod", "verdict": "OK", "suggestions": []},
+  {"id": "994622a8-9140-41b6-b793-761fcb94bf2b", "term": "Outlet Tester", "verdict": "OK", "suggestions": []},
+  {"id": "a2045c4c-e658-43f6-8ad1-be03be43844c", "term": "Phase Rotation", "verdict": "OK", "suggestions": []},
+  {"id": "0f7540a0-4c6d-4eef-bce5-33e7a0732946", "term": "Portable Generator (Genset)", "verdict": "MINOR", "suggestions": [
+     {"field": "practical_application", "severity": "Low", "issue": "The trailing clause 'keep it outdoors clear of intakes with refueling done only when off and cool' reads as a dangling modifier and jams two distinct rules together.", "suggestion": "Rewrite as: '...keep it outdoors and clear of air intakes, and refuel only when it is off and cool.'"},
+     {"field": "common_mistakes", "severity": "Low", "issue": "The third bullet ('Getting the neutral bonding wrong; ...') is a long, comma-spliced run-on that packs three ideas into one sentence, making it hard to parse for a learner.", "suggestion": "Split into two sentences, e.g.: 'Getting the neutral bonding wrong. A portable genset feeding cord-and-plug loads is typically neutral-bonded to its frame; but when it acts as a separately derived system feeding a distro or transfer switch, bonding and grounding must follow NEC 250.34/250.30 so GFCIs and breakers work.'"}
+  ]},
+  {"id": "16c89c85-ac8d-46f8-81b3-9105dd116d08", "term": "Power Distro", "verdict": "OK", "suggestions": []},
+  {"id": "45a34e97-0233-4289-b500-c4b4331c794f", "term": "Relay", "verdict": "OK", "suggestions": []},
+  {"id": "075e14f2-8db4-4a9e-aef5-4fbe457d61ec", "term": "Ambisonic Microphone", "verdict": "OK", "suggestions": []},
+  {"id": "dd172c48-f7ed-4abf-b0bc-c628129cf709", "term": "Crystal Microphone", "verdict": "OK", "suggestions": []},
+  {"id": "a93948dc-c4c3-4588-a1ab-48ecd3d41877", "term": "Microphone Modeling", "verdict": "OK", "suggestions": []},
+  {"id": "8f0db471-6f18-48b4-8ee3-04dd65a724a4", "term": "Noise-Canceling Microphone", "verdict": "MINOR", "suggestions": [
+     {"field": "purpose_function", "severity": "Low", "issue": "Spelling inconsistency: the headword is 'Noise-Canceling' (single-l, American) but the edited fields use British 'noise-cancelling' (double-l) in purpose_function and common_mistakes. Mixed spellings of the defined term within one entry read as an error.", "suggestion": "Standardize to the headword spelling: change 'noise-cancelling' to 'noise-canceling' in purpose_function ('a differential (noise-canceling) design') and in the second common_mistakes bullet ('an acoustic differential (noise-canceling) mic')."}
+  ]},
+  {"id": "96b46617-f019-4430-bcee-1329c4f0ed42", "term": "Parabolic Microphone", "verdict": "OK", "suggestions": []},
+  {"id": "91e47196-7979-455e-a29a-d8637d61e080", "term": "In-Line Console", "verdict": "MINOR", "suggestions": [
+     {"field": "common_mistakes", "severity": "Low", "issue": "Terminal-punctuation inconsistency: the common_mistakes and scenario_contexts bullets omit ending periods, whereas the same list fields on the electrical and microphone terms in this group use full stops. (This applies across the Mixers & Recorders entries: Master Section, Monitor Section, Split Console, etc.)", "suggestion": "For consistency with the rest of the glossary's list fields, add terminal periods to each common_mistakes and scenario_contexts bullet, or confirm a single house style and apply it uniformly across all terms."}
+  ]},
+  {"id": "96d6f23f-dba2-4f93-8cce-76fce38e195c", "term": "Master Section", "verdict": "OK", "suggestions": []},
+  {"id": "2b44dc52-dcfe-4945-9a97-9132bf651f3e", "term": "Monitor Section", "verdict": "OK", "suggestions": []},
+  {"id": "4f81edde-f231-4021-bb60-87e4552d969a", "term": "Scribble Strip", "verdict": "OK", "suggestions": []},
+  {"id": "b7d64353-ba42-4c89-bc5b-3d041f2066df", "term": "Solo In Place (SIP)", "verdict": "OK", "suggestions": []},
+  {"id": "27f9a60a-f2d0-4527-b87f-585cafa8eb48", "term": "Split Console", "verdict": "MINOR", "suggestions": [
+     {"field": "purpose_function", "severity": "Low", "issue": "The two sentences are redundant: 'makes signal flow obvious and easy to follow, which is why it is common on teaching...desks. It exists to keep tracking and monitoring workflows distinct and easy to understand.' Both restate the same 'easy to follow/understand' benefit.", "suggestion": "Merge or drop the redundancy, e.g.: '...a split console makes signal flow obvious and keeps tracking and monitoring workflows distinct, which is why it is common on teaching and smaller-format desks.'"}
+  ]},
+  {"id": "7c21397d-697b-46d1-9e95-415d15a8dff3", "term": "Feedback Delay Network (FDN)", "verdict": "OK", "suggestions": []},
+  {"id": "4a2aa894-8fd7-41e9-9504-58a02483accc", "term": "Oil-Can Delay", "verdict": "OK", "suggestions": []},
+  {"id": "2cb58a2c-f450-41e9-92a1-d5511da87b76", "term": "Schroeder Reverberator", "verdict": "OK", "suggestions": []},
+  {"id": "126cd168-1e05-4630-a31d-7c5d2cd526a5", "term": "Wow and Flutter", "verdict": "OK", "suggestions": []}
+ ]
+}

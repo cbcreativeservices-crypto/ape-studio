@@ -1,0 +1,159 @@
+{
+ "batch": 138,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "e985a7ed-d7fa-4842-ba96-a7b0aa8301c9",
+   "term": "Show playback",
+   "fields": {
+    "definition": "The playback of pre-recorded audio material — backing tracks, click, sound effects, and cues — during a live performance or theatrical show, run from a dedicated playback system and triggered in time with the event.",
+    "plain_english": "Show playback is the pre-recorded sound played during a live show, like backing tracks or sound effects. A person starts each clip at the right moment, like a DJ cueing songs on time.",
+    "purpose_function": "It adds parts that cannot be performed live and keeps timed elements such as clicks, effects, and video sync accurate, so the show runs the same way every night.",
+    "practical_application": "A playback operator loads the session, sends a click and backing tracks to the band via in-ears, and fires cues on the stage manager's call.",
+    "category": "Playback",
+    "related_terms": ["Click track", "Backing track", "Cue", "Timecode", "In-ear monitoring", "Stem"],
+    "common_mistakes": ["Running playback with no backup machine or redundancy, so one crash stops the show", "Sending the click track to the front-of-house mix instead of only to the performers", "Not checking sample rate and tempo, so tracks drift out of sync with the band"],
+    "scenario_contexts": ["A touring band runs backing synths and a click to in-ears while the drummer plays to the click", "A musical theatre production fires sound-effect cues from a playback rig on the operator's cue", "A corporate event plays walk-on music and stingers timed to the presenter"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "76d43a27-a08c-4be1-a0fa-e6762a944c09",
+   "term": "Sidechain routing (Live)",
+   "fields": {
+    "definition": "In Ableton Live, the routing that feeds a device such as Compressor or Gate from a separate track or input (the sidechain source), so that the source's level, rather than the audio passing through the device, controls how much processing is applied.",
+    "plain_english": "Sidechain routing in Ableton Live lets one track control an effect on another track. For example, a kick drum can automatically turn down the bass each time it hits, so both sounds fit together.",
+    "purpose_function": "It lets one sound trigger dynamics on another — most often ducking bass or music under a kick or a voice — to create space and keep the mix clear.",
+    "practical_application": "You open the Compressor's sidechain section, switch on the external input, and pick the kick track as the source so the bass ducks on every kick.",
+    "category": "Signal Routing",
+    "related_terms": ["Sidechain compression", "Ducking", "Compressor", "Gate", "Bus routing", "Threshold"],
+    "common_mistakes": ["Forgetting to enable the external sidechain, so the compressor still reacts to the track's own signal", "Setting the threshold so low that the effect never releases, or so high that it never triggers", "Confusing the sidechain SC Gain with output volume — it only changes how strongly the source triggers the device"],
+    "scenario_contexts": ["Ducking a bass line under the kick drum in a dance track", "Making a pad breathe in time with the kick for a pumping effect", "Ducking background music under a voiceover clip"]
+   },
+   "sources": ["Ableton Live 12 Reference Manual", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "25364e7e-d7ae-40ec-9547-0a7be3d8a0bd",
+   "term": "Signal-path validation",
+   "fields": {
+    "definition": "The systematic process of confirming that audio travels correctly and at the proper level through every stage of a signal chain — source, cabling, processing, routing, and output — so faults are found and fixed before they affect the program.",
+    "plain_english": "This means checking that sound really flows all the way through the system, from the input to the speaker. It is like following a hose from the tap to the nozzle to be sure water comes out where it should.",
+    "purpose_function": "It catches broken cables, wrong routing, muted channels, and bad gain staging before a session or show, preventing dead channels and last-minute failures.",
+    "practical_application": "A tech line-checks each input, watches the meters stage by stage, and listens at the output to confirm every source reaches the mix at the right level.",
+    "category": "Signal Flow",
+    "related_terms": ["Line check", "Signal flow", "Gain staging", "Metering", "Solo (in-place)", "Patch"],
+    "common_mistakes": ["Checking only that sound reaches the output but not the level at each stage, missing gain-staging problems", "Skipping the check under time pressure and finding a dead channel during the show", "Assuming a lit meter means the correct source, without verifying it is the right input"],
+    "scenario_contexts": ["Line-checking every input on a console before doors open", "Tracing why a channel is silent by testing each point from mic to monitor", "Verifying a new patch or routing change before recording a take"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c1e9cea8-5410-49d5-ae07-3a1f272a3e79",
+   "term": "Signature List",
+   "fields": {
+    "definition": "In Logic Pro, a list editor that displays and edits a project's time and key signature changes as text entries with their bar positions, letting you add, move, or delete signature events precisely.",
+    "plain_english": "The Signature List in Logic Pro is a text list of every time and key signature change in a song. You use it to see and edit exactly where the beat count or key changes, instead of dragging things on the timeline.",
+    "purpose_function": "It gives an exact, numeric way to manage meter and key changes, which is useful for scores, tempo maps, and pieces that switch time signatures.",
+    "practical_application": "A composer opens the Signature List to insert a 3/4 bar in the middle of a 4/4 song or to fix the bar where a key change lands.",
+    "category": "DAW Editing",
+    "related_terms": ["Signature track (Logic)", "Time signature", "Key signature", "Tempo List", "Event List", "Bar ruler"],
+    "common_mistakes": ["Confusing the Signature List with the Tempo List — signatures set the beat grouping, not the speed", "Editing a signature and not checking that later bars still line up", "Entering a key-signature change and expecting it to transpose audio — it only affects notation"],
+    "scenario_contexts": ["Adding a time-signature change for a bridge section", "Setting up a correct meter map so notation and the bar ruler line up", "Cleaning up stray signature events imported with a MIDI file"]
+   },
+   "sources": ["Logic Pro User Guide (Apple)", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "37f93d61-1d0e-4a2f-9d2c-e796de93b9ff",
+   "term": "Signature track (Logic)",
+   "fields": {
+    "definition": "In Logic Pro, a global track that shows a project's time and key signature changes along the timeline, where you can create and edit signature events directly in line with the bar ruler and the other tracks.",
+    "plain_english": "The Signature track in Logic Pro is a strip above your song that shows where the time and key signatures change. You can click on it to add or move a change, right where it happens on the timeline.",
+    "purpose_function": "It gives a visual, timeline-based place to manage meter and key changes so they line up with the music, complementing the text-based Signature List.",
+    "practical_application": "An engineer shows the Signature track, then clicks to drop a 6/8 change at the chorus so the metronome and grid follow the song.",
+    "category": "DAW Editing",
+    "related_terms": ["Signature List", "Global tracks", "Time signature", "Key signature", "Tempo track", "Bar ruler"],
+    "common_mistakes": ["Leaving global tracks hidden and not finding the Signature track when a meter change is needed", "Placing a signature change off the bar line, causing an unexpected short bar", "Expecting a key-signature change to retune audio rather than only affect notation"],
+    "scenario_contexts": ["Dropping a time-signature change at a section boundary so the click follows", "Building a meter map for a film cue that shifts between 4/4 and 7/8", "Matching the grid to a live recording that changes meter"]
+   },
+   "sources": ["Logic Pro User Guide (Apple)", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bfc20fa1-22da-4a75-a24b-b129d11dd05d",
+   "term": "Slice edit mode",
+   "fields": {
+    "definition": "A working mode in a sampler or DAW audio editor in which a sample is divided into individual slices at transient or grid points, and the slice markers can be added, moved, merged, or deleted to control where each segment begins.",
+    "plain_english": "Slice edit mode lets you cut a sound, like a drum loop, into separate pieces and adjust where each cut lands. It is like slicing a loaf of bread and moving the cuts so each slice is the size you want.",
+    "purpose_function": "It gives precise control over where a sample splits, so each hit or note can be triggered, moved, or re-timed on its own.",
+    "practical_application": "A beginner opens a drum loop in slice edit mode, nudges the slice markers onto each drum hit, and then plays the slices from pads or keys.",
+    "category": "Audio Editing",
+    "related_terms": ["Slicing mode", "Transient", "Sampler", "Drum Rack", "Warping", "Quantize"],
+    "common_mistakes": ["Setting the slice sensitivity too high, creating many false slices between the real hits", "Moving a slice marker past the transient so the hit's attack is cut off", "Confusing editing slice markers with permanently cutting the audio file"],
+    "scenario_contexts": ["Fixing slice points on a break so each drum hit triggers cleanly", "Preparing a vocal chop to be played from a keyboard", "Tightening a loop so slices land exactly on the beat"]
+   },
+   "sources": ["Ableton Live 12 Reference Manual", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dc1a0203-1771-4bd3-85e6-f386d4f93deb",
+   "term": "Slicing mode",
+   "fields": {
+    "definition": "A sampler or DAW mode that detects transients (or uses a beat or region grid) to split a sample into slices and maps each slice to a separate pad or key, so the segments can be played and re-sequenced independently.",
+    "plain_english": "Slicing mode automatically chops a sample into pieces at each beat or hit and spreads them across your pads or keys. Then you can replay the pieces in any order, like rearranging beads on a string.",
+    "purpose_function": "It turns a fixed audio loop into playable, re-arrangeable parts, so a loop can be re-timed, reordered, or rebuilt into a new pattern.",
+    "practical_application": "An engineer uses Slice to a new MIDI track, and Live spreads each slice across a Drum Rack so the loop can follow a new tempo and pattern.",
+    "category": "Audio Editing",
+    "related_terms": ["Slice edit mode", "Transient", "Drum Rack", "Sampler", "Warping", "MIDI"],
+    "common_mistakes": ["Slicing by beat when the loop is not tightly in time, so the slices miss the hits", "Forgetting that the slices still depend on warp and tempo settings for their timing", "Creating too many slices, making the loop hard to play and manage"],
+    "scenario_contexts": ["Slicing a breakbeat to a Drum Rack to rearrange the groove", "Making a loop follow the project tempo by playing its slices", "Turning a melodic phrase into playable notes across a keyboard"]
+   },
+   "sources": ["Ableton Live 12 Reference Manual", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d2eb6c77-f7cc-44c0-b9c1-f79f653d9b64",
+   "term": "Smart Controls",
+   "fields": {
+    "definition": "In Logic Pro, a set of on-screen controls mapped to key parameters of a track's channel strip and plug-ins, so several related settings can be adjusted together from one simplified panel and easily assigned to hardware controllers.",
+    "plain_english": "Smart Controls in Logic Pro are a small panel of knobs and sliders that control the most useful settings of a track at once. It is like a car dashboard, giving you the main controls without opening every part under the hood.",
+    "purpose_function": "They simplify sound tweaking by putting the most important parameters in one place and make it easy to map those controls to a MIDI keyboard or control surface for hands-on control.",
+    "practical_application": "A producer opens the Smart Controls for a synth track and turns one knob that has been mapped to both the filter cutoff and the reverb amount.",
+    "category": "DAW Control",
+    "related_terms": ["Channel strip", "Plug-in", "Automation", "MIDI controller", "Patch", "Macro control"],
+    "common_mistakes": ["Assuming Smart Controls are separate effects rather than remote controls for existing plug-in parameters", "Re-mapping a screen control and forgetting it now moves a different parameter", "Overlooking that saving the patch also stores the Smart Control mappings"],
+    "scenario_contexts": ["Mapping a hardware knob to a Smart Control for live tweaking", "Adjusting a patch's tone quickly without opening each plug-in", "Automating a Smart Control to change several parameters at once"]
+   },
+   "sources": ["Logic Pro User Guide (Apple)", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "19fefb2d-e824-4fa1-98af-8336435d0d36",
+   "term": "Smart EQ",
+   "fields": {
+    "definition": "A class of equalizer that analyzes the incoming audio and automatically generates or suggests an EQ curve — smoothing resonances, balancing the tonal spectrum, or matching a target profile — which the user can then refine, rather than setting every band by ear alone.",
+    "plain_english": "A Smart EQ listens to your sound and sets a starting EQ for you by itself. It is like a photo app that fixes the colors for you, giving a good result you can still change.",
+    "purpose_function": "It speeds up tone shaping and helps less-experienced users by finding problem frequencies and a balanced curve quickly, which can then be fine-tuned by hand.",
+    "practical_application": "An engineer plays a few seconds of a vocal through a Smart EQ, lets it learn and set a curve, then tweaks a band or two to taste.",
+    "category": "Equalization",
+    "related_terms": ["Equalizer", "Parametric EQ", "Resonance", "Spectral analysis", "Tonal balance", "Match EQ"],
+    "common_mistakes": ["Trusting the automatic curve blindly without listening to it in the full mix", "Letting it learn from a bad or unrepresentative section, giving a wrong curve", "Assuming a smart EQ replaces learning EQ fundamentals rather than assisting them"],
+    "scenario_contexts": ["Getting a fast starting EQ on a vocal before manual tweaks", "Taming harsh resonances on a recorded instrument", "Matching a track's tonal balance to a reference"]
+   },
+   "sources": ["sonible smart:EQ User Guide", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

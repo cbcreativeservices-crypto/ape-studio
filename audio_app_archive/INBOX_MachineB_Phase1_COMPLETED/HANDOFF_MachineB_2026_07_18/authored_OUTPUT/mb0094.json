@@ -1,0 +1,313 @@
+{
+ "batch": 94,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "79c8ba71-a97a-4bbb-8076-f318ede35504",
+   "term": "Cubase project",
+   "fields": {
+    "definition": "The central document in Steinberg Cubase that holds all the settings and references for a piece of work, saved as a .cpr file. It stores the track arrangement, mixer and routing settings, edits, and automation, while pointing to the media files kept in the project folder.",
+    "plain_english": "A Cubase project is the file that holds your whole song in Cubase. It remembers your tracks, edits, and mixer settings. It also links to the audio files saved in the project folder. Think of it as a map that keeps every part of your work together.",
+    "purpose_function": "It ties every track, edit, mix setting, and media reference into one saved, reopenable state, so a whole production can be stored, recalled, and continued exactly where it was left off.",
+    "practical_application": "A technician opens, saves, and backs up the .cpr file together with its Audio and other project subfolders, and uses Save As or Back up Project to move or archive a session without losing linked media.",
+    "category": "Session Management",
+    "related_terms": [
+     "Project folder",
+     "Track",
+     "MixConsole",
+     "Mixdown",
+     "Audio Pool",
+     "Autosave"
+    ],
+    "common_mistakes": [
+     "Moving or renaming the .cpr file but leaving its audio files behind, which breaks the links to the media.",
+     "Assuming the project file contains the audio itself, when it mainly references external files in the project folder.",
+     "Not saving incremental versions, so one corrupted project file loses all recent work."
+    ],
+    "scenario_contexts": [
+     "Starting a new song and choosing a project folder location before recording.",
+     "Archiving a finished mix by using Back up Project to gather all referenced media.",
+     "Reopening a client session weeks later and having every track, edit, and mix setting recalled."
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Pro Operation Manual",
+    "Steinberg Cubase AI Operation Manual"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6ec18ae0-593e-490f-bc6a-42035d98c1c8",
+   "term": "Custom action",
+   "fields": {
+    "definition": "In REAPER, a user-created macro that combines two or more actions from the Action List so they run in sequence when triggered by a single command, shortcut, or menu item.",
+    "plain_english": "A custom action in REAPER lets you bundle several commands into one. You pick the steps you want, put them in order, and give them a single shortcut. Pressing that shortcut then runs all the steps for you, like a one-tap recipe.",
+    "purpose_function": "It speeds up repetitive work by letting one keystroke perform a whole chain of steps, cutting manual clicks and keeping multi-step tasks consistent every time.",
+    "practical_application": "An engineer builds a custom action to, for example, select tracks, toggle their visibility, and zoom, then assigns it a keyboard shortcut or toolbar button for instant reuse.",
+    "category": "Workflow Automation",
+    "related_terms": [
+     "Action List",
+     "Key command",
+     "Macro",
+     "Cycle action",
+     "Toolbar",
+     "Script"
+    ],
+    "common_mistakes": [
+     "Ordering the steps wrong, so the actions run in a sequence that gives an unexpected result.",
+     "Forgetting that some actions apply to whatever is focused or selected, so the macro behaves differently depending on context.",
+     "Confusing a custom action, which is a fixed sequence, with a cycle action, which steps through actions on repeated presses."
+    ],
+    "scenario_contexts": [
+     "Automating a repetitive editing routine that normally takes several menu clicks.",
+     "Creating a single shortcut that sets up a preferred track layout and zoom level.",
+     "Sharing a reusable macro with collaborators to standardize a studio workflow."
+    ]
+   },
+   "sources": [
+    "Sound on Sound, 'Automate Anything With Reaper's Custom Actions'",
+    "Cockos REAPER User Guide"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b0fb497a-1d60-45fb-9244-8ac9b79e8aa1",
+   "term": "Cycle action",
+   "fields": {
+    "definition": "In REAPER (via the SWS/S&M extension), a user-programmable command that performs a different action or step each time its shortcut is triggered, cycling through a defined sequence of actions or states, so one key command can step through multiple behaviors in turn.",
+    "plain_english": "It is a shortcut in Reaper that does a different thing each time you press it, moving through a list you set up. One button, several jobs in a set order.",
+    "purpose_function": "It lets a user pack several related commands onto one shortcut and step through them, streamlining repetitive multi-step workflows and toggles.",
+    "practical_application": "An editor builds a cycle action so one key repeatedly steps through a set of zoom levels or track views during editing.",
+    "category": "Workflow",
+    "related_terms": [
+     "Custom action",
+     "Macro",
+     "Key command",
+     "Action list"
+    ],
+    "common_mistakes": [
+     "Confusing a cycle action (steps through actions on repeated presses) with a custom action/macro (runs all its steps at once)",
+     "Forgetting that cycle actions require the SWS/S&M extension to be installed in REAPER",
+     "Losing track of the cycle's current state, so the shortcut appears to do the 'wrong' thing"
+    ],
+    "scenario_contexts": [
+     "Assigning one shortcut to step through several zoom presets in REAPER",
+     "Toggling between mixer and arrange views with repeated presses",
+     "Rotating through take lanes while comping"
+    ]
+   },
+   "sources": [
+    "Cockos REAPER — SWS/S&M Extension, Cycle Action editor documentation (CockosWiki)",
+    "Cockos REAPER User Guide — Actions list and custom actions"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ff52ca10-c540-45f6-90a9-a3ad9733402d",
+   "term": "Cycle area",
+   "fields": {
+    "definition": "In Logic Pro, the strip in the upper part of the ruler used to define a section of the project that plays back or records repeatedly. With Cycle mode on, playback loops between the left and right edges of this highlighted region.",
+    "plain_english": "The cycle area in Logic Pro is a marked strip along the top ruler. It sets a part of your song to play over and over on a loop. You drag its edges to choose where the loop starts and stops, so you can practice or record a section again and again.",
+    "purpose_function": "It lets you repeat a chosen section hands-free for focused practice, take recording, or fine-tuning edits and mix moves without constantly restarting playback.",
+    "practical_application": "A technician drags across the ruler to set the cycle area over a chorus, enables Cycle mode, and loops that part to record several takes or audition edits.",
+    "category": "Playback & Transport",
+    "related_terms": [
+     "Cycle mode",
+     "Locators",
+     "Loop",
+     "Ruler",
+     "Playhead",
+     "Comping"
+    ],
+    "common_mistakes": [
+     "Leaving Cycle mode on by accident, so playback keeps looping when you expect it to continue past the section.",
+     "Setting the cycle edges slightly off the bar lines, causing loops that feel out of time.",
+     "Confusing the cycle area, a playback loop range, with looping an individual region."
+    ],
+    "scenario_contexts": [
+     "Looping a verse to record several vocal takes for comping.",
+     "Repeating a short section to dial in an EQ or effect setting.",
+     "Practicing a difficult passage by playing it back on a continuous loop."
+    ]
+   },
+   "sources": [
+    "Apple Logic Pro User Guide, 'Use the cycle area in Logic Pro'",
+    "Apple Logic Pro for iPad User Guide, 'Use the cycle area'"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e1a64248-9646-4ff2-aeaf-18ff4a394388",
+   "term": "Dashboard",
+   "fields": {
+    "definition": "A consolidated screen or window that presents key status information and controls at a glance; in Pro Tools specifically, the Dashboard is the window shown when creating or opening a session, where the user sets sample rate, bit depth, file type, and I/O settings and locates recent or existing sessions.",
+    "plain_english": "It is a single screen that shows the important info and controls in one place. In Pro Tools, it is the window that pops up to set up or open a session.",
+    "purpose_function": "It centralizes the settings and choices needed to start work, so the user configures a session or reviews status from one place instead of hunting through menus.",
+    "practical_application": "When launching Pro Tools, an engineer uses the Dashboard to create a new session at 48 kHz / 24-bit or to reopen a recent project.",
+    "category": "Interface",
+    "related_terms": [
+     "Session",
+     "Sample rate",
+     "Bit depth",
+     "Audio Connections window"
+    ],
+    "common_mistakes": [
+     "Rushing past the Dashboard and creating a session at the wrong sample rate or bit depth",
+     "Assuming the Dashboard is only for new sessions when it also opens recent and existing ones",
+     "Confusing a software 'dashboard' overview with a hardware metering panel"
+    ],
+    "scenario_contexts": [
+     "Setting sample rate and bit depth when starting a new Pro Tools session",
+     "Reopening a recent project from the Dashboard at launch",
+     "Choosing file type and I/O settings before recording begins"
+    ]
+   },
+   "sources": [
+    "Avid, Pro Tools Reference Guide / User Guide — 'Starting a new session' (the Dashboard window)",
+    "Sound on Sound — 'Pro Tools Dashboard' (techniques article)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8def116f-2cbd-467c-b584-6cd98cd3459a",
+   "term": "Defeat music",
+   "fields": {
+    "definition": "In video game audio, a musical cue that plays when the player loses—such as a game-over, death, or failure state—typically a short, downbeat or resolving piece that signals the negative outcome.",
+    "plain_english": "It is the sad or 'you lost' music that plays when you fail or die in a game. It tells you the round is over and you did not win.",
+    "purpose_function": "It gives clear emotional feedback that the player has failed, marking the end of an attempt and setting the tone before a retry.",
+    "practical_application": "A composer writes a brief defeat cue, and an implementer triggers it on the game-over or death event, usually stopping the gameplay music first.",
+    "category": "Game Audio",
+    "related_terms": [
+     "Boss music",
+     "Combat music",
+     "Adaptive music",
+     "Delayed transition"
+    ],
+    "common_mistakes": [
+     "Confusing defeat music (a loss cue) with victory or level-complete music",
+     "Letting gameplay music keep playing under the defeat cue instead of stopping or ducking it",
+     "Making the defeat cue so long it delays the player's retry"
+    ],
+    "scenario_contexts": [
+     "Playing a game-over theme when the player's health reaches zero",
+     "Triggering a short failure sting when a timed mission is lost",
+     "Transitioning from combat music to a defeat cue on player death"
+    ]
+   },
+   "sources": [
+    "Winifred Phillips, A Composer's Guide to Game Music (MIT Press)",
+    "Karen Collins, Game Sound: An Introduction to the History, Theory, and Practice of Video Game Music and Sound Design (MIT Press)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a7cfdb4b-261f-4230-b160-ef6729a17031",
+   "term": "Delayed transition",
+   "fields": {
+    "definition": "A change from one section, cue, or mix state to another that is intentionally deferred—executing only after a set time delay or at the next musical boundary (such as the next bar or an exit marker)—rather than taking effect the instant it is triggered.",
+    "plain_english": "It is a switch between two parts that waits for the right moment instead of happening right away. Like waiting for the end of a musical phrase before changing the song.",
+    "purpose_function": "It keeps changes musical and smooth by aligning them to a natural point, avoiding abrupt jumps when a cue or state change is triggered off-beat.",
+    "practical_application": "In interactive game music, an implementer sets a combat-to-explore transition to wait until the next bar, so the music switches cleanly after the trigger.",
+    "category": "Transitions",
+    "related_terms": [
+     "Bar-aligned transition",
+     "Beat-aligned transition",
+     "Combat music",
+     "Adaptive music"
+    ],
+    "common_mistakes": [
+     "Confusing a delayed transition (deferred to a sync point) with a slow crossfade, which is about fade length, not timing",
+     "Setting the delay so long the change feels disconnected from its trigger",
+     "Forgetting to define an exit point, so the transition waits far longer than intended"
+    ],
+    "scenario_contexts": [
+     "Waiting for the next bar before switching from exploration to combat music",
+     "Delaying a mix scene change until a song section ends",
+     "Scheduling a stinger to land on the next downbeat"
+    ]
+   },
+   "sources": [
+    "Winifred Phillips, A Composer's Guide to Game Music (MIT Press) — transitions in interactive scores",
+    "Karen Collins, Game Sound: An Introduction to the History, Theory, and Practice of Video Game Music and Sound Design (MIT Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "62095a0b-5c06-4513-81d4-bf7b1e8de528",
+   "term": "Delivery certification",
+   "fields": {
+    "definition": "A formal confirmation that a finished deliverable has passed quality control and conforms to the recipient's technical delivery specification, covering items such as file format, channel layout, and loudness. It is the sign-off, often documented as a QC report, that clears content for acceptance and distribution.",
+    "plain_english": "Delivery certification is a formal check that says a finished file meets all the rules the client set. It confirms the format, channels, and loudness are right and that quality control found no faults. Think of it like a pass stamp that lets the file be accepted and released.",
+    "purpose_function": "It protects both sides by proving, before acceptance, that the master meets the agreed spec, so faulty or non-compliant files are caught before they reach air or release.",
+    "practical_application": "Before hand-off, an engineer or QC operator checks the deliverable against the spec sheet and provides certification or a QC report confirming it passes.",
+    "category": "Delivery & QC",
+    "related_terms": [
+     "Deliverables",
+     "Quality control",
+     "Delivery master",
+     "Loudness normalization",
+     "Spec sheet",
+     "LUFS"
+    ],
+    "common_mistakes": [
+     "Treating certification as a formality and skipping an actual check against the spec sheet.",
+     "Judging loudness by ear instead of measuring it to the required target.",
+     "Missing required elements, such as channel layout or metadata, that the specification demands."
+    ],
+    "scenario_contexts": [
+     "Confirming a broadcast master meets the network's loudness and format spec before hand-off.",
+     "Providing a QC pass report with files delivered to a streaming platform.",
+     "Rejecting and returning a deliverable that fails the technical specification."
+    ]
+   },
+   "sources": [
+    "EBU R128 (Loudness normalisation and permitted maximum level of audio signals)",
+    "Sound on Sound, 'Mastering Essentials: Final Delivery, Requirements & Specs'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "70b98a9f-8992-493c-ab63-96c8fc304c4c",
+   "term": "Delivery master",
+   "fields": {
+    "definition": "The final approved version of a mix or master prepared to meet the exact technical specifications of its destination, such as a streaming service, broadcaster, or replication plant. It is the file or file set formally handed over for distribution, made to the required format, sample rate, bit depth, and loudness targets.",
+    "plain_english": "A delivery master is the final, approved version of a track made to fit exactly what the client or platform asks for. It uses the right file type, quality, and loudness for that destination. Think of it as the finished copy you hand over for release, cut to spec.",
+    "purpose_function": "It exists to give each destination a correctly formatted, compliant file so the release plays back and measures as intended without any further changes.",
+    "practical_application": "A mastering engineer renders separate delivery masters for streaming, CD, and video, each matching that platform's format and loudness requirements before sending them off.",
+    "category": "Mastering & Delivery",
+    "related_terms": [
+     "Master",
+     "Mixdown",
+     "Loudness normalization",
+     "LUFS",
+     "Deliverables",
+     "DDP"
+    ],
+    "common_mistakes": [
+     "Sending one generic file to every platform instead of meeting each one's format and loudness spec.",
+     "Over-limiting to a very loud level that gets turned down and can distort under loudness normalization.",
+     "Mislabeling sample rate, bit depth, or channel layout so the file is rejected in QC."
+    ],
+    "scenario_contexts": [
+     "Preparing separate masters for a streaming service, an online store, and a CD run.",
+     "Delivering a broadcast mix that must meet a specified loudness target.",
+     "Sending an approved final file set to a distributor or replication plant."
+    ]
+   },
+   "sources": [
+    "Sound on Sound, 'Mastering Essentials: Final Delivery, Requirements & Specs'",
+    "Ballou, Handbook for Sound Engineers (mastering and delivery)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

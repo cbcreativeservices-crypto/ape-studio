@@ -1,0 +1,159 @@
+{
+ "batch": 160,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "0ad2d233-e4f2-4cb1-a8f4-e9f2d68758fb",
+   "term": "Dialogue-friendly score mix",
+   "fields": {
+    "definition": "A film or TV music mix balanced and spectrally shaped so the musical score supports the picture without masking or reducing the intelligibility of spoken dialogue. It is achieved by controlling the music's level and dynamics and by carving competing midrange frequencies relative to the dialogue.",
+    "plain_english": "A way of mixing background music so it never covers up the talking. The music is kept a bit quieter and pulled out of the voice's range. It is like a band playing softly behind a speaker so you still hear every word.",
+    "purpose_function": "It exists so the audience can always follow the story: dialogue is the priority element, and the score is shaped to add emotion while staying out of its way.",
+    "practical_application": "A re-recording or music mixer rides the music level under dialogue, uses EQ to open space around 1-4 kHz, and may duck the score during lines so the words stay clear.",
+    "category": "Post-Production Mixing",
+    "related_terms": ["Dialogue intelligibility", "Ducking", "Stem mixing", "Loudness normalization", "Frequency masking", "Re-recording mix"],
+    "common_mistakes": ["Setting the music by feel in a quiet room, then finding it buries dialogue on small TV speakers", "Using only a level ride instead of also carving the competing midrange frequencies", "Ignoring dialogue-anchored loudness standards, so the delivered mix fails broadcast targets"],
+    "scenario_contexts": ["Mixing a documentary where narration must stay clear over a music bed", "Balancing an orchestral cue under an emotional dialogue scene in a film", "Preparing a TV episode mix to meet broadcast dialogue-anchored loudness specs"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "EBU R128 (loudness)", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b6904c32-2ab9-4b86-8c76-57b8b16fe9a3",
+   "term": "Disc balance verification",
+   "fields": {
+    "definition": "A quality-control check that measures a disc's residual mechanical (dynamic) imbalance, the uneven distribution of mass about its rotational axis, to confirm it stays within specification so the disc spins without excessive vibration at high playback speeds.",
+    "plain_english": "A test that checks the disc's weight is spread evenly around its center. If one side is heavier, the disc wobbles when it spins fast, just like a lopsided wheel on a car. This test makes sure it stays smooth.",
+    "purpose_function": "It exists to catch discs whose off-center mass would cause vibration, tracking errors, or read failures in high-speed drives, protecting playback reliability.",
+    "practical_application": "In manufacturing QC, a technician spins sample discs on a balance analyzer and compares the measured residual imbalance against the standard's limit before releasing a production run.",
+    "category": "Disc Quality Control",
+    "related_terms": ["Disc eccentricity test", "Disc reflectivity measurement", "Disc compatibility test", "Radial runout", "Residual imbalance"],
+    "common_mistakes": ["Confusing mechanical mass imbalance with left/right audio channel balance, which is unrelated", "Assuming imbalance only matters for data discs, when high-speed audio and video playback is affected too", "Skipping balance checks on thin or warped stock that is most likely to fail at speed"],
+    "scenario_contexts": ["Batch QC of pressed CDs or DVDs before shipment", "Diagnosing a disc that vibrates or fails to read at high drive speeds", "Qualifying a new stamper or moulding run for consistent disc flatness and balance"]
+   },
+   "sources": ["ECMA-267 (DVD-ROM, residual imbalance)", "ISO 1940-1 (balance quality of rotating bodies)", "ECMA-130"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4e473d49-e759-4365-96d5-36fda07313ba",
+   "term": "Disc compatibility test",
+   "fields": {
+    "definition": "A verification step confirming that a finished or premaster disc conforms to its format standard (such as Red Book) and plays back correctly across a representative range of drives and players, not only on the machine that wrote it.",
+    "plain_english": "A check that makes sure a disc really plays in lots of different players, not just the one that made it. It is like testing a house key in every door it should open, so you know it works everywhere before you hand it out.",
+    "purpose_function": "It exists to catch format or writing errors that would make a disc unreadable or cause it to be rejected at the pressing plant, ensuring the master is safe to replicate.",
+    "practical_application": "A mastering engineer plays the finished CD-R or DDP master on several drives and an analyzer, checking for E32 uncorrectable errors and standard compliance before sending it for replication.",
+    "category": "Disc Quality Control",
+    "related_terms": ["Disc-at-once mastering", "Disc image verification", "Red Book standard", "Block error rate (BLER)", "DDP"],
+    "common_mistakes": ["Delivering a Track-At-Once CD-R whose run-out sectors read as uncorrectable E32 errors and get rejected by the plant", "Testing only on the burner's own drive and assuming universal compatibility", "Ignoring high block-error-rate warnings on a master that still happens to play on one machine"],
+    "scenario_contexts": ["Checking a CD master on multiple players before replication", "Troubleshooting a disc that plays on a computer but not on standalone players", "Pre-flighting a delivery to meet a plant's error-rate acceptance criteria"]
+   },
+   "sources": ["Sound on Sound, Compact Disc Formats Explained", "IEC 60908 (Red Book)", "ECMA-130"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f3bf9e0e-bad4-429b-ac40-f625133a458e",
+   "term": "Disc eccentricity test",
+   "fields": {
+    "definition": "A measurement of how far a disc's recorded track spiral or centre hole deviates from being concentric with the rotational axis, expressed as radial runout, verifying the deviation stays within the format standard's limits.",
+    "plain_english": "A test that checks the disc's grooves and center hole sit truly in the middle. If they are off-center, the disc reads unevenly as it spins, like a record with an off-center hole that makes the pitch wobble. This keeps it centered.",
+    "purpose_function": "It exists to ensure the read or cutting mechanism can track the spiral smoothly; too much eccentricity causes tracking errors, speed wobble, or read failures.",
+    "practical_application": "In QC, a technician measures the track's radial runout and hub concentricity against the standard's limits, such as those in ECMA-130, to accept or reject discs or a moulding run.",
+    "category": "Disc Quality Control",
+    "related_terms": ["Disc balance verification", "Radial runout", "Disc reflectivity measurement", "Tracking error", "Centre hole concentricity"],
+    "common_mistakes": ["Confusing eccentricity (off-center) with warp or axial deviation (up-and-down); both are checked but are different", "Assuming a slightly off-center printed label means the recorded track itself is eccentric", "Overlooking hub and centre-hole concentricity, which sets how well any player can center the disc"],
+    "scenario_contexts": ["QC of pressed optical discs against standard runout limits", "Diagnosing tracking errors or audible wow on a disc", "Setting up a cutting lathe or mastering system so the master is cut concentrically"]
+   },
+   "sources": ["ECMA-130", "IEC 60908 (Red Book)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d07ea4e2-31f1-43f5-9c83-14246b159457",
+   "term": "Disc identification code",
+   "fields": {
+    "definition": "A standardized code that uniquely identifies an optical disc or its release. On audio CDs the primary example is the Media Catalog Number (MCN), a 13-digit UPC/EAN encoded in the disc's Q-subchannel per IEC 60908 (Red Book), complemented by source and matrix codes molded into the disc that identify its manufacturing origin.",
+    "plain_english": "A code stored on a disc that tells machines exactly which disc it is, like a barcode on a grocery item. On a CD it is a hidden number that names the whole release, so software and players can look it up.",
+    "purpose_function": "It exists so a disc and its release can be recognized, catalogued, and tracked automatically by players, software, and the manufacturing chain.",
+    "practical_application": "During CD mastering, the engineer enters the MCN, and the per-track ISRC codes, so they are written into the subcode; QC then reads them back to confirm they are present and correct.",
+    "category": "Disc Metadata",
+    "related_terms": ["ISRC", "Media Catalog Number", "Subcode (Q channel)", "Disc image verification", "Matrix number"],
+    "common_mistakes": ["Confusing the MCN, which identifies the whole disc, with the ISRC, which identifies each individual track", "Leaving the MCN blank or reusing another release's number", "Assuming the catalogue number printed on the artwork is the same as the encoded MCN"],
+    "scenario_contexts": ["Entering MCN and ISRC codes during CD premastering", "Verifying encoded identifiers on a master before replication", "Identifying a pressed disc's origin from its matrix and source codes"]
+   },
+   "sources": ["IEC 60908 (Red Book)", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e670034e-20d3-4fb4-8fce-f681512158e7",
+   "term": "Disc image verification",
+   "fields": {
+    "definition": "The process of confirming that a disc image, the complete premaster file set describing a disc's content and most commonly a DDP (Disc Description Protocol) image, is intact and matches its source, typically by comparing MD5 checksums before the image is replicated.",
+    "plain_english": "A check that makes sure the disc's master files arrived complete and unchanged. It compares a digital fingerprint, called a checksum, taken at both ends. If the fingerprints match, nothing got corrupted along the way.",
+    "purpose_function": "It exists to guarantee the exact audio and data the engineer approved are what get pressed, preventing a corrupted transfer from being turned into thousands of faulty discs.",
+    "practical_application": "A mastering engineer generates an MD5 checksum for the DDP image and sends it with the files; the plant recomputes the checksum on receipt to confirm the image is bit-for-bit identical.",
+    "category": "Disc Quality Control",
+    "related_terms": ["DDP", "MD5 checksum", "Disc compatibility test", "Disc-at-once mastering", "Red Book standard"],
+    "common_mistakes": ["Delivering a DDP with no checksum, so a corrupted transfer can go undetected", "Assuming a file that opens correctly is automatically bit-perfect", "Editing files inside the DDP folder after the checksum was generated, which invalidates it"],
+    "scenario_contexts": ["Sending a DDP master to a replication plant with an MD5 file", "A plant verifying a received image before starting a pressing run", "Confirming an archived disc image is still intact years later"]
+   },
+   "sources": ["Library of Congress, Sustainability of Digital Formats (DDP)", "Sound on Sound (DDP)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0dbb2292-6dc5-40be-afda-becdd9ad6639",
+   "term": "Disc reflectivity measurement",
+   "fields": {
+    "definition": "A measurement of the fraction of incident laser light reflected from a disc's information surface, used to verify the disc meets the format standard's minimum reflectance; for CD this is at least 70% under normal incidence per ECMA-130 and IEC 60908, so players can reliably read it.",
+    "plain_english": "A test of how well a disc bounces the player's laser back. If the surface does not reflect enough light, the player cannot read the data, like trying to read a mirror that has gone dull. The test makes sure it is shiny enough.",
+    "purpose_function": "It exists to confirm the reflective layer and substrate return enough signal for stable reading; low reflectivity causes read errors, skipping, or unplayable discs.",
+    "practical_application": "In QC, a technician measures reflectance on unrecorded and recorded areas with an analyzer and compares it to the standard's minimum before accepting the batch.",
+    "category": "Disc Quality Control",
+    "related_terms": ["Block error rate (BLER)", "Disc eccentricity test", "Disc compatibility test", "Red Book standard", "Reflective layer"],
+    "common_mistakes": ["Assuming any dye or metal layer meets spec without actually measuring reflectance", "Confusing shininess to the eye with the laser-wavelength reflectance that actually matters", "Ignoring reflectance variation across the disc, which the standard also limits"],
+    "scenario_contexts": ["QC of pressed or burned discs against the 70% minimum", "Diagnosing discs that skip or are unreadable in some drives", "Qualifying a new reflective-layer or dye formulation in manufacturing"]
+   },
+   "sources": ["ECMA-130", "IEC 60908 (Red Book)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "617f84ae-c621-407e-b64e-c7d950867176",
+   "term": "Disc-at-once mastering",
+   "fields": {
+    "definition": "A CD writing method in which the entire disc, including lead-in, all tracks, and lead-out, is written in a single continuous pass without the laser switching off between tracks, producing a gapless, Red Book-compliant master suitable for replication.",
+    "plain_english": "A way of burning a whole CD in one non-stop pass, from start to finish, without stopping between songs. Because the laser never pauses, there are no glitchy gaps, which is why factories want masters made this way. It is like writing a letter without lifting your pen.",
+    "purpose_function": "It exists to create clean, glitch-free masters with controllable gaps and no run-out errors, meeting the requirements for commercial CD replication.",
+    "practical_application": "When creating a final CD master or DDP, the engineer selects disc-at-once so the plant does not reject the disc for Track-At-Once run-out (E32) errors.",
+    "category": "Disc Mastering",
+    "related_terms": ["Track-at-once", "DDP", "Disc image verification", "Red Book standard", "Disc compatibility test"],
+    "common_mistakes": ["Delivering a Track-At-Once CD-R for replication, whose run-out sectors can read as E32 errors and be rejected", "Thinking disc-at-once and track-at-once sound different; the difference is gaps and errors, not audio quality", "Adding or trimming tracks after finalizing, which requires re-burning the whole disc"],
+    "scenario_contexts": ["Burning a final CD-R master for a pressing plant", "Creating a gapless live-album or DJ-mix CD", "Producing a Red Book master alongside a DDP for delivery"]
+   },
+   "sources": ["Sound on Sound, Compact Disc Formats Explained", "IEC 60908 (Red Book)", "ECMA-130"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2c4c9691-891a-4607-a2b8-5af78e2e77ea",
+   "term": "Disc-cutting engineer",
+   "fields": {
+    "definition": "A specialist mastering engineer who transfers audio to a physical disc master by operating a cutting lathe, driving a cutter head that engraves the modulated groove into a lacquer (or copper/DMM) blank from which vinyl records are subsequently manufactured.",
+    "plain_english": "The engineer who carves the sound into a master disc used to make vinyl records. Using a machine called a cutting lathe, they turn the audio into a real groove, a bit like a very precise needle drawing a spiral. Their choices affect how the record sounds.",
+    "purpose_function": "They exist to translate a finished audio master into a groove a record can reproduce, managing level, bass, and stereo width so the cut plays back cleanly without skipping.",
+    "practical_application": "The cutting engineer sets the lathe's pitch and depth, applies any EQ or limiting the medium needs, and cuts the lacquer master that goes to the plating and pressing plant.",
+    "category": "Disc Mastering",
+    "related_terms": ["Cutting lathe", "Lacquer master", "Vinyl mastering", "RIAA equalization", "Direct Metal Mastering (DMM)"],
+    "common_mistakes": ["Assuming a digital master needs no changes for vinyl; excessive bass, out-of-phase low end, or sibilance can make a groove unplayable", "Confusing the cutting engineer with the pressing plant; cutting makes the master, pressing makes the copies", "Cutting levels too hot or sides too long, reducing groove space and lowering volume or causing skips"],
+    "scenario_contexts": ["Cutting a lacquer master for a vinyl release", "Adjusting a master's low end and sibilance so it can be cut safely", "Deciding cut level versus side length to fit a long album on one side"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

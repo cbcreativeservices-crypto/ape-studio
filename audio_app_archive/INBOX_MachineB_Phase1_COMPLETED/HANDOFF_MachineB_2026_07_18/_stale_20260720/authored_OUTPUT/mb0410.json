@@ -1,0 +1,78 @@
+{
+ "batch": 410,
+ "topic": "Cloud & Emerging Production",
+ "authored": [
+  {
+   "id": "d26e3419-5250-4c89-a4ef-9186d5f317b3",
+   "term": "Trusted media verification",
+   "fields": {
+    "definition": "The process of confirming that a media asset (audio, video or image) is authentic, unaltered and from a known origin by validating cryptographically signed provenance data bound to the asset. In current practice this uses content-provenance standards such as C2PA Content Credentials, where digital signatures and hashing make any tampering evident and record the asset's creation and edit history.",
+    "plain_english": "It is a way to check that a sound or video file is real and has not been secretly changed. It works like a tamper-proof seal that shows who made the file and what was done to it.",
+    "purpose_function": "It exists to protect the origin and integrity of media as it moves through cloud and networked production, so recipients can trust that a file has not been faked or altered and can inspect its history.",
+    "practical_application": "A technician meets it when ingesting or delivering assets that carry provenance data such as Content Credentials, validating a file's signature and history before it is used on air or in a release and flagging any media whose verification fails.",
+    "category": "Media provenance & security",
+    "related_terms": [
+     "Content provenance",
+     "Content Credentials (C2PA)",
+     "Digital signature",
+     "Cryptographic hash",
+     "Watermarking",
+     "Media asset management"
+    ],
+    "common_mistakes": [
+     "Assuming a file is genuine because it looks or sounds fine; without validating its provenance data, tampering can go unnoticed",
+     "Confusing verification of authenticity with DRM or copy protection; provenance data proves origin and integrity but does not restrict playback",
+     "Assuming that re-encoding or exporting a file preserves its Content Credentials; many edits strip the embedded provenance unless the tool is designed to carry it forward"
+    ],
+    "scenario_contexts": [
+     "Checking Content Credentials on user-submitted or field-captured media before broadcast to confirm it was not manipulated or AI-generated",
+     "Validating asset signatures at the point of ingest into a cloud production workflow",
+     "Tracing the recorded edit history of a delivered master to confirm which facility or tool made each change"
+    ]
+   },
+   "sources": [
+    "C2PA, Content Credentials and C2PA Explainer (spec.c2pa.org, v2.4)",
+    "C2PA Technical Specification (spec.c2pa.org)",
+    "SMPTE, Content Provenance and Authenticity in Media Study Group"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "639dd17e-e358-4ba8-a912-05d9d4ac97f0",
+   "term": "Virtual recording studio",
+   "fields": {
+    "definition": "A software- and network-based environment that reproduces the recording, monitoring, editing and mixing functions of a physical recording studio without dedicated studio hardware, running on a computer or cloud platform and often linking geographically separated performers and engineers over IP so they can record together in real time.",
+    "plain_english": "It is a recording studio that lives in software instead of a room full of gear. People in different places can record and work on the same song online, as if they shared one studio.",
+    "purpose_function": "It exists to make recording and collaboration possible without a fixed physical facility, lowering cost and letting musicians, engineers and clients work together from separate locations.",
+    "practical_application": "A technician builds one by running a DAW or cloud platform with remote-recording tools such as VST Connect or Source-Connect, managing the network link, monitoring latency, and capturing full-resolution tracks from remote performers.",
+    "category": "Remote & cloud production",
+    "related_terms": [
+     "Remote recording",
+     "Cloud collaboration",
+     "Digital audio workstation (DAW)",
+     "Source-Connect",
+     "Latency",
+     "Networked audio"
+    ],
+    "common_mistakes": [
+     "Treating the live internet audio stream as the master; the take should be captured locally at full resolution or transferred as a high-quality file, not kept from the compressed monitor feed",
+     "Underestimating network latency and jitter, which break timing and monitoring when the connection is not managed",
+     "Assuming a virtual studio removes the need for good acoustics and monitoring; recorded quality still depends on the room and gear at each location"
+    ],
+    "scenario_contexts": [
+     "Recording a voice-over actor in another city into a studio DAW over an IP link",
+     "A band tracking parts from separate home studios into a shared cloud project",
+     "Mixing a session entirely in software while clients review takes remotely"
+    ]
+   },
+   "sources": [
+    "Steinberg, VST Connect operation manual (remote recording)",
+    "Source Elements, Source-Connect technical documentation (support.source-elements.com)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

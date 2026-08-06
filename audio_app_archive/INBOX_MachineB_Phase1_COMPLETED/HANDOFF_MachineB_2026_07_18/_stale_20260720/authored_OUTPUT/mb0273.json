@@ -1,0 +1,40 @@
+{
+ "batch": 273,
+ "topic": "Editing & Comping",
+ "authored": [
+  {
+   "id": "4645c07b-66d3-4e07-84d6-14b7301e67c1",
+   "term": "Automatic Delay Compensation",
+   "fields": {
+    "definition": "A DAW function that automatically measures the processing latency introduced by plug-ins and internal signal routing and delays the earlier-arriving tracks and buses to match, keeping every track sample-accurately time-aligned at the output.",
+    "plain_english": "Some effects take a tiny moment to do their work, which can nudge a track slightly out of sync with the others. This feature measures that small delay and lines every track back up, so nothing ends up early or late. It is like making faster runners wait at the start so the whole group crosses the finish line together.",
+    "purpose_function": "It exists to keep all tracks and buses time- and phase-coherent when different plug-ins and routing paths add different amounts of latency, preventing the timing smear and comb-filtering that would otherwise appear when many processed signals are mixed together.",
+    "practical_application": "A technician leaves delay compensation on while mixing so heavily processed tracks, parallel buses, and reamped signals stay aligned, and may reduce or bypass it when tracking live because it can add noticeable monitoring latency.",
+    "category": "DAW Feature",
+    "related_terms": ["Latency", "Plug-in Delay", "Buffer Size", "Bus", "Phase Alignment", "Parallel Compression"],
+    "common_mistakes": ["Assuming it removes all latency while recording; it aligns playback but can increase monitoring latency, so it is often reduced or bypassed when tracking.", "Thinking it corrects timing errors in a performance; it only offsets plug-in and routing latency, not sloppy playing or misaligned edits.", "Forgetting that some external hardware inserts need a manually measured delay offset because the DAW cannot detect their latency automatically."],
+    "scenario_contexts": ["Mixing with a look-ahead limiter on the mix bus while keeping it aligned with the individual tracks.", "Running parallel drum compression without the processed copy drifting out of phase with the dry drums.", "Diagnosing a thin, phasey snare that turns out to be delay compensation being switched off."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (delay compensation)", "Sound on Sound technical articles on plug-in delay compensation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bf8984c9-a53d-436a-bfc9-773b00dd1527",
+   "term": "Link Timeline and Edit Selection",
+   "fields": {
+    "definition": "A Pro Tools toggle that ties the Timeline Selection (the playback and record range shown on the timeline rulers) to the Edit Selection (the material highlighted in the Edit window), so that changing one automatically updates the other.",
+    "plain_english": "In Pro Tools there are two kinds of highlight: the part that will play back, and the part you picked to edit. This switch joins the two, so when you select something to edit it also becomes what plays. Turning it off lets you keep playing one spot while you edit a different one.",
+    "purpose_function": "It exists to let an editor choose whether playback follows their edit selections; linked keeps normal editing simple, while unlinked lets you loop or audition one section while selecting or editing somewhere else.",
+    "practical_application": "Editors usually leave it linked so playback matches whatever they highlight, and unlink it when they want to loop a reference section while editing elsewhere or set punch points separate from the edited region.",
+    "category": "DAW Feature",
+    "related_terms": ["Timeline Selection", "Edit Selection", "Edit Window", "Loop Playback", "Punch Recording", "Link Track and Edit Selection"],
+    "common_mistakes": ["Confusing it with 'Link Track and Edit Selection', which links selected tracks between the Mix and Edit windows rather than the timeline and edit ranges.", "Leaving it unlinked by accident, then being confused when playback starts from a different place than the highlighted region.", "Assuming the two selections are always identical; by default they can be independent of each other."],
+    "scenario_contexts": ["Unlinking the selections to loop a chorus for reference while editing a verse elsewhere in the session.", "Keeping them linked so playback always starts from the region just selected during detailed editing.", "Setting timeline punch-in points that differ from the currently edited region."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Linking Timeline and Edit Selections)", "Sound on Sound Pro Tools editing technique articles"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

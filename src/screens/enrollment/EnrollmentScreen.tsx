@@ -15,7 +15,7 @@
  * drag uses an estimated row height (no gesture lib).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Animated, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
+import { Alert, Animated, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -173,6 +173,16 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
   const [filters, setFilters] = useState<Set<FilterKey>>(new Set());
   const dragAccum = useRef(0);
+  // Reorder step = the REAL measured height of each container (owner 2026-08-05
+  // "reorder not working"): the old fixed DRAG_ROW_H=84 mismatched the true card
+  // heights (collapsed cards are thin, expanded ones are much taller), so a
+  // one-card drag fired the wrong number of ±1 swaps. Each container reports its
+  // height via onLayout; we step by the lifted card's own height, falling back
+  // to DRAG_ROW_H until measured.
+  const rowHeights = useRef<Map<string, number>>(new Map());
+  const rowLayoutProps = (id: string) => ({
+    onLayout: (ev: LayoutChangeEvent) => rowHeights.current.set(id, ev.nativeEvent.layout.height),
+  });
   // Press-hold-to-lift reorder (owner 2026-07-31): hold a topic still for 2 s and
   // it POPS out (springs up + shadow) to become a draggable object; then drag
   // up/down to reorder and release to drop it. A 2 s timer (started on touch,
@@ -250,11 +260,12 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       },
       onPanResponderMove: (_e, g) => {
         if (liftedIdRef.current !== id || !move) return; // only while lifted
-        const step = Math.trunc((g.dy - dragAccum.current) / DRAG_ROW_H);
+        const rowH = rowHeights.current.get(id) || DRAG_ROW_H; // real measured height
+        const step = Math.trunc((g.dy - dragAccum.current) / rowH);
         if (step !== 0) {
           const dir: -1 | 1 = step > 0 ? 1 : -1;
           for (let k = 0; k < Math.abs(step); k++) move(dir);
-          dragAccum.current += step * DRAG_ROW_H;
+          dragAccum.current += step * rowH;
         }
       },
       onPanResponderRelease: (_e, g) => {
@@ -735,6 +746,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           key={b.key}
           {...containerPan(b.key, (dir) => moveBundle(b.key, dir)).panHandlers}
           {...(customOrder ? reorderTouchProps(b.key) : {})}
+          {...rowLayoutProps(b.key)}
           style={liftStyle(b.key)}
         >
         <Pressable style={[styles.bundleCard, kindCard, done && styles.bundleDone, styles.collapsedCard]} onPress={() => toggleCollapse(b.key)} accessibilityRole="button" accessibilityLabel={`Expand ${b.name}`}>
@@ -758,6 +770,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         style={[styles.bundleCard, kindCard, done && styles.bundleDone, liftStyle(b.key)]}
         {...containerPan(b.key, (dir) => moveBundle(b.key, dir)).panHandlers}
         {...(customOrder ? reorderTouchProps(b.key) : {})}
+        {...rowLayoutProps(b.key)}
       >
         <View style={styles.cardTop}>
           <Pressable style={styles.collapseBtn} onPress={() => toggleCollapse(b.key)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${b.name}`}>
@@ -973,27 +986,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             header, but sticky-header touch handling was intercepting taps on the
             tab buttons (user report 2026-07-22) — so it now scrolls normally. */}
         <View style={styles.topBlock}>
-        {/* Slim "Continue Learning" banner — notification height. */}
-        {resume ? (
-          <Pressable style={styles.continueBar} onPress={resumeLastOrDashboard} accessibilityRole="button" accessibilityLabel={`Continue ${nameFor(resume.gs)}`}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.continueEyebrow}>CONTINUE LEARNING · {resume.pct}%</Text>
-              <Text style={styles.continueName} numberOfLines={1}>
-                Resume {nameFor(resume.gs)}
-              </Text>
-            </View>
-            {/* Blue bottom-nav STUDY icon — in the shared studyNavBtn slot so it
-                aligns with the other rows' study icons (user request 2026-07-24). */}
-            <View style={styles.studyNavBtn}>
-              <NavIcon icon="Study" lit />
-            </View>
-          </Pressable>
-        ) : null}
-
         {/* "My Custom List" — the user's ★ starred terms as a study deck. The
             large deck icon + name IS the Custom List; the small deck icon toggles
             whether it appears on the Dashboard as a current topic; the blue Study
-            icon opens the Dashboard with it present. */}
+            icon opens the Dashboard with it present. Placed ABOVE Continue
+            Learning (owner 2026-08-05). */}
         {/* OFF state: gray border, dimmed background, gray toggle + study icons
             (study not pressable). The large deck icon, title, and SEE & EDIT stay
             NORMAL in both states (user request 2026-07-24). */}
@@ -1037,6 +1034,23 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             <NavIcon icon="Study" lit={customOnDash} />
           </Pressable>
         </View>
+
+        {/* Slim "Continue Learning" banner — notification height. */}
+        {resume ? (
+          <Pressable style={styles.continueBar} onPress={resumeLastOrDashboard} accessibilityRole="button" accessibilityLabel={`Continue ${nameFor(resume.gs)}`}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.continueEyebrow}>CONTINUE LEARNING · {resume.pct}%</Text>
+              <Text style={styles.continueName} numberOfLines={1}>
+                Resume {nameFor(resume.gs)}
+              </Text>
+            </View>
+            {/* Blue bottom-nav STUDY icon — in the shared studyNavBtn slot so it
+                aligns with the other rows' study icons (user request 2026-07-24). */}
+            <View style={styles.studyNavBtn}>
+              <NavIcon icon="Study" lit />
+            </View>
+          </Pressable>
+        ) : null}
 
         {/* The standalone "REQUIRED CORE COURSES" section was removed (user
             request 2026-07-22) — the cores now live in the My Enrollment list
@@ -1152,6 +1166,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                   key={e.gs}
                   {...containerPan(tid, moveThis).panHandlers}
                   {...(customOrder ? reorderTouchProps(tid) : {})}
+                  {...rowLayoutProps(tid)}
                   style={liftStyle(tid)}
                 >
                 <Pressable style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]} onPress={() => toggleCollapse(tid)} accessibilityRole="button" accessibilityLabel={`Expand ${nameFor(e.gs)}`}>
@@ -1194,6 +1209,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 key={e.gs}
                 {...containerPan(tid, moveThis).panHandlers}
                 {...(customOrder ? reorderTouchProps(tid) : {})}
+                {...rowLayoutProps(tid)}
                 style={liftStyle(tid)}
               >
               <View

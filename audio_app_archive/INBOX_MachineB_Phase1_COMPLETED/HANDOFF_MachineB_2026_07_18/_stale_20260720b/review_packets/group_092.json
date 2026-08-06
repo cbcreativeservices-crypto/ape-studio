@@ -1,0 +1,1003 @@
+{
+ "group": 92,
+ "terms": [
+  {
+   "id": "bda23d7d-456b-4b05-8d0a-2309d92ea5fc",
+   "term": "Renderer latency",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The processing delay introduced by a real-time object-audio renderer between its input, the bed and object feeds from the DAW, and its monitored or recorded output. Because the renderer and the audio driver buffer and process audio, this latency must be handled by delay compensation so monitoring and any recorded re-renders stay time-aligned with the session.",
+   "plain_english": "The small delay a renderer adds while it turns the mix into speaker or headphone sound. If you do not account for it, what you hear or record can drift out of time with the rest of the session.",
+   "purpose_function": "Knowing the renderer's latency lets the system apply delay compensation so what you hear and what you record line up with the DAW timeline.",
+   "practical_application": "A technician keeps delay compensation active and matches buffer settings so the renderer's return signal and re-renders sync with the picture and tracks.",
+   "category": "Signal timing",
+   "related_terms": [
+    "Renderer speaker mapping",
+    "Renderer calibration",
+    "Room-rendered monitoring",
+    "Multichannel monitor controller",
+    "Re-render",
+    "Buffer size"
+   ],
+   "common_mistakes": [
+    "Disabling automatic delay compensation, then wondering why the return is out of sync.",
+    "Assuming an external renderer adds no delay and printing re-renders that drift against picture.",
+    "Setting a very large audio buffer for stability while ignoring the extra latency it adds."
+   ],
+   "scenario_contexts": [
+    "Aligning a recorded re-render from the renderer back to the timeline.",
+    "Troubleshooting sync drift between picture and an Atmos monitor feed.",
+    "Choosing a buffer size that balances stability against added latency."
+   ]
+  },
+  {
+   "id": "e1cb17b5-6971-406b-8cf5-e5e224c87015",
+   "term": "Renderer speaker mapping",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The assignment of a renderer's internal output channels, the speakers defined in its room setup such as L, R, C, LFE, side and rear surrounds and the top channels, to the physical outputs of the audio interface that feed each monitor. It is set in the renderer's room or output configuration and determines which speaker each rendered channel drives.",
+   "plain_english": "Telling the renderer which real speaker jack each of its channels should go to. It is like labeling the wires so a left-top sound actually comes out of the left-top speaker.",
+   "purpose_function": "It routes each rendered channel to the correct physical speaker so the immersive layout plays back as intended, with no swapped or misrouted channels.",
+   "practical_application": "A technician sets the speaker layout, maps each channel to an interface output, and plays test noise per channel to confirm the right speaker responds.",
+   "category": "Signal routing",
+   "related_terms": [
+    "Renderer calibration",
+    "Room-rendered monitoring",
+    "Multichannel monitor controller",
+    "Overhead speaker",
+    "Rear surround speaker",
+    "Side surround speaker"
+   ],
+   "common_mistakes": [
+    "Mapping channels to the wrong outputs, so sounds come from the wrong speakers.",
+    "Confusing speaker mapping with calibration; mapping is routing, calibration is levels and delays.",
+    "Forgetting to re-check the map after changing the interface or its output order."
+   ],
+   "scenario_contexts": [
+    "Assigning the renderer's 7.1.4 channels to interface outputs one through twelve.",
+    "Running per-channel test noise to verify each speaker is mapped correctly.",
+    "Re-mapping outputs after adding a second interface for more speakers."
+   ]
+  },
+  {
+   "id": "a880e67e-78d6-4c0d-9e61-4f5fa1b40212",
+   "term": "Room-rendered monitoring",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "Monitoring in which the object-based mix is rendered in real time to the actual loudspeaker layout installed in the room, so the engineer hears it on the physical speakers rather than through binaural headphone rendering or a fixed downmix. What is heard depends on the room's speaker configuration and its calibration.",
+   "plain_english": "Listening to an immersive mix on the real speakers in your room, with the renderer feeding sound to each one live. It is different from checking on headphones, where the space is faked for your ears.",
+   "purpose_function": "It lets the engineer judge the mix on the true speaker layout it is made for, revealing imaging, level and translation issues that headphone monitoring can hide.",
+   "practical_application": "A technician monitors on the room speakers through the renderer during a mix, switching to binaural only to spot-check the headphone experience.",
+   "category": "Monitoring",
+   "related_terms": [
+    "Renderer calibration",
+    "Renderer speaker mapping",
+    "Multichannel monitor controller",
+    "Renderer latency",
+    "Downmix",
+    "Overhead speaker"
+   ],
+   "common_mistakes": [
+    "Judging a mix mainly on binaural headphones, then finding it does not translate to the speaker layout.",
+    "Monitoring on the room speakers before calibration, so level and timing errors are mistaken for mix problems.",
+    "Assuming room-rendered monitoring sounds the same across studios; each room's layout and calibration differ."
+   ],
+   "scenario_contexts": [
+    "Mixing an Atmos session on a 7.1.4 room through the renderer.",
+    "Comparing the room-speaker render against a binaural check before delivery.",
+    "Diagnosing whether an imaging problem is in the mix or the room by listening on the calibrated speakers."
+   ]
+  },
+  {
+   "id": "0b3cd382-35a5-4aaa-9c45-9c926bcaf711",
+   "term": "Side surround speaker",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A loudspeaker positioned to the side of the listening position, roughly abreast of the listener, to reproduce the side surround channels of a 7.1-based or immersive layout. In ITU-R BS.2051 these are the left and right side surround (Lss, Rss) at roughly plus or minus 85 to 110 degrees azimuth and ear level (0 degrees elevation), distinct from the rear surround speakers.",
+   "plain_english": "A speaker placed beside you, level with your ears, that plays sounds coming from your left or right side. It handles the sound that should feel right next to you, between the front and the back.",
+   "purpose_function": "It provides discrete side imaging so sounds can be placed and panned along the listener's sides, filling the gap between the front speakers and the rear surrounds.",
+   "practical_application": "A technician mounts the side surrounds at ear height beside the seat, wires them to the side channels, and calibrates their level and delay with the array.",
+   "category": "Monitor loudspeaker",
+   "related_terms": [
+    "Rear surround speaker",
+    "Overhead speaker",
+    "Low-frequency effects speaker",
+    "Renderer speaker mapping",
+    "Renderer calibration",
+    "Multichannel monitor controller"
+   ],
+   "common_mistakes": [
+    "Confusing side surrounds with rear surrounds and wiring them to the wrong channels.",
+    "Placing side surrounds too far forward or behind the listener instead of to the side.",
+    "Assuming a 5.1 setup has separate side and rear surrounds; 5.1 has only one surround pair."
+   ],
+   "scenario_contexts": [
+    "Placing the side surrounds at the listener's sides when expanding a room to 7.1.",
+    "Calibrating the side pair so a left-to-right pan stays smooth.",
+    "Verifying the renderer maps the side surround channels to the correct speakers."
+   ]
+  },
+  {
+   "id": "105a6d0d-ec53-4ddd-9495-ac6c4e7c1fd4",
+   "term": "Speaker identification signal",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A test signal, typically a tone or band-limited pink noise, routed to one loudspeaker output at a time during system setup so the installer can confirm which physical speaker corresponds to which channel and that its wiring, polarity, and routing are correct.",
+   "plain_english": "A test sound sent to one speaker at a time. It lets you hear which speaker is which and check that each one is wired to the right channel.",
+   "purpose_function": "It verifies channel-to-speaker mapping and correct wiring before calibration, preventing swapped or miswired speakers in a multichannel immersive layout.",
+   "practical_application": "During commissioning a technician sends the signal to each output in turn, walking the room to confirm the correct speaker plays and is in phase before running level and distance calibration.",
+   "category": "Calibration & Setup",
+   "related_terms": [
+    "Speaker remapping",
+    "Speaker-trim calibration",
+    "Speaker-distance compensation",
+    "Speaker-rendered monitoring",
+    "Pink noise"
+   ],
+   "common_mistakes": [
+    "Assuming the physical speaker order matches the amplifier or interface output order without testing each one.",
+    "Ignoring polarity, so a reversed speaker passes the identification check by sound alone.",
+    "UNSAFE: Setting a very high signal level to hear a distant speaker, risking hearing damage and driver damage when the tone plays close by."
+   ],
+   "scenario_contexts": [
+    "Commissioning a 7.1.4 monitor room and confirming each ceiling speaker plays on its assigned channel.",
+    "Troubleshooting a swapped surround pair reported by a mixer.",
+    "Verifying wiring after re-patching an immersive amplifier rack."
+   ]
+  },
+  {
+   "id": "0c2d7803-bdf8-4477-9068-95f326ebc129",
+   "term": "Speaker remapping",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The reassignment of rendered output channels to different physical loudspeaker outputs, or the re-rendering of an immersive mix to a different loudspeaker layout, so program material plays on the intended speakers of the target system.",
+   "plain_english": "Sending each audio channel to a different speaker output, or reshaping the mix for a different set of speakers. It makes sure sounds come out of the right speakers.",
+   "purpose_function": "It matches the renderer's output to the actual hardware wiring or to an alternate playback layout, allowing one mix to be monitored on different speaker configurations.",
+   "practical_application": "A technician remaps outputs when the interface patch differs from the default order, or re-renders a 7.1.4 master to a 5.1.4 room for monitoring.",
+   "category": "Signal Routing",
+   "related_terms": [
+    "Speaker identification signal",
+    "Speaker-rendered monitoring",
+    "Speaker-relative placement",
+    "Top speaker",
+    "Wide speaker"
+   ],
+   "common_mistakes": [
+    "Confusing remapping outputs with changing the creative mix; remapping only reroutes or re-renders playback.",
+    "Forgetting to update the map after changing the audio interface's output patch, sending channels to the wrong speakers.",
+    "Assuming a re-render to a smaller layout preserves every overhead cue exactly."
+   ],
+   "scenario_contexts": [
+    "Matching renderer outputs to a non-standard interface output order.",
+    "Re-rendering a 9.1.6 master down to a 7.1.4 monitor room.",
+    "Adapting a mix for a room whose speakers are wired in a different sequence."
+   ]
+  },
+  {
+   "id": "912134de-0928-4c2f-af6c-52ee6dc87821",
+   "term": "Speaker-distance compensation",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The application of a per-loudspeaker time delay based on each speaker's distance to the reference listening position, so signals from all speakers arrive at the listener simultaneously despite unequal path lengths.",
+   "plain_english": "Adding a tiny delay to closer speakers so sound from every speaker reaches your ears at the same time. Think of a staggered start in a race so all runners finish together.",
+   "purpose_function": "It time-aligns the array at the listening position, preserving accurate imaging, phantom images, and object localization that unequal distances would otherwise smear.",
+   "practical_application": "A technician measures each speaker's distance to the mix position and enters it, or runs auto-calibration, so the renderer or processor delays nearer speakers accordingly.",
+   "category": "Calibration & Setup",
+   "related_terms": [
+    "Speaker-trim calibration",
+    "Speaker identification signal",
+    "Speaker-rendered monitoring",
+    "Top speaker",
+    "Wide speaker"
+   ],
+   "common_mistakes": [
+    "Measuring to the speaker cabinet face but forgetting the extra path for in-ceiling overheads.",
+    "Setting one global delay instead of a correct per-speaker distance.",
+    "Confusing distance/time compensation with level trim, which correct different problems."
+   ],
+   "scenario_contexts": [
+    "Aligning near-field fronts with more distant surround and ceiling speakers.",
+    "Compensating for overhead speakers mounted well above the listener.",
+    "Restoring imaging after moving the mix position in a room."
+   ]
+  },
+  {
+   "id": "89d1c1ec-b577-423f-86ad-d51ea0942645",
+   "term": "Speaker-relative placement",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": "intermediate",
+   "definition": "A positioning approach in which an audio signal's location is defined with reference to actual loudspeaker positions, each signal tied to a specific speaker or interpolated between named speakers, rather than to absolute room coordinates or a listener-centred angular grid.",
+   "plain_english": "Placing sound by pointing it at the actual speakers, instead of at a spot in the room. Each channel is tied to a real speaker.",
+   "purpose_function": "It ties reproduction directly to the physical layout, which keeps channel-based material predictable but locks the result to that exact speaker arrangement.",
+   "practical_application": "A technician relies on speaker-relative routing when feeding fixed bed channels or test signals straight to named outputs, as opposed to object audio placed in room coordinates.",
+   "category": "Spatial Rendering",
+   "related_terms": [
+    "Speaker remapping",
+    "Speaker-rendered monitoring",
+    "Speaker identification signal",
+    "Top speaker",
+    "Wide speaker"
+   ],
+   "common_mistakes": [
+    "Assuming speaker-relative channels translate perfectly to a layout with different speaker angles.",
+    "Confusing speaker-relative (channel-anchored) placement with room-based object placement.",
+    "Expecting a phantom image between two speakers to hold for listeners well off the sweet spot."
+   ],
+   "scenario_contexts": [
+    "Routing a 7.1.4 bed where each channel maps to one speaker.",
+    "Comparing channel-based beds against object-based, room-positioned sources.",
+    "Explaining why a hard-panned channel moves with the speaker layout, not the room."
+   ]
+  },
+  {
+   "id": "d68e0b74-accf-4b21-af8a-ae7c486214ad",
+   "term": "Speaker-rendered monitoring",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "Monitoring an immersive mix by rendering its bed channels and audio objects to a physical multichannel loudspeaker array in the room, as opposed to binaural rendering over headphones.",
+   "plain_english": "Listening to an immersive mix through real speakers all around the room, not through headphones. The renderer decides how much of each sound goes to each speaker.",
+   "purpose_function": "It reproduces the mix over the actual speaker layout so the engineer hears true spatial imaging, level, and timing at the listening position.",
+   "practical_application": "An engineer uses speaker-rendered monitoring on a calibrated 7.1.4 system to make spatial and tonal decisions, switching to binaural only to check the headphone experience.",
+   "category": "Monitoring",
+   "related_terms": [
+    "Speaker-trim calibration",
+    "Speaker-distance compensation",
+    "Speaker remapping",
+    "Speaker-relative placement",
+    "Top speaker"
+   ],
+   "common_mistakes": [
+    "Trusting spatial decisions on an uncalibrated array where levels and distances are wrong.",
+    "Assuming speaker-rendered and binaural monitoring sound the same.",
+    "Judging overhead content on a system missing or misplaced top speakers."
+   ],
+   "scenario_contexts": [
+    "Mixing Dolby Atmos on a calibrated in-room speaker array.",
+    "Checking object movement across the surround and ceiling speakers.",
+    "Comparing the loudspeaker render with a binaural headphone render."
+   ]
+  },
+  {
+   "id": "d0e33f33-174a-419d-89e2-e0526089b3f5",
+   "term": "Speaker-trim calibration",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The process of adjusting each loudspeaker's playback gain (trim) so every speaker produces a matched sound-pressure level at the reference listening position, referenced to a defined target; for example, driving each channel with -20 dBFS RMS pink noise to reach roughly 79-82 dB SPL(C) in a Dolby Atmos near-field room.",
+   "plain_english": "Setting each speaker volume so they all sound equally loud at the mixing spot. You play a steady test noise through one speaker at a time and adjust it to hit the target level.",
+   "purpose_function": "It equalizes per-speaker level so the balance heard at the mix position is accurate and repeatable, which is essential for consistent immersive mixes across rooms.",
+   "practical_application": "Using an SPL meter at the listening position, a technician sends reference pink noise to each speaker and trims its gain until all channels read the same target level.",
+   "category": "Calibration & Setup",
+   "related_terms": [
+    "Speaker-distance compensation",
+    "Speaker identification signal",
+    "Speaker-rendered monitoring",
+    "Pink noise",
+    "Top speaker"
+   ],
+   "common_mistakes": [
+    "Level-matching by ear instead of a calibrated SPL meter and defined pink-noise reference.",
+    "Using a different pink-noise level or meter weighting than the target specifies, so trims come out wrong.",
+    "UNSAFE: Calibrating to full theatrical reference in a small room, producing sustained levels that can exceed safe hearing-exposure limits (OSHA 29 CFR 1910.95)."
+   ],
+   "scenario_contexts": [
+    "Calibrating a new immersive monitor room to a house reference level.",
+    "Re-trimming a speaker after replacing its amplifier or driver.",
+    "Matching two rooms so mixes translate between them."
+   ]
+  },
+  {
+   "id": "62067e15-1139-4fe1-90e1-e978b448bd0d",
+   "term": "Top speaker",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A loudspeaker in the upper (height) layer of an immersive layout, mounted above the listening plane, typically overhead at an elevation of about +30 to +45 degrees, used to reproduce height channels and elevated audio objects.",
+   "plain_english": "A speaker mounted above you, usually on or near the ceiling. It plays sounds that should seem to come from overhead, like rain or a passing plane.",
+   "purpose_function": "It adds the vertical dimension that distinguishes immersive audio from surround, letting sounds be placed and moved overhead.",
+   "practical_application": "A technician installs top speakers, such as top front and top rear pairs in 7.1.4, at the specified elevation and includes them in distance and trim calibration.",
+   "category": "Speaker Layout",
+   "related_terms": [
+    "Wide speaker",
+    "Speaker-distance compensation",
+    "Speaker-trim calibration",
+    "Speaker-rendered monitoring",
+    "Speaker-relative placement"
+   ],
+   "common_mistakes": [
+    "Mounting top speakers too shallow so overhead sounds seem to come from the front wall.",
+    "Forgetting the extra ceiling-to-listener path when setting overhead distance.",
+    "Spacing or aiming overhead pairs inconsistently between left and right."
+   ],
+   "scenario_contexts": [
+    "Installing the four overhead speakers of a 7.1.4 monitor room.",
+    "Setting overhead elevation between 30 and 55 degrees per the layout spec.",
+    "Checking that an object panned upward images correctly overhead."
+   ]
+  },
+  {
+   "id": "785b5663-b20e-4c3f-a048-ca1eb16f3fb5",
+   "term": "Wide speaker",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A front loudspeaker positioned at a wider azimuth than the main front left/right speakers, between the fronts and the side/surround speakers, used in extended immersive layouts (such as 9.1.x) to fill the frontal gap and broaden the front sound stage.",
+   "plain_english": "An extra front speaker placed out to the side of the main left and right speakers. It widens the sound across the front so there is no gap between the front and side speakers.",
+   "purpose_function": "It smooths panning and imaging between the front and surround speakers, widening the frontal image in layouts that go beyond the standard front trio.",
+   "practical_application": "A technician adds left/right wide speakers between the fronts and sides in a 9.1.x room, then includes them in identification, distance, and trim calibration.",
+   "category": "Speaker Layout",
+   "related_terms": [
+    "Top speaker",
+    "Speaker-relative placement",
+    "Speaker-distance compensation",
+    "Speaker-trim calibration",
+    "Speaker-rendered monitoring"
+   ],
+   "common_mistakes": [
+    "Placing wide speakers too close to the front left/right, so they add little width.",
+    "Assuming every immersive layout includes wide speakers; many, like 7.1.4, do not.",
+    "Confusing front wide speakers with side surround speakers."
+   ],
+   "scenario_contexts": [
+    "Expanding a 7.1.4 room to a 9.1.4 layout with front wides.",
+    "Filling the imaging gap between front and side speakers.",
+    "Calibrating the added wide pair into an existing immersive system."
+   ]
+  },
+  {
+   "id": "63e6e0d0-6516-43f4-8ecc-67df3cc0f37d",
+   "term": "Dialogue-editing suite",
+   "topic": "Dialogue Editing",
+   "difficulty": null,
+   "definition": "The dedicated workroom and workstation environment equipped for dialogue editing, typically comprising a DAW such as Pro Tools, calibrated near-field monitoring, and synchronized picture playback, in which the dialogue editor conforms, cleans, and organizes production sound and ADR into edited tracks for the re-recording mix.",
+   "plain_english": "It is the workroom where an editor cleans up spoken lines in a film and lines them up to the picture.",
+   "purpose_function": "It gives the dialogue editor a controlled listening space and the editing tools to conform, clean, and split dialogue and ADR, so the re-recording mixer receives organized, intelligible, ready-to-mix tracks.",
+   "practical_application": "A dialogue editor works in the suite to sync ADR to picture, remove clicks and noises, smooth cuts with matching room tone, and split lines across tracks before handing the session to the dub stage.",
+   "category": "Dialogue Editing",
+   "related_terms": [
+    "Dialogue mixing",
+    "ADR",
+    "Room tone",
+    "Re-recording mixing",
+    "Conform",
+    "Edit decision list"
+   ],
+   "common_mistakes": [
+    "Assuming the final balance against music and effects is done in the dialogue-editing suite; that blending happens later on the dub stage during the re-recording mix.",
+    "Confusing the dialogue-editing suite with the picture-editorial cutting room; they are separate stages with different roles and deliverables.",
+    "Editing dialogue in an untreated, uncalibrated room, so noise and coloration in the space hide problems that only surface later on the dub stage.",
+    "UNSAFE: monitoring at excessive SPL through long editing sessions can cause noise-induced hearing loss; keep exposure within OSHA permissible limits and take breaks."
+   ],
+   "scenario_contexts": [
+    "A dialogue editor conforms production sound to the locked picture and prepares split, labeled tracks before the re-recording mix.",
+    "ADR takes are imported into the suite and edited so the recorded lines match the actor's on-screen lip movements and original performance.",
+    "The editor uses room tone captured on set to fill gaps between lines and smooth over audible cuts between takes.",
+    "Clicks, mouth noises, and camera or set noise are removed from the production dialogue before the tracks are handed off to the dub stage."
+   ]
+  },
+  {
+   "id": "2b25a96b-07c5-45d3-b715-78c5e3e5ee34",
+   "term": "ADR booth",
+   "topic": "ADR & Looping",
+   "difficulty": null,
+   "definition": "A small, sound-isolated recording enclosure used to re-record dialogue in sync to picture during ADR (automated dialogue replacement, or looping); it is acoustically treated for a dry, low-reverberation signal and fitted with a picture monitor, microphone, and headphone cue/talkback feed so an actor can match new lines to the original performance. It is the compact counterpart to a full ADR stage, common in television, animation, games, and voice-over facilities.",
+   "plain_english": "A small, soundproof room where an actor re-records their movie lines while watching the scene on a screen. It is built to sound very dead, so the new voice is clean and can be blended into the film later.",
+   "purpose_function": "It provides an isolated, acoustically neutral space so replacement lines are captured cleanly and can later be matched or processed to fit the on-screen environment, without room reflections coloring the recording.",
+   "practical_application": "A technician sets up the booth mic, feeds the actor the original guide track and picture with sync beeps or streamers over headphones, and records take after take until the timing and lip-sync match the picture.",
+   "category": "Post-production facility",
+   "related_terms": [
+    "ADR stage",
+    "Looping",
+    "Lip sync",
+    "Guide track",
+    "Streamer",
+    "Foley stage"
+   ],
+   "common_mistakes": [
+    "Assuming any small vocal booth is ready for ADR; the space still needs a synchronized picture feed and a cueing system, not just sound isolation.",
+    "Recording ADR in a booth with audible reverb, which colors the take and makes it impossible to match to different scene environments later.",
+    "Expecting a booth to substitute for a full ADR stage when the scene needs a large, boomed, theatrical-scale performance.",
+    "UNSAFE: driving actor headphone cue levels too high across a long looping session, risking hearing damage."
+   ],
+   "scenario_contexts": [
+    "Re-recording an actor's lines for an animated series in a compact isolation booth.",
+    "Looping a single line ruined by set noise, matched to the lip movement on the monitor.",
+    "Recording video-game character dialogue to picture or timecode in a voice booth."
+   ]
+  },
+  {
+   "id": "f6ac616c-ab13-4aad-bdb4-72da57f73146",
+   "term": "ADR stage",
+   "topic": "ADR & Looping",
+   "difficulty": null,
+   "definition": "A large, acoustically controlled recording studio dedicated to automated dialogue replacement (ADR, or looping), equipped with a big projection screen or monitor, a recording microphone (often on a boom), an adjacent control room, and sync/cueing systems such as streamers, wipes, and beeps so actors can re-perform and lip-sync dialogue to picture. Its acoustics are kept neutral and low in reverberation so recorded lines can be matched or processed to any on-screen environment.",
+   "plain_english": "A big, quiet studio with a movie screen where actors re-record their lines to match the picture. The room is made to sound very dead, so the new voice can be shaped to fit any scene.",
+   "purpose_function": "It exists to give actors a theatrical-scale space with picture playback for re-performing dialogue in sync, while its neutral, dry acoustics keep the recordings clean enough to blend seamlessly with production dialogue in the final mix.",
+   "practical_application": "The recording mixer plays the scene on the large screen with cue beeps and streamers, records the actor at the boom mic through multiple takes, and the ADR editor later aligns the chosen take precisely to picture.",
+   "category": "Post-production facility",
+   "related_terms": [
+    "ADR booth",
+    "Looping",
+    "Lip sync",
+    "Streamer",
+    "Guide track",
+    "Foley stage"
+   ],
+   "common_mistakes": [
+    "Confusing an ADR stage with a dubbing/mix stage; the ADR stage is where replacement lines are recorded, while balancing and mixing happen on the dubbing stage.",
+    "Assuming a live, reverberant room is acceptable; ADR stages are kept acoustically dead so lines can be matched to any scene's environment.",
+    "Forgetting that the actor needs accurate sync cues (beeps and streamers) to hit lip-sync, not just picture playback.",
+    "UNSAFE: setting actor cue/monitor or headphone levels too high over a long session, risking hearing damage."
+   ],
+   "scenario_contexts": [
+    "Re-recording dialogue for a feature film scene whose location sound was unusable.",
+    "Bringing an actor in to change or clean up a line for a broadcast or airline edit, performed to the big screen.",
+    "Recording loop-group (walla) crowd dialogue to picture on the stage."
+   ]
+  },
+  {
+   "id": "8a135eb7-c0f7-4ad2-b63a-55ed2a087d7b",
+   "term": "Dubbing stage",
+   "topic": "Dubbing & Localization",
+   "difficulty": null,
+   "definition": "A large, acoustically controlled mixing theatre in which the final re-recording (the 'dub') of a film or television programme is performed, combining the dialogue, music and sound-effects premixes into the finished soundtrack. It is aligned to a cinema monitoring reference (the wide-range 'X-curve' B-chain response of SMPTE ST 202 / ISO 2969) so the mix translates to release venues, and it is used to build both the original mix and the music-and-effects (M&E) stem that localized-language versions are dubbed against.",
+   "plain_english": "A big, sound-treated theatre where a movie final soundtrack is mixed. Here the speech, music, and effects are blended into one track. The speakers are set to a cinema standard so the mix sounds right in real theatres.",
+   "purpose_function": "It provides a calibrated, cinema-like listening environment where re-recording mixers balance every sound element into a final mix that plays back consistently across theatres and home systems, and it produces the M&E stem needed for foreign-language dubbing.",
+   "practical_application": "A re-recording mixer works at a large console in the dubbing stage, mixing dialogue, music and effects to picture while checking the mix against the room's reference alignment; a localization team later reuses the stage's M&E stem when recording and mixing dubbed dialogue.",
+   "category": "Post-production facility",
+   "related_terms": [
+    "Re-recording mixer",
+    "M&E stem",
+    "X-curve",
+    "ADR",
+    "Localization studio",
+    "Final mix"
+   ],
+   "common_mistakes": [
+    "Confusing the dubbing stage (the mixing theatre) with a voice booth where dialogue is recorded; the stage is for mixing, not tracking.",
+    "Assuming 'dubbing' here means language replacement; on a dubbing stage it refers to the final re-recording mix.",
+    "Treating any large room as a dubbing stage even though it is not aligned to the cinema monitoring reference (X-curve), so the mix will not translate to release venues.",
+    "UNSAFE: Monitoring at excessive SPL for long mixing sessions without level limits or hearing breaks, risking noise-induced hearing loss."
+   ],
+   "scenario_contexts": [
+    "Performing the final re-recording mix of a feature film, blending the dialogue, music and effects premixes.",
+    "Creating and checking the M&E stem that overseas dubbing houses will mix localized dialogue against.",
+    "Aligning the room's B-chain to the X-curve before a mixing session.",
+    "Reviewing a completed mix in the calibrated theatre to confirm it translates to release cinemas."
+   ]
+  },
+  {
+   "id": "048f7884-2391-4c15-8d22-309e478c0e1b",
+   "term": "Localization booth",
+   "topic": "Dubbing & Localization",
+   "difficulty": null,
+   "definition": "A sound-isolated recording booth, within a dubbing or localization facility, in which voice talent records target-language dialogue to picture so it can replace the original-language performance. It provides acoustic isolation and a synchronized picture/audio reference feed so the actor can watch the scene and match timing and lip-sync while a director and engineer monitor from the control room.",
+   "plain_english": "A small, soundproof room where voice actors record lines in another language while watching the film. It keeps outside noise out so their voice can cleanly replace the original speech.",
+   "purpose_function": "It exists to capture clean, isolated dialogue in the target language, free of room noise and spill, that will be edited and mixed in place of the original dialogue during localization.",
+   "practical_application": "An engineer sets up a large-diaphragm mic, headphone monitoring and a video feed in the booth, then records the voice actor line by line to picture, watching levels and lip-sync while keeping the booth quiet between takes.",
+   "category": "Post-production facility",
+   "related_terms": [
+    "Localization studio",
+    "Dubbing stage",
+    "ADR",
+    "Lip-sync",
+    "M&E stem",
+    "Voice actor"
+   ],
+   "common_mistakes": [
+    "Treating the localization booth like a mixing room; it is for recording clean dialogue, not for the final mix.",
+    "Ignoring lip-sync and timing against the picture, so recorded lines do not fit the on-screen mouth movements.",
+    "Allowing headphone bleed or booth noise into the take, contaminating dialogue that must sit cleanly over the M&E stem."
+   ],
+   "scenario_contexts": [
+    "Recording an actor's target-language lines to picture for a dubbed film.",
+    "Re-recording an actor's own dialogue (ADR) to replace noisy or unusable production sound.",
+    "Capturing isolated voice-over narration for a localized version of a documentary."
+   ]
+  },
+  {
+   "id": "d6f9eadc-987d-4207-8308-882eb5a4bd09",
+   "term": "Localization studio",
+   "topic": "Dubbing & Localization",
+   "difficulty": null,
+   "definition": "A post-production facility that adapts audiovisual content for other languages and markets, carrying out dubbing, voice-over and often subtitling work; it typically houses recording booths for target-language dialogue and mixing rooms where that dialogue is combined with the programme's supplied music-and-effects (M&E) stem to produce the localized soundtrack.",
+   "plain_english": "A studio that adapts films and shows for other countries. It records new speech in different languages. Then it mixes that speech with the original music and sound effects to make a local version.",
+   "purpose_function": "It exists to turn a finished programme into versions for other languages and regions, providing the rooms, tools and staff to record localized dialogue and remix it with the supplied M&E stem so the new soundtrack matches the original.",
+   "practical_application": "A technician at a localization studio ingests the M&E stem and reference mix, records target-language dialogue in the booth, then edits and mixes it to picture to deliver a broadcast- or cinema-ready localized soundtrack.",
+   "category": "Post-production facility",
+   "related_terms": [
+    "Localization booth",
+    "Dubbing stage",
+    "M&E stem",
+    "ADR",
+    "Subtitling",
+    "Voice-over"
+   ],
+   "common_mistakes": [
+    "Confusing a localization studio with the original dubbing stage; the localization studio remixes against the delivered M&E stem rather than the original premixes.",
+    "Assuming localization is only translation, when it also requires recording, editing and mixing dialogue to picture.",
+    "Delivering a localized mix that ignores the loudness and format specs (such as the target market's broadcast loudness targets) required for delivery."
+   ],
+   "scenario_contexts": [
+    "Producing foreign-language dubbed versions of a streaming series from the supplied M&E stem.",
+    "Recording and mixing localized voice-over for a documentary or corporate release.",
+    "Preparing multiple language versions of a film for international theatrical or broadcast distribution."
+   ]
+  },
+  {
+   "id": "6b8d5c30-caa4-4997-bc00-d951af0faa98",
+   "term": "Foley pit",
+   "topic": "Foley Performance & Recording",
+   "difficulty": null,
+   "definition": "A recessed section built into a Foley stage floor and filled with a specific walking-surface material—such as gravel, sand, dirt, concrete, wood, tile, or water—so a Foley artist can perform footsteps and other movement sounds directly on that surface. A stage normally has several pits holding different materials side by side.",
+   "plain_english": "A sunken box built into the floor of a Foley studio and filled with a surface like gravel, sand, or wood. A Foley artist steps into it to make footstep sounds that match the picture on screen.",
+   "purpose_function": "Foley pits let an artist reproduce footsteps and movement on the many surfaces seen on screen without leaving the stage, supplying the mixer with authentic, picture-synced surface sounds that replace or reinforce the production recording.",
+   "practical_application": "A Foley artist selects the pit whose material best matches the on-screen surface—gravel for an outdoor path, wood for a porch—and performs the footsteps in sync while watching the picture and monitoring the recorded take.",
+   "category": "Foley stage",
+   "related_terms": [
+    "Foley surface",
+    "Foley prop area",
+    "Foley stage",
+    "Foley artist",
+    "Footsteps (Foley)",
+    "Spotting"
+   ],
+   "common_mistakes": [
+    "Treating the pit's material as fixed rather than choosing or dressing it to match the exact on-screen surface.",
+    "Ignoring how loose material like gravel or sand migrates during a session, changing the sound and requiring reset between takes.",
+    "Miking the pit at a fixed spot instead of adjusting distance and angle to capture the character of that particular surface."
+   ],
+   "scenario_contexts": [
+    "Performing a character's walk along a gravel road using the stage's gravel pit.",
+    "Switching from the wood pit to the concrete pit as a scene moves from a porch to a sidewalk.",
+    "Using the water pit to create splashing and wet footstep sounds for a rain sequence."
+   ]
+  },
+  {
+   "id": "285341f7-9f62-4967-9ad9-02599858584a",
+   "term": "Foley prop area",
+   "topic": "Foley Performance & Recording",
+   "difficulty": null,
+   "definition": "The dedicated storage and staging space on or beside a Foley stage where the props used to create sound effects—shoes, cloth, dishes, doors, hardware, keys, and countless found objects—are organized and kept within reach of the performer. It keeps the working collection sorted so props can be selected quickly during a session.",
+   "plain_english": "The spot on a Foley stage where all the props are kept, like shoes, dishes, and doors. The artist grabs objects from here to make the sounds a scene needs.",
+   "purpose_function": "It organizes the large, varied collection of sound-making objects a Foley artist needs so the right prop can be found and performed quickly, keeping the session efficient and matched to the picture.",
+   "practical_application": "A Foley artist and editor stage the props a cue will need from the prop area before rolling, then return and re-sort them afterward so the collection stays usable for the next session.",
+   "category": "Foley stage",
+   "related_terms": [
+    "Foley pit",
+    "Foley surface",
+    "Foley stage",
+    "Foley artist",
+    "Props (Foley)",
+    "Spotting"
+   ],
+   "common_mistakes": [
+    "Leaving props scattered instead of returning them, so time is lost hunting for objects mid-session.",
+    "Assuming a real-world object always sounds correct on screen rather than testing several props to find the convincing one.",
+    "UNSAFE: storing sharp tools, broken glass, or heavy metal props loosely in the prop area, creating cut and crush hazards for performers reaching for objects."
+   ],
+   "scenario_contexts": [
+    "Pulling several pairs of shoes from the prop area to match different characters' footsteps.",
+    "Selecting cloth and leather from the prop area to perform clothing movement (cloth pass) for a scene.",
+    "Gathering dishes, cutlery, and glassware from the prop area to cover a kitchen sequence."
+   ]
+  },
+  {
+   "id": "c0a1024b-2cbd-41d2-9f02-96d5b838b61e",
+   "term": "Foley surface",
+   "topic": "Foley Performance & Recording",
+   "difficulty": null,
+   "definition": "The specific material an artist walks or moves on to generate a Foley sound—for example wood, tile, marble, concrete, gravel, sand, grass, carpet, or metal—chosen to match the surface depicted on screen. Foley surfaces are held in the stage's pits or laid out as loose panels and materials for the performer.",
+   "plain_english": "The material a Foley artist walks or moves on to make a sound, such as tile, wood, or grass. It is picked to match the floor you see on screen so the footsteps sound right.",
+   "purpose_function": "The surface determines the timbre and character of footstep and movement sounds, so matching it to the on-screen material is what makes the Foley read as believable and locked to the picture.",
+   "practical_application": "A Foley artist auditions and swaps surfaces—laying a tile panel over a pit or moving to the gravel pit—until the recorded footsteps match the on-screen floor in tone, weight, and rhythm.",
+   "category": "Foley stage",
+   "related_terms": [
+    "Foley pit",
+    "Foley prop area",
+    "Foley stage",
+    "Foley artist",
+    "Footsteps (Foley)",
+    "Sync"
+   ],
+   "common_mistakes": [
+    "Choosing a surface by name alone rather than by how it actually sounds under a given shoe and performance.",
+    "Overlooking how a performer's shoe, weight, and walking rhythm interact with the surface to shape the final sound.",
+    "Forgetting that a hard surface's brightness and reflections change with mic distance, so surface choice and mic placement must be set together."
+   ],
+   "scenario_contexts": [
+    "Laying a hardwood panel over a pit to match footsteps on a wooden floor.",
+    "Choosing a marble or tile surface to give a character's steps a hard, ringing quality in a lobby scene.",
+    "Performing on grass or leaf litter to match a character walking through a park."
+   ]
+  },
+  {
+   "id": "5c3233b8-f14d-44f3-9d4c-68586b841c80",
+   "term": "Game-audio implementation room",
+   "topic": "Game Audio",
+   "difficulty": null,
+   "definition": "A dedicated workspace equipped for game-audio implementation, the task of integrating audio assets into a game so they respond to gameplay. It typically runs the game engine (such as Unreal or Unity) alongside audio middleware (such as Audiokinetic Wwise or Firelight FMOD Studio) with calibrated monitoring, so a technician can author events, real-time parameters, states, and switches and audition the audio in-engine.",
+   "plain_english": "A room set up to put game sounds into a game. An audio person runs the game next to a tool like Wwise or FMOD, links each sound to what happens in play, and then tests it.",
+   "purpose_function": "It gives the person responsible for implementation the tools and monitoring needed to connect sound and music to game logic and to verify that behavior in the running build, rather than only mixing linear files.",
+   "practical_application": "A technician works here to import assets into Wwise or FMOD, wire events and RTPCs to game parameters, build and profile SoundBanks, and audition the result in the live engine to catch missing triggers or mix problems before a build ships.",
+   "category": "Game-audio facility",
+   "related_terms": [
+    "Game-audio suite",
+    "Interactive-audio lab",
+    "Audio middleware",
+    "Real-Time Parameter Control (RTPC)",
+    "SoundBank",
+    "Game engine"
+   ],
+   "common_mistakes": [
+    "Treating implementation as simply exporting mixed files, rather than authoring the events, parameters, states, and switches that make audio respond to gameplay.",
+    "Monitoring only on the room's studio speakers and never checking the mix on target playback such as TV speakers, headphones, or a phone.",
+    "Forgetting to rebuild and profile SoundBanks after asset changes, so the running game loads outdated or missing audio.",
+    "UNSAFE: auditioning game effects at high SPL for long implementation sessions without managing monitoring level, risking noise-induced hearing loss."
+   ],
+   "scenario_contexts": [
+    "Integrating a new weapon's sound set into the engine and mapping its firing, reload, and impact events.",
+    "Setting up an RTPC so an engine loop's pitch tracks vehicle speed, then testing it while driving in-game.",
+    "Profiling a level's audio in the running build to find voices that exceed the platform's voice limit."
+   ]
+  },
+  {
+   "id": "feb4f691-45a1-43ce-a580-12fa47b0d135",
+   "term": "Game-audio suite",
+   "topic": "Game Audio",
+   "difficulty": null,
+   "definition": "A complex of connected rooms configured as a complete game-audio production facility, typically covering recording and editing, sound design, implementation, and mixing for interactive projects. It groups the spaces and shared systems a game-audio team needs under one roof, as distinct from a single-purpose room.",
+   "plain_english": "A set of connected rooms that together make all the sound for games. One space might record sounds, another designs them, and another puts them into the game.",
+   "purpose_function": "It brings the full game-audio workflow—capture, design, implementation, and mixing—into one coordinated facility so a team can move a project through every stage without leaving the building.",
+   "practical_application": "A studio books its game-audio suite for a project, using its recording room for source capture, its design and edit rooms for asset creation, and its implementation room to integrate and mix the audio in-engine.",
+   "category": "Game-audio facility",
+   "related_terms": [
+    "Game-audio implementation room",
+    "Interactive-audio lab",
+    "Audio middleware",
+    "Sound design",
+    "Control room",
+    "SoundBank"
+   ],
+   "common_mistakes": [
+    "Confusing a game-audio suite with a music studio, overlooking that it must also support in-engine implementation and interactive testing, not just linear recording and mixing.",
+    "Assuming every room shares one calibrated reference, when target-platform monitoring and workstation setups differ between spaces.",
+    "Neglecting a shared middleware project and asset server, so rooms in the suite drift onto different builds and versions.",
+    "UNSAFE: running long high-level monitoring or repeated loud SFX passes across rooms without hearing-conservation practices, risking cumulative noise exposure."
+   ],
+   "scenario_contexts": [
+    "A game-audio team moving a title from field recording through design, implementation, and final mix within one facility.",
+    "Scheduling different rooms of the suite for parallel work, such as dialogue editing in one and implementation in another.",
+    "Setting up a shared asset server and middleware project so all rooms in the suite work from the same build."
+   ]
+  },
+  {
+   "id": "c195826c-db2c-4658-89f9-a8a6b12147c2",
+   "term": "Interactive-audio lab",
+   "topic": "Game Audio",
+   "difficulty": null,
+   "definition": "A workspace outfitted for developing and testing interactive (adaptive) audio—sound and music that changes in real time in response to game state and player input. It combines a game engine, audio middleware, and monitoring so that non-linear audio systems can be prototyped, implemented, and evaluated; the term is common in educational, research, and development settings.",
+   "plain_english": "A room set up to build and test game sound that changes as you play. People try out music and effects that react to what the player does and check if they work in the game.",
+   "purpose_function": "It provides a controlled space to prototype and evaluate adaptive audio behavior—transitions, layering, and parameter-driven changes—so systems can be refined before they go into a shipping game.",
+   "practical_application": "Students or developers use the lab to build middleware projects, hook audio events and parameters to game logic, and audition how music and effects adapt while play conditions change.",
+   "category": "Game-audio facility",
+   "related_terms": [
+    "Game-audio implementation room",
+    "Game-audio suite",
+    "Adaptive music",
+    "Audio middleware",
+    "Real-Time Parameter Control (RTPC)",
+    "Interactive audio"
+   ],
+   "common_mistakes": [
+    "Thinking interactive audio is just looping a background track, rather than systems whose transitions and layers are driven by game parameters and state.",
+    "Testing adaptive behavior only in the middleware's preview or soundcaster tool and never in the actual running game, where timing and state changes differ.",
+    "Setting music transitions without defined sync points, so cues switch abruptly instead of on musically appropriate beats or bars.",
+    "UNSAFE: prototyping with sustained high monitoring levels during long lab sessions, risking noise-induced hearing loss."
+   ],
+   "scenario_contexts": [
+    "Building a vertical-layering music system whose intensity follows a combat parameter and testing it in-engine.",
+    "Prototyping a horizontal re-sequencing transition between exploration and danger music.",
+    "A class exercise implementing footstep switches that change with the surface the player walks on."
+   ]
+  },
+  {
+   "id": "59a8a49e-6512-4f95-aeb2-496c08eb59ad",
+   "term": "Ambient-to-Scare Contrast",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "The deliberate level and dynamic contrast between a low-level ambient soundscape and a sudden high-level scare cue, engineered so the loudness jump maximizes the guest's startle response. It exploits relative loudness perception: a quiet bed lowers the listener's reference so the scare event is perceived as far more intense than its absolute level alone would suggest.",
+   "plain_english": "It is the big jump from a soft background sound to a loud scare. The quiet part makes the loud part feel even louder and more shocking.",
+   "purpose_function": "It exists to make scares effective through contrast rather than sheer volume, so designers can startle guests reliably while keeping average sound levels comfortable and within hearing-safe limits.",
+   "practical_application": "A technician sets the ambient bed several decibels below the scare cue and checks both the scare's peak level and the average exposure so the effect lands hard yet stays safe for guests and staff.",
+   "category": "Scare Sound Design",
+   "related_terms": [
+    "Jump-Scare Audio",
+    "Continuous Haunt Playback",
+    "Distant Scream",
+    "Decoy Sound"
+   ],
+   "common_mistakes": [
+    "Raising the whole soundscape's level to make scares hit harder, which flattens the contrast and just fatigues guests",
+    "Confusing loudness contrast with absolute volume, so the scare relies on brute level instead of the quiet-to-loud jump",
+    "UNSAFE: Pushing scare-cue peaks above 140 dB peak sound pressure level or letting staff average exposure exceed OSHA limits, risking hearing damage"
+   ],
+   "scenario_contexts": [
+    "A quiet fog-filled hallway with faint drips is broken by a loud chainsaw stinger as an actor lunges",
+    "Tuning a room so its ambient bed sits well below the triggered scare so the contrast reads clearly",
+    "Lowering baseline bed level in a long queue to protect staff hearing while keeping scare impact"
+   ]
+  },
+  {
+   "id": "0b8c0b5a-9d8d-4e33-a265-81de94478b8f",
+   "term": "Backstory Audio",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "Pre-recorded narrative or environmental audio that conveys the fictional history, lore, or context of a themed space or character, delivered through the sound system to immerse guests in the story rather than to scare them directly.",
+   "plain_english": "Sound that tells the story behind a scene, like a recorded voice or eerie details that explain what happened there. It sets the mood before anything jumps out.",
+   "purpose_function": "It exists to build narrative context and atmosphere so guests understand and feel the setting, supporting the story arc that scares punctuate.",
+   "practical_application": "A technician levels and places backstory tracks such as a whispered legend or distant broadcast on looped or ambient playback so they read clearly without masking scare cues or dialogue.",
+   "category": "Narrative Audio",
+   "related_terms": [
+    "Found-Recording Audio",
+    "Character Voice Track",
+    "Continuous Haunt Playback",
+    "Creature Vocal Track"
+   ],
+   "common_mistakes": [
+    "Mixing backstory dialogue too quietly or too loudly, so it is unintelligible or overpowers scare cues",
+    "Looping a spoken backstory track so short that guests notice the repeat and break immersion",
+    "Treating backstory audio as a scare cue and triggering it abruptly instead of blending it into the bed"
+   ],
+   "scenario_contexts": [
+    "A recorded radio bulletin explaining an outbreak plays softly in an infected-lab room",
+    "A whispered legend loops in a queue to set up the haunt's story",
+    "Environmental sounds of a working asylum establish a scene's history before actors appear"
+   ]
+  },
+  {
+   "id": "e2bcac33-9db2-444d-a9e1-d63c37e68cf5",
+   "term": "Character Voice Track",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "A pre-recorded (or live) vocal recording for a specific scripted character or animatronic figure, played back and often synchronized to mouth movement, action, or a show-control cue so the figure appears to speak.",
+   "plain_english": "A recorded voice for one character or animatronic figure. It is played back, often timed to the figure's mouth so it looks like the character is really talking.",
+   "purpose_function": "It exists to give a character a consistent, repeatable voice performance that plays on cue, freeing a live performer and ensuring the same delivery every show.",
+   "practical_application": "A technician loads the character track into the playback or show-control system and aligns it with animatronic movement or lighting so voice and action stay in sync.",
+   "category": "Voice Content",
+   "related_terms": [
+    "Creature Vocal Track",
+    "Backstory Audio",
+    "Continuous Haunt Playback",
+    "Found-Recording Audio"
+   ],
+   "common_mistakes": [
+    "Letting the voice track drift out of sync with the figure's mouth or gestures",
+    "Recording the track at a level or tone that does not cut through the room's ambient bed",
+    "Failing to match playback loudness across zones, so the same character sounds different from room to room"
+   ],
+   "scenario_contexts": [
+    "An animatronic fortune teller delivers a scripted spiel from a looped voice track",
+    "A talking portrait's lines are triggered when a guest enters the room",
+    "Syncing a character's recorded dialogue to servo-driven jaw movement"
+   ]
+  },
+  {
+   "id": "cbb128b7-edd2-4f5d-adb3-9a83d32aab0f",
+   "term": "Continuous Haunt Playback",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "An audio playback mode in which ambient beds, room tone, or music loop and play without interruption throughout operating hours, as distinct from momentary cues triggered by sensors or operators.",
+   "plain_english": "Sound that keeps playing on a loop the whole time the haunt is open, like background atmosphere. It runs on its own instead of waiting to be set off.",
+   "purpose_function": "It exists to maintain a constant atmosphere and mask outside noise so the environment stays immersive in the gaps between triggered scares.",
+   "practical_application": "A technician sets ambient tracks to seamless loop on a playback device or show-control system and confirms they restart cleanly and hold a consistent level for a full night.",
+   "category": "Show Playback",
+   "related_terms": [
+    "Backstory Audio",
+    "Ambient-to-Scare Contrast",
+    "Jump-Scare Audio",
+    "Character Voice Track"
+   ],
+   "common_mistakes": [
+    "Using a loop with an audible seam or click that reveals the repeat",
+    "Running continuous beds so loud that they mask triggered scare cues or fatigue guests and staff",
+    "Assuming a continuous file will play all night without checking the player for dropouts or restarts"
+   ],
+   "scenario_contexts": [
+    "A low wind-and-drone bed loops through a graveyard maze all evening",
+    "Room tone plays continuously to hide HVAC and crowd noise between scares",
+    "A music loop maintains dread in a waiting queue"
+   ]
+  },
+  {
+   "id": "9269b34a-eedb-4810-9ad9-57942c6f11f9",
+   "term": "Creature Vocal Track",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "A pre-recorded set of non-human vocalizations such as growls, screeches, and roars, designed for a monster, creature, or animatronic and played back on cue to voice the creature's presence or attack.",
+   "plain_english": "Recorded monster sounds like growls and roars made for a creature or animatronic. They are played on cue so the creature seems alive and threatening.",
+   "purpose_function": "It exists to give a non-human character a believable, repeatable voice, letting designers craft sounds no live performer could safely sustain and trigger them on demand.",
+   "practical_application": "A technician loads creature vocals into the playback or trigger system and levels them so growls and roars sit menacingly in the mix without exceeding safe peaks.",
+   "category": "Voice Content",
+   "related_terms": [
+    "Character Voice Track",
+    "Jump-Scare Audio",
+    "Distant Scream",
+    "Backstory Audio"
+   ],
+   "common_mistakes": [
+    "Reusing the same short growl so often that guests recognize the loop",
+    "Mixing creature vocals so low they lose menace or so high they mask other cues",
+    "UNSAFE: Setting a triggered roar's peak level so high near guests or actors that it approaches unsafe sound pressure levels"
+   ],
+   "scenario_contexts": [
+    "A hidden speaker growls as an animatronic beast lunges from the dark",
+    "Layered screeches play when a swarm effect is triggered",
+    "A distant roar sets up a creature the guest will meet later"
+   ]
+  },
+  {
+   "id": "796888b0-2d36-4234-91ac-0ba654bb9b02",
+   "term": "Decoy Sound",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "A sound cue deliberately placed to draw a guest's attention and gaze toward one location so an actor or effect can surprise them from a different direction, exploiting auditory localization and the reflex to orient toward a sound.",
+   "plain_english": "A sound used to trick you into looking one way, so the real scare can come from another. It works because people turn toward a sound.",
+   "purpose_function": "It exists to misdirect attention, setting up a stronger surprise by controlling where the guest looks in the moment just before the actual scare.",
+   "practical_application": "A technician positions the decoy on a speaker away from the real scare and times it a beat before the reveal so guests turn the wrong way.",
+   "category": "Scare Sound Design",
+   "related_terms": [
+    "Jump-Scare Audio",
+    "Ambient-to-Scare Contrast",
+    "Distant Scream",
+    "Continuous Haunt Playback"
+   ],
+   "common_mistakes": [
+    "Placing the decoy on the same speaker as the real scare, so it gives the location away instead of misdirecting",
+    "Making the decoy so loud or long that it becomes the main event instead of a setup",
+    "Mistiming the decoy so guests have already turned back before the real scare hits"
+   ],
+   "scenario_contexts": [
+    "A crash on the left speaker pulls guests' eyes as an actor emerges on the right",
+    "A whisper behind guests turns them around into a drop-panel scare",
+    "A distant sound baits guests down a hallway toward a hidden trigger"
+   ]
+  },
+  {
+   "id": "0ec75386-1c78-4e6d-8d09-e37b19d9a399",
+   "term": "Distant Scream",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "A scream sound effect mixed and processed to be perceived as far away, using lower level, greater reverberation relative to the direct sound, and reduced high-frequency content, which are the acoustic cues the ear uses to judge source distance.",
+   "plain_english": "A scream made to sound like it is coming from far off. Lowering its volume, adding echo, and dulling the highs make our ears place it in the distance.",
+   "purpose_function": "It exists to expand a scene's sense of space and dread, suggesting off-scene danger or a larger world beyond what the guest can see.",
+   "practical_application": "A technician lowers the level, adds reverberation, and rolls off the highs on a scream, then plays it from a far or hidden speaker so it reads as distant.",
+   "category": "Scare Sound Design",
+   "related_terms": [
+    "Ambient-to-Scare Contrast",
+    "Jump-Scare Audio",
+    "Continuous Haunt Playback",
+    "Decoy Sound"
+   ],
+   "common_mistakes": [
+    "Only lowering the volume without adding reverberation or dulling the highs, so it sounds close but quiet rather than far",
+    "Placing a distant scream on a near speaker so its location contradicts the intended distance",
+    "Adding so much reverberation that the scream turns to mush and loses its emotional read"
+   ],
+   "scenario_contexts": [
+    "A faint scream echoes from deep in a maze to imply another victim",
+    "A distant cry lures guests forward toward the next scene",
+    "Layering a far-off scream under an ambient bed to enlarge a room's implied space"
+   ]
+  },
+  {
+   "id": "066b4c76-6df0-4b94-be30-c2028174169e",
+   "term": "Found-Recording Audio",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "Diegetic audio presented as a discovered artifact within the story, such as a recovered tape, voicemail, radio transmission, or log, usually given lo-fi, degraded processing to sell it as a real recording found in the environment.",
+   "plain_english": "Sound made to seem like a real recording the characters found, such as an old tape or phone message. It is roughened up so it feels discovered, not staged.",
+   "purpose_function": "It exists to deliver story and clues in the fiction's own voice, deepening immersion by making guests feel they are uncovering evidence.",
+   "practical_application": "A technician applies band-limiting, added noise, and distortion to sell the format, then places it on a prop speaker or looped bed where guests encounter the recording.",
+   "category": "Narrative Audio",
+   "related_terms": [
+    "Backstory Audio",
+    "Character Voice Track",
+    "Continuous Haunt Playback",
+    "Creature Vocal Track"
+   ],
+   "common_mistakes": [
+    "Leaving the recording too clean, so it sounds like studio audio rather than a found artifact",
+    "Degrading it so heavily that the words become unintelligible",
+    "Looping a short found recording so obviously that the illusion of a real captured moment breaks"
+   ],
+   "scenario_contexts": [
+    "A victim's last voicemail plays from a prop phone in a crime-scene room",
+    "A degraded reel-to-reel confession loops in a researcher's office",
+    "A staticky radio distress call sets up a scene's backstory"
+   ]
+  },
+  {
+   "id": "eb170a35-971d-43ba-bf77-5dbf7ff9b6be",
+   "term": "Jump-Scare Audio",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "A sudden, high-level, fast-attack sound cue (a stinger) timed to coincide with a visual reveal to trigger the acoustic startle reflex, the involuntary defensive response the auditory system produces to an abrupt, intense sound onset.",
+   "plain_english": "A sudden loud sound timed with a scare to make you flinch. Fast, sharp sounds set off the body's built-in startle reflex, which is why they make you jump.",
+   "purpose_function": "It exists to produce an immediate, reliable startle at the moment of a reveal, using rapid onset and high contrast rather than sustained volume.",
+   "practical_application": "A technician aligns the stinger tightly with the visual trigger and sets its peak for maximum startle while keeping peaks and average exposure within hearing-safe limits.",
+   "category": "Scare Sound Design",
+   "related_terms": [
+    "Ambient-to-Scare Contrast",
+    "Continuous Haunt Playback",
+    "Decoy Sound",
+    "Creature Vocal Track"
+   ],
+   "common_mistakes": [
+    "Chasing startle with sheer volume instead of a fast onset and quiet-to-loud contrast",
+    "Mistiming the stinger so it lands before or after the visual reveal and loses its punch",
+    "UNSAFE: Letting stinger peaks exceed 140 dB peak sound pressure level or letting cumulative exposure exceed OSHA limits, risking hearing damage to guests and staff"
+   ],
+   "scenario_contexts": [
+    "A sharp stinger fires as an animatronic drops from the ceiling",
+    "A silent room is broken by a sudden screech synced to a strobe",
+    "A fast transient hit is paired with an actor's lunge at a corner"
+   ]
+  },
+  {
+   "id": "5dc2dece-28f1-4afe-906f-d8b7bc60a724",
+   "term": "Misdirection Audio",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "A sound cue or source deliberately timed, placed, or localized in a themed or haunted attraction to draw guests' attention toward one location—or away from another—so a scare, reveal, or effect can be sprung where they are not looking. It applies the theatrical principle of misdirection to the audio channel, exploiting sound localization to steer the guest's focus.",
+   "plain_english": "A sound used to pull your eyes and ears one way, so a scare can hit from another. It works like a magician who gets you to watch one hand while the trick happens in the other.",
+   "purpose_function": "It exists to control where guests look and listen so a scare, reveal, or effect can be sprung from an unexpected direction, making the payoff land harder. Steering attention with sound also helps guide groups along the intended path through a walkthrough.",
+   "practical_application": "A technician aims or triggers a localized sound—via a placed loudspeaker or a show-control cue—to pull a group's focus one way, then fires the real scare or gag from the opposite side a beat later.",
+   "category": "Scare Technique",
+   "related_terms": [
+    "Decoy Sound",
+    "Jump-Scare Audio",
+    "Ambient-to-Scare Contrast",
+    "Distant Scream",
+    "Sound Localization",
+    "Show Control"
+   ],
+   "common_mistakes": [
+    "Making the misdirection cue so loud or obvious that guests realize they are being steered, which kills the surprise.",
+    "Placing the decoy sound and the real scare on the same side, so attention is never actually pulled away.",
+    "Ignoring the timing gap between the misdirection cue and the payoff, so the two events overlap and neither reads clearly."
+   ],
+   "scenario_contexts": [
+    "A growl triggers from a speaker on the left of a haunted hallway so the group turns that way, and an actor emerges from an opening on the right.",
+    "In a dark maze, a distant scream pulls guests toward one doorway while a pneumatic prop fires behind them.",
+    "A show-control cue plays a phone ringing in an empty room to draw a small group inside before a startle effect activates."
+   ]
+  },
+  {
+   "id": "909d7e13-04f7-4bff-a232-a8d032166f08",
+   "term": "Preshow Audio",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "The audio program presented in the pre-show—the space or segment guests experience immediately before the main attraction—typically combining narration, music, ambience, and any safety or instructional content. It is usually delivered through a fixed, zoned playback system under show control to set the story and pace groups before they enter.",
+   "plain_english": "The sound played in the room or space guests pass through just before the main ride or show. It sets the mood and often tells the story or gives safety notes before they go in.",
+   "purpose_function": "It sets the story, mood, and any safety or instructional information before guests enter the main attraction, and it helps batch and pace groups to match the ride or show's load cycle. This primes guests emotionally so the main experience lands as intended.",
+   "practical_application": "A technician loads and triggers the preshow program through show control, balancing narration against music and ambience so the story and safety cues are clearly heard throughout the space.",
+   "category": "Attraction Zone Audio",
+   "related_terms": [
+    "Queue-Line Audio",
+    "Backstory Audio",
+    "Show Control",
+    "Distributed Sound System",
+    "Character Voice Track",
+    "Ambient Audio"
+   ],
+   "common_mistakes": [
+    "Treating the preshow as background filler instead of pacing it to batch and hold guests for the main attraction's load cycle.",
+    "Mixing narration so low it is buried under music and ambience, so guests miss the story or safety information.",
+    "UNSAFE: running preshow playback at high continuous levels in a small enclosed room, exposing guests and nearby staff to noise doses that can exceed OSHA permissible exposure limits over a shift."
+   ],
+   "scenario_contexts": [
+    "A themed briefing room plays recorded character narration and a safety spiel while the previous group finishes the ride.",
+    "A pre-show video's synchronized audio sets up the backstory before doors open into the main attraction.",
+    "Atmospheric sound and low music hold and pace a waiting group in an antechamber before they are batched into the show."
+   ]
+  }
+ ]
+}

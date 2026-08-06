@@ -1,0 +1,323 @@
+{
+ "batch": 414,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "ce7cf0ab-e049-426c-ae8a-eeebde965ff0",
+   "term": "Acoustic scene classification",
+   "fields": {
+    "definition": "A supervised audio classification task in which a model assigns an entire recording to one label from a predefined set of environments or contexts (for example park, metro station, or office) based on its overall acoustic character rather than individual sound events.",
+    "plain_english": "It teaches a computer to listen to a sound clip and name the place it was recorded, like a park or a train station. The computer learns the general sound of each place from many labeled examples.",
+    "purpose_function": "It exists to give machines an understanding of the surrounding environment or context from sound alone, supporting context-aware devices, soundscape monitoring, and automatic tagging of large audio archives.",
+    "practical_application": "Developers train and evaluate such models on benchmark datasets like those from the DCASE challenge to build systems that recognize recording environments, for example to auto-label field recordings or drive context-aware processing.",
+    "category": "Machine listening",
+    "related_terms": [
+     "Audio classification",
+     "Audio embedding",
+     "Sound event detection",
+     "Mel spectrogram",
+     "Convolutional neural network"
+    ],
+    "common_mistakes": [
+     "Confusing acoustic scene classification with sound event detection, which locates and labels individual sounds rather than the whole scene",
+     "Assuming a model trained on one set of recording devices or cities will generalize to audio from very different devices or locations",
+     "Judging a model only on overall accuracy while ignoring how it performs on each individual scene class"
+    ],
+    "scenario_contexts": [
+     "Automatically tagging the recording environment of clips in a large sound library",
+     "A phone or wearable adjusting its audio processing based on whether the user is indoors, on a street, or on transit",
+     "Benchmarking a model against a DCASE acoustic scene classification dataset"
+    ]
+   },
+   "sources": [
+    "Barchiesi, Giannoulis, Stowell, Plumbley, 'Acoustic Scene Classification', IEEE Signal Processing Magazine (2015)",
+    "DCASE Challenge, Acoustic Scene Classification task documentation (dcase.community)",
+    "Mesaros et al., 'Detection and Classification of Acoustic Scenes and Events: Outcome of the DCASE 2016 Challenge', IEEE/ACM TASLP"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4566d378-a47d-4662-a0f8-ea977eae7979",
+   "term": "Adaptive beamforming",
+   "fields": {
+    "definition": "A microphone-array spatial filtering technique whose combining weights are adjusted automatically and continuously from the incoming signals to enhance sound from a desired direction while suppressing interference and noise from other directions; data-dependent methods such as the MVDR (minimum variance distortionless response) beamformer are common examples.",
+    "plain_english": "It blends several microphones so they listen more to one direction and less to the noise around it. It keeps adjusting as sounds change, like aiming an invisible cone at the person talking.",
+    "purpose_function": "It exists to pull a wanted sound, such as a talker, out of noise and reverberation by exploiting the spatial layout of a microphone array, improving clarity for speech capture and hands-free communication.",
+    "practical_application": "Technicians encounter it in conferencing systems, hearing aids, and voice-controlled devices, where an array steers and reshapes its pickup pattern in real time to follow a talker and reject room noise.",
+    "category": "Array processing",
+    "related_terms": [
+     "Adaptive filter",
+     "Microphone array",
+     "Beamforming",
+     "Spatial filtering",
+     "Noise reduction"
+    ],
+    "common_mistakes": [
+     "Assuming more microphones always give better results, when array geometry, spacing, and calibration matter just as much",
+     "Confusing fixed (data-independent) beamforming with adaptive beamforming, which changes its weights based on the signals it receives",
+     "Overlooking that reverberation and steering errors can make an adaptive beamformer partly cancel the desired signal"
+    ],
+    "scenario_contexts": [
+     "A conference-room ceiling array tracking whoever is speaking",
+     "A hearing aid focusing on a talker in front while suppressing side and background noise",
+     "A smart speaker isolating a voice command from music and room noise"
+    ]
+   },
+   "sources": [
+    "Van Veen & Buckley, 'Beamforming: A Versatile Approach to Spatial Filtering', IEEE ASSP Magazine (1988)",
+    "Benesty, Chen & Huang, 'Microphone Array Signal Processing' (Springer)",
+    "Brandstein & Ward (eds.), 'Microphone Arrays: Signal Processing Techniques and Applications' (Springer)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0eed8a3b-30ea-478a-8440-02c15fa40bbd",
+   "term": "Adaptive filter",
+   "fields": {
+    "definition": "A digital filter whose coefficients are adjusted automatically over time by an adaptive algorithm (such as LMS or RLS) that minimizes an error signal, allowing the filter to track and model an unknown or time-varying system without manually set coefficients.",
+    "plain_english": "It is a filter that tunes itself, changing its own settings as it runs to match a signal or cancel unwanted sound. It works like noise-cancelling headphones that keep adjusting to the noise around you.",
+    "purpose_function": "It exists to solve problems where the ideal filter is unknown or keeps changing, such as canceling echoes or noise, by continuously learning the coefficients that reduce the error.",
+    "practical_application": "Technicians meet adaptive filters inside acoustic echo cancellers on conferencing gear and in active noise control, where the filter constantly retunes to match the room and the echo path.",
+    "category": "Adaptive signal processing",
+    "related_terms": [
+     "Adaptive beamforming",
+     "Acoustic echo cancellation",
+     "Least mean squares",
+     "Noise reduction",
+     "Finite impulse response filter"
+    ],
+    "common_mistakes": [
+     "Setting the adaptation step size (learning rate) too high, which makes the filter unstable, or too low, which makes it adapt too slowly",
+     "Assuming the filter converges instantly, when it needs time and a suitable reference signal to learn",
+     "Confusing an adaptive filter with a fixed filter whose coefficients never change after design"
+    ],
+    "scenario_contexts": [
+     "An acoustic echo canceller removing the far-end voice picked up by a conference microphone",
+     "Active noise cancellation adapting to changing headphone or cabin noise",
+     "Cancelling mains hum or interference that drifts over time"
+    ]
+   },
+   "sources": [
+    "Haykin, 'Adaptive Filter Theory' (Prentice Hall)",
+    "Widrow & Stearns, 'Adaptive Signal Processing' (Prentice Hall)",
+    "Oppenheim & Schafer, 'Discrete-Time Signal Processing'"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "371226ce-739e-48ef-a655-f2e30c8e13da",
+   "term": "All-pass filter network",
+   "fields": {
+    "definition": "An interconnection of all-pass filter sections — filters that pass all frequencies with (ideally) unity magnitude response while imposing a frequency-dependent phase and group-delay shift — used to alter the phase or delay of a signal without changing its magnitude spectrum; such networks are a building block of artificial reverberators and phase-shifting effects.",
+    "plain_english": "It is a chain of filters that lets every frequency through at the same loudness but changes their timing. Engineers use these chains to build reverb and that swirling phaser sound without changing the tone.",
+    "purpose_function": "It exists to reshape phase and delay — spreading sound out in time — while leaving the overall frequency balance untouched, which is essential for building dense, natural-sounding artificial reverberation.",
+    "practical_application": "A plugin designer or technician encounters all-pass networks inside reverb algorithms such as Schroeder-style reverberators and inside phaser effects, where cascaded all-pass sections build echo density or create moving notches.",
+    "category": "Digital filtering",
+    "related_terms": [
+     "All-pass filter",
+     "Schroeder reverberator",
+     "Phaser",
+     "Group delay",
+     "Comb filter",
+     "Artificial reverberation"
+    ],
+    "common_mistakes": [
+     "Believing an all-pass filter does nothing because it does not change the magnitude response, when it changes phase and delay",
+     "Forgetting that cascaded all-pass sections still add latency and can audibly smear transients",
+     "Assuming an all-pass network can never color the sound, when feedback or mixing can create audible comb-filter effects"
+    ],
+    "scenario_contexts": [
+     "Building or tuning a digital reverb algorithm from cascaded all-pass and comb sections",
+     "Designing a phaser effect that sweeps notches through the spectrum",
+     "Using all-pass sections to manipulate phase without altering tonal balance"
+    ]
+   },
+   "sources": [
+    "Oppenheim & Schafer, 'Discrete-Time Signal Processing' (all-pass systems)",
+    "Schroeder, 'Natural Sounding Artificial Reverberation', Journal of the Audio Engineering Society (1962)",
+    "Smith, 'Physical Audio Signal Processing' (CCRMA, Stanford)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8f39f468-5fa3-4dd0-888c-46437266c93d",
+   "term": "Apple Stem Splitter",
+   "fields": {
+    "definition": "A source-separation feature in Apple's Logic Pro that uses on-device machine learning to split a mixed audio recording into separate instrument and vocal stems — such as vocals, drums, bass, guitar, piano, and other parts — each extracted to its own audio region within the project; it requires Apple silicon (M1 or later).",
+    "plain_english": "It is a Logic Pro tool that takes a finished song and pulls it apart into separate tracks, like vocals, drums, and bass. It works a bit like un-baking a cake back into its ingredients, all on your own Mac.",
+    "purpose_function": "It exists to let users recover individual parts from a mix when the original multitrack is unavailable — for remixing, sampling, practice, or repair — using AI that runs locally on the computer.",
+    "practical_application": "An engineer or producer uses Stem Splitter to isolate a vocal from a mixed track for a remix or to mute a part for practice, then works with the extracted stems as ordinary regions in Logic Pro.",
+    "category": "Source separation",
+    "related_terms": [
+     "Source separation",
+     "Music source separation",
+     "Stem",
+     "Deep learning",
+     "Digital audio workstation"
+    ],
+    "common_mistakes": [
+     "Expecting perfectly clean stems, when separation can leave artifacts or bleed between parts",
+     "Assuming it runs on any Mac, when it requires Apple silicon (M1 or later)",
+     "Treating extracted stems as if they were the original studio multitracks, which they are not"
+    ],
+    "scenario_contexts": [
+     "Isolating a vocal from a stereo mix to build a remix",
+     "Removing a vocal or instrument to make a practice or karaoke backing",
+     "Extracting a drum part from an old recording for sampling"
+    ]
+   },
+   "sources": [
+    "Apple, Logic Pro User Guide for Mac — 'Extract vocal and instrumental stems with Stem Splitter' (support.apple.com)",
+    "Apple, Logic Pro User Guide for iPad — 'Extract vocal and instrumental stems with Stem Splitter' (support.apple.com)",
+    "Sound on Sound, 'Logic Pro: How To Use The Stem Splitter'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9f3f23eb-262a-4bd2-b4a6-8e3139a78d7c",
+   "term": "Attention mechanism",
+   "fields": {
+    "definition": "A neural network component that computes a weighted combination of a set of value vectors, where the weights come from the compatibility between a query and a set of keys, letting the model dynamically focus on the most relevant parts of its input or context; scaled dot-product attention as used in the Transformer is the canonical formulation.",
+    "plain_english": "It lets a neural network decide which parts of the input matter most at each step, instead of treating everything the same. It is like skimming a page and reading only the words that answer your question.",
+    "purpose_function": "It exists to let models handle long or complex inputs by learning what to weight and connect, capturing relationships between distant elements far better than fixed, order-limited processing.",
+    "practical_application": "It underlies the Transformer models used for tasks like speech recognition, music tagging, and audio captioning, and it powers the audio spectrogram Transformers behind many modern audio AI tools.",
+    "category": "Neural architectures",
+    "related_terms": [
+     "Transformer",
+     "Self-attention",
+     "Audio foundation model",
+     "Recurrent neural network",
+     "Audio embedding"
+    ],
+    "common_mistakes": [
+     "Thinking attention is a single fixed formula, when there are many variants such as self-attention, cross-attention, and multi-head attention",
+     "Confusing the everyday meaning of attention with the specific query-key-value computation used in models",
+     "Assuming attention removes all limits on sequence length, when its cost grows quickly with input size"
+    ],
+    "scenario_contexts": [
+     "A Transformer transcribing speech by attending to the relevant parts of the audio",
+     "An audio captioning model attending to the sound events it describes",
+     "A music tagging model built on an audio spectrogram Transformer"
+    ]
+   },
+   "sources": [
+    "Vaswani et al., 'Attention Is All You Need', NeurIPS (2017)",
+    "Bahdanau, Cho & Bengio, 'Neural Machine Translation by Jointly Learning to Align and Translate', ICLR (2015)",
+    "Goodfellow, Bengio & Courville, 'Deep Learning' (MIT Press)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "83c318ec-1ca8-4fca-866d-59aacf17ff5f",
+   "term": "Audio classification",
+   "fields": {
+    "definition": "The machine learning task of assigning one or more categorical labels to an audio signal or segment (for example identifying an instrument, a genre, a spoken command, or a sound type), typically by extracting features such as a mel spectrogram and applying a trained classifier.",
+    "plain_english": "It teaches a computer to listen to a sound and put a label on it, such as guitar, applause, or dog bark. The computer learns the pattern of each label from many example sounds.",
+    "purpose_function": "It exists to let machines recognize and organize sound automatically, enabling search, tagging, monitoring, and triggering actions from audio without a human listening to everything.",
+    "practical_application": "Technicians and developers build audio classifiers to auto-tag sound libraries, detect specific sounds for monitoring, or recognize spoken keywords, usually by training a model on labeled audio.",
+    "category": "Machine listening",
+    "related_terms": [
+     "Acoustic scene classification",
+     "Audio embedding",
+     "Sound event detection",
+     "Mel spectrogram",
+     "Convolutional neural network"
+    ],
+    "common_mistakes": [
+     "Confusing single-label classification with multi-label tagging, where several labels can apply to one clip",
+     "Training on clean studio audio and expecting good results on noisy real-world recordings",
+     "Ignoring class imbalance, so the model favors common sounds and misses rare ones"
+    ],
+    "scenario_contexts": [
+     "Automatically tagging instruments or genres across a music catalog",
+     "Detecting alarms, breaking glass, or other events in a monitoring system",
+     "Recognizing spoken keywords to trigger a device"
+    ]
+   },
+   "sources": [
+    "Müller, 'Fundamentals of Music Processing' (Springer)",
+    "Bishop, 'Pattern Recognition and Machine Learning' (Springer) — classification",
+    "DCASE Challenge task documentation (dcase.community)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "93576500-a2fb-4d91-9866-7e4e4b60b35e",
+   "term": "Audio embedding",
+   "fields": {
+    "definition": "A fixed-dimensional vector representation of an audio signal or segment, produced by a (usually neural) model, that captures its salient content so that perceptually or semantically similar sounds map to nearby points in the vector space; VGGish and wav2vec representations are common examples.",
+    "plain_english": "It is a list of numbers that stands in for a sound, arranged so that similar sounds get similar numbers. It works like a spot on a map, where things that sound alike sit close together.",
+    "purpose_function": "It exists to turn raw audio into a compact, meaningful form that machine learning systems can compare, search, and classify far more easily than the raw waveform.",
+    "practical_application": "Technicians use audio embeddings for similarity search, clustering, and as input features for classifiers, for example finding sounds like a reference clip or feeding a small model instead of training from raw audio.",
+    "category": "Audio representations",
+    "related_terms": [
+     "Audio foundation model",
+     "Audio classification",
+     "Feature extraction",
+     "Mel spectrogram",
+     "Attention mechanism"
+    ],
+    "common_mistakes": [
+     "Assuming embeddings from different models are interchangeable, when each model has its own vector space",
+     "Treating an embedding as human-readable, when its individual dimensions usually have no simple meaning",
+     "Using embeddings from a model trained on unrelated data and expecting them to capture the features you need"
+    ],
+    "scenario_contexts": [
+     "Building a 'find similar sounds' search over a sample library",
+     "Clustering unlabeled recordings into groups by content",
+     "Using pretrained embeddings as features to train a small classifier with little data"
+    ]
+   },
+   "sources": [
+    "Hershey et al., 'CNN Architectures for Large-Scale Audio Classification' (VGGish), ICASSP (2017)",
+    "Baevski et al., 'wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations', NeurIPS (2020)",
+    "Goodfellow, Bengio & Courville, 'Deep Learning' (MIT Press) — representation learning"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "47ccc170-3d62-4f10-bf98-ad1e89248f1b",
+   "term": "Audio foundation model",
+   "fields": {
+    "definition": "A large neural network pretrained on broad, mostly unlabeled audio data (typically via self-supervised learning) to learn general-purpose representations that can then be adapted, through fine-tuning or prompting, to many downstream audio tasks; models such as wav2vec 2.0, HuBERT, and CLAP are representative examples.",
+    "plain_english": "It is a big AI model trained on huge amounts of audio so it learns general sound knowledge first. You can then adapt that one model to many jobs, the way a well-read person picks up new tasks fast.",
+    "purpose_function": "It exists to replace training a separate model from scratch for every task; one broadly pretrained model can be fine-tuned to many audio jobs with far less labeled data.",
+    "practical_application": "Developers fine-tune or extract features from an audio foundation model to build speech recognition, tagging, or captioning systems without collecting a massive labeled dataset for each one.",
+    "category": "Foundation models",
+    "related_terms": [
+     "Audio embedding",
+     "Attention mechanism",
+     "Transformer",
+     "Self-supervised learning",
+     "Transfer learning",
+     "Audio classification"
+    ],
+    "common_mistakes": [
+     "Assuming a foundation model works well on every task out of the box, when many tasks still need fine-tuning or adaptation",
+     "Overlooking that biases and gaps in the pretraining data carry over into downstream systems",
+     "Confusing a foundation model with a single-task model trained only for one purpose"
+    ],
+    "scenario_contexts": [
+     "Fine-tuning a pretrained speech model for a specialized transcription task",
+     "Using a foundation model's features to tag audio with limited labeled data",
+     "Adapting one pretrained audio model across several products or tasks"
+    ]
+   },
+   "sources": [
+    "Bommasani et al., 'On the Opportunities and Risks of Foundation Models', Stanford CRFM (2021)",
+    "Baevski et al., 'wav2vec 2.0', NeurIPS (2020)",
+    "Hsu et al., 'HuBERT: Self-Supervised Speech Representation Learning by Masked Prediction of Hidden Units', IEEE/ACM TASLP (2021)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

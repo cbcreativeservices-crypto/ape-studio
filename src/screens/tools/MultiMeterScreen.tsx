@@ -69,7 +69,7 @@ import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-nati
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
-import { heatColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { heatColor, levelColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type MultimeterSnapshotPayload } from '../../features/tools/measure/types';
@@ -101,9 +101,11 @@ const FFT_SIZE = 8192;
 /** The fine-spectrum poll (envelope + spectrogram + detection feed) — its own
  *  ~12.5 Hz interval, exactly the SpectrogramScreen idiom (the hook's 15 Hz
  *  frame poll does not carry the spectrum payload). */
-const SPEC_POLL_MS = 80;
-/** Spectrogram/detection cadence: every 2nd spectrum tick → 160 ms ≈ 6 col/s. */
-const SLOW_EVERY = 2;
+// Faster spectrum response (owner 2026-08-05, item 4): poll the fine spectrum at
+// ~16.7 Hz (was 12.5) so the FFT overlay + envelope track the signal quicker.
+const SPEC_POLL_MS = 60;
+/** Spectrogram/detection cadence: every 3rd spectrum tick → 180 ms ≈ 5.5 col/s. */
+const SLOW_EVERY = 3;
 
 /** SMOOTHING chips → native bandAvgAlpha + the overlay-envelope α (same
  *  exponential-average behavior; HIGH = heaviest smoothing = slowest α). */
@@ -138,9 +140,9 @@ const ENV_POINTS = 96;
 // (shared idiom, not a cross-screen import).
 const PLOT_BG = '#0c0c0f';
 const PLOT_FRAME = '#262b36';
-const GRID = '#20242e';
-const GRID_MINOR = '#181c22';
-const AXIS = '#39404d';
+const GRID = '#333846';
+const GRID_MINOR = '#262b36';
+const AXIS = '#5a6376';
 const BAR_HOT = '#ffd35e';
 const BAR_HI = '#7fd4ff';
 const BAR_MID = '#2f9bff';
@@ -381,7 +383,7 @@ export function MultiMeterScreen({ navigation }: Props) {
     spectrumEnabled: true,
     pitchEnabled: true,
     waveformEnabled: true,
-    bandAvgAlpha: 0.35,
+    bandAvgAlpha: 0.6, // faster bar response (owner 2026-08-05, item 4) — LOW default
   }).current;
   const { state, frames, start, stop, lastError, resetPeakHold } = useDspEngine(cfg, {
     meter: true,
@@ -392,8 +394,11 @@ export function MultiMeterScreen({ navigation }: Props) {
   const framesRef = useRef(frames);
   framesRef.current = frames;
 
-  const [smoothing, setSmoothing] = useState<Smoothing>(SMOOTHINGS[1]);
-  const [zoom, setZoom] = useState<Zoom>(ZOOMS[0]);
+  const [smoothing, setSmoothing] = useState<Smoothing>(SMOOTHINGS[0]); // LOW (fastest) default (item 4)
+  // Spectrum zoom is fixed FULL (owner 2026-08-05, item 3: FULL/LOW/MID/HIGH
+  // buttons removed). Scope zoom ×1/×2/×4 is a separate control (item 2).
+  const [zoom] = useState<Zoom>(ZOOMS[0]);
+  const [scopeZoom, setScopeZoom] = useState<1 | 2 | 4>(1);
   const zoomRef = useRef(zoom);
   zoomRef.current = zoom;
   const envAlphaRef = useRef(smoothing.envAlpha);
@@ -617,13 +622,23 @@ export function MultiMeterScreen({ navigation }: Props) {
     },
     [cfg, smoothing],
   );
-  const applyZoom = useCallback((z: Zoom) => {
-    setZoom(z);
-    setCursorX(null); // the x-axis re-maps — a stale cursor would mis-read
-  }, []);
+  // Peak-clip latch (owner 2026-08-05, item 5): the PEAK / PK HOLD readouts turn
+  // red only once the signal actually reaches 0 dBFS, and stay red until the
+  // peak-hold is reset.
+  const [hasPeaked, setHasPeaked] = useState(false);
+  useEffect(() => {
+    if (meter && ((Number.isFinite(meter.peakDb) && meter.peakDb >= 0) || (Number.isFinite(meter.peakHoldDb) && meter.peakHoldDb >= 0))) {
+      setHasPeaked(true);
+    }
+  }, [meter]);
+  const onResetPeakHold = useCallback(() => {
+    resetPeakHold();
+    setHasPeaked(false);
+  }, [resetPeakHold]);
 
   const onStart = useCallback(() => {
     setMicPaused(false);
+    setHasPeaked(false);
     // Fresh run = fresh derived state (stale holds/history/chips would lie).
     clearEnv();
     sgBinsRef.current = null;
@@ -811,6 +826,11 @@ export function MultiMeterScreen({ navigation }: Props) {
   const info = running ? ApeDsp.getInfo() : null;
   const half = SCOPE_H / 2;
 
+  // Horizontal SPL meter fractions (item 7): map −60…0 dBFS → 0…1.
+  const SPL_MIN_DB = -60;
+  const splFrac = meter ? Math.max(0, Math.min(1, (meter.aFastDb - SPL_MIN_DB) / -SPL_MIN_DB)) : 0;
+  const splHoldFrac = meter ? Math.max(0, Math.min(1, (meter.peakHoldDb - SPL_MIN_DB) / -SPL_MIN_DB)) : 0;
+
   // Mini-scope geometry (WaveformScreen scope math, compact ×1, autoscaled).
   const [scopeW, setScopeW] = useState(0);
   const scope = useMemo(() => {
@@ -825,7 +845,8 @@ export function MultiMeterScreen({ navigation }: Props) {
     }
     const scaleMax = Math.max(1.05, observed);
     const usable = half - 10;
-    const y = (v: number) => Math.min(SCOPE_H - 2, Math.max(2, half - (v * usable) / scaleMax));
+    // Vertical zoom ×1/×2/×4 (owner 2026-08-05, item 2) — display scaling only.
+    const y = (v: number) => Math.min(SCOPE_H - 2, Math.max(2, half - (v * scopeZoom * usable) / scaleMax));
     const colW = scopeW / SCOPE_BUCKETS;
     let top = '';
     let bottomFwd = '';
@@ -851,7 +872,7 @@ export function MultiMeterScreen({ navigation }: Props) {
       if (b.clipped) clip += `M${x},3L${x},9`;
     }
     // Velocity-ramp axis: blue at the mid line (0), red at |amp| = full scale.
-    const fullPix = usable / scaleMax;
+    const fullPix = (scopeZoom * usable) / scaleMax;
     return {
       area: top + bottomRev + 'Z',
       outline: top + bottomFwd,
@@ -863,7 +884,7 @@ export function MultiMeterScreen({ navigation }: Props) {
       gradY0: half - fullPix,
       gradY1: half + fullPix,
     };
-  }, [running, frames.waveform, scopeW, half]);
+  }, [running, frames.waveform, scopeW, half, scopeZoom]);
 
   // Hero overlay paths (live glow envelope + AVERAGE trace).
   const overlay = useMemo(() => {
@@ -925,45 +946,66 @@ export function MultiMeterScreen({ navigation }: Props) {
         </View>
       </View>
 
-      {/* 1 ── TOP STATUS BAR — pinned outside the scroll (always visible),
-             instrument-style mono digits. "SPL" carries the SPL screen's
+      {/* 1 ── TOP STATUS BAR — pinned, instrument-style mono digits. Shown only
+             while capturing (owner 2026-08-05, item 1: the dead readouts are
+             removed from the start screen). "SPL" carries the SPL screen's
              convention: A-weighted FAST, dBFS-referenced, UNCALIBRATED. */}
-      <View style={styles.statusBar}>
-        <Pressable style={styles.statusCell} onLongPress={() => help('spl')} delayLongPress={350}>
-          <Text style={styles.statusLabel}>SPL·LAF</Text>
-          <Text style={styles.statusValue}>{meter ? fmtDb(meter.aFastDb) : '—'}</Text>
-        </Pressable>
-        <Pressable style={styles.statusCell} onLongPress={() => help('peak')} delayLongPress={350}>
-          <Text style={styles.statusLabel}>PEAK</Text>
-          <Text style={[styles.statusValue, styles.statusValuePeak, meter != null && meter.peakDb >= 0 && styles.statusHot]}>
-            {meter ? fmtDb(meter.peakDb) : '—'}
-          </Text>
-        </Pressable>
-        <Pressable style={styles.statusCell} onLongPress={() => help('rms')} delayLongPress={350}>
-          <Text style={styles.statusLabel}>RMS</Text>
-          <Text style={styles.statusValue}>{meter ? fmtDb(meter.zFastDb) : '—'}</Text>
-        </Pressable>
-        {/* PEAK HOLD: long-press the cell (or tap ⟲) to reset — resets the
-            native meter hold AND the per-band holds in one call. */}
-        <Pressable
-          style={styles.statusCell}
-          onLongPress={resetPeakHold}
-          delayLongPress={350}
-          accessibilityRole="button"
-          accessibilityLabel="Peak hold — long-press to reset"
-        >
-          <View style={styles.statusHoldRow}>
-            <Text style={styles.statusLabel}>PK HOLD</Text>
-            <Pressable onPress={resetPeakHold} hitSlop={8} accessibilityRole="button" accessibilityLabel="Reset peak hold">
-              <Text style={styles.statusReset}>⟲</Text>
+      {(running || micPaused) && (
+        <>
+          <View style={styles.statusBar}>
+            <Pressable style={styles.statusCell} onLongPress={() => help('spl')} delayLongPress={350}>
+              <Text style={styles.statusLabel}>SPL·LAF</Text>
+              <Text style={styles.statusValue}>{meter ? fmtDb(meter.aFastDb) : '—'}</Text>
+            </Pressable>
+            <Pressable style={styles.statusCell} onLongPress={() => help('peak')} delayLongPress={350}>
+              <Text style={styles.statusLabel}>PEAK</Text>
+              {/* Red only once it has actually peaked, until reset (item 5). */}
+              <Text style={[styles.statusValue, hasPeaked && styles.statusValueRed]}>
+                {meter ? fmtDb(meter.peakDb) : '—'}
+              </Text>
+            </Pressable>
+            <Pressable style={styles.statusCell} onLongPress={() => help('rms')} delayLongPress={350}>
+              <Text style={styles.statusLabel}>RMS</Text>
+              <Text style={styles.statusValue}>{meter ? fmtDb(meter.zFastDb) : '—'}</Text>
+            </Pressable>
+            {/* PEAK HOLD: long-press the cell (or tap ⟲) to reset — clears the
+                native meter hold, the per-band holds, AND the red peak latch. */}
+            <Pressable
+              style={styles.statusCell}
+              onLongPress={onResetPeakHold}
+              delayLongPress={350}
+              accessibilityRole="button"
+              accessibilityLabel="Peak hold — long-press to reset"
+            >
+              <View style={styles.statusHoldRow}>
+                <Text style={styles.statusLabel}>PK HOLD</Text>
+                <Pressable onPress={onResetPeakHold} hitSlop={8} accessibilityRole="button" accessibilityLabel="Reset peak hold">
+                  <Text style={styles.statusReset}>⟲</Text>
+                </Pressable>
+              </View>
+              <Text style={[styles.statusValue, hasPeaked && styles.statusValueRed]}>
+                {meter ? fmtDb(meter.peakHoldDb) : '—'}
+              </Text>
             </Pressable>
           </View>
-          <Text style={[styles.statusValue, styles.statusValuePeak, meter != null && meter.peakHoldDb >= 0 && styles.statusHot]}>
-            {meter ? fmtDb(meter.peakHoldDb) : '—'}
-          </Text>
-        </Pressable>
-      </View>
-      <Text style={styles.statusUnit}>all levels dBFS · uncalibrated approximate — not dB SPL</Text>
+          <Text style={styles.statusUnit}>all levels dBFS · uncalibrated approximate — not dB SPL</Text>
+
+          {/* 7 ── Horizontal main SPL level meter (owner 2026-08-05) — like the
+                 VU screen's, but horizontal + thinner. Left→right level with a
+                 peak-hold tick, MIDI-coloured (blue quiet → red loud). */}
+          <View style={styles.hMeterWrap}>
+            <View style={styles.hMeterTrack}>
+              <View style={[styles.hMeterFill, { width: `${splFrac * 100}%`, backgroundColor: levelColor(splFrac) }]} />
+              {splHoldFrac > 0 ? (
+                <View style={[styles.hMeterHold, { left: `${Math.min(99.3, splHoldFrac * 100)}%` }]} />
+              ) : null}
+            </View>
+            <Text style={styles.hMeterCaption}>
+              SPL·LAF {meter ? fmtDb(meter.aFastDb) : '—'} dBFS · level {-60}→0
+            </Text>
+          </View>
+        </>
+      )}
 
       <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={scrollEnabled}>
         {/* Honest not-ready card (absent/spike/denied/error). */}
@@ -1120,31 +1162,10 @@ export function MultiMeterScreen({ navigation }: Props) {
               )}
             </View>
 
-            {/* Zoom + smoothing chips. */}
-            <View style={styles.ctrlRow}>
-              <Pressable onLongPress={() => help('zoom')} delayLongPress={350}>
-                <Text style={styles.ctrlLabel}>ZOOM</Text>
-              </Pressable>
-              {ZOOMS.map((z) => (
-                <Chip
-                  key={z.label}
-                  label={z.label}
-                  a11yLabel={`Zoom ${z.label}, ${z.min} to ${z.max} hertz`}
-                  active={zoom.label === z.label}
-                  onPress={() => applyZoom(z)}
-                />
-              ))}
-            </View>
-            <View style={styles.ctrlRow}>
-              <Pressable onLongPress={() => help('smoothing')} delayLongPress={350}>
-                <Text style={styles.ctrlLabel}>SMOOTH</Text>
-              </Pressable>
-              {SMOOTHINGS.map((s) => (
-                <Chip key={s.label} label={s.label} active={smoothing.label === s.label} onPress={() => applySmoothing(s)} />
-              ))}
-            </View>
-
-            {/* 3+4 ── MINI SPECTROGRAM + MINI OSCILLOSCOPE, side by side. */}
+            {/* MINI SPECTROGRAM + MINI OSCILLOSCOPE — moved up, directly under the
+                spectrum analyzer and above the user buttons (owner 2026-08-05,
+                item 6). The FULL/LOW/MID/HIGH spectrum-zoom row is removed
+                (item 3); the scope carries its own ×1/×2/×4 zoom (item 2). */}
             <View style={styles.lowerRow}>
               <View style={styles.miniPanel}>
                 <Pressable onLongPress={() => help('spectrogram')} delayLongPress={350}>
@@ -1200,10 +1221,36 @@ export function MultiMeterScreen({ navigation }: Props) {
                     </Svg>
                   )}
                 </View>
+                {/* Oscilloscope vertical zoom ×1/×2/×4 (owner 2026-08-05, item 2). */}
+                <View style={styles.scopeZoomRow}>
+                  {([1, 2, 4] as const).map((z) => (
+                    <Pressable
+                      key={z}
+                      onPress={() => setScopeZoom(z)}
+                      hitSlop={4}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: scopeZoom === z }}
+                      accessibilityLabel={`Oscilloscope zoom ${z} times`}
+                      style={[styles.scopeZoomChip, scopeZoom === z && styles.scopeZoomChipOn]}
+                    >
+                      <Text style={[styles.scopeZoomText, scopeZoom === z && styles.scopeZoomTextOn]}>×{z}</Text>
+                    </Pressable>
+                  ))}
+                </View>
                 <Text style={styles.miniMeta}>
-                  3 s window{scope && scope.observed > 1 ? ` · scale ±${scope.scaleMax.toFixed(2)}` : ''}
+                  3 s window · ×{scopeZoom}{scope && scope.observed > 1 ? ` · scale ±${scope.scaleMax.toFixed(2)}` : ''}
                 </Text>
               </View>
+            </View>
+
+            {/* User controls — below the displays (owner 2026-08-05, item 6). */}
+            <View style={styles.ctrlRow}>
+              <Pressable onLongPress={() => help('smoothing')} delayLongPress={350}>
+                <Text style={styles.ctrlLabel}>SMOOTH</Text>
+              </Pressable>
+              {SMOOTHINGS.map((s) => (
+                <Chip key={s.label} label={s.label} active={smoothing.label === s.label} onPress={() => applySmoothing(s)} />
+              ))}
             </View>
 
             <DisplayGuideButton onPress={helpAll} />
@@ -1503,9 +1550,38 @@ const styles = StyleSheet.create({
   statusHoldRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   statusLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
   statusValue: { fontFamily: fonts.mono, fontSize: 17, color: colors.textPrimary },
-  statusValuePeak: { color: '#ff5a48' }, // peak text readouts are always red (owner 2026-07-31)
-  statusHot: { color: colors.red },
+  statusValueRed: { color: '#ff5a48' }, // peak readouts red once they actually peak, until reset (item 5)
   statusReset: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: '#c9d6e4', marginTop: -2 },
+
+  // Horizontal SPL level meter (owner 2026-08-05, item 7) — thin, left→right.
+  hMeterWrap: { paddingHorizontal: 14, marginTop: 6, gap: 3 },
+  hMeterTrack: {
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#2a2a30',
+    backgroundColor: '#0c0c10',
+    overflow: 'hidden',
+    justifyContent: 'center',
+  },
+  hMeterFill: { position: 'absolute', left: 0, top: 0, bottom: 0, borderRadius: 6 },
+  hMeterHold: { position: 'absolute', top: -1, bottom: -1, width: 2, backgroundColor: '#ffffff' },
+  hMeterCaption: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
+
+  // Oscilloscope ×1/×2/×4 zoom chips (item 2).
+  scopeZoomRow: { flexDirection: 'row', gap: 5, marginTop: 5 },
+  scopeZoomChip: {
+    flex: 1,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#141418',
+    paddingVertical: 4,
+    alignItems: 'center',
+  },
+  scopeZoomChipOn: { borderColor: 'rgba(55,224,95,.65)', backgroundColor: '#0c2012' },
+  scopeZoomText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textSub },
+  scopeZoomTextOn: { color: '#37e05f' },
   statusUnit: {
     fontFamily: fonts.mono,
     fontSize: 12,

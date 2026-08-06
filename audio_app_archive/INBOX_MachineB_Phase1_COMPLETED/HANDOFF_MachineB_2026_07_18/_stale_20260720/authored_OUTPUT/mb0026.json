@@ -1,0 +1,321 @@
+{
+ "batch": 26,
+ "topic": "Drum-Kit Recording",
+ "authored": [
+  {
+   "id": "60d31988-52a3-45ee-95f2-d448c90238c9",
+   "term": "Snare batter head",
+   "fields": {
+    "definition": "The top drumhead of a snare drum — the upper membrane struck with the stick — usually a thicker, often coated single- or double-ply head; it sits opposite the thin snare-side (resonant) head, and its type and tuning largely set the drum's attack, pitch and sustain.",
+    "plain_english": "The top skin of a snare drum. It is the one the drummer hits with the stick. It is thicker than the bottom skin. Its tuning shapes the drum's tone and punch.",
+    "purpose_function": "It gives the playing surface that is struck and set vibrating, and its material, ply count, coating and tension decide the snare's attack, tone and feel.",
+    "practical_application": "An engineer or drum tech picks and tunes the batter head for the wanted sound, then places the top snare mic a few centimetres above its edge, angled toward the centre.",
+    "category": "Drum head",
+    "related_terms": [
+     "Snare-side head",
+     "Snare wires",
+     "Snare damping",
+     "Snare ring",
+     "Snare throw-off"
+    ],
+    "common_mistakes": [
+     "Confusing the batter head (top, struck) with the snare-side head (thin bottom head the wires rest on).",
+     "Thinking head choice does not matter, when ply, coating and material strongly change attack and sustain.",
+     "Over-tightening the batter head hoping for more crack, which chokes the drum and stresses the head.",
+     "Tightening lugs unevenly, so the head is not seated flat and gives uneven pitch and short life."
+    ],
+    "scenario_contexts": [
+     "Swapping a worn coated batter head before a session to restore a fat, focused snare tone.",
+     "Tuning the batter head up or down to suit a song's feel and key.",
+     "Placing a top mic just above the batter head's rim for the main snare sound."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques (drum-kit recording — snare heads)",
+    "Owsinski, The Recording Engineer's Handbook (snare drum, head choice and tuning)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0e934d91-29d9-4958-96bd-5e658f2791cc",
+   "term": "Snare damping",
+   "fields": {
+    "definition": "The controlled reduction of a snare drum's ring, sustain and stray overtones by adding mass or friction to the batter head — with gel pads, tape, cloth, muffling rings or a wallet — while keeping the drum's attack; the amount is set to taste and to suit the mic and room.",
+    "plain_english": "Ways to calm a snare's ring. You stick a gel pad, tape, or a cloth on the top skin. This shortens the ringing tail. The drum then sounds tighter and more controlled.",
+    "purpose_function": "It tames long metallic ring and stray overtones that can clash with a mix or a mic, so the drum reads as tight and focused while keeping its initial crack.",
+    "practical_application": "When a miked snare rings too long, a tech adds a small gel pad, a strip of tape, or a muffling ring near the edge and listens back until the tail is controlled.",
+    "category": "Damping",
+    "related_terms": [
+     "Snare ring",
+     "Snare batter head",
+     "Snare wires",
+     "Snare-side head",
+     "Snare throw-off"
+    ],
+    "common_mistakes": [
+     "Over-damping until the life and tone are gone, leaving a dull, dead thud.",
+     "Damping to fix a tuning problem, when even tuning often controls ring better than muffling.",
+     "Placing damping dead centre where the stick lands, which kills attack and wears the material fast.",
+     "Assuming more damping always records better, when a little ring often sits fine once the kit is in a mix."
+    ],
+    "scenario_contexts": [
+     "Adding a gel pad to a ringing snare so it records tight and controlled.",
+     "Taping a folded tissue near the rim to shorten a bright snare's tail for a dry, vintage sound.",
+     "Removing damping to open up a snare that sounds too choked."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Recording Engineer's Handbook (snare damping and overtone control)",
+    "Huber & Runstein, Modern Recording Techniques (drum tuning and muffling)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cd5b7276-ed00-4e43-b095-dbc4c9390acf",
+   "term": "Snare ring",
+   "fields": {
+    "definition": "The sustained, often metallic overtone that carries on after the initial snare stroke, produced by the batter head, resonant head and shell resonating together; a moderate ring adds body and sustain, but excessive or dissonant ring is a common problem when close-miking a snare.",
+    "plain_english": "The ringing tone that hangs on after you hit a snare. A little bit adds life. Too much sounds annoying, like a long metallic buzz. Engineers often try to control it.",
+    "purpose_function": "It is a natural result of the heads and shell vibrating; hearing it clearly lets a tech decide how much sustain to keep and how much to remove for a given song or mic setup.",
+    "practical_application": "Hearing an unwanted ring on a close-miked snare, an engineer tunes the heads more evenly, adds light damping, or uses a narrow EQ cut on the ringing frequency.",
+    "category": "Drum acoustics",
+    "related_terms": [
+     "Snare damping",
+     "Snare batter head",
+     "Snare-side head",
+     "Snare wires",
+     "Snare throw-off"
+    ],
+    "common_mistakes": [
+     "Trying to remove ring only with heavy damping when uneven head tuning is the real cause.",
+     "Confusing pleasant sustain with the harsh, dissonant ring that clashes with a mix.",
+     "Reaching for EQ first when a small tuning change at the lugs fixes the ring more musically.",
+     "Assuming all ring is bad, when some sustain gives the snare body and helps it carry."
+    ],
+    "scenario_contexts": [
+     "Chasing an annoying overtone on a close-miked snare during tracking.",
+     "Fine-tuning lugs to even out a snare's ring before recording.",
+     "Using a narrow EQ cut to reduce a ringing frequency in the mix."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Recording Engineer's Handbook (snare overtones and ring control)",
+    "Huber & Runstein, Modern Recording Techniques (drum tuning, resonance and damping)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9e0cc1c1-ed74-4919-92de-14d94d681541",
+   "term": "Snare throw-off",
+   "fields": {
+    "definition": "The lever mechanism on the side of a snare drum — also called the strainer — that pulls the snare wires tight against the snare-side head or releases them; throwing it off drops the wires away so the drum sounds like a tom, and a paired knob sets wire tension.",
+    "plain_english": "The lever on the side of a snare drum. Flip it up and the wires press on the bottom skin, giving the buzzy crack. Flip it off and the wires drop away, so the drum sounds like a plain tom.",
+    "purpose_function": "It engages or disengages the snare wires and sets their tension, letting the player switch between the snappy snare sound and an unsnared, tom-like sound and dial in buzz and sensitivity.",
+    "practical_application": "Before a take a drummer or tech sets wire tension with the throw-off's knob and checks that the lever throws cleanly; a loose or rattling throw-off is a common cause of buzz and is tightened or serviced.",
+    "category": "Drum hardware",
+    "related_terms": [
+     "Snare wires",
+     "Snare-side head",
+     "Snare batter head",
+     "Snare damping",
+     "Snare ring"
+    ],
+    "common_mistakes": [
+     "Confusing the throw-off (the lever) with the snare wires themselves.",
+     "Setting wire tension too tight with the throw-off, which chokes the wires and kills the buzz.",
+     "Ignoring a worn or loose throw-off that lets wires rattle and buzz during a take.",
+     "Throwing the strainer on or off harshly, which can knock the tuning or damage the wires over time."
+    ],
+    "scenario_contexts": [
+     "Disengaging the throw-off so the snare plays like a tom for a song part.",
+     "Adjusting the strainer's fine-tune knob to dial in snare wire tension before tracking.",
+     "Servicing a rattling throw-off that is causing unwanted buzz on a recording."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques (snare drum construction and hardware)",
+    "Ludwig snare drum owner/technical documentation (strainer / throw-off operation and adjustment)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "21bc70a8-0d41-4f77-8eab-f9a29058829c",
+   "term": "Snare top-bottom polarity",
+   "fields": {
+    "definition": "The polarity relationship between a mic on the snare's batter (top) head and one on the snare-side (bottom) head; because the two heads move in opposite directions, the mics capture opposite pressure swings, so the bottom mic's polarity is normally inverted to stop the two signals cancelling and to keep body and snap when they are combined.",
+    "plain_english": "When you mic a snare on top and bottom, the two skins move opposite ways. So the two mics fight each other and can cancel out. Flipping the bottom mic's polarity fixes this. The snare then sounds full instead of thin.",
+    "purpose_function": "Inverting the bottom mic's polarity lines the two snare signals up so they add instead of subtract, preventing a thin, weak sound and preserving low-end body and high-end snap when the mics are summed.",
+    "practical_application": "After placing top and bottom snare mics, an engineer flips the polarity switch on the bottom mic's channel and listens for the fullest, punchiest blend, often checking both settings to hear which is stronger.",
+    "category": "Recording technique",
+    "related_terms": [
+     "Snare-side head",
+     "Snare batter head",
+     "Snare wires",
+     "Snare damping",
+     "Snare ring"
+    ],
+    "common_mistakes": [
+     "Forgetting to invert the bottom snare mic, so the two mics partly cancel and the snare sounds thin.",
+     "Assuming a polarity flip is always right, when mic distance also shifts phase and you should just listen.",
+     "Confusing polarity inversion (flipping the waveform) with time-based phase from mic spacing.",
+     "Inverting the wrong channel, or both, which undoes the correction."
+    ],
+    "scenario_contexts": [
+     "Setting up top and bottom snare mics and flipping the bottom mic's polarity for a fuller sound.",
+     "A/B testing the polarity switch to hear which setting gives more body and snap.",
+     "Troubleshooting a thin, hollow snare that turns out to be the top and bottom mics cancelling."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Recording Engineer's Handbook (top and bottom snare miking — inverting the bottom mic)",
+    "Huber & Runstein, Modern Recording Techniques (phase/polarity in multi-mic drum recording)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2887134a-d862-4dc2-a3be-0fec053023bd",
+   "term": "Snare trigger",
+   "fields": {
+    "definition": "A drum trigger — a piezo or similar transducer — fixed to the snare drum (clamped to the rim or mounted on the shell or head) that turns each strike into an electronic pulse used to fire a sampled or synthesized snare from a drum module, sampler or software, either replacing or reinforcing the acoustic snare.",
+    "plain_english": "A small sensor fixed to the snare drum. Every time the drum is hit, the sensor sends an electric signal. That signal plays a snare sample from a module or computer. It can add to or replace the real drum sound.",
+    "purpose_function": "It turns an acoustic hit into a control signal, so a tech can add consistent sample reinforcement, replace a poor sound, or drive fully electronic drums, helping get a strong, even snare in loud or difficult settings.",
+    "practical_application": "A tech clamps a trigger to the snare rim, runs it to a drum module or triggering software, and sets sensitivity and threshold so it fires on real hits but not on bleed from other drums.",
+    "category": "Electronic percussion",
+    "related_terms": [
+     "Snare-gate mistriggering",
+     "Snare batter head",
+     "Snare wires",
+     "Snare damping",
+     "Snare ring"
+    ],
+    "common_mistakes": [
+     "Setting sensitivity too high, so hits on nearby drums (crosstalk) fire the snare sample falsely.",
+     "Setting the threshold too high, so soft ghost notes are missed.",
+     "Mounting the trigger loosely, which gives weak or double triggers.",
+     "Assuming a trigger captures dynamics perfectly, when poor setup can flatten the drummer's touch."
+    ],
+    "scenario_contexts": [
+     "Clamping a trigger to the snare to reinforce a weak acoustic drum in a loud live mix.",
+     "Using a trigger to replace a bleed-heavy snare with a clean sample during mixing.",
+     "Dialing in threshold and sensitivity so the trigger fires on hits but not on tom bleed."
+    ]
+   },
+   "sources": [
+    "Roland drum-trigger and drum-module technical documentation (trigger sensitivity, threshold, crosstalk/mask settings)",
+    "Huber & Runstein, Modern Recording Techniques (drum triggering, sound replacement and reinforcement)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f90e9dcc-0060-4b79-bee5-96f45b195137",
+   "term": "Snare wires",
+   "fields": {
+    "definition": "The set of thin coiled metal wires (also called snares or the 'snappy') stretched across the outside of the snare-side head; when the batter head is struck, the resonant head vibrates against these wires to produce the bright, buzzing rattle that gives the snare drum its name and character.",
+    "plain_english": "The coiled metal wires stretched under a snare drum. When you hit the top skin, the bottom skin buzzes against these wires. That buzz is the snare's signature crack and rattle. Loosen or remove them and it sounds like a tom.",
+    "purpose_function": "They add the sharp, buzzy snap to each stroke; their tension and the number of strands set the drum's sensitivity, sustain and how tight or loose the buzz sounds.",
+    "practical_application": "A drum tech sets wire tension with the throw-off to balance snap and buzz, and an engineer may add a bottom mic to capture the wires' detail while watching for sympathetic buzz from other drums.",
+    "category": "Drum hardware",
+    "related_terms": [
+     "Snare throw-off",
+     "Snare-side head",
+     "Snare batter head",
+     "Snare damping",
+     "Snare ring"
+    ],
+    "common_mistakes": [
+     "Over-tightening the wires, which chokes them into a short, lifeless snap.",
+     "Leaving the wires too loose, giving a sloppy, buzzy rattle that trails after every hit.",
+     "Blaming the room for sympathetic snare buzz when detuning or a light touch on the wires would fix it.",
+     "Confusing the snare wires with the snare-side head they rest against."
+    ],
+    "scenario_contexts": [
+     "Adjusting snare-wire tension to balance crisp snap against buzz before a take.",
+     "Adding a bottom snare mic to capture the detail of the wires.",
+     "Muting sympathetic wire buzz that rings when the toms or bass are played."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques (snare drum — snares/wires and their effect)",
+    "Owsinski, The Recording Engineer's Handbook (snare bottom miking and wire buzz)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "90ac4a32-b976-4408-aacf-62a55c15f15e",
+   "term": "Snare-gate mistriggering",
+   "fields": {
+    "definition": "A fault in which a noise gate on the snare channel opens or closes at the wrong moments — false-opening on hi-hat or tom bleed, chattering, or failing to open on soft ghost notes — because its threshold, timing or key/sidechain filtering is not set correctly for the drum's dynamics and the surrounding spill.",
+    "plain_english": "A noise gate should open only when the snare is hit. Mistriggering is when it opens at the wrong time. Loud hi-hat or tom bleed can trip it. Or it may miss quiet snare hits. Both leave the snare sounding wrong.",
+    "purpose_function": "Spotting mistriggering matters because a snare gate is meant to cut bleed between hits; when it misfires it lets in spill or chops off wanted hits, so the tech must retune the gate rather than trust it blindly.",
+    "practical_application": "When a snare gate chatters or drops ghost notes, an engineer adjusts threshold, attack, hold and release, and uses a key filter or the bottom mic as the trigger source so only real snare hits open the gate.",
+    "category": "Mixing",
+    "related_terms": [
+     "Snare trigger",
+     "Snare wires",
+     "Snare batter head",
+     "Snare damping",
+     "Snare-side head"
+    ],
+    "common_mistakes": [
+     "Setting the threshold between the snare's loud and soft hits, so ghost notes are cut off.",
+     "Not using a key filter, so loud hi-hat or tom bleed keeps false-opening the gate.",
+     "Setting the release too fast, which makes the gate chatter and clip the snare's tail.",
+     "Trusting the gate untended instead of checking it across the whole performance's dynamics."
+    ],
+    "scenario_contexts": [
+     "A snare gate false-opening every time the hi-hat is hit during mixdown.",
+     "Ghost notes disappearing because the gate threshold is set too high.",
+     "Adding a key/sidechain filter so only snare hits open the gate."
+    ]
+   },
+   "sources": [
+    "Izhaki, Mixing Audio: Concepts, Practices and Tools (noise gates — key filtering and false triggering)",
+    "Yamaha Sound Reinforcement Handbook (noise gates on drums — threshold and sidechain/key input)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "78ae085e-1516-43b9-9d8a-468ac10381d7",
+   "term": "Snare-side head",
+   "fields": {
+    "definition": "The thin lower drumhead of a snare drum — also called the resonant or snare head — mounted opposite the batter head with the snare wires resting against its outer surface; being very thin (typically around 2–3 mil), it responds readily to the batter head's vibration and drives the wires that create the drum's buzz.",
+    "plain_english": "The thin bottom skin of a snare drum. The metal snare wires sit against it. When the top skin is hit, this thin skin vibrates and rattles the wires. That is what makes the snare buzz.",
+    "purpose_function": "Its thinness lets it react quickly to the struck batter head and pass that energy to the snare wires; its tuning strongly affects the drum's sensitivity, snare response and sustain.",
+    "practical_application": "A drum tech tunes the snare-side head fairly tight for a crisp, responsive buzz, handles it carefully because it tears easily, and an engineer may place a bottom mic near it to capture wire detail.",
+    "category": "Drum head",
+    "related_terms": [
+     "Snare batter head",
+     "Snare wires",
+     "Snare throw-off",
+     "Snare top-bottom polarity",
+     "Snare damping"
+    ],
+    "common_mistakes": [
+     "Confusing the snare-side (bottom) head with the batter (top) head that is struck.",
+     "Tuning the very thin snare-side head like a thick batter head and tearing it.",
+     "Detuning it too loose, which gives a sloppy, buzzy, unresponsive snare.",
+     "Striking the snare-side head to play it, when it is a resonant head, not a playing surface."
+    ],
+    "scenario_contexts": [
+     "Replacing a torn snare-side head and tuning it tight for crisp wire response.",
+     "Placing a bottom mic near the snare-side head to capture the wires.",
+     "Adjusting snare-side head tension to change the snare's sensitivity and buzz."
+    ]
+   },
+   "sources": [
+    "Remo drumhead technical specifications (snare-side heads — construction and 2–3 mil thicknesses)",
+    "Huber & Runstein, Modern Recording Techniques (resonant/snare-side head and snare response)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

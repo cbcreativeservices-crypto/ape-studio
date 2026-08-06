@@ -1,0 +1,230 @@
+{
+ "expert": "language",
+ "group": 22,
+ "reviews": [
+  {
+   "id": "0df73d0f-2fab-4576-a59a-ace7a28f231e",
+   "term": "Handheld Transmitter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1a084ff3-a4ea-4c78-9fc4-d79d485a3416",
+   "term": "Hard Clipping",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cb6d38a0-df28-438e-963d-f06cbd43675d",
+   "term": "Hard Knee",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2fc299d4-a44d-498c-8112-1b0c30f3276d",
+   "term": "Harmonic (overtones)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fde28de2-876e-4c55-96d2-dd7c4033da4e",
+   "term": "Harmonic Distortion",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "153f460a-a87a-400e-97de-d7018df6bcad",
+   "term": "Harmonic Series",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4292ee5e-306e-4834-9613-397f8dd0dfe5",
+   "term": "HDBaseT",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c53f9731-931a-422b-aa8d-4960c82129f8",
+   "term": "HDMI",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6b4b49a2-9ad8-4360-baf7-04f4340471e0",
+   "term": "HDMI (High-Definition Multimedia Interface)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b3814124-5a18-49fb-a0bd-92b1506a4a8a",
+   "term": "HDMI ARC",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2257ceec-4470-4bc0-9de4-af2bbf902705",
+   "term": "HDMI CEC",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a19fe999-d9d9-4162-8606-3446971db4aa",
+   "term": "HDMI eARC",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2cb84d5f-ae55-4537-a583-acaa60663485",
+   "term": "Head Unit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eb52785c-d77d-4254-9afa-f15137eccc14",
+   "term": "Headbasket",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4c95fcc3-031a-4f76-a2c5-8350b2245d14",
+   "term": "Headphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fd36f983-bef0-4dd9-9286-5d3645f5ca61",
+   "term": "Headphone Adapter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1e26355d-035b-453e-b6aa-078b0178d4ca",
+   "term": "Headphone Mix (Cue Mix)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e2b5f074-699f-41b3-b545-72b5f7c8615c",
+   "term": "Headroom",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ab523315-ecf7-4785-8625-ae4efc409623",
+   "term": "Headset microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "41e0dfa1-73bb-462f-bae1-c95df0a110bb",
+   "term": "Hearing Accessibility",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d0960c8c-65ac-45c2-9163-ff401a9ab0ac",
+   "term": "Hearing Conservation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fbd47ce6-7b60-4137-9f75-9b321d491240",
+   "term": "Hearing Damage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "26262cb5-dbbd-49f7-8aa1-a71cf4eb57eb",
+   "term": "Hearing Loop",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "practical_application",
+     "severity": "Low",
+     "issue": "The clause 'installs the loop wire to plan' is garbled/incomplete; 'to plan' reads as a broken phrase and the referent of the plan is unclear.",
+     "suggestion": "Rewrite as 'A technician installs the loop wire according to a layout plan, drives it with a loop amplifier set to IEC 60118-4 field levels, and verifies the field with a meter...'"
+    }
+   ]
+  },
+  {
+   "id": "3c1a05c8-7aad-445a-9d0c-065a2dbc5388",
+   "term": "Hearing Range",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fd0aaa8b-ca62-4096-bef4-8d040e16f28d",
+   "term": "Heat Dissipation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "69d52fa6-2bf5-4fea-bf5a-b4c63ab04108",
+   "term": "Helical Antenna",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "70bf910d-1920-42c2-a650-f7a0e290062b",
+   "term": "Hertz (Hz)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "29d24672-1884-41bc-9c67-991fa08ec884",
+   "term": "Hi-Res Audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8b06ba3f-878f-41bd-b5f2-812c7c2a089c",
+   "term": "High Current Output",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "343b7913-437d-4ce6-a1ea-2a758cf6c95f",
+   "term": "High Shelf",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e78df147-d33a-45e2-aa8a-bba85dbcb269",
+   "term": "High-Frequency Damping",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a54a03c1-1fdd-46f2-9ae9-fb038203c9e2",
+   "term": "High-Level Input",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "956c6fa0-e1c4-4fc9-b15e-284efe8eb5e6",
+   "term": "High-Pass Filter (HPF / Low-Cut Filter)",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "'EQ (equalizer)' appears twice in the related_terms list (duplicate entry).",
+     "suggestion": "Remove the duplicate so 'EQ (equalizer)' is listed only once."
+    }
+   ]
+  },
+  {
+   "id": "490dd2ed-ae24-4e7f-8bae-648cc9cdf60d",
+   "term": "Hirose Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "60afb2a1-2e78-4806-81bd-da7c7437611c",
+   "term": "Hiss",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

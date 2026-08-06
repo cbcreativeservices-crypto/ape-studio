@@ -1,0 +1,106 @@
+{
+ "batch": 180,
+ "topic": "Mastering Fundamentals & Chain",
+ "terms": [
+  {
+   "id": "f16edd98-ad1b-4981-9f65-f7a488e65284",
+   "term": "Weiss EQ1",
+   "topic": "Mastering Fundamentals & Chain",
+   "seq": 1160,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "6cedcf10-bcc4-482f-9f61-a164524f4b61",
+   "term": "Weiss MM-1",
+   "topic": "Mastering Fundamentals & Chain",
+   "seq": 1160,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "99dc77c8-bdce-4bf7-9268-4766b7498511",
+   "term": "Wet score stem",
+   "topic": "Mastering Fundamentals & Chain",
+   "seq": 1160,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "7782ef18-ab38-409f-a245-af306622211f",
+   "term": "Woodwinds stem",
+   "topic": "Mastering Fundamentals & Chain",
+   "seq": 1160,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

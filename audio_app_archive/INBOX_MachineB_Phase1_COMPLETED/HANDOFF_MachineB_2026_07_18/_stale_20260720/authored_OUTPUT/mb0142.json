@@ -1,0 +1,159 @@
+{
+ "batch": 142,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "4da9aa47-82ce-4b5a-83b6-27142809be74",
+   "term": "Stinger cue",
+   "fields": {
+    "definition": "A stinger cue is a playback cue that fires a stinger: a short, sharp musical or sound-effect accent used to punctuate a moment in a show, broadcast, or production. It is triggered on demand by the operator, normally as a one-shot that plays once without looping.",
+    "plain_english": "A stinger cue is a button that plays a short, sharp sound to mark a big moment. Think of the quick 'sting' you hear on a game show when someone gives a wrong answer.",
+    "purpose_function": "It lets an operator drop a brief, attention-grabbing sound on cue to punctuate an action, reveal, or transition without interrupting the main audio flow.",
+    "practical_application": "In live theatre or broadcast, a sound operator loads stingers into a cue list, for example in QLab, and fires one on the exact beat, such as a dramatic hit at a scene reveal.",
+    "category": "Playback Cue",
+    "related_terms": ["Cue list", "One-shot sample", "Bumper", "Sound effect (SFX)", "Playback engine"],
+    "common_mistakes": ["Looping a stinger instead of setting it as a one-shot, so it repeats", "Setting the stinger level too low to cut through the mix", "Firing the stinger a beat late because the cue was not pre-loaded and armed"],
+    "scenario_contexts": ["Punctuating a wrong answer on a live game show", "Adding a dramatic hit at a scene reveal in theatre", "Marking a transition between segments in a live broadcast"]
+   },
+   "sources": ["Figure 53 QLab documentation (audio and cue playback)", "Alten, Audio in Media (production stings and stingers)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "68c8339a-46c7-4095-add0-23e7fa486686",
+   "term": "Streaming compliance",
+   "fields": {
+    "definition": "Streaming compliance is the practice of preparing a mix or master so it meets the loudness, true-peak, and delivery specifications of streaming platforms. Following AES streaming recommendations, typical targets are around -14 LUFS integrated loudness with a maximum true peak of -1 dBTP to avoid codec-induced clipping.",
+    "plain_english": "Streaming compliance means making sure your song fits the rules of services like Spotify or Apple Music. The main rule is keeping the loudness and peak levels in the range they ask for, so the track plays back cleanly.",
+    "purpose_function": "It exists so a release plays back at a consistent, predictable level and does not distort after a platform turns it down or encodes it, keeping the artist's intended sound intact.",
+    "practical_application": "Before uploading, an engineer checks the master on a loudness meter and adjusts level and limiting so the integrated loudness and true peak land inside the platform's targets.",
+    "category": "Streaming Delivery",
+    "related_terms": ["LUFS", "True peak", "Loudness normalization", "Integrated loudness", "Streaming compliance verification", "Mastering"],
+    "common_mistakes": ["Mastering far louder than the target, which the platform just turns down and which often adds true-peak distortion", "Ignoring true peak and letting the codec clip on peaks near 0 dBFS", "Assuming every platform uses the same target when their normalization levels differ"],
+    "scenario_contexts": ["Preparing a single for release on Spotify and Apple Music", "Checking a podcast episode meets a distributor's loudness spec", "Delivering a mastered album that stays consistent across streaming services"]
+   },
+   "sources": ["AES TD1008 (Recommendations for Loudness of Internet Audio Streaming)", "EBU R128 / EBU Tech 3341 (loudness metering)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a8315cb5-8b5c-4fae-9585-4f072944923b",
+   "term": "Streaming compliance verification",
+   "fields": {
+    "definition": "Streaming compliance verification is the quality-control step of measuring a finished mix or master against a streaming platform's delivery specification. Using an ITU-R BS.1770 or EBU R128 loudness meter, the engineer confirms integrated loudness, true peak, and often loudness range fall within the required limits before delivery.",
+    "plain_english": "This is the final check that your song follows the streaming rules before you send it out. You run the track through a loudness meter and read the numbers to make sure they are in range.",
+    "purpose_function": "It catches level and true-peak problems before release, so the track is not rejected, turned down unexpectedly, or distorted after encoding.",
+    "practical_application": "An engineer runs the bounced master through a metering plugin, reads integrated LUFS and true peak, and re-exports if any value is out of spec.",
+    "category": "Streaming Delivery",
+    "related_terms": ["Streaming compliance", "LUFS", "True peak", "Loudness meter", "Integrated loudness", "Quality control (QC)"],
+    "common_mistakes": ["Reading momentary or short-term loudness instead of integrated loudness for the whole track", "Verifying with a meter that is not ITU-R BS.1770 compliant", "Skipping true-peak metering and only checking sample peak"],
+    "scenario_contexts": ["Final QC pass on a master before uploading to a distributor", "Confirming a broadcast deliverable meets EBU R128", "Batch-checking loudness across an album so tracks match"]
+   },
+   "sources": ["AES TD1008 (Recommendations for Loudness of Internet Audio Streaming)", "EBU R128 / EBU Tech 3341 (loudness metering)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6e268346-48ae-48db-98dc-41f34b5aeea9",
+   "term": "Streaming mix",
+   "fields": {
+    "definition": "A streaming mix is a mix balanced and leveled with streaming playback in mind, where platforms apply loudness normalization and lossy codec encoding. It prioritizes clarity, controlled dynamics, mono compatibility, and headroom over raw loudness, so the balance survives normalization.",
+    "plain_english": "A streaming mix is a mix made to sound good on services like Spotify, which even out the volume of every song. Because loudness gets matched, you focus on a clean, clear balance instead of just making it loud.",
+    "purpose_function": "It ensures the song still sounds full, clear, and correctly balanced after a platform normalizes its level and compresses it into a streaming codec.",
+    "practical_application": "A mix engineer references the track on earbuds and phone speakers, checks the mono fold-down, and leaves headroom so the mastering stage can hit streaming loudness targets cleanly.",
+    "category": "Streaming Delivery",
+    "related_terms": ["Streaming compliance", "Loudness normalization", "Mono compatibility", "Headroom", "Streaming translation", "LUFS"],
+    "common_mistakes": ["Over-compressing the mix to chase loudness the platform will only turn down", "Leaving no headroom for the mastering and limiting stage", "Not checking how the mix folds to mono on phone speakers"],
+    "scenario_contexts": ["Mixing a single destined mainly for Spotify and Apple Music", "Delivering a mix that must hold up on phone and earbud playback", "Preparing a mix so the master can meet streaming loudness targets"]
+   },
+   "sources": ["AES TD1008 (Recommendations for Loudness of Internet Audio Streaming)", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "404b6f71-dd4a-43b1-9a7c-4fee4850802a",
+   "term": "Streaming translation",
+   "fields": {
+    "definition": "Streaming translation refers to how well a mix or master holds up, or translates, after streaming platforms apply loudness normalization and lossy codec encoding. Good streaming translation means the balance, tonality, and impact stay consistent across services and playback devices despite that processing.",
+    "plain_english": "Streaming translation is how well your song survives after a streaming service changes its volume and squashes it into a smaller file. If it still sounds balanced and clear on any service or phone, it translates well.",
+    "purpose_function": "It matters because a mix that sounds great in the studio can shift once a platform normalizes and encodes it; aiming for good translation keeps the artist's intended sound intact for listeners.",
+    "practical_application": "An engineer auditions a codec preview, for example an AAC or Ogg encode, at the platform's playback level to hear tonal or peak changes, then adjusts the mix or master to compensate.",
+    "category": "Streaming Delivery",
+    "related_terms": ["Mix translation", "Loudness normalization", "Lossy codec", "True peak", "Streaming compliance", "Reference monitoring"],
+    "common_mistakes": ["Judging the mix only at full studio level, not the platform's normalized level", "Ignoring codec artifacts on bright, peaky material", "Assuming all platforms sound the same after encoding"],
+    "scenario_contexts": ["Comparing a master before and after AAC encoding", "Checking a release sounds consistent on Spotify, Apple Music, and YouTube", "Diagnosing why a loud master sounds dull after normalization"]
+   },
+   "sources": ["AES TD1008 (Recommendations for Loudness of Internet Audio Streaming)", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f6bf16ac-abfe-4b80-b21d-f34ab17ba5c6",
+   "term": "Studio One Project",
+   "fields": {
+    "definition": "In PreSonus Studio One, a Project is the mastering document used to assemble finished songs into a sequenced album or release. It provides a mastering chain, track spacing and metadata, and export to disc image, digital files, and DDP, with a link that updates it when a source Song changes.",
+    "plain_english": "A Studio One Project is the part of the program where you turn finished songs into a full album. You line up the tracks, set the gaps and loudness, add final polish, and export the whole release.",
+    "purpose_function": "It exists to handle mastering and album assembly separately from mixing, so an engineer can level-match songs, sequence them, and produce consistent delivery files.",
+    "practical_application": "After mixing each Song, an engineer adds them to a Project, applies mastering plugins, sets spacing and metadata, then exports the album for streaming or disc.",
+    "category": "DAW Document Type",
+    "related_terms": ["Studio One Song", "Studio One Show", "Mastering", "DDP", "LUFS", "Sequencing"],
+    "common_mistakes": ["Confusing the Project (mastering) page with the Song (mixing) page", "Trying to record or arrange audio in a Project instead of a Song", "Forgetting to update the Project after re-mixing a linked Song"],
+    "scenario_contexts": ["Assembling and mastering an album from individual mixed songs", "Level-matching and sequencing tracks for a release", "Exporting a mastered set as a DDP image for replication"]
+   },
+   "sources": ["PreSonus Studio One Reference Manual (Project page)", "Sound on Sound, Studio One Project window / mastering technique articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "712dfcc9-c528-47c1-b91c-09db3071c73c",
+   "term": "Studio One Show",
+   "fields": {
+    "definition": "In PreSonus Studio One, a Show is the live-performance document created on the Show Page. It organizes a setlist of songs, with backing tracks, virtual instruments, and per-song patches, plus a performance view for playing a set in real time on stage.",
+    "plain_english": "A Studio One Show is a file built for playing live. It holds your setlist, backing tracks, and instrument sounds so you can move through a gig one song at a time.",
+    "purpose_function": "It exists so musicians can arrange, rehearse, and perform a whole set live from the DAW, switching songs and sounds without loading separate sessions.",
+    "practical_application": "A performer builds a Show, adds each song's backing tracks and patches, sets the setlist order, then runs the gig from the Show Page's performance view.",
+    "category": "DAW Document Type",
+    "related_terms": ["Studio One Song", "Studio One Project", "Setlist", "Patch", "Backing track", "Virtual instrument"],
+    "common_mistakes": ["Confusing a Show (live performance) with a Song (recording and mixing)", "Not testing patch changes before the gig, causing gaps between songs", "Overloading the CPU with too many live instruments and no freezing or bouncing"],
+    "scenario_contexts": ["Running a live set with backing tracks and instrument patches", "Rehearsing a setlist in performance order", "Switching songs and sounds hands-free during a show"]
+   },
+   "sources": ["PreSonus Studio One Reference Manual (Show Page / Performance View)", "Sound on Sound, Studio One Show Page articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e10f6ac7-99bc-46db-b335-e19319d34bfc",
+   "term": "Studio One Song",
+   "fields": {
+    "definition": "In PreSonus Studio One, a Song is the primary document for recording, editing, arranging, and mixing a single piece of music. It contains the audio and instrument tracks, the arrangement, and the mix console, and can be sent to a Project for mastering.",
+    "plain_english": "A Studio One Song is the main file where you record and mix one track. It holds your recordings, the arrangement, and the mixer, all in one place.",
+    "purpose_function": "It is the working session where all recording, editing, and mixing happen for one piece of music before it is mastered.",
+    "practical_application": "An engineer opens a Song to track parts, edit takes, and mix, then adds the finished Song to a Project for mastering.",
+    "category": "DAW Document Type",
+    "related_terms": ["Studio One Project", "Studio One Show", "Arrangement", "Mix console", "Track", "Session"],
+    "common_mistakes": ["Trying to master or sequence an album inside a Song instead of a Project", "Confusing a Song with a Show used for live performance", "Not setting the correct sample rate before recording a Song"],
+    "scenario_contexts": ["Recording and mixing a single track", "Editing takes and comping vocals in the arrangement", "Sending a finished mix to a Project for mastering"]
+   },
+   "sources": ["PreSonus Studio One Reference Manual (Song document)", "Sound on Sound, PreSonus Studio One review and technique articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4c6c1e3c-2a13-4ab9-9372-32703a06f28f",
+   "term": "Summing Stack",
+   "fields": {
+    "definition": "In Logic Pro, a Summing Stack is a type of Track Stack that routes the outputs of its subtracks to a shared bus, with the main track becoming an aux (audio subgroup) that sums them into a submix. Unlike a Folder Stack, which groups tracks without changing their routing, a Summing Stack lets the whole group be processed and controlled as one.",
+    "plain_english": "A Summing Stack in Logic Pro is a folder that combines several tracks into one submix. All the tracks feed into a single channel, so you can add effects and control their volume together.",
+    "purpose_function": "It lets you build a submix, for example all drums or all backing vocals, so shared processing and level control apply to the whole group through one aux channel.",
+    "practical_application": "A mixer selects the drum tracks and creates a Summing Stack so the kit runs through one bus, then adds glue compression and rides the group with a single fader.",
+    "category": "Track Routing",
+    "related_terms": ["Folder Stack", "Track Stack", "Aux channel", "Bus", "Submix", "VCA"],
+    "common_mistakes": ["Confusing a Summing Stack (routes to a bus) with a Folder Stack (VCA control, no routing change)", "Expecting individual subtrack outputs to stay direct after summing", "Adding duplicate processing on both the subtracks and the summing aux"],
+    "scenario_contexts": ["Creating a drum submix on one bus for glue compression", "Grouping backing vocals to process and fade together", "Building stems by summing related tracks to shared auxes"]
+   },
+   "sources": ["Apple Logic Pro User Guide (Track Stacks overview)", "Sound on Sound, Logic track stacks technique article"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

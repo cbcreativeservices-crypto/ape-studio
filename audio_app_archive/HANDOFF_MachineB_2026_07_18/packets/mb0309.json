@@ -1,0 +1,56 @@
+{
+ "batch": 309,
+ "topic": "Voice & Vocal Perception",
+ "terms": [
+  {
+   "id": "ff557b12-f78f-45b3-a419-cd65790ca68d",
+   "term": "Voice.ai",
+   "topic": "Voice & Vocal Perception",
+   "seq": 1490,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "200a631e-ede4-462a-a2b9-b33b1c746fe4",
+   "term": "Zero-shot voice cloning",
+   "topic": "Voice & Vocal Perception",
+   "seq": 1490,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

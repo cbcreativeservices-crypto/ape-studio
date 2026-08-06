@@ -1,0 +1,146 @@
+section,title,topic1,topic2,topic3
+Capture & Microphones,Microphone Technology Specialist,Microphone Transducer Principles,Polar Patterns & Microphone Types,Specialized & Emerging Microphones
+Capture & Microphones,Studio Miking Specialist,Close-Miking - Drums & Percussion,"Close-Miking - Guitars, Amps & Strings","Close-Miking - Keys, Winds, Brass & Vocals"
+Capture & Microphones,Stereo & Ensemble Recording,Stereo & Ensemble Miking Techniques,"Orchestral, Choir & Acoustic-Ensemble Mixing",Microphone Specs & Characteristics
+Capture & Microphones,Drum Miking Specialist,Close-Miking - Drums & Percussion,Stereo & Ensemble Miking Techniques,Microphone Specs & Characteristics
+Capture & Microphones,Live Wireless Mic Systems,RF Wireless Systems,Microphone Transducer Principles,Live Sound - Monitor Engineering
+Capture & Microphones,Field & Location Recording,Recording Fundamentals & Signal Chain,"Post Workflow, Spotting & Sessions",Microphone Transducer Principles
+Capture & Microphones,Classical & Orchestral Recording,Stereo & Ensemble Miking Techniques,"Orchestral, Choir & Acoustic-Ensemble Mixing",Room Treatment Layout & Application
+Capture & Microphones,Guitar Tone & Recording,"Close-Miking - Guitars, Amps & Strings",Instrument Recording (by Source),"Instrument Mixing - Guitars, Bass & Keys"
+Capture & Microphones,Vocal Recording & Production,"Close-Miking - Keys, Winds, Brass & Vocals",Vocal Mixing,"Session Workflow, Takes & Documentation"
+Loudspeakers & Amplification,Loudspeaker Design Engineer,Transducer Design & Motor Systems,"Enclosure, Horn & Radiation Engineering",Crossover & System Engineering
+Loudspeakers & Amplification,Loudspeaker Systems & Measurement,Loudspeaker Types & Drivers,Loudspeaker Measurement & Modeling,Amplifiers
+Loudspeakers & Amplification,Tube & Vintage Gear Specialist,Vacuum Tubes,Preamp & Converter Engineering,Repair
+Loudspeakers & Amplification,PA Loudspeaker Systems,Loudspeaker Types & Drivers,System Deployment & Rigging,"System Tuning, Optimization & Alignment"
+Loudspeakers & Amplification,Amplifier Technology,Amplifiers,Active Devices & Semiconductors,Circuits & Topologies
+Loudspeakers & Amplification,Horn & Waveguide Design,"Enclosure, Horn & Radiation Engineering",Crossover & System Engineering,Loudspeaker Measurement & Modeling
+"Consoles, Networking & Infrastructure",Mixing Console Specialist,Console Architecture & Bus Structure,Console Signal Flow & Gain Staging,Control Surfaces & Machine Control
+"Consoles, Networking & Infrastructure",Audio Networking (Dante & AV),Dante Fundamentals & Routing,"Clocking, Redundancy & Network Management","Standards - Coding, Systems, Metadata & Transport"
+"Consoles, Networking & Infrastructure",Studio Wiring & Infrastructure,"Racks, Patchbays & Wiring Infrastructure",Connectors & Plugs,Cables & Wiring
+"Consoles, Networking & Infrastructure",Digital Console Operations,Console Architecture & Bus Structure,Console Signal Flow & Gain Staging,Digital Live Sound
+"Consoles, Networking & Infrastructure",Gain Staging & Signal Flow,Console Signal Flow & Gain Staging,Signal Path & Levels,"Levels, Metering & Reference Standards"
+"Consoles, Networking & Infrastructure",AV-over-IP Systems,Commercial/Install AV & Assisted Listening,Dante Fundamentals & Routing,Audio System Design & Specification
+"Consoles, Networking & Infrastructure",Stage Patch & Signal Distribution,"Racks, Patchbays & Wiring Infrastructure",Connectors & Plugs,Dante Fundamentals & Routing
+Signal Processing,Dynamics & EQ Specialist,Equalization (EQ),Compression & Limiting,"Gates, Expanders & Transient Design"
+Signal Processing,Time-Based & Creative FX,Reverb,Delay & Time-Based Effects,Creative Effects & Sound Design in the Mix
+Signal Processing,Plugin & Processing Power User,"Plugin Formats, Hosts & Processing",Advanced Parallel & Bus Processing,Virtual Instruments & Samplers
+Signal Processing,EQ & Tonal Shaping,Equalization (EQ),Tonal & Timbre Descriptors,Frequency & Spectrum Analysis
+Signal Processing,Compression & Dynamics,Compression & Limiting,"Gates, Expanders & Transient Design","Mix Automation, Bus & Loudness"
+Signal Processing,Reverb & Spatial FX,Reverb,Delay & Time-Based Effects,Immersive Formats & Delivery
+Signal Processing,Sound Design with Synthesis,Synthesis Fundamentals & Oscillators,Creative Effects & Sound Design in the Mix,Virtual Instruments & Samplers
+Acoustics & Measurement,Room Acoustics & Treatment,Acoustic Principles & Room Behavior,Room Treatment Layout & Application,Studio & Facility Design
+Acoustics & Measurement,Audio Measurement & Analysis,Acoustic & Room Measurement Methods,Frequency & Spectrum Analysis,Signal & Transfer-Function Analysis
+Acoustics & Measurement,Test & Calibration Technician,"Levels, Metering & Reference Standards",Test Signals & Measurement Instruments,Test & Measurement Instruments
+Acoustics & Measurement,System Tuning & Alignment,"System Tuning, Optimization & Alignment",Signal & Transfer-Function Analysis,Acoustic & Room Measurement Methods
+Acoustics & Measurement,Audio Metrology & Calibration,"Levels, Metering & Reference Standards",Test & Measurement Instruments,Standards - General Acoustics & Signal Terms
+Acoustics & Measurement,Spectrogram & STFT Analysis,Time/Frequency Displays & Spectrograms,Frequency & Spectrum Analysis,Signal & Transfer-Function Analysis
+"Troubleshooting, Repair & Electronics",Audio Troubleshooting Specialist,Troubleshooting Methodology & Diagnostics,Live & System Fault Isolation,"Recording, Mixing & Troubleshooting Concepts"
+"Troubleshooting, Repair & Electronics",Electronics Repair Technician,Repair,Soldering,Circuits & Topologies
+"Troubleshooting, Repair & Electronics",Analog Electronics for Audio,Passive Components,Active Devices & Semiconductors,Circuits & Topologies
+"Troubleshooting, Repair & Electronics",Audio Hardware Manufacturing,"Manufacturing, Assembly & Production",Electromechanical Parts & Hardware,Preamp & Converter Engineering
+"Troubleshooting, Repair & Electronics",PCB & Assembly Technician,"Manufacturing, Assembly & Production",Soldering,Circuits & Topologies
+"Troubleshooting, Repair & Electronics",Microphone Building,Microphone Transducer Principles,Passive Components,Electromechanical Parts & Hardware
+"Troubleshooting, Repair & Electronics",Preamp & Converter Design,Preamp & Converter Engineering,Active Devices & Semiconductors,Circuits & Topologies
+"Troubleshooting, Repair & Electronics",Tube Amp Building,Vacuum Tubes,Circuits & Topologies,Soldering
+"Troubleshooting, Repair & Electronics",Effects & Pedal Design,Circuits & Topologies,Active Devices & Semiconductors,Creative Effects & Sound Design in the Mix
+Live Sound & Touring,Live Sound System Engineer,System Deployment & Rigging,"System Tuning, Optimization & Alignment",RF Wireless Systems
+Live Sound & Touring,Live Mixing Specialist,Live Sound - FOH Mixing Workflow,Live Sound - Monitor Engineering,Digital Live Sound
+Live Sound & Touring,Touring & Road Crew,Road Crew,Live Sound - Concert-Audio Slang,System Deployment & Rigging
+Live Sound & Touring,DJ & Club Sound,"Beatmatching, Mixing & FX",Digital Live Sound,Loudness & Listening Environments
+Live Sound & Touring,FOH Engineering,Live Sound - FOH Mixing Workflow,Console Architecture & Bus Structure,"System Tuning, Optimization & Alignment"
+Live Sound & Touring,Monitor Engineering (IEM & Wedges),Live Sound - Monitor Engineering,RF Wireless Systems,Live Sound - FOH Mixing Workflow
+Live Sound & Touring,Rigging & Load Safety,"Rigging Hardware, Loads & Motorized Flying","Stage Platforms, Scenery & Soft Goods",Professional Audio Safety
+Live Sound & Touring,Corporate & Event Production,"Show Control, Cueing & Communications",Audio System Design & Specification,Commercial/Install AV & Assisted Listening
+Live Sound & Touring,Electronic Live Performance,"Beatmatching, Mixing & FX",DAW: Ableton Live,Digital Live Sound
+"Venue, Stagecraft & Entertainment",Stagecraft & Rigging,"Stage Platforms, Scenery & Soft Goods","Rigging Hardware, Loads & Motorized Flying",Venue Architecture & Spaces
+"Venue, Stagecraft & Entertainment",Theatrical Sound,Theatrical Sound (commercial card),"Show Control, Cueing & Communications",Stage Geography & Backstage
+"Venue, Stagecraft & Entertainment",Worship Audio,Worship Sound (commercial card),Live Sound - FOH Mixing Workflow,Live Sound - Monitor Engineering
+"Venue, Stagecraft & Entertainment",Show Control & Cueing,"Show Control, Cueing & Communications",Orchestra Pit & Ensemble Layout,Theatrical Sound (commercial card)
+Installed & Commercial Audio,Consumer & Home Audio,HiFi Consumer Audio,Vehicle Audio,Loudspeaker Types & Drivers
+Installed & Commercial Audio,Assisted Listening & Accessibility,Commercial/Install AV & Assisted Listening,Speech & Voice Perception,Standards - General Acoustics & Signal Terms
+Installed & Commercial Audio,Distributed & Paging Systems,Audio System Design & Specification,Commercial/Install AV & Assisted Listening,Amplifiers
+Installed & Commercial Audio,Home Theater Design,HiFi Consumer Audio,Immersive Formats & Delivery,Acoustic Principles & Room Behavior
+Installed & Commercial Audio,Car Audio Installation,Vehicle Audio,Loudspeaker Types & Drivers,Amplifiers
+Studio Recording,Studio Recording Engineer,Recording Fundamentals & Signal Chain,"Session Workflow, Takes & Documentation",Instrument Recording (by Source)
+Studio Recording,Band Tracking Specialist,Band Tracking Workflow & Arrangement,Drum-Kit Recording,Instrument Recording (by Source)
+Studio Recording,Drum Recording & Mixing,Drum-Kit Recording,Close-Miking - Drums & Percussion,Instrument Mixing - Drums & Percussion
+Studio Recording,Orchestral Recording & Mixing,"Orchestral, Choir & Acoustic-Ensemble Mixing",Stereo & Ensemble Miking Techniques,"Film Scoring - Recording, Mixing & Delivery"
+Studio Recording,Analog Console Recording,Console Architecture & Bus Structure,Preamp & Converter Engineering,"Tape Recording, Formats & Formulations"
+Studio Recording,Session Editing & Comping,DAW Fundamentals & Session Management,"Session Workflow, Takes & Documentation","Recording, Mixing & Troubleshooting Concepts"
+Mixing & Mastering,Mixing Engineer,Instrument Mixing - Drums & Percussion,"Instrument Mixing - Guitars, Bass & Keys",Vocal Mixing
+Mixing & Mastering,Mix Bus & Automation,"Mix Automation, Bus & Loudness",Creative Effects & Sound Design in the Mix,Advanced Parallel & Bus Processing
+Mixing & Mastering,Mastering Engineer,Mastering Fundamentals & Chain,"Loudness, QC, Delivery & Metadata",Vinyl / Disc Mastering
+Mixing & Mastering,Loudness & Delivery Specialist,"Loudness, QC, Delivery & Metadata",Broadcast Processing & Loudness,"Standards - Immersive/Object/Scene, MIR, ML & Loudness"
+Mixing & Mastering,Vocal Mixing Specialist,Vocal Mixing,Creative Effects & Sound Design in the Mix,Compression & Limiting
+Mixing & Mastering,Drum Mixing,Instrument Mixing - Drums & Percussion,Compression & Limiting,Equalization (EQ)
+Mixing & Mastering,Mix Bus & Loudness,"Mix Automation, Bus & Loudness","Loudness, QC, Delivery & Metadata",Advanced Parallel & Bus Processing
+Mixing & Mastering,Vinyl Mastering,Vinyl / Disc Mastering,Mastering Fundamentals & Chain,Tape Machine Mechanics & Alignment
+Mixing & Mastering,Streaming Mastering & Loudness,"Loudness, QC, Delivery & Metadata","Standards - Immersive/Object/Scene, MIR, ML & Loudness",Mastering Fundamentals & Chain
+"Electronic Music, DAWs & Synthesis",DAW Power User,DAW Fundamentals & Session Management,MIDI,"Plugin Formats, Hosts & Processing"
+"Electronic Music, DAWs & Synthesis",Logic Pro Specialist,DAW: Logic,DAW Fundamentals & Session Management,MIDI
+"Electronic Music, DAWs & Synthesis",Ableton Live Specialist,DAW: Ableton Live,Sampling & Sample Instruments,Sample Editing & Beat Programming
+"Electronic Music, DAWs & Synthesis",Beat-Making & Sampling,Sampling & Sample Instruments,Sample Editing & Beat Programming,MIDI
+"Electronic Music, DAWs & Synthesis",Logic Pro Producer,DAW: Logic,MIDI,Virtual Instruments & Samplers
+"Electronic Music, DAWs & Synthesis",Ableton Live Performance,DAW: Ableton Live,"Beatmatching, Mixing & FX",Sample Editing & Beat Programming
+"Electronic Music, DAWs & Synthesis",REAPER Power User,DAW: REAPER,DAW Fundamentals & Session Management,"Plugin Formats, Hosts & Processing"
+"Electronic Music, DAWs & Synthesis",Cubase/Nuendo for Post,DAW: Cubase/Nuendo,"Post Workflow, Spotting & Sessions",Dialogue Editing
+"Electronic Music, DAWs & Synthesis",Studio One Production,DAW: Studio One,"Mix Automation, Bus & Loudness",Mastering Fundamentals & Chain
+"Broadcast, Podcast & Streaming",Podcast Production,Podcast Production,Vocal Mixing,"Loudness, QC, Delivery & Metadata"
+"Broadcast, Podcast & Streaming",Broadcast Engineer,Radio Production & Studio Workflow,Broadcast Air Chain & Transmission,Broadcast Processing & Loudness
+"Broadcast, Podcast & Streaming",Podcast Editing & Publishing,Podcast Production,"Loudness, QC, Delivery & Metadata",Dialogue Editing
+"Broadcast, Podcast & Streaming",Sports & Live Broadcast,Broadcast Air Chain & Transmission,Live Sound - FOH Mixing Workflow,Dante Fundamentals & Routing
+"Broadcast, Podcast & Streaming",Voice-Over Production,Vocal Mixing,Speech & Voice Perception,Recording Fundamentals & Signal Chain
+Sound for Picture & Media,Dialogue Editor,Dialogue Editing,ADR & Looping,"Post Workflow, Spotting & Sessions"
+Sound for Picture & Media,Sound Design & SFX,SFX Editorial & Sound Design,Foley Performance & Recording,Creative Effects & Sound Design in the Mix
+Sound for Picture & Media,Re-Recording Mixer,Re-Recording & Final Mix,"Deliverables, Stems & Mastering for Picture","Post Workflow, Spotting & Sessions"
+Sound for Picture & Media,Film Scoring,Film Scoring - Composition & Orchestration,Film Scoring - Technology & MIDI Mockups,"Film Scoring - Recording, Mixing & Delivery"
+Sound for Picture & Media,Foley Artist,Foley Performance & Recording,SFX Editorial & Sound Design,"Post Workflow, Spotting & Sessions"
+Sound for Picture & Media,Localization & Dubbing,Dubbing & Localization,"Dubbing - Adaptation, Sync & Deliverables",Dialogue Editing
+Sound for Picture & Media,Game Audio,Game Audio,SFX Editorial & Sound Design,Immersive Formats & Delivery
+Sound for Picture & Media,Immersive Audio Production,Immersive Formats & Delivery,"Standards - Immersive/Object/Scene, MIR, ML & Loudness","Deliverables, Stems & Mastering for Picture"
+Sound for Picture & Media,ADR & Voice Recording,ADR & Looping,Dialogue Editing,Vocal Mixing
+Sound for Picture & Media,Foley Recording,Foley Performance & Recording,SFX Editorial & Sound Design,Recording Fundamentals & Signal Chain
+Sound for Picture & Media,Film Music Technology,Film Scoring - Technology & MIDI Mockups,MIDI,Virtual Instruments & Samplers
+Sound for Picture & Media,Orchestral Scoring,Film Scoring - Composition & Orchestration,"Orchestral, Choir & Acoustic-Ensemble Mixing",Stereo & Ensemble Miking Techniques
+Sound for Picture & Media,Dubbing Director,Dubbing & Localization,"Dubbing - Adaptation, Sync & Deliverables",ADR & Looping
+Sound for Picture & Media,Interactive & Game Music,Game Audio,Film Scoring - Technology & MIDI Mockups,"AI Music, Voice & Creative Tools"
+Sound for Picture & Media,VR/AR Spatial Sound,Immersive Formats & Delivery,Acoustic Imaging & Sound-Field Visualization,"Standards - Immersive/Object/Scene, MIR, ML & Loudness"
+"Hearing, Perception & Listening",Psychoacoustics & Listening,Psychoacoustics,Loudness & Listening Environments,Speech & Voice Perception
+"Hearing, Perception & Listening",Critical Listening & Ear Training,Tonal & Timbre Descriptors,"Attack, Decay, Resonance & Artifact Identification","Strings, Guitar & Keys"
+"Hearing, Perception & Listening",Instrument Sound Identification,"Strings, Guitar & Keys",Drums & Percussion,"Winds, Brass & Organ"
+"Hearing, Perception & Listening",Hearing Health & Conservation,"Hearing Anatomy, Health & Disorders",Professional Audio Safety,Loudness & Listening Environments
+"Hearing, Perception & Listening",Golden Ears - Critical Listening,"Attack, Decay, Resonance & Artifact Identification",Tonal & Timbre Descriptors,Frequency & Spectrum Analysis
+"Hearing, Perception & Listening",Instrument Recognition - Percussion,Drums & Percussion,"Attack, Decay, Resonance & Artifact Identification",Tonal & Timbre Descriptors
+"Hearing, Perception & Listening",Instrument Recognition - Winds & Brass,"Winds, Brass & Organ",Tonal & Timbre Descriptors,"Attack, Decay, Resonance & Artifact Identification"
+"Hearing, Perception & Listening",Speech & Voice Science,Speech & Voice Perception,"Medical, Hearing & Clinical Acoustics",Psychoacoustics
+Career & Business,Audio Career & Business,Audio Career Exploration,Music Entrepreneurship,Project Management
+Career & Business,Music Business & Industry,Music Entrepreneurship,Industry Foundations,Project Management
+AI Audio,AI Audio Production,"AI Music, Voice & Creative Tools","Audio DSP, MIR, Ethics & Emerging",AI/ML Foundations for Audio
+AI Audio,Audio DSP & Machine Learning,AI/ML Foundations for Audio,"Audio DSP, MIR, Ethics & Emerging","Plugin Formats, Hosts & Processing"
+AI Audio,AI Music Creation,"AI Music, Voice & Creative Tools",Synthesis Fundamentals & Oscillators,Music Entrepreneurship
+AI Audio,AI Voice & Speech Synthesis,"AI Music, Voice & Creative Tools",Speech & Voice Perception,"Audio DSP, MIR, Ethics & Emerging"
+AI Audio,Audio Machine Learning,AI/ML Foundations for Audio,"Audio DSP, MIR, Ethics & Emerging",Time/Frequency Displays & Spectrograms
+AI Audio,Source Separation & Restoration,Audio Restoration & Archival,AI/ML Foundations for Audio,"Audio DSP, MIR, Ethics & Emerging"
+Preservation & Archival,Audio Archival & Restoration,Audio Restoration & Archival,Magnetic Tape Preservation & Conservation,Archival Preservation & Obsolete Media
+Preservation & Archival,Analog Tape Engineering,Tape Machine Mechanics & Alignment,"Tape Recording, Formats & Formulations",Audio Restoration & Archival
+Preservation & Archival,Vinyl & Disc Mastering,Vinyl / Disc Mastering,Mastering Fundamentals & Chain,"Tape Recording, Formats & Formulations"
+Preservation & Archival,Tape Restoration,Magnetic Tape Preservation & Conservation,Tape Machine Mechanics & Alignment,Audio Restoration & Archival
+Preservation & Archival,Digital Archiving,Archival Preservation & Obsolete Media,"Digital Audio - Sampling, Quantization & Formats","Standards - Coding, Systems, Metadata & Transport"
+Preservation & Archival,Media Migration & Metadata,Recorders & File Formats,"Standards - Coding, Systems, Metadata & Transport",Documentation & Diagrams
+"Standards, Law & Compliance",Audio Standards Specialist,"Standards - Coding, Systems, Metadata & Transport",Standards - General Acoustics & Signal Terms,"Standards - Room, Building, Environmental & Measurement"
+"Standards, Law & Compliance",Noise Law & Compliance,"Sound Law - Framework, Metrics & Compliance","Sound Law - Assessment, Mapping & Mitigation","Standards - Room, Building, Environmental & Measurement"
+"Standards, Law & Compliance",Noise Control Engineering,"Sound Law - Assessment, Mapping & Mitigation","Standards - Room, Building, Environmental & Measurement",Acoustic & Room Measurement Methods
+Acoustics Science & Applied Research,Sound Visualization & Imaging,Time/Frequency Displays & Spectrograms,Acoustic Imaging & Sound-Field Visualization,Advanced Acoustic Imaging & Sound-Field Reconstruction
+Acoustics Science & Applied Research,Bioacoustics & Ecoacoustics,Bioacoustics & Ecoacoustics,Data Sonification & Auditory Display,Acoustic Imaging & Sound-Field Visualization
+Acoustics Science & Applied Research,Underwater & Sonar Acoustics,"Ultrasonics, Underwater & Spatial-Audio Science",Advanced & Physical Acoustics (Nonlinear/Structural/Aero/Materials),"Sound Physics, Measurement & Acoustic Quantities"
+Acoustics Science & Applied Research,Forensic Audio,"Surveillance, Forensic & Covert Audio",Time/Frequency Displays & Spectrograms,Standards - General Acoustics & Signal Terms
+Acoustics Science & Applied Research,Ultrasonics & NDT,"Ultrasonics, NDT & Industrial Inspection","Ultrasonics, Underwater & Spatial-Audio Science","Sound Physics, Measurement & Acoustic Quantities"
+Acoustics Science & Applied Research,Medical & Clinical Acoustics,"Medical, Hearing & Clinical Acoustics","Hearing Anatomy, Health & Disorders","Ultrasonics, Underwater & Spatial-Audio Science"
+Acoustics Science & Applied Research,Archaeoacoustics & Heritage,Archaeological & Heritage Acoustics,Anthropology & Sound Studies,Acoustic Principles & Room Behavior
+Acoustics Science & Applied Research,Space & Earth Acoustics,Astronomical & Cosmological Acoustics,Geologic & Seismoacoustics,Data Sonification & Auditory Display
+Acoustics Science & Applied Research,Data Sonification,Data Sonification & Auditory Display,Time/Frequency Displays & Spectrograms,AI/ML Foundations for Audio
+Acoustics Science & Applied Research,Physical & Molecular Acoustics,Advanced & Physical Acoustics (Nonlinear/Structural/Aero/Materials),"Sound Physics, Measurement & Acoustic Quantities",Chemical & Molecular Acoustics
+Acoustics Science & Applied Research,Nearfield Acoustic Holography,Advanced Acoustic Imaging & Sound-Field Reconstruction,Acoustic Imaging & Sound-Field Visualization,"Sound Physics, Measurement & Acoustic Quantities"
+Acoustics Science & Applied Research,Seismoacoustics & Infrasound,Geologic & Seismoacoustics,Advanced & Physical Acoustics (Nonlinear/Structural/Aero/Materials),"Sound Physics, Measurement & Acoustic Quantities"
+Acoustics Science & Applied Research,Astroacoustics & Sonification,Astronomical & Cosmological Acoustics,Data Sonification & Auditory Display,Time/Frequency Displays & Spectrograms
+Acoustics Science & Applied Research,Ecoacoustic Monitoring,Bioacoustics & Ecoacoustics,Data Sonification & Auditory Display,"Standards - Room, Building, Environmental & Measurement"

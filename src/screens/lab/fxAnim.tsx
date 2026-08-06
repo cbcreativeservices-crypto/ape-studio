@@ -50,16 +50,22 @@ import {
 } from 'react-native-reanimated';
 import { distShape, eqResponseDb, type EqBandSpec } from '../../features/lab/fxViz';
 import { usePhaseClock } from './foundations/viz';
+import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
 
 // Shared lab grammar (fxViz palette): amber = processed, dim = dry/reference,
 // blue = the effect's internal copy (delayed/shifted voice).
 const AMBER = colors.amber;
 const BLUE = '#6fa8ff';
-const DIM = '#767a85';
+const DIM = '#9a9ca8';
 const BG = '#0c0c0f';
 const FRAME = '#262b36';
-const ZERO = '#39404d';
+const ZERO = '#5a6376';
+// The middle EFFECT divider bar + its label are GREEN (owner 2026-08-05) — the
+// bar and the effect it represents read as one green "processor" element.
+const STAGE_GREEN = colors.green; // #37e05f
+const STAGE_GREEN_DK1 = '#1b4a29';
+const STAGE_GREEN_DK2 = '#0a1a10';
 
 const FLOW_H = 118;
 /** The effect stage sits at this fraction of the width. */
@@ -161,24 +167,45 @@ function useGlide(target: number, ms = 300): SharedValue<number> {
   return sv;
 }
 
-/** Glow + crisp double-stroke for an animated path (house GlowStroke idiom). */
+/** Vertical MIDI amplitude gradient for a zero-centred waveform (loudness
+ *  standard): blue at the mid line → green/yellow/orange → red at ±full scale.
+ *  Mapped over the panel height so the colour tracks true level (owner
+ *  2026-08-05: amplitude on the flow waves reads in the MIDI schema). */
+function WaveMidiGradient({ h }: { h: number }) {
+  return (
+    <LinearGradient
+      start={vec(0, 0)}
+      end={vec(0, h)}
+      colors={WAVE_LEVEL_STOPS.map((s) => s.color)}
+      positions={WAVE_LEVEL_STOPS.map((s) => s.offset)}
+    />
+  );
+}
+
+/** Glow + crisp double-stroke for an animated path (house GlowStroke idiom).
+ *  When `gradH` is given the crisp stroke is coloured by the MIDI amplitude
+ *  gradient (level → colour) instead of the flat role colour. */
 function FlowGlow({
   path,
   color = AMBER,
   width = 2.2,
   opacity = 1,
+  gradH,
 }: {
   path: SharedValue<SkPathT>;
   color?: string;
   width?: number;
   opacity?: number;
+  gradH?: number;
 }) {
   return (
     <>
       <Path path={path} color={color} style="stroke" strokeWidth={width * 2.6} strokeCap="round" strokeJoin="round" opacity={0.22 * opacity}>
         <BlurMask blur={width * 2.2} style="normal" />
       </Path>
-      <Path path={path} color={color} style="stroke" strokeWidth={width} strokeCap="round" strokeJoin="round" opacity={opacity} />
+      <Path path={path} color={gradH != null ? undefined : color} style="stroke" strokeWidth={width} strokeCap="round" strokeJoin="round" opacity={opacity}>
+        {gradH != null ? <WaveMidiGradient h={gradH} /> : null}
+      </Path>
     </>
   );
 }
@@ -210,19 +237,22 @@ function FlowScene({
         <RoundedRect x={0} y={0} width={w} height={h} r={8} color={BG} />
         <SkLine p1={{ x: 4, y: h / 2 }} p2={{ x: w - 4, y: h / 2 }} color={ZERO} strokeWidth={1.1} />
         {children}
-        {/* The effect stage — the signal visibly passes THROUGH it. */}
-        <RoundedRect x={stageX - 13} y={4} width={26} height={h - 8} r={8} color={AMBER} opacity={glowOp}>
+        {/* The effect stage — the signal visibly passes THROUGH it. GREEN: the
+            bar and its label are one green "processor" element (owner 2026-08-05). */}
+        <RoundedRect x={stageX - 13} y={4} width={26} height={h - 8} r={8} color={STAGE_GREEN} opacity={glowOp}>
           <BlurMask blur={13} style="normal" />
         </RoundedRect>
         <RoundedRect x={stageX - 6} y={7} width={12} height={h - 14} r={5}>
-          <LinearGradient start={vec(stageX - 6, 7)} end={vec(stageX + 6, h - 7)} colors={['#43371d', '#191308']} />
+          <LinearGradient start={vec(stageX - 6, 7)} end={vec(stageX + 6, h - 7)} colors={[STAGE_GREEN_DK1, STAGE_GREEN_DK2]} />
         </RoundedRect>
-        <RoundedRect x={stageX - 6} y={7} width={12} height={h - 14} r={5} color="rgba(255,198,77,.6)" style="stroke" strokeWidth={1.2} />
+        <RoundedRect x={stageX - 6} y={7} width={12} height={h - 14} r={5} color="rgba(55,224,95,.7)" style="stroke" strokeWidth={1.2} />
         <RoundedRect x={0.5} y={0.5} width={w - 1} height={h - 1} r={7.5} color={FRAME} style="stroke" strokeWidth={1} />
       </Canvas>
-      <Text style={[flowStyles.lbl, { left: 8, top: 5 }]}>IN</Text>
-      <Text style={[flowStyles.lbl, { right: 8, top: 5 }]}>OUT</Text>
-      <Text style={[flowStyles.lbl, flowStyles.stageLbl, { left: stageX - 34, width: 68 }]}>{label}</Text>
+      {/* Emphasized IN / OUT labels (owner 2026-08-05) — larger, bold, chipped. */}
+      <Text style={[flowStyles.io, { left: 6, top: 4 }]}>IN ▸</Text>
+      <Text style={[flowStyles.io, { right: 6, top: 4 }]}>▸ OUT</Text>
+      {/* Processor name written VERTICALLY along the green divider bar. */}
+      <Text style={[flowStyles.stageLbl, { left: stageX - 45, top: h / 2 - 9, width: 90 }]}>{label}</Text>
     </View>
   );
 }
@@ -292,7 +322,7 @@ function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: 
   return (
     <FlowScene w={w} h={h} label={label}>
       <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
-      <FlowGlow path={outPath} />
+      <FlowGlow path={outPath} gradH={h} />
     </FlowScene>
   );
 }
@@ -374,7 +404,7 @@ function EchoFlow({
   return (
     <FlowScene w={w} h={h} label={label}>
       <Path path={dryPath} color={DIM} style="stroke" strokeWidth={4} strokeCap="round" opacity={0.9} />
-      <FlowGlow path={echoPath} width={3.4} />
+      <FlowGlow path={echoPath} width={3.4} gradH={h} />
     </FlowScene>
   );
 }
@@ -613,7 +643,7 @@ function ModFlow({
     <FlowScene w={w} h={h} label={label}>
       <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
       <Path path={copyPath} color={BLUE} style="stroke" strokeWidth={1.2} opacity={0.55} />
-      <FlowGlow path={outPath} />
+      <FlowGlow path={outPath} gradH={h} />
     </FlowScene>
   );
 }
@@ -716,7 +746,7 @@ function DynamicsFlow({
         <DashPathEffect intervals={[4, 3]} />
       </Path>
       <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
-      <FlowGlow path={outPath} width={2} />
+      <FlowGlow path={outPath} width={2} gradH={h} />
     </FlowScene>
   );
 }
@@ -816,7 +846,7 @@ function DistFlow({
   return (
     <FlowScene w={w} h={h} label={label}>
       <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
-      <FlowGlow path={outPath} width={2} />
+      <FlowGlow path={outPath} width={2} gradH={h} />
     </FlowScene>
   );
 }
@@ -1057,12 +1087,27 @@ export function FxAnimHero({ model, active, grDb = 0 }: { model: FxAnimModel; ac
 
 const flowStyles = StyleSheet.create({
   wrap: { width: '100%' },
-  lbl: {
+  // Emphasized IN / OUT signal-flow labels — large, bold, on a subtle chip.
+  io: {
     position: 'absolute',
-    fontFamily: fonts.mono,
-    fontSize: 8,
-    letterSpacing: 0.6,
-    color: colors.textSub,
+    fontFamily: fonts.oswaldBold,
+    fontSize: 14,
+    letterSpacing: 1.4,
+    color: colors.textPrimary,
+    backgroundColor: 'rgba(12,12,15,.72)',
+    paddingHorizontal: 4,
+    borderRadius: 3,
+    overflow: 'hidden',
   },
-  stageLbl: { top: 5, textAlign: 'center', color: 'rgba(255,198,77,.85)' },
+  // Processor name along the divider — rotated to run vertically down the bar,
+  // green to match it (owner 2026-08-05).
+  stageLbl: {
+    position: 'absolute',
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12,
+    letterSpacing: 2,
+    textAlign: 'center',
+    color: STAGE_GREEN,
+    transform: [{ rotate: '-90deg' }],
+  },
 });

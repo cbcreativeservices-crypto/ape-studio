@@ -1,0 +1,308 @@
+{
+ "batch": 379,
+ "topic": "Immersive Formats & Delivery",
+ "authored": [
+  {
+   "id": "8748f017-be02-4357-8d72-82822ac4b846",
+   "term": "Immersive reference level",
+   "fields": {
+    "definition": "The standardized, calibrated sound-pressure level at which an immersive (object-based) program is monitored, fixing the relationship between a given digital signal level and the acoustic level at the mix position. In Dolby Atmos cinema practice each full-range screen channel is aligned to 85 dB SPL (C-weighted, slow) using band-limited pink noise at -20 dBFS, while near-field and home or music rooms calibrate every speaker to a consistent, usually lower, per-speaker reference.",
+    "plain_english": "This is the loudness a room is set to when mixing surround-with-height sound. The engineer plays a test noise and adjusts each speaker so a set signal makes a set volume. When every studio uses the same reference, a mix sounds the same everywhere. It is like tuning all the pianos to the same pitch.",
+    "purpose_function": "It gives a fixed link between the signal level on the meters and real loudness in the room, so mixes made in different rooms match and translate to cinemas, home systems, and streaming.",
+    "practical_application": "A technician calibrates the room with an SPL meter and -20 dBFS pink noise, setting each speaker to the target level before an immersive mix, and rechecks after any monitor or gain change.",
+    "category": "Monitoring & calibration",
+    "related_terms": [
+     "Monitor calibration",
+     "Pink noise",
+     "SPL meter",
+     "Loudness normalization",
+     "Bass management",
+     "Dolby Atmos"
+    ],
+    "common_mistakes": [
+     "Calibrating with A-weighting or fast metering instead of C-weighted, slow, which reports the wrong level",
+     "Setting the reference by ear instead of using pink noise and an SPL meter",
+     "Assuming the cinema 85 dB per-channel reference applies unchanged to a small near-field room",
+     "UNSAFE: Monitoring for long sessions much above about 85 dBA risks hearing damage; follow OSHA and NIOSH exposure limits and take regular breaks"
+    ],
+    "scenario_contexts": [
+     "Calibrating a Dolby Atmos music room before a mix so it matches other studios",
+     "Aligning a home theater's speakers to reference for accurate playback",
+     "Troubleshooting why a mix plays too loud or too quiet on another system",
+     "Setting monitoring level so metering lines up with delivery loudness targets"
+    ]
+   },
+   "sources": [
+    "SMPTE RP 200 (cinema B-chain reference / dubbing stage alignment)",
+    "Dolby Atmos Renderer and production technical documentation",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7e4611ed-2c30-4be9-903b-d1089f823b8f",
+   "term": "Immersive stem structure",
+   "fields": {
+    "definition": "The organized set of grouped submixes (stems) exported from an immersive project in a way that preserves its bed-and-object layout, so the program can be re-balanced, re-versioned, mastered, or archived without reopening the full session. In Dolby Atmos work these are typically object-audio stems or multichannel re-renders that retain the spatial layout, unlike flat stereo or 5.1 stems.",
+    "plain_english": "A stem is a group of tracks bounced into one file, like all the drums together. In surround-with-height sound, the stems also keep where each sound sits in the room. This lets someone remix or fix the show later without opening the whole project. It is like keeping labeled boxes instead of one big pile.",
+    "purpose_function": "It lets a mix be handed off, re-versioned for trailers, languages, or formats, mastered, or archived while keeping the immersive positioning intact.",
+    "practical_application": "An engineer delivers dialogue, music, and effects as immersive re-renders or grouped object stems so a mastering house or another mixer can adjust balances and still output every required downmix.",
+    "category": "Delivery & mastering",
+    "related_terms": [
+     "Bed (Dolby Atmos)",
+     "Audio object",
+     "Re-render",
+     "Stem mastering",
+     "ADM BWF",
+     "Downmix"
+    ],
+    "common_mistakes": [
+     "Flattening immersive stems to stereo or 5.1 too early, losing the height and object placement",
+     "Exporting stems without their spatial layout or metadata, so positions are lost on import",
+     "Mismatched loudness or bus processing across stems, so the summed stems no longer equal the master",
+     "Naming or grouping stems inconsistently, which makes clean re-assembly error-prone"
+    ],
+    "scenario_contexts": [
+     "Delivering dialogue, music, and effects stems for a Dolby Atmos film master",
+     "Sending object stems to a mastering engineer for an immersive music release",
+     "Creating trailer or foreign-language versions from immersive stems",
+     "Archiving an immersive project for future re-versioning"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos technical delivery documentation (ADM BWF / re-renders)",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a8b92ac4-2a6c-49d1-b917-330617dd3f7e",
+   "term": "Immersive translation check",
+   "fields": {
+    "definition": "A quality-control step in which an immersive mix is auditioned through the various renderings it will produce - binaural headphone fold-down, stereo, and multichannel downmixes such as 5.1 and 7.1, plus different speaker layouts - to confirm that balance, dialogue intelligibility, and spatial intent hold up on each.",
+    "plain_english": "This is a check to make sure a surround-with-height mix still sounds right on other systems. The engineer listens to the headphone, stereo, and smaller surround versions the format makes automatically. The goal is that nothing important gets lost or too loud on any of them. It is like checking a photo on both a phone and a laptop.",
+    "purpose_function": "It catches cases where the automatic downmixes or binaural fold-downs bury dialogue, shift balance, or lose height content, so the program works for every listener.",
+    "practical_application": "Before delivery, a technician switches the renderer through binaural, stereo, and 5.1 re-renders, checks on headphones and a soundbar, and adjusts object levels or downmix settings until each version translates.",
+    "category": "Quality control",
+    "related_terms": [
+     "Downmix",
+     "Binaural render",
+     "Re-render",
+     "Fold-down",
+     "Dialogue intelligibility",
+     "Loudness normalization"
+    ],
+    "common_mistakes": [
+     "Only checking the full immersive layout and never auditioning the stereo or binaural fold-down",
+     "Ignoring downmix coefficients, so the 5.1 or stereo version clips or loses level",
+     "Assuming height content survives a fold-down when it is usually attenuated",
+     "Not checking dialogue level on small, mono, or phone playback"
+    ],
+    "scenario_contexts": [
+     "Final QC of a Dolby Atmos music track before a streaming release",
+     "Checking a film mix's 5.1 and stereo downmixes for dialogue clarity",
+     "Verifying a mix on headphones through the binaural render",
+     "Testing playback on a consumer soundbar and TV speakers"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Renderer technical documentation (binaural / downmix rendering)",
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3cd93ae4-9765-42db-897e-880dbad6f9b9",
+   "term": "Listener-relative placement",
+   "fields": {
+    "definition": "Positioning of sound sources defined relative to the listener's position and orientation (egocentric) rather than to fixed room coordinates, so a source keeps the same perceived direction as the layout, or the listener's head, changes. In object-based and VR/AR spatial audio this contrasts with allocentric, room-anchored placement.",
+    "plain_english": "This means placing a sound based on where the listener is, not where the walls are. If the listener turns, or the speakers change, the sound stays in the same spot around them. Head-tracked headphone audio works this way. It is like a sign that always turns to face you.",
+    "purpose_function": "It keeps spatial intent consistent across different speaker layouts and supports head-tracked and binaural playback, where sources must move relative to the listener.",
+    "practical_application": "When mixing for headphones or VR, a technician places objects in listener-relative space so head-tracking rotates the scene correctly; in Atmos, room-relative object coordinates are rendered to whatever layout the listener actually has.",
+    "category": "Spatial placement",
+    "related_terms": [
+     "Audio object",
+     "Head tracking",
+     "Binaural render",
+     "Egocentric coordinates",
+     "Allocentric coordinates",
+     "Object panning"
+    ],
+    "common_mistakes": [
+     "Confusing listener-relative (egocentric) placement with room-relative (allocentric) placement",
+     "Assuming head-locked and listener-relative are the same thing",
+     "Placing critical sounds so head-tracking swings them behind the listener, where they are hard to locate",
+     "Forgetting that speaker playback still renders positions to the actual room layout"
+    ],
+    "scenario_contexts": [
+     "Mixing head-tracked binaural audio for VR or spatial-audio earphones",
+     "Deciding whether a sound should follow the listener or stay fixed to the scene",
+     "Adapting a mix for many different consumer speaker layouts",
+     "Keeping a narrator front-and-center as the viewer looks around"
+    ]
+   },
+   "sources": [
+    "AES technical papers on spatial and binaural audio (egocentric vs allocentric rendering)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2c9f499a-df81-4fda-b88a-029bee334f4b",
+   "term": "Overhead placement",
+   "fields": {
+    "definition": "Positioning of sound in the height (top or ceiling) layer of an immersive layout - the overhead speakers above the listener - to place or move sources vertically, such as rain, aircraft, or open-air ambience. In Dolby Atmos these correspond to the top or height speakers (for example Top Front, Top Middle, and Top Rear).",
+    "plain_english": "This means putting a sound above the listener, in the ceiling speakers. It suits things that belong overhead, like rain, a plane, or open-sky ambience. Height speakers are what make surround-with-height feel like a dome of sound. It is like hanging a speaker on the ceiling so sound comes from above.",
+    "purpose_function": "The height layer adds the vertical dimension that separates immersive audio from flat surround, giving a sense of overhead space and elevation.",
+    "practical_application": "A mixer pans ambience, weather, or fly-over effects into the top speakers, or raises an object's height coordinate, to lift them off the ear-level plane.",
+    "category": "Spatial placement",
+    "related_terms": [
+     "Height channel",
+     "Top speaker",
+     "Audio object",
+     "Elevation",
+     "Ambience layer",
+     "Bed (Dolby Atmos)"
+    ],
+    "common_mistakes": [
+     "Overusing the height layer so effects feel like a gimmick instead of natural",
+     "Putting key elements only overhead, where localization is weaker for many listeners",
+     "Assuming overhead content survives a stereo or 5.1 fold-down, when it is usually cut or lost",
+     "Confusing overhead height speakers with rear surround speakers at ear level"
+    ],
+    "scenario_contexts": [
+     "Placing rain or open-air ambience in the top speakers of an Atmos mix",
+     "Flying an effect from the front, up overhead, then to the rear",
+     "Adding overhead reverb for the feel of a tall room",
+     "Positioning a helicopter pass above the audience"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos technical documentation (speaker layouts / height channels)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e9aaa876-c20b-428c-847a-d36e5639f6f2",
+   "term": "Rear-wall placement",
+   "fields": {
+    "definition": "Positioning of a sound at the rear of the immersive listening space - the rear surround position behind the listener - either by panning to the rear surround speakers or by setting an object's coordinates to the back of the room. It completes the surround field behind the listener.",
+    "plain_english": "This means placing a sound behind the listener, at the back of the room. The back speakers handle sounds coming from behind, like a crowd or a door shutting behind you. It helps wrap the sound all the way around. It is like someone speaking to you from the doorway at your back.",
+    "purpose_function": "Rear placement completes the surround field behind the listener, supporting envelopment, off-screen effects, and front-to-back movement.",
+    "practical_application": "A mixer sends ambience, off-screen effects, or trailing reverb to the rear surrounds, or sets an object to the rear, to build depth behind the audience.",
+    "category": "Spatial placement",
+    "related_terms": [
+     "Surround channel",
+     "Rear surround",
+     "Audio object",
+     "Envelopment",
+     "Side-wall placement",
+     "Object panning"
+    ],
+    "common_mistakes": [
+     "Placing dialogue or lead vocals in the rear, where they distract and pull focus off the screen",
+     "Confusing rear surrounds with side surrounds when routing",
+     "Overloading the rears so the image feels unbalanced front-to-back",
+     "Assuming rear content translates to a stereo or soundbar downmix"
+    ],
+    "scenario_contexts": [
+     "Placing audience or crowd ambience behind the listener",
+     "Moving an effect from front to back across the room",
+     "Adding rear reverb returns for depth",
+     "Positioning an off-screen sound behind the viewer"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos technical documentation (speaker layouts / surround channels)",
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6e906398-1bc8-4d68-948b-1d0dbde78aa7",
+   "term": "Side-wall placement",
+   "fields": {
+    "definition": "Positioning of a sound at the sides of the immersive listening space - the left and right side surround positions beside the listener - by panning to the side surround speakers or setting an object's coordinates to the side of the room. Side placement bridges the front and rear and supports lateral movement and width.",
+    "plain_english": "This means placing a sound to the left or right of the listener, from the side speakers. It fills the space between the front and back so sounds can move smoothly around. It also widens the sound picture. It is like someone talking to you from the seat right next to you.",
+    "purpose_function": "Side surrounds provide the lateral field that links front and rear, enabling smooth pans around the listener and a wider, more enveloping image.",
+    "practical_application": "A mixer routes passing effects, width, and ambience to the side surrounds, or sets objects to the sides, to move sounds along the walls and broaden the stage.",
+    "category": "Spatial placement",
+    "related_terms": [
+     "Surround channel",
+     "Side surround",
+     "Audio object",
+     "Envelopment",
+     "Rear-wall placement",
+     "Object panning"
+    ],
+    "common_mistakes": [
+     "Confusing side surrounds with rear surrounds when assigning speakers",
+     "Leaving a gap in a pan because side speakers are missing or misrouted in a smaller layout",
+     "Placing lead elements at the sides, which hurts the front image and dialogue focus",
+     "Assuming side content survives a fold-down to stereo"
+    ],
+    "scenario_contexts": [
+     "Panning a car or effect smoothly front to back along the side wall",
+     "Adding lateral ambience for width",
+     "Placing a sound beside the listener for a specific scene",
+     "Widening a music mix using the side surrounds"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos technical documentation (speaker layouts / surround channels)",
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "96157096-60f7-4ebc-88dc-6dc338a45d95",
+   "term": "Spatial music mix",
+   "fields": {
+    "definition": "A music mix produced and delivered in an immersive, spatial-audio format such as Dolby Atmos Music or Sony 360 Reality Audio, in which individual elements are placed in a three-dimensional field around and above the listener rather than only across a stereo pair. It is authored with beds and objects and rendered to the listener's playback layout or to a binaural headphone fold-down.",
+    "plain_english": "This is a song mixed so the parts sit all around you, and even above you, not just left and right. On headphones or the right speakers it can feel like being inside the music. Formats like Dolby Atmos Music make this. It is like moving from a flat photo to standing inside the scene.",
+    "purpose_function": "It gives listeners a more enveloping, three-dimensional music experience and lets artists place and move elements in space, delivered to many playback systems from one master.",
+    "practical_application": "A mix engineer places vocals, instruments, and reverb as objects and beds in a spatial workspace, monitors on a calibrated immersive rig, and delivers a master that streaming services fold down to each listener's device.",
+    "category": "Immersive format",
+    "related_terms": [
+     "Dolby Atmos",
+     "Audio object",
+     "Bed (Dolby Atmos)",
+     "Binaural render",
+     "Spatial audio",
+     "Downmix"
+    ],
+    "common_mistakes": [
+     "Treating it as just a wider stereo mix instead of using the full 3D field with intent",
+     "Placing lead vocals far from center or overhead, which hurts focus and translation",
+     "Ignoring the binaural and stereo fold-downs that most listeners actually hear",
+     "Not calibrating the room to reference before mixing"
+    ],
+    "scenario_contexts": [
+     "Producing a Dolby Atmos Music release for streaming platforms",
+     "Remixing a legacy stereo album into spatial audio",
+     "Mixing a live concert recording in an immersive format",
+     "Preparing a binaural version for headphone listeners"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Music technical / production documentation",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

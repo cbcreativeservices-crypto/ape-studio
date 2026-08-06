@@ -1,0 +1,159 @@
+{
+ "batch": 369,
+ "topic": "Winds, Brass & Organ",
+ "authored": [
+  {
+   "id": "f629f1e4-b345-4e4d-b4ad-dfc90b458409",
+   "term": "Air leakage",
+   "fields": {
+    "definition": "In wind and reed instruments and pipe organs, air leakage is the unintended escape of air through imperfect seals — such as woodwind key pads and joint corks, organ windchest and pipe-foot joints, or a bagpipe bag, valve, or stock — reducing air-supply efficiency and causing weak tone, unstable pitch, or notes that fail to speak.",
+    "plain_english": "Air leakage is when air escapes from an instrument through a gap it should not, like a leaky pad or a loose joint. It is a bit like a bike tire with a slow leak, so the instrument loses power and notes may not sound right.",
+    "purpose_function": "The concept names a common fault mode, so identifying air leakage lets a player or technician find why an instrument sounds weak or will not hold pitch and then restore an airtight air path.",
+    "practical_application": "A repair technician checks for air leakage by feeling or listening for escaping air, using a leak light or feeler gauge on woodwind pads or soaping organ joints, then reseats pads or reseals joints.",
+    "category": "Air-supply fault",
+    "related_terms": ["Bellows air noise", "Air-button hiss", "Bagpipe moisture noise", "Reed", "Windchest"],
+    "common_mistakes": ["Confusing intentional air sounds, like an accordion air button, with an actual leak.", "Blaming weak tone on the player's breath when a leaking pad or joint is the real cause.", "Overtightening joints or key screws to stop a leak, which can bend keys or crack wood."],
+    "scenario_contexts": ["A saxophone's low notes will not speak because a pad is not sealing and air leaks past it.", "An organ rank sounds weak and breathy due to a leaking windchest joint.", "A bagpiper struggles to keep the bag inflated because a stock or valve is leaking."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Anthony Baines, Woodwind Instruments and Their History", "G. A. Audsley, The Art of Organ Building"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9870cc69-47f4-4aef-b454-13249016eb6f",
+   "term": "Air-button hiss",
+   "fields": {
+    "definition": "The audible rush of air, heard as a hiss, produced when an accordion's air button (air-release valve) is pressed to move the bellows without sounding any reeds; on close-miked recordings it can appear as unwanted noise between or beneath notes.",
+    "plain_english": "On an accordion, the air button lets the player open the bellows without playing a note. The air that escapes makes a soft hiss. Up close a mic can pick it up, like the sound of blowing gently across your hand.",
+    "purpose_function": "Naming this hiss helps a recording engineer expect and manage the noise that comes from normal accordion bellows handling rather than mistaking it for a fault.",
+    "practical_application": "An engineer recording accordion positions or angles the mic and may use gating or editing to reduce air-button hiss captured during bellows resets.",
+    "category": "Recording artifact",
+    "related_terms": ["Bellows air noise", "Air leakage", "Bagpipe moisture noise", "Noise gate", "Close miking"],
+    "common_mistakes": ["Mistaking normal air-button hiss for a broken reed or an instrument leak.", "Gating too hard so quiet real notes are cut along with the hiss.", "Placing the mic right at the bellows seam, which exaggerates the hiss."],
+    "scenario_contexts": ["A studio take of solo accordion shows a soft hiss each time the player resets the bellows.", "A live sound engineer hears hiss through a clip-on accordion mic during quiet passages.", "A composer asks for the air-button whoosh as an intentional effect, so the engineer keeps it."]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians (Accordion)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "68e3d066-b705-45e6-bdbb-d93b38269791",
+   "term": "Alphorn-fa (11th partial)",
+   "fields": {
+    "definition": "The alphorn-fa is the note produced by the 11th harmonic (11th partial) of a natural, valveless labrosone such as the alphorn or natural horn; relative to the instrument's harmonic series it falls about a quarter-tone between F and F-sharp and sounds distinctly out of tune to ears expecting equal temperament.",
+    "plain_english": "On an alphorn you can only play the notes of the natural harmonic series, and one of them, the 11th, sits halfway between F and F-sharp. This alphorn-fa sounds oddly out of tune to us, like a note stuck between two piano keys.",
+    "purpose_function": "The term identifies a characteristic pitch of natural brass and alphorn music, explaining why some traditional melodies use a note that falls outside the standard scale.",
+    "practical_application": "A player or arranger uses the alphorn-fa knowingly as part of the instrument's authentic sound, and a recording engineer or transcriber recognizes it as intended rather than a tuning error to correct.",
+    "category": "Harmonics",
+    "related_terms": ["Harmonic series", "Natural horn", "Partial", "Overblowing", "Just intonation"],
+    "common_mistakes": ["Thinking the alphorn-fa is simply an F or F-sharp played out of tune by mistake.", "Trying to correct the note in tuning software when it is a genuine feature of the harmonic series.", "Confusing it with the flat 7th partial, which is a different out-of-tune harmonic."],
+    "scenario_contexts": ["A folk melody for alphorn deliberately features the alphorn-fa as its signature color.", "An engineer transcribing a natural-horn part must decide how to notate the 11th-partial note.", "A student overblows a valveless horn and lands on the alphorn-fa between F and F-sharp."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Anthony Baines, Brass Instruments: Their History and Development", "The New Grove Dictionary of Music and Musicians"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fafee9aa-5be9-42ac-8247-5e269a7cbe47",
+   "term": "Bagpipe chanter",
+   "fields": {
+    "definition": "The chanter is the melody pipe of a bagpipe, fitted with fingerholes and driven by a reed (a double reed on Great Highland pipes), on which the player fingers the tune while the bag supplies a continuous air stream.",
+    "plain_english": "The chanter is the part of the bagpipe you play the tune on, using finger holes like a recorder. A reed inside makes the sound, and the bag keeps feeding it air so the notes never stop for a breath.",
+    "purpose_function": "The chanter carries the melody of the instrument, and its reed and fingerholes set the pitch range and scale of the bagpipe.",
+    "practical_application": "A piper tunes and maintains the chanter reed and hole taping, and a sound engineer usually aims the main melody mic at the chanter.",
+    "category": "Instrument component",
+    "related_terms": ["Bagpipe drone", "Bagpipe drones", "Reed", "Double reed", "Blowpipe"],
+    "common_mistakes": ["Confusing the chanter, which plays the melody, with a drone, which holds one fixed note.", "Assuming the chanter can be silenced on its own like a woodwind; it sounds whenever the bag has air.", "Aiming the microphone at the bag or drones instead of the chanter for the melody."],
+    "scenario_contexts": ["A piper swaps to a softer chanter reed for indoor recording.", "A sound engineer close-mics the chanter to capture the melody clearly over the drones.", "A pipe band tunes each chanter to a common pitch before a performance."]
+   },
+   "sources": ["Anthony Baines, Bagpipes (Oxford)", "The New Grove Dictionary of Music and Musicians"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "21a91736-3efe-4405-a273-53890c69a69b",
+   "term": "Bagpipe drone",
+   "fields": {
+    "definition": "A drone is a bagpipe pipe that sounds a single, fixed, continuous pitch and is not fingered, usually driven by a single reed and tuned to the tonic of the chanter to provide a constant harmonic backdrop to the melody.",
+    "plain_english": "A drone is a bagpipe pipe that plays just one steady note the whole time, with no finger holes. It sits under the tune like a held bass note, giving that classic droning bagpipe sound.",
+    "purpose_function": "The drone supplies a constant reference pitch and sustained harmony against which the chanter's melody is heard.",
+    "practical_application": "A piper tunes each drone by sliding its joints so it matches the chanter's tonic, and an engineer may add a separate mic or accept spill to balance drones against the melody.",
+    "category": "Instrument component",
+    "related_terms": ["Bagpipe drones", "Bagpipe chanter", "Reed", "Tonic", "Blowpipe"],
+    "common_mistakes": ["Thinking the drone can play a melody; it holds only one fixed pitch.", "Leaving a drone slightly out of tune with the chanter, which sounds sour.", "Corking off a drone but forgetting it changes the overall balance."],
+    "scenario_contexts": ["A piper tunes the bass drone to the low A of the chanter before playing.", "An engineer notices one drone beating against the chanter and asks the piper to retune.", "A solo piper corks two drones to record with a single drone for a thinner texture."]
+   },
+   "sources": ["Anthony Baines, Bagpipes (Oxford)", "The New Grove Dictionary of Music and Musicians"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4d3e59e0-1272-4151-83f4-2b7b54b40d94",
+   "term": "Bagpipe drones",
+   "fields": {
+    "definition": "The drones are the set of fixed-pitch, non-fingered pipes on a bagpipe (typically two tenor and one bass on the Great Highland bagpipe), each driven by its own reed and tuned in octaves to the chanter's tonic so they sound together as a sustained chord beneath the melody.",
+    "plain_english": "The drones are the group of pipes on a bagpipe that each hold one steady note. Together they add a full, humming background under the tune, usually tuned to the same note in different octaves.",
+    "purpose_function": "As a group the drones create the bagpipe's signature sustained harmony and fix the tonal center of the music.",
+    "practical_application": "A piper tunes all the drones to lock with the chanter and with each other, and a sound engineer balances the drones' low hum against the chanter melody in the mix.",
+    "category": "Instrument component",
+    "related_terms": ["Bagpipe drone", "Bagpipe chanter", "Reed", "Tonic", "Octave"],
+    "common_mistakes": ["Tuning the drones to each other but not to the chanter.", "Assuming every bagpipe has three drones; the number varies by type.", "Miking only the drones and losing melody detail from the chanter."],
+    "scenario_contexts": ["A pipe band lines up so all players' drones sound as one steady chord.", "An engineer sets a room mic to capture the blended drones of a full band.", "A piper corks one tenor drone to change the drone texture."]
+   },
+   "sources": ["Anthony Baines, Bagpipes (Oxford)", "The New Grove Dictionary of Music and Musicians"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "99e4f7ab-0dd5-4a68-a9ce-7078c6ef793c",
+   "term": "Bagpipe moisture noise",
+   "fields": {
+    "definition": "The gurgling, burbling, or unstable sounds caused by condensed moisture from the player's breath collecting in a bagpipe's bag, reeds, and bores, which disturbs reed vibration and can be captured as unwanted noise on close-miked recordings.",
+    "plain_english": "When a piper blows into the bag, warm breath leaves moisture inside, and that wet build-up makes gurgling or crackly sounds. It can make reeds sound rough, a bit like blowing bubbles through a straw in a drink.",
+    "purpose_function": "Naming this noise helps players and engineers spot moisture as the cause of gurgling or reed instability and take steps to control it.",
+    "practical_application": "Pipers fit moisture traps or drying agents and let the instrument dry out, while engineers may edit or gate stray gurgles from a recording.",
+    "category": "Recording artifact",
+    "related_terms": ["Air leakage", "Bellows air noise", "Reed", "Bagpipe drone", "Close miking"],
+    "common_mistakes": ["Blaming a rough reed when trapped moisture is the real cause.", "Ignoring moisture buildup until a reed stops speaking during a performance.", "Over-editing natural playing sounds while chasing every small gurgle."],
+    "scenario_contexts": ["A long studio session leaves the bag damp, so gurgling appears in later takes.", "A piper's drone reed becomes unstable outdoors on a cold day from condensation.", "An engineer hears burbling under quiet passages and asks the piper to dry the reeds."]
+   },
+   "sources": ["Anthony Baines, Bagpipes (Oxford)", "Fletcher & Rossing, The Physics of Musical Instruments", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8ce432fd-5899-448a-ab81-101913eae9cc",
+   "term": "Bansuri edge chiff",
+   "fields": {
+    "definition": "The brief, breathy transient heard at the onset of a note on a bansuri (a side-blown Indian bamboo flute), produced as the player's air jet first strikes the sharp edge of the blowing hole before a stable tone forms; \"chiff\" is a term borrowed from organ flue-pipe voicing for this attack noise.",
+    "plain_english": "When a bansuri player starts a note, the breath hits the sharp edge of the blow hole and makes a soft puff before the clear note settles. This little breathy attack is called chiff, like the burst of air at the start of the word who.",
+    "purpose_function": "The term describes a natural attack transient that gives the bansuri its breathy, expressive character and signals how a note begins.",
+    "practical_application": "A recording engineer places and angles the mic to capture a pleasing amount of edge chiff without harsh wind blasts, and a player controls breath to shape it.",
+    "category": "Attack transient",
+    "related_terms": ["Chiff", "Edge tone", "Embouchure", "Attack transient", "Air jet"],
+    "common_mistakes": ["Treating all chiff as a flaw and gating it away, which removes natural expression.", "Confusing chiff with wind pops that come from breath hitting the mic.", "Blowing too hard so the chiff turns into harsh wind noise."],
+    "scenario_contexts": ["A film composer wants an intimate bansuri with just a touch of edge chiff.", "An engineer moves the mic off-axis to soften strong chiff on loud attacks.", "A student learns to control breath so each note's chiff is even."]
+   },
+   "sources": ["Ardal Powell, The Flute (Yale Musical Instruments Series)", "Fletcher & Rossing, The Physics of Musical Instruments", "G. A. Audsley, The Art of Organ Building"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3c6780dd-919f-450a-b025-0ee96db9c3cb",
+   "term": "Bellows air noise",
+   "fields": {
+    "definition": "The broadband rushing or whooshing sound produced by air moving through and around the bellows and wind path of a bellows-driven instrument (accordion, concertina, harmonium or reed organ, or an organ blower system), heard separately from the musical tone and often captured as noise on close-miked recordings.",
+    "plain_english": "Instruments like accordions and reed organs push air with bellows, and that moving air makes a soft rushing sound of its own. Up close a mic can pick it up, a bit like the hiss you hear when you squeeze an air pump.",
+    "purpose_function": "Naming this noise helps engineers separate normal air-handling sound from musical tone and manage it during recording.",
+    "practical_application": "An engineer chooses mic placement and may use gating or editing to control bellows air noise, or keeps it when a natural, intimate sound is wanted.",
+    "category": "Recording artifact",
+    "related_terms": ["Air-button hiss", "Air leakage", "Bagpipe moisture noise", "Reed", "Close miking"],
+    "common_mistakes": ["Mistaking normal bellows air noise for an air leak or fault.", "Placing the mic directly at the bellows fold, which exaggerates the noise.", "Gating so aggressively that soft note tails are lost with the noise."],
+    "scenario_contexts": ["A close-miked accordion recording shows steady air rush under sustained chords.", "A harmonium track in a quiet mix reveals bellows noise that needs gentle editing.", "An engineer keeps some bellows noise on a folk recording for a natural feel."]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians (Reed organ, Accordion)", "Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

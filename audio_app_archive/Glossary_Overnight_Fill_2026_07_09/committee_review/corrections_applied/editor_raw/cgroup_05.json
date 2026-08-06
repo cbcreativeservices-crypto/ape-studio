@@ -1,0 +1,94 @@
+{
+ "group": 5,
+ "corrections": [
+  {
+   "id": "7a977cfd-36e2-44ab-b197-8e2485e03cf7",
+   "term": "Signal-Sensing Turn-On",
+   "corrected": {
+    "common_mistakes": [
+     "Playing audio at very low volume, so the sense circuit never sees enough voltage swing and the amp fails to turn on or cycles off.",
+     "Expecting instant, click-free operation — signal-sensing adds a short turn-on delay and can produce a pop. With AC-signal detection (rather than DC-offset detection), it can also drop out during silent passages.",
+     "Using signal sensing when a clean switched 12V source is available, adding unnecessary turn-on lag and reliability issues.",
+     "Tapping the sense signal from wires that are muted or powered down by the factory system in certain modes, causing the amp not to wake."
+    ]
+   },
+   "notes": [
+    "common_mistakes: split the second bullet's comma-spliced run-on into two sentences (turn-on delay/pop, then AC-detection dropout) for parallelism with the surrounding bullets; content unchanged."
+   ]
+  },
+  {
+   "id": "23215c0a-402b-4272-b32f-c34070ed4f63",
+   "term": "Subsonic Filter",
+   "corrected": {
+    "practical_application": "On a ported build, the installer sets the amp's subsonic filter at or slightly below the enclosure tuning frequency — a few Hz under tuning, for example near 25–28 Hz for a box tuned to 30 Hz — to keep the cone under control near and below tuning."
+   },
+   "notes": [
+    "practical_application: removed the internally inconsistent 'half-octave (about 80%)' characterization (a half-octave below 30 Hz is ~21 Hz and 80% is 24 Hz, neither matching the 25–28 Hz example) and described the setting as at or a few Hz below port tuning, which matches the worked example and standard practice."
+   ]
+  },
+  {
+   "id": "ea49fc9c-9592-4ca9-8b15-17844a6f7e4f",
+   "term": "Isobaric Loading",
+   "corrected": {
+    "practical_application": "A tech uses isobaric pairs where cabinet size is tightly limited, accepting the extra driver cost and weight — with no gain in efficiency — in exchange for a smaller box."
+   },
+   "notes": [
+    "practical_application: set the efficiency point off as a parenthetical aside so 'accepting' no longer governs 'no gain in efficiency', fixing the broken list logic; meaning unchanged."
+   ]
+  },
+  {
+   "id": "8bdc86ba-1551-4641-ad9c-1f6c6522b06a",
+   "term": "DisplayPort",
+   "corrected": {
+    "common_mistakes": [
+     "Assuming any DisplayPort output drives an HDMI display through a passive adapter; a passive DP-to-HDMI adapter works only from a Dual-Mode (DP++) source at limited resolution and refresh, while an active adapter is required otherwise — and always for the HDMI-to-DisplayPort direction.",
+     "Forgetting that DisplayPort can carry embedded audio, then hunting for a separate audio feed that is actually inside the video cable.",
+     "Yanking a full-size DisplayPort cable without releasing the latch, which can damage the connector or port."
+    ]
+   },
+   "notes": [
+    "common_mistakes: reworded the first bullet to reflect verified adapter behavior — passive DP-to-HDMI adapters work only from a Dual-Mode (DP++) source at limited resolution/refresh; active adapters are needed for non-DP++ sources, higher resolutions, and always for HDMI-to-DisplayPort. Confirmed via VESA DP++ / adapter references."
+   ]
+  },
+  {
+   "id": "36ddfe76-343e-414e-a76f-a4a72465a5f6",
+   "term": "GPIO",
+   "corrected": {
+    "scenario_contexts": [
+     "Triggering an on-air or recording tally lamp from a broadcast console.",
+     "Using fader-start logic so opening a channel launches a playback device.",
+     "Sending a contact closure over a Dante or AoIP network to mute a zone or interface with a certified life-safety system — the actual EVAC trigger must originate from a supervised fire-alarm pathway (NFPA 72 / UL 2572 / EN 54-16), not an unmonitored AoIP GPIO."
+    ]
+   },
+   "notes": [
+    "scenario_contexts: qualified the third bullet so an unsupervised AoIP GPIO contact closure is no longer presented as a valid life-safety EVAC trigger; added the requirement that EVAC actuation use a supervised, certified pathway (NFPA 72 / UL 2572 / EN 54-16)."
+   ]
+  },
+  {
+   "id": "97548fb8-af37-4f35-afcc-967191aa3480",
+   "term": "MicroDot Connector",
+   "corrected": {
+    "related_terms": [
+     "Hirose Connector",
+     "Lavalier Microphone",
+     "Measurement Microphone",
+     "Phantom Power",
+     "TA5F (Switchcraft mini-XLR)"
+    ]
+   },
+   "notes": [
+    "related_terms: corrected 'TA5F (Lemo)' to 'TA5F (Switchcraft mini-XLR)'. Verified: TA5F is a Switchcraft Tini-QG 5-pin mini-XLR; LEMO is a separate circular connector brand — the two are physically distinct (hence TA5F-to-LEMO adapter cables). Left Lemo out rather than adding an unflagged item."
+   ]
+  },
+  {
+   "id": "9bd06f61-9ccf-4390-a1cc-8aff9ec91f45",
+   "term": "SC Connector",
+   "corrected": {
+    "purpose_function": "A fiber connector using a 2.5 mm ferrule and a square push-pull coupling housing that snaps into a latched position on insertion, standardized in early telecom specifications. It exists to provide a robust, easy-to-mate fiber termination and is common on legacy and telecom-grade infrastructure."
+   },
+   "notes": [
+    "purpose_function: replaced 'square push-pull housing with a locking-tab retention' with 'square push-pull coupling housing that snaps into a latched position on insertion' — removes the LC-style 'locking-tab' descriptor (SC self-retains via spring-loaded push-pull), aligns the mechanism language with plain_english's 'push-pull ... clicks in and out', and fixes the awkward count-noun grammar. Reconciles all three suggestions."
+   ]
+  }
+ ]
+}

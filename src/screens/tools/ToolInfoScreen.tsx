@@ -12,8 +12,10 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
 import { ApeDsp } from '../../../modules/ape-dsp';
 import { useToolUsage } from '../../features/tools/telemetry';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { colors, fonts } from '../../theme/tokens';
 import { ENGINE_NOTE, MIC_LIMITS, toolByKey } from './toolsData';
+import { LockedButton, MembershipRequiredNote } from './ToolLockUi';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ToolInfo'>;
@@ -37,6 +39,10 @@ export function ToolInfoScreen({ navigation, route }: Props) {
   // T-1 telemetry: this screen owns the tool session (stays mounted while the
   // live screen is pushed on top), so its lifetime ≈ time spent in the tool.
   useToolUsage(tool.key);
+  // OPEN TOOL is free for everyone; the LEARN/DEMO training layer is Academy-
+  // only (owner 2026-08-05). Gate on entitlement, not caps.
+  const { entitlement } = useEntitlement();
+  const isMember = entitlement === 'academy';
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -66,7 +72,7 @@ export function ToolInfoScreen({ navigation, route }: Props) {
         {tool.key !== 'hzcounter' && (
           <GlassButton
             label="OPEN TOOL"
-            tint={tool.tint}
+            tint="green"
             height={52}
             fontSize={15}
             onPress={() =>
@@ -87,28 +93,38 @@ export function ToolInfoScreen({ navigation, route }: Props) {
           />
         )}
 
-        {/* Phase-1 training layer (spec 2026-07-23): guided LEARN + visual DEMO.
-            Buttons always open; the destination screens gate the content. */}
+        {/* Phase-1 training layer: guided LEARN + visual DEMO. Academy-only
+            (owner 2026-08-05) — free accounts see them grayed + locked. */}
         <View style={styles.trainRow}>
-          <View style={{ flex: 1 }}>
-            <GlassButton
-              label="LEARN"
-              tint={tool.tint}
-              height={46}
-              fontSize={14}
-              onPress={() => navigation.navigate('ToolLearn', { toolKey: tool.key })}
-            />
-          </View>
-          <View style={{ flex: 1 }}>
-            <GlassButton
-              label="DEMO"
-              tint={tool.tint}
-              height={46}
-              fontSize={14}
-              onPress={() => navigation.navigate('ToolDemo', { toolKey: tool.key })}
-            />
-          </View>
+          {isMember ? (
+            <>
+              <View style={{ flex: 1 }}>
+                <GlassButton
+                  label="LEARN"
+                  tint="blue"
+                  height={46}
+                  fontSize={14}
+                  onPress={() => navigation.navigate('ToolLearn', { toolKey: tool.key })}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <GlassButton
+                  label="DEMO"
+                  tint="purple"
+                  height={46}
+                  fontSize={14}
+                  onPress={() => navigation.navigate('ToolDemo', { toolKey: tool.key })}
+                />
+              </View>
+            </>
+          ) : (
+            <>
+              <LockedButton label="LEARN" height={46} onPress={() => navigation.navigate('Paywall')} />
+              <LockedButton label="DEMO" height={46} onPress={() => navigation.navigate('Paywall')} />
+            </>
+          )}
         </View>
+        {!isMember && <MembershipRequiredNote what="open guided training" />}
 
         <Text style={styles.purpose}>{tool.purpose}</Text>
 

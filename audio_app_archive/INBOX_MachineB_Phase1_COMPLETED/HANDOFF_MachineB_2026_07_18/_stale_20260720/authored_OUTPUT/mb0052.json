@@ -1,0 +1,159 @@
+{
+ "batch": 52,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "7c079c71-a101-4c5c-8c2b-85abd344b561",
+   "term": "Harmony delay",
+   "fields": {
+    "definition": "The application of a delay (echo) effect to backing harmony vocals, producing timed repeats that add depth, movement, or stereo spread and set the harmonies apart in space from the lead vocal.",
+    "plain_english": "This is an echo effect put on the backing singers. It repeats their voices so they sound wider and sit behind the main singer.",
+    "purpose_function": "It adds space and size to harmony vocals and pushes them back in the mix, so they support the lead without crowding it or fighting for the same spot.",
+    "practical_application": "An engineer sends the harmony bus to a delay return, usually timed to the song tempo, and blends in enough repeats to widen the backing while keeping the lead vocal dry and up front.",
+    "category": "Vocal Processing",
+    "related_terms": ["Harmony reverb", "Harmony stack", "Backing vocals", "Slapback delay", "Tempo-synced delay", "Send effect"],
+    "common_mistakes": ["Using so much delay that the harmony words smear and become hard to understand", "Not tempo-syncing the delay, so the repeats clash with the groove", "Adding the same heavy delay to the lead vocal, which blurs the main line", "Letting delayed harmony tails cover the lead in the gaps between phrases"],
+    "scenario_contexts": ["Adding tempo-synced delay to chorus harmony vocals to make the backing feel wide", "Using a short delay on a doubled harmony to thicken it", "Throwing a delay on the last word of a harmony phrase for a spacious tail", "Panning harmony delay repeats opposite the dry signal for a stereo effect"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a8a12030-4156-4cef-9aed-d7127d6d1894",
+   "term": "Harmony ducking",
+   "fields": {
+    "definition": "The automatic reduction of harmony vocal level when the lead vocal is present, usually driven by a sidechain compressor keyed from the lead, so the harmonies dip out of the way and rise again in the gaps.",
+    "plain_english": "This turns the harmony singers down a little whenever the lead sings. The backing voices dip out of the way, then come back up in the gaps between lines.",
+    "purpose_function": "It keeps the lead vocal clear and in front by making the harmonies step back automatically, so a dense backing arrangement never masks the main line.",
+    "practical_application": "An engineer puts a compressor on the harmony bus and feeds the lead vocal into its sidechain, then sets the threshold and release so the harmonies drop a few decibels under the lead and recover between phrases.",
+    "category": "Vocal Processing",
+    "related_terms": ["Sidechain compression", "Harmony-to-lead balance", "Ducking", "Harmony subgroup", "Lead vocal", "Automation"],
+    "common_mistakes": ["Setting too much gain reduction, so the harmonies pump and jump in level", "Using a release time so fast or slow that the ducking sounds unnatural", "Ducking off the wrong source instead of the lead vocal", "Relying on ducking to fix a balance that a simple level or arrangement change would solve better"],
+    "scenario_contexts": ["Sidechaining dense chorus harmonies to the lead so the words stay clear", "Keeping oohs and aahs under a busy lead verse", "Making a thick vocal stack breathe around the main melody", "Automating extra duck depth only in the wordiest sections"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio: Concepts, Practices and Tools"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6cc5cbd8-9ce1-45f0-9f4a-7703c1ce51c2",
+   "term": "Harmony equalization",
+   "fields": {
+    "definition": "The use of equalization to shape the tone of backing harmony vocals, typically cutting or contouring frequencies so the harmonies blend under and support the lead vocal rather than competing with it.",
+    "plain_english": "This means shaping the tone of the harmony voices with EQ. You cut or boost certain pitches so the backing blends smoothly under the main singer.",
+    "purpose_function": "It carves room for the lead by trimming frequencies where harmonies would otherwise clash or build up, so a stacked backing sits as a smooth bed under the main vocal.",
+    "practical_application": "An engineer often rolls off low end and dips presence or harsh mids on the harmony bus, leaving those bands stronger on the lead so the two parts occupy slightly different tonal spaces.",
+    "category": "Vocal Processing",
+    "related_terms": ["Equalization", "High-pass filter", "Harmony subgroup", "Harmony-to-lead balance", "Frequency masking", "Backing vocals"],
+    "common_mistakes": ["EQing each harmony track differently so the stack loses its blend", "Leaving heavy low end on many stacked voices, causing mud", "Boosting the same presence range as the lead, which makes them fight", "Cutting so aggressively that the harmonies sound thin and lifeless"],
+    "scenario_contexts": ["High-passing a harmony stack to clear low-end buildup", "Dipping harsh upper mids on backing vocals so they sit behind the lead", "Matching EQ across a group of harmony tracks for a unified tone", "Shaping oohs and aahs to sound smooth and distant under the lead"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c873c977-e548-4b4a-bde9-0969767a949b",
+   "term": "Harmony reverb",
+   "fields": {
+    "definition": "The application of reverberation to backing harmony vocals, adding a sense of space and depth; harmonies are often given more or longer reverb than the lead to place them further back in the mix.",
+    "plain_english": "This adds a sense of room or space to the backing singers. More reverb makes the harmonies feel further away than the main singer.",
+    "purpose_function": "It sets the harmonies back in the depth of the mix and glues stacked voices together, creating a sense of distance that keeps the lead vocal closer and clearer.",
+    "practical_application": "An engineer routes the harmony bus to a reverb send, usually a longer or wetter setting than the lead vocal uses, and blends the return to push the backing into the background.",
+    "category": "Vocal Processing",
+    "related_terms": ["Reverb", "Harmony delay", "Harmony stack", "Send effect", "Predelay", "Depth of field"],
+    "common_mistakes": ["Drowning the harmonies in reverb so words and pitch blur", "Using the same short reverb as the lead, so the harmonies never sit back", "Ignoring predelay, which can smear the attack of the voices", "Letting long reverb tails wash over the lead in quiet moments"],
+    "scenario_contexts": ["Adding a longer plate reverb to chorus harmonies to set them behind the lead", "Gluing a wide vocal stack with a shared reverb", "Using a lush hall on distant background oohs", "Blending harmony reverb to add depth without losing intelligibility"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a6d2c19d-06a9-428b-b461-0d4d32fea4a6",
+   "term": "Harmony saturation",
+   "fields": {
+    "definition": "The deliberate addition of harmonic distortion, via tube, tape, transformer, or plugin emulation, to backing harmony vocals to add warmth, density, and perceived loudness and help the stack blend.",
+    "plain_english": "This adds a bit of warm grit to the harmony voices. It makes them thicker and helps them melt into the track.",
+    "purpose_function": "It thickens and glues harmony vocals by adding harmonics, so a stack sounds fuller and more cohesive and cuts through without simply being turned up louder.",
+    "practical_application": "An engineer inserts a saturation or tape emulation on the harmony bus and drives it gently, adding harmonics and density while watching that the effect does not make sibilance or noise harsh.",
+    "category": "Vocal Processing",
+    "related_terms": ["Saturation", "Harmonic distortion", "Tape emulation", "Harmony stack", "Harmony subgroup", "Parallel processing"],
+    "common_mistakes": ["Driving the saturation so hard that the harmonies sound fizzy or harsh", "Exaggerating sibilance and breath noise along with the wanted harmonics", "Saturating each track separately, which stacks up as unwanted grit", "Using saturation to fix a level balance that a fader move would solve"],
+    "scenario_contexts": ["Adding light tape saturation to a harmony bus for glue and warmth", "Driving background vocals with a tube emulation to help them cut without volume", "Thickening a thin doubled harmony", "Using parallel saturation to keep the dry stack clean while adding density"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0b91c4b7-c93e-4230-81c9-d264304f7b79",
+   "term": "Harmony stack",
+   "fields": {
+    "definition": "A layered arrangement of multiple recorded harmony vocal takes or parts, combined to build a fuller, wider, and more powerful backing than a single harmony line could provide.",
+    "plain_english": "This is layering several harmony takes on top of each other. Many voices build a fuller, choir-like wall of sound.",
+    "purpose_function": "It thickens and widens the backing vocals by combining many parts and takes, turning a thin single harmony into a rich, impactful section, usually reserved for choruses and big moments.",
+    "practical_application": "A singer records each harmony part several times, and the engineer layers and pans these takes, often doubling or tripling each note of the chord to build a wide, dense stack.",
+    "category": "Vocal Arrangement",
+    "related_terms": ["Double tracking", "Harmony width", "Harmony subgroup", "Backing vocals", "Comping", "Unison stacking"],
+    "common_mistakes": ["Stacking so many takes that the pitch and timing smear into mush", "Not tuning or timing the layers, so the stack sounds sloppy", "Using the identical take twice, which does not widen anything", "Building a huge stack in every section, leaving no contrast for the chorus"],
+    "scenario_contexts": ["Tripling each chorus harmony note for a big, wide backing", "Layering oohs and aahs to create a choir-like pad", "Stacking octave harmonies to reinforce a hook", "Building a dense harmony stack only in the final chorus for lift"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "43b4a49c-3b22-4f9c-be4e-fd39d90285ea",
+   "term": "Harmony subgroup",
+   "fields": {
+    "definition": "A subgroup (bus) that all backing harmony vocal channels are routed to, allowing collective level control and shared processing of the harmonies as a single unit before they reach the main mix.",
+    "plain_english": "This sends all the harmony tracks to one control channel. Then you can shape or turn down every harmony at once with a single fader.",
+    "purpose_function": "It lets an engineer balance and process the whole harmony section together, so one fader, EQ, or compressor treats every backing voice as a unified group rather than adjusting each track separately.",
+    "practical_application": "An engineer routes every harmony channel to one bus, then applies shared compression and EQ and rides that single subgroup fader to set the harmonies against the lead and the rest of the mix.",
+    "category": "Signal Routing",
+    "related_terms": ["Subgroup", "Bus", "Harmony-to-lead balance", "Bus compression", "Harmony equalization", "VCA group"],
+    "common_mistakes": ["Processing each harmony track and the bus without checking the total, causing over-compression", "Forgetting to route a stray harmony channel, so it escapes the group processing", "Confusing an audio subgroup with a VCA group, which only links faders", "Squashing the whole bus so hard the harmonies lose all dynamics"],
+    "scenario_contexts": ["Bussing all backing vocals to one subgroup for glue compression", "Riding a single fader to set harmonies against the lead", "Applying one EQ curve across the entire harmony section", "Muting the harmony subgroup to audition the mix without backing vocals"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "da63d5b5-bf8c-44e5-8e21-acb7bcd49421",
+   "term": "Harmony width",
+   "fields": {
+    "definition": "The perceived stereo spread of backing harmony vocals, controlled through panning, layering, and stereo effects to make the harmonies sound broad and open across the stereo field.",
+    "plain_english": "This is how wide the harmony voices spread across the stereo picture. Panning them left and right makes the backing feel big and open.",
+    "purpose_function": "It creates a sense of size and separation for the backing vocals, opening space around a centered lead so the harmonies frame it without crowding the middle of the mix.",
+    "practical_application": "An engineer pans doubled harmony takes to opposite sides, or uses stereo delay, reverb, and widening, to spread the backing wide while keeping the lead vocal focused in the center.",
+    "category": "Vocal Arrangement",
+    "related_terms": ["Panning", "Double tracking", "Harmony stack", "Stereo image", "Harmony delay", "Mono compatibility"],
+    "common_mistakes": ["Widening with stereo effects that collapse or thin out when heard in mono", "Panning a single take rather than separate doubles, giving no real width", "Spreading harmonies so wide the center of the mix feels empty", "Ignoring mono compatibility, so phase issues weaken the vocals on club or phone speakers"],
+    "scenario_contexts": ["Panning doubled chorus harmonies hard left and right for a wide backing", "Using stereo reverb to spread a harmony stack", "Checking harmony width in mono to confirm it holds up", "Narrowing verse harmonies and widening chorus harmonies for contrast"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "59185d83-6f16-43d4-b2ae-4bcb7e329182",
+   "term": "Harmony-to-lead balance",
+   "fields": {
+    "definition": "The relative level relationship between backing harmony vocals and the lead vocal, set so the harmonies support and enrich the lead while the main melody stays clearly out in front.",
+    "plain_english": "This is how loud the backing voices are next to the main singer. You set it so the harmonies support the lead without covering it.",
+    "purpose_function": "It keeps the lead vocal as the focus while letting the harmonies add fullness and emotion, striking the point where the backing is felt and heard but never masks the main line.",
+    "practical_application": "An engineer rides the harmony fader or subgroup against the lead, often pulling harmonies back in verses and letting them come up in choruses, and checks the balance on several playback systems.",
+    "category": "Mix Balance",
+    "related_terms": ["Harmony subgroup", "Harmony ducking", "Lead vocal", "Level balance", "Automation", "Backing vocals"],
+    "common_mistakes": ["Mixing harmonies so loud they compete with or bury the lead", "Setting one static balance instead of adjusting between verse and chorus", "Judging the balance only on studio monitors, not on phones or car speakers", "Turning harmonies up to fix a tone problem that EQ would solve better"],
+    "scenario_contexts": ["Pulling harmonies down in the verse and up in the chorus", "Automating harmony level so the lead stays clear in busy sections", "Setting backing-vocal level against the lead during a mix", "Checking the harmony-to-lead balance on multiple playback systems"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio: Concepts, Practices and Tools"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

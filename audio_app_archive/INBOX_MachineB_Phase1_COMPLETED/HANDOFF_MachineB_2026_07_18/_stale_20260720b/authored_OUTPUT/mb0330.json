@@ -1,0 +1,216 @@
+{
+ "batch": 330,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "cfb3c65a-f604-4cc8-a7dd-7699f6726006",
+   "term": "Flutter tongue",
+   "fields": {
+    "definition": "A wind-instrument articulation in which the player rolls the tongue tip (as in a rolled 'r') or flutters the throat or uvula while sustaining a note, adding a rapid buzzing or growling tremolo to the tone. It is used on flute and other woodwinds and on brass, and is marked 'flz.' or 'Flatterzunge' in the score.",
+    "plain_english": "The player rolls their tongue, like a long rolled 'rrrr,' while blowing a note. This makes the sound flutter and buzz, like a growl on top of the note.",
+    "purpose_function": "It colours a sustained tone with a fast, buzzing texture, giving players an expressive effect that ranges from a gentle shimmer to an aggressive growl.",
+    "practical_application": "When miking or mixing a flute or trumpet passage marked 'flz.', an engineer expects a dense, buzzy tremolo and sets levels and any noise reduction so the flutter reads as intended rather than as a fault.",
+    "category": "Articulation",
+    "related_terms": ["Ghost note", "Grace note", "Tremolo", "Growl", "Vibrato", "Transient"],
+    "common_mistakes": [
+     "Confusing flutter tongue with vibrato; vibrato is a pitch or loudness wobble, while flutter tongue is a fast tongue- or throat-driven buzz.",
+     "Assuming every player uses the tongue roll; some brass and low-flute players flutter with the throat instead.",
+     "Applying heavy noise reduction that strips the buzzing texture and makes the note sound flat and unnatural."
+    ],
+    "scenario_contexts": [
+     "Recording an orchestral flute solo marked 'Flatterzunge' and capturing the buzz cleanly.",
+     "A trumpet player using a flutter-tongue growl for a jazz or big-band effect.",
+     "Identifying a buzzing wind note as an intended flutter tongue rather than a reed or valve fault."
+    ]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians", "Adler, The Study of Orchestration", "Baines, Woodwind Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0dd0ffb2-f100-4fce-a8c5-9059d9fc3dc9",
+   "term": "Foot chick",
+   "fields": {
+    "definition": "The short, crisp 'chick' sound a drummer produces by pressing the hi-hat pedal to clap the two cymbals together, without striking them with a stick. It marks time, often on beats 2 and 4, and gives a tight, quickly decaying accent.",
+    "plain_english": "It is the short 'chick' sound a drummer makes by clapping the two hi-hat cymbals shut with their foot. No stick is used, so the sound is tight and stops fast.",
+    "purpose_function": "It lets the drummer keep steady time and add a crisp accent with the foot while the hands play other drums, and it sets the tightness of the hi-hat groove.",
+    "practical_application": "When recording drums, an engineer places the hi-hat mic to catch a clean 'chick' without too much snare bleed, and checks that the foot pattern sits in time with the backbeat.",
+    "category": "Percussion articulation",
+    "related_terms": ["Foot splash", "Ghost note", "Attack", "Decay", "Transient", "Backbeat"],
+    "common_mistakes": [
+     "Confusing the foot chick with a stick-struck closed hi-hat; the chick is made by the pedal alone and is shorter and softer.",
+     "Mis-timing the foot so the chick drifts off the backbeat.",
+     "Miking the hi-hat so far away that the chick loses its crisp attack and buries under the cymbal wash."
+    ],
+    "scenario_contexts": [
+     "A drummer marking beats 2 and 4 with the hi-hat foot during a quiet verse.",
+     "Identifying a soft rhythmic tick in a drum recording as the hi-hat foot chick.",
+     "Setting the hi-hat mic to capture a tight chick for a pop track."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "65859fd1-544d-4b3d-a80a-a35a81b187e1",
+   "term": "Foot splash",
+   "fields": {
+    "definition": "A hi-hat sound made by quickly pressing the pedal to clash the cymbals and then releasing it, so the cymbals splash open and ring rather than close tightly. It produces a loose, sloshy, sustaining accent played with the foot alone.",
+    "plain_english": "The drummer taps the hi-hat pedal and lets it open again fast, so the cymbals crash and keep ringing. It gives a loose, splashy sound instead of a tight click.",
+    "purpose_function": "It adds an open, washy accent or fill using the foot, giving colour and a sense of lift without needing the hands.",
+    "practical_application": "An engineer identifies a sloshy, ringing hi-hat accent as a foot splash and, if it clutters a mix, controls it with the hi-hat fader or gentle gating between hits.",
+    "category": "Percussion articulation",
+    "related_terms": ["Foot chick", "Ghost note", "Decay", "Sustain", "Attack", "Transient"],
+    "common_mistakes": [
+     "Confusing a foot splash with a splash cymbal; the splash here is the hi-hat opening, not a separate small cymbal.",
+     "Releasing the pedal too slowly, so the cymbals close into a dull chick instead of ringing open.",
+     "Gating the hi-hat too hard and cutting off the natural splash decay."
+    ],
+    "scenario_contexts": [
+     "A drummer accenting the end of a phrase with an open hi-hat foot splash.",
+     "Recognising a loose, ringing hi-hat wash in a track as a foot splash.",
+     "Deciding how much of a foot splash to keep when balancing a busy drum mix."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8a3dc125-91b7-437d-a75e-37c9f395e356",
+   "term": "Fret rattle",
+   "fields": {
+    "definition": "An unwanted buzzing or rattling on a fretted string instrument caused by the vibrating string striking one or more frets along its length. It commonly results from low string action, uneven or high frets, too little neck relief, or very hard picking.",
+    "plain_english": "It is the buzzing sound a guitar string makes when it slaps against the metal frets while it vibrates. It usually means the strings sit too low or a fret is uneven or too high.",
+    "purpose_function": "It is a fault to spot and cure, not an effect; recognising fret rattle tells a technician that the instrument's setup, such as action, neck relief, or fret level, needs adjustment.",
+    "practical_application": "A guitar tech listens and watches for fret rattle when setting string height and neck relief, and traces it to a specific fret to decide whether to adjust the truss rod, raise the saddle, or dress the frets.",
+    "category": "Mechanical artifact",
+    "related_terms": ["Gear noise", "String action", "Neck relief", "Sustain", "Attack", "Buzz"],
+    "common_mistakes": [
+     "Blaming the strings or amp for a buzz that is really fret rattle from the setup.",
+     "Lowering the action for playability without checking that it causes fret rattle.",
+     "Assuming all buzz is a bad fret when too little neck relief or a high nut can cause it."
+    ],
+    "scenario_contexts": [
+     "Setting up a guitar and lowering the action until fret rattle appears, then raising it slightly.",
+     "Tracking a clean electric guitar and hearing a buzz that turns out to be fret rattle, not amp noise.",
+     "Diagnosing a buzz at one position on the neck to locate a high or worn fret."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Grove Dictionary of Music and Musicians"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ae2fa7db-54f4-4a32-bd76-ae3ec3307ef7",
+   "term": "Gear noise",
+   "fields": {
+    "definition": "Unwanted background noise added to a signal by the audio equipment itself rather than by the source, such as the hiss of a preamp or converter or hum picked up in the gear. It sets the noise floor beneath the wanted sound and is measured as a device's self-noise or equivalent input noise.",
+    "plain_english": "It is the faint hiss or hum that your recording gear adds on its own, even with no one playing. Every piece of gear makes a little noise, and this is the quiet floor under the real sound.",
+    "purpose_function": "Naming gear noise helps a technician tell faults in the equipment apart from noise in the room or performance, so the right fix is chosen.",
+    "practical_application": "An engineer checks gear noise by turning up a channel with no input and listening for hiss or hum, then improves gain staging or swaps a noisy preamp to keep the noise floor low.",
+    "category": "Noise artifact",
+    "related_terms": ["Fret rattle", "Noise floor", "Self-noise", "Hum", "Hiss", "Gain staging"],
+    "common_mistakes": [
+     "Blaming the microphone or room for hiss that is really the preamp's own self-noise.",
+     "Turning up a noisy channel's gain instead of fixing the gain structure, which raises the noise along with the signal.",
+     "UNSAFE: chasing a hum by lifting the mains earth or ground on equipment; this defeats a safety ground and can leave exposed metal live."
+    ],
+    "scenario_contexts": [
+     "Comparing two preamps by their self-noise to pick the quieter one for a soft acoustic source.",
+     "Tracing a steady hiss under a quiet recording to a specific noisy device.",
+     "Setting gain structure across a console to keep gear noise below the wanted signal."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dfaed48d-7ec8-41a2-8a0f-13ac3a384854",
+   "term": "Ghost attack",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: 'Ghost attack' has no established, attested meaning in professional audio, orchestration, or acoustics literature. After searching recognised texts and standards, no >=2 acceptable sources define it. It is also ambiguous even as a transparent compound (a faint or spurious attack transient versus the onset of a ghost note), so no single canonical sense can be authored without guessing."
+   ]
+  },
+  {
+   "id": "be773e2e-520b-49e1-b1e1-14f14a97513b",
+   "term": "Ghost note",
+   "fields": {
+    "definition": "A note played very quietly and with reduced articulation, so it is felt as rhythmic texture more than heard as a clear pitch or hit. On drums it is common on the snare between the main backbeats, and on bass or guitar it appears as a muted, percussive note; it is often written in parentheses.",
+    "plain_english": "A ghost note is a note played so softly that you feel its rhythm more than you hear it. On drums it is a light tap on the snare between the loud hits that makes a groove feel alive.",
+    "purpose_function": "Ghost notes add groove, swing, and rhythmic detail between the main accents without cluttering the music or fighting the backbeat.",
+    "practical_application": "When mixing drums, an engineer sets compression and gating carefully so quiet snare ghost notes stay audible and are not squashed flat or gated out.",
+    "category": "Articulation",
+    "related_terms": ["Foot chick", "Foot splash", "Grace note", "Flutter tongue", "Attack", "Dynamics"],
+    "common_mistakes": [
+     "Confusing ghost notes with grace notes; ghost notes are about very low volume, while grace notes are quick ornaments before a main note.",
+     "Playing ghost notes too loud, so they compete with the backbeat instead of supporting it.",
+     "Over-compressing a drum bus so ghost notes jump up to the level of the main hits."
+    ],
+    "scenario_contexts": [
+     "A drummer adding light snare ghost notes to make a funk groove breathe.",
+     "A bassist muting strings for percussive ghost notes between main notes.",
+     "Setting snare compression so ghost notes stay quiet but present in a mix."
+    ]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c49263e2-3610-46a1-ac69-4756d33181ac",
+   "term": "gong-y",
+   "fields": {
+    "definition": "An informal descriptive term for a sound that resembles a gong: metallic and shimmering, with a slow swell, a spreading wash of inharmonic overtones, and a long, ringing decay. It is used to describe cymbals, reverbs, or resonances that ring in this metallic, gong-like way.",
+    "plain_english": "'Gong-y' means a sound is metallic and ringing, like a big gong. It swells up and rings for a long time with a shimmery, clangy tail.",
+    "purpose_function": "It gives engineers and musicians a quick shared word for a metallic, long-ringing character, whether that character is wanted or is an unwanted resonance to tame.",
+    "practical_application": "An engineer might call a boomy metallic drum reverb 'gong-y' and pull back the tail or notch a ringing resonance to clean it up.",
+    "category": "Tonal descriptor",
+    "related_terms": ["Resonance", "Decay", "Sustain", "Ring", "Inharmonicity", "Timbre"],
+    "common_mistakes": [
+     "Treating 'gong-y' as a precise measurement rather than a subjective description that should be backed up by listening or a spectrum view.",
+     "Confusing a gong-y ring from a genuine resonance with one added by reverb.",
+     "Boosting high mids to add shimmer and accidentally making a cymbal or reverb sound harshly gong-y."
+    ],
+    "scenario_contexts": [
+     "Describing a long, metallic reverb tail as too gong-y during a mix.",
+     "Identifying a gong-y ring on a floor tom as a resonance to be tuned or damped.",
+     "Choosing a cymbal that is bright but not overly gong-y for a dense mix."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "df50b441-c8c4-4cb2-a7f0-4132dc3fd477",
+   "term": "Grace note",
+   "fields": {
+    "definition": "A small ornamental note, or short group of notes, of very brief duration, printed in smaller type and played immediately before or on the beat of the main note it decorates. Common types are the acciaccatura, crushed in as quickly as possible, and the appoggiatura, which leans on the beat and takes value from the main note.",
+    "plain_english": "A grace note is a tiny, quick note squeezed in right before a main note to decorate it. It is printed small and passes by so fast it barely takes any time.",
+    "purpose_function": "Grace notes ornament a melody, adding emphasis, flourish, or a smooth lead-in to the main note without changing its place in the rhythm.",
+    "practical_application": "When editing MIDI or comping takes, an engineer keeps a grace note tight against its main note so the ornament reads clearly and does not sound like a flam or a timing error.",
+    "category": "Ornament",
+    "related_terms": ["Ghost note", "Flutter tongue", "Attack", "Transient", "Articulation", "Trill"],
+    "common_mistakes": [
+     "Confusing a grace note with a ghost note; a grace note is a quick ornament, while a ghost note is simply a very quiet note.",
+     "Playing an acciaccatura too slowly so it sounds like a full melodic note.",
+     "Quantising MIDI so hard that grace notes snap onto the beat and lose their ornamental feel."
+    ],
+    "scenario_contexts": [
+     "A guitarist adding a quick hammer-on grace note before a melody note.",
+     "Editing a sampled string line so grace notes stay crisp and unquantised.",
+     "Reading a score and recognising a small-printed note as a grace note ornament."
+    ]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians", "Adler, The Study of Orchestration"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

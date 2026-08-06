@@ -1,0 +1,231 @@
+{
+ "batch": 318,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "06f0f44c-4994-497a-acdd-6efd62c051f0",
+   "term": "papery",
+   "fields": {
+    "definition": "A timbral descriptor for a thin, dry sound that lacks low-frequency body and resonance, having a light, insubstantial, rustling character reminiscent of paper. It is commonly applied to snare drums, acoustic guitars, or midrange tones that seem hollow and weightless.",
+    "plain_english": "A papery sound is thin and dry, with no real low-end weight behind it. It is like the light, rustling noise of a sheet of paper instead of a full, solid tone.",
+    "purpose_function": "The term gives engineers a quick shorthand for a tone that is too thin and lacks body, flagging a problem to address with EQ, mic choice, or source treatment.",
+    "practical_application": "An engineer might call a close-miked acoustic guitar 'papery' and add low-mid EQ or reposition the mic away from the soundhole edge to restore body.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["thin", "dry", "boxy", "dull", "body"],
+    "common_mistakes": [
+     "Confusing 'papery' (thin, dry, no body) with 'crisp' or 'bright', which describe treble detail rather than a lack of low-end weight.",
+     "Trying to fix a papery tone only by boosting treble, which makes it thinner instead of adding the missing body.",
+     "Assuming it is always a fault; a papery quality is sometimes wanted for a dry, delicate texture."
+    ],
+    "scenario_contexts": [
+     "A close-miked acoustic guitar recorded near the bridge sounds papery and needs low-mid support.",
+     "A snare drum with the mic too close to the rim reads as papery and lacks fullness.",
+     "A vocal captured through a thin small-diaphragm mic is described as papery in a mix note."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Owsinski, The Mixing Engineer's Handbook", "Bartlett, Practical Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "23cd3f23-2b18-4ec7-8e7c-52a886229932",
+   "term": "phone-y / telephone",
+   "fields": {
+    "definition": "A timbral descriptor for sound band-limited to a narrow midrange, roughly 300 Hz to 3.4 kHz, so that it lacks deep lows and crisp highs and resembles speech heard over a traditional telephone line. This corresponds to the standard telephone voice band and is sometimes created deliberately as a 'telephone' or lo-fi effect.",
+    "plain_english": "A phone-y sound has no deep lows and no bright highs, leaving only the middle. It sounds boxed-in and small, just like a voice coming through an old telephone.",
+    "purpose_function": "The term names a sound squeezed into the telephone midrange band, flagging it either as a fault to correct or as a deliberate special effect an engineer can dial in.",
+    "practical_application": "To make a vocal sound 'telephone', an engineer sets a band-pass filter that cuts below about 300 Hz and above about 3.4 kHz, often adding light distortion for realism.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["nasal", "boxy", "thin", "midrange", "band-pass filter"],
+    "common_mistakes": [
+     "Assuming any thin sound is 'telephone'; the term specifically means midrange-only, cutting both the lows and the highs.",
+     "Setting the passband far too wide, so the effect never gets the boxed-in telephone character.",
+     "Forgetting that a bit of distortion is usually needed to sell a convincing telephone effect."
+    ],
+    "scenario_contexts": [
+     "Creating a deliberate telephone voice for a phone-call moment in a song or film.",
+     "Describing a badly EQ'd voiceover that has lost its lows and highs.",
+     "A cheap intercom or laptop speaker playback that sounds phone-y."
+    ]
+   },
+   "sources": ["ITU-T Recommendation G.712", "ITU-T Recommendation P.861 (telephone-band 300-3400 Hz)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b032f2d0-8c88-41bb-b8f2-9901e0b011f5",
+   "term": "piercing",
+   "fields": {
+    "definition": "A timbral descriptor for sound with excessive, painfully sharp high-frequency energy, typically in the 2-5 kHz presence and lower-treble region, that feels penetrating and physically uncomfortable to the ear. It is a stronger, more negative relative of 'bright' or 'edgy'.",
+    "plain_english": "A piercing sound has too much sharp high-frequency energy. It feels like it is stabbing your ears, the way a shrill whistle does.",
+    "purpose_function": "The term flags a harsh, fatiguing high-frequency region that needs taming with EQ or level control before it tires the listener or damages the mix balance.",
+    "practical_application": "An engineer hearing a piercing cymbal or vocal will notch or shelve the offending 2-5 kHz range, or apply a de-esser, to make long listening comfortable.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["harsh", "shrill", "bright", "sibilance", "presence"],
+    "common_mistakes": [
+     "Confusing 'piercing' with 'bright'; bright can be pleasant, while piercing is painful and fatiguing.",
+     "Cutting too wide a band to tame it, which dulls the whole sound instead of the narrow harsh region.",
+     "Ignoring that a piercing tone causes listener fatigue and leads to poor mix decisions over a long session."
+    ],
+    "scenario_contexts": [
+     "A cymbal or hi-hat with a sharp spike near 3 kHz that hurts on loud playback.",
+     "A vocal with harsh sibilance that becomes piercing when the level is pushed.",
+     "A live PA tuned with too much presence that sounds piercing to the audience."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook", "Izhaki, Mixing Audio"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "42f191c1-a61a-428e-a883-06cdcc49c657",
+   "term": "pinched",
+   "fields": {
+    "definition": "A timbral descriptor for a constricted, narrow tone that sounds squeezed and lacking in openness, width, and air, as though the sound is being forced through a small opening. It often results from an over-emphasized narrow midrange or heavy dynamic processing.",
+    "plain_english": "A pinched sound is tight and narrow, like it is being squeezed through a small gap. It lacks the open, airy feel of a full, relaxed tone.",
+    "purpose_function": "The term flags a closed, constricted quality so the engineer can open the sound back up with EQ, lighter compression, or better mic placement.",
+    "practical_application": "Hearing a pinched vocal, an engineer might ease off a fast, heavy compressor and add some upper-frequency air to restore openness.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["nasal", "boxy", "thin", "honky", "open"],
+    "common_mistakes": [
+     "Mistaking 'pinched' for 'warm'; pinched is narrow and closed, not full and rounded.",
+     "Over-compressing a source into a pinched tone, then blaming the microphone.",
+     "Trying to open a pinched sound with more level instead of EQ or lighter processing."
+    ],
+    "scenario_contexts": [
+     "A vocal squashed by a fast compressor that sounds pinched and lacks air.",
+     "A guitar amp mic'd tight at the center of the cone giving a pinched, narrow tone.",
+     "A mix bus with too much narrow midrange EQ that reads as pinched."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio", "Bartlett, Practical Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d8656577-a9c3-4262-a484-282c15b64bde",
+   "term": "Punchy",
+   "fields": {
+    "definition": "A timbral descriptor for a sound with strong, well-defined transient impact and dynamic energy, especially in the low-mids, giving a solid sense of 'hit' or force. Punch depends on preserved transients and tight, controlled low-frequency dynamics rather than sheer loudness.",
+    "plain_english": "A punchy sound hits hard and feels powerful, with a strong, clear kick to each beat. It is like a firm punch you can feel, not a soft tap.",
+    "purpose_function": "The term describes the desirable sense of impact and drive an engineer aims for on drums, bass, and full mixes to make them feel energetic and solid.",
+    "practical_application": "An engineer creates punch by setting compressor attack and release so transients pass through, and by tightening the low-mid region on kick, snare, and bass.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["tight", "transient", "attack", "fat", "dynamics"],
+    "common_mistakes": [
+     "Confusing 'punchy' (strong transients and impact) with simply 'loud'.",
+     "Over-compressing with too fast an attack, which flattens transients and kills the punch.",
+     "Boosting only deep bass to get punch, when tight low-mids and preserved transients matter more."
+    ],
+    "scenario_contexts": [
+     "Shaping a kick drum with compression and transient control to make it punchy.",
+     "Choosing a compressor attack setting that lets a snare stay punchy.",
+     "A live mix note asking for a punchier bass guitar in the low-mids."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b0f63e09-f6c1-491e-a729-d95cf3dfa65a",
+   "term": "Put air on it",
+   "fields": {
+    "definition": "A mix instruction to add very-high-frequency content, the 'air' band above roughly 10 kHz, to open up a sound and give it a sense of sparkle, breath, and spaciousness. It is usually achieved with a high-shelf boost or a dedicated air-band EQ.",
+    "plain_english": "This means add a little boost to the very highest frequencies. It opens the sound up and gives it a light, airy sparkle, like letting fresh air into a stuffy room.",
+    "purpose_function": "The instruction directs the engineer to lift the top octave so a source sounds more open and detailed and sits with a modern, expensive-sounding sheen.",
+    "practical_application": "Told to 'put air on it', an engineer applies a gentle high-shelf boost above about 10 kHz to a lead vocal or overheads to add openness.",
+    "category": "Mix Instruction",
+    "related_terms": ["airy", "bright", "presence", "open", "sparkle"],
+    "common_mistakes": [
+     "Boosting midrange instead of the very top; 'air' lives above about 10 kHz.",
+     "Adding so much air that the sound becomes harsh or hissy.",
+     "Trying to add air to a dull, band-limited source that has no high-frequency content to lift."
+    ],
+    "scenario_contexts": [
+     "Adding a high-shelf boost to open up a lead vocal.",
+     "Brightening acoustic guitar or cymbal overheads to add sparkle.",
+     "A mastering note asking to 'put air on it' for a more open top end."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio", "Sound on Sound (mixing technique articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "57e48908-151d-4ce3-9977-b67bd4dc138c",
+   "term": "Put it in your face",
+   "fields": {
+    "definition": "A mix instruction to make a sound more present, forward, and aggressive so it sits up front in the mix and grabs the listener's attention. It is typically achieved by raising level, boosting the presence range around 2-5 kHz, and reducing competing ambience or masking elements.",
+    "plain_english": "This means push a sound to the front so it feels close and bold. It is like someone stepping right up to you instead of standing across the room.",
+    "purpose_function": "The instruction directs the engineer to bring a key element forward so it dominates and feels immediate, usually for a lead vocal or featured instrument.",
+    "practical_application": "To put a vocal in your face, an engineer raises its level, adds presence EQ, and pulls back reverb so it feels close and upfront.",
+    "category": "Mix Instruction",
+    "related_terms": ["present", "forward", "aggressive", "upfront", "presence"],
+    "common_mistakes": [
+     "Only raising the fader, when presence EQ and reduced ambience also create the forward feel.",
+     "Making every element 'in your face', which leaves nothing sitting back and crowds the mix.",
+     "Confusing forward presence with simply making the whole track louder."
+    ],
+    "scenario_contexts": [
+     "Pushing a lead vocal forward so it grabs attention in a pop mix.",
+     "Making a rock guitar aggressive and upfront for an energetic section.",
+     "A producer asking for a rap vocal to be right in your face over the beat."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio", "Sound on Sound (mixing technique articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "91de5d50-882f-4445-9e1a-48852555def3",
+   "term": "quacky",
+   "fields": {
+    "definition": "A timbral descriptor for a honking, nasal midrange coloration with a pronounced peak roughly in the 500 Hz to 1 kHz region, giving a hollow, duck-like 'quack' quality. It is often caused by a resonant EQ peak, a wah-type filter, or certain compressor artifacts.",
+    "plain_english": "A quacky sound has a honking, nasal midrange bump that sticks out. It has a hollow, duck-like tone, a bit like talking through cupped hands.",
+    "purpose_function": "The term pinpoints an unwanted resonant midrange honk so the engineer can notch it out and restore a natural, balanced tone.",
+    "practical_application": "Hearing a quacky guitar, an engineer sweeps a narrow EQ cut through the 500 Hz to 1 kHz range to find and reduce the resonant peak.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["nasal", "honky", "boxy", "midrange", "resonant"],
+    "common_mistakes": [
+     "Confusing 'quacky' (nasal midrange honk) with 'bright' or 'harsh', which are higher-frequency traits.",
+     "Leaving a resonant EQ or wah peak in place, then blaming the source instrument.",
+     "Cutting too broadly and dulling the tone instead of notching the narrow quacky peak."
+    ],
+    "scenario_contexts": [
+     "A guitar played through a parked wah pedal that sounds quacky.",
+     "A vocal with a resonant peak near 700 Hz that reads as quacky.",
+     "A cheap speaker or small enclosure adding a quacky midrange coloration."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0414fa42-aa7b-4bb6-9c79-39d5ba7e122f",
+   "term": "raspy",
+   "fields": {
+    "definition": "A timbral descriptor for a rough, gritty, edgy tone carrying audible harmonic buzz or grain, usually in the upper midrange, resembling the sound of a rasp or file. It can arise from natural source distortion, harmonic saturation, or the onset of breakup.",
+    "plain_english": "A raspy sound is rough and gritty, with a scratchy edge to it. It is like a voice that has gone hoarse, or the buzz of a file scraping wood.",
+    "purpose_function": "The term describes an edgy, grainy character that can be a flaw to smooth out or a wanted texture to preserve, depending on the style.",
+    "practical_application": "An engineer may keep a singer's natural rasp for attitude, or tame it with gentle EQ and saturation control when it turns unpleasant.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["gritty", "edgy", "harsh", "rough", "distorted"],
+    "common_mistakes": [
+     "Confusing 'raspy' (rough grit and buzz) with 'bright' (clean treble detail).",
+     "Adding heavy saturation to get rasp and pushing it into unpleasant distortion.",
+     "Trying to remove all rasp with a de-esser, which targets sibilance rather than midrange grit."
+    ],
+    "scenario_contexts": [
+     "A hoarse or gritty vocal described as raspy in session notes.",
+     "A saxophone or overdriven guitar with a natural raspy edge.",
+     "A bass amp on the edge of breakup giving a raspy tone."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

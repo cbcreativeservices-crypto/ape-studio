@@ -1,0 +1,230 @@
+{
+ "expert": "cognition",
+ "group": 5,
+ "reviews": [
+  {
+   "id": "8a8ec5fe-91fc-4d68-a4d4-446a2608cb31",
+   "term": "Averaging",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5aa3bf95-4e7f-43a1-ac0b-45f04698b826",
+   "term": "back-EMF",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b2158193-7757-4d62-94f3-87fe0f64e38f",
+   "term": "Background Music (BGM)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3802765c-57c9-4fe4-aa5e-a28e085a8e41",
+   "term": "Background Music System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "af3b82bf-d089-4fde-b6cb-2a7ad630897f",
+   "term": "Backline",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e43588eb-9a76-4ca3-beab-f41faaca95c8",
+   "term": "Backplate",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b5fae0e4-d136-4b50-9ef3-2937c52f8f12",
+   "term": "Backup Alarm",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b0fac1ce-660b-48d1-904b-e5b932a603fe",
+   "term": "Backup Camera",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9e9c0241-1b57-4f23-9d1e-522a792848c3",
+   "term": "Backup Frequency",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "92de0556-85d6-4732-ad63-2a69adfa6b88",
+   "term": "Backup System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dcb46902-172e-4c94-b77c-9fdff767af1e",
+   "term": "Baffle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1d496a06-8b97-4d55-909f-76c08414644c",
+   "term": "Baffle Step",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "01b42238-9048-4a91-bf4c-e9bc847cb5a7",
+   "term": "balance control",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bdb5761d-8456-4622-a2c6-25412ef0ae35",
+   "term": "Balanced Connection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7174a55c-cc8d-4613-907b-2cdc8320b442",
+   "term": "Balanced line",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "64c5a2a7-0083-429f-81e6-9ae116e9a8ed",
+   "term": "Balanced output",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "372abebf-12e4-48b7-9907-93702111e64f",
+   "term": "Balanced Power",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4738d153-1af7-487e-8248-3a2a36ed1d85",
+   "term": "Balanced Signal",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "be1a3002-c32c-43f3-a6fe-3c784fbcd216",
+   "term": "Balun",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3af0e1bd-2b35-41c4-bf75-82456dd70ece",
+   "term": "Banana Plug",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "005c4924-c323-4e14-8953-42424bbaa23a",
+   "term": "Band Solo",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eecbd584-831c-40d1-8389-6c7060a28f9a",
+   "term": "band-limiting filters",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ca87c9cc-2b7b-41ea-9c06-3debaeacb986",
+   "term": "Banding",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c2e36c67-cc4a-4638-bd85-33a420090c7a",
+   "term": "Bandpass Enclosure",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "222bd325-6334-447c-8369-9cbde4eea733",
+   "term": "Bandpass Filter",
+   "verdict": "NEEDS_REVISION",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Medium",
+     "issue": "The first common_mistake teaches the distinction as 'bandpass is narrow, others are broad,' which is a misconception and internally contradicts this same entry's practical_application ('apply narrow bandpass (high Q)... use wider bandpass (low Q)'). A bandpass filter can be wide or narrow; the real distinction from HPF/LPF is that it attenuates BOTH above and below the band, not its width.",
+     "suggestion": "Reword to: 'Confusing bandpass with high-pass/low-pass \u2014 a bandpass attenuates both below and above its band, whereas HPF/LPF pass everything on one side of a single cutoff (bandwidth can be wide or narrow either way).'"
+    }
+   ]
+  },
+  {
+   "id": "7ebd1608-4e1a-4b26-ba8f-d1153d1ac3ca",
+   "term": "Bandwidth",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "27585fba-5634-4a25-8234-d5b31c7a3e1f",
+   "term": "Barrel Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2e19e36d-f744-487f-a927-d76bc02755b9",
+   "term": "Base",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "related_terms lists only 'Clean Feed,' omitting the obvious counterpart the definition itself names ('users' personal receivers'). A learner cannot navigate from the transmitter (Base) to the receiver side of the system, breaking the knowledge map.",
+     "suggestion": "Add 'Personal Receiver' (and e.g. 'Assistive Listening System' / 'Induction Loop') so the map connects the base to what it transmits to."
+    }
+   ]
+  },
+  {
+   "id": "9fc62ba9-87db-48ef-8f92-061bd68af790",
+   "term": "Basket",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8ec0c787-1f2b-4d2d-b81d-69d1cbdc5caa",
+   "term": "Bass Management",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2520a7cc-899d-4aeb-a8d0-39d98dabebd0",
+   "term": "Bass Reflex",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5352cf8a-7a6c-44d3-90ea-76ff75f3a1d1",
+   "term": "Bass Shaker (Tactile Transducer)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "78aab49d-dbb2-4a34-8c79-58080ef06eb7",
+   "term": "Bass trap",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8738f7ef-5026-485a-afe4-9e9afff38b3c",
+   "term": "Bathtub Curve",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6c442183-7990-405f-8fe9-9bfc60c7fd5b",
+   "term": "Battery Management",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

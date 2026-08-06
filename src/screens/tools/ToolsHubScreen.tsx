@@ -154,8 +154,12 @@ function ToolIcon({ tool }: { tool: ToolKey }) {
 
 export function ToolsHubScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { commercialMode, caps } = useEntitlement();
+  const { commercialMode, caps, entitlement } = useEntitlement();
   const album = useAlbumTier();
+  // Saved Measurements + Measurement Training are Academy-only (owner
+  // 2026-08-05) — free accounts see them grayed + locked → Paywall. Gate on
+  // entitlement, not caps (matches the AudioLearning training gate).
+  const isMember = entitlement === 'academy';
   // The TOOLS themselves are always usable (Booth 2026-07-11) — the academy
   // upsell is for the TUTORIALS on how to use them, shown as the bottom banner
   // until the user is an academy member (returns if their subscription lapses).
@@ -212,18 +216,6 @@ export function ToolsHubScreen({ navigation }: Props) {
             </Text>
           </View>
 
-          {/* Spike-0 dev entry — dev builds only, invisible in release. */}
-          {__DEV__ && (
-            <Pressable
-              style={styles.devRow}
-              onPress={() => navigation.navigate('DspDebug')}
-              accessibilityRole="button"
-              accessibilityLabel="DSP debug"
-            >
-              <Text style={styles.devRowText}>DSP DEBUG (DEV) — SPIKE 0</Text>
-            </Pressable>
-          )}
-
           {/* Tools as SQUARE tiles, 2 across (Booth 2026-07-11). Always unlocked. */}
           <View style={styles.grid}>
             {TOOLS.map((t) => (
@@ -262,22 +254,24 @@ export function ToolsHubScreen({ navigation }: Props) {
             ))}
           </View>
 
-          {/* Phase-2 (spec §7): the shared Saved Measurement Library. Free to
-              use, like the tools. */}
+          {/* Saved Measurement Library — Academy-only (owner 2026-08-05). Free
+              accounts see it grayed + locked; a tap routes to the Paywall. */}
           <Pressable
-            style={styles.libraryRow}
-            onPress={() => navigation.navigate('ToolLibrary', undefined)}
+            style={[styles.libraryRow, !isMember && styles.lockedRow]}
+            onPress={() => (isMember ? navigation.navigate('ToolLibrary', undefined) : navigation.navigate('Paywall'))}
             accessibilityRole="button"
-            accessibilityLabel="Saved measurements"
+            accessibilityLabel={isMember ? 'Saved measurements' : 'Saved measurements — Academy membership required'}
           >
-            <Text style={styles.libraryRowText}>SAVED MEASUREMENTS</Text>
-            <Text style={styles.trainingChevron}>›</Text>
+            <Text style={[styles.libraryRowText, !isMember && styles.lockedText]}>
+              {!isMember ? '🔒 ' : ''}SAVED MEASUREMENTS
+            </Text>
+            <Text style={[styles.trainingChevron, !isMember && styles.lockedText]}>›</Text>
           </Pressable>
+          {!isMember && <Text style={styles.lockedNote}>🔒 Academy membership required.</Text>}
 
-          {/* Phase-1 training layer (spec 2026-07-23 §15): the professional
-              measurement concept modules — Smaart-style concepts taught as
-              tutorials, not live tools. Section appears once content lands;
-              modules gate their content to Academy. */}
+          {/* Measurement-training concept modules — Academy-only (owner
+              2026-08-05). Free accounts see the section + every link grayed +
+              locked; taps route to the Paywall. */}
           {CONCEPT_MODULES.length > 0 && (
             <>
               <Text style={styles.trainingHead}>MEASUREMENT TRAINING</Text>
@@ -285,19 +279,26 @@ export function ToolsHubScreen({ navigation }: Props) {
                 {CONCEPT_MODULES.map((m) => (
                   <Pressable
                     key={m.key}
-                    style={styles.trainingRow}
-                    onPress={() => navigation.navigate('ConceptModule', { conceptKey: m.key })}
+                    style={[styles.trainingRow, !isMember && styles.lockedRow]}
+                    onPress={() =>
+                      isMember
+                        ? navigation.navigate('ConceptModule', { conceptKey: m.key })
+                        : navigation.navigate('Paywall')
+                    }
                     accessibilityRole="button"
-                    accessibilityLabel={m.title}
+                    accessibilityLabel={isMember ? m.title : `${m.title} — Academy membership required`}
                   >
-                    <Text style={styles.trainingNum}>{String(m.num).padStart(2, '0')}</Text>
-                    <Text style={styles.trainingTitle} numberOfLines={1}>
+                    <Text style={[styles.trainingNum, !isMember && styles.lockedText]}>
+                      {!isMember ? '🔒' : String(m.num).padStart(2, '0')}
+                    </Text>
+                    <Text style={[styles.trainingTitle, !isMember && styles.lockedText]} numberOfLines={1}>
                       {m.title}
                     </Text>
-                    <Text style={styles.trainingChevron}>›</Text>
+                    <Text style={[styles.trainingChevron, !isMember && styles.lockedText]}>›</Text>
                   </Pressable>
                 ))}
               </View>
+              {!isMember && <Text style={styles.lockedNote}>🔒 Academy membership required.</Text>}
             </>
           )}
         </ScrollView>
@@ -472,13 +473,14 @@ const styles = StyleSheet.create({
   navBar: { borderTopWidth: 1, borderTopColor: colors.black },
   navRow: { flexDirection: 'row', height: 60 },
   navItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  devRow: {
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#4a3a10',
-    backgroundColor: '#171204',
-    paddingVertical: 8,
-    alignItems: 'center',
+  // Academy-locked container/row treatment — grayed steel, muted text.
+  lockedRow: { borderColor: '#3a3a3a', backgroundColor: '#141414', opacity: 0.6 },
+  lockedText: { color: colors.textSub },
+  lockedNote: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12.5,
+    lineHeight: 17,
+    color: colors.textMuted,
+    marginTop: -4,
   },
-  devRowText: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 1, color: '#b98a20' },
 });

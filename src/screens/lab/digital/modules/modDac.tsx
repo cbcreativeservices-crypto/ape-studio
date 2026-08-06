@@ -1,8 +1,8 @@
 /**
- * Digital Lab — Module 7 (D-to-A Reconstruction) & Module 8 (Errors, Limits
- * & Listening). THE LAB'S HEART: Module 7 kills the staircase myth with the
- * four-layer reconstruction hero; Module 8 is the permanent MYTH vs REALITY
- * charter panel plus the honest jitter model and the listening-test roadmap.
+ * Digital Lab — Module 7 (D-to-A Reconstruction) & Module 8 (Errors & Limits).
+ * THE LAB'S HEART: Module 7 kills the staircase myth with the four-layer
+ * reconstruction hero; Module 8 is the permanent MYTH vs REALITY charter panel
+ * plus the honest jitter model.
  *
  * CHARTER (owner): sample values describe a band-limited signal; the DAC +
  * reconstruction filter produce a CONTINUOUS analog waveform via band-limited
@@ -19,7 +19,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import {
   Badge,
-  ListeningSoonCard,
   ModeChips,
   MythReality,
   PanelCard,
@@ -283,7 +282,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// MODULE 8 — ERRORS, LIMITS & LISTENING
+// MODULE 8 — ERRORS & LIMITS
 
 /** The owner's charter panel — all eight, permanent. */
 const MYTHS: { myth: string; reality: string }[] = [
@@ -325,18 +324,8 @@ const MYTHS: { myth: string; reality: string }[] = [
   {
     myth: 'Higher sample rates always sound audibly better.',
     reality:
-      'Once the rate covers hearing plus filter margin, extra rate adds bandwidth you cannot hear. Level-matched listening tests routinely fail to distinguish it. Higher rates have real engineering uses — automatic audible improvement is not one of them.',
+      'Once the rate covers hearing plus filter margin, extra rate adds bandwidth you cannot hear. Careful level-matched comparisons routinely fail to distinguish it. Higher rates have real engineering uses — automatic audible improvement is not one of them.',
   },
-];
-
-const LISTENING_TESTS = [
-  'Bit depths (16-bit vs 24-bit)',
-  'Sample rates (44.1 vs 96 kHz)',
-  'Dither on vs off at low level',
-  'Truncation vs rounding',
-  'Clean conversion vs clipped conversion',
-  'Sample-rate-conversion quality',
-  'Generation loss (repeated conversion)',
 ];
 
 export function ErrorsModule({ width, focused, help }: DigitalModuleProps) {
@@ -397,23 +386,6 @@ export function ErrorsModule({ width, focused, help }: DigitalModuleProps) {
           conversion; file transfers and buffered, reclocked playback carry the same numbers
           regardless of the cable. Claims that clocks and cables transform playback sound should be
           weighed against that.
-        </Text>
-      </PanelCard>
-
-      {/* ── Listening-test roadmap ───────────────────────────────────────── */}
-      <PanelCard>
-        <PanelHead title="LISTENING TESTS — ROADMAP" helpLabel="listening tests" onHelp={() => help('listening')} />
-        <Text style={dstyles.body}>
-          Every comparison below will be level-matched — otherwise you just prefer the louder one.
-        </Text>
-        <View style={{ gap: 8 }}>
-          {LISTENING_TESTS.map((t) => (
-            <ListeningSoonCard key={t} what={t} />
-          ))}
-        </View>
-        <Text style={dstyles.caption}>
-          One demo is live today: Module 2’s ALIASING demo really plays the input tone and its
-          predicted alias — go hear the fold.
         </Text>
       </PanelCard>
 

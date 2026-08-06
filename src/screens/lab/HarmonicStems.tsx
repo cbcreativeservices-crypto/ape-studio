@@ -44,6 +44,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Modal, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Line, Path } from 'react-native-svg';
 import { colors, fonts } from '../../theme/tokens';
+import { levelColor } from '../../features/tools/levelColor';
 import {
   AMP_FLOOR,
   DBC_FLOOR_DB,
@@ -52,6 +53,12 @@ import {
   type Harmonic,
   type HarmonicSet,
 } from './harmonicModel';
+
+// The musical interval each harmonic sounds relative to the fundamental — the
+// harmonic series' pitch content, labeled across the top of the sliders (owner
+// 2026-08-05). True series: H10 = M3, H12 = P5 (the "13" is the 13th harmonic,
+// beyond the 12 shown). Index = harmonic number − 1.
+const HARMONIC_INTERVALS = ['Root', '8ve', 'P5', '8ve', 'M3', 'P5', '♭7', '8ve', '9', 'M3', '♯11', 'P5'] as const;
 
 const PLOT_H = 132; // stem plot area height (classic ~120-140 px)
 const HANDLE_D = 14; // handle diameter
@@ -315,6 +322,20 @@ export function HarmonicStems({
     <View style={styles.card}>
       <Text style={styles.head}>HARMONIC STEMS — EDITABLE MODEL</Text>
 
+      {/* Interval names across the TOP — the musical equivalent of each
+          harmonic (owner 2026-08-05), aligned above each stem. */}
+      <View style={styles.intervalRow}>
+        {set.map((h) => (
+          <Text
+            key={h.n}
+            style={[styles.intervalLabel, h.n === selectedN && styles.slotLabelSel]}
+            numberOfLines={1}
+          >
+            {HARMONIC_INTERVALS[h.n - 1] ?? ''}
+          </Text>
+        ))}
+      </View>
+
       <View
         style={styles.plot}
         onLayout={(e) => setPlotW(Math.round(e.nativeEvent.layout.width))}
@@ -394,10 +415,13 @@ export function HarmonicStems({
                 }${off ? ', inactive' : ''}`}
                 accessibilityHint="Drag vertically to change level. Double tap to reset. Long press for details."
               >
+                {/* The STEM SLIDE LINE is coloured by LEVEL via the MIDI ramp
+                    (owner 2026-08-05): higher = red, lower = blue. The node
+                    (handle) keeps its odd/even/selected identity hue. */}
                 <View
                   style={[
                     styles.stem,
-                    { height: stemH + HANDLE_D / 2, backgroundColor: hue, opacity: off ? 0.28 : 0.85 },
+                    { height: stemH + HANDLE_D / 2, backgroundColor: levelColor(frac), opacity: off ? 0.3 : 0.95 },
                   ]}
                 />
                 <View
@@ -619,6 +643,16 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   slotLabelSel: { color: colors.amber },
+  // Interval names across the top — one per stem, aligned by flex.
+  intervalRow: { flexDirection: 'row', marginBottom: 2 },
+  intervalLabel: {
+    flex: 1,
+    textAlign: 'center',
+    fontFamily: fonts.barlowCondensedMedium,
+    fontSize: 9.5,
+    letterSpacing: 0.2,
+    color: colors.textSub,
+  },
   hint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
 
   // Detail sheet (PresetFader popup idiom, green-tinted for the Ear Lab).

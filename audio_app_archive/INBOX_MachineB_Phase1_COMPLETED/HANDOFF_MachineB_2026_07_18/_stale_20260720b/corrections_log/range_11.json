@@ -1,0 +1,48 @@
+{
+ "range": 11,
+ "applied": [
+  {
+   "pkt": "mb0412",
+   "term": "Source separation",
+   "field": "scenario_contexts",
+   "severity": "Low",
+   "summary": "Fixed misspelling 'acappella' to standard 'a cappella' (confirmed via Merriam-Webster and Cambridge dictionaries); resolves internal inconsistency with the 'Demixing' entry."
+  },
+  {
+   "pkt": "mb0413",
+   "term": "Melody extraction",
+   "field": "common_mistakes",
+   "severity": "Low",
+   "summary": "Trimmed opaque undefined evaluation-metric jargon ('raw chroma accuracy'/'raw pitch accuracy') from the octave-error bullet while preserving the accurate core point (correct pitch class, wrong octave); consistent with MIREX melody-extraction metrics."
+  },
+  {
+   "pkt": "mb0418",
+   "term": "Discrete audio codec tokens",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Replaced the 'like turning speech into text' analogy, which primed the exact misconception common_mistakes #1 corrects, with a 'numbered codes / catalog part numbers' analogy consistent with the definition (indices into codebooks). FK grade 7.6."
+  },
+  {
+   "pkt": "mb0424",
+   "term": "Principal component analysis",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Rewrote garbled closing analogy 'summing up a cloud of points by its longest and widest spread' to 'describing a cloud of points by its longest and widest directions of spread', which is clearer and accurate (principal components are directions of variance). FK grade 8.5."
+  },
+  {
+   "pkt": "mb0430",
+   "term": "One-mix (festival one-off)",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Anchored the headword by opening with 'A one-mix (or one-off) is...', connecting the term being studied to the 'one-off' shorthand used throughout. FK grade 7.6."
+  }
+ ],
+ "declined": [
+  {
+   "pkt": "mb0427",
+   "term": "Training data",
+   "field": "common_mistakes",
+   "reason": "Pure style/parallelism preference. The third list item ('Mislabeled or biased examples that teach the model the wrong patterns') communicates the mistake clearly; adding a leading gerund ('Using') is a house-style parallel-structure tweak, not a real accuracy, safety, or comprehension defect. Declined per instruction to reject pure style/preference edits."
+  }
+ ]
+}

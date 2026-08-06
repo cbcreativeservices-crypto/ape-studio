@@ -1,0 +1,223 @@
+{
+ "expert": "cognition",
+ "group": 32,
+ "reviews": [
+  {
+   "id": "6131e7dd-843b-4e72-8e3e-f6daa7c18bd1",
+   "term": "NL4 (Speakon)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "946724c9-f5bd-4624-a8a9-cf6ffcc77323",
+   "term": "No output",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dec16fab-229e-46fe-8715-51fc8af9b21a",
+   "term": "Noise",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8fcc8b56-c863-49fe-ba32-730e82f910f8",
+   "term": "Noise - spectral colors",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5b99b7ea-3e08-4f34-a2c1-a6299e1042f0",
+   "term": "Noise Floor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7f194b72-c305-4477-9f94-7a3d044fe190",
+   "term": "Noise Gate",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Low",
+     "issue": "For a beginner-tagged term whose sibling entries use full explanatory sentences, the common_mistakes here are cryptic verbless fragments ('Threshold into program material', 'chatter from fast release') that a beginner cannot decode or learn the correction from.",
+     "suggestion": "Rewrite as short constructive sentences, e.g. 'Setting the threshold too high so it cuts into quiet parts of the wanted signal', 'Gate chatter (rapid open/close) when the threshold sits right at the signal level - fix with a longer hold/release', and 'Using a hard gate where a gentler expander would sound more natural.'"
+    }
+   ]
+  },
+  {
+   "id": "8f0db471-6f18-48b4-8ee3-04dd65a724a4",
+   "term": "Noise-Canceling Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f64868d4-10ad-4d84-b6bc-be19d943eb30",
+   "term": "NOM (Number of Open Mics)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ca5fbed5-b28c-4efd-b514-f7f84d3436c0",
+   "term": "Nominal Impedance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "28031c97-0389-4593-af69-79eb7ec43d2b",
+   "term": "Nominal Level",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a4c1e69e-b3b1-4fc6-aaf2-6cd8d1242f2c",
+   "term": "Non-Normalled",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4e982ca1-af18-492a-aebe-4dafeea627e6",
+   "term": "Nonlinear Reverb",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1490cd6b-2bfe-4384-9a12-75390c20ed44",
+   "term": "Normalled",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a039a3a0-b94f-4085-9e13-083ef9a9ab06",
+   "term": "Notch Filter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "70b574cc-c97b-4ffe-af41-2e958b63b227",
+   "term": "Null",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b6f1c548-11c7-40cb-ac67-0d03a2d2cb5d",
+   "term": "Nyquist frequency",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "86a42d16-ad1d-4c05-ad60-9c2d38891743",
+   "term": "Object-Based Audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d33fee86-f4dc-41d9-a600-384b2fbf854c",
+   "term": "Octave",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4f4b2156-177d-42b5-b568-2824b6a800da",
+   "term": "Octave band",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d8c9a7b8-968e-4652-83df-81f6dc4c0c42",
+   "term": "Octave banding control",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d0faea57-9500-455b-8d89-e2efdc649c87",
+   "term": "Octave smoothing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "67673b6a-ba77-4669-a69e-f7c0212764cd",
+   "term": "OEM Head Unit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "86edf69d-1919-49e5-8fa8-b7643ca0cb1d",
+   "term": "Off-Axis",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d7416e65-5400-44d8-bd16-2cac04532586",
+   "term": "Off-axis coloration",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c277cc43-d973-497b-bf2c-9ed499684792",
+   "term": "Offline Editor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "865e843a-375a-41a2-84c3-4f02c0887cb0",
+   "term": "Ohm (Ω)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cfb847d3-b73b-4b77-8f8c-189954edd710",
+   "term": "Ohm's Law",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fde4cbc8-e378-45c3-9bb6-86c022d837d7",
+   "term": "Ohm-out",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4a2aa894-8fd7-41e9-9504-58a02483accc",
+   "term": "Oil-Can Delay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "44033fd1-4c6e-4ba7-b80b-6132a27cc0e9",
+   "term": "Omnidirectional Antenna",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "80fd2fa9-a02d-472d-bb6a-173c777cd877",
+   "term": "Omnidirectional Microphone (Omni)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6f56f37d-6742-4ca5-807e-110bb134d4dd",
+   "term": "On-axis",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6e4a23a4-aaf5-476b-9670-d3e086272003",
+   "term": "op-amp (operational amplifier)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c9036f55-bb61-4ee0-b0a6-368efcf00076",
+   "term": "Open circuit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7034a27b-f2bb-415f-997f-89a4efcd9b8b",
+   "term": "Open-Back Headphones",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

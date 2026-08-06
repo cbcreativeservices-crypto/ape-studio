@@ -1,0 +1,223 @@
+{
+ "expert": "Learning/Cognition",
+ "group": 22,
+ "reviews": [
+  {
+   "id": "8146d1a2-0a30-4396-87ed-ec0bf371befb",
+   "term": "Body layer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f8ac5abc-1e7d-4360-8428-55e226dc2097",
+   "term": "Bounce Mixer Channels",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2bddb806-624f-494c-bde2-7c97061d712e",
+   "term": "Breakbeat slicing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a0927cd8-386e-435c-8d54-365ae19c1ad3",
+   "term": "Broadcast compliance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f79fbc90-541c-41f8-8134-fade2f8af274",
+   "term": "Broadcast compliance verification",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3e6fadc7-b998-412f-b30c-73c20c77c9c0",
+   "term": "Broadcast master",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e961511d-3849-4bef-ad93-3a83f25f9c5c",
+   "term": "Broadcast mix version",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a39250b5-d7c4-4313-9c94-2ea7c2952a57",
+   "term": "Broadcast printmaster",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "difficulty",
+     "severity": "Medium",
+     "issue": "Tagged 'beginner', but the entry's core content assumes advanced post-production prerequisites: a combined D/M/E printmaster versus separated stems, M&E for foreign-language dubbing, and the re-recording mixer role. A launch-level beginner has not met these concepts, so the definition and related_terms carry unstated prerequisite load.",
+     "suggestion": "Re-tag as 'intermediate' (or 'advanced') to match the printmaster/M&E/dubbing content, so learners are not led to expect a foundational term."
+    }
+   ]
+  },
+  {
+   "id": "8459064d-e117-47fe-9357-c97c93a4b4c9",
+   "term": "Broadcast translation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0194f4e5-f530-4310-a7b2-496c65d0f6d3",
+   "term": "Build the mix",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a8878869-6751-44c4-a050-1ab197dbf5c0",
+   "term": "Catch Playhead",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1e8f151a-b0d6-4d8a-90ad-9796a0e89fef",
+   "term": "Chain selector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9efed616-e279-4382-8576-c2d05621e529",
+   "term": "Chain zone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a1ca4a48-1981-49f8-9da8-aaaeb30ef7a9",
+   "term": "Changeover music",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "56ad7097-ef73-4aba-949d-1c2e5b5f3beb",
+   "term": "Channel Settings window",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fc90be23-f616-4c6d-adc4-b8221d9d474c",
+   "term": "Channel validation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2f36acc4-5c7b-43db-84d2-150b6e5e2fc7",
+   "term": "Chase Events",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "341108e9-47d5-475a-beac-141190d90c9b",
+   "term": "Check the back of the room",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "df176023-1715-4416-9846-0cef385915b5",
+   "term": "Check the corners",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1a051e41-d6ed-4cd7-8877-7186ed7a3e5b",
+   "term": "Check the front row",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f6422af7-a524-4849-b1b8-face43fb8115",
+   "term": "Check under the balcony",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c82b6019-b10b-47b7-badf-ab932ecfb7f3",
+   "term": "Chord track",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "85842147-9072-4000-961d-672304056652",
+   "term": "Chromagram",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "89c42e96-e620-463a-be06-51b9846c017c",
+   "term": "Chunks window",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f9ff1bbd-e847-41fa-8d04-bc8215b1180b",
+   "term": "Clap layering",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fceaa069-f077-40a9-bdce-dad39b27f7fa",
+   "term": "Clap sample",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6945e685-18fc-451c-a7fa-f4793228a077",
+   "term": "Client acceptance review",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "77cb8620-f1a0-417b-b0f8-5f8bd55da9e6",
+   "term": "Client delivery package",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3308f994-285a-45a4-aebc-95b3c7a97154",
+   "term": "Clip Effects",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3ec0867f-0f8a-4c4e-9cf2-fa865dd1d2a6",
+   "term": "Clip Gain Line",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "56b11441-3d85-4899-ac32-d02b1fec6227",
+   "term": "Clip lane",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1c9b243f-4b65-496b-ad6f-e8b2399510ae",
+   "term": "Clip View",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dda94bb1-26a8-4051-8a39-bc344d7e5529",
+   "term": "Clipping prevention",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e44dec5d-4896-4327-aae0-f7c0c71bbe28",
+   "term": "Clippings window",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "df8e7374-109c-4f44-a8c6-81cc3e7f6c3b",
+   "term": "Closed-hi-hat sample",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

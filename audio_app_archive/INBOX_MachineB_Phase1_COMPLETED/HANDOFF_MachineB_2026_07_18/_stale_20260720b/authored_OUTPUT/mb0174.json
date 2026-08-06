@@ -1,0 +1,261 @@
+{
+ "batch": 174,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "a64b94d5-fc9c-41dc-902c-4663484a754b",
+   "term": "Session-at-once mastering",
+   "fields": {
+    "definition": "A CD-writing method in which each session — a self-contained group of tracks with its own lead-in and lead-out — is recorded in a single continuous pass while the disc is left open so further sessions can be added. In mastering it is used mainly for Enhanced or mixed-mode CDs that combine an audio session with a data session, whereas a replication-ready Red Book audio master requires Disc-At-Once instead.",
+    "plain_english": "A way of burning a CD where a whole batch of tracks is written in one go, but the disc stays open so you can add more later. It is used for discs that hold both music and computer files. For normal music CDs sent to a factory, engineers use Disc-At-Once instead.",
+    "purpose_function": "It lets one disc carry more than a single session — for example an audio session plus a data session — by finishing each session on its own while keeping the disc writable. This supports Enhanced CD formats that a single Disc-At-Once write cannot create.",
+    "practical_application": "An authoring engineer chooses Session-At-Once when building a mixed-mode or Enhanced CD, but switches to Disc-At-Once for any audio master going to a pressing plant, because run-out sectors left by other modes can be read as uncorrectable errors.",
+    "category": "CD Mastering",
+    "related_terms": ["Disc-At-Once", "Track-At-Once", "Red Book", "DDP", "Enhanced CD"],
+    "common_mistakes": [
+     "Using Session-At-Once for an audio master meant for replication, when Disc-At-Once is required.",
+     "Assuming any burned CD-R is Red Book compliant no matter which write mode was used.",
+     "Confusing sessions with tracks — one session can hold many tracks."
+    ],
+    "scenario_contexts": [
+     "Authoring an Enhanced CD that pairs an audio album with bonus video or data files.",
+     "Preparing a mixed-mode disc for a promotional release.",
+     "Deciding on a write mode before sending a master to a pressing plant."
+    ]
+   },
+   "sources": [
+    "Sound on Sound — CD writing modes (Disc-At-Once / Track-At-Once) technique article",
+    "Ballou, Handbook for Sound Engineers (optical disc recording)",
+    "IEC 60908 (Compact Disc Digital Audio / Red Book)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "78da7d4e-baa3-45e2-9633-03fc105906f7",
+   "term": "Side-length optimization",
+   "fields": {
+    "definition": "In vinyl mastering, the practice of arranging program length, cutting level and low-frequency content so each side of a record can be cut cleanly. Because a longer side forces grooves closer together, the engineer trades playing time against maximum level, bass energy and groove spacing to keep tracking reliable and quality high.",
+    "plain_english": "On a record, the more music you fit on one side, the quieter and thinner it must be cut. This work balances how long each side runs against how loud and how much bass it can hold. Short sides can be loud and full; long sides must be tamed.",
+    "purpose_function": "It exists because a lacquer has limited space, so packing grooves tighter for a longer side lowers the level that can be cut and risks mistracking. Managing side length protects loudness, low end and reliable playback.",
+    "practical_application": "A vinyl mastering engineer checks each side's total time, then sets track order, cutting level and how much bass to keep in mono, often splitting an album so no single side runs over-length.",
+    "category": "Vinyl Mastering",
+    "related_terms": ["Lacquer cutting", "Groove spacing", "Bass mono", "RIAA equalization", "Cutting lathe"],
+    "common_mistakes": [
+     "Cramming too much time onto one side, then wondering why it plays back quiet or distorted.",
+     "Ignoring heavy bass content, which widens grooves and uses up space fast.",
+     "Placing the loudest track at the inner grooves, where cutting quality is lowest."
+    ],
+    "scenario_contexts": [
+     "Splitting a long album across sides so neither one runs over-length.",
+     "Deciding whether a loud, bass-heavy single fits on one 7-inch side at 45 rpm.",
+     "Advising a client to trim runtime so the record can stay loud."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (disc recording chapter)",
+    "Katz, Mastering Audio: The Art and the Science",
+    "Sound on Sound — vinyl mastering technique article"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fdafa565-5fb9-491f-a887-e78ac7055ff8",
+   "term": "Single mastering",
+   "fields": {
+    "definition": "The mastering of a single — a standalone release built around one lead track, sometimes with a remix or B-side — rather than a full album or EP. It applies the usual finishing process of level, tone, dynamics and format masters, but focuses on making that one track competitive and consistent across release outlets.",
+    "plain_english": "Getting one song ready for release on its own, instead of as part of an album. The engineer polishes its loudness and tone so it holds up next to other hits. It may also include a remix or two.",
+    "purpose_function": "It exists so a track released on its own sounds finished and competitive on streaming, radio and other outlets. With no album around it, the single has to stand fully by itself.",
+    "practical_application": "A mastering engineer sets the single's loudness and tone to modern targets, delivers the format masters each outlet needs, and compares it against reference tracks in the same genre.",
+    "category": "Mastering Workflow",
+    "related_terms": ["Album mastering", "Loudness normalization", "Reference track", "Streaming master", "Sequencing"],
+    "common_mistakes": [
+     "Mastering a single much louder than the artist's album, so the catalogue sounds inconsistent.",
+     "Sending one file everywhere instead of the correct format masters.",
+     "Ignoring streaming loudness targets and getting turned down on playback."
+    ],
+    "scenario_contexts": [
+     "Preparing a lead single ahead of an album campaign.",
+     "Mastering a one-off track for a playlist pitch.",
+     "Delivering a single with both clean and explicit versions."
+    ]
+   },
+   "sources": [
+    "Katz, Mastering Audio: The Art and the Science",
+    "Sound on Sound — mastering technique articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "429b0891-1006-40d5-b8be-0b67aa52ed51",
+   "term": "Soloist stem",
+   "fields": {
+    "definition": "A stem — a grouped submix bounced as its own audio file — that carries the featured soloist, such as a lead vocal or solo instrument, kept separate from the rest of the mix. It lets a mastering or re-mix engineer adjust the soloist's level and tone independently of the backing.",
+    "plain_english": "A separate audio file that holds just the star part, like the lead singer or a solo guitar. Keeping it on its own lets the engineer turn it up or down without touching the rest of the music. It is one of several grouped files handed over for mastering.",
+    "purpose_function": "It exists to give control over the most important element after mixing is finished, so the soloist can be lifted, brightened or dipped without a full remix. This helps in stem mastering and when making alternate versions.",
+    "practical_application": "In stem mastering the engineer receives the soloist stem alongside the music and other stems, and nudges its level or EQ so the lead sits right before combining everything into the final master.",
+    "category": "Stem Mastering",
+    "related_terms": ["Stem mastering", "Lead vocal", "Submix", "Music stem", "Stem"],
+    "common_mistakes": [
+     "Delivering the soloist stem with print effects baked in, so it can no longer be adjusted cleanly.",
+     "Stems that do not add back up to the original mix because levels or routing changed.",
+     "Confusing a stem with a single track — a stem can hold several grouped parts."
+    ],
+    "scenario_contexts": [
+     "Raising a quiet lead vocal during stem mastering without going back to a remix.",
+     "Creating an instrumental version by muting the soloist stem.",
+     "Delivering stems for a film or streaming remix."
+    ]
+   },
+   "sources": [
+    "Katz, Mastering Audio: The Art and the Science (stem mastering)",
+    "Sound on Sound — stem mastering technique article"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9cb16b2b-162d-4d99-8f29-c6af4b159123",
+   "term": "Sound-design music stem",
+   "fields": {
+    "definition": "A stem that carries the sound-design elements of a music production — risers, impacts, textures, drones and other designed effects — grouped as a single audio file separate from the drum, bass, melodic and vocal stems. It lets these atmospheric or transitional sounds be balanced on their own during stem mastering or re-mixing.",
+    "plain_english": "A separate file that holds the special-effect sounds in a track, like whooshes, booms and background textures. Keeping them apart lets the engineer set how loud these effects sit without changing the drums or vocals. It is one of the grouped files handed over for mastering.",
+    "purpose_function": "It exists so designed, non-instrumental sounds can be controlled on their own, since they often need a different level or brightness than the musical parts. This helps in stem mastering and when adapting a track for picture or games.",
+    "practical_application": "A stem mastering engineer receives the sound-design stem with the other stems and adjusts its level and tone so risers and impacts add energy without swamping the mix.",
+    "category": "Stem Mastering",
+    "related_terms": ["Stem mastering", "Music stem", "Riser", "Submix", "Soloist stem"],
+    "common_mistakes": [
+     "Burying transitional effects so low that they lose their build-up impact.",
+     "Letting loud impacts trigger the master limiter and pump the whole mix.",
+     "Bouncing the stem with different processing than the reference mix, breaking the sum."
+    ],
+    "scenario_contexts": [
+     "Balancing risers and impacts in an electronic track during stem mastering.",
+     "Adapting a song's effects layer for a trailer or game.",
+     "Muting the sound-design stem to make a cleaner instrumental."
+    ]
+   },
+   "sources": [
+    "Katz, Mastering Audio: The Art and the Science (stem mastering)",
+    "Sound on Sound — stem mastering technique article"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8037d916-7922-4d71-872f-364caf2e88d4",
+   "term": "Speaker re-render",
+   "fields": {
+    "definition": "In immersive, object-based audio such as Dolby Atmos, a re-render is a channel-based bounce of the master made for a specific speaker layout — for example 7.1.4, 5.1, stereo or binaural — produced by the renderer from the same object mix. It provides ready deliverables for playback systems that are not object-capable.",
+    "plain_english": "Immersive mixes store sounds that can move anywhere in the room. A speaker re-render turns that master into a fixed version made for one speaker setup, such as 5.1 surround or plain stereo. It lets the mix play back right on systems that cannot handle the moving-sound format.",
+    "purpose_function": "It exists because listeners do not all have the same speakers, so one object-based master is folded down into set channel layouts for delivery. This gives a controlled result on stereo, surround and headphone playback.",
+    "practical_application": "Working in the Dolby Atmos Renderer, an engineer sets up re-renders for the layouts a label needs and bounces them alongside the master, delivering stereo, 5.1 and binaural versions from one session.",
+    "category": "Immersive Mastering",
+    "related_terms": ["Dolby Atmos", "Binaural render", "Downmix", "Object-based audio", "ADM BWF"],
+    "common_mistakes": [
+     "Assuming the stereo re-render will match a separately made stereo master — fold-down levels can differ.",
+     "Forgetting to render every deliverable layout the distributor requires.",
+     "Not checking the binaural re-render on headphones before delivery."
+    ],
+    "scenario_contexts": [
+     "Bouncing 5.1 and stereo deliverables from a Dolby Atmos music master.",
+     "Creating a binaural version for headphone streaming.",
+     "Supplying multiple speaker layouts for a film mix."
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Renderer — Dolby Professional technical documentation",
+    "Dolby Professional Support — binaural render and re-render deliverables",
+    "Katz, Mastering Audio: The Art and the Science (immersive delivery)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "807c6d13-2396-429c-90ae-f010f88ee131",
+   "term": "Stamper creation",
+   "fields": {
+    "definition": "In vinyl manufacturing, the electroforming step that produces the metal stamper used to press records. The cut lacquer is silvered and electroplated to grow a metal 'father'; from it a 'mother' is grown, and from the mother the negative 'stampers' are formed and mounted in the press.",
+    "plain_english": "The step that turns a freshly cut master disc into the metal mould that stamps out records. The soft lacquer is coated in metal and copied in stages to make a tough, reversed plate. That plate presses the grooves into every copy.",
+    "purpose_function": "It exists because the delicate lacquer cannot survive pressing thousands of records, so a hard metal negative is grown from it. The stamper is the durable tool that shapes the hot vinyl in the press.",
+    "practical_application": "A plating technician silvers and electroforms the lacquer and produces a stamper for each side; the mastering engineer's cut quality directly sets how good those stampers, and the finished records, turn out.",
+    "category": "Disc Manufacturing",
+    "related_terms": ["Lacquer cutting", "Mother", "Electroforming", "Test pressing", "Pressing"],
+    "common_mistakes": [
+     "Thinking the stamper is a positive copy — it is a negative, mirror image of the record.",
+     "Assuming plating can fix a noisy or poorly cut lacquer.",
+     "Handling or storing lacquers carelessly before plating, which adds clicks and dropouts."
+    ],
+    "scenario_contexts": [
+     "A pressing plant plating a lacquer to begin a record run.",
+     "Growing extra stampers to press a large order.",
+     "Tracing surface noise back to the plating stage."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (disc recording and plating)",
+    "Katz, Mastering Audio: The Art and the Science (vinyl production)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f7d1bc8f-8a5b-413e-942b-3af0f5a44539",
+   "term": "Stem mastering",
+   "fields": {
+    "definition": "A mastering approach in which the engineer works from a small set of grouped submixes (stems) — such as drums, bass, music and vocals — instead of a single stereo mixdown. Processing the stems individually gives more control over balance and tone than stereo mastering, placing the work between mixing and traditional mastering.",
+    "plain_english": "Instead of one finished stereo file, the engineer gets a few grouped tracks — like drums, bass, music and vocals — bounced separately. Working on these gives more control to fix the balance while mastering. It sits partway between mixing and normal mastering.",
+    "purpose_function": "It exists to let a mastering engineer solve balance problems — a too-loud vocal or a weak low end — that a single stereo file cannot fix. It offers more reach than stereo mastering without a full remix.",
+    "practical_application": "The engineer imports the stems, checks they add back up to the original mix, then processes and balances them together to reach the final master, usually when the mix needs more help than stereo mastering allows.",
+    "category": "Mastering Workflow",
+    "related_terms": ["Stereo mastering", "Stem", "Submix", "Mixdown", "Soloist stem"],
+    "common_mistakes": [
+     "Treating stem mastering as a chance to remix instead of to finish the record.",
+     "Stems that do not add back up to the approved mix because of level or effect changes.",
+     "Charging stereo-master rates for stem work, which takes much longer."
+    ],
+    "scenario_contexts": [
+     "Rescuing a mix with a buried vocal without reopening the mix session.",
+     "A label wanting balance tweaks late in the schedule.",
+     "Mastering a track whose low end needs separate control."
+    ]
+   },
+   "sources": [
+    "Katz, Mastering Audio: The Art and the Science",
+    "Sound on Sound — stem mastering technique article"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "aa5a76b6-a90e-4bc3-b60b-a3946394259e",
+   "term": "Stereo mastering",
+   "fields": {
+    "definition": "The standard mastering process carried out on a finished two-channel stereo mixdown — a single stereo file per song — applying level, equalization, dynamics, stereo and other processing to prepare it for release. It contrasts with stem mastering, which works from grouped submixes, and with immersive mastering, which works from objects or multichannel beds.",
+    "plain_english": "The usual way of mastering, working from one finished stereo file for each song. The engineer adjusts loudness, tone and dynamics to get it ready for release. It is the most common method and the one most engineers learn first.",
+    "purpose_function": "It exists to give a mixed song its final polish and a consistent loudness and tone across a release, using the single stereo file the mix engineer approved. It is the baseline mastering format for most music.",
+    "practical_application": "A mastering engineer loads the stereo mixdown, sets tone and loudness against reference tracks and release targets, then delivers the format masters for streaming, CD or vinyl.",
+    "category": "Mastering Workflow",
+    "related_terms": ["Stem mastering", "Mixdown", "Loudness normalization", "Mastering chain", "Reference track"],
+    "common_mistakes": [
+     "Over-limiting a stereo master while chasing loudness and crushing the dynamics.",
+     "Mastering without reference tracks, so tone and level drift off target.",
+     "Expecting stereo mastering to fix a serious mix balance problem it cannot reach."
+    ],
+    "scenario_contexts": [
+     "Mastering an album from approved stereo mixdowns.",
+     "Finishing a single from one stereo bounce.",
+     "Setting a consistent loudness across a stereo release."
+    ]
+   },
+   "sources": [
+    "Katz, Mastering Audio: The Art and the Science",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

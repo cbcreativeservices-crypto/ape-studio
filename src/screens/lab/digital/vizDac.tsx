@@ -41,14 +41,14 @@ import { fonts } from '../../../theme/tokens';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const BG = '#0c0c0f';
-const GRID = '#2c2c33';
-const GHOST = '#232329';
+const GRID = '#3a3b46';
+const GHOST = '#2e2f38';
 const WAVE = '#ffc64d'; // hero amber — the reconstructed CONTINUOUS output
 const BLUE = '#6fa8ff'; // stored sample values
 const GREEN = '#5bff85'; // good / filter response
 const RED = '#ff6b5e'; // danger: over-full-scale, jitter error
 const STEEL = '#8a8c94'; // utilitarian ZOH steps — deliberately not glamorous
-const LABEL = '#767a85';
+const LABEL = '#9a9ca8';
 
 /** JS-side deterministic hash (module scope — mirrors foundations/viz). */
 function hashJs(n: number): number {

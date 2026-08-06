@@ -1,0 +1,81 @@
+{
+ "batch": 431,
+ "topic": "Live Sound — FOH Mixing Workflow",
+ "authored": [
+  {
+   "id": "d29b20db-374a-47a4-a7f3-f325e30e062c",
+   "term": "System tuning (PA tuning)",
+   "fields": {
+    "definition": "The process of measuring and adjusting a sound reinforcement system in its venue so that frequency response, level balance, and time/phase alignment are optimized across the intended listening area. It typically combines dual-channel FFT (transfer function) measurement with corrective equalization, crossover settings, subsystem delay and level matching, and critical listening.",
+    "plain_english": "System tuning means adjusting a PA to sound its best in the room where it is set up. The tech uses a measurement mic and software to fix the tone and timing, then checks the result by ear.",
+    "purpose_function": "It exists to make the system sound clear and even for every listener despite how the room and multiple loudspeakers interact. Correcting response and timing errors before the show gives the mix engineer a consistent, predictable starting point instead of fighting the room during the performance.",
+    "practical_application": "Before doors, the system tech places a measurement microphone in the audience area, drives pink noise or program through a dual-FFT analyzer, and sets equalization, delay times, and relative levels for the mains, subs, and fill speakers. The FOH engineer then mixes on top of that known, calibrated baseline.",
+    "category": "System Optimization",
+    "related_terms": [
+     "Front of house (FOH)",
+     "Transfer function measurement",
+     "Time alignment",
+     "Crossover",
+     "Equalization (EQ)",
+     "Sound pressure level (SPL)"
+    ],
+    "common_mistakes": [
+     "Tuning to force the analyzer into a perfectly flat trace while ignoring how the system actually sounds; measurement guides the work but the ear makes the final judgment.",
+     "Taking a measurement at a single microphone position and assuming that result represents the whole venue.",
+     "Using equalization to fix problems that are really time or phase misalignment between loudspeakers.",
+     "UNSAFE: Tuning or testing the system at full concert level for extended periods without hearing protection, risking noise-induced hearing loss beyond OSHA 1910.95 exposure limits."
+    ],
+    "scenario_contexts": [
+     "A festival system tech aligns the subs to the main hangs and sets house EQ each morning before the first band's line check.",
+     "In a theater, under-balcony delay speakers are time-aligned to the mains so distant seats hear speech in sync with the stage.",
+     "After the audience arrives and changes the room's acoustics, the engineer trims the house EQ to keep the response even.",
+     "A rental-company tech verifies and calibrates a newly hung line array against a design prediction before handing it to the visiting FOH engineer."
+    ]
+   },
+   "sources": [
+    "McCarthy, Sound Systems: Design and Optimization (Focal Press)",
+    "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5f2dd7e1-71e0-4ed2-9e28-e96ca046c512",
+   "term": "Top of show",
+   "fields": {
+    "definition": "The exact starting point of a performance — the first moment of the program after any pre-show music, house announcements, or walk-in. In live-sound workflow it is the reference cue at which the opening console state (levels, mutes, and recalled scene/snapshot) must be set and ready.",
+    "plain_english": "The top of the show is the moment the performance begins. The sound tech has everything set and ready so the very first note or word comes through right.",
+    "purpose_function": "It marks the handoff from pre-show to the live program and gives the whole crew a single shared reference for when audio, lighting, and stage cues must be ready. For the FOH engineer it defines the starting console state that the rest of the mix builds from.",
+    "practical_application": "As the stage manager calls the top of show, the FOH engineer fades out the walk-in music, recalls the opening scene/snapshot, unmutes the correct inputs, and confirms levels so the first cue lands cleanly.",
+    "category": "Show Operation",
+    "related_terms": [
+     "Front of house (FOH)",
+     "Soundcheck",
+     "Line check",
+     "Scene/snapshot recall",
+     "Walk-in music",
+     "Cue"
+    ],
+    "common_mistakes": [
+     "Confusing 'top of show' with soundcheck or doors; it refers specifically to the moment the performance itself starts.",
+     "Leaving walk-in music routed up or channels muted from soundcheck, so the opening cue is late, doubled, or silent.",
+     "Failing to recall the correct opening scene/snapshot, so the console begins the show in the wrong state.",
+     "Treating the top of show as a moment to still be trimming gains, rather than arriving with a prepared and verified starting state."
+    ],
+    "scenario_contexts": [
+     "The stage manager calls 'standby for top of show,' and the FOH engineer fades out the house music and unmutes the opening inputs.",
+     "A touring engineer stores an 'opening' snapshot that is recalled at the top of show so every night starts from the same console state.",
+     "At a corporate event, the walk-in playback loop stops and the presenter's microphone goes live exactly at the top of show.",
+     "During a theatrical production, the top-of-show cue triggers the overture playback and the first vocal channels in one console scene."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

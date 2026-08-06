@@ -1,0 +1,264 @@
+{
+ "batch": 33,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "47cf2256-83f3-497e-9751-149eb18c0893",
+   "term": "Background-vocal saturation",
+   "fields": {
+    "definition": "The deliberate application of harmonic saturation (subtle harmonic distortion from tape, tube, or a plug-in emulation) to backing-vocal tracks, adding harmonic content and perceived density so the vocals blend and sit behind the lead.",
+    "plain_english": "It means adding a gentle, warm fuzz to the backing vocals. This gives them extra tone and thickness so the voices blend together. Think of it as a soft glow that helps them sit behind the main singer.",
+    "purpose_function": "It thickens and glues stacked backing vocals and pushes them slightly back in the mix, so they support the lead vocal without competing with it for clarity.",
+    "practical_application": "An engineer sends the backing-vocal group through a tape or tube saturation plug-in and adds a small amount, checking that it enriches the blend without adding harshness.",
+    "category": "Mixing technique",
+    "related_terms": ["Background-vocal stack", "Background-vocal subgroup", "Harmonic saturation", "Lead vocal", "Parallel processing"],
+    "common_mistakes": [
+     "Adding so much saturation that the backing vocals turn harsh and distract from the lead",
+     "Saturating each track separately and on the group, stacking up distortion until it sounds gritty",
+     "Confusing saturation with volume, and pushing the effect up until the backing vocals jump forward"
+    ],
+    "scenario_contexts": [
+     "Warming up a thin stack of backing vocals so it blends into a dense chorus",
+     "Adding a touch of tape drive to help layered harmonies sit behind the lead",
+     "Using gentle saturation to glue several harmony takes into one texture"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound, mixing techniques articles (harmonic saturation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8a3fbf73-2abe-4f5e-8707-b66ce70ca4bd",
+   "term": "Background-vocal stack",
+   "fields": {
+    "definition": "A group of multiple recorded backing-vocal takes—often the same part sung several times, or harmony parts doubled and layered—combined into one thick, unified vocal texture that supports the lead vocal.",
+    "plain_english": "It is a pile of backing vocals made by singing the same part many times and layering the takes. Stacked together they sound big and full. It is like many people singing the same line at once.",
+    "purpose_function": "Layering several takes averages out tiny timing and pitch differences to build a wide, powerful, choir-like backing texture that a single take cannot give.",
+    "practical_application": "The engineer records several passes of each harmony, then groups and balances them so the stack sounds unified and full behind the lead vocal.",
+    "category": "Vocal arrangement",
+    "related_terms": ["Background-vocal subgroup", "Background-vocal width", "Background-vocal saturation", "Vocal doubling", "Lead vocal"],
+    "common_mistakes": [
+     "Stacking so many layers that the backing vocals overpower and mask the lead vocal",
+     "Recording every layer exactly the same way, so the stack sounds phasey instead of wide",
+     "Not tuning and timing the layers, leaving the stack cluttered and smeared"
+    ],
+    "scenario_contexts": [
+     "Building a big chorus by tripling each harmony part and blending them",
+     "Layering soft 'oohs' and 'aahs' to thicken a sparse verse",
+     "Doubling a hook line several times for a wall-of-vocals effect"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cc890491-84cc-4b8b-a9c6-1380ed2eebd3",
+   "term": "Background-vocal subgroup",
+   "fields": {
+    "definition": "A subgroup (audio bus) that sums all backing-vocal tracks to a single fader and shared processing chain, so the whole backing-vocal section can be balanced and processed together as one unit.",
+    "plain_english": "It is one channel that all the backing vocals feed into. From there you control their total volume and sound with a single fader. It is like gathering many singers under one group control.",
+    "purpose_function": "It lets the engineer set level, EQ, compression, and effects for the entire backing-vocal section at once, keeping the blend consistent and simplifying the mix.",
+    "practical_application": "The engineer routes every backing-vocal channel to the subgroup, then rides that one fader and adds shared processing instead of adjusting each track separately.",
+    "category": "Signal routing",
+    "related_terms": ["Background-vocal stack", "Background-vocal width", "Bass bus", "Subgroup", "Lead vocal"],
+    "common_mistakes": [
+     "Processing each channel and the subgroup as well, causing double compression or EQ",
+     "Routing the lead vocal into the backing-vocal subgroup by mistake, so it gets buried",
+     "Forgetting to assign every backing track, leaving some voices loud in the main mix"
+    ],
+    "scenario_contexts": [
+     "Compressing all backing vocals on one bus so they breathe as a unit",
+     "Riding a single fader to lift the whole harmony section in the chorus",
+     "Sending one reverb from the subgroup so every backing voice shares the same space"
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5f9663f7-46c5-4eb9-b9a8-06941bdbb323",
+   "term": "Background-vocal width",
+   "fields": {
+    "definition": "The perceived left-to-right stereo spread of the backing vocals, created by panning layered takes across the stereo field, hard-panning doubles, or applying stereo effects, so the backing vocals occupy the sides while the lead stays centred.",
+    "plain_english": "It is how far the backing vocals spread out to the left and right. Panning the layers wide makes the voices feel big and surround the main singer in the middle. It is like a choir spread across a stage.",
+    "purpose_function": "Widening the backing vocals opens space in the centre for the lead vocal and creates a bigger, more immersive sense of the vocal arrangement.",
+    "practical_application": "The engineer pans matched double takes hard left and right, keeps the lead centred, and checks that the backing vocals feel wide without pulling focus.",
+    "category": "Stereo imaging",
+    "related_terms": ["Background-vocal stack", "Background-vocal subgroup", "Vocal doubling", "Panning", "Stereo image"],
+    "common_mistakes": [
+     "Widening with a stereo effect that collapses in mono, so the backing vocals vanish on mono systems",
+     "Panning the layers so wide that the arrangement feels hollow in the middle",
+     "Confusing loudness with width, and pushing the sides up until they mask the lead"
+    ],
+    "scenario_contexts": [
+     "Hard-panning double-tracked harmonies to frame a centred lead vocal",
+     "Checking mono compatibility after widening a stacked chorus",
+     "Narrowing the backing vocals in verses and opening them wide in the chorus"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6ee342bd-0048-4faf-864b-a89fc87a6b92",
+   "term": "Bass amplifier track",
+   "fields": {
+    "definition": "A recorded track capturing an electric bass played through a bass amplifier and speaker cabinet, picked up by a microphone and/or the amp's line output, preserving the amp's tone and colouration; it is often recorded alongside a clean DI track.",
+    "plain_english": "It is the bass sound recorded from a real amp and speaker, caught with a microphone. This gives the growl and grit of the amp. Engineers often record it next to a clean plugged-in track and blend the two.",
+    "purpose_function": "It captures the character, drive, and midrange of a bass amp that a clean DI lacks, giving the mix engineer an amp-flavoured tone to blend with the DI for the final sound.",
+    "practical_application": "The engineer mics the bass cabinet, records it to its own track next to the DI, and checks phase alignment so the two can be blended without cancellation.",
+    "category": "Recording technique",
+    "related_terms": ["Bass bus", "Bass attack layer", "Bass definition enhancement", "Direct guitar track", "Off-axis pickup"],
+    "common_mistakes": [
+     "Not phase- or time-aligning the amp track with the DI, so combining them thins the low end",
+     "Recording only the amp track, leaving no clean signal to re-amp or blend later",
+     "UNSAFE: Running the bass amp loud close to the ears for long tracking sessions without hearing protection, which risks permanent hearing damage; keep exposure within OSHA limits."
+    ],
+    "scenario_contexts": [
+     "Miking a bass cabinet for grit while a DI captures the clean low end",
+     "Blending an amp track and DI to get both attack and body",
+     "Aligning the amp and DI tracks before committing the bass sound"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound, Bass Guitars In The Mix",
+    "OSHA 29 CFR 1910.95 (Occupational Noise Exposure)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "29fc3201-179c-4dd7-b127-2905fc993313",
+   "term": "Bass attack layer",
+   "fields": {
+    "definition": "A separate signal or track dedicated to the bass's upper-frequency attack—the pick or finger transient and string articulation—typically made by high-pass filtering, distortion, or an added layer, then blended under the main bass body to increase clarity and definition.",
+    "plain_english": "It is a layer that carries only the click and bite of the bass notes. You mix it under the deep body of the bass to help each note cut through. It is like adding a sharp edge back onto a soft sound.",
+    "purpose_function": "It lets the engineer control the bass's attack and definition apart from its low-end weight, so the notes stay clear on small speakers without adding boom.",
+    "practical_application": "The engineer splits the bass, high-pass filters or distorts one copy to isolate the attack, and blends it under the low body, automating it louder in busy sections.",
+    "category": "Mixing technique",
+    "related_terms": ["Bass definition enhancement", "Bass amplifier track", "Bass bus", "Parallel processing", "Bass automation"],
+    "common_mistakes": [
+     "Pushing the attack layer so hard the bass sounds clanky and thin",
+     "Not high-pass filtering the attack layer, so it doubles the low end and causes buildup",
+     "Leaving the attack layer out of phase with the body, weakening the combined tone"
+    ],
+    "scenario_contexts": [
+     "Adding a distorted high layer so a bass is audible on phone speakers",
+     "Blending in pick attack to help the bass lock with the kick drum",
+     "Automating the attack layer up in a dense chorus for extra articulation"
+    ]
+   },
+   "sources": [
+    "Sound on Sound, Mixing DI Bass Guitar",
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e85962a9-f097-404e-b06f-a315e8aefa05",
+   "term": "Bass automation",
+   "fields": {
+    "definition": "The use of mix automation to change bass parameters over time—most often level, but also EQ, sends, or plug-in settings—so the bass stays even and correctly balanced across a song's sections.",
+    "plain_english": "It is setting the bass volume and controls to change on their own through the song. The mix remembers those moves and repeats them every playback. It is like an extra hand riding the bass fader for you.",
+    "purpose_function": "It keeps the bass consistent from note to note and section to section, evening out uneven notes and lifting or dipping the bass where the arrangement needs it.",
+    "practical_application": "The engineer writes level automation to even out weak or loud bass notes and to raise the bass slightly in choruses, so it sits right throughout the song.",
+    "category": "Mixing technique",
+    "related_terms": ["Bass bus", "Bass attack layer", "Bass definition enhancement", "Volume automation", "Fader ride"],
+    "common_mistakes": [
+     "Leaning on automation to fix a badly tracked or poorly compressed bass instead of recording it well",
+     "Writing so many tiny volume moves that the bass sounds jumpy and unnatural",
+     "Automating the bus and the channel at once, so the two sets of moves fight each other"
+    ],
+    "scenario_contexts": [
+     "Evening out one loud open string that jumps out of the bassline",
+     "Nudging the bass up a decibel in each chorus for more drive",
+     "Riding the bass down under a busy vocal line to keep the low end clear"
+    ]
+   },
+   "sources": [
+    "Sound on Sound, Mixing DI Bass Guitar",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fb358a51-a625-4730-8d82-d7442aabe4aa",
+   "term": "Bass bus",
+   "fields": {
+    "definition": "A subgroup bus that sums all bass-related tracks (for example DI, amp, and attack layers) to a single fader and shared processing chain, so the whole bass sound is controlled and processed as one element.",
+    "plain_english": "It is one channel that all the bass tracks feed into. You set the total bass level and add shared effects there in one place. It is like a single master control for everything bass.",
+    "purpose_function": "It lets the engineer glue the separate bass layers together, apply common compression or EQ, and manage the overall bass level with one fader.",
+    "practical_application": "The engineer routes the DI, amp, and attack tracks to the bass bus, adds gentle bus compression to glue them, and rides that fader for the whole bass level.",
+    "category": "Signal routing",
+    "related_terms": ["Bass amplifier track", "Bass attack layer", "Bass automation", "Background-vocal subgroup", "Subgroup"],
+    "common_mistakes": [
+     "Heavy bus compression that pumps and squashes the whole low end",
+     "Processing each bass track and the bus so much that the sound is over-compressed",
+     "Forgetting to phase-check the layers before summing them on the bus"
+    ],
+    "scenario_contexts": [
+     "Gluing a DI and amp track together with light compression on the bass bus",
+     "Sending the whole bass to one bus for a single level ride",
+     "Placing one EQ on the bass bus to shape the combined low end"
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound, Mixing DI Bass Guitar"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "49429c2b-a244-4850-8297-2dbb391d9d15",
+   "term": "Bass definition enhancement",
+   "fields": {
+    "definition": "Techniques that increase the clarity and note articulation of bass in a mix—such as midrange and upper-harmonic EQ boosts, harmonic exciters or saturation, and parallel distortion—so the bassline stays audible and distinct, including on small speakers with little low-frequency output.",
+    "plain_english": "It means making each bass note clearer and easier to hear. Engineers add higher tones with EQ or gentle distortion so the bass shows up even on small speakers. It is like sharpening a blurry picture so the shape stands out.",
+    "purpose_function": "It ensures the bassline can be followed on any playback system, especially phones and laptops that cannot reproduce deep bass, by adding harmonics the ear reads as the low note's pitch.",
+    "practical_application": "The engineer boosts around 700 Hz to a few kHz, or adds a saturator or exciter, then checks on small speakers that the notes read clearly without becoming harsh.",
+    "category": "Mixing technique",
+    "related_terms": ["Bass attack layer", "Bass bus", "Bass amplifier track", "Harmonic saturation", "Parallel processing"],
+    "common_mistakes": [
+     "Boosting only the deep lows for a 'big' bass, then losing the notes on small speakers",
+     "Over-driving the saturation until the bass sounds fizzy and harsh",
+     "Adding definition with EQ while ignoring the clash with guitars in the same range"
+    ],
+    "scenario_contexts": [
+     "Adding harmonics so a bassline is audible on laptop speakers",
+     "Boosting upper-mids to help the bass cut through a dense rock mix",
+     "Using parallel distortion to bring a dull DI bass forward"
+    ]
+   },
+   "sources": [
+    "Sound on Sound, Mixing DI Bass Guitar",
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

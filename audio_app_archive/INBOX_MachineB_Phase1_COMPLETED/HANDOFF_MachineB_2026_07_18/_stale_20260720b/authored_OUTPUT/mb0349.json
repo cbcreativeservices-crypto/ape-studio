@@ -1,0 +1,264 @@
+{
+ "batch": 349,
+ "topic": "Strings, Guitar & Keys",
+ "authored": [
+  {
+   "id": "e26bb1d8-7a01-4b13-8a91-d57dbd232366",
+   "term": "Gut-string slide",
+   "fields": {
+    "definition": "A glissando or portamento made by sliding the stopping finger along a gut string so the sounding pitch moves continuously between two notes. On gut-strung instruments such as the classical guitar, lute, viol or oud, the softer, more textured string surface gives the slide an audible finger-on-string friction and a warm, gradual change of pitch.",
+    "plain_english": "Moving a finger along a gut string while it sounds, so the note glides smoothly up or down. It is like a trombone slide, where moving the slide smoothly changes the pitch with no break between notes.",
+    "purpose_function": "It links two pitches with a smooth, vocal-like slur and adds expression; the gut string's soft texture also gives a gentle sliding noise that is part of the instrument's natural character.",
+    "practical_application": "When recording nylon or gut-strung instruments, a technician expects these slides and their finger noise, and chooses mic placement and any noise processing so the slide stays musical rather than being cut away or exaggerated.",
+    "category": "Playing technique",
+    "related_terms": ["Glissando", "Portamento", "Finger noise", "Legato", "Gut string", "Fingerboard"],
+    "common_mistakes": [
+     "Confusing a gut-string slide, which is a continuous pitch change, with a hammer-on or fretted legato that moves in discrete steps.",
+     "Using heavy noise reduction that strips out the sliding finger sound and leaves the slide lifeless.",
+     "Assuming every string slide sounds alike; gut and nylon strings give a softer, less squeaky slide than wound steel strings."
+    ],
+    "scenario_contexts": [
+     "Close-miking a classical guitarist whose left hand slides between positions on the treble strings.",
+     "Recording a lute or viol part where expressive slides connect the notes of a phrase.",
+     "Editing a solo passage where a slide's finger noise must be balanced against the note itself."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (glissando; portamento; guitar technique)",
+    "Huber & Runstein, Modern Recording Techniques (nylon/classical guitar; finger noise)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cda6e391-346c-45b7-9f97-75648ac3b355",
+   "term": "Guzheng glissando sweep",
+   "fields": {
+    "definition": "A rapid glissando swept across the open strings of the guzheng (Chinese zither), sounding the successive pitches of its pentatonic tuning in a cascading run. Played by drawing the fingers or nails up or down across the strings, it is a signature ornamental gesture of the instrument.",
+    "plain_english": "A quick sweep of the fingers across the guzheng's strings, so the notes flow past like water. It sounds a bit like running your thumb down a row of piano keys, but on plucked strings.",
+    "purpose_function": "It supplies flowing ornamental runs and transitions that colour a melody; because the guzheng is tuned to a pentatonic scale, every swept note fits the mode, so the sweep always sounds pleasant.",
+    "practical_application": "When miking or mixing a guzheng, a technician captures the wide left-to-right spread of a sweep and watches for sharp peaks and nail noise as the fingers cross many strings quickly.",
+    "category": "Playing technique",
+    "related_terms": ["Glissando", "Pentatonic scale", "Zither", "Plucking", "Tremolo", "Transient"],
+    "common_mistakes": [
+     "Assuming the sweep is chromatic; the guzheng's open strings are pentatonic, so the run skips the missing scale degrees.",
+     "Panning a single spot mic so a sweep collapses to one point instead of showing the instrument's natural left-to-right motion.",
+     "Setting compression too fast and squashing the bright attack of each swept string."
+    ],
+    "scenario_contexts": [
+     "Recording a solo guzheng where sweeps open or close musical phrases.",
+     "Balancing a guzheng in a fusion mix so its glissando cuts through without harsh nail noise.",
+     "Stereo-miking the instrument to preserve the movement of a full-range sweep."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (zheng / guzheng)",
+    "Encyclopedia (peer-reviewed), 'Zhao's Guzheng: Traditional Chinese Performance Techniques'"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e1771763-26d8-4d7f-be0e-532bf887d113",
+   "term": "Hammered-dulcimer strike",
+   "fields": {
+    "definition": "The action of striking the courses of a hammered dulcimer with lightweight hand-held hammers (beaters) to set the strings vibrating. The hammer's mass and hardness and the point of contact along the string shape the loudness, attack and tone of each note.",
+    "plain_english": "Hitting the strings of a hammered dulcimer with small handheld hammers to make them ring. It works like tapping a tuned string with a little mallet, where a harder tap gives a brighter, louder note.",
+    "purpose_function": "Striking is how the instrument makes its sound; the bounce of the light hammers lets a player repeat notes fast, while hammer hardness and strike point set the brightness and attack of the tone.",
+    "practical_application": "A technician recording a hammered dulcimer expects sharp percussive peaks and wide dynamics, and sets gain and mic distance so loud strikes do not clip while soft passages stay audible.",
+    "category": "Playing technique",
+    "related_terms": ["Course", "Transient", "Attack", "Struck string", "Beater", "Sustain"],
+    "common_mistakes": [
+     "Setting input gain for quiet notes and then clipping on hard strikes, since dulcimer strikes have a very high peak level.",
+     "Over-compressing the attack and losing the bright percussive character of the strike.",
+     "Placing a mic so close to one course that nearby courses ringing sympathetically are missed."
+    ],
+    "scenario_contexts": [
+     "Close-miking a hammered dulcimer in a folk session with strong percussive strikes.",
+     "Recording rapid tremolo passages built from fast, repeated hammer strikes.",
+     "Setting a limiter to catch unexpected loud strikes during a live performance."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (struck strings)",
+    "Journal of the Acoustical Society of America (hammered dulcimer acoustics)",
+    "Grove Dictionary of Music (dulcimer)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1387970e-7716-414f-8d7a-51856021bcfa",
+   "term": "Harp feedback",
+   "fields": {
+    "definition": "Acoustic feedback that occurs when an amplified harp's pickup or microphone signal is reproduced by a loudspeaker and re-excites the harp's soundboard and strings, forming a self-sustaining howl or ring. The harp's large resonant body and many freely vibrating strings make it especially prone to feedback on stage.",
+    "plain_english": "A howling or ringing sound that happens when a plugged-in harp's own amplified sound feeds back into it and builds up. It is the same runaway loop you hear when a microphone gets too close to its speaker.",
+    "purpose_function": "Feedback is an unwanted loop, not a goal; understanding it matters because the harp's open strings and big soundbox pick up amplified sound easily, so controlling it keeps the amplified harp usable at stage volume.",
+    "practical_application": "A technician fights harp feedback by managing gain before feedback, using directional mics or contact pickups, placing the harp away from and behind the speakers, and notching the problem frequencies with EQ.",
+    "category": "Amplification",
+    "related_terms": ["Acoustic feedback", "Gain before feedback", "Pickup", "Notch filter", "Monitor wedge", "Ringing out"],
+    "common_mistakes": [
+     "UNSAFE: Letting feedback build into a sudden loud howl, which can damage speakers and hearing; pull the gain down or mute at the first sign of ringing.",
+     "Raising the harp channel gain to hear more instead of moving the harp out of the monitor's direct path.",
+     "Aiming a floor wedge straight at the harp's soundboard, which invites feedback."
+    ],
+    "scenario_contexts": [
+     "Amplifying a lever or pedal harp in a loud band where the soundboard starts to ring.",
+     "Ringing out the monitors before a set that features an amplified harp.",
+     "Choosing between a contact pickup and a mic to reduce feedback on a small stage."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook (acoustic feedback; ringing out)",
+    "Ballou, Handbook for Sound Engineers (feedback; gain before feedback)",
+    "Rane technical notes (feedback and equalization)",
+    "Dusty Strings technical documentation (harp pickup and amplification)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6ab545a8-8b6b-4d35-9b7a-563b5d3ff912",
+   "term": "Humbucker",
+   "fields": {
+    "definition": "An electric-guitar pickup that uses two coils wired in series with opposite magnetic polarity and reversed winding sense, so that externally induced hum cancels while the string signal from both coils adds in phase. The result is a quieter, higher-output and warmer-sounding pickup than a single coil.",
+    "plain_english": "A guitar pickup made of two coils that cancel out the buzzing hum a single coil picks up. The coils are wired so the noise cancels but the guitar sound adds together, giving a fuller, quieter tone.",
+    "purpose_function": "It exists to remove the mains-frequency hum that plagues single-coil pickups; pairing two coils that see hum in opposite phase cancels the shared noise while doubling the wanted signal, raising output and thickening the tone.",
+    "practical_application": "A technician treats a humbucker-equipped guitar as a hotter, quieter source, sets input gain for its higher output, and expects less 50/60 Hz hum than from single coils near lighting or transformers.",
+    "category": "Guitar pickup",
+    "related_terms": ["Single-coil pickup", "Hum", "Series wiring", "Coil split", "Pickup", "Ground loop"],
+    "common_mistakes": [
+     "Thinking a humbucker removes all noise; it cancels shared magnetic hum but not radio interference or ground-loop buzz.",
+     "Assuming humbucker and single-coil outputs match, then clipping the input when switching to the hotter humbucker.",
+     "Splitting a humbucker to single-coil mode and forgetting that its hum-cancelling is then lost."
+    ],
+    "scenario_contexts": [
+     "DI-ing or miking a humbucker-equipped electric guitar under stage lighting that would hum through single coils.",
+     "Setting preamp gain when a player switches between single-coil and humbucker guitars.",
+     "Troubleshooting guitar hum and confirming whether the pickup is a true humbucker."
+    ]
+   },
+   "sources": [
+    "Seymour Duncan technical documentation (humbucker internals; series wiring)",
+    "Fletcher & Rossing, The Physics of Musical Instruments (electric guitar pickups)",
+    "Ballou, Handbook for Sound Engineers (magnetic pickups)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2d5d3ae9-1182-4b45-9598-e4879812a062",
+   "term": "Inside-string bow tone",
+   "fields": {
+    "definition": "The tone produced when bowing one of the inner strings of a multi-string bowed instrument (for example the D or A string of a violin), which lie between the outer strings and demand a precise bow-arm height to sound cleanly without brushing the neighbouring strings. This inner-string tone tends to be more covered and mellow than that of the freely bowed outer strings.",
+    "plain_english": "The sound made when a bow plays one of the middle strings of an instrument like a violin. These strings sit between the outer two, so the arm must be held at just the right height to sound only one string cleanly.",
+    "purpose_function": "Naming the inner-string tone matters because these strings need a careful bow-arm level; getting it right gives a smooth, even tone and avoids accidentally sounding the strings on either side.",
+    "practical_application": "When recording strings, a technician may notice the inner strings sound slightly darker or quieter and adjusts mic placement or balance so passages on the middle strings match the brighter outer strings.",
+    "category": "Bowing technique",
+    "related_terms": ["Bowing technique", "String crossing", "Double stop", "Sul tasto", "Bow contact point", "Timbre"],
+    "common_mistakes": [
+     "Blaming the instrument for an uneven tone when the real cause is the bow arm sitting at the wrong height for an inner string.",
+     "Expecting inner strings to record as brightly as the top string and not balancing them in the mix.",
+     "Confusing inner-string tone with sul tasto or sul ponticello, which are about where the bow contacts the string, not which string is played."
+    ],
+    "scenario_contexts": [
+     "Recording a violin solo where a melody moves onto the inner D and A strings.",
+     "Balancing a string section so middle-string passages sit evenly with outer-string ones.",
+     "Coaching mic placement for a violist playing mostly on the inner strings."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (bowing; string crossing; violin technique)",
+    "Galamian, Principles of Violin Playing and Teaching"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c6d6cd4d-d1bd-40ac-9014-2cd5861e542e",
+   "term": "Jawari/javari buzz",
+   "fields": {
+    "definition": "The bright, buzzing, overtone-rich timbre created by the jawari (javari) — the broad, gently curved bridge of Indian string instruments such as the sitar, tanpura and veena. As a string vibrates it grazes the curved bridge surface, and this repeated glancing contact adds and sustains high harmonics, producing the characteristic humming buzz.",
+    "plain_english": "The rich, buzzing ring of a sitar or tanpura. It happens when the strings graze a wide, curved bridge. That gentle brushing adds shimmering overtones, a bit like how a buzzing reed sounds fuller than a clean one.",
+    "purpose_function": "The jawari bridge exists to give these instruments their signature sustained, overtone-heavy sound; the grazing contact keeps high harmonics alive far longer than a normal sharp-edged bridge would.",
+    "practical_application": "A technician recording a sitar or tanpura captures this bright, harmonic-rich buzz with careful mic choice and placement, avoiding harshness while keeping the sustaining overtones that define the sound.",
+    "category": "Instrument timbre",
+    "related_terms": ["Jivari drone bloom", "Bridge", "Sympathetic strings", "Overtones", "Sustain", "Sitar"],
+    "common_mistakes": [
+     "Mistaking the intended jawari buzz for an unwanted rattle or fret buzz and trying to EQ it out.",
+     "Close-miking so tightly that the overtones sound harsh instead of rich and sustained.",
+     "Assuming any curved-bridge buzz is a defect; on these instruments the buzz is the desired tone and is finely shaped by a craftsman."
+    ],
+    "scenario_contexts": [
+     "Recording a sitar where the jawari gives every note a long, shimmering tail.",
+     "Miking a tanpura drone whose buzzing overtones underpin a raga performance.",
+     "Deciding EQ on an Indian-classical track so the jawari overtones stay musical."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (sitar; tanpura; grazing bridge)",
+    "Grove Dictionary of Music (sitar; tanpura; jawari)",
+    "Journal of the Acoustical Society of America (tanpura / sitar bridge acoustics)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5f7800de-9a4d-48e6-af80-650455a3fda2",
+   "term": "Jivari drone bloom",
+   "fields": {
+    "definition": "The swelling, harmonically blooming sustain of a tanpura's drone produced by its jivari (jawari) bridge and the cotton threads (juari) laid under the strings. As each plucked string grazes the curved bridge, overtones build and evolve during the note, so the drone seems to bloom and shimmer rather than simply decay.",
+    "plain_english": "The way a tanpura's droning notes seem to swell and shimmer instead of just fading. The strings brush a curved bridge and a small thread, which makes overtones grow during the note, so the drone blooms like a slowly opening chord.",
+    "purpose_function": "This blooming drone provides the harmonic backdrop for Indian classical music; the jivari bridge and threads are tuned so the overtones rise and sustain, giving singers and soloists a rich, living reference pitch.",
+    "practical_application": "A technician records the tanpura with enough sustain and stereo space that the blooming overtones fill the background, and sets levels so the drone supports rather than masks the lead.",
+    "category": "Instrument timbre",
+    "related_terms": ["Jawari/javari buzz", "Tanpura", "Drone", "Overtones", "Sympathetic resonance", "Sustain"],
+    "common_mistakes": [
+     "Gating or heavily compressing the tanpura, which kills the slow bloom and the evolving overtones.",
+     "Treating the blooming overtones as tuning drift instead of the intended sound of the jivari.",
+     "Recording the drone too quietly or too loudly so it either disappears or masks the soloist."
+    ],
+    "scenario_contexts": [
+     "Tracking a tanpura drone under a vocal raga so its bloom fills the harmonic space.",
+     "Choosing reverb and level so the tanpura blooms without swamping the mix.",
+     "Miking a live tanpura so the evolving overtones reach the audience."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (tanpura; jawari)",
+    "Journal of the Acoustical Society of America ('Effect of the Position of the Jivari Threads on the Tanpura String Vibrations')",
+    "Fletcher & Rossing, The Physics of Musical Instruments (tanpura)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "54c0b2ec-0909-44a9-9629-2f80803043b5",
+   "term": "Kamancheh nasal tone",
+   "fields": {
+    "definition": "The bright, penetrating, slightly nasal timbre characteristic of the kamancheh, a Persian bowed spike fiddle whose sound is radiated by a thin skin (membrane) stretched over a small round wooden or gourd body. The membrane and compact resonator emphasize the upper harmonics, giving a reedy, voice-like nasal quality.",
+    "plain_english": "The bright, slightly buzzy, voice-like sound of the kamancheh, a Persian bowed fiddle. Its small skin-covered body makes a thin, nasal tone, a bit like a singer humming through the nose.",
+    "purpose_function": "The skin-headed body and small resonator shape this nasal, upper-harmonic-rich tone, which lets the kamancheh sing expressively and cut through an ensemble in Persian classical music.",
+    "practical_application": "A technician miking a kamancheh positions the mic to capture the skin's bright nasal tone without harshness, and may tame upper-midrange peaks with gentle EQ.",
+    "category": "Instrument timbre",
+    "related_terms": ["Spike fiddle", "Membrane", "Bowing technique", "Timbre", "Overtones", "Resonator"],
+    "common_mistakes": [
+     "Mistaking the natural nasal tone for a bad mic or harsh EQ and dulling it until the instrument loses character.",
+     "Placing a bright condenser too close to the skin head, which exaggerates the nasal upper mids.",
+     "Assuming it should sound like a violin; the skin-covered body gives a thinner, more nasal voice."
+    ],
+    "scenario_contexts": [
+     "Recording a kamancheh solo in a Persian classical ensemble.",
+     "Balancing the kamancheh's nasal tone against softer plucked instruments in a mix.",
+     "Choosing mic distance to capture the skin head's bright timbre naturally."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (kamancheh)",
+    "During, The Art of Persian Music (kamancheh timbre and construction)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

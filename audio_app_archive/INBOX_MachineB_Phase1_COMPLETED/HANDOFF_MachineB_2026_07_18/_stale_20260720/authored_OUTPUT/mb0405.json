@@ -1,0 +1,325 @@
+{
+ "batch": 405,
+ "topic": "Audio Plugin & DSP Development",
+ "authored": [
+  {
+   "id": "538865e2-b66e-4604-9d54-9c9eb9a2f6b3",
+   "term": "Denormal-number protection",
+   "fields": {
+    "definition": "A set of techniques that keep tiny floating-point values called denormals (subnormals) from lingering in a DSP signal path, because on many CPUs arithmetic on such near-zero numbers falls back to slow paths and causes large processing-time spikes. Common methods are enabling the processor's flush-to-zero and denormals-are-zero modes (for example through JUCE's ScopedNoDenormals) or injecting a tiny DC offset or noise so signals never rest at denormal magnitudes.",
+    "plain_english": "Denormals are extremely tiny numbers that can show up when a sound fades toward silence. Some chips handle them very slowly, so a plugin can suddenly stall. This protection keeps those tiny numbers from ever slowing things down.",
+    "purpose_function": "It keeps the CPU out of the slow code paths triggered by subnormal numbers, so real-time audio processing stays fast and does not glitch when signals decay toward zero.",
+    "practical_application": "A plugin developer wraps the audio callback in a flush-to-zero guard such as ScopedNoDenormals, then tests reverbs and IIR filters as their tails decay to confirm no CPU spikes appear.",
+    "category": "Real-time safety",
+    "related_terms": [
+     "Floating-point precision",
+     "IIR filter",
+     "Reverb tail",
+     "Real-time thread",
+     "CPU load",
+     "Digital signal processing engine"
+    ],
+    "common_mistakes": [
+     "Assuming denormals no longer matter on modern CPUs; recursive filters and reverb tails can still trigger slow paths when flush-to-zero is off",
+     "Enabling flush-to-zero on the GUI thread instead of the audio thread, so the audio callback still meets denormals",
+     "Adding such a large anti-denormal DC offset or noise that it becomes audible or shifts the signal"
+    ],
+    "scenario_contexts": [
+     "A reverb plugin spikes CPU as its tail decays, fixed by enabling flush-to-zero in the audio callback",
+     "Profiling an IIR filter chain that stalls on near-silent input",
+     "Adding a ScopedNoDenormals guard around a synthesizer's processing block"
+    ]
+   },
+   "sources": [
+    "JUCE ScopedNoDenormals class reference documentation",
+    "IEEE 754-2019, IEEE Standard for Floating-Point Arithmetic (subnormal numbers)",
+    "Pirkle, Designing Audio Effect Plugins in C++"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7156a0f2-b520-4e03-846e-0295da7b7b4c",
+   "term": "Digital signal processing engine",
+   "fields": {
+    "definition": "The core software component of an audio plugin or device that performs the actual numerical audio processing, turning input sample blocks into output by running filters, gain stages, delays and other algorithms. It is kept separate from the user-interface and parameter-management code and executes on the real-time audio thread.",
+    "plain_english": "This is the part of a plugin that actually changes the sound, doing all the math on the audio. Think of it as the engine under the hood, while the knobs and screen are the dashboard.",
+    "purpose_function": "It concentrates all real-time audio math in one well-defined, efficient module, so processing stays fast and predictable and can be reused across different plugin formats and user interfaces.",
+    "practical_application": "A developer writes and optimizes the DSP engine to run inside the host's audio callback, calling it from the plugin's process function while keeping interface code on a separate thread.",
+    "category": "Plugin architecture",
+    "related_terms": [
+     "Real-time thread",
+     "Graphical user interface thread",
+     "Multithreaded processing",
+     "Denormal-number protection",
+     "Latency reporting",
+     "Oversampling engine"
+    ],
+    "common_mistakes": [
+     "Allocating memory, locking mutexes or calling the operating system inside the DSP engine, which can break real-time performance",
+     "Mixing GUI and parameter code into the DSP engine instead of keeping them on separate threads",
+     "Assuming the engine can ignore block size instead of handling the variable buffer sizes a host may send"
+    ],
+    "scenario_contexts": [
+     "Reusing the same DSP engine behind VST3, Audio Unit and AAX wrappers",
+     "Optimizing an EQ plugin's DSP engine to lower CPU on a large session",
+     "Debugging clicks caused by the DSP engine not clearing its state on reset"
+    ]
+   },
+   "sources": [
+    "Steinberg VST3 SDK documentation (Audio Processor / IAudioProcessor)",
+    "JUCE AudioProcessor class reference documentation",
+    "Pirkle, Designing Audio Effect Plugins in C++"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3f373afb-1ca9-4d91-a13f-4615768a9069",
+   "term": "Graphical user interface thread",
+   "fields": {
+    "definition": "The thread on which a plugin's user interface is created, drawn and updated and on which its GUI event callbacks run, distinct from the real-time audio processing thread; in many frameworks (such as JUCE's message thread) it also handles timers and host UI messages. Communication between it and the audio thread must be lock-free or otherwise real-time safe so it never blocks audio.",
+    "plain_english": "This is the thread that draws the plugin's window and reacts when you move a knob. It runs apart from the part that handles the sound, so drawing the screen never breaks the audio.",
+    "purpose_function": "It isolates slow, event-driven interface work from the time-critical audio thread, so redrawing controls or opening menus cannot cause audio dropouts.",
+    "practical_application": "A developer updates meters and controls on the GUI thread while passing parameter changes to and from the audio thread through lock-free structures such as atomics or FIFOs.",
+    "category": "Threading & concurrency",
+    "related_terms": [
+     "Real-time thread",
+     "Multithreaded processing",
+     "Digital signal processing engine",
+     "Parameter automation",
+     "Lock-free FIFO",
+     "MIDI parameter control"
+    ],
+    "common_mistakes": [
+     "Reading or writing shared data from the GUI and audio threads without lock-free synchronization, causing glitches or crashes",
+     "Doing audio processing or other heavy work on the GUI thread, which stalls the interface or the host",
+     "Calling GUI functions directly from the audio thread instead of marshaling the request onto the message thread"
+    ],
+    "scenario_contexts": [
+     "Updating a level meter from audio data without blocking the audio thread",
+     "Fixing a crash caused by the editor reading processor state during playback",
+     "Repainting a spectrum display on a timer on the message thread"
+    ]
+   },
+   "sources": [
+    "JUCE MessageManager and threading documentation",
+    "Steinberg VST3 SDK documentation (threading / IEditController)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dba08376-a147-4928-a2a0-dc2aff99405f",
+   "term": "Independent component analysis (ICA)",
+   "fields": {
+    "definition": "A statistical and computational method that decomposes an observed set of mixed signals into a sum of statistically independent, non-Gaussian source components by estimating an unmixing matrix; modeled as x = As, it recovers the sources s from the mixtures x without knowing the mixing matrix A. It is a principal technique for blind source separation, exemplified by the cocktail-party problem.",
+    "plain_english": "ICA is a math method that pulls apart sounds that got mixed together. It uses the idea that the original sources are independent. It is like picking out one voice from a noisy party recording made with several microphones.",
+    "purpose_function": "It exists to separate independent sources from their mixtures when the mixing process is unknown, enabling tasks such as isolating instruments or voices and removing interference.",
+    "practical_application": "An audio developer applies ICA to multi-microphone recordings to separate overlapping sources or suppress interference, feeding the mixtures in and reading the estimated independent components out.",
+    "category": "Source separation",
+    "related_terms": [
+     "Blind source separation",
+     "Digital signal processing engine",
+     "Principal component analysis",
+     "Multichannel processing",
+     "Adaptive filtering",
+     "Machine learning"
+    ],
+    "common_mistakes": [
+     "Expecting ICA to separate Gaussian sources; the method requires the components to be non-Gaussian",
+     "Assuming ICA recovers the original scale and ordering of the sources, which are inherently ambiguous",
+     "Applying it with fewer sensors than sources without a model that handles the underdetermined case"
+    ],
+    "scenario_contexts": [
+     "Separating two speakers recorded by two microphones",
+     "Removing a hum or interference component from a multichannel capture",
+     "Isolating instrument sources for remixing from a multi-mic session"
+    ]
+   },
+   "sources": [
+    "Hyvarinen & Oja, Independent Component Analysis: Algorithms and Applications, Neural Networks (2000)",
+    "Hyvarinen, Karhunen & Oja, Independent Component Analysis (Wiley)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ad62933a-dc90-444f-9da9-798dd6e04d4b",
+   "term": "Internal sample-rate conversion",
+   "fields": {
+    "definition": "A plugin's conversion of incoming audio from the host sample rate to a fixed internal processing rate, and back again at the output, so its algorithm always runs at the rate it was designed for regardless of the session's sample rate. It relies on interpolation with anti-aliasing and anti-imaging filtering and generally adds latency.",
+    "plain_english": "Some plugins are built to run at one fixed sample rate. This feature changes the incoming sound to that rate, works on it, then changes it back to match your session. It is a bit like translating, doing the work, then translating back.",
+    "purpose_function": "It lets an algorithm that was designed and tuned for one sample rate work correctly at any host rate, keeping its behavior consistent across sessions.",
+    "practical_application": "A developer adds internal resampling so a fixed-rate modeling algorithm behaves the same at 44.1, 48 or 96 kHz, and reports the added latency to the host.",
+    "category": "Sample-rate handling",
+    "related_terms": [
+     "Sample rate",
+     "Oversampling engine",
+     "Anti-aliasing filter",
+     "Latency reporting",
+     "Interpolation",
+     "Digital signal processing engine"
+    ],
+    "common_mistakes": [
+     "Forgetting to report the latency added by the resampling filters, which pushes the plugin out of time",
+     "Using a low-quality resampling filter that adds audible aliasing or high-frequency loss",
+     "Confusing internal sample-rate conversion with oversampling; one matches a fixed design rate, the other raises the rate to reduce aliasing in nonlinear processing"
+    ],
+    "scenario_contexts": [
+     "Running a fixed-rate amp model in a 96 kHz session",
+     "Keeping a vintage-modeled effect consistent across different session rates",
+     "Diagnosing a timing offset traced to unreported resampling latency"
+    ]
+   },
+   "sources": [
+    "Julius O. Smith, Digital Audio Resampling Home Page (CCRMA, Stanford)",
+    "Zolzer (ed.), DAFX: Digital Audio Effects"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "99df4481-ef9c-4c67-a5f9-f89099d0c21f",
+   "term": "Latency reporting",
+   "fields": {
+    "definition": "The mechanism by which a plugin tells the host how many samples of delay it introduces, so the host can apply plug-in delay compensation and keep tracks time-aligned. In VST3 the processor returns this from getLatencySamples() and signals changes with IComponentHandler::restartComponent(kLatencyChanged), while other formats expose equivalent samples-based latency properties.",
+    "plain_english": "This is how a plugin tells your DAW how much delay it adds to the sound. The DAW uses that number to nudge the other tracks so everything still lines up in time.",
+    "purpose_function": "It gives the host the exact processing delay so it can delay other tracks by the same amount, preventing phase and timing errors from look-ahead, filtering or oversampling.",
+    "practical_application": "A developer returns the total added latency in samples, including any oversampling or look-ahead, and notifies the host whenever that value changes so delay compensation stays correct.",
+    "category": "Timing & latency",
+    "related_terms": [
+     "Plug-in delay compensation",
+     "Look-ahead",
+     "Oversampling engine",
+     "Internal sample-rate conversion",
+     "Group delay",
+     "Buffer size"
+    ],
+    "common_mistakes": [
+     "Reporting zero latency while using look-ahead or linear-phase filtering, which throws tracks out of time",
+     "Changing latency mid-stream without notifying the host, so delay compensation becomes wrong",
+     "Forgetting to include the oversampling filter delay in the reported figure"
+    ],
+    "scenario_contexts": [
+     "A look-ahead limiter reporting its look-ahead time to the DAW",
+     "A linear-phase EQ staying aligned with other tracks through delay compensation",
+     "Updating reported latency when the user switches the oversampling factor"
+    ]
+   },
+   "sources": [
+    "Steinberg VST3 SDK, IAudioProcessor::getLatencySamples reference documentation",
+    "JUCE AudioProcessor setLatencySamples / getLatencySamples documentation",
+    "Apple Audio Unit documentation (kAudioUnitProperty_Latency)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a6c95d05-e3de-4c26-ad6d-91bceb92f67f",
+   "term": "MIDI parameter control",
+   "fields": {
+    "definition": "The control of a plugin's parameters from MIDI messages, typically by mapping MIDI continuous-controller (CC) numbers, pitch bend or aftertouch to parameter IDs so incoming MIDI moves those parameters. In VST3 the plugin declares these mappings through IMidiMapping::getMidiControllerAssignment so the host converts the MIDI into normal parameter changes rather than passing raw CCs to the processor.",
+    "plain_english": "This lets a hardware knob or fader send MIDI to move a plugin's controls. You turn a real knob and the matching on-screen control follows it.",
+    "purpose_function": "It links external MIDI controllers to plugin parameters so performers can play and automate the plugin from hardware, with the host treating the mapping as ordinary parameter automation.",
+    "practical_application": "A developer exposes which CC numbers map to which parameters so a host can route a control surface to the plugin, or implements MIDI learn to let users assign controllers themselves.",
+    "category": "MIDI & control",
+    "related_terms": [
+     "MIDI continuous controller (CC)",
+     "Parameter automation",
+     "MIDI learn",
+     "Graphical user interface thread",
+     "Note expression",
+     "Control surface"
+    ],
+    "common_mistakes": [
+     "Passing raw MIDI CCs straight into the DSP instead of declaring mappings so the host handles them as parameter changes",
+     "Assuming 7-bit CC resolution is fine for sensitive parameters, which can cause audible stepping or zipper noise",
+     "Ignoring MIDI channel and bus when assigning controllers, so mappings collide"
+    ],
+    "scenario_contexts": [
+     "Assigning a control surface's faders to a synth's filter cutoff and resonance",
+     "Implementing MIDI learn so a user maps a knob to any parameter",
+     "Automating a plugin parameter live from an expression pedal"
+    ]
+   },
+   "sources": [
+    "Steinberg VST3 SDK, IMidiMapping::getMidiControllerAssignment reference documentation",
+    "MIDI Association, MIDI 1.0 Detailed Specification (Control Change messages)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b866bf4b-9370-4708-a43d-4a1259b25fbf",
+   "term": "Multithreaded processing",
+   "fields": {
+    "definition": "The use of multiple concurrent threads to perform a plugin's or host's audio work, such as splitting independent processing across worker threads or separating the real-time audio thread from GUI and background threads. It requires real-time-safe, lock-free communication so that no thread blocks the audio callback.",
+    "plain_english": "This means splitting a plugin's work across several threads so more than one thing runs at once. It is like having several cooks in a kitchen, but they must stay out of the audio's way.",
+    "purpose_function": "It spreads heavy processing across multiple CPU cores so complex plugins can run in real time, while keeping the time-critical audio thread free of blocking work.",
+    "practical_application": "A developer offloads heavy or parallelizable tasks to worker threads and passes results back to the audio thread through lock-free queues, avoiding locks inside the audio callback.",
+    "category": "Threading & concurrency",
+    "related_terms": [
+     "Real-time thread",
+     "Graphical user interface thread",
+     "Lock-free FIFO",
+     "Digital signal processing engine",
+     "CPU load",
+     "Denormal-number protection"
+    ],
+    "common_mistakes": [
+     "Using locks or mutexes shared with the audio thread, which can cause priority inversion and audio dropouts",
+     "Assuming more threads always means faster; thread overhead and synchronization can make small tasks slower",
+     "Sharing data between threads without atomic or lock-free access, leading to races and glitches"
+    ],
+    "scenario_contexts": [
+     "Spreading convolution across worker threads to run a large reverb in real time",
+     "Rendering a waveform display on a background thread without stalling audio",
+     "Distributing per-voice synthesis across CPU cores"
+    ]
+   },
+   "sources": [
+    "JUCE threading and real-time audio documentation",
+    "Pirkle, Designing Audio Effect Plugins in C++"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "73f620d3-1b05-437a-b4b5-f20ff9e874f6",
+   "term": "Oversampling engine",
+   "fields": {
+    "definition": "A plugin subsystem that raises the internal sample rate by an integer factor (such as 2x, 4x or 8x), processes the audio at that higher rate, then filters and downsamples back to the host rate. Upsampling and downsampling use anti-imaging and anti-aliasing filters (FIR for linear phase or IIR for lower latency), and the process adds latency that must be reported.",
+    "plain_english": "An oversampling engine runs the sound at a higher sample rate inside the plugin, then brings it back down. This gives effects like distortion more room, so they make fewer harsh, false tones called aliasing.",
+    "purpose_function": "It reduces aliasing from nonlinear processing such as distortion, saturation or clipping by pushing the newly created high harmonics above the range that would otherwise fold back into the audible band.",
+    "practical_application": "A developer wraps a nonlinear stage in an oversampling engine, chooses a factor and filter type to balance quality against CPU and latency, and reports the added latency to the host.",
+    "category": "Anti-aliasing",
+    "related_terms": [
+     "Aliasing",
+     "Nyquist frequency",
+     "Anti-aliasing filter",
+     "Internal sample-rate conversion",
+     "Latency reporting",
+     "Nonlinear processing"
+    ],
+    "common_mistakes": [
+     "Believing oversampling removes all aliasing; it only reduces it, and higher factors cost more CPU and latency",
+     "Applying oversampling to purely linear processing, where it adds cost with little benefit",
+     "Forgetting to report the extra latency introduced by the oversampling filters"
+    ],
+    "scenario_contexts": [
+     "Adding 4x oversampling to a saturation plugin to clean up aliasing",
+     "Choosing FIR versus IIR oversampling filters to trade phase accuracy against latency",
+     "Lowering the oversampling factor to save CPU on a dense mix"
+    ]
+   },
+   "sources": [
+    "JUCE dsp::Oversampling class reference documentation",
+    "Zolzer (ed.), DAFX: Digital Audio Effects",
+    "Julius O. Smith, Digital Audio Resampling Home Page (CCRMA, Stanford)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

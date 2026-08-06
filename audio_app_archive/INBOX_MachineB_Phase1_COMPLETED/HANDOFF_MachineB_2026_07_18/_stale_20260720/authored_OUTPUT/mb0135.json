@@ -1,0 +1,231 @@
+{
+ "batch": 135,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "89f38824-a96d-49dd-ad15-979b0d551a25",
+   "term": "Sampler track",
+   "fields": {
+    "definition": "A DAW track type that hosts a built-in sampler instrument, letting a single audio sample be mapped across the keyboard and played back chromatically via MIDI, with controls for root pitch, filter, envelope, and loop points.",
+    "plain_english": "A track in music software that turns one recorded sound into a playable instrument. You drop in a clip, and different keys play it higher or lower, like a piano made from any sound you pick.",
+    "purpose_function": "It lets you build a playable, pitched instrument from any audio clip without a separate hardware sampler, so a recorded note, loop, or one-shot can be performed melodically from a MIDI keyboard.",
+    "practical_application": "A producer drags a vocal chop or a single bass note onto a sampler track, plays a melody from a MIDI keyboard, and shapes each hit with the filter and envelope.",
+    "category": "DAW Instrument",
+    "related_terms": ["Sampler", "MIDI", "Virtual instrument", "Audio sample", "Score Editor"],
+    "common_mistakes": [
+     "Confusing a sampler track with a plain audio track; a sampler track plays a mapped sample chromatically via MIDI, while an audio track just plays a recording on the timeline.",
+     "Forgetting to set the correct root/base pitch, so the sample plays back at the wrong pitch across the keyboard.",
+     "Leaving loop points or the envelope release badly set, causing clicks or abrupt cutoffs on held notes."
+    ],
+    "scenario_contexts": [
+     "Turning a one-shot vocal sample into a playable chord instrument for a pop production.",
+     "Mapping a single recorded bass note and performing a bassline from a MIDI keyboard.",
+     "Chopping a drum loop onto a sampler track to re-trigger individual hits in a new pattern."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (Sampler Track)", "Ableton Live Reference Manual (Sampler/Simpler)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d820babd-eab7-488d-a4a1-bec4f5153cec",
+   "term": "Scene automation",
+   "fields": {
+    "definition": "On a digital mixing console, a scene is a stored snapshot of the desk's settings (fader levels, mutes, EQ, routing, effects), and scene automation is the storing and ordered recall of these snapshots so the console reconfigures itself at defined cue points during a show.",
+    "plain_english": "A way to save all your mixer's settings as a snapshot and load them back instantly. During a show you jump from one saved setup to the next at each cue, so the mix changes exactly on time.",
+    "purpose_function": "It lets one operator make large, repeatable changes to a complex mix at the press of a button, so cues happen accurately and the same way every performance.",
+    "practical_application": "A live engineer builds a scene for each song or scene of a musical, then hits next (or lets timecode fire it) to recall levels, mutes, and effects at each cue.",
+    "category": "Console Automation",
+    "related_terms": ["Snapshot", "Recall", "Mute group", "DCA group", "Cue"],
+    "common_mistakes": [
+     "Assuming scene recall changes everything; many desks let you scope or filter parameters, so items left out of scope will not update as expected.",
+     "Not safeing or isolating channels (like a wireless input or a global reverb) that should stay put, so a recall unexpectedly overwrites them.",
+     "Overwriting the wrong scene by storing instead of recalling, losing carefully built settings."
+    ],
+    "scenario_contexts": [
+     "Running a musical theatre show where each cue recalls a new scene of mic mutes and levels.",
+     "Switching band configurations between acts at a festival using stored scenes.",
+     "Recalling a preset scene for a specific service format in a house of worship."
+    ]
+   },
+   "sources": ["Yamaha CL/QL Series Reference Manual (Scene Memory)", "Allen & Heath dLive/SQ Reference Guide (Scenes)", "Ballou, Handbook for Sound Engineers (digital consoles)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "515403b7-78ba-4f8e-98af-f4266b9217f4",
+   "term": "Score balance",
+   "fields": {
+    "definition": "The relative level and blend among the instruments and sections of a musical score, set so melody, harmony, and supporting parts each sit at their intended prominence within the mix.",
+    "plain_english": "Getting the instruments in a piece of music to the right loudness against each other. It is like making sure the melody stays clear while the backing parts support it instead of covering it up.",
+    "purpose_function": "It makes the listener hear the intended musical hierarchy, with lead lines clear and accompaniment supportive, so the emotional and structural intent of the score comes through.",
+    "practical_application": "A scoring mixer rides section faders so strings, brass, and woodwinds each sit correctly under a solo line, matching the composer's intent for a cue.",
+    "category": "Score Mixing",
+    "related_terms": ["Level balance", "Score stem", "Score premix", "Panning", "Dynamic range"],
+    "common_mistakes": [
+     "Balancing each section in solo instead of in context, so parts that sounded right alone fight once combined.",
+     "Chasing loudness on every part until nothing leads and the mix sounds flat.",
+     "Ignoring how dialogue and picture will sit over the score, so a balance that works alone masks the dialogue later."
+    ],
+    "scenario_contexts": [
+     "Mixing an orchestral film cue so the theme carries over the accompaniment.",
+     "Balancing a string section against percussion in a game-music stem.",
+     "Setting relative levels of soloist and ensemble in a concert recording."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (balance/mixing)", "Ballou, Handbook for Sound Engineers (music mixing)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a0643b3e-2fb2-4955-a224-05c57daf98df",
+   "term": "Score depth",
+   "fields": {
+    "definition": "The sense of front-to-back distance created among the elements of a musical score, produced with reverb, early reflections, relative level, and high-frequency roll-off so some instruments feel close and others farther back in a perceived space.",
+    "plain_english": "How near or far each instrument feels in a piece of music. Using echo and volume, a mixer can make one instrument sound right in front of you and another sound far away, like players spread across a real stage.",
+    "purpose_function": "It recreates a believable acoustic space and separates instruments front to back, giving the score dimension so parts do not all sound stuck in the same flat plane.",
+    "practical_application": "A mixer adds a touch more reverb and gently lowers level and top end on the back of a section to push it back, keeping the solo dry and forward.",
+    "category": "Score Mixing",
+    "related_terms": ["Reverb", "Score width", "Score balance", "Ambience", "Early reflections"],
+    "common_mistakes": [
+     "Adding so much reverb to create depth that the score turns washy and loses clarity.",
+     "Using only level changes for depth while ignoring reverb and high-frequency roll-off, so distance never feels convincing.",
+     "Placing everything up front, leaving the mix flat with no front-to-back dimension."
+    ],
+    "scenario_contexts": [
+     "Placing a solo instrument in front of a lush string bed on a film cue.",
+     "Recreating a concert-hall front-to-back perspective in an orchestral mix.",
+     "Pushing pads and textures behind the lead in a hybrid score."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (depth/reverb)", "Ballou, Handbook for Sound Engineers (reverberation and space)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "459397ba-017a-49bb-9bb8-15759eb36279",
+   "term": "Score Editor",
+   "fields": {
+    "definition": "A DAW editing window that displays and edits MIDI data as standard musical notation on staves, letting the user enter, correct, and format notes and then print or export a readable score or parts.",
+    "plain_english": "A part of music software that shows your notes as sheet music instead of blocks or piano-roll bars. You can write and fix notes on the staff and print proper sheet music for players to read.",
+    "purpose_function": "It bridges MIDI sequencing and written notation, so the same performance data can be edited musically and turned into printed scores or parts for live musicians.",
+    "practical_application": "A composer records a MIDI part, opens the Score Editor to clean up rhythms and note spelling, adds dynamics and clefs, then prints parts for a session.",
+    "category": "DAW Editor",
+    "related_terms": ["MIDI", "Piano roll", "Notation", "Quantize", "Key Editor"],
+    "common_mistakes": [
+     "Expecting raw MIDI to look tidy; without quantize and display settings, exact human timing shows as messy, unreadable notation.",
+     "Confusing display quantize (how notation looks) with real quantize (which moves the notes), and altering the performance by accident.",
+     "Assuming what you see is what plays; notation display settings change appearance, not playback."
+    ],
+    "scenario_contexts": [
+     "Printing individual parts for a string session from a MIDI mockup.",
+     "Cleaning up note spelling and rhythms before handing a score to a copyist.",
+     "Entering a melody by hand on the staff for a student arrangement."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (Score Editor)", "Apple Logic Pro User Guide (Score Editor)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "352af695-8921-4334-a0f3-b2acc39b4bee",
+   "term": "Score premix",
+   "fields": {
+    "definition": "In film and TV post-production, a premix (predub) of the music score: a balanced submix of the many recorded music tracks and stems, prepared ahead of the final re-recording mix so the music can be handled as a manageable set of elements during the final dub.",
+    "plain_english": "A rough, tidied-up mix of just the music, made before the final movie mix. It combines many music tracks into a few, so the team is not juggling hundreds of tracks when they blend music with dialogue and effects.",
+    "purpose_function": "It reduces a large music session to a workable, pre-balanced group of elements, saving time and keeping the final mix manageable when music meets dialogue and effects.",
+    "practical_application": "A music mixer balances the orchestral and synth tracks into a score premix, delivering stems the re-recording mixer drops straight into the final dub.",
+    "category": "Post Production",
+    "related_terms": ["Score stem", "Re-recording mix", "Stem", "Dialogue premix", "Score balance"],
+    "common_mistakes": [
+     "Baking in too much processing or level so the re-recording mixer cannot rebalance the music against dialogue later.",
+     "Delivering premix stems that are not level- or phase-consistent, so they do not sum back to the intended full mix.",
+     "Skipping clear labeling and formatting of stems, causing confusion at the final dub."
+    ],
+    "scenario_contexts": [
+     "Preparing a music predub before the final re-recording mix of a feature film.",
+     "Delivering balanced score stems to a dub stage.",
+     "Consolidating a huge orchestral session into a few premixed groups for the mix."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (film sound / post-production)", "Huber & Runstein, Modern Recording Techniques (submixing/stems)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7b4ddd8a-b164-437f-a3eb-67d6400b3b08",
+   "term": "Score recording stage",
+   "fields": {
+    "definition": "A large recording studio (scoring stage) purpose-built for recording film, TV, and game music, with an acoustically treated live room big enough for a full orchestra, a control room, and facilities to record to picture in sync.",
+    "plain_english": "A very large recording studio built for recording film music with a whole orchestra at once. It is big enough to fit dozens of players and lets them watch the movie so the music lines up with the picture.",
+    "purpose_function": "It provides the room size, acoustics, and picture-sync facilities needed to capture a full ensemble performing to a film, which a normal studio cannot accommodate.",
+    "practical_application": "A scoring session books a stage where the orchestra plays to picture while the mixer captures multitrack stems for later premixing.",
+    "category": "Recording Facility",
+    "related_terms": ["Live room", "Control room", "Score premix", "Click track", "Multitrack"],
+    "common_mistakes": [
+     "Assuming any large room works; scoring needs controlled acoustics and low noise, not just size.",
+     "Underestimating the headphone/foldback and click-track routing an orchestra needs when playing to picture.",
+     "Forgetting that mic bleed across a big room limits how much each section can be fixed separately later."
+    ],
+    "scenario_contexts": [
+     "Recording a feature-film orchestral score to picture.",
+     "Tracking a game-music ensemble across sectional passes on a large stage.",
+     "Capturing choir and orchestra together for a trailer cue."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (studio design / scoring stages)", "Huber & Runstein, Modern Recording Techniques (studio acoustics)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7a548df3-fb76-4173-b0c1-0d6812c9f4a3",
+   "term": "Score stem",
+   "fields": {
+    "definition": "A stem containing only the music score: a submix bounce of the score's grouped elements (or the whole music) delivered as a separate track or set of tracks, kept apart from dialogue and effects for use in the final mix and later versioning.",
+    "plain_english": "A separate mixed-down track of only the music. Keeping the music on its own lets the team turn it up or down without touching dialogue or sound effects, and makes it easy to swap or remove later.",
+    "purpose_function": "It isolates the music as an independent element so it can be balanced, muted, or replaced in the final mix and reused for trailers, foreign versions, or remixes.",
+    "practical_application": "A mixer delivers music stems (for example, orchestra, synths, and percussion) that the dub stage rides against dialogue and effects.",
+    "category": "Post Production",
+    "related_terms": ["Stem", "Score premix", "Dialogue stem", "Effects stem", "Re-recording mix"],
+    "common_mistakes": [
+     "Assuming a stem must be a single track; a score stem is often several grouped stems that sum to the full music.",
+     "Printing stems with different processing than the master, so they do not recombine to match the approved mix.",
+     "Failing to keep stems separate from dialogue and effects, defeating the point of stem delivery."
+    ],
+    "scenario_contexts": [
+     "Delivering a music-only stem for a film's final dub.",
+     "Supplying score stems for a trailer edit.",
+     "Providing an isolated music stem for foreign-language (M&E) versions."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (stems / post-production)", "Huber & Runstein, Modern Recording Techniques (stem mixing)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9ca1972b-7f3a-4dc6-8564-9d02721691aa",
+   "term": "Score width",
+   "fields": {
+    "definition": "The perceived left-to-right spread of the music score in the stereo (or surround) field, set with panning, stereo miking, and stereo-image processing so sections occupy their intended horizontal positions and overall stage width.",
+    "plain_english": "How wide the music sounds from left to right. By panning instruments and using stereo tricks, a mixer can make the orchestra feel spread across a big stage instead of squashed into the middle.",
+    "purpose_function": "It positions instruments horizontally and controls the overall spread, giving the score a natural stereo image and separating parts so they do not pile up in the center.",
+    "practical_application": "A mixer pans strings, brass, and percussion to their orchestral seating and widens the ambience mics to place the ensemble across the stereo stage.",
+    "category": "Score Mixing",
+    "related_terms": ["Panning", "Stereo image", "Score depth", "Score balance", "Mono compatibility"],
+    "common_mistakes": [
+     "Widening so aggressively with stereo processing that the mix collapses or hollows out when summed to mono.",
+     "Panning everything hard left and right, leaving a hole in the center where the lead should sit.",
+     "Ignoring the standard orchestral seating layout, so instrument positions feel unnatural."
+    ],
+    "scenario_contexts": [
+     "Panning an orchestra to its concert seating in a film mix.",
+     "Widening pads and strings to open up space around a centered melody.",
+     "Checking mono compatibility of a widened score for broadcast."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (stereo imaging/panning)", "Ballou, Handbook for Sound Engineers (stereo and imaging)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

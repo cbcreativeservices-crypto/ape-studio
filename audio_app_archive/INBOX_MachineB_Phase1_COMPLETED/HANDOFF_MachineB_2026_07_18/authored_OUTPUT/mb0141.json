@@ -1,0 +1,159 @@
+{
+ "batch": 141,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "ae730278-1940-4668-a8e3-dd55b5e26e24",
+   "term": "Stem validation",
+   "fields": {
+    "definition": "The quality-control process of checking exported stems (grouped submixes such as drums, bass, and vocals) to confirm they are complete, in sync, free of clipping, in the correct format, and sum back to match the reference full mix before delivery.",
+    "plain_english": "Stems are grouped mixdowns, like all the drums bounced into one file. Stem validation means checking these files to make sure they play in time, do not distort, and add back up to sound like the finished mix.",
+    "purpose_function": "It exists to catch errors before delivery, ensuring the stems a client, mastering engineer, or post house receives will recombine into the intended mix without missing parts, level jumps, or timing offsets.",
+    "practical_application": "After bouncing stems, an engineer imports them into a fresh session at unity gain, sums them, and null-tests or listens against the reference mix to verify they match before sending them out.",
+    "category": "Mix Validation",
+    "related_terms": ["Stem", "Bounce", "Reference mix", "Null test", "Stereo compatibility validation", "Gain staging"],
+    "common_mistakes": ["Bouncing stems with different start points or lengths so they no longer line up when reimported", "Leaving master-bus processing on individual stems, so they no longer sum to the reference mix", "Assuming stems are correct without actually summing them back and comparing to the mix"],
+    "scenario_contexts": ["Preparing drum, bass, music, and vocal stems for a mastering engineer", "Delivering stems to a film or TV post house for the re-recording mix", "Creating stems for a live performance backing-track rig"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dbaf5fca-51b5-4f3d-bc37-ff68f8de0adb",
+   "term": "Step duration",
+   "fields": {
+    "definition": "In a step sequencer, the length of time a triggered step's note sounds, usually set as a gate value that is a percentage of the step's time slot; a shorter duration produces staccato notes while a longer one sustains the note toward or into the next step.",
+    "plain_english": "In a step sequencer, step duration is how long each note is held. A short setting makes clipped, punchy notes; a long setting lets the note ring out until the next one.",
+    "purpose_function": "It shapes the rhythmic feel and articulation of a pattern, letting a programmer choose between tight, detached notes and smooth, connected ones without changing the pattern's timing grid.",
+    "practical_application": "A producer shortens step duration on a bassline for a plucky, staccato groove, or lengthens it and adds ties to create sustained, legato lines.",
+    "category": "Step Sequencing",
+    "related_terms": ["Step resolution", "Step velocity", "Step repeat", "Step Editor", "Tie", "Gate time"],
+    "common_mistakes": ["Confusing step duration (how long the note sounds) with step resolution (how far apart steps are)", "Setting very long durations and then wondering why overlapping notes sound stuck or muddy", "Forgetting that gate/duration is a percentage of the step, so it changes with tempo and step rate"],
+    "scenario_contexts": ["Programming a staccato synth bassline", "Creating legato pad movement in a pattern", "Tightening a hi-hat pattern by shortening gate times"]
+   },
+   "sources": ["Apple, Logic Pro User Guide (Step Sequencer edit modes: Gate)", "Steinberg, Cubase Operation Manual (step/pattern editing)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "07c3ddc9-013d-4929-9119-814ced6601e0",
+   "term": "Step Editor",
+   "fields": {
+    "definition": "A grid-based MIDI editor that displays the note and controller events of a region as vertical beams within a user-defined time grid, where each beam's height represents a value such as velocity or a controller amount, enabling fast step-based creation and editing of drum patterns and control data.",
+    "plain_english": "The Step Editor is a grid-style MIDI editor. Each note or control value shows up as a bar, and taller bars mean bigger values, so you can quickly draw and tweak drum hits and how loud they are.",
+    "purpose_function": "It exists to make repetitive rhythmic and controller editing fast and precise, showing several lanes of MIDI data at once so a user can build patterns and adjust values like velocity without dragging tiny points.",
+    "practical_application": "A producer uses the Step Editor to punch in a drum groove, then adjusts the velocity beams to accent certain hits and draws in controller moves such as filter cutoff.",
+    "category": "MIDI Editing",
+    "related_terms": ["Step velocity", "Step duration", "MIDI controller", "Piano Roll", "Step Sequencer", "Velocity"],
+    "common_mistakes": ["Confusing the Step Editor (a MIDI event editor) with a step sequencer that generates patterns automatically", "Editing the wrong lane, so velocity or controller changes land on the wrong data type", "Not setting the correct grid or lane set, so events do not align as expected"],
+    "scenario_contexts": ["Building and refining a drum pattern's velocities", "Drawing MIDI controller automation such as modulation or cutoff", "Quickly correcting note velocities across a busy percussion part"]
+   },
+   "sources": ["Apple, Logic Pro User Guide (Step Editor interface and overview)", "Steinberg, Cubase Operation Manual (MIDI editors)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "daa20a55-9370-4497-96b7-ef55a1628eeb",
+   "term": "Step probability",
+   "fields": {
+    "definition": "A per-step sequencer setting that defines the percentage chance a step will trigger on any given pass; at 100% it always plays and at 50% it plays roughly half the time, with each step evaluated independently to produce randomized variation.",
+    "plain_english": "Step probability sets the odds that a step actually plays. At 100% it plays every time; at 50% it plays about half the time, like a coin flip each loop, which adds surprise and variety.",
+    "purpose_function": "It exists to add controlled randomness and human-like unpredictability to patterns, keeping loops from sounding identical every bar and generating fills and variations automatically.",
+    "practical_application": "A producer lowers probability on ghost snare hits so they appear only now and then, making a looped beat feel less mechanical over a long section.",
+    "category": "Step Sequencing",
+    "related_terms": ["Step velocity", "Step repeat", "Step Sequencer", "Randomization", "Step duration", "Groove"],
+    "common_mistakes": ["Expecting the exact same pattern every loop when probability is set below 100%", "Setting key downbeats below 100% and losing the groove's backbone", "Confusing per-step probability with a global randomizer that affects the whole pattern"],
+    "scenario_contexts": ["Adding occasional ghost notes to a drum loop", "Creating evolving, generative melodies", "Introducing fills that appear at random over a long arrangement"]
+   },
+   "sources": ["Apple, Logic Pro User Guide (Step Sequencer edit modes: Chance)", "Ableton, Live 11 Reference Manual (Note and Velocity Chance)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d1902980-314e-490a-95b2-ff35d189a61e",
+   "term": "Step repeat",
+   "fields": {
+    "definition": "A per-step function that retriggers a step's note multiple times within its single time slot (also called note repeat or ratcheting), subdividing the step into rapid repeated hits, for example turning one sixteenth-note step into two or four faster notes.",
+    "plain_english": "Step repeat makes one step fire several fast notes instead of one. It chops a single slot into quick repeats, like a drum roll packed into one beat.",
+    "purpose_function": "It exists to create rolls, stutters, and rhythmic subdivisions inside a pattern without adding more steps, adding energy and detail to drums and synth lines.",
+    "practical_application": "A producer sets step repeat to 4 on a snare step to make a quick roll into a drop, or ratchets a hi-hat step for a burst of faster notes.",
+    "category": "Step Sequencing",
+    "related_terms": ["Step duration", "Step velocity", "Step resolution", "Ratcheting", "Step Sequencer", "Step probability"],
+    "common_mistakes": ["Confusing step repeat (repeats inside one step) with looping the whole pattern", "Setting high repeat counts that clutter the groove and lose punch", "Forgetting that very fast repeats depend on the tempo and step rate"],
+    "scenario_contexts": ["Building a snare roll leading into a drop", "Adding hi-hat stutters and rolls", "Creating trap-style rapid hi-hat subdivisions"]
+   },
+   "sources": ["Apple, Logic Pro User Guide (Step Sequencer edit modes: Note Repeat)", "Steinberg, Cubase Operation Manual (step sequencing / ratcheting)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "78ee5a7b-9126-43b1-8914-cb774c0e407e",
+   "term": "Step resolution",
+   "fields": {
+    "definition": "The note value assigned to each step in a sequencer pattern (its step rate), setting how much musical time one step represents (for example 1/16 makes each step a sixteenth note), which together with the pattern length determines the timing grid and total pattern duration.",
+    "plain_english": "Step resolution is how much time each step stands for, like a sixteenth note. It sets how fast the steps march along and how fine the timing grid is.",
+    "purpose_function": "It exists to define a pattern's rhythmic grid and speed, letting a programmer choose coarse or fine timing and control how long the whole pattern lasts.",
+    "practical_application": "A producer sets step resolution to 1/16 for a standard 16-step bar, then switches to 1/32 to double the speed of a hi-hat pattern.",
+    "category": "Step Sequencing",
+    "related_terms": ["Step duration", "Pattern length", "Step Sequencer", "Step repeat", "Quantization", "Tempo"],
+    "common_mistakes": ["Confusing step resolution (spacing between steps) with step duration (how long each note sounds)", "Changing the resolution and not realizing the whole pattern's length changed too", "Assuming 16 steps always equals one bar regardless of the resolution setting"],
+    "scenario_contexts": ["Setting a 16-step pattern to 1/16 for one bar", "Doubling hi-hat speed by switching to 1/32", "Making a slow, spacious pattern with 1/8 resolution"]
+   },
+   "sources": ["Apple, Logic Pro User Guide (Step Sequencer inspector: Step Rate / pattern length)", "Steinberg, Cubase Operation Manual (step/pattern resolution)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9a357033-6b62-45bb-9b4a-ea794dc37a5e",
+   "term": "Step timing offset",
+   "fields": {
+    "definition": "A per-step adjustment that shifts a step's start time earlier or later than its grid position, typically expressed as a percentage of the step rate (for example -50% to +50%), used to add swing, push, drag, or micro-timing feel to a pattern.",
+    "plain_english": "Step timing offset nudges a single step a little earlier or later than the grid. It lets you push or drag notes off the strict beat to add swing and a human feel.",
+    "purpose_function": "It exists to loosen the rigid sequencer grid, letting a programmer create groove, swing, and natural timing variation instead of perfectly quantized, mechanical hits.",
+    "practical_application": "A producer nudges snare or hat steps slightly late to add a laid-back swing, or pushes a step early to give a part more urgency.",
+    "category": "Step Sequencing",
+    "related_terms": ["Swing", "Quantization", "Step resolution", "Step duration", "Step Sequencer", "Groove"],
+    "common_mistakes": ["Confusing a per-step offset with a global swing or quantize setting", "Offsetting so far that a step overlaps or crosses into a neighboring step", "Nudging every step the same amount, which just moves the pattern instead of adding groove"],
+    "scenario_contexts": ["Adding a laid-back feel to a hi-hat pattern", "Pushing a snare slightly to change the groove", "Dialing in swing on a programmed drum beat"]
+   },
+   "sources": ["Apple, Logic Pro User Guide (Step Sequencer edit modes: Offset)", "Steinberg, Cubase Operation Manual (step timing / nudge)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "134ec08f-8bb4-4660-a388-029e5b586ce1",
+   "term": "Step velocity",
+   "fields": {
+    "definition": "The MIDI velocity value assigned to an individual step in a sequencer, ranging from 1 to 127, which sets how hard that step's note is struck and typically controls its loudness and, depending on the instrument, its tone or brightness.",
+    "plain_english": "Step velocity is how hard each step's note is hit, on a scale of 1 to 127. Higher velocity usually means louder and often brighter, just like hitting a drum harder.",
+    "purpose_function": "It exists to add dynamics and accents to an otherwise flat pattern, letting a programmer emphasize certain hits and shape the groove's feel through changes in loudness and tone.",
+    "practical_application": "A producer raises velocity on downbeat kicks and lowers it on ghost snares so a looped beat breathes with natural accents instead of sounding uniform.",
+    "category": "Step Sequencing",
+    "related_terms": ["Velocity", "Step duration", "Step probability", "Accent", "Step Editor", "Dynamics"],
+    "common_mistakes": ["Leaving every step at the same velocity, giving a lifeless, machine-like groove", "Assuming velocity only changes volume when many instruments also change tone with it", "Confusing velocity (how hard a note is struck) with the track's overall fader level"],
+    "scenario_contexts": ["Accenting downbeats in a drum pattern", "Creating dynamic ghost notes on a snare", "Adding expression to a programmed synth line"]
+   },
+   "sources": ["MIDI Association, MIDI 1.0 Specification (Note On velocity 1-127)", "Apple, Logic Pro User Guide (Step Sequencer edit modes: Velocity)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c787486d-70b6-481c-8300-74e11fefce48",
+   "term": "Stereo compatibility validation",
+   "fields": {
+    "definition": "The process of checking that a stereo mix still holds together when summed to mono, verifying that phase relationships between the left and right channels do not cause elements to lose level or disappear, so the mix translates correctly on mono playback systems.",
+    "plain_english": "This means checking that a stereo mix still sounds right when both sides are added into one mono signal. If the left and right fight each other, parts can get quieter or vanish, so you test for it.",
+    "purpose_function": "It exists to guarantee a mix survives mono playback on phones, clubs, TV, and public-address systems, where out-of-phase content can cancel and make instruments or vocals drop out.",
+    "practical_application": "An engineer sums the master to mono and listens for level drops or missing parts, watches a correlation meter, and then fixes wide stereo effects or out-of-phase tracks that cancel.",
+    "category": "Mix Validation",
+    "related_terms": ["Mono compatibility", "Phase", "Correlation meter", "Mid-side", "Stem validation", "Phase cancellation"],
+    "common_mistakes": ["Never checking the mix in mono until after it is released", "Using heavy out-of-phase stereo wideners that collapse or cancel when summed to mono", "Assuming stereo headphones reveal mono problems, when only summing to mono exposes them"],
+    "scenario_contexts": ["Checking a mix before broadcast delivery where it may be summed to mono", "Ensuring a track holds up on a mono club or PA system", "Verifying vocals stay present when a phone speaker plays in mono"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (mono compatibility / phase)", "Yamaha Sound Reinforcement Handbook (phase and mono summation)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

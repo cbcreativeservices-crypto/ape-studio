@@ -1,0 +1,183 @@
+{
+  "course": "MUSI190",
+  "topic": "Connectors & I/O Connections",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "8bdc86ba-1551-4641-ad9c-1f6c6522b06a",
+      "term": "DisplayPort",
+      "fields": {
+        "plain_english": "A computer video plug that also carries sound down the same cable, so one connector can drive a monitor's picture and its built-in speakers.",
+        "purpose_function": "Developed by VESA to send high-bandwidth digital video plus optional audio and data from a computer or graphics card to a display over a single cable. It exists to give PCs a royalty-free, high-refresh alternative to HDMI with features like daisy-chaining monitors.",
+        "practical_application": "A tech patches a playback or edit machine to a stage monitor, projector, or confidence display via DisplayPort, and remembers that the audio may travel embedded in the same cable rather than out a separate jack.",
+        "category": "Digital I/O Connectors",
+        "related_terms": ["HDMI", "USB-B", "Lightning Connector", "Thunderbolt", "SFP Module"],
+        "common_mistakes": ["Assuming DisplayPort and HDMI plugs are interchangeable without an active adapter; the two standards are electrically different.", "Forgetting that DisplayPort can carry embedded audio, then hunting for a separate audio feed that is actually inside the video cable.", "Yanking a full-size DisplayPort cable without releasing the latch, which can damage the connector or port."],
+        "scenario_contexts": ["Connecting a video-playback computer to a large-format display or projector at a live event.", "Driving multiple monitors from one GPU output using Multi-Stream Transport daisy-chaining in an edit or mastering suite.", "Routing a computer's picture and its system audio to a display's speakers over a single cable during a presentation."]
+      },
+      "sources": ["VESA, 'About DisplayPort' / 'HDMI vs. DisplayPort' (vesa.org)", "DisplayPort, Wikipedia (technical overview)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "0f0ff2e9-cd3d-4061-8dcc-9fb54d4b901c",
+      "term": "EDAC / Elco Connector",
+      "fields": {
+        "plain_english": "A big rectangular block connector that carries dozens of audio channels through one plug, so a whole console or wall panel connects in a single push instead of plugging in many separate cables.",
+        "purpose_function": "A multi-pin rectangular connector family (common counts include 20, 38, 56, 90, and 120 pins) that consolidates many audio pairs into one shell for fast, repeatable mass connection. It exists so large consoles, patchbays, and studio wall panels can be wired once and connected or disconnected as a single unit.",
+        "practical_application": "A tech mates a console loom or studio-wall tie line to a stagebox or patchbay through a single EDAC/Elco block, securing it with the actuating screw and lock nut so the multi-pin contacts stay aligned and seated.",
+        "category": "Multipin Connectors",
+        "related_terms": ["Multipin Connector", "Patchbay", "XLR", "DB25 (D-sub)", "Snake"],
+        "common_mistakes": ["Assuming EDAC and Elco pinouts or shells always match; ranges and wiring conventions vary and must be verified before mating.", "Mating or unmating without using the locking screw, which lets pins misalign and bend.", "Confusing the many pin-count variants (20/38/56/90/120) and ordering the wrong shell for a given loom."],
+        "scenario_contexts": ["Wiring a large-format recording console to a machine room or patchbay via a 90-pin loom.", "Building a studio wall panel that consolidates many tie lines into one connector for fast reconfiguration.", "Fabricating a multichannel analog snake terminated in an EDAC/Elco block instead of individual XLRs."]
+      },
+      "sources": ["Redco Audio, 'EDAC/ELCO Connectors' (redco.com)", "Sweetwater InSync, 'Elco (or Edac)' (sweetwater.com)", "EDAC/ELCO 516-series datasheet listings (Markertek)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "36ddfe76-343e-414e-a76f-a4a72465a5f6",
+      "term": "GPIO",
+      "fields": {
+        "plain_english": "Simple on/off electrical contacts that let one piece of gear tell another to do something, like flipping an on-air light or starting a player when a fader moves.",
+        "purpose_function": "General-purpose input/output ports provide logic-level or contact-closure (dry-contact) connections so audio devices can send and receive simple triggers, tallies, and status signals. They exist to integrate audio systems with external control such as on-air/tally lamps, fader-start, mute triggers, and automation.",
+        "practical_application": "A tech wires a console or network I/O unit's GPIO to a red on-air light, a record-start trigger, or a mute relay, mapping each input or output to the desired logic event in the device's control software.",
+        "category": "Control I/O",
+        "related_terms": ["Contact Closure", "Dante", "Tally", "Fader Start", "Logic Control"],
+        "common_mistakes": ["Confusing GPIO inputs with outputs, or wiring a dry contact where a voltage-driven logic level is expected (or vice versa).", "Assuming a GPIO output can directly switch mains-powered devices; a proper relay or interface rated for that load is required.", "Forgetting to map the GPIO pin to a function in software, then expecting the physical contact to work by itself."],
+        "scenario_contexts": ["Triggering an on-air or recording tally lamp from a broadcast console.", "Using fader-start logic so opening a channel launches a playback device.", "Sending a contact closure over a Dante or AoIP network to mute a zone or fire an EVAC override."]
+      },
+      "sources": ["Allen & Heath, 'GPIO' product documentation (allen-heath.com)", "Solid State Logic, 'A16.D16, A32, D64 and GPIO 32 Network I/O User Guide'", "Tieline, 'Jake's Take on GPIOs' (tieline.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "490dd2ed-ae24-4e7f-8bae-648cc9cdf60d",
+      "term": "Hirose Connector",
+      "fields": {
+        "plain_english": "A tiny locking plug used to attach a lavalier or headset mic to a wireless bodypack, small enough to hide but secure enough not to fall off mid-show.",
+        "purpose_function": "A family of miniature locking connectors (the 4-pin HRS type is common on wireless bodypacks) that terminates lavalier and headworn microphones to transmitter inputs. It exists to provide a small, secure, keyed connection that carries the mic signal and bias voltage in a rugged, repeatable way.",
+        "practical_application": "A tech chooses a lav or headset mic terminated with the correct Hirose plug for a given transmitter brand, or uses an adapter, since pinout and connector type differ between manufacturers such as Audio-Technica, Sennheiser, and Shure.",
+        "category": "Microphone Connectors",
+        "related_terms": ["MicroDot Connector", "Lavalier Microphone", "Bodypack Transmitter", "TA4F (mini-XLR)", "Wireless Microphone"],
+        "common_mistakes": ["Assuming all bodypack mic connectors are interchangeable; a 4-pin Hirose is not wired the same as a TA4F or a Lemo and can damage gear if forced.", "Matching only the connector shape while ignoring the transmitter-specific pinout and bias scheme.", "Forcing the plug without seating the locking mechanism, leading to intermittent audio during movement."],
+        "scenario_contexts": ["Fitting a talent with a concealed lavalier mic on an Audio-Technica bodypack transmitter.", "Swapping a headset mic between wireless systems using a manufacturer-specific Hirose-terminated cable or adapter.", "Troubleshooting dropouts by reseating a bodypack's locking Hirose connection."]
+      },
+      "sources": ["Senal, 'UTM-86-HRS / OLM-2 Lavalier with 4-Pin Hirose Connector' compatibility docs (senalsound.com)", "B&H Photo product documentation for 4-pin Hirose (HRS) lavalier microphones (bhphotovideo.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "2c6c28e8-4583-4dc1-8f7f-2753ddb9953e",
+      "term": "LC Connector",
+      "fields": {
+        "plain_english": "A small snap-in fiber-optic plug, about half the size of the older square type, that clicks in like a phone jack and is the most common fiber connector in use today.",
+        "purpose_function": "A small-form-factor (SFF) fiber connector using a 1.25 mm ferrule and a latch-style push-pull retention. It exists to terminate optical fiber at high port density with low insertion loss, and is the dominant modern fiber termination for data, telecom, and audio-over-fiber links.",
+        "practical_application": "A tech plugs LC-terminated fiber patch cords into switches, SFP modules, and stageboxes for long-run digital audio transport, keeping the ferrule end caps on and the connector clean until the moment it is mated.",
+        "category": "Fiber Optic Connectors",
+        "related_terms": ["SC Connector", "SFP Module", "Fiber Optic Cable", "Optical Transceiver", "Single-mode Fiber"],
+        "common_mistakes": ["Touching or failing to clean the fiber ferrule end-face, which contaminates the link and raises insertion loss.", "Mixing single-mode and multimode fiber or transceivers because the LC connector looks identical on both.", "Forcing the latch or bending the fiber past its minimum radius, damaging the glass."],
+        "scenario_contexts": ["Patching a fiber run between a stagebox SFP and a console SFP for digital audio transport.", "Connecting network switches in a high-density rack where LC's small size doubles available ports versus SC.", "Running a long fiber link front-of-house to stage to avoid copper distance limits and ground issues."]
+      },
+      "sources": ["Optcore, 'LC vs SC vs MU Connectors' (optcore.net)", "ShowMeCables, 'Types of Fiber Optic Connectors' (showmecables.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "90fcd5fd-525e-43dc-8469-5a2a1d98eaf0",
+      "term": "Lightning Connector",
+      "fields": {
+        "plain_english": "Apple's small reversible plug used on older iPhones and iPads; you often need an adapter to connect it to a real audio interface or DAC.",
+        "purpose_function": "Apple's proprietary 8-pin reversible mobile connector, introduced in 2012, used to connect iOS devices to power and peripherals including audio interfaces and adapters. It exists as a compact, orientation-agnostic replacement for the 30-pin dock connector and gates accessories through an authentication chip.",
+        "practical_application": "A tech interfaces an iPhone or iPad to a USB audio device using Apple's Lightning-to-USB Camera Adapter, and plans for charging separately since the single port must handle both power and data.",
+        "category": "Digital I/O Connectors",
+        "related_terms": ["USB-B", "DisplayPort", "USB-C", "DAC", "Camera Connection Kit"],
+        "common_mistakes": ["Assuming any USB device plugs straight into Lightning; a Camera Adapter (and sometimes external power) is required.", "Relying on uncertified third-party Lightning cables that fail authentication and stop working after an iOS update.", "Forgetting Lightning cannot both charge and carry USB audio without the powered version of the adapter."],
+        "scenario_contexts": ["Connecting an external USB audio interface or DAC to an iPad for mobile recording.", "Feeding audio from an iPhone into a system via a Lightning adapter during playback.", "Bridging an older iOS device into a USB-based accessory chain that otherwise expects USB-C."]
+      },
+      "sources": ["Lightning (connector), Wikipedia (specification and history)", "Crutchfield / Apple Lightning to USB Camera Adapter product documentation (crutchfield.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "97548fb8-af37-4f35-afcc-967191aa3480",
+      "term": "MicroDot Connector",
+      "fields": {
+        "plain_english": "A tiny screw-on coaxial plug used on very small lav and measurement mics, designed to work with a whole family of adapters so one mic can fit many wireless systems.",
+        "purpose_function": "A miniature coaxial threaded termination (popularized by DPA) used on subminiature lavalier, headset, and measurement microphones. It exists to provide a very small, standardized mic end that connects to many different wireless transmitters and inputs through interchangeable MicroDot adapters.",
+        "practical_application": "A tech pairs a MicroDot-terminated DPA mic with the correct adapter for the transmitter or phantom-power input in use, swapping only the inexpensive adapter rather than buying a new mic when systems change.",
+        "category": "Microphone Connectors",
+        "related_terms": ["Hirose Connector", "Lavalier Microphone", "Measurement Microphone", "Phantom Power", "TA5F (Lemo)"],
+        "common_mistakes": ["Using the wrong MicroDot adapter for a given transmitter, which mismatches the pinout and bias voltage.", "Over-tightening or cross-threading the small coaxial connector and damaging the delicate contact.", "Assuming the mic itself is system-specific when it is actually the adapter that determines compatibility."],
+        "scenario_contexts": ["Adapting a DPA lavalier from one wireless brand to another by swapping only the MicroDot adapter.", "Connecting a MicroDot-terminated mic to a phantom-powered input via a MicroDot-to-XLR adapter.", "Fitting a subminiature measurement or headset mic where a full-size connector would be too bulky."]
+      },
+      "sources": ["DPA Microphones, 'Adapters' / MicroDot adapter system documentation (dpamicrophones.com)", "Trew Audio, 'DPA MicroDot Adaptors' catalog (trewaudio.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "322881a8-5058-444d-a595-28637ceda69d",
+      "term": "Multipin Connector",
+      "fields": {
+        "plain_english": "A general term for any big connector that packs lots of channels into one shell, so you can plug in many signals at once instead of one cable at a time.",
+        "purpose_function": "A generic category of high-count circular or rectangular connectors that carry many channels or circuits through a single shell. They exist to speed mass connection and reduce clutter for consoles, snakes, stageboxes, and distribution where individual cables would be slow and bulky.",
+        "practical_application": "A tech mates a multichannel loom to a stagebox or console through one multipin shell, always confirming the specific pinout and pin count before connecting since 'multipin' spans many incompatible families.",
+        "category": "Multipin Connectors",
+        "related_terms": ["EDAC / Elco Connector", "DB25 (D-sub)", "Snake", "Patchbay", "XLR"],
+        "common_mistakes": ["Treating 'multipin' as one standard; it is a category, and pinouts differ between EDAC, Socapex, D-sub, and others.", "Mating connectors that fit physically but are wired to different pinouts, causing miswired or damaged signals.", "UNSAFE: Assuming an audio-style multipin loom is safe to carry power; power-distribution multipins (e.g., Socapex) carry mains voltage and must never be confused with signal looms."],
+        "scenario_contexts": ["Connecting a large console to a stagebox or machine room through a single multichannel loom.", "Deploying a touring rig where many audio circuits break out from one rugged multipin connector.", "Standardizing studio wall panels so entire subsystems connect and disconnect as one unit."]
+      },
+      "sources": ["Redco Audio, 'EDAC/ELCO Connectors' (redco.com)", "Whirlwind, '19 Pin Socapex Standard Multipin Connectors' (whirlwindusa.com)", "Phase 3 Connectors, 'What are Socapex Connectors?' (p3connectors.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "9bd06f61-9ccf-4390-a1cc-8aff9ec91f45",
+      "term": "SC Connector",
+      "fields": {
+        "plain_english": "A square, push-pull fiber plug that clicks in and out; it is larger and older than the LC type and shows up mostly on legacy and telecom fiber gear.",
+        "purpose_function": "A fiber connector using a 2.5 mm ferrule and a square push-pull housing with a locking-tab retention, standardized in early telecom specifications. It exists to provide a robust, easy-to-mate fiber termination and is common on legacy and telecom-grade infrastructure.",
+        "practical_application": "A tech encounters SC on older patch panels, media converters, and telecom-grade links, and uses SC-to-LC patch cords or the correct SFP interface when integrating that equipment with modern LC-based gear.",
+        "category": "Fiber Optic Connectors",
+        "related_terms": ["LC Connector", "SFP Module", "Fiber Optic Cable", "Optical Transceiver", "Multimode Fiber"],
+        "common_mistakes": ["Contaminating the larger 2.5 mm ferrule end-face by leaving it uncapped or touching it.", "Mixing single-mode and multimode SC connectors, which look alike but must be matched to the fiber and optics.", "Forcing an SC where an LC is required instead of using the correct adapter or patch cord."],
+        "scenario_contexts": ["Interfacing legacy telecom or building fiber that terminates in SC with newer LC-based audio network gear.", "Patching older media converters or fiber panels in an installed AV system.", "Documenting and adapting an existing SC fiber backbone during a system upgrade."]
+      },
+      "sources": ["Optcore, 'LC vs SC vs MU Connectors' (optcore.net)", "ShowMeCables, 'Types of Fiber Optic Connectors' (showmecables.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b0de99f1-5f52-4ca4-b35e-196bb6d062da",
+      "term": "SFP Module",
+      "fields": {
+        "plain_english": "A small snap-in adapter that slots into a switch or stagebox so the same port can use fiber or copper just by swapping the module, and it can be changed while the gear is powered.",
+        "purpose_function": "A small-form-factor pluggable (SFP) is a compact, hot-swappable transceiver, defined by a multi-source agreement (MSA) rather than a single standards body, that plugs into a switch or device slot to convert electrical signals to a chosen media. It exists so one piece of networking or audio hardware can support different fiber or copper media by changing only the module.",
+        "practical_application": "A tech selects matching SFP transceivers (media type, wavelength, and distance rating) for both ends of a link and hot-inserts them into console, switch, or stagebox cages, accepting a brief loss of that port's connectivity during the swap.",
+        "category": "Network Hardware",
+        "related_terms": ["LC Connector", "SC Connector", "Optical Transceiver", "Dante", "Fiber Optic Cable"],
+        "common_mistakes": ["Mismatching SFPs between link ends (fiber type, wavelength, or reach), so the connection will not establish.", "Assuming a switch accepts any brand; some enforce vendor coding despite the MSA form factor.", "UNSAFE: Staring into an SFP's optical port or fiber end; active transceivers can emit invisible laser light that harms the eye."],
+        "scenario_contexts": ["Fitting fiber SFPs into a Dante or AVB switch and stagebox to run a long optical audio link.", "Choosing a copper (RJ45) SFP to bridge a short run where fiber is unnecessary.", "Hot-swapping a failed transceiver in a live rig while the rest of the network keeps running."]
+      },
+      "sources": ["Small Form-factor Pluggable, Wikipedia (MSA, hot-swap definition)", "Cisco, 'SFP Transceiver Module Installation Notes' (cisco.com)", "Perle, 'SFP Optical Transceiver' documentation (perle.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "67783d6c-0250-4961-8bcd-827b0af09a75",
+      "term": "USB-B",
+      "fields": {
+        "plain_english": "The squarish 'printer-style' USB plug found on the back of many audio interfaces and controllers; it goes into the device while the flat USB-A or USB-C end goes to the computer.",
+        "purpose_function": "A near-square USB connector that serves as the upstream (device-side) port in a host-to-peripheral USB link, with a keyed shape that prevents backwards insertion. It exists to provide a rugged, standardized peripheral-side connector still widely used on audio interfaces, mixers, and controllers.",
+        "practical_application": "A tech connects an audio interface or MIDI controller to a computer with a USB-B-to-A (or -C) cable, seating the squarish end firmly in the device since a loose or worn USB-B port is a common cause of dropouts.",
+        "category": "Digital I/O Connectors",
+        "related_terms": ["USB-C", "Lightning Connector", "DisplayPort", "MIDI", "Audio Interface"],
+        "common_mistakes": ["Confusing the taller USB 3.0 Type-B shell with the standard USB 2.0 Type-B and forcing the wrong cable.", "Assuming USB-B is upstream/host-capable; it is the device-side port and connects to a host such as USB-A or USB-C.", "Using a marginal or damaged USB-B cable and blaming the interface for intermittent audio dropouts."],
+        "scenario_contexts": ["Connecting a desktop audio interface to a laptop for recording.", "Hooking a MIDI keyboard or control surface to a DAW computer.", "Replacing a worn cable when an interface's squarish USB-B port develops an intermittent connection."]
+      },
+      "sources": ["Sweetwater InSync, 'USB Type B Connection' (sweetwater.com)", "USB hardware, Wikipedia (Type-B connector, upstream port role)"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

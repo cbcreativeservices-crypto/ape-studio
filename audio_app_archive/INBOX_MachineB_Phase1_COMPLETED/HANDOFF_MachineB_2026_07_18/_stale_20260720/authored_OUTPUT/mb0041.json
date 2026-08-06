@@ -1,0 +1,159 @@
+{
+ "batch": 41,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "cdac5a21-33bf-4285-a484-ceeb8d829546",
+   "term": "Choral resonance control",
+   "fields": {
+    "definition": "The management of unwanted sympathetic resonances and room-driven frequency build-up in a recorded or reinforced choir, so sustained massed voices do not accumulate boomy or ringing tones. It is achieved through microphone placement, room treatment, and narrow-band equalization on the combined vocal signal.",
+    "plain_english": "A choir singing together can make some notes ring out too strongly in a room. Controlling that means taming those boomy or ringing tones so the voices stay clear.",
+    "purpose_function": "It keeps a massed vocal sound clean and easy to understand by stopping certain frequencies from building up and hiding the words.",
+    "practical_application": "An engineer uses careful mic placement and gentle EQ cuts to remove ringing low-mid frequencies when tracking a choir in a live room.",
+    "category": "Choral Recording",
+    "related_terms": ["Choral warmth", "Choral transparency", "Room acoustics", "Equalization", "Reverberation"],
+    "common_mistakes": ["Cutting too aggressively and making the choir sound thin and lifeless", "Blaming the microphones for boom when the room is the real cause", "Using one narrow EQ notch and missing that the resonance shifts with the note being sung"],
+    "scenario_contexts": ["Tracking a church choir in a reverberant sanctuary", "Taming low-mid build-up on a massed backing-vocal stack", "Cleaning up a live choral feed before it reaches the main PA"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "56bdeb8e-bfa5-4c59-b7d5-f1cd45491ff3",
+   "term": "Choral spacing",
+   "fields": {
+    "definition": "The physical arrangement and distance between singers in a choir, together with the matching microphone spacing used to capture them, which shape blend, width, and stereo image. Correct spacing merges individual voices into a unified section while preserving depth.",
+    "plain_english": "Choral spacing is how far apart the singers stand and how far apart the mics are set. Getting it right helps the voices blend into one smooth sound instead of clumps.",
+    "purpose_function": "It controls how well the voices blend and how wide the choir sounds, so the section reads as one instrument rather than separate people.",
+    "practical_application": "When setting up, an engineer positions a spaced or coincident mic pair at a distance that matches how the choir is arranged on the risers.",
+    "category": "Choral Recording",
+    "related_terms": ["Choral resonance control", "Choral transparency", "Stereo miking", "Blend", "Microphone placement"],
+    "common_mistakes": ["Placing mics too close so single voices stick out of the blend", "Ignoring riser height so the back rows sound distant", "Assuming wider mic spacing always means better blend"],
+    "scenario_contexts": ["Arranging singers on risers for a studio choral session", "Choosing spaced-pair distance for a large ensemble", "Balancing front and back rows of a school choir"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "81127c0d-8df7-410c-a8da-d11d19801de5",
+   "term": "Choral tail preservation",
+   "fields": {
+    "definition": "The practice of retaining the natural reverberant decay, or tail, of a choir's sustained notes when editing, gating, or processing, so sung phrases end with their full ambient bloom rather than being cut short. It treats the room's decay as part of the choral character.",
+    "plain_english": "When a choir holds a note and stops, the sound keeps ringing in the room for a moment. Preserving the tail means keeping that natural fade instead of chopping it off.",
+    "purpose_function": "It keeps the choir sounding natural and connected to its space by not cutting off the reverb that gives the sound its bloom.",
+    "practical_application": "An engineer sets long gate release times or edits crossfades carefully so the decay after each phrase is not clipped.",
+    "category": "Choral Recording",
+    "related_terms": ["Reverberation", "Noise gate", "Choral warmth", "Decay time", "Crossfade"],
+    "common_mistakes": ["Setting a noise gate's release too short so the tails get chopped", "Editing phrase ends with hard cuts instead of crossfades", "Mistaking the natural room tail for unwanted noise and removing it"],
+    "scenario_contexts": ["Gating a live choral mic without killing the decay", "Comping choral takes while keeping phrase endings smooth", "Preserving hall ambience on a classical choir recording"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6c7b9995-5d93-48c6-96a0-53e229c58036",
+   "term": "Choral transparency",
+   "fields": {
+    "definition": "The quality of a choral recording or mix in which individual vocal lines and words stay clear and distinct within the massed sound, without muddiness or masking. It reflects good intelligibility and separation across the section.",
+    "plain_english": "Transparency means you can still hear the words and the different parts clearly, even with many voices singing at once. The sound is clear, not muddy.",
+    "purpose_function": "It lets listeners follow the lyrics and harmony parts, which is why clarity is prized when capturing and mixing a choir.",
+    "practical_application": "An engineer improves transparency with careful mic choice, gentle low-mid EQ, and controlled reverb so the choir stays clear.",
+    "category": "Choral Recording",
+    "related_terms": ["Choral resonance control", "Intelligibility", "Equalization", "Masking", "Choral spacing"],
+    "common_mistakes": ["Adding too much reverb and washing out the words", "Boosting low-mids until the choir turns muddy", "Over-compressing so the separate voices blur together"],
+    "scenario_contexts": ["Mixing a choir so the lyrics stay intelligible", "Cleaning up a muddy massed-vocal recording", "Balancing soprano and bass lines in a dense arrangement"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5de58a69-ebe2-4514-972b-39a37b3c7f13",
+   "term": "Choral warmth",
+   "fields": {
+    "definition": "A tonal quality in choral sound marked by full, rich low-mid content and smooth high frequencies, giving the voices a rounded, pleasing body. It is shaped by the room, the microphone choice, and equalization.",
+    "plain_english": "Warmth is a full, rounded feel in the choir's sound, coming mostly from the lower and middle notes. It makes the voices feel cosy rather than thin or harsh.",
+    "purpose_function": "It gives a choir a rich, inviting body that flatters massed voices, which is why engineers aim for it while capturing and mixing.",
+    "practical_application": "An engineer builds warmth by choosing a suitable mic, adding gentle low-mid EQ, and using a room or reverb that adds body without mud.",
+    "category": "Choral Recording",
+    "related_terms": ["Choral transparency", "Equalization", "Choral resonance control", "Reverberation", "Timbre"],
+    "common_mistakes": ["Adding so much low-mid that warmth turns into mud", "Confusing warmth with simply turning up the bass", "Using a harsh microphone and then trying to fix warmth with EQ alone"],
+    "scenario_contexts": ["Warming up a thin-sounding choir recording", "Choosing a ribbon or condenser mic for a fuller choral tone", "Balancing warmth against clarity in a final mix"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b951e7cb-89d5-4e08-a2c6-7d4fd2f7d306",
+   "term": "Clean-guitar mixing",
+   "fields": {
+    "definition": "The techniques used to blend an undistorted, or clean, electric or acoustic guitar into a mix, focusing on tone shaping, level, dynamics, and space so the part sits clearly without competing with vocals or other midrange instruments. Clean guitar carries more transient detail and dynamic range than distorted guitar, so it needs different handling.",
+    "plain_english": "A clean guitar has no distortion, so every note and pick attack shows clearly. Mixing it well means shaping its tone and volume so it fits with the singing and the other instruments.",
+    "purpose_function": "It lets a clear, undistorted guitar part support a song without clashing, by controlling its level, tone, and dynamics.",
+    "practical_application": "An engineer uses EQ, light compression, and reverb or delay to place a clean guitar in the mix, often carving space around the lead vocal.",
+    "category": "Guitar Mixing",
+    "related_terms": ["Equalization", "Compression", "Reverberation", "Panning", "Direct injection"],
+    "common_mistakes": ["Leaving clean-guitar dynamics uncontrolled so the levels jump around", "Piling on distortion-style EQ that clutters the midrange", "Forgetting to carve space so the guitar masks the vocal"],
+    "scenario_contexts": ["Mixing a clean arpeggiated guitar under a lead vocal", "Blending a clean rhythm guitar with keys in a pop track", "Placing a clean guitar with delay in a sparse verse"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "437fe320-9dec-4606-9dde-39ac0ade01cf",
+   "term": "Closed hi-hat",
+   "fields": {
+    "definition": "The sound made when the two hi-hat cymbals are held tightly together, usually by pressing the foot pedal, so a struck cymbal gives a short, crisp, tight tick rather than a sustained wash. It is a core timekeeping articulation on the drum kit.",
+    "plain_english": "A hi-hat is two small cymbals on a stand. When they are pressed shut with a foot pedal and hit, they make a short, tight tick used to keep time.",
+    "purpose_function": "It provides a tight, controlled timekeeping sound that drives the rhythm without ringing on, which is why it anchors most drum grooves.",
+    "practical_application": "A drummer plays closed hi-hat for steady eighth or sixteenth notes, while an engineer mics it closely and controls its bleed into the other drum mics.",
+    "category": "Drum Recording",
+    "related_terms": ["Open hi-hat", "Cymbal bleed", "Overhead miking", "Snare drum", "Crash transient"],
+    "common_mistakes": ["Placing the hi-hat mic where the pedal's blast of air hits it", "Ignoring hi-hat bleed into the snare mic", "Confusing closed and open hi-hat sounds when editing a take"],
+    "scenario_contexts": ["Miking a drum kit for a pop session", "Controlling hi-hat bleed in a tight groove", "Programming a closed hi-hat pattern in a DAW"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a400fa67-8804-4721-b453-1b6b44f72d36",
+   "term": "Counterline",
+   "fields": {
+    "definition": "A secondary melodic line written to play against the main melody, complementing it with a different rhythm or contour while staying subordinate to the lead. It adds movement and interest to an arrangement without obscuring the main tune.",
+    "plain_english": "A counterline is a second tune that plays along with the main melody. It moves differently to add interest, but it stays in the background so the main tune leads.",
+    "purpose_function": "It enriches an arrangement by adding a complementary melodic layer that fills gaps and adds motion behind the lead line.",
+    "practical_application": "An arranger writes a counterline for a horn or backing vocal to answer the lead melody, and an engineer mixes it below the main line.",
+    "category": "Arrangement",
+    "related_terms": ["Countermelody", "Harmony", "Arrangement", "Melody", "Voicing"],
+    "common_mistakes": ["Writing a counterline so busy that it fights the main melody", "Mixing the counterline as loud as the lead", "Confusing a counterline with simple harmony notes"],
+    "scenario_contexts": ["Arranging a horn line to answer a vocal melody", "Adding a bass counterline under a chorus", "Layering a backing-vocal counterline in a bridge"]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Grove Dictionary of Music and Musicians"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e3542aa3-f72a-4669-8e5b-79f421e562e2",
+   "term": "Crash transient",
+   "fields": {
+    "definition": "The brief, high-energy attack at the very start of a crash cymbal's sound, before it blooms into its sustained wash. This sharp initial spike carries much of the cymbal's peak level and can dominate meters and trigger compressors and limiters.",
+    "plain_english": "When a crash cymbal is hit, the first split second is a sharp, loud burst before the long ringing sound. That quick burst is the crash transient.",
+    "purpose_function": "The transient gives the crash its sense of impact and accent, and recognising it matters because it drives peak levels and how compressors react.",
+    "practical_application": "An engineer watches for crash transients when setting limiter thresholds and overhead levels, since they can cause sudden peaks and pumping.",
+    "category": "Drum Recording",
+    "related_terms": ["Transient", "Overhead miking", "Compression", "Limiter", "Closed hi-hat"],
+    "common_mistakes": ["Setting overhead levels to the wash and then clipping on the transient peak", "Using a fast limiter that squashes the crash's impact", "Ignoring crash transients when gain-staging the drum bus"],
+    "scenario_contexts": ["Gain-staging drum overheads to avoid clipping on crashes", "Setting a limiter that keeps the crash impact intact", "Taming pumping caused by crash peaks on the drum bus"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

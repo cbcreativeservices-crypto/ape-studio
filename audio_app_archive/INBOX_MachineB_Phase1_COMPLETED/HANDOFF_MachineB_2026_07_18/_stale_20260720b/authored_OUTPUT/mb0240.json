@@ -1,0 +1,145 @@
+{
+ "batch": 240,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "37be77ba-a6ab-4a5a-b957-da33dfb4beae",
+   "term": "Noise transition",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No established, attested professional meaning found for 'Noise transition' in sound-for-picture post or spatial audio literature after searching manufacturer docs and professional texts. It does not resolve to a recognized technique applied to a source (unlike a transparent compound); it could plausibly mean a crossfade between ambience/noise beds, a noise-floor change across an edit, or a noise-based transition effect. Genuinely ambiguous coined phrase; all fields omitted pending clarification."
+   ]
+  },
+  {
+   "id": "87e33728-30c3-4bf9-88c7-1724faac91ce",
+   "term": "Note-level edit",
+   "fields": {
+    "definition": "An edit that targets an individual musical note within recorded audio or a MIDI performance, altering properties such as its pitch, timing, length, or level independently of the surrounding notes. Polyphonic-capable tools such as Celemony Melodyne (via Direct Note Access) detect discrete notes even inside chords, allowing each to be adjusted separately.",
+    "plain_english": "It means changing just one note in a recording, such as its pitch or timing, without touching the notes around it. Think of fixing one wrong letter in a word instead of retyping the whole line.",
+    "purpose_function": "It lets an editor correct or reshape a performance note by note, so tuning, timing, and phrasing can be fixed without re-recording. This gives fine control over both single-line and chord-based material.",
+    "practical_application": "An editor loads a vocal or instrument take into a tool like Melodyne, then drags individual notes to correct pitch or nudge timing before the mix.",
+    "category": "Audio Editing",
+    "related_terms": ["Pitch correction", "Direct Note Access", "MIDI editing", "Quantization", "Comping", "Time stretching"],
+    "common_mistakes": ["Over-correcting every note to perfect pitch, which strips natural expression and sounds robotic", "Assuming note-level editing only works on single-note lines, when polyphonic tools can separate chords", "Editing a note's pitch without checking that its timbre and formants still sound natural"],
+    "scenario_contexts": ["Tuning a lead vocal note by note before a final mix", "Fixing one flat note inside a guitar chord using polyphonic detection", "Correcting the timing of individual notes in a keyboard part"]
+   },
+   "sources": ["Celemony Melodyne 5 studio user manual / Direct Note Access technical documentation", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b135965f-78ef-4fac-9217-389ffafa1964",
+   "term": "Object pickup",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No established, attested professional meaning found for 'Object pickup' in object-based/immersive audio or post-production literature. 'Pickup' has separate established senses (a re-recorded pickup shot/line; a microphone's pickup pattern/sensitivity), and 'object' means an audio object with position metadata, but the combination is not a recognized term and does not resolve unambiguously as a transparent compound. All fields omitted pending clarification."
+   ]
+  },
+  {
+   "id": "2f3fb2b3-b004-4067-a98b-93e040cfd3e0",
+   "term": "Object placement",
+   "fields": {
+    "definition": "The positioning of an individual audio object within a three-dimensional sound field by assigning it spatial coordinates (and often size and movement) as metadata rather than routing it to fixed channels. In object-based systems such as Dolby Atmos, a renderer uses this placement data to reproduce the object at its intended location on whatever speaker layout is available.",
+    "plain_english": "It means telling the system exactly where a sound should sit in the room, like putting a bird up and to the left. The playback system then sends that sound to the right speakers for wherever it plays.",
+    "purpose_function": "It exists so a sound can be tied to a real point in space instead of a fixed speaker, letting the mix follow the picture and adapt to any speaker setup. This keeps localization accurate from a small soundbar to a full cinema.",
+    "practical_application": "A re-recording mixer uses a panner to place a passing car as an object and automates its position so it moves across and above the audience.",
+    "category": "Immersive Audio",
+    "related_terms": ["Audio object", "Object-based audio", "Dolby Atmos", "Panner", "Bed", "Renderer"],
+    "common_mistakes": ["Placing too many elements as moving objects, which clutters the field and can exceed the renderer's object count", "Forgetting that extreme positions may collapse toward the nearest speaker on smaller layouts", "Confusing object placement (position metadata) with hard-routing a sound to one specific speaker"],
+    "scenario_contexts": ["Positioning a helicopter overhead in a Dolby Atmos film mix", "Automating a fly-by so an object moves front to back", "Placing dialogue as an object locked to a character's on-screen position"]
+   },
+   "sources": ["Dolby Atmos production / renderer technical documentation", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "db681d7d-a6c2-44f3-8484-66a4bb2e7002",
+   "term": "Object-based audio suite",
+   "fields": {
+    "definition": "An integrated set of tools — software plugins and/or a dedicated mixing facility — for authoring, mixing, and monitoring object-based audio, in which sounds carry positional metadata instead of being fixed to channels. A typical suite includes a spatial panner, a renderer that maps objects to the monitoring layout, and metering and export tools for immersive deliverables.",
+    "plain_english": "It is the set of tools used to build and check mixes where each sound has its own position in the room. Think of it as the full kit a mixer needs to place sounds anywhere and hear the result.",
+    "purpose_function": "It exists to give a mixer everything needed to create, monitor, and deliver object-based mixes in one connected workflow. This keeps positioning, rendering, and export consistent from mixing through final delivery.",
+    "practical_application": "A mixer runs a Dolby Atmos production suite — panner plugins feeding a renderer — to place objects, monitor the room, and print the immersive master.",
+    "category": "Immersive Audio",
+    "related_terms": ["Object-based audio", "Dolby Atmos", "Renderer", "Panner", "Immersive mixing", "Bed"],
+    "common_mistakes": ["Assuming any DAW can output an immersive master without the required renderer and metadata tools", "Monitoring on a layout that does not match the delivery target, so the exported mix translates poorly", "Confusing the authoring suite with the final deliverable file it produces"],
+    "scenario_contexts": ["Setting up a Dolby Atmos mixing room for a film's final mix", "Producing an immersive music master with a panner-and-renderer toolset", "Exporting object-based deliverables from an integrated immersive workflow"]
+   },
+   "sources": ["Dolby Atmos Renderer technical documentation", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4999b6e2-9682-460a-82af-a4c33e68f42a",
+   "term": "Obstruction",
+   "fields": {
+    "definition": "A spatial-audio condition in which an obstacle blocks the direct path between a sound source and the listener while the reflected or reverberant (indirect) sound can still reach the listener around it. It is treated by attenuating and low-pass filtering the dry/direct signal only, leaving the environmental (wet) send largely intact — distinguishing it from occlusion, which blocks both the direct and indirect paths.",
+    "plain_english": "It is when something blocks the straight path to a sound while you stay in the same room. The direct sound gets muffled, but its echoes still reach you. It is like hearing someone talk from behind a pillar.",
+    "purpose_function": "It exists to model how a partial barrier changes a sound so that spatial mixes and interactive scenes stay believable. Handling the direct and reflected paths separately makes a blocked source sound natural rather than simply quieter.",
+    "practical_application": "In a game or immersive mix, a sound designer sets obstruction so a source behind a pillar is filtered on its direct path but still feeds the room reverb.",
+    "category": "Spatial Audio",
+    "related_terms": ["Occlusion", "Audio object", "Emitter", "Reverb send", "Low-pass filter", "Diffraction"],
+    "common_mistakes": ["Confusing obstruction (direct path blocked, reflections open) with occlusion (both paths blocked)", "Applying obstruction filtering to the reverb/aux send, which removes the cue that the source is still in the room", "Using a hard volume cut instead of a low-pass filter, which sounds unnatural"],
+    "scenario_contexts": ["A character speaking from behind a pillar in the same room", "A sound source partly hidden by furniture in an interactive scene", "Simulating a barrier that muffles direct sound but not room reflections"]
+   },
+   "sources": ["Audiokinetic Wwise technical documentation (Obstruction and Occlusion)", "CRYENGINE Audio System documentation (Sound Obstruction/Occlusion)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6fe5778e-be77-45f9-8cf0-74dedb760080",
+   "term": "Off-screen dialogue",
+   "fields": {
+    "definition": "Dialogue spoken by a character or source that is not visible within the frame — just outside it, behind the camera, or elsewhere in the scene's space. It is diegetic (part of the story world) but has no visible speaker, and is typically given more distance, room tone, and reverb than on-screen lines to place it beyond the frame.",
+    "plain_english": "It is talking from someone you cannot see in the shot, like a voice from the next room. The words still belong to the scene, but the speaker is out of frame.",
+    "purpose_function": "It lets a scene use voices beyond what the camera shows, widening the world and carrying action off-screen. Editors use it to keep conversations flowing across cuts and to imply space outside the frame.",
+    "practical_application": "A dialogue editor cuts an off-screen line and adds a little distance and room tone so it sits as if coming from beyond the frame.",
+    "category": "Dialogue",
+    "related_terms": ["On-screen dialogue", "Diegetic sound", "Room tone", "ADR", "Perspective", "Dialogue editing"],
+    "common_mistakes": ["Mixing off-screen lines as close and dry as on-screen lines, which flattens the sense of space", "Confusing off-screen dialogue (diegetic, inside the scene) with narration or voice-over (outside the scene)", "Forgetting to match perspective and reverb to the character's implied distance"],
+    "scenario_contexts": ["A character answering from another room while the camera stays on the listener", "A crowd voice heard from just outside the frame", "Continuing a conversation over a cutaway to a reaction shot"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cac957c0-c91c-4c53-bd02-9a62ac339b75",
+   "term": "Omnidirectional emitter",
+   "fields": {
+    "definition": "In spatial and game audio, a sound source (emitter) that radiates its sound equally in all directions, with no directional cone or angle-dependent attenuation. Its level at the listener depends on distance and any obstruction, but not on the direction the source is 'facing.'",
+    "plain_english": "It is a sound source that sends its sound out evenly in every direction, like a ringing bell. It does not point one way, so it sounds the same from any side.",
+    "purpose_function": "It exists to model sounds that have no clear facing direction, such as a hum, an alarm, or ambience. Using it keeps a source consistent in tone as the listener moves around it.",
+    "practical_application": "A sound designer sets a generator's emitter to omnidirectional so it stays steady in level as the player circles it, changing only with distance.",
+    "category": "Spatial Audio",
+    "related_terms": ["Emitter", "Audio object", "Directional emitter", "Attenuation", "Obstruction", "Spatial audio"],
+    "common_mistakes": ["Using an omnidirectional emitter for a source that clearly faces one way, such as a speaker cabinet or a megaphone", "Assuming omnidirectional means no distance attenuation — level still falls off with distance", "Confusing an emitter's radiation pattern with a microphone's polar pattern"],
+    "scenario_contexts": ["A buzzing light or generator that sounds the same from any angle", "An alarm placed as an omnidirectional source in a game level", "Ambient point sources that need no facing direction"]
+   },
+   "sources": ["Steam Audio (Valve) spatial-audio technical documentation", "Audiokinetic Wwise technical documentation (emitters and attenuation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "764255d3-601c-41b2-8072-7f63e82b44a9",
+   "term": "On-screen dialogue",
+   "fields": {
+    "definition": "Dialogue spoken by a character or source that is visible within the frame at the moment it is heard. It is diegetic and is typically mixed close and anchored to the center of the picture, with perspective and reverb matched to the character's on-screen position and distance.",
+    "plain_english": "It is talking by someone you can see in the shot. The sound is matched to where they are on screen, so their voice lines up with their lips.",
+    "purpose_function": "It anchors speech to a visible speaker so the audience links voice to character clearly. Matching its perspective to the picture keeps dialogue believable and easy to follow.",
+    "practical_application": "A dialogue editor syncs on-screen lines to the picture, and the mixer keeps them centered so the voice tracks the actor's position.",
+    "category": "Dialogue",
+    "related_terms": ["Off-screen dialogue", "Diegetic sound", "Sync", "Perspective", "Dialogue editing", "ADR"],
+    "common_mistakes": ["Letting on-screen dialogue drift out of sync with the actor's lip movements", "Adding heavy reverb that does not match the visible space", "Panning on-screen dialogue wide instead of anchoring it to the center/screen"],
+    "scenario_contexts": ["A close-up of an actor delivering a line", "Two visible characters talking in a shot-reverse-shot scene", "Syncing a replaced ADR line to an on-screen performance"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

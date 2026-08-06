@@ -1,0 +1,159 @@
+{
+ "batch": 117,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "15d4ed8f-be96-4b05-ae9d-827e75a97ee0",
+   "term": "Mix Group",
+   "fields": {
+    "definition": "A subgroup bus that routes several related channels (for example all drum tracks) through one fader, so they can be balanced and processed together as a single unit.",
+    "plain_english": "A way to link several tracks so one fader moves them all at once. Think of putting the whole drum kit on one slider you can raise or lower together.",
+    "purpose_function": "It lets an engineer control the level of many channels at once and apply shared processing, keeping the mix organized and faster to adjust.",
+    "practical_application": "A technician routes all the drum mics to a drum group, then rides that one fader to bring the whole kit up or down without touching each channel.",
+    "category": "Signal Routing",
+    "related_terms": ["Subgroup", "Bus", "VCA group", "Auxiliary send", "Master bus"],
+    "common_mistakes": ["Confusing an audio group (which carries the summed signal) with a VCA (which only links fader levels)", "Adding processing to a group but forgetting that some channels are not routed to it", "Double-counting a channel by sending it to both the group and the master directly"],
+    "scenario_contexts": ["Routing all drum mics to one group to control kit balance with a single fader", "Bus-compressing a background-vocal group for a tighter blend", "Muting a whole instrument section quickly during a live show"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers", "Izhaki, Mixing Audio (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "93b2d876-e678-4ae4-9144-85e1f1ee4a9a",
+   "term": "Mix headroom",
+   "fields": {
+    "definition": "The level margin between the mix's normal signal peaks and the clipping point (0 dBFS in a digital system), reserved so transients and summed peaks do not distort.",
+    "plain_english": "The safety gap between how loud your mix is and the point where it starts to distort. It is like not filling a cup to the brim so it does not spill when bumped.",
+    "purpose_function": "Headroom prevents clipping on loud peaks and leaves room for later stages such as mastering, protecting sound quality.",
+    "practical_application": "An engineer keeps mix peaks a few dB below 0 dBFS so the master bus and the mastering stage have room to work without distortion.",
+    "category": "Gain Structure",
+    "related_terms": ["Gain staging", "Clipping", "0 dBFS", "Peak level", "Dynamic range", "Mix-bus limiting"],
+    "common_mistakes": ["Pushing the mix bus near 0 dBFS and leaving no room for mastering", "Confusing loudness with level and clipping the mix to make it sound louder", "Ignoring inter-sample (true) peaks that overshoot after conversion even when meters look safe"],
+    "scenario_contexts": ["Leaving several dB below 0 dBFS before sending a mix to mastering", "Setting gain structure so summed peaks never clip the master bus", "Checking a true-peak meter before exporting a final file"]
+   },
+   "sources": ["Bob Katz, Mastering Audio", "Izhaki, Mixing Audio (Focal Press)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c3568a48-fa86-4106-9590-c5ba9286718b",
+   "term": "Mix into the room",
+   "fields": {
+    "definition": "The live-sound practice of shaping a mix for how it actually sounds out in the venue's audience area, compensating for the room's acoustics rather than judging only at the console.",
+    "plain_english": "Shaping a live mix so it sounds right out in the actual room, not just at the desk. The space changes the sound, so you tune the mix to fit it.",
+    "purpose_function": "It ensures the audience hears a balanced mix by accounting for reflections, absorption and distance, which alter the sound between the console and the seats.",
+    "practical_application": "A front-of-house engineer walks out into the room to hear the PA where the audience stands, then returns to adjust EQ and balance for that space.",
+    "category": "Monitoring",
+    "related_terms": ["Room acoustics", "PA system", "Front of house", "System tuning", "Mix to the room"],
+    "common_mistakes": ["Judging the mix only at the console and not out in the audience area", "Forgetting that a crowd absorbs high frequencies and changes the sound during the show", "UNSAFE: raising SPL to fill a large room past safe exposure limits without hearing protection (per OSHA 1910.95)"],
+    "scenario_contexts": ["Walking the room to hear how the PA sounds where the audience stands", "Tuning the mix so it still carries clearly to the back rows", "Compensating for strong reflections off hard walls in a reverberant venue"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "McCarthy, Sound Systems: Design and Optimization"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4dd856df-5065-45b7-83c7-291a811e48a3",
+   "term": "Mix position translation",
+   "fields": {
+    "definition": "How well the tonal and level balance heard at the mix position holds up at other listening locations in the room, so a mix judged at the console still sounds balanced elsewhere.",
+    "plain_english": "How well your mix holds up when you move to a different seat or spot in the room. A good mix still sounds balanced from more than one place.",
+    "purpose_function": "It matters because the mix position is only one point in a space; a mix that fails to translate leaves much of the audience hearing a different, poorer balance.",
+    "practical_application": "An engineer checks a mix balanced at front of house from several seats around the venue to confirm it still works away from the console.",
+    "category": "Monitoring",
+    "related_terms": ["Mix position", "Front of house", "Coverage", "Room acoustics", "System tuning"],
+    "common_mistakes": ["Assuming what sounds good at the desk sounds good everywhere in the room", "Placing the mix position in an acoustic null and mixing to a false picture", "Not checking the mix from several seats before the doors open"],
+    "scenario_contexts": ["Confirming a mix balanced at front of house still works at the back of the venue", "Moving around the room to test coverage and tonal balance", "Choosing a mix position that represents the average audience experience"]
+   },
+   "sources": ["McCarthy, Sound Systems: Design and Optimization", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "002685e9-e29b-4345-89b8-c5377f587950",
+   "term": "Mix reference level",
+   "fields": {
+    "definition": "A fixed, calibrated monitoring loudness (often a set SPL such as around 83-85 dB SPL per channel) used consistently while mixing so balance and tonal decisions are made against a stable reference.",
+    "plain_english": "A set, steady loudness you always monitor at while mixing. Keeping the volume the same each time helps you judge the sound fairly.",
+    "purpose_function": "It gives consistent monitoring so decisions are not skewed by the ear's changing frequency response at different volumes, making mixes more repeatable and translatable.",
+    "practical_application": "An engineer calibrates the monitors to a known SPL and mixes at that level, occasionally checking quieter and louder to confirm the balance holds.",
+    "category": "Monitoring",
+    "related_terms": ["Monitoring level", "K-system", "SPL", "Calibration", "Loudness", "Equal-loudness contours"],
+    "common_mistakes": ["Mixing at constantly changing volumes so balance decisions drift", "Mixing too loud and fatiguing the ears, skewing EQ and level choices", "Assuming louder monitoring reveals more detail when it mainly adds low-end and high-end bias"],
+    "scenario_contexts": ["Calibrating monitors to a fixed SPL for consistent mixing sessions", "Checking a mix at a quiet reference level to judge vocal balance", "Matching room monitoring level to a mastering-studio standard"]
+   },
+   "sources": ["Bob Katz, Mastering Audio", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1ccc06a5-84ef-4329-973d-917cab6ef0be",
+   "term": "Mix to the room",
+   "fields": {
+    "definition": "The practice of adjusting a mix to suit the acoustics of the specific space it is heard in, compensating for the room's resonances, reflections and absorption.",
+    "plain_english": "Adjusting your mix to match the room you are playing in. A boomy hall or a dead room each need different tuning.",
+    "purpose_function": "It accounts for the fact that no room is acoustically neutral, so the same mix can sound very different from space to space; tuning to the room keeps the intended balance.",
+    "practical_application": "A technician cuts low mids in a boomy gym or adds brightness in a heavily damped room so the mix sounds right where it is actually played.",
+    "category": "Monitoring",
+    "related_terms": ["Room acoustics", "Reverberation time", "Monitoring", "System tuning", "Mix position translation"],
+    "common_mistakes": ["Mixing only by the meters and ignoring how the room actually sounds", "Over-correcting for a bad room so the mix falls apart in a better space", "UNSAFE: pushing levels to overcome a dead room and exceeding safe hearing-exposure limits (OSHA 1910.95)"],
+    "scenario_contexts": ["Cutting low mids in a boomy gymnasium to keep vocals clear", "Adding high-frequency lift in a heavily carpeted, damped room", "Re-checking a live mix as an empty hall fills with an absorbing crowd"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "McCarthy, Sound Systems: Design and Optimization"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "adef5f46-edc1-411f-a17f-d80da894e974",
+   "term": "Mix with your ears",
+   "fields": {
+    "definition": "The principle that final mixing decisions should be made by listening rather than by relying on visual metering, waveform displays or analyzer readouts.",
+    "plain_english": "Trusting what you hear instead of what the screen shows you. The meters and waveforms help, but your ears make the final call.",
+    "purpose_function": "It keeps the focus on how the mix actually sounds, since meters and graphs measure signal but cannot judge musical balance, tone or emotion the way listening can.",
+    "practical_application": "An engineer sets EQ and compression by listening and comparing, using visual tools only as a reference rather than letting a display dictate the choice.",
+    "category": "Mixing Technique",
+    "related_terms": ["Critical listening", "Metering", "Monitoring", "A/B comparison", "Reference track"],
+    "common_mistakes": ["Cutting a frequency because the analyzer shows a peak even though it sounds fine", "Matching waveform sizes by eye instead of judging loudness by sound", "Trusting a plugin preset or number over what is actually heard"],
+    "scenario_contexts": ["Setting EQ by listening rather than chasing a flat spectrum display", "Judging compression by feel and sound instead of only the gain-reduction meter", "Leaving a scary-looking waveform alone because it sounds clean"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio (Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "df008a6f-ff97-4d45-8d31-41640a59691c",
+   "term": "Mix-bus limiting",
+   "fields": {
+    "definition": "Applying a limiter across the mix (master) bus to catch peaks and control the overall level ceiling of the full mix, often to raise perceived loudness or protect against overs.",
+    "plain_english": "Putting a limiter on the main output to catch the loudest peaks and lift the overall volume. It acts like a ceiling that stops the mix from going too high.",
+    "purpose_function": "It manages the summed peaks of the whole mix so the output stays below a set ceiling, allowing a louder, more controlled level without clipping.",
+    "practical_application": "An engineer places a gentle limiter on the master bus to tame stray peaks and add loudness to a rough mix sent to a client, or before a loudness target.",
+    "category": "Bus Processing",
+    "related_terms": ["Master bus", "Limiter", "Mix headroom", "Loudness", "True peak", "Bus compression"],
+    "common_mistakes": ["Over-limiting the mix bus and squashing all the punch and dynamics", "Mixing into a heavy limiter and then being unable to remove it without the mix falling apart", "Confusing a limiter with a compressor and setting a slow attack that misses the peaks"],
+    "scenario_contexts": ["Catching stray peaks on the master bus before export", "Adding gentle limiting for a louder rough mix to send to a client", "Controlling transient overshoot before hitting a broadcast loudness target"]
+   },
+   "sources": ["Izhaki, Mixing Audio (Focal Press)", "Bob Katz, Mastering Audio", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "90b32d58-537b-44bd-a7a5-6df1fb0e9940",
+   "term": "MixConsole",
+   "fields": {
+    "definition": "The integrated mixer window in Steinberg's Cubase and Nuendo DAWs, providing channel strips with faders, pan, EQ, inserts, sends and routing for every track in the project.",
+    "plain_english": "The built-in mixing board inside Cubase and Nuendo, the music software from Steinberg. It is the on-screen version of a studio mixing desk, with faders and knobs for each track.",
+    "purpose_function": "It gathers level, pan, EQ, effects and routing controls for all channels in one window so the whole mix can be balanced and processed from a single view.",
+    "practical_application": "A technician opens the MixConsole to set levels and pan, add insert effects and EQ per channel, and manage bus routing during a mixdown in Cubase or Nuendo.",
+    "category": "DAW Mixer",
+    "related_terms": ["Channel strip", "Fader", "Bus", "DAW", "Insert", "Send"],
+    "common_mistakes": ["Confusing the MixConsole window with the project window's smaller mixer view", "Losing track of routing because channel visibility is filtered or hidden", "Assuming its settings are separate from the channel/track inspector when they are actually linked"],
+    "scenario_contexts": ["Setting levels and pan for every track from one window in Cubase", "Adding insert effects and channel EQ during a mixdown", "Recalling a saved mix configuration in Nuendo"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "Steinberg Nuendo Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,318 @@
+{
+ "batch": 25,
+ "topic": "Drum-Kit Recording",
+ "authored": [
+  {
+   "id": "e3d7a756-0717-4cb2-9863-954c2949e47c",
+   "term": "Kick drum trigger",
+   "fields": {
+    "definition": "A kick drum trigger is a piezoelectric or acoustic-drum sensor mounted on the bass drum's hoop, shell, or beater-side head that converts each beater impact into an electronic pulse, which a drum module or DAW instrument uses to layer or replace the acoustic kick sound.",
+    "plain_english": "A small sensor that clips onto the kick drum. It feels each hit of the beater. Then it sends a signal that plays a stored kick sound. Players use it to make the kick louder or more even.",
+    "purpose_function": "It turns the physical beater hit into a trigger signal so an engineer can reinforce or replace a weak, boomy, or inconsistent acoustic kick with a controlled, repeatable sample.",
+    "practical_application": "A technician clamps the trigger to the hoop or mounts it inside the drum, sets sensitivity and threshold on the trigger module, and blends or replaces the miked kick with a sample in live sound or recording.",
+    "category": "Kick drum",
+    "related_terms": [
+     "Kick-drum pillow",
+     "Kick port",
+     "Kick resonant head",
+     "Ported kick head",
+     "Kick phase alignment"
+    ],
+    "common_mistakes": [
+     "Setting the threshold too low, so bleed from the snare or nearby toms causes false triggers and double hits.",
+     "Mounting the sensor loosely, so its output level jumps around and it misses softer hits.",
+     "Assuming a trigger replaces good tuning and miking; a poorly tuned drum still triggers erratically."
+    ],
+    "scenario_contexts": [
+     "Reinforcing a soft acoustic kick at a loud live show so it cuts through the mix.",
+     "Layering a sampled sub-thump under a recorded kick in a DAW for a modern pop production.",
+     "Fully replacing a bleed-heavy or inconsistent kick during drum editing in post."
+    ]
+   },
+   "sources": [
+    "Roland technical documentation (RT-series acoustic drum triggers and TM-series trigger modules)",
+    "Owsinski & Moody, The Drum Recording Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6a79137d-bb3c-4d6d-af2d-4825cfb89643",
+   "term": "Kick phase alignment",
+   "fields": {
+    "definition": "Kick phase alignment is the practice of time-aligning the multiple microphone signals capturing one bass drum — such as an inside beater mic and an outside resonant-head mic, plus overheads and room mics — so their low-frequency waveforms sum constructively instead of partially cancelling.",
+    "plain_english": "A kick is often caught by more than one mic. Each mic sits a bit farther away, so the sound reaches them at slightly different times. If they fight, the low end gets thin. Lining them up keeps the bass strong.",
+    "purpose_function": "Because sound takes time to travel between mics, their signals can arrive out of phase and cancel the low end; aligning them preserves punch, weight, and a solid mono-compatible bottom end.",
+    "practical_application": "An engineer flips a mic's polarity switch, nudges one track earlier in the DAW, or uses a phase tool while watching the waveforms and listening in mono until the kick sounds fullest.",
+    "category": "Kick drum",
+    "related_terms": [
+     "Kick drum trigger",
+     "Kick port",
+     "Kick resonant head",
+     "Ported kick head",
+     "Kick tunnel"
+    ],
+    "common_mistakes": [
+     "Judging phase only in solo and stereo; low-end cancellation shows up most when the whole mix is heard in mono.",
+     "Flipping polarity at random instead of choosing the setting that gives the fullest, loudest low end.",
+     "Forgetting that the outside mic is often reversed in polarity relative to the inside mic."
+    ],
+    "scenario_contexts": [
+     "Blending an inside and an outside kick mic on a rock session so the two sum to a punchy low end.",
+     "Aligning the kick close mics against the overheads before committing a drum mix.",
+     "Checking mono compatibility of a kick for broadcast or club playback."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski & Moody, The Drum Recording Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "04ae4098-3a81-4a84-8556-2aca7fe3db9c",
+   "term": "Kick port",
+   "fields": {
+    "definition": "A kick port is a hole cut into the front (resonant) head of a bass drum, typically several inches across and offset from the centre, that lets an engineer place a microphone inside the drum and lets internal air escape on each hit.",
+    "plain_english": "A round hole cut in the front skin of the kick drum. It lets a mic reach inside near the beater. It also lets air puff out with each hit. This gives more attack and less long boom.",
+    "purpose_function": "It gives microphone access to the beater impact and vents internal air pressure, which shortens sustain and adds attack for a tighter, more focused kick sound.",
+    "practical_application": "A technician cuts or fits a pre-made ported head, threads a mic through the port toward the beater, and adjusts the mic depth to trade attack against body.",
+    "category": "Kick drum",
+    "related_terms": [
+     "Ported kick head",
+     "Kick resonant head",
+     "Kick tunnel",
+     "Kick-drum pillow",
+     "Kick drum trigger"
+    ],
+    "common_mistakes": [
+     "Cutting the port dead-centre, which weakens the head and chokes tone; an offset hole is standard.",
+     "Cutting the hole too large, killing most of the resonance and low-end sustain.",
+     "Assuming a port is always needed; a solid front head gives more sustain and low end when that is wanted."
+    ],
+    "scenario_contexts": [
+     "Setting up a rock kick so an engineer can get a mic close to the beater.",
+     "Adding attack and reducing boom on a jazz or funk kick for a tighter sound.",
+     "Running both an inside port mic and an outside sub mic on a large studio session."
+    ]
+   },
+   "sources": [
+    "Remo drumhead technical documentation (ported bass-drum heads)",
+    "Owsinski & Moody, The Drum Recording Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b80192c6-4f13-478d-866b-f24d757da9fc",
+   "term": "Kick resonant head",
+   "fields": {
+    "definition": "The kick resonant head is the front drumhead of a bass drum — the one not struck by the beater — whose vibration shapes the drum's sustain, low-end tone, and overall resonance.",
+    "plain_english": "The front skin of the kick drum. The beater never hits this one. It rings after each hit and sets how long the boom lasts. A whole, tight head rings more; a ported or damped one rings less.",
+    "purpose_function": "It couples the vibrating batter head and the enclosed air to the outside, setting how much sustain, pitch, and body the kick produces.",
+    "practical_application": "An engineer chooses and tunes the resonant head — solid, ported, or damped — to dial sustain and pitch, and often places an outside mic a short distance from it to capture low-end weight.",
+    "category": "Kick drum",
+    "related_terms": [
+     "Kick port",
+     "Ported kick head",
+     "Kick-drum pillow",
+     "Kick tunnel",
+     "Single-headed tom"
+    ],
+    "common_mistakes": [
+     "Tuning the resonant head much too loose, causing a flabby, pitch-less kick with uncontrolled wrinkles.",
+     "Removing the resonant head entirely and expecting the same low end; the front head builds body and sustain.",
+     "Blaming a boomy kick only on mic choice while ignoring the resonant head's tuning."
+    ],
+    "scenario_contexts": [
+     "Tuning a bass drum's front head to set sustain before a recording session.",
+     "Deciding between a solid or ported front head for a given musical style.",
+     "Placing an outside mic in front of the resonant head to capture sub-low energy."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Remo drumhead technical documentation",
+    "Owsinski & Moody, The Drum Recording Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "899ae81a-fc4f-4d42-b929-7cf40ffb849f",
+   "term": "Kick tunnel",
+   "fields": {
+    "definition": "A kick tunnel is an enclosure — often an extra bass-drum shell, a purpose-built frame, or a heavy blanket over a stand — placed in front of the kick drum's resonant head to shield the outside mic from stage or room bleed and to reinforce low-end capture.",
+    "plain_english": "A tunnel or box built around the front of the kick drum. It wraps the outside mic in its own little room. This blocks sound from cymbals and other drums. It also traps low end for a bigger boom.",
+    "purpose_function": "It isolates the front kick mic from bleed and builds up low-frequency pressure around it, giving a cleaner, weightier kick that is easier to process.",
+    "practical_application": "An engineer drapes a heavy moving blanket over a mic stand or uses a second shell to form a short tunnel between the drum and the outside mic, especially on loud stages or in untreated rooms.",
+    "category": "Kick drum",
+    "related_terms": [
+     "Kick resonant head",
+     "Kick port",
+     "Kick-drum pillow",
+     "Kick phase alignment",
+     "Kick drum trigger"
+    ],
+    "common_mistakes": [
+     "Sealing the tunnel so tightly that trapped low pressure overloads the mic and muddies the sound.",
+     "Letting the blanket or shell touch and rattle against the resonant head, adding buzz.",
+     "Expecting a tunnel to fix a poor drum sound instead of isolating an already good one."
+    ],
+    "scenario_contexts": [
+     "Isolating the kick mic on a loud live stage with close cymbals.",
+     "Recording drums in an untreated room where bleed and reflections are a problem.",
+     "Chasing a large, controlled low-end kick sound in a rock or metal production."
+    ]
+   },
+   "sources": [
+    "Owsinski & Moody, The Drum Recording Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cd36a367-8ecc-4ceb-b664-8e3cd8cc1c36",
+   "term": "Kick-drum pillow",
+   "fields": {
+    "definition": "A kick-drum pillow is a pillow, folded blanket, or foam dampener placed inside the bass drum, usually resting against the batter or resonant head, to absorb resonance and shorten the drum's sustain.",
+    "plain_english": "A pillow or blanket stuffed inside the kick drum. It presses against a skin and soaks up the ring. This makes the kick shorter and punchier. It cuts the long boom that can wash out a mix.",
+    "purpose_function": "It controls unwanted ring and low-end sustain, tightening the kick into a focused thump that sits cleanly in a mix.",
+    "practical_application": "A technician slides a pillow through the port or an open head, moves it toward more or less head contact to set the damping, and wedges it so it does not shift during playing.",
+    "category": "Kick drum",
+    "related_terms": [
+     "Kick port",
+     "Kick resonant head",
+     "Ported kick head",
+     "Kick tunnel",
+     "Kick drum trigger"
+    ],
+    "common_mistakes": [
+     "Overstuffing the drum until the kick is dead and lifeless, with no tone or sustain left.",
+     "Leaving the pillow loose so it slides during the take and changes the sound between hits.",
+     "Using a pillow to hide a badly tuned head instead of tuning first, then damping."
+    ],
+    "scenario_contexts": [
+     "Tightening a boomy kick for a pop or rock recording.",
+     "Quickly taming an unfamiliar house kit at a live gig.",
+     "Adjusting damping to trade attack against sustain during tracking."
+    ]
+   },
+   "sources": [
+    "Owsinski & Moody, The Drum Recording Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2926d746-4333-4188-a13c-30f2954842ca",
+   "term": "Ported kick head",
+   "fields": {
+    "definition": "A ported kick head is a bass-drum resonant (front) head that has a port hole cut or moulded into it, combining the tonal role of the resonant head with a built-in opening for microphone access and air venting.",
+    "plain_english": "A front kick skin that already has a hole in it. It works like a normal front head but vents air through the port. The hole lets a mic reach inside. It also trims the long boom for more attack.",
+    "purpose_function": "It gives the shorter, punchier, mic-friendly response of a ported drum without cutting a hole by hand, offering a consistent factory port.",
+    "practical_application": "An engineer fits a ready-made ported head so the kick has repeatable venting and easy inside-mic placement from session to session.",
+    "category": "Kick drum",
+    "related_terms": [
+     "Kick port",
+     "Kick resonant head",
+     "Kick-drum pillow",
+     "Kick tunnel",
+     "Kick drum trigger"
+    ],
+    "common_mistakes": [
+     "Confusing a ported head with a fully open, headless front; the port only vents part of the head.",
+     "Choosing a large offset port when a smaller hole would keep more low-end sustain.",
+     "Assuming every style needs a port; some genres want a solid, fuller-ringing front head."
+    ],
+    "scenario_contexts": [
+     "Buying a pre-ported front head so a studio kick is mic-ready out of the box.",
+     "Standardising kick venting across a rehearsal-room or rental kit.",
+     "Getting an attack-forward kick for rock without modifying a solid head."
+    ]
+   },
+   "sources": [
+    "Remo drumhead technical documentation (ported bass-drum heads)",
+    "Owsinski & Moody, The Drum Recording Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4a98ec8e-d0cb-4792-8923-d2df1aa9ec61",
+   "term": "Rack tom",
+   "fields": {
+    "definition": "A rack tom is a tom-tom mounted above or in front of the drummer — typically suspended from the bass drum or a stand — as opposed to a floor tom that stands on its own legs; rack toms are usually the smaller, higher-pitched toms of the kit.",
+    "plain_english": "A tom drum held up on a stand or on top of the kick drum. It sits in front of the drummer, up high. These are the smaller, higher toms. They are the ones a drummer rolls across in a fill.",
+    "purpose_function": "It provides higher-pitched melodic tom voices within easy reach above the snare, filling out the kit's range for fills and grooves.",
+    "practical_application": "A technician mounts, tunes, and mics each rack tom, often close from the top, and checks that the mount does not choke the shell's resonance.",
+    "category": "Toms",
+    "related_terms": [
+     "Single-headed tom",
+     "Kick resonant head",
+     "Kick phase alignment",
+     "Kick-drum pillow",
+     "Kick port"
+    ],
+    "common_mistakes": [
+     "Over-tightening a bass-drum tom mount, which chokes the shell and kills sustain; isolation mounts help.",
+     "Miking every rack tom without checking phase against the overheads, thinning the kit's sound.",
+     "Tuning rack toms with no interval relationship, so fills sound uneven and muddy."
+    ],
+    "scenario_contexts": [
+     "Setting up and close-miking the high toms for a rock drum session.",
+     "Tuning the rack toms in clear intervals for smooth-sounding fills.",
+     "Gating and phase-checking rack-tom tracks during a drum mix."
+    ]
+   },
+   "sources": [
+    "The New Grove Dictionary of Music and Musicians (tom-tom / drum kit)",
+    "Owsinski & Moody, The Drum Recording Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dc0ce674-d07f-467c-b688-160a37e903bd",
+   "term": "Single-headed tom",
+   "fields": {
+    "definition": "A single-headed tom, also called a concert tom, is a tom-tom fitted with only a batter head and no resonant (bottom) head, giving a shorter, more sharply pitched, faster-decaying sound with an open shell underneath.",
+    "plain_english": "A tom with just a top skin and no bottom skin. The shell is open underneath. It rings for a shorter time and speaks fast. Its pitch is clear and it is easy to mic from below.",
+    "purpose_function": "It gives a punchy, articulate tom with quick decay and simple tuning, popular in certain rock and studio setups and easy to mic through the open shell.",
+    "practical_application": "An engineer can place a mic inside or under the open shell and tune only the single batter head, trading the fuller sustain of a two-headed tom for speed and attack.",
+    "category": "Toms",
+    "related_terms": [
+     "Rack tom",
+     "Kick resonant head",
+     "Kick phase alignment",
+     "Ported kick head",
+     "Kick port"
+    ],
+    "common_mistakes": [
+     "Expecting the long sustain of a double-headed tom; single-headed toms decay quickly by design.",
+     "Overlooking the open shell, which lets more bleed from other drums into the tom mic.",
+     "Tuning the batter head too low, where a tom with no bottom head loses focus and pitch."
+    ],
+    "scenario_contexts": [
+     "Recording a 1970s-style rock kit that uses concert toms.",
+     "Miking toms from inside the open shell to reduce cymbal bleed.",
+     "Choosing single-headed toms for fast, articulate fills with quick decay."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "The New Grove Dictionary of Music and Musicians (tom-tom / drum kit)",
+    "Owsinski & Moody, The Drum Recording Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

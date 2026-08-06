@@ -1,0 +1,339 @@
+{
+ "batch": 415,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "eae26d4b-fcb1-4e69-90e5-88bf68fcabcc",
+   "term": "Audio generation",
+   "fields": {
+    "definition": "In machine learning, audio generation is the task of using a trained generative model to synthesize new audio signals, either unconditionally or conditioned on inputs such as text, a musical score, a speaker identity, or a class label. Modern systems commonly generate audio by autoregressively predicting sequences of discrete audio tokens or by iteratively denoising a latent or spectral representation, which is then rendered to a waveform.",
+    "plain_english": "Audio generation means using a trained computer model to create new sound from nothing. It works like a program that can make speech or music that was never recorded before.",
+    "purpose_function": "It lets a system produce audio content on demand instead of only replaying existing recordings, which powers applications such as text-to-speech, music creation, and sound-effect synthesis.",
+    "practical_application": "A technician may use audio-generation tools to synthesize voiceovers from a script, create royalty-free backing music or effects, or reconstruct a short damaged region of a recording, then audition the output for artifacts before using it.",
+    "category": "Generative audio modeling",
+    "related_terms": [
+     "Audio language model",
+     "Audio tokens",
+     "Autoencoder",
+     "Bandwidth extension model",
+     "Text-to-speech",
+     "Generative model"
+    ],
+    "common_mistakes": [
+     "Confusing audio generation (creating new signals) with audio effects processing of an existing recording",
+     "Assuming generated audio is automatically free of artifacts, bias, or licensing and rights concerns",
+     "Expecting a model trained to generate speech to generate high-quality music without task-specific training",
+     "UNSAFE: Relying on AI-generated speech for safety announcements, evacuation cues, or show calls without human verification"
+    ],
+    "scenario_contexts": [
+     "Synthesizing a voiceover from a text script for a video edit",
+     "Producing royalty-free background music or ambient beds for a production",
+     "Creating sound effects that would be difficult or costly to record",
+     "Reconstructing a brief corrupted section of an otherwise usable recording"
+    ]
+   },
+   "sources": [
+    "Borsos et al., AudioLM: A Language Modeling Approach to Audio Generation, IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2023",
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press), chapter on deep generative models"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b22e27be-7030-48e1-9df8-68698067cc3b",
+   "term": "Audio language model",
+   "fields": {
+    "definition": "An audio language model is a model that represents audio as a sequence of discrete tokens and applies language-modeling techniques, typically autoregressive next-token prediction, over that token sequence. Following the AudioLM framework, such models often combine semantic tokens that capture long-term structure with acoustic tokens from a neural audio codec to enable coherent, high-fidelity audio generation and continuation.",
+    "plain_english": "An audio language model turns sound into small pieces called tokens, then learns to predict the next piece, the way a text model predicts the next word. This lets it continue or create audio one small step at a time.",
+    "purpose_function": "It reuses the powerful sequence-modeling methods developed for text so that audio can be generated, continued, or transformed by predicting tokens, giving long-range coherence without hand-crafted signal models.",
+    "practical_application": "A technician encounters audio language models inside tools that continue or generate speech and music, and should understand that output quality depends on the tokenizer and codec used to encode and decode the audio.",
+    "category": "Generative audio modeling",
+    "related_terms": [
+     "Audio tokens",
+     "Audio generation",
+     "Neural audio codec",
+     "Autoencoder",
+     "Text-to-speech",
+     "Transformer"
+    ],
+    "common_mistakes": [
+     "Assuming an audio language model works directly on raw samples rather than on discrete tokens produced by a codec or quantizer",
+     "Treating it as identical to a text language model, ignoring the separate semantic and acoustic token stages",
+     "Believing more tokens always means better audio, when token design and codec bitrate set the real quality ceiling",
+     "Confusing an audio language model with a speech recognition system that only outputs text"
+    ],
+    "scenario_contexts": [
+     "Continuing a short recorded phrase into a longer coherent passage",
+     "Generating speech in a given speaker's voice from prompt audio",
+     "Producing music continuations conditioned on an opening motif",
+     "Serving as the generative core inside a text-to-speech or music-generation product"
+    ]
+   },
+   "sources": [
+    "Borsos et al., AudioLM: A Language Modeling Approach to Audio Generation, IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2023",
+    "Jurafsky & Martin, Speech and Language Processing, chapters on language modeling"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a2357a7d-fc8c-43ac-8565-9fb191c95c7a",
+   "term": "Audio regression",
+   "fields": {
+    "definition": "Audio regression is a supervised learning task in which a model maps audio, or features derived from audio, to one or more continuous-valued targets rather than to discrete class labels. It differs from classification only in the output type: the model predicts real numbers, and is typically trained by minimizing an error such as mean squared error.",
+    "plain_english": "This is when a model listens to audio and predicts a number, not a label. For example, it might guess the loudness or the tempo of a song as a value.",
+    "purpose_function": "It exists to estimate continuous quantities from sound, so systems can predict measurable properties such as tempo, loudness, pitch, or a quality score instead of just assigning categories.",
+    "practical_application": "A technician meets audio regression in tools that estimate values like tempo in beats per minute, perceived loudness, or a predicted audio-quality metric from a signal.",
+    "category": "Learning tasks",
+    "related_terms": [
+     "Audio tagging",
+     "Audio segmentation",
+     "Autoencoder",
+     "Feature extraction",
+     "Supervised learning",
+     "Loss function"
+    ],
+    "common_mistakes": [
+     "Confusing regression (continuous outputs) with classification (discrete labels)",
+     "Forcing an inherently categorical problem into regression, or vice versa",
+     "Ignoring that targets and features often need scaling or normalization for stable training",
+     "Judging a regression model only by one error number without checking behavior across the input range"
+    ],
+    "scenario_contexts": [
+     "Estimating a track's tempo in beats per minute from audio",
+     "Predicting perceived loudness or a subjective quality score of a clip",
+     "Estimating the fundamental frequency (pitch) of a monophonic recording",
+     "Predicting reverberation time or a room parameter from a recorded impulse or signal"
+    ]
+   },
+   "sources": [
+    "Bishop, Pattern Recognition and Machine Learning (Springer), chapter on linear models for regression",
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press), chapter on machine learning basics"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a63a49e5-4fa0-4f19-8914-840d4bc8c555",
+   "term": "Audio segmentation",
+   "fields": {
+    "definition": "Audio segmentation is the task of partitioning an audio stream in time into contiguous regions that are internally homogeneous or that correspond to meaningful units, by detecting the boundaries between them. Common variants include speech/non-speech and speaker segmentation, sound-event onset and offset detection, and music structure segmentation into sections such as intro, verse, and chorus.",
+    "plain_english": "Audio segmentation means splitting a recording into parts that belong together, like chapters in a book. Each part might be one speaker, one song section, or one type of sound.",
+    "purpose_function": "It exists to give downstream processing meaningful time boundaries, so later steps such as labeling, transcription, editing, or analysis can work on coherent regions instead of an undivided stream.",
+    "practical_application": "A technician relies on segmentation when tools auto-detect song sections, split a long recording at speaker changes, or mark where distinct sound events start and stop for editing or logging.",
+    "category": "Audio analysis tasks",
+    "related_terms": [
+     "Audio tagging",
+     "Audio regression",
+     "Feature extraction",
+     "Onset detection",
+     "Speaker diarization",
+     "Sound event detection"
+    ],
+    "common_mistakes": [
+     "Confusing segmentation (finding time boundaries) with classification (labeling what each region is)",
+     "Assuming fixed-length windows are the same as true, content-aware segment boundaries",
+     "Ignoring that boundary tolerance and the evaluation metric strongly affect reported accuracy",
+     "Expecting one segmentation model to fit every task, when speaker, event, and music-structure segmentation differ"
+    ],
+    "scenario_contexts": [
+     "Automatically detecting intro, verse, and chorus sections of a song",
+     "Splitting a long interview recording at points where the speaker changes",
+     "Marking the start and end of distinct sound events for editing or logging",
+     "Separating speech regions from silence or music before transcription"
+    ]
+   },
+   "sources": [
+    "Müller, Fundamentals of Music Processing (Springer), chapter on music structure analysis",
+    "Nieto et al., Audio-Based Music Structure Analysis: Current Trends, Open Challenges, and Applications, Transactions of the ISMIR, 2020"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9c3f15ec-6e17-49da-956b-5faef8e61f59",
+   "term": "Audio tagging",
+   "fields": {
+    "definition": "Audio tagging is the task of predicting the presence or absence of one or more sound classes (tags) in an audio clip, without necessarily localizing them in time. It is typically framed as multi-label classification, using a sigmoid output per class trained with binary cross-entropy, so that several tags can be assigned to the same clip.",
+    "plain_english": "Audio tagging means labeling a clip with the sounds it contains, like dog, rain, or guitar. One clip can get several tags at once because many sounds can happen together.",
+    "purpose_function": "It exists to describe the sound content of a clip so audio can be searched, indexed, filtered, or triggered by category, even when labels are weak and no exact timing is provided.",
+    "practical_application": "A technician meets audio tagging in tools that auto-label sound libraries, detect the presence of noise or specific events in recordings, or organize large clip collections by content.",
+    "category": "Audio classification",
+    "related_terms": [
+     "Audio segmentation",
+     "Audio regression",
+     "Sound event detection",
+     "Feature extraction",
+     "Supervised learning",
+     "Spectrogram"
+    ],
+    "common_mistakes": [
+     "Treating tagging as single-label classification when clips usually need several tags at once",
+     "Confusing clip-level tagging with sound event detection, which also outputs when each event occurs",
+     "Using softmax across classes instead of an independent sigmoid per class for multi-label output",
+     "Ignoring that weak, noisy web labels limit accuracy and require careful evaluation"
+    ],
+    "scenario_contexts": [
+     "Automatically labeling a sound-effects library by content for search",
+     "Flagging clips that contain a target sound such as applause, sirens, or noise",
+     "Organizing a large recording archive by the sound classes present",
+     "Pre-screening field recordings for the presence of specific events"
+    ]
+   },
+   "sources": [
+    "Kong et al., PANNs: Large-Scale Pretrained Audio Neural Networks for Audio Pattern Recognition, IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2020",
+    "Kong et al., Weakly Labelled AudioSet Tagging With Attention Neural Networks, IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2019"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a6fd4134-5a12-49f2-9591-19c597486f04",
+   "term": "Audio tokens",
+   "fields": {
+    "definition": "Audio tokens are discrete symbols that represent short frames of audio, produced by quantizing the latent representation of a neural audio codec, for example through residual vector quantization. They let continuous audio be treated as a sequence of integer codes, so sequence models such as audio language models can operate on sound the way text models operate on words.",
+    "plain_english": "Audio tokens are small code numbers that stand for short pieces of sound. They let a model treat audio like a string of symbols, the way words make up a sentence.",
+    "purpose_function": "They exist to convert continuous waveforms into a compact discrete sequence, which makes audio compressible and lets token-based generative and language models predict and produce sound.",
+    "practical_application": "A technician encounters audio tokens as the internal representation inside neural codecs and generative audio tools, where token count and codec bitrate trade off against audio quality.",
+    "category": "Audio representations",
+    "related_terms": [
+     "Audio language model",
+     "Neural audio codec",
+     "Autoencoder",
+     "Audio generation",
+     "Vector quantization",
+     "Spectrogram"
+    ],
+    "common_mistakes": [
+     "Thinking audio tokens are raw samples rather than quantized codec codes",
+     "Confusing acoustic tokens (fidelity) with semantic tokens (long-term structure)",
+     "Assuming more tokens always improve quality, ignoring the codec's bitrate and design limits",
+     "Treating tokens from one codec as interchangeable with tokens from another"
+    ],
+    "scenario_contexts": [
+     "Encoding audio into discrete codes for a neural codec at a target bitrate",
+     "Feeding token sequences into an audio language model for generation",
+     "Debugging quality loss by inspecting how many tokens represent each second of audio",
+     "Comparing codecs by the number and structure of tokens they emit"
+    ]
+   },
+   "sources": [
+    "Zeghidour et al., SoundStream: An End-to-End Neural Audio Codec, IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2022",
+    "Borsos et al., AudioLM: A Language Modeling Approach to Audio Generation, IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2023"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8505a526-0436-4b26-9f61-657ca7955df0",
+   "term": "Autoencoder",
+   "fields": {
+    "definition": "An autoencoder is a neural network trained to reconstruct its own input, consisting of an encoder that maps the input to a lower-dimensional (or otherwise constrained) latent code and a decoder that reconstructs the input from that code. Because information is forced through a bottleneck, the network learns a compact representation that captures the most important structure of the data.",
+    "plain_english": "An autoencoder is a network that squeezes data down to a small summary and then rebuilds it. By learning to rebuild its input, it finds a compact way to describe the data.",
+    "purpose_function": "It exists to learn efficient representations without labels, supporting compression, denoising, feature learning, and, in variational or quantized forms, generation of new data.",
+    "practical_application": "A technician meets autoencoders inside audio tools for tasks such as denoising, dimensionality reduction, and the encoder-decoder cores of neural audio codecs that compress and reconstruct sound.",
+    "category": "Neural network architectures",
+    "related_terms": [
+     "Audio tokens",
+     "Neural audio codec",
+     "Audio generation",
+     "Latent space",
+     "Vector quantization",
+     "Feature extraction"
+    ],
+    "common_mistakes": [
+     "Believing an autoencoder just copies its input, when the bottleneck forces it to learn useful structure",
+     "Assuming a plain autoencoder is a generative model, when generation needs variational or quantized variants",
+     "Making the latent code too large, so the network memorizes instead of learning a compact representation",
+     "Confusing the learned latent code with a meaningful, human-interpretable feature set"
+    ],
+    "scenario_contexts": [
+     "Denoising a recording by reconstructing a clean signal from a noisy input",
+     "Compressing audio through the encoder-decoder core of a neural codec",
+     "Reducing feature dimensionality before another analysis stage",
+     "Learning latent representations for later generation or clustering"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press), chapter on autoencoders",
+    "Bishop, Pattern Recognition and Machine Learning (Springer)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f4e1322c-6639-4bb1-b268-bc76e5f67667",
+   "term": "Bandwidth extension model",
+   "fields": {
+    "definition": "A bandwidth extension model is a machine-learning model that estimates and adds high-frequency content missing from band-limited audio, reconstructing a wider-bandwidth signal from a narrowband or low-sample-rate input. Also called audio super-resolution, it is trained on paired low- and high-bandwidth examples to predict the plausible missing spectrum, typically from narrowband toward wideband or full-band audio.",
+    "plain_english": "This model adds back high frequencies that are missing from dull or low-quality audio. It is like guessing the sharp, bright detail that got lost, to make the sound fuller.",
+    "purpose_function": "It exists to improve the perceived quality and intelligibility of band-limited audio, such as telephone-grade speech or downsampled recordings, by restoring high-frequency detail that was never captured.",
+    "practical_application": "A technician may use bandwidth-extension tools to enhance narrowband speech, upsample legacy or low-rate recordings, or improve intelligibility, while checking that added detail sounds natural and does not introduce artifacts.",
+    "category": "Audio enhancement models",
+    "related_terms": [
+     "Audio generation",
+     "Autoencoder",
+     "Sample rate",
+     "Spectrogram",
+     "Nyquist frequency",
+     "Audio restoration"
+    ],
+    "common_mistakes": [
+     "Believing the model recovers the true original highs, when it estimates plausible content that may differ from the real signal",
+     "Confusing bandwidth extension with simple upsampling or resampling, which adds no new spectral content",
+     "Expecting good results on inputs far outside the model's training bandwidth or domain",
+     "Assuming more added high end always sounds better, ignoring the risk of harsh or unnatural artifacts"
+    ],
+    "scenario_contexts": [
+     "Improving the quality of telephone-grade or narrowband speech",
+     "Restoring high-frequency detail in legacy or low-sample-rate archive recordings",
+     "Enhancing intelligibility of degraded voice communications",
+     "Upgrading low-bitrate or downsampled audio before further processing"
+    ]
+   },
+   "sources": [
+    "Kuleshov, Enam & Ermon, Audio Super-Resolution Using Neural Nets, ICLR 2017 Workshop",
+    "Su, Wang & Finkelstein, Bandwidth Extension Is All You Need, ICASSP 2021"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4b615563-ec42-4bd5-9c79-4e02dc05b4d2",
+   "term": "Bass separation model",
+   "fields": {
+    "definition": "A bass separation model is a music source separation model whose target is the bass stem, isolating the bass instrument from a mixture into a separate track while suppressing other sources such as vocals, drums, and other instruments. It is a specific case of the four-stem separation convention (vocals, drums, bass, other) established by datasets such as MUSDB18.",
+    "plain_english": "A bass separation model pulls the bass part out of a full mix so you can hear or use it alone. It works like a filter that keeps the low instrument and removes the rest.",
+    "purpose_function": "It exists to recover an isolated bass track from a finished mix, enabling remixing, transcription, practice, and analysis when the original multitrack is unavailable.",
+    "practical_application": "A technician may run a bass separation model to extract a bass stem for a remix, a transcription reference, or a practice backing track, then check the result for bleed and artifacts from other instruments.",
+    "category": "Source separation",
+    "related_terms": [
+     "Audio segmentation",
+     "Audio tagging",
+     "Spectrogram",
+     "Feature extraction",
+     "Autoencoder",
+     "Music source separation"
+    ],
+    "common_mistakes": [
+     "Expecting perfect isolation, when separated stems usually contain residual bleed and artifacts",
+     "Confusing source separation (splitting a mix into stems) with equalization that only boosts or cuts bands",
+     "Assuming a low-pass filter can replace separation, when bass and other sources overlap in frequency",
+     "Applying a model trained on one genre or mix style and expecting equal quality on very different material"
+    ],
+    "scenario_contexts": [
+     "Extracting an isolated bass stem from a stereo mix for a remix",
+     "Producing a bass-only reference to aid transcription",
+     "Creating a minus-bass or bass-only backing track for practice",
+     "Analyzing the bass line of a finished recording when no multitrack exists"
+    ]
+   },
+   "sources": [
+    "Rafii et al., The MUSDB18 Corpus for Music Separation (SigSep), and the SiSEC music separation campaign",
+    "Défossez, Hybrid Spectrogram and Waveform Source Separation (Hybrid Demucs), ISMIR 2021 MDX Workshop"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

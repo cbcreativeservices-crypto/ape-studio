@@ -1,0 +1,159 @@
+{
+ "batch": 396,
+ "topic": "Audio Restoration & Archival",
+ "authored": [
+  {
+   "id": "637b7d06-cfe9-40ee-a59c-c7baa3c5f74a",
+   "term": "Dissemination information package",
+   "fields": {
+    "definition": "In the OAIS reference model (ISO 14721), the information package an archive assembles from one or more Archival Information Packages (AIPs) and delivers to a Consumer in response to an order or request. A DIP contains the requested content plus Packaging Information, and may carry full or partial Preservation Description Information, formatted for access, exchange, or system transfer rather than for long-term storage.",
+    "plain_english": "It is the copy an archive hands out when someone asks for a recording. The archive builds it from its stored master, then shapes it for easy use rather than for long storage.",
+    "purpose_function": "It separates what an archive gives out from what it keeps, so the preserved master (the AIP) stays untouched while users receive a version tailored for access, sharing, or migration to another system.",
+    "practical_application": "An audio archivist generates a DIP, such as an access-quality WAV or MP3 plus a metadata sheet, when a researcher, broadcaster, or partner institution requests material from the preservation store.",
+    "category": "Archival Standards",
+    "related_terms": ["OAIS-compliant archive", "Submission information package", "Archival information package", "Access copy", "Preservation metadata"],
+    "common_mistakes": ["Confusing the DIP with the AIP; the AIP is the preserved master, while the DIP is the delivery copy derived from it", "Assuming a DIP must contain the whole archival package, when it often carries only the part a consumer ordered plus packaging information", "Treating a DIP as a preservation copy and discarding the AIP after exporting it"],
+    "scenario_contexts": ["Exporting an access-quality file and metadata for a researcher who requested a specific recording", "Packaging content with complete metadata to hand a collection to another institution", "Preparing a standardized DIP to transfer holdings to a successor archive system"]
+   },
+   "sources": ["ISO 14721 / CCSDS 650.0-M-2, Reference Model for an Open Archival Information System (OAIS)", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 6.1.8 (OAIS)", "Digital Preservation Coalition, OAIS wiki: Types of Information Packages"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "727abf2a-0713-42f9-a3e7-9c3e09b0b500",
+   "term": "Fixity verification",
+   "fields": {
+    "definition": "The process of confirming that a digital audio file or bitstream has remained unchanged, or fixed, over time or through transfer, typically by generating a checksum or cryptographic hash and comparing it against a previously stored reference value. A mismatch indicates corruption, alteration, or an incomplete transfer.",
+    "plain_english": "It is a way to prove a file has not changed. The computer makes a short code from the file, then later makes the code again and checks that the two still match.",
+    "purpose_function": "It gives an archive proof that stored files stay bit-for-bit identical, detecting silent data corruption, failed transfers, or tampering so a damaged file can be replaced from a good copy.",
+    "practical_application": "Preservation systems compute checksums at ingest and at scheduled intervals, flagging any file whose hash no longer matches its recorded value so it can be repaired from a redundant copy.",
+    "category": "Data Integrity",
+    "related_terms": ["Long-term checksum validation", "Checksum", "Bit rot", "Multiple-copy preservation", "OAIS-compliant archive"],
+    "common_mistakes": ["Believing fixity verification repairs files; it only detects change, and repair requires a known-good redundant copy", "Recording a checksum once at ingest but never re-checking, so slow corruption goes unnoticed", "Assuming a matching checksum proves audio quality, when it only proves the bits are unchanged, not that the original transfer was good"],
+    "scenario_contexts": ["Verifying that a file transferred to archival storage matches the checksum recorded at ingest", "Running scheduled integrity sweeps across a repository to catch bit rot on aging media", "Confirming a retrieved file is intact before delivering it to a user"]
+   },
+   "sources": ["Digital Preservation Coalition, Digital Preservation Handbook: Fixity and checksums", "NDSA Levels of Digital Preservation (File Fixity and Data Integrity)", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 6.3 (Archival Storage / verification)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "335661e7-137c-456b-b27c-a0716306f457",
+   "term": "Format-obsolescence planning",
+   "fields": {
+    "definition": "The proactive practice of monitoring the file and encoding formats held in an archive for signs of obsolescence, such as loss of software or hardware support and backward compatibility, and planning timely migration to sustainable, well-documented formats before the content becomes inaccessible.",
+    "plain_english": "It means watching the file types you store and getting ready before they stop working. Old formats can become unreadable, so you plan to move the content into newer formats in good time.",
+    "purpose_function": "It protects long-term access by making sure files are never trapped in a format that current software can no longer open, guiding both format choice and migration timing.",
+    "practical_application": "Archivists track format risk using registries such as PRONOM, prefer open lossless formats like WAV and BWF for masters, and schedule migration when a format's support begins to decline.",
+    "category": "Preservation Planning",
+    "related_terms": ["Media migration policy", "File format", "Broadcast Wave Format", "OAIS-compliant archive", "Preservation metadata"],
+    "common_mistakes": ["Storing masters in proprietary or lossy formats that raise obsolescence risk instead of open, lossless, well-documented ones", "Waiting until a format is already unreadable to act, rather than planning migration in advance", "Assuming an open format can never become obsolete, when adoption and tool support still have to be monitored"],
+    "scenario_contexts": ["Reviewing collection formats against a format-risk registry during an annual audit", "Deciding to migrate a legacy encoded collection while conversion tools still exist", "Selecting a sustainable master format when setting up a new digitization workflow"]
+   },
+   "sources": ["Digital Preservation Coalition, Digital Preservation Handbook: File formats and standards", "IASA-TC 03, The Safeguarding of the Audiovisual Heritage, sec. 4 (Obsolescence of formats)", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects (target formats / preservation planning)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "73629bab-91ab-47ec-9316-ac1d1be28863",
+   "term": "Geographic redundancy",
+   "fields": {
+    "definition": "A storage strategy in which complete copies of archived content are kept at two or more physically separate locations, ideally in areas subject to different disaster threats, so that a localized event such as fire, flood, or power loss cannot destroy every copy.",
+    "plain_english": "It means keeping copies of your files in different places that are far apart. If one site is hit by a fire or flood, the copies stored somewhere else still survive.",
+    "purpose_function": "It hedges against regional and site-level threats by ensuring no single physical event can take out all copies, a requirement built into preservation frameworks such as the NDSA Levels.",
+    "practical_application": "An archive keeps one copy on-site and additional copies in data centers in other regions, or on offline media held elsewhere, so recovery is still possible after a local disaster.",
+    "category": "Storage and Backup",
+    "related_terms": ["Multiple-copy preservation", "Media migration policy", "Fixity verification", "OAIS-compliant archive", "Disaster recovery"],
+    "common_mistakes": ["Keeping all copies in the same building or region, which gives no protection against a local disaster", "Counting copies without checking they sit in locations with genuinely different disaster threats", "Assuming a cloud provider gives geographic redundancy by default without confirming where the copies physically reside"],
+    "scenario_contexts": ["Placing a second copy of a master collection in a data center in a different region", "Designing storage to meet a preservation level that requires copies in areas with different disaster threats", "Recovering holdings from a remote copy after a flood damages the primary facility"]
+   },
+   "sources": ["NDSA Levels of Digital Preservation (Storage and Geographic Location)", "Digital Preservation Coalition, Digital Preservation Handbook (storage / preservation)", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects (multiple storage locations)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b6b11ab7-d99d-4f0d-bb6d-e368e7f2cbc9",
+   "term": "Heritage recording preservation",
+   "fields": {
+    "definition": "The practice of safeguarding audio recordings of cultural, historical, or documentary significance for the long term, prioritizing the preservation of their content, meaning the signal and its associated information, over the original carrier, since analog and physical carriers inevitably deteriorate and become obsolete.",
+    "plain_english": "It is the work of saving important old recordings so future people can still hear them. Because tapes and discs wear out, the goal is to save the sound itself, not just the object it came on.",
+    "purpose_function": "It ensures that culturally valuable sound, such as music, oral history, broadcast, and field recordings, survives carrier decay and format change so the recorded content stays accessible for future generations.",
+    "practical_application": "Archivists appraise and prioritize significant collections, transfer at-risk carriers to digital preservation formats, and then manage the results under standards such as IASA-TC 03 and TC-04.",
+    "category": "Preservation Strategy",
+    "related_terms": ["Media migration policy", "Format-obsolescence planning", "OAIS-compliant archive", "Multiple-copy preservation", "Analog-to-digital transfer"],
+    "common_mistakes": ["Focusing on preserving the physical carrier while neglecting to transfer the content before the carrier fails", "Treating a single digital transfer as permanent, ignoring the ongoing migration and integrity checking preservation requires", "Making lossy or low-resolution transfers of irreplaceable material to save space, which degrades the archival master"],
+    "scenario_contexts": ["Digitizing a deteriorating collection of magnetic tapes holding unique oral histories", "Prioritizing which at-risk heritage recordings to transfer first based on significance and carrier condition", "Maintaining and periodically migrating a digitized heritage collection to keep it accessible"]
+   },
+   "sources": ["IASA-TC 03, The Safeguarding of the Audiovisual Heritage: Ethics, Principles and Preservation Strategy", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects", "UNESCO Memory of the World Programme, guidance on audiovisual heritage preservation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "04e28269-db65-4259-9581-244cb2104ed4",
+   "term": "Long-term checksum validation",
+   "fields": {
+    "definition": "The ongoing, scheduled recomputation and comparison of file checksums across the full lifetime of an archive, used to confirm that stored audio files remain bit-for-bit unchanged over years or decades and to detect gradual data corruption, or bit rot, as storage media age.",
+    "plain_english": "It means checking a file's fingerprint code again and again over many years. Doing it on a regular schedule catches slow damage before a file quietly rots away.",
+    "purpose_function": "It shifts trust away from the durability of any single storage medium toward repeated verification, so silent corruption is caught early and affected files repaired from a good copy.",
+    "practical_application": "Preservation systems store reference checksums and re-verify content at fixed intervals, often yearly for tape and more frequently for disk, logging the results and triggering repair when a hash fails.",
+    "category": "Data Integrity",
+    "related_terms": ["Fixity verification", "Checksum", "Bit rot", "Multiple-copy preservation", "Media migration policy"],
+    "common_mistakes": ["Calculating a checksum only at ingest and never revalidating, so long-term corruption goes undetected", "Validating checksums but keeping no redundant copy to repair from when a file fails", "Assuming newer storage media never degrade, so scheduled revalidation is skipped"],
+    "scenario_contexts": ["Running an annual integrity sweep over an entire tape-based archive", "Comparing current file hashes against reference values during a storage-system migration", "Detecting and repairing a corrupted master file from a redundant copy after a failed check"]
+   },
+   "sources": ["Digital Preservation Coalition, Digital Preservation Handbook: Fixity and checksums", "NDSA Levels of Digital Preservation (File Fixity and Data Integrity)", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 6.3 (Archival Storage / verification)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "107dc81a-ca25-4097-9230-fe78e7591d2a",
+   "term": "Media migration policy",
+   "fields": {
+    "definition": "A documented archival policy defining when and how digital content is copied from aging or obsolescent storage media and systems onto current ones, along with the verification required, in order to counter the limited lifespan and obsolescence of storage carriers and hardware.",
+    "plain_english": "It is a written plan for moving files onto fresh storage before the old storage fails. Since drives and tapes do not last forever, the plan says when to move data and how to check it copied correctly.",
+    "purpose_function": "It ensures content outlives any single storage medium or system by scheduling regular transfers to current media, with fixity checks so nothing is lost or corrupted during the move.",
+    "practical_application": "An archive follows its policy to refresh or migrate collections onto new LTO tape generations or storage systems on a set cycle, verifying checksums before retiring the old media.",
+    "category": "Preservation Planning",
+    "related_terms": ["Format-obsolescence planning", "Fixity verification", "Long-term checksum validation", "Multiple-copy preservation", "OAIS-compliant archive"],
+    "common_mistakes": ["Confusing media migration, which moves bits to new storage, with format migration, which changes the file format", "Migrating data without verifying checksums, so existing corruption is copied forward undetected", "Delaying migration until the media are already failing or the reading hardware is obsolete"],
+    "scenario_contexts": ["Copying a collection onto a new LTO tape generation before the old drives are unsupported", "Scheduling routine storage-refresh cycles as part of a preservation plan", "Verifying fixity on both source and destination during a system migration"]
+   },
+   "sources": ["IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 6.3-6.4 (Archival Storage / Digital Preservation Planning)", "Digital Preservation Coalition, Digital Preservation Handbook: Preservation action", "NDSA Levels of Digital Preservation (Storage / ongoing management)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "068af4e2-5d95-4270-a3ad-d48331dde6eb",
+   "term": "Multiple-copy preservation",
+   "fields": {
+    "definition": "A preservation strategy of maintaining several complete, independent copies of archived content, typically three or more on different storage systems and often in different locations, so that the failure, loss, or corruption of any one copy does not endanger the content.",
+    "plain_english": "It means keeping more than one full copy of everything you store. If one copy is lost or damaged, another good copy is still there to restore from.",
+    "purpose_function": "It removes reliance on any single copy or device, because redundant copies let a corrupted or destroyed file be rebuilt from an intact one and underpin fixity-based repair.",
+    "practical_application": "Archives keep a primary copy plus independent backups on separate systems and sites, following guidance such as the NDSA Levels or the 3-2-1 rule, and repair failed files from a healthy copy.",
+    "category": "Storage and Backup",
+    "related_terms": ["Geographic redundancy", "Fixity verification", "Long-term checksum validation", "Media migration policy", "Disaster recovery"],
+    "common_mistakes": ["Keeping several copies on the same drive or system, which share a single point of failure", "Assuming a RAID array counts as multiple copies, when RAID is not a backup or an independent copy", "Never verifying the copies, so all of them may already be corrupt when one is finally needed"],
+    "scenario_contexts": ["Storing three independent copies of a master collection across different systems", "Rebuilding a corrupted file from a redundant copy after a failed fixity check", "Applying the 3-2-1 backup rule when designing archival storage"]
+   },
+   "sources": ["NDSA Levels of Digital Preservation (Storage and Geographic Location)", "Digital Preservation Coalition, Digital Preservation Handbook (storage / multiple copies)", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects (redundant copies)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "13eb6a50-072f-419e-b28b-7796eb0be85c",
+   "term": "OAIS-compliant archive",
+   "fields": {
+    "definition": "A digital archive whose design and operations conform to the Open Archival Information System (OAIS) reference model (ISO 14721 / CCSDS 650.0), implementing its functional entities, namely Ingest, Archival Storage, Data Management, Administration, Preservation Planning, and Access, together with its information-package model of SIP, AIP, and DIP, to preserve digital content and keep it accessible to a designated community over the long term.",
+    "plain_english": "It is an archive built to follow one shared set of rules for keeping digital files safe and usable for a long time. Using the same rules lets different archives work alike and share files.",
+    "purpose_function": "It provides a common framework and vocabulary so long-term preservation is systematic and interoperable, ensuring content is ingested, stored, managed, and delivered with the metadata needed to stay understandable over time.",
+    "practical_application": "Audio archives adopt the OAIS model to structure their systems and workflows, taking content in as SIPs, preserving it as AIPs, and delivering DIPs to users.",
+    "category": "Archival Standards",
+    "related_terms": ["Dissemination information package", "Submission information package", "Archival information package", "Preservation metadata", "Fixity verification"],
+    "common_mistakes": ["Thinking OAIS is a piece of software or a certification, rather than a reference model that systems are designed to conform to", "Implementing storage only and ignoring OAIS functions such as Preservation Planning and Data Management", "Confusing OAIS conformance with trustworthy-repository certification, such as ISO 16363, which is a separate audit"],
+    "scenario_contexts": ["Designing a new audio preservation repository around the six OAIS functional entities", "Mapping ingest and delivery workflows to the SIP, AIP, and DIP model", "Assessing whether an existing archive meets the OAIS mandatory responsibilities"]
+   },
+   "sources": ["ISO 14721 / CCSDS 650.0-M-2, Reference Model for an Open Archival Information System (OAIS)", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 6.1.8 (OAIS)", "Digital Preservation Coalition, technology watch report: The Open Archival Information System (OAIS) Reference Model"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,223 @@
+{
+ "expert": "audio",
+ "group": 1,
+ "reviews": [
+  {
+   "id": "d66f8815-61dc-4406-8178-205222eab023",
+   "term": "0 dBFS",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e8b39b39-05d2-494b-947c-9a59c108049c",
+   "term": "1/3-octave display",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2266e9d0-df8c-4638-9705-0bce5f0f3f45",
+   "term": "1/48-octave display",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2a5e4031-d980-4d68-ab07-8dbc3bb30005",
+   "term": "100-Volt System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "015a6118-f6d3-45bc-80fe-8d2d773a66e2",
+   "term": "110-Ohm Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6637274d-7adf-4468-a1b2-05898cfd18e6",
+   "term": "2-Ohm Load",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8c5967e7-e255-4a82-916f-cefd7534aaa9",
+   "term": "2.4 GHz Band",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "316378d3-4f9f-4bd4-a520-6347cad162c4",
+   "term": "2.5mm Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "76933232-8686-4919-899b-3249d2bde77b",
+   "term": "3.5mm Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2d55f111-8863-4851-a955-3c0e9b8da05e",
+   "term": "4-Ohm Load",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "84254f91-dfda-4373-b33a-03af9262ee89",
+   "term": "5-Pin DIN (MIDI)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5b9eca4a-8d3e-4000-be84-300812c227ac",
+   "term": "5.1 / 7.1 Surround Sound",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "297c8257-2b34-4d28-b849-10eb4a452db9",
+   "term": "5.1 Surround",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a6f2a825-7d68-4464-a92e-2318f65b8465",
+   "term": "6-Pin XLR",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "41f77f28-ca37-4f40-8b9f-8617483f0c18",
+   "term": "7.1 Surround",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e151b36a-8d8d-4758-b46e-f790ff5656b2",
+   "term": "70-Volt System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f49f4532-fb02-4897-ad1e-256c97822ebd",
+   "term": "75-Ohm Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "200aeeac-3276-4b51-aa28-565fac7bf0e4",
+   "term": "A-Pillar",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c147d3c2-27bb-43ba-9f40-f72e98939f11",
+   "term": "A-weighted (dBA)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "34308ff0-b8de-457b-9165-d73d8f7cc146",
+   "term": "A/B comparison",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "79d5180c-9294-4357-a53f-e9849925feb5",
+   "term": "A/D converter (ADC)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "11b83504-4188-4369-ad28-83308d472e68",
+   "term": "AAC (Advanced Audio Coding)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "82f1ec35-2b30-4a9d-8bc8-efcc6c4569f8",
+   "term": "Absorber / Absorbers",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e66938c0-7a71-4d43-bf28-30844d50451c",
+   "term": "Absorption",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "36547910-62ce-480c-9523-e1a6690b59b0",
+   "term": "AC Power",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4922e3eb-c182-47a3-aa63-238070fbf790",
+   "term": "Accessibility",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ec331f47-d0d3-46df-9ea8-f912af61f7cd",
+   "term": "Accessibility Accommodation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f1577e64-61c3-41a5-b605-abddcc92b7ed",
+   "term": "Acoustic environment",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0634dddd-b7fc-42ba-bfaf-ef0e4780be33",
+   "term": "Acoustic Feedback / Howlround / Ringing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f9877a58-ecca-4f3c-a805-55010b026af7",
+   "term": "Acoustic Impedance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4dd309ca-ba93-4e1a-9847-3018b38e2b8f",
+   "term": "Acoustic overload",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "category",
+     "severity": "Low",
+     "issue": "category is 'Acoustic Treatment', but the entry (topic: Signal Path & Levels) is about SPL/signal levels exceeding a device's handling capability, not room absorption/diffusion/isolation. Mislabeled field.",
+     "suggestion": "Recategorize to a signal-level bucket consistent with its topic and with sibling level terms (e.g. 'Level Standards' or 'Signal Levels'), not 'Acoustic Treatment'."
+    }
+   ]
+  },
+  {
+   "id": "a0cdd847-9928-4c7f-922c-bddab7c70a4f",
+   "term": "Acoustic panel",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f6b731bd-e2ec-4b59-b34a-9909e5fe24c2",
+   "term": "Acoustic Treatment",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "abbad623-df2d-42a3-92bb-1ce1dd3d20a2",
+   "term": "Acoustics",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dac9f58e-3126-45e1-9a47-8f6e26d2a7de",
+   "term": "Active Antenna",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

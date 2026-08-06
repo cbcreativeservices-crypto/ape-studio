@@ -1,0 +1,159 @@
+{
+ "batch": 83,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "28a1e2d1-b283-4fd4-ae7e-be271a5164cd",
+   "term": "Auto-mixing",
+   "fields": {
+    "definition": "A technique in which a mixer automatically manages the gains of multiple open microphones in real time, favoring the mic being spoken or sung into and attenuating the others to control feedback and background noise without a person riding faders. Gain-sharing automixers (such as the Dugan system) hold the summed gain of all active mics roughly constant.",
+    "plain_english": "Auto-mixing lets a mixer turn microphones up and down by itself. It leaves the mic someone is talking into open and quietly pulls the others down, so the sound stays clean without an engineer moving every fader. It works like a spotlight that follows whoever is speaking.",
+    "purpose_function": "It exists to keep multi-microphone events like panels, theatre, and worship services clear and feedback-free by cutting the number of open mics adding noise at any moment, a job that is hard to do by hand with many talkers.",
+    "practical_application": "A technician assigns panel or lavalier mics to an automixer group on a digital console, or a Dugan card or plug-in, then lets it manage the relative mic gains during the event while still setting the overall level.",
+    "category": "Automatic Mixing",
+    "related_terms": ["Gain-sharing automixer", "Number of open mics (NOM)", "Acoustic feedback", "Noise gate", "Digital mixing console", "Gain staging"],
+    "common_mistakes": ["Confusing auto-mixing with mix automation: auto-mixing manages live mic gains in real time, while mix automation records and replays a mixer's moves", "Assigning a music or instrument channel that must stay open to the automixer, so it ducks unexpectedly", "Assuming an automixer removes the need to set gain structure and ring out feedback first"],
+    "scenario_contexts": ["A panel discussion with eight table mics where only one or two people talk at a time", "A house of worship with several lavalier and pulpit mics", "A broadcast talk show or courtroom needing clean multi-mic pickup without a dedicated operator"]
+   },
+   "sources": ["Dugan Automatic Microphone Mixer product manual (Dan Dugan Sound Design)", "Yamaha DUGAN-MY16 and TF-series automixing technical documentation", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "12576d21-e10f-45c6-b535-808054fc7500",
+   "term": "Automatic Flex mode",
+   "fields": {
+    "definition": "In Logic Pro's Flex Time, the Automatic setting is a Flex algorithm that analyzes an audio region and picks the most suitable time-stretching algorithm for it, choosing Monophonic for single-note material, Slicing for percussive non-tonal material, or Polyphonic for chordal or complex material.",
+    "plain_english": "This is a Logic Pro setting that fixes the timing of audio for you. It listens to the track and picks the best stretching method by itself, one way for drums, another for a bass line, another for chords. It is like a camera's auto mode choosing the right settings for the shot.",
+    "purpose_function": "It exists so users can time-stretch audio without knowing which specialized algorithm fits the material, giving good results by matching the processing to the detected content.",
+    "practical_application": "An engineer turns on Flex for a track, leaves the algorithm set to Automatic, and drags flex markers to nudge notes or beats into time while Logic applies the fitting algorithm behind the scenes.",
+    "category": "Time Editing",
+    "related_terms": ["Flex Time", "Flex Pitch", "Time-stretching", "Smart Tempo", "Transient detection", "Quantization"],
+    "common_mistakes": ["Expecting Automatic to be flawless on very complex material, where manually choosing Polyphonic or another algorithm can sound better", "Confusing Flex Time (timing) with Flex Pitch (pitch correction)", "Leaving Flex enabled on regions that do not need it, adding processing artifacts"],
+    "scenario_contexts": ["Tightening a slightly rushed vocal phrase to the grid", "Aligning a double-tracked guitar part to the main take", "Fixing the timing of an imported loop that drifts from the project tempo"]
+   },
+   "sources": ["Apple Logic Pro User Guide (Flex Time algorithms and parameters)", "Sound on Sound (Logic Pro Flex Time technique articles)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "34a29874-f27f-442f-a437-5d7029a73fb4",
+   "term": "Automatic Tempo mode",
+   "fields": {
+    "definition": "In Logic Pro's Smart Tempo, Automatic is a Project Tempo mode in which Logic decides, from the musical context, whether to keep the project tempo (conforming new material to it) or adapt the project tempo to follow the timing of a new recording or import.",
+    "plain_english": "This Logic Pro setting handles tempo for you. When you record or import audio, it decides whether to bend your take to the song's tempo or bend the tempo to your take. It is like a smart thermostat that picks whether to heat or cool without being told.",
+    "purpose_function": "It exists to take manual tempo decisions out of the workflow, letting Logic build or apply a tempo map on its own so recordings and the project stay in sync.",
+    "practical_application": "A producer sets the Project Tempo mode to Automatic before tracking freely played parts, so Logic either maps the performance's tempo or locks it to the grid depending on what it detects.",
+    "category": "Tempo Management",
+    "related_terms": ["Smart Tempo", "Tempo map", "Flex Time", "Click track", "Beat mapping", "Quantization"],
+    "common_mistakes": ["Assuming Automatic always guesses right: on loose or rubato takes it may adapt when you wanted it to keep, or the reverse", "Not checking the resulting tempo map, which can leave unwanted tempo changes", "Confusing Smart Tempo's Automatic mode with the Flex Time Automatic algorithm"],
+    "scenario_contexts": ["Recording a band that speeds up naturally and wanting a matching tempo map", "Importing a loop that should snap to the project tempo", "Building a project around a freely performed piano take"]
+   },
+   "sources": ["Apple Logic Pro User Guide (Choose the Project Tempo mode; Smart Tempo)", "Sound on Sound (Logic Pro: Using Smart Tempo)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f8bc4c99-f1af-4ca1-b2f5-4628991e689a",
+   "term": "Automation breakpoint editing",
+   "fields": {
+    "definition": "The process of shaping mix automation by creating, moving, and deleting breakpoints, the individual editable points (nodes) on an automation line that set a parameter's value at specific moments, with the DAW interpolating between them.",
+    "plain_english": "Automation is how a mixer remembers moves like volume changes over time. Breakpoint editing means grabbing the little dots on the automation line and dragging them to set exactly when and how a control changes. It is like bending a wire by pinning it down at chosen points.",
+    "purpose_function": "It gives precise, repeatable control over how parameters change over time, letting an engineer draw exact fades, mutes, and effect sweeps instead of performing them by hand.",
+    "practical_application": "An engineer shows a track's volume automation lane, then uses the pencil or grabber tool to add breakpoints and drag them into a fade or to ride a vocal level word by word.",
+    "category": "Mix Automation",
+    "related_terms": ["Breakpoint", "Automation glide", "Automation lane", "Write mode", "Read mode", "Volume ride"],
+    "common_mistakes": ["Creating too many breakpoints, giving jittery, stair-stepped moves instead of smooth ramps", "Editing on the wrong automation lane, such as pan instead of volume", "Forgetting the track must be in Read, not Write, so hand-drawn breakpoints are not overwritten"],
+    "scenario_contexts": ["Drawing a smooth fade-out at the end of a song", "Dipping a music bed under a voiceover at exact points", "Automating a filter sweep across a build-up"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (automation)", "Sound on Sound (Automation Facilities in Pro Tools)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d33bbf9f-d4b9-403e-83fa-ecba03817e0e",
+   "term": "Automation chase",
+   "fields": {
+    "definition": "The behavior by which an automation system updates a channel's controls to their correct automated positions for the current transport location, so motorized faders and parameters follow (chase) the recorded automation, typically synchronized to timecode, whenever you locate, scrub, or play to a new point.",
+    "plain_english": "Chase means the mixer's controls jump to the right settings for wherever the song is playing. If you skip to the chorus, the faders move themselves to match the moves you recorded there. It is like subtitles keeping pace with the scene you jump to.",
+    "purpose_function": "It keeps the audible mix in step with stored automation no matter where playback starts, so a recalled or synced mix always reflects the recorded moves at that exact time position.",
+    "practical_application": "When an engineer stops and relocates the playhead, motorized faders on a console or control surface snap to their automated values so the mix picks up correctly from the new spot.",
+    "category": "Mix Automation",
+    "related_terms": ["Mix automation", "SMPTE timecode", "Motorized faders", "Read mode", "Control surface", "Total recall"],
+    "common_mistakes": ["Expecting non-motorized faders to physically chase: only their stored values update, not a manual control's position", "Confusing automation chase (following stored moves) with writing new automation", "Losing sync when timecode is missing or the automation is switched offline"],
+    "scenario_contexts": ["Jumping to a later section and having the faders update to that section's levels", "Locking console automation to SMPTE timecode from a video edit", "Recalling a mix and having controls follow the saved automation on playback"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (automation modes)", "Sound on Sound (Automation Facilities in Pro Tools)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2c78ef1d-5506-4857-a9a9-24fa47036a03",
+   "term": "Automation commit",
+   "fields": {
+    "definition": "The act of making dynamic automation permanent by rendering or printing the automated result to fixed audio (often a new track), so the recorded parameter moves are baked in rather than reproduced live on every playback.",
+    "plain_english": "Committing automation means turning your moving controls into a finished, fixed recording. The volume rides and effect sweeps get printed into the audio for good, so they always play back the same and the computer works less. It is like saving a recipe as a cooked meal you can just reheat.",
+    "purpose_function": "It locks in a decided automation performance, frees up CPU and routing, and simplifies a session by turning live, editable moves into a stable rendered track.",
+    "practical_application": "Once an engineer is happy with a track's automation and plug-in moves, they commit (render) it to a new audio file, keeping the original for safety while working with the lighter committed version.",
+    "category": "Mix Automation",
+    "related_terms": ["Track commit", "Bounce/render", "Freeze", "Printing effects", "Mix automation", "Read mode"],
+    "common_mistakes": ["Committing before the automation is final, forcing a redo because the moves are now baked in", "Not keeping the original un-committed track, losing the ability to tweak later", "Assuming a commit captures moves on the master or other routing outside the committed track"],
+    "scenario_contexts": ["Rendering a heavily automated synth to save CPU", "Locking in a final vocal ride before handing the session to another engineer", "Printing an automated filter sweep so it transfers to another system"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Commit tracks)", "Sound on Sound (Pro Tools: Freeze & Commit Functions; Making Commitments)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5845a3a4-d0b4-4042-98ac-0e4356604338",
+   "term": "Automation compare",
+   "fields": {
+    "definition": "A function that lets an engineer switch between newly written or edited automation and the previously stored automation for the same parameter, so the two versions can be auditioned against each other before deciding which to keep.",
+    "plain_english": "Compare lets you flip between your new automation moves and the old ones to hear which is better. Nothing is thrown away until you choose. It is like an A/B test that plays version one, then version two, so you can pick the winner.",
+    "purpose_function": "It supports decision-making during a mix by preserving the prior automation while a new pass is tried, so good moves are not lost before the engineer confirms an improvement.",
+    "practical_application": "After riding a new fader pass, an engineer uses compare to toggle back to the original automation, confirms the new version is better, and then keeps it.",
+    "category": "Mix Automation",
+    "related_terms": ["Mix automation", "Automation history", "A/B comparison", "Undo history", "Write mode", "Read mode"],
+    "common_mistakes": ["Thinking compare permanently saves both versions: once you commit to one, the other may be discarded", "Comparing at different playback levels, which biases the choice toward the louder pass", "Forgetting which state is currently active and keeping the wrong one"],
+    "scenario_contexts": ["Auditioning a re-ridden chorus vocal against the earlier pass", "Checking a redrawn fade against the original before keeping it", "Deciding between two automation takes of an effect send"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (automation)", "Sound on Sound (Automation Facilities in Pro Tools)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "306af33c-d98f-49ef-9c60-e79ae190515a",
+   "term": "Automation copy",
+   "fields": {
+    "definition": "The editing operation of copying automation data from a selected time range or parameter and pasting it elsewhere, to another spot on the same track, another parameter, or another track, so identical moves can be reused without redrawing them.",
+    "plain_english": "Automation copy means grabbing a set of recorded control moves and pasting them somewhere else. If the second chorus should move like the first, you just copy the moves over. It is like copy-and-paste for text, but for volume and effect changes.",
+    "purpose_function": "It saves time and keeps sections consistent by letting an engineer reuse existing automation instead of performing or drawing the same moves again.",
+    "practical_application": "An engineer selects the volume automation across the first chorus, copies it, and pastes it onto the later choruses so each one has the same rides.",
+    "category": "Mix Automation",
+    "related_terms": ["Automation breakpoint editing", "Automation lane", "Special paste", "Automation glide", "Mix automation", "Write mode"],
+    "common_mistakes": ["Pasting automation onto the wrong parameter lane, such as copying volume onto pan", "Not aligning the paste to the correct bar or time, shifting the moves off the music", "Copying only visible automation and missing hidden parameter lanes"],
+    "scenario_contexts": ["Reusing a first-verse vocal ride on later verses", "Duplicating a filter-sweep automation across repeated sections", "Copying pan moves from one tom to matching drum hits"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (editing automation data)", "Sound on Sound (Automation Facilities in Pro Tools)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "52bac839-c6b4-4022-bb75-ddd21895bdc4",
+   "term": "Automation glide",
+   "fields": {
+    "definition": "An automation operation that writes a smooth ramp between two values over a selected time range, so a parameter transitions gradually from its start value to a target value rather than jumping abruptly; in Pro Tools this is the Glide Automation command.",
+    "plain_english": "Glide creates a smooth slide from one setting to another over time. Instead of the volume snapping up, it eases up gently across the part you chose. It is like slowly turning a dimmer instead of flipping a light switch.",
+    "purpose_function": "It provides controlled, gradual parameter changes, such as fades, gentle pan moves, and effect swells, by ramping between breakpoints instead of stepping, giving natural-sounding transitions.",
+    "practical_application": "An engineer selects a range, sets the target value, and applies glide so a reverb send or fader ramps smoothly from its current level to the new one across that selection.",
+    "category": "Mix Automation",
+    "related_terms": ["Automation breakpoint editing", "Trim automation", "Automation ramp", "Fade", "Mix automation", "Write mode"],
+    "common_mistakes": ["Selecting too short a range, so the glide sounds like a sudden jump", "Confusing glide (a gradual ramp) with a snap or step change", "Applying glide across a section that already has breakpoints you meant to keep"],
+    "scenario_contexts": ["Smoothly bringing up a reverb send into a chorus", "Gradually panning a sound from left to right over four bars", "Easing a synth filter open across a build"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Glide Automation)", "Sound on Sound (Automation Facilities in Pro Tools)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

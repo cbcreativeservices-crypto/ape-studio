@@ -1,0 +1,159 @@
+{
+ "batch": 278,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "d45e57ba-0aab-4b7d-82fc-d17dd44cdefe",
+   "term": "Multitimbral instrument",
+   "fields": {
+    "definition": "An electronic instrument, such as a synthesizer or sampler, that can produce two or more different sounds (timbres) at the same time, each typically assigned to its own MIDI channel and voiced independently.",
+    "plain_english": "One keyboard or sound module that can play several different sounds at once. Think of it as a small band inside one box, where each part gets its own channel.",
+    "purpose_function": "It lets a single device behave like several instruments at once, so one unit can play bass, drums, and pads together, which is essential for building full arrangements from a MIDI sequence.",
+    "practical_application": "A producer assigns each track in a MIDI sequence to a different channel on one multitimbral module, layering a whole arrangement without needing separate hardware for each part.",
+    "category": "Synthesis",
+    "related_terms": ["Polyphony", "MIDI channel", "Patch", "Sound module", "Voice allocation", "General MIDI"],
+    "common_mistakes": ["Confusing multitimbral (many sounds at once) with polyphonic (many notes of one sound at once).", "Assuming any polyphonic synth is automatically multitimbral, when many are not.", "Running out of voices because all timbres draw from one shared voice pool."],
+    "scenario_contexts": ["Sequencing a full song from one hardware sound module using separate MIDI channels.", "Hosting several instruments on one software sampler instance in a DAW.", "Setting up a General MIDI module so each channel plays a different patch."]
+   },
+   "sources": ["MIDI Association (General MIDI System specification)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e4134fad-5b1b-47cb-9510-024941f95b19",
+   "term": "Noise oscillator",
+   "fields": {
+    "definition": "A sound source in a synthesizer that generates noise, a signal made of a broad, random spread of frequencies (such as white or pink noise), rather than a periodic, pitched waveform.",
+    "plain_english": "A part of a synth that makes a rushing, hiss-like sound instead of a musical note. It is like the static between radio stations, and it is useful for wind, breath, or drum sounds.",
+    "purpose_function": "It supplies unpitched, broadband material for percussion, wind and breath effects, and for adding texture or a sharper attack to pitched sounds.",
+    "practical_application": "A sound designer routes a short burst of the noise oscillator through a fast-decaying filter to build a snare or hi-hat, or adds a little under a pad for breathiness.",
+    "category": "Oscillators",
+    "related_terms": ["White noise", "Pink noise", "Oscillator", "Subtractive synthesis", "Envelope generator", "Filter cutoff"],
+    "common_mistakes": ["Expecting a noise oscillator to track pitch, when it has no fundamental frequency to follow.", "Confusing white noise (equal energy per hertz) with pink noise (equal energy per octave).", "Leaving noise level too high, which masks the pitched oscillators."],
+    "scenario_contexts": ["Building electronic snare and hi-hat sounds from filtered noise.", "Adding breath noise to a flute or vocal patch.", "Creating wind, ocean, or riser effects for film and game audio."]
+   },
+   "sources": ["Roads, The Computer Music Tutorial", "Sound on Sound, Synth Secrets (subtractive synthesis)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8155b024-a52d-488f-8272-e31dac60b08b",
+   "term": "Numerically controlled oscillator",
+   "fields": {
+    "definition": "A digital oscillator that generates a periodic waveform by repeatedly incrementing a phase accumulator with a numeric tuning value and using the accumulated phase to look up or compute each output sample; its frequency is set precisely by that number. It is the core of direct digital synthesis (DDS).",
+    "plain_english": "A digital sound generator whose pitch is set by a number instead of a control voltage. Because a computer counts the number, the tuning stays exact and does not slip.",
+    "purpose_function": "It produces very stable, precisely tunable tones in digital synths and radio gear, replacing the drift-prone analog voltage-controlled oscillator with exact numeric control.",
+    "practical_application": "In a digital synthesizer or wireless system, technicians rely on the numerically controlled oscillator to hold pitch and frequency dead-on across temperature changes and over time.",
+    "category": "Oscillators",
+    "related_terms": ["Voltage-controlled oscillator", "Phase accumulator", "Direct digital synthesis", "Sample rate", "Wavetable", "Oscillator drift"],
+    "common_mistakes": ["Assuming a numeric oscillator cannot alias, when its harmonics still fold back if not band-limited.", "Confusing the oscillator (frequency source) with the DAC that converts its samples to analog.", "Thinking more accumulator bits raise the pitch, when they raise tuning resolution."],
+    "scenario_contexts": ["Setting the carrier frequency in a digital wireless microphone system.", "Generating stable, precisely tuned test tones in signal-generator instruments.", "Producing exactly tuned waveforms in a software or DSP synthesizer."]
+   },
+   "sources": ["Analog Devices, MT-085 Fundamentals of Direct Digital Synthesis (technical tutorial)", "IEEE literature on direct digital synthesis / phase-accumulator oscillators"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "47bf0269-6453-46dd-aeae-4d7666601ccb",
+   "term": "Oscillator aliasing",
+   "fields": {
+    "definition": "The appearance of false, inharmonic frequencies when a digital oscillator produces harmonic content above the Nyquist frequency (half the sample rate); those over-range components fold back down into the audible band as tones unrelated to the intended pitch.",
+    "plain_english": "Unwanted, out-of-tune tones that show up when a digital synth tries to make sounds too high for its sample rate. The extra highs fold back down like a mirror and sound harsh or metallic.",
+    "purpose_function": "It is an artifact to avoid rather than a feature; understanding it lets designers use band-limited oscillators so bright digital tones stay clean instead of gaining clangy, detuned overtones.",
+    "practical_application": "An engineer hearing a gritty, bell-like edge on the high notes of a cheap digital synth recognizes aliasing and switches to a band-limited oscillator or an oversampled plug-in.",
+    "category": "Digital Audio",
+    "related_terms": ["Nyquist frequency", "Sample rate", "Band-limited oscillator", "Oversampling", "Anti-aliasing filter", "Sampling theorem"],
+    "common_mistakes": ["Confusing aliasing artifacts with normal bright harmonics.", "Believing a higher sample rate fully removes aliasing, when it only raises the fold point.", "Ignoring aliasing on high-pitched or hard-sync patches, where it is worst."],
+    "scenario_contexts": ["Hearing metallic overtones on the top octave of a virtual analog synth.", "Choosing an oversampled soft synth to keep bright leads clean.", "Comparing band-limited versus naive digital waveforms during sound design."]
+   },
+   "sources": ["Roads, The Computer Music Tutorial (sampling and aliasing)", "AES literature on band-limited oscillator synthesis"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c7b1ba9f-981f-4668-9516-8e0ba66db001",
+   "term": "Oscillator crossfade",
+   "fields": {
+    "definition": "A technique in which the output of one oscillator or waveform is gradually faded down while another is faded up, so the sound morphs smoothly between the two sources instead of switching abruptly.",
+    "plain_english": "Slowly blending from one synth sound into another so the change is smooth, not a sudden jump. It works like a DJ fading between two songs so you never hear a hard cut.",
+    "purpose_function": "It lets a synth move smoothly between two timbres, often driven by an envelope, LFO, or mod wheel, to create evolving, animated tones without clicks or steps.",
+    "practical_application": "A sound designer maps the mod wheel to crossfade between a soft and a bright oscillator, sweeping the timbre live during a performance.",
+    "category": "Synthesis",
+    "related_terms": ["Oscillator", "Wavetable", "LFO", "Modulation", "Vector synthesis", "Oscillator detuning"],
+    "common_mistakes": ["Confusing a crossfade (smooth blend) with an abrupt oscillator switch.", "Setting a fade whose midpoint dips in level when the two sources are out of phase.", "Forgetting to assign a modulation source, so the crossfade never actually moves."],
+    "scenario_contexts": ["Blending two wavetables with the mod wheel during a solo.", "Using vector synthesis to move between four oscillators with a joystick.", "Morphing a pad slowly from dark to bright over a long envelope."]
+   },
+   "sources": ["Roads, The Computer Music Tutorial", "Sound on Sound, Synth Secrets (wavetable and vector synthesis)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "db147f80-8578-42b4-84f4-5f76170b0c7e",
+   "term": "Oscillator detuning",
+   "fields": {
+    "definition": "Deliberately offsetting the pitch of one oscillator slightly relative to another (typically by a few cents) so the two waveforms drift in and out of phase, producing beating and a thicker, chorused sound.",
+    "plain_english": "Setting two synth oscillators a tiny bit apart in pitch so they clash gently and sound fatter. It is the same shimmer you hear when two singers are almost, but not quite, in tune.",
+    "purpose_function": "It fattens and animates a sound by creating slow beating between oscillators, the classic way to get big, wide, analog-style leads and pads from otherwise static tones.",
+    "practical_application": "To thicken a lead, a player detunes the second oscillator a few cents from the first, adjusting the amount by ear for a wider or more aggressive sound.",
+    "category": "Synthesis",
+    "related_terms": ["Beating", "Unison", "Oscillator fine tune", "Chorus", "Cents", "Supersaw"],
+    "common_mistakes": ["Detuning so far that the two oscillators sound like separate, out-of-tune notes.", "Confusing detune (small and musical) with a coarse pitch or interval offset.", "Forgetting that detuned unison stacks use extra voices of polyphony."],
+    "scenario_contexts": ["Fattening a saw lead by detuning a second oscillator a few cents.", "Building a supersaw pad from many slightly detuned copies.", "Adding movement to a bass by lightly detuning a sub oscillator."]
+   },
+   "sources": ["Roads, The Computer Music Tutorial", "Sound on Sound, Synth Secrets (oscillators and beating)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bcd7730a-ef95-46c8-bd11-cbeb4b17c08a",
+   "term": "Oscillator drift",
+   "fields": {
+    "definition": "Slow, small, and somewhat random variation in an oscillator's pitch over time, caused in analog circuits by temperature changes and component tolerances; many digital synths model it intentionally to add analog-style warmth and movement.",
+    "plain_english": "The way an old analog synth's tuning wanders a little on its own. Modern synths often copy this gentle wobble because it makes the sound feel warm and alive instead of frozen.",
+    "purpose_function": "As a fault it causes tuning instability that calls for warm-up and calibration; as a modeled effect it adds subtle, ever-changing detuning that keeps stacked oscillators from sounding sterile.",
+    "practical_application": "A technician lets a vintage analog synth warm up and retunes it before a session, while a producer may dial a little modeled drift into a soft synth for character.",
+    "category": "Oscillators",
+    "related_terms": ["Oscillator detuning", "Voltage-controlled oscillator", "Tuning stability", "Analog modeling", "Oscillator fine tune", "Temperature compensation"],
+    "common_mistakes": ["Assuming drift means the synth is broken, when a short warm-up and retune usually fixes it.", "Adding too much modeled drift, leaving the patch sounding out of tune.", "Forgetting that older analog gear needs periodic tuning before recording."],
+    "scenario_contexts": ["Warming up and retuning a vintage analog synth before tracking.", "Adding modeled drift to a virtual analog patch for realism.", "Diagnosing pitch instability traced to a temperature-sensitive oscillator."]
+   },
+   "sources": ["Roads, The Computer Music Tutorial", "Sound on Sound, Synth Secrets (analog oscillator behaviour)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d8d8f34b-a217-4f57-bb2b-733f05d9db06",
+   "term": "Oscillator fine tune",
+   "fields": {
+    "definition": "A control that adjusts an oscillator's pitch in small increments, usually measured in cents (hundredths of a semitone), for precise tuning against other oscillators or instruments, as opposed to coarse tuning in semitones.",
+    "plain_english": "A knob that shifts a synth's pitch by very small steps. You use it to tune the synth exactly to other sounds, like the fine tuner on a guitar.",
+    "purpose_function": "It gives the small pitch resolution needed to match an oscillator precisely to another source, or to set a deliberate slight detune, separate from coarse semitone steps.",
+    "practical_application": "A player nudges the fine tune a few cents to lock a synth to a recorded track, or to introduce a gentle detune between two oscillators.",
+    "category": "Oscillators",
+    "related_terms": ["Coarse tune", "Cents", "Oscillator detuning", "Concert pitch", "Unison", "Oscillator key tracking"],
+    "common_mistakes": ["Confusing fine tune (cents) with coarse tune (semitones).", "Leaving a small offset dialed in and wondering why the synth sits slightly out of tune.", "Fine-tuning by ear against a drifting analog reference instead of a stable one."],
+    "scenario_contexts": ["Matching a synth's pitch to a sampled or acoustic track.", "Setting a small detune between two oscillators for width.", "Zeroing fine tune to return a patch to standard concert pitch."]
+   },
+   "sources": ["Roads, The Computer Music Tutorial", "Sound on Sound, Synth Secrets (tuning and cents)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9a42ba68-7196-423f-aff6-9864ecd2c0b6",
+   "term": "Oscillator key tracking",
+   "fields": {
+    "definition": "A setting that makes an oscillator's pitch follow the note played on the keyboard, so higher keys raise the oscillator's frequency proportionally; at full (100%) tracking the oscillator stays in equal-tempered tune across the keyboard, and reduced tracking makes pitch change less than one semitone per key.",
+    "plain_english": "This makes a synth oscillator change pitch to match the key you press, so it plays in tune up and down the keyboard. Turn it down and the notes get closer together, which is handy for drum or effect sounds.",
+    "purpose_function": "It keeps oscillators musically in tune across the keyboard, and when reduced or switched off it lets a sound hold a fixed or compressed pitch range, which is useful for percussion and effects.",
+    "practical_application": "A sound designer leaves key tracking full for melodic patches but lowers it on a noise or percussion layer so the sound barely changes pitch from key to key.",
+    "category": "Oscillators",
+    "related_terms": ["Keyboard tracking", "Filter key tracking", "Oscillator fine tune", "Equal temperament", "Pitch", "Envelope generator"],
+    "common_mistakes": ["Confusing oscillator key tracking with filter key tracking, which follows pitch for the cutoff.", "Turning tracking down and then wondering why higher notes play flat.", "Assuming every oscillator tracks the keyboard, when drones and some effects deliberately do not."],
+    "scenario_contexts": ["Keeping a lead in tune across the whole keyboard.", "Reducing tracking on a drum layer so its pitch stays nearly constant.", "Setting an oscillator to a fixed pitch for a special-effect or drone sound."]
+   },
+   "sources": ["Roads, The Computer Music Tutorial", "Sound on Sound, Synth Secrets (keyboard tracking)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

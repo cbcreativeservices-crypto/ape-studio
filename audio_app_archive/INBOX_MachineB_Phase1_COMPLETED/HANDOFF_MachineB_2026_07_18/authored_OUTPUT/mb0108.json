@@ -1,0 +1,339 @@
+{
+ "batch": 108,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "486e4b04-19ea-4d6e-b1c1-db6e0c444f2b",
+   "term": "Home-entertainment mix",
+   "fields": {
+    "definition": "A version of a film, television, or streaming program's soundtrack that is re-balanced and mastered specifically for consumer playback systems such as televisions, soundbars, and headphones, rather than the large-format theatrical mix made for cinemas. Compared with the theatrical mix it typically has raised dialogue levels and reduced dynamic range so it translates well at the lower listening levels found in the home.",
+    "plain_english": "A home mix is a version of a movie's sound made for watching at home, not in a big theater. The voices are turned up. The very loud and very quiet parts are brought closer together. This way it sounds clear on a TV, soundbar, or headphones.",
+    "purpose_function": "It exists because a cinema mix is calibrated for a large, loud room with a wide dynamic range, so it can sound muddy or force listeners to ride the volume at home; the home-entertainment mix adapts level balance and dynamics for smaller, quieter consumer environments.",
+    "practical_application": "A re-recording mixer creates it from the theatrical mix stems, raising dialogue, compressing the dynamic range, and checking translation on near-field monitors, a TV, and headphones before delivering to a streaming platform or disc.",
+    "category": "Mix Deliverable",
+    "related_terms": [
+     "Theatrical mix",
+     "Printmaster",
+     "Dynamic range",
+     "Stems",
+     "Dialnorm",
+     "Near-field monitoring"
+    ],
+    "common_mistakes": [
+     "Assuming the theatrical mix can be delivered as-is for home viewing without re-balancing dialogue and dynamics",
+     "Over-compressing the dynamic range until the mix sounds flat and lifeless",
+     "Only checking the mix on high-end studio monitors and never on a TV, soundbar, or headphones",
+     "Confusing the home-entertainment mix with a simple stereo downmix of the surround master"
+    ],
+    "scenario_contexts": [
+     "Preparing a feature film's soundtrack for Blu-ray and streaming release after the cinema run",
+     "Delivering a near-field mix that meets a streaming platform's loudness and dynamic-range specification",
+     "Re-balancing dialogue so speech stays intelligible on a small TV speaker",
+     "Creating separate cinema and home versions of a documentary's mix"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos technical documentation (Dolby Professional)",
+    "Ballou, Handbook for Sound Engineers (film and broadcast sound)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b63d7ff8-35db-4471-b136-7ccfe70c8583",
+   "term": "Horizontal branching",
+   "fields": {
+    "definition": "A horizontal-resequencing technique in interactive game music in which the score is built from pre-composed musical segments that branch to different follow-on segments at set decision points, so the order of music played changes in response to gameplay while remaining musically coherent.",
+    "plain_english": "In games, the music is split into short chunks. At certain points the game can branch to a different next chunk depending on what you do. It is like a choose-your-own-path story, but with pieces of music instead of pages.",
+    "purpose_function": "It lets a game's music follow the player's choices and changing situations without a composer having to write a separate fixed track for every possible path, keeping the score reactive yet continuous.",
+    "practical_application": "A game composer or audio implementer builds the segments and defines the branch points and rules in middleware such as Wwise or FMOD, so the engine picks the next segment based on game state like entering combat or completing an objective.",
+    "category": "Interactive Music",
+    "related_terms": [
+     "Horizontal resequencing",
+     "Vertical layering",
+     "Immediate transition",
+     "Adaptive music",
+     "Music segment",
+     "Transition marker"
+    ],
+    "common_mistakes": [
+     "Confusing horizontal branching with vertical layering, which adds or removes instrument layers instead of changing the segment order",
+     "Placing branch points off the musical grid so transitions sound abrupt or out of time",
+     "Writing segments that do not share key or tempo, making branches clash musically",
+     "Creating so many branches that the system becomes hard to test and maintain"
+    ],
+    "scenario_contexts": [
+     "Scoring a game level whose music branches between explore, tension, and combat states",
+     "Building a boss fight that branches to a victory segment when the enemy is defeated",
+     "Implementing music that branches based on which path the player chooses in an open world",
+     "Prototyping an adaptive score in Wwise using branch points tied to game parameters"
+    ]
+   },
+   "sources": [
+    "Sweet, Writing Interactive Music for Video Games: A Composer's Guide",
+    "Audiokinetic Wwise Help documentation (Interactive Music)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "de2e8292-0675-4921-a222-394f289a3323",
+   "term": "Horizontal resequencing",
+   "fields": {
+    "definition": "An interactive game-music technique in which pre-composed musical segments are reordered, repeated, or swapped along the timeline in real time in response to game events, changing what plays next without altering the instrumentation within any single segment.",
+    "plain_english": "This is a way to make game music change by rearranging chunks of a song as you play. The game decides which chunk comes next, so the same music can be reshuffled to fit the action. Think of it like a DJ picking the next section on the fly.",
+    "purpose_function": "It keeps a game's soundtrack fresh and responsive over long, unpredictable play sessions by rearranging existing music instead of looping one fixed track, so the score can follow shifts in pace and mood.",
+    "practical_application": "A composer writes interchangeable segments and transition rules, then an implementer sets them up in middleware such as Wwise or FMOD so the correct next segment is triggered when the game state changes.",
+    "category": "Interactive Music",
+    "related_terms": [
+     "Horizontal branching",
+     "Vertical layering",
+     "Adaptive music",
+     "Immediate transition",
+     "Music segment",
+     "Loop"
+    ],
+    "common_mistakes": [
+     "Mixing up horizontal resequencing (reordering segments) with vertical layering (adding or muting layers)",
+     "Not matching tempo and key across segments, so re-sequenced sections do not join cleanly",
+     "Transitioning between segments off the beat or bar, causing audible glitches",
+     "Forgetting to author transition segments, leaving jarring jumps between musical sections"
+    ],
+    "scenario_contexts": [
+     "Reordering exploration music segments as a player moves through a level",
+     "Swapping to a more intense segment when enemies appear",
+     "Looping and reshuffling background score during an open-ended puzzle",
+     "Setting up segment playlists and transition rules in game audio middleware"
+    ]
+   },
+   "sources": [
+    "Sweet, Writing Interactive Music for Video Games: A Composer's Guide",
+    "Audiokinetic Wwise Help documentation (Interactive Music)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c91e8722-b61c-4162-9c6e-04461ef4a07d",
+   "term": "Horizontal Zoom",
+   "fields": {
+    "definition": "In a digital audio workstation or editor, horizontal zoom is the control that expands or contracts the view along the time axis, showing a longer span of the timeline at lower magnification or a shorter span in greater detail, without changing track height.",
+    "plain_english": "Horizontal zoom stretches or squeezes the timeline from left to right on your screen. Zoom in to see a tiny slice of time up close for fine edits. Zoom out to see the whole song at once. It changes the view only, not the audio itself.",
+    "purpose_function": "It lets an editor move between a broad overview of a whole session and a close-up of individual waveforms or events, which is essential for both arranging and sample-accurate editing.",
+    "practical_application": "An engineer uses horizontal zoom, via keyboard shortcuts, a zoom tool, or a scroll gesture, to zoom in tight on a waveform to place an edit or crossfade, then zooms out to check the arrangement across the whole timeline.",
+    "category": "DAW Navigation",
+    "related_terms": [
+     "Vertical zoom",
+     "Timeline",
+     "Waveform",
+     "Zoom tool",
+     "Edit window",
+     "Playhead"
+    ],
+    "common_mistakes": [
+     "Confusing horizontal (time-axis) zoom with vertical zoom, which changes waveform or track height",
+     "Assuming zooming changes the audio itself rather than just the on-screen view",
+     "Editing while zoomed too far out to see the exact edit point, causing sloppy cuts",
+     "Forgetting the zoom keyboard shortcuts and losing time navigating menus"
+    ],
+    "scenario_contexts": [
+     "Zooming in to place a precise edit or crossfade on a vocal take",
+     "Zooming out to view and arrange a full song timeline",
+     "Lining up a sound effect to a video frame in post-production",
+     "Using zoom shortcuts to move quickly between detail and overview while comping"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide",
+    "Apple Logic Pro User Guide"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "983d08bc-118e-4018-9f6a-5d44f7464c12",
+   "term": "Hot spot",
+   "fields": {
+    "definition": "In sound reinforcement, a hot spot is a localized area within a system's coverage where the sound pressure level is noticeably higher than in surrounding areas, typically directly in front of or beneath a loudspeaker, producing uneven coverage across the audience.",
+    "plain_english": "A hot spot is a small area where the sound is much louder than everywhere else, usually right in front of or under a speaker. People standing there get blasted while others farther away hear less. Sound techs work to smooth these out for even coverage.",
+    "purpose_function": "Spotting hot spots matters because even, consistent level across the listening area is a core goal of system design; a hot spot flags a coverage problem that can cause listener discomfort and an inconsistent mix from seat to seat.",
+    "practical_application": "During system tuning a technician finds hot spots by walking the room or measuring SPL at many positions, then reduces them by re-aiming or re-angling loudspeakers, adjusting relative levels, or adding fill speakers for the under-covered areas.",
+    "category": "System Coverage",
+    "related_terms": [
+     "Coverage pattern",
+     "Sound pressure level",
+     "Even coverage",
+     "Fill speaker",
+     "Loudspeaker aiming",
+     "Sweet spot"
+    ],
+    "common_mistakes": [
+     "Turning the whole system down to tame a hot spot instead of re-aiming the loudspeaker causing it",
+     "Confusing a coverage hot spot with the monitoring sweet spot",
+     "UNSAFE: Standing in a hot spot close to a loudspeaker for long periods without hearing protection, risking noise exposure above safe OSHA limits",
+     "Judging coverage from one mix position only and missing hot spots elsewhere in the room"
+    ],
+    "scenario_contexts": [
+     "Tuning a live PA and finding the front rows are far louder than the back",
+     "Evening out coverage under a flown line array where seats directly below are too loud",
+     "Measuring SPL across a venue to locate and reduce hot spots before doors",
+     "Positioning fill speakers to balance a hot spot near the main hangs"
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "McCarthy, Sound Systems: Design and Optimization"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "25c2688d-c1bb-4491-a482-cea03e28d9fd",
+   "term": "Hybrid score mix",
+   "fields": {
+    "definition": "The mixing of a hybrid musical score, one that combines live acoustic recordings such as orchestra or soloists with electronic and programmed elements such as synthesizers, samples, and processed sounds, balancing and blending the acoustic and electronic material into a cohesive whole.",
+    "plain_english": "A hybrid score combines real recorded instruments with electronic and computer-made sounds. A hybrid score mix is the engineer's job of blending those two kinds of sound into one. It is like combining a live band and a synth setup into a single, smooth sound.",
+    "purpose_function": "It exists because modern film, TV, and game music often blends orchestra with synths and samples, and these sources have very different tone and dynamics; the mix reconciles them so neither the acoustic nor the electronic side sounds pasted on.",
+    "practical_application": "A score mixer balances recorded orchestral stems against synthetic layers using level, EQ, reverb, and spatial placement so the electronic parts sit naturally with the live players, often matching reverbs and low end so the elements share one space.",
+    "category": "Score Mixing",
+    "related_terms": [
+     "Stems",
+     "Orchestral recording",
+     "Synthesizer",
+     "Reverb",
+     "Submix",
+     "Immersive printmaster"
+    ],
+    "common_mistakes": [
+     "Letting synthetic low end and orchestral low end pile up and mask each other instead of carving space with EQ",
+     "Placing electronic elements in a different-sounding reverb space than the live players, breaking the illusion of one ensemble",
+     "Balancing only in stereo and ignoring how the blend holds up in surround or immersive formats",
+     "Treating the electronic layers as an afterthought rather than mixing them as part of the ensemble"
+    ],
+    "scenario_contexts": [
+     "Mixing a film cue that layers a recorded string section over synth pads and programmed percussion",
+     "Blending sampled instruments with a live soloist for a game soundtrack",
+     "Matching reverb and low end between orchestra and electronics in a trailer cue",
+     "Delivering a hybrid score stem set for a re-recording mix"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e3f8d760-a976-460c-80f0-b78e867128ee",
+   "term": "Immediate transition",
+   "fields": {
+    "definition": "In interactive game music, an immediate transition is a change from one musical segment or state to another that happens right away when triggered, without waiting for a musical sync point such as the next beat, bar, or cue, prioritizing responsiveness over rhythmic smoothness.",
+    "plain_english": "An immediate transition means the game switches the music the instant something happens, instead of waiting for the next beat or bar. It reacts fast, which is great for sudden events. The trade-off is the change can sound a little abrupt.",
+    "purpose_function": "It exists to make music respond instantly to urgent gameplay moments, such as a sudden ambush, where waiting for a musical boundary would feel too slow or disconnected from the action.",
+    "practical_application": "An audio implementer selects an immediate transition in middleware such as Wwise or FMOD for events that must react without delay, often pairing it with a short crossfade or a stinger to soften the otherwise abrupt cut.",
+    "category": "Interactive Music",
+    "related_terms": [
+     "Horizontal resequencing",
+     "Horizontal branching",
+     "Transition marker",
+     "Crossfade",
+     "Stinger",
+     "Sync point"
+    ],
+    "common_mistakes": [
+     "Using immediate transitions everywhere, so the music constantly jumps and loses its musical flow",
+     "Forgetting to add a crossfade or stinger, leaving an abrupt, clicky cut",
+     "Confusing an immediate transition with a synced transition that waits for the next bar or beat",
+     "Not testing immediate transitions against real gameplay timing, so they fire at awkward moments"
+    ],
+    "scenario_contexts": [
+     "Snapping instantly to combat music the moment an enemy attacks",
+     "Cutting immediately to a game-over sting when the player dies",
+     "Switching states right away during a scripted jump-scare",
+     "Choosing between immediate and beat-synced transitions while tuning a score in Wwise"
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise Help documentation (Music Transitions)",
+    "Sweet, Writing Interactive Music for Video Games: A Composer's Guide"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4498171b-d42d-4501-8699-bfefba2df953",
+   "term": "Immersive printmaster",
+   "fields": {
+    "definition": "An immersive printmaster is the final, fully-mixed master of a program's soundtrack delivered in an immersive, object-based format such as Dolby Atmos, containing the completed mix of channel beds plus audio objects with positional metadata, from which distribution encodes and renders are produced.",
+    "plain_english": "A printmaster is the finished, final version of a movie's soundtrack. An immersive printmaster is that final master in a 3D sound format like Dolby Atmos. In that format, sounds can be placed all around you and even above you. It is the master copy that everything else is made from.",
+    "purpose_function": "It serves as the authoritative final deliverable of the immersive mix, preserving the full object-based mix so that cinema, home, and streaming versions can all be rendered from one master rather than re-mixed for each format.",
+    "practical_application": "A re-recording mixer finalizes the immersive printmaster on a Dolby Atmos stage, then delivers it, typically as an ADM BWF master file, so the distributor can generate theatrical, home, and binaural renders from the same source.",
+    "category": "Mix Deliverable",
+    "related_terms": [
+     "Printmaster",
+     "Home-entertainment mix",
+     "Dolby Atmos",
+     "Audio object",
+     "Bed",
+     "Stems"
+    ],
+    "common_mistakes": [
+     "Thinking the immersive printmaster is a single stereo or 5.1 file rather than an object-based master with metadata",
+     "Confusing the printmaster (final master) with intermediate stems or the mix session",
+     "Delivering without confirming the format meets the platform's immersive spec such as bed layout, object count, and loudness",
+     "Assuming the immersive master alone covers home delivery without a re-rendered or re-balanced home mix"
+    ],
+    "scenario_contexts": [
+     "Delivering a feature film's final Dolby Atmos mix to the distributor",
+     "Creating the master from which cinema, home, and binaural renders are made",
+     "Archiving the object-based master at the end of a re-recording mix",
+     "Delivering an immersive printmaster that meets a streaming platform's Atmos home spec"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos technical documentation (Dolby Atmos Renderer)",
+    "SMPTE immersive audio / ADM (Audio Definition Model) documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "215a3b74-0e90-4d20-81ae-01776442bca3",
+   "term": "Import Session Data",
+   "fields": {
+    "definition": "Import Session Data is a Pro Tools command that copies selected elements, such as tracks, audio and video clips, automation, plug-in and mixer settings, tempo/meter maps, and window views, from another Pro Tools session into the current one, with options to match or create tracks and to reference or copy the source media.",
+    "plain_english": "Import Session Data is a Pro Tools command that pulls parts of one project into another. You pick what you want, like certain tracks, their volume moves, or the tempo, and it drops them into the session you have open. It saves you from rebuilding things by hand.",
+    "purpose_function": "It exists to move work between sessions, letting engineers reuse tracks, templates, settings, and edits, or gather material from several sessions, without manually recreating them.",
+    "practical_application": "An engineer opens Import Session Data, selects a source session, chooses which tracks and data to bring in and how to match them to existing tracks, then imports, for example pulling approved vocal tracks or a mix template into the current project.",
+    "category": "Session Management",
+    "related_terms": [
+     "Session",
+     "Track",
+     "Automation",
+     "Template",
+     "Consolidate",
+     "Clip"
+    ],
+    "common_mistakes": [
+     "Choosing 'copy from source media' versus referencing without understanding the difference, leading to missing files or duplicated audio",
+     "Importing to new tracks when you meant to match existing ones, creating duplicates",
+     "Overlooking that plug-in settings and automation can come in with the tracks, overwriting current settings",
+     "Forgetting that sample-rate or bit-depth differences may require conversion on import"
+    ],
+    "scenario_contexts": [
+     "Bringing approved tracks from an older session into a new one",
+     "Loading a mix template's routing and plug-in setup into a fresh session",
+     "Consolidating alternate takes recorded in separate sessions",
+     "Recovering specific tracks after a session file becomes corrupted"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide",
+    "Avid Pro Tools feature documentation (Avid Knowledge Base)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

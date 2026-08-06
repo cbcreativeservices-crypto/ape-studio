@@ -1,0 +1,159 @@
+{
+ "batch": 304,
+ "topic": "Psychoacoustics",
+ "authored": [
+  {
+   "id": "594c0f4d-7d61-4aa6-a216-fca3a18aec14",
+   "term": "ABX listening test",
+   "fields": {
+    "definition": "A double-blind comparison test in which a listener hears two known samples, A and B, then an unknown sample X that is randomly set to either A or B, and must decide whether X matches A or B. Repeating many trials and applying statistics reveals whether the listener can reliably hear any difference between A and B.",
+    "plain_english": "You listen to sound A and sound B, then a mystery sound X that is secretly one of them. You guess whether X is A or B, and you do this many times. If you cannot beat a coin flip, the two sounds most likely sound the same.",
+    "purpose_function": "It provides an objective, bias-resistant way to prove whether two audio items are actually distinguishable by ear, instead of relying on opinion or expectation.",
+    "practical_application": "A technician runs an ABX test to check claims such as whether listeners can truly hear the difference between two cables, codecs, or sample rates before making a purchasing or workflow decision.",
+    "category": "Listening Tests",
+    "related_terms": ["Double-blind listening test", "Controlled listening evaluation", "Listening experiment", "Audio benchmarking", "Just-noticeable difference"],
+    "common_mistakes": ["Assuming a heard difference is real without running enough trials to reach statistical significance", "Failing to level-match A and B, so a loudness difference gives away the answer", "Letting the software or operator reveal which sample is playing, breaking the blind", "Treating a single correct guess as proof, ignoring that 50 percent can be reached by chance"],
+    "scenario_contexts": ["Testing whether listeners can distinguish a lossy codec from the original master", "Comparing two microphone preamps to see if the difference is audible", "Evaluating whether a high sample rate is distinguishable from CD quality", "Settling a studio debate about whether a cable swap changed the sound"]
+   },
+   "sources": ["AES publications on subjective evaluation of audio", "Toole, Sound Reproduction: The Acoustics and Psychoacoustics of Loudspeakers and Rooms", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c2bf6ca4-3d52-43b0-9b13-8a53b2d7d873",
+   "term": "Audio benchmarking",
+   "fields": {
+    "definition": "The process of measuring and comparing the performance of audio equipment, software, or systems against a defined reference or against one another, using consistent test signals, metrics, and conditions so results are repeatable and fair.",
+    "plain_english": "It means testing audio gear or software the same way every time so you can compare them fairly. Like timing runners on the same track, you use fixed tests so the scores actually mean something.",
+    "purpose_function": "It lets engineers rank or qualify equipment objectively and track whether a change improves or degrades performance, so decisions rest on repeatable data rather than impressions.",
+    "practical_application": "A technician benchmarks converters, plugins, or DSP by running standard signals and logging metrics such as THD+N, frequency response, latency, or CPU load to compare products or verify a unit meets spec.",
+    "category": "Research Methodology",
+    "related_terms": ["Experimental validation", "Controlled listening evaluation", "ABX listening test", "Signal-to-noise ratio", "Total harmonic distortion"],
+    "common_mistakes": ["Comparing devices under different settings or signal levels, so the results are not fair", "Reporting a single number without stating the test conditions that produced it", "Confusing measured benchmarks with how something actually sounds to listeners", "Using test material that cannot be run again identically"],
+    "scenario_contexts": ["Comparing two audio interfaces' measured latency and noise floor", "Evaluating plugin CPU usage across different DAW buffer sizes", "Qualifying a batch of amplifiers against the manufacturer's published specs", "Choosing between converters by comparing THD+N under identical signals"]
+   },
+   "sources": ["AES standards for measurement of audio equipment performance", "Ballou, Handbook for Sound Engineers", "Fluke/Tektronix audio measurement application notes"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7f0e4317-b395-44bd-9d8f-3fc616285c62",
+   "term": "Audio research session",
+   "fields": {
+    "definition": "An organized working session dedicated to collecting audio data or perceptual judgments, in which stimuli are presented or recorded under planned, repeatable conditions to answer a defined research or evaluation question.",
+    "plain_english": "It is a planned work session for studying sound. You set up your gear and test sounds ahead of time, then gather results in a careful, repeatable way, much like running a science lab.",
+    "purpose_function": "It exists to gather reliable audio data or listener responses within one controlled block of time, keeping conditions consistent so the results can be trusted and repeated.",
+    "practical_application": "A technician sets up the room, level-matches stimuli, and logs conditions before running listeners or capturing test recordings, so every trial in the session stays comparable.",
+    "category": "Research Methodology",
+    "related_terms": ["Listening experiment", "Controlled listening evaluation", "Experimental recording", "Audio benchmarking", "Double-blind listening test"],
+    "common_mistakes": ["Changing gear or room setup partway through, so early and late results are not comparable", "Failing to document conditions, which makes the session impossible to repeat", "Running sessions so long that listeners fatigue and their judgments lose accuracy"],
+    "scenario_contexts": ["Running a block of listening trials to compare loudspeaker voicings", "Capturing reference recordings of an instrument under set microphone positions", "Collecting localization judgments from a panel of listeners", "Measuring a room's response before a perceptual evaluation"]
+   },
+   "sources": ["AES publications on subjective evaluation methodology", "Toole, Sound Reproduction: The Acoustics and Psychoacoustics of Loudspeakers and Rooms", "Moore, An Introduction to the Psychology of Hearing"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a2320789-359d-445a-96ed-30f80d9a854a",
+   "term": "Controlled listening evaluation",
+   "fields": {
+    "definition": "A subjective assessment of audio quality or attributes carried out under standardized, controlled conditions, including level-matched stimuli, a defined playback system and room, blinding, and a structured response method, so that bias is reduced and the perceptual data is repeatable.",
+    "plain_english": "It means judging how something sounds under strict, fair conditions. Loudness is matched, the room and gear are fixed, and you do not know which sample is which, so only the sound itself shapes your opinion.",
+    "purpose_function": "It controls the many factors that bias hearing, such as loudness, expectation, room, and order, so that differences reported by listeners reflect the audio itself and can be reproduced by others.",
+    "practical_application": "A technician sets up level-matched, blinded playback in a treated room and uses a fixed rating scale so listener panels can reliably compare speakers, codecs, or processing.",
+    "category": "Listening Tests",
+    "related_terms": ["Double-blind listening test", "ABX listening test", "Listening experiment", "Audio benchmarking", "Just-noticeable difference"],
+    "common_mistakes": ["Skipping level-matching, so the louder sample is preferred regardless of quality", "Letting listeners see labels or brands, which biases their ratings", "Using an untreated room whose acoustics color every comparison", "Using too few listeners or trials to draw a statistically sound conclusion"],
+    "scenario_contexts": ["Grading codec quality with a trained listening panel", "Comparing loudspeakers behind an acoustically transparent curtain", "Assessing the audibility of a processing change before release", "Rating the spatial quality of different surround mixes"]
+   },
+   "sources": ["ITU-R BS.1116 method for subjective assessment of small impairments in audio systems", "AES publications on listening test methodology", "Toole, Sound Reproduction: The Acoustics and Psychoacoustics of Loudspeakers and Rooms"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9f269792-13e4-43de-a7cd-3d2eade53b25",
+   "term": "Double-blind listening test",
+   "fields": {
+    "definition": "A listening test in which neither the listener nor the person administering the test knows which stimulus is being presented at any given time, preventing conscious or unconscious cues from influencing the result. It is the standard method for objectively assessing audible differences and quality in audio.",
+    "plain_english": "In this test, neither you nor the person running it knows which sound is playing. Hiding that from both sides stops any hint or body language from giving away the answer, so the results stay honest.",
+    "purpose_function": "It removes both experimenter and listener bias, ensuring that reported differences come from what is actually heard rather than from expectation, branding, or subtle cues from the test operator.",
+    "practical_application": "A technician runs double-blind comparisons, often using automated switching software, when evaluating gear, codecs, or formats so that conclusions will hold up to professional and scientific scrutiny.",
+    "category": "Listening Tests",
+    "related_terms": ["ABX listening test", "Controlled listening evaluation", "Listening experiment", "Audio benchmarking", "Experimental validation"],
+    "common_mistakes": ["Running a single-blind test instead, where the operator still knows and can leak cues", "Not level-matching, so loudness rather than quality drives the choice", "Ending the test as soon as a right answer appears, ignoring the statistics", "Using too few trials or listeners for the result to be meaningful"],
+    "scenario_contexts": ["Testing whether a lossy codec is transparent to listeners", "Evaluating amplifier or DAC differences without brand bias", "Comparing analog versus digital processing chains", "Validating a mastering change before committing to it"]
+   },
+   "sources": ["ITU-R BS.1116 method for subjective assessment of small impairments in audio systems", "AES publications on double-blind subjective testing", "Toole, Sound Reproduction: The Acoustics and Psychoacoustics of Loudspeakers and Rooms"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a19584f2-12b2-4e20-9a05-eb27dbe50a48",
+   "term": "Experimental recording",
+   "fields": {
+    "definition": "A recording made under deliberately controlled or varied conditions as part of a study, used either to test a recording technique or to produce standardized stimulus material for later perceptual or technical evaluation.",
+    "plain_english": "It is a recording made to test something, not to release as music. You capture sound under set conditions so you can study a technique or use the clip as a test sample later.",
+    "purpose_function": "It provides controlled, documented audio for research, either to compare capture methods or to serve as consistent stimuli, so that findings rest on known, repeatable material.",
+    "practical_application": "A technician captures the same source with different microphone types, positions, or rooms, logging each condition, so the clips can be compared or reused in listening tests.",
+    "category": "Research Methodology",
+    "related_terms": ["Audio research session", "Listening experiment", "Controlled listening evaluation", "Experimental validation", "Localization experiment"],
+    "common_mistakes": ["Changing more than one variable at once, so you cannot tell what caused a difference", "Not documenting microphone, position, and settings, which makes the recording unusable as data", "Letting recording level differ between conditions, biasing later comparisons"],
+    "scenario_contexts": ["Recording an instrument with several microphones to compare their character", "Capturing binaural stimuli for a localization study", "Producing reference clips for a codec listening test", "Testing a new room-microphone technique under controlled conditions"]
+   },
+   "sources": ["AES publications on recording technique evaluation", "Ballou, Handbook for Sound Engineers", "Toole, Sound Reproduction: The Acoustics and Psychoacoustics of Loudspeakers and Rooms"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "43b41bf7-c083-4540-85d4-e42bfec7c537",
+   "term": "Experimental validation",
+   "fields": {
+    "definition": "The process of confirming a hypothesis, model, design, or performance claim by testing it under controlled conditions and comparing the outcomes against measured or perceptual evidence.",
+    "plain_english": "It means proving an idea actually works by testing it, not just assuming it. You run a careful experiment and check the results against what you predicted.",
+    "purpose_function": "It exists to separate claims that hold up from those that do not, giving engineers evidence-based confidence before a method, model, or product is trusted or shipped.",
+    "practical_application": "A technician validates a new processing algorithm or measurement model by running controlled tests, such as listening trials or instrument measurements, and checking whether results match the predicted behavior.",
+    "category": "Research Methodology",
+    "related_terms": ["Audio benchmarking", "Double-blind listening test", "Controlled listening evaluation", "Listening experiment", "Experimental recording"],
+    "common_mistakes": ["Treating a good result on one sample as proof without repeating the test", "Confirmation bias: looking only for evidence that supports the claim", "Skipping controls, so you cannot rule out other causes for the result"],
+    "scenario_contexts": ["Confirming a new noise-reduction algorithm reduces noise without audible artifacts", "Checking that a room-correction model predicts the measured response", "Validating that a loudness meter matches the standard's reference values", "Testing whether a perceptual model agrees with listener ratings"]
+   },
+   "sources": ["AES publications on validation of audio systems and models", "Ballou, Handbook for Sound Engineers", "Moore, An Introduction to the Psychology of Hearing"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6cefdcc7-0ad1-40ab-8f37-da1763f2c1ce",
+   "term": "Listening experiment",
+   "fields": {
+    "definition": "A controlled study in which human listeners are presented with audio stimuli and asked to detect, discriminate, identify, or rate them, so that their responses can be analyzed to reveal how sound is perceived or to evaluate audio quality.",
+    "plain_english": "It is a test where people listen to sounds and report what they hear or prefer. Researchers study those answers to learn how hearing works or how good a sound is.",
+    "purpose_function": "It turns subjective hearing into measurable data, letting researchers map the limits and behavior of human perception or judge audio systems against real listeners rather than meters alone.",
+    "practical_application": "A technician runs listening experiments, such as detection, discrimination, or rating tasks with a listener panel, to establish thresholds, compare processing, or gather quality scores.",
+    "category": "Listening Tests",
+    "related_terms": ["Double-blind listening test", "ABX listening test", "Controlled listening evaluation", "Localization experiment", "Just-noticeable difference"],
+    "common_mistakes": ["Using too few listeners or trials to reach a reliable conclusion", "Not randomizing stimulus order, letting learning or fatigue bias results", "Failing to screen listeners' hearing when the task demands it", "Leading listeners with biased instructions or labels"],
+    "scenario_contexts": ["Measuring the threshold at which a distortion becomes audible", "Comparing preference scores for different loudspeakers", "Studying masking between two tones", "Rating the quality of coded audio at several bitrates"]
+   },
+   "sources": ["Moore, An Introduction to the Psychology of Hearing", "AES publications on subjective listening tests", "ITU-R BS.1534 (MUSHRA) method for subjective assessment of intermediate audio quality"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "240dc543-7d6d-4f3d-9c2c-d43a3d6595f4",
+   "term": "Localization experiment",
+   "fields": {
+    "definition": "A listening experiment designed to measure how accurately a listener can judge the direction and/or distance of a sound source, typically by presenting sounds from known positions or with controlled interaural cues and recording the perceived location.",
+    "plain_english": "It is a test of how well you can tell where a sound is coming from. Sounds are played from set spots or through headphones, and you point to or name where each one seems to be.",
+    "purpose_function": "It reveals how the ear and brain use timing, level, and spectral cues to place sounds in space, which informs spatial audio, surround sound, and hearing research.",
+    "practical_application": "A technician runs localization tests, using loudspeaker arrays or binaural playback, to evaluate spatial rendering systems, surround setups, or hearing performance.",
+    "category": "Listening Tests",
+    "related_terms": ["Listening experiment", "Double-blind listening test", "Controlled listening evaluation", "Interaural time difference", "Interaural level difference"],
+    "common_mistakes": ["Ignoring head movement, which strongly affects real-world localization", "Using a reflective room whose echoes confuse the direction cues", "Not controlling loudness, which gives distance cues away", "Confusing front-back reversals with true localization errors"],
+    "scenario_contexts": ["Testing how accurately listeners locate sources in a surround setup", "Evaluating a binaural rendering engine's directional accuracy", "Studying the precedence effect with paired sound sources", "Measuring localization blur at different frequencies"]
+   },
+   "sources": ["Blauert, Spatial Hearing: The Psychophysics of Human Sound Localization", "Moore, An Introduction to the Psychology of Hearing", "AES publications on spatial audio and localization"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

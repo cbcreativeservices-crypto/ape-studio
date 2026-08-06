@@ -1,0 +1,223 @@
+{
+ "expert": "cognition",
+ "group": 8,
+ "reviews": [
+  {
+   "id": "ad48847e-db84-47ae-a586-20f2df03a62e",
+   "term": "Bus Compressor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d77e639f-e2ee-4361-b35b-9213e340f9d2",
+   "term": "Butterworth filter / crossover",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4558d0e6-fbdb-416c-8227-2d1f386596da",
+   "term": "Buzz",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4be8db45-85eb-424e-a332-6a9c33e892fb",
+   "term": "Bypass test",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a39f6d24-ac50-4a26-9f18-08e4f2a179e9",
+   "term": "C-weighted (dBC)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "316514f5-ade3-4642-8545-cc8b30d4cea0",
+   "term": "Cabinet",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dac58355-4c4b-47a2-a9c9-37196e897dcf",
+   "term": "Cable capacitance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0e4ba416-406a-4b23-a91e-660d1c02ea28",
+   "term": "Cable Concealment",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4d89194b-b8c3-40dc-9f61-804b4f4c52fd",
+   "term": "Cable flex test",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b29305a3-ff55-4ebb-a7ba-eb50303abb2c",
+   "term": "Cable Gauge",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8d79b0fa-f4a3-41f6-84eb-84f6de82e1c3",
+   "term": "Cable Inspection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f54d834f-6a06-465a-b866-890c1fcbd4f8",
+   "term": "Cable Jacket",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "44d7b2d0-f072-46c2-8bb7-6c107e3f3863",
+   "term": "Cable Label",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "57dd7d6d-1333-4837-a4dd-cb0e8fcbf0fb",
+   "term": "Cable Labeling",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a5bf9364-b647-4f98-bf24-3ccca6724e99",
+   "term": "Cable Loom",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "82436f8b-520a-4f97-b546-6d86a5331df2",
+   "term": "Cable Management",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "648ca3da-9b83-49e7-bc7b-2a987441a03f",
+   "term": "Cable Pathway",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "19ef8cbb-341e-4bd5-86e1-624cdc00da18",
+   "term": "Cable Protection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ed332f8e-61a9-4999-a6f5-a82be88c3203",
+   "term": "Cable Raceway",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1995056a-ca4a-4a58-b876-5a7058865da2",
+   "term": "Cable Ramp",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bc1653fc-3db3-4839-b4ac-02006323b548",
+   "term": "Cable Run",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6f425b77-7e10-4a1e-a43a-7fce7b6924b6",
+   "term": "Cable Strain Relief",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c408bab7-f927-4682-a8d5-2cdb9421b5f5",
+   "term": "Cable Tester",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3a320462-dd04-4957-b65f-b7afbfbcdd8c",
+   "term": "Cable Wrap",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "655b0ee1-89ca-4f10-a50b-51819adc2750",
+   "term": "Cables (audio)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7abd023f-5b0f-4d0e-bc3f-af5bed030f7f",
+   "term": "Calibration",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ec53c957-d586-4cf1-8c59-25cd51467f1e",
+   "term": "Calibration offset",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4a5b980e-620f-4744-aa4d-30e7291ad448",
+   "term": "Calibration Tone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c4a23423-086e-4a4c-a0a2-bfb9ae95d75c",
+   "term": "Calibrator",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "41837cd6-cee9-4b51-9a15-a9aafeee7566",
+   "term": "Camlock",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "004a2baf-3f52-4f77-9f25-6a8b1071aa55",
+   "term": "CAN Bus",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d9b4561b-f971-4974-8a2d-2d53249bee0a",
+   "term": "Cannon EP Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "aefb311f-3aaf-4860-a878-c1829e728af5",
+   "term": "Capacitor",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Low",
+     "issue": "Tagged beginner and the definition/plain_english stay beginner-appropriate (stores charge, passes AC/blocks DC, safe discharge), but the mistakes and scenarios jump to intermediate work that assumes unstated prerequisites -- 'coupling stages', 'cathode bypass capacitor', and HV tube-amp filter caps are never introduced, so a true beginner can't map the mistakes to anything concrete.",
+     "suggestion": "Bring the beginner-facing fields down to the same level as the definition: e.g. replace 'Ignoring voltage rating in HV circuits' / 'wrong value for the role' with plainer misconceptions a beginner actually holds ('thinking a capacitor stores signal like a battery stores power', 'assuming a disconnected device is safe to touch because the power is off'), and keep the tube-amp coupling/cathode-bypass examples for the intermediate capacitor sub-entries. Alternatively retag this entry intermediate to match the depth of its current mistakes/scenarios."
+    }
+   ]
+  },
+  {
+   "id": "8964cdd4-8421-486e-abea-440e776d77b4",
+   "term": "Capsule",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8a5655b7-f516-4cd9-a51a-55faf0441ea2",
+   "term": "Capsule contamination",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

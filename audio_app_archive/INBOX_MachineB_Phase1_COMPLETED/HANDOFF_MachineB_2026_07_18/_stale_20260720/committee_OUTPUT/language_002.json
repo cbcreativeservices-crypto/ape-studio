@@ -1,0 +1,43 @@
+{
+ "expert": "Language/Communications",
+ "group": 2,
+ "reviews": [
+  {"id": "23d7f1d2-9137-4004-811f-df5015010c7a", "term": "Fingerstyle attack", "verdict": "OK", "suggestions": []},
+  {"id": "8715c831-bba4-4b92-a629-8bfa46db5e5c", "term": "Flue pipe", "verdict": "OK", "suggestions": []},
+  {"id": "a655c256-3701-4306-8fa2-318423ab81a1", "term": "Guitar body resonance", "verdict": "OK", "suggestions": []},
+  {"id": "dc9356df-837c-460d-a202-80d62561b52c", "term": "Guitar tone control", "verdict": "OK", "suggestions": []},
+  {"id": "7ecb3c1b-893b-4cf0-a09c-f60b6d89e4d2", "term": "Guitar volume control", "verdict": "OK", "suggestions": []},
+  {"id": "4e3bc4fb-f2ac-4b99-84c2-356ef343de6f", "term": "Hand cupping", "verdict": "MINOR", "suggestions": [
+    {"field": "scenario_contexts", "severity": "Low", "issue": "The second scenario 'A blues harmonica player cups mic and harp for a gritty tone' omits the article before the paired nouns; as a full subject-verb clause it reads ungrammatically.", "suggestion": "Change to 'A blues harmonica player cups the mic and harp for a gritty tone while the engineer manages feedback.'"}
+  ]},
+  {"id": "03ea5989-5136-4521-974b-6ecf8628e99e", "term": "Harmon mute", "verdict": "OK", "suggestions": []},
+  {"id": "62e5b204-6017-4914-89bf-bf4d9c66b66f", "term": "Harp glissando", "verdict": "OK", "suggestions": []},
+  {"id": "662109a5-5736-4c76-b22a-d8bbfba10b68", "term": "Harp soundboard", "verdict": "OK", "suggestions": []},
+  {"id": "278f2cc2-26cd-4f15-ba2f-5047ae1c6334", "term": "High-impedance guitar output", "verdict": "OK", "suggestions": []},
+  {"id": "2e113362-d1d4-4e3e-a9c8-1b0142b6dbc9", "term": "Instrument direct output", "verdict": "OK", "suggestions": []},
+  {"id": "c7b3d09b-1208-4452-988f-33c323187235", "term": "Instrument headphone output", "verdict": "OK", "suggestions": []},
+  {"id": "7cf836f9-dfe6-4e30-b231-559135445ac7", "term": "Instrument line output", "verdict": "OK", "suggestions": []},
+  {"id": "bff9f97f-f5d2-4937-9525-eba4588778a1", "term": "Isolation shield", "verdict": "OK", "suggestions": []},
+  {"id": "bd17dc8f-b1ce-4b16-bdf7-fb4f9adfd0ea", "term": "Leakage", "verdict": "OK", "suggestions": []},
+  {"id": "2b5a8a15-54e4-4f93-bc16-7ea03afe32cf", "term": "Left/mono output", "verdict": "OK", "suggestions": []},
+  {"id": "d7e91412-d2ea-4fe9-b0ee-619732c1525f", "term": "Lever harp", "verdict": "OK", "suggestions": []},
+  {"id": "d3f5f4f3-5527-4473-83eb-30179d4cb1d8", "term": "Line output", "verdict": "OK", "suggestions": []},
+  {"id": "07b87eea-21c6-42db-ad47-a2da9380bf8c", "term": "Local control", "verdict": "OK", "suggestions": []},
+  {"id": "6df2ca5a-21cd-4b9a-bf05-e10856dcf647", "term": "Low-B string", "verdict": "OK", "suggestions": []},
+  {"id": "3951811a-c281-4705-97fd-672b6602826a", "term": "Mandolin chop", "verdict": "OK", "suggestions": []},
+  {"id": "e4d4cd94-6b9c-4079-8e88-01dcb8c1eeec", "term": "Mandolin course", "verdict": "OK", "suggestions": []},
+  {"id": "2219ad69-ec83-454c-a63d-3019acc17de5", "term": "Master tuning", "verdict": "OK", "suggestions": []},
+  {"id": "1ff7db0e-6dcb-4d3a-86f7-198f5f992908", "term": "Mixture stop", "verdict": "OK", "suggestions": []},
+  {"id": "6311ee30-a99f-42af-86d1-95913333752a", "term": "Musette tuning", "verdict": "OK", "suggestions": []},
+  {"id": "bc25bf66-1a64-4ff8-9667-c0c6ce6afa4a", "term": "Neck-body joint", "verdict": "OK", "suggestions": []},
+  {"id": "75c63b74-b8b4-4723-9898-4f514080476e", "term": "Nylon-string guitar", "verdict": "OK", "suggestions": []},
+  {"id": "c7cf81fe-c6f9-497b-844c-a1c21d14aa55", "term": "Open bell", "verdict": "OK", "suggestions": []},
+  {"id": "e841b7a7-22c7-41ae-8888-436697fc3429", "term": "Open string", "verdict": "OK", "suggestions": []},
+  {"id": "090c023d-bb35-408d-a028-75ff4d60d7e9", "term": "Open-back banjo", "verdict": "OK", "suggestions": []},
+  {"id": "ca33765b-2d16-499d-890b-72bdc19b0ab7", "term": "Overblowing", "verdict": "OK", "suggestions": []},
+  {"id": "e0f5d73e-dcb6-4480-99fb-1e1f5c2afea6", "term": "Palm muting", "verdict": "OK", "suggestions": []},
+  {"id": "5b7077e3-4def-4e14-903e-9882926b33de", "term": "Patch-change transient", "verdict": "OK", "suggestions": []},
+  {"id": "94e9a8cc-e174-42ea-867a-3d40ef6f0e0d", "term": "Pedal division", "verdict": "OK", "suggestions": []},
+  {"id": "98de405d-24c5-4e3a-ba59-ba755b3c90cf", "term": "Pedal harp", "verdict": "OK", "suggestions": []}
+ ]
+}

@@ -1,0 +1,231 @@
+{
+  "course": "MUSI190",
+  "topic": "Amps & Loudspeakers",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "37fc85b4-f7e3-452e-9e30-3e4489c739ca",
+      "term": "Alnico Magnet",
+      "fields": {
+        "plain_english": "An older type of speaker magnet made from aluminum, nickel, and cobalt that gives up a little of its magnetism when driven hard, producing a smooth, softly compressed sound prized in vintage drivers.",
+        "purpose_function": "It supplies the fixed magnetic field for the driver's motor; because alnico partially demagnetizes under heavy drive, it adds a gentle dynamic compression valued in guitar and classic hi-fi drivers.",
+        "practical_application": "A tech encounters alnico in vintage guitar speakers, classic compression drivers, and boutique reissues, and handles and stores them carefully because alnico can be partially demagnetized by physical shock, heat, or sustained overdrive.",
+        "category": "Loudspeaker Design",
+        "related_terms": ["Neodymium Magnet", "Ferrofluid", "Voice Coil", "Compression Driver", "Power Compression"],
+        "common_mistakes": [
+          "Believing alnico is inherently 'better' than ceramic or neodymium; it simply has a different, softer-compressing behavior.",
+          "Assuming alnico magnets never weaken, when they can be partially demagnetized by heavy overdrive, physical shock, or excess heat.",
+          "Confusing alnico's musical, motor-level compression with electronic dynamic-range compression in the signal chain."
+        ],
+        "scenario_contexts": [
+          "Restoring a vintage guitar amp and identifying whether the original speaker uses an alnico magnet.",
+          "Choosing an alnico compression driver for a warmer, more compressed top end in a horn-loaded system.",
+          "Diagnosing reduced output from an old alnico speaker that may have lost magnetic strength."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (loudspeaker driver motor structures chapter)",
+        "Premier Guitar, 'Speaker Geeks: Alnico or Ceramic ... What Gives?'",
+        "Thomas & Skinner, 'Alnico Magnets in Loudspeakers'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "00b6b47a-f1f2-4724-ac05-d2ca24e85ef8",
+      "term": "Beaming",
+      "fields": {
+        "plain_english": "As a speaker plays higher notes, the sound stops spreading out and instead shoots forward in a narrow beam, like a flashlight, so listeners off to the sides hear much less treble.",
+        "purpose_function": "Beaming is a physical behavior rather than a feature; understanding it lets designers set crossover points and choose driver sizes so coverage stays even across the frequency range.",
+        "practical_application": "A tech uses the onset of beaming to decide where to cross over to a smaller driver or add a horn or waveguide so off-axis audience members still receive high frequencies.",
+        "category": "Loudspeaker Design",
+        "related_terms": ["Dispersion", "Crossover", "Horn", "Waveguide", "Folded Horn"],
+        "common_mistakes": [
+          "Thinking beaming is a defect rather than a natural result of the wavelength becoming small relative to the cone diameter.",
+          "Running a large woofer too high in frequency, causing severe off-axis high-frequency loss.",
+          "Trusting on-axis measurements alone while beaming has already narrowed the usable coverage angle."
+        ],
+        "scenario_contexts": [
+          "Setting a crossover so a 12-inch or 15-inch driver hands off before it begins to beam.",
+          "Explaining why listeners at the sides of a room hear dull treble from a single full-range driver.",
+          "Selecting driver size and horn coverage to achieve even audience coverage in a live venue."
+        ]
+      },
+      "sources": [
+        "ProSoundWeb, 'Size Matters: Observations On Loudspeaker Directivity'",
+        "Ballou, Handbook for Sound Engineers (directivity and dispersion)",
+        "Yamaha Sound Reinforcement Handbook (Davis & Jones)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "9d4096d2-1275-4b55-a457-845641f610da",
+      "term": "Doppler Distortion",
+      "fields": {
+        "plain_english": "When one cone tries to play deep bass and high notes at the same time, its large back-and-forth bass movement slightly bends the pitch of the high notes, similar to how a passing siren changes tone.",
+        "purpose_function": "It is an unwanted distortion, not a function; recognizing it justifies multi-way designs that keep large low-frequency excursions and high frequencies on separate drivers.",
+        "practical_application": "A tech minimizes audible Doppler and related intermodulation distortion by using multi-way systems or subwoofers so a single cone is not reproducing heavy bass and delicate highs simultaneously.",
+        "category": "Loudspeaker Design",
+        "related_terms": ["Intermodulation Distortion", "Cone Excursion", "Full-Range Driver", "Crossover", "Beaming"],
+        "common_mistakes": [
+          "Confusing Doppler distortion with harmonic distortion, when it is a form of frequency/phase modulation that produces intermodulation sidebands.",
+          "Assuming it affects all drivers equally, when it is worst in full-range drivers with large excursion and a wide frequency spread.",
+          "Believing more power fixes it, when reducing excursion, for example by offloading bass to a subwoofer, is the real remedy."
+        ],
+        "scenario_contexts": [
+          "Deciding to add a subwoofer so a full-range driver is not modulating the highs with bass excursion.",
+          "Evaluating single-driver full-range loudspeakers for critical listening.",
+          "Explaining audible smearing of high frequencies during heavy bass passages."
+        ]
+      },
+      "sources": [
+        "Elliott Sound Products (sound-au.com), 'Doppler Distortion in Loudspeakers - Real or Imaginary?'",
+        "Stereophile, 'Red Shift: Doppler Distortion in Loudspeakers'",
+        "Ballou, Handbook for Sound Engineers (loudspeaker distortion mechanisms)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "e612ea14-fd06-49c7-af09-0bf75547f435",
+      "term": "Ferrofluid",
+      "fields": {
+        "plain_english": "A special magnetic oil placed in the tiny gap around a tweeter's voice coil; it pulls heat away and calms unwanted ringing, letting the tweeter play louder and cleaner.",
+        "purpose_function": "Held in place by the magnet in the voice-coil gap, it conducts heat from the coil to the magnet structure, raising power handling, and damps the driver's resonance peak.",
+        "practical_application": "A tech may refill or replace dried-out ferrofluid in aging tweeters to restore output and smooth the response, and recognizes that fluid loss can cause weak or distorted highs.",
+        "category": "Loudspeaker Design",
+        "related_terms": ["Voice Coil", "Tweeter", "Power Compression", "Alnico Magnet", "Neodymium Magnet"],
+        "common_mistakes": [
+          "Assuming all tweeters use ferrofluid; many do not, and adding the wrong type or amount changes the response.",
+          "Ignoring that ferrofluid can dry out or thicken with age, reducing output and increasing distortion.",
+          "Overheating a tweeter and expecting ferrofluid to prevent damage; it raises but does not remove thermal limits."
+        ],
+        "scenario_contexts": [
+          "Servicing vintage tweeters with degraded ferrofluid to restore high-frequency output.",
+          "Choosing tweeters with ferrofluid for higher power handling in PA use.",
+          "Diagnosing a tweeter with reduced or distorted highs caused by dried-out fluid."
+        ]
+      },
+      "sources": [
+        "HUMAN Speakers technical essay, 'Ferrofluid'",
+        "Ballou, Handbook for Sound Engineers (voice-coil cooling and damping)",
+        "Speaker Repair Shop, 'Information about ferrofluid-cooled tweeters'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "fb0ee365-00a6-49b7-b30c-3983a69c8f04",
+      "term": "Folded Horn",
+      "fields": {
+        "plain_english": "A horn speaker whose long flare is bent back and forth inside the cabinet, giving the power and efficiency of a large horn in a box small enough to move.",
+        "purpose_function": "It folds a long horn path into a practical enclosure to horn-load a driver, boosting low-frequency efficiency and sensitivity while reducing driver excursion.",
+        "practical_application": "A tech deploys folded-horn subwoofers for high-output, efficient low end in large venues, accounting for their size, weight, and directional low-frequency behavior.",
+        "category": "Loudspeaker Design",
+        "related_terms": ["Horn", "Bass Reflex", "Infinite Baffle", "Isobaric Loading", "Beaming"],
+        "common_mistakes": [
+          "Expecting deep, flat extension from a small folded horn, when true low-frequency horn loading requires a large mouth and a long path.",
+          "Ignoring that sharp internal folds create response irregularities and pipe resonances.",
+          "Assuming higher efficiency means the cabinet can be undersized, when horn dimensions are set by wavelength."
+        ],
+        "scenario_contexts": [
+          "Choosing folded-horn subs for maximum SPL and efficiency in a large concert system.",
+          "Comparing folded-horn versus bass-reflex subs for a tour with weight and space limits.",
+          "Explaining why a compact horn sub rolls off higher than a full-size horn."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (horn loudspeaker loading)",
+        "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+        "AudioJudgement, 'Folded Horn Speaker Design'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "5ca53f6d-9817-4cd3-b565-c2945a190b67",
+      "term": "Infinite Baffle",
+      "fields": {
+        "plain_english": "Mounting a woofer on a large surface such as a wall or a car trunk so the air behind it is effectively unlimited, letting the driver move as if it were in the open with no box to color the sound.",
+        "purpose_function": "It presents the driver with an effectively infinite rear volume so the enclosure adds no resonance or stiffness, letting the driver's own free-air characteristics dominate.",
+        "practical_application": "A tech uses infinite-baffle mounting in a wall, ceiling, or car trunk for smooth, natural low end with no box coloration, at the cost of needing a very large sealed space.",
+        "category": "Loudspeaker Design",
+        "related_terms": ["Sealed Enclosure", "Bass Reflex", "Folded Horn", "Isobaric Loading", "Free-Air Resonance"],
+        "common_mistakes": [
+          "Confusing a true infinite baffle with a small sealed box; the rear volume must be far larger than the driver's Vas.",
+          "Failing to seal the baffle so that front and rear waves cancel, killing bass output.",
+          "Expecting the same output-per-space efficiency as a tuned or ported enclosure."
+        ],
+        "scenario_contexts": [
+          "Installing car subwoofers firing into a sealed trunk as an infinite-baffle load.",
+          "Building in-wall speakers that use the wall cavity as an effectively infinite baffle.",
+          "Choosing an infinite-baffle approach for smooth, uncolored bass in a dedicated listening room."
+        ]
+      },
+      "sources": [
+        "Electronics Notes, 'Infinite Baffle Speaker: Loudspeaker Cabinet'",
+        "Ballou, Handbook for Sound Engineers (enclosure design)",
+        "Kicker technical paper, 'Infinite Baffle Guidelines'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "ea49fc9c-9592-4ca9-8b15-17844a6f7e4f",
+      "term": "Isobaric Loading",
+      "fields": {
+        "plain_english": "Stacking two identical woofers so they work as a team on the same trapped air, letting a subwoofer fit in about half the box size it would otherwise need.",
+        "purpose_function": "It couples two drivers through a shared enclosed air volume so the pair behaves like a single driver that needs only half the enclosure volume for the same low-frequency response.",
+        "practical_application": "A tech uses isobaric pairs where cabinet size is tightly limited, accepting the extra driver cost and weight, and no gain in efficiency, in exchange for a smaller box.",
+        "category": "Loudspeaker Design",
+        "related_terms": ["Sealed Enclosure", "Infinite Baffle", "Folded Horn", "Cone Excursion", "Bass Reflex"],
+        "common_mistakes": [
+          "Believing isobaric loading increases output or efficiency, when it trades a second driver for half the box volume, not more SPL.",
+          "Wiring the two drivers with incorrect polarity for the chosen face-to-face or tandem arrangement.",
+          "Forgetting that added driver mass, weight, and cost accompany the space savings."
+        ],
+        "scenario_contexts": [
+          "Designing a compact subwoofer that must fit a small space while keeping deep extension.",
+          "Explaining why a small dual-driver sub can match the low end of a larger single-driver box.",
+          "Wiring face-to-face isobaric drivers out of electrical phase so their motion combines correctly."
+        ]
+      },
+      "sources": [
+        "Wikipedia, 'Isobaric loudspeaker' (aggregating Linn/Isobarik and compound-loading references)",
+        "Ballou, Handbook for Sound Engineers (compound/isobaric enclosures)",
+        "AudioJudgement, 'Isobaric Subwoofer Box Design'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "f3c8eb62-4fc4-46ca-a8ed-8178251142ca",
+      "term": "Neodymium Magnet",
+      "fields": {
+        "plain_english": "A very strong, lightweight magnet made of neodymium, iron, and boron that lets speakers be much smaller and lighter while still playing loud, which is ideal for gear that has to be carried and flown.",
+        "purpose_function": "It provides a strong magnetic field in far less mass than ceramic, enabling lightweight, high-sensitivity drivers for portable and flown loudspeaker systems.",
+        "practical_application": "A tech values neodymium drivers in line arrays and portable PA for large weight savings in rigging and transport, while watching heat, because neodymium loses magnetism at high temperatures.",
+        "category": "Loudspeaker Design",
+        "related_terms": ["Alnico Magnet", "Ferrofluid", "Voice Coil", "Compression Driver", "Line Array"],
+        "common_mistakes": [
+          "Assuming neodymium magnets are immune to heat; they demagnetize at lower temperatures than ceramic, so voice-coil heat can weaken them.",
+          "Thinking neodymium automatically sounds better, when it mainly enables lighter and more efficient drivers.",
+          "Overlooking the higher cost and corrosion sensitivity of neodymium, which requires protective plating."
+        ],
+        "scenario_contexts": [
+          "Speccing neodymium line-array boxes to cut flown weight and reduce rigging load.",
+          "Choosing lightweight neodymium drivers for portable or battery-powered PA and touring.",
+          "Managing amplifier and thermal limits to avoid demagnetizing neodymium motors during long, high-power shows."
+        ]
+      },
+      "sources": [
+        "Stanford Magnetics, 'Neodymium Magnet Loudspeakers'",
+        "AIRPULSE, 'Neodymium Drivers: What You Need to Know'",
+        "Ballou, Handbook for Sound Engineers (magnet materials for drivers)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

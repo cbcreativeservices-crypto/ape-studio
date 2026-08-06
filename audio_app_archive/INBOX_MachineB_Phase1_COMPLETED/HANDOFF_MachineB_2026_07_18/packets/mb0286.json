@@ -1,0 +1,106 @@
+{
+ "batch": 286,
+ "topic": "Sampling Fundamentals & Instruments",
+ "terms": [
+  {
+   "id": "7b4398d8-e0bb-4620-80c2-9d3a8714df3a",
+   "term": "Waveform morphing",
+   "topic": "Sampling Fundamentals & Instruments",
+   "seq": 1350,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "f5acbd98-9719-4e5b-a39e-b193b5a1c056",
+   "term": "Waveform shaping",
+   "topic": "Sampling Fundamentals & Instruments",
+   "seq": 1350,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "12a86bbe-6f2c-43eb-a8d6-bc1b894fdcda",
+   "term": "Wavetable oscillator",
+   "topic": "Sampling Fundamentals & Instruments",
+   "seq": 1350,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "56de5cab-cf23-4f1e-aed5-86dfc5ef801b",
+   "term": "Zone mapping",
+   "topic": "Sampling Fundamentals & Instruments",
+   "seq": 1350,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

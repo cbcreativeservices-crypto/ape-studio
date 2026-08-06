@@ -1,0 +1,231 @@
+{
+ "batch": 70,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "06de1777-e922-424d-9627-187054aea70b",
+   "term": "Vocal air enhancement",
+   "fields": {
+    "definition": "The process of adding or boosting very-high-frequency content on a vocal, typically above roughly 10 kHz, to give it a sense of openness, breathiness, and sheen. It is done with a high-shelf EQ or with a harmonic exciter that generates new high-frequency detail.",
+    "plain_english": "It means adding a gentle lift to the very top of a voice so it sounds open and airy. It is like opening a window to let a little light and space into the sound.",
+    "purpose_function": "It adds detail and presence so a lead vocal sits on top of the mix and sounds clear and modern. Without it a voice can feel dull or closed in.",
+    "practical_application": "While mixing a lead vocal, a technician dials in a high-shelf boost around 10 to 16 kHz or inserts an air band or exciter, checking that sibilant sounds do not turn harsh.",
+    "category": "Vocal EQ",
+    "related_terms": ["Vocal brightness control", "High-shelf EQ", "Harmonic exciter", "De-essing", "Vocal body enhancement"],
+    "common_mistakes": [
+     "Pushing the air band so high that the vocal becomes harsh and the sibilant s and t sounds spit.",
+     "Boosting broadband highs and raising hiss and noise along with the wanted air.",
+     "Adding air on a dull raw recording instead of first fixing the source or mic choice."
+    ],
+    "scenario_contexts": [
+     "Brightening a close-miked lead vocal so it cuts through a dense band mix.",
+     "Adding sheen to a vocal recorded with a darker dynamic microphone.",
+     "Using an exciter to restore air to a vocal that lost highs after heavy compression."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fa4613ba-92f4-4b48-8646-14d9d0a73573",
+   "term": "Vocal ambience control",
+   "fields": {
+    "definition": "The management of the room reverberation and spatial character heard around a recorded vocal, by capturing, reducing, gating, or adding natural and artificial reverb. It sets how close or distant and how wet or dry the voice sounds in the mix.",
+    "plain_english": "It means setting how much room echo you hear around a voice. It decides if the singer sounds close and dry or far off in a big space.",
+    "purpose_function": "It places the vocal at a chosen distance and mood so it matches the song and sits clearly against the band. Too much ambience blurs the words, while too little sounds flat.",
+    "practical_application": "While mixing, a technician trims recorded room sound, gates spill between phrases, or adds reverb sends so the ambience supports the vocal without muddying it.",
+    "category": "Vocal Processing",
+    "related_terms": ["Reverb", "Room tone", "Noise gate", "Vocal background-noise repair", "Dry/wet balance"],
+    "common_mistakes": [
+     "Adding heavy reverb to a vocal already recorded in a live room, which washes out the words.",
+     "Gating room spill so hard that phrase tails cut off abruptly and sound unnatural.",
+     "Judging ambience on a solo vocal instead of against the full mix where the band fills space."
+    ],
+    "scenario_contexts": [
+     "Drying up a bedroom vocal take so it does not sound boxy behind the band.",
+     "Adding a short plate reverb so a close, dry vocal feels natural in a ballad.",
+     "Gating headphone bleed and room noise before adding controlled reverb of your own."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6f123137-dda6-4679-b3b6-a0f8b51f9b6e",
+   "term": "Vocal arrangement",
+   "fields": {
+    "definition": "The planning and layering of the vocal parts in a song, including lead, harmonies, doubles, ad-libs, and backing vocals, along with their timing, register, and placement. It shapes the overall vocal texture of an arrangement and guides what gets tracked.",
+    "plain_english": "It means deciding how all the sung parts fit together in a song. It covers the main tune plus harmonies and backup voices, and when each one comes in.",
+    "purpose_function": "It shapes the emotion and fullness of a song's vocals and tells the engineer which parts to record and where. A strong arrangement keeps the lead clear while backing parts add depth.",
+    "practical_application": "Before or during tracking, a producer maps out the lead, doubles, and harmony stacks, then records each part in turn to build the planned vocal texture.",
+    "category": "Vocal Arrangement",
+    "related_terms": ["Harmony vocals", "Double tracking", "Lead vocal", "Backing vocals", "Vocal comping"],
+    "common_mistakes": [
+     "Stacking so many harmony and backing parts that they bury the lead vocal and blur the lyric.",
+     "Recording harmonies without a clear plan, so parts clash in register or timing.",
+     "Doubling every section the same way instead of saving big stacks for choruses and hooks."
+    ],
+    "scenario_contexts": [
+     "Planning lead, double, and three-part harmonies for a chorus before a tracking session.",
+     "Adding ad-libs and answer lines to fill space between the lead vocal phrases.",
+     "Deciding which verse lines stay solo and which sections open up with backing vocals."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3df7e422-b6b0-4f74-8d93-5fdd81ec7fd2",
+   "term": "Vocal automation pass",
+   "fields": {
+    "definition": "A dedicated pass through a vocal track in which the engineer writes automation over time, most often volume level, but also mute, pan, sends, or plugin settings. Its aim is to keep the vocal even and intelligible from start to finish of the song.",
+    "plain_english": "It means going through a vocal track and drawing in volume moves line by line. It keeps every word at the right level so nothing gets lost or jumps out.",
+    "purpose_function": "It evens out level and effect changes that the singer or compressor left behind so each word sits right in the mix. It gives a level of control finer than a single fader setting can.",
+    "practical_application": "After basic balancing, a technician plays the song and rides the vocal fader or draws level moves so quiet words come up and loud peaks stay in place.",
+    "category": "Vocal Automation",
+    "related_terms": ["Fader riding", "Volume automation", "Vocal breath automation", "Compression", "Mix automation"],
+    "common_mistakes": [
+     "Relying only on heavy compression for level control instead of a fine automation pass, so words still get lost.",
+     "Writing automation moves so extreme that the vocal level pumps and sounds unnatural.",
+     "Automating the vocal in solo rather than against the band, so the balance is wrong in the full mix."
+    ],
+    "scenario_contexts": [
+     "Riding the lead vocal level word by word so every lyric is clearly heard over the band.",
+     "Automating a reverb send up on the last word of a phrase for a throw effect.",
+     "Drawing level dips on loud consonants that a compressor alone could not tame."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1c3e1b3f-db47-4f27-a46f-01417f5cf18a",
+   "term": "Vocal background-noise repair",
+   "fields": {
+    "definition": "The removal or reduction of unwanted background sound from a recorded vocal, such as room hum, air-conditioning, hiss, chair squeaks, or headphone bleed, using noise-reduction tools, spectral editing, gating, or manual editing while preserving the voice. It restores a clean vocal recording.",
+    "plain_english": "It means cleaning quiet junk out of a vocal recording, like fan hum or hiss. The goal is a clear voice with the background noise gone.",
+    "purpose_function": "It keeps noise from building up or distracting once the vocal is compressed and raised in level. A clean recording sits better in the mix and sounds professional.",
+    "practical_application": "An editor uses a noise-reduction or spectral-repair plugin to learn the steady room noise and subtract it, then listens for artifacts before moving on.",
+    "category": "Audio Restoration",
+    "related_terms": ["Noise gate", "Spectral editing", "Vocal ambience control", "Hum removal", "De-essing"],
+    "common_mistakes": [
+     "Applying too much noise reduction, which leaves a watery, robotic artifact on the voice.",
+     "Gating out low-level noise but also chopping soft breaths and phrase tails.",
+     "Cleaning noise late in the mix instead of fixing the recording chain and room at the source."
+    ],
+    "scenario_contexts": [
+     "Removing steady air-conditioner hum from a vocal tracked in an untreated room.",
+     "Using spectral repair to erase a single chair creak between two vocal phrases.",
+     "Reducing headphone click bleed captured on a quiet, close-miked verse."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "de9c6d48-882c-49b6-b971-f266ad5906a8",
+   "term": "Vocal body enhancement",
+   "fields": {
+    "definition": "The reinforcement of a vocal's low-midrange fundamentals, roughly 100 to 300 Hz, to add weight, warmth, and fullness. It is done with EQ boosts, saturation, or parallel processing so a thin voice sounds fuller and more present.",
+    "plain_english": "It means adding weight and warmth to a thin-sounding voice. It fills in the lower part of the sound so the singer feels fuller and closer.",
+    "purpose_function": "It gives a thin or distant vocal more warmth and power so it feels present and supported in the mix. A voice with body holds its place instead of sounding weak.",
+    "practical_application": "When a vocal sounds thin, a technician boosts the low-mids or adds gentle saturation, watching that it does not clash with the bass and turn muddy.",
+    "category": "Vocal EQ",
+    "related_terms": ["Low-mid EQ", "Saturation", "Vocal boxiness reduction", "Proximity effect", "Parallel compression"],
+    "common_mistakes": [
+     "Boosting low-mids so much that the vocal turns muddy and masks the bass guitar.",
+     "Adding body to fix a poor take when a better mic distance would solve it at the source.",
+     "Confusing warm body around 200 Hz with boxy honk higher up and boosting the wrong range."
+    ],
+    "scenario_contexts": [
+     "Warming up a thin vocal recorded on a bright condenser microphone.",
+     "Adding weight to a backing vocal so it supports rather than disappears under the lead.",
+     "Using saturation to give a distant-sounding take more presence and fullness."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0bce22a0-1cb6-4260-a389-92d813690c5b",
+   "term": "Vocal boxiness reduction",
+   "fields": {
+    "definition": "The cutting of low-mid frequencies, typically around 300 to 600 Hz, that make a vocal sound hollow or boxy, using a moderate to narrow EQ dip. It clears congestion in that range and improves the vocal's clarity and openness.",
+    "plain_english": "It means cutting the tones that make a voice sound like it comes from inside a box. Taking them down makes the voice clearer and more open.",
+    "purpose_function": "It removes the hollow, cardboard-like tone that small rooms and close miking can add, so the vocal sounds clear and natural. This frees up space in a crowded part of the mix.",
+    "practical_application": "A technician sweeps a narrow EQ boost to find the boxy frequency, then cuts it a few decibels until the vocal opens up.",
+    "category": "Vocal EQ",
+    "related_terms": ["Low-mid EQ", "Vocal body enhancement", "Subtractive EQ", "Proximity effect", "Muddiness"],
+    "common_mistakes": [
+     "Cutting too wide or too deep, which thins the voice and strips out its natural warmth.",
+     "Removing all low-mids and losing the body that keeps the vocal full.",
+     "Fixing boxiness only with EQ when the real cause was a reflective room that needed treating."
+    ],
+    "scenario_contexts": [
+     "Clearing a hollow tone from a vocal tracked in a small untreated room.",
+     "Dipping the low-mids so a close-miked vocal stops sounding congested.",
+     "Sweeping to find and cut a boxy resonance before adding air and presence."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "598e0be2-20e9-4330-96b8-4a7274b4eae6",
+   "term": "Vocal breath automation",
+   "fields": {
+    "definition": "The use of volume automation, muting, or editing to reduce, but usually not fully remove, the level of a singer's breaths between phrases. It keeps breaths natural while stopping compression from pushing them up too loud.",
+    "plain_english": "It means turning down the breaths a singer takes between lines so they do not jump out. You lower them a bit but keep some so the voice still sounds human.",
+    "purpose_function": "It stops breaths from being made loud by heavy compression while keeping the performance natural rather than lifeless. Fully cutting breaths often sounds unnatural, so they are tamed instead.",
+    "practical_application": "After compressing a vocal, a technician draws volume dips on each breath or uses a de-breath tool to lower them without cutting them out completely.",
+    "category": "Vocal Automation",
+    "related_terms": ["Vocal automation pass", "De-breath", "Compression", "Fader riding", "Vocal editing"],
+    "common_mistakes": [
+     "Muting breaths entirely, which makes phrases start abruptly and sound robotic.",
+     "Ignoring breaths so a hard compressor pushes them up as loud as the words.",
+     "Automating breath levels before compression, so the compressor changes them again afterward."
+    ],
+    "scenario_contexts": [
+     "Taming loud inhales that a fast compressor pulled up on an intimate vocal.",
+     "Lowering breaths between rap lines so they do not distract from the delivery.",
+     "Keeping soft, natural breaths in a ballad while trimming the loudest gasps."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0fe6a07c-ac6e-492e-a415-41331a24146f",
+   "term": "Vocal brightness control",
+   "fields": {
+    "definition": "The adjustment of a vocal's upper-frequency content, roughly the 3 to 8 kHz presence range and above, with EQ or dynamic processing to make it more or less bright. It balances clarity and cut against harshness and sibilance.",
+    "plain_english": "It means setting how sharp and clear the top of a voice sounds. You add some to help words cut through, or pull back if it gets too harsh.",
+    "purpose_function": "It balances a vocal's clarity and edge so it stays easy to understand and present without sounding thin or piercing. This keeps the voice sitting well over a busy band.",
+    "practical_application": "A technician boosts or cuts presence and high frequencies, sometimes with a dynamic EQ, so the vocal cuts through the band without turning harsh.",
+    "category": "Vocal EQ",
+    "related_terms": ["Vocal air enhancement", "Presence", "De-essing", "High-shelf EQ", "Sibilance"],
+    "common_mistakes": [
+     "Boosting brightness broadly and making the sibilant s and t sounds harsh.",
+     "Adding presence to a harsh vocal instead of first cutting the frequency that is causing the problem.",
+     "Judging brightness on headphones alone, then finding the vocal is too sharp on speakers."
+    ],
+    "scenario_contexts": [
+     "Lifting presence so a soft vocal is understood over loud electric guitars.",
+     "Cutting harsh upper frequencies on a vocal recorded through a bright signal chain.",
+     "Using dynamic EQ so brightness only rises on quieter passages where the vocal needs help."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

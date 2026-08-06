@@ -1,0 +1,159 @@
+{
+ "batch": 191,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "11df48eb-a496-4eb1-b417-545b26302a74",
+   "term": "Broadcast audio production",
+   "fields": {
+    "definition": "The craft and workflow of capturing, editing, mixing, and processing audio content such as programs, news, commercials, and station imaging for transmission over radio or television.",
+    "plain_english": "This is the work of making the sound you hear on radio and TV. Someone records voices and music, then mixes them so they play clearly on air.",
+    "purpose_function": "It turns raw recordings into polished, consistent audio that meets a station's sound and loudness targets, so the audience gets a clear and professional listening experience.",
+    "practical_application": "A technician records voice tracks, edits ads, and mixes shows in a DAW or on an on-air console, then delivers the finished audio to playout or the air chain.",
+    "category": "Broadcast Production",
+    "related_terms": ["Broadcast automation system", "Broadcast audio router", "Air chain", "Loudness normalization", "Studio-to-transmitter link"],
+    "common_mistakes": ["Ignoring loudness targets so segments air noticeably louder or quieter than the rest of the programming", "Over-processing voice audio until it sounds pumped or distorted", "Mixing to studio monitors without checking how content sounds on typical listener devices"],
+    "scenario_contexts": ["Editing and mixing a recorded interview for a scheduled news program", "Producing a 30-second commercial spot to a station's loudness spec", "Preparing station imaging and jingles for insertion by the automation system"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4c4128e6-de6f-4cf6-b40b-8e4e90347881",
+   "term": "Broadcast audio router",
+   "fields": {
+    "definition": "A matrix switching device that can connect any of many audio input sources to any of many outputs under operator or automation control, serving as the central signal-distribution hub of a broadcast facility.",
+    "plain_english": "This is a big switchboard for sound in a station. It can send any input, like a studio or a phone line, to any output, like the transmitter.",
+    "purpose_function": "It lets a facility route sources to destinations quickly and reliably, so studios, feeds, and transmitters can be reconfigured without repatching cables by hand.",
+    "practical_application": "An operator selects a source-to-destination crosspoint on a router panel or control software to send a studio's output to air or to feed a recorder.",
+    "category": "Signal Routing",
+    "related_terms": ["Broadcast automation system", "Broadcast clean feed", "Air chain", "Studio-to-transmitter link", "Crosspoint"],
+    "common_mistakes": ["Taking the wrong crosspoint and routing the wrong source to air", "Assuming a route change is instant when clean switching depends on proper synchronization", "Confusing a router destination with a physical output and patching the signal twice"],
+    "scenario_contexts": ["Switching a live studio to air at the top of the hour", "Feeding a network program to multiple outputs at once", "Routing an incoming remote feed to a recorder and to the monitor bus"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Wheatstone WheatNet-IP technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ce50119b-9540-4824-8801-c1ff3a6360d7",
+   "term": "Broadcast automation system",
+   "fields": {
+    "definition": "A software and hardware system that schedules, sequences, and plays out audio content such as songs, ads, jingles, and voice tracks automatically according to a program log, with or without a live operator.",
+    "plain_english": "This is a computer system that plays radio content on its own. It follows a playlist, so songs and ads play in the right order even with no one in the room.",
+    "purpose_function": "It ensures programming airs on time and in the correct order around the clock, cutting staffing needs and reducing human error during playout.",
+    "practical_application": "A technician builds the daily log, imports audio, and monitors the automation as it plays tracks, fires ads, and switches over to live shows.",
+    "category": "Playout & Automation",
+    "related_terms": ["Broadcast audio router", "Broadcast backup recorder", "Program log", "Voice tracking", "Air chain"],
+    "common_mistakes": ["Leaving a gap or bad entry in the log so the system airs silence or dead air", "Importing audio with the wrong start point so tracks clip on or off", "Trusting automation without monitoring, so a failed event goes unnoticed"],
+    "scenario_contexts": ["Running an unattended overnight music shift from a scheduled log", "Firing scheduled commercial breaks between live segments", "Voice-tracking a show so recorded links play between songs as if live"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "ENCO DAD system technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4e83365c-b8b2-44a1-a3a0-ce8b8e0acb77",
+   "term": "Broadcast backup recorder",
+   "fields": {
+    "definition": "A recorder that continuously captures a program or air-chain signal as a redundant copy, allowing content recovery or re-airing if the primary source or playout system fails.",
+    "plain_english": "This machine keeps recording the show as a spare copy. If the main system crashes, you still have the audio to play or to fix the problem.",
+    "purpose_function": "It provides redundancy so a station can recover content and stay on air after an equipment failure, a lost file, or a playout crash.",
+    "practical_application": "Engineers pull from the backup recording to fill dead air, re-air a lost segment, or check what actually left the studio.",
+    "category": "Logging & Recording",
+    "related_terms": ["Broadcast compliance recorder", "Broadcast automation system", "Air chain", "Redundancy", "Playout"],
+    "common_mistakes": ["Assuming a backup recorder also satisfies legal logging, which is the job of a compliance recorder", "Never testing the recording, then finding the backup was silent when it was needed", "Letting the storage fill up so old recordings block new ones"],
+    "scenario_contexts": ["Recovering a segment after the playout server crashes mid-show", "Filling dead air by replaying recently captured programming", "Reviewing the capture to confirm what audio actually aired"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1ee7f391-780c-4b2e-9a64-ec62f1d16a1e",
+   "term": "Broadcast clean feed",
+   "fields": {
+    "definition": "A program audio feed sent to a remote contributor that carries the full mix minus that contributor's own audio, preventing them from hearing their own voice delayed back; in audio production it is also called a mix-minus.",
+    "plain_english": "This is the sound sent back to a guest in another place. It has everything except the guest's own voice, so they don't hear a distracting echo of themselves.",
+    "purpose_function": "It gives remote guests the program audio they need to react to while removing their own delayed voice, which would otherwise cause confusing echo and disrupt the conversation.",
+    "practical_application": "An engineer builds a mix-minus on the console for each phone caller or remote guest so they hear the host and program but not themselves.",
+    "category": "Signal Feeds",
+    "related_terms": ["Broadcast dirty feed", "Mix-minus", "Broadcast codec link", "IFB", "Broadcast audio router"],
+    "common_mistakes": ["Sending the guest the full mix so they hear their own delayed voice as an echo", "Building one mix-minus and sharing it across several remote sources", "Assuming clean feed always means video without graphics; in audio it means the mix-minus feed"],
+    "scenario_contexts": ["Feeding a phone-in caller during a live talk show", "Sending program audio back to a reporter in the field over a codec", "Providing a remote studio guest a return feed free of their own voice"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "664ed620-6f25-4c4a-9df7-d346107a80d6",
+   "term": "Broadcast codec link",
+   "fields": {
+    "definition": "A point-to-point audio connection that uses an encoder/decoder to compress and carry broadcast-quality audio over IP, ISDN, or similar networks, used for remote contributions and studio-to-transmitter links.",
+    "plain_english": "This is a way to send radio-quality sound over the internet or phone lines. A box squeezes the audio at one end and unpacks it at the other.",
+    "purpose_function": "It moves high-quality audio between distant points reliably and with low delay, connecting field reporters, remote studios, and transmitter sites.",
+    "practical_application": "An engineer configures an IP codec to send a reporter's audio from a remote location back to the studio or to feed the transmitter site.",
+    "category": "Contribution Links",
+    "related_terms": ["Studio-to-transmitter link", "Broadcast clean feed", "Air chain", "IP audio", "Broadcast audio router"],
+    "common_mistakes": ["Mismatching the encode and decode settings so the link fails to connect or drops out", "Ignoring network jitter and buffer settings, causing audio glitches on the link", "Choosing a heavily compressed low-bitrate mode when quality audio is required"],
+    "scenario_contexts": ["Sending a field reporter's live report back to the studio over IP", "Linking a remote broadcast site to the main studio", "Carrying the main program from studio to the transmitter over a dedicated link"]
+   },
+   "sources": ["EBU Tech 3326 (ACIP)", "Telos Alliance codec technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "57ec87ed-7cda-4ee5-b8b0-73c009809251",
+   "term": "Broadcast compliance recorder",
+   "fields": {
+    "definition": "A recorder that continuously logs a station's off-air output to create a retained archive proving what was broadcast, used to meet regulatory, contractual, and dispute-resolution requirements; also called a logging or air-check recorder.",
+    "plain_english": "This records everything a station puts on air and keeps it. If someone asks what was broadcast, or the rules require proof, the log has it.",
+    "purpose_function": "It satisfies legal retention rules and provides evidence for listener complaints, royalty checks, and verification that content actually aired.",
+    "practical_application": "Staff pull a logged segment to answer a complaint, confirm an ad ran, or meet a regulator's request for proof of what was broadcast.",
+    "category": "Logging & Recording",
+    "related_terms": ["Broadcast backup recorder", "Air check", "Program log", "Air chain", "Loudness normalization"],
+    "common_mistakes": ["Confusing a compliance log with a backup recorder; the log is for legal proof, not re-airing quality", "Letting the retention period lapse so required recordings are already deleted", "Assuming the logger is running without checking it actually captured audio"],
+    "scenario_contexts": ["Retrieving a recording to answer a regulator's request about aired content", "Verifying a scheduled commercial actually ran at the logged time", "Reviewing a logged segment to resolve a listener complaint"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Telos Alliance logging system technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6ca66575-99e6-43f6-a831-26cb8b5312e3",
+   "term": "Broadcast dirty feed",
+   "fields": {
+    "definition": "The full program feed that includes every added element, such as the remote contributor's own audio in a return feed or, in television, station graphics and local inserts, in contrast to a clean feed from which specific elements are removed.",
+    "plain_english": "This is the full feed with all the extra parts left in. It is the opposite of a clean feed, where one part is taken out.",
+    "purpose_function": "It carries the complete program exactly as presented, useful where a downstream point needs everything included rather than a stripped-down version.",
+    "practical_application": "A master control operator monitors the dirty feed to see the complete output an audience receives, including all inserts and, in TV, graphics.",
+    "category": "Signal Feeds",
+    "related_terms": ["Broadcast clean feed", "Mix-minus", "Broadcast audio router", "Master control", "Program feed"],
+    "common_mistakes": ["Sending a dirty feed to a remote guest, so they hear their own delayed voice", "Confusing the dirty feed with the clean feed and stripping needed elements", "Assuming every downstream point wants the full feed when some need a clean version"],
+    "scenario_contexts": ["Monitoring the complete as-aired output in master control", "Feeding a downstream point that needs the full program with all inserts", "Comparing the dirty and clean feeds to confirm what each destination receives"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5aa10b65-5fcb-41f7-b8dc-4fc96a4b1754",
+   "term": "Broadcast effects microphone",
+   "fields": {
+    "definition": "A microphone deployed to capture ambient or event sounds such as crowd noise, applause, atmosphere, or specific action sounds rather than speech, mixed in to add realism and presence to a broadcast.",
+    "plain_english": "This is a mic that picks up background sound, like a cheering crowd. It makes a broadcast feel live and real instead of flat.",
+    "purpose_function": "It provides atmosphere and a sense of place under the commentary, so the audience feels present at the event.",
+    "practical_application": "At a sports broadcast, an engineer places effects mics around the field to capture crowd noise and on-field sounds mixed beneath the commentators.",
+    "category": "Microphones",
+    "related_terms": ["Broadcast clean feed", "Mix-minus", "Ambience", "Shotgun microphone", "Commentary"],
+    "common_mistakes": ["Mixing effects mics too loud so they bury the commentary", "Placing effects mics where they mainly pick up nearby commentators instead of the crowd", "Forgetting wind protection on outdoor effects mics, causing rumble"],
+    "scenario_contexts": ["Capturing crowd atmosphere at a live sports broadcast", "Miking the field or court to pick up on-field action sounds", "Adding audience applause and ambience to a live concert broadcast"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

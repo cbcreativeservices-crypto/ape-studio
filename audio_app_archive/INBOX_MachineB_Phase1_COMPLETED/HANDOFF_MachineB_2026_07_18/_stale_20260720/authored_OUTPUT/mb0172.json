@@ -1,0 +1,231 @@
+{
+ "batch": 172,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "e2f8752e-435a-46d2-8508-ce4b37a9ebdc",
+   "term": "Preview-delay system",
+   "fields": {
+    "definition": "In disc mastering, an arrangement that supplies the lathe's automatic pitch and depth control with an advance (preview) copy of the audio, timed roughly one groove revolution ahead of the signal being cut, so groove spacing can be adjusted before loud or bass-heavy passages arrive. It is implemented either with a separate preview (advance) head on the master tape machine or, for digital sources, with a delay line that delays the cutting feed while the undelayed feed drives the pitch computer.",
+    "plain_english": "When a record is cut, the machine must space the grooves out before a loud part so they do not overlap. A preview-delay system lets the machine 'hear' the music a moment early, giving it time to make room. It works like reading a line just ahead of when you say it out loud.",
+    "purpose_function": "It gives the lathe's variable pitch and depth system look-ahead, so it can widen groove spacing for loud or low passages and pack quiet passages tightly, fitting the most program time on a side without grooves cutting into each other.",
+    "practical_application": "A disc-mastering engineer sets the preview time to one platter revolution (about 1.8 seconds at 33 1/3 rpm) and feeds the preview signal to the pitch computer while the delayed program feeds the cutter head.",
+    "category": "Disc Mastering",
+    "related_terms": ["Cutting lathe", "Variable pitch", "Lacquer master", "Reference lacquer", "Groove spacing"],
+    "common_mistakes": [
+     "Setting the preview delay to the wrong time, so the pitch control opens up too early or too late and wastes side length or overcuts adjacent grooves.",
+     "Assuming the preview signal is heard on the finished record, when it only drives the automatic spacing and is not part of the cut audio.",
+     "Forgetting that a digital preview delay must match the platter speed, so a 45 rpm cut needs a different delay time than a 33 1/3 rpm cut."
+    ],
+    "scenario_contexts": [
+     "Cutting a loud, bass-heavy master to a 12-inch lacquer where wide groove spacing is needed to keep adjacent grooves from cutting into each other.",
+     "Fitting a long album side onto one lacquer by letting the automatic pitch pack quiet passages tightly.",
+     "Setting up a lathe to cut from a digital file rather than a tape machine that has a physical preview head."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (disc recording/cutting)", "Huber & Runstein, Modern Recording Techniques", "AES recommended practice for disc recording"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9e9f1086-8bcf-4101-8265-06a7bce06c51",
+   "term": "Production master",
+   "fields": {
+    "definition": "The final, approved master from which all consumer copies of a release are manufactured, for example a DDP fileset or PMCD for CD, a cutting master for vinyl, or an encoded master for digital distribution. It is the last stage of the mastering chain and is not altered further; every replicated or distributed copy derives from it.",
+    "plain_english": "This is the final, finished version of a recording that a factory or store copies to make every disc or download. Nothing is changed after it, so every copy people get comes from it. It is like the master stamp used to press identical coins.",
+    "purpose_function": "It locks the finished, approved sound and metadata into one authoritative source, so that every manufactured or distributed copy is identical and matches what the artist and label signed off on.",
+    "practical_application": "A mastering engineer delivers the production master as a DDP image, PMCD, or distribution-ready file set, checks it against the approved reference, and sends it to the replication plant or distributor.",
+    "category": "Master Deliverables",
+    "related_terms": ["Reference master", "DDP fileset", "PMCD", "Cutting master", "Remastering"],
+    "common_mistakes": [
+     "Confusing the production master with a rough or reference mix and sending an unapproved version for manufacture.",
+     "Editing or re-rendering the master after approval, so pressed or streamed copies no longer match the signed-off reference.",
+     "Delivering the wrong sample rate or bit depth for the target format, forcing the plant to re-encode and change the sound."
+    ],
+    "scenario_contexts": [
+     "Sending a DDP fileset to a CD plant for glass-master and disc replication.",
+     "Uploading a distribution master to a streaming aggregator.",
+     "Handing a vinyl cutting master to a lathe engineer for lacquer cutting."
+    ]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (mastering deliverables)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fce34dc6-3ded-495d-8e28-acb3541a3703",
+   "term": "Promo music stem",
+   "fields": {
+    "definition": "A stem containing only the musical elements of a program or track, prepared and delivered for promotional material such as on-air promos, trailers, or advertisements, so the music can be reused or re-balanced independently of dialogue and effects.",
+    "plain_english": "A stem is a mix that holds just one group of sounds. A promo music stem holds only the music, given to the team that makes ads and trailers so they can use the music by itself. It is like getting only the drum part of a song so you can add it to something new.",
+    "purpose_function": "It lets promo and marketing editors drop in, loop, or re-level the music without dialogue and effects, keeping promotional versions clean and giving flexibility for shorter cutdowns.",
+    "practical_application": "A mix engineer bounces a music-only stem alongside the dialogue and effects stems and includes it in the promo package so a network's promo department can build trailers and spots.",
+    "category": "Stem Delivery",
+    "related_terms": ["Stem", "M&E", "Dialogue stem", "Effects stem", "Full mix"],
+    "common_mistakes": [
+     "Baking effects or dialogue into the music stem, so it is no longer clean music-only.",
+     "Delivering the stem at a different level or sync than the full mix, so it does not line up when recombined.",
+     "Assuming one stem covers all promo needs when different cutdown lengths or alternate mixes are required."
+    ],
+    "scenario_contexts": [
+     "Supplying a network's promo team with a show's music so they can cut a trailer.",
+     "Building a 30-second ad that reuses a track's music bed without the vocal or effects.",
+     "Delivering stems so an international promo can be re-voiced over the same music."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (stems)", "Sound on Sound (stem delivery and mixing)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1af80f9b-ba0e-43dd-9f8e-0203f403fac0",
+   "term": "Reduced score mix",
+   "fields": {
+    "definition": "An alternate mix of a musical cue built from a reduced version of the score, using fewer instruments or a condensed arrangement, supplied so a thinner, less busy version of the music is available, for instance to sit beneath dialogue or narration or for simpler placements.",
+    "plain_english": "A full score can have many instruments playing at once. A reduced score mix is the same music played by fewer instruments and mixed as its own version. It gives a lighter, less busy option, handy when someone is talking over the music.",
+    "purpose_function": "It provides a thinner alternate of a cue so the music can support speech or a quiet scene without crowding the mix, while still matching the full version.",
+    "practical_application": "A score mixer prints a reduced version alongside the full mix so the dubbing stage can choose the lighter cue where dialogue or effects need room.",
+    "category": "Music Delivery",
+    "related_terms": ["Score mix", "Underscore", "Full mix", "Stem", "Cue"],
+    "common_mistakes": [
+     "Treating the reduced mix as a stem, when it is a complete alternate mix rather than a single element group.",
+     "Letting the reduced version drift out of sync or tuning with the full mix, so the two cannot be swapped.",
+     "Stripping out so much that the reduced mix no longer reads as the same cue."
+    ],
+    "scenario_contexts": [
+     "Delivering a lighter version of a cue to sit under heavy dialogue on a dubbing stage.",
+     "Offering a simpler arrangement of a theme for a quiet scene.",
+     "Providing an alternate mix for a promo that needs less instrumentation."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (music production and post)", "Sound on Sound (score mixing and delivery)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4374072e-8d3c-4656-8ea9-555c98d9facb",
+   "term": "Reference acetate",
+   "fields": {
+    "definition": "A lacquer-coated disc, commonly called an acetate, cut as a temporary reference so a recording can be auditioned on an ordinary turntable before committing to a production lacquer and pressing. It is a soft, short-lived cut used only for evaluation and approval, not for mass manufacture.",
+    "plain_english": "This is a one-off record cut so people can play a mix on a normal turntable and check it before the real records are made. It wears out fast, so it is only for listening and approval. Think of it as a rough draft you can actually play.",
+    "purpose_function": "It lets the artist, label, or engineer hear how a master will sound as a played-back disc and approve it before the costlier, one-way steps of production cutting and plating.",
+    "practical_application": "A cutting engineer cuts a reference acetate from the master, sends it out for approval, and only cuts the production lacquer once the acetate is signed off.",
+    "category": "Disc Mastering",
+    "related_terms": ["Reference lacquer", "Lacquer master", "Dubplate", "Reference pressing", "Cutting lathe"],
+    "common_mistakes": [
+     "Calling it 'acetate' and thinking it is made of acetate, when the coating is actually nitrocellulose lacquer over a metal or glass base.",
+     "Playing a reference acetate many times, not realizing each play wears the soft groove and dulls the sound.",
+     "Judging final quality from an acetate, which does not sound identical to the finished pressing."
+    ],
+    "scenario_contexts": [
+     "Cutting a quick reference disc so a band can hear their master on a home turntable.",
+     "Checking that a bass-heavy master tracks cleanly under a stylus before production.",
+     "Sending an acetate to a label for sign-off before plating begins."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (disc recording)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "668bac2d-9517-4806-9d32-612003f4c5c7",
+   "term": "Reference lacquer",
+   "fields": {
+    "definition": "A lacquer (acetate) disc cut for listening and approval, as distinct from the production lacquer that is silvered and electroplated to make stampers. It lets the cut be checked on a turntable before the one-way plating and pressing process begins.",
+    "plain_english": "A lacquer is the soft disc a record is first cut onto. A reference lacquer is one cut just so people can play it and approve the sound, not the one used to make the factory stampers. It is a playable check before the point of no return.",
+    "purpose_function": "It gives a listenable version of the cut for sign-off, guarding against sending a flawed cut into the irreversible plating and pressing chain.",
+    "practical_application": "An engineer cuts a reference lacquer for the client to approve, then cuts a separate production lacquer for plating once the sound and levels are confirmed.",
+    "category": "Disc Mastering",
+    "related_terms": ["Reference acetate", "Lacquer master", "Reference pressing", "Cutting lathe", "Stamper"],
+    "common_mistakes": [
+     "Confusing the reference lacquer with the production lacquer that goes into the plating bath.",
+     "Expecting a lacquer to survive many plays, when it is soft and degrades with use.",
+     "Assuming the lacquer's sound equals the final pressing, which is shaped further by plating and pressing."
+    ],
+    "scenario_contexts": [
+     "Cutting a lacquer for client approval before committing to plating.",
+     "Comparing two cutting levels on lacquers to choose the best side length.",
+     "Auditioning a lacquer to confirm sibilance and bass track cleanly."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (disc recording)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cb8a1262-9c21-4c55-8a22-5d7efa43b63c",
+   "term": "Reference master",
+   "fields": {
+    "definition": "An approved master used as the sonic reference against which later copies, transfers, or manufactured products are checked. It defines the target sound and level that a production master or pressing must match.",
+    "plain_english": "This is the approved 'sounds right' version everyone compares against. When a copy or pressing is made, engineers check it against the reference master to be sure it matches. It is like the answer key you check your work against.",
+    "purpose_function": "It sets the agreed sonic target so that production masters, transfers, and manufactured copies can be verified as faithful before release.",
+    "practical_application": "A mastering engineer keeps the approved reference master on hand and A/Bs it against test pressings or new transfers to confirm they match.",
+    "category": "Master Deliverables",
+    "related_terms": ["Production master", "Reference pressing", "Remastering", "Reference lacquer", "Cutting master"],
+    "common_mistakes": [
+     "Mixing up the reference master with the production master, when one is the target and the other is what gets manufactured.",
+     "Not documenting the reference master's level and format, making later matching guesswork.",
+     "Assuming any early mix is the reference, when only the approved version counts."
+    ],
+    "scenario_contexts": [
+     "Checking a vinyl test pressing against the approved reference master.",
+     "Verifying a new digital transfer matches the reference before release.",
+     "Confirming a plant's copy has not drifted from the approved sound."
+    ]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "17d65a8f-917b-48aa-9c64-5dbb887ed6cd",
+   "term": "Reference pressing",
+   "fields": {
+    "definition": "A record pressed from the finished stampers and sent to the artist, label, or engineer for approval before the full production run, commonly called a test pressing. It is checked for surface noise, defects, level, and overall sound.",
+    "plain_english": "Before a factory presses thousands of records, it makes a few from the finished parts and sends them out to be checked. This reference pressing lets people catch problems like noise or skips before the big run. It is like a proof copy before printing a whole book run.",
+    "purpose_function": "It provides a real, playable sample from the actual stampers so faults can be caught and the sound approved before committing to a costly full pressing run.",
+    "practical_application": "The artist or mastering engineer plays the reference pressing on a good turntable, listens for clicks, distortion, and level, and either approves the run or asks for a re-cut.",
+    "category": "Disc Mastering",
+    "related_terms": ["Test pressing", "Reference lacquer", "Reference master", "Stamper", "Cutting master"],
+    "common_mistakes": [
+     "Approving a reference pressing after only a quick listen, missing defects that show up later in the run.",
+     "Judging it on a poor turntable, so real problems are hidden or false ones imagined.",
+     "Assuming every production copy will sound identical, when stamper wear can change later pressings."
+    ],
+    "scenario_contexts": [
+     "Reviewing a test pressing for surface noise before greenlighting a run.",
+     "Comparing the pressing against the reference master to confirm the sound.",
+     "Catching a skip or non-fill defect before thousands of copies are made."
+    ]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science", "Ballou, Handbook for Sound Engineers (disc recording)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d335abfc-7f86-4b51-a977-172ac4441f71",
+   "term": "Remastering",
+   "fields": {
+    "definition": "The process of creating a new master from an existing recording, typically the original master tapes or files, to improve quality or adapt it to a new format, loudness target, or medium, without re-recording the performance or remixing from the multitrack.",
+    "plain_english": "Remastering means making a fresh, improved master from a recording that already exists. The performance is not redone; the engineer cleans it up and re-balances it for today's formats. It is like restoring an old photo without taking a new one.",
+    "purpose_function": "It brings older or format-limited recordings up to current quality and delivery standards, or prepares a catalog title for a new release format.",
+    "practical_application": "An engineer transfers the original tapes at high resolution, then corrects level, tone, and noise to produce a new master for CD, streaming, or a vinyl reissue.",
+    "category": "Mastering Process",
+    "related_terms": ["Production master", "Reference master", "Restoration", "Loudness normalization", "Reissue"],
+    "common_mistakes": [
+     "Confusing remastering with remixing, when remastering works from the finished mix rather than the multitrack.",
+     "Over-compressing a remaster to sound louder, sacrificing the dynamics of the original.",
+     "Assuming a remaster always sounds better, when a poor one can harm a well-regarded original."
+    ],
+    "scenario_contexts": [
+     "Preparing a 1970s album from its original tapes for a streaming reissue.",
+     "Bringing an old low-level master up to current loudness targets.",
+     "Cleaning tape hiss and re-balancing tone for a remastered CD edition."
+    ]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (remastering)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

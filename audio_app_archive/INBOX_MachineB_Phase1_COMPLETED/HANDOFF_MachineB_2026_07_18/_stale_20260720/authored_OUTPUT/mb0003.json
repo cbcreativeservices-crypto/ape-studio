@@ -1,0 +1,324 @@
+{
+  "batch": 3,
+  "topic": "Instrument Recording — Strings & Guitar",
+  "authored": [
+    {
+      "id": "8ba3cd8d-32cb-4bdc-a7d8-0b6ce4e8e9f6",
+      "term": "Bow-direction level change",
+      "fields": {
+        "definition": "The audible change in loudness (and slight change in timbre) that occurs as a bowed-string player reverses bow direction. Because a note's loudness follows bow speed, the bow decelerating to a stop and reversing at each up-bow/down-bow change causes a momentary dip in level, while down-bow and up-bow strokes also carry inherent dynamic tendencies (a down-bow near the frog naturally sounds stronger).",
+        "plain_english": "A bow only moves one way at a time. When a violin or cello player flips the bow's direction, the sound dips for a moment and its tone can shift a little. It is like the tiny pause you hear when someone saws a board back and forth.",
+        "purpose_function": "It is an inherent artifact of how a bow drives a string: since volume tracks bow speed, the speed passing through zero at each reversal creates a natural articulation point that players either use musically or smooth over for seamless legato.",
+        "practical_application": "Engineers recording strings listen for these dips as uneven seams in sustained lines and address them with mic placement, comping, or gentle gain riding rather than heavy compression, which would pump the room tone.",
+        "category": "Bowing technique",
+        "related_terms": [
+          "Bowing position",
+          "Bowed-string scratchiness",
+          "Bridge radiation",
+          "Helmholtz motion",
+          "Sul ponticello",
+          "Legato"
+        ],
+        "common_mistakes": [
+          "Assuming up-bow and down-bow are dynamically identical, so a natural bow-change dip gets mistaken for a bad take or player error",
+          "Reaching for heavy compression to hide bow-change dips, which pumps the room and dulls articulation instead of smoothing the line",
+          "Ignoring bow direction when editing or comping, so splice points land on a bow-change dip and create awkward level jumps"
+        ],
+        "scenario_contexts": [
+          "Tracking a solo violin legato line where audible dips at each bow change need transparent gain rather than aggressive compression",
+          "A cello section sounding uneven because down-bows land louder than up-bows on a repeated figure",
+          "Editing a string overdub and choosing splice points that avoid a bow-change level dip"
+        ]
+      },
+      "sources": [
+        "Adler, The Study of Orchestration (W. W. Norton)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "J. Woodhouse, Euphonics: the science and technology of musical instruments (euphonics.org, University of Cambridge)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "566a464d-49fe-4c33-9cbf-8e79baea2be6",
+      "term": "Bowed-string scratchiness",
+      "fields": {
+        "definition": "A harsh, noisy, poorly pitched quality in bowed-string tone produced when bow force, bow speed, and distance from the bridge fall outside the range that sustains clean Helmholtz (slip-stick) string motion. It typically results from excessive bow force for the chosen bow speed and bow-to-bridge distance, which turns the note into a raucous 'crunch' rather than a clear pitch; too little force gives a thin, whistling 'surface sound' instead.",
+        "plain_english": "The scratchy, crunchy sound a violin or cello makes when the bow is used wrong. Press too hard or drag it badly and you get noise instead of a clear, smooth note.",
+        "purpose_function": "Recognizing it matters because it marks the boundary of playable tone described by Schelleng's bow-force limits, so its presence signals that technique, rosin, or bow position, not the microphone, is the cause.",
+        "practical_application": "On a session an engineer hearing scratchiness first checks player technique, rosin, and bow-bridge position before suspecting the signal chain, and may move a mic slightly off-axis or further back to reduce captured bow noise.",
+        "category": "Bowing technique",
+        "related_terms": [
+          "Bowing position",
+          "Bow-direction level change",
+          "Sul ponticello",
+          "Helmholtz motion",
+          "Bridge radiation",
+          "Rosin"
+        ],
+        "common_mistakes": [
+          "Blaming a scratchy string recording on the mic or preamp when it is bow force or position producing surface noise",
+          "Over-rosining the bow, which increases grip and can worsen scratch and dust artifacts",
+          "Close-miking on-axis directly over the bridge, which exaggerates captured bow-contact scratch"
+        ],
+        "scenario_contexts": [
+          "A student violinist's take sounds harsh because bow force is too high for how close the bow is to the bridge",
+          "Setting mic distance and angle on a fiddle session to tame captured bow scratch",
+          "Diagnosing whether harshness on a string stem is a technique problem or a signal-chain fault"
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "J. Woodhouse, Euphonics: the science and technology of musical instruments (euphonics.org, University of Cambridge)",
+        "C. E. Gough, 'Violin Acoustics,' Acoustics Today (Acoustical Society of America), 2016"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "4b900ccb-3ad5-49c4-a4be-12226729d9ce",
+      "term": "Bowing position",
+      "fields": {
+        "definition": "The point along the string where the bow contacts it, expressed as its distance from the bridge as a fraction of the vibrating string length. It ranges from near the bridge (sul ponticello, brighter, thinner, harmonically rich) to over the fingerboard (sul tasto, softer, rounder, fewer high harmonics), and it sets the usable minimum and maximum bow force for a clear tone.",
+        "plain_english": "Where between the bridge and the fingerboard the player draws the bow. Closer to the bridge is brighter and edgier; over the fingerboard is softer and mellower.",
+        "purpose_function": "It is a primary tone control for bowed strings: bow position governs harmonic content and how much bow force the string tolerates before the note breaks up or thins, so players use it for both timbre and dynamics.",
+        "practical_application": "Engineers exploit it by asking a player to move sul tasto for a soft pad or sul ponticello for an edgy effect, and by aiming or placing mics aware that near-bridge playing radiates more high-frequency energy.",
+        "category": "Bowing technique",
+        "related_terms": [
+          "Bowed-string scratchiness",
+          "Bow-direction level change",
+          "Bridge radiation",
+          "Bridge area",
+          "Helmholtz motion",
+          "Sul ponticello"
+        ],
+        "common_mistakes": [
+          "Confusing bowing position (bridge-to-fingerboard contact point) with the fingering position of the left hand on the string",
+          "Assuming closer to the bridge simply means louder, when it means brighter and demands more, better-controlled force",
+          "Fixing mic placement without accounting for how far from the bridge the part is actually played"
+        ],
+        "scenario_contexts": [
+          "Directing a violinist sul tasto for a soft, airy sustained texture",
+          "Capturing an aggressive sul ponticello effect for a film cue",
+          "Choosing mic distance on strings where the player varies bow position across a phrase"
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "J. Woodhouse, Euphonics: the science and technology of musical instruments (euphonics.org, University of Cambridge)",
+        "Adler, The Study of Orchestration (W. W. Norton)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "e469482e-87dd-4994-8ce5-81e0dd7b22f9",
+      "term": "Bridge area",
+      "fields": {
+        "definition": "The region of a stringed instrument immediately surrounding the bridge, where string vibration is transferred into the top plate or soundboard and radiated as sound. In recording it is a common microphone and pickup placement zone, and in playing, bowing or picking closer to the bridge yields a brighter, more articulate, harmonically richer tone.",
+        "plain_english": "The part of a guitar or violin right around the bridge, the small mount the strings rest on. It is a favorite spot to point a mic, and playing near it sounds brighter and snappier.",
+        "purpose_function": "It matters because the bridge is where string energy enters the body, making the surrounding area acoustically live, a strong and articulate source for miking and the zone where playing distance most changes brightness and attack.",
+        "practical_application": "Engineers place or aim a mic, or clip a contact pickup, near the bridge to get a direct, attack-rich sound on acoustic guitar or upright bass, balancing it against a warmer, fuller position further from the bridge.",
+        "category": "Instrument anatomy",
+        "related_terms": [
+          "Bridge radiation",
+          "Bowing position",
+          "Sul ponticello",
+          "Soundboard",
+          "Contact pickup",
+          "Twelfth-fret miking"
+        ],
+        "common_mistakes": [
+          "Miking directly over the bridge or soundhole on acoustic guitar and getting a boomy, boxy tone instead of moving toward the 12th fret for balance",
+          "Assuming the bridge area sounds the same as over the soundhole, when the two positions capture very different tonal balances",
+          "Confusing the bridge with the nut or saddle when describing a placement"
+        ],
+        "scenario_contexts": [
+          "Positioning a small-diaphragm condenser near the bridge of an acoustic guitar for attack and clarity",
+          "Clipping a contact pickup at the bridge area of an upright bass for live reinforcement",
+          "Comparing bridge-area versus 12th-fret mic positions to dial in an acoustic guitar's brightness"
+        ]
+      },
+      "sources": [
+        "C. E. Gough, 'Violin Acoustics,' Acoustics Today (Acoustical Society of America), 2016",
+        "Huber & Runstein, Modern Recording Techniques (Focal Press)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "987069e0-d7db-4f5a-a479-786b4f3da51b",
+      "term": "Bridge radiation",
+      "fields": {
+        "definition": "The process by which a stringed instrument's bridge couples string vibration into the body and thereby into radiated sound. Driven by the string, the bridge rocks and bounces on the top plate to excite the body's radiating modes, and its own resonances create a broad 'bridge hill' response peak around 2-3 kHz that shapes brightness and presence.",
+        "plain_english": "The bridge is the small part the strings rest on. It passes the strings' shaking into the body, which then moves the air so you can hear it. The bridge also rings a little on its own, adding brightness around 2 to 3 kHz.",
+        "purpose_function": "It exists because strings alone move too little air to be heard; the bridge acts as a mechanical coupler and filter that transfers and colors string energy on its way to the radiating body, strongly influencing tone and projection.",
+        "practical_application": "Knowing the bridge hill sits near 2-3 kHz helps an engineer understand where a violin's presence and edge live, guiding mic choice and gentle EQ, and explains why adding a bridge mute rolls off the highs by many decibels.",
+        "category": "Instrument acoustics",
+        "related_terms": [
+          "Bridge area",
+          "Bowing position",
+          "Soundboard",
+          "Bridge hill",
+          "Helmholtz motion",
+          "Practice mute"
+        ],
+        "common_mistakes": [
+          "Treating the bridge as a passive mount rather than an active, resonant coupler that colors the tone",
+          "Assuming a heavier bridge or a mute only lowers volume, when it also strongly attenuates high frequencies",
+          "Expecting EQ alone to fully restore the presence lost when a mute damps bridge radiation"
+        ],
+        "scenario_contexts": [
+          "Explaining why a muted violin loses air and edge on a recording",
+          "Choosing a mic and a gentle EQ move that flatters the 2-3 kHz bridge-hill presence region",
+          "Comparing two violins whose brightness differs largely because of bridge mass and setup"
+        ]
+      },
+      "sources": [
+        "C. E. Gough, 'Violin Acoustics,' Acoustics Today (Acoustical Society of America), 2016",
+        "J. Woodhouse, Euphonics: the science and technology of musical instruments (euphonics.org, University of Cambridge)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "ccd1e1f2-d1c1-4a32-b379-dd913643b832",
+      "term": "Bucket mute",
+      "fields": {
+        "definition": "A brass-instrument mute (used on trumpet, cornet, and trombone) consisting of a cylindrical container packed with sound-absorbing material such as cotton or felt that clips onto or fits over the bell. It absorbs high frequencies to give a soft, dark, veiled tone without significantly altering pitch.",
+        "plain_english": "A padded cup that clips over the open end of a trumpet or trombone. It makes the sound soft, warm, and far-away, like hanging a blanket in front of the horn.",
+        "purpose_function": "It exists to darken and soften a brass instrument's timbre for mellow, subdued passages, filtering out bright high harmonics while the player still articulates normally.",
+        "practical_application": "In tracking or live sound a bucket-muted horn is much softer and duller, so the engineer moves the mic closer or adds gain and eases off the high-frequency EQ used for an open horn.",
+        "category": "Brass mute",
+        "related_terms": [
+          "Straight mute",
+          "Cup mute",
+          "Harmon mute",
+          "Bell",
+          "Timbre"
+        ],
+        "common_mistakes": [
+          "Confusing the bucket mute (absorbent cylinder over the bell) with a cup mute (hard cup), which sound different",
+          "Miking a bucket-muted horn as if it were open and getting a thin, distant, low-level signal",
+          "Assuming any mute drastically changes tuning, when the bucket mute mainly changes timbre and level"
+        ],
+        "scenario_contexts": [
+          "A big-band trumpet section using bucket mutes for a soft ballad backing",
+          "Recording a muted trombone where the engineer must add gain and back off treble EQ",
+          "Selecting among straight, cup, and bucket mutes to match a soft, dark tone brief"
+        ]
+      },
+      "sources": [
+        "Adler, The Study of Orchestration (W. W. Norton)",
+        "Piston, Orchestration (W. W. Norton)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "19636605-66ad-4f37-8040-6290cd403cf5",
+      "term": "Buffer pedal",
+      "fields": {
+        "definition": "A guitar signal-chain device containing a unity-gain buffer amplifier, a stage with very high input impedance and low output impedance that copies the signal's voltage without changing its level. It isolates a high-impedance magnetic pickup from cable capacitance and following loads, preserving high-frequency content over long cables and true-bypass pedal chains.",
+        "plain_english": "A small box that boosts a guitar's weak signal. This helps the sound run through long cables and many pedals without losing its bright, sparkly highs.",
+        "purpose_function": "It exists to solve tone loss: a passive pickup has high impedance, and long cables and stacked bypassed pedals form a filter that dulls the highs, so a buffer's low output impedance drives that load cleanly and keeps the signal bright and strong.",
+        "practical_application": "Players place a buffer near the start (and sometimes end) of a large true-bypass pedalboard, or use a pedal with a good built-in buffer, to stop the rig sounding dull, and engineers reference it when a guitar loses clarity over long runs.",
+        "category": "Guitar electronics",
+        "related_terms": [
+          "Impedance",
+          "True bypass",
+          "DI box",
+          "Pickup",
+          "Signal chain",
+          "Cable capacitance"
+        ],
+        "common_mistakes": [
+          "Thinking a buffer boosts volume, when it is unity gain and changes impedance, not level",
+          "Assuming true-bypass is always best, when a long all-true-bypass chain can dull tone that a buffer would preserve",
+          "Placing a buffer before a fuzz or vintage wah that needs to see the guitar's high impedance, changing how those effects respond"
+        ],
+        "scenario_contexts": [
+          "A large pedalboard sounding dull, fixed by adding a buffer to drive the cable load",
+          "Long cable runs on a stage darkening a guitar tone",
+          "Deciding buffer placement so a fuzz pedal still interacts properly with the pickups"
+        ]
+      },
+      "sources": [
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press)",
+        "Horowitz & Hill, The Art of Electronics (Cambridge University Press)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "d2fd5d07-95d3-4e9c-9d4c-5f4c8453c568",
+      "term": "Capo",
+      "fields": {
+        "definition": "A clamp fitted across all the strings of a guitar or similar fretted instrument at a chosen fret, shortening the vibrating string length to raise the pitch of every string by the same interval. It lets a player use familiar open-string chord shapes in a higher key.",
+        "plain_english": "A clamp that presses down all the strings at one fret. This makes the whole guitar sound higher. Now easy chord shapes work in a new key. Think of it as a spare finger laid across the neck.",
+        "purpose_function": "It exists to transpose an instrument up in fixed semitone steps without new fingerings, keeping the ringing open-string sound in keys that would otherwise require barre chords.",
+        "practical_application": "In the studio a capo lets a guitarist match a singer's key while keeping bright open voicings, and engineers note capo position because it shifts the instrument's register and resonances, affecting mic placement and doubling.",
+        "category": "Guitar accessory",
+        "related_terms": [
+          "Fret",
+          "Nut",
+          "Transposition",
+          "Barre chord",
+          "Intonation",
+          "Open tuning"
+        ],
+        "common_mistakes": [
+          "Clamping too hard or off-center behind the fret, which pulls strings sharp and causes buzzing; place it just behind the fret with minimal pressure",
+          "Assuming a capo needs no tuning check, when fitting it can pull strings slightly sharp and require retuning",
+          "Forgetting the capo changes the sounding key, causing transposition errors when reading chord charts"
+        ],
+        "scenario_contexts": [
+          "A session guitarist capoing up to keep open-chord voicings in the vocalist's key",
+          "Doubling a part with one guitar open and another capoed for a shimmering layered sound",
+          "Rechecking tuning right after fitting a capo before a take"
+        ]
+      },
+      "sources": [
+        "Denyer, The Guitar Handbook (Alfred A. Knopf)",
+        "The New Grove Dictionary of Musical Instruments (Oxford University Press)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "39664d4a-d432-4609-accb-12660a725511",
+      "term": "Cassotto",
+      "fields": {
+        "definition": "In an accordion, a tone chamber (Italian cassotto, literally 'little house') built into the treble side through which one or more reed banks, usually the lower 16-foot and/or 8-foot sets, sound. The chamber acts as a passive acoustic filter that attenuates high overtones, giving a warmer, rounder, more mellow timbre.",
+        "plain_english": "A small sound box inside nicer accordions. Some of the reeds play through it. This gives a warmer, softer, less nasal tone, a bit like singing into a cupped hand.",
+        "purpose_function": "It exists to refine tone: by enclosing certain reeds it softens their bright, reedy overtones so those registers sound rounder and more vocal, a feature prized on higher-end instruments.",
+        "practical_application": "When miking an accordion an engineer captures a notably darker sound from the cassotto reed banks than from the brighter non-cassotto reeds, and may mic the treble side to balance the two.",
+        "category": "Accordion",
+        "related_terms": [
+          "Reed block",
+          "Register",
+          "Timbre",
+          "Overtone",
+          "Bellows",
+          "Treble side"
+        ],
+        "common_mistakes": [
+          "Assuming cassotto changes pitch or tuning, when it only shapes timbre and tone color",
+          "Expecting every reed bank to sound through the chamber, when typically only the 16-foot and 8-foot banks are in cassotto",
+          "Miking an accordion at one fixed spot and missing the tonal difference between cassotto and non-cassotto registers"
+        ],
+        "scenario_contexts": [
+          "Recording a jazz or musette accordionist and choosing cassotto registers for a warm solo tone",
+          "Balancing mics across the treble side to blend cassotto and non-cassotto reeds",
+          "Explaining why a premium accordion sounds mellower than an entry-level one"
+        ]
+      },
+      "sources": [
+        "The Cambridge Companion to the Accordion (Cambridge University Press)",
+        "The New Grove Dictionary of Musical Instruments (Oxford University Press)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

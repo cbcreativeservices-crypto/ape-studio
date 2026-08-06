@@ -1,0 +1,322 @@
+{
+ "batch": 175,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "ce5b2333-5be7-4bf4-95a7-5e3ba209cbfa",
+   "term": "Stereo re-render",
+   "fields": {
+    "definition": "The act of bouncing or exporting a two-channel (left/right) mix or master again to produce a fresh stereo audio file, typically after edits, format changes, or corrections have been made to the session or processing chain.",
+    "plain_english": "Making a new stereo (left and right) sound file from your project after you change something. It is like re-printing a photo once you have fixed how it looks.",
+    "purpose_function": "It captures the current state of the mix or master into a new file so later steps like further mastering, encoding, or replication use the updated audio instead of an old bounce.",
+    "practical_application": "A mastering engineer re-renders the stereo master after tweaking EQ or fixing a bad edit, then checks the new file's peaks and loudness before delivery.",
+    "category": "Master Delivery",
+    "related_terms": [
+     "Bounce/mixdown",
+     "Stereo master",
+     "Sample rate conversion",
+     "Dither",
+     "True peak",
+     "Master bus"
+    ],
+    "common_mistakes": [
+     "Re-rendering with a different plugin state or gain than the approved version, giving an inconsistent master.",
+     "Forgetting to set the correct dither or sample-rate options on the new render.",
+     "Delivering the old bounce by mistake after changes were made."
+    ],
+    "scenario_contexts": [
+     "Fixing a small edit late in mastering and re-rendering the stereo file for delivery.",
+     "Producing a corrected stereo master after a client revision.",
+     "Re-rendering at a new sample rate for a different distribution format."
+    ]
+   },
+   "sources": [
+    "Bob Katz, Mastering Audio: The Art and the Science",
+    "Bobby Owsinski, The Mastering Engineer's Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bbdee0ed-4361-47f8-ad96-e260d1a27a06",
+   "term": "Streaming mastering",
+   "fields": {
+    "definition": "The practice of preparing and mastering a track so it translates well after streaming services apply loudness normalization, typically targeting an integrated loudness near the platform reference (about -14 LUFS for Spotify per ITU-R BS.1770) while keeping true-peak headroom (commonly -1 dBTP) to avoid encoder distortion.",
+    "plain_english": "Getting a song ready so it sounds good on apps like Spotify, which set every track to a similar volume. You aim for their loudness level and leave a little headroom so it does not distort.",
+    "purpose_function": "It makes sure a release keeps its intended tone, dynamics, and clean peaks after a streaming service turns its volume up or down to match other tracks, instead of being hurt for being too loud.",
+    "practical_application": "The engineer meters integrated LUFS and true peak, sets the limiter so the master lands near the target loudness, and checks how it will sound after normalization on each platform.",
+    "category": "Streaming Delivery",
+    "related_terms": [
+     "LUFS",
+     "Loudness normalization",
+     "True peak",
+     "ITU-R BS.1770",
+     "Limiter",
+     "Dynamic range"
+    ],
+    "common_mistakes": [
+     "Pushing loudness far past the streaming target, which only gets turned back down and loses dynamics.",
+     "Ignoring true-peak limits so the lossy encoder clips.",
+     "Assuming every platform uses the same target and the same true-peak rule."
+    ],
+    "scenario_contexts": [
+     "Mastering a single for release across Spotify, Apple Music, and YouTube.",
+     "Deciding how hard to limit a loud pop track knowing it will be normalized.",
+     "Setting a -1 dBTP true-peak ceiling before delivery to avoid AAC or Ogg distortion."
+    ]
+   },
+   "sources": [
+    "Spotify loudness normalization technical documentation",
+    "AES TD1004.1.15-10 Recommendation for Loudness of Audio Streaming and Network File Playback",
+    "ITU-R BS.1770"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f549f9f5-b0f7-4112-a32e-de200b467856",
+   "term": "Strings stem",
+   "fields": {
+    "definition": "A stem consisting of all string-section parts (for example violins, violas, cellos, basses, or synthesized strings) combined and rendered as a single grouped audio file for use in stem mixing or stem mastering.",
+    "plain_english": "One sound file that holds all the string instruments mixed together, like violins and cellos. It lets someone change the whole string group at once instead of each part.",
+    "purpose_function": "It lets a mix or mastering engineer balance and process the whole string group as a unit while keeping it separate from vocals, drums, and other stems for finer control.",
+    "practical_application": "During stem mastering the engineer gets a strings stem and can gently raise or EQ it if the strings feel too quiet or too harsh in the full mix.",
+    "category": "Stem Mastering",
+    "related_terms": [
+     "Stem mastering",
+     "Submix",
+     "Bus",
+     "Synthesizer stem",
+     "Mixdown",
+     "Master bus"
+    ],
+    "common_mistakes": [
+     "Printing the strings stem with different plugins or automation than the final mix, so the stems do not sum back to the mix.",
+     "Rendering the stem too hot so it clips on its own output.",
+     "Leaving master-bus processing on the stem so it gets processed twice later."
+    ],
+    "scenario_contexts": [
+     "Delivering separate stems such as drums, bass, vocals, and strings to a mastering engineer.",
+     "Boosting the strings stem slightly during stem mastering for a fuller sound.",
+     "Recalling a mix by re-importing stems, including the strings group."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mastering Engineer's Handbook",
+    "Bob Katz, Mastering Audio: The Art and the Science"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "de440404-d1c4-4ef4-9625-082174319d1d",
+   "term": "Studio mastering tape",
+   "fields": {
+    "definition": "Professional analog magnetic tape used to record the final two-track master mix in a studio, typically 1/4-inch or 1/2-inch tape run at 15 or 30 ips, often serving as the source medium from which lacquers or digital masters are made.",
+    "plain_english": "The reel of analog tape that holds the finished stereo mix in a studio. It is the master copy that other formats, like records or digital files, are made from.",
+    "purpose_function": "It holds a high-quality master recording of the final mix, giving a warm analog sound and a stable source for transfer to other formats.",
+    "practical_application": "An engineer aligns the tape machine (bias, level, azimuth) to a reference tone, records the mix at 30 ips, and later transfers the tape to digital or cuts a lacquer from it.",
+    "category": "Analog Media",
+    "related_terms": [
+     "Analog tape",
+     "Tape machine",
+     "Bias",
+     "Reference level",
+     "Two-track master",
+     "Lacquer"
+    ],
+    "common_mistakes": [
+     "Not printing alignment tones at the head of the tape, so playback level and EQ become guesswork.",
+     "Storing the reel heads-out and near heat or magnetic fields, which worsens print-through and damage.",
+     "Setting the wrong reference flux level so later transfers come out too hot or too quiet."
+    ],
+    "scenario_contexts": [
+     "Mixing to a 1/2-inch analog master at 30 ips for a warm, high-headroom master.",
+     "Transferring an archived studio mastering tape to digital for a reissue.",
+     "Cutting a vinyl lacquer directly from the analog mastering tape."
+    ]
+   },
+   "sources": [
+    "Glen Ballou (ed.), Handbook for Sound Engineers (magnetic recording)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "02bb7588-39ca-49f7-b743-62913ebd333f",
+   "term": "Stylus heating",
+   "fields": {
+    "definition": "In disc mastering, the controlled electrical heating of the cutting stylus on a lathe (via a small heater coil adjustable in amperes) that warms and slightly softens the lacquer at the cutting point, reducing friction-induced surface noise and high-frequency cutting distortion to yield quieter grooves and cleaner high-frequency reproduction.",
+    "plain_english": "Warming the sharp tool that carves the groove into a record master. The heat softens the surface so it cuts smoother, giving quieter, cleaner grooves, much like a warm knife slicing more neatly.",
+    "purpose_function": "It improves groove quality by letting the stylus carve softened lacquer with less noise and distortion, especially in the high frequencies, so the cut master sounds cleaner.",
+    "practical_application": "A disc-cutting engineer adjusts the stylus heat current while cutting a test lacquer, listening for the lowest surface noise and cleanest highs without overheating the lacquer.",
+    "category": "Disc Mastering",
+    "related_terms": [
+     "Cutting lathe",
+     "Cutting stylus",
+     "Lacquer",
+     "Disc mastering",
+     "Cutter head",
+     "Direct metal mastering"
+    ],
+    "common_mistakes": [
+     "Using too much heat, which can deform the groove or overheat and burn the lacquer.",
+     "Using too little heat, leaving excess surface noise and high-frequency distortion.",
+     "Assuming stylus heat can fix a bad cut when the real problem is level or geometry."
+    ],
+    "scenario_contexts": [
+     "Dialing in stylus heat current on a Neumann lathe before cutting a reference lacquer.",
+     "Reducing surface noise on quiet passages during a vinyl cut.",
+     "Troubleshooting harsh high frequencies in a test cut by adjusting stylus heating."
+    ]
+   },
+   "sources": [
+    "Neumann master stereo disk recording lathe technical notes (heated stylus specification)",
+    "Glen Ballou (ed.), Handbook for Sound Engineers (disc recording)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3cb67baf-8e54-4278-9bcb-b2971d8c4c48",
+   "term": "Subcode verification",
+   "fields": {
+    "definition": "In CD mastering and premastering, the process of checking that the subcode data (notably the Q channel, which carries track and index numbers, timing and offsets, ISRCs, the UPC/EAN catalog number, and pre-emphasis and copy-protection flags, while the P channel acts as a simple track-start/pause flag) in a Red Book master or DDP image is correct and standards-compliant before replication.",
+    "plain_english": "Checking the hidden data on a CD master, like track numbers, start times, and ID codes, before the disc is copied. It is like proofreading a table of contents so every track lands in the right place.",
+    "purpose_function": "It catches errors in track starts, pauses, indexes, and embedded codes before manufacturing, preventing costly faulty pressings and making sure metadata like ISRCs is correct.",
+    "practical_application": "Before sending a DDP to the plant, the engineer reviews the PQ log, confirms track offsets and ISRC/UPC entries, and checks that pre-emphasis flags match the audio.",
+    "category": "CD Mastering",
+    "related_terms": [
+     "PQ codes",
+     "ISRC",
+     "DDP",
+     "Red Book",
+     "Track index",
+     "UPC/EAN"
+    ],
+    "common_mistakes": [
+     "Entering wrong or missing ISRC or UPC codes and not catching them before replication.",
+     "Placing track start markers or indexes at the wrong offsets, cutting off audio.",
+     "Ignoring the pre-emphasis flag so it does not match the actual audio."
+    ],
+    "scenario_contexts": [
+     "Reviewing a PQ sheet before exporting a DDP for a CD pressing plant.",
+     "Confirming ISRC codes are embedded correctly for royalty tracking.",
+     "Checking gapless or hidden-track offsets on a live album master."
+    ]
+   },
+   "sources": [
+    "IEC 60908 (Compact Disc Digital Audio / Red Book)",
+    "AES literature on CD premastering and PQ subcode editing",
+    "DDP (Disc Description Protocol) specification"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e1b7148f-2208-4fde-ad9d-3e1705751512",
+   "term": "Synthesizer stem",
+   "fields": {
+    "definition": "A stem consisting of all synthesizer parts in a production combined and rendered as a single grouped audio file for use in stem mixing or stem mastering.",
+    "plain_english": "One sound file that holds all the synth parts mixed together. It lets someone change every synth at once instead of one at a time.",
+    "purpose_function": "It groups the synth parts so a mix or mastering engineer can balance or process them as a unit while keeping them separate from drums, bass, and vocals.",
+    "practical_application": "In stem mastering the engineer can lower or brighten the synthesizer stem if the synths clash with the vocal, without touching the other stems.",
+    "category": "Stem Mastering",
+    "related_terms": [
+     "Stem mastering",
+     "Submix",
+     "Bus",
+     "Strings stem",
+     "Mixdown",
+     "Master bus"
+    ],
+    "common_mistakes": [
+     "Printing the synth stem with automation or effects that differ from the final mix.",
+     "Rendering the stem too hot so it clips on its own output.",
+     "Leaving master-bus compression on the stem so it gets processed twice."
+    ],
+    "scenario_contexts": [
+     "Sending drums, bass, vocal, and synthesizer stems to a mastering engineer.",
+     "Taming a harsh synth by EQ-ing just the synthesizer stem in stem mastering.",
+     "Recalling a track later using its printed stems."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mastering Engineer's Handbook",
+    "Bob Katz, Mastering Audio: The Art and the Science"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "29a2e700-7ba2-413d-8b5e-efa351429ab5",
+   "term": "T-RackS Master Match",
+   "fields": {
+    "definition": "A mastering plug-in module in IK Multimedia's T-RackS suite that analyzes up to three user-loaded reference tracks (or genre presets) to build a target spectral and loudness profile, then automatically applies matching EQ and level processing to make the user's master resemble the tonal balance and loudness of those references.",
+    "plain_english": "A mastering tool that listens to songs you like and then shapes your own track to match their tone and loudness. It is like copying the recipe of a finished dish so yours tastes similar.",
+    "purpose_function": "It gives engineers a fast starting point for tone and loudness by automatically matching a master to trusted reference tracks, which helps with consistency and with less-experienced users.",
+    "practical_application": "An engineer loads two or three reference songs, analyzes the loudest section of their own track, presses match, then dials the match amount back to taste instead of accepting 100%.",
+    "category": "Mastering Software",
+    "related_terms": [
+     "Reference track",
+     "Match EQ",
+     "Loudness matching",
+     "Mastering chain",
+     "Limiter",
+     "Spectral analysis"
+    ],
+    "common_mistakes": [
+     "Trusting the automatic match at 100% instead of adjusting it to taste.",
+     "Matching to a poor or very different-genre reference and getting an odd result.",
+     "Analyzing a quiet section instead of the loudest part, which skews the match."
+    ],
+    "scenario_contexts": [
+     "Quickly matching a mix's tone to a commercial reference during mastering.",
+     "Giving a beginner a reference-based starting curve before fine EQ.",
+     "Checking a master's tonal balance against several references."
+    ]
+   },
+   "sources": [
+    "IK Multimedia T-RackS Master Match product and user documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "568dce4a-ca39-4f36-886e-7295a5dbc8c6",
+   "term": "Tape barcode system",
+   "fields": {
+    "definition": "A media-identification system that applies machine-readable barcode labels to tape media (master or archive/backup tapes) so each reel or cartridge carries a unique ID for cataloging, tracking, retrieval, and inventory, commonly read by tape libraries or asset-management databases.",
+    "plain_english": "A way to put scannable barcode labels on tapes so each one has its own ID. It works like the barcode on a grocery item, letting a system find and track each tape.",
+    "purpose_function": "It gives every tape a unique, scannable identity so archives and automated tape libraries can locate, log, and manage large collections without relying on hand-written labels.",
+    "practical_application": "An archivist or library operator applies a barcode label to each master or backup tape and scans it into a database that records its title, location, and history.",
+    "category": "Media Archival",
+    "related_terms": [
+     "Master tape",
+     "Media asset management",
+     "Archival",
+     "Catalog number",
+     "Tape library",
+     "Metadata"
+    ],
+    "common_mistakes": [
+     "Reusing or duplicating a barcode ID across two tapes, which breaks database tracking.",
+     "Placing the label where it fouls the tape path or peels off in storage.",
+     "Relying only on the barcode without backing metadata, so a lost database orphans the tape."
+    ],
+    "scenario_contexts": [
+     "Bar-coding a studio's master-tape archive for a database inventory.",
+     "Automated tape libraries reading cartridge barcodes for backup rotation.",
+     "Scanning a master tape's barcode to pull its session history before a reissue transfer."
+    ]
+   },
+   "sources": [
+    "IBM tape library documentation (bar code label requirements)",
+    "HPE StorageWorks tape bar code label technical requirements"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

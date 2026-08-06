@@ -1,0 +1,328 @@
+{
+ "batch": 80,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "51f79031-3841-41f0-8854-06a06279838d",
+   "term": "Adaptive EQ",
+   "fields": {
+    "definition": "An equalizer that automatically and continuously adjusts its filter response in reaction to the incoming audio, applying gain changes to specific frequency bands only when the signal's spectral content triggers them, rather than holding fixed static settings. It is often called a dynamic EQ.",
+    "plain_english": "A smart tone control that listens to the sound and changes the level of certain pitches by itself, only when needed. It works like a thermostat that heats a room only when it gets too cold, instead of staying on all the time.",
+    "purpose_function": "It lets an engineer tame problem frequencies that come and go, such as a harsh vocal peak, without permanently cutting those frequencies when they are not causing trouble. This keeps the source sounding natural while controlling only the moments that need it.",
+    "practical_application": "A mixer might place an adaptive EQ on a lead vocal so it dips harshness near 3 kHz only on loud, bright words, leaving quieter phrases untouched.",
+    "category": "Equalization",
+    "related_terms": [
+     "Dynamic EQ",
+     "Multiband compression",
+     "Parametric EQ",
+     "De-esser",
+     "Spectral processing",
+     "Sidechain"
+    ],
+    "common_mistakes": [
+     "Confusing adaptive EQ with a static EQ and expecting the displayed curve to stay fixed",
+     "Setting thresholds so aggressively that the EQ pumps or dulls the source",
+     "Using it to fix a mic or arrangement problem that should be solved at the source",
+     "Stacking several adaptive processors so their movements fight each other"
+    ],
+    "scenario_contexts": [
+     "Controlling sibilance and harshness on a vocal only when it spikes",
+     "Evening out resonant notes on a bass that jump out on certain pitches",
+     "Automatically dipping mud from an acoustic guitar during loud strums"
+    ]
+   },
+   "sources": [
+    "iZotope Neutron documentation (Dynamic/adaptive EQ module)",
+    "sonible smart:EQ technical documentation",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6a4222dc-f3bd-4118-a071-638814603bd8",
+   "term": "Adaptive gain",
+   "fields": {
+    "definition": "Gain that an algorithm adjusts automatically and continuously in response to the measured level or characteristics of the incoming signal, so the amount applied changes over time to reach a target instead of remaining at one fixed setting.",
+    "plain_english": "A volume control that turns itself up or down to keep the sound at a steady level. It works like cruise control in a car, easing off or pressing the gas to hold one speed.",
+    "purpose_function": "It keeps a signal at a usable, consistent level despite changing input, reducing the need to ride the fader by hand and helping quiet parts stay audible while loud parts stay in check.",
+    "practical_application": "On dialogue or a podcast, an engineer may use an adaptive-gain stage to hold speech near a target level as the talker moves closer to or further from the mic.",
+    "category": "Gain & Dynamics",
+    "related_terms": [
+     "Automatic gain control",
+     "Gain staging",
+     "Leveler",
+     "Compressor",
+     "Makeup gain",
+     "Normalization"
+    ],
+    "common_mistakes": [
+     "Assuming adaptive gain replaces good gain staging at the input",
+     "Letting it pump up the noise floor and room tone during quiet pauses",
+     "Confusing it with compression, which reshapes dynamics faster and by a set ratio",
+     "Trusting it blindly and not watching meters, so levels drift or feed a system too hot"
+    ],
+    "scenario_contexts": [
+     "Holding podcast or broadcast speech at a consistent level",
+     "Smoothing an uneven vocal take before compression",
+     "Managing level on a lavalier mic as a presenter moves around"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (dynamics and DSP chapters)",
+    "Rane Pro Audio Reference"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0c1adb4c-9ae0-4b36-b28e-734ffff5d708",
+   "term": "Adaptive score",
+   "fields": {
+    "definition": "A musical score, most common in games and interactive media, that changes in real time in response to events or user actions by switching, layering, or reshaping its musical parts on the fly, rather than playing back as one fixed linear recording.",
+    "plain_english": "Background music that changes as you play a video game. It is like a movie soundtrack that speeds up or grows tense on its own when the action does.",
+    "purpose_function": "It keeps the music matched to what is happening moment to moment, so the mood and energy follow the story or gameplay instead of feeling disconnected from it.",
+    "practical_application": "A game audio engineer builds an adaptive score in middleware so calm exploration music adds drums and rises in intensity the instant combat begins, then eases back when the fight ends.",
+    "category": "Interactive Audio",
+    "related_terms": [
+     "Interactive music",
+     "Vertical layering",
+     "Horizontal re-sequencing",
+     "Game audio middleware",
+     "Stem",
+     "Cue"
+    ],
+    "common_mistakes": [
+     "Thinking an adaptive score is just a normal linear track set to loop",
+     "Writing music that does not transition smoothly between states",
+     "Forgetting to align musical changes to tempo or bar boundaries, causing jarring jumps",
+     "Overlooking memory and voice limits on the target platform"
+    ],
+    "scenario_contexts": [
+     "Video game music that intensifies during combat",
+     "Interactive museum or VR installations that respond to visitors",
+     "Apps or ads whose music reacts to user choices"
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise documentation (Interactive Music)",
+    "FMOD Studio documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "73f879dd-b833-4fe6-a714-7c2517f7999f",
+   "term": "AI loudness",
+   "fields": {
+    "definition": "The use of AI or machine-learning tools to analyze a mix and automatically adjust its loudness to hit a target, usually an integrated loudness in LUFS defined by standards such as ITU-R BS.1770 and EBU R128, often as part of automated mastering or loudness-matching services.",
+    "plain_english": "Software that uses AI to measure how loud a song is and set it to the right level on its own. It aims for the loudness targets that streaming services expect.",
+    "purpose_function": "It speeds up loudness matching and normalization so tracks meet platform targets consistently, without an engineer setting every level by hand.",
+    "practical_application": "An engineer runs a mix through an AI loudness or mastering tool to reach a streaming target, then checks the result against a compliant metering standard.",
+    "category": "Loudness & metering",
+    "related_terms": [
+     "AI mastering",
+     "Adaptive gain",
+     "Adaptive DSP",
+     "Anchor the mix"
+    ],
+    "common_mistakes": [
+     "Trusting an AI loudness result without checking it on a compliant LUFS meter",
+     "Pushing loudness so high the AI tool adds audible distortion or pumping",
+     "Assuming one loudness target fits every platform, when specs differ"
+    ],
+    "scenario_contexts": [
+     "Normalizing a batch of tracks to a streaming LUFS target with an AI tool",
+     "Using an AI mastering service to loudness-match songs across an album",
+     "Checking an AI-set level against ITU-R BS.1770 metering before delivery"
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1770 (loudness measurement)",
+    "EBU R128; AES streaming loudness recommendations (TD1008)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c3120361-52f1-474c-8deb-7d05d86fdbcd",
+   "term": "AI mastering",
+   "fields": {
+    "definition": "An automated approach to audio mastering in which software driven by machine-learning models analyzes a mix and applies mastering-style processing such as equalization, dynamics, stereo adjustment, and loudness targeting, producing a finished master with little or no manual input from an engineer.",
+    "plain_english": "Software that masters a song for you by studying the sound and making its own tweaks. It is like a photo app that auto-fixes a picture's brightness and color with one tap.",
+    "purpose_function": "It offers a fast, low-cost way to bring a mix up to a competitive loudness and tonal balance, which is useful for demos, drafts, or creators without access to a mastering engineer.",
+    "practical_application": "A producer might run a mix through an AI mastering tool to get a quick reference master, then compare it against a human master or use it as a starting point.",
+    "category": "Mastering",
+    "related_terms": [
+     "Mastering",
+     "Loudness normalization",
+     "LUFS",
+     "Reference track",
+     "Limiter",
+     "Master bus"
+    ],
+    "common_mistakes": [
+     "Treating an AI master as final without critical listening on good monitors",
+     "Feeding it a poor mix and expecting mastering to fix mix problems",
+     "Ignoring platform loudness targets and letting the tool over-limit",
+     "Assuming one algorithm suits every genre and every song"
+    ],
+    "scenario_contexts": [
+     "Quickly mastering a demo before release",
+     "Getting a loud reference version to compare with a manual master",
+     "Batch-finishing tracks for an independent release on a budget"
+    ]
+   },
+   "sources": [
+    "iZotope Ozone documentation (Master Assistant)",
+    "Katz, Mastering Audio: The Art and the Science"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d9ecf2ce-d6fd-46c9-a560-ed9efb691afb",
+   "term": "Airline mix",
+   "fields": {
+    "definition": "An alternative version of a film or program's soundtrack prepared for in-flight entertainment, typically edited to remove or replace objectionable content and mixed for intelligibility on headphones in a noisy cabin, often delivered as a dialogue-forward, level-controlled, downmix-compatible version.",
+    "plain_english": "A special edit of a movie's sound made for watching on a plane. Bad language is taken out and the talking is made clearer so you can follow it over the engine noise through earbuds.",
+    "purpose_function": "It lets airlines show content that meets their audience and censorship rules and stays easy to understand in a loud cabin on small headphones, without altering the original theatrical mix.",
+    "practical_application": "A re-recording mixer delivers an airline mix alongside the theatrical and home versions, muting or replacing profanity and keeping dialogue clear and consistent in level.",
+    "category": "Deliverables",
+    "related_terms": [
+     "Deliverables",
+     "Re-recording mix",
+     "Dialogue stem",
+     "Fold-down",
+     "Censored version",
+     "Loudness normalization"
+    ],
+    "common_mistakes": [
+     "Assuming the airline mix is identical to the theatrical mix",
+     "Forgetting to check that the edited version stays in sync with picture",
+     "Leaving dialogue too low to hear over cabin noise",
+     "Missing an item on the airline's content or loudness spec sheet"
+    ],
+    "scenario_contexts": [
+     "Preparing a feature film for in-flight entertainment",
+     "Delivering a clean, edited version to meet airline content rules",
+     "Creating a dialogue-forward mix for noisy headphone listening"
+    ]
+   },
+   "sources": [
+    "Yewdall, The Practical Art of Motion Picture Sound",
+    "Rose, Producing Great Sound for Film and Video"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "70498e47-0859-4100-822a-55e588845576",
+   "term": "All Files Browser",
+   "fields": {
+    "definition": "In Apple Logic Pro, a browser pane that lets you navigate the computer's file system to locate, preview, and import supported files, such as Logic Pro and GarageBand projects, audio files, and QuickTime movies, directly into the current project.",
+    "plain_english": "A file finder built into Logic Pro. It works like a Finder window on a Mac, letting you dig through folders to grab sounds, movies, or old projects and drop them into your song.",
+    "purpose_function": "It gives quick in-app access to any importable file on the computer, so you can browse, preview, and bring media into a session without leaving Logic Pro.",
+    "practical_application": "An engineer opens the All Files Browser to preview and drag an audio file into the timeline, or to import track settings from another Logic Pro project.",
+    "category": "DAW Interface",
+    "related_terms": [
+     "Browser",
+     "Project Audio Browser",
+     "Media Browser",
+     "Import",
+     "Workspace",
+     "Region"
+    ],
+    "common_mistakes": [
+     "Confusing the All Files Browser with the Project Audio Browser, which shows only files already in the project",
+     "Importing a file from an external drive and then disconnecting it, breaking the link",
+     "Overlooking the search filters and scrolling manually through large folders",
+     "Assuming importing a project's data copies its audio when it may only reference it"
+    ],
+    "scenario_contexts": [
+     "Importing audio or movie files into a Logic Pro session",
+     "Copying track settings or channel strips from another project",
+     "Previewing sound files on disk before adding them to a mix"
+    ]
+   },
+   "sources": [
+    "Apple Logic Pro User Guide, All Files Browser interface",
+    "Apple Logic Pro User Guide, Import media files"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ffcc847f-6788-49c4-91ef-241a8408e39b",
+   "term": "Anchor the mix",
+   "fields": {
+    "definition": "The practice of establishing one central element, commonly the lead vocal, kick, or snare, as a fixed reference point and building the balance, levels, and effects of the other tracks in relation to it, rather than adjusting each element in isolation.",
+    "plain_english": "Picking one main sound, like the lead singer, as your reference and setting everything else around it. It is like arranging furniture around the biggest piece in the room so the whole layout makes sense.",
+    "purpose_function": "It gives the mix a stable foundation, so decisions about level and space stay consistent and the balance does not drift as more tracks are added.",
+    "practical_application": "A mixer sets the lead vocal or kick to a target level first, then brings up every other track to sit around that anchor, rechecking against it as the mix grows.",
+    "category": "Mix Technique",
+    "related_terms": [
+     "Static mix",
+     "Balance",
+     "Gain staging",
+     "Reference track",
+     "Lead vocal",
+     "Fader"
+    ],
+    "common_mistakes": [
+     "Constantly re-adjusting the anchor so nothing has a stable reference",
+     "Choosing an anchor that is not central to the song",
+     "Pushing every other track up to compete with the anchor until nothing has room",
+     "Forgetting to recheck the balance against the anchor as the mix changes"
+    ],
+    "scenario_contexts": [
+     "Starting a mix by setting the lead vocal level first",
+     "Building a drum balance around the kick or snare",
+     "Keeping levels consistent when returning to a mix on another day"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Izhaki, Mixing Audio: Concepts, Practices, and Tools"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fe3679a5-496d-4ec2-88f2-bc80cab80409",
+   "term": "Approval master",
+   "fields": {
+    "definition": "A version of a finished master sent to the client or artist for review and sign-off before final delivery, typically watermarked, quality- or level-limited, or otherwise marked so it is clearly not the final release file.",
+    "plain_english": "A near-final version of a song sent to the artist to okay before it goes out. It is like showing someone a proof to approve before you print the whole batch.",
+    "purpose_function": "It lets the client confirm the master meets their expectations and catch changes early, protecting both sides before the real, unrestricted files are released.",
+    "practical_application": "A mastering engineer sends an approval master, often a watermarked or lower-resolution file, and waits for written sign-off before delivering the final high-resolution masters.",
+    "category": "Deliverables",
+    "related_terms": [
+     "Master",
+     "Reference master",
+     "Revision",
+     "Deliverables",
+     "Watermark",
+     "Bounce"
+    ],
+    "common_mistakes": [
+     "Sending the full-resolution final master before payment or sign-off",
+     "Treating an approval master as the release file",
+     "Not labeling versions clearly, so an old approval file gets released by mistake",
+     "Skipping written approval and relying on a verbal okay"
+    ],
+    "scenario_contexts": [
+     "Getting artist sign-off before releasing masters",
+     "Sending a watermarked draft for label approval",
+     "Confirming revisions are correct before final delivery"
+    ]
+   },
+   "sources": [
+    "Katz, Mastering Audio: The Art and the Science",
+    "Owsinski, The Mastering Engineer's Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

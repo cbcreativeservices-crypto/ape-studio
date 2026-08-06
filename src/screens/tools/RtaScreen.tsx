@@ -57,6 +57,8 @@ import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../feature
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
+import { LOUDNESS_STOPS } from '../../features/tools/levelColor';
+import { useColorModePref } from '../../features/tools/colorModePref';
 import { colors, fonts } from '../../theme/tokens';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
@@ -209,10 +211,11 @@ function metaFor(mode: BandMode, alpha: number): string {
 }
 
 // ---- Bar-panel geometry (fixed-height SVG; dBFS → pixels) -----------------
-const PANEL_H = 190;
+// Taller panel (owner 2026-08-05): more vertical room = finer level detail.
+const PANEL_H = 252;
 const FLOOR_DB = -90; // display floor — levels below draw no bar
 const ZERO_Y = 16; // 0 dBFS gridline; the zone above is REAL headroom (F1)
-const FLOOR_Y = 182;
+const FLOOR_Y = 244;
 const PX_PER_DB = (FLOOR_Y - ZERO_Y) / -FLOOR_DB;
 /** dBFS → y. Values above 0 dBFS climb into the headroom zone; only the SVG
  *  edge (y=2, ≈+7.6 dBFS) limits geometry — numbers are never clamped. */
@@ -224,11 +227,12 @@ const LABEL_TARGETS = [63, 250, 1000, 4000, 16000] as const;
 
 // Visual standards 2026-07-29 rule 2 — chart chrome + LED palette. Copied
 // locally from the fxViz grammar (shared idiom, not a cross-feature import).
+// Graticule lifted (owner 2026-08-05): the marks were near-invisible on black.
 const PLOT_BG = '#0c0c0f';
-const PLOT_FRAME = '#262b36';
-const GRID = '#20242e';
-const GRID_MINOR = '#181c22';
-const AXIS = '#39404d'; // 0 dBFS reference — brighter than the graticule
+const PLOT_FRAME = '#3a4150';
+const GRID = '#333846';
+const GRID_MINOR = '#262b36';
+const AXIS = '#5a6376'; // 0 dBFS reference — brighter than the graticule
 const BAR_HOT = '#ffd35e'; // 0 dBFS and the headroom zone above it
 const BAR_HI = '#7fd4ff';
 const BAR_MID = '#2f9bff';
@@ -268,25 +272,29 @@ function StatCell({
   value,
   unit,
   help,
-  peak,
+  clipped,
+  frameRed,
 }: {
   label: string;
   value: string;
   unit?: string;
   help?: (key: string) => void;
-  /** Peak text readout (owner 2026-07-31): the top peak number always prints RED. */
-  peak?: boolean;
+  /** Clip latch (owner 2026-08-05): the number turns RED only once a clip has
+   *  occurred, and stays red until the user resets. */
+  clipped?: boolean;
+  /** Also paint the cell's frame red on clip (PEAK HOLD only). */
+  frameRed?: boolean;
 }) {
   return (
     <Pressable
-      style={styles.statCell}
+      style={[styles.statCell, frameRed && styles.statCellClipped]}
       onLongPress={help ? () => help(readoutKey(label)) : undefined}
       delayLongPress={350}
       accessibilityRole={help ? 'button' : undefined}
       accessibilityLabel={help ? `${label} — what it shows` : label}
     >
       <Text style={styles.statLabel}>{label}</Text>
-      <Text style={[styles.statValue, peak && styles.statValuePeak]}>
+      <Text style={[styles.statValue, clipped && styles.statValuePeak]}>
         {value}
         {unit ? <Text style={styles.statUnit}> {unit}</Text> : null}
       </Text>
@@ -315,7 +323,19 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
  *  bands. ONE shared gradient def in userSpaceOnUse — the ramp is anchored to
  *  the dB scale (hot at 0 dBFS, deep at the floor), so every bar shares it
  *  and short bars only ever show the deep end. */
-function BandsPanel({ bands, mode, alpha }: { bands: DisplayBands | null; mode: BandMode; alpha: number }) {
+function BandsPanel({
+  bands,
+  mode,
+  alpha,
+  midiColors,
+}: {
+  bands: DisplayBands | null;
+  mode: BandMode;
+  alpha: number;
+  /** COLORS toggle (owner 2026-08-05): recolour the columns with the app-wide
+   *  MIDI level ramp (red at 0 dBFS → blue at the floor) instead of the LED ramp. */
+  midiColors?: boolean;
+}) {
   const [chartW, setChartW] = useState(0);
 
   const n = bands ? bands.centers.length : 0;
@@ -361,6 +381,19 @@ function BandsPanel({ bands, mode, alpha }: { bands: DisplayBands | null; mode: 
                   <Stop offset="0.13" stopColor={BAR_HI} />
                   <Stop offset="0.5" stopColor={BAR_MID} />
                   <Stop offset="1" stopColor={BAR_DEEP} />
+                </LinearGradient>
+                {/* MIDI level ramp — red (0 dBFS/full scale) → blue (floor). */}
+                <LinearGradient
+                  id="rtaBarFillMidi"
+                  x1="0"
+                  y1={ZERO_Y}
+                  x2="0"
+                  y2={FLOOR_Y}
+                  gradientUnits="userSpaceOnUse"
+                >
+                  {LOUDNESS_STOPS.map((s) => (
+                    <Stop key={s.pos} offset={String(s.pos)} stopColor={s.color} />
+                  ))}
                 </LinearGradient>
               </Defs>
               {/* Plot frame — rounded panel + hairline (shared chart chrome). */}
@@ -423,13 +456,14 @@ function BandsPanel({ bands, mode, alpha }: { bands: DisplayBands | null; mode: 
                     <G key={`band-${c}`}>
                       {level > FLOOR_DB && (
                         <>
-                          {/* LED column: shared hot-top→deep-base ramp. */}
+                          {/* LED column: shared hot-top→deep-base ramp (or the
+                              MIDI level ramp when COLORS is on). */}
                           <Rect
                             x={x}
                             y={barTop}
                             width={w}
                             height={FLOOR_Y - barTop}
-                            fill="url(#rtaBarFill)"
+                            fill={midiColors ? 'url(#rtaBarFillMidi)' : 'url(#rtaBarFill)'}
                             fillOpacity={0.96}
                           />
                           {/* Glow cap: soft halo + bright core at the tip. */}
@@ -488,6 +522,105 @@ function BandsPanel({ bands, mode, alpha }: { bands: DisplayBands | null; mode: 
       {anyUnresolvable && (
         <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>
       )}
+    </View>
+  );
+}
+
+// ---- Piano map (owner 2026-08-05) ------------------------------------------
+// A keyboard under the display showing where each note's fundamental lines up
+// with the frequency axis, low → high, left → right. Keys are placed by mapping
+// their Hz onto the SAME axis the bars use (log-interpolated through the band
+// centers) so a key sits directly beneath the band it belongs to. Aligned to
+// the chart by mirroring the panel's dB-gutter width.
+const PIANO_H = 44;
+const KEYBED = '#ece9f0';
+const KEY_LINE = '#9a97a6';
+const KEY_BLACK = '#141319';
+/** Semitone offsets (from C) that are black keys. */
+const BLACK_SET = new Set([1, 3, 6, 8, 10]);
+const NOTE_C0 = 16.351598; // Hz — C0; note n semitones up = C0 · 2^(n/12).
+
+/** Fractional band-index for a frequency (log-interpolated through centers) —
+ *  the axis the bars are drawn on. */
+function fracIndexForHz(hz: number, centers: number[]): number | null {
+  const n = centers.length;
+  if (n === 0 || hz <= 0) return null;
+  const lf = Math.log2(hz);
+  if (lf <= Math.log2(centers[0])) return 0;
+  if (lf >= Math.log2(centers[n - 1])) return n - 1;
+  for (let i = 1; i < n; i++) {
+    const a = Math.log2(centers[i - 1]);
+    const b = Math.log2(centers[i]);
+    if (lf <= b) return i - 1 + (lf - a) / (b - a || 1);
+  }
+  return n - 1;
+}
+
+function PianoStrip({ bands }: { bands: DisplayBands | null }) {
+  const [w, setW] = useState(0);
+  const centers = bands?.centers ?? [];
+  const n = centers.length;
+  const barW = n > 0 && w > 0 ? w / n : 0;
+  const xForHz = (hz: number): number | null => {
+    const fi = fracIndexForHz(hz, centers);
+    return fi == null ? null : (fi + 0.5) * barW;
+  };
+
+  // C0 (~16 Hz) … C10 covers the full audible span; only notes that fall inside
+  // the axis get drawn. White separators + black keys + C-octave labels.
+  const whiteXs: number[] = [];
+  const blackKeys: { x: number }[] = [];
+  const octaveLabels: { x: number; text: string }[] = [];
+  if (w > 0 && n > 0) {
+    for (let midi = 0; midi <= 120; midi++) {
+      const hz = NOTE_C0 * Math.pow(2, midi / 12);
+      const x = xForHz(hz);
+      if (x == null) continue;
+      const semi = midi % 12;
+      if (BLACK_SET.has(semi)) blackKeys.push({ x });
+      else whiteXs.push(x);
+      if (semi === 0) octaveLabels.push({ x, text: `C${Math.floor(midi / 12)}` });
+    }
+  }
+
+  return (
+    <View style={styles.pianoRow}>
+      <View style={styles.pianoGutter} />
+      <View style={styles.pianoArea} onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
+        {w > 0 && n > 0 && (
+          <Svg width={w} height={PIANO_H}>
+            {/* Keybed */}
+            <Rect x={0} y={0} width={w} height={PIANO_H} rx={4} fill={KEYBED} />
+            {/* White-key separators */}
+            {whiteXs.map((x, i) => (
+              <Line key={`w-${i}`} x1={x} y1={0} x2={x} y2={PIANO_H} stroke={KEY_LINE} strokeWidth={0.75} />
+            ))}
+            {/* Black keys — upper ~60%, centered on their Hz position */}
+            {blackKeys.map((k, i) => {
+              const bw = Math.max(2, barW * 0.55);
+              return (
+                <Rect
+                  key={`b-${i}`}
+                  x={k.x - bw / 2}
+                  y={0}
+                  width={bw}
+                  height={PIANO_H * 0.62}
+                  rx={1.5}
+                  fill={KEY_BLACK}
+                />
+              );
+            })}
+          </Svg>
+        )}
+        {/* C-octave labels under the keybed */}
+        <View style={styles.pianoLabelRow}>
+          {octaveLabels.map((l) => (
+            <Text key={l.text} style={[styles.pianoLabel, { left: l.x - 12 }]}>
+              {l.text}
+            </Text>
+          ))}
+        </View>
+      </View>
     </View>
   );
 }
@@ -597,11 +730,21 @@ export function RtaScreen({ navigation }: Props) {
     return regroupBands(nb, mode, groupHoldRef.current);
   }, [mode, frames.bands, sixth]);
 
-  /** RESET PEAK: native hold (unchanged call) + the derived-mode holds. */
+  // Clip latch (owner 2026-08-05): PEAK / PEAK HOLD numbers are neutral until an
+  // actual clip (≥ 0 dBFS), then stay RED (+ red frame on PEAK HOLD) until the
+  // user hits RESET PEAK.
+  const [hasClipped, setHasClipped] = useState(false);
+  // Display toggles (owner 2026-08-05): recolor the bars with the MIDI level
+  // ramp (persisted, first-ever default ON — item 7), and a piano keyboard.
+  const [colorsOn, setColorsOn] = useColorModePref();
+  const [pianoOn, setPianoOn] = useState(false);
+
+  /** RESET PEAK: native hold (unchanged call) + the derived-mode holds + clip latch. */
   const onResetPeak = useCallback(() => {
     groupHoldRef.current.clear();
     sixthHoldRef.current.fill(NO_LEVEL);
     resetPeakHold();
+    setHasClipped(false);
   }, [resetPeakHold]);
 
   // STOP must not collapse the tool back to the intro card (that shrinks the
@@ -676,6 +819,15 @@ export function RtaScreen({ navigation }: Props) {
   const meter = frames.meter;
   const canSave = state === 'running' && frames.bands != null && frames.bands.centers.length > 0;
 
+  // Latch the clip flag the instant peak (or its hold) reaches 0 dBFS. Stays set
+  // until RESET PEAK (owner 2026-08-05); this drives the red numbers + red frame.
+  useEffect(() => {
+    if (!meter) return;
+    const p = meter.peakDb;
+    const h = meter.peakHoldDb;
+    if ((Number.isFinite(p) && p >= 0) || (Number.isFinite(h) && h >= 0)) setHasClipped(true);
+  }, [meter]);
+
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
@@ -701,30 +853,47 @@ export function RtaScreen({ navigation }: Props) {
 
         {(state === 'running' || micPaused) && (
           <>
+            {/* Numeric truth row — ABOVE the display (owner 2026-08-05). PEAK /
+                PEAK HOLD stay neutral until an actual clip, then latch red.
+                Long-press any cell for what it shows. */}
+            <View style={styles.statGrid}>
+              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" clipped={hasClipped} />
+              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" clipped={hasClipped} frameRed={hasClipped} />
+              <StatCell help={help} label="BANDS" value={displayBands ? String(displayBands.centers.length) : '—'} />
+            </View>
+
             {/* Tapping the display toggles START/STOP (owner 2026-07-31). */}
             <Pressable
               onPress={state === 'running' ? onStop : onStart}
               accessibilityRole="button"
               accessibilityLabel={state === 'running' ? 'Tap to stop capture' : 'Tap to start capture'}
             >
-              <BandsPanel bands={displayBands} mode={mode} alpha={alpha} />
+              <BandsPanel bands={displayBands} mode={mode} alpha={alpha} midiColors={colorsOn} />
             </Pressable>
+            {pianoOn && <PianoStrip bands={displayBands} />}
             <DisplayGuideButton onPress={helpAll} />
 
-            {/* Numeric truth row — peak may exceed 0 dBFS (F1): print it.
-                Long-press any cell for what it shows. */}
-            <View style={styles.statGrid}>
-              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" peak />
-              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" peak />
-              <StatCell help={help} label="BANDS" value={displayBands ? String(displayBands.centers.length) : '—'} />
+            {/* Display toggles (owner 2026-08-05): MIDI level colours + piano map. */}
+            <View style={styles.buttonRow}>
+              <Pressable
+                style={[styles.ctrlBtn, colorsOn && styles.ctrlBtnOnGreen]}
+                onPress={() => setColorsOn(!colorsOn)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: colorsOn }}
+                accessibilityLabel="Toggle MIDI level colours on the display"
+              >
+                <Text style={[styles.ctrlText, colorsOn && styles.ctrlTextOnGreen]}>COLORS</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.ctrlBtn, pianoOn && styles.ctrlBtnOnBlue]}
+                onPress={() => setPianoOn((v) => !v)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: pianoOn }}
+                accessibilityLabel="Toggle a piano keyboard under the display"
+              >
+                <Text style={[styles.ctrlText, pianoOn && styles.ctrlTextOnBlue]}>PIANO</Text>
+              </Pressable>
             </View>
-
-            {/* Live quality warnings (spec §6) — same flags stored on save. */}
-            {liveFlags.map((f) => (
-              <Text key={f} style={styles.liveWarn}>
-                ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
-              </Text>
-            ))}
 
             {/* Controls (spec §10): banding · averaging · peak hold · save. */}
             <View style={styles.ctrlRow}>
@@ -796,6 +965,14 @@ export function RtaScreen({ navigation }: Props) {
             >
               <Text style={styles.libraryLink}>VIEW SAVED MEASUREMENTS ›</Text>
             </Pressable>
+
+            {/* Live quality warnings (spec §6) — moved to the very bottom
+                (owner 2026-08-05): the "input is uncalibrated…" note reads last. */}
+            {liveFlags.map((f) => (
+              <Text key={f} style={styles.liveWarn}>
+                ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+              </Text>
+            ))}
           </>
         )}
 
@@ -869,10 +1046,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     gap: 4,
   },
+  statCellClipped: { borderColor: '#ff5a48' }, // PEAK HOLD frame turns red on clip (owner 2026-08-05)
   statLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
   statValue: { fontFamily: fonts.mono, fontSize: 19, color: colors.textPrimary },
-  statValuePeak: { color: '#ff5a48' }, // peak text readouts are always red (owner 2026-07-31)
-  statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amberLabel },
+  statValuePeak: { color: '#ff5a48' }, // red once a clip has occurred, until reset (owner 2026-08-05)
+  statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: '#ffffff' }, // dBFS markings white (owner 2026-08-05)
 
   // Live warning line (spec §6) — amber, plain language.
   liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
@@ -914,8 +1092,28 @@ const styles = StyleSheet.create({
   },
   ctrlBtnSaved: { borderColor: 'rgba(91,255,133,.65)', backgroundColor: '#0d1710' },
   ctrlBtnDisabled: { opacity: 0.45 },
+  // COLORS / PIANO display toggles (owner 2026-08-05).
+  ctrlBtnOnGreen: { borderColor: colors.green, backgroundColor: '#0d1710' },
+  ctrlBtnOnBlue: { borderColor: colors.blue, backgroundColor: '#0c1622' },
   ctrlText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.4, color: colors.textSecondary },
   ctrlTextSaved: { color: '#5bff85' },
+  ctrlTextOnGreen: { color: colors.green },
+  ctrlTextOnBlue: { color: colors.cyanBright },
+
+  // Piano map strip (owner 2026-08-05).
+  pianoRow: { flexDirection: 'row', marginTop: 2 },
+  pianoGutter: { width: 32 },
+  pianoArea: { flex: 1 },
+  pianoLabelRow: { height: 14 },
+  pianoLabel: {
+    position: 'absolute',
+    top: 0,
+    width: 24,
+    fontFamily: fonts.mono,
+    fontSize: 12,
+    color: colors.textSub,
+    textAlign: 'center',
+  },
 
   libraryLink: {
     fontFamily: fonts.oswaldSemiBold,

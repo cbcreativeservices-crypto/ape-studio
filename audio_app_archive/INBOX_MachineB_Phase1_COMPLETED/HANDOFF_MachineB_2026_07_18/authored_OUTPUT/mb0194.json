@@ -1,0 +1,159 @@
+{
+ "batch": 194,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "23b30238-cae4-4c29-96c3-d51fcb889815",
+   "term": "Broadcast source selector",
+   "fields": {
+    "definition": "A control or device in a broadcast chain that chooses which of several audio (or audio/video) sources is routed to a given destination, most often the program (on-air) bus. It is the point at which an operator or automation system commits a specific source to air.",
+    "plain_english": "It is a switch that picks which sound feed goes on the air. Think of it like choosing a channel on a TV, but for what the station sends out.",
+    "purpose_function": "It lets an operator or automation route exactly one chosen source to the program output at a time, so the air chain always carries the intended feed. It exists to make source changes clean, deliberate, and repeatable.",
+    "practical_application": "A radio operator uses it to swap the on-air source between the studio microphone, a network feed, and a playout system without dead air or overlap. In automated stations the selector is driven by the playout schedule.",
+    "category": "Signal Routing",
+    "related_terms": ["Air chain", "Program bus", "Routing switcher", "Playout system", "Master control", "Broadcast studio"],
+    "common_mistakes": ["Confusing the source selector with a full routing switcher; a selector chooses one source for a destination, while a router cross-connects many sources to many destinations", "Switching sources without checking levels or fade, causing an audible jump or click on air", "Assuming the selected source is on air without confirming on program metering and monitoring"],
+    "scenario_contexts": ["A talk-radio operator moves the on-air feed from the host mic to a syndicated network program at the top of the hour", "An automation system selects the next scheduled audio source for playout", "An engineer selects between main and backup studio outputs during a fault"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (broadcast and routing chapters)", "AES standards / professional broadcast routing practice"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a1d943f6-7a42-42fc-92e5-d7fdd13e5e5a",
+   "term": "Broadcast split system",
+   "fields": {
+    "definition": "A signal-distribution arrangement that splits microphone or line sources into multiple isolated feeds so that the broadcast mix, house PA, and recording can each receive the same sources independently. Transformer-isolated (and sometimes active) splits keep the feeds electrically separated to avoid ground loops and cross-loading.",
+    "plain_english": "It takes one microphone signal and copies it to several places at once. That way the on-air mix, the room speakers, and the recorder each get their own clean copy.",
+    "purpose_function": "It exists so several consoles can share the same stage sources without one console's settings or grounding affecting the others. Isolation protects each feed and prevents hum caused by ground loops between systems.",
+    "practical_application": "At a concert broadcast, the technician runs the stage mics into a splitter that sends one leg to the broadcast truck, one to front-of-house PA, and one to monitors. The broadcast leg is usually the transformer-isolated output to keep it hum-free.",
+    "category": "Signal Distribution",
+    "related_terms": ["Microphone splitter", "Broadcast stagebox", "Ground loop", "Broadcast truck recording", "Front of house", "Isolation transformer"],
+    "common_mistakes": ["UNSAFE: Defeating an isolated split's ground lift or relying on a mains ground-defeat adapter to cure hum, which can leave equipment chassis unbonded and create a shock hazard", "Overloading a passive split with too many parallel destinations, loading down the source and reducing level", "Assuming phantom power passes to every leg; typically only one leg carries phantom to the mic while others are isolated"],
+    "scenario_contexts": ["A live music broadcast where truck, PA, and monitors each need the same stage mics", "A multi-broadcaster event where several networks each take an isolated split of the sources", "A house-of-worship service split between the broadcast feed and the room sound system"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook (microphone splitting and isolation)", "Ballou, Handbook for Sound Engineers (signal distribution and grounding)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "27cbd915-03c7-4424-bbae-a6c6d202f129",
+   "term": "Broadcast spot microphone",
+   "fields": {
+    "definition": "A microphone placed close to a specific source, instrument, or section to capture it individually for the broadcast mix, supplementing the main and ambience microphones. Its close pickup gives the broadcast mixer direct control over that source's level and presence.",
+    "plain_english": "It is a mic placed close to one thing, like a single singer or drum. It picks up that one source clearly so it stands out in the on-air mix.",
+    "purpose_function": "It exists to give the broadcast engineer a clean, isolated pickup of an important source that the wider main pair may not capture with enough clarity. This lets specific parts be reinforced or balanced without moving the main array.",
+    "practical_application": "Covering an orchestra broadcast, an engineer adds spot mics on a soloist and on quiet sections so they can be lifted in the mix relative to the main stereo pickup. The spots are usually blended slightly behind the mains and time-aligned where needed.",
+    "category": "Microphones",
+    "related_terms": ["Main microphone", "Ambience microphone", "Stereo microphone technique", "Broadcast split system", "Time alignment", "Broadcast stereo recorder"],
+    "common_mistakes": ["Mixing spot mics too loud, collapsing the natural depth and imaging provided by the main array", "Ignoring time-of-arrival differences between spot and main mics, causing comb filtering when combined", "Treating a spot mic as the primary source instead of a supplement to the mains"],
+    "scenario_contexts": ["An orchestral concert broadcast where soloists and weak sections get individual spot mics", "A panel discussion where each guest has a close spot mic feeding the broadcast mix", "A live event where a specific instrument needs reinforcement in the on-air balance"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (music recording and microphone techniques)", "Yamaha Sound Reinforcement Handbook (microphone placement)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f138d4e3-e76c-4976-abfb-5d551597955a",
+   "term": "Broadcast stagebox",
+   "fields": {
+    "definition": "A rack- or floor-mounted input/output unit placed at the performance area that collects microphone and line signals and carries them to the broadcast console or outside-broadcast truck. It links the stage to the mixing point using an analog multicore or a digital audio network such as MADI, AES50, or Dante.",
+    "plain_english": "It is a box on the stage where all the mic cables plug in. It then sends every signal down one cable or network to the mixing desk or truck.",
+    "purpose_function": "It exists to gather many stage signals at the source and transport them over a single tidy link instead of running dozens of long individual cables. Digital stageboxes also place the mic preamps at the stage, keeping signal quality high over long runs.",
+    "practical_application": "Setting up a remote broadcast, a technician patches stage mics into the stagebox and runs one fiber or cat cable back to the truck, where the console addresses each input remotely. Preamp gain is often controlled from the console over the network.",
+    "category": "Signal Distribution",
+    "related_terms": ["Digital snake", "MADI", "Dante", "Broadcast truck recording", "Microphone preamplifier", "Broadcast split system"],
+    "common_mistakes": ["Exceeding the network's channel count or sample-rate limits and losing inputs", "Forgetting that phantom power is enabled per input at the stagebox, so condenser mics get no power if it is not switched on", "Running an unshielded or over-length data cable and getting dropouts on a digital snake"],
+    "scenario_contexts": ["A remote concert broadcast feeding stage inputs to a truck over fiber", "A studio linking talent-area mics to the control room console over a digital snake", "A shared stagebox split between broadcast and PA consoles at a festival"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (audio transport and consoles)", "Audinate Dante / manufacturer digital-snake technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b8818426-6776-42a2-9167-b3d76d312c98",
+   "term": "Broadcast stereo recorder",
+   "fields": {
+    "definition": "A two-channel audio recorder used in broadcast to capture or play back the stereo program feed. It provides an archive, a time-delay source, or a playback record of the left/right program as broadcast.",
+    "plain_english": "It is a recorder that captures sound in two channels, left and right. Radio uses it to save or replay the on-air program.",
+    "purpose_function": "It exists to log or store the stereo program so it can be archived, replayed, or delayed. A reliable two-channel record of exactly what went to air is also useful for compliance and review.",
+    "practical_application": "An engineer feeds the program bus into a stereo recorder to keep a clean archive of a live broadcast for later playout or checking. The same recorder can replay a pre-recorded stereo segment into the air chain on cue.",
+    "category": "Recording",
+    "related_terms": ["Program bus", "Air chain", "Broadcast surround recorder", "Logging recorder", "Playout system", "Broadcast studio"],
+    "common_mistakes": ["Recording with the wrong reference level or headroom, so the archive clips or sits too low", "Assuming a stereo recorder captures surround; it stores only two channels", "Forgetting to confirm the recorder is armed, ending up with no archive of a live event"],
+    "scenario_contexts": ["Archiving a live stereo radio broadcast for later replay", "Playing a pre-recorded stereo segment into the air chain on cue", "Keeping a compliance record of the stereo program feed"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (recording and broadcast systems)", "EBU / AES broadcast audio practice"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "da7c585b-23e1-4c2c-8ad0-154500898c02",
+   "term": "Broadcast studio",
+   "fields": {
+    "definition": "An acoustically treated room equipped for radio or television production, housing the mixing console, microphones, monitoring, and on-air equipment used to produce or transmit programs. It is designed for controlled acoustics and low noise so that speech and music are captured cleanly.",
+    "plain_english": "It is a quiet, sound-treated room built for making radio or TV. It holds the mixing desk, mics, and speakers used to put a show together.",
+    "purpose_function": "It exists to give producers a controlled acoustic space and the equipment needed to originate a broadcast. Treating the room for low noise and even response keeps the on-air sound clear and consistent.",
+    "practical_application": "A presenter and engineer work in the broadcast studio using the console, mics, and monitors to run a live show or record a segment. The studio's acoustic treatment keeps reflections and background noise out of the program audio.",
+    "category": "Facilities",
+    "related_terms": ["Control room", "Broadcast source selector", "Air chain", "Broadcast technical operations center", "Acoustic treatment", "Monitoring"],
+    "common_mistakes": ["Assuming any quiet room is broadcast-ready without proper acoustic treatment and noise control", "Confusing the studio (where the program originates) with master control or the transmitter site", "Monitoring too loud, which skews mix decisions and risks hearing exposure over long shifts"],
+    "scenario_contexts": ["A live radio show hosted from an on-air studio", "Recording a voice-over or interview segment for later broadcast", "A TV set audio feed originating from a treated broadcast studio"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (studio design and acoustics)", "EBU / AES studio and acoustic practice"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a232589e-cf18-443e-8c83-5156fadab0c9",
+   "term": "Broadcast surround recorder",
+   "fields": {
+    "definition": "A multichannel recorder used in broadcast to capture or replay surround-sound program material, such as a 5.1 mix. It stores the discrete surround channels together so the immersive program can be archived, delayed, or played back in sync.",
+    "plain_english": "It is a recorder that captures many channels of sound, not just two. This lets a show be saved in surround, like 5.1, with speakers all around you.",
+    "purpose_function": "It exists to record or replay the full set of surround channels as a single locked group, preserving the spatial mix exactly as produced. This supports archiving, delayed transmission, and playback of surround broadcasts.",
+    "practical_application": "For a live sports or concert broadcast in 5.1, an engineer records all surround channels together so the show can be reviewed or replayed with its spatial image intact. Channel assignments follow the standard surround order to stay compatible downstream.",
+    "category": "Recording",
+    "related_terms": ["5.1 surround", "Broadcast stereo recorder", "Channel mapping", "Program bus", "Broadcast truck recording", "Loudness metering"],
+    "common_mistakes": ["Mislabeling or swapping surround channels so the playback image is wrong (for example, swapping center and LFE)", "Losing channel sync by recording surround channels on unlinked devices", "Assuming a stereo downmix preserves the surround image; the discrete channels must be recorded to keep it"],
+    "scenario_contexts": ["Capturing a 5.1 live sports broadcast for archive and replay", "Recording a surround concert mix in an outside-broadcast truck", "Storing a surround program for delayed transmission"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (multichannel and broadcast audio)", "SMPTE / EBU surround-sound broadcast documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "733fe016-0809-4338-9d37-0bcdd3a6e7f5",
+   "term": "Broadcast technical operations center",
+   "fields": {
+    "definition": "The central technical facility of a broadcast operation where signals are routed, monitored, and controlled, and where the station's transmission paths and technical infrastructure are managed. It is the hub through which program and support feeds pass on their way to air.",
+    "plain_english": "It is the control hub of a station where all the signals come together. Staff there route, watch, and fix the feeds that go out to viewers or listeners.",
+    "purpose_function": "It exists to centralize routing, monitoring, and fault management so that program feeds reach air reliably and problems are caught quickly. Concentrating these functions gives engineers one place to switch sources and respond to failures.",
+    "practical_application": "An operator in the technical operations center watches program and confidence monitors, routes network and studio feeds, and switches to backup paths when a fault appears. It coordinates closely with master control and the studios feeding it.",
+    "category": "Facilities",
+    "related_terms": ["Master control", "Routing switcher", "Broadcast source selector", "Air chain", "Broadcast studio", "Signal monitoring"],
+    "common_mistakes": ["Confusing the technical operations center with a single studio; it serves and connects many program sources", "Making a route change without confirming it on confidence monitoring, sending the wrong feed to air", "Assuming redundancy is automatic instead of verifying backup paths are armed and healthy"],
+    "scenario_contexts": ["Routing a live network feed to the correct transmission path", "Switching to a backup studio or feed when a primary source fails", "Monitoring multiple program channels for signal loss or level faults"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (broadcast facilities and routing)", "SMPTE / EBU broadcast operations practice"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dfa8eab3-9b9a-471f-844c-03fd1deca123",
+   "term": "Broadcast truck recording",
+   "fields": {
+    "definition": "The capture of audio, and often video, at a live remote event using the equipment inside an outside-broadcast (OB) or mobile production truck. The truck houses consoles, recorders, and routing so a full production and multitrack record can be made on site.",
+    "plain_english": "It is recording sound from inside a special truck parked at an event. The truck is like a full studio on wheels for concerts and sports.",
+    "purpose_function": "It exists to bring a complete, controlled production and recording facility to venues that have no permanent studio. Recording on the truck preserves the multitrack and program feeds for live transmission, later mixing, or archive.",
+    "practical_application": "At a concert or sports event, the audio engineer in the OB truck records every stage input as multitrack plus the stereo or surround program off the console. Stage sources reach the truck through a stagebox and split so the truck feed stays independent of the PA.",
+    "category": "Remote Production",
+    "related_terms": ["Outside broadcast", "Broadcast stagebox", "Broadcast split system", "Multitrack recording", "Broadcast surround recorder", "Program bus"],
+    "common_mistakes": ["UNSAFE: Energizing the truck from venue power without verifying proper grounding/bonding and correct supply, risking shock and equipment damage", "Recording only the stereo program and no multitrack, leaving no way to remix later", "Not confirming record arm and disk space before the event, losing the capture of a one-time performance"],
+    "scenario_contexts": ["Multitrack recording a live concert from an OB truck for later album mixing", "Producing and recording a live sports broadcast on site", "Capturing a festival's stage feeds via a split to the truck alongside the PA"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (remote and broadcast production)", "Yamaha Sound Reinforcement Handbook (remote recording and signal splitting)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 136,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "4fa95748-d6e0-4ad8-b238-67904cbb2aa5",
+   "term": "Score-to-dialogue balance",
+   "fields": {
+    "definition": "The relative level relationship between the musical score and the spoken dialogue in a film, television, or game mix, set so dialogue stays intelligible while the music keeps its emotional impact.",
+    "plain_english": "It is how loud the background music is next to the talking in a film. You set it so you can still hear the words clearly, while the music still moves you.",
+    "purpose_function": "It ensures the audience can always follow the spoken story while the score supports the mood, keeping music from masking important lines.",
+    "practical_application": "A re-recording mixer rides the music level under dialogue, dipping the score a few decibels during key lines and lifting it in transitions or action scenes.",
+    "category": "Mix Balance",
+    "related_terms": ["Dialogue intelligibility", "Re-recording mixer", "Ducking", "Stem", "Level balance", "Scoring mixer"],
+    "common_mistakes": ["Setting the score so loud that dialogue becomes hard to follow", "Judging the balance only in a quiet room instead of at realistic listening levels", "Forgetting that streaming loudness normalization can shift the perceived balance", "Checking the mix only on studio monitors and never on consumer-grade playback"],
+    "scenario_contexts": ["Final re-recording mix of a feature film on a dubbing stage", "Balancing an emotional cue under a character's monologue in a TV drama", "Keeping narration clear over music in a documentary", "Setting adaptive music levels under dialogue in a video game"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b3b6d1da-0c1d-45af-a4e2-4cfaa14bdef0",
+   "term": "Scoring engineer",
+   "fields": {
+    "definition": "The recording engineer responsible for capturing a film, television, or game score during scoring-stage sessions, setting up microphones and signal paths and recording the orchestra or ensemble in sync with picture.",
+    "plain_english": "This is the engineer who records the music written for a film. They set up the microphones and capture the orchestra as it plays along to the movie.",
+    "purpose_function": "The role exists to turn a large live ensemble into clean, well-organized recorded tracks that the music team can later edit and mix.",
+    "practical_application": "On a scoring stage the engineer places microphones across the orchestra, manages click and headphone feeds, and records each cue locked to the on-screen picture.",
+    "category": "Studio Roles",
+    "related_terms": ["Scoring mixer", "Scoring stage", "Click track", "Cue", "Orchestral recording", "Re-recording mixer"],
+    "common_mistakes": ["Confusing the scoring engineer with the re-recording mixer who handles the final film mix", "Assuming one person always both records and mixes the score", "Underestimating how much session planning and microphone setup the role requires"],
+    "scenario_contexts": ["Recording an orchestral score to picture on a large scoring stage", "Setting up a click and headphone system for the conductor and players", "Capturing individual cues for a television episode", "Recording a smaller ensemble score in a project studio"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d1e79c44-af6b-4edd-bb23-6ce5fb8d7a78",
+   "term": "Scoring mixer",
+   "fields": {
+    "definition": "The engineer who balances and mixes the recorded music for a film, television, or game score, blending the orchestral and instrumental tracks — often in real time during the session — into the stems delivered to the final mix.",
+    "plain_english": "This is the engineer who blends all the recorded music into a finished sound. They often mix the orchestra live as it plays, so each cue is ready to hand off.",
+    "purpose_function": "The role exists to deliver a polished, balanced music mix, usually as stems, that the re-recording mixer can drop into the final soundtrack.",
+    "practical_application": "During a session the scoring mixer balances string, brass, and percussion sections at the console, prints stems, and delivers them for the final dub.",
+    "category": "Studio Roles",
+    "related_terms": ["Scoring engineer", "Stem", "Re-recording mixer", "Scoring stage", "Score-to-dialogue balance", "Cue"],
+    "common_mistakes": ["Treating the scoring mixer and re-recording mixer as the same job", "Assuming the score is always mixed after the session rather than live", "Overlooking the need for clearly labeled stems for the final dub"],
+    "scenario_contexts": ["Mixing an orchestra live to stems during a scoring session", "Delivering separate music stems to the re-recording stage", "Balancing sections of an ensemble for a film cue", "Preparing a stereo and surround music mix for a game score"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8f4c2109-ee2d-4c69-af67-955106ecfa0f",
+   "term": "Scratch Pad",
+   "fields": {
+    "definition": "A separate, non-linear workspace in some digital audio workstations where a producer can try out alternate arrangement or edit ideas apart from the main timeline, without altering the primary song.",
+    "plain_english": "It is a side area in some music software for testing new ideas. You can rearrange or experiment there without changing your real song.",
+    "purpose_function": "It lets you compare arrangement options and audition changes safely, keeping experiments out of the committed project until you pick one.",
+    "practical_application": "A producer copies a chorus into the scratch pad, reorders sections to test a new structure, then moves the winning version back into the main arrangement.",
+    "category": "DAW Workflow",
+    "related_terms": ["Arrangement", "Playlist", "Comping", "Take", "Timeline", "Screenset"],
+    "common_mistakes": ["Assuming scratch-pad ideas automatically update the main song", "Forgetting to move a finished idea back into the main timeline", "Confusing it with a scratch track or scratch vocal used as a rough reference"],
+    "scenario_contexts": ["Testing an alternate song structure before committing", "Auditioning two different bridge ideas side by side", "Sketching a rough arrangement while the main mix stays untouched", "Comparing edit versions during production"]
+   },
+   "sources": ["PreSonus Studio One Reference Manual", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3d28bc00-768c-47c8-bcec-6e5cc6ede101",
+   "term": "Screenset",
+   "fields": {
+    "definition": "A saved, recallable arrangement of open windows with their sizes, positions, and zoom settings in a digital audio workstation, letting an engineer switch between task-specific layouts with a single key.",
+    "plain_english": "It is a saved layout of your software windows. You press one key to jump to the setup you want, like one view for recording and another for mixing.",
+    "purpose_function": "It speeds up workflow by letting you flip between dedicated layouts — such as editing, mixing, or arranging — instead of moving windows around by hand.",
+    "practical_application": "An engineer assigns a mixing layout to one number key and an editing layout to another, then switches between them instantly during a session.",
+    "category": "DAW Workflow",
+    "related_terms": ["Workspace", "Mixer window", "Arrange window", "Scratch Pad", "Key command", "Template"],
+    "common_mistakes": ["Forgetting that moving a window updates the current screenset automatically", "Locking a screenset and then wondering why layout changes will not save", "Confusing screensets with separate project files"],
+    "scenario_contexts": ["Switching from a tracking layout to a mixing layout instantly", "Recalling an editing window set during a comping session", "Setting up dedicated layouts for a multi-monitor rig", "Building a template with preset screensets"]
+   },
+   "sources": ["Apple Logic Pro User Guide", "Sound on Sound (technical articles)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "598df719-16fa-4a3c-b179-fb2d0bea5bfe",
+   "term": "Scrub Tool",
+   "fields": {
+    "definition": "A digital audio workstation tool that plays audio at variable speed as you drag the cursor across a waveform, letting you hear exactly what is under the pointer to locate a precise edit point.",
+    "plain_english": "It lets you drag across a sound to hear it slowly, like moving a record under a needle by hand. You use it to find the exact spot to make a cut.",
+    "purpose_function": "It exists to help you find precise edit points by ear, hearing starts and boundaries that are hard to judge from the waveform picture alone.",
+    "practical_application": "An editor scrubs across a drum track to find the exact start of a hit, then places an edit point right at the transient.",
+    "category": "Editing Tools",
+    "related_terms": ["Selector Tool", "Playhead", "Transient", "Waveform", "Edit point", "Zero crossing"],
+    "common_mistakes": ["Confusing scrubbing with normal playback", "Scrubbing too fast to hear fine detail", "Forgetting that scrub is for finding edits, not for final listening judgments"],
+    "scenario_contexts": ["Finding the exact start of a vocal phrase to trim", "Locating a click or noise to edit out", "Setting a precise loop point on a drum hit", "Spotting a sync point against picture"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Apple Logic Pro User Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "33b9eaad-d3a5-43d6-a040-ca944996b3ae",
+   "term": "Seamless music loop",
+   "fields": {
+    "definition": "A section of music edited so its end flows into its start with no audible gap, click, or discontinuity, allowing it to repeat indefinitely as one continuous piece.",
+    "plain_english": "It is a piece of music that can repeat over and over with no gap or click. When it reaches the end it flows straight back to the start so you cannot tell where it joins.",
+    "purpose_function": "It exists to provide continuous background music, such as in games or on-hold systems, without a jarring break each time the loop restarts.",
+    "practical_application": "A game composer trims the loop at matching zero crossings and matches the tail's reverb to the intro so the join stays inaudible during endless playback.",
+    "category": "Looping",
+    "related_terms": ["Loop point", "Zero crossing", "Crossfade", "Reverb tail", "Bar", "Tempo"],
+    "common_mistakes": ["Cutting the loop where the waveform is not at a zero crossing, causing a click", "Ignoring the reverb or note tail that should carry over the loop join", "Not matching the loop length to whole bars, causing a rhythmic stumble"],
+    "scenario_contexts": ["Creating background music that loops in a video game", "Building a loop for on-hold phone music", "Looping an ambient bed for an installation", "Making a repeating groove for a backing track"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6bc35a7e-a026-4c29-ba78-0dbfda13fa70",
+   "term": "Selection Cursor",
+   "fields": {
+    "definition": "The on-screen insertion point in a digital audio workstation that marks where editing will occur and from which a timeline selection is extended, usually shown as a blinking vertical line.",
+    "plain_english": "It is the blinking line that shows where your edit will happen. You click to place it, then drag to select the part of the audio you want to work on.",
+    "purpose_function": "It gives editing commands a precise anchor point, telling the software exactly where to place, cut, or start a selection on the timeline.",
+    "practical_application": "An editor clicks to set the selection cursor on a beat, then drags to highlight a region before cutting or copying it.",
+    "category": "Editing Tools",
+    "related_terms": ["Selector Tool", "Playhead", "Edit point", "Selection", "Timeline", "Marker"],
+    "common_mistakes": ["Confusing the selection cursor with the moving playhead", "Losing track of where the cursor sits before running an edit command", "Assuming a click also starts playback"],
+    "scenario_contexts": ["Placing an insertion point before pasting audio", "Setting the start of a timeline selection", "Marking where a new region should begin", "Positioning for a precise split"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "86badfbd-60d9-42d3-ab03-3e99e0f007b4",
+   "term": "Selector Tool",
+   "fields": {
+    "definition": "An editing tool in a digital audio workstation — notably Pro Tools — used to place the edit cursor and drag out selections of audio or MIDI on the timeline for editing, copying, or playback.",
+    "plain_english": "It is the tool you pick to highlight parts of your audio. You click and drag with it to choose the section you want to cut, copy, or play.",
+    "purpose_function": "It exists to define what and where you edit, letting you set an insertion point or select a range before applying a command.",
+    "practical_application": "In Pro Tools an editor chooses the Selector, drags across a chorus to select it, then loops or copies that selection.",
+    "category": "Editing Tools",
+    "related_terms": ["Selection Cursor", "Grabber Tool", "Trim Tool", "Scrub Tool", "Edit point", "Region"],
+    "common_mistakes": ["Confusing the Selector with the Grabber, which moves regions instead of selecting them", "Leaving the wrong tool active and dragging a region by accident", "Forgetting to switch tools for different edit tasks"],
+    "scenario_contexts": ["Selecting a range of audio to delete in Pro Tools", "Placing the edit cursor before recording a punch", "Highlighting a loop selection for playback", "Choosing a MIDI range to quantize"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

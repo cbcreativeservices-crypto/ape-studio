@@ -1,0 +1,339 @@
+{
+ "batch": 65,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "2716709d-3fcb-4dc3-9f9d-8a8eb9b15a33",
+   "term": "Snare compression",
+   "fields": {
+    "definition": "The application of dynamic-range compression to a snare drum signal, reducing the level difference between the loud initial transient and the quieter body and decay. Depending on attack and release settings it evens out hit-to-hit level, tames peaks, or adds sustain and perceived weight.",
+    "plain_english": "A compressor makes the loud snare hits and the softer ones sit closer in volume. This keeps every hit even and can make the drum sound fuller and more powerful.",
+    "purpose_function": "It controls the wide dynamic range of a struck snare so the drum stays consistent and present in a mix. By shaping the attack and decay it can also thicken the tone or hold back sharp peaks that would jump out.",
+    "practical_application": "An engineer patches a compressor across the snare channel and sets ratio, threshold, attack and release to taste, often using a slower attack to preserve the crack. On live consoles the same is done with the channel's built-in dynamics section.",
+    "category": "Drum processing",
+    "related_terms": [
+     "Snare equalization",
+     "Snare gating",
+     "Snare saturation",
+     "Parallel compression",
+     "Attack time",
+     "Overhead compression"
+    ],
+    "common_mistakes": [
+     "Using too fast an attack, which crushes the snare's crack and makes it sound dull.",
+     "Setting the release so slow that the compressor pulls up bleed and pumps between hits.",
+     "Over-compressing so every hit sounds squashed and lifeless.",
+     "Confusing compression with limiting and clamping down far harder than intended."
+    ],
+    "scenario_contexts": [
+     "Evening out a drummer whose snare hits vary in strength during tracking.",
+     "Adding punch and sustain to a rock snare in a mix.",
+     "Using parallel compression to add body while keeping the natural transient.",
+     "Controlling snare peaks feeding a live front-of-house mix."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Handbook for Sound Engineers (Ballou)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8cb6f7bc-8585-4712-a5f0-c7330a7b36e3",
+   "term": "Snare crack enhancement",
+   "fields": {
+    "definition": "Techniques that emphasise the sharp, high-frequency attack — the 'crack' — of a snare drum, typically through upper-mid and high-frequency EQ boosts, transient shaping, or parallel processing. The goal is to make the snare cut through a dense mix without simply raising its overall level.",
+    "plain_english": "The crack is the sharp snap you hear the instant a stick hits the snare. Enhancing it means bringing out that snap so the drum cuts through the rest of the band.",
+    "purpose_function": "It increases the snare's attack and definition so it reads clearly against loud guitars, cymbals and vocals. This keeps the drum punchy and articulate even when the whole mix is busy.",
+    "practical_application": "An engineer boosts EQ around the attack and snap regions, adds a transient shaper to lift the initial hit, or blends in a parallel channel to bring out the crack, judging the amount against the full mix.",
+    "category": "Drum processing",
+    "related_terms": [
+     "Snare equalization",
+     "Snare compression",
+     "Snare saturation",
+     "Transient shaper",
+     "Attack time",
+     "Snare sample blend"
+    ],
+    "common_mistakes": [
+     "Boosting harsh high frequencies so much the snare becomes fatiguing or spitty.",
+     "Chasing crack with EQ when the real problem is a slow compressor attack killing the transient.",
+     "Using a transient shaper so aggressively the hit sounds clicky and unnatural.",
+     "Enhancing the crack in solo without checking it against the full mix."
+    ],
+    "scenario_contexts": [
+     "Making a soft-sounding snare cut through a wall of distorted guitars.",
+     "Adding a transient shaper to sharpen a dull recorded snare.",
+     "Blending a parallel compressed channel to bring out attack on a pop snare.",
+     "Lifting an attack EQ band so the snare reads clearly on small speakers."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Sound on Sound technical articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "58f6790c-503f-4436-b0f1-35ece528b25a",
+   "term": "Snare equalization",
+   "fields": {
+    "definition": "The use of an equalizer to shape the tonal balance of a snare drum signal, for example adding body in the low mids, cutting boxy resonances in the low-to-mid range, and lifting attack and snap in the upper mids and highs. It tailors the snare's character so it fits the arrangement.",
+    "plain_english": "EQ lets you turn different parts of the snare's tone up or down. You can add low-end thump, remove a boxy honk, or brighten the snap so the drum sounds the way you want.",
+    "purpose_function": "It sculpts the snare's frequency balance so its body, attack and ring suit the song and sit clearly against the other instruments. It also removes problem resonances and bleed that muddy the drum.",
+    "practical_application": "A technician cuts boxiness around a few hundred hertz, adds weight in the low mids, and lifts the highs for attack, checking the result in the full mix rather than in solo.",
+    "category": "Drum processing",
+    "related_terms": [
+     "Snare compression",
+     "Snare ring control",
+     "Snare crack enhancement",
+     "High-pass filter",
+     "Overhead equalization",
+     "Equalization"
+    ],
+    "common_mistakes": [
+     "Boosting the highs too much so the snare becomes harsh and fatiguing.",
+     "Leaving boxy low-mid resonances that make the snare sound like a cardboard box.",
+     "EQing the snare in solo instead of in context with the full kit and mix.",
+     "Reaching for EQ to fix a problem that better tuning or damping would solve."
+    ],
+    "scenario_contexts": [
+     "Cutting a boxy low-mid frequency to clean up a dull recorded snare.",
+     "Adding a high-shelf lift to brighten the snare's snap in a busy mix.",
+     "High-passing a snare channel to remove kick and floor-tom rumble.",
+     "Shaping snare tone to match the reference sound for a project."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Handbook for Sound Engineers (Ballou)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "953ac7dc-d63e-4ad2-8f7a-a7ddb510d8e4",
+   "term": "Snare gating",
+   "fields": {
+    "definition": "The use of a noise gate on the snare microphone channel to attenuate or mute the signal while the snare is not being struck, reducing bleed from the hi-hat, kick and rest of the kit. The gate opens on the snare's transient and closes during the gaps between hits.",
+    "plain_english": "A gate is like an automatic switch that opens only when the snare is hit. It quiets the microphone in between hits so you hear less of the cymbals and other drums leaking in.",
+    "purpose_function": "It cleans up the snare channel by removing spill from the rest of the kit, which tightens the drum sound and allows more aggressive EQ and processing. Cleaner isolation also makes the whole drum mix clearer.",
+    "practical_application": "A technician sets the gate threshold above the bleed but below the snare hits, then adjusts attack, hold and release so the gate opens cleanly and closes without cutting the drum's natural decay.",
+    "category": "Drum processing",
+    "related_terms": [
+     "Snare compression",
+     "Snare microphone blend",
+     "Snare sample blend",
+     "Noise gate",
+     "Threshold",
+     "Bleed"
+    ],
+    "common_mistakes": [
+     "Setting the threshold so high the gate chops off soft ghost notes.",
+     "Using a fast release that cuts the snare's natural decay and sounds choppy.",
+     "Forgetting the gate can false-trigger from loud hi-hat or kick bleed.",
+     "Gating so tightly the drums sound unnatural and disconnected."
+    ],
+    "scenario_contexts": [
+     "Removing hi-hat bleed from a snare track before heavy EQ and compression.",
+     "Tightening a loose, ringy snare in a metal mix with a gate.",
+     "Cleaning up spill on a live snare channel to get more gain before feedback.",
+     "Key-triggering a gate from the snare mic to drive a sample or reverb."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Handbook for Sound Engineers (Ballou)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8dc2c494-2117-4226-94a3-7aa1ab5a12ad",
+   "term": "Snare microphone blend",
+   "fields": {
+    "definition": "The balancing of two or more snare mics — commonly a top mic capturing body and attack and a bottom mic capturing the wire snare's buzz — into a single composite snare tone. Because the mics face opposite drumheads, polarity and phase between them must be managed.",
+    "plain_english": "Drummers often put one mic above the snare and one below. Blending means mixing the two so you get both the punch from the top and the buzz from the wires below.",
+    "purpose_function": "It lets the engineer combine the strengths of each mic position to build a fuller, more controllable snare tone than a single mic gives. Managing their phase keeps the blended sound solid instead of thin.",
+    "practical_application": "A technician flips the polarity of the bottom mic, then balances the two levels for the right mix of body and wire snap, checking the sound in mono to make sure the mics reinforce rather than cancel.",
+    "category": "Drum miking",
+    "related_terms": [
+     "Snare gating",
+     "Snare equalization",
+     "Phase",
+     "Polarity",
+     "Bleed",
+     "Overhead compression"
+    ],
+    "common_mistakes": [
+     "Leaving the bottom mic in the same polarity as the top, causing thin, hollow cancellation.",
+     "Adding too much bottom mic so the snare sounds all buzz and no body.",
+     "Ignoring hi-hat bleed the top mic picks up when both are blended.",
+     "Blending without checking the result in mono for phase problems."
+    ],
+    "scenario_contexts": [
+     "Combining top and bottom snare mics to get both attack and wire snap.",
+     "Flipping bottom-mic polarity so the blended snare sounds full instead of thin.",
+     "Balancing snare mics against the overheads for a cohesive kit sound.",
+     "Adjusting the top-to-bottom blend to add sizzle to a dead-sounding snare."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f1352cae-3c16-47b5-9349-3c2a13370d95",
+   "term": "Snare reverb",
+   "fields": {
+    "definition": "The addition of artificial or natural reverberation to a snare drum to place it in a sense of space and add depth or sustain. Plate and room programs are common, and gated reverb — a reverb tail cut short by a gate — is a well-known snare effect.",
+    "plain_english": "Reverb adds an echo-like sense of space around the snare. A little makes the drum sound like it is in a real room, while more can give the big, booming snare heard on many records.",
+    "purpose_function": "It gives the snare depth, size and a place in a space so it sounds less dry and more produced, and it can add sustain to a short hit. The choice of reverb type strongly shapes the drum's character.",
+    "practical_application": "A technician sends the snare to a reverb bus, chooses a plate or room program, and adjusts pre-delay, decay time and level so the effect adds space without washing out the mix.",
+    "category": "Drum processing",
+    "related_terms": [
+     "Snare compression",
+     "Snare gating",
+     "Gated reverb",
+     "Plate reverb",
+     "Pre-delay",
+     "Send"
+    ],
+    "common_mistakes": [
+     "Using so much reverb the snare loses punch and the mix sounds washed out.",
+     "Setting pre-delay and decay without regard to the song's tempo, smearing the groove.",
+     "Adding bright reverb that pushes an already harsh snare further into harshness.",
+     "Printing reverb to the recorded track instead of using a send, losing later control."
+    ],
+    "scenario_contexts": [
+     "Sending a dry pop snare to a plate reverb for a classic sheen.",
+     "Recreating an eighties gated-reverb snare for a retro production.",
+     "Adding a short room reverb to glue close-miked drums together.",
+     "Timing the reverb decay to the tempo so the tail clears before the next hit."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Handbook for Sound Engineers (Ballou)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "004562bc-788f-44b4-bf2c-444845ceaf2f",
+   "term": "Snare ring control",
+   "fields": {
+    "definition": "The reduction of unwanted sympathetic ringing and overtones from a snare drum, achieved acoustically with dampening such as gel pads, tape or damping rings on the head, or electronically with narrow EQ cuts, gating or transient control. It tightens the snare's decay while preserving its fundamental tone.",
+    "plain_english": "A snare often keeps ringing after it is hit. Ring control tames that long ring, using pads or tape on the drum or an EQ cut, so each hit sounds tighter.",
+    "purpose_function": "It removes distracting overtones and sustain that clutter a mix or clash with other instruments, giving a focused snare sound. Controlling ring at the source usually beats trying to fix it later.",
+    "practical_application": "A technician first tunes or dampens the drum with gel or a muffling ring, then, if needed, applies a narrow EQ cut at the ringing frequency or a gate to shorten the tail.",
+    "category": "Drum damping",
+    "related_terms": [
+     "Snare equalization",
+     "Snare gating",
+     "Snare compression",
+     "Damping",
+     "Overtone",
+     "Drum tuning"
+    ],
+    "common_mistakes": [
+     "Over-damping the head so the snare sounds dead and lifeless.",
+     "Using a wide EQ cut that removes the ring but also the drum's tone.",
+     "Treating all ring as bad when some ring gives the snare life and sustain.",
+     "Reaching for EQ before trying to tune or dampen the drum itself."
+    ],
+    "scenario_contexts": [
+     "Placing a gel pad on the snare head to tame ring before tracking.",
+     "Notching out a specific ringing frequency with a narrow EQ cut.",
+     "Using a gate to shorten an overly long snare tail in a dense mix.",
+     "Retuning the snare heads to remove sympathetic buzz from the bass."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Handbook for Sound Engineers (Ballou)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "93add166-2158-43ca-8251-3ece5c95a633",
+   "term": "Snare sample blend",
+   "fields": {
+    "definition": "The layering of a triggered or replacement snare sample underneath the recorded snare track, mixed in to reinforce attack, consistency or tone. The sample is usually triggered from the original snare hits so it stays in time, with its dynamics and phase matched to the live track.",
+    "plain_english": "Sometimes engineers add a recorded snare sound under the real one. Blending the two gives a stronger, more consistent hit while keeping the feel of the live playing.",
+    "purpose_function": "It shores up a weak, inconsistent or bleed-heavy recorded snare with a reliable sample, giving a bigger and more even sound while keeping the natural performance. It is a common fix when a re-record is not possible.",
+    "practical_application": "Using a drum replacement or trigger plug-in, a technician detects each snare hit and plays a matched sample beneath it, then adjusts the blend and aligns timing and phase so the two sound as one.",
+    "category": "Drum processing",
+    "related_terms": [
+     "Snare gating",
+     "Snare compression",
+     "Drum replacement",
+     "Trigger",
+     "Phase",
+     "Snare crack enhancement"
+    ],
+    "common_mistakes": [
+     "Blending the sample so loud it replaces the natural drum and sounds fake.",
+     "Ignoring timing and phase so the sample smears the original transient.",
+     "False triggers from bleed adding sample hits where there was no snare hit.",
+     "Choosing a sample whose tuning clashes with the recorded snare."
+    ],
+    "scenario_contexts": [
+     "Reinforcing a weak recorded snare with a triggered sample for more punch.",
+     "Evening out an inconsistent drum take by blending a steady sample under it.",
+     "Aligning a sample's phase with the live snare so the blend stays solid.",
+     "Replacing a bleed-heavy snare while keeping the drummer's dynamics."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Sound on Sound technical articles"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0166d55a-3968-430b-90e0-e0af4f32947c",
+   "term": "Snare saturation",
+   "fields": {
+    "definition": "The application of harmonic saturation or mild distortion to a snare signal, adding harmonics that increase perceived loudness, weight and aggression. Tape, tube and transformer-style emulations are common, and it is often used in parallel so the clean transient is preserved.",
+    "plain_english": "Saturation adds a bit of controlled grit to the snare, like gently overdriving it. This makes the drum sound louder, thicker and more aggressive without turning the volume up.",
+    "purpose_function": "It adds harmonics that thicken the snare and help it cut through a mix, and the extra density can make the drum feel louder at the same level. Used in parallel it adds edge while keeping the natural attack.",
+    "practical_application": "A technician inserts a tape, tube or console-style saturator on the snare or a parallel copy, drives it for the desired grit, and blends it in while matching levels so the change is about tone, not volume.",
+    "category": "Drum processing",
+    "related_terms": [
+     "Snare compression",
+     "Snare crack enhancement",
+     "Snare equalization",
+     "Harmonic distortion",
+     "Parallel compression",
+     "Tape saturation"
+    ],
+    "common_mistakes": [
+     "Adding so much saturation the snare sounds fizzy and harsh.",
+     "Saturating the full channel and losing the clean attack instead of using a parallel path.",
+     "Confusing gentle saturation with heavy distortion and overdoing the drive.",
+     "Not level-matching, so the loudness boost is mistaken for a better tone."
+    ],
+    "scenario_contexts": [
+     "Driving a tape saturator on the snare to add weight to a rock mix.",
+     "Using parallel saturation to add edge while keeping the natural crack.",
+     "Thickening a thin sampled snare with tube-style harmonics.",
+     "Adding grit to help a clean snare cut through distorted guitars."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Handbook for Sound Engineers (Ballou)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

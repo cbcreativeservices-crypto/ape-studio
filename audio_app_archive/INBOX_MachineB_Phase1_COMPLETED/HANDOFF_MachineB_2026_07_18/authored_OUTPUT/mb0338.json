@@ -1,0 +1,231 @@
+{
+ "batch": 338,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "42f8b2e5-b162-432f-bfbe-6e349bba5c8c",
+   "term": "Pop",
+   "fields": {
+    "definition": "A brief, high-energy transient heard as a sharp click or thump, produced when a sudden pressure blast (such as a plosive consonant hitting a microphone) or an abrupt electrical discontinuity (such as making or breaking a live connection) injects a fast step into the signal.",
+    "plain_english": "A pop is a quick, loud burst of sound, like the thump you hear when someone says a hard 'P' too close to a mic. It can also come from plugging in a cable while the sound is turned up.",
+    "purpose_function": "Naming this artifact tells a technician the fault is a fast transient event, not a steady tone, which points to a plosive, a switching event, or a bad connection so the right fix is applied.",
+    "practical_application": "An engineer who hears pops on a vocal fits a pop filter and high-pass filter, and at a patchbay mutes the channel before plugging so a pop is not sent through the PA.",
+    "category": "Transient artifact",
+    "related_terms": ["Plosive", "Pop filter", "Transient", "Click", "DC offset"],
+    "common_mistakes": [
+     "Confusing a plosive pop with a low-frequency rumble or handling noise",
+     "Thinking a pop filter will stop electrical pops caused by patching or switching",
+     "UNSAFE: patching or unplugging live sources into a powered system, which can send a loud pop that damages drivers or hearing"
+    ],
+    "scenario_contexts": [
+     "A singer's hard consonants pop the vocal mic during a quiet ballad",
+     "A loud pop bursts through the PA when an engineer patches a live channel hot",
+     "A guitar amp pops when its footswitch is stepped on"
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook", "Shure technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6f6d8144-a947-4694-8527-6b0cd7085e95",
+   "term": "Port resonance",
+   "fields": {
+    "definition": "The acoustic resonance of the air column in a bass-reflex loudspeaker's port. At the enclosure's Helmholtz tuning frequency it reinforces low bass, but the same air column also exhibits higher-frequency pipe (standing-wave) resonances that appear as unwanted peaks and coloration in the port's output.",
+    "plain_english": "A ported speaker has a tube, the port, that helps it make deeper bass. The air in that tube can also ring at higher notes, adding a peak or a hollow, pipe-like sound you do not want.",
+    "purpose_function": "The port's main air resonance is designed to extend low-frequency output, so telling it apart from the port's unwanted higher resonances lets a technician separate useful tuning from coloration and port noise.",
+    "practical_application": "When a sub or monitor sounds boomy or has a hollow honk, a technician measures the response and impedance to find the peak, then fits a longer or flared port or adds damping to control it.",
+    "category": "Resonance artifact",
+    "related_terms": ["Bass reflex", "Helmholtz resonance", "Port noise", "Standing wave", "Enclosure tuning"],
+    "common_mistakes": [
+     "Confusing the intended Helmholtz tuning resonance with the unwanted pipe resonance higher up",
+     "Mistaking port chuffing (air turbulence noise) for port resonance",
+     "Assuming a larger port always removes resonance, when port length sets the pipe resonance frequency"
+    ],
+    "scenario_contexts": [
+     "A ported PA sub develops a hollow midbass coloration traced to a port pipe resonance",
+     "A studio monitor shows a response peak above its tuning frequency caused by port resonance",
+     "A home-built cabinet honks on sustained bass notes"
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "AES (Journal / bass-reflex port papers)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5c0b90e4-f9bd-4e6c-8e9c-17b9f303d3c9",
+   "term": "Position shift",
+   "fields": {
+    "definition": "An audible change in the apparent location of a sound source within the stereo or surround image, where a phantom source drifts from its intended position because of shifts in interchannel level or time differences, phase relationships, or comb filtering.",
+    "plain_english": "This is when a sound seems to move to a different spot between your speakers than where it should sit. It usually happens when the two channels differ in loudness or timing, so your ears place the sound off to one side.",
+    "purpose_function": "Spotting a position shift lets a technician separate an imaging problem, such as a level imbalance or a timing or phase error, from a tonal problem, so they correct the pan, delay, or wiring instead of the EQ.",
+    "practical_application": "If a centered vocal pulls to one side, an engineer checks channel levels, pan, cable polarity, and any delay to bring the image back to center.",
+    "category": "Imaging artifact",
+    "related_terms": ["Phantom image", "Panning", "Interchannel level difference", "Comb filtering", "Phase"],
+    "common_mistakes": [
+     "Trying to fix a position shift with EQ instead of level, timing, or phase",
+     "Overlooking a swapped or out-of-polarity cable that pulls the image off center",
+     "Assuming the pan control is wrong when a delay or strong reflection is actually moving the image"
+    ],
+    "scenario_contexts": [
+     "A mixed lead vocal drifts left because one channel is a few dB louder",
+     "A stereo mic pair images off-center after one leg is wired out of polarity",
+     "A phantom-centered instrument shifts sideways when a channel delay is misset"
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "AES (interchannel level/time difference localization)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "45443e7b-82f7-44f5-bc56-26fcf7fe5d04",
+   "term": "quack",
+   "fields": {
+    "definition": "A nasal, honking midrange timbre resembling a duck's call, produced by a strong resonant peak in roughly the 700 Hz to 1.5 kHz region, characteristically from a wah or envelope filter parked near its resonance or from a narrow midrange EQ boost.",
+    "plain_english": "'Quack' is a nasal, honking sound, a bit like a duck. You get it when one part of the midrange is pushed way up, often by a wah pedal or auto-wah on a funky bass or guitar.",
+    "purpose_function": "Calling a sound 'quack' quickly tells others it is a peaky, nasal midrange resonance, which guides whether to keep it as an effect or tame it by lowering the mid peak or reducing filter resonance.",
+    "practical_application": "A funk bassist dials an envelope filter to get a quack, while a mix engineer who finds an unwanted quack on a track notches the offending midrange band.",
+    "category": "Timbral descriptor",
+    "related_terms": ["Envelope filter", "Wah", "Resonance peak", "Formant", "Midrange"],
+    "common_mistakes": [
+     "Confusing quack, a narrow mid resonance, with a general boxy or nasal tone",
+     "Boosting instead of cutting the mid peak when trying to remove an unwanted quack",
+     "Assuming quack always means a wah pedal when a sharp EQ boost can cause it"
+    ],
+    "scenario_contexts": [
+     "A bass player sets an auto-wah for a quacky funk line",
+     "A vocal has an unwanted quacky honk from a room or mic mid peak",
+     "A guitar tone quacks when the wah pedal is left parked mid-sweep"
+    ]
+   },
+   "sources": ["Sound on Sound", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "624dfefa-7688-4553-936e-de0c68d47f0d",
+   "term": "Rattle",
+   "fields": {
+    "definition": "An intermittent buzzing or clattering noise caused by a loose or poorly secured mechanical part vibrating against an adjacent surface when excited by sound or vibration, often appearing only at specific frequencies or drive levels.",
+    "plain_english": "A rattle is a buzzy, clattering noise made when something loose shakes against something else. A loose screw or speaker grille buzzing when the bass hits is a rattle.",
+    "purpose_function": "Identifying a rattle points a technician to a mechanical fault, a loose part or a sympathetic vibration, rather than an electrical or driver fault, so they tighten, damp, or isolate the offending part.",
+    "practical_application": "When a cabinet buzzes on certain low notes, a technician sweeps a tone to find the frequency, then locates and tightens the loose screw, grille, or panel; on stage they damp rattling hardware or set pieces.",
+    "category": "Mechanical artifact",
+    "related_terms": ["Rub and buzz", "Buzz", "Sympathetic resonance", "Driver", "Enclosure"],
+    "common_mistakes": [
+     "Blaming the driver when a loose grille or screw is the real source of the rattle",
+     "Missing that a rattle may appear only at one frequency or level, so testing at the wrong level hides it",
+     "Confusing a mechanical rattle with electrical buzz from a grounding or hum problem"
+    ],
+    "scenario_contexts": [
+     "A PA cabinet rattles on kick-drum notes from a loose handle bolt",
+     "A drum shell buzzes from a loose lug or stray snare wire",
+     "A studio finds a rattle from a resonating light fixture during loud playback"
+    ]
+   },
+   "sources": ["AES (Rub and Buzz and Other Irregular Loudspeaker Distortion)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3dff5d4d-a186-4e77-91bf-5c1a0b2afd78",
+   "term": "Resonant decay",
+   "fields": {
+    "definition": "The gradual exponential dying-away of energy stored at a resonance after the driving excitation stops, heard as a ringing tail at the resonant frequency whose duration is set by the system's damping (Q).",
+    "plain_english": "When something that rings is driven and then stops, the sound fades out slowly instead of stopping at once. That slow fade at the ringing note is resonant decay, like a struck bell that keeps humming.",
+    "purpose_function": "Hearing how a resonance decays tells a technician how sharp and how damped it is, helping separate a lightly damped ringing mode with a long decay from a well-controlled one, and guiding EQ, damping, or treatment.",
+    "practical_application": "A technician uses a sine sweep or a decay (waterfall) plot to spot long resonant decays in a monitor, a room mode, or a drum, then adds damping or a notch to shorten the ring.",
+    "category": "Decay behavior",
+    "related_terms": ["Resonance", "Q factor", "Damping", "Reverberation time", "Ringing"],
+    "common_mistakes": [
+     "Confusing resonant decay, a single ringing frequency dying away, with broadband reverberation",
+     "Judging a resonance by its level only while ignoring how long it rings",
+     "Trying to cut a resonance with static EQ when a long decay actually needs damping or dynamic control"
+    ],
+    "scenario_contexts": [
+     "A room mode gives a long resonant decay on a bass note, seen on a waterfall plot",
+     "A snare drum rings with a resonant decay that a gate or damping tames",
+     "A monitor's cone breakup shows a long resonant decay in a cumulative spectral decay plot"
+    ]
+   },
+   "sources": ["Fletcher and Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e5ab24ad-41e0-4289-bdd9-e1cb551ce9ab",
+   "term": "Ricochet bowing",
+   "fields": {
+    "definition": "A string bowing technique (also called jete) in which the player throws or drops the bow onto the string, usually in the upper half and on a down-bow, letting it bounce freely to produce a rapid series of short, decreasingly loud notes within a single stroke.",
+    "plain_english": "Ricochet is when a string player drops the bow onto the string and lets it bounce, like skipping a stone on water. Each bounce makes a quick, light note, and they get softer as the bow slows.",
+    "purpose_function": "Ricochet gives players a fast, sparkling group of repeated notes from one bow throw, and recognizing its bouncing, decaying attack pattern helps an engineer mic and capture the transients cleanly.",
+    "practical_application": "When recording strings, an engineer who hears ricochet passages sets placement and levels for its sharp, bouncing transients and avoids over-compressing the natural decay of each bounce.",
+    "category": "Bowing technique",
+    "related_terms": ["Spiccato", "Sautille", "Jete", "Staccato", "Attack transient"],
+    "common_mistakes": [
+     "Confusing ricochet with spiccato or sautille, which are separately controlled bounces rather than a single thrown bounce",
+     "Gating or heavily compressing ricochet and killing the natural decay of each bounce",
+     "Assuming every bounce is equally loud when they naturally get softer"
+    ],
+    "scenario_contexts": [
+     "A violinist plays a ricochet flourish in an orchestral part",
+     "A film-score session captures rapid ricochet figures in the upper strings",
+     "A quartet uses ricochet for a light, bouncing passage the engineer must record without clipping the transients"
+    ]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Grove Dictionary of Music"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c048f3d1-f372-417d-85c8-af8aff3a6c66",
+   "term": "Rim click",
+   "fields": {
+    "definition": "A snare-drum technique (also called cross-stick or side-stick) in which the stick rests on the head while its butt end strikes the rim, producing a short, dry, woody click at low volume, distinct from the loud rimshot where head and rim are struck together.",
+    "plain_english": "A rim click is a soft, woody tap a drummer makes by laying the stick on the snare and clicking its end on the metal rim. It sounds like a quiet knock and is common in gentle parts of a song, like a bossa nova.",
+    "purpose_function": "The rim click gives a quiet, short percussive accent in place of a full backbeat, and recognizing its dry, clicky transient helps an engineer mic and gain-stage it, since it is far softer than a normal snare hit.",
+    "practical_application": "For ballads or bossa-nova grooves a drummer plays rim clicks, so the engineer raises the snare-mic gain or adds a dedicated close mic because the rim click is much quieter than a struck head.",
+    "category": "Percussion technique",
+    "related_terms": ["Cross-stick", "Side stick", "Rimshot", "Snare drum", "Backbeat"],
+    "common_mistakes": [
+     "Confusing a rim click (quiet, stick on head with butt on rim) with a rimshot (loud, head and rim struck together)",
+     "Setting snare-mic gain for a full hit, so the much quieter rim click disappears in the mix",
+     "Placing the stick wrong so the click sounds thin instead of woody"
+    ],
+    "scenario_contexts": [
+     "A drummer plays rim clicks through a soft verse, then switches to a full backbeat in the chorus",
+     "A bossa-nova track uses rim clicks throughout",
+     "An engineer boosts the snare channel to catch quiet rim clicks"
+    ]
+   },
+   "sources": ["Huber and Runstein, Modern Recording Techniques", "Grove Dictionary of Music"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e5c8ed4b-edcb-4239-bfaf-1efede89a3ff",
+   "term": "Rim resonance",
+   "fields": {
+    "definition": "A ringing overtone arising from the vibration of a drum's rim (counterhoop) and its coupling to the heads and shell, or from the edge modes of a cymbal or similar plate, often heard as an unwanted high-pitched metallic ring after the main strike.",
+    "plain_english": "This is a ringing sound that comes from a drum's metal rim, or from the edge of a cymbal, buzzing on after you hit it. It can add a thin, metallic 'ping' on top of the drum's main sound.",
+    "purpose_function": "Identifying rim resonance tells a technician the unwanted ring comes from the hoop or edge rather than the drumhead or shell, so they damp or retune the rim and hardware instead of the head.",
+    "practical_application": "When a snare or tom has an annoying metallic ring, a technician checks for rim resonance from loose or resonant hoops and lugs, then adds tape, gaskets, or retunes to reduce it before a session.",
+    "category": "Resonance artifact",
+    "related_terms": ["Resonant decay", "Sympathetic resonance", "Rim click", "Overtone", "Damping"],
+    "common_mistakes": [
+     "Blaming the drumhead for a ring that is actually rim or hoop resonance",
+     "Over-damping the whole drum instead of just the resonant rim, which kills the tone",
+     "Confusing rim resonance with snare-wire buzz"
+    ],
+    "scenario_contexts": [
+     "A tom rings metallically from its die-cast hoop resonance during tracking",
+     "A snare's rim resonance adds an unwanted ping picked up by the overhead mics",
+     "A cymbal's edge resonance lingers and needs light damping for a dry mix"
+    ]
+   },
+   "sources": ["Fletcher and Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

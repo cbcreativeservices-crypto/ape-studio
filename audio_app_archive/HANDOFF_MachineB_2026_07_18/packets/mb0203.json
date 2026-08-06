@@ -1,0 +1,31 @@
+{
+ "batch": 203,
+ "topic": "Streaming & Distribution",
+ "terms": [
+  {
+   "id": "8634c6ea-40dc-4153-8fd1-4151df253798",
+   "term": "Streaming studio",
+   "topic": "Streaming & Distribution",
+   "seq": 1210,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

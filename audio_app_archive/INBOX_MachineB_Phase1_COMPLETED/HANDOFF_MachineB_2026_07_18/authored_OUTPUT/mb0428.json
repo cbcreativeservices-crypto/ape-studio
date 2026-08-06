@@ -1,0 +1,181 @@
+{
+ "batch": 428,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "99be0ce7-71fb-4b39-83fa-23b691284fe4",
+   "term": "Waveform model",
+   "fields": {
+    "definition": "A waveform model is a machine-learning model, typically a deep neural network, that generates or processes audio directly in the time domain as a sequence of raw amplitude samples, rather than operating on a frequency-domain representation such as a spectrogram. Autoregressive examples such as WaveNet and WaveRNN predict each output sample conditioned on previous samples, and such models are widely used as neural vocoders that turn acoustic features into a finished audio waveform.",
+    "plain_english": "A waveform model is an AI that works on sound the way it is recorded, sample by sample over time, instead of on a picture of its frequencies. It learns to build audio one tiny step at a time.",
+    "purpose_function": "It exists to model or synthesize audio at the level of individual samples, which lets it capture fine detail and phase that frequency-domain methods can miss, at the cost of heavy computation because there are tens of thousands of samples every second.",
+    "practical_application": "A technician meets waveform models inside neural vocoders, text-to-speech, and voice-generation tools, where a trained model turns features such as a mel-spectrogram into an audible waveform.",
+    "category": "Generative model",
+    "related_terms": [
+     "WaveNet",
+     "Neural vocoder",
+     "Autoregressive model",
+     "Spectrogram",
+     "Mel-spectrogram",
+     "Deep neural network"
+    ],
+    "common_mistakes": [
+     "Confusing a waveform model with a spectrogram model; a waveform model works on raw time-domain samples, not on a frequency-domain image",
+     "Assuming autoregressive waveform models run in real time; generating one sample at a time can be very slow without special optimization",
+     "Thinking a higher sample rate alone gives better output; quality depends on the trained model, not just on the number of samples"
+    ],
+    "scenario_contexts": [
+     "Using a neural vocoder to turn a predicted mel-spectrogram into speech in a text-to-speech system",
+     "Generating or cloning a voice from a trained waveform model",
+     "Comparing a time-domain waveform model against a spectrogram-based model for an audio task"
+    ]
+   },
+   "sources": [
+    "van den Oord et al., WaveNet: A Generative Model for Raw Audio, ISCA Speech Synthesis Workshop 2016",
+    "Goodfellow, Bengio & Courville, Deep Learning (autoregressive and generative models)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e189facf-2ddd-4112-a606-061fdd18b3a8",
+   "term": "Waveguide synthesis",
+   "fields": {
+    "definition": "Digital waveguide synthesis is a physical-modeling sound-synthesis technique that simulates wave propagation in an acoustic medium, such as a vibrating string or an air column, using bidirectional delay lines to represent the traveling waves moving in opposite directions. Losses, dispersion, and reflections are modeled by digital filters and scattering junctions placed along or at the ends of the delay lines, letting a wide range of string, wind, and brass tones be synthesized efficiently.",
+    "plain_english": "Waveguide synthesis makes instrument sounds by copying how a wave moves back and forth, like along a guitar string. It uses digital delay loops to model the wave. So it can sound like a real instrument without using a recording.",
+    "purpose_function": "It exists to synthesize realistic and expressive instrument sounds by modeling the physics of wave travel rather than storing samples, achieving natural, playable timbres at low computational cost.",
+    "practical_application": "A technician meets it in physical-modeling synthesizers and plugins that emulate guitars, violins, flutes, and brass, where parameters map to physical actions such as plucking, bowing, or blowing.",
+    "category": "Synthesis",
+    "related_terms": [
+     "Physical modeling synthesis",
+     "Karplus-Strong synthesis",
+     "Delay line",
+     "Digital filter",
+     "Fractional delay filter",
+     "Lagrange interpolation"
+    ],
+    "common_mistakes": [
+     "Confusing waveguide synthesis with sampling; the sound is computed from a physical model, not played back from a stored recording",
+     "Assuming it only makes plucked strings; the same traveling-wave approach also models bowed strings and wind and brass air columns",
+     "Treating it as identical to Karplus-Strong; Karplus-Strong is a simplified special case, while a full digital waveguide models waves traveling in both directions with scattering and losses"
+    ],
+    "scenario_contexts": [
+     "Playing a modeled acoustic guitar or violin patch in a physical-modeling synth",
+     "Designing an expressive wind-instrument sound that responds to breath control",
+     "Building lightweight instrument models that use far less memory than sample libraries"
+    ]
+   },
+   "sources": [
+    "Smith, Physical Modeling using Digital Waveguides, Computer Music Journal 16(4), 1992",
+    "Smith, Physical Audio Signal Processing, Stanford CCRMA (Digital Waveguide Models)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e72f02cb-12df-43c0-beac-32cc935b92a9",
+   "term": "Wiener filtering",
+   "fields": {
+    "definition": "Wiener filtering is the design of the linear filter that produces the minimum mean-square-error estimate of a desired signal from a noisy or degraded observation, given the power spectra or correlation statistics of the signal and the noise. In the frequency domain the optimal gain at each frequency equals the ratio of signal power to the sum of signal and noise power, so it attenuates frequencies dominated by noise while preserving those dominated by signal.",
+    "plain_english": "Wiener filtering is a math-based way to clean up a noisy signal to get as close as it can to the clean version. It turns down the frequencies where noise is strongest and keeps the ones where the real sound is strongest.",
+    "purpose_function": "It exists to give the statistically best linear estimate of a clean signal from a noisy one, serving as the classic optimal benchmark for noise reduction and signal restoration.",
+    "practical_application": "A technician encounters Wiener-based processing in noise-reduction and speech-enhancement tools, in source-separation masks, and in dereverberation, where the quality of the estimate depends on a good estimate of the noise spectrum.",
+    "category": "Estimation algorithm",
+    "related_terms": [
+     "Kalman filter",
+     "Power spectral density",
+     "Signal-to-noise ratio",
+     "Spectral subtraction",
+     "Speech enhancement",
+     "Adaptive filter"
+    ],
+    "common_mistakes": [
+     "Assuming it needs no prior knowledge; the Wiener filter requires estimates of the signal and noise statistics, and wrong estimates give poor results",
+     "Expecting it to remove noise perfectly; it is optimal only among linear filters and under its assumptions, and it trades noise reduction against signal distortion",
+     "Confusing the Wiener filter with the Kalman filter; the Wiener filter assumes stationary statistics, while the Kalman filter tracks a changing state over time"
+    ],
+    "scenario_contexts": [
+     "Reducing steady background noise in a speech recording",
+     "Building the soft mask that weights a source-separation output",
+     "Restoring a degraded signal when the noise spectrum is known or can be estimated"
+    ]
+   },
+   "sources": [
+    "Hayes, Statistical Digital Signal Processing and Modeling (Wiener filtering)",
+    "Loizou, Speech Enhancement: Theory and Practice (Wiener filtering for noise reduction)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "13b5285e-3e0e-426b-becd-65569d658f54",
+   "term": "Windowed sinc interpolation",
+   "fields": {
+    "definition": "Windowed sinc interpolation is a bandlimited interpolation method that estimates a signal's value between existing samples by convolving them with an ideal sinc (sin(x)/x) reconstruction kernel that has been truncated and multiplied by a smooth window function. The window makes the otherwise infinitely long sinc practical while controlling passband ripple and stopband leakage, giving high-quality sample-rate conversion and fractional-sample delay.",
+    "plain_english": "Windowed sinc interpolation is a top-quality way to find sound values that fall between the samples you have. It uses the best math shape for the job. The shape is trimmed with a smooth window so a computer can use it.",
+    "purpose_function": "It exists to resample or delay audio with very low added aliasing and noise by approximating the ideal bandlimited reconstruction filter, trading a longer kernel for higher accuracy.",
+    "practical_application": "A technician meets it inside high-quality sample-rate converters, pitch shifters, and fractional-delay lines, where kernel length and window choice set the balance between audio quality and CPU cost.",
+    "category": "Interpolation",
+    "related_terms": [
+     "Interpolation",
+     "Sample rate conversion",
+     "Lagrange interpolation",
+     "Fractional delay filter",
+     "Finite impulse response filter",
+     "Nyquist frequency"
+    ],
+    "common_mistakes": [
+     "Assuming a longer sinc kernel is always worth it; more taps improve quality but cost more CPU, so length must fit the real-time budget",
+     "Ignoring the window; a truncated sinc with no window causes ripple and aliasing that a proper window reduces",
+     "Confusing it with linear interpolation; simple linear or drop-sample resampling is far cheaper but adds much more aliasing and high-frequency loss"
+    ],
+    "scenario_contexts": [
+     "Converting a 48 kHz recording to 44.1 kHz for release",
+     "Implementing a high-quality fractional-delay line for pitch shifting or modulation effects",
+     "Choosing a resampling quality setting in a DAW or sample-rate converter"
+    ]
+   },
+   "sources": [
+    "Smith & Gossett, A Flexible Sampling-Rate Conversion Method, IEEE ICASSP 1984",
+    "Oppenheim & Schafer, Discrete-Time Signal Processing (bandlimited interpolation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7ed4ab94-9caf-4758-b831-343d2af60819",
+   "term": "Zero-latency convolution",
+   "fields": {
+    "definition": "Zero-latency convolution is a real-time convolution technique that produces output with no input-to-output delay, unlike a single large FFT-based (fast) convolution, which must wait to fill a whole block before it can process. It is achieved by partitioning the impulse response into blocks of increasing size: the first, shortest block is convolved directly to deliver immediate output, while larger blocks are processed with FFT-based convolution and combined, keeping efficiency high without added latency.",
+    "plain_english": "Zero-latency convolution lets effects like convolution reverb work live with no delay you can hear. It handles the very start of the sound right away. It then processes the long tail in bigger, faster chunks in the background.",
+    "purpose_function": "It exists to run long convolutions, such as reverb or speaker and cabinet impulse responses, in real time without the block delay of plain FFT convolution, so performers and engineers hear the effect instantly.",
+    "practical_application": "A technician relies on it in convolution reverb plugins, guitar cabinet and speaker emulators, and live processors, where any noticeable delay would be unusable during tracking or performance.",
+    "category": "Convolution",
+    "related_terms": [
+     "Convolution",
+     "Impulse response",
+     "Fast Fourier transform",
+     "Convolution reverb",
+     "Latency",
+     "Finite impulse response filter"
+    ],
+    "common_mistakes": [
+     "Thinking any FFT-based convolution is zero-latency; a single large-block FFT convolution inherently adds a block of delay",
+     "Assuming zero latency means less computation; partitioning adds bookkeeping and can cost more CPU than one big FFT in order to remove the delay",
+     "Confusing algorithmic latency with total system latency; the audio interface buffer still adds its own delay on top of the processing"
+    ],
+    "scenario_contexts": [
+     "Running a convolution reverb while tracking a vocalist who monitors through it",
+     "Using an impulse-response guitar cabinet emulator live on stage",
+     "Applying a long room impulse response in a live mix without audible delay"
+    ]
+   },
+   "sources": [
+    "Gardner, Efficient Convolution without Input-Output Delay, Journal of the Audio Engineering Society 43(3), 1995",
+    "Smith, Physical Audio Signal Processing, Stanford CCRMA (partitioned convolution)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 248,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "88666424-c910-4efa-958c-7ecf7517e5d0",
+   "term": "Riser effect",
+   "fields": {
+    "definition": "A designed transitional sound that gradually increases in pitch, brightness, level, and/or density over several seconds to build tension and lead into an impact, downbeat, or scene change. Common realizations include filtered noise sweeps, upward-glissando synth tones, and reverse-cymbal swells, usually resolving on a hit or cut.",
+    "plain_english": "It is a whooshing sound that slowly gets higher and louder to build excitement, then drops you into the next moment. It works like a drumroll right before something big happens.",
+    "purpose_function": "It signals that something is coming and pulls the audience's attention forward, smoothing an edit and adding energy across a transition.",
+    "practical_application": "A sound designer places a riser under the last few seconds before a cut, title reveal, or music drop, timing its peak to land exactly on the impact.",
+    "category": "Sound design element",
+    "related_terms": ["Whoosh", "Impact hit", "Sweetener", "Reverse reverb", "Transition effect"],
+    "common_mistakes": ["Letting the riser peak before or after the impact instead of exactly on it, which weakens the payoff", "Overusing risers so every transition sounds the same and loses its punch", "Letting a loud riser mask dialogue or important sounds underneath it"],
+    "scenario_contexts": ["Building tension before a title card or logo reveal in a trailer", "Leading into a music drop or chorus in a promo edit", "Smoothing a hard picture cut between two scenes"]
+   },
+   "sources": ["Sound on Sound (sound design / transition technique articles)", "Viers, 'The Sound Effects Bible'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "52d4cb8d-9832-49cf-94ba-c380c55b9542",
+   "term": "Ritardando map",
+   "fields": {
+    "definition": "A portion of a tempo map that encodes a ritardando — a gradual, controlled decrease in tempo across a passage — as a series of descending tempo values or a curved tempo ramp, so a sequencer or notation program plays back and displays the slowdown accurately.",
+    "plain_english": "It is a set of tempo markers that tells the software to slow the music down bit by bit, instead of all at once. It is like easing off the gas pedal so a car slows smoothly.",
+    "purpose_function": "It keeps a slowing passage locked to a grid so the click track, MIDI parts, and edits all follow the same smooth deceleration and still line up with picture.",
+    "practical_application": "A composer or music editor enters or draws descending tempo values in the DAW's tempo track so the click and sequenced parts slow together toward a picture cue.",
+    "category": "Scoring & tempo",
+    "related_terms": ["Tempo map", "Click track", "Accelerando", "Rubato cue", "Hit point"],
+    "common_mistakes": ["Using one sudden tempo drop instead of many small steps, which sounds like a stumble rather than a smooth slow-down", "Forgetting that the click track slows too, so live players lose the beat if they are not warned", "Not checking that the slowdown still lands on the intended picture point after the tempo change"],
+    "scenario_contexts": ["Scoring a film ending where the music gently slows to a stop", "Setting up a click track so musicians can record a rallentando in time", "Conforming a live-performed slowdown to a grid so edits stay in sync"]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians (ritardando)", "Sound on Sound (tempo track / tempo map techniques)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e8187731-5a05-4089-a233-599f48a98b70",
+   "term": "Rolloff curve",
+   "fields": {
+    "definition": "The graphed shape describing how a filter attenuates signal level as frequency moves past its cutoff, typically expressed as a slope in decibels per octave (e.g., 6, 12, 18, or 24 dB/octave); by extension, any curve showing progressive level reduction versus frequency.",
+    "plain_english": "It is a line on a graph that shows how fast a filter turns down the sounds above or below a set point. A steeper line means the unwanted frequencies fade out more quickly.",
+    "purpose_function": "It tells you how gently or aggressively a high-pass, low-pass, or shelving filter removes unwanted frequencies, which shapes tone and controls rumble, hiss, or harshness.",
+    "practical_application": "A mixer picks a filter's rolloff slope — a gentle 6 dB/octave or a steep 24 dB/octave — when high-passing a dialogue track to cut rumble without thinning the voice.",
+    "category": "Filtering",
+    "related_terms": ["Cutoff frequency", "High-pass filter", "Low-pass filter", "Filter slope", "Shelving filter"],
+    "common_mistakes": ["Confusing the cutoff frequency (where attenuation begins) with the rolloff rate (how fast level falls beyond it)", "Assuming a filter blocks everything past cutoff, when it actually attenuates gradually along the curve", "Using an overly steep rolloff and adding phase shift or ringing near the cutoff"],
+    "scenario_contexts": ["Choosing a high-pass slope to remove stage rumble from a vocal mic", "Setting a subwoofer crossover's rolloff to blend with the main speakers", "Reading a microphone's published low-frequency rolloff on its datasheet"]
+   },
+   "sources": ["Ballou, 'Handbook for Sound Engineers'", "Rane Professional Audio Reference (technical notes)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "97eba954-db5a-41d5-889b-37b2d135932b",
+   "term": "Room-and-portal system",
+   "fields": {
+    "definition": "A spatial-audio modeling approach in game-audio middleware in which enclosed acoustic spaces are defined as 'rooms' (each with its own reverb and properties) connected by 'portals' (openings such as doors or windows) that control how sound propagates, is occluded, diffracts, and transmits reverb between adjacent rooms as the listener and sources move.",
+    "plain_english": "In a game, each area is a 'room' with its own echo. Doorways are 'portals' that decide how sound leaks from one room to the next. It copies how a noisy kitchen turns quiet when you step out and shut the door.",
+    "purpose_function": "It makes interactive spaces sound believable by changing reverb and muffling in real time based on where the listener and sound sources sit relative to walls and openings.",
+    "practical_application": "A game audio designer places room volumes and portal shapes in a level so a sound in one room is heard — filtered and delayed — through the doorway of the next.",
+    "category": "Game audio",
+    "related_terms": ["Occlusion", "Obstruction", "Diffraction", "Reverb zone", "Spatial audio"],
+    "common_mistakes": ["Confusing rooms (the enclosed spaces) with portals (the openings that connect them)", "Leaving gaps between room boundaries so the listener falls into 'no room' and reverb drops out", "Making a portal too large or mis-oriented, so sound leaks in ways that break the illusion"],
+    "scenario_contexts": ["Setting up reverb transitions as a player walks from a hallway into a large hall", "Muffling gunfire heard through a closed door in a shooter", "Modeling how ambience spills between connected rooms in a building"]
+   },
+   "sources": ["Audiokinetic Wwise documentation (Spatial Audio: Rooms and Portals)", "Audiokinetic Wwise Spatial Audio technical documentation (obstruction, occlusion, diffraction)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a4f5d1ee-fcac-4b3b-a148-e416b4b96091",
+   "term": "Rubato cue",
+   "fields": {
+    "definition": "A musical cue performed or written with rubato — expressive, flexible timing in which the tempo pushes and pulls rather than staying locked to a strict metronomic pulse — so its beats do not fall on a fixed grid.",
+    "plain_english": "It is a piece of music played with loose, expressive timing, speeding up and slowing down for feeling instead of following a strict beat. It is like a singer stretching a phrase for emotion instead of marching in step.",
+    "purpose_function": "Rubato gives a cue human, emotional phrasing, but its free timing means it cannot rely on a steady click and needs special handling to sync to picture or other tracks.",
+    "practical_application": "A music editor conforming a rubato cue maps its shifting bar lines by hand or builds a variable tempo map so edits, MIDI, and hit points still land where intended.",
+    "category": "Scoring & tempo",
+    "related_terms": ["Tempo map", "Ritardando map", "Click track", "Music cue", "Hit point"],
+    "common_mistakes": ["Forcing a rubato cue onto a fixed grid, which flattens its expressive timing", "Assuming a rubato cue can be beat-matched to a click without a variable tempo map", "Editing a rubato cue at arbitrary points and breaking its musical phrasing"],
+    "scenario_contexts": ["Syncing a freely played solo piano cue to a scene's emotional beats", "Building a tempo map so a rubato orchestral cue can be clicked and re-recorded", "Editing a rubato source recording to fit a re-cut picture"]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians (tempo rubato)", "Karlin & Wright, 'On the Track: A Guide to Contemporary Film Scoring'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "eb4d20db-38b9-4140-9cc2-01fb32b5ff8e",
+   "term": "Rubber impact",
+   "fields": {
+    "definition": "A sound-effects or Foley category consisting of the impact sound made when a rubber object strikes or is struck against a surface — a dull, damped thud with little sustain or ring — used to represent tires, balls, boots, bumpers, and similar rubbery materials on screen.",
+    "plain_english": "It is the dull thud a rubber thing makes when it hits something, like a bouncing ball or a car tire. It has almost no ring because rubber soaks up the energy of the hit.",
+    "purpose_function": "It gives rubbery on-screen objects a matching material sound, adding weight and realism to hits, bounces, and collisions.",
+    "practical_application": "A Foley artist or sound editor chooses or records a rubber impact to sync with a ball bounce, a boot stomp, or a car bumper collision.",
+    "category": "Sound effects",
+    "related_terms": ["Foley", "Impact hit", "Hard effects", "Sweetener", "Sync point"],
+    "common_mistakes": ["Using a hard, ringing impact for rubber, which sounds like metal or wood instead", "Failing to match the impact's weight and softness to the size of the object on screen", "Placing the impact off the exact frame of contact so it looks out of sync"],
+    "scenario_contexts": ["Adding the thud of a basketball hitting the court", "Syncing a rubber boot stepping onto a hard floor in Foley", "Building a car bumper or tire collision from layered rubber impacts"]
+   },
+   "sources": ["Ament, 'The Foley Grail: The Art of Performing Sound for Film, Games, and Animation'", "Viers, 'The Sound Effects Bible'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6f53aeb7-a545-4d40-9ed9-7be294d3bc3c",
+   "term": "Running footsteps",
+   "fields": {
+    "definition": "A Foley or sound-effects element consisting of footstep sounds performed and recorded at a running pace — faster, heavier, and more forceful than a walk — matched to a character's stride, footwear, and walking surface on screen.",
+    "plain_english": "It is the sound of feet hitting the ground fast, made to match someone running on screen. A Foley artist usually performs them in time with the picture, stepping on the same kind of surface.",
+    "purpose_function": "They give a running character believable movement and weight, and help sell speed, effort, and which surface the character is on.",
+    "practical_application": "A Foley artist watches the picture and performs running footsteps in sync, choosing shoes and a surface — gravel, wood, concrete — that match the shot.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Footsteps", "Foley pit", "Surface", "Sync point"],
+    "common_mistakes": ["Performing footsteps out of sync with the on-screen foot contacts", "Using the wrong shoe or surface so the steps do not match the picture", "Keeping every step the same volume and weight instead of varying them as in real running"],
+    "scenario_contexts": ["Foleying a character sprinting down a hallway", "Replacing noisy production-sound footsteps in a chase scene", "Layering many running footsteps for a crowd stampede"]
+   },
+   "sources": ["Ament, 'The Foley Grail: The Art of Performing Sound for Film, Games, and Animation'", "Viers, 'The Sound Effects Bible'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "82e7b2fc-aa1f-4437-9f1f-c7900d1763d5",
+   "term": "Runtime audio",
+   "fields": {
+    "definition": "Audio that is generated, processed, and rendered in real time while a program — typically a game or interactive application — is running, rather than being pre-rendered to a fixed file, and assembled on the fly by an audio engine from samples, parameters, and program state.",
+    "plain_english": "It is sound that a game builds live while you play, instead of playing a finished recording. Because it is made on the spot, it can change with whatever you do in the game.",
+    "purpose_function": "It lets interactive media adapt sound to player actions and changing conditions, so the audio responds moment to moment instead of being a fixed, unchanging track.",
+    "practical_application": "A game audio designer authors sounds and rules in middleware so the engine chooses, layers, and processes them at runtime as the player moves and events fire.",
+    "category": "Game audio",
+    "related_terms": ["Runtime mixing", "Middleware", "RTPC", "Audio engine", "Interactive audio"],
+    "common_mistakes": ["Confusing runtime audio with a pre-rendered (baked) audio file that never changes", "Ignoring CPU and voice-count limits, so heavy runtime processing causes dropouts", "Assuming a mix that sounds right in the authoring tool will sound identical once assembled at runtime"],
+    "scenario_contexts": ["Layering engine sounds that change with a car's speed as you drive", "Triggering footstep sounds that vary by surface as a character walks", "Blending music layers that shift with combat intensity"]
+   },
+   "sources": ["Audiokinetic Wwise documentation", "FMOD Engine documentation (fmod.com/docs)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6acbf4ec-d4d3-45e1-92a9-b8c7c84c21af",
+   "term": "Runtime mixing",
+   "fields": {
+    "definition": "The practice of balancing and processing an interactive soundscape dynamically at runtime, in which the audio engine adjusts levels, effects, and routing in response to program state using tools such as states/snapshots, real-time parameter controls (RTPCs), ducking, and priority/voice management — rather than committing to a single fixed mix.",
+    "plain_english": "It is setting up the sound balance so a game mixes itself live, turning things up or down as the action changes. It is like an automatic engineer riding the faders while you play.",
+    "purpose_function": "It keeps the most important sounds clear and the overall balance right as scenes and player actions change, which a single pre-set mix cannot do in interactive media.",
+    "practical_application": "A game audio designer builds mixer snapshots and parameter rules so, for example, music and ambience duck under dialogue or intensify during combat automatically.",
+    "category": "Game audio",
+    "related_terms": ["Runtime audio", "Mixer snapshot", "Ducking", "RTPC", "Middleware"],
+    "common_mistakes": ["Setting static levels only and expecting a good balance in every game situation", "Stacking too many snapshots or ducking rules so the mix pumps or fights itself", "Testing the mix only in the authoring tool instead of across real gameplay"],
+    "scenario_contexts": ["Ducking music and ambience under important dialogue during a cutscene", "Raising combat music and impact levels when a fight starts", "Prioritizing nearby, important sounds when many sources play at once"]
+   },
+   "sources": ["Audiokinetic Wwise documentation (Mixing, States, RTPC)", "FMOD Studio documentation (Mixing, Snapshots)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

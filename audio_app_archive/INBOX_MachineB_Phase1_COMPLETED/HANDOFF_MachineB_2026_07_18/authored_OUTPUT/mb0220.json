@@ -1,0 +1,159 @@
+{
+ "batch": 220,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "f01d37de-c2b3-4fbe-b182-3f680c1a805f",
+   "term": "Dialogue noise reduction",
+   "fields": {
+    "definition": "The process of removing or attenuating unwanted background sounds—such as hiss, hum, HVAC rumble, set noise, and clicks—from recorded dialogue while preserving the natural quality of the voice. It is typically performed with dedicated restoration tools using broadband and narrowband noise profiles, spectral repair, and de-clicking.",
+    "plain_english": "This means cleaning up recorded speech by taking out background sounds like hiss, hum, or air-conditioner noise. It works a bit like using an eraser to wipe away the noise so the voice still sounds clear and natural.",
+    "purpose_function": "It exists to make production dialogue clean and intelligible so it sits well against music and effects, and so location recordings match cleaner ADR or studio takes. Reducing noise early prevents that noise from being amplified later by EQ and compression in the mix.",
+    "practical_application": "A dialogue editor learns a noise print from a quiet section of a clip and applies broadband reduction, spectral de-noise, and de-hum, working conservatively to avoid audible artifacts on the voice.",
+    "category": "Dialogue Editing",
+    "related_terms": ["Dialogue room-tone matching", "Spectral repair", "De-esser", "ADR", "Broadband noise reduction"],
+    "common_mistakes": ["Applying too much reduction, which leaves the voice sounding hollow, watery, or robotic with audible artifacts", "Learning the noise profile from a section that already contains speech, which makes the tool remove parts of the voice", "Reducing noise on every clip to a different floor so cuts no longer match, instead of aiming for a consistent background level"],
+    "scenario_contexts": ["Removing constant air-conditioning rumble from a location interview before the mix", "Cleaning a lav-mic take of clothing rustle and handling noise", "Reducing camera or generator hum picked up on set dialogue"]
+   },
+   "sources": ["iZotope RX technical documentation", "Yewdall, The Practical Art of Motion Picture Sound", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ab7500be-47d3-4203-a5ab-013ad0d22c29",
+   "term": "Dialogue panning",
+   "fields": {
+    "definition": "The placement of recorded dialogue within the stereo or surround sound field. In film and television mixing, principal dialogue is conventionally anchored to the center channel to keep it locked to the screen and intelligible, though it may be panned off-center to follow an on-screen or off-screen speaker's position.",
+    "plain_english": "This is choosing where a voice sits between the speakers. In movies the main talking is usually kept in the center speaker so it stays tied to the picture and easy to understand.",
+    "purpose_function": "It positions voices so they seem to come from the right place relative to the picture and stay clear against music and effects. Anchoring dialogue to the center channel keeps it stable even when audience members sit off to one side of the room.",
+    "practical_application": "A re-recording mixer routes principal dialogue to the center channel by default and only pans it off-center for a clear reason, such as an off-screen line or a stylized moment.",
+    "category": "Dialogue Mixing",
+    "related_terms": ["Dialogue perspective", "Center channel", "Surround panning", "Re-recording mixer", "Dialogue spread"],
+    "common_mistakes": ["Hard-panning on-screen dialogue away from center, which pulls the voice off the screen and distracts the audience", "Forgetting that dialogue placed off-center can shift or collapse in a stereo or mono downmix"],
+    "scenario_contexts": ["Anchoring principal dialogue to the center channel in a 5.1 theatrical mix", "Panning an off-screen character's line toward the side they will enter from"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8ba7f9bd-4e6d-4470-aab6-26a36eddf7d3",
+   "term": "Dialogue perspective",
+   "fields": {
+    "definition": "The matching of a voice's level, tonal balance, and reverberation to the apparent distance and position of the speaker within the frame, so the sound agrees with the picture. A wide or distant shot is given a more distant, roomier sound than a close-up of the same line.",
+    "plain_english": "This means making a voice sound near or far to match how close the person looks on screen. A person far away in a wide shot should sound a little quieter and more echoey than the same person in a close-up.",
+    "purpose_function": "It exists to keep sound and picture believable, so the audience feels the voice comes from where the character actually is. Consistent perspective helps the scene feel real without the viewer noticing the sound work.",
+    "practical_application": "A dialogue editor or mixer adjusts level, EQ, and added reverb shot by shot so a line recorded on one mic still feels close in a close-up and more distant in a wide shot.",
+    "category": "Dialogue Mixing",
+    "related_terms": ["Dialogue reverb", "Dialogue panning", "Dialogue presence", "ADR", "Worldizing"],
+    "common_mistakes": ["Leaving every line equally close and dry, so distant characters still sound like they are right on the microphone", "Overdoing distance so on-screen dialogue becomes too roomy and hard to understand", "Ignoring perspective changes between angles, so the voice jumps in closeness at each cut"],
+    "scenario_contexts": ["Making a character's voice recede as the camera pulls back to a wide shot", "Matching ADR perspective to the original location shot", "Giving an off-screen voice from another room a more distant, filtered sound"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "39817250-feba-405e-801d-e4b4b046b6f8",
+   "term": "Dialogue presence",
+   "fields": {
+    "definition": "The perceived immediacy, clarity, and intimacy of a voice that makes it feel close and forward in the mix. It is commonly enhanced by lifting the presence frequency region (roughly 2–5 kHz) and controlling low-mid buildup, so the voice cuts through effects and music.",
+    "plain_english": "This is how close, clear, and up-front a voice feels to the listener. Adding presence is like bringing the speaker a step nearer so their words stand out over the music and background.",
+    "purpose_function": "It exists to keep dialogue intelligible and engaging so the audience follows the story without straining. Good presence lets a voice sit on top of a busy mix without simply turning it up louder.",
+    "practical_application": "A mixer gently boosts the upper-midrange presence band and trims muddiness so a voice feels intimate and clear, checking it against music and effects rather than in isolation.",
+    "category": "Dialogue Mixing",
+    "related_terms": ["Dialogue perspective", "Presence (EQ)", "Intelligibility", "De-esser", "Dialogue resonance control"],
+    "common_mistakes": ["Boosting the presence range too hard, which makes the voice harsh and exaggerates sibilance", "Chasing presence with EQ when the real problem is background noise or a distant, roomy recording", "Judging presence on the solo'd voice instead of within the full mix"],
+    "scenario_contexts": ["Bringing a soft-spoken lead forward so it stays clear over a music cue", "Adding presence to a distant boom take to make it feel more intimate", "Matching the presence of ADR to nearby production dialogue"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f441d391-a465-44db-9ccf-ec4b80971987",
+   "term": "Dialogue resonance control",
+   "fields": {
+    "definition": "The reduction of unwanted resonant peaks in recorded dialogue—such as low-mid boominess from proximity effect or room modes, chesty buildup, or nasal and honky midrange ringing—usually with narrow subtractive EQ or dynamic EQ that acts only when the offending frequency spikes.",
+    "plain_english": "This means taming certain frequencies that ring out or boom in a voice and make it sound boxy or muddy. It is like turning down just the one note that keeps buzzing, without changing the rest of the voice.",
+    "purpose_function": "It exists to make dialogue sound even and natural so no single frequency jumps out or masks the words. Controlling resonances also keeps later processing like compression from grabbing onto a booming or ringing tone.",
+    "practical_application": "A mixer sweeps a narrow EQ band to find a boom or honk in a voice, then cuts it—often with dynamic EQ so the cut only engages when that frequency rings out.",
+    "category": "Dialogue Mixing",
+    "related_terms": ["Dynamic EQ", "Proximity effect", "Dialogue presence", "De-esser", "Room modes"],
+    "common_mistakes": ["Using wide, deep cuts that fix one boom but hollow out the whole voice", "Treating natural voice character as a problem and EQing until the voice sounds thin and unnatural", "Applying a fixed cut for a resonance that only appears on loud words, where dynamic EQ would be cleaner"],
+    "scenario_contexts": ["Removing low-mid boom from a lav mic worn under clothing", "Taming a boxy room resonance on dialogue shot in a small hard-walled set", "Reducing a nasal honk on a specific actor's close-mic delivery"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "iZotope RX technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "768c377f-f0bb-485c-b3c2-1a6ad83bb0e1",
+   "term": "Dialogue reverb",
+   "fields": {
+    "definition": "Reverberation added to dialogue to place the voice believably in the acoustic space of the scene and to blend edits and ADR with production sound. The reverb type, decay, and pre-delay are matched to the size and surfaces of the depicted room.",
+    "plain_english": "This is adding a sense of room echo to a voice so it sounds like it belongs in the space on screen. A voice in a big stone hall gets long echo, while a small carpeted room gets almost none.",
+    "purpose_function": "It exists to make dialogue sit in the scene's space and to help re-recorded or cleaned-up lines match the natural room sound of the location. Matched reverb hides edits so replaced words and ADR are not noticeable.",
+    "practical_application": "A mixer sends dialogue to a reverb tuned to the on-screen space—short and tight for a small room, longer for a large hall—and matches ADR reverb to the surrounding production dialogue.",
+    "category": "Dialogue Mixing",
+    "related_terms": ["Dialogue perspective", "ADR", "Worldizing", "Pre-delay", "Dialogue slap delay"],
+    "common_mistakes": ["Adding so much reverb that the dialogue loses clarity and intelligibility", "Using a reverb that does not match the on-screen space, so the voice feels detached from the picture", "Reverbing the center dialogue without matching it to the room tone and effects, breaking the illusion"],
+    "scenario_contexts": ["Placing a dry ADR line into the reverberant space of a church scene", "Matching cleaned-up dialogue to the natural room sound of a location", "Giving an off-screen shouted line the long decay of a large warehouse"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "42224098-ad28-41bc-a7f0-865201e66cfa",
+   "term": "Dialogue room-tone matching",
+   "fields": {
+    "definition": "The use of room tone—the ambient background sound of a location recorded with no dialogue—to fill silent gaps, smooth edit points, and blend ADR or noise-reduced sections so the background stays continuous and cuts are inaudible.",
+    "plain_english": "Room tone is the quiet background hum of a place with no one talking. Matching it means filling gaps and edits with that same background so the sound never drops out or jumps when the dialogue is cut.",
+    "purpose_function": "It exists to keep the background even under dialogue so edits, silences, and replaced lines do not stand out as sudden changes in the ambient level. A continuous bed of matched tone makes cut-together takes sound like one seamless recording.",
+    "practical_application": "A dialogue editor lays matching room tone under gaps, hard edits, and ADR, filling any spot where the original background drops out so the mix has an unbroken ambient floor.",
+    "category": "Dialogue Editing",
+    "related_terms": ["Dialogue noise reduction", "ADR", "Ambience", "Fill", "Crossfade"],
+    "common_mistakes": ["Leaving a dead-silent gap after an edit or noise reduction, so the background audibly drops out", "Using room tone from a different location or take, so the fill does not match the surrounding sound", "Butting room tone in without crossfades, creating clicks or audible seams at the joins"],
+    "scenario_contexts": ["Filling the silence under an ADR line so it matches the location background", "Smoothing the point where a noisy section was cleaned to a lower noise floor", "Bridging a gap left after removing an unwanted off-camera sound"]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cc1d5a34-b328-4fa3-9f8a-3c482211f3bc",
+   "term": "Dialogue slap delay",
+   "fields": {
+    "definition": "A single short, discrete echo (slapback) applied to dialogue, typically in the range of tens of milliseconds up to around a hundred milliseconds, used to suggest a hard reflective space or as a stylized effect. Unlike reverb, it produces one distinct repeat rather than a dense decaying tail.",
+    "plain_english": "This is one quick echo added to a voice, like a single bounce off a far wall. It is used to make speech sound like it is in a big hard room, or as a special effect such as a loudspeaker announcement.",
+    "purpose_function": "It exists to imply a large hard-surfaced space or to create a stylized voice effect without the wash of full reverb. A single clean repeat can suggest scale or otherworldliness while keeping the words readable.",
+    "practical_application": "A mixer sets a delay to a short single repeat and blends a little of it under the dialogue to evoke a cavern, arena announcement, or dream-like voice, timing it so it does not blur the words.",
+    "category": "Dialogue Mixing",
+    "related_terms": ["Dialogue reverb", "Pre-delay", "Slapback", "Dialogue perspective", "Worldizing"],
+    "common_mistakes": ["Setting the delay time too long, so the echo doubles the words and hurts intelligibility", "Mixing the slap too loud, which makes it a distracting effect instead of a subtle sense of space", "Using slap delay where matched natural reverb would sit more convincingly in the scene"],
+    "scenario_contexts": ["Suggesting a large cave or empty warehouse under a shouted line", "Creating a stylized public-address or announcement voice", "Adding an eerie single repeat to a dream or flashback voice"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "461226b9-1372-483f-89c7-c3d818170f0e",
+   "term": "Dialogue spread",
+   "fields": {
+    "definition": "The widening of dialogue beyond a single point so it occupies more of the front stereo or surround field, achieved with techniques such as adding decorrelated left/right content or stereo processing. Because dialogue is normally kept mono and centered, spread is used sparingly for specific creative effects or crowd and off-screen textures.",
+    "plain_english": "This means making a voice feel wider across the speakers instead of coming from one point. Voices are usually kept in the center, so spreading them out is only done now and then for a special effect, like a huge or ghostly voice.",
+    "purpose_function": "It exists to give a voice size or an unnatural, enveloping quality for stylized moments, or to broaden layered crowd and background voices. Used carefully, it adds width without pulling important dialogue away from the screen.",
+    "practical_application": "A mixer applies stereo widening or decorrelation to a voice for a godlike, dreamlike, or crowd effect, then checks the result in mono to make sure the words do not thin out or cancel.",
+    "category": "Dialogue Mixing",
+    "related_terms": ["Dialogue panning", "Center channel", "Decorrelation", "Surround panning", "Dialogue reverb"],
+    "common_mistakes": ["Spreading principal on-screen dialogue, which pulls the voice off the screen and weakens intelligibility", "Widening with techniques that cancel in mono, so the voice loses level or vanishes in a mono downmix", "Overusing spread as a default width instead of reserving it for deliberate effects"],
+    "scenario_contexts": ["Widening a supernatural or godlike voice for scale", "Spreading layered crowd or background voices across the front field", "Creating a disorienting, enveloping voice for a dream sequence"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

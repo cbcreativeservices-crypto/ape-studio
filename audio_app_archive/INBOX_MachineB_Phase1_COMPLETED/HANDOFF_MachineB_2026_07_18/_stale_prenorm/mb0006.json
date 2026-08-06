@@ -1,0 +1,231 @@
+{
+  "batch": 6,
+  "topic": "Instrument Recording — Strings & Guitar",
+  "authored": [
+    {
+      "id": "62e5b204-6017-4914-89bf-bf4d9c66b66f",
+      "term": "Harp glissando",
+      "fields": {
+        "definition": "A harp glissando is a rapid sweep of the fingers across successive strings, sounding a run of adjacent notes; on a concert (pedal) harp the seven pedals are pre-set — often using enharmonic equivalents — so the swept strings sound a chosen scale or chord rather than every chromatic pitch.",
+        "plain_english": "It's the shimmering sweep you get by running your fingers across the harp strings; the harpist sets the pedals first so the whoosh lands on the right notes.",
+        "purpose_function": "It produces the harp's signature cascading, arpeggiated texture and lets a player sound the notes of a whole scale or chord almost instantly, an idiomatic gesture made possible by the pedal mechanism.",
+        "practical_application": "When recording it, an engineer captures the full sweep from the low to the high strings, watching level and stereo image so the run reads clearly and the soundboard's low-end bloom stays balanced against the string attack.",
+        "category": "Playing technique",
+        "related_terms": ["Harp soundboard", "Leakage", "Stereo miking", "Room microphone", "Transient response"],
+        "common_mistakes": [
+          "Assuming the harpist can play any scale in a glissando on demand; the sounding pitches are fixed by the current pedal settings, so the wrong pedal setup gives the wrong glissando.",
+          "Miking only the top of the harp and missing the low strings and soundboard, so the sweep sounds thin and loses its bloom.",
+          "Applying a gate or heavy noise reduction that chops the natural decay and mechanism resonance which make the gliss sound continuous."
+        ],
+        "scenario_contexts": [
+          "Tracking a solo pedal harp for a film score where the composer has notated specific glissando chords.",
+          "Overdubbing a harp glissando as a transitional sweep effect in a pop production.",
+          "Recording an orchestral session where the harp's glissandi must sit within the string section without excessive bleed."
+        ]
+      },
+      "sources": ["The Study of Orchestration (Adler)", "Orchestration (Piston)"],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "662109a5-5736-4c76-b22a-d8bbfba10b68",
+      "term": "Harp soundboard",
+      "fields": {
+        "definition": "The harp soundboard is the thin resonating wooden panel forming the front face of the harp's body, to which the lower ends of the strings are anchored; it transforms the strings' vibration into radiated sound and largely shapes the instrument's tone and projection.",
+        "plain_english": "It's the wooden belly of the harp that the strings pull against; like the top of a guitar, it's what actually turns the string's vibration into the sound you hear.",
+        "purpose_function": "By coupling the strings to a large radiating surface, the soundboard amplifies and colors the string vibrations, giving the harp its loudness and characteristic warm resonance.",
+        "practical_application": "Because most of the harp's radiated low end and body comes off the soundboard, engineers often aim one microphone toward the lower soundboard for warmth while a second mic nearer the strings captures attack and detail.",
+        "category": "Instrument acoustics",
+        "related_terms": ["Harp glissando", "Resonance", "Microphone placement", "Proximity effect", "Room microphone"],
+        "common_mistakes": [
+          "Treating the soundboard like a guitar's soundhole and expecting one 'sweet spot'; the harp radiates over a large area, so a single close mic rarely captures the whole instrument.",
+          "Placing a mic so close to the soundboard that proximity effect and mechanical/pedal noise dominate over the strings.",
+          "Ignoring the low-frequency bloom from the soundbox, producing a boxy or boomy recording."
+        ],
+        "scenario_contexts": [
+          "Choosing mic distance so the soundboard's low-end resonance is captured without becoming boomy.",
+          "Explaining to a student why the harp needs open space around its back and soundbox to project.",
+          "Diagnosing a thin harp recording that under-captured the soundboard's radiation."
+        ]
+      },
+      "sources": ["The Physics of Musical Instruments (Fletcher & Rossing)", "The Science of Sound (Rossing)"],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "278f2cc2-26cd-4f15-ba2f-5047ae1c6334",
+      "term": "High-impedance guitar output",
+      "fields": {
+        "definition": "The output of a passive electric guitar or bass (magnetic pickups, no onboard preamp) is a high-impedance, unbalanced signal whose source impedance is high and frequency-dependent, so it requires a high-impedance load — typically around 1 MΩ — to avoid loading down the pickup and rolling off high frequencies.",
+        "plain_english": "A regular electric guitar puts out a weak, fussy signal that needs to 'see' a very high-resistance input; plug it into the wrong low-impedance input and it goes dull and quiet.",
+        "purpose_function": "Passive magnetic pickups are inductive sources, so a high-impedance interface preserves their level and tone, which is why guitar amps and instrument/DI inputs present roughly 1 MΩ.",
+        "practical_application": "A technician routes a passive guitar into a Hi-Z instrument input or a DI box rather than a mic or line input, keeps the unbalanced cable short to limit noise and high-frequency loss, then lets the DI convert it to a balanced low-impedance feed.",
+        "category": "Signal I/O",
+        "related_terms": ["Instrument direct output", "Instrument line output", "Impedance", "DI box", "Pickup"],
+        "common_mistakes": [
+          "Plugging a passive guitar into a low-impedance mic or line input, which loads the pickup and dulls and weakens the tone.",
+          "Running a long unbalanced guitar cable to the console; high-impedance signals pick up noise and lose highs over distance, so keep the run short (roughly under 8 m / 25 ft).",
+          "Assuming a guitar's output is line level; it is instrument level and far lower, so it needs preamp gain."
+        ],
+        "scenario_contexts": [
+          "Deciding whether a guitar can go straight into an interface's instrument/Hi-Z input or needs a DI.",
+          "Troubleshooting a dull, low guitar signal traced to a low-impedance input.",
+          "Setting up a long cable run from a passive bass to front-of-house through a DI box."
+        ]
+      },
+      "sources": ["Rane Note: Sound System Interconnection", "Radial Engineering JDI passive DI technical manual", "Radial Engineering technical guide: What Is a Direct Box"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "2e113362-d1d4-4e3e-a9c8-1b0142b6dbc9",
+      "term": "Instrument direct output",
+      "fields": {
+        "definition": "An instrument direct output (direct/DI output) is a feed that sends an instrument's signal straight to a mixer, interface or recorder — typically via a direct box that converts the unbalanced, high-impedance instrument signal to a balanced, low-impedance mic-level signal — instead of, or alongside, miking an amplifier.",
+        "plain_english": "It's a way to plug an instrument 'directly' into the desk without a mic, using a small box that reshapes the signal so it can travel far without picking up noise.",
+        "purpose_function": "It captures a clean, hum-resistant version of the instrument and lets the signal run long distances (up to about 100 m / 300 ft) without adding appreciable noise, and it can split the signal to feed both an amp and the console.",
+        "practical_application": "On stage or in the studio a tech plugs the bass, acoustic guitar or keyboard into a DI, sends the balanced XLR to the console for a clean channel, and optionally uses the DI's thru jack to also feed the player's amp.",
+        "category": "Signal I/O",
+        "related_terms": ["High-impedance guitar output", "Instrument line output", "DI box", "Balanced signal", "Ground lift"],
+        "common_mistakes": [
+          "Confusing a DI/direct output (balanced, mic level) with a line output; plugging it into a line input yields a very low signal.",
+          "Assuming a passive DI boosts the signal; it converts impedance and balance but adds no gain, so the console preamp still supplies the gain.",
+          "Overdriving a passive DI's transformer with a hot active source and clipping it instead of engaging the input pad."
+        ],
+        "scenario_contexts": [
+          "Recording DI bass alongside a miked cabinet for re-amping flexibility.",
+          "Sending an acoustic guitar's pickup to front-of-house through a DI on a live stage.",
+          "Splitting a keyboard so a clean DI feed goes to the console and a second feed goes to a stage amp."
+        ]
+      },
+      "sources": ["Radial Engineering technical guide: What Is a Direct Box", "Radial Engineering JDI passive DI technical manual", "Rane Note: Sound System Interconnection"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "c7b3d09b-1208-4452-988f-33c323187235",
+      "term": "Instrument headphone output",
+      "fields": {
+        "definition": "An instrument headphone output is a headphone-amplifier jack on an instrument amp, modeler, preamp or interface that drives a pair of headphones for private monitoring; inserting a plug typically mutes the built-in speaker so the player can practice or track silently.",
+        "plain_english": "It's the headphone socket on a practice amp or modeler; plug in and the speaker usually goes quiet so you can play without disturbing anyone.",
+        "purpose_function": "It lets a player hear their instrument — often with amp and effects modeling — at any level without acoustic output from a speaker, and it provides a convenient monitor feed when recording.",
+        "practical_application": "A tech uses it for silent practice or as a scratch monitor while tracking a DI, setting a safe level for the headphones and confirming the speaker mutes so nothing bleeds into the room during a take.",
+        "category": "Signal I/O",
+        "related_terms": ["Instrument line output", "Instrument direct output", "Monitor mix", "Amp modeling", "Leakage"],
+        "common_mistakes": [
+          "UNSAFE: monitoring at high headphone levels for extended periods, which risks permanent hearing damage; keep levels conservative and take breaks in line with hearing-conservation practice.",
+          "Using the headphone out as a line or DI feed to a console; its level and impedance differ from a line output and can add noise or a mismatched level.",
+          "Assuming every headphone jack mutes the amp's speaker; on some devices it does not, so unwanted sound bleeds into takes."
+        ],
+        "scenario_contexts": [
+          "Silent late-night practice on a modeling amp through headphones.",
+          "Using an amp modeler's headphone out as a quick monitor while tracking a DI signal.",
+          "Confirming the speaker mutes when headphones are inserted so nothing bleeds into an open microphone."
+        ]
+      },
+      "sources": ["Yamaha THR30II Reference Manual", "Handbook for Sound Engineers (Ballou)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "7cf836f9-dfe6-4e30-b231-559135445ac7",
+      "term": "Instrument line output",
+      "fields": {
+        "definition": "An instrument line output is a jack that provides a device's signal at nominal line level — professional +4 dBu or consumer -10 dBV — for connection to a mixer or interface line input, as distinct from an instrument-level, speaker-level or headphone output.",
+        "plain_english": "It's the 'line out' that sends a full-strength, ready-to-record signal to a mixer or interface, rather than the weak instrument-level signal a guitar puts out.",
+        "purpose_function": "It delivers a standardized, higher-level signal so the receiving line input needs little or no added gain, giving a clean, low-noise interconnection between pieces of gear.",
+        "practical_application": "A tech patches an amp modeler's or preamp's line output into a console or interface line input, matching +4 dBu versus -10 dBV levels so the signal is neither too hot nor too quiet, rather than using an instrument or mic input.",
+        "category": "Signal I/O",
+        "related_terms": ["High-impedance guitar output", "Instrument direct output", "Left/mono output", "Line level", "Impedance"],
+        "common_mistakes": [
+          "Plugging a line output into a mic input, overloading the preamp and distorting; use a line input or a pad.",
+          "Ignoring the +4 dBu versus -10 dBV difference, so the level ends up too low (noisy) or too hot (clipping).",
+          "Treating a line output as a high-impedance instrument output and expecting guitar-amp tone from it."
+        ],
+        "scenario_contexts": [
+          "Connecting an amp modeler's line out to an interface for a clean, DI-style record.",
+          "Matching a -10 dBV instrument line output to a +4 dBu console input.",
+          "Choosing between a line out and a miked cabinet when recording a modeler."
+        ]
+      },
+      "sources": ["Rane Note: Audio Specifications", "Rane Note: Sound System Interconnection", "Modern Recording Techniques (Huber & Runstein)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "bff9f97f-f5d2-4937-9525-eba4588778a1",
+      "term": "Isolation shield",
+      "fields": {
+        "definition": "An isolation shield is a portable acoustic barrier — an absorptive (sometimes absorptive/reflective composite) panel placed around a microphone or between sound sources — used to reduce room reflections and leakage from nearby instruments during recording.",
+        "plain_english": "It's a padded screen you put around a mic, or between players, to block room echo and stop other instruments from spilling into the mic.",
+        "purpose_function": "It improves separation between sources recorded at the same time and tames early reflections, yielding cleaner, more independently controllable tracks.",
+        "practical_application": "A tech sets absorptive shields or gobos around a guitar amp or vocal mic, or between a harp and a nearby instrument, to cut bleed and reflections without needing a separate isolation booth.",
+        "category": "Studio acoustics",
+        "related_terms": ["Leakage", "Isolation booth", "Gobo", "Reflection filter", "Room microphone"],
+        "common_mistakes": [
+          "Expecting a small mic-mounted shield to fully isolate a source; it mainly reduces early reflections and modest bleed, not low-frequency spill.",
+          "Placing the shield so close that it colors the sound with its own reflections or comb filtering.",
+          "Relying on shields instead of distance, directional mics and arrangement to control heavy leakage."
+        ],
+        "scenario_contexts": [
+          "Reducing bleed between a guitar amp and a vocalist tracking live in one room.",
+          "Taming a live room's reflections around an acoustic guitar microphone.",
+          "Separating a harp from other instruments in an ensemble session without a booth."
+        ]
+      },
+      "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "bd17dc8f-b1ce-4b16-bdf7-fb4f9adfd0ea",
+      "term": "Leakage",
+      "fields": {
+        "definition": "Leakage (also called bleed or spill) is unwanted sound from one source picked up by a microphone intended for a different source — for example, drums appearing in a vocal mic — during simultaneous recording or amplification.",
+        "plain_english": "It's when a mic hears things it isn't meant to, like the guitar amp showing up in the singer's microphone.",
+        "purpose_function": "Leakage is an unavoidable consequence of open microphones sharing a space, and it matters because it sets the limit on track separation and creates phase/comb-filtering when one source appears in several mics, so controlling it is central to clean multitrack work.",
+        "practical_application": "Engineers manage leakage with mic choice and pattern (directional mics with nulls aimed at offending sources), distance, isolation shields, gobos and booths, and arrangement, while weighing useful leakage that glues a live ensemble against the loss of independent control.",
+        "category": "Recording technique",
+        "related_terms": ["Isolation shield", "Isolation booth", "Polar pattern", "Comb filtering", "Phase"],
+        "common_mistakes": [
+          "Trying to fix heavy leakage only with a gate or EQ in the mix instead of controlling it at the source with placement and isolation.",
+          "Ignoring phase and comb-filtering when the same source leaks into several mics, causing a hollow or thin sound once tracks are combined.",
+          "Assuming close-miking alone eliminates leakage; loud nearby sources still bleed in."
+        ],
+        "scenario_contexts": [
+          "Tracking a live band in one room and hearing the drum kit in the guitar and vocal mics.",
+          "Deciding mic patterns and gobo placement to minimize spill in a string ensemble.",
+          "Diagnosing a hollow combined mix caused by one source leaking into multiple mics."
+        ]
+      },
+      "sources": ["Modern Recording Techniques (Huber & Runstein)", "Yamaha Sound Reinforcement Handbook (Davis & Jones)", "Handbook for Sound Engineers (Ballou)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "2b5a8a15-54e4-4f93-bc16-7ea03afe32cf",
+      "term": "Left/mono output",
+      "fields": {
+        "definition": "On a stereo device, the Left/Mono (L/MONO) output is the jack designated for mono operation: when only that single jack is connected, the device provides a mono feed there, while using both jacks gives a stereo pair.",
+        "plain_english": "It's the 'use this one if you only have a single cable' output; plug into the L/MONO jack and you get a mono signal instead of losing half the sound.",
+        "purpose_function": "It lets a stereo instrument or effect feed a single mono input — an amp, mixer channel or interface input — without discarding content that would otherwise only appear on the right channel.",
+        "practical_application": "When a keyboard, drum machine or stereo pedal must go to one mono channel, a tech connects only the L/MONO jack as the manufacturer's manual specifies, rather than taking just the left channel and dropping right-panned material.",
+        "category": "Signal I/O",
+        "related_terms": ["Instrument line output", "Instrument direct output", "Mono", "Stereo", "Summing"],
+        "common_mistakes": [
+          "Taking only the plain L (left) jack of a stereo pair that does not sum, which drops all right-channel content; confirm whether the jack is a true L/MONO summing jack.",
+          "Assuming every jack labeled L/MONO sums L+R; some simply pass the left channel, so behavior varies by device and the manual should be checked.",
+          "Leaving both outputs connected but sending only one to the desk, then wondering why panned parts vanish."
+        ],
+        "scenario_contexts": [
+          "Sending a stereo keyboard to a single mono console channel through its L/MONO output.",
+          "Connecting a stereo effects pedal into one amp using the mono output.",
+          "Wiring a drum machine's L/MONO out to a mono DI for a live feed."
+        ]
+      },
+      "sources": ["Roland SP-404MK2 Reference Manual", "Korg microKORG Owner's Manual"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

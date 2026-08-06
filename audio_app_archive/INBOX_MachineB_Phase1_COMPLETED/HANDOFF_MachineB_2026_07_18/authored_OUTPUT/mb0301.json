@@ -1,0 +1,159 @@
+{
+ "batch": 301,
+ "topic": "Hearing Anatomy & Function",
+ "authored": [
+  {
+   "id": "76e030b3-b4bd-4c64-b9c0-417c11da8ca2",
+   "term": "Auditory filter model",
+   "fields": {
+    "definition": "A model of hearing that represents the cochlea as a bank of overlapping band-pass filters, called auditory filters, each centered on a different frequency, so a complex sound is analyzed by splitting it into frequency bands. The bandwidth of each filter, expressed as the critical bandwidth or equivalent rectangular bandwidth, sets the ear's frequency selectivity and governs how one sound masks another.",
+    "plain_english": "This idea says your ear works like a row of many small filters. Each filter listens to one narrow band of pitches. Together they split a complex sound into separate pitch slices, a bit like sieves sorting sound by pitch.",
+    "purpose_function": "It explains how the ear separates the many frequencies in a sound and predicts when one sound will hide, or mask, another, which underpins how we hear detail in speech and music.",
+    "practical_application": "Engineers lean on it when setting EQ and reasoning about masking, since it explains why a boost in one band affects nearby frequencies and why some sounds bury others in a mix.",
+    "category": "Psychoacoustics",
+    "related_terms": ["Critical-band analysis", "Cochlear filter model", "Equal-loudness contour analysis", "Auditory scene analysis", "Masking"],
+    "common_mistakes": ["Picturing the auditory filters as sharp, brick-wall bands rather than gradually sloping, overlapping shapes", "Assuming the filter bandwidths stay equal across frequency, when they widen at higher frequencies", "Confusing the auditory filter model, a functional model of hearing, with the physical cochlea itself"],
+    "scenario_contexts": ["Explaining why a masking sound in one band hides a nearby tone", "Designing perceptual audio codecs such as MP3 or AAC that discard masked signal", "Setting EQ and understanding why adjacent frequencies interact"]
+   },
+   "sources": ["Moore, An Introduction to the Psychology of Hearing", "Zwicker & Fastl, Psychoacoustics: Facts and Models"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d0899fd3-d4bb-42ba-a3d3-40b9b328fff0",
+   "term": "Auditory scene analysis",
+   "fields": {
+    "definition": "The process by which the auditory system organizes a mixture of sounds arriving at the ears into separate perceptual streams, each corresponding to a distinct sound source. It relies on cues such as onset timing, harmonic relationships, common frequency movement, and spatial location to group and segregate sound.",
+    "plain_english": "This is how your brain sorts a jumble of sounds into separate sources. It works out which sounds belong to the singer, which to the drums, and which to a passing car. It uses hints like when sounds start and whether their pitches move together.",
+    "purpose_function": "It lets us follow one voice or instrument within a busy mixture of sound, which is essential for understanding speech and music in the real world.",
+    "practical_application": "Engineers use its cues of timing, pitch, and panning to make instruments sit as separate, hearable sources in a mix, and the same principles inform source-separation and noise-reduction tools.",
+    "category": "Psychoacoustics",
+    "related_terms": ["Cocktail-party effect study", "Auditory filter model", "Binaural masking level difference", "Haas-effect experiment", "Masking"],
+    "common_mistakes": ["Treating stream segregation as fixed, when it shifts with tempo, pitch spacing, and attention", "Assuming spatial position alone groups sounds, when timing and harmonicity matter as much or more", "Confusing auditory scene analysis with simple frequency masking"],
+    "scenario_contexts": ["Following one instrument through a dense arrangement", "Mixing so vocals stay distinct from backing tracks", "Designing algorithms that separate speech from background noise"]
+   },
+   "sources": ["Bregman, Auditory Scene Analysis: The Perceptual Organization of Sound", "Moore, An Introduction to the Psychology of Hearing"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "862f51db-326b-48f6-84e9-8f81c33d0fd7",
+   "term": "Binaural masking level difference",
+   "fields": {
+    "definition": "The improvement in the detectability of a signal in noise that occurs when the interaural phase or level relationship of the signal differs from that of the masking noise, compared with when signal and masker are identical at the two ears. The release from masking can reach roughly 15 dB at low frequencies, showing that binaural processing aids the detection of sounds in noise.",
+    "plain_english": "This is how using both ears helps you pick out a sound hidden in noise. If the target sound and the noise reach your two ears in different ways, the target becomes much easier to hear. The gain can be worth up to about 15 dB.",
+    "purpose_function": "It shows how the brain compares the sound at the two ears to unmask signals, which helps us detect and follow sounds in noisy places.",
+    "practical_application": "It explains why stereo and binaural listening improve clarity in noise, and it underlies hearing tests and the design of hearing aids and headphone audio.",
+    "category": "Psychoacoustics",
+    "related_terms": ["Auditory scene analysis", "Cocktail-party effect study", "Masking", "Interaural time difference", "Interaural level difference"],
+    "common_mistakes": ["Assuming the effect is equally large at all frequencies, when it is largest below about 500 Hz", "Thinking it depends only on level differences, when interaural phase is the main driver", "Confusing this release from masking with a simple increase in loudness"],
+    "scenario_contexts": ["Explaining why two ears hear speech in noise better than one", "Audiology testing of binaural hearing", "Designing hearing aids and binaural noise reduction"]
+   },
+   "sources": ["Moore, An Introduction to the Psychology of Hearing", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8c15be32-3fb6-408c-b12f-622b6c9183d0",
+   "term": "Cochlear filter model",
+   "fields": {
+    "definition": "A model describing the frequency-selective, place-based filtering carried out by the cochlea, in which each location along the basilar membrane responds best to a particular frequency, forming a bank of overlapping, level-dependent band-pass filters. It links the mechanical tuning of the basilar membrane and the active gain of the outer hair cells to the auditory filters measured psychoacoustically.",
+    "plain_english": "This describes how the inner ear itself acts like a set of tuned filters. Different spots along the coiled cochlea react to different pitches, high notes near the start and low notes deeper in. So the ear sorts sound by pitch using its own shape.",
+    "purpose_function": "It connects the physical workings of the inner ear to the frequency selectivity we measure in hearing, explaining how the ear turns sound into place-coded frequency information.",
+    "practical_application": "It helps technicians and audiologists understand frequency resolution and tuning sharpness, and why cochlear damage broadens the filtering and reduces the ability to separate frequencies.",
+    "category": "Psychoacoustics",
+    "related_terms": ["Auditory filter model", "Critical-band analysis", "Equal-loudness contour analysis", "Masking", "Basilar membrane"],
+    "common_mistakes": ["Thinking cochlear tuning is passive and linear, when outer hair cells add active, level-dependent sharpening", "Assuming the filters keep a fixed width, when they broaden as level rises and with hair-cell damage", "Treating the cochlear filter model and the psychoacoustic auditory filter as unrelated"],
+    "scenario_contexts": ["Explaining how the inner ear maps frequency to place", "Understanding how hearing loss broadens frequency tuning", "Relating basilar-membrane tuning to measured critical bands"]
+   },
+   "sources": ["Moore, An Introduction to the Psychology of Hearing", "Zwicker & Fastl, Psychoacoustics: Facts and Models"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "37c6e02b-da36-453b-a1ca-de56a1a4cd32",
+   "term": "Cocktail-party effect study",
+   "fields": {
+    "definition": "Research into the auditory system's ability to selectively attend to one sound source, typically a single talker, amid competing sounds and background noise. Beginning with Colin Cherry's 1953 experiments, such studies examine how listeners use spatial, spectral, and temporal cues, together with binaural hearing, to focus on and follow a target voice.",
+    "plain_english": "This is the study of how you can follow one voice at a noisy party. Your brain locks onto the person you want to hear and pushes the rest into the background. Researchers test which clues, like direction and pitch, make this possible.",
+    "purpose_function": "It reveals how attention and binaural hearing let us pick out and track one source in a crowd, which is central to real-world listening and understanding speech.",
+    "practical_application": "Findings guide the design of hearing aids, conferencing systems, and beamforming microphones, and they inform how engineers place and pan sources so a target stays intelligible.",
+    "category": "Psychoacoustics",
+    "related_terms": ["Auditory scene analysis", "Binaural masking level difference", "Masking", "Haas-effect experiment", "Auditory filter model"],
+    "common_mistakes": ["Believing it works purely by direction, when pitch, timing, and voice quality also help", "Assuming background sound is fully blocked, when unattended streams still intrude, such as hearing your own name", "Confusing selective attention with the ear physically filtering the sound"],
+    "scenario_contexts": ["Following a bandmate's voice on a loud stage", "Designing hearing aids that boost one talker in noise", "Evaluating microphone arrays that focus on a single speaker"]
+   },
+   "sources": ["Cherry, Some Experiments on the Recognition of Speech (Journal of the Acoustical Society of America, 1953)", "Bregman, Auditory Scene Analysis: The Perceptual Organization of Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2e410b3d-e2ae-4b4c-bbc8-1a2b3d3961e1",
+   "term": "Critical-band analysis",
+   "fields": {
+    "definition": "The analysis of hearing in terms of critical bands, the frequency ranges within which the ear integrates energy and within which sounds interact strongly for masking and loudness. Introduced by Fletcher and refined by Zwicker, it treats the ear as processing sound in about 24 critical bands across the audible range, expressed on the Bark scale.",
+    "plain_english": "This looks at hearing as if the ear breaks sound into a set of frequency bands. Sounds inside the same band blend and fight each other for your attention. There are roughly two dozen of these bands across everything we can hear.",
+    "purpose_function": "It explains how the ear groups nearby frequencies for loudness and masking, giving a basis for predicting when sounds combine or hide one another.",
+    "practical_application": "It underlies perceptual audio coding such as MP3, loudness metering, and helps engineers understand why closely spaced frequencies mask each other in a mix.",
+    "category": "Psychoacoustics",
+    "related_terms": ["Auditory filter model", "Cochlear filter model", "Equal-loudness contour analysis", "Masking", "Auditory scene analysis"],
+    "common_mistakes": ["Confusing the critical band on the Bark scale with the equivalent rectangular bandwidth, a related but narrower modern measure", "Assuming critical bandwidth stays constant in hertz, when it widens with center frequency", "Thinking the bands are fixed, non-overlapping channels rather than a continuous, sliding property of hearing"],
+    "scenario_contexts": ["Explaining masking between close frequencies in a mix", "Designing perceptual codecs that hide coding noise within a band", "Predicting the loudness of complex sounds"]
+   },
+   "sources": ["Zwicker & Fastl, Psychoacoustics: Facts and Models", "Moore, An Introduction to the Psychology of Hearing"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "75346711-7333-43c7-9b34-9700bffe62da",
+   "term": "Equal-loudness contour analysis",
+   "fields": {
+    "definition": "The study and use of equal-loudness contours, curves showing the sound pressure level needed at each frequency for a tone to be judged as loud as a reference tone, usually 1 kHz, across the audible range. Standardized in ISO 226 and historically known as the Fletcher-Munson curves, they map the frequency-dependent sensitivity of hearing and define the phon scale of loudness level.",
+    "plain_english": "This studies curves that show how loud each pitch must be to sound equally loud to us. Our ears are less sensitive to very low and very high notes, so those need more level to match a mid tone. The curves map that pattern across all pitches.",
+    "purpose_function": "It measures how our sensitivity changes with frequency and level, explaining why bass and treble seem to fade at low volume and providing the basis for loudness units like the phon.",
+    "practical_application": "It guides monitoring levels, informs loudness-compensation controls, and reminds engineers that tonal balance shifts with playback volume, so mixes should be checked at realistic levels.",
+    "category": "Psychoacoustics",
+    "related_terms": ["Critical-band analysis", "Auditory filter model", "Cochlear filter model", "Masking", "Sound pressure level"],
+    "common_mistakes": ["Assuming the contours are flat, when the ear is far less sensitive at low frequencies", "Treating one curve as valid for all levels, when the shape changes with loudness", "Still calling them the Fletcher-Munson curves when the current standard is ISO 226"],
+    "scenario_contexts": ["Explaining why bass seems weaker at low listening volumes", "Checking a mix at several playback levels", "Understanding loudness-compensation controls on playback gear"]
+   },
+   "sources": ["ISO 226, Acoustics -- Normal equal-loudness-level contours", "Moore, An Introduction to the Psychology of Hearing"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "faf9b5c1-9a24-4702-b7bd-08825d082a5d",
+   "term": "Haas-effect experiment",
+   "fields": {
+    "definition": "The classic experiments by Helmut Haas that demonstrate the precedence effect, or law of the first wavefront: when two identical sounds arrive from different directions within roughly 1 to 40 ms of each other, the listener hears a single sound localized toward the earlier arrival, and the later sound can be up to about 10 dB louder before it is heard as a separate echo. The work quantifies how the ear fuses early reflections with the direct sound.",
+    "plain_english": "These tests show that when the same sound reaches you twice, very close in time, you hear it as one sound coming from wherever it arrived first. The slightly later copy can even be a bit louder without sounding like a separate echo. This is why early room reflections blend with the original.",
+    "purpose_function": "It explains how we localize sound and fuse early reflections with the direct sound, which is key to hearing direction correctly in reflective rooms.",
+    "practical_application": "Engineers exploit it with delay in distributed loudspeaker systems, so sound seems to come from the stage even when nearer speakers are louder, and they use short delays to place or widen an image.",
+    "category": "Psychoacoustics",
+    "related_terms": ["Auditory scene analysis", "Binaural masking level difference", "Cocktail-party effect study", "Interaural time difference", "Sound pressure level"],
+    "common_mistakes": ["Thinking any delay works, when the fusion effect holds only within roughly a 1 to 40 ms window", "Assuming the later sound is always inaudible, when enough delay or level turns it into a separate echo", "Setting delay-speaker timing by ear alone instead of measuring the arrival difference"],
+    "scenario_contexts": ["Time-aligning delay speakers so sound images to the stage", "Explaining why early room reflections are not heard as echoes", "Using short delays to widen or position a stereo image"]
+   },
+   "sources": ["Haas, The Influence of a Single Echo on the Audibility of Speech (Journal of the Audio Engineering Society, 1972)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "47d43e95-e081-434a-a5f6-0d9ee08593c1",
+   "term": "Headphone perception study",
+   "fields": {
+    "definition": "Research into how listeners perceive sound presented over headphones, where each ear receives its signal directly without room or outer-ear cues. Such study addresses in-head localization, or lateralization, the lack of externalization, and how interaural time and level differences map a sound to a position along a line between the ears, in contrast with loudspeaker listening.",
+    "plain_english": "This studies how sound seems different through headphones. Because the sound goes straight into each ear, it often feels like it sits inside your head rather than out in the room. Researchers look at how the balance and timing between the two earpieces move the sound left or right.",
+    "purpose_function": "It explains why headphone listening differs from speaker listening and how left-right cues place a sound, guiding accurate headphone mixing and the design of realistic binaural and virtual audio.",
+    "practical_application": "Engineers draw on it when mixing on headphones, which exaggerate panning and lack room sound, and when building binaural recordings, crossfeed, and virtual surround that push sound outside the head.",
+    "category": "Psychoacoustics",
+    "related_terms": ["Binaural masking level difference", "Interaural time difference", "Interaural level difference", "Auditory scene analysis", "Haas-effect experiment"],
+    "common_mistakes": ["Assuming a headphone mix translates directly to loudspeakers, when panning and bass balance differ", "Expecting sound to sit outside the head without crossfeed or binaural processing", "Ignoring that headphones bypass the room and outer-ear cues that speakers provide"],
+    "scenario_contexts": ["Mixing and checking how a track translates between headphones and speakers", "Creating binaural or 3D audio for headphones", "Understanding in-head localization during hearing tests"]
+   },
+   "sources": ["Moore, An Introduction to the Psychology of Hearing", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,2518 @@
+[
+  {
+    "certificate_id": "cert-microphones-amplifiers-and-loudspeakers",
+    "name": "Microphones, Amplifiers & Loudspeakers",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Mics, Amps, & Speakers",
+    "member_topic_gs": [
+      190,
+      240,
+      270
+    ],
+    "member_topic_names": [
+      "Microphone Types & Transducers",
+      "Loudspeaker Types & Drivers",
+      "Amplifiers"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-cables-and-connectivity",
+    "name": "Cables & Connectivity",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Cables & Connectivity",
+    "member_topic_gs": [
+      150,
+      160,
+      170
+    ],
+    "member_topic_names": [
+      "Signal Path & Levels",
+      "Connectors & Plugs",
+      "Cables & Wiring"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-consoles",
+    "name": "Consoles",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Consoles",
+    "member_topic_gs": [
+      290,
+      300,
+      310
+    ],
+    "member_topic_names": [
+      "Console Architecture & Signal Flow",
+      "Channel Strip & Processing",
+      "Buses, Routing & Matrix"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-recording-systems",
+    "name": "Recording Systems",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Recorders",
+    "member_topic_gs": [
+      330,
+      340,
+      360
+    ],
+    "member_topic_names": [
+      "Recorder Types & Formats",
+      "Audio File Formats & Media",
+      "Storage, Backup & Archival"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-infrastructure",
+    "name": "Infrastructure",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Racks  & Infrastructure",
+    "member_topic_gs": [
+      370,
+      400,
+      410
+    ],
+    "member_topic_names": [
+      "Racks, Patchbays & Wiring Infrastructure",
+      "Power & Signal Distribution Hardware",
+      "Documentation & Diagrams"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-networking",
+    "name": "Networking",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Racks  & Infrastructure",
+    "member_topic_gs": [
+      420,
+      430,
+      440
+    ],
+    "member_topic_names": [
+      "Dante Fundamentals & Routing",
+      "Dante Devices, Modules & Certification",
+      "Clocking, Redundancy & Network Management"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-power-systems",
+    "name": "Power Systems",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Racks  & Infrastructure",
+    "member_topic_gs": [
+      130,
+      140,
+      400
+    ],
+    "member_topic_names": [
+      "Power Fundamentals, Distribution & Quality",
+      "Batteries, Backup & Touring Power",
+      "Power & Signal Distribution Hardware"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-signal-processing",
+    "name": "Signal Processing",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Signal Processing",
+    "member_topic_gs": [
+      460,
+      470,
+      480
+    ],
+    "member_topic_names": [
+      "Equalization (EQ)",
+      "Dynamics Processing",
+      "Reverb"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-acoustics-and-measurement",
+    "name": "Acoustics & Measurement",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Acoustics & Measurement",
+    "member_topic_gs": [
+      500,
+      540,
+      550
+    ],
+    "member_topic_names": [
+      "Acoustic Principles & Room Behavior",
+      "Measurement Fundamentals & Metering",
+      "Acoustic & Room Measurement"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-room-treatment",
+    "name": "Room Treatment",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Acoustics & Measurement",
+    "member_topic_gs": [
+      510,
+      520,
+      530
+    ],
+    "member_topic_names": [
+      "Absorption & Bass Trapping",
+      "Diffusion & Materials",
+      "Room Treatment Layout & Application"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-troubleshooting",
+    "name": "Troubleshooting",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Troubleshooting",
+    "member_topic_gs": [
+      580,
+      600,
+      610
+    ],
+    "member_topic_names": [
+      "Signal & Connection Troubleshooting",
+      "Patch & Routing Diagnostics",
+      "System Maintenance"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-live-sound-systems",
+    "name": "Live Sound Systems",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Live Sound & Deployment",
+    "member_topic_gs": [
+      620,
+      630,
+      650
+    ],
+    "member_topic_names": [
+      "Analog Live Sound",
+      "Digital Live Sound",
+      "System Tuning & Alignment"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-wireless-audio-systems",
+    "name": "Wireless Audio Systems",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Live Sound & Deployment",
+    "member_topic_gs": [
+      660,
+      220,
+      230
+    ],
+    "member_topic_names": [
+      "RF Wireless Systems",
+      "Mic Controls, Power & Mounting",
+      "Specialized & Application Microphones"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-dj-audio",
+    "name": "DJ Audio",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "DJ Audio",
+    "member_topic_gs": [
+      670,
+      680,
+      690
+    ],
+    "member_topic_names": [
+      "DJ Performance & Turntablism",
+      "DJ Equipment & Software",
+      "Beatmatching, Mixing & FX"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-stagecraft-and-venue-operations",
+    "name": "Stagecraft & Venue Operations",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Venue, Stagecraft & Rigging Terminology",
+    "member_topic_gs": [
+      710,
+      720,
+      740
+    ],
+    "member_topic_names": [
+      "Venue Architecture & Spaces",
+      "Stage Geography & Backstage",
+      "Stage Platforms, Scenery & Soft Goods"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-entertainment-rigging-fundamentals",
+    "name": "Entertainment Rigging Fundamentals",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Live Sound & Deployment",
+    "member_topic_gs": [
+      640,
+      750,
+      760
+    ],
+    "member_topic_names": [
+      "System Deployment & Rigging",
+      "Fly Systems & Overhead Access",
+      "Rigging Hardware, Loads & Motorized Flying"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-theatrical-audio",
+    "name": "Theatrical Audio",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Venue, Stagecraft & Rigging Terminology",
+    "member_topic_gs": [
+      780,
+      790,
+      770
+    ],
+    "member_topic_names": [
+      "Show Control, Cueing & Communications",
+      "Theatrical Sound",
+      "Orchestra Pit & Ensemble Layout"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-worship-audio",
+    "name": "Worship Audio",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Venue, Stagecraft & Rigging Terminology",
+    "member_topic_gs": [
+      800,
+      630,
+      1980
+    ],
+    "member_topic_names": [
+      "Worship Sound",
+      "Digital Live Sound",
+      "Live Sound — Monitor Engineering"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-commercial-audio-systems",
+    "name": "Commercial Audio Systems",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Install, Commercial, & AV",
+    "member_topic_gs": [
+      810,
+      830,
+      840
+    ],
+    "member_topic_names": [
+      "Audio System Design",
+      "Commercial 70/100V Systems",
+      "Distributed Audio Systems"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-architectural-audio",
+    "name": "Architectural Audio",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Install, Commercial, & AV",
+    "member_topic_gs": [
+      810,
+      860,
+      570
+    ],
+    "member_topic_names": [
+      "Audio System Design",
+      "Architectural Audio",
+      "System Optimization"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-corporate-av-audio",
+    "name": "Corporate AV Audio",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Install, Commercial, & AV",
+    "member_topic_gs": [
+      820,
+      810,
+      850
+    ],
+    "member_topic_names": [
+      "Corporate AV",
+      "Audio System Design",
+      "Assisted Listening Systems"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-residential-and-consumer-audio",
+    "name": "Residential & Consumer Audio",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Consumer, Home & Vehicle",
+    "member_topic_gs": [
+      940,
+      950,
+      840
+    ],
+    "member_topic_names": [
+      "HiFi Consumer Audio",
+      "Home Theater & Residential AV",
+      "Distributed Audio Systems"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-vehicle-audio",
+    "name": "Vehicle Audio",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Consumer, Home & Vehicle",
+    "member_topic_gs": [
+      960,
+      170,
+      270
+    ],
+    "member_topic_names": [
+      "Vehicle Audio",
+      "Cables & Wiring",
+      "Amplifiers"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-electronic-music-production",
+    "name": "Electronic Music Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Electronic Music",
+    "member_topic_gs": [
+      1380,
+      1350,
+      1370
+    ],
+    "member_topic_names": [
+      "Synthesis Fundamentals & Oscillators",
+      "Sampling Fundamentals & Instruments",
+      "Drum Programming & Beat-Making"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-synthesis-and-sound-design",
+    "name": "Synthesis & Sound Design",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Electronic Music",
+    "member_topic_gs": [
+      1400,
+      1390,
+      1380
+    ],
+    "member_topic_names": [
+      "Synthesis Types, Modular & CV",
+      "Filters, Envelopes & Modulation",
+      "Synthesis Fundamentals & Oscillators"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-studio-recording",
+    "name": "Studio Recording",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Studio Recording",
+    "member_topic_gs": [
+      990,
+      1000,
+      1010
+    ],
+    "member_topic_names": [
+      "Recording Fundamentals & Signal Chain",
+      "Microphone Technique for Recording",
+      "Session Setup & Signal Flow"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-instrument-recording",
+    "name": "Instrument Recording",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Studio Recording",
+    "member_topic_gs": [
+      1020,
+      1022,
+      1024
+    ],
+    "member_topic_names": [
+      "Instrument Recording — Strings & Guitar",
+      "Instrument Recording — Drums & Percussion",
+      "Instrument Recording — Keys, Winds & Brass"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-advanced-recording-production",
+    "name": "Advanced Recording Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Studio Recording",
+    "member_topic_gs": [
+      1030,
+      1060,
+      1070
+    ],
+    "member_topic_names": [
+      "Studio Recording Craft — Advanced",
+      "Band Tracking Workflow & Arrangement",
+      "Vocal & Overdub Production"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-microphone-techniques",
+    "name": "Microphone Techniques",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Studio Recording",
+    "member_topic_gs": [
+      1000,
+      212,
+      210
+    ],
+    "member_topic_names": [
+      "Microphone Technique for Recording",
+      "Instrument & Close Miking Techniques",
+      "Stereo & Ensemble Miking Techniques"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-music-mixing",
+    "name": "Music Mixing",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Mastering",
+    "member_topic_gs": [
+      1080,
+      1130,
+      1140
+    ],
+    "member_topic_names": [
+      "Mix Fundamentals & Workflow",
+      "Mix Automation & Recall",
+      "Mix Bus, Loudness & Translation"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-instrument-mixing",
+    "name": "Instrument Mixing",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Studio: Mixing",
+    "member_topic_gs": [
+      1090,
+      1100,
+      1120
+    ],
+    "member_topic_names": [
+      "Instrument Mixing — Drums & Percussion",
+      "Instrument Mixing — Guitars, Bass & Keys",
+      "Orchestral, Choir & Acoustic-Ensemble Mixing"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-vocal-mixing-and-production",
+    "name": "Vocal Mixing & Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Studio Recording",
+    "member_topic_gs": [
+      1070,
+      1110,
+      1490
+    ],
+    "member_topic_names": [
+      "Vocal & Overdub Production",
+      "Vocal Mixing",
+      "Voice & Vocal Perception"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-mastering",
+    "name": "Mastering",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Mastering",
+    "member_topic_gs": [
+      1160,
+      1170,
+      1180
+    ],
+    "member_topic_names": [
+      "Mastering Fundamentals & Chain",
+      "Loudness, Dynamics & QC",
+      "Delivery Formats & Metadata"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-broadcast-and-streaming-audio",
+    "name": "Broadcast & Streaming Audio",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Mastering",
+    "member_topic_gs": [
+      1200,
+      1210,
+      1220
+    ],
+    "member_topic_names": [
+      "Broadcast / Radio Production & Air Chain",
+      "Streaming & Distribution",
+      "Broadcast Loudness & Compliance"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-podcast-production",
+    "name": "Podcast Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Studio: Mixing",
+    "member_topic_gs": [
+      1190,
+      1110,
+      1210
+    ],
+    "member_topic_names": [
+      "Podcast Production",
+      "Vocal Mixing",
+      "Streaming & Distribution"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-production-sound",
+    "name": "Production Sound",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Mastering",
+    "member_topic_gs": [
+      1232,
+      340,
+      410
+    ],
+    "member_topic_names": [
+      "Production Sound & Field Recording",
+      "Audio File Formats & Media",
+      "Documentation & Diagrams"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-daw-production",
+    "name": "DAW Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Computer & Electronic Music",
+    "member_topic_gs": [
+      1240,
+      1250,
+      1260
+    ],
+    "member_topic_names": [
+      "DAW Fundamentals & Session Management",
+      "Editing & Comping",
+      "In-the-Box Mixing & Automation"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-logic-production",
+    "name": "Logic Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Computer & Electronic Music",
+    "member_topic_gs": [
+      1240,
+      1250,
+      1270
+    ],
+    "member_topic_names": [
+      "DAW Fundamentals & Session Management",
+      "Editing & Comping",
+      "DAW: Logic"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-cubase-nuendo-production",
+    "name": "Cubase/Nuendo Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Computer & Electronic Music",
+    "member_topic_gs": [
+      1240,
+      1250,
+      1280
+    ],
+    "member_topic_names": [
+      "DAW Fundamentals & Session Management",
+      "Editing & Comping",
+      "DAW: Cubase/Nuendo"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-reaper-production",
+    "name": "REAPER Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Computer & Electronic Music",
+    "member_topic_gs": [
+      1240,
+      1250,
+      1290
+    ],
+    "member_topic_names": [
+      "DAW Fundamentals & Session Management",
+      "Editing & Comping",
+      "DAW: REAPER"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-ableton-live-production",
+    "name": "Ableton Live Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Computer & Electronic Music",
+    "member_topic_gs": [
+      1240,
+      1330,
+      1300
+    ],
+    "member_topic_names": [
+      "DAW Fundamentals & Session Management",
+      "MIDI",
+      "DAW: Ableton Live"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-studio-one-production",
+    "name": "Studio One Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Computer & Electronic Music",
+    "member_topic_gs": [
+      1240,
+      1250,
+      1310
+    ],
+    "member_topic_names": [
+      "DAW Fundamentals & Session Management",
+      "Editing & Comping",
+      "DAW: Studio One"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-digital-performer-reason-production",
+    "name": "Digital Performer/Reason Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Computer & Electronic Music",
+    "member_topic_gs": [
+      1240,
+      1330,
+      1320
+    ],
+    "member_topic_names": [
+      "DAW Fundamentals & Session Management",
+      "MIDI",
+      "DAW: Digital Performer/Reason"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-hearing-and-audio-health",
+    "name": "Hearing & Audio Health",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Hearing, Perception & Listening",
+    "member_topic_gs": [
+      1410,
+      1420,
+      1430
+    ],
+    "member_topic_names": [
+      "Hearing Anatomy & Function",
+      "Hearing Protection & Occupational Health",
+      "Hearing Disorders & Health"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-psychoacoustics-and-listening",
+    "name": "Psychoacoustics & Listening",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Hearing, Perception & Listening",
+    "member_topic_gs": [
+      1440,
+      1450,
+      1470
+    ],
+    "member_topic_names": [
+      "Psychoacoustics",
+      "Spatial Hearing & Localization",
+      "Loudness & Listening Environments"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-critical-listening",
+    "name": "Critical Listening",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Hearing, Perception & Listening",
+    "member_topic_gs": [
+      1500,
+      1510,
+      1530
+    ],
+    "member_topic_names": [
+      "Ear Training",
+      "Tonal & Timbre Descriptors",
+      "Monitoring & Audio Evaluation"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-instrument-sound-identification",
+    "name": "Instrument Sound Identification",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Studio: Ear Training & Instrument Sound ID",
+    "member_topic_gs": [
+      1550,
+      1560,
+      1570
+    ],
+    "member_topic_names": [
+      "Strings, Guitar & Keys",
+      "Drums & Percussion",
+      "Winds, Brass & Organ"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-career-development",
+    "name": "Career Development",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Career, Business & Industry",
+    "member_topic_gs": [
+      1600,
+      1610,
+      1640
+    ],
+    "member_topic_names": [
+      "Audio Career Exploration",
+      "Portfolio Development",
+      "Industry Foundations"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-music-business-and-entrepreneurship",
+    "name": "Music Business & Entrepreneurship",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Career, Business & Industry",
+    "member_topic_gs": [
+      1620,
+      1630,
+      1580
+    ],
+    "member_topic_names": [
+      "Copyright, Publishing & Licensing",
+      "Music Entrepreneurship",
+      "Project Management"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-immersive-audio-production",
+    "name": "Immersive Audio Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Immersive & Screen Sound",
+    "member_topic_gs": [
+      1650,
+      1660,
+      1670
+    ],
+    "member_topic_names": [
+      "Immersive Formats & Delivery",
+      "Object & Bed Panning / Authoring",
+      "Immersive Monitoring & Calibration"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-immersive-music-production",
+    "name": "Immersive Music Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Immersive & Screen Sound",
+    "member_topic_gs": [
+      1650,
+      1670,
+      1680
+    ],
+    "member_topic_names": [
+      "Immersive Formats & Delivery",
+      "Immersive Monitoring & Calibration",
+      "Immersive Music Production & Delivery"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-dialogue-and-localization",
+    "name": "Dialogue & Localization",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Immersive & Screen Sound",
+    "member_topic_gs": [
+      1700,
+      1710,
+      1720
+    ],
+    "member_topic_names": [
+      "Dialogue Editing",
+      "ADR & Looping",
+      "Dubbing & Localization"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-foley-and-sound-effects",
+    "name": "Foley & Sound Effects",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Immersive & Screen Sound",
+    "member_topic_gs": [
+      1730,
+      1732,
+      1232
+    ],
+    "member_topic_names": [
+      "Foley Performance & Recording",
+      "SFX Editorial & Sound Design",
+      "Production Sound & Field Recording"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-game-and-themed-entertainment-audio",
+    "name": "Game & Themed-Entertainment Audio",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Immersive & Screen Sound",
+    "member_topic_gs": [
+      1740,
+      1750,
+      1732
+    ],
+    "member_topic_names": [
+      "Game Audio",
+      "Themed Entertainment / Haunt Audio",
+      "SFX Editorial & Sound Design"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-electronics",
+    "name": "Electronics",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Audio Engineering & Development",
+    "member_topic_gs": [
+      880,
+      890,
+      900
+    ],
+    "member_topic_names": [
+      "Passive Components",
+      "Active Devices & Semiconductors",
+      "Circuits & Topologies"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-equipment-service",
+    "name": "Equipment Service",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Audio Engineering & Development",
+    "member_topic_gs": [
+      970,
+      980,
+      920
+    ],
+    "member_topic_names": [
+      "Soldering",
+      "Repair",
+      "Bench Test, Measurement & Repair"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-manufacturing",
+    "name": "Manufacturing",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Audio Engineering & Development",
+    "member_topic_gs": [
+      910,
+      920,
+      930
+    ],
+    "member_topic_names": [
+      "PCB, Assembly & Soldering",
+      "Bench Test, Measurement & Repair",
+      "Manufacturing & Production"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-hardware-engineering",
+    "name": "Hardware Engineering",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Audio Engineering & Development",
+    "member_topic_gs": [
+      1810,
+      1820,
+      900
+    ],
+    "member_topic_names": [
+      "Preamp & Converter Engineering",
+      "Loudspeaker / Transducer Engineering",
+      "Circuits & Topologies"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-software-and-dsp-development",
+    "name": "Software & DSP Development",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Audio Engineering & Development",
+    "member_topic_gs": [
+      1830,
+      1840,
+      1910
+    ],
+    "member_topic_names": [
+      "Audio Plugin & DSP Development",
+      "Cloud & Emerging Production",
+      "AI/ML Foundations for Audio"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-ai-audio-foundations",
+    "name": "AI Audio Foundations",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "AI Audio",
+    "member_topic_gs": [
+      1910,
+      1900,
+      1920
+    ],
+    "member_topic_names": [
+      "AI/ML Foundations for Audio",
+      "Music Information Retrieval",
+      "AI Audio Ethics, Rights & Provenance"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-ai-music-and-sound-creation",
+    "name": "AI Music & Sound Creation",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "AI Audio",
+    "member_topic_gs": [
+      1850,
+      1890,
+      1920
+    ],
+    "member_topic_names": [
+      "AI Music Generation & Composition",
+      "Neural Amp Modeling & Neural Synthesis",
+      "AI Audio Ethics, Rights & Provenance"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-ai-audio-production",
+    "name": "AI Audio Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "AI Audio",
+    "member_topic_gs": [
+      1870,
+      1880,
+      1920
+    ],
+    "member_topic_names": [
+      "AI Source Separation & Restoration",
+      "AI Mixing/Mastering & Adaptive Processing",
+      "AI Audio Ethics, Rights & Provenance"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-ai-voice-and-speech",
+    "name": "AI Voice & Speech",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "AI Audio",
+    "member_topic_gs": [
+      1860,
+      1900,
+      1920
+    ],
+    "member_topic_names": [
+      "AI Voice & Speech",
+      "Music Information Retrieval",
+      "AI Audio Ethics, Rights & Provenance"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-live-sound-crew-operations",
+    "name": "Live Sound Crew Operations",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Live Sound Production",
+    "member_topic_gs": [
+      1930,
+      1940,
+      1950
+    ],
+    "member_topic_names": [
+      "Live Sound — Crew Roles & Departments",
+      "Live Sound — Production Documents & Advancing",
+      "Live Sound — Load-In / Setup / Strike / Load-Out"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-live-sound-mixing",
+    "name": "Live Sound Mixing",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Live Sound Production",
+    "member_topic_gs": [
+      1960,
+      1970,
+      1980
+    ],
+    "member_topic_names": [
+      "Live Sound — Stage Patch & Signal Distribution",
+      "Live Sound — FOH Mixing Workflow",
+      "Live Sound — Monitor Engineering"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-live-sound-system-engineering",
+    "name": "Live Sound System Engineering",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Live Sound Production",
+    "member_topic_gs": [
+      1990,
+      2000,
+      2030
+    ],
+    "member_topic_names": [
+      "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+      "Live Sound — PA Deployment & System Engineering",
+      "Live Sound — Troubleshooting & Emergency"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-festival-audio-production",
+    "name": "Festival Audio Production",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Live Sound Production",
+    "member_topic_gs": [
+      1940,
+      2010,
+      2020
+    ],
+    "member_topic_names": [
+      "Live Sound — Production Documents & Advancing",
+      "Live Sound — Festival Changeovers & Guest-Engineer",
+      "Live Sound — Communication & Show Calls"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  },
+  {
+    "certificate_id": "cert-road-crew-operations",
+    "name": "Road Crew Operations",
+    "level": "L1",
+    "parent_program_id": null,
+    "track": "Live Sound Production",
+    "member_topic_gs": [
+      700,
+      1950,
+      1930
+    ],
+    "member_topic_names": [
+      "Road Crew",
+      "Live Sound — Load-In / Setup / Strike / Load-Out",
+      "Live Sound — Crew Roles & Departments"
+    ],
+    "member_topic_achievement_ids": [],
+    "corequisite_gs": [
+      100,
+      120,
+      1590
+    ],
+    "requirements": {
+      "quiz": null,
+      "study_gate": null,
+      "integrity": null,
+      "_note": "Not modeled per-cert in ccode. Enforced requisites = 3 core coreqs + Foundations lab + the 3 specialization topics; \"pass the final assessment\" is prose only. Per-topic quiz/study gates are server-enforced, not cert-scoped."
+    },
+    "prerequisites": [
+      "Professional Audio Safety",
+      "Grounding & Electrical",
+      "Workplace Skills",
+      "Foundations in Audio"
+    ],
+    "icon_url": null,
+    "is_active": true
+  }
+]

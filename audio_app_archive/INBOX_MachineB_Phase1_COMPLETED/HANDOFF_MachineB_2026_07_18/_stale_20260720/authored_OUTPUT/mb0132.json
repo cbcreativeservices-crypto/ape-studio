@@ -1,0 +1,159 @@
+{
+ "batch": 132,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "c7d701af-b04e-431e-843b-80b9bdf6be32",
+   "term": "Region tempo",
+   "fields": {
+    "definition": "The tempo information tied to an audio or MIDI region (also called a clip or part) in a DAW, describing the beats-per-minute at which its musical content was recorded or is meant to play. DAWs use this value to align, time-stretch, or warp the region so it conforms to the project's tempo.",
+    "plain_english": "A region is one block of audio or notes on a track. Its region tempo is the speed, in beats per minute, that the block was played at. The software uses this speed to line the block up with the song, like matching two dancers to the same beat.",
+    "purpose_function": "It tells a DAW the native speed of a piece of audio so the software can stretch or warp it to match the session tempo, keeping every part in sync.",
+    "practical_application": "When importing a loop or an out-of-time take, a technician sets or corrects its region tempo so the DAW warps it cleanly to the project tempo instead of drifting.",
+    "category": "Tempo & Sync",
+    "related_terms": ["Tempo map", "Time-stretching", "Warping", "Beat mapping", "Rhythm pattern", "Metronome"],
+    "common_mistakes": ["Confusing a region's tempo with the project tempo, then wondering why an imported loop plays back too fast or too slow.", "Leaving the region tempo wrong so the DAW over-stretches the audio and adds artifacts.", "Assuming every audio file carries embedded tempo data — many do not, and the tempo must be set by hand."],
+    "scenario_contexts": ["Importing a drum loop recorded at 90 BPM into a 120 BPM session and needing it to follow the project.", "Correcting the detected tempo of a live-recorded take before enabling flex or warp.", "Building a tempo-matched remix from stems tracked at different speeds."]
+   },
+   "sources": ["Apple Logic Pro User Guide (Smart Tempo / audio region tempo)", "Steinberg Cubase Operation Manual (audio tempo and Musical Mode)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "06ecbd22-7d3c-499c-b596-8fc5a9906320",
+   "term": "Relative automation",
+   "fields": {
+    "definition": "An automation writing mode in which new fader, pan, or parameter moves are applied as an offset added to the existing automation data rather than replacing it with absolute values. Also called trim automation, it shifts a whole existing curve up or down while preserving its shape.",
+    "plain_english": "Automation records the moves of a control, like the volume fader, so they play back on their own. Relative automation lets you nudge all those saved moves up or down at once without erasing their shape. It works like one master dial that shifts the whole recorded ride together.",
+    "purpose_function": "It lets an engineer change the overall level of an already-automated part without redrawing every move, so balanced detail stays intact while the average value shifts.",
+    "practical_application": "After automating a vocal to sit in the mix, a technician uses relative (trim) mode to raise the entire pass by a decibel in the chorus without losing the word-by-word rides.",
+    "category": "Automation",
+    "related_terms": ["Absolute automation", "Trim mode", "Automation pass", "Fader ride", "Write mode", "Read mode"],
+    "common_mistakes": ["Confusing relative (trim) mode with absolute mode and overwriting existing moves instead of offsetting them.", "Forgetting to leave trim mode, so later passes keep adding offsets and levels drift.", "Expecting relative changes to reshape the automation curve when they only slide it up or down."],
+    "scenario_contexts": ["Raising an entire automated backing-vocal ride by 1.5 dB without touching its internal moves.", "Trimming a busy synth automation down a little across a whole section during a revision.", "Making a global level tweak to a client-approved automation pass late in a project."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Trim automation mode)", "Huber & Runstein, Modern Recording Techniques (automation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8444c40a-a08b-43ee-8c04-20c078ecf016",
+   "term": "Release readiness review",
+   "fields": {
+    "definition": "A final quality-control review carried out before a mix or master is delivered for release, confirming that the audio meets technical requirements — level, file formats, metadata, track spacing, and freedom from defects — and satisfies the creative brief. It is the sign-off step that catches problems while they are still cheap to fix.",
+    "plain_english": "This is the last check before a song is sent out to the world. Someone listens right through and confirms the sound, loudness, file types, and track details are all correct, with no clicks or missing parts. It is like proofreading a paper one more time before you hand it in.",
+    "purpose_function": "It exists to catch technical faults and creative mismatches at the final stage, so a finished release does not ship with errors that are costly or impossible to fix later.",
+    "practical_application": "Before delivering masters to a label or distributor, a technician runs a release readiness review — checking loudness targets, file formats, fades, track order, and metadata — and signs off only when every item passes.",
+    "category": "Delivery & QC",
+    "related_terms": ["Mastering", "Loudness normalization", "Metadata", "Reference track", "Bounce", "Dither"],
+    "common_mistakes": ["Skipping a full listen and only checking loudness while missing clicks, dropouts, or wrong fades.", "Reviewing on one set of speakers or headphones instead of several playback systems.", "Approving files without confirming the delivery format, sample rate, and metadata the distributor requires."],
+    "scenario_contexts": ["Final sign-off on an album master before it goes to a streaming distributor.", "Checking a podcast episode for level, spacing, and edits before publishing.", "Reviewing a game or film audio deliverable against the client's technical spec sheet."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook (final mix checks and delivery)", "Bob Katz, Mastering Audio (quality control and delivery)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8ec7203f-1200-42c8-ab88-789a222a685f",
+   "term": "Resampling input",
+   "fields": {
+    "definition": "An internal input source that captures a DAW's own master or bus output so it can be recorded back onto an audio track — for example Ableton Live's 'Resampling' input choice. It lets a technician commit synths, effects, and full submixes to new audio entirely inside the software.",
+    "plain_english": "Resampling means recording your software's own sound back into itself as a new clip. The resampling input is the setting that grabs the program's output for that recording. It is like pointing a track's microphone at the mixer's own output instead of the outside world.",
+    "purpose_function": "It provides a purely internal signal path to record the DAW's output, so instruments and effect chains can be turned into plain audio for further editing, layering, or CPU savings.",
+    "practical_application": "A producer sets an audio track's input to resampling, arms it, and records a synth-and-effects passage into a fresh clip that can be chopped, warped, or re-processed without the original devices.",
+    "category": "Routing",
+    "related_terms": ["Return Track", "Bounce", "Freeze", "Internal routing", "Warping", "Sample rate"],
+    "common_mistakes": ["Confusing resampling (recording internal output) with sample-rate conversion, which is a different meaning of the word.", "Recording through the resampling input while monitoring effects that then get captured a second time.", "Forgetting that resampling bakes in the current settings, so later changes to the source no longer affect the new clip."],
+    "scenario_contexts": ["Capturing a CPU-heavy synth patch as audio to lighten the session.", "Resampling a full drum bus to chop and rearrange it as one clip.", "Printing an effect-drenched vocal chain to committed audio before mixdown."]
+   },
+   "sources": ["Ableton Live Manual (Resampling input source)", "Huber & Runstein, Modern Recording Techniques (internal recording and bouncing)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bb7d3646-c8d6-4d9e-9a27-4b00cbf777d6",
+   "term": "Return Track",
+   "fields": {
+    "definition": "A mixer channel that receives signal from the sends of other tracks, most often to host a shared effect such as reverb or delay, with its output feeding the master or another bus. In Ableton Live it is called a return track; on other consoles the equivalent is an aux, effects, or return bus.",
+    "plain_english": "A return track is a track built to hold one effect, like reverb, that many other tracks can share. Each track sends a little of its sound to it, and the wet effect comes back into the mix. It works like one shared bucket of reverb the whole band can dip into.",
+    "purpose_function": "It centralizes an effect so several sources share a single instance, which saves CPU, keeps a consistent sound, and lets the wet effect level be balanced apart from the dry tracks.",
+    "practical_application": "An engineer puts a reverb on a return track, then sets each vocal and instrument's send amount to place them at different depths in the same shared space.",
+    "category": "Routing",
+    "related_terms": ["Send", "Aux bus", "Return-track send", "Return-track routing", "Master track", "Wet/dry mix"],
+    "common_mistakes": ["Putting a send effect at 100% wet on the source track instead of on a shared return.", "Setting the return track's effect below fully wet, which lets dry signal leak through twice.", "Routing a return back into a track that feeds it, creating a feedback loop."],
+    "scenario_contexts": ["Sharing one reverb across a vocal group to glue them into one space.", "Setting up a delay throw on a return that several instruments can send to.", "Building parallel compression by sending drums to a return holding a compressor."]
+   },
+   "sources": ["Ableton Live Manual (return tracks and sends)", "Huber & Runstein, Modern Recording Techniques (aux/effects sends and returns)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "73b27f85-4919-430d-8880-66ea29af99e2",
+   "term": "Return-track routing",
+   "fields": {
+    "definition": "The signal-routing configuration of a return track — what feeds it (the sends assigned to it) and where its output goes, such as to the master bus, a group, or another return. Correct return-track routing determines how a shared effect sits within the overall signal flow.",
+    "plain_english": "This is how a shared effect track is wired into the rest of the mix. It covers which tracks feed it and where its sound goes afterward, usually to the main output. Think of it as the plumbing that decides where the effect's water flows in and out.",
+    "purpose_function": "It defines the path of a shared effect within the mixer so its output lands in the right place and can be grouped, processed, or metered as intended.",
+    "practical_application": "When building a mix, a technician sets return-track routing so a reverb feeds a reverb group or the master, and can chain one return into another for effects like reverb into delay.",
+    "category": "Routing",
+    "related_terms": ["Return Track", "Return-track send", "Send", "Bus", "Master track", "Aux bus"],
+    "common_mistakes": ["Routing a return's output to a track that sends to it, which creates a feedback loop.", "Sending a return to the wrong bus so its effect bypasses a group's processing.", "Leaving a return routed to master when it was meant to feed a submix, breaking the intended balance."],
+    "scenario_contexts": ["Chaining a reverb return into a delay return for a layered space.", "Routing all effect returns through one effects group for shared bus processing.", "Redirecting a return from master to a stems bus for separate delivery."]
+   },
+   "sources": ["Ableton Live Manual (return track routing and I/O)", "Huber & Runstein, Modern Recording Techniques (signal routing and buses)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e141b359-b1c3-4c87-b648-e46236cbe575",
+   "term": "Return-track send",
+   "fields": {
+    "definition": "A send control on a track that routes an adjustable amount of that track's signal to a return track, feeding the shared effect hosted there. The send level sets how much of the source is heard through that effect.",
+    "plain_english": "A return-track send is the knob that decides how much of a track's sound goes to a shared effect. Turn it up and more of that track gets, say, reverb. It is like choosing how much sauce to pour from a shared bottle.",
+    "purpose_function": "It lets each source contribute a chosen amount to a shared effect on its own, so different tracks can sit at different effect depths using one effect instance.",
+    "practical_application": "A technician raises the return-track send on a lead vocal to push it deeper into a shared reverb while keeping a backing part drier with a smaller send.",
+    "category": "Routing",
+    "related_terms": ["Return Track", "Send", "Return-track routing", "Pre-fader", "Post-fader", "Aux send"],
+    "common_mistakes": ["Leaving a send pre-fader by mistake, so the effect stays loud even when the track fader is pulled down.", "Turning the send too high and drowning the source in effect.", "Sending to the wrong return and applying the wrong effect to a track."],
+    "scenario_contexts": ["Setting individual vocal reverb depths from one shared reverb return.", "Using post-fader sends so effect level follows fader automation.", "Adding a subtle delay to a guitar by nudging its send to a delay return."]
+   },
+   "sources": ["Ableton Live Manual (sends and returns)", "Huber & Runstein, Modern Recording Techniques (aux sends)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "53697382-6b0a-4f26-b10b-4e454531d75e",
+   "term": "ReWire",
+   "fields": {
+    "definition": "A software protocol, developed by Propellerhead Software (now Reason Studios) with Steinberg, that links two running audio applications so a client program streams its audio and MIDI into a host DAW while they share a synchronized transport and tempo. It let apps such as Reason run inside hosts like Cubase or Live; the technology was discontinued in 2020.",
+    "plain_english": "ReWire was a way to connect two music programs so they worked as one. One program was the host, and another fed its sound and notes into it, all playing in perfect time. It was like plugging one app into another with a virtual cable. It is no longer supported in newer software.",
+    "purpose_function": "It existed to combine separate audio applications — for example a dedicated synth program inside a full DAW — with locked transport, tempo, and multi-channel audio, without any physical cabling.",
+    "practical_application": "A producer would launch a DAW as the ReWire host, start Reason as the client, and route Reason's instruments into the DAW's mixer as synced channels for recording and mixing.",
+    "category": "Integration",
+    "related_terms": ["Host DAW", "MIDI", "Virtual instrument", "Transport sync", "Plug-in", "Return Track"],
+    "common_mistakes": ["Launching the client application before the host, which stops the ReWire link from forming.", "Expecting ReWire to work in current DAW versions, though support was removed after 2020.", "Confusing ReWire's app-to-app streaming with plug-in hosting, which loads instruments directly inside the DAW."],
+    "scenario_contexts": ["Running Reason as a synth rack inside Cubase on older systems.", "Streaming Ableton Live's audio into Pro Tools with synced transport.", "Maintaining a legacy project that still relies on a ReWire client."]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (ReWire)", "Reason Studios / Propellerhead documentation (ReWire)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "13232d40-8ff4-4540-8a60-99782eec3b57",
+   "term": "Rhythm pattern",
+   "fields": {
+    "definition": "A repeating arrangement of note onsets, durations, accents, and rests that defines the rhythmic feel of a part over a set span such as a bar or phrase. In production it is often a programmed sequence — for instance a drum pattern — looped to drive a groove.",
+    "plain_english": "A rhythm pattern is a repeating set of hits and gaps that gives a part its beat. Think of a steady drum groove that loops around every bar. It is the timing skeleton that the rest of the music hangs on.",
+    "purpose_function": "It provides the recurring rhythmic framework that sets a section's groove and tempo feel, giving other parts a timing reference to lock to.",
+    "practical_application": "A producer programs a rhythm pattern in a drum sequencer, loops it across a section, and layers bass and other parts against its accents to build a groove.",
+    "category": "Rhythm & Timing",
+    "related_terms": ["Groove", "Quantization", "Step sequencer", "Region tempo", "Tempo map", "Swing"],
+    "common_mistakes": ["Quantizing a rhythm pattern so hard that it loses all human feel and groove.", "Confusing the rhythm pattern with the tempo — the pattern is the arrangement of hits, tempo is the speed.", "Building patterns only one bar long so the part feels static over a whole section."],
+    "scenario_contexts": ["Programming a four-on-the-floor kick pattern for a dance track.", "Copying a verse rhythm pattern and varying it for the chorus.", "Locking a bassline to the accents of a drum pattern for a tight groove."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (rhythm programming and sequencing)", "Steinberg Cubase Operation Manual (Beat Designer / drum patterns)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

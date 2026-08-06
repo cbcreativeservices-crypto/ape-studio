@@ -1,0 +1,321 @@
+{
+ "batch": 314,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "a21933f3-d21f-481a-aa75-d80114a9467d",
+   "term": "fizzy",
+   "fields": {
+    "definition": "A subjective term for a thin, buzzy, effervescent high-frequency character, typically excess energy in the upper treble and presence region (roughly 4-10 kHz), often heard on harshly distorted electric guitar or low-quality digital distortion.",
+    "plain_english": "Fizzy means the sound has a thin, buzzy edge up top, like the hiss of a soda. It usually comes from too much harsh treble, often on a distorted guitar.",
+    "purpose_function": "The term lets engineers quickly flag unpleasant, grainy top-end energy so it can be tamed with EQ or a different cabinet, mic, or distortion setting.",
+    "practical_application": "A tech hearing a fizzy guitar tone might roll off upper treble with EQ, swap the speaker cabinet or mic position, or reduce the amount of gain and distortion.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "gritty",
+     "harsh",
+     "bright",
+     "Glassy",
+     "presence"
+    ],
+    "common_mistakes": [
+     "Confusing fizzy (thin, buzzy treble) with gritty (rough mid-range dirt)",
+     "Adding more presence or treble EQ to a fizzy tone, which makes it worse",
+     "Assuming fizz is always the amp when mic choice and placement often cause it"
+    ],
+    "scenario_contexts": [
+     "A high-gain electric guitar that sounds buzzy and thin in a mix",
+     "Cheap digital distortion or amp-sim plugins adding harsh top end",
+     "An overhead or cymbal track with brittle, effervescent high frequencies"
+    ]
+   },
+   "sources": [
+    "Rane Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "53898cdb-4214-4f35-851d-4bba0cc58625",
+   "term": "flabby",
+   "fields": {
+    "definition": "A subjective term for loose, poorly controlled, ill-defined low-frequency reproduction that lacks tightness and damping, so bass notes sound soft, boomy, and slow rather than firm and articulate.",
+    "plain_english": "Flabby means the bass sounds loose and soft, with no firm edge. It is like a drum with a slack head that thuds instead of hitting cleanly.",
+    "purpose_function": "The term flags bass that lacks control or definition, prompting fixes in damping, EQ, speaker or room setup, or playing technique.",
+    "practical_application": "A tech may tighten a flabby low end by cutting a boomy frequency region, improving room treatment, or checking loudspeaker damping and port tuning.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "flubby",
+     "boomy",
+     "muddy",
+     "tight",
+     "Full"
+    ],
+    "common_mistakes": [
+     "Boosting bass EQ to fix flabbiness, which makes it looser",
+     "Blaming the source when room modes cause the flab",
+     "Confusing flabby (loose bass) with full (rich, strong bass)"
+    ],
+    "scenario_contexts": [
+     "A bass guitar or kick drum with loose, undefined low end",
+     "Loudspeakers in an untreated room with strong bass build-up",
+     "A ported speaker or subwoofer tuned poorly, giving soft, slow bass"
+    ]
+   },
+   "sources": [
+    "Rane Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d982bc4d-4763-453e-87f8-8c92d15d0aad",
+   "term": "flubby",
+   "fields": {
+    "definition": "A subjective term for soft, loose, undefined low-frequency character with weak transient definition, especially a kick drum or bass that sounds spongy and lacks punch or attack.",
+    "plain_english": "Flubby means the low notes sound soft and spongy, with no punch. A flubby kick drum goes 'flub' instead of a tight thump.",
+    "purpose_function": "The term identifies a lack of attack and control in the low end so it can be tightened for clarity and punch.",
+    "practical_application": "A tech might tighten a flubby kick with EQ, gating, better tuning or muffling, or by adjusting compressor attack to restore punch.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "flabby",
+     "boomy",
+     "muddy",
+     "punchy",
+     "tight"
+    ],
+    "common_mistakes": [
+     "Adding low-end EQ to a flubby kick instead of tightening it",
+     "Ignoring drum tuning or muffling, which often causes flub",
+     "Confusing flubby (soft, no punch) with punchy (tight, strong attack)"
+    ],
+    "scenario_contexts": [
+     "A kick drum that sounds soft and lacks thump in a mix",
+     "An over-resonant bass note that blooms and loses definition",
+     "A poorly tuned or undamped tom sounding loose and spongy"
+    ]
+   },
+   "sources": [
+    "Rane Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a4dbb271-3fee-413c-ab50-46f0683ef424",
+   "term": "Focused",
+   "fields": {
+    "definition": "A subjective term for sound that is tight, coherent, and well-defined, with clear imaging and energy concentrated in a precise location rather than smeared or diffuse.",
+    "plain_english": "Focused means the sound is tight and clear, and you can tell exactly where it sits. It is like a sharp photo instead of a blurry one.",
+    "purpose_function": "The term describes strong definition and precise imaging, a goal when aligning, EQ-ing, or positioning sources so each one sits clearly.",
+    "practical_application": "A tech aims for a focused image by time-aligning speakers, clearing masking frequencies, and controlling reflections so instruments sound tight and placed.",
+    "category": "Mix Descriptor",
+    "related_terms": [
+     "tight",
+     "forward",
+     "imaging",
+     "smeared",
+     "Glue"
+    ],
+    "common_mistakes": [
+     "Thinking louder equals more focused, when clarity comes from definition",
+     "Over-narrowing EQ and losing natural body while chasing focus",
+     "Confusing focused (tight, defined) with forward (close, prominent)"
+    ],
+    "scenario_contexts": [
+     "A well-time-aligned PA where each instrument sits clearly",
+     "A vocal that sits precisely in the center of a mix",
+     "A tightly EQ-ed drum bus with clear, defined transients"
+    ]
+   },
+   "sources": [
+    "Rane Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "124402b7-496f-4ff5-ba78-393b6563251c",
+   "term": "forward",
+   "fields": {
+    "definition": "A subjective term for sound that appears close and prominent to the listener, seeming to sit in front of the mix, often from emphasis in the upper-midrange and presence region (roughly 1-5 kHz).",
+    "plain_english": "Forward means the sound feels close and up-front, like someone stepping toward you to speak. It often comes from a lift in the upper-middle frequencies.",
+    "purpose_function": "The term describes a source's front-to-back position, guiding how prominent or intimate an instrument or voice sits in a mix.",
+    "practical_application": "A tech can push a vocal forward with a presence boost, level, and compression, or pull it back by reducing upper mids and adding reverb.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "presence",
+     "Focused",
+     "bright",
+     "Glassy",
+     "Full"
+    ],
+    "common_mistakes": [
+     "Confusing forward (close, prominent) with bright (extra treble)",
+     "Pushing everything forward, so nothing stands out",
+     "Using only level to make a source forward, ignoring EQ presence"
+    ],
+    "scenario_contexts": [
+     "A lead vocal that sits close and up-front in a pop mix",
+     "A guitar with a presence boost that jumps out of the speakers",
+     "A microphone with a presence peak making a voice sound immediate"
+    ]
+   },
+   "sources": [
+    "Rane Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d1bdb48f-dee5-4d26-9080-89615c65c815",
+   "term": "Full",
+   "fields": {
+    "definition": "A subjective term for a rich, weighty sound with strong low-frequency and low-midrange content, giving a sense of body and completeness across the spectrum.",
+    "plain_english": "Full means the sound has plenty of body and weight, with strong lows. It is the opposite of thin, like a big, solid wall of sound with real weight behind it.",
+    "purpose_function": "The term describes tonal weight and body, guiding EQ and arrangement choices to make a source or mix sound complete rather than thin.",
+    "practical_application": "A tech may add fullness with low-mid EQ, layering, or mic choice, while watching that it does not tip into muddy or boomy.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "thin",
+     "warm",
+     "boomy",
+     "muddy",
+     "flabby"
+    ],
+    "common_mistakes": [
+     "Overdoing low-mid EQ, turning full into muddy",
+     "Confusing full (rich body) with simply loud",
+     "Thinking only bass makes a sound full, ignoring low mids"
+    ],
+    "scenario_contexts": [
+     "A vocal that sounds rich and complete rather than thin",
+     "A mix with strong low-mid body and weight",
+     "Choosing a large-diaphragm mic to add fullness to a voice"
+    ]
+   },
+   "sources": [
+    "Rane Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5a2b0cea-7dad-4860-ba3f-b7e486efb9f0",
+   "term": "Glassy",
+   "fields": {
+    "definition": "A subjective term for a bright, clear, hard-edged high-frequency character that sounds smooth yet reflective and slightly brittle, like the surface of glass, usually in the upper treble.",
+    "plain_english": "Glassy means the top end is very bright and clear, with a hard, shiny edge. It sounds smooth but can feel brittle, like tapping a glass.",
+    "purpose_function": "The term flags a hard, reflective top end so it can be used for clarity and sparkle or softened when it becomes brittle or fatiguing.",
+    "practical_application": "A tech might smooth a glassy top with a gentle high-shelf cut or de-essing, or keep it for sparkle on a clean electric piano or guitar.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "bright",
+     "brittle",
+     "crisp",
+     "fizzy",
+     "presence"
+    ],
+    "common_mistakes": [
+     "Confusing glassy (hard, bright top) with warm",
+     "Boosting a high shelf on an already glassy source",
+     "Assuming glassy always sounds good, when it can be brittle and tiring"
+    ],
+    "scenario_contexts": [
+     "A clean electric piano such as a Rhodes or DX with a bright, shiny top",
+     "A chime or bell with a hard, reflective high end",
+     "A vocal recorded through a bright condenser sounding glassy"
+    ]
+   },
+   "sources": [
+    "Rane Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c2ece9a4-f715-481f-9bb4-2ae4951e1acb",
+   "term": "Glue",
+   "fields": {
+    "definition": "A subjective term for a sense of cohesion that makes separate mix elements sound like one unified whole; commonly achieved with gentle bus compression (often called 'glue compression') and shared processing.",
+    "plain_english": "Glue is when all the parts of a mix feel like they belong together, not like separate pieces. Gentle compression across the whole mix helps bind them, like tying a bundle together.",
+    "purpose_function": "Glue helps a mix sound cohesive and finished, so instruments feel connected rather than like isolated tracks stacked on top of each other.",
+    "practical_application": "A mix engineer often applies slow-attack, low-ratio bus compression, shared reverb, or subtle saturation across a group bus to add glue.",
+    "category": "Mix Descriptor",
+    "related_terms": [
+     "bus compression",
+     "compression",
+     "cohesion",
+     "Focused",
+     "saturation"
+    ],
+    "common_mistakes": [
+     "Over-compressing the bus, which crushes dynamics instead of gluing",
+     "Thinking glue is a single plugin rather than a result of cohesion",
+     "Confusing glue (cohesion) with loudness"
+    ],
+    "scenario_contexts": [
+     "Adding gentle compression across a mix bus to bind a mix",
+     "Using a shared drum-bus compressor to make a kit sound like one instrument",
+     "Applying subtle saturation to make layered tracks feel connected"
+    ]
+   },
+   "sources": [
+    "Sound on Sound",
+    "Ballou, Handbook for Sound Engineers",
+    "Rane Pro Audio Reference"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a9dc75eb-4ed4-49f8-9fe6-2782eef642f4",
+   "term": "gritty",
+   "fields": {
+    "definition": "A subjective term for a rough, textured, slightly distorted character caused by added harmonic distortion or edge, giving a sound dirt and aggression without being fully clean.",
+    "plain_english": "Gritty means the sound has a rough, dirty texture, like sandpaper. It comes from a bit of distortion that adds edge and attitude.",
+    "purpose_function": "The term describes deliberate roughness or harmonic edge, used to add energy and character, or flagged when it is unwanted.",
+    "practical_application": "A tech may add grit with saturation, overdrive, or a driven preamp for character, or reduce it by backing off gain when it becomes harsh.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "fizzy",
+     "harsh",
+     "saturation",
+     "distortion",
+     "warm"
+    ],
+    "common_mistakes": [
+     "Confusing gritty (rough mid texture) with fizzy (thin, buzzy treble)",
+     "Adding grit until it becomes harsh and fatiguing",
+     "Assuming grit needs treble, when it is mostly harmonic distortion"
+    ],
+    "scenario_contexts": [
+     "An overdriven bass or guitar with rough, dirty texture",
+     "A vocal run through saturation for edge and attitude",
+     "A driven preamp or tape emulation adding gritty character"
+    ]
+   },
+   "sources": [
+    "Rane Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

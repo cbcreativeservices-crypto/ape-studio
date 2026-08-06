@@ -1,0 +1,230 @@
+{
+ "expert": "cognition",
+ "group": 12,
+ "reviews": [
+  {
+   "id": "3481e7c0-b124-4dbb-aad1-6d4b530c0c4b",
+   "term": "Continuity test",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "89d5ee91-a48d-40ae-81a3-1fbc54758dde",
+   "term": "Continuity Testing",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Low",
+     "issue": "The first two list items are the same misconception stated twice \u2014 'Running a continuity/resistance test on a live circuit' and 'UNSAFE: measuring resistance/continuity on an energized circuit, which gives false readings and can damage the meter or injure the user' both warn against testing a live circuit. A learner sees the single most important safety point occupying two of four slots, which dilutes the other distinct mistakes.",
+     "suggestion": "Merge into one item: 'UNSAFE: never run a continuity/resistance test on a live (energized) circuit \u2014 it gives false readings and can damage the meter or injure you.' This frees a slot to keep the genuinely distinct mistakes (stored capacitor charge; trusting a beep without confirming the intended path) prominent."
+    }
+   ]
+  },
+  {
+   "id": "ea3e34e4-31d7-400c-bf1d-485a8547d425",
+   "term": "Continuous Power",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "79874fcf-5ada-4414-9117-e9d1cc54f37e",
+   "term": "Control bar",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a20772b7-6799-4295-969f-0df12c7b13f8",
+   "term": "Control Surface",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "af8e8ebb-782f-486b-b7f3-b41c26eb8540",
+   "term": "Convolution Reverb",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "73d568ee-287b-471a-87a6-b42d699386ca",
+   "term": "Coordination Software",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3abac37f-de4d-46ef-9bb9-5772ec716c3a",
+   "term": "Corner Frequency",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2a558dc4-1a7e-439f-ba5a-18764bc01ecd",
+   "term": "Corporate Communications",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9d1c14ca-6625-48db-969d-6e08facc49cd",
+   "term": "Corporate Event",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a1541944-5d69-4ebe-8d1b-123b0ec9239c",
+   "term": "Correlation Meter",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "'Goniometer' is listed twice in related_terms, so the knowledge map presents a duplicate node and effectively offers a learner four unique links instead of five.",
+     "suggestion": "Remove the duplicate 'Goniometer' entry (keep a single instance)."
+    }
+   ]
+  },
+  {
+   "id": "076fc4cd-0a10-4a80-8ade-3394f0c0df8d",
+   "term": "Corrosion",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4ba21714-3868-479a-8997-836fbe206730",
+   "term": "Corrugated ribbon",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cdf6d02a-ed0c-49d1-a575-42a52c70fe2d",
+   "term": "Coupler",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eea3b136-9826-467d-bae7-15774ce4c164",
+   "term": "Coverage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a4f75b04-e04b-44e4-a8a1-9a89c1626c22",
+   "term": "Coverage Angle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d7412e53-6e10-4bd2-a35a-6f52cfc99b0a",
+   "term": "Coverage Area",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c373ac2d-8f8f-49ee-aee7-524070f35a96",
+   "term": "Coverage map",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8524d693-dd15-49bc-85b9-2c5e3ca7d07e",
+   "term": "Crackle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ee7c98a4-dde5-44ee-aaeb-675259c9c9d1",
+   "term": "Cramped EQ (Frequency Cramping)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9c68fa29-64e4-4830-9b51-6fbd493ff0ea",
+   "term": "Crest factor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d6454681-592e-457b-b38e-635ea34f8242",
+   "term": "Crew",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "79b30d8e-0527-45fd-9ab0-3a8484f86392",
+   "term": "Crimp Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f9dbd262-bff4-47d3-8a75-40fefb8dd875",
+   "term": "Crimp Tool",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fa382154-f9ce-4219-b495-c57baf90efb9",
+   "term": "Critical Distance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ee7894e8-6896-4a78-8f0e-ab8ae299eb46",
+   "term": "Cross-correlation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3f6f0dee-7612-4760-98c2-09e1a40875b2",
+   "term": "Crossfader",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9db145eb-4ad9-49ed-b66f-0dc1e915a8e8",
+   "term": "Crossover",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "254dc695-ff5a-4415-b69c-05e10c3b10f6",
+   "term": "Crossover alignment",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a5b4946e-ffe4-4096-bcaf-71f44ad230a3",
+   "term": "Crossover Distortion",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2b540cbd-97a0-4102-808a-2e9a15719ed9",
+   "term": "Crossover Frequency",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c29a699d-4944-4100-9c42-9747dc04c0f0",
+   "term": "Crossover Network",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d014da78-d7c6-4a3e-8699-85406a44fbfd",
+   "term": "crosstalk",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c04dd89d-2734-44b0-943d-5db096d114a1",
+   "term": "Crowd Egress",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9ec63952-681a-4c32-9331-99b71e8e4d8a",
+   "term": "Crowd Safety",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

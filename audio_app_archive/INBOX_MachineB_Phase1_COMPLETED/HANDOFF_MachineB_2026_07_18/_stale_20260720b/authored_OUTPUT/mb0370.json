@@ -1,0 +1,159 @@
+{
+ "batch": 370,
+ "topic": "Winds, Brass & Organ",
+ "authored": [
+  {
+   "id": "2525ea55-186a-433d-9482-27703aaffcc1",
+   "term": "Bellows noise",
+   "fields": {
+    "definition": "The mechanical and air-related sound produced by the bellows of a free-reed instrument (accordion, concertina, bandoneon) or the wind-raising bellows of an organ or harmonium, including the hiss of escaping air, valve clatter, and the creak or thump of the folds as they open and close. It is an incidental noise, distinct from the musical tone, and is most noticeable at direction changes and under close microphone placement.",
+    "plain_english": "This is the puffing, hissing, or creaking sound a bellows makes as it pushes air, apart from the notes themselves. It is like the whoosh you hear when you squeeze a fireplace bellows.",
+    "purpose_function": "It is an unwanted byproduct of moving air through a bellows; recognizing it helps a technician judge instrument condition and control how much of it reaches a recording.",
+    "practical_application": "When close-miking an accordion, concertina, or chamber organ, a technician positions and angles microphones to capture the reeds or pipes while minimizing bellows hiss and mechanical thumps.",
+    "category": "Instrument noise",
+    "related_terms": ["Bellows shake (rale)", "Blower rumble", "Free reed", "Reed valve", "Wind noise", "Close miking"],
+    "common_mistakes": ["Assuming all bellows noise is a fault when some is normal to the instrument", "Placing a microphone right at the bellows seam, which exaggerates air hiss and valve clatter", "Confusing bellows air hiss with reed or pipe speech noise"],
+    "scenario_contexts": ["Close-miking an accordion for a studio folk session", "Recording a chamber organ or harmonium where the hand-pumped bellows is audible", "Editing out bellows thumps at direction changes in a solo recording"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (free-reed and wind-supply systems)", "Audsley, The Art of Organ Building (bellows and wind supply)", "Ballou, Handbook for Sound Engineers (microphone technique)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9c9b30a5-a7b1-46ee-9a85-3e6e97140ddb",
+   "term": "Bellows shake (rale)",
+   "fields": {
+    "definition": "An accordion (and concertina/bandoneon) technique in which the player rapidly reverses the direction of the bellows while holding one or more keys, rearticulating the sustained note into a fast, even tremolo or rhythmic pulsation. The pitch stays constant while the bellows motion supplies repeated attacks, producing a shimmering or driving rhythmic effect.",
+    "plain_english": "The player wiggles the bellows quickly back and forth while holding a note, so the note pulses fast instead of staying flat. It works a bit like flicking a light on and off fast to make one steady light seem to flutter.",
+    "purpose_function": "It lets a bellows-driven instrument, which cannot re-strike a note from the keys alone, add rhythmic drive and a tremolo-like accent to a held chord.",
+    "practical_application": "A player uses the bellows shake for energetic passages in forro, musette, and folk styles; a technician recording it watches levels because each shake adds a burst of transient energy and bellows noise.",
+    "category": "Bellows technique",
+    "related_terms": ["Bellows noise", "Tremolo", "Free reed", "Accordion", "Articulation", "Circular-breathing drone"],
+    "common_mistakes": ["Thinking the shake changes pitch when only the attack pattern changes", "Confusing the bellows shake with keyboard tremolo, which the accordion cannot produce", "Shaking so hard the reeds choke or the pitch bends from pressure spikes"],
+    "scenario_contexts": ["A forro accordionist driving a fast dance groove", "A French musette waltz adding rhythmic shimmer to a held chord", "Miking an accordion solo where bellows-shake transients must not clip"]
+   },
+   "sources": ["Grove Dictionary of Music, 'Accordion' (bellows articulation and effects)", "Fletcher & Rossing, The Physics of Musical Instruments (free-reed instruments)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "933c1a24-ea14-4cb9-89d1-e928b76f0895",
+   "term": "Bisbigliando",
+   "fields": {
+    "definition": "A harp technique (Italian for 'whispering') in which a note or chord is repeated very softly and rapidly, usually by alternating the fingers of both hands near the soundboard, to create a delicate, murmuring tremolo. It is marked with the word 'bisbigliando' (often abbreviated 'bisb.') and a wavy line, and is played at a low dynamic.",
+    "plain_english": "On the harp, this is a soft, fast fluttering of a note or chord that sounds like a whisper. The player gently trades the strings between both hands to make it shimmer quietly.",
+    "purpose_function": "It gives the harp a sustained, veiled shimmer on a held note, since a plucked string quickly fades; it exists to add quiet color and atmosphere.",
+    "practical_application": "An arranger writes bisbigliando for a hushed background wash, and an engineer captures it with a sensitive, low-noise microphone setup because the effect lives at very low levels.",
+    "category": "Harp technique",
+    "related_terms": ["Tremolo", "Harp harmonics", "Glissando", "Arpeggio", "Pres de la table", "Dynamics"],
+    "common_mistakes": ["Playing it too loudly, which destroys the whispered character", "Treating it as a strict measured tremolo instead of a free, rapid shimmer", "Assuming it is a wind or organ effect because of the topic label, when it is a harp technique"],
+    "scenario_contexts": ["Orchestrating a quiet, atmospheric harp background", "A harpist sustaining a soft chord under a solo melody", "Recording delicate harp textures at very low dynamic levels"]
+   },
+   "sources": ["Adler, The Study of Orchestration (harp techniques)", "Randel (ed.), The Harvard Dictionary of Music ('bisbigliando')", "Grove Dictionary of Music ('bisbigliando')"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d328e202-d189-40d3-8972-b57837a85eae",
+   "term": "Blower rumble",
+   "fields": {
+    "definition": "A low-frequency noise in a pipe organ (or other blown instrument) caused by the electric wind blower and its motor, transmitted through the wind trunks, reservoir, and building structure into the pipe chamber or room. It appears as a steady low hum or rumble beneath the musical sound, separate from the pipe tone itself.",
+    "plain_english": "This is the low humming or rumbling sound an organ air blower makes, heard under the music. It is like the background drone of a fan or furnace running in another room.",
+    "purpose_function": "It is unwanted mechanical and airflow noise from the blower that supplies the organ's wind; identifying it helps a technician keep it out of recordings and diagnose wind-system problems.",
+    "practical_application": "When recording a pipe organ, an engineer uses high-pass filtering and careful microphone placement to reduce blower rumble, and a technician may check for loose ducting or a failing motor bearing if it grows louder.",
+    "category": "Wind-supply noise",
+    "related_terms": ["Bellows noise", "Wind supply", "Reservoir", "Rumble", "High-pass filter", "Pipe organ"],
+    "common_mistakes": ["UNSAFE: Opening or servicing a running blower or its electrical motor without locking out and tagging out power, risking shock or injury from live parts and moving blades", "Mistaking blower rumble for a low pedal pipe or room HVAC noise", "Trying to fix rumble only with EQ when the microphone is placed too near the blower or wind trunks"],
+    "scenario_contexts": ["Recording a church pipe organ where blower rumble intrudes on quiet passages", "Diagnosing a new low-frequency hum after blower maintenance", "Setting up microphones in an organ loft to avoid the blower and wind trunks"]
+   },
+   "sources": ["Audsley, The Art of Organ Building (wind supply and blowing plant)", "Fletcher & Rossing, The Physics of Musical Instruments (organ wind system)", "OSHA 29 CFR 1910.147 (control of hazardous energy / lockout-tagout)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e9b87b2c-4460-4c85-8df7-bd79ccf40fce",
+   "term": "Bronx cheer/raspberry",
+   "fields": {
+    "definition": "A raspy, buzzing 'raspberry' used as a comic or derisive effect, produced on a brass instrument by buzzing the lips very loosely and slackly into the mouthpiece so the tone breaks up into a flabby, uncontrolled buzz rather than a clear pitch. Vocally it is the familiar lip 'raspberry'; on brass it is the deliberately unfocused, sputtering counterpart.",
+    "plain_english": "This is the rude raspberry buzzing sound, like a fake fart noise. On a brass instrument the player makes it by letting the lips flap loosely into the mouthpiece instead of buzzing a clean note.",
+    "purpose_function": "It provides a humorous, rude, or gritty special effect, and a loose-lip 'free buzz' that brass players also use to relax and warm up the embouchure.",
+    "practical_application": "A composer may call for a Bronx cheer in a novelty or cartoon-style passage, and brass players also free-buzz a raspberry as a warm-up to loosen the lips.",
+    "category": "Brass technique",
+    "related_terms": ["Flutter tonguing", "Growl", "Lip buzz", "Embouchure", "Mute", "Conch blast"],
+    "common_mistakes": ["Trying to force a clear pitch, which the effect deliberately avoids", "Confusing it with flutter tonguing, which uses a rolled tongue rather than loose lips", "Over-relying on loose free-buzzing so the working embouchure weakens"],
+    "scenario_contexts": ["A novelty or comedic brass passage calling for a rude effect", "A brass player free-buzzing a raspberry during warm-up", "A jazz or theatrical setting adding a derisive 'razz'"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (lip-reed / brass sound production)", "Grove Dictionary of Music ('Brass instruments'; embouchure and lip vibration)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c591e0c8-71b4-48ba-9d6f-56ad86e2d587",
+   "term": "Chanter gracing chiff",
+   "fields": {
+    "definition": "On a bagpipe chanter, the brief, breathy 'chiff' - a short transient of noise at the very start of a note - created when a grace note (a fast finger movement, or 'gracing') articulates and separates otherwise continuous notes. Because the chanter sounds without pause, gracings inject these tiny chiffs to mark note beginnings, functioning like tonguing on other wind instruments.",
+    "plain_english": "On bagpipes the notes never stop, so players flick quick grace notes to separate them. Each flick makes a tiny puff at the note start, called a chiff, a bit like the little t sound of tonguing a flute.",
+    "purpose_function": "The chiff from gracing gives note definition and rhythm on an instrument that cannot stop or tongue, so listeners hear separate, articulated notes instead of one smeared drone.",
+    "practical_application": "A piper practices crisp gracings so each chiff is clean, and an engineer close-miking a chanter captures these transients, which carry the tune's rhythmic clarity.",
+    "category": "Bagpipe articulation",
+    "related_terms": ["Grace note", "Chanter", "Drone", "Articulation", "Embellishment", "Circular-breathing drone"],
+    "common_mistakes": ["Playing gracings too slowly so they sound like real melody notes instead of quick chiffs", "Thinking the chanter can be tongued or stopped like a flute", "Miking only the drones and missing the chanter chiffs that carry the rhythm"],
+    "scenario_contexts": ["A Highland piper articulating a fast reel with crisp gracings", "Teaching a beginner why grace notes replace tonguing", "Close-miking a solo chanter so its gracing chiffs stay clear"]
+   },
+   "sources": ["Baines, Bagpipes (organological monograph)", "Grove Dictionary of Music ('Bagpipe'; fingering, gracing and articulation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2320559d-1d89-4cd1-b111-2937e18c915c",
+   "term": "Circular-breathing drone",
+   "fields": {
+    "definition": "A continuous, unbroken sustained tone (drone) produced on a wind instrument by circular breathing: the player pushes stored air from the puffed cheeks to keep the instrument sounding while quickly inhaling through the nose, so the note never stops. It is central to instruments such as the didgeridoo, launeddas, and zurna, and to drone accompaniments on double reeds.",
+    "plain_english": "This is a wind note that goes on and on with no break, because the player breathes in through the nose while pushing air out from the cheeks. It works like a bagpipe bag holding air, but the cheeks do the storing.",
+    "purpose_function": "It lets a single player hold an endless drone or line without pausing to breathe, providing a steady harmonic foundation under a melody.",
+    "practical_application": "A didgeridoo or duduk player circular-breathes to hold a drone for minutes, and a technician records it knowing there is no natural breath gap to edit or punch in at.",
+    "category": "Breathing technique",
+    "related_terms": ["Circular breathing", "Drone", "Dam drone (duduk)", "Didgeridoo", "Embouchure", "Double reed"],
+    "common_mistakes": ["Believing the player never inhales, when they inhale through the nose during the cheek push", "Letting the tone dip or waver at the cheek-to-lung switch", "Expecting a breath gap to edit at, when the drone is deliberately seamless"],
+    "scenario_contexts": ["A didgeridoo player holding a long continuous drone", "A duduk 'dam' player sustaining an accompaniment", "Recording a seamless drone with no breath points for edits"]
+   },
+   "sources": ["Baines, Woodwind Instruments and their History (circular breathing)", "Fletcher & Rossing, The Physics of Musical Instruments (wind excitation and breath control)", "Grove Dictionary of Music ('Circular breathing')"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ff04cceb-c4bc-434f-b208-a377a1bab663",
+   "term": "Conch blast",
+   "fields": {
+    "definition": "The loud, sustained tone sounded on a conch-shell (or other shell) trumpet, produced by buzzing the lips into a hole cut at the shell's apex or side, exactly as on a natural brass horn. The shell's conical cavity fixes the pitch, and players typically sound one strong note used for signaling or ceremony.",
+    "plain_english": "This is the deep, powerful note made by blowing into a large seashell like a horn. The player buzzes their lips into a hole in the shell, and it rings out one loud tone, often used to call people together.",
+    "purpose_function": "It turns a shell into a natural lip-blown horn for signaling, ceremony, or ritual, carrying a strong tone over long distances.",
+    "practical_application": "In ceremonial or world-music recordings, a technician captures the conch blast knowing it is a loud natural horn tone with a strong attack and a very limited pitch range.",
+    "category": "Shell-trumpet sound",
+    "related_terms": ["Shell trumpet", "Natural horn", "Embouchure", "Lip buzz", "Harmonic series", "Bronx cheer/raspberry"],
+    "common_mistakes": ["Thinking the conch has valves or holes to change pitch, when it plays essentially one natural tone", "Blowing without a firm lip buzz, which produces only breathy air", "Underestimating its loudness and overloading a close microphone"],
+    "scenario_contexts": ["A ceremonial conch call in ritual or theatrical music", "A world-music session featuring a shell trumpet", "Herald or signal effects requiring a natural horn blast"]
+   },
+   "sources": ["Baines, Brass Instruments: Their History and Development (natural horns and shell trumpets)", "Grove Dictionary of Music ('Conch' / 'Shell trumpet')"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8742c63d-e031-4915-9afb-69be04dcc36e",
+   "term": "Dam drone (duduk)",
+   "fields": {
+    "definition": "The sustained drone ('dam') that underlies Armenian duduk music, held continuously on a second duduk by an accompanist using circular breathing while the lead player performs the melody. The dam is usually the tonic and sometimes shifts pitch to follow the mode, giving the music its steady harmonic ground.",
+    "plain_english": "In Armenian duduk music, a second player holds one long, unbroken note called the dam while the first plays the tune over it. The dam is the steady background hum that the melody floats on top of.",
+    "purpose_function": "The dam supplies a constant tonal center and drone, anchoring the melody's mode and creating the duduk's deep, sustained atmosphere.",
+    "practical_application": "In an ensemble recording, the dam player is often given a separate microphone and holds the drone by circular breathing, so the engineer balances a steady low line against the moving melody duduk.",
+    "category": "Drone technique",
+    "related_terms": ["Circular-breathing drone", "Drone", "Duduk", "Tonic", "Double reed", "Chanter gracing chiff"],
+    "common_mistakes": ["Assuming the dam is a machine or bag drone, when a live player holds it by circular breathing", "Thinking the dam is always a fixed pitch, when it can shift to follow the mode", "Miking only the melody duduk and losing the dam's supporting drone"],
+    "scenario_contexts": ["A traditional Armenian duduk duo with lead and dam players", "Film-score sessions using duduk for a mournful, drone-based mood", "Balancing a sustained dam under an expressive melody line in a mix"]
+   },
+   "sources": ["Grove Dictionary of Music ('Duduk')", "The Garland Encyclopedia of World Music (Middle East / Armenia; duduk and dam)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

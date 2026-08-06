@@ -1,0 +1,159 @@
+{
+ "batch": 200,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "5f921e90-1e78-47fd-9f93-cc4893c7947e",
+   "term": "Radio imaging session",
+   "fields": {
+    "definition": "A production session dedicated to creating a station's imaging elements: the branded sweepers, station IDs, stingers, promos, and voiced transitions that give a radio station its recognizable on-air identity. Voice takes are recorded and layered with music beds and effects, then edited and processed into finished short-form audio for insertion into the air chain.",
+    "plain_english": "A studio session where a team makes the short branded clips you hear between songs. These include station name jingles and voice drops that give the station its own sound.",
+    "purpose_function": "It produces the short branded audio pieces that identify the station and tie its programming together, reinforcing listener recognition and format consistency between songs and segments.",
+    "practical_application": "A production engineer records a voice actor, layers the take over music beds and effects in a DAW, and exports finished imaging cuts that are loaded into the automation or playout system for on-air use.",
+    "category": "Radio Production",
+    "related_terms": ["Radio production studio", "Recorded spot", "Voice tracking", "Sweeper", "Air chain", "Station ID"],
+    "common_mistakes": ["Confusing imaging (station branding elements) with commercial spots (paid advertising); they serve different purposes.", "Recording voice takes too hot or without processing, so the imaging does not sit cleanly over the music bed.", "Failing to match imaging loudness to the station's on-air processing, so drops sound weak or distorted on air."],
+    "scenario_contexts": ["Producing a new set of station IDs and sweepers when a station rebrands or changes format.", "Recording a guest voice actor for seasonal promos and layering them over music beds.", "Refreshing daily transition drops and stingers loaded into the automation system."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0c6225c3-3399-4ed0-8e81-9189de814434",
+   "term": "Radio production room",
+   "fields": {
+    "definition": "A dedicated studio space used to produce recorded audio (commercials, promos, imaging, and voice tracks) separately from the live on-air studio. It typically houses a mixing console or DAW, microphone, monitors, and audio processing, and is acoustically treated so recordings are clean and not broadcast live.",
+    "plain_english": "A room set up for recording and editing radio audio, like ads and station clips. It is kept apart from the live on-air room so this work does not go out over the air.",
+    "purpose_function": "It gives staff a controlled space to record and mix content without tying up or interfering with the on-air studio, keeping production work off the live broadcast.",
+    "practical_application": "An engineer books the room between shifts to cut voice tracks, edit spots, or mix a pre-recorded segment, then exports the finished audio to the playout system.",
+    "category": "Studio Facilities",
+    "related_terms": ["Radio production studio", "Radio studio", "Recorded spot", "Radio imaging session", "Voice tracking", "Air chain"],
+    "common_mistakes": ["Assuming the production room feeds the air directly; its output is recorded and scheduled, not broadcast live.", "Neglecting acoustic treatment, so recorded voice picks up room reflections and noise.", "Leaving monitor levels uncalibrated, so mixes translate poorly to the on-air chain."],
+    "scenario_contexts": ["Recording and editing a batch of commercial spots between on-air shifts.", "Cutting voice tracks for an announcer's automated evening show.", "Producing a sponsored feature or interview away from the live studio."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4e31e3bf-ae4f-4fa4-93c0-ee19340d3666",
+   "term": "Radio production studio",
+   "fields": {
+    "definition": "A studio equipped for producing recorded radio content (spots, imaging, promos, and pre-recorded segments) as opposed to originating live broadcasts. It centers on a DAW or production console with microphone, monitoring, and processing for recording, editing, and mixing finished audio.",
+    "plain_english": "A studio built for making recorded radio audio instead of going live on air. Engineers record voices and mix ads, promos, and shows in it.",
+    "purpose_function": "It provides the equipment and acoustic environment for creating polished recorded content, separating production work from the live origination done in the on-air studio.",
+    "practical_application": "A producer records and edits interviews, spots, and imaging here, then delivers the finished files to traffic and automation for scheduled airing.",
+    "category": "Studio Facilities",
+    "related_terms": ["Radio production room", "Radio studio", "Radio imaging session", "Recorded spot", "Radio show production", "Voice tracking"],
+    "common_mistakes": ["Treating it as interchangeable with the on-air studio; it is optimized for recording, not live origination.", "Skipping gain staging on the DAW or console and clipping recorded takes.", "Exporting at the wrong sample rate or level for the playout system."],
+    "scenario_contexts": ["Producing imaging and promos for the station's brand.", "Mixing a pre-recorded interview program for later airing.", "Editing and sweetening voice tracks and commercials."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9c7f1c5a-aa62-442a-ac50-633f20fddcf6",
+   "term": "Radio program recording",
+   "fields": {
+    "definition": "The capture of a radio program as a finished audio recording for later broadcast rather than airing it live. It lets the program be edited, quality-checked, and scheduled into the playout system for transmission at the intended time.",
+    "plain_english": "Recording a full radio show ahead of time so it can be played later. This lets the team edit it and air it in the right slot.",
+    "purpose_function": "It lets stations prepare polished programs in advance, control airtime scheduling, and archive or rebroadcast content, separating production from the moment of transmission.",
+    "practical_application": "An engineer records a host and guests in the studio, edits out mistakes and gaps, then loads the finished file into automation to air in its scheduled slot.",
+    "category": "Radio Production",
+    "related_terms": ["Radio show production", "Radio production studio", "Recorded spot", "Air chain", "Voice tracking", "Playout system"],
+    "common_mistakes": ["Recording without headroom and clipping the program master.", "Failing to slate or log takes, making editing and scheduling error-prone.", "Not matching loudness targets, so the pre-recorded program is louder or quieter than surrounding content."],
+    "scenario_contexts": ["Pre-recording a weekend interview show for airing while staff are off.", "Capturing a live concert or event for delayed broadcast.", "Recording a program for distribution to affiliate stations."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "eb6baed4-8463-4453-b548-2641dcc7b848",
+   "term": "Radio show production",
+   "fields": {
+    "definition": "The end-to-end process of creating a radio show: planning content and segments, recording or hosting the audio, and editing, mixing, and adding imaging to produce a finished program for broadcast, whether aired live or pre-recorded.",
+    "plain_english": "The whole job of planning, recording, and editing a radio show. It turns raw ideas and clips into a finished program ready to air.",
+    "purpose_function": "It organizes talent, content, and audio elements into a coherent, well-paced program that fits the station's format and airtime.",
+    "practical_application": "A producer scripts segments, coordinates hosts and guests, runs or records the session, then edits and sweetens the audio before it airs or is scheduled.",
+    "category": "Radio Production",
+    "related_terms": ["Radio program recording", "Radio production studio", "Radio imaging session", "Recorded spot", "Voice tracking", "Air chain"],
+    "common_mistakes": ["Under-planning segment timing, so the show runs long or short against the clock.", "Ignoring level and loudness consistency between voice, music, and inserts.", "Keeping no backup recording of a live show for reair or correction."],
+    "scenario_contexts": ["Producing a daily morning-drive show with hosts, calls, and features.", "Assembling a themed music program with voiced links and imaging.", "Coordinating a talk show with live guests and pre-recorded packages."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "39a6110b-f830-4a5d-95ad-d648756fc27d",
+   "term": "Radio studio",
+   "fields": {
+    "definition": "The on-air studio from which a radio broadcast originates, housing the broadcast (air) console, announcer microphones, playout and automation, source equipment, and monitoring. It is the origination point of the air chain, where live and automated program audio is mixed and routed toward the transmitter.",
+    "plain_english": "The room where a radio broadcast comes from, with the mic, mixing desk, and playback gear. This is where the host talks live to listeners.",
+    "purpose_function": "It provides the controlled, acoustically treated environment and signal-routing hub where program audio is created and sent into the broadcast chain.",
+    "practical_application": "An announcer operates the air console here, opening the mic, firing spots and music from the playout system, and monitoring the air signal while an engineer maintains levels and routing.",
+    "category": "Studio Facilities",
+    "related_terms": ["Radio production studio", "Air chain", "Recorded spot", "Playout system", "Broadcast console", "Radio program recording"],
+    "common_mistakes": ["Confusing the on-air studio with the production studio; only the air studio originates live broadcasts.", "Leaving the microphone open (live) while cueing or talking off-air.", "Poor gain staging on the air console, sending over-processed or distorted audio to the transmitter."],
+    "scenario_contexts": ["Hosting a live on-air shift, mixing mic, music, and spots to air.", "Running automated programming overnight from the studio's playout system.", "Conducting a live in-studio interview broadcast to listeners."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "817708c8-e3c3-4ed9-bd2e-b69ff4f8dadc",
+   "term": "Recorded spot",
+   "fields": {
+    "definition": "A pre-recorded radio commercial or announcement stored as a finished audio file and played from the automation or playout system during scheduled breaks, rather than read live by an announcer. Spots are typically fixed-length (for example 15, 30, or 60 seconds) and produced with voice, music, and effects.",
+    "plain_english": "A pre-recorded ad or short message saved as an audio file. The station plays it during breaks instead of reading it live.",
+    "purpose_function": "It delivers paid advertising or station messaging consistently and at a controlled length, ensuring the client's approved content airs exactly as produced without a live read.",
+    "practical_application": "A production engineer produces the spot in a DAW, exports it to the traffic and automation system at the correct length and loudness, and it plays automatically in the scheduled commercial break.",
+    "category": "Radio Production",
+    "related_terms": ["Radio imaging session", "Radio production studio", "Air chain", "Playout system", "Voice tracking", "Radio program recording"],
+    "common_mistakes": ["Delivering a spot that is off-length (for example 32 seconds for a 30-second slot), causing it to be clipped or to overlap.", "Ignoring broadcast loudness standards so the spot is noticeably louder than programming.", "Overwriting or mislabeling spot files, causing the wrong or an expired ad to air."],
+    "scenario_contexts": ["Producing a 30-second client commercial for a scheduled ad break.", "Loading a batch of dealer spots into the traffic system for the week.", "Replacing an expired promotional spot with a new campaign."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers", "ATSC A/85 / ITU-R BS.1770 loudness practice"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "82e044e4-3aa0-4b89-b4b6-58c0f4d2405d",
+   "term": "Remote broadcast codec",
+   "fields": {
+    "definition": "A hardware or software audio codec used to encode and transport program audio between a remote location and the studio over IP, ISDN, or POTS links, and decode it at the far end. It applies low-latency compression (such as AAC, Opus, aptX, or MPEG) with error concealment so a broadcast-quality contribution feed can travel over networks with limited or variable bandwidth.",
+    "plain_english": "A box that squeezes audio so it can travel over a phone or internet link from an outside event back to the station. It also unpacks the audio at the other end so it sounds clear on air.",
+    "purpose_function": "It lets a station send or receive broadcast-quality audio to and from the field over ordinary networks, making live remotes and contribution feeds possible without a dedicated broadcast circuit.",
+    "practical_application": "An engineer connects a portable codec (such as a Comrex, Telos, or Tieline unit) at a remote site to an IP or cellular network, connects to a matching codec at the studio, and sends the on-site mix back for air.",
+    "category": "Broadcast Equipment",
+    "related_terms": ["Remote production unit", "Air chain", "Radio studio", "Contribution feed", "IP audio", "Latency"],
+    "common_mistakes": ["Mismatching the algorithm or settings between ends, so the link will not connect or the audio is garbled.", "Ignoring network jitter and buffer settings, causing dropouts on a live remote.", "Underestimating end-to-end latency and creating awkward delays during two-way on-air conversations."],
+    "scenario_contexts": ["Sending a live sports play-by-play mix from a stadium back to the studio.", "Connecting a remote broadcast from a client's business over cellular IP.", "Receiving a syndicated host's contribution feed from another city."]
+   },
+   "sources": ["EBU Tech 3326 (Audio Contribution over IP, ACIP)", "Comrex technical documentation", "NAB Engineering Handbook (National Association of Broadcasters)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4b1b054c-49ae-4b85-8552-d6c170d4a7b3",
+   "term": "Remote production unit",
+   "fields": {
+    "definition": "A self-contained package of broadcast equipment, ranging from a portable field kit to a fully equipped outside-broadcast (OB) vehicle, used to originate radio (or TV) programming from a location away from the main studio. It typically includes microphones, a mixing console, audio processing, monitoring, power distribution, and a remote codec or link back to the studio.",
+    "plain_english": "Gear or a vehicle that lets a crew broadcast from outside the station, like a concert or a game. It carries the mics, mixer, and link gear needed to send audio back home.",
+    "purpose_function": "It provides the mixing, monitoring, and transmission capability needed to capture and send a professional broadcast from the field, extending the studio's production reach to live events and locations.",
+    "practical_application": "A crew deploys the unit to an event, sets up mics and the mixer, links back to the studio through a codec, and produces the on-site portion of the broadcast.",
+    "category": "Broadcast Equipment",
+    "related_terms": ["Remote broadcast codec", "Radio studio", "Air chain", "Outside broadcast", "Contribution feed", "Radio show production"],
+    "common_mistakes": ["Failing to confirm connectivity (IP or cellular) and audio return before going live.", "UNSAFE: Powering the unit from unverified or ungrounded mains or generator sources without proper grounding and GFCI/RCD protection, risking shock or equipment damage.", "Carrying no backup link or power, so a single failure takes the remote off air."],
+    "scenario_contexts": ["Broadcasting a live morning show from a sponsor's storefront.", "Covering a festival or sporting event from the field.", "Setting up an election-night or emergency remote from a public venue."]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers", "NEC/NFPA 70 and OSHA 29 CFR 1910 (temporary power and grounding)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

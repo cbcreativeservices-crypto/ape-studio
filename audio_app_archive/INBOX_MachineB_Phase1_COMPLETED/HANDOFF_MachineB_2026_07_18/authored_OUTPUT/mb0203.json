@@ -1,0 +1,44 @@
+{
+ "batch": 203,
+ "topic": "Streaming & Distribution",
+ "authored": [
+  {
+   "id": "8634c6ea-40dc-4153-8fd1-4151df253798",
+   "term": "Streaming studio",
+   "fields": {
+    "definition": "A production space configured to capture audio (and usually video) and deliver it in real time to online viewers, pairing a conventional studio's acoustically treated room, microphones, mixing console or audio interface and monitoring with a dedicated streaming signal chain. That added chain routes the program mix to an encoder, which compresses it into a chosen codec and bitrate and sends it over an internet connection to a streaming platform or content delivery network.",
+    "plain_english": "A streaming studio is a room set up to send live sound and video to people watching online. It has normal studio gear like mics, a mixer and speakers. It also has a device called an encoder that packs the audio into a small stream and pushes it out over the internet. Think of it as a small live TV station you can run from one room.",
+    "purpose_function": "It exists to turn a live or recorded performance into a broadcast-quality online stream from a single controlled space, so the audio and video reach a remote audience in real time with consistent quality. Bringing capture, mixing, monitoring and encoding into one room lets an operator control the whole signal chain rather than depending on a venue or an outside service.",
+    "practical_application": "A technician uses a streaming studio to run live shows, podcasts, webinars or concerts, setting mic and instrument levels on the console, sending a dedicated stream mix to the encoder, and checking the outgoing bitrate, codec and connection so the audience hears clean, glitch-free audio. They also watch for dropouts and manage the latency between the studio and the streaming platform.",
+    "category": "Streaming Production",
+    "related_terms": [
+     "Encoder",
+     "Bitrate",
+     "Codec",
+     "Latency",
+     "Content delivery network",
+     "Audio interface"
+    ],
+    "common_mistakes": [
+     "Sending the main monitor or PA mix to the stream instead of a separate broadcast mix, so the online audience hears the wrong balance or missing sources.",
+     "Setting the encoder bitrate higher than the available upload bandwidth, which causes buffering, dropouts or a dropped stream.",
+     "Ignoring gain staging into the encoder, letting the stream clip or sit too quiet.",
+     "Forgetting the latency between the studio and the platform, so live interaction or synced audio and video drift out of time."
+    ],
+    "scenario_contexts": [
+     "A band plays a ticketed concert live-streamed from a treated studio room to a paying online audience.",
+     "A podcast or talk show is recorded and streamed at the same time to a video platform and a podcast feed.",
+     "A corporate webinar or product launch is produced in-house from a streaming studio with multiple cameras and a mixed audio feed.",
+     "A house of worship streams its weekly service from a dedicated streaming room."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

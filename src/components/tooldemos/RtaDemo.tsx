@@ -299,18 +299,20 @@ function SceneSmoothing() {
       <View style={styles.traceStack}>
         <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`} style={StyleSheet.absoluteFill}>
           {GRID_YS.map((gy) => (
-            <Line key={gy} x1={8} y1={gy} x2={312} y2={gy} stroke={colors.hairlineDim} strokeWidth={1} />
+            <Line key={gy} x1={8} y1={gy} x2={312} y2={gy} stroke='#3a3c46' strokeWidth={1} />
           ))}
-          <Line x1={8} y1={BASE_Y} x2={312} y2={BASE_Y} stroke={colors.steelBorder} strokeWidth={1.5} />
+          <Line x1={8} y1={BASE_Y} x2={312} y2={BASE_Y} stroke='#565a66' strokeWidth={1.5} />
         </Svg>
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: jaggedOpacity }]}>
           <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
-            <Polyline points={RAW_POINTS} fill='none' stroke={colors.cyanBright} strokeWidth={1.6} strokeLinejoin='round' />
+            {/* 1/24-octave (raw) line = BLUE (owner 2026-08-05). */}
+            <Polyline points={RAW_POINTS} fill='none' stroke={colors.blue} strokeWidth={1.6} strokeLinejoin='round' />
           </Svg>
         </Animated.View>
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: smoothOpacity }]}>
           <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
-            <Polyline points={SMOOTH_POINTS} fill='none' stroke={colors.amber} strokeWidth={2.5} strokeLinecap='round' strokeLinejoin='round' />
+            {/* Smoothed outcome line = GREEN (owner 2026-08-05). */}
+            <Polyline points={SMOOTH_POINTS} fill='none' stroke={colors.green} strokeWidth={2.5} strokeLinecap='round' strokeLinejoin='round' />
           </Svg>
         </Animated.View>
       </View>
@@ -335,12 +337,15 @@ function RoomGlyph({ which }: { which: 0 | 1 }) {
     }).start();
   }, [which, pos]);
 
-  const tx = pos.interpolate({ inputRange: [0, 1], outputRange: [MIC_SPOT_A.x - 4, MIC_SPOT_B.x - 4] });
-  const ty = pos.interpolate({ inputRange: [0, 1], outputRange: [MIC_SPOT_A.y - 4, MIC_SPOT_B.y - 4] });
+  // Enlarged 2× (owner 2026-08-05: there's spare space — make it easier to read).
+  // The Svg scales the 46-unit content into a 92px box; the overlaid dot is in
+  // container px, so its positions scale by 2 (dot is 16px → −8 to centre).
+  const tx = pos.interpolate({ inputRange: [0, 1], outputRange: [MIC_SPOT_A.x * 2 - 8, MIC_SPOT_B.x * 2 - 8] });
+  const ty = pos.interpolate({ inputRange: [0, 1], outputRange: [MIC_SPOT_A.y * 2 - 8, MIC_SPOT_B.y * 2 - 8] });
 
   return (
     <View style={styles.roomGlyph}>
-      <Svg width={46} height={46} viewBox='0 0 46 46'>
+      <Svg width={92} height={92} viewBox='0 0 46 46'>
         <Rect x={2} y={2} width={42} height={42} rx={3} fill='#101014' stroke={colors.steelBorder} strokeWidth={1.2} />
         <Rect x={6} y={6} width={8} height={8} rx={1.5} fill={colors.amber} />
         <Path d='M17 8 A9 9 0 0 1 20 17' stroke={colors.amber} strokeOpacity={0.45} strokeWidth={1.2} fill='none' />
@@ -427,9 +432,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chipActive: { borderColor: colors.amberDeep, backgroundColor: '#1d180d' },
+  chipActive: { borderColor: colors.green, backgroundColor: '#122015' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
-  chipTextActive: { color: colors.amber },
+  chipTextActive: { color: colors.green },
 
   sceneArea: { height: 206 },
   innerRow: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 24, marginBottom: 6 },
@@ -448,21 +453,21 @@ const styles = StyleSheet.create({
   innerChipTextActive: { color: colors.amber },
   readout: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
 
-  legendJagged: { fontFamily: fonts.mono, fontSize: 12, color: colors.cyanBright },
-  legendSmooth: { fontFamily: fonts.mono, fontSize: 12, color: colors.amber, marginLeft: 8 },
+  legendJagged: { fontFamily: fonts.mono, fontSize: 12, color: colors.blue },
+  legendSmooth: { fontFamily: fonts.mono, fontSize: 12, color: colors.green, marginLeft: 8 },
   traceStack: { height: CHART_H },
 
   freqRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8, marginTop: 2 },
   freqLabel: { fontFamily: fonts.mono, fontSize: 12, color: colors.textMuted },
 
-  roomGlyph: { position: 'absolute', top: 32, right: 4, width: 46, height: 46 },
+  roomGlyph: { position: 'absolute', top: 30, right: 6, width: 92, height: 92 },
   micDot: {
     position: 'absolute',
     left: 0,
     top: 0,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
     backgroundColor: colors.green,
   },
 

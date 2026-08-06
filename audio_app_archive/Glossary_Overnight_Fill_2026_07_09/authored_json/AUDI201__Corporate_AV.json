@@ -1,0 +1,135 @@
+{
+  "course": "AUDI201",
+  "topic": "Corporate AV",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "870e8e9e-20d2-42d4-a136-4455c52b4846",
+      "term": "Breakout Room",
+      "fields": {
+        "plain_english": "A smaller side room where part of the conference audience goes for a focused session while the main event is happening elsewhere.",
+        "purpose_function": "It hosts smaller, topic-specific sessions running in parallel with (or after) the general session, so attendees can split into targeted groups for training, workshops, and discussion. It exists because a single big room cannot serve many simultaneous specialized tracks.",
+        "practical_application": "A tech deploys a scaled-down AV kit here, typically a projector or flat panel, a couple of wireless mics, small speakers, and a laptop input, and supports faster content changes and more live Q&A than the main stage.",
+        "category": "Event Production",
+        "related_terms": ["General Session", "Lectern", "Push-To-Talk Microphone", "Throwable Microphone", "Speaker Timer"],
+        "common_mistakes": ["Under-provisioning audio so a talky, Q&A-heavy room ends up without enough working microphones", "Assuming breakout gear needs the same scale as the general session and over-ordering, or ignoring that rapid presenter/laptop swaps need reliable switching", "Forgetting that multiple breakouts running at once can share wireless RF space and cause interference if frequencies are not coordinated"],
+        "scenario_contexts": ["After a morning general session, attendees disperse into 8 concurrent breakout rooms for track-specific workshops", "A corporate training day runs three parallel breakouts, each needing a laptop, screen, and a lav or handheld mic", "A conference books breakout rooms for sponsor demos requiring quick source switching between presenter laptops"]
+      },
+      "sources": ["Corporate Audio Visual Services — Conferences Part 2: Breakouts (corporate-av.com)", "ON Services — AV for Meetings, Breakouts, and Corporate Events (onservices.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "98361ac6-10cf-4d89-889e-e3ecb8f0ebe5",
+      "term": "General Session",
+      "fields": {
+        "plain_english": "The big main-stage part of a conference where everyone gathers at once, and the room with the most demanding audiovisual setup.",
+        "purpose_function": "It is the plenary gathering that assembles the entire audience for keynotes, main presentations, and high-visibility content, which is why it carries the largest and highest-stakes AV production of the event. It exists to deliver the shared, marquee moments that set the tone for the whole program.",
+        "practical_application": "A tech supports it with a large stage, LED wall or large-format projection, multiple microphones, confidence monitors, live cameras, playback, and lighting, and treats redundancy and cueing as critical because a failure here is the most visible.",
+        "category": "Event Production",
+        "related_terms": ["Breakout Room", "Green Room", "Lectern", "Speaker Timer", "Throwable Microphone"],
+        "common_mistakes": ["Running the main stage without backup for critical signal paths, so a single failure interrupts the highest-profile room", "Neglecting confidence monitors and speaker timing, leaving presenters unable to see their slides or remaining time", "Underestimating the RF and cabling coordination needed for many mics, cameras, and playback sources on one stage"],
+        "scenario_contexts": ["A conference opens with a keynote in the general session for all 1,500 attendees before splitting into breakouts", "A product launch stages a large general session with LED wall, live cameras, and IMAG for the audience", "An annual company meeting holds its awards presentation in the general session room"]
+      },
+      "sources": ["Corporate Optics — General Session & Breakout AV Support blog (corporateoptics.com)", "T. Allen — Live Event Production: Conferences and General Sessions (tallen-inc.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "ab2bad4c-275e-4aa0-95cb-8cd3d06251cb",
+      "term": "Green Room",
+      "fields": {
+        "plain_english": "A backstage lounge where speakers and talent wait, get their microphones fitted, and receive last-minute briefing before going on stage.",
+        "purpose_function": "It provides an offstage holding and preparation space so presenters can relax, get mic'd, review notes, and be cued without interfering with the live show. It exists to keep talent organized, camera-ready, and on schedule.",
+        "practical_application": "A tech often fits and checks a presenter's wireless mic here, runs a quick mic-technique briefing, and uses a video monitor and intercom so the green room can watch the program feed and receive stage calls.",
+        "category": "Event Production",
+        "related_terms": ["General Session", "Lectern", "Push-To-Talk Microphone", "Speaker Timer", "Breakout Room"],
+        "common_mistakes": ["Fitting and powering a wireless mic in the green room but forgetting to mute or check it, so private conversations are broadcast when the transmitter is live", "Not providing a program monitor or intercom, leaving talent unaware of timing and stage calls", "Assuming the green room needs no AV, then scrambling when a presenter needs to preview slides or rehearse"],
+        "scenario_contexts": ["A keynote speaker waits in the green room where a tech fits and tests their lav mic before stage call", "Panelists gather in the green room to watch the program feed on a monitor while awaiting their cue", "A last-minute running-order change is relayed to talent in the green room via intercom"]
+      },
+      "sources": ["LASSO/Shoflo — What Is a Green Room (shoflo.tv)", "Daysheets — Green Room glossary (daysheets.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "a7c872ef-f6a4-47dd-a4d8-153e692537f5",
+      "term": "Lectern",
+      "fields": {
+        "plain_english": "The slanted stand a speaker stands behind to hold their notes, usually fitted with a microphone and a small light. People often call it a podium, but a podium is really the platform you stand on.",
+        "purpose_function": "It supports a speaker's notes, script, or laptop at a comfortable reading height and typically houses the presenter's microphone, task light, and cable management. It exists to give a fixed, equipped speaking position at the front of the room.",
+        "practical_application": "A tech mounts and tests the gooseneck or podium mic, dresses the cabling, and may add a monitor lift or confidence display, and selects an ADA height-adjustable model when accessibility is required.",
+        "category": "Event Production",
+        "related_terms": ["General Session", "Push-To-Talk Microphone", "Speaker Timer", "Green Room", "Breakout Room"],
+        "common_mistakes": ["Calling it a podium when ordering gear, which can cause the wrong item to be delivered or set up", "Positioning a fixed lectern mic too far from the speaker's mouth, producing weak or inconsistent level", "Ignoring ADA height requirements so shorter speakers or wheelchair users cannot use it comfortably"],
+        "scenario_contexts": ["A conference lectern is fitted with a gooseneck mic and reading light for a series of speakers", "A press briefing attaches an adjustable mic to the front of the lectern for the spokesperson", "An accessible event orders a height-adjustable lectern to meet ADA needs"]
+      },
+      "sources": ["AVFI — Podiums vs. Lecterns: When to Use Them (avfi.com)", "Grammarly — Podium vs. Lectern (grammarly.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "3b136c85-d3a7-4d14-ad8a-7323d7b6e54d",
+      "term": "Mult Box",
+      "fields": {
+        "plain_english": "A distribution box that takes one clean program audio feed and splits it into many identical outputs so lots of reporters, cameras, and recorders can each get the same sound.",
+        "purpose_function": "It takes a single official program feed and creates multiple isolated outputs so many media outlets can capture the same clean audio without crowding the stage with individual mics. It exists to provide one authoritative, interference-free press feed to a large media pool.",
+        "practical_application": "A tech feeds the console's program output into the mult box and lets each journalist patch into an isolated XLR output, using the isolation to prevent one device from loading down or injecting noise into the others.",
+        "category": "Event Production",
+        "related_terms": ["Push-To-Talk Microphone", "Lectern", "General Session", "Green Room"],
+        "common_mistakes": ["Confusing a passive mult with a truly isolated distro, so connecting many devices causes level loss, hum, or crosstalk", "Sending the wrong level (line vs. mic) to press outputs and overloading or under-driving their recorders", "UNSAFE: creating a ground loop or hum path between press devices by not using the box's transformer isolation, and attempting to 'fix' it by lifting a safety ground on mains-powered gear"],
+        "scenario_contexts": ["A press conference feeds a mult box so dozens of reporters each get an isolated recording of the podium mic", "A sports post-game interview room provides press outputs via a mult box", "A corporate announcement offers a broadcast pool feed through a mult box to camera crews"]
+      },
+      "sources": ["Wikipedia — Mult box (en.wikipedia.org/wiki/Mult_box)", "AudioPressBox — Mult box and Microphone Splitter (audiopressbox.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "856a072f-24a6-4df9-8d4b-91fe353e739c",
+      "term": "Push-To-Talk Microphone",
+      "fields": {
+        "plain_english": "A microphone that is only live while you hold down its talk button, so it stays off until someone actually wants to speak. It is standard on panel and delegate desks.",
+        "purpose_function": "It uses a momentary talk switch so a mic is open only while pressed, which reduces overlapping speech, open-mic noise, and feedback in multi-participant discussions. It exists to give structured, one-at-a-time speaking in panels, boardrooms, and delegate systems.",
+        "practical_application": "A tech deploys these on panel or delegate desks, often with a chairperson unit that limits how many mics can be open at once, so only active speakers are live and the room stays clean.",
+        "category": "Event Production",
+        "related_terms": ["Lectern", "Mult Box", "Throwable Microphone", "General Session", "Breakout Room"],
+        "common_mistakes": ["Assuming the mic latches on, so a speaker releases the button mid-sentence and is not heard", "Leaving too many delegate mics open at once, inviting feedback and muddiness instead of using the chairperson limit", "Forgetting that PTT is half-duplex/one-at-a-time and expecting simultaneous cross-talk to be captured cleanly"],
+        "scenario_contexts": ["A boardroom fits each seat with a push-to-talk delegate mic so members speak in turn", "A panel discussion uses PTT desk mics with a chairperson unit capping open mics", "A city-council or government hearing runs a delegate discussion system with press-to-talk units"]
+      },
+      "sources": ["Wikipedia — Push-to-talk (en.wikipedia.org/wiki/Push-to-talk)", "Conference Rental — Switch to Push-to-Talk Conference Microphones (conferencerental.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "daa3eb48-cdd7-4a21-b08f-ec53b8432248",
+      "term": "Speaker Timer",
+      "fields": {
+        "plain_english": "A countdown display that shows presenters how much time they have left, usually using traffic-light colors: green means you are fine, yellow means wrap up, red means stop.",
+        "purpose_function": "It shows presenters their remaining time, commonly with green/yellow/red traffic-light warnings, so sessions stay on schedule. It exists to keep speakers on time without a stagehand having to interrupt them.",
+        "practical_application": "A tech places it as a wedge confidence monitor on the stage floor, on the lectern, or at the back of the room, programs the segment length and warning points, and confirms the speaker can see the color change without turning away from the audience.",
+        "category": "Event Production",
+        "related_terms": ["Lectern", "General Session", "Green Room", "Breakout Room", "Push-To-Talk Microphone"],
+        "common_mistakes": ["Placing the display where the speaker cannot see it, or making it visible to the audience when it should be private", "Not briefing the presenter on what the colors mean, so the red warning is ignored", "Setting the wrong segment length or warning thresholds and cutting a speaker off early or late"],
+        "scenario_contexts": ["A conference puts a wedge speaker timer on the stage floor so keynote presenters can glance at remaining time", "A panel session sets short segment timers to keep each speaker on schedule", "A city-council meeting uses a public-facing red-yellow-green timer to limit each commenter's speaking time"]
+      },
+      "sources": ["Stagetimer — Conference and Speaker Timer use case (stagetimer.io)", "TimeMachines Inc. — Presentation and Meeting Timers (timemachinescorp.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "72fbcb14-4dba-46ec-8862-0fb96d07c9d6",
+      "term": "Throwable Microphone",
+      "fields": {
+        "plain_english": "A soft foam cube or ball with a wireless mic inside that you can toss to audience members so they can ask questions without a runner carrying a mic around.",
+        "purpose_function": "It is a soft, lightweight wireless mic in a padded cube or ball that can be safely tossed between audience members, making Q&A faster and less intimidating. It exists to speed up audience participation without a staffer running a handheld mic to each person.",
+        "practical_application": "A tech drops the wireless transmitter into the padded cover and manages it like any wireless channel, relying on its auto-mute (which cuts the mic while it is thrown, caught, or dropped) to avoid thumps and handling noise.",
+        "category": "Event Production",
+        "related_terms": ["Push-To-Talk Microphone", "General Session", "Breakout Room", "Lectern", "Speaker Timer"],
+        "common_mistakes": ["Treating it as unbreakable and ignoring RF coordination, so it drops out like any other wireless mic when frequencies are not managed", "Assuming it stays live in the air and expecting clean audio during the throw, instead of relying on its auto-mute", "Forgetting battery management for a full event when the unit is passed around continuously"],
+        "scenario_contexts": ["A large general session tosses a throwable mic into the audience for open Q&A", "A workshop uses a soft cube mic so attendees can pass questions quickly without a mic runner", "A town-hall-style corporate meeting throws the mic to employees asking questions from the floor"]
+      },
+      "sources": ["Catchbox — Cube Throwable Mic product page (catchbox.com)", "Catchbox Knowledge Base — What is the Cube Audience Mic (help.catchbox.com)"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

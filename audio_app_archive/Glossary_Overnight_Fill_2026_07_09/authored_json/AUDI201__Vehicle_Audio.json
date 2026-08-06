@@ -1,0 +1,119 @@
+{
+  "course": "AUDI201",
+  "topic": "Vehicle Audio",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "018ff95c-1d93-47fd-b8b4-16b784bcc4bb",
+      "term": "Auxiliary Battery",
+      "fields": {
+        "plain_english": "A second car battery added just for the stereo, so big bass hits don't starve the amps or dim your headlights.",
+        "purpose_function": "It adds reserve current capacity close to the amplifiers, stabilizing system voltage during high-demand bass transients and extending engine-off listening time without draining the starting battery below the level needed to crank the engine.",
+        "practical_application": "An installer mounts an auxiliary battery near the amp rack, ties it to the charging system through heavy cable (often after a Big 3 upgrade), and fuses its positive lead close to the terminal; an isolator or relay may be used so the audio load can't discharge the starting battery when the engine is off.",
+        "category": "Vehicle Audio",
+        "related_terms": ["Big 3 Upgrade", "Battery Isolator", "Alternator", "Voltage Drop", "Capacitor", "Ground"],
+        "common_mistakes": ["UNSAFE: Running an unfused or improperly fused high-current battery cable — the positive lead must be fused as close as possible to each battery terminal so a shorted cable cannot start a fire.", "Mixing battery chemistries or ages (e.g., an old flooded starter battery paired with a new AGM/lithium aux battery), which causes uneven charging and shortened life.", "Adding a second battery without upgrading the alternator or charging wiring, so the system still sags because the alternator can't keep both batteries charged under load.", "UNSAFE: Mounting a non-sealed (flooded) battery inside the passenger cabin, allowing hydrogen gas and acid vapor to vent into the occupied space instead of using a sealed AGM/lithium type."],
+        "scenario_contexts": ["A competition or daily SPL build where large amplifiers pull heavy current on bass peaks and a single battery can't hold voltage.", "A show or tailgate setup where the audio system runs for extended periods with the engine off.", "Diagnosing headlight dimming and amp protect-mode cutouts caused by voltage sag under heavy bass.", "A trunk-mounted amp rack where an installer places reserve capacity close to the amps to minimize voltage drop over long power runs."]
+      },
+      "sources": ["Audio Sellerz — Step-by-Step Car Audio Electrical Upgrades (Big 3, Alternator, Battery)", "WattCycle — How to Add a Second Battery for Car Audio", "Evolution Lithium — Wiring Two Batteries for Car Audio Setup Guide"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "004a2baf-3f52-4f77-9f25-6a8b1071aa55",
+      "term": "CAN Bus",
+      "fields": {
+        "plain_english": "The car's internal messaging network that lets modules talk to each other over just two wires; an aftermarket stereo has to work with it instead of fighting it.",
+        "purpose_function": "It is a differential two-wire serial network that lets a vehicle's electronic control units share data and control signals without dedicated point-to-point wiring; the audio system must coexist with it, so integration modules translate CAN messages into signals an aftermarket head unit or amplifier can use.",
+        "practical_application": "When replacing a factory radio on a CAN-equipped vehicle, an installer adds a CAN-bus interface module (from brands like iDatalink, PAC, Axxess, or Metra) to keep steering-wheel controls, chimes, displays, and factory-amp signals working and to prevent warning lights or lost accessory power.",
+        "category": "Vehicle Audio",
+        "related_terms": ["Integration Module", "Steering Wheel Control Interface", "Head Unit", "Factory Amplifier", "Vehicle Speed Signal (VSS)"],
+        "common_mistakes": ["Assuming a simple wiring harness alone will work — on many CAN vehicles, removing the factory radio without an interface module kills accessory power, chimes, or steering-wheel controls.", "Cutting into or splicing the CAN data (CAN-H/CAN-L) wires, which can corrupt the network and trigger faults across unrelated vehicle systems.", "Not updating or correctly programming/flashing the integration module for the specific vehicle, causing missing or erratic features.", "Expecting every factory feature to transfer automatically when some require a vehicle-specific module or firmware."],
+        "scenario_contexts": ["Replacing a factory head unit in a modern vehicle where the radio is integrated into the data network.", "Retaining steering-wheel controls, backup camera, and chimes after an aftermarket stereo install.", "Adding an amplifier while keeping a factory amplified/premium sound system that communicates over the bus.", "Troubleshooting warning lights or dead accessory power that appeared after an aftermarket radio swap."]
+      },
+      "sources": ["Best Car Audio — Upgrading Car Audio Systems with Data Bus Interfaces", "PAC Audio — CAN-Bus Interface Module product documentation", "XAutoStereo — What Does a CANBUS Box Do for a Car Stereo"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "a54a03c1-1fdd-46f2-9ae9-fb038203c9e2",
+      "term": "High-Level Input",
+      "fields": {
+        "plain_english": "An amp input that takes the speaker wires straight from a factory radio, so you don't need RCA jacks or a separate converter.",
+        "purpose_function": "It lets an amplifier accept a speaker-level (high-voltage) signal directly, internally attenuating it to line level, so a system can be built around a factory head unit that has no RCA/preamp outputs.",
+        "practical_application": "On a factory-radio upgrade, the installer taps the head unit's speaker outputs into the amp's high-level input terminals; many such amps also include signal-sensing turn-on, eliminating the need for a switched remote wire.",
+        "category": "Vehicle Audio",
+        "related_terms": ["Line Output Converter (LOC)", "Signal-Sensing Turn-On", "Head Unit", "Speaker-Level Signal", "Line Level"],
+        "common_mistakes": ["Confusing high-level (speaker-level) inputs with line-level RCA inputs and feeding the wrong signal type into the wrong terminals.", "Tapping the speaker wires after a factory amplifier or processor, capturing an already-EQ'd/limited signal instead of a clean full-range one.", "Setting amp gain using the high-level input as if it were a low-level source, causing clipping because the input voltage is much higher.", "Leaving factory speakers connected in parallel on the same tapped wires when the amp expects a bridged/high-impedance sense signal, causing turn-on or load issues."],
+        "scenario_contexts": ["Adding an amplifier to a factory head unit that has no RCA preamp outputs.", "Installing a powered subwoofer that only offers speaker-wire inputs.", "A budget upgrade where the customer keeps the factory radio but wants more power.", "Wiring an amp behind a factory system where a remote turn-on lead isn't readily available."]
+      },
+      "sources": ["BoomSpeaker — How to Wire the High-Level Input on an Amp (No RCA Needed)", "Best Car Audio — Exploring the Two Types of Automatic Amplifier Remote Turn-On Circuits"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "7a977cfd-36e2-44ab-b197-8e2485e03cf7",
+      "term": "Signal-Sensing Turn-On",
+      "fields": {
+        "plain_english": "The amp powers itself on automatically when it detects music on the speaker wires, so you don't have to run a separate turn-on wire from the radio.",
+        "purpose_function": "It lets an amplifier switch on without a dedicated remote/switched lead by detecting either the AC audio signal or a small DC offset voltage on the speaker wires, which is essential when integrating with factory head units that provide no remote turn-on output.",
+        "practical_application": "Used with high-level inputs on factory-radio installs: the installer connects speaker-level signal and lets the amp's sense circuit power it up when audio starts; the amp typically turns on within a second and shuts off 10–30 seconds after audio stops.",
+        "category": "Vehicle Audio",
+        "related_terms": ["High-Level Input", "Remote Turn-On Wire", "DC Offset", "Head Unit", "Line Output Converter (LOC)"],
+        "common_mistakes": ["Playing audio at very low volume, so the sense circuit never sees enough voltage swing and the amp fails to turn on or cycles off.", "Expecting instant, click-free operation — signal-sense adds a short turn-on delay and can produce a pop, and it drops out on silent passages if using AC-signal detection rather than DC-offset detection.", "Using signal sensing when a clean switched 12V source is available, adding unnecessary turn-on lag and reliability issues.", "Tapping the sense signal from wires that are muted or powered down by the factory system in certain modes, causing the amp not to wake."],
+        "scenario_contexts": ["Integrating an aftermarket amp with a factory head unit that has no remote turn-on lead.", "Installing a compact powered subwoofer using only speaker-level connections.", "A clean, minimal-wiring install where the installer avoids running a remote wire to the dash.", "Troubleshooting an amp that won't power on or randomly shuts off between songs on a factory system."]
+      },
+      "sources": ["Best Car Audio — Exploring the Two Types of Automatic Car Audio Amplifier Remote Turn-On Circuits", "BoomSpeaker — How to Wire the High-Level Input on an Amp (No RCA Needed)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "623153f8-a0e8-4417-8f2e-00ce19bb109c",
+      "term": "SPL Competition",
+      "fields": {
+        "plain_english": "Contests to see whose car stereo can hit the loudest measured sound level inside the vehicle.",
+        "purpose_function": "These organized events measure maximum in-car sound pressure level with a calibrated meter and rank vehicles by class, providing the competitive culture that drives extreme high-current, high-output system builds.",
+        "practical_application": "Competitors build and tune vehicles to a sanctioning body's rules (dB Drag Racing, MECA, IASCA, USACi), then run in a class where a meter such as the Term-LAB records peak dB from a mic placed in the cabin per the rulebook.",
+        "category": "Vehicle Audio",
+        "related_terms": ["Sound Pressure Level (SPL)", "Subwoofer", "Auxiliary Battery", "Big 3 Upgrade", "Enclosure Tuning", "Alternator"],
+        "common_mistakes": ["Confusing SPL (maximum loudness) competition with sound-quality (SQ) competition, which judges accuracy and staging instead of volume.", "UNSAFE: Chasing peak numbers with prolonged exposure to extreme SPL without hearing protection, risking permanent hearing damage.", "Assuming everyday listening levels resemble competition levels, which are far beyond safe or musical listening.", "Ignoring the sanctioning body's specific rules for mic placement, class limits, and electrical requirements, leading to disqualification."],
+        "scenario_contexts": ["A sanctioned sound-off event where cars run one at a time for a peak dB score.", "A dB Drag Racing head-to-head lane matchup decided by a lighted tree.", "A shop-sponsored demo vehicle built to showcase maximum output.", "Class-based competition where builds are grouped by power, number of subs, or vehicle type."]
+      },
+      "sources": ["IASCA Worldwide — official organization site", "MECA — 2020 SPL Rule Book", "TermPro — Term-LAB Magnum SPL Competition Meter product page"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "9e69f2ea-3f90-4afa-9dfe-e37b34d226dc",
+      "term": "Steering Wheel Control Interface",
+      "fields": {
+        "plain_english": "A small adapter that lets the buttons on your steering wheel keep controlling the stereo after you swap in an aftermarket radio.",
+        "purpose_function": "It translates the vehicle's factory steering-wheel control signals into commands the aftermarket head unit understands, preserving safe hands-on-wheel operation of volume, track, and source functions after a radio upgrade.",
+        "practical_application": "The installer wires an interface such as the Axxess ASWC-1, PAC SWI-RC, or iDatalink Maestro to the vehicle harness and the radio's SWC input, then uses auto-detect or manual/flash programming to map each wheel button to a radio function.",
+        "category": "Vehicle Audio",
+        "related_terms": ["Head Unit", "CAN Bus", "Integration Module", "Wiring Harness Adapter", "Factory Integration"],
+        "common_mistakes": ["Assuming the aftermarket radio must have a dedicated wire-type SWC input — some vehicles communicate wheel controls over the data bus and require a CAN-capable interface instead.", "Skipping or mis-running the auto-detect/programming step, so buttons are unmapped or mapped to the wrong functions.", "Buying a universal interface without confirming vehicle and radio compatibility for that specific application.", "Splicing into the wrong control or data wire, causing non-working buttons or bus faults."],
+        "scenario_contexts": ["Installing an aftermarket head unit while retaining factory steering-wheel audio buttons.", "A late-model vehicle where wheel controls run over the data network and need a CAN interface.", "Programming/flashing an interface to a specific vehicle when auto-detect doesn't fully map the buttons.", "A customer who wants modern radio features but insists on keeping familiar wheel controls for safe driving."]
+      },
+      "sources": ["Crutchfield — Guide to Steering Wheel Audio Control Adapters", "Axxess Integrate — ASWC-1 product documentation"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "23215c0a-402b-4272-b32f-c34070ed4f63",
+      "term": "Subsonic Filter",
+      "fields": {
+        "plain_english": "A filter that cuts the ultra-low notes a ported box can't handle, so the sub cone doesn't flop around and tear itself apart.",
+        "purpose_function": "It is a high-pass filter set below the enclosure's tuning frequency that removes frequencies the box can't support with air-spring resistance, protecting a ported/vented subwoofer from mechanical over-excursion and freeing amplifier power for usable bass.",
+        "practical_application": "On a ported build, the installer sets the amp's subsonic filter roughly a half-octave (about 80%) below the enclosure tuning frequency — for example, near 25–28 Hz for a box tuned to 30 Hz — to keep the cone under control near and below tuning.",
+        "category": "Vehicle Audio",
+        "related_terms": ["Enclosure Tuning", "Ported Enclosure", "High-Pass Filter", "Over-Excursion", "Xmax", "Subwoofer"],
+        "common_mistakes": ["Leaving the subsonic filter off (or set too low) on a ported box, letting infrasonic content drive the cone past its mechanical limits and destroy the sub.", "Setting the filter too high, which needlessly cuts audible low bass and reduces output.", "Applying aggressive subsonic filtering to a sealed enclosure as if it were ported — sealed boxes provide their own air-spring control and need far less.", "Confusing the subsonic (infrasonic) filter with the low-pass crossover; they cut opposite ends of the subwoofer's passband."],
+        "scenario_contexts": ["Tuning an amplifier for a ported subwoofer enclosure to prevent over-excursion near and below tuning.", "Protecting subs during low-frequency-heavy content or test tones that contain infrasonic energy.", "Setting up an SPL or daily bass system where the box is tuned low for maximum output.", "Diagnosing a subwoofer that visibly over-excurses or bottoms out on deep notes."]
+      },
+      "sources": ["Stinger — How to Set Your Subsonic Filter for Ported and Sealed Subwoofers", "MTX — Car Amplifier Tuning and Features", "Advanced Car Audio Solutions — How to Adjust Subsonic Filters"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

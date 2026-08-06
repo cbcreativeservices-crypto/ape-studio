@@ -1,0 +1,267 @@
+{
+ "batch": 35,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "5b8a27c6-b2ec-45bc-b794-7931d2c81ed2",
+   "term": "Bass limiting",
+   "fields": {
+    "definition": "The application of a limiter to a bass instrument's signal to cap its peaks at a set threshold, holding the loudest notes back so the low end keeps a consistent level and does not consume excess headroom.",
+    "plain_english": "Using a limiter to hold back the loudest bass notes. This keeps the bass at a steady level so it never jumps out of the mix.",
+    "purpose_function": "It controls short peaks in the bass so the instrument stays even in level and leaves enough headroom for the rest of the mix.",
+    "practical_application": "A tracking or mix engineer places a limiter on the bass DI or channel and sets the threshold to catch only the strongest peaks, tightening the low end before the master bus.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Bass mixing", "Bass multiband compression", "Bass note consistency", "Limiter", "Headroom", "Threshold"],
+    "common_mistakes": [
+     "Setting the threshold so low that the limiter squashes every note and removes the bass's natural dynamics",
+     "Confusing limiting with compression; a limiter uses a very high ratio to act as a ceiling, not gentle level control",
+     "Heavily limiting the bass channel and again on the master, causing audible pumping in the low end"
+    ],
+    "scenario_contexts": [
+     "Taming an aggressive slap or pick bass part that has occasional loud peaks",
+     "Locking the bass to a steady level so it supports the kick drum without spikes",
+     "Controlling a DI bass before a loud PA to protect subwoofers from transient overshoot"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers (dynamics processing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "41b27b26-e1e9-41fc-adf4-56b875160d7a",
+   "term": "Bass low-frequency control",
+   "fields": {
+    "definition": "The use of equalization, high-pass filtering, and dynamics to shape and restrain the lowest frequencies of a bass instrument (roughly below 100 Hz), managing sub-bass energy so it stays tight and defined rather than boomy or excessive.",
+    "plain_english": "Shaping the deepest part of the bass sound so it stays tight, not boomy. Engineers cut or control the very low notes so the low end feels solid but clean.",
+    "purpose_function": "It keeps sub-bass energy under control so the mix has a firm foundation without wasting headroom or muddying the sound on large speakers.",
+    "practical_application": "An engineer uses a high-pass filter to remove sub-sonic rumble, then EQ or compression around 40 to 100 Hz to keep the deep bass even and defined.",
+    "category": "Equalization",
+    "related_terms": ["Bass mixing", "Bass mud reduction", "Bass multiband compression", "High-pass filter", "Subwoofer", "Equalization"],
+    "common_mistakes": [
+     "Boosting very low frequencies on small speakers where they cannot be heard, leaving too much sub energy in the mix",
+     "UNSAFE: Failing to high-pass sub-sonic rumble, which wastes headroom and can overload and damage subwoofer drivers",
+     "Cutting so much low end that the bass sounds thin on full-range systems"
+    ],
+    "scenario_contexts": [
+     "Tightening a boomy bass guitar recorded through a DI in a small room",
+     "Managing sub energy on a synth bass before a club or festival PA",
+     "Cleaning sub-sonic rumble from a bass track before mastering"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Rane technical notes (equalization and filters)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "40ce7747-5aff-47b3-a8a4-807940606955",
+   "term": "Bass midrange layer",
+   "fields": {
+    "definition": "The midrange harmonic content of a bass sound (roughly 500 Hz to 3 kHz), often emphasized or added through EQ, distortion, or a duplicated parallel track, so the bass stays audible on small speakers that cannot reproduce deep lows.",
+    "plain_english": "The middle part of the bass tone, not the deep boom. Engineers boost or add it so you can still hear the bass on phones and laptop speakers.",
+    "purpose_function": "It gives the bass presence and definition that carries on small speakers and earbuds, so the bassline is still heard when the deep low end is missing.",
+    "practical_application": "An engineer adds mild distortion or a parallel EQ'd layer to bring out upper harmonics around 700 Hz to 2 kHz, helping the bass translate across playback systems.",
+    "category": "Tone Shaping",
+    "related_terms": ["Bass mixing", "Bass mud reduction", "Bass low-frequency control", "Parallel processing", "Harmonic distortion", "Translation"],
+    "common_mistakes": [
+     "Relying only on deep lows, so the bass disappears on phones and laptop speakers",
+     "Adding so much distortion that the midrange layer sounds fizzy or harsh",
+     "Boosting midrange without checking that it does not clash with guitars or vocals in the same range"
+    ],
+    "scenario_contexts": [
+     "Making a sub-heavy synth bass audible on earbuds and phone speakers",
+     "Adding grit to a clean DI bass so it cuts through a dense rock mix",
+     "Checking a mix on small speakers and finding the bass only through its midrange"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers (harmonics and timbre)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d22560be-000e-4677-baa7-b9b061f6b30d",
+   "term": "Bass mixing",
+   "fields": {
+    "definition": "The process of balancing, shaping, and controlling a bass instrument within a mix using level, EQ, dynamics, and stereo placement so it locks with the drums and supports the harmonic foundation without masking other elements.",
+    "plain_english": "The job of fitting the bass into the whole song. You set its volume and tone so it works with the drums and does not cover the other instruments.",
+    "purpose_function": "It gives the mix a solid low-end foundation and ties the bass to the kick drum, so the rhythm section feels tight and the song has power and groove.",
+    "practical_application": "An engineer sets the bass level against the kick, carves EQ so each has its own space, and uses compression to keep the bass steady under the vocal and guitars.",
+    "category": "Mixing",
+    "related_terms": ["Bass limiting", "Bass mud reduction", "Bass phase alignment", "Bass mono compatibility", "Kick drum", "Frequency masking"],
+    "common_mistakes": [
+     "Mixing the bass too quietly because it sounds loud on bass-heavy monitors that are not accurate",
+     "Letting the kick and bass fight for the same frequencies instead of giving each its own space",
+     "Judging the bass on only one speaker system instead of checking several"
+    ],
+    "scenario_contexts": [
+     "Balancing bass and kick so the low end is powerful but clear",
+     "Setting up a rough mix during a band tracking session",
+     "Reworking a bass part to sit under a busy vocal and guitar arrangement"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Yamaha Sound Reinforcement Handbook (mixing and balance)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2928c603-1199-4c6a-bf3a-027d7e94c813",
+   "term": "Bass mono compatibility",
+   "fields": {
+    "definition": "The practice of keeping the low-frequency content of the bass summed to mono, or centered and phase-coherent, so it stays full and does not partially cancel when a stereo mix is played on mono systems.",
+    "plain_english": "Keeping the bass in the center so it stays strong when played in mono. If the low notes are spread in stereo, they can get weaker or vanish on a mono speaker.",
+    "purpose_function": "It prevents phase cancellation of the low end on mono playback such as clubs, phones, and PA systems, so the bass stays powerful everywhere.",
+    "practical_application": "An engineer uses a mono-maker or elliptical EQ to sum everything below about 100 to 150 Hz to mono, then checks the mix on a mono monitor for level loss.",
+    "category": "Stereo Imaging",
+    "related_terms": ["Bass mixing", "Bass phase alignment", "Bass low-frequency control", "Phase cancellation", "Mono compatibility", "Elliptical EQ"],
+    "common_mistakes": [
+     "Widening or adding stereo effects to the deep bass, which cancels on mono systems",
+     "Never checking the mix in mono, so low-end loss goes unnoticed until playback",
+     "Assuming a wide stereo bass sounds bigger, when it often sounds weaker in mono"
+    ],
+    "scenario_contexts": [
+     "Preparing a dance track for club systems that sum the subs to mono",
+     "Checking a stereo-recorded bass for low-end cancellation in mono",
+     "Making sure a mix holds up on a mono phone speaker or single PA cabinet"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "AES stereo and mono compatibility literature"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "86c0df7a-de70-4219-b1fa-f31826ba45a5",
+   "term": "Bass mud reduction",
+   "fields": {
+    "definition": "The reduction of excess low-midrange energy (roughly 150 to 500 Hz) in the bass through EQ cuts or dynamic control, clearing the buildup that makes a mix sound thick, boxy, or undefined.",
+    "plain_english": "Cutting the thick, cloudy part of the bass in the low mids. Removing it makes the mix sound clearer and less boomy.",
+    "purpose_function": "It clears the low-mid buildup where bass, guitars, and other instruments pile up, so the mix sounds clean and each part is easier to hear.",
+    "practical_application": "An engineer sweeps a narrow EQ band through 150 to 400 Hz to find the boxy frequency, then cuts it, sometimes with a dynamic EQ so the cut acts only when the mud appears.",
+    "category": "Equalization",
+    "related_terms": ["Bass mixing", "Bass low-frequency control", "Bass midrange layer", "Dynamic EQ", "Frequency masking", "Equalization"],
+    "common_mistakes": [
+     "Cutting too much low-mid, which leaves the bass thin and lifeless",
+     "Blaming the bass for mud that is actually coming from guitars or room resonance",
+     "Making big EQ cuts while soloed instead of checking the change in the full mix"
+    ],
+    "scenario_contexts": [
+     "Cleaning a boomy bass and guitar buildup in a dense rock mix",
+     "Fixing a boxy sound from a bass recorded in an untreated room",
+     "Opening up a muddy mix so the vocal and drums sit clearly"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Rane technical notes (equalization)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f0cc8ab2-4929-47a0-8032-71bea7666b58",
+   "term": "Bass multiband compression",
+   "fields": {
+    "definition": "Compression of the bass signal split into separate frequency bands, allowing independent dynamic control of the sub, low, and upper regions, so the deep lows can be evened out without affecting the note attack or midrange.",
+    "plain_english": "Compressing the bass in separate frequency zones instead of all at once. This lets you steady the deep lows while leaving the punch and mids alone.",
+    "purpose_function": "It controls uneven low-end energy in just the problem band, keeping the deep notes consistent while preserving the attack and tone of the rest of the bass.",
+    "practical_application": "An engineer splits the bass around 120 Hz and compresses only the low band to tame notes that boom, leaving the upper band's dynamics and pick attack intact.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Bass limiting", "Bass note consistency", "Bass mixing", "Multiband compression", "Crossover", "Dynamic EQ"],
+    "common_mistakes": [
+     "Over-compressing the low band until every note is the same level and the groove feels dead",
+     "Setting crossover points carelessly, causing bands to overlap and create phase issues",
+     "Using multiband when a simple EQ cut or single compressor would solve the problem"
+    ],
+    "scenario_contexts": [
+     "Evening out a bass where only the low E and open strings boom",
+     "Controlling sub energy on a synth bass without dulling its attack",
+     "Fixing a bass that is uneven only in the deep register"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers (dynamics processing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "461247ae-1cc9-4070-84bf-8c720aa10f98",
+   "term": "Bass note consistency",
+   "fields": {
+    "definition": "The evenness of level and tone from note to note across a bass performance, achieved through compression, dynamic control, and sometimes editing, so no single note booms or disappears in the mix.",
+    "plain_english": "Making every bass note come through at a steady volume. Compression and edits stop some notes from booming while others get lost.",
+    "purpose_function": "It ensures each note in the bassline is heard clearly and at a balanced level, giving the low end a solid, dependable feel under the song.",
+    "practical_application": "An engineer uses compression, and sometimes clip-gain or volume automation, to lift weak notes and hold back loud ones so the bassline is even.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Bass limiting", "Bass multiband compression", "Bass mixing", "Compression", "Volume automation", "Gain staging"],
+    "common_mistakes": [
+     "Fixing uneven notes with heavy compression alone when the real cause is a room resonance or an uneven instrument",
+     "Ignoring that some notes ring louder because of the recording space, not the playing",
+     "Flattening every note so completely that the bassline loses its natural feel"
+    ],
+    "scenario_contexts": [
+     "Evening out a bass part where some fretted notes are much louder than others",
+     "Smoothing a DI bass so every note supports the kick equally",
+     "Preparing a bass track so no note jumps out during the final mix"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Recording Engineer's Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e30bef14-2427-44ef-874f-425ab09399f8",
+   "term": "Bass phase alignment",
+   "fields": {
+    "definition": "The time and polarity alignment of multiple bass signals, or of the bass relative to the kick drum, so their low-frequency waveforms add constructively rather than partially cancelling, preserving a full and punchy low end.",
+    "plain_english": "Lining up the timing of bass signals so their low notes add up instead of cancelling. When they are out of line, the bass sounds thin and weak.",
+    "purpose_function": "It prevents phase cancellation between combined bass sources, or between bass and kick, keeping the low end powerful and defined instead of hollow.",
+    "practical_application": "When blending a bass DI and a miked amp, an engineer time-aligns the tracks and checks polarity, nudging one so the low end is fullest; the same is done between kick and bass.",
+    "category": "Phase Alignment",
+    "related_terms": ["Bass mixing", "Bass mono compatibility", "Bass low-frequency control", "Phase cancellation", "Polarity", "Kick drum"],
+    "common_mistakes": [
+     "Forgetting to check polarity between the DI and amp tracks, leaving the low end hollow",
+     "Assuming a polarity flip fixes everything, when a timing offset also needs alignment",
+     "Aligning by eye on the waveform without listening for the fullest low end"
+    ],
+    "scenario_contexts": [
+     "Blending a bass DI with a miked bass amp cabinet",
+     "Aligning the kick and bass so the low end hits together",
+     "Combining two mics on a bass cabinet without losing low end"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers (phase and polarity)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

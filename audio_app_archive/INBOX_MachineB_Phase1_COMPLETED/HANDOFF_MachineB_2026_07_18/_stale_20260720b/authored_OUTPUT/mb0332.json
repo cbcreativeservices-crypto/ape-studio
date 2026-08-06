@@ -1,0 +1,159 @@
+{
+ "batch": 332,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "a69f5b42-df4d-418b-b0e7-5beede37d6a0",
+   "term": "Harmonic tail",
+   "fields": {
+    "definition": "The harmonically rich portion of a sound that rings on after the initial attack, formed by the instrument's vibrating modes decaying at their own rates. It carries much of the note's pitch, richness, and timbre as the energy fades.",
+    "plain_english": "It is the ringing sound that lingers after you first hit or pluck a note. Like a bell that keeps humming after you tap it, this tail slowly fades away.",
+    "purpose_function": "It carries much of a sound's pitch and character, so the ear still recognises the instrument even after the sharp attack has passed.",
+    "practical_application": "Engineers listen to the harmonic tail when setting reverb decay, gate release, and edit fades so a note dies away naturally instead of being cut off.",
+    "category": "Decay & Resonance",
+    "related_terms": ["Initial transient", "Head resonance", "Decay", "Sustain", "Overtone"],
+    "common_mistakes": ["Confusing the harmonic tail with added reverb, when it is part of the instrument's own sound.", "Cutting the tail short with a fast gate release, which makes notes sound unnatural.", "Assuming the tail has no pitch, when it often defines the note."],
+    "scenario_contexts": ["Setting a noise gate's release so a piano note's tail is not chopped off.", "Editing a guitar sustain in a DAW to fade smoothly.", "Matching reverb decay to the natural tail of a snare drum."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (decay of vibrational modes)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c6dd92f3-1d19-4280-8178-d5229fab0b7c",
+   "term": "Hat slosh",
+   "fields": {
+    "definition": "The loose, washy, sustaining sound produced by hi-hat cymbals that are not fully closed, letting the two cymbals ring and rattle together. In recordings it is often heard as a smeared, uncontrolled wash rather than a tight, defined stick attack.",
+    "plain_english": "It is the loose, washy sound of hi-hats that are not squeezed shut. The two cymbals slap and ring together, making a splashy 'shh' instead of a crisp tick.",
+    "purpose_function": "Spotting hat slosh helps a technician judge whether a hi-hat part is tight and controlled or loose and messy, which affects the groove and clarity of a mix.",
+    "practical_application": "When hi-hats sound washy, an engineer may ask for tighter playing, or use gating and EQ to tame the slosh in the recorded track.",
+    "category": "Artifact Identification",
+    "related_terms": ["Cymbal wash", "Bleed", "Decay", "Initial transient", "Hi-hat"],
+    "common_mistakes": ["Trying to fix a washy hi-hat entirely with EQ instead of asking for tighter playing.", "Confusing hi-hat slosh with cymbal bleed picked up by other mics.", "Over-gating the hi-hat, which strips wanted stick detail along with the slosh."],
+    "scenario_contexts": ["Diagnosing a loose, splashy hi-hat during a drum tracking session.", "Cleaning up washy hats in a dense mix with automation.", "Choosing hi-hat mic placement to reduce excess wash."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (drum recording and hi-hat capture)", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b7245f9e-4170-42e0-a764-9de27e33ef03",
+   "term": "Head attack",
+   "fields": {
+    "definition": "The sharp initial transient produced at the moment a stick, mallet, or hand strikes a drumhead, before the membrane settles into its resonant ringing. It is the bright, click-like onset that defines a drum's punch and articulation.",
+    "plain_english": "It is the sharp 'thwack' you hear the instant a stick lands on a drum. This first quick sound comes before the drum's longer ringing tone.",
+    "purpose_function": "The head attack gives a drum its punch and clarity, helping each hit cut through a mix and letting the ear place the beat precisely.",
+    "practical_application": "Engineers protect or boost the head attack with transient shapers, fast compressor timing, or close mic placement to keep drums punchy.",
+    "category": "Attack Characteristics",
+    "related_terms": ["Initial transient", "Head resonance", "Impact", "Transient shaper", "Attack"],
+    "common_mistakes": ["Using a slow compressor attack that dulls the head attack.", "Confusing the head attack with the drum's ringing resonant tone.", "Over-boosting high frequencies to fake attack, which adds harshness."],
+    "scenario_contexts": ["Setting compressor attack time on a snare to keep the stick 'crack'.", "Using a transient designer to add punch to a soft kick.", "Choosing mic position to capture the beater or stick strike."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (membrane excitation and starting transients)", "Ballou, Handbook for Sound Engineers (transients)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "864c23fa-f546-406f-8a9a-7ed32f1622ae",
+   "term": "Head resonance",
+   "fields": {
+    "definition": "The sustained ringing of a drumhead's membrane modes after it is struck, together with the tonal contribution of a drum's resonant (usually lower) head. It shapes the pitch, body, and sustain of the drum's sound.",
+    "plain_english": "It is the ringing tone a drumhead makes after it is hit. Like a trampoline still bouncing after you jump, the skin keeps vibrating and singing for a moment.",
+    "purpose_function": "Head resonance gives a drum its pitch, body, and sustain, and tuning it controls how long and how musically the drum rings.",
+    "practical_application": "Technicians tune the resonant head and add muffling to control ring, adjusting sustain and pitch so the drum sits well in a mix.",
+    "category": "Decay & Resonance",
+    "related_terms": ["Harmonic tail", "Initial transient", "Head attack", "Sustain", "Resonance"],
+    "common_mistakes": ["Over-muffling the head, which kills the drum's natural tone and sustain.", "Ignoring resonant-head tuning and blaming ring on the batter head alone.", "Confusing the drum's own head resonance with room reverb."],
+    "scenario_contexts": ["Tuning a tom's resonant head to set its pitch and sustain.", "Adding a gate to control excessive snare ring.", "Diagnosing an unwanted ringing note in a kick drum."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (membrane modes of drums)", "Rossing, The Science of Percussion Instruments"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9be8155e-93e2-4ef4-a316-d057119e3c77",
+   "term": "Head slap",
+   "fields": {
+    "definition": "A bright, high-transient stroke made by slapping a drumhead sharply with the hand or fingers near the rim, common on hand drums such as congas and djembes. It produces a cracking, cutting attack distinct from the fuller open tone.",
+    "plain_english": "It is a sharp slapping hit on a drum skin that makes a bright cracking sound. It cuts through more than a soft, round drum tone.",
+    "purpose_function": "The slap adds a bright accent and rhythmic punctuation in hand drumming, giving contrast against the fuller open tones.",
+    "practical_application": "Engineers recording congas or djembes set mic placement and transient control to capture the slap's crack without harshness or distortion.",
+    "category": "Attack Characteristics",
+    "related_terms": ["Head attack", "Initial transient", "Impact", "Transient", "Hit"],
+    "common_mistakes": ["Confusing a slap tone with an open tone when identifying strokes.", "Placing a mic too close, which exaggerates the slap into harshness.", "Over-compressing and squashing the slap's sharp attack."],
+    "scenario_contexts": ["Micing a djembe to capture both slap and bass tones.", "Balancing slap accents against open tones in a percussion mix.", "Taming a harsh conga slap with EQ."]
+   },
+   "sources": ["Rossing, The Science of Percussion Instruments (hand drums and stroke types)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "26a145c8-ae01-4370-8164-d6de93d9c560",
+   "term": "Hinge squeak",
+   "fields": {
+    "definition": "A narrowband, high-frequency creaking or squeaking noise caused by friction in a mechanical hinge or pivot, such as a door, chair, mic-stand joint, or kick-drum pedal, captured unintentionally in a recording. It is an unwanted mechanical artifact identified during monitoring or editing.",
+    "plain_english": "It is the high creaky sound a stiff hinge makes when it moves. In a recording it sneaks in as an unwanted squeak that you have to find and remove.",
+    "purpose_function": "Identifying a hinge squeak lets a technician trace and stop the noise at its source or remove it, keeping the recording clean.",
+    "practical_application": "Engineers hunt down squeaks from doors, pedals, or stands, then oil or isolate the source, or edit and use spectral repair to remove them.",
+    "category": "Artifact Identification",
+    "related_terms": ["Mechanical noise", "Spectral repair", "Noise floor", "Isolation", "Artifact"],
+    "common_mistakes": ["Failing to trace the squeak to its source, so it returns on later takes.", "Confusing a hinge squeak with an intended sound in the performance.", "Trying to remove a resonant squeak with broad EQ instead of targeted spectral repair."],
+    "scenario_contexts": ["Finding a squeaky kick-pedal during a drum session.", "Removing a chair or door squeak from a spoken-word recording with spectral repair.", "Isolating a mic-stand joint that creaks when touched."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (noise sources and editing)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5073adb8-2b6c-4c12-b3fb-765d665c3f1a",
+   "term": "Hit",
+   "fields": {
+    "definition": "A single percussive strike, or the short recorded or sampled sound of one such strike, made up of an attack transient followed by a decay. The term also covers layered one-shot samples such as an orchestra hit.",
+    "plain_english": "It is one single strike of a drum or other sound, or a short sample of that one strike. Think of a single hand clap captured as one quick sound.",
+    "purpose_function": "Individual hits are the building blocks of programmed beats and sample libraries, letting producers trigger precise, repeatable percussive events.",
+    "practical_application": "Producers load hits into samplers and drum machines, trimming and shaping each one-shot's attack and decay before sequencing a groove.",
+    "category": "Attack Characteristics",
+    "related_terms": ["Initial transient", "Impact", "One-shot", "Sample", "Head attack"],
+    "common_mistakes": ["Leaving silence or a click before a hit's attack, which causes timing errors.", "Trimming a hit too tightly and cutting off its decay.", "Confusing a single hit sample with a looped phrase."],
+    "scenario_contexts": ["Programming a beat from individual drum hits in a sampler.", "Editing a recorded snare hit into a clean one-shot.", "Layering hits to build a bigger drum sound."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (sampling and one-shots)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0cadce3f-4e13-4ed7-855d-940f530a4d68",
+   "term": "Impact",
+   "fields": {
+    "definition": "The brief, high-energy onset of a percussive or collision sound, carrying the sense of physical force and low-frequency punch felt at the moment of contact. It is the perceived weight of a transient rather than its bright click alone.",
+    "plain_english": "It is the powerful 'boom' or 'thud' you feel when something hits hard. It is the part of a sound that makes it feel heavy and forceful.",
+    "purpose_function": "Impact conveys power and physical weight, which is vital for drums, sound effects, and cinematic hits that need to feel big.",
+    "practical_application": "Sound designers and engineers boost low-mid punch, layer sub-bass, and shape transients to strengthen the impact of drums and effects.",
+    "category": "Attack Characteristics",
+    "related_terms": ["Initial transient", "Head attack", "Hit", "Punch", "Transient"],
+    "common_mistakes": ["Confusing impact, the low-frequency weight, with attack, the high-frequency click.", "Over-compressing until the impact loses its punch.", "Adding sub-bass so loud that it muddies the impact."],
+    "scenario_contexts": ["Layering a sub-bass drop under a cinematic impact effect.", "Enhancing kick-drum weight so it hits harder on a club system.", "Shaping a gunshot effect to feel powerful in film sound."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (transients and percussion)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "37854718-a2c7-4fbd-bf80-724a7048ec96",
+   "term": "Initial transient",
+   "fields": {
+    "definition": "The very brief, high-amplitude, rapidly changing onset of a sound, occurring before it settles into a steadier state. It carries much of the information the ear uses to identify an instrument and to locate an event in time.",
+    "plain_english": "It is the tiny burst of sound at the very start of a note, like the pluck before a guitar string rings. This quick first moment tells your ears what instrument it is.",
+    "purpose_function": "The initial transient defines a sound's attack and articulation and is key to how clear and punchy it feels in a mix.",
+    "practical_application": "Engineers protect the initial transient when compressing, using slower attack times or transient tools so drums and plucks stay punchy and clear.",
+    "category": "Attack Characteristics",
+    "related_terms": ["Head attack", "Impact", "Harmonic tail", "Transient shaper", "Attack"],
+    "common_mistakes": ["Using a fast compressor attack that flattens the initial transient.", "Confusing the transient with the sustained body of the sound.", "Over-limiting a master and dulling all the transients."],
+    "scenario_contexts": ["Setting compressor attack to preserve drum punch.", "Using a transient shaper to sharpen a dull sample.", "Diagnosing a mix that sounds flat because transients are squashed."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (starting transients)", "Ballou, Handbook for Sound Engineers (transients and onset)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

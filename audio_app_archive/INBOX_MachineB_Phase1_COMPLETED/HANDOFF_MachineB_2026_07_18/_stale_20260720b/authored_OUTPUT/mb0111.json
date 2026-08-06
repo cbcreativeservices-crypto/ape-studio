@@ -1,0 +1,159 @@
+{
+ "batch": 111,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "435ca4ec-3c52-4f0d-b5b0-5efc1e8d4633",
+   "term": "LANDR",
+   "fields": {
+    "definition": "LANDR is an online, algorithm-driven platform providing automated audio mastering and music distribution. A user uploads a finished stereo mix and the service analyzes it and applies mastering processing (equalization, dynamics control, and limiting) to generate a mastered file without a human mastering engineer.",
+    "plain_english": "LANDR is a website that masters your song for you. You upload your finished mix, and a computer program polishes the sound and makes it louder. It works a bit like a photo filter, but for music.",
+    "purpose_function": "It gives musicians a fast, low-cost way to obtain a polished, loudness-balanced version of a track without hiring a mastering engineer or owning mastering tools.",
+    "practical_application": "An artist or technician uploads a stereo mixdown, chooses an intensity or style setting, previews the result, and downloads the master for release or streaming.",
+    "category": "Mastering Service",
+    "related_terms": ["Mastering", "Loudness normalization", "Limiter", "Reference track", "Mixdown", "LUFS"],
+    "common_mistakes": ["Treating an automated master as a fix for a weak mix (poor input still yields a poor master)", "Expecting it to match a skilled human mastering engineer on complex or unusual material", "Uploading a lossy MP3 instead of a high-resolution WAV", "Pushing the intensity setting too high, causing over-limiting and distortion"],
+    "scenario_contexts": ["An independent artist mastering a single for streaming on a tight budget", "Generating a quick loud reference version to compare against a manual master", "Batch-mastering demo tracks for a quick listen"]
+   },
+   "sources": ["Sound on Sound (mastering and online-service coverage)", "AES E-Library (papers on automated / intelligent music mastering)", "Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6dc9a659-658b-442d-b3b2-5a7cdb61384b",
+   "term": "Lane comping",
+   "fields": {
+    "definition": "Lane comping is the practice of assembling a single best composite performance from multiple recorded takes stacked as separate horizontal take lanes under one track, by selecting and stitching together the strongest sections of each take.",
+    "plain_english": "Lane comping means building one perfect take out of many. You record a part several times and stack the takes in rows. Then you pick the best bit from each row and join them into one smooth take.",
+    "purpose_function": "It lets an engineer keep every take and later combine the best moments into one flawless performance, raising quality without asking the performer to nail the whole part in a single pass.",
+    "practical_application": "After recording several vocal or solo passes into take lanes, the engineer auditions each lane phrase by phrase and selects the best sections to form the comp used in the mix.",
+    "category": "Editing",
+    "related_terms": ["Comping", "Take lane", "Playlist", "Crossfade", "Cycle recording", "Punch-in"],
+    "common_mistakes": ["Forgetting to crossfade edit points, so the joins click or pop", "Comping across takes with different tuning or timing, causing audible jumps", "Not keeping a backup or flat version of the original takes", "Choosing takes by how the waveform looks instead of by listening"],
+    "scenario_contexts": ["Comping a lead vocal from ten looped takes", "Building a guitar solo from several recorded passes", "Assembling a clean voiceover from multiple reads"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Steinberg Cubase Operation Manual", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8ecf31f7-3a22-4df8-8e45-b4dee4b85430",
+   "term": "Laptop translation",
+   "fields": {
+    "definition": "Laptop translation refers to how well a mix keeps its intended balance, clarity, and impact when played through the small, bass-limited built-in speakers of a laptop. It is one reference point when checking that a mix translates across a range of playback systems.",
+    "plain_english": "Laptop translation is about whether your mix still sounds good on a laptop's tiny speakers. Those small speakers cannot make deep bass. So you check that the song does not fall apart when it plays on them.",
+    "purpose_function": "Because many listeners hear music on laptop or phone speakers, checking laptop translation ensures the mix's key elements stay clear and balanced on small, low-bass systems, not just on studio monitors.",
+    "practical_application": "A mixer periodically switches playback to the laptop's internal speakers to confirm that vocals, kick, and bass remain audible and balanced before finalizing the mix.",
+    "category": "Monitoring",
+    "related_terms": ["Mix translation", "Reference monitor", "Mono compatibility", "Grot box", "Frequency balance", "Nearfield monitor"],
+    "common_mistakes": ["Mixing only on large monitors and never checking small speakers", "Boosting sub-bass that laptop speakers cannot reproduce, hiding balance problems", "Assuming a mix that works on laptops automatically works on full-range systems"],
+    "scenario_contexts": ["A final mix check on a laptop's built-in speakers", "Verifying a podcast stays intelligible on laptop playback", "Comparing balance between studio monitors and a laptop"]
+   },
+   "sources": ["Sound on Sound", "Owsinski, The Mixing Engineer's Handbook", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ef032971-a446-4fa6-b2e2-c1080b037dff",
+   "term": "Latch automation mode",
+   "fields": {
+    "definition": "Latch is a DAW mixer automation mode in which a control starts writing new automation data as soon as it is moved (touched) and continues writing at its last set value even after it is released, until transport playback is stopped.",
+    "plain_english": "Latch is a setting that records your fader moves. Once you grab the fader, it starts writing. It keeps holding the last value even after you let go, until you stop playback.",
+    "purpose_function": "It lets an engineer overwrite a stretch of existing automation with continuous hands-off holds, useful for riding a level or effect across a long section without having to keep the control moving.",
+    "practical_application": "An engineer arms latch, plays the section, rides the vocal fader to set the level, then releases it; the fader holds its last position and keeps writing until playback stops.",
+    "category": "Automation",
+    "related_terms": ["Automation", "Touch mode", "Write mode", "Read mode", "Trim mode", "Fader ride"],
+    "common_mistakes": ["Forgetting to stop playback, so latch keeps overwriting good automation past the intended section", "Confusing latch with touch, which snaps back to the old value on release while latch holds the last value", "Leaving a channel in latch and accidentally erasing automation on the next pass"],
+    "scenario_contexts": ["Riding a lead vocal level through a chorus", "Automating a reverb send level and holding it", "Correcting one section of existing automation"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Steinberg Cubase Operation Manual", "Apple Logic Pro User Guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7510db32-023e-4070-b22e-ef76c1492d0d",
+   "term": "Left Zone",
+   "fields": {
+    "definition": "In Steinberg Cubase, the Left Zone is the panel area along the left edge of the Project window that houses the Inspector, Visibility, and related tabs for viewing and adjusting the settings of the selected track and for showing or hiding tracks.",
+    "plain_english": "The Left Zone is the strip of tools down the left side of the Cubase window. It holds the Inspector, where you change the settings for the track you picked.",
+    "purpose_function": "It groups track-editing and visibility controls in one dockable area so the engineer can see and adjust the selected track's parameters and manage which tracks are shown.",
+    "practical_application": "A Cubase user opens the Left Zone to reach the Inspector, expand a track's insert, EQ, or send sections, or use the Visibility tab to hide unused tracks.",
+    "category": "Interface",
+    "related_terms": ["Inspector", "Right Zone", "Lower Zone", "Project window", "Visibility", "MixConsole"],
+    "common_mistakes": ["Confusing the Left Zone Inspector with the separate MixConsole window", "Accidentally hiding the Left Zone and thinking the Inspector has disappeared", "Mixing up the Left, Right, and Lower zones and their contents"],
+    "scenario_contexts": ["Opening the Inspector via the Left Zone to add an insert plug-in", "Using the Visibility tab in the Left Zone to declutter a large project", "Toggling the Left Zone off to gain screen space"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (Project window / Left Zone)", "Sound on Sound (Cubase workshop coverage)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cf0e7879-06c9-4ae5-a5c0-a7a6202c6b6b",
+   "term": "Library panel",
+   "fields": {
+    "definition": "A Library panel is a browser pane in a DAW or plug-in that lists and loads presets, patches, sounds, or channel settings for the selected track or device.",
+    "plain_english": "The Library panel is a menu of ready-made sounds and settings. You click a track, open the Library, and pick one. This saves you from building the sound from scratch.",
+    "purpose_function": "It gives quick access to saved presets and factory content so an engineer can audition and apply sounds or channel settings without recreating them by hand.",
+    "practical_application": "In Logic Pro a user selects a software-instrument track, opens the Library, and clicks patches to load instrument and effect settings instantly.",
+    "category": "Interface",
+    "related_terms": ["Preset", "Patch", "Channel strip", "Inspector", "Browser", "Track"],
+    "common_mistakes": ["Confusing the Library (presets and patches) with the file or media browser (audio files)", "Loading a patch that replaces existing plug-ins and losing custom settings", "Not saving custom settings as a user patch for reuse"],
+    "scenario_contexts": ["Loading a vocal channel-strip patch from the Library", "Browsing synth patches while writing a part", "Saving a custom patch to the Library for later projects"]
+   },
+   "sources": ["Apple Logic Pro User Guide", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dd0e093b-896d-458b-945c-ff002ac0fedf",
+   "term": "Limiter ceiling optimization",
+   "fields": {
+    "definition": "Limiter ceiling optimization is the practice of setting a limiter's output ceiling — the maximum peak level it will allow — to the value that prevents clipping, including inter-sample (true) peaks, while preserving loudness and dynamics. In mastering it commonly means setting a true-peak ceiling around -1 dBTP for safety through lossy codecs and D/A conversion.",
+    "plain_english": "A limiter has a ceiling, which is the loudest level it lets through. Optimizing it means picking that top level with care. The goal is a loud track that never clips or distorts.",
+    "purpose_function": "It sets a safe maximum peak so the master stays free of clipping and codec distortion while reaching the target loudness for release.",
+    "practical_application": "A mastering engineer sets the limiter's true-peak ceiling (for example -1 dBTP) so that encoded MP3 or AAC files and the converter do not overshoot 0 dBFS and clip.",
+    "category": "Mastering",
+    "related_terms": ["Brickwall limiter", "True peak", "dBTP", "Inter-sample peak", "LUFS", "Loudness normalization"],
+    "common_mistakes": ["Setting the ceiling at 0 dBFS, allowing true-peak overs after lossy encoding", "Driving the input so hard against the ceiling that the master distorts", "Watching only sample peaks and ignoring true-peak metering"],
+    "scenario_contexts": ["Setting a -1 dBTP ceiling before exporting a streaming master", "Preventing clipping when a track is encoded to MP3", "Balancing loudness against true-peak headroom"]
+   },
+   "sources": ["AES TD1004 (streaming loudness recommendations) / AES loudness technical documents", "Katz, Mastering Audio: The Art and the Science", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "21bcc490-76a3-4e1b-a355-f0a502cf5246",
+   "term": "List Editors",
+   "fields": {
+    "definition": "A List Editor is a DAW editor that displays MIDI or other events as a numerical text list, with each event shown as a row carrying values such as position, type, pitch, velocity, and length, for precise viewing and numeric editing.",
+    "plain_english": "A List Editor shows your MIDI notes as a written list, not dots on a grid. Each note is a row of numbers. You can read and type to change them, like a spreadsheet of notes.",
+    "purpose_function": "It lets an editor inspect and adjust individual events by exact numeric value and find stray or hidden events, such as extra controller messages, that graphic editors can miss.",
+    "practical_application": "A technician opens the List Editor to fix a wrong velocity, delete a stuck controller message, or move an event to an exact tick position.",
+    "category": "MIDI Editing",
+    "related_terms": ["Piano Roll", "Key Editor", "MIDI", "Event", "Velocity", "Controller"],
+    "common_mistakes": ["Overlooking the List Editor and missing stray MIDI controller or sysex events", "Editing numeric values without understanding tick or PPQN position", "Confusing the List Editor with the score or notation editor"],
+    "scenario_contexts": ["Removing a stuck sustain-pedal message", "Correcting one note's velocity by typing an exact value", "Finding hidden program-change events in a part"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (List Editor)", "Apple Logic Pro User Guide (Event List)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fe10c9a7-70d4-4051-a14e-36bbebbdb233",
+   "term": "Listening-fatigue reduction",
+   "fields": {
+    "definition": "Listening-fatigue reduction refers to practices that lessen the ear tiredness and loss of discrimination that build up during prolonged listening, by controlling monitoring level and exposure time and by taming harsh or over-processed content such as excess high-mid energy, distortion, and heavy compression.",
+    "plain_english": "This means keeping your ears fresh while you work. You keep the volume down, take breaks, and smooth out harsh sounds. Tired ears start to hear wrong, so this helps you trust your mix.",
+    "purpose_function": "It preserves accurate hearing and judgment over a long session, and protects long-term hearing, so mix decisions stay reliable instead of drifting as tired ears mislead the engineer.",
+    "practical_application": "An engineer monitors at a moderate reference level (commonly around 79-85 dB SPL), takes regular breaks, and tames harsh high-mid buildup so both the ears and the mix judgment stay dependable.",
+    "category": "Monitoring",
+    "related_terms": ["Listening fatigue", "Monitoring level", "SPL", "Reference level", "De-essing", "Hearing protection"],
+    "common_mistakes": ["UNSAFE: Monitoring at high SPL for long periods, which causes fatigue and risks permanent noise-induced hearing loss (observe OSHA 1910.95 exposure limits)", "Turning the monitors up to hear more detail, which tires the ears faster", "Not taking breaks and then trusting fatigued judgment", "Masking harshness with volume instead of fixing it"],
+    "scenario_contexts": ["A long mix session where scheduled breaks keep the ears fresh", "Taming a harsh vocal to reduce fatigue over a track", "Setting a safe monitoring level for an all-day tracking session"]
+   },
+   "sources": ["OSHA 29 CFR 1910.95 (Occupational Noise Exposure)", "NIOSH Criteria for a Recommended Standard: Occupational Noise Exposure", "Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

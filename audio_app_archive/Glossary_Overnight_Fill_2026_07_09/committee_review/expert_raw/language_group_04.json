@@ -1,0 +1,140 @@
+{
+ "expert": "language",
+ "group": 4,
+ "reviews": [
+  {
+   "id": "dbc16ee5-d302-4149-a8b7-387d62cc5865",
+   "term": "Front Fill",
+   "verdict": "MINOR",
+   "suggestions": [
+    {"field": "practical_application", "severity": "Low", "issue": "\"time-aligns (delays) them slightly late\" is redundant and awkward — 'delays' and 'slightly late' say the same thing, and the parenthetical interrupts the sentence.", "suggestion": "Rewrite as: \"...and time-aligns them (adding a small delay) so the audience still localizes to the stage rather than to the fill boxes.\""}
+   ]
+  },
+  {
+   "id": "9ed8281c-5209-4ecb-bc09-ee97aee877ec",
+   "term": "Inclinometer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c219d5fd-a101-45f7-8c22-78fd36d9b871",
+   "term": "Prediction Software",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a6d8cfa6-9a5b-472b-84ae-02dbd9e22b18",
+   "term": "Round Sling",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "90daecc8-1767-4ef3-9a5f-38b5c278a891",
+   "term": "Shackle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b68ab7a4-2856-425e-a9f5-38e3a43afc74",
+   "term": "Side Fill",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "18b275cc-f2f3-4d8e-a8a5-bc56c82dd842",
+   "term": "Splay Angle",
+   "verdict": "MINOR",
+   "suggestions": [
+    {"field": "plain_english", "severity": "Low", "issue": "British spelling \"neighbouring\" is inconsistent with American spelling used elsewhere across these entries (e.g., \"localize\", \"center\", \"neighboring boxes\" concept).", "suggestion": "Change \"neighbouring\" to \"neighboring\" for spelling consistency."}
+   ]
+  },
+  {
+   "id": "087c418f-53e7-4675-afed-129e64afcd79",
+   "term": "Antenna Gain (dBi)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9e9c0241-1b57-4f23-9d1e-522a792848c3",
+   "term": "Backup Frequency",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e896a8ab-9b11-4305-b60f-bb126684c44b",
+   "term": "Digital Wireless System",
+   "verdict": "MINOR",
+   "suggestions": [
+    {"field": "related_terms", "severity": "Medium", "issue": "The related_terms list includes \"Digital Wireless System\" itself — a self-reference, which is a clear editing error and clutters the cross-reference list.", "suggestion": "Remove the self-referential \"Digital Wireless System\" entry; the remaining terms (Companding, Latency, Frequency Coordination, RF Interference) are the correct set. Consider adding \"Analog Wireless System\" if one exists, since the definition contrasts against analog FM."}
+   ]
+  },
+  {
+   "id": "d03e4ec6-f1a6-4c97-801b-5f51615b92d3",
+   "term": "Dipole Antenna",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fe8101f3-4aa7-4add-8dd4-a815e4f15d11",
+   "term": "Part 74 License",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5787f149-6511-495d-82e1-6e2514892c6f",
+   "term": "Yagi Antenna",
+   "verdict": "MINOR",
+   "suggestions": [
+    {"field": "common_mistakes", "severity": "Medium", "issue": "Internal unit-conversion inconsistency: \"(about 50 feet / roughly 3 meters minimum)\" — 50 feet is roughly 15 meters, not 3 meters, so the two figures contradict each other. As written it will confuse students on the recommended minimum distance. (Flag for technical reviewer to confirm the intended value.)", "suggestion": "Make the two units agree — e.g., \"(about 10 feet / roughly 3 meters minimum)\" or \"(about 50 feet / roughly 15 meters minimum)\", whichever distance is technically correct."}
+   ]
+  },
+  {
+   "id": "8738f7ef-5026-485a-afe4-9e9afff38b3c",
+   "term": "Bathtub Curve",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3b8cb6e1-8398-4ace-b6d5-026158ba2c04",
+   "term": "Chopstick Test",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bcabae72-88aa-46b5-9495-0024ba149a95",
+   "term": "Failure Mode",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "82d74ea5-f50c-4b90-ba2f-fcb188fbc993",
+   "term": "Latent Defect",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "86195a26-68fa-406f-bda8-cd1b784f65f7",
+   "term": "Shotgunning",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "20deef56-8512-4bf6-885d-5abb3f5fcc11",
+   "term": "Thermal Drift",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "018ff95c-1d93-47fd-b8b4-16b784bcc4bb",
+   "term": "Auxiliary Battery",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "004a2baf-3f52-4f77-9f25-6a8b1071aa55",
+   "term": "CAN Bus",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

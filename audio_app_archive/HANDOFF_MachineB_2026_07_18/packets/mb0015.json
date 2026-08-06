@@ -1,0 +1,81 @@
+{
+ "batch": 15,
+ "topic": "Instrument Recording — Strings & Guitar",
+ "terms": [
+  {
+   "id": "4d68e59a-b5b7-42f3-be0d-bfba229a38bc",
+   "term": "Wah-wah mute",
+   "topic": "Instrument Recording — Strings & Guitar",
+   "seq": 1020,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "e8834edd-e094-4cf7-a7dc-4531fd252340",
+   "term": "Wet tuning",
+   "topic": "Instrument Recording — Strings & Guitar",
+   "seq": 1020,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "fcd61c4e-476c-41b8-b1df-5dd68032c99f",
+   "term": "Wolf tone",
+   "topic": "Instrument Recording — Strings & Guitar",
+   "seq": 1020,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

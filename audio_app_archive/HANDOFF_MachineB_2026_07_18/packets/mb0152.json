@@ -1,0 +1,131 @@
+{
+ "batch": 152,
+ "topic": "Mix Fundamentals & Workflow",
+ "terms": [
+  {
+   "id": "dd2053d3-24ab-406b-a19b-5850976c2d64",
+   "term": "Workspace Catalog",
+   "topic": "Mix Fundamentals & Workflow",
+   "seq": 1080,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "df86d015-5a7e-481b-93e0-a585c1e6a860",
+   "term": "Workspace preset",
+   "topic": "Mix Fundamentals & Workflow",
+   "seq": 1080,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "f8c36dab-253b-4ee7-a52a-6d717d8b0875",
+   "term": "Write automation mode",
+   "topic": "Mix Fundamentals & Workflow",
+   "seq": 1080,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "cff83ef9-61e4-4a2b-935a-e799b4b533d1",
+   "term": "Zoom Toggle",
+   "topic": "Mix Fundamentals & Workflow",
+   "seq": 1080,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "5f061147-c9e2-4f23-8c33-1959a44ac9ef",
+   "term": "Zoom Tool",
+   "topic": "Mix Fundamentals & Workflow",
+   "seq": 1080,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

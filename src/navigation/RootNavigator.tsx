@@ -63,6 +63,7 @@ import { SpeakerCoverageLabScreen } from '../screens/lab/micspeaker/SpeakerCover
 import { VacuumTubeLabScreen } from '../screens/lab/tube/VacuumTubeLabScreen';
 import { CalcLabScreen } from '../screens/lab/calc/CalcLabScreen';
 import { CalcWorkspaceScreen } from '../screens/lab/calc/CalcWorkspaceScreen';
+import { CalcSymbolsKeyScreen } from '../screens/lab/calc/CalcSymbolsKeyScreen';
 import { DigitalLabHomeScreen } from '../screens/lab/digital/DigitalLabHomeScreen';
 import { DigitalModuleScreen } from '../screens/lab/digital/DigitalModuleScreen';
 import { WaveLabHomeScreen } from '../screens/lab/wave/WaveLabHomeScreen';
@@ -156,6 +157,7 @@ export function RootNavigator() {
       <Stack.Screen name="TubeLab" component={VacuumTubeLabScreen} />
       <Stack.Screen name="CalcLab" component={CalcLabScreen} />
       <Stack.Screen name="CalcWorkspace" component={CalcWorkspaceScreen} />
+      <Stack.Screen name="CalcSymbolsKey" component={CalcSymbolsKeyScreen} />
       <Stack.Screen name="DigitalLab" component={DigitalLabHomeScreen} />
       <Stack.Screen name="DigitalModule" component={DigitalModuleScreen} />
       <Stack.Screen name="WaveLab" component={WaveLabHomeScreen} />

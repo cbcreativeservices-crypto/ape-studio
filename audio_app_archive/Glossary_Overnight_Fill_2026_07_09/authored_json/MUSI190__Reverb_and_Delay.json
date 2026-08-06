@@ -1,0 +1,155 @@
+{
+  "course": "MUSI190",
+  "topic": "Reverb & Delay",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "7c21397d-697b-46d1-9e95-415d15a8dff3",
+      "term": "Feedback Delay Network (FDN)",
+      "fields": {
+        "plain_english": "A reverb 'engine' built from several echo lines whose outputs are mixed together and fed back into each other, so a handful of echoes quickly multiply into a thick, smooth wash of sound.",
+        "purpose_function": "It generates dense, natural-sounding reverberation efficiently by recirculating a small set of delay lines through a mixing (feedback) matrix, letting the designer control decay time and frequency response independently. It exists because directly modeling every reflection in a room is far too costly, while an FDN builds convincing density from just a few delays.",
+        "practical_application": "Engineers encounter FDNs as the core of most modern algorithmic reverb plugins and hardware units, where the 'size,' 'decay/RT60,' 'density,' and 'damping/high-frequency decay' controls map onto the network's delay lengths, feedback matrix, and in-loop filters.",
+        "category": "Reverb Algorithm",
+        "related_terms": [
+          "Schroeder Reverberator",
+          "Comb Filter",
+          "All-Pass Filter",
+          "Algorithmic Reverb",
+          "Convolution Reverb",
+          "RT60 (Reverberation Time)"
+        ],
+        "common_mistakes": [
+          "Assuming an FDN reverb models a real room the way convolution does; it is a synthetic recirculating structure, not an impulse-response capture.",
+          "Confusing the FDN's internal 'density' with decay time; more delay lines and higher echo density make the tail smoother, while the feedback gain sets how long it rings.",
+          "Setting feedback so high that the network becomes unstable or metallic, instead of relying on the lossless (unitary/orthogonal) feedback matrix plus in-loop damping to shape a musical decay.",
+          "Treating all algorithmic reverbs as identical; FDN topology and matrix choice strongly affect echo buildup, modal density, and coloration."
+        ],
+        "scenario_contexts": [
+          "Dialing in a plate- or hall-style algorithmic reverb plugin whose engine is an FDN when mixing vocals or drums.",
+          "Choosing an FDN-based reverb over convolution when low CPU load and real-time tweakability matter, such as live performance or gaming/VR audio.",
+          "Adjusting damping and decay independently across frequency bands to make a bright hall sound warmer without shortening the tail.",
+          "A developer or advanced sound designer building or programming a custom reverb using a network of delay lines and a unitary feedback matrix."
+        ]
+      },
+      "sources": [
+        "Julius O. Smith III, 'Physical Audio Signal Processing' (CCRMA, Stanford / DSPRelated.com), FDN Reverberation and Schroeder Reverberators chapters",
+        "J.-M. Jot and A. Chaigne, 'Digital Delay Networks for Designing Artificial Reverberators,' AES 90th Convention (1991)",
+        "Stautner & Puckette, 'Designing Multichannel Reverberators,' Computer Music Journal (1982)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "4a2aa894-8fd7-41e9-9504-58a02483accc",
+      "term": "Oil-Can Delay",
+      "fields": {
+        "plain_english": "A quirky 1960s echo box that stored your sound as static electricity on an oil-coated spinning disc, giving back a dark, watery, wobbling echo rather than a clean repeat.",
+        "purpose_function": "It produced an electromechanical echo/vibrato effect before tape and digital delays were practical for compact units, storing the audio as an electrostatic charge on a rotating oil-coated disc and reading it back with a pickup. Today it exists mainly as a sought-after 'lo-fi,' warbly delay character emulated in pedals and plugins.",
+        "practical_application": "A tech encounters oil-can delays in vintage Tel-Ray/Morley units (and OEM circuits inside gear like the Fender Dimension IV or Gibson GA-4RE) and in modern emulations, reaching for them when a dark, seasick, pitch-modulated echo is wanted rather than a clean, accurate one.",
+        "category": "Delay Hardware",
+        "related_terms": [
+          "Tape Delay",
+          "Bucket-Brigade Delay (BBD)",
+          "Wow and Flutter",
+          "Spring Reverb",
+          "Modulation (Chorus/Vibrato)",
+          "Analog Delay"
+        ],
+        "common_mistakes": [
+          "Expecting clean, repeatable echoes; the format is inherently murky, warbly, and unstable, which is the point of its charm.",
+          "Confusing an oil-can (electrostatic disc) delay with a bucket-brigade (BBD chip) analog delay or with tape echo; the storage mechanisms are entirely different.",
+          "Believing the 'oil' is what stores the sound as a liquid; the oil holds an electrostatic charge on the disc, and the fluid's condition mainly affects reliability and tone.",
+          "Assuming vintage units are plug-and-play; aging motors, drive belts, dried or leaking oil, and worn discs commonly cause erratic behavior."
+        ],
+        "scenario_contexts": [
+          "A guitarist or producer chasing a vintage, dark, seasick slapback for a psychedelic or surf-era tone.",
+          "A studio tech servicing or restoring a Tel-Ray/Morley oil-can unit and dealing with belt, motor, or oil issues.",
+          "A sound designer selecting an oil-can emulation plugin/pedal to add lo-fi wobble to a synth or vocal.",
+          "Recognizing the oil-can circuit embedded inside older combo-amp echo/reverb features when repairing vintage amplifiers."
+        ]
+      },
+      "sources": [
+        "Effectrode, 'History of Delay' technical knowledge base",
+        "Catalinbread, 'Tel-Ray Ad-N-Echo' history article",
+        "Equipboard, 'Oil Can Delay Explained' and Strymon TimeLine 'Oil Can Delay' documentation"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "2cb58a2c-f450-41e9-92a1-d5511da87b76",
+      "term": "Schroeder Reverberator",
+      "fields": {
+        "plain_english": "The original recipe for fake reverb: chain together echo-building 'comb' filters and smearing 'all-pass' filters until a few echoes turn into a smooth, room-like tail.",
+        "purpose_function": "It provides the foundational architecture for artificial reverberation by combining parallel comb filters (to build echo density and decay) with series all-pass filters (to increase echo density without coloring the timbre). It exists as the first practical, controllable way to synthesize natural-sounding reverb from delay elements rather than physical rooms.",
+        "practical_application": "Engineers rarely dial up a 'Schroeder' preset by name, but its comb-plus-all-pass structure underlies countless classic algorithmic reverbs, so understanding it explains why reverb controls behave as they do and informs anyone building or studying reverb DSP.",
+        "category": "Reverb Algorithm",
+        "related_terms": [
+          "Comb Filter",
+          "All-Pass Filter",
+          "Feedback Delay Network (FDN)",
+          "Algorithmic Reverb",
+          "RT60 (Reverberation Time)",
+          "Echo Density"
+        ],
+        "common_mistakes": [
+          "Thinking Schroeder reverb models a specific real room; it is a synthetic algorithm designed to sound natural, not an impulse-response capture.",
+          "Confusing the roles of the two building blocks: comb filters create the discrete echoes and decay, while all-pass filters thicken density without altering the frequency response.",
+          "Assuming all-pass filters are inaudible because they are 'flat'; their phase/time smearing is exactly what increases echo density and can add metallic coloration if misused.",
+          "Believing it is obsolete; comb and all-pass sections still form the basis of many modern reverberators and FDNs."
+        ],
+        "scenario_contexts": [
+          "A DSP or audio-programming student implementing a basic reverb from comb and all-pass sections.",
+          "Explaining why an algorithmic reverb sounds metallic or 'ringy' by tracing it to comb/all-pass tuning.",
+          "Comparing early Schroeder-style algorithms to later FDN designs when evaluating reverb plugins.",
+          "Understanding the lineage of classic hardware reverbs (e.g., Lexicon, Alesis) whose designs build on Schroeder's nested all-pass-in-feedback idea."
+        ]
+      },
+      "sources": [
+        "M. R. Schroeder, 'Natural Sounding Artificial Reverberation,' Journal of the Audio Engineering Society (1962)",
+        "Julius O. Smith III, 'Physical Audio Signal Processing' (CCRMA, Stanford / DSPRelated.com), Schroeder Reverberators and Schroeder Allpass Sections chapters",
+        "Valhalla DSP, 'Schroeder Reverbs: the forgotten algorithm'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "126cd168-1e05-4630-a31d-7c5d2cd526a5",
+      "term": "Wow and Flutter",
+      "fields": {
+        "plain_english": "The slow 'wow' and fast 'flutter' pitch wobble you hear when a tape or record player can't hold a perfectly steady speed; in plugins it is added on purpose for vintage warmth.",
+        "purpose_function": "As a fault, it describes the frequency-modulation distortion caused by speed variations in mechanical transports (capstan, motors, belts, rollers), with wow being slow fluctuations and flutter being faster ones. As a creative control in tape emulations, it exists to reintroduce that gentle pitch/time instability to make digital sources sound warmer and more analog.",
+        "practical_application": "A tech measures wow and flutter (traditionally via a 3,150 Hz test tone per DIN/IEC weighting) when servicing or aligning tape machines and turntables, and separately dials a 'wow & flutter' amount in tape/delay emulation plugins to add vintage character.",
+        "category": "Tape Characteristic",
+        "related_terms": [
+          "Tape Delay",
+          "Oil-Can Delay",
+          "Modulation (Chorus/Vibrato)",
+          "Capstan",
+          "Tape Saturation",
+          "Pitch/Frequency Modulation"
+        ],
+        "common_mistakes": [
+          "Swapping the definitions: wow is the slow (roughly 0.5-6 Hz) pitch drift, while flutter is the faster (roughly 6-100 Hz) variation.",
+          "Assuming any speed wobble is always undesirable; in mixing it is often added intentionally for analog vibe, even though on a real machine it signals a mechanical problem.",
+          "Confusing wow and flutter (a speed/pitch instability) with tape saturation or hiss, which are level/noise phenomena, not timing.",
+          "Overlooking scrape flutter (high-frequency roughness above ~100 Hz from tape vibrating at the head), which is a distinct issue addressed with damping rollers."
+        ],
+        "scenario_contexts": [
+          "Aligning and troubleshooting an analog tape machine or turntable and finding excessive wobble traced to a worn belt, capstan, or pinch roller.",
+          "Adding subtle wow & flutter in a tape-emulation plugin to give a stiff digital mix or synth a warmer, more organic feel.",
+          "Diagnosing a warbly, unstable pitch on a vintage tape delay and deciding whether it is a fault to repair or a character to keep.",
+          "Evaluating a deck's specifications, where lower wow-and-flutter percentages indicate a more speed-stable, higher-fidelity transport."
+        ]
+      },
+      "sources": [
+        "Wikipedia, 'Wow and flutter measurement' (citing DIN 45507 / IEC 60386 standards and 3,150 Hz test tone)",
+        "Lindos Electronics, 'Wow and Flutter Measurement' technical article",
+        "Encyclopaedia Britannica, 'Flutter and wow'"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

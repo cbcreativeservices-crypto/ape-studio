@@ -1,0 +1,126 @@
+{
+ "bucket": 9,
+ "packets": [
+  "mb0309",
+  "mb0316",
+  "mb0324",
+  "mb0326",
+  "mb0330",
+  "mb0333",
+  "mb0337"
+ ],
+ "terms": [
+  {
+   "pkt": "mb0309",
+   "id": "ff557b12-f78f-45b3-a419-cd65790ca68d",
+   "term": "Voice.ai",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Voice & Vocal Perception"
+  },
+  {
+   "pkt": "mb0316",
+   "id": "7d464080-1759-409f-b38d-70c3913953ea",
+   "term": "Make it pretty",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Tonal & Timbre Descriptors"
+  },
+  {
+   "pkt": "mb0324",
+   "id": "a6d6af76-0db8-4c80-bf09-667d3f3fafbd",
+   "term": "Bench noise",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Attack, Decay, Resonance & Artifact Identification"
+  },
+  {
+   "pkt": "mb0326",
+   "id": "0da583a6-e51a-4675-91dd-b4dd2b01971d",
+   "term": "brown sound",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Attack, Decay, Resonance & Artifact Identification"
+  },
+  {
+   "pkt": "mb0330",
+   "id": "dfaed48d-7ec8-41a2-8a0f-13ac3a384854",
+   "term": "Ghost attack",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Attack, Decay, Resonance & Artifact Identification"
+  },
+  {
+   "pkt": "mb0333",
+   "id": "40d7f496-2fc8-44ed-9fd9-73e6dfc07081",
+   "term": "Knock",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Attack, Decay, Resonance & Artifact Identification"
+  },
+  {
+   "pkt": "mb0337",
+   "id": "d3c022d6-ab63-4335-afca-a4b963dae156",
+   "term": "Pick recovery",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Attack, Decay, Resonance & Artifact Identification"
+  }
+ ]
+}

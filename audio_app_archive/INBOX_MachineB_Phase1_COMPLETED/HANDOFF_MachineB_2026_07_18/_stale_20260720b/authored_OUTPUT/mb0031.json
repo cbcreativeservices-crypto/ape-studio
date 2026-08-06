@@ -1,0 +1,261 @@
+{
+ "batch": 31,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "8db809f6-01e3-4299-a89b-de06cb91f063",
+   "term": "Accent layer",
+   "fields": {
+    "definition": "A supplementary recorded or programmed part added to emphasize specific moments in an arrangement, such as a downbeat, a section change, or a lyrical hook, rather than to play throughout the song. It reinforces impact at chosen points while leaving the core arrangement otherwise unchanged.",
+    "plain_english": "An accent layer is an extra sound added just at key moments to make them stand out, like a cymbal crash or a quick synth stab when the chorus hits. It is not meant to play the whole time.",
+    "purpose_function": "It exists to pull the listener's ear to important spots and add energy or surprise without cluttering the rest of the track.",
+    "practical_application": "A producer drops in an accent layer, such as a tambourine hit or reversed cymbal, on the transition into a chorus, then mutes it during quieter sections.",
+    "category": "Arrangement",
+    "related_terms": ["Ambience layer", "Background texture", "Attack reinforcement", "Acoustic-trigger blend", "Background-vocal alignment"],
+    "common_mistakes": [
+     "Leaving the accent layer playing through the whole song so it stops feeling special",
+     "Mixing it so loud it competes with the lead part instead of supporting it",
+     "Stacking so many accent layers that the arrangement becomes cluttered"
+    ],
+    "scenario_contexts": [
+     "Adding a cymbal swell and synth stab on the first downbeat of the final chorus",
+     "Dropping a tambourine hit on section changes in a pop track",
+     "Placing an orchestral hit under a key lyric to underline it"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "90aa9663-9733-4bdf-84dd-7e784449848d",
+   "term": "Acoustic-guitar mixing",
+   "fields": {
+    "definition": "The process of balancing, equalizing, and placing a recorded acoustic guitar within a mix so its body, string detail, and dynamics sit clearly against the other instruments. It typically involves controlling low-mid boom, taming pick or finger noise, and setting the guitar's stereo position and level for its role as either a rhythm bed or a featured part.",
+    "plain_english": "Acoustic-guitar mixing means shaping a recorded acoustic guitar so it sounds clear and full without booming or getting lost. You usually cut some low mud, control harsh string noise, and set how loud and how wide it sits.",
+    "purpose_function": "It exists to make the acoustic guitar's natural tone fit the arrangement, supporting the song whether the guitar is the main instrument or a background layer.",
+    "practical_application": "An engineer high-passes the guitar to remove rumble, dips the lower mids to reduce boxiness, and pans a doubled rhythm part left and right to widen the bed.",
+    "category": "Mixing",
+    "related_terms": ["Acoustic-instrument mix", "Acoustic-trigger blend", "Ambience layer", "Background texture", "Attack reinforcement"],
+    "common_mistakes": [
+     "Boosting the highs so much that pick and fret noise becomes distracting",
+     "Leaving low-frequency boom in that clashes with the bass and kick drum",
+     "Panning a single acoustic to the center where it fights the lead vocal instead of moving it aside"
+    ],
+    "scenario_contexts": [
+     "Fitting a strummed acoustic under a lead vocal in a pop ballad",
+     "Blending doubled acoustic guitars into a wide rhythm bed",
+     "Featuring a fingerpicked acoustic as the main instrument in a singer-songwriter track"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound (recording and mixing acoustic guitar technique articles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a15cc83b-6669-4fcb-bfce-d80118bfae02",
+   "term": "Acoustic-instrument mix",
+   "fields": {
+    "definition": "An approach to mixing that preserves the natural tone, dynamics, and room character of acoustically produced instruments such as guitar, piano, strings, or upright bass, rather than heavily processing them. It emphasizes accurate level balance, gentle equalization, and controlled dynamics so the instruments sound realistic and cohesive.",
+    "plain_english": "An acoustic-instrument mix keeps real instruments sounding natural. It avoids making them sound heavily electronic or processed. You aim for a good balance and only light changes, so a guitar or piano still sounds like itself.",
+    "purpose_function": "It exists to deliver a believable, organic sound for styles like folk, jazz, or acoustic pop, where realism and natural dynamics matter more than heavy effects.",
+    "practical_application": "A technician uses light compression and minimal EQ, keeps some natural room ambience, and balances the instruments mostly with faders to protect their real dynamics.",
+    "category": "Mixing",
+    "related_terms": ["Acoustic-guitar mixing", "Ambience layer", "Background texture", "Acoustic-trigger blend", "Alto section balance"],
+    "common_mistakes": [
+     "Over-compressing until the instruments lose the natural dynamics that make them sound live",
+     "Adding heavy effects that make acoustic sources sound artificial",
+     "Removing all room ambience so the mix sounds sterile and lifeless"
+    ],
+    "scenario_contexts": [
+     "Mixing a folk trio of acoustic guitar, upright bass, and fiddle",
+     "Balancing a jazz combo where natural dynamics carry the feel",
+     "Preparing a live acoustic session for release with minimal processing"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cd518a99-e008-42ea-9558-c1cd4737b6d8",
+   "term": "Acoustic-trigger blend",
+   "fields": {
+    "definition": "The technique of mixing a drum's natural acoustic microphone signal with a triggered sample of the same drum, combining the two to reach a desired balance of realism and consistency. The blend ratio is adjusted so the sample reinforces weight or attack while the live mic keeps the instrument's natural character.",
+    "plain_english": "An acoustic-trigger blend mixes the real recorded drum sound with a matching sample fired from that same hit. You dial in how much of each so the drum keeps its natural feel but gains extra punch or an even level from the sample.",
+    "purpose_function": "It exists to fix weak, inconsistent, or poorly captured drum sounds, often the kick or snare, without losing the human feel of the original performance.",
+    "practical_application": "An engineer uses a trigger plugin to fire a sample in time with the recorded snare, then balances the sample and live-mic faders until the snare has body and an even level across the song.",
+    "category": "Drum production",
+    "related_terms": ["Attack reinforcement", "Accent layer", "Acoustic-instrument mix", "Ambience layer", "Acoustic-guitar mixing"],
+    "common_mistakes": [
+     "Setting the trigger threshold so it misfires or misses ghost notes",
+     "Using so much sample that the drums sound fake and lose the room feel",
+     "Ignoring polarity so the sample and the live mic partly cancel each other out"
+    ],
+    "scenario_contexts": [
+     "Reinforcing a dull kick drum recorded in a poor-sounding room",
+     "Evening out an inconsistent snare level across a long take",
+     "Adding weight to live drums that were captured with only a few microphones"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound (drum sample replacement and triggering technique articles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7ed05112-822b-4275-b04b-6584417b4310",
+   "term": "Alto section balance",
+   "fields": {
+    "definition": "The setting of the relative levels and blend of the alto voices, or alto-range parts, within an ensemble so they support the harmony without overpowering or disappearing beneath the adjacent sections. It concerns the internal balance of the middle harmony line against the soprano, tenor, and bass parts.",
+    "plain_english": "Alto section balance means setting the right level for the alto singers, who sing the middle voices. They should fill out the harmony. But they must not cover the melody or get lost under the other parts.",
+    "purpose_function": "It exists to keep the middle harmony audible and even, giving a choir or vocal group a full, well-blended sound.",
+    "practical_application": "When mixing a choir or stacked backing vocals, the engineer rides the alto level so the inner harmony is present but the soprano melody still leads.",
+    "category": "Vocal production",
+    "related_terms": ["Background-vocal alignment", "Background texture", "Ambience layer", "Accent layer", "Acoustic-instrument mix"],
+    "common_mistakes": [
+     "Mixing the altos too low so the harmony sounds thin and hollow",
+     "Pushing the altos so loud they mask the soprano melody",
+     "Judging the balance in solo instead of in the full mix, where masking really happens"
+    ],
+    "scenario_contexts": [
+     "Balancing a four-part choir recording",
+     "Setting levels for stacked backing-vocal harmonies in a pop chorus",
+     "Blending a horn section's alto-range parts against the lead lines"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b92652f7-d8b7-4b07-8abd-5e4ce62b7420",
+   "term": "Ambience layer",
+   "fields": {
+    "definition": "A track or group of tracks, such as room microphones, reverb returns, or recorded environmental sound, added beneath an arrangement to create a sense of space, depth, and natural or atmospheric context. It sits low in the mix and provides continuity rather than a distinct musical part.",
+    "plain_english": "An ambience layer is background sound, like room mics, reverb, or soft atmosphere, added under a song to give it a sense of space. It usually sits quietly and makes the mix feel more real or wider.",
+    "purpose_function": "It exists to add depth and glue to a mix, making separately recorded parts feel like they share one space.",
+    "practical_application": "An engineer blends in room-mic tracks or a long reverb return under the drums and vocals to widen the sound and connect the elements.",
+    "category": "Arrangement",
+    "related_terms": ["Background texture", "Accent layer", "Acoustic-instrument mix", "Attack reinforcement", "Acoustic-trigger blend"],
+    "common_mistakes": [
+     "Turning the ambience up so loud it washes out clarity and detail",
+     "Adding so much reverb that the mix sounds distant and muddy",
+     "Forgetting to filter low rumble out of room tracks before blending them in"
+    ],
+    "scenario_contexts": [
+     "Adding room mics under close-miked drums for depth",
+     "Layering soft atmosphere or crowd noise under a live-style mix",
+     "Using a reverb return as a shared space for the vocals and guitars"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "75d8cda0-7426-4b36-8931-c117b276a155",
+   "term": "Attack reinforcement",
+   "fields": {
+    "definition": "The strengthening of the initial transient, the attack, of a sound so it cuts through a mix more clearly, using transient shaping, layering, or careful compression. It emphasizes the very start of a note or hit to improve definition and rhythmic clarity.",
+    "plain_english": "Attack reinforcement means boosting the very start of a sound, the initial hit, so it stands out better in the mix. You might layer a sharper sound on top or use a tool that lifts the punchy front of each note.",
+    "purpose_function": "It exists to restore or add clarity and punch to sounds whose attack is weak, helping them stay defined and rhythmically tight against the other parts.",
+    "practical_application": "An engineer uses a transient shaper to raise the attack of a soft kick, or layers a short click sample under it so each hit reads clearly.",
+    "category": "Mixing",
+    "related_terms": ["Acoustic-trigger blend", "Accent layer", "Ambience layer", "Acoustic-guitar mixing", "Background texture"],
+    "common_mistakes": [
+     "Overdoing the transient boost until hits sound clicky and unnatural",
+     "Reinforcing the attack so hard it triggers harsh distortion on the peaks",
+     "Forgetting that too much attack can make a part feel harsh and tiring to hear"
+    ],
+    "scenario_contexts": [
+     "Making a soft kick drum punch through a dense rock mix",
+     "Adding definition to a slap bass that lacks bite",
+     "Sharpening the pick attack on a rhythm guitar buried in the mix"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1bb9a868-9d20-4df5-9cd6-5e7b9af0e317",
+   "term": "Background texture",
+   "fields": {
+    "definition": "A subtle, sustained layer, such as a pad, drone, soft synth, or atmospheric sound, placed low in an arrangement to add richness and fill space without drawing attention as a distinct part. It supports the main elements by providing harmonic or tonal context in the background.",
+    "plain_english": "A background texture is a quiet, steady sound, like a soft pad or drone, added under a song to fill it out and make it feel fuller. You are not really meant to notice it on its own.",
+    "purpose_function": "It exists to add fullness, mood, and glue to an arrangement, filling the gaps between the featured parts.",
+    "practical_application": "A producer layers a low synth pad or filtered noise under the verse to keep it from sounding empty, mixed quietly beneath the vocals and drums.",
+    "category": "Arrangement",
+    "related_terms": ["Ambience layer", "Accent layer", "Acoustic-instrument mix", "Background-vocal alignment", "Attack reinforcement"],
+    "common_mistakes": [
+     "Making the texture too loud so it competes with the main parts",
+     "Choosing a busy texture that clutters the arrangement instead of supporting it",
+     "Letting the texture clash harmonically with the chords underneath"
+    ],
+    "scenario_contexts": [
+     "Adding a soft pad under a sparse verse to fill space",
+     "Layering atmospheric noise beneath a breakdown for mood",
+     "Using a sustained drone to connect two song sections"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5e78416c-1597-4f42-8fcb-c5e4d627451c",
+   "term": "Background-vocal alignment",
+   "fields": {
+    "definition": "The adjusting of the timing, and often the pitch, of backing-vocal tracks so they lock tightly to each other and to the lead vocal. It ensures that stacked harmonies and doubles start, phrase, and end together for a cohesive blend.",
+    "plain_english": "Background-vocal alignment means tightening the timing of the backing vocals so they land together and match the lead singer. When the words and notes start and stop at the same time, the harmonies sound like one smooth blend.",
+    "purpose_function": "It exists to make layered harmonies and doubles sound unified rather than sloppy or smeared, which is essential for a polished vocal production.",
+    "practical_application": "An engineer nudges backing-vocal takes in the DAW, or uses time-alignment tools, so the consonants and note endings match the lead, then checks tuning across the stack.",
+    "category": "Vocal production",
+    "related_terms": ["Alto section balance", "Background texture", "Accent layer", "Ambience layer", "Acoustic-instrument mix"],
+    "common_mistakes": [
+     "Aligning the timing so rigidly the vocals sound robotic and lifeless",
+     "Fixing the timing but ignoring tuning differences that still smear the blend",
+     "Aligning to the wrong reference so the stack drifts off the lead vocal"
+    ],
+    "scenario_contexts": [
+     "Tightening stacked harmony takes in a pop chorus",
+     "Lining up double-tracked backing vocals so they sound as one",
+     "Matching a group's backing phrases to the lead vocal's timing"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound (vocal editing and alignment technique articles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

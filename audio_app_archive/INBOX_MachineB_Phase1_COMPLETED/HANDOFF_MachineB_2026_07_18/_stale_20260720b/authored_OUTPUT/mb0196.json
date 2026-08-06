@@ -1,0 +1,159 @@
+{
+ "batch": 196,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "5cbbc299-d0cf-466d-a3c0-f520f757b0f9",
+   "term": "Dead-air detector",
+   "fields": {
+    "definition": "A device or circuit in the air chain that continuously monitors program audio and raises an alarm or triggers a corrective action when the level stays below a set threshold for a defined interval, indicating unintended silence (dead air).",
+    "plain_english": "A watchdog that listens to what is going out over the air. If the sound drops to silence for too long, it sets off an alarm or starts a backup so listeners do not hear nothing.",
+    "purpose_function": "It detects unintended silence so staff or automation can restore audio quickly, because dead air loses listeners and can breach a station's operating and licensing obligations.",
+    "practical_application": "A technician sets the silence threshold and hold time on a silence sensor so it fires only on genuine dead air, then wires its relay or logic output to trigger a backup player or send an alert.",
+    "category": "Monitoring",
+    "related_terms": ["Air chain", "Automation system", "Backup audio", "Distribution feed", "Silence sensor"],
+    "common_mistakes": ["Setting the hold time too short, so natural pauses in speech or music trigger false alarms", "Setting the threshold too high, so quiet passages read as silence", "Assuming the detector fixes the fault rather than only reporting it", "Never testing the trigger path, so the alarm or backup fails when real dead air occurs"],
+    "scenario_contexts": ["Unattended overnight automation where no operator is present to notice silence", "An STL or codec link failure that drops audio to the transmitter", "A source or playout dropout during a live show"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "NAB Engineering Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4e43f535-ce34-4063-a013-74487ed84d87",
+   "term": "Delay buffer",
+   "fields": {
+    "definition": "The block of memory in a broadcast (profanity) delay that holds several seconds of program audio between the record point and the on-air playback point, so recently recorded audio can be removed before it reaches the transmitter.",
+    "plain_english": "A short store of the last few seconds of the show. The audio is recorded into it and played out a moment later, so staff can cut something out before it reaches listeners.",
+    "purpose_function": "It holds a time cushion of program audio ahead of transmission so objectionable content can be dumped before it airs.",
+    "practical_application": "A technician sets the buffer size on the delay unit, typically from a few seconds up to around 80 seconds; larger buffers give more reaction time but take longer to build.",
+    "category": "Broadcast delay",
+    "related_terms": ["Delay system", "Dump button", "Delay rebuild", "Air chain", "Distribution feed"],
+    "common_mistakes": ["Confusing the safety buffer with a fixed alignment delay used for lip-sync or loudspeaker timing", "Assuming the full buffer is available the instant the unit powers up", "Setting the buffer so short that there is no time to react to bad content"],
+    "scenario_contexts": ["Live call-in talk radio where callers may swear on air", "Live sports or event coverage with unpredictable audio", "A morning show building buffer before going live"]
+   },
+   "sources": ["Eventide BD600 Broadcast Delay Operator's Manual", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a02bab1b-5d8d-410e-abe1-88eae3a351c1",
+   "term": "Delay rebuild",
+   "fields": {
+    "definition": "The process by which a broadcast delay gradually restores its full safety buffer after a dump or at start-up, by subtly time-expanding audio (typically during pauses) without an audible pitch change until the target delay is reached again.",
+    "plain_english": "After someone cuts audio with the dump button, the safety cushion of stored sound gets smaller. Rebuild slowly stretches the sound during quiet spots to grow the cushion back to full, and it does this without changing the pitch.",
+    "purpose_function": "It brings the delay back to full length after the buffer is shortened, restoring the ability to dump again.",
+    "practical_application": "A technician configures how aggressively rebuild stretches audio and the silence threshold it uses, trading rebuild speed against how transparent the time-stretching sounds.",
+    "category": "Broadcast delay",
+    "related_terms": ["Delay buffer", "Dump button", "Delay system", "Air chain"],
+    "common_mistakes": ["Expecting the delay to return to full length instantly after a dump", "Setting rebuild too aggressive, so the time-stretching becomes audible", "Dumping repeatedly before rebuild finishes, leaving little or no protection"],
+    "scenario_contexts": ["Recovering the safety margin after dumping a caller's profanity", "Building the initial delay when the unit is first entered into the air chain", "A busy talk segment with several dumps close together"]
+   },
+   "sources": ["Eventide BD600 Broadcast Delay Operator's Manual", "NAB Engineering Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e35d72bf-b581-4687-a8d0-338c0fdf03e5",
+   "term": "Delay system",
+   "fields": {
+    "definition": "In broadcast, the equipment and configuration that introduces a controlled, adjustable time offset (typically several seconds) into the air chain, so program audio reaches the transmitter later than it is produced and objectionable content can be removed before transmission.",
+    "plain_english": "The whole setup that puts a few seconds of gap between the studio and the transmitter. That gap gives staff time to catch and cut anything that should not go out live.",
+    "purpose_function": "It provides the time cushion and dump capability that let a station keep unwanted content off the air while still sounding live.",
+    "practical_application": "A technician patches the delay system into the chain between the studio output and the transmitter or STL, sets the delay amount, and verifies the dump and rebuild behavior before going live.",
+    "category": "Broadcast delay",
+    "related_terms": ["Delay buffer", "Dump button", "Delay rebuild", "Air chain", "Distribution feed"],
+    "common_mistakes": ["Placing the delay after the point being monitored, so operators hear content too late to dump it", "Forgetting that the system needs time to build before protection is available", "Leaving the delay bypassed and assuming it is protecting the air"],
+    "scenario_contexts": ["Live call-in and talk programming", "Live award shows or sports carried on radio", "Any live remote where content cannot be fully controlled"]
+   },
+   "sources": ["Eventide BD600 Broadcast Delay Operator's Manual", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ec748be8-25fa-46cc-818e-ad8cbb534cd3",
+   "term": "Digital telephone hybrid",
+   "fields": {
+    "definition": "A DSP-based broadcast device that interfaces a telephone or VoIP line to the console, using digital adaptive processing to separate the caller's receive audio from the studio's send audio on the shared line and to suppress echo and leakage so callers can be aired cleanly.",
+    "plain_english": "A box that connects a phone call to the studio. A phone line carries both voices on one pair of wires, so this device uses digital processing to split them apart. That way the caller is heard cleanly on air and your own voice does not echo back.",
+    "purpose_function": "It separates send and receive audio and removes echo so caller audio can be broadcast at good quality without feedback.",
+    "practical_application": "A technician connects the hybrid between the phone line and the console, provides a mix-minus feed, and sets caller gain, ducking, and processing to balance the caller against studio audio.",
+    "category": "Telephone interface",
+    "related_terms": ["Mix-minus", "Distribution feed", "Air chain", "Digital hybrid", "Caller ducking"],
+    "common_mistakes": ["UNSAFE: Connecting studio equipment directly to a telephone line without an approved interface, risking hazardous line and ringing voltages", "Feeding the hybrid a full mix instead of a mix-minus, so the caller hears themselves echoed", "Expecting to manually null the hybrid when the digital unit adapts automatically"],
+    "scenario_contexts": ["Live call-in talk and request shows", "Phone interviews with remote guests", "Traffic or news reports phoned in from the field"]
+   },
+   "sources": ["Telos Systems technical documentation", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8e3993ea-ce8d-4545-b861-a8517e9b071d",
+   "term": "Distribution feed",
+   "fields": {
+    "definition": "An audio (or audio/video) output routed to and shared among multiple downstream destinations, such as a program feed sent to affiliates, recorders, monitoring, and further processing, usually through a distribution amplifier so each destination receives an isolated copy.",
+    "plain_english": "One audio signal sent out to many places at once. It is like copying a program feed to several recorders, receivers, or stations so they all get the same sound.",
+    "purpose_function": "It delivers the same source to many destinations without letting them load or interfere with each other.",
+    "practical_application": "A technician takes a program or bus output into a distribution amplifier and patches its isolated outputs to the transmitter, logger, monitoring, and any network or affiliate feeds.",
+    "category": "Signal routing",
+    "related_terms": ["Distribution amplifier", "Air chain", "Mix-minus", "Program bus", "Dead-air detector"],
+    "common_mistakes": ["Paralleling one output to many inputs instead of using a distribution amplifier, causing loading and level loss", "Not labeling feeds, so a wrong or dead feed goes unnoticed", "Assuming every destination needs the same level and format without checking"],
+    "scenario_contexts": ["Sending a network program feed to multiple affiliate stations", "Splitting a main output to the transmitter, logger, and monitoring", "Providing a clean feed to a recording or streaming encoder"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "NAB Engineering Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "888e208a-a763-49d7-8683-e1859042bc66",
+   "term": "Dump button",
+   "fields": {
+    "definition": "The control on a broadcast delay that, when pressed, immediately removes several seconds of buffered audio by moving the record point toward the playback point, so objectionable material already in the buffer never reaches the transmitter.",
+    "plain_english": "The panic button on a broadcast delay. Press it and the last few seconds of audio are thrown away before they go out, so a swear word or mistake never reaches listeners.",
+    "purpose_function": "It lets an operator delete unwanted content from the safety buffer before it airs.",
+    "practical_application": "A technician sets the dump amount, commonly a few seconds per press, and places the button where the host or producer can reach it instantly during a live show.",
+    "category": "Broadcast delay",
+    "related_terms": ["Delay buffer", "Delay rebuild", "Delay system", "Air chain"],
+    "common_mistakes": ["Pressing dump too late, after the content has already passed the playback point and aired", "Dumping repeatedly and exhausting the buffer, removing all protection", "Forgetting that the buffer must rebuild before another dump is possible"],
+    "scenario_contexts": ["A caller swears during a live call-in show", "A guest says something legally risky on air", "An unexpected loud or unwanted sound during live coverage"]
+   },
+   "sources": ["Eventide BD600 Broadcast Delay Operator's Manual", "NAB Engineering Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "77a5f45d-1b0b-4ca5-8e1c-c0771b4d3e86",
+   "term": "Festival broadcast mix",
+   "fields": {
+    "definition": "A dedicated mix of a live festival performance created for broadcast or streaming, separate from the front-of-house PA mix, balanced for at-home listeners and typically built at an outside-broadcast truck or flypack from stage splits, with audience and ambience mics and commentary added as needed.",
+    "plain_english": "A separate mix of a festival made for people watching or listening at home, not the crowd at the show. It is balanced for TV and phone speakers, and often adds crowd sound to capture the feel of the event.",
+    "purpose_function": "It gives broadcast and streaming audiences a mix tuned for their playback, independent of the loud PA mix aimed at the live crowd.",
+    "practical_application": "A broadcast engineer works from an isolated split of the stage inputs, blends performance, audience, and ambience mics, and delivers the mix to the distribution feed or recording system.",
+    "category": "Remote production",
+    "related_terms": ["Flypack recording system", "Distribution feed", "Mix-minus", "Microphone split", "Ambience mics"],
+    "common_mistakes": ["Reusing the front-of-house mix, which lacks crowd and ambience and is tuned for the room rather than home listeners", "Neglecting audience mics, so the broadcast sounds flat and lifeless", "Not securing an isolated split, leaving the broadcast mix dependent on the PA console"],
+    "scenario_contexts": ["Radio or TV coverage of a multi-stage music festival", "A live stream of a concert to online viewers", "Recording festival sets for later broadcast or release"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "NAB Engineering Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bff4fe30-dc0f-4fce-89c2-d6289e5b30b5",
+   "term": "Flypack recording system",
+   "fields": {
+    "definition": "A portable, rack-mounted production and recording system built into flight cases that can be shipped or flown to a remote venue as an alternative to an outside-broadcast truck, containing the recorders, routing, and processing needed to capture and produce a multichannel remote broadcast.",
+    "plain_english": "A production kit built into wheeled road cases that can be flown or trucked to a venue. It does the job of a broadcast truck but packs down to travel, holding the recorders and gear needed to capture a show.",
+    "purpose_function": "It brings full remote-production capability to venues where a truck is impractical, by packaging the gear into transportable cases.",
+    "practical_application": "A technician racks recorders, routers, and interfaces into flight cases, ships them to the venue, and cables them to stage splits and the distribution feed to capture and mix the event.",
+    "category": "Remote production",
+    "related_terms": ["Festival broadcast mix", "Distribution feed", "Microphone split", "Outside broadcast", "Multitrack recorder"],
+    "common_mistakes": ["Underestimating cabling, power, and setup time compared with a pre-wired truck", "Skipping a full bench test before shipping, so faults appear on site", "Failing to plan power distribution and grounding for the rack at the venue"],
+    "scenario_contexts": ["Recording a festival or concert at a venue with no truck access", "A one-off remote broadcast at a hard-to-reach location", "Air-freighting a production kit to an overseas event"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "NAB Engineering Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

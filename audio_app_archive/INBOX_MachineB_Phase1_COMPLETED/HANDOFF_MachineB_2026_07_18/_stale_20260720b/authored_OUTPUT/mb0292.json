@@ -1,0 +1,76 @@
+{
+ "batch": 292,
+ "topic": "Drum Programming & Beat-Making",
+ "authored": [
+  {
+   "id": "1828644c-20e9-4cf9-bb5d-fbf1fa4516f9",
+   "term": "Drum library",
+   "fields": {
+    "definition": "A curated collection of pre-recorded drum and percussion sounds, supplied as individual samples and/or assembled kits, that a producer loads into a sampler, drum machine, or DAW instrument to program beats.",
+    "plain_english": "A drum library is a big folder of ready-made drum sounds like kicks, snares, and hi-hats. You pick sounds from it to build your own beats, the way you pick blocks from a bin.",
+    "purpose_function": "It gives producers a ready, consistent supply of high-quality drum sounds so they can build rhythms without setting up mics and recording a live kit.",
+    "practical_application": "A technician browses the library, drags chosen hits into a sampler or drum rack, and maps them to pads or MIDI notes to program a groove.",
+    "category": "Sample Sources",
+    "related_terms": [
+     "One-shot sample",
+     "Sample library",
+     "Drum kit",
+     "Drum rack",
+     "Sampler",
+     "Loop"
+    ],
+    "common_mistakes": [
+     "Assuming every library sound is mix-ready and skipping level, tuning, and EQ matching between hits from different sources.",
+     "Loading huge multi-gigabyte libraries entirely into RAM instead of streaming, then running out of memory mid-session.",
+     "Ignoring the license terms and using paid or royalty-restricted library sounds in commercial releases without clearance."
+    ],
+    "scenario_contexts": [
+     "Building a hip-hop beat by pulling a kick, snare, and hat from a downloaded drum library into a drum rack.",
+     "Layering a library snare under a live-recorded snare to reinforce the backbeat.",
+     "Auditioning several library kits to find one that fits the genre and tempo of a track."
+    ]
+   },
+   "sources": [
+    "Sound on Sound — sample library and drum-sampling technique articles",
+    "Native Instruments Battery / Maschine manuals (library and kit management)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "625f757b-a294-40e8-ba15-20c2b908e3c3",
+   "term": "One-shot sample",
+   "fields": {
+    "definition": "A single self-contained audio sample that plays once from start to finish each time it is triggered rather than looping, typically an individual drum hit such as a kick, snare, clap, or cymbal.",
+    "plain_english": "A one-shot is a short sound that plays one time each time you hit the pad or key. It is like a doorbell: press it once and it rings once, then stops.",
+    "purpose_function": "It lets a producer trigger a discrete drum hit on demand, so each note in a programmed pattern sounds as a clean, repeatable event.",
+    "practical_application": "A technician assigns a one-shot kick and snare to sampler pads or MIDI notes, then sequences them step by step to build a drum pattern.",
+    "category": "Sample Sources",
+    "related_terms": [
+     "Drum library",
+     "Loop",
+     "Sampler",
+     "Trigger",
+     "Velocity",
+     "Drum rack"
+    ],
+    "common_mistakes": [
+     "Confusing a one-shot with a loop and expecting it to repeat on its own when it only plays once per trigger.",
+     "Leaving the sampler in a mode that cuts the sample off early, so decay-heavy hits like cymbals get chopped.",
+     "Retriggering the same one-shot rapidly on one voice and causing clicks instead of using multiple voices or a choke group."
+    ],
+    "scenario_contexts": [
+     "Programming a kick-and-snare pattern from individual one-shot hits on a step sequencer.",
+     "Mapping one-shots across a pad grid on a controller for finger-drumming a beat.",
+     "Replacing a weak recorded snare by triggering a one-shot from the drum track's transients."
+    ]
+   },
+   "sources": [
+    "Sound on Sound — sampling and one-shot vs. loop technique articles",
+    "Ableton Live / Native Instruments Battery manuals (one-shot playback and pad mapping)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

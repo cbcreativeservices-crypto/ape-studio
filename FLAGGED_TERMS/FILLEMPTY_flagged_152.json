@@ -1,0 +1,919 @@
+{
+ "job": "Computer C — FILL-EMPTY wave",
+ "note": "Terms held (not authored) because no qualifying source supports a confident, correct definition — mostly informal slang, on-stage hand signals, coined cue-phrases, mis-categorized labels, or bespoke house jargon. Per term: author from a named source, rename to a standardized headword, re-file under the correct topic, or drop.",
+ "count": 152,
+ "flagged_terms": [
+  {
+   "id": "af1638e1-73f0-4567-a433-5e705dc6ba1c",
+   "term": "Image restoration",
+   "primary_topic": "AI Source Separation & Restoration",
+   "flag_reason": "In an audio context the bare term 'Image restoration' is ambiguous: it is the standard name of a visual/photographic process, and no qualifying audio source defines 'Image restoration' as a named audio technique. It most likely intends 'stereo image restoration', but that cannot be confirmed from a qualifying source, so it is flagged rather than guessed."
+  },
+  {
+   "id": "c4010bf3-7c19-491a-b349-530895887564",
+   "term": "RipX DeepMix",
+   "primary_topic": "AI/ML Foundations for Audio",
+   "flag_reason": "No product named exactly 'RipX DeepMix' could be verified from Hit'n'Mix or other qualifying sources. The documented RipX product line is DeepRemix, DeepAudio, DeepCreate, and RipX DAW / DAW Pro. This appears to be a mislabel, so it is flagged rather than described under an unverifiable name."
+  },
+  {
+   "id": "621448ce-2845-4450-8adb-04de7dbae51a",
+   "term": "After-hours cooling",
+   "primary_topic": "Acoustic Principles & Room Behavior",
+   "flag_reason": "No qualifying acoustics reference defines 'after-hours cooling' as a room-behavior term. It reads as a coined phrase (possibly venue HVAC running or noise dropping after closing), with no source-supported acoustic meaning, so it is flagged rather than fabricated."
+  },
+  {
+   "id": "ec713107-7b00-4acb-bc7d-ab11d18dd0a7",
+   "term": "Edit speed",
+   "primary_topic": "Analog Tape / Tape Machines",
+   "flag_reason": "'Edit speed' is not a standardized tape-machine term. Editing on open-reel machines is done by rocking the reels by hand to locate a splice or by engaging an EDIT/dump function; no qualifying source fixes 'edit speed' as a named parameter, so it is flagged rather than guessed."
+  },
+  {
+   "id": "d5091c46-21ce-4edc-8d04-941d591b2580",
+   "term": "Ribbon recording era",
+   "primary_topic": "Analog Tape / Tape Machines",
+   "flag_reason": "There is no recording medium called 'ribbon' — 'ribbon' denotes ribbon microphones, not a recording format or era. No qualifying source defines a 'ribbon recording era', so the term is flagged rather than fabricated."
+  },
+  {
+   "id": "bc032704-56cf-4b1e-b1f7-4c241409dd7f",
+   "term": "Tape dump",
+   "primary_topic": "Analog Tape / Tape Machines",
+   "flag_reason": "'Tape dump' is ambiguous and not consistently defined: it can mean engaging a machine's edit/dump function to spill tape while removing a section, or transferring/'dumping' a tape's contents to another medium. No qualifying source fixes a single meaning, so it is flagged rather than guessed."
+  },
+  {
+   "id": "b88f489f-aef4-4c35-b3b2-1265c6aaa28b",
+   "term": "Banger",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "'Banger' is informal slang for an exciting, high-energy track. No qualifying audio-technical or professional reference defines it precisely, and its scope (any energetic hit) is loose and subjective, so it is flagged rather than given a fabricated technical definition."
+  },
+  {
+   "id": "1bfa2594-cf35-4ffc-b950-125829be496c",
+   "term": "Bring it in",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "'Bring it in' is an informal, spoken DJ cue (roughly, start the next track or element). It is not a named technique in any qualifying source and its exact meaning is context-dependent, so it is flagged rather than guessed."
+  },
+  {
+   "id": "183bf41f-b2fc-4fa2-8c03-dd00b24363e1",
+   "term": "Certified hit",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "'Certified hit' is a colloquial hype phrase for a proven crowd-pleasing record. No qualifying source defines it as a specific audio term, so it is flagged rather than fabricated."
+  },
+  {
+   "id": "7af85f88-ad16-456f-a54e-7f33e89ff7ca",
+   "term": "Dancefloor killer",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "'Dancefloor killer' is subjective hype slang; it can mean a track that ignites a floor or, contradictorily, one that clears it. The meaning is ambiguous and unsupported by any qualifying source, so it is flagged rather than guessed."
+  },
+  {
+   "id": "ed40eb11-437f-4a9c-b35d-ee482aaf5b08",
+   "term": "Dig deeper",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "'Dig deeper' is informal slang derived from crate-digging, roughly meaning to play more obscure selections. As a standalone glossary term it is ambiguous (deeper cuts vs. reading the crowd) and unsupported by a qualifying source, so it is flagged."
+  },
+  {
+   "id": "368bc51a-bb99-4533-a791-51702dbcd850",
+   "term": "Drop it",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "'Drop it' is a spoken hype/cue phrase (play the drop or start the track). It is not a defined technique in any qualifying source, so it is flagged rather than guessed."
+  },
+  {
+   "id": "a074aeb1-08e0-449e-815a-cfa7ee35b138",
+   "term": "Empty the floor",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "'Empty the floor' is informal slang for playing music that clears the dancefloor. No qualifying source defines it as a named audio term, so it is flagged rather than fabricated."
+  },
+  {
+   "id": "98b52e28-36a5-43d7-80fa-70d47f617c27",
+   "term": "Fake mix",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "'Fake mix' has no established meaning in any qualifying source; it could refer to a pre-recorded or mimed set, a poorly executed blend, or a rough demo mix. The term is ambiguous and unsupported, so it is flagged rather than guessed."
+  },
+  {
+   "id": "7d90baf8-485d-40dd-be45-5eab54cb2e5b",
+   "term": "Lose the floor",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "'Lose the floor' is informal slang for playing music that drives dancers away. It is not a named technique in any qualifying source, so it is flagged rather than fabricated."
+  },
+  {
+   "id": "0db6e8e0-8837-4675-b513-40ce9bac1e9c",
+   "term": "Spiral",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "As a standalone DJ/mixing term 'Spiral' has no established, source-supported meaning; it may be coined slang for an escalating build or a set losing control. It is ambiguous and unverifiable, so it is flagged rather than guessed."
+  },
+  {
+   "id": "2468fdb5-8eb0-473a-907e-cef9b8b5c1de",
+   "term": "Spiral out",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "'Spiral out' has no established meaning in any qualifying DJ/mixing source and appears to be coined slang (possibly a set losing momentum or an escalating effect). Ambiguous and unverifiable, so it is flagged rather than guessed."
+  },
+  {
+   "id": "015d95df-1a2a-453e-9a57-525168051941",
+   "term": "Wash out",
+   "primary_topic": "Beatmatching, Mixing & FX",
+   "flag_reason": "'Wash out' is ambiguous in a DJ/FX context — it may mean masking a transition with a reverb or echo wash, or a track or crowd losing energy — and no qualifying source fixes a single named definition, so it is flagged rather than guessed."
+  },
+  {
+   "id": "5f421c5a-ffae-4761-a4fa-a3ba53430340",
+   "term": "Ghost channel",
+   "primary_topic": "Channel Strip & Processing",
+   "flag_reason": "'Ghost channel' has no single established meaning as a channel-strip term (it variously suggests an unused/spare channel, a hidden mix layer, or is confused with the Soundcraft 'Ghost' console brand). Ambiguous and unsupported, so it is flagged rather than guessed."
+  },
+  {
+   "id": "f9cae882-e0d7-4cd5-9e53-f9949dea64e6",
+   "term": "Signal stage",
+   "primary_topic": "Circuits & Topologies",
+   "flag_reason": "'Signal stage' is not standard circuit terminology; recognized references use 'stage', 'gain stage', 'amplifier stage', or 'input/output stage'. The exact term cannot be tied to a qualifying definition, so it is flagged rather than authored under a non-canonical name."
+  },
+  {
+   "id": "9f026645-9ae6-4ab2-8e52-d4f110f77432",
+   "term": "Audio pocket",
+   "primary_topic": "Connectors & Plugs",
+   "flag_reason": "'Audio pocket' is not an established connectors-and-plugs term in any qualifying reference. Its meaning is unclear (possibly a stage-box or patch-panel feature), so it is flagged rather than guessed."
+  },
+  {
+   "id": "8db6587d-5c36-4e05-8d58-21390e03ddbb",
+   "term": "Follow",
+   "primary_topic": "Console Architecture & Signal Flow",
+   "flag_reason": "As a standalone console term 'Follow' is ambiguous — it could mean solo/monitor follows fader (AFL), sends-on-faders follow, or a follow-spot cue. No single qualifying definition applies to the bare word, so it is flagged rather than guessed."
+  },
+  {
+   "id": "29d8add3-5cf1-4158-ab15-43b7b77b6db8",
+   "term": "House start file",
+   "primary_topic": "Console Architecture & Signal Flow",
+   "flag_reason": "'House start file' is not standard console terminology. Digital consoles use 'show file', 'scene', or 'snapshot'; no qualifying source defines a 'house start file', so it is flagged rather than fabricated."
+  },
+  {
+   "id": "30ff9320-64eb-43be-b0dd-83133a5012c0",
+   "term": "Populate group",
+   "primary_topic": "Console Architecture & Signal Flow",
+   "flag_reason": "'Populate group' is not an established named console feature. Assigning channels to a DCA/VCA or group is standard, but no qualifying source defines 'populate group' as a term, so it is flagged rather than guessed."
+  },
+  {
+   "id": "7965fdca-194d-4277-bef4-59278cbdb050",
+   "term": "Population group",
+   "primary_topic": "Console Architecture & Signal Flow",
+   "flag_reason": "'Population group' has no meaning in console architecture or signal flow (it reads as a statistical term). No qualifying audio source supports it, so it is flagged rather than fabricated."
+  },
+  {
+   "id": "0e27848f-eec8-418d-8089-5554eefad006",
+   "term": "Solo group",
+   "primary_topic": "Console Architecture & Signal Flow",
+   "flag_reason": "'Solo group' is not a consistently defined console feature; recognized terms are solo bus, PFL/AFL, mute groups, and DCA/VCA groups. It is ambiguous and unsupported by a qualifying source, so it is flagged rather than guessed."
+  },
+  {
+   "id": "8f5ef941-96a7-4aa3-9f84-7153e053aeaf",
+   "term": "Start file",
+   "primary_topic": "Console Architecture & Signal Flow",
+   "flag_reason": "'Start file' is not standard console terminology; consoles use 'show file', 'scene', 'snapshot', or a template/default show. No qualifying source defines 'start file', so it is flagged rather than fabricated."
+  },
+  {
+   "id": "672f8459-e658-4e56-a05f-3ae40565f4f5",
+   "term": "Surface attention zone",
+   "primary_topic": "Control Surfaces & Machine Control",
+   "flag_reason": "Not a documented control-surface term. EUCON documentation defines 'attention' and the attentioned track, but no qualifying protocol or manufacturer source defines 'attention zone' or 'surface attention zone'. It appears to be a coined label, so it is flagged rather than assigned an invented meaning."
+  },
+  {
+   "id": "b5ea79c4-74bc-45b0-887a-05d19874b789",
+   "term": "Frequency-density control",
+   "primary_topic": "Creative & Advanced Mix Processing",
+   "flag_reason": "Coined/ambiguous label with no qualifying source that defines it as a named technique. It could plausibly refer to managing spectral density or frequency masking across an arrangement, but no mixing or DAW reference uses 'frequency-density control' as a term. Flagged to avoid inventing a definition."
+  },
+  {
+   "id": "1a86dd6f-0b4b-496b-8cd0-f85f000d4a25",
+   "term": "Basic Folder",
+   "primary_topic": "DAW Fundamentals & Session Management",
+   "flag_reason": "Ambiguous/coined label capitalized as a proper term, but no qualifying DAW or asset-management source defines a specific feature named 'Basic Folder'. It may mean an ordinary file-system folder for session assets or a named feature in a particular application; unverifiable, so flagged rather than guessed."
+  },
+  {
+   "id": "89d16e4d-45b2-4c8d-be3d-5186d5288274",
+   "term": "Navigation Memory",
+   "primary_topic": "DAW Fundamentals & Session Management",
+   "flag_reason": "Coined/ambiguous label; no qualifying DAW manual or reference defines a feature called 'Navigation Memory'. It may loosely paraphrase marker or memory-location navigation (e.g. Pro Tools Memory Locations), but naming it this way would conflate distinct product features. Flagged rather than guessed."
+  },
+  {
+   "id": "1bac3bfe-6338-4abe-a412-2e65d7a846c1",
+   "term": "Session server",
+   "primary_topic": "DAW Fundamentals & Session Management",
+   "flag_reason": "Not a standardized, documented term in DAW/session-management literature. It plausibly means a server hosting collaborative session or project files (as opposed to a media server holding media), but no qualifying source defines 'session server' specifically. Flagged to avoid fabricating a definition."
+  },
+  {
+   "id": "bfad2fc4-94f3-4db9-b722-38dd334b609f",
+   "term": "Segmentation resolution",
+   "primary_topic": "DAW: Ableton Live",
+   "flag_reason": "Not a documented Ableton Live feature name. The manual uses 'Warp Markers', a 'slicing resolution' setting in Slice to New MIDI Track, and 'Segment BPM', but no feature is named 'Segmentation resolution'. Conflating it with slicing or warp settings would risk inaccuracy, so it is flagged for review."
+  },
+  {
+   "id": "b06db557-13ab-4e81-a964-b956ea43392d",
+   "term": "Mixdown Selection",
+   "primary_topic": "DAW: Studio One",
+   "flag_reason": "No Studio One feature or command named 'Mixdown Selection' appears in the official Studio One manual (Export Mixdown / Mixing Down page) or the key-commands references. The corresponding official commands are 'Export Mixdown' and 'Bounce Selection'. Label is ambiguous and cannot be defined against a qualifying Studio One source without guessing."
+  },
+  {
+   "id": "80e400c8-ed1a-484c-bad7-4ca383411b00",
+   "term": "Record Mix",
+   "primary_topic": "DAW: Studio One",
+   "flag_reason": "No Studio One feature or command named 'Record Mix' appears in the official Studio One manual, the Export Mixdown documentation, or the key-commands references. Ambiguous/coined label with no qualifying Studio One source to confirm its meaning."
+  },
+  {
+   "id": "f1651b76-7fd1-406c-a213-18cada3d5033",
+   "term": "Battle scratch",
+   "primary_topic": "DJ Performance & Turntablism",
+   "flag_reason": "'Battle scratch' is not a specific named technique in the standard turntablism vocabulary; 'battle' denotes a competitive context, not a defined scratch. No qualifying source defines it, so it is flagged rather than guessed."
+  },
+  {
+   "id": "b0dfe8f6-22b2-40fb-a68d-0bf97d0079a9",
+   "term": "Recover the floor",
+   "primary_topic": "DJ Performance & Turntablism",
+   "flag_reason": "'Recover the floor' is informal slang for winning a crowd back after losing energy. It is not a named technique in any qualifying source, so it is flagged rather than fabricated."
+  },
+  {
+   "id": "2eb18ee6-dfb9-43fe-866d-03db75e4d945",
+   "term": "Tone play",
+   "primary_topic": "DJ Performance & Turntablism",
+   "flag_reason": "'Tone play' is not an established, named turntablism technique in the recognized scratch lexicon (baby, chirp, flare, crab, transformer, etc.). Its meaning is unclear and unsupported by a qualifying source, so it is flagged rather than guessed."
+  },
+  {
+   "id": "5ca52716-c048-488a-a4f5-148f6d306d0b",
+   "term": "Cross-subscription",
+   "primary_topic": "Dante Fundamentals & Routing",
+   "flag_reason": "Audinate's Dante terminology uses 'subscription' (routing a transmit channel to a receive channel); 'cross-subscription' is not a documented Dante term. It cannot be confirmed from official Audinate documentation, so it is flagged rather than guessed."
+  },
+  {
+   "id": "e226eea0-55d7-4ee0-ae65-46648136de4f",
+   "term": "Dante Button",
+   "primary_topic": "Dante Fundamentals & Routing",
+   "flag_reason": "No 'Dante Button' feature or product appears in official Audinate documentation (Dante Controller, Virtual Soundcard, Via, Domain Manager). The term cannot be verified, so it is flagged rather than fabricated."
+  },
+  {
+   "id": "21422c88-5675-423a-99d6-36eb14316b64",
+   "term": "Grid diffuser",
+   "primary_topic": "Diffusion & Materials",
+   "flag_reason": "'Grid diffuser' is not a canonical named diffuser type in acoustics references, which define Schroeder/QRD, primitive-root, skyline (2D), and BAD-panel diffusers. The term is unverified, so it is flagged rather than guessed."
+  },
+  {
+   "id": "c533c16a-432b-4960-be34-0cbc2726d798",
+   "term": "House file",
+   "primary_topic": "Documentation & Diagrams",
+   "flag_reason": "'House file' is not established documentation/console terminology; standard terms are 'show file', 'scene', 'snapshot', or 'patch/system file'. No qualifying source defines 'house file', so it is flagged rather than fabricated."
+  },
+  {
+   "id": "e44fa56e-af46-408a-beac-07c1a9f76b4c",
+   "term": "Accent supervision",
+   "primary_topic": "Dubbing & Localization",
+   "flag_reason": "'Accent supervision' is not a standardized, named role in dubbing/localization references, which name dubbing directors and dialogue/dialect coaches. Its exact scope cannot be confirmed from a qualifying source, so it is flagged rather than guessed."
+  },
+  {
+   "id": "4ac6becb-033f-4760-9228-edd81718db30",
+   "term": "Sensitivity-curve nodes",
+   "primary_topic": "Equalization (EQ)",
+   "flag_reason": "'Sensitivity-curve nodes' is not standard EQ terminology in recognized references (Izhaki, Bartlett, Ballou). It may conflate equal-loudness (sensitivity) contours with EQ band control points, but the term is coined and unverifiable, so it is flagged rather than guessed."
+  },
+  {
+   "id": "14a5770f-33d0-42a9-9115-8c2c87935929",
+   "term": "Conducting offset",
+   "primary_topic": "Film Scoring",
+   "flag_reason": "'Conducting offset' is not a clearly established, named term in recognized film-scoring references. It may point to a real practice (conducting ahead of the beat, or a click/visual offset), but the specific term cannot be confirmed from a qualifying source, so it is flagged rather than guessed."
+  },
+  {
+   "id": "4bf8b643-1ba7-432e-938b-b58c4afe6bfe",
+   "term": "Contact Foley",
+   "primary_topic": "Foley Performance & Recording",
+   "flag_reason": "Not an established, named Foley category in the recognized references (Ament, Yewdall, Viers). The label is ambiguous: it could mean Foley for physical-contact/touch sounds (a subset of specifics/moves) or a contact-microphone recording technique. Cannot confidently disambiguate from a qualifying source, so holding rather than guessing."
+  },
+  {
+   "id": "a896fab7-fe96-4f22-9e76-1177c6734304",
+   "term": "Beer-proof",
+   "primary_topic": "Live Sound — Concert-Audio Slang",
+   "flag_reason": "'Beer-proof' is subjective concert-audio slang for gear rugged enough to survive a spilled drink. It has no qualifying technical definition or rating, so per the slang rule it is flagged rather than given a fabricated technical meaning."
+  },
+  {
+   "id": "3fcab0e3-19b1-4505-bb5b-66e2dc8bdb64",
+   "term": "Pile-up",
+   "primary_topic": "Live Sound — Concert-Audio Slang",
+   "flag_reason": "'Pile-up' has no established, single meaning in concert-audio usage (it may loosely suggest frequency masking, a scheduling jam, or borrow the radio 'pileup' sense). It is ambiguous and unsupported by a qualifying source, so it is flagged rather than guessed."
+  },
+  {
+   "id": "1a5b56bf-a825-48a4-8a58-b05a30ae0966",
+   "term": "Plenty of rig",
+   "primary_topic": "Live Sound — Concert-Audio Slang",
+   "flag_reason": "'Plenty of rig' is a casual, subjective phrase meaning there is ample PA/system for the gig. It is not a defined term and has no qualifying technical definition, so per the slang rule it is flagged rather than fabricated."
+  },
+  {
+   "id": "e55cca1e-e14e-498f-8094-99682e18394d",
+   "term": "Closed fist",
+   "primary_topic": "Live Sound — Monitor Engineering",
+   "flag_reason": "Stage hand signals to monitor engineers are not standardized, and 'closed fist' has no single documented meaning (variously read as stop/hold, cut, or 'that's good'). No qualifying source fixes its meaning, so it is flagged rather than guessed."
+  },
+  {
+   "id": "6aa094cc-23f4-4079-81e8-f8a0f6f9dfed",
+   "term": "Crossfire wedges",
+   "primary_topic": "Live Sound — Monitor Engineering",
+   "flag_reason": "'Crossfire wedges' (angling two wedge monitors so their coverage crosses) describes a plausible practice but is not a defined, source-supported named technique in qualifying monitor-engineering references, so it is flagged rather than authored with fabricated specifics."
+  },
+  {
+   "id": "7ef5b737-d96e-41df-b7f3-a2f6025989e5",
+   "term": "Mix stability",
+   "primary_topic": "Live Sound — Monitor Engineering",
+   "flag_reason": "Ambiguous, non-standardized term. No qualifying source defines 'mix stability' as a distinct monitor-engineering term; it could mean gain-before-feedback stability or a mix that needs no adjustment. Intended meaning cannot be confirmed without guessing."
+  },
+  {
+   "id": "160d9ab1-bacd-4456-abde-9ae9caef15ed",
+   "term": "Point to the wedge",
+   "primary_topic": "Live Sound — Monitor Engineering",
+   "flag_reason": "Informal on-stage hand-signal/idiom (performer indicating the floor monitor). Oral live-sound tradition only; no qualifying published source defines it."
+  },
+  {
+   "id": "c7eed23d-598a-4071-87e5-e011aad66ff4",
+   "term": "Point-and-signal method",
+   "primary_topic": "Live Sound — Monitor Engineering",
+   "flag_reason": "Coined/undocumented phrase. No qualifying source defines a named 'point-and-signal method' for stage communication."
+  },
+  {
+   "id": "ac6506f2-3a5a-44c0-82d6-c0513049d852",
+   "term": "Take me out",
+   "primary_topic": "Live Sound — Monitor Engineering",
+   "flag_reason": "Informal performer/talent phrase (remove me from the mix or monitor). Oral jargon only; no qualifying source."
+  },
+  {
+   "id": "a38964fc-7f68-4d36-962c-11d0c2798d59",
+   "term": "Tap the ear",
+   "primary_topic": "Live Sound — Monitor Engineering",
+   "flag_reason": "Informal on-stage hand signal for in-ear/monitor level. No qualifying published source documents it."
+  },
+  {
+   "id": "fefbd43d-3c22-420e-9761-dbc652890577",
+   "term": "Thumb up or down",
+   "primary_topic": "Live Sound — Monitor Engineering",
+   "flag_reason": "Generic gesture for more/less, not a defined audio term. No qualifying source."
+  },
+  {
+   "id": "f04da6b0-e3dc-47ef-80b0-877c29c3f6a6",
+   "term": "Wedge wash",
+   "primary_topic": "Live Sound — Monitor Engineering",
+   "flag_reason": "Informal term for floor-monitor spill/bleed across the stage. No qualifying source defines 'wedge wash' as a distinct term."
+  },
+  {
+   "id": "541b43d3-658c-4d7d-bd38-07dedaee6987",
+   "term": "Amp city (amp world)",
+   "primary_topic": "Live Sound — PA Deployment & System Engineering",
+   "flag_reason": "Slang for the amplifier/rack area backstage. No qualifying source defines it as a technical term."
+  },
+  {
+   "id": "16a0a7d9-c0aa-4abe-a939-ad0a07a41ae6",
+   "term": "Call and response",
+   "primary_topic": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+   "flag_reason": "Ambiguous in this context and conflicts with the established musical form. No qualifying source defines a distinct soundcheck 'call and response' procedure."
+  },
+  {
+   "id": "c131b7e7-79b2-4a91-ae9b-6520fb2d4ad6",
+   "term": "Call the channel",
+   "primary_topic": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+   "flag_reason": "Informal soundcheck phrase (announce the input/channel being checked). No qualifying source defines it by name."
+  },
+  {
+   "id": "167b81b7-5a97-4ab9-803e-e8661d9babec",
+   "term": "Check from the top",
+   "primary_topic": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+   "flag_reason": "General 'from the top' phrasing (start from the beginning), not a defined audio term. No qualifying source."
+  },
+  {
+   "id": "ab30ef76-ed9e-41f4-9d76-a2198fc64675",
+   "term": "Check in context",
+   "primary_topic": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+   "flag_reason": "Informal workflow phrase (evaluate a source within the full mix rather than soloed). No qualifying source defines it as a term."
+  },
+  {
+   "id": "5260bf60-fc27-4f24-8649-98703caab02e",
+   "term": "Check the split",
+   "primary_topic": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+   "flag_reason": "Informal phrase for verifying splitter / mic-split feeds. No qualifying source defines it by name."
+  },
+  {
+   "id": "31b8fb97-25d1-42c3-85e0-b03d3fa3532b",
+   "term": "Color pass",
+   "primary_topic": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+   "flag_reason": "Coined/ambiguous. Meaning uncertain in the soundcheck context and no qualifying source; flagged rather than guess."
+  },
+  {
+   "id": "8dfdc2c4-21bd-4a55-9cea-e35968ab6a9e",
+   "term": "Communication check",
+   "primary_topic": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+   "flag_reason": "Generic, self-descriptive pre-show comms/intercom check. No qualifying source defines it as a distinct term of art."
+  },
+  {
+   "id": "2770f62f-753b-4181-878f-e20fe2000f3a",
+   "term": "Count into the microphone",
+   "primary_topic": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+   "flag_reason": "Describes the generic mic check ('one, two'). Not a defined term and no qualifying source."
+  },
+  {
+   "id": "a2cc0ad0-7198-4e71-bb58-c200fcf7d6e7",
+   "term": "Scratch the grille",
+   "primary_topic": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+   "flag_reason": "Informal technique/idiom (lightly scratching a mic grille to identify a channel). No qualifying published source."
+  },
+  {
+   "id": "1ac9985c-0d12-42c3-bd20-d03e75b665e4",
+   "term": "Throw-and-go",
+   "primary_topic": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+   "flag_reason": "Slang for rapid deploy-and-run PA setup with minimal tuning. No qualifying source defines it as a term."
+  },
+  {
+   "id": "bef1ca94-e018-4958-9ce3-057016b708e7",
+   "term": "Earbud engineering",
+   "primary_topic": "Loudspeaker / Transducer Engineering",
+   "flag_reason": "Overly broad/ambiguous descriptor rather than a defined term of art. No qualifying source establishes a specific 'earbud engineering' concept; flagged rather than invent a scope."
+  },
+  {
+   "id": "e453ea6f-8ef7-4a98-96e6-8385be0b0432",
+   "term": "Long-term wear evaluation",
+   "primary_topic": "Loudspeaker / Transducer Engineering",
+   "flag_reason": "Coined descriptive phrase for extended-wear comfort testing. No qualifying source establishes it as a standard named term; flagged rather than invent a fixed methodology."
+  },
+  {
+   "id": "77c144ae-7232-4da8-95ff-19dbdda0a97d",
+   "term": "Early monitor",
+   "primary_topic": "Orchestra Pit & Ensemble Layout",
+   "flag_reason": "No recognized meaning for 'early monitor' in orchestra-pit / ensemble-layout practice; no qualifying source defines it in this context. Possible non-standard or coined usage - flagged rather than guessed."
+  },
+  {
+   "id": "4108570b-cd79-4294-ac80-18ae9be3128c",
+   "term": "Late monitor",
+   "primary_topic": "Orchestra Pit & Ensemble Layout",
+   "flag_reason": "No recognized meaning for 'late monitor' in orchestra-pit / ensemble-layout practice; no qualifying source defines it in this context. Possible non-standard or coined usage - flagged rather than guessed."
+  },
+  {
+   "id": "1caac7c1-9344-41a1-b0bb-20e5ffd96255",
+   "term": "Blue light",
+   "primary_topic": "Professional Audio Safety",
+   "flag_reason": "Ambiguous in a Professional Audio Safety context - could mean backstage blue running/safety lights, the photobiological 'blue-light' retinal hazard, or a device power indicator; no single meaning is verifiable from a safety standard. Flagged rather than guess a safety term."
+  },
+  {
+   "id": "cfb35378-ef1c-4fbe-b408-85ea253ff514",
+   "term": "Artist package",
+   "primary_topic": "Project Management",
+   "flag_reason": "Vague/non-standard; 'artist package' has no consistent, sourceable meaning in touring project management (could denote a hospitality, technical, or service bundle). Flagged rather than invent a meaning."
+  },
+  {
+   "id": "360fbfe2-88d6-456e-a729-f17e5a35ca15",
+   "term": "Local pickup",
+   "primary_topic": "Project Management",
+   "flag_reason": "Ambiguous in touring PM - could mean locally hired crew, locally rented gear, or a local equipment collection; no qualifying source fixes the meaning. Flagged rather than guess."
+  },
+  {
+   "id": "637416fa-36b6-46b4-8caa-2d3f7a10f46a",
+   "term": "Stick",
+   "primary_topic": "RF Wireless Systems",
+   "flag_reason": "Ambiguous RF slang - could mean a handheld ('stick') wireless microphone or a 'stick'/whip antenna; not defined unambiguously in manufacturer or standards RF references. Flagged rather than guess."
+  },
+  {
+   "id": "93220408-953a-4e83-b01e-0ef0daeac959",
+   "term": "Back",
+   "primary_topic": "Racks, Patchbays & Wiring Infrastructure",
+   "flag_reason": "Not a meaningful standalone term in racks/patchbays/wiring infrastructure; no qualifying source. Likely a placeholder or mislabeled entry. Flagged rather than invent."
+  },
+  {
+   "id": "c51c314f-e178-457e-a0d7-8cb8f03b3ee3",
+   "term": "Contrast",
+   "primary_topic": "Racks, Patchbays & Wiring Infrastructure",
+   "flag_reason": "'Contrast' is a display/video parameter, not a racks/patchbays/wiring term; it does not fit the topic and is unverifiable here. Flagged."
+  },
+  {
+   "id": "33a999f9-1ae5-402a-89c3-8f4daaf3cd06",
+   "term": "Enter",
+   "primary_topic": "Racks, Patchbays & Wiring Infrastructure",
+   "flag_reason": "Not a racks/patchbays/wiring infrastructure term (a generic key/word); no qualifying source defines it in this context. Flagged."
+  },
+  {
+   "id": "80416870-0a22-4332-975b-b9bb4212de86",
+   "term": "Podcast table",
+   "primary_topic": "Racks, Patchbays & Wiring Infrastructure",
+   "flag_reason": "No recognized definition as wiring-infrastructure terminology; appears to be furniture/product usage outside the topic. Unverifiable - flagged."
+  },
+  {
+   "id": "7646d6f5-56d7-4058-80cc-775e2ccd467a",
+   "term": "Quality Mode",
+   "primary_topic": "Racks, Patchbays & Wiring Infrastructure",
+   "flag_reason": "Generic feature label with no consistent, sourceable meaning in racks/patchbays/wiring infrastructure. Flagged rather than guess."
+  },
+  {
+   "id": "e94a6dbd-aead-409d-8e82-4839459ffdc6",
+   "term": "Rack pedestal",
+   "primary_topic": "Racks, Patchbays & Wiring Infrastructure",
+   "flag_reason": "Not verifiable as a standard term in racks/wiring infrastructure; uncertain whether it denotes specific studio furniture or hardware. Flagged rather than invent."
+  },
+  {
+   "id": "aaef2910-f2d6-4c72-bce1-059e73144665",
+   "term": "Perspective Cut",
+   "primary_topic": "Re-Recording & Final Mix",
+   "flag_reason": "Not a documented re-recording/final-mix term. 'Audio perspective' (matching a sound's apparent distance and space to the picture) is a recognized concept in Holman's Sound for Film and Television and Wyatt & Amyes' Audio Post Production, but no qualifying film-post source defines 'Perspective Cut' as a named technique. It reads as a coined or garbled label, so it is flagged rather than assigned an invented meaning."
+  },
+  {
+   "id": "72efc495-6d71-4b89-8401-e647906ce6df",
+   "term": "Perspective Performance",
+   "primary_topic": "Re-Recording & Final Mix",
+   "flag_reason": "No qualifying film-post reference (Holman; Yewdall, Practical Art of Motion Picture Sound; Wyatt & Amyes) defines 'Perspective Performance' as a named term. 'Perspective' alone is a real audio concept, but this specific two-word label is unverifiable and appears coined, so it is flagged rather than guessed."
+  },
+  {
+   "id": "13b13399-5d33-4ef0-99d5-73d043908853",
+   "term": "Specifics Track",
+   "primary_topic": "Re-Recording & Final Mix",
+   "flag_reason": "Not a recognized re-recording/final-mix term. Standard stems and tracks (dialogue, music, effects, Foley, backgrounds) are well documented, but no qualifying source (Holman; Yewdall; Wyatt & Amyes) defines a 'Specifics Track'. It appears to be a coined or mislabeled term, so it is flagged rather than described under an unverifiable name."
+  },
+  {
+   "id": "e73a8c5a-ed7c-4b33-982f-2d8fa01bdb20",
+   "term": "Step Perspective",
+   "primary_topic": "Re-Recording & Final Mix",
+   "flag_reason": "Not a documented film-post term. Footsteps are handled in Foley, and 'perspective' is a real concept, but no qualifying source (Holman; Yewdall; Wyatt & Amyes) defines 'Step Perspective' as a named technique. It reads as a coined or garbled label, so it is flagged rather than guessed."
+  },
+  {
+   "id": "5b154a2e-2b3b-4136-81ae-5215209a1175",
+   "term": "Attic space",
+   "primary_topic": "Rigging Hardware, Loads & Motorized Flying",
+   "flag_reason": "Not a recognized entertainment-rigging term; cannot verify a definition, load context, or clearance/procedure from a rigging standard. SAFETY-CRITICAL: flagged rather than guess."
+  },
+  {
+   "id": "bcc30945-c533-49d2-95ca-df76fd3c8f0b",
+   "term": "Obstruction zone",
+   "primary_topic": "Rigging Hardware, Loads & Motorized Flying",
+   "flag_reason": "Not a defined term in entertainment-rigging standards; meaning and any clearance/exclusion specifics are unverifiable. SAFETY-CRITICAL: flagged rather than guess a distance or procedure."
+  },
+  {
+   "id": "502e5b02-de3f-4ca2-9813-ed33fa87b45d",
+   "term": "Send it",
+   "primary_topic": "Rigging Hardware, Loads & Motorized Flying",
+   "flag_reason": "Non-standard, dangerously ambiguous crew slang (generally 'proceed', but can imply raise/lower/go); defining it precisely as a motorized-flying instruction would risk a wrong, hazardous command. SAFETY-CRITICAL: flagged rather than guess."
+  },
+  {
+   "id": "ae16bc35-b72d-47cb-802b-b84b587020ab",
+   "term": "Sound bridge",
+   "primary_topic": "Rigging Hardware, Loads & Motorized Flying",
+   "flag_reason": "The sourceable meaning of 'sound bridge' is an acoustics term (a rigid sound-transmitting/flanking path), which does not fit 'Rigging Hardware, Loads & Motorized Flying'; any rigging meaning is unverifiable. Flagged rather than guess."
+  },
+  {
+   "id": "aed3e6c5-12a0-4b5a-ab5a-9c89deddb014",
+   "term": "Break-in",
+   "primary_topic": "Road Crew",
+   "flag_reason": "Ambiguous in a road-crew context (breaking in new crew, a vehicle/venue break-in, or a mis-entry for 'load-in'); no qualifying source fixes the meaning. Flagged rather than guess."
+  },
+  {
+   "id": "30dd1699-1d1a-4e5a-ae36-bf2581dab021",
+   "term": "Up-and-over",
+   "primary_topic": "Road Crew",
+   "flag_reason": "Ambiguous in road-crew practice (an up-and-over truck/dock door, or an over-an-obstacle load path/move); no qualifying source defines it. Flagged rather than guess."
+  },
+  {
+   "id": "5b01f2fb-718b-4eac-9b00-1a8f04b1efe1",
+   "term": "Vault",
+   "primary_topic": "Road Crew",
+   "flag_reason": "'Vault' has an established music-industry meaning (an artist's archive of master or unreleased recordings) but no established Road Crew meaning; term-topic mismatch and ambiguity. No qualifying source supports a Road Crew definition."
+  },
+  {
+   "id": "5af15700-19ce-47fd-8ba4-80ffafb15b99",
+   "term": "Age matching",
+   "primary_topic": "SFX Editorial & Sound Design",
+   "flag_reason": "No qualifying source defines 'Age matching' as a term of art in SFX editorial / sound design. The label is ambiguous: it could mean matching a replacement voice's perceived age in ADR/casting, or processing a sound so its sonic vintage/era matches surrounding material. Not verifiable without inventing a specific meaning."
+  },
+  {
+   "id": "284d8827-1adf-4c82-b114-1c11c31767f4",
+   "term": "Emotional performance",
+   "primary_topic": "SFX Editorial & Sound Design",
+   "flag_reason": "Generic phrase with no established, specific definition in SFX editorial / sound design; not found as a term of art in recognized references (Viers 'The Sound Effects Bible', Sonnenschein 'Sound Design'). It reads as an acting/voice/music descriptor rather than an SFX-editorial concept. Defining it in this topic context would require guessing."
+  },
+  {
+   "id": "5f144024-9020-446d-a810-29960e244cf8",
+   "term": "Finger tap",
+   "primary_topic": "SFX Editorial & Sound Design",
+   "flag_reason": "Literal descriptive label (the sound of a fingertip striking a surface) with no recognized term-of-art definition in SFX editorial / Foley references. It could also denote a guitar/controller tapping technique. Meaning cannot be pinned to a qualifying source without inventing specifics."
+  },
+  {
+   "id": "237ff440-188b-4c42-9f34-f44f97b56694",
+   "term": "Mobile recording certification",
+   "primary_topic": "Session Workflow, Takes & Documentation",
+   "flag_reason": "No recognized industry certification exists under this exact name, and the label is ambiguous: it could mean certifying a person for remote/location recording, certifying a mobile recording vehicle or rig, or a device/format certification. No qualifying source defines it, so authoring a definition would be guessing."
+  },
+  {
+   "id": "cea9b806-570b-4f33-84d1-fd5f3f8fd1a4",
+   "term": "Clear the cue",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Coined/ambiguous. Could mean cancelling a cue, clearing a standby, or reporting a cue complete; not an established, defined show-control term and no >=2 qualifying sources support one reading."
+  },
+  {
+   "id": "a3d1d069-3670-4171-b7ee-ac99929a0c32",
+   "term": "Clear to patch",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Appears to be a coined/permutation 'clear-to-[action]' phrase. General radio/comms practice uses 'clear to...' permission phraseology, but this exact term is not defined in qualifying show-control or intercom references (MIDI Show Control, SMPTE, Clear-Com/RTS docs) and lacks >=2 qualifying sources. Not authored to avoid inventing a definition."
+  },
+  {
+   "id": "aef33f27-6774-4915-b243-b54adf5c8718",
+   "term": "Clear to power",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Appears to be a coined/permutation 'clear-to-[action]' phrase. General radio/comms practice uses 'clear to...' permission phraseology, but this exact term is not defined in qualifying show-control or intercom references (MIDI Show Control, SMPTE, Clear-Com/RTS docs) and lacks >=2 qualifying sources. Not authored to avoid inventing a definition."
+  },
+  {
+   "id": "6634089e-d2b0-43f0-917b-8b0fc3cfd2f7",
+   "term": "Clear to power up",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Appears to be a coined/permutation 'clear-to-[action]' phrase. General radio/comms practice uses 'clear to...' permission phraseology, but this exact term is not defined in qualifying show-control or intercom references (MIDI Show Control, SMPTE, Clear-Com/RTS docs) and lacks >=2 qualifying sources. Not authored to avoid inventing a definition."
+  },
+  {
+   "id": "90b7cf7c-2f81-44b0-9e0b-316179f83103",
+   "term": "Clear to test",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Appears to be a coined/permutation 'clear-to-[action]' phrase. General radio/comms practice uses 'clear to...' permission phraseology, but this exact term is not defined in qualifying show-control or intercom references (MIDI Show Control, SMPTE, Clear-Com/RTS docs) and lacks >=2 qualifying sources. Not authored to avoid inventing a definition."
+  },
+  {
+   "id": "ea23dbf6-c31f-44b0-8a44-313e9273d539",
+   "term": "Clear to unmute",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Appears to be a coined/permutation 'clear-to-[action]' phrase. General radio/comms practice uses 'clear to...' permission phraseology, but this exact term is not defined in qualifying show-control or intercom references (MIDI Show Control, SMPTE, Clear-Com/RTS docs) and lacks >=2 qualifying sources. Not authored to avoid inventing a definition."
+  },
+  {
+   "id": "3d125330-0ead-4f3f-b065-7f2b1b3148c6",
+   "term": "Coming down",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Non-standard variant of the canonical fly call 'coming in'. Informal, house-specific verbal call. Rigging safety guidance (UC counterweight-fly safety procedures; J.R. Clancy/Wenger rigging vocabulary) documents standardized calls such as 'heads', 'coming in', 'going out', and 'runaway' and directs each facility to develop its own warning phrases - this exact wording is not a standardized, qualifying-sourced term. Safety-relevant; flagged rather than defined from assumption."
+  },
+  {
+   "id": "8d0cf8a8-ca1c-43cb-956c-7dcc0354d652",
+   "term": "Coming through",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Informal, house-specific verbal call. Rigging safety guidance (UC counterweight-fly safety procedures; J.R. Clancy/Wenger rigging vocabulary) documents standardized calls such as 'heads', 'coming in', 'going out', and 'runaway' and directs each facility to develop its own warning phrases - this exact wording is not a standardized, qualifying-sourced term. Safety-relevant; flagged rather than defined from assumption."
+  },
+  {
+   "id": "c8dbee32-e78b-456e-9cb8-087d3f76e497",
+   "term": "Overnight hold",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Ambiguous 'hold' phrase with no qualifying source; could mean an equipment/state hold, a scheduling hold, or a stored console state left running overnight. No >=2 qualifying sources define this term."
+  },
+  {
+   "id": "514ab632-ad65-43d4-b862-32fb2bf32bb6",
+   "term": "Post-show hold",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Ambiguous 'hold' phrase; could mean gear/state held after the show, a scheduling hold, or a stored console state. No qualifying source defines this specific term."
+  },
+  {
+   "id": "be86fdc4-0d23-433c-8cc0-b5329a9c9657",
+   "term": "Shout line",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Ambiguous. May denote a 'shout'/talkback intercom circuit or a paging line, but not verified in qualifying intercom references (Clear-Com/RTS). No confident, sourced definition."
+  },
+  {
+   "id": "c0c02b98-6c26-4d34-aeb1-203a8a82c7ee",
+   "term": "Watch your feet",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Informal, house-specific verbal call. Rigging safety guidance (UC counterweight-fly safety procedures; J.R. Clancy/Wenger rigging vocabulary) documents standardized calls such as 'heads', 'coming in', 'going out', and 'runaway' and directs each facility to develop its own warning phrases - this exact wording is not a standardized, qualifying-sourced term. Safety-relevant; flagged rather than defined from assumption."
+  },
+  {
+   "id": "3e746b3e-a395-4cd9-aef6-b85f684ccaca",
+   "term": "Weight is off",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Facility-specific load-transfer call. Informal, house-specific verbal call. Rigging safety guidance (UC counterweight-fly safety procedures; J.R. Clancy/Wenger rigging vocabulary) documents standardized calls such as 'heads', 'coming in', 'going out', and 'runaway' and directs each facility to develop its own warning phrases - this exact wording is not a standardized, qualifying-sourced term. Safety-relevant; flagged rather than defined from assumption."
+  },
+  {
+   "id": "d0a14866-198c-4c92-a7d6-43f555497547",
+   "term": "You have it",
+   "primary_topic": "Show Control, Cueing & Communications",
+   "flag_reason": "Facility-specific load/line handoff confirmation. Informal, house-specific verbal call. Rigging safety guidance (UC counterweight-fly safety procedures; J.R. Clancy/Wenger rigging vocabulary) documents standardized calls such as 'heads', 'coming in', 'going out', and 'runaway' and directs each facility to develop its own warning phrases - this exact wording is not a standardized, qualifying-sourced term. Safety-relevant; flagged rather than defined from assumption."
+  },
+  {
+   "id": "308bbbff-811a-4e80-85dc-d685a11963ed",
+   "term": "Bubble windscreen",
+   "primary_topic": "Sound for Picture — Post Workflow & Deliverables",
+   "flag_reason": "Term is niche/ambiguous and listed under a post-workflow topic rather than microphone accessories; no qualifying reference confidently defines a specific 'bubble windscreen' as a standardized microphone wind-protection device. Cannot author a confident, correct definition without guessing which product/design is meant. Recommend verification against a manufacturer catalog (e.g. Rycote/Rode/Sennheiser) or SME."
+  },
+  {
+   "id": "28f4960e-e422-427e-8f88-7461cc1c6fec",
+   "term": "Projection playback",
+   "primary_topic": "Sound for Picture — Post Workflow & Deliverables",
+   "flag_reason": "Not a recognized, uniquely defined post-production sound term. It could plausibly mean on-set music/picture playback run from a projector, or playback synchronized to projected picture in a screening theatre, but no qualifying source fixes a single, confident meaning. Flagging rather than inventing one."
+  },
+  {
+   "id": "4458b541-b1bc-4787-a635-e11ad088115e",
+   "term": "Punch pass",
+   "primary_topic": "Sound for Picture — Post Workflow & Deliverables",
+   "flag_reason": "Ambiguous and not an established named term. It could mean a punch-in (insert) recording pass used to drop in fixes, or a Foley/effects pass dedicated to punches and impacts for a fight scene. No qualifying source confirms a single meaning, so flagging rather than guessing."
+  },
+  {
+   "id": "57bad379-c459-4a23-a8bc-0757506ebce0",
+   "term": "C-stage",
+   "primary_topic": "Stage Geography & Backstage",
+   "flag_reason": "Ambiguous. Could denote a specifically named sound stage ('Stage C') or a house-specific area label; no established general 'Stage Geography & Backstage' meaning with >=2 qualifying sources."
+  },
+  {
+   "id": "9f5dcef8-0c34-4236-b33d-b7a7f8804930",
+   "term": "Acoustic equipment closet",
+   "primary_topic": "Studio & Facility Design",
+   "flag_reason": "Not an established named term in facility-design/acoustics references. Equipment/service closets and the acoustic isolation of mechanical spaces are real, but 'acoustic equipment closet' as a defined term lacks >=2 qualifying sources."
+  },
+  {
+   "id": "15432b00-c7e8-448c-804f-27778ca7070f",
+   "term": "rubbery",
+   "primary_topic": "Synthesis Fundamentals & Oscillators",
+   "flag_reason": "Subjective timbre descriptor. No qualifying synthesis reference (Roads 'The Computer Music Tutorial', Russ 'Sound Synthesis and Sampling') defines 'rubbery' as a technical term. The meaning is impressionistic and unverifiable, so a confident definition cannot be authored without fabrication."
+  },
+  {
+   "id": "7ebc76f2-3234-4a04-a299-81f8fbfb8ded",
+   "term": "Bridge buzz",
+   "primary_topic": "System & Live Troubleshooting Method",
+   "flag_reason": "Ambiguous/coined-sounding. Could refer to a bridged-amplifier buzz, a guitar-bridge rattle, or other; no qualifying source defines it as a live-sound troubleshooting term."
+  },
+  {
+   "id": "0e58dbb1-6ba2-4e3b-b8e5-9bd357e4c80a",
+   "term": "Creak",
+   "primary_topic": "System & Live Troubleshooting Method",
+   "flag_reason": "A generic mechanical noise, not an established live-sound troubleshooting term; no qualifying source supports a defined meaning in this context."
+  },
+  {
+   "id": "7eb5456c-7c04-4884-95e0-bed302c5a5a3",
+   "term": "Mute loop",
+   "primary_topic": "System & Live Troubleshooting Method",
+   "flag_reason": "Coined/ambiguous. Might imply an automation or DCA/mute feedback condition, but not a defined troubleshooting term; no >=2 qualifying sources."
+  },
+  {
+   "id": "88ac4740-8743-4c67-ad63-def3682bdd75",
+   "term": "swimming",
+   "primary_topic": "System & Live Troubleshooting Method",
+   "flag_reason": "'Swimming' describes a phasey/watery artifact (e.g., from lossy codecs or heavy processing) in some audio contexts, but is not an established live-sound troubleshooting term; ambiguous, no qualifying sources for this topic."
+  },
+  {
+   "id": "cf4ea502-6d29-4edb-abb7-2c219335d559",
+   "term": "Takeoff",
+   "primary_topic": "System & Live Troubleshooting Method",
+   "flag_reason": "Ambiguous. 'Takeoff' is an established AV/estimating term (a quantity takeoff from drawings), which does not fit the 'System & Live Troubleshooting Method' topic; no qualifying source supports a troubleshooting meaning."
+  },
+  {
+   "id": "07ea41a8-2705-4ddf-a0e5-a5c264153aae",
+   "term": "Turnaround",
+   "primary_topic": "System & Live Troubleshooting Method",
+   "flag_reason": "Multiple established meanings (reset time between shows/events; a patchbay or signal loopback/return). Under a troubleshooting topic the intended sense is ambiguous; no >=2 qualifying sources pin one."
+  },
+  {
+   "id": "e75a6202-2906-465a-bc5e-80d63761cdea",
+   "term": "Acoustic reference point",
+   "primary_topic": "System Deployment & Rigging",
+   "flag_reason": "Plausibly a measurement/alignment reference position for system tuning, but not an established, defined term with >=2 qualifying sources; ambiguous."
+  },
+  {
+   "id": "aaa848a9-5fa7-41d4-97a7-b991874b0258",
+   "term": "Band Polarity",
+   "primary_topic": "System Deployment & Rigging",
+   "flag_reason": "Not an established named term. Polarity and per-band/crossover polarity are real concepts, but 'band polarity' as a defined deployment/rigging term lacks qualifying sources; ambiguous/coined."
+  },
+  {
+   "id": "61dfdd55-592b-40a4-8a9b-8136e9404319",
+   "term": "Drive line",
+   "primary_topic": "System Deployment & Rigging",
+   "flag_reason": "Ambiguous. Could mean the drive-signal feed from console/processor to amplifiers, or an unrelated 'driveline'; no qualifying source defines it as a deployment/rigging term."
+  },
+  {
+   "id": "3b0e2c7a-9837-467b-a4f9-62c1cd3bda19",
+   "term": "Mute walk",
+   "primary_topic": "System Deployment & Rigging",
+   "flag_reason": "Coined/ambiguous; no qualifying source supports a defined meaning."
+  },
+  {
+   "id": "f7beb51f-2ff6-49a0-ad93-e1e9ee50fabb",
+   "term": "Pull back",
+   "primary_topic": "System Deployment & Rigging",
+   "flag_reason": "Generic mix/aim direction ('pull it back'), not an established named term; under a rigging/deployment topic the intended sense (level vs. physical aim vs. delay) is ambiguous. No qualifying source."
+  },
+  {
+   "id": "104224b1-e41e-49b3-ac1e-be904e53949e",
+   "term": "Push forward",
+   "primary_topic": "System Deployment & Rigging",
+   "flag_reason": "Generic mix/aim direction ('push it forward'), not an established named term; ambiguous under a rigging/deployment topic. No qualifying source."
+  },
+  {
+   "id": "752ead34-0996-4950-b6a6-c0f1de90b58e",
+   "term": "Rattle hunt",
+   "primary_topic": "System Deployment & Rigging",
+   "flag_reason": "Descriptive shop phrase for locating rattles/buzzes during tuning, but not an established, defined term with >=2 qualifying sources; flagged rather than invented."
+  },
+  {
+   "id": "1a959978-25fb-416d-a908-b4eb4ca81d7c",
+   "term": "Costume-change handoff",
+   "primary_topic": "Theatrical Sound (commercial card)",
+   "flag_reason": "The underlying practice (handling or swapping a radio mic during a quick costume change) is real in theatre sound, but 'costume-change handoff' is not an established named term with >=2 qualifying sources; wording ambiguous. Flagged for review."
+  },
+  {
+   "id": "c7126633-7d64-451e-b8dc-bac3d4652d2b",
+   "term": "Cue programmer",
+   "primary_topic": "Theatrical Sound (commercial card)",
+   "flag_reason": "Ambiguous role title. 'Programmer' is well established in lighting; in theatrical sound the person who programs cues is variously titled (associate, system programmer, head of sound). No >=2 qualifying sources establish 'cue programmer' as a defined sound role."
+  },
+  {
+   "id": "ade90ffd-c7cc-4242-bccb-5de5e0c841fd",
+   "term": "Scene tracking",
+   "primary_topic": "Theatrical Sound (commercial card)",
+   "flag_reason": "In theatrical sound, 'Scene tracking' has no single established, source-defined meaning. It could denote a digital-console feature where snapshot/scene parameter values 'track' forward until changed, the mapping and firing of cues to script scenes, or actor-mic follow automation (as in TheatreMix). Recognized references (Kaye & LeBrecht; console-maker manuals) do not fix one definition, so a confident meaning cannot be chosen without guessing."
+  },
+  {
+   "id": "bcba8e5d-e004-4ffa-8923-1120b87876cf",
+   "term": "Song pickup",
+   "primary_topic": "Theatrical Sound (commercial card)",
+   "flag_reason": "'Song pickup' is ambiguous and unsupported by a qualifying theatrical-sound source. It may mean a musical-theatre rehearsal 'pickup' (resuming a number from a set point), a vocal or instrument microphone pickup, or a broadcast/return feed of a song. No recognized reference defines it as a single term, so it cannot be authored without inventing a meaning."
+  },
+  {
+   "id": "e205d706-e056-4800-b870-27781abacec0",
+   "term": "Theater playback studio",
+   "primary_topic": "Theatrical Sound (commercial card)",
+   "flag_reason": "Appears to be a coined, non-standard label with no qualifying source. It could refer to a facility, a control-room/playback rig, or a content-preparation room, and no recognized theatrical-sound reference defines 'theater playback studio' as a term of art. Defining it would require guessing its intended scope."
+  },
+  {
+   "id": "ce8d24a1-071f-4867-9224-a9667d5d0253",
+   "term": "Theater sound studio",
+   "primary_topic": "Theatrical Sound (commercial card)",
+   "flag_reason": "Coined, generic label not defined as a term of art in recognized theatrical-sound references. It could mean a sound-design/edit room, a recording facility attached to a theatre, or a production office. Without a qualifying source fixing its meaning, a confident definition cannot be authored."
+  },
+  {
+   "id": "845d47d9-859c-4580-ac36-6121d7d6bde5",
+   "term": "Approach Effect",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Bespoke haunt-audio label with no qualifying source and genuinely ambiguous meaning: it could describe a sound designed to seem to approach the guest (looming level rise, Doppler) or an effect triggered as the guest approaches a sensor. No recognized themed-AV/show-control reference defines it, so it cannot be authored without choosing a meaning by guess."
+  },
+  {
+   "id": "95ef31cd-feb0-45ff-9803-106b47aba157",
+   "term": "Behind-You Effect",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Coined descriptive label for a rear-localized scare sound. No qualifying themed-AV/audio source defines it as a named effect. The general technique (rear/surround localization) is real, but the specific term is unsupported, so it is flagged rather than fabricated."
+  },
+  {
+   "id": "f6ebc0c0-0581-4b52-a4b1-19524c1009f6",
+   "term": "Boo Cue",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Informal, slang label with no qualifying source. It appears to mean a simple startle/jump-scare cue, overlapping with 'scare cue,' but no recognized reference defines 'Boo Cue' as a distinct term, so it is flagged rather than guessed."
+  },
+  {
+   "id": "4d63c02d-9348-4581-806c-5a8c4cb397d0",
+   "term": "False Scare Cue",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Coined label for a misdirection or fake-out scare. Misdirection is a real design idea, but no qualifying themed-AV/show-control source defines 'False Scare Cue' as a term with a fixed meaning, so it is flagged rather than fabricated."
+  },
+  {
+   "id": "54d2f081-32aa-4e22-814b-112682ddd701",
+   "term": "Floor-Level Audio Zone",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Coined, ambiguous label. It could denote floor-mounted or low loudspeakers, tactile bass transducers under the floor, or simply a low coverage zone. 'Audio zone' is a real concept, but no qualifying source defines 'Floor-Level Audio Zone' specifically, so authoring it would invent specifics."
+  },
+  {
+   "id": "b0b283d5-823c-4f88-bc9d-09fd3435fc8b",
+   "term": "Footstep Chase Effect",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Coined label with no qualifying source. It likely refers to sequenced ('chase') triggering of speakers to simulate moving footsteps, but no recognized themed-AV/show-control reference defines the term or its parameters, so it is flagged rather than guessed."
+  },
+  {
+   "id": "8c1bc268-6a41-440a-861d-f20b51b08b28",
+   "term": "Intercom Horror Cue",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Bespoke, delivery-specific coinage with no qualifying source. It plausibly means horror audio played over a PA/intercom/paging system, but the term and its scope are not defined in any recognized reference, so a confident definition cannot be authored."
+  },
+  {
+   "id": "a6f423d3-ec1a-4126-b53a-1e5178dacb4b",
+   "term": "Lunge Cue",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Ambiguous, coined label tied to an unspecified action. It could mean the audio played when a creature or prop lunges, the trigger that fires on a lunge, or a musical stinger synced to it. No qualifying source fixes the meaning, so it cannot be authored without inventing one."
+  },
+  {
+   "id": "4de07de2-f148-45e7-be7e-7b9747a6cc6f",
+   "term": "Moving Scare Sound",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Generic, coined descriptor rather than a defined term. The real techniques (panning, sequenced speakers, precedence-based movement) are documented, but 'Moving Scare Sound' is not defined by any qualifying source, so a specific definition would be invented."
+  },
+  {
+   "id": "15b39e10-c5bc-4d53-a3d4-c95301dc62ed",
+   "term": "Near-Ear Effect",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Coined descriptive label (a very close, near-field scare sound). No recognized source defines 'Near-Ear Effect' as a term of art, and it could denote a near-field speaker, a directional/parametric beam, or an ear-level prop. Meaning cannot be fixed without guessing."
+  },
+  {
+   "id": "df9258c0-b223-4993-a519-c0e34d65bfe6",
+   "term": "Possessed-Voice Effect",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Coined, content-specific label. Voice processing (pitch/formant shifting, layering, reverb) is well documented, but no qualifying source defines a standard 'Possessed-Voice Effect' or its specific processing chain, so authoring it would invent specifics."
+  },
+  {
+   "id": "bfb460c4-a6cd-4b34-b72e-80d0faf76e2e",
+   "term": "Receding Effect",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Bespoke, matched-set haunt label with no qualifying source. The underlying idea (a sound that seems to move away) is real, but no recognized reference defines 'Receding Effect' as a term with fixed parameters, so authoring it would invent specifics."
+  },
+  {
+   "id": "9617c868-f5e6-4707-b1dc-b64ecb885aeb",
+   "term": "Scene Reset Audio",
+   "primary_topic": "Themed Entertainment / Haunt Audio",
+   "flag_reason": "Coined label with an unclear referent: it could mean audio played while a scene resets between groups, a reset/confirmation sound for operators, or ambience returning to a start state. No qualifying source defines it, so a confident meaning cannot be chosen without guessing."
+  },
+  {
+   "id": "d5c564dd-08ba-4497-951e-ee4ba549c5b1",
+   "term": "Principal position",
+   "primary_topic": "Venue Architecture & Spaces",
+   "flag_reason": "'Principal position' is not an established term in venue architecture or room acoustics. Recognized acoustics references use terms like reference, listening, or measurement position, not 'principal position,' and the label could also mean a lead performer's onstage spot. With no qualifying source fixing its meaning, it cannot be authored without guessing."
+  },
+  {
+   "id": "984d8dd9-e18a-41f4-bda7-6e77629cd9a1",
+   "term": "Platform Wash",
+   "primary_topic": "Worship Sound (commercial card)",
+   "flag_reason": "Ambiguous, unsupported label in worship audio. 'Wash' is primarily a lighting term (stage wash); in audio it could mean general platform coverage, ambient/room mics capturing a 'wash' of the stage, or a reverb wash. No qualifying worship-audio source defines 'Platform Wash,' so a confident definition cannot be authored."
+  }
+ ]
+}

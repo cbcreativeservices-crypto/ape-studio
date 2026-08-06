@@ -1,0 +1,159 @@
+{
+ "batch": 157,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "bd15ea07-6678-4e70-8723-cab0bfb62ce8",
+   "term": "Audio mastering",
+   "fields": {
+    "definition": "The final creative and technical stage of audio production, in which a completed mix is prepared and transferred to a master used for reproduction. Mastering optimizes overall level, tonal balance, and dynamics, ensures consistency across a program such as an album, and encodes format-specific delivery data before duplication or streaming.",
+    "plain_english": "Mastering is the last step in making a record. An engineer takes the finished mix and polishes its volume, tone, and balance. This makes every song sound clear and even on any speaker or set of headphones. It is like the final coat of polish before the music goes out to the world.",
+    "purpose_function": "It gives a release a consistent, competitive sound that translates well across all playback systems, and produces a technically correct master for each delivery format. It exists to bridge the gap between an approved mix and the many formats listeners actually use.",
+    "practical_application": "A mastering engineer loads the stereo mix onto a calibrated system, adjusts EQ, compression, and limiting, matches loudness and tone between tracks, and exports masters that meet each distributor's specifications. They also handle track spacing, fades, and embedded codes for the final release.",
+    "category": "Mastering process",
+    "related_terms": ["Mixing", "Stem mastering", "Loudness normalization", "Brickwall limiter", "Dithering", "DDP image"],
+    "common_mistakes": ["Treating mastering as a way to fix a flawed mix instead of returning to correct the problems in the mix itself", "Pushing loudness so hard with the limiter that the master becomes distorted and lifeless", "Making tonal decisions while monitoring too loud or on an uncalibrated system"],
+    "scenario_contexts": ["Preparing an album so all tracks share consistent loudness and tone before release", "Creating format-specific masters for streaming, CD, and vinyl from one approved mix", "Matching a new single to the tonal character of earlier tracks in a catalog"]
+   },
+   "sources": ["Bob Katz, Mastering Audio: The Art and the Science", "Bobby Owsinski, The Mastering Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4947ee9c-f842-47dd-af0b-af70fd34290a",
+   "term": "Back-coated tape",
+   "fields": {
+    "definition": "Magnetic recording tape that carries a thin, nonmagnetic layer of conductive carbon black on the reverse side of the base film, opposite the oxide coating. The back coat reduces static charge buildup, improves frictional behavior, and produces a smoother, more even tape pack during winding.",
+    "plain_english": "Back-coated tape is reel-to-reel tape with a dull, dark layer on its back side. This coating cuts down on static and helps the tape wind smoothly and evenly. Think of it like a non-slip backing that keeps the tape roll neat and clean.",
+    "purpose_function": "The back coat exists to control static and dust, steady tape tension and handling, and prevent winding faults such as cinching, uneven stacking, and edge damage. This helps keep the recorded signal clean and the reel physically stable over time.",
+    "practical_application": "A technician restoring or transferring older recordings identifies back-coated stock by its matte back side and watches for formulations prone to sticky-shed syndrome, which may need baking before a safe playback transfer.",
+    "category": "Analog tape media",
+    "related_terms": ["Analog tape recording", "Tape bias", "Sticky-shed syndrome", "Reel-to-reel", "Tape baking"],
+    "common_mistakes": ["Assuming all back-coated tape is high quality, when some binder formulations suffer sticky-shed and must be baked before playback", "Confusing the matte back coat with the glossy oxide side and threading the tape so the wrong side faces the heads"],
+    "scenario_contexts": ["Restoring archival multitrack recordings originally captured on back-coated tape", "Selecting tape stock for an analog session where smooth winding and low static matter"]
+   },
+   "sources": ["SBE Broadcast Engineering Handbook — Magnetic Tape (Robert H. Perry)", "IASA TC-04, Guidelines on the Production and Preservation of Digital Audio Objects", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "134ce59c-58c6-4bd3-93b6-6f3a83479d76",
+   "term": "Bed metadata package",
+   "fields": {
+    "definition": "In immersive audio masters such as Dolby Atmos, the set of metadata that describes the channel-based bed, the foundation of sounds anchored to fixed loudspeaker positions rather than to moving objects. It records the bed's speaker-layout assignment and channel configuration so a renderer can reproduce the bed correctly across different playback systems.",
+    "plain_english": "In surround and Dolby Atmos sound, the bed is the layer tied to fixed speaker spots. Its metadata package is the bundle of notes that says what that layer is and where its channels belong. It is like a label on a box that lists what is inside and where each part goes.",
+    "purpose_function": "It lets an immersive master carry a stable, speaker-anchored foundation alongside the moving objects, so playback systems know how to route and reproduce the bed. This keeps the core surround field consistent while objects move around it.",
+    "practical_application": "When exporting an Atmos master, an engineer confirms the bed configuration, such as 7.1.2, is written correctly so the bed and its metadata travel with the object audio into the ADM BWF or Dolby Atmos master file.",
+    "category": "Immersive metadata",
+    "related_terms": ["Dolby Atmos", "Audio object", "ADM BWF", "Binaural metadata", "Immersive master"],
+    "common_mistakes": ["Confusing the bed with objects; the bed is fixed to speaker positions and does not carry per-object positional trajectories", "Assuming the bed metadata alone is enough, when the objects and their metadata must also be exported for a complete immersive master"],
+    "scenario_contexts": ["Exporting a Dolby Atmos master where the 7.1.2 bed and its metadata accompany the objects", "Troubleshooting an immersive deliverable that plays back with the wrong speaker layout"]
+   },
+   "sources": ["Library of Congress, Dolby Atmos Master File (DAMF) format description", "Dolby Atmos production and renderer documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4a05b055-7006-4736-aec2-e822d8c52acb",
+   "term": "Binaural metadata",
+   "fields": {
+    "definition": "Metadata carried in an immersive master, notably Dolby Atmos, that assigns each object or bed a binaural render mode, Off, Near, Mid, or Far. These settings tell the binaural renderer how much distance and space to apply to each element when the mix is folded down to two-channel headphone playback.",
+    "plain_english": "Binaural metadata is a small set of instructions saved with an Atmos mix. It tells the headphone rendering how near or far each sound should feel. Think of it as a note that says make this sound close or make this one far away when you listen on headphones.",
+    "purpose_function": "It exists so the mixer can control the sense of depth and space heard on headphones without changing the loudspeaker mix. This gives immersive releases a convincing 3D feel for the large audience listening on earbuds and headphones.",
+    "practical_application": "In the Dolby Atmos renderer, an engineer assigns near, mid, or far to objects to shape headphone depth, then verifies these settings are saved in the master before it is delivered to a streaming service.",
+    "category": "Immersive metadata",
+    "related_terms": ["Binaural render mode", "Binaural re-render", "Dolby Atmos", "Audio object", "Spatial audio"],
+    "common_mistakes": ["Thinking the binaural render settings change the speaker mix, when they only affect the headphone render", "Leaving every element on the same near, mid, or far setting, which flattens the sense of depth on headphones"],
+    "scenario_contexts": ["Setting objects to near, mid, or far so an Atmos mix has depth on headphones", "Confirming binaural render settings are saved in the master before delivery to a streaming service"]
+   },
+   "sources": ["Dolby Professional Support, Binaural Render Mode documentation", "Library of Congress, Dolby Atmos Master File (DAMF) format description"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "78add2c2-73cb-45ad-b92c-8e3c78481cf7",
+   "term": "Binaural re-render",
+   "fields": {
+    "definition": "A two-channel headphone version produced from an immersive mix by processing it through head-related transfer functions so surround and height cues are simulated over ordinary stereo headphones. The re-render honors the binaural render-mode metadata assigned to each object and bed in the master.",
+    "plain_english": "A binaural re-render turns a surround or Atmos mix into a normal two-channel headphone mix. It uses facts about how our ears hear direction to fake a 3D space over plain headphones. It is how one immersive mix can still sound wide and deep in your earbuds.",
+    "purpose_function": "It exists to deliver the immersive experience to the huge audience listening on headphones, where real surround and height speakers are not available. It also lets engineers audition how headphone listeners will hear the immersive mix.",
+    "practical_application": "An engineer auditions the binaural re-render in the Dolby Atmos renderer to check headphone translation, and may deliver a binaural stereo file alongside the immersive master for headphone-based streaming.",
+    "category": "Immersive rendering",
+    "related_terms": ["Binaural metadata", "Dolby Atmos", "HRTF", "Spatial audio", "Downmix"],
+    "common_mistakes": ["Assuming the binaural re-render will sound identical to the speaker mix, when HRTF processing changes timbre and space", "Judging the whole immersive mix only by the binaural re-render instead of monitoring on the full speaker system"],
+    "scenario_contexts": ["Auditioning how an Atmos mix will sound to headphone listeners on a streaming service", "Delivering a binaural stereo version alongside the immersive master"]
+   },
+   "sources": ["Dolby Atmos Renderer documentation", "Library of Congress, Dolby Atmos Master File (DAMF) format description"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "28b7d29e-9329-4f27-8643-fc5a1aaf1f8c",
+   "term": "BLER measurement",
+   "fields": {
+    "definition": "The measurement of Block Error Rate on a Compact Disc, defined as the number of erroneous data blocks per second entering the C1 stage of the CIRC error-correction decoder, averaged over a period such as ten seconds. The Red Book specification sets a maximum average BLER of 220 per second for a conforming disc.",
+    "plain_english": "BLER measurement counts how many small data errors show up on a CD each second as it plays. A low count means the disc was made well and should play reliably. It is like checking a printed page for smudges before you send it off to be copied.",
+    "purpose_function": "It gives a quantitative check of manufacturing and burn quality so a disc can be judged fit for replication or archiving. Keeping BLER low leaves error correction with enough headroom to hide the remaining errors during playback.",
+    "practical_application": "A technician runs error analysis on a glass master or reference CD-R with a suitable drive and software, checking BLER along with E22 and E32 error counts before approving a disc for replication.",
+    "category": "Disc quality control",
+    "related_terms": ["Red Book", "CIRC error correction", "C1/C2 errors", "DDP image", "Glass master"],
+    "common_mistakes": ["Believing a low BLER guarantees a perfect disc, when uncorrectable E32 or CU errors matter more for playback failures", "Skipping error analysis on a burned reference disc and then sending a faulty master for replication"],
+    "scenario_contexts": ["Running an error analysis on a glass master or reference CD-R before replication", "Assessing the condition of an archival CD to decide whether it should be re-ripped"]
+   },
+   "sources": ["IASA TC-04, Errors, Life Expectancy and Testing and Analysis", "Pohlmann, Principles of Digital Audio", "Compact Disc Digital Audio (Red Book) specification"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "24e4165a-d0a8-435b-ad78-d83b985ca18f",
+   "term": "Brainworx bx_masterdesk",
+   "fields": {
+    "definition": "A mastering plugin from Brainworx, distributed by Plugin Alliance, that presents a complete analog-style mastering chain in a single interface. It combines volume and loudness metering, compression, a four-band tone stack, harmonic and stereo tools, and a true-peak limiter so a user can produce a finished master from one window.",
+    "plain_english": "bx_masterdesk is a mastering plugin that puts a whole mastering chain in one window. You turn a few simple knobs to set loudness, tone, and balance, and it handles the rest. It is made to help people master tracks without years of training.",
+    "purpose_function": "It exists to make competitive, loudness-aware mastering accessible to users without a full outboard chain or deep mastering expertise. It bundles the usual mastering stages into guided controls with metering that shows loudness and peak levels.",
+    "practical_application": "A producer places bx_masterdesk on the stereo mix bus, raises the volume control to drive the chain, shapes the tone stack and compression, then sets the limiter to reach a target loudness while watching the true-peak meter.",
+    "category": "Mastering software",
+    "related_terms": ["Mastering chain", "Brickwall limiter", "True peak", "Loudness normalization", "Bus compression"],
+    "common_mistakes": ["Relying on presets and loud output without checking true-peak levels and translation on other systems", "Pushing the chain for maximum loudness, which crushes dynamics and adds audible distortion"],
+    "scenario_contexts": ["Producing a quick, competitive master of a demo without a full outboard chain", "Setting a loudness and true-peak target for a self-released single"]
+   },
+   "sources": ["Brainworx / Plugin Alliance, bx_masterdesk Plugin Manual", "Brainworx / Plugin Alliance, bx_masterdesk Pro Plugin Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8ab7ea52-6ce7-48dd-9a33-b66ef49a9d51",
+   "term": "Brass stem",
+   "fields": {
+    "definition": "A stem containing the combined submix of all brass instruments, such as trumpets, trombones, and horns, bounced as a single mono, stereo, or multichannel file. It is delivered so the brass can be balanced or processed as one group without returning to the full multitrack session.",
+    "plain_english": "A brass stem is a single mixed track that holds all the brass instruments together, like trumpets and trombones. Keeping brass on its own stem lets an engineer change just the horns without touching the rest of the song. It is like putting all the brass players on one slider.",
+    "purpose_function": "It exists to give mastering, re-mixing, and post-production stages control over the brass section as a unit while preserving the balance made within it. Stems let sections be adjusted or re-versioned without a full remix.",
+    "practical_application": "An engineer receives the brass stem among a set of stems, and nudges its level or tone during stem mastering or a film re-recording mix while the other stems stay untouched.",
+    "category": "Stems",
+    "related_terms": ["Stem mastering", "Submix", "Stem mixing", "Group bus", "Mixdown"],
+    "common_mistakes": ["Processing the full mix when only the brass stem needed adjustment", "Delivering stems that do not sum back to the original mix because levels or effects were changed after the mix was approved"],
+    "scenario_contexts": ["Delivering separate brass, strings, and rhythm stems for a film re-recording mix", "Stem mastering a song so the brass level can be nudged without a full remix"]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Bobby Owsinski, The Mastering Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "56666112-8a90-4bdf-b483-84e9baf282db",
+   "term": "Broadcast mastering",
+   "fields": {
+    "definition": "The preparation of a master that conforms to the loudness and level rules of broadcast delivery, using loudness normalization to standards such as EBU R128 and ATSC A/85 with measurement defined by ITU-R BS.1770. Targets typically include an integrated loudness such as -23 LUFS or -24 LKFS and a true-peak ceiling such as -1 dBTP.",
+    "plain_english": "Broadcast mastering prepares a mix to meet the strict loudness and level rules used by TV and radio. It sets the volume to a fixed target so shows and ads do not jump louder or softer. It is like making sure every clip fits the same volume speed limit before it airs.",
+    "purpose_function": "It exists to give consistent perceived loudness across programs and channels and to stop peaks from clipping after transmission encoding. This meets legal and network requirements and spares listeners jarring jumps in volume.",
+    "practical_application": "A mastering engineer measures the program with a compliant loudness meter, normalizes it to the required integrated target, and limits true peaks below the specified ceiling before delivering the file to the broadcaster.",
+    "category": "Mastering process",
+    "related_terms": ["Loudness normalization", "EBU R128", "LUFS", "True peak", "Dialnorm"],
+    "common_mistakes": ["Mastering to streaming loudness targets and assuming the file also meets broadcast specs, which differ", "Exceeding the true-peak ceiling such as -1 dBTP, which causes clipping after lossy encoding"],
+    "scenario_contexts": ["Preparing a program master to -23 LUFS with a -1 dBTP ceiling for European broadcast", "Delivering a commercial that complies with the US CALM Act loudness rules"]
+   },
+   "sources": ["EBU R 128, Loudness Normalisation and Permitted Maximum Level of Audio Signals", "ITU-R BS.1770, Algorithms to Measure Audio Programme Loudness and True-Peak Level", "ATSC A/85, Techniques for Establishing and Maintaining Audio Loudness"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

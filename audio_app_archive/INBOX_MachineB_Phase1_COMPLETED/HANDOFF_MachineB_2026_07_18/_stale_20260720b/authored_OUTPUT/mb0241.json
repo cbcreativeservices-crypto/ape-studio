@@ -1,0 +1,150 @@
+{
+ "batch": 241,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "19af0f9c-2929-4b2c-89ca-582ba09e243c",
+   "term": "One-shot asset",
+   "fields": {
+    "definition": "A one-shot asset is an audio sample or sound file set to play once through in full when triggered, rather than looping. In samplers, virtual instruments, and game audio it is used for discrete events such as hits, stabs, impacts, and single notes.",
+    "plain_english": "A one-shot is a sound clip that plays all the way through once each time you fire it, instead of looping. Think of it like a doorbell: press it and you get one full 'ding,' not a sound that keeps repeating.",
+    "purpose_function": "It provides a single, self-contained sound event that plays predictably from start to finish, so designers can trigger distinct hits and cues without managing loop points.",
+    "practical_application": "A technician loads one-shot samples into a sampler or game-audio engine and maps them to keys or events so each trigger fires one complete sound, such as a gunshot, footstep, or drum hit.",
+    "category": "Sample Assets",
+    "related_terms": ["Sample", "Loop", "Sampler", "Trigger", "Velocity layer", "Sound design"],
+    "common_mistakes": ["Confusing a one-shot with a loop and enabling loop playback, so the sound repeats or stutters instead of playing once.", "Leaving long silence or an unwanted tail baked into the file, which delays or muddies retriggering.", "Assuming a one-shot must be short; the term is about single playback, not duration."],
+    "scenario_contexts": ["Mapping drum hits as one-shots in a sampler so each pad triggers one full note.", "Loading impact and whoosh one-shots into a game engine to fire on in-game events.", "Building a sound-effects library where each file is a discrete one-shot for editors to drop onto a timeline."]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4f79fea3-a9dc-44cc-adac-995a73e26d35",
+   "term": "Optional-material stem",
+   "fields": {
+    "definition": "An optional-material stem is a delivered submix (stem) carrying non-essential or alternate audio content that a distributor may choose to include or omit, rather than a required element of the main mix. It is supplied alongside the core stems so downstream users can add, swap, or leave out that material.",
+    "plain_english": "This is a separate audio track given to a client that holds extra sound they can use or skip. It is like serving a meal with the sauce on the side, so they can add it or leave it off.",
+    "purpose_function": "It keeps optional or alternate content separate from the required mix so distributors, broadcasters, or clients can tailor the final soundtrack without re-opening the whole session.",
+    "practical_application": "A post engineer exports optional-material stems, such as alternate music, optional narration, or extra effects, so an editor in another market can add or drop them during versioning.",
+    "category": "Deliverables",
+    "related_terms": ["Stem", "M&E", "DME", "Printmaster", "Deliverables", "Versioning"],
+    "common_mistakes": ["Folding optional material into the main stems, so it can no longer be removed cleanly.", "Failing to label the stem clearly, leaving the client unsure what is optional versus required.", "Assuming an optional stem can be lower quality; it must still meet the full delivery spec."],
+    "scenario_contexts": ["Delivering an alternate-music stem the network may swap in for a specific broadcast.", "Providing an optional-narration stem so a foreign version can include or omit voice-over.", "Supplying extra sound-effects material as a separate optional stem for a director's later choice."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5482a965-6e92-4394-b292-cee9167b1ca7",
+   "term": "Orchestra comping",
+   "fields": {
+    "definition": "Orchestra comping is the editing practice of assembling one composite orchestral performance by selecting and joining the best sections from multiple recorded takes. Editors cut between takes at musically and acoustically suitable points so the final track sounds like a single continuous, unified performance.",
+    "plain_english": "Comping means building one great orchestra take out of the best bits of several takes. It is like making a photo album from many shots, keeping only the best moment from each.",
+    "purpose_function": "It lets a music editor deliver the strongest possible performance, with the best notes, intonation, and feel, which matters because a full orchestra rarely repeats a flawless pass every time.",
+    "practical_application": "Working from a session's multiple takes, a music editor auditions passages, marks the best ones, and crossfades between takes at bar lines or rests so the joins are inaudible across every microphone.",
+    "category": "Orchestral Editing",
+    "related_terms": ["Comping", "Take", "Crossfade", "Music editing", "Orchestra timing adjustment", "Orchestra phase alignment"],
+    "common_mistakes": ["Cutting mid-note or mid-phrase, which creates audible jumps in the sustained orchestral sound.", "Comping only the close mics and ignoring the room and tree mics, so the ambience jumps or phases at edits.", "Choosing takes for one section without checking they still balance against the rest of the orchestra."],
+    "scenario_contexts": ["Editing a film-score cue by joining the best string passages from three orchestral takes.", "Fixing a single wrong horn note by comping in the matching bar from an alternate take.", "Assembling a clean master take from a live orchestral session for album release."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Bartlett, Practical Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7455e349-e5c7-40ae-a700-5bc0ee185c6e",
+   "term": "Orchestra phase alignment",
+   "fields": {
+    "definition": "Orchestra phase alignment is the process of time-aligning the many microphones used to record an orchestra, including close (spot) mics, section mics, the main tree, and room mics, so their combined signals sum coherently instead of comb filtering or smearing. It compensates for the different arrival times of the same sound at each microphone position.",
+    "plain_english": "In a big orchestra recording, many mics pick up the same sound at slightly different times. Phase alignment nudges those signals into step so they add up cleanly. Without it they can thin each other out, like rowers pulling out of time.",
+    "purpose_function": "It preserves tone, punch, and a clear stereo image when many mics are mixed together, preventing the hollow, comb-filtered sound that results when overlapping signals arrive out of time.",
+    "practical_application": "An engineer measures or ear-checks the delay between spot mics and the main tree, then applies small time delays or nudges tracks so each close mic lines up with the main pickup before balancing the mix.",
+    "category": "Orchestral Recording",
+    "related_terms": ["Phase alignment", "Comb filtering", "Spot microphone", "Decca tree", "Time alignment", "Polarity"],
+    "common_mistakes": ["Confusing polarity (flipping +/-) with time alignment; flipping polarity does not fix arrival-time differences.", "Aligning by waveform alone and ignoring how it sounds, which can spoil the natural room blend.", "Over-delaying spot mics so they drift behind the main tree and smear transients."],
+    "scenario_contexts": ["Time-aligning violin spot mics to the Decca tree before mixing a scoring session.", "Fixing a hollow, comb-filtered brass section caused by spot and room mics fighting.", "Aligning added close mics to the main pair when re-balancing an orchestral recording in the mix."]
+   },
+   "sources": ["Eargle, The Microphone Book", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e72ec58a-9973-4ecc-92ef-d7ae2a05cb99",
+   "term": "Orchestra timing adjustment",
+   "fields": {
+    "definition": "Orchestra timing adjustment is the editing of an orchestral recording's timing—tightening or shifting notes, phrases, or whole sections—so the performance locks to a click, to picture, or to a desired feel. It uses nudging, time-stretching, or elastic-audio editing while preserving the ensemble's natural phrasing.",
+    "plain_english": "This means moving parts of an orchestra recording a little earlier or later so they line up. They can match a click, match the video, or just feel tighter. It is like straightening a group photo so everyone stands in line.",
+    "purpose_function": "It corrects small timing errors and syncs the music to a film's action or a tempo map, which matters when a cue must hit an on-screen moment or match an edited scene.",
+    "practical_application": "A music editor slides or time-stretches sections so a downbeat lands on a cut, or tightens a slightly late entrance, checking that all mics move together to avoid phase problems.",
+    "category": "Orchestral Editing",
+    "related_terms": ["Time-stretching", "Elastic audio", "Music editing", "Click track", "Orchestra comping", "Sync point"],
+    "common_mistakes": ["Time-stretching one mic while leaving the others, which throws the tracks out of phase.", "Quantizing an orchestra too hard, stripping the human feel that makes it sound live.", "Adjusting timing without watching picture, so a hit lands slightly off the on-screen action."],
+    "scenario_contexts": ["Nudging an orchestral hit so it lands exactly on a scene cut.", "Tightening a late string entrance to match the click on a scoring stage.", "Stretching a cue slightly so it fits a re-timed picture edit."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1bfa355c-c2f7-4066-8dba-aa7c18038d26",
+   "term": "Organic sound design",
+   "fields": {
+    "definition": "Organic sound design is the crafting of sounds that feel natural, living, and imperfect—typically built from recorded real-world (acoustic) sources or heavily processed field recordings—rather than from clean, static synthesis. The aim is a result that breathes and evolves like a real object or environment.",
+    "plain_english": "This is designing sounds that feel real and alive instead of cold and electronic. Designers often build them from recordings of real things like water, cloth, or metal. The result feels natural, the way a handmade item feels different from plastic.",
+    "purpose_function": "It gives films, games, and media sounds that feel believable and emotionally warm, helping audiences connect with a scene, object, or creature as if it were real.",
+    "practical_application": "A sound designer records or layers real-world textures such as breath, foliage, or friction, then shapes them so a fantasy creature or interface still feels natural rather than obviously synthetic.",
+    "category": "Sound Design",
+    "related_terms": ["Sound design", "Field recording", "Foley", "Layering", "Texture", "Sample"],
+    "common_mistakes": ["Assuming 'organic' means unprocessed; heavy processing of real-world sources is still common.", "Leaning on obvious synth presets, which breaks the natural feel.", "Layering so many sources that the sound turns to mush instead of feeling real."],
+    "scenario_contexts": ["Building a natural-feeling creature voice from layered animal and human recordings.", "Designing an interface or UI sound that feels warm and hand-made rather than sterile.", "Creating ambience for a forest scene from real field recordings."]
+   },
+   "sources": ["Sonnenschein, Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e1dfbc0e-9b1e-4eba-8d41-8de9be0caa2e",
+   "term": "Page turn",
+   "fields": {
+    "definition": "In recording, a page turn is the act of a performer turning a page of their printed part or score during a session or performance. Because the movement and paper can produce audible noise picked up by nearby microphones, it is a recognized source of unwanted sound that engineers and editors anticipate and manage.",
+    "plain_english": "A page turn is when a musician flips to the next page of their sheet music. The paper rustle can get caught by the mics. It is one of the small noises a team listens for and cleans up, like a cough or a chair squeak.",
+    "purpose_function": "Naming it as a distinct event helps a team plan mic placement, take timing, and edits around it, keeping paper rustle out of the final recording.",
+    "practical_application": "During a scoring session, an engineer notes where page turns fall and may capture clean coverage there, and an editor later cuts to a quiet take to hide any page-turn noise.",
+    "category": "Session Practice",
+    "related_terms": ["Spot microphone", "Room tone", "Noise floor", "Take", "Music editing", "Orchestra comping"],
+    "common_mistakes": ["Ignoring page-turn noise until the mix, when it is far harder to remove.", "Placing spot mics so close that every paper rustle is captured.", "Assuming page turns only matter in quiet passages; open mics can catch them anywhere."],
+    "scenario_contexts": ["Planning takes so a loud page turn falls during a rest in the music.", "Editing out a paper rustle by cutting to an alternate take at that bar.", "Advising players to pre-turn or stagger page turns on a scoring stage."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cf3b6df7-e3ea-47c8-9aca-6920ec784691",
+   "term": "Paper handling",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["All fields left blank: 'Paper handling' has no established, attested audio-technical meaning. It reads as a generic term (its common technical sense is a printer/scanner feature) and is ambiguous even as a transparent compound in this topic — plausibly the quiet handling of sheet-music parts to reduce noise, or the handling of paperwork/documentation in a deliverables workflow. No >=2 acceptable professional/standards sources define it as an audio term, so it is flagged rather than guessed."]
+  },
+  {
+   "id": "7500e313-7c3b-4359-8806-03dc14f57859",
+   "term": "Parameter-driven audio",
+   "fields": {
+    "definition": "Parameter-driven audio is sound whose playback and behavior are controlled in real time by data values (parameters) rather than fixed to a linear timeline. In interactive media such as games and VR, engine parameters like speed, distance, health, or intensity drive volume, pitch, filtering, layering, and which sounds play.",
+    "plain_english": "This is sound that changes based on live values instead of being one fixed clip. In a game, how fast a car goes can control its engine sound. The audio reacts to the action, like a dimmer switch tied to what you do.",
+    "purpose_function": "It lets a soundtrack adapt to a user's actions and the state of a scene, so interactive experiences stay responsive and believable instead of replaying the same static clip.",
+    "practical_application": "Using audio middleware, a technician maps game parameters to sound properties, for example linking vehicle speed to engine pitch and volume, so the mix responds automatically as the game state changes.",
+    "category": "Interactive Audio",
+    "related_terms": ["Interactive audio", "Adaptive audio", "Audio middleware", "Game audio", "Layering", "Automation"],
+    "common_mistakes": ["Confusing parameter-driven audio with simple automation; here values change live from user actions, not from a fixed timeline.", "Mapping too many parameters at once, making the sound behave unpredictably.", "Forgetting to smooth parameter changes, causing audible zipper noise or jumps."],
+    "scenario_contexts": ["Linking engine RPM to a car's engine-sound pitch and volume in a game.", "Driving reverb and filtering by a player's distance from a sound source.", "Blending music layers based on on-screen tension or intensity."]
+   },
+   "sources": ["Audiokinetic Wwise Fundamentals / SDK Documentation", "Sound on Sound (technical features on interactive and game audio)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

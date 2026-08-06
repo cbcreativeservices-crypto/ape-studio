@@ -1,0 +1,326 @@
+{
+  "batch": 355,
+  "topic": "Strings, Guitar & Keys",
+  "authored": [
+    {
+      "id": "90fedc3e-3d8b-42ec-a9b1-67730d4de7eb",
+      "term": "String-instrument feedback",
+      "fields": {
+        "definition": "A sustained, self-oscillating tone that arises when the amplified sound of a string instrument re-excites its own strings, hollow body, or pickup/microphone, forming a closed acoustic loop between the loudspeaker and the instrument. It is most common with acoustic-electric guitars, violins, mandolins and other resonant-bodied instruments whose air cavity and top plate readily couple to loud stage sound.",
+        "plain_english": "A loud howl or ring that happens when a string instrument's amplified sound feeds back into it and keeps building. The speaker shakes the guitar's body and strings, and they push the sound back to the speaker in a loop.",
+        "purpose_function": "It is not a designed function but an unwanted feedback phenomenon of amplifying a resonant acoustic body at high volume; recognizing that the loop rides on the instrument's body and string resonances is what lets a technician raise the usable gain before feedback.",
+        "practical_application": "On stage a technician fights it by lowering stage volume, fitting a feedback-suppressing soundhole cover on guitars, notching the offending resonant frequency with a parametric EQ, and repositioning the player away from monitors and mains.",
+        "category": "Live sound",
+        "related_terms": [
+          "Upright-bass feedback",
+          "Gain before feedback",
+          "Notch filter",
+          "Piezo pickup",
+          "Soundhole cover",
+          "Monitor wedge"
+        ],
+        "common_mistakes": [
+          "Cranking the channel gain for more level, which only pushes the system past gain-before-feedback sooner.",
+          "Blaming the main PA when the real loop is a monitor wedge exciting the instrument body right in front of it.",
+          "Permanently stuffing the soundhole and killing the instrument's natural tone instead of notching the single problem frequency.",
+          "UNSAFE: Letting sustained feedback ring at high SPL, which can overheat and destroy compression drivers and exposes everyone nearby to hearing-damaging sound levels."
+        ],
+        "scenario_contexts": [
+          "A singer-songwriter's acoustic-electric guitar starts howling on a low note as the band's stage volume rises.",
+          "A miked mandolin feeds back every time the player steps toward the front-fill speakers.",
+          "Sound check where the engineer rings out an acoustic guitar channel to find its feedback frequencies before the show."
+        ]
+      },
+      "sources": [
+        "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+        "Ballou, Handbook for Sound Engineers (Focal Press)",
+        "Rane, technical note on feedback and gain before feedback"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "2591bd30-5035-440b-953e-c3ca1d96941c",
+      "term": "Sul ponticello glassiness",
+      "fields": {
+        "definition": "The thin, brittle, silvery timbre produced when a bowed string is played sul ponticello (very close to the bridge), a bow position that suppresses the fundamental and lower partials while emphasizing high harmonics. The resulting color is commonly described as glassy, metallic, or eerie.",
+        "plain_english": "The cold, glassy sound a bowed string makes when the player bows right next to the bridge. Bowing there brings out the high, thin overtones and holds back the warm low ones, so the note sounds like glass or metal.",
+        "purpose_function": "It is a tone color composers and players call for to add a fragile, otherworldly quality; the extreme near-bridge bow position is what shifts the harmonic balance toward the shimmering upper partials.",
+        "practical_application": "A recording engineer expects sul ponticello passages to be bright and hiss-like, so they leave headroom for the extra high-frequency energy and may ease off bright room mics or HF EQ so the glassy overtones do not turn harsh.",
+        "category": "Timbre",
+        "related_terms": [
+          "Sul ponticello tone",
+          "Sul tasto",
+          "Harmonics",
+          "Bow position",
+          "Tremolo",
+          "Overtones"
+        ],
+        "common_mistakes": [
+          "Confusing sul ponticello (near the bridge, glassy and bright) with sul tasto (over the fingerboard, soft and flute-like).",
+          "Thinking the effect comes from bow pressure when it actually comes from the bowing point being close to the bridge.",
+          "Adding a mute to 'clean up' the sound, which removes the very upper harmonics that create the glassy character."
+        ],
+        "scenario_contexts": [
+          "Scoring a horror cue where the string section plays sul ponticello tremolo for an unsettling shimmer.",
+          "A cellist bows near the bridge to give a sustained note a cold, metallic edge.",
+          "Micing a quartet and hearing the timbre turn thin and bright when players shift to ponticello."
+        ]
+      },
+      "sources": [
+        "Adler, The Study of Orchestration (Norton)",
+        "Piston, Orchestration (Norton)",
+        "Grove Dictionary of Music (sul ponticello / bowing)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "5e255dc0-dd65-4fa6-993a-31b8afa02966",
+      "term": "Sul ponticello tone",
+      "fields": {
+        "definition": "The characteristic tone of bowing sul ponticello (close to or on the bridge), in which the bow excites high partials disproportionately to give a bright, nasal, glassy or scratchy sound weak in fundamental. It is notated 'sul pont.' and cancelled by 'ordinario' ('ord.').",
+        "plain_english": "The bright, thin sound a string makes when the bow is drawn close to the bridge. The bow wakes up the high overtones more than the main note, so the tone is glassy and a little scratchy.",
+        "purpose_function": "It gives arrangers a distinct string color for eerie or tense moments; the near-bridge bow point is the mechanism that rebalances the sound toward its upper harmonics.",
+        "practical_application": "Players switch to it on the 'sul pont.' marking and return to normal on 'ord.'; an engineer capturing it keeps headroom for the extra high-frequency energy so the bright transients do not distort.",
+        "category": "Timbre",
+        "related_terms": [
+          "Sul ponticello glassiness",
+          "Sul tasto",
+          "Ordinario",
+          "Bow position",
+          "Flautando",
+          "Harmonics"
+        ],
+        "common_mistakes": [
+          "Reading 'sul pont.' as a dynamic instead of a bowing-position change.",
+          "Forgetting to cancel it with 'ord.', leaving the whole passage glassy.",
+          "Assuming louder bowing makes the effect; the timbre depends on where the bow contacts the string, not how hard."
+        ],
+        "scenario_contexts": [
+          "A film composer marks 'sul pont.' over a violin tremolo for a suspense scene.",
+          "A violist practices the near-bridge contact point to get an even ponticello tone.",
+          "An engineer notices extra bow noise and brightness when the section plays sul ponticello."
+        ]
+      },
+      "sources": [
+        "Adler, The Study of Orchestration (Norton)",
+        "Piston, Orchestration (Norton)",
+        "Grove Dictionary of Music (sul ponticello / bowing)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "d96eb056-14ee-4e0e-b0d8-4b5db37d7add",
+      "term": "Sympathetic string ringing",
+      "fields": {
+        "definition": "The audible resonance of a string set into vibration not by direct playing but by acoustic or mechanical coupling to another sounding string at a matching frequency or harmonic. The undamped string 'rings' sympathetically, adding a soft halo of related pitches to the played note.",
+        "plain_english": "When one string rings on its own because another string is playing a note it shares. The played note's vibrations travel through the instrument and set the quiet string humming along.",
+        "purpose_function": "It enriches an instrument's tone with a lingering, shimmering resonance; on instruments with dedicated sympathetic strings it is a designed feature, while on guitars and pianos it is a natural side effect of open, undamped strings.",
+        "practical_application": "A guitarist or engineer controls unwanted sympathetic ringing with palm muting or light finger damping during quiet passages, while a sitar or Hardanger player relies on it for the instrument's signature wash.",
+        "category": "Acoustic resonance",
+        "related_terms": [
+          "Sympathetic string",
+          "Tarab (sympathetic resonance)",
+          "Understring ring (Hardanger)",
+          "Resonance",
+          "Open string",
+          "Damping"
+        ],
+        "common_mistakes": [
+          "Mistaking sympathetic ringing for a tuning problem or a buzz when it is the instrument resonating normally.",
+          "Trying to EQ it out instead of muting the offending open strings at the source.",
+          "Assuming only special instruments do it; any undamped string on a guitar or piano can ring sympathetically."
+        ],
+        "scenario_contexts": [
+          "Recording fingerstyle guitar where open bass strings ring under a melody and blur the mix.",
+          "A piano's undamped strings resonate when the sustain pedal is held.",
+          "A sitar's sympathetic strings shimmer beneath the melody line."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "Grove Dictionary of Music (sympathetic strings / resonance)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "5487ccc6-3ea0-43e8-a8b7-5abf405a0054",
+      "term": "Tarab (sympathetic resonance)",
+      "fields": {
+        "definition": "In organology, tarab (also taraf) strings are the sympathetic strings fitted to instruments such as the sitar, sarangi and sarod; here 'tarab' denotes the resonant shimmer these undamped strings add when they vibrate in sympathy with the played strings. The word derives from the Arabic ṭarab, the state of musical ecstasy the effect evokes.",
+        "plain_english": "Tarab strings are extra strings on some instruments that are never plucked directly. They ring on their own when the main strings are played, adding a shimmering, dreamy halo of sound.",
+        "purpose_function": "These sympathetic strings exist to surround each melody note with a soft cloud of resonance that sustains and colors the tone; the effect is prized in South Asian and Middle Eastern music for its emotional, hypnotic quality.",
+        "practical_application": "When recording a sitar or sarangi, an engineer positions a mic to catch the whole body's tarab resonance and expects a long, ringing decay that must not be over-compressed or gated.",
+        "category": "Acoustic resonance",
+        "related_terms": [
+          "Sympathetic string",
+          "Sympathetic string ringing",
+          "Understring ring (Hardanger)",
+          "Resonance",
+          "Sitar",
+          "Drone"
+        ],
+        "common_mistakes": [
+          "Thinking tarab strings are played directly; they are only ever excited sympathetically by the main strings.",
+          "Gating or heavy compression that chokes the long sympathetic decay that gives the sound its character.",
+          "Confusing the tarab strings with the melody or drone strings when tuning the instrument."
+        ],
+        "scenario_contexts": [
+          "Micing a sitar for a fusion session and preserving its shimmering sympathetic wash.",
+          "A sarangi's many sympathetic strings ring under a vocal accompaniment.",
+          "Tuning the tarab strings of a sitar to the notes of the chosen raga before a recording."
+        ]
+      },
+      "sources": [
+        "Grove Dictionary of Music / Oxford Companion to Music (tarab strings)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "39cc9486-4ec5-40dc-b7e3-fbe94b246406",
+      "term": "Tel darbı (string slap)",
+      "fields": {
+        "definition": "A percussive right-hand technique on Turkish plucked lutes such as the bağlama (saz), in which the plectrum or fingers strike the strings to produce a sharp, rhythmic, largely unpitched attack (literally a 'string strike' or slap) that drives the rhythm rather than sounding a clear pitch.",
+        "plain_english": "A drum-like slap of the strings on a Turkish saz, made by striking them sharply with the pick or hand. It gives a punchy, percussive beat instead of a clear note, which helps keep the rhythm.",
+        "purpose_function": "It adds a built-in percussive pulse to a single melodic instrument, letting a lone player supply both tune and rhythm; the sharp strike briefly turns the strings and body into a drum.",
+        "practical_application": "A player mixes these percussive strikes between plucked notes for groove, and a recording engineer leaves extra transient headroom so the loud slap attacks stay clean and punchy.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Bağlama",
+          "Plectrum",
+          "Percussive strike",
+          "Pizzicato",
+          "Palm mute",
+          "Tremolo"
+        ],
+        "common_mistakes": [
+          "Treating the strike as a pitched note; its purpose is rhythmic attack, not a defined pitch.",
+          "Striking too hard and knocking the instrument out of tune or stressing a thin top over time.",
+          "Gating the recorded track so tightly that the natural percussive body sound is lost."
+        ],
+        "scenario_contexts": [
+          "A solo bağlama player drives a dance rhythm with string strikes between melody notes.",
+          "Recording Turkish folk music where the saz's percussive slaps punctuate each phrase.",
+          "A player practices even, controlled strikes so the rhythm stays steady."
+        ]
+      },
+      "sources": [
+        "Grove Dictionary of Music (bağlama / saz)",
+        "Eurasian Journal of Music and Dance (EJMD), peer-reviewed study of bağlama plectrum technique"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "68315f7a-6ddb-4113-898b-73cc448ac622",
+      "term": "Trompette buzz (coup de poignet)",
+      "fields": {
+        "definition": "On the hurdy-gurdy, the rhythmic buzzing of the trompette (a drone/melody string) whose loose bridge, the chien ('dog'), rattles against the soundboard. The buzz is triggered by a coup de poignet, a sharp wrist jolt that briefly accelerates the wheel so the player can articulate percussive rhythms on demand.",
+        "plain_english": "The buzzing, rasping beat a hurdy-gurdy makes with its special 'dog' bridge. The player gives the crank a quick flick of the wrist, which makes the loose bridge rattle against the top and mark the rhythm.",
+        "purpose_function": "It turns the hurdy-gurdy's drone into a rhythmic engine: the wrist-driven buzz lets one player lay down percussive accents while the wheel keeps sounding the melody and drones.",
+        "practical_application": "A player sets buzz sensitivity with the tension thread (tirant) and shapes rhythm with wrist strokes, and an engineer miking the instrument positions a mic to catch both the melody and the sharp buzz transients without overload.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Hurdy-gurdy",
+          "Buzzing bridge",
+          "Chien",
+          "Drone",
+          "Rhythmic articulation",
+          "Wheel"
+        ],
+        "common_mistakes": [
+          "Thinking the buzz comes from a mechanical fault instead of the deliberately loose chien bridge.",
+          "Setting the tirant so tight the bridge cannot buzz, or so loose it rattles uncontrollably.",
+          "Turning the crank at a steady speed and expecting rhythm; the buzz needs the sudden wrist accelerations."
+        ],
+        "scenario_contexts": [
+          "A hurdy-gurdy player drives a dance tune with steady wrist-stroke buzzing.",
+          "Setting up the chien and tirant before a performance to dial in buzz response.",
+          "Micing a hurdy-gurdy so its percussive trompette buzz cuts through an ensemble."
+        ]
+      },
+      "sources": [
+        "Grove Dictionary of Music (hurdy-gurdy / vielle à roue)",
+        "Baines, European and American Musical Instruments (organology reference)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "a9c3c3db-f738-46cd-ab06-29af3049c772",
+      "term": "Understring ring (Hardanger)",
+      "fields": {
+        "definition": "The sympathetic ringing of the Hardanger fiddle's understrings, the four or five extra strings running beneath the fingerboard that are never bowed directly but resonate in sympathy with the four bowed top strings. Their shimmering, drone-like undertone is a defining feature of the instrument's sound.",
+        "plain_english": "The soft, ringing hum from the hidden strings under a Hardanger fiddle. These strings are never bowed, but they buzz along on their own when the top strings are played, giving the fiddle its shimmering glow.",
+        "purpose_function": "The understrings exist to wrap each bowed note in a resonant halo that gives the Hardanger fiddle its rich, echoing tone; tuning them to the tune's key strengthens the sympathetic response.",
+        "practical_application": "A player tunes the understrings to match the tune's key for maximum ring, and an engineer mics the fiddle to capture the resonance while keeping the bowed melody clear.",
+        "category": "Acoustic resonance",
+        "related_terms": [
+          "Hardanger fiddle",
+          "Sympathetic string",
+          "Sympathetic string ringing",
+          "Tarab (sympathetic resonance)",
+          "Resonance",
+          "Scordatura"
+        ],
+        "common_mistakes": [
+          "Mistaking the understring ring for unwanted noise or a buzzing fault.",
+          "Leaving the understrings tuned to the wrong key, which weakens the sympathetic resonance.",
+          "Damping the strings to 'clean up' the sound and losing the instrument's signature shimmer."
+        ],
+        "scenario_contexts": [
+          "Recording Norwegian folk music where the Hardanger fiddle's understrings glow beneath the melody.",
+          "Retuning the understrings between tunes to match each key.",
+          "Micing a Hardanger fiddle to balance its bowed lines against the sympathetic ring."
+        ]
+      },
+      "sources": [
+        "Grove Dictionary of Music (Hardanger fiddle / hardingfele)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "52c5e132-b53f-40e5-ade8-d11c4ba2a934",
+      "term": "Upright-bass feedback",
+      "fields": {
+        "definition": "Acoustic feedback specific to the amplified double bass (upright bass), in which the instrument's large hollow body and low-frequency pickup couple with stage sound to produce a sustained low-frequency howl or boom. It typically centers on the body's main air (Helmholtz) and top-plate resonances.",
+        "plain_english": "A low, booming howl an amplified upright bass makes when its big hollow body feeds its own sound back through the pickup and speaker. The loop builds on the bass's strongest low notes until it roars.",
+        "purpose_function": "It is an unwanted resonance problem, not a feature; knowing it centers on the bass's body resonances lets a technician notch those frequencies and keep usable volume before feedback.",
+        "practical_application": "Engineers tame it with a high-pass filter, a narrow notch at the boom frequency, a body-mounted pickup rather than an open mic, foam or a feedback-buster in the body, and by keeping the bass away from monitors and subs.",
+        "category": "Live sound",
+        "related_terms": [
+          "String-instrument feedback",
+          "Gain before feedback",
+          "Helmholtz resonance",
+          "Notch filter",
+          "High-pass filter",
+          "Piezo pickup"
+        ],
+        "common_mistakes": [
+          "Boosting low EQ for more 'body', which feeds the exact resonance that howls.",
+          "Standing the bass right in front of a wedge or sub and then blaming the pickup.",
+          "UNSAFE: Leaving a low-frequency feedback loop running at high level, which can drive subwoofers and amplifiers past their limits and expose the crew to harmful sound levels."
+        ],
+        "scenario_contexts": [
+          "A jazz trio's upright bass booms uncontrollably as stage volume climbs in a small club.",
+          "Sound check where the engineer high-passes and notches the bass to raise its gain before feedback.",
+          "An outdoor gig where the bass sits near the subs and starts a low-frequency howl."
+        ]
+      },
+      "sources": [
+        "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+        "Ballou, Handbook for Sound Engineers (Focal Press)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

@@ -1,0 +1,312 @@
+{
+ "batch": 407,
+ "topic": "Audio Plugin & DSP Development",
+ "authored": [
+  {
+   "id": "d6214bb1-dc0d-4a17-b0c7-144ed2ba6cd4",
+   "term": "Plugin state recall",
+   "fields": {
+    "definition": "Plugin state recall is the mechanism by which a host saves a plugin's complete internal state - parameter values plus any non-parameter data - into a data block and later restores it exactly, so the plugin returns to the saved configuration. In VST3 the host calls the component's getState and setState methods; in JUCE these map to getStateInformation and setStateInformation; in Audio Units the state is exchanged through the ClassInfo property.",
+    "plain_english": "State recall lets a project reopen a plugin exactly as you left it. The host saves all the knob settings to a file, then feeds them back to load them again. That way your sound comes back the next day.",
+    "purpose_function": "It exists so a plugin's settings survive being closed and reopened; the host serializes the state when saving a session or preset and hands it back on load, letting the plugin rebuild the exact sound the user set up.",
+    "practical_application": "A developer implements the save and restore methods so a DAW project reloads the plugin with every parameter, plus any hidden state such as an oversampling choice, restored intact; a technician depends on this when reopening a mix session.",
+    "category": "State management",
+    "related_terms": [
+     "Preset serialization",
+     "Parameter automation",
+     "Serialization",
+     "Plugin validation",
+     "Processing callback"
+    ],
+    "common_mistakes": [
+     "Saving only parameter values and forgetting non-parameter state, so features like a chosen filter mode or oversampling factor reset when the session reloads.",
+     "Writing a state format with no version tag, so a later plugin update cannot safely read presets saved by an older build.",
+     "Assuming setState always arrives on the audio thread and doing heavy work there; it can arrive on a message thread and must not corrupt live processing."
+    ],
+    "scenario_contexts": [
+     "Reopening a saved DAW project and expecting every plugin to load with its exact settings.",
+     "Migrating a mix to another studio where the plugin must restore identically from the session file.",
+     "Saving and recalling a user preset from the plugin's own preset browser."
+    ]
+   },
+   "sources": [
+    "JUCE API Documentation, AudioProcessor Class Reference (getStateInformation / setStateInformation)",
+    "Steinberg VST3 SDK, Vst::Component Class Reference (getState / setState via IBStream)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7ed0138f-30f1-493c-a8d8-0a63c9aa0753",
+   "term": "Plugin validation",
+   "fields": {
+    "definition": "Plugin validation is the process of running an audio plugin through an automated conformance test that checks it behaves correctly under a host's rules - correct interfaces, parameter reporting, state save and restore, and stable rendering at varied block sizes and channel layouts. Standard tools include Steinberg's VST3 Validator, Apple's auval for Audio Units, and Tracktion's pluginval.",
+    "plain_english": "Validation is an automatic checkup for a plugin. A test program loads it and pokes every part to make sure nothing breaks or crashes. Passing it means the plugin should behave in real hosts.",
+    "purpose_function": "It exists to catch bugs and rule violations before release, confirming the plugin loads, exposes its parameters correctly, saves and restores state, and renders audio without crashing across the block sizes and channel layouts a host may throw at it.",
+    "practical_application": "A developer runs the VST3 Validator or auval as part of the build so a plugin that fails conformance never ships; on macOS a plugin must pass auval or Logic Pro will not load it.",
+    "category": "Testing",
+    "related_terms": [
+     "Plugin state recall",
+     "Processing callback",
+     "Processing buffer",
+     "Real-time safety",
+     "Preset serialization"
+    ],
+    "common_mistakes": [
+     "Testing only inside one favorite DAW and skipping the standard validator, then shipping a plugin that fails auval and will not load in Logic Pro.",
+     "Ignoring validator warnings about unsupported block sizes or channel layouts that later cause crashes in real sessions.",
+     "Not re-running validation after a small change, so a regression that breaks state recall reaches users."
+    ],
+    "scenario_contexts": [
+     "Adding auval and the VST3 Validator to a continuous-integration build so every commit is checked.",
+     "Diagnosing why a newly installed plugin refuses to appear in a host's plugin list.",
+     "Confirming a plugin handles zero-sample and oversized blocks before a public release."
+    ]
+   },
+   "sources": [
+    "Steinberg VST3 Developer Portal, Validator command line (VST3 conformity checking)",
+    "Apple Technical Note TN2204, Audio Unit Validation Using the auval Tool"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "35651eae-32db-496f-a595-6ad4d7a5f599",
+   "term": "Preset serialization",
+   "fields": {
+    "definition": "Preset serialization is the conversion of a plugin's current settings into a linear byte stream that can be written to disk or into a host session and later parsed back to reproduce those settings. In VST3 this is done by writing to and reading from an IBStream; the byte layout is defined by the plugin and usually carries a version identifier.",
+    "plain_english": "Serializing a preset means turning all the settings into one string of bytes you can save. Later the plugin reads that string back and rebuilds the sound. It is like packing a suitcase so you can unpack it the same.",
+    "purpose_function": "It exists so settings can be stored and shared as a compact, ordered stream rather than live objects; the fixed format lets the same bytes reload on any machine and lets newer plugin versions still read older presets when versioning is included.",
+    "practical_application": "A developer writes each parameter and any extra state into the stream in a fixed order, tagging it with a version number so future builds can migrate old presets; users experience this as saving and loading presets.",
+    "category": "State management",
+    "related_terms": [
+     "Plugin state recall",
+     "Serialization",
+     "Parameter automation",
+     "Plugin validation",
+     "Processing callback"
+    ],
+    "common_mistakes": [
+     "Writing raw memory structs straight to the stream, so presets break across compilers, CPU byte orders, or plugin versions.",
+     "Leaving out a version field, making it impossible to safely change the preset format later.",
+     "Storing absolute file paths or machine-specific data in the preset so it fails to load on another computer."
+    ],
+    "scenario_contexts": [
+     "Saving a user preset to a shareable file that opens correctly on a collaborator's system.",
+     "Loading presets made by an older plugin version after a format change.",
+     "Embedding plugin settings inside a DAW project file."
+    ]
+   },
+   "sources": [
+    "Steinberg VST3 SDK, IBStream interface and Vst::Component getState / setState",
+    "JUCE API Documentation, AudioProcessor getStateInformation / setStateInformation (MemoryBlock serialization)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9644acda-f3ca-4904-85c0-2096ad5b1cc3",
+   "term": "Processing buffer",
+   "fields": {
+    "definition": "A processing buffer is the block of consecutive audio samples, per channel, that the host passes to a plugin for each processing call rather than delivering samples one at a time. Its length (the block or buffer size) is set by the host, can change between calls, and directly affects latency and CPU efficiency.",
+    "plain_english": "Audio is handed to a plugin in small groups of samples, not one by one. Each group is a processing buffer. Bigger groups are easier on the computer but add a little delay.",
+    "purpose_function": "It exists to make processing efficient: handling many samples per call reduces the overhead of switching between the host and plugin, while the chosen buffer size trades latency against CPU headroom and dropout risk.",
+    "practical_application": "A developer writes the process routine to loop over the samples in whatever buffer the host provides, never assuming a fixed size; an engineer picks a small buffer for low-latency tracking and a larger one for mixing stability.",
+    "category": "Audio processing",
+    "related_terms": [
+     "Processing callback",
+     "Sample processing routine",
+     "Real-time processing thread",
+     "Latency",
+     "Real-time safety"
+    ],
+    "common_mistakes": [
+     "Assuming the buffer size never changes and allocating fixed arrays, then crashing when the host sends a larger or zero-length block.",
+     "Confusing the buffer size in samples with latency in milliseconds and setting an unusable value for live monitoring.",
+     "Reading past the number of valid samples the host reports for that call."
+    ],
+    "scenario_contexts": [
+     "Lowering the buffer size in a DAW to reduce monitoring latency while overdubbing.",
+     "Raising the buffer size to stop audio dropouts during a heavy mix.",
+     "Writing a plugin that must handle a host changing block size on the fly."
+    ]
+   },
+   "sources": [
+    "JUCE API Documentation, AudioProcessor::processBlock (AudioBuffer, variable block size)",
+    "Steinberg VST3 SDK, IAudioProcessor process and ProcessData (block-based sample processing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "45ac640d-ea71-400c-a810-d3135aaf4f77",
+   "term": "Processing callback",
+   "fields": {
+    "definition": "A processing callback is the function the host invokes on the audio thread to hand a plugin a block of input samples and collect the processed output. It is called repeatedly in real time; examples are JUCE's processBlock, VST3's process, and the Audio Unit render callback.",
+    "plain_english": "The host calls one special function over and over to move audio through a plugin. Each call gives the plugin some input and takes back the output. It has to finish fast because it runs in real time.",
+    "purpose_function": "It is the entry point where all real-time audio processing happens; the host drives it on a strict schedule so the plugin can read input, apply its effect, and return output in time for the next block.",
+    "practical_application": "A developer puts the effect's DSP inside this callback and keeps it free of slow or blocking operations, since anything that overruns the block deadline causes audible glitches; it runs many times per second during playback.",
+    "category": "Audio processing",
+    "related_terms": [
+     "Processing buffer",
+     "Real-time processing thread",
+     "Real-time safety",
+     "Sample processing routine",
+     "Latency"
+    ],
+    "common_mistakes": [
+     "Allocating memory, taking locks, or doing file or network I/O inside the callback, which can stall the audio thread and cause dropouts.",
+     "Assuming the callback always gets the same number of samples, so code breaks when the host changes block size.",
+     "UNSAFE: leaving the output buffer uninitialized or letting NaN or denormal values through, which can produce a full-scale burst that harms hearing or damages drivers."
+    ],
+    "scenario_contexts": [
+     "Real-time monitoring where the callback must return within a few milliseconds.",
+     "Profiling CPU use by measuring time spent inside the callback.",
+     "Debugging clicks that appear only at small buffer sizes."
+    ]
+   },
+   "sources": [
+    "JUCE API Documentation, AudioProcessor::processBlock (called on the audio thread, variable block size)",
+    "Apple Audio Unit Programming Guide, The Audio Unit (render callback / render cycle)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "308f9206-615e-4d7a-b137-0c3d19a80af9",
+   "term": "Real-time processing thread",
+   "fields": {
+    "definition": "The real-time processing thread (the audio thread) is the high-priority operating-system thread on which the host runs a plugin's processing callback, driven by the audio hardware's timing. It must complete each block within a hard deadline set by the buffer size and sample rate, or the output underruns and glitches.",
+    "plain_english": "The audio thread is a special fast lane in the computer just for sound. It has to finish each chunk of audio on time, every time, or you hear clicks. It runs at a high priority so nothing gets in its way.",
+    "purpose_function": "It exists to guarantee that audio is produced on the strict, unforgiving schedule the sound hardware demands; running processing at high priority keeps other tasks from delaying it and causing dropouts.",
+    "practical_application": "A developer treats any code that runs on this thread as time-critical and keeps it free of blocking calls; a technician sees the symptoms of an overloaded audio thread as crackles, pops, or a rising CPU meter in the DAW.",
+    "category": "Real-time systems",
+    "related_terms": [
+     "Processing callback",
+     "Real-time safety",
+     "Processing buffer",
+     "Latency",
+     "Sample processing routine"
+    ],
+    "common_mistakes": [
+     "Sharing data with the audio thread using a normal lock, which can block it and cause dropouts instead of using lock-free communication.",
+     "Doing UI updates, logging, or memory allocation on the audio thread and wondering why the sound glitches.",
+     "Assuming the audio thread and the message or GUI thread can touch the same data safely without proper synchronization."
+    ],
+    "scenario_contexts": [
+     "Passing new parameter values from the GUI to the audio thread without a lock.",
+     "Investigating dropouts that appear when the CPU is loaded by another program.",
+     "Choosing a lock-free FIFO to send data between the editor and the processor."
+    ]
+   },
+   "sources": [
+    "JUCE API Documentation, AudioProcessor::processBlock (audio thread, no UI interaction)",
+    "Pirkle, Designing Audio Effect Plugins in C++ (real-time audio thread and processing deadlines)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3510f759-531a-467b-9022-76e43d915a7c",
+   "term": "Real-time safety",
+   "fields": {
+    "definition": "Real-time safety is the discipline of writing audio-thread code so every operation has a bounded, predictable execution time. It forbids operations that can block or take unbounded time - memory allocation, locks that a lower-priority thread can hold, file or network I/O, and many system calls - because any stall risks missing the block deadline and glitching.",
+    "plain_english": "Real-time safe code never does anything that might pause by surprise. On the audio thread you avoid things like grabbing memory or waiting on a lock, because a pause means a click. Every chunk of sound must finish in time.",
+    "purpose_function": "It exists to keep the audio thread from ever stalling; by banning unbounded operations, it ensures each processing block completes within its deadline so playback stays glitch-free even under load.",
+    "practical_application": "A developer pre-allocates buffers before playback, uses lock-free structures to talk to other threads, and keeps allocation, locks, and I/O out of the processing callback; failing this shows up as intermittent dropouts that are hard to trace.",
+    "category": "Real-time systems",
+    "related_terms": [
+     "Real-time processing thread",
+     "Processing callback",
+     "Processing buffer",
+     "Sample processing routine",
+     "Denormal numbers"
+    ],
+    "common_mistakes": [
+     "Calling new, delete, or malloc inside the audio callback, since allocation can block for an unpredictable time.",
+     "Locking a mutex on the audio thread that a lower-priority thread can hold, causing priority inversion and dropouts.",
+     "Treating occasional dropouts as harmless instead of as evidence of a real-time safety violation."
+    ],
+    "scenario_contexts": [
+     "Reviewing DSP code to remove every allocation and lock from the processing path.",
+     "Replacing a locked shared buffer with a lock-free FIFO between threads.",
+     "Tracking down rare glitches that only appear after the plugin has run for a while."
+    ]
+   },
+   "sources": [
+    "JUCE API Documentation, AudioProcessor::processBlock (audio-thread constraints)",
+    "Pirkle, Designing Audio Effect Plugins in C++ (avoiding blocking operations on the audio thread)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9b019a7c-e0a8-43b5-87d3-3b0b69915f7d",
+   "term": "Sample processing routine",
+   "fields": {
+    "definition": "A sample processing routine is the inner code that applies a DSP algorithm to audio, typically a loop that reads each input sample, computes the output from the algorithm's state and coefficients, and writes the result. It sits inside the processing callback and runs once per sample or, when vectorized, per group of samples.",
+    "plain_english": "This is the core loop that actually changes the sound. It takes each sample, does the math for the effect, and writes the new value out. It runs for every single sample of audio.",
+    "purpose_function": "It is where the effect or instrument's math is carried out; keeping this routine separate makes the DSP logic clear and makes it easy to optimize the part of the code that runs most often.",
+    "practical_application": "A developer writes and tunes this loop for filters, gain, distortion, or delay, then optimizes it because it is the hottest code path; it is the first place to look when a plugin uses too much CPU.",
+    "category": "Audio processing",
+    "related_terms": [
+     "Processing callback",
+     "Processing buffer",
+     "SIMD optimization",
+     "Real-time safety",
+     "Filter coefficients"
+    ],
+    "common_mistakes": [
+     "Reallocating or recomputing constant values inside the per-sample loop instead of before it, wasting CPU on the hottest path.",
+     "Forgetting to carry filter or delay state correctly across blocks, causing clicks at buffer boundaries.",
+     "Ignoring denormal numbers in feedback paths, which can spike CPU when signals decay toward silence."
+    ],
+    "scenario_contexts": [
+     "Writing the per-sample loop for a biquad filter.",
+     "Optimizing a distortion algorithm that is overloading the CPU.",
+     "Debugging clicks that appear at the edges of each processing block."
+    ]
+   },
+   "sources": [
+    "Zolzer, DAFX: Digital Audio Effects (per-sample DSP algorithm implementation)",
+    "Pirkle, Designing Audio Effect Plugins in C++ (processing loop structure inside the callback)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "48758461-657b-4a49-8f7a-dfab53632935",
+   "term": "SIMD optimization",
+   "fields": {
+    "definition": "SIMD (Single Instruction, Multiple Data) optimization uses CPU vector instructions to apply one operation to several audio samples at once, processing them in parallel within wide registers instead of one at a time. Common instruction sets are SSE and AVX on x86 and NEON on ARM; frameworks such as JUCE wrap them in classes like SIMDRegister.",
+    "plain_english": "SIMD lets the CPU do the same math on several samples in one step instead of one at a time. It is like a checkout lane that scans four items at once. This can make heavy audio code run much faster.",
+    "purpose_function": "It exists to speed up the busiest DSP loops by exploiting the CPU's ability to process a vector of samples per instruction, cutting the cost of filters, gain, and mixing when many samples must be handled in real time.",
+    "practical_application": "A developer vectorizes a hot per-sample loop so it handles four or eight samples per instruction, often getting a large CPU saving; this matters when a plugin must run many voices or channels within the audio thread's deadline.",
+    "category": "Optimization",
+    "related_terms": [
+     "Sample processing routine",
+     "Processing buffer",
+     "Real-time safety",
+     "Processing callback",
+     "Latency"
+    ],
+    "common_mistakes": [
+     "Assuming a specific instruction set is present, causing a crash on CPUs without it instead of checking at runtime or providing a fallback.",
+     "Feeding SIMD code misaligned data, which can slow it down or crash depending on the instruction used.",
+     "Vectorizing code that is not the bottleneck, adding complexity for no real speedup."
+    ],
+    "scenario_contexts": [
+     "Speeding up a multichannel filter by processing channels as one vector.",
+     "Optimizing a synth so more voices fit inside the CPU budget.",
+     "Adding a runtime check to pick the best available instruction set."
+    ]
+   },
+   "sources": [
+    "JUCE Tutorial, Optimisation using the SIMDRegister class (SSE / AVX / NEON vectorization)",
+    "Zolzer, DAFX: Digital Audio Effects (vectorized DSP processing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,1012 @@
+{
+ "group": 83,
+ "terms": [
+  {
+   "id": "9a3de45d-2443-46d4-b5e5-03857ae4a5c1",
+   "term": "Guqin slide squeak (zou yin)",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The sliding-hand tone of the guqin (zou shou yin), the sustained gliding sound made when a left-hand finger presses a string after plucking and slides along it to new pitches, often with an audible friction squeak against the string. It is central to the guqin's expressive, speech-like melodic style rather than an unwanted noise.",
+   "plain_english": "On the guqin, after plucking a string the player often slides a finger along it to move between notes. This makes a smooth gliding tone, and sometimes a light squeak as the finger rubs the string. It is a wanted, expressive part of the music.",
+   "purpose_function": "Sliding tones connect notes and imitate the rise and fall of the human voice, giving the guqin its distinctive singing, expressive melodic lines.",
+   "practical_application": "When recording guqin, an engineer decides how much of the natural slide friction to keep, capturing the expressive glides while avoiding overly harsh finger squeaks.",
+   "category": "Playing Technique",
+   "related_terms": [
+    "Portamento",
+    "Glissando",
+    "Guqin floating harmonics (fan yin)",
+    "Guqin",
+    "Vibrato"
+   ],
+   "common_mistakes": [
+    "Treating the slide squeak as a mistake and editing it all out",
+    "Confusing the expressive slide with a fault such as fret buzz",
+    "Over-compressing the track, which pushes quiet slide sounds forward harshly"
+   ],
+   "scenario_contexts": [
+    "Recording a guqin performance rich in sliding tones",
+    "Editing finger friction on a close-miked solo instrument",
+    "Analyzing guqin melodic ornaments and slides"
+   ]
+  },
+  {
+   "id": "b9a8c15b-04df-4539-a714-a378c86e1e94",
+   "term": "Gusle raspy drone",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The rough, buzzing sustained tone of the gusle, a Balkan bowed instrument with one (rarely two) horsehair string bowed against a skin-bellied wooden body; its many-stranded string and sideways finger-stopping produce a raspy, penetrating drone that accompanies epic singing.",
+   "plain_english": "The gusle is a Balkan folk instrument with a single thick horsehair string played with a bow. It makes a rough, buzzing, droning sound that backs a singer telling long epic stories. The scratchy tone is just what the instrument is meant to have.",
+   "purpose_function": "The raspy drone provides a steady, speech-supporting backdrop for a solo epic singer, its rough timbre helping the voice cut through and carry the story.",
+   "practical_application": "Recording a gusle, an engineer chooses a mic and placement that capture its raw, raspy character without harsh distortion, keeping voice and instrument balanced.",
+   "category": "Timbre",
+   "related_terms": [
+    "Drone",
+    "Bowed string",
+    "Timbre",
+    "Sympathetic strings",
+    "Gadulka sympathetic ring"
+   ],
+   "common_mistakes": [
+    "Trying to make the gusle sound smooth and clean, removing its natural rasp",
+    "Treating the buzzy tone as distortion that needs fixing",
+    "Overpowering the singer, when the gusle should support the voice"
+   ],
+   "scenario_contexts": [
+    "Recording a Balkan guslar performing epic poetry",
+    "Mixing voice and gusle so the story stays clear",
+    "Documenting traditional single-string bowed instruments"
+   ]
+  },
+  {
+   "id": "e26bb1d8-7a01-4b13-8a91-d57dbd232366",
+   "term": "Gut-string slide",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A glissando or portamento made by sliding the stopping finger along a gut string so the sounding pitch moves continuously between two notes. On gut-strung instruments such as the classical guitar, lute, viol or oud, the softer, more textured string surface gives the slide an audible finger-on-string friction and a warm, gradual change of pitch.",
+   "plain_english": "Moving a finger along a gut string while it sounds, so the note glides smoothly up or down. It is like sliding your finger along a stretched rubber band that is playing a note, bending the pitch from one note to the next.",
+   "purpose_function": "It links two pitches with a smooth, vocal-like slur and adds expression; the gut string's soft texture also gives a gentle sliding noise that is part of the instrument's natural character.",
+   "practical_application": "When recording nylon or gut-strung instruments, a technician expects these slides and their finger noise, and chooses mic placement and any noise processing so the slide stays musical rather than being cut away or exaggerated.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Glissando",
+    "Portamento",
+    "Finger noise",
+    "Legato",
+    "Gut string",
+    "Fingerboard"
+   ],
+   "common_mistakes": [
+    "Confusing a gut-string slide, which is a continuous pitch change, with a hammer-on or fretted legato that moves in discrete steps.",
+    "Using heavy noise reduction that strips out the sliding finger sound and leaves the slide lifeless.",
+    "Assuming every string slide sounds alike; gut and nylon strings give a softer, less squeaky slide than wound steel strings."
+   ],
+   "scenario_contexts": [
+    "Close-miking a classical guitarist whose left hand slides between positions on the treble strings.",
+    "Recording a lute or viol part where expressive slides connect the notes of a phrase.",
+    "Editing a solo passage where a slide's finger noise must be balanced against the note itself."
+   ]
+  },
+  {
+   "id": "cda6e391-346c-45b7-9f97-75648ac3b355",
+   "term": "Guzheng glissando sweep",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A rapid glissando swept across the open strings of the guzheng (Chinese zither), sounding the successive pitches of its pentatonic tuning in a cascading run. Played by drawing the fingers or nails up or down across the strings, it is a signature ornamental gesture of the instrument.",
+   "plain_english": "A quick sweep of the fingers across the guzheng's strings, so the notes flow past like water. It sounds a bit like running your thumb down a row of piano keys, but on plucked strings.",
+   "purpose_function": "It supplies flowing ornamental runs and transitions that colour a melody; because the guzheng is tuned to a pentatonic scale, every swept note fits the mode, so the sweep always sounds pleasant.",
+   "practical_application": "When miking or mixing a guzheng, a technician captures the wide left-to-right spread of a sweep and watches for sharp peaks and nail noise as the fingers cross many strings quickly.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Glissando",
+    "Pentatonic scale",
+    "Zither",
+    "Plucking",
+    "Tremolo",
+    "Transient"
+   ],
+   "common_mistakes": [
+    "Assuming the sweep is chromatic; the guzheng's open strings are pentatonic, so the run skips the missing scale degrees.",
+    "Panning a single spot mic so a sweep collapses to one point instead of showing the instrument's natural left-to-right motion.",
+    "Setting compression too fast and squashing the bright attack of each swept string."
+   ],
+   "scenario_contexts": [
+    "Recording a solo guzheng where sweeps open or close musical phrases.",
+    "Balancing a guzheng in a fusion mix so its glissando cuts through without harsh nail noise.",
+    "Stereo-miking the instrument to preserve the movement of a full-range sweep."
+   ]
+  },
+  {
+   "id": "e1771763-26d8-4d7f-be0e-532bf887d113",
+   "term": "Hammered-dulcimer strike",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The action of striking the courses of a hammered dulcimer with lightweight hand-held hammers (beaters) to set the strings vibrating. The hammer's mass and hardness and the point of contact along the string shape the loudness, attack and tone of each note.",
+   "plain_english": "Hitting the strings of a hammered dulcimer with small handheld hammers to make them ring. It works like tapping a tuned string with a little mallet, where a harder tap gives a brighter, louder note.",
+   "purpose_function": "Striking is how the instrument makes its sound; the bounce of the light hammers lets a player repeat notes fast, while hammer hardness and strike point set the brightness and attack of the tone.",
+   "practical_application": "A technician recording a hammered dulcimer expects sharp percussive peaks and wide dynamics, and sets gain and mic distance so loud strikes do not clip while soft passages stay audible.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Course",
+    "Transient",
+    "Attack",
+    "Struck string",
+    "Beater",
+    "Sustain"
+   ],
+   "common_mistakes": [
+    "Setting input gain for quiet notes and then clipping on hard strikes, since dulcimer strikes have a very high peak level.",
+    "Over-compressing the attack and losing the bright percussive character of the strike.",
+    "Placing a mic so close to one course that nearby courses ringing sympathetically are missed."
+   ],
+   "scenario_contexts": [
+    "Close-miking a hammered dulcimer in a folk session with strong percussive strikes.",
+    "Recording rapid tremolo passages built from fast, repeated hammer strikes.",
+    "Setting a limiter to catch unexpected loud strikes during a live performance."
+   ]
+  },
+  {
+   "id": "1387970e-7716-414f-8d7a-51856021bcfa",
+   "term": "Harp feedback",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "Acoustic feedback that occurs when an amplified harp's pickup or microphone signal is reproduced by a loudspeaker and re-excites the harp's soundboard and strings, forming a self-sustaining howl or ring. The harp's large resonant body and many freely vibrating strings make it especially prone to feedback on stage.",
+   "plain_english": "A howling or ringing sound that happens when a plugged-in harp's own amplified sound feeds back into it and builds up. It is the same runaway loop you hear when a microphone gets too close to its speaker.",
+   "purpose_function": "Feedback is an unwanted loop, not a goal; understanding it matters because the harp's open strings and big soundbox pick up amplified sound easily, so controlling it keeps the amplified harp usable at stage volume.",
+   "practical_application": "A technician fights harp feedback by managing gain before feedback, using directional mics or contact pickups, placing the harp away from and behind the speakers, and notching the problem frequencies with EQ.",
+   "category": "Amplification",
+   "related_terms": [
+    "Acoustic feedback",
+    "Gain before feedback",
+    "Pickup",
+    "Notch filter",
+    "Monitor wedge",
+    "Ringing out"
+   ],
+   "common_mistakes": [
+    "UNSAFE: Letting feedback build into a sudden loud howl, which can damage speakers and hearing; pull the gain down or mute at the first sign of ringing.",
+    "Raising the harp channel gain to hear more instead of moving the harp out of the monitor's direct path.",
+    "Aiming a floor wedge straight at the harp's soundboard, which invites feedback."
+   ],
+   "scenario_contexts": [
+    "Amplifying a lever or pedal harp in a loud band where the soundboard starts to ring.",
+    "Ringing out the monitors before a set that features an amplified harp.",
+    "Choosing between a contact pickup and a mic to reduce feedback on a small stage."
+   ]
+  },
+  {
+   "id": "6ab545a8-8b6b-4d35-9b7a-563b5d3ff912",
+   "term": "Humbucker",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "An electric-guitar pickup that uses two coils wired in series with opposite magnetic polarity and reversed winding sense, so that externally induced hum cancels while the string signal from both coils adds in phase. The result is a quieter, higher-output and warmer-sounding pickup than a single coil.",
+   "plain_english": "A guitar pickup made of two coils that cancel out the buzzing hum a single coil picks up. The coils are wired so the noise cancels but the guitar sound adds together, giving a fuller, quieter tone.",
+   "purpose_function": "It exists to remove the mains-frequency hum that plagues single-coil pickups; pairing two coils that see hum in opposite phase cancels the shared noise while doubling the wanted signal, raising output and thickening the tone.",
+   "practical_application": "A technician treats a humbucker-equipped guitar as a hotter, quieter source, sets input gain for its higher output, and expects less 50/60 Hz hum than from single coils near lighting or transformers.",
+   "category": "Guitar pickup",
+   "related_terms": [
+    "Single-coil pickup",
+    "Hum",
+    "Series wiring",
+    "Coil split",
+    "Pickup",
+    "Ground loop"
+   ],
+   "common_mistakes": [
+    "Thinking a humbucker removes all noise; it cancels shared magnetic hum but not radio interference or ground-loop buzz.",
+    "Assuming humbucker and single-coil outputs match, then clipping the input when switching to the hotter humbucker.",
+    "Splitting a humbucker to single-coil mode and forgetting that its hum-cancelling is then lost."
+   ],
+   "scenario_contexts": [
+    "DI-ing or miking a humbucker-equipped electric guitar under stage lighting that would hum through single coils.",
+    "Setting preamp gain when a player switches between single-coil and humbucker guitars.",
+    "Troubleshooting guitar hum and confirming whether the pickup is a true humbucker."
+   ]
+  },
+  {
+   "id": "2d5d3ae9-1182-4b45-9598-e4879812a062",
+   "term": "Inside-string bow tone",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The tone produced when bowing one of the inner strings of a multi-string bowed instrument (for example the D or A string of a violin), which lie between the outer strings and demand a precise bow-arm height to sound cleanly without brushing the neighbouring strings. This inner-string tone tends to be more covered and mellow than that of the freely bowed outer strings.",
+   "plain_english": "The sound made when a bow plays one of the middle strings of an instrument like a violin. These strings sit between the outer two, so the arm must be held at just the right height to sound only one string cleanly.",
+   "purpose_function": "Naming the inner-string tone matters because these strings need a careful bow-arm level; getting it right gives a smooth, even tone and avoids accidentally sounding the strings on either side.",
+   "practical_application": "When recording strings, a technician may notice the inner strings sound slightly darker or quieter and adjusts mic placement or balance so passages on the middle strings match the brighter outer strings.",
+   "category": "Bowing technique",
+   "related_terms": [
+    "Bowing technique",
+    "String crossing",
+    "Double stop",
+    "Sul tasto",
+    "Bow contact point",
+    "Timbre"
+   ],
+   "common_mistakes": [
+    "Blaming the instrument for an uneven tone when the real cause is the bow arm sitting at the wrong height for an inner string.",
+    "Expecting inner strings to record as brightly as the top string and not balancing them in the mix.",
+    "Confusing inner-string tone with sul tasto or sul ponticello, which are about where the bow contacts the string, not which string is played."
+   ],
+   "scenario_contexts": [
+    "Recording a violin solo where a melody moves onto the inner D and A strings.",
+    "Balancing a string section so middle-string passages sit evenly with outer-string ones.",
+    "Coaching mic placement for a violist playing mostly on the inner strings."
+   ]
+  },
+  {
+   "id": "c6d6cd4d-d1bd-40ac-9014-2cd5861e542e",
+   "term": "Jawari/javari buzz",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The bright, buzzing, overtone-rich timbre created by the jawari (javari) — the broad, gently curved bridge of Indian string instruments such as the sitar, tanpura and veena. As a string vibrates it grazes the curved bridge surface, and this repeated glancing contact adds and sustains high harmonics, producing the characteristic humming buzz.",
+   "plain_english": "The rich, buzzing ring of a sitar or tanpura. It happens when the strings graze a wide, curved bridge. That gentle brushing adds shimmering overtones, a bit like how a buzzing reed sounds fuller than a clean one.",
+   "purpose_function": "The jawari bridge exists to give these instruments their signature sustained, overtone-heavy sound; the grazing contact keeps high harmonics alive far longer than a normal sharp-edged bridge would.",
+   "practical_application": "A technician recording a sitar or tanpura captures this bright, harmonic-rich buzz with careful mic choice and placement, avoiding harshness while keeping the sustaining overtones that define the sound.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Jivari drone bloom",
+    "Bridge",
+    "Sympathetic strings",
+    "Overtones",
+    "Sustain",
+    "Sitar"
+   ],
+   "common_mistakes": [
+    "Mistaking the intended jawari buzz for an unwanted rattle or fret buzz and trying to EQ it out.",
+    "Close-miking so tightly that the overtones sound harsh instead of rich and sustained.",
+    "Assuming any curved-bridge buzz is a defect; on these instruments the buzz is the desired tone and is finely shaped by a craftsman."
+   ],
+   "scenario_contexts": [
+    "Recording a sitar where the jawari gives every note a long, shimmering tail.",
+    "Miking a tanpura drone whose buzzing overtones underpin a raga performance.",
+    "Deciding EQ on an Indian-classical track so the jawari overtones stay musical."
+   ]
+  },
+  {
+   "id": "5f7800de-9a4d-48e6-af80-650455a3fda2",
+   "term": "Jivari drone bloom",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The swelling, harmonically blooming sustain of a tanpura's drone produced by its jivari (jawari) bridge and the cotton threads (juari) laid under the strings. As each plucked string grazes the curved bridge, overtones build and evolve during the note, so the drone seems to bloom and shimmer rather than simply decay.",
+   "plain_english": "The way a tanpura's droning notes seem to swell and shimmer instead of just fading. The strings brush a curved bridge and a small thread, which makes overtones grow during the note, so the drone blooms like a slowly opening chord.",
+   "purpose_function": "This blooming drone provides the harmonic backdrop for Indian classical music; the jivari bridge and threads are tuned so the overtones rise and sustain, giving singers and soloists a rich, living reference pitch.",
+   "practical_application": "A technician records the tanpura with enough sustain and stereo space that the blooming overtones fill the background, and sets levels so the drone supports rather than masks the lead.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Jawari/javari buzz",
+    "Tanpura",
+    "Drone",
+    "Overtones",
+    "Sympathetic resonance",
+    "Sustain"
+   ],
+   "common_mistakes": [
+    "Gating or heavily compressing the tanpura, which kills the slow bloom and the evolving overtones.",
+    "Treating the blooming overtones as tuning drift instead of the intended sound of the jivari.",
+    "Recording the drone too quietly or too loudly so it either disappears or masks the soloist."
+   ],
+   "scenario_contexts": [
+    "Tracking a tanpura drone under a vocal raga so its bloom fills the harmonic space.",
+    "Choosing reverb and level so the tanpura blooms without swamping the mix.",
+    "Miking a live tanpura so the evolving overtones reach the audience."
+   ]
+  },
+  {
+   "id": "54c0b2ec-0909-44a9-9629-2f80803043b5",
+   "term": "Kamancheh nasal tone",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The bright, penetrating, slightly nasal timbre characteristic of the kamancheh, a Persian bowed spike fiddle whose sound is radiated by a thin skin (membrane) stretched over a small round wooden or gourd body. The membrane and compact resonator emphasize the upper harmonics, giving a reedy, voice-like nasal quality.",
+   "plain_english": "The bright, slightly buzzy, voice-like sound of the kamancheh, a Persian bowed fiddle. Its small skin-covered body makes a thin, nasal tone, a bit like a singer humming through the nose.",
+   "purpose_function": "The skin-headed body and small resonator shape this nasal, upper-harmonic-rich tone, which lets the kamancheh sing expressively and cut through an ensemble in Persian classical music.",
+   "practical_application": "A technician miking a kamancheh positions the mic to capture the skin's bright nasal tone without harshness, and may tame upper-midrange peaks with gentle EQ.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Spike fiddle",
+    "Membrane",
+    "Bowing technique",
+    "Timbre",
+    "Overtones",
+    "Resonator"
+   ],
+   "common_mistakes": [
+    "Mistaking the natural nasal tone for a bad mic or harsh EQ and dulling it until the instrument loses character.",
+    "Placing a bright condenser too close to the skin head, which exaggerates the nasal upper mids.",
+    "Assuming it should sound like a violin; the skin-covered body gives a thinner, more nasal voice."
+   ],
+   "scenario_contexts": [
+    "Recording a kamancheh solo in a Persian classical ensemble.",
+    "Balancing the kamancheh's nasal tone against softer plucked instruments in a mix.",
+    "Choosing mic distance to capture the skin head's bright timbre naturally."
+   ]
+  },
+  {
+   "id": "9e5931e7-4dcc-4f55-aca6-8353775ada5a",
+   "term": "Kemençe reedy bow",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The characteristic reedy, nasal, penetrating tone produced by bowing the kemençe, a family of small pear- or bottle-shaped bowed lutes played upright on the knee, with the strings stopped by the fingernails or fingertips rather than pressed to a fingerboard. Its bright, sharp timbre, often likened to a double-reed instrument, arises from the short body, high string tension and the bow's stick-slip excitation, and is central to Black Sea (Pontic lyra) and Ottoman classical kemençe music.",
+   "plain_english": "The sharp, nasal, oboe-like sound a kemence makes when you play it with a bow. This small upright fiddle from Turkey and the Black Sea has a thin, cutting voice, so it stands out clearly even in a loud band.",
+   "purpose_function": "The reedy, penetrating tone lets the kemençe carry a melody over drums, voices and dancing crowds in Black Sea and Ottoman music, which is why players and builders prize its bright, cutting voice.",
+   "practical_application": "When recording or amplifying a kemençe a technician expects a strong upper-midrange edge and audible bow noise, so they choose mic placement and gentle EQ that keep the reedy character without letting it turn harsh.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Arco sound",
+    "Bowing",
+    "Stick-slip motion",
+    "Timbre",
+    "Nasal tone",
+    "Spot mic"
+   ],
+   "common_mistakes": [
+    "Assuming the kemençe is fretted or stopped like a violin; players stop the strings with their fingernails, not by pressing them onto a fingerboard.",
+    "EQ-ing away all of the upper-midrange 'reed' to make it sound smooth, which strips the instrument of its identity.",
+    "Miking too close and exaggerating harsh bow scratch instead of capturing the body and reedy ring."
+   ],
+   "scenario_contexts": [
+    "Recording a Pontic lyra (Black Sea kemençe) for a folk-fusion track.",
+    "Amplifying a kemençe on a live horon-dance stage where it must cut through the mix.",
+    "Blending an Ottoman classical kemençe with other instruments in an ensemble session."
+   ]
+  },
+  {
+   "id": "cad01d39-0b51-4e15-8e66-4e90eaa19cee",
+   "term": "Key click",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A brief, percussive click transient heard at the very start (and often the end) of a note on an electromechanical or electronic organ, most famously the Hammond tonewheel organ. It occurs because the tone is always present at the key contacts, so making or breaking a contact chops the waveform and produces a sharp attack (and release) spike; it is regarded as a defining part of the vintage organ sound and is deliberately modeled in clonewheel instruments.",
+   "plain_english": "The short, snappy click you hear when an organ key goes down or up. It comes from the electrical contacts under the key turning the sound on and off. This click is a big part of what makes a Hammond organ sound like a Hammond.",
+   "purpose_function": "Originally an unavoidable side effect of the key contacts, key click became a valued musical feature that adds attack and definition to each note, so modern organs let players dial in the amount to imitate vintage instruments.",
+   "practical_application": "A player or engineer sets the attack and release key-click level on a clonewheel or reissue organ to taste, adding more for a percussive, aggressive feel or less for a smoother, pad-like sound.",
+   "category": "Keyboard artifact",
+   "related_terms": [
+    "Drawbar",
+    "Percussion (organ)",
+    "Tonewheel",
+    "Attack transient",
+    "Clonewheel organ",
+    "Key release"
+   ],
+   "common_mistakes": [
+    "Treating all key click as a fault to be removed; on a Hammond it is a wanted part of the tone.",
+    "Confusing electrical key click with mechanical key-action noise, which comes from the physical keys rather than the contacts.",
+    "Cranking click so high that it masks the note attack and sounds unnaturally spiky."
+   ],
+   "scenario_contexts": [
+    "Dialing in vintage key click on a clonewheel organ for a soul or gospel track.",
+    "Recording a real Hammond and preserving its natural attack and release clicks.",
+    "Reducing excessive modeled key click that sounds harsh in a dense mix."
+   ]
+  },
+  {
+   "id": "c79160ff-b544-460f-b737-7359be28415e",
+   "term": "Key noise",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The unwanted mechanical sound made by the keys and their action as they are pressed and released, distinct from the instrument's intended musical tone. On acoustic and digital pianos and organs it includes the impact of keys moving, bottoming out and returning to rest, and it can be captured by microphones or transmitted structurally into pickups.",
+   "plain_english": "The clicky, clunky sound the keys make as you press and release them, apart from the notes. Every keyboard makes some of this. It is like the soft clatter you hear on a quiet digital piano, even through headphones.",
+   "purpose_function": "Key noise is a normal by-product of any physical key mechanism; recognizing it matters because it can intrude on quiet recordings and must be managed so it does not distract from the music.",
+   "practical_application": "When close-miking a soft passage a technician positions mics and sets levels to keep key noise low, and on digital pianos may isolate the instrument from resonant surfaces that amplify the clatter.",
+   "category": "Mechanical noise",
+   "related_terms": [
+    "Key-action noise",
+    "Key thump",
+    "Key return",
+    "Key click",
+    "Acoustic spill",
+    "Close miking"
+   ],
+   "common_mistakes": [
+    "Assuming key noise means the instrument is broken; a certain amount is normal mechanical operation.",
+    "Gating hard to remove key noise and cutting off the quiet start or tail of real notes.",
+    "Blaming the microphone for key noise that is actually structure-borne through the stand or floor."
+   ],
+   "scenario_contexts": [
+    "Recording a soft solo piano passage where key clatter becomes audible between notes.",
+    "Tracking a digital piano late at night and noticing mechanical key sound through headphones.",
+    "Miking an organ manual and picking up the keys as well as the tone."
+   ]
+  },
+  {
+   "id": "cd7e96f3-78e9-41a3-a11c-5e8bd2533ce3",
+   "term": "Key release",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The act of letting go of a depressed key, which ends the note's actuation. On a MIDI instrument it sends a Note Off message; on a synthesizer it triggers the release stage of the amplitude envelope; and on acoustic or sampled instruments it lets the damper fall and may produce a distinct key-off or release sound.",
+   "plain_english": "The moment you lift your finger off a key to end a note. On a synth this starts the note fading away, and on a piano it drops the damper back onto the string to stop the sound.",
+   "purpose_function": "Key release tells the instrument when a note should stop, letting the player control note length and phrasing; the speed of the following envelope release then shapes how quickly the sound dies away.",
+   "practical_application": "A technician sets envelope release time so notes end smoothly, and when using sampled pianos enables release samples so the natural key-off sound is heard when keys are lifted.",
+   "category": "Note articulation",
+   "related_terms": [
+    "Key return",
+    "ADSR envelope",
+    "Note Off",
+    "Damper",
+    "Release sample",
+    "Sustain"
+   ],
+   "common_mistakes": [
+    "Confusing key release (letting go of the key) with the envelope's release time (how fast the sound fades).",
+    "Setting a very long envelope release and causing notes to overlap and turn muddy.",
+    "Forgetting that a held sustain pedal keeps notes sounding even after the keys are released."
+   ],
+   "scenario_contexts": [
+    "Programming a synth pad and lengthening the release so chords bloom after keys are lifted.",
+    "Using release samples in a virtual piano for realistic note endings.",
+    "Editing MIDI note-off timing to tighten a staccato keyboard part."
+   ]
+  },
+  {
+   "id": "58a6a5b8-7948-42a4-b031-72042a7de1fe",
+   "term": "Key return",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The mechanical travel of a key back to its rest (up) position after it is released, driven by a spring, gravity or a counterweight, together with the soft impact and noise produced as the key settles. On weighted and hammer-action keyboards it also involves the action parts falling back, and its speed limits how quickly a note can be repeated.",
+   "plain_english": "The way a key springs back up after you let it go, and the little soft thud it makes settling into place. If a key returns slowly, you cannot play fast repeated notes on it.",
+   "purpose_function": "Reliable key return resets the key for the next note and gives the player a consistent feel; the return also generates a small mechanical sound that engineers may need to manage on quiet recordings.",
+   "practical_application": "A technician checks that keys return evenly on a piano or controller so repeated notes trigger reliably, and keeps mic levels in mind because the soft key-return noise can appear in intimate recordings.",
+   "category": "Mechanical noise",
+   "related_terms": [
+    "Key-action noise",
+    "Key noise",
+    "Key thump",
+    "Key release",
+    "Weighted action",
+    "Repetition"
+   ],
+   "common_mistakes": [
+    "Confusing key return (the key rising back up) with key release (the act of letting go of the key).",
+    "Ignoring sluggish key return, which prevents fast note repetition and feels uneven.",
+    "Gating out quiet key-return noise so aggressively that soft note tails are also lost."
+   ],
+   "scenario_contexts": [
+    "Servicing a controller whose sticky keys do not return fully to rest.",
+    "Recording a soft passage where the key-return thud becomes audible.",
+    "Testing action feel by checking even, springy key return across the keyboard."
+   ]
+  },
+  {
+   "id": "dd1dcf1f-c579-48f4-a833-a4bcb587169e",
+   "term": "Key thump",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A low-frequency thud produced when a key is pressed hard and bottoms out on the key bed, or when the action falls back on release, transmitting mechanical energy into the instrument's body. It is common on digital pianos and weighted controllers and can be picked up by microphones or radiated as a dull knock, especially on resonant stands or surfaces.",
+   "plain_english": "The dull, low thump you feel and hear when a key hits the bottom of its travel. It is like tapping a table; the energy spreads into the keyboard's body and can be picked up as a soft knock.",
+   "purpose_function": "Key thump is an unwanted by-product of the key hitting its end stop; understanding it helps a technician stop that low-frequency knock from muddying quiet recordings or resonating through the stage.",
+   "practical_application": "A technician reduces key thump by placing the keyboard on an isolating stand or pad, and may use a high-pass filter to remove the low-frequency knock without touching the musical range.",
+   "category": "Mechanical noise",
+   "related_terms": [
+    "Key-action noise",
+    "Key noise",
+    "Key return",
+    "High-pass filter",
+    "Structure-borne noise",
+    "Isolation"
+   ],
+   "common_mistakes": [
+    "Confusing mechanical key thump with a low-frequency electrical thump or pop from the audio signal.",
+    "Trying to EQ out key thump with a broad low cut that also thins the instrument's real bass notes.",
+    "Ignoring structure-borne thump traveling through a shared stand or riser into other microphones."
+   ],
+   "scenario_contexts": [
+    "Recording a weighted digital piano where heavy playing produces a low key thump.",
+    "High-passing a keyboard DI to remove low-frequency knock in a live mix.",
+    "Isolating a controller on foam to stop thump traveling into a resonant desk."
+   ]
+  },
+  {
+   "id": "939f8c80-fe42-4753-b89f-1e8172f5bdba",
+   "term": "Key-action noise",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The mechanical noise generated specifically by a keyboard instrument's action, the hammers, jacks, wippens, dampers, springs and key bushings, as these parts move when notes are played. It is inherent to the physical mechanism; felt and cloth cushions are used to quiet it, but some remains and can be captured by close microphones.",
+   "plain_english": "The clicky, knocky sound made by the moving parts inside a keyboard's action, like the hammers and levers, not the strings or speakers. Even good pianos make a little of it, which is why the parts are padded with felt.",
+   "purpose_function": "Key-action noise is an unavoidable result of a mechanical action doing its job; knowing its causes lets a technician minimize it through maintenance and mic choices so it does not intrude on the recording.",
+   "practical_application": "A technician keeps action parts regulated and felts in good condition, and on quiet takes moves mics slightly away from the action or angles them to reduce the mechanical clatter reaching the recording.",
+   "category": "Mechanical noise",
+   "related_terms": [
+    "Key noise",
+    "Key thump",
+    "Key return",
+    "Damper",
+    "Piano action",
+    "Close miking"
+   ],
+   "common_mistakes": [
+    "Assuming audible action noise means a defect; some is normal even on a well-regulated instrument.",
+    "Letting worn or dried-out felt bushings go unserviced, so the action rattles more than it should.",
+    "Placing mics right over the action on a quiet passage and exaggerating the mechanical clatter."
+   ],
+   "scenario_contexts": [
+    "Close-miking a grand piano for a delicate solo and hearing hammer and damper noise.",
+    "Regulating a piano action to reduce excess mechanical clatter before a session.",
+    "Choosing mic distance on an upright to balance tone against action noise."
+   ]
+  },
+  {
+   "id": "b833b3f5-32f1-405e-b0d2-ec3e6530a700",
+   "term": "Keyboard ground-loop noise",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A hum or buzz, usually at the mains frequency (50 or 60 Hz) and its harmonics, caused when a keyboard or synthesizer and the mixer or amplifier it feeds are connected to ground through more than one path, forming a closed loop. Small voltage differences between the grounds drive current through the audio cable shield, which is heard as hum in the signal.",
+   "plain_english": "A steady hum or buzz that appears when a keyboard and a mixer are grounded through two different paths at once, making a loop. Stray current flows through the cable shield and you hear it as an annoying hum.",
+   "purpose_function": "This term names a specific, common cause of unwanted hum so technicians can tell it apart from other noise and cure the wiring at its source rather than masking the symptom.",
+   "practical_application": "A technician cures keyboard ground-loop hum with balanced connections, a DI box with a ground-lift switch, or an isolation transformer, and keeps signal cables away from power cables, never by disconnecting the mains safety ground.",
+   "category": "Electrical noise",
+   "related_terms": [
+    "Ground loop",
+    "DI box",
+    "Ground lift",
+    "Balanced connection",
+    "Isolation transformer",
+    "Hum"
+   ],
+   "common_mistakes": [
+    "UNSAFE: Lifting or defeating the mains earth/safety ground (for example with a cheater plug or by cutting the ground pin) to stop the hum; this removes shock protection and can be lethal.",
+    "Using a DI box's signal ground-lift switch and expecting it to fix every loop, when the wiring path itself may still need changing.",
+    "Chasing the hum with EQ or noise gates instead of finding and breaking the ground loop at its source."
+   ],
+   "scenario_contexts": [
+    "A stage keyboard buzzes when plugged into the main mixer on a different power circuit.",
+    "A studio synth hums only when connected to both an audio interface and a separately grounded amp.",
+    "Adding a DI box with a ground lift to silence hum between a keyboard and the front-of-house console."
+   ]
+  },
+  {
+   "id": "487882de-9d7c-4ac1-bfc1-bff0351806a4",
+   "term": "Kokle/kantele pluck",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The bright, ringing, bell-like tone produced by plucking the kokle (Latvian) or kantele (Finnish), related Baltic and Finnic box zithers of the psaltery family in which open strings are stretched over a flat soundboard and plucked with the fingers, fingernails or a plectrum. Plucking sets the strings into free vibration so they sustain and shimmer, while the player's other hand can damp the strings that should not ring.",
+   "plain_english": "The clear, ringing sound you get by plucking the open strings of a kantele or kokle, box zithers from Finland and Latvia. It sounds bright and bell-like, a bit like a small harp, and the notes ring on until they are damped.",
+   "purpose_function": "Plucking excites the free strings so they ring and sustain, giving these zithers their delicate, shimmering voice; damping with the free hand lets the player control which strings ring and keep the harmony clean.",
+   "practical_application": "When recording a kantele or kokle a technician mics the soundboard to capture the bright attack and long ring, and watches for finger and string noise from the plucking hand on quiet passages.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Pizzicato",
+    "Plucked string",
+    "Sustain",
+    "Damping",
+    "Soundboard",
+    "Spot mic"
+   ],
+   "common_mistakes": [
+    "Confusing the kantele/kokle with a hammered dulcimer; these zithers are plucked, not struck with beaters.",
+    "Miking too far away and losing the bright pluck attack that defines the sound.",
+    "Forgetting that undamped strings keep ringing, so overlapping notes can blur the harmony."
+   ],
+   "scenario_contexts": [
+    "Recording a solo kantele for a Finnish folk album.",
+    "Amplifying a kokle in an ensemble and controlling string ring with careful damping.",
+    "Capturing the bright plucked attack of a Baltic psaltery for a film score."
+   ]
+  },
+  {
+   "id": "2df30a3e-3fbe-4f16-9331-c797f2114eeb",
+   "term": "Kora buzz-key rattle",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The buzzing, rattling timbre characteristic of the kora, a 21-string West African harp-lute, traditionally produced by a metal plate fitted with loose jingle rings (the nyenyemo) attached near the bridge, whose sympathetic vibration adds a sustained buzz to each plucked note. Loose leather or metal tuning rings (konso) on the neck can add further rattle. The buzz is a deliberate aesthetic element, though many modern players remove the device for clarity when amplified.",
+   "plain_english": "The soft buzzing, rattly sound a kora makes. The kora is a big West African harp with 21 strings. A small metal plate with loose rings sits near the bridge. The rings shake and buzz as the strings sound. Players like this fuzzy tail, but some take the rings off when they plug in.",
+   "purpose_function": "The buzz enriches and sustains each plucked note and adds a percussive shimmer prized in West African music, which is why the rattle device is built onto the instrument.",
+   "practical_application": "When recording or amplifying a kora a technician expects this buzzy, rattly overtone and sets mic placement and EQ to keep it musical, or works with a player who may remove the rattle plate for a cleaner amplified sound.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Sympathetic resonance",
+    "Timbre",
+    "Bridge buzz",
+    "Overtone",
+    "Close miking",
+    "String rattle"
+   ],
+   "common_mistakes": [
+    "Assuming the buzz is a fault or a bad string setup; on a traditional kora the rattle is intentional.",
+    "Trying to EQ out all of the buzz, which strips the instrument of its natural character.",
+    "Confusing the bridge rattle device (nyenyemo) with loose tuning rings, which cause a different, unwanted clatter."
+   ],
+   "scenario_contexts": [
+    "Recording a traditional kora where the buzzing rattle plate is still fitted.",
+    "Amplifying a kora on stage and deciding whether to keep or remove the rattle for clarity.",
+    "Troubleshooting whether a rattle comes from the buzz device or from loose tuning rings."
+   ]
+  },
+  {
+   "id": "b13ec23c-6afd-479e-9da3-7f01179891ba",
+   "term": "Lap-steel slide",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The smooth, continuous glide in pitch produced on a lap steel (Hawaiian) guitar by sliding a solid metal or glass bar — the 'steel' — along the strings instead of pressing them onto frets. Because the bar never stops the strings at a fixed fret, the player moves smoothly between and beyond pitches, giving the instrument its singing, vocal-like portamento.",
+   "plain_english": "The sliding, singing sound of a lap steel guitar. Instead of pressing the strings down on frets, the player rests a smooth metal bar on top of the strings and slides it up and down. This lets the notes glide into each other, a bit like a voice sliding between pitches.",
+   "purpose_function": "Sliding the bar lets the player connect notes with a smooth glide and add expressive vibrato, which is the core voice of Hawaiian, country and blues steel-guitar styles.",
+   "practical_application": "A technician recording or amplifying lap steel expects long sustained notes and glides, plus some bar and string noise, and sets levels and EQ so the sustain and slide stay clear without harsh scrape.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Slide guitar",
+    "Glissando",
+    "Portamento",
+    "Vibrato",
+    "Sustain",
+    "Pickup"
+   ],
+   "common_mistakes": [
+    "Confusing lap-steel technique with fretting; the bar rests on the strings and never presses them to the fretboard.",
+    "Pressing the bar down hard enough to touch the frets, which causes buzzing and choked notes.",
+    "Forgetting that pitch depends on exact bar position, so slightly wrong placement plays out of tune."
+   ],
+   "scenario_contexts": [
+    "Recording a lap or Hawaiian steel glide in a country session.",
+    "Amplifying a Hawaiian steel guitar on stage.",
+    "Capturing bluesy slide lines with long sustained glides."
+   ]
+  },
+  {
+   "id": "0869c4f1-f6fb-4289-a96a-c62974e1a748",
+   "term": "Lunzhi tremolo",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A pipa (Chinese lute) right-hand technique, also called lun, in which the fingers of the right hand strike the string outward in rapid succession — typically index, middle, ring and little finger, then thumb — turning a short plucked note into a continuous, sustained tremolo. It is the pipa's principal means of sustaining a melody, since a single pluck decays quickly.",
+   "plain_english": "A fast finger-rolling trick on the pipa, a pear-shaped Chinese lute. The player flicks each finger of the right hand across the string one after another, over and over. A single pluck fades fast, so this rolling motion keeps the note going in a steady shimmer.",
+   "purpose_function": "Rolling the fingers in sequence sustains a plucked string that would otherwise decay at once, letting the pipa hold long, singing melody notes and swells.",
+   "practical_application": "When recording pipa a technician expects these dense tremolo passages and chooses mic placement and gentle compression that keep every finger-stroke even without exaggerating nail noise.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Pipa",
+    "Tremolo",
+    "Sustain",
+    "Plucked string",
+    "Attack transient",
+    "Fingerpicking"
+   ],
+   "common_mistakes": [
+    "Thinking lunzhi is a single finger's tremolo; it is a roll of several fingers in sequence.",
+    "Assuming it works like mandolin pick tremolo; the pipa uses individual fingers, not a plectrum.",
+    "Over-compressing the roll so the natural swell and decay of the tremolo are flattened."
+   ],
+   "scenario_contexts": [
+    "Recording a solo pipa piece with long sustained tremolo lines.",
+    "Balancing a pipa's tremolo against an ensemble in a fusion track.",
+    "Editing pipa where finger-roll strokes need even level."
+   ]
+  },
+  {
+   "id": "f7e068ba-7549-4fc6-85a7-6a7929e12050",
+   "term": "Mandolin feedback",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "Acoustic feedback that occurs when an amplified mandolin's pickup or microphone picks up its own amplified sound and drives the hollow body and strings into sustained self-oscillation, usually heard as a howl or ring at a resonant frequency. It is most common with acoustic-electric or close-miked mandolins on loud stages.",
+   "plain_english": "The howling or ringing sound that happens when an amplified mandolin feeds its own sound back into its pickup or mic. The speaker sound shakes the small hollow body and strings, and the loop builds into a squeal. It is like when a singer's mic gets too close to the speaker.",
+   "purpose_function": "Understanding mandolin feedback matters because the small resonant body feeds back easily on stage, so controlling it keeps the instrument loud enough without breaking into a howl.",
+   "practical_application": "To stop feedback a technician lowers gain, moves the mandolin or monitors, notches the ringing frequency with EQ, or fits a soundhole cover, watching the resonant note that first starts to howl.",
+   "category": "Live-sound artifact",
+   "related_terms": [
+    "Acoustic feedback",
+    "Gain before feedback",
+    "Notch filter",
+    "Monitor wedge",
+    "Soundhole cover",
+    "Resonant frequency"
+   ],
+   "common_mistakes": [
+    "UNSAFE: Chasing more volume by pushing gain past the feedback point, which can send a sudden loud squeal through the PA and risk hearing damage.",
+    "Blaming the pickup when the real cause is monitor level or the mandolin facing the speakers.",
+    "Notching so many frequencies to kill feedback that the mandolin's natural tone is lost."
+   ],
+   "scenario_contexts": [
+    "An acoustic-electric mandolin howling on a loud bluegrass stage.",
+    "Setting gain before feedback for a close-miked mandolin.",
+    "Using a soundhole cover to tame feedback during an amplified set."
+   ]
+  },
+  {
+   "id": "0199fd8d-2326-4ffb-8e26-98dff5900517",
+   "term": "Mandolin tremolo",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A mandolin performance technique in which the player rapidly alternates down-and-up plectrum strokes across a pair (course) of strings to sustain a note or chord, compensating for the quick decay of the plucked double strings. It produces the mandolin's characteristic shimmering, sustained tone on longer notes.",
+   "plain_english": "The fast, shimmery picking that lets a mandolin hold a long note. A plucked mandolin string fades quickly, so the player flicks the pick down and up very fast on the same string pair. This rapid picking blurs into one long, trembling sound.",
+   "purpose_function": "Rapid alternate picking sustains notes that would otherwise die away fast, giving the mandolin a smooth, singing line on melodies and long chords.",
+   "practical_application": "When recording mandolin tremolo a technician expects a dense stream of pick attacks and sets mic position and light compression so the tremolo sounds even and smooth rather than choppy or spiky.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Tremolo",
+    "Course (strings)",
+    "Plectrum",
+    "Sustain",
+    "Alternate picking",
+    "Pick attack"
+   ],
+   "common_mistakes": [
+    "Confusing pick tremolo with pitch vibrato; mandolin tremolo is rapid re-picking, not a pitch wobble.",
+    "Setting compression so hard that the individual pick strokes turn into an unnatural wall of sound.",
+    "Miking so close that each pick attack clicks harshly instead of blending into a smooth tremolo."
+   ],
+   "scenario_contexts": [
+    "Recording a sustained mandolin melody built on tremolo.",
+    "Mixing tremolo-picked mandolin in a bluegrass or classical piece.",
+    "Capturing even tremolo across a mandolin's string courses."
+   ]
+  },
+  {
+   "id": "1076671d-8a08-497d-b365-300160af774a",
+   "term": "Meend (multi-note bend)",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "In Hindustani (North Indian) classical music, meend is a smooth, continuous glide in pitch that connects notes, a portamento central to raga phrasing. On the sitar it is produced by pulling (deflecting) a string laterally across the curved fret so that a single stopped position can bend up through several notes, letting one gesture traverse multiple pitches without re-plucking.",
+   "plain_english": "A smooth pitch slide used in Indian classical music. On a sitar the player pulls the string sideways across a fret, and the pitch rises smoothly through several notes. It is like sliding your finger along a stretched rubber band so the sound climbs with no gaps, all from one pluck.",
+   "purpose_function": "Meend links notes with an unbroken glide that carries the feeling and identity of a raga, which is why smooth bending is a core expressive skill on sitar and in vocal-style playing.",
+   "practical_application": "When recording sitar a technician expects long bent glides after a single pluck and sets levels and any compression so the quiet tail of the bend stays audible instead of dropping out.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Raga",
+    "String bend",
+    "Portamento",
+    "Glissando",
+    "Sitar",
+    "Sustain"
+   ],
+   "common_mistakes": [
+    "Thinking meend is a quick guitar-style bend; it is a smooth, controlled glide that can pass through several notes.",
+    "Gating or compressing so hard that the fading tail of the glide is cut off.",
+    "Assuming each note in the glide is re-plucked; meend flows from one pluck across the bend."
+   ],
+   "scenario_contexts": [
+    "Recording a sitar alap full of long meend glides.",
+    "Preserving the quiet tail of a bend during mixing.",
+    "Capturing vocal-style glides in an Indian classical session."
+   ]
+  },
+  {
+   "id": "6c9246d5-f456-4a11-bff2-23de51eab722",
+   "term": "Morin khuur wide vibrato",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The broad, expressive vibrato characteristic of the morin khuur, the Mongolian two-string horse-head fiddle, whose strings are stopped from the side by the fingernails or finger pads rather than pressed onto a fingerboard. This side-stopping allows a wide, vocal pitch oscillation used to imitate the human voice and horse sounds in Mongolian long-song and folk styles.",
+   "plain_english": "The wide, wailing pitch wobble of the morin khuur, Mongolia's two-string horse-head fiddle. The player does not press the strings onto a fingerboard; the fingers touch the strings from the side. This lets the pitch swing widely, so the fiddle can cry and sing almost like a human voice.",
+   "purpose_function": "The wide vibrato gives the morin khuur its deeply vocal, expressive voice, letting it imitate singing and horse calls, which is central to Mongolian long-song and storytelling music.",
+   "practical_application": "When recording or amplifying a morin khuur a technician expects broad pitch swings and a rich low-mid tone, and chooses mic placement that captures the expressive vibrato and body resonance without boom.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Vibrato",
+    "Bowing",
+    "Stopped string",
+    "Portamento",
+    "Timbre",
+    "Spot mic"
+   ],
+   "common_mistakes": [
+    "Assuming the strings are pressed to a fingerboard like a violin; the morin khuur is stopped from the side by the fingers.",
+    "Using tuning or editing software that 'corrects' the wide vibrato and destroys the instrument's expressive character.",
+    "Miking so close that bow noise masks the smooth width of the vibrato."
+   ],
+   "scenario_contexts": [
+    "Recording a morin khuur accompanying Mongolian long-song.",
+    "Amplifying the horse-head fiddle in a folk-fusion band.",
+    "Capturing the wide, vocal vibrato in a solo performance."
+   ]
+  },
+  {
+   "id": "ef15f2c1-0876-4b3e-b4a8-3e6d5647d8d8",
+   "term": "Nail-pluck attack",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The bright, sharply defined onset of a plucked note produced when the string is released by the player's fingernail rather than the flesh of the fingertip, as on classical guitar, harp or lute. Contact with the harder nail releases the string cleanly and excites more high-frequency partials, giving a crisper, louder, more articulate attack.",
+   "plain_english": "The bright, crisp start of a note when you pluck a string with your fingernail. The hard nail lets go of the string quickly and cleanly, so the note begins with a sharp, clear edge. It sounds brighter and more cutting than plucking with the soft pad of your finger.",
+   "purpose_function": "Using the nail gives a louder, brighter, more precise attack and lets the player shape tone and projection, which is why classical guitarists and harpists carefully shape their nails.",
+   "practical_application": "When recording a nail-plucked instrument a technician expects strong high-frequency attack transients and chooses mic placement and gentle EQ or compression that keep the bright pluck clear without turning it clicky or harsh.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Plucked string",
+    "Attack transient",
+    "Nail-vs-flesh attack",
+    "Timbre",
+    "Fingerstyle",
+    "Transient"
+   ],
+   "common_mistakes": [
+    "Assuming nail attack is just louder; it also shifts the tone brighter by adding high partials.",
+    "Miking too close so the nail attack becomes a harsh click instead of a crisp pluck.",
+    "Compressing the attack so hard that the clear onset of each note is squashed."
+   ],
+   "scenario_contexts": [
+    "Recording classical guitar played with the nails.",
+    "Capturing the bright pluck of a concert harp.",
+    "Comparing nail and flesh tone during a session."
+   ]
+  },
+  {
+   "id": "2a92f385-3c2d-4377-ba7e-147a42a14ed3",
+   "term": "Nail-vs-flesh attack",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The tonal contrast between plucking a string with the fingernail versus the bare flesh of the fingertip, a core tone-shaping choice on classical guitar, harp and related instruments. Nail contact yields a brighter, louder, more articulate attack rich in high partials, while flesh produces a warmer, rounder, darker tone with a softer onset; many players use a combined nail-and-flesh contact to blend the two.",
+   "plain_english": "The difference in sound between plucking a string with your nail and with the soft skin of your fingertip. The nail gives a bright, sharp, loud note. The flesh gives a warm, soft, rounder note. Players pick one or blend both to control how bright or mellow each note sounds.",
+   "purpose_function": "Choosing nail, flesh, or a blend lets a player control brightness, volume and attack note by note, which is a main way string players shape tone and expression.",
+   "practical_application": "A technician recording fingerstyle guitar or harp hears whether a player uses nail or flesh and adjusts mic choice, placement and EQ so a bright nail tone does not get harsh or a warm flesh tone does not get dull.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Nail-pluck attack",
+    "Plucked string",
+    "Timbre",
+    "Attack transient",
+    "Fingerstyle",
+    "Tone production"
+   ],
+   "common_mistakes": [
+    "Thinking the choice only changes volume; it mainly changes brightness and attack shape.",
+    "Assuming flesh tone is always better or worse; each suits different music and passages.",
+    "Reaching for EQ to fix a tone that the player is actually creating with nail-versus-flesh technique."
+   ],
+   "scenario_contexts": [
+    "A classical guitarist switching between nail and flesh for contrast.",
+    "A harpist choosing flesh for a warmer passage.",
+    "Deciding mic and EQ to suit a bright nail or warm flesh tone."
+   ]
+  },
+  {
+   "id": "4e80a56c-5959-422a-be07-e67cfa34deef",
+   "term": "Ngoni dry pluck",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "On the ngoni, a small West African (Mande) plucked lute with a hide-covered wooden body and gut or nylon strings, a plucked note that sounds with a short, tight, quickly decaying tone having little sustain or ringing resonance, giving a dry, percussive character.",
+   "plain_english": "The ngoni is a small West African lute with a skin-covered body. A dry pluck is a plucked note that stops ringing fast. It sounds short and snappy, not long and echoey.",
+   "purpose_function": "The dry, fast-decaying pluck gives the ngoni its crisp rhythmic drive, letting fast melodic runs stay clear and articulate without notes blurring into one another.",
+   "practical_application": "An engineer captures the ngoni close with a small-diaphragm condenser to preserve its tight transient, avoiding excess room sound that would smear the naturally dry, percussive notes.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Plucked lute",
+    "Attack (transient)",
+    "Sustain",
+    "Damping",
+    "Kora"
+   ],
+   "common_mistakes": [
+    "Confusing the ngoni with the kora; the kora is a large 21-string harp-lute with long sustain, while the ngoni is small with a short, dry decay",
+    "Drenching the ngoni in reverb, which masks its tight, percussive attack",
+    "Treating a dry pluck as a technical fault, when it is the instrument's natural short-sustain voice"
+   ],
+   "scenario_contexts": [
+    "Micing a ngoni for a Mande griot recording where rhythmic clarity matters",
+    "Blending ngoni with kora and balafon in a West African ensemble mix",
+    "Choosing close mic placement to preserve the ngoni's dry, articulate transient"
+   ]
+  },
+  {
+   "id": "7cfadfe3-00fb-453b-b151-5b374922a34d",
+   "term": "Nyckelharpa shimmer",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "On the nyckelharpa, a bowed Swedish keyed fiddle fitted with a set of undertuned sympathetic strings, the bright, ringing, halo-like resonance produced when those sympathetic strings vibrate in sympathy with the bowed melody notes, adding a shimmering, reverb-like sheen to the tone.",
+   "plain_english": "A nyckelharpa is a Swedish fiddle played with a bow and rows of keys. Under the main strings sit extra strings that no one bows. They ring on their own when you play, adding a bright, shimmery glow like a soft echo.",
+   "purpose_function": "The sympathetic-string shimmer enriches the nyckelharpa's tone with a natural, sustained resonance, giving it a characteristic bright, ringing sustain even on short bow strokes.",
+   "practical_application": "An engineer recording nyckelharpa avoids over-close mic placement and heavy upper-mid EQ cuts so the delicate sympathetic shimmer stays audible, often adding a little room capture to let it bloom.",
+   "category": "Sympathetic resonance",
+   "related_terms": [
+    "Sympathetic resonance",
+    "Sympathetic strings",
+    "Sustain",
+    "Bowed string",
+    "Resonance"
+   ],
+   "common_mistakes": [
+    "Confusing the sympathetic strings, which are never bowed, with the melody strings the bow and keys play",
+    "Cutting high-mid frequencies so hard in the mix that the shimmer disappears",
+    "Damping the body or using too many close mics, which chokes the ringing resonance"
+   ],
+   "scenario_contexts": [
+    "Recording a solo nyckelharpa where the sympathetic shimmer is central to the sound",
+    "Placing a room mic to capture the halo of resonance around the direct tone",
+    "Blending nyckelharpa into a Nordic folk mix without masking its ringing overtones"
+   ]
+  },
+  {
+   "id": "cc55168e-acae-4f81-a67b-69f62e10ef99",
+   "term": "Nylon-string finger noise",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The incidental squeaks, scrapes, and thumps produced when a player's fingers slide along or release the strings of a nylon-string (classical) guitar, most audible on the metal-wound bass strings where the fingertips drag across the winding while shifting position.",
+   "plain_english": "On a classical guitar, the low strings are wrapped in thin metal. When a player slides their fingers along them to change notes, the fingers catch the ridges and squeak. That squeak is finger noise.",
+   "purpose_function": "Finger noise is a natural by-product of moving the fingers on the strings; in a recording it can lend intimate realism, but at high levels it distracts from the notes and must be managed.",
+   "practical_application": "When recording classical guitar, an engineer manages finger squeak through mic choice and placement, gentle high-frequency EQ, or careful editing, and may advise the player on smoother shifts or coated strings.",
+   "category": "Performance noise",
+   "related_terms": [
+    "String squeak",
+    "Wound string",
+    "Fret buzz",
+    "Close miking",
+    "De-essing"
+   ],
+   "common_mistakes": [
+    "Trying to erase every squeak, which strips natural realism and sounds artificial",
+    "Blaming the guitar, when smoother left-hand position shifts reduce the noise more than gear changes",
+    "Assuming the plain treble nylon strings squeak, when the noise comes mostly from the metal-wound bass strings"
+   ],
+   "scenario_contexts": [
+    "Editing squeaks out of a solo classical guitar take before mastering",
+    "Choosing a mic position that reduces finger noise on a close-miked nylon guitar",
+    "Advising a guitarist on coated strings or cleaner shifts to cut down squeak"
+   ]
+  },
+  {
+   "id": "486753da-1842-45ca-8438-9e0ec20367bc",
+   "term": "Open string ring",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The full, freely sustaining tone produced when a string is played open, sounded along its entire length without being stopped by a finger or fret, allowing it to vibrate and ring longer and more resonantly than a fretted note and to resonate sympathetically with related pitches.",
+   "plain_english": "An open string is one you play without pressing it down. With nothing stopping it, the whole string is free to vibrate. So it rings out longer and louder than a note you hold down with a finger.",
+   "purpose_function": "Open-string ring gives players sustained, resonant tones and lets a note keep sounding while the hand moves elsewhere; it also adds sympathetic resonance that enriches an instrument's overall sound.",
+   "practical_application": "Guitarists and engineers use open-string ring for drones, arpeggios, and sustain, but watch for unwanted ringing bleeding into later notes, muting strings by hand when a cleaner, drier passage is needed.",
+   "category": "String resonance",
+   "related_terms": [
+    "Open string",
+    "Sustain",
+    "Sympathetic resonance",
+    "Damping",
+    "Palm muting"
+   ],
+   "common_mistakes": [
+    "Letting open strings ring into a passage where they clash with the harmony, muddying the chord",
+    "Forgetting to mute a ringing open string before it bleeds into the next section",
+    "Assuming a fretted note rings as long as an open string, when open strings usually sustain longer"
+   ],
+   "scenario_contexts": [
+    "Using open strings as a drone under a fingerpicked guitar part",
+    "Muting ringing open strings to keep a tight, dry rhythm part clean",
+    "Tuning a mix so sympathetic open-string resonance supports rather than clutters the track"
+   ]
+  },
+  {
+   "id": "5dfeaf3f-5b8d-46c3-8999-1b282fcf725e",
+   "term": "Oshide/press-bend",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "On the Japanese koto and related zithers, a left-hand technique in which the player presses down on a string on the far side of its movable bridge, increasing tension to raise the pitch, typically by a semitone or whole tone, allowing pitch bends and ornaments beyond the tuning fixed by the bridge positions.",
+   "plain_english": "A koto has movable bridges that set each string pitch. With oshide, the player presses the string down on one side of its bridge. That tightens the string, so the note bends up higher, like bending a guitar string.",
+   "purpose_function": "Oshide lets the koto reach pitches and expressive bends the fixed bridge tuning cannot provide, adding vibrato, ornaments, and note-to-note pitch slides central to the instrument's musical style.",
+   "practical_application": "A player uses oshide to raise a plucked note or add an ornament; a recording engineer captures it with enough dynamic range and low-noise gain to preserve the subtle pitch rise and the string's changing tension.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Pitch bend",
+    "Vibrato",
+    "Koto",
+    "Portamento",
+    "Ornament"
+   ],
+   "common_mistakes": [
+    "Pressing so hard the pitch overshoots the intended semitone or whole tone",
+    "Confusing oshide, pressing left of the bridge to raise pitch, with moving the bridge itself to retune",
+    "Pressing on the wrong side of the bridge, which slackens rather than tightens the string"
+   ],
+   "scenario_contexts": [
+    "Performing a koto ornament that bends a plucked note up a semitone",
+    "Recording traditional koto where oshide pitch slides must stay clearly audible",
+    "Notating oshide press-bends in a transcription of Japanese zither music"
+   ]
+  },
+  {
+   "id": "ac62d938-b709-44fe-b8cb-cd2074b7de29",
+   "term": "Pedal-steel bend/glide",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "On the pedal steel guitar, the smooth pitch changes produced two ways: sliding the handheld steel bar along the strings for continuous glides (portamento), and pressing foot pedals or knee levers that mechanically alter the tension of chosen strings through the changer to bend individual notes up or down while other notes sustain.",
+   "plain_english": "A pedal steel is played flat, sliding a metal bar over the strings. Moving the bar slides the pitch up or down smoothly. Foot pedals and knee levers can also bend single strings while the rest hold, giving that crying, gliding country sound.",
+   "purpose_function": "Bends and glides give the pedal steel its vocal, weeping character and let a player bend some notes within a chord while others stay put, creating the smooth voice-leading that defines the instrument.",
+   "practical_application": "A player combines bar glides with pedal and knee-lever bends for expressive lines; an engineer records the instrument with a clean, full-range signal so the sustained, gliding pitches and their overtones come through without distortion.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Portamento",
+    "Pitch bend",
+    "Glissando",
+    "Slide guitar",
+    "Sustain"
+   ],
+   "common_mistakes": [
+    "Confusing bar glides, made by moving the steel, with pedal or knee-lever bends, made by mechanical string-tension changes",
+    "Assuming all strings bend together, when pedals and levers bend only the strings they are set to",
+    "Sliding the bar carelessly so glides land off-pitch instead of on the target note"
+   ],
+   "scenario_contexts": [
+    "Recording a country ballad where pedal-steel glides answer the vocal line",
+    "Setting up a pedal steel's copedent so specific strings bend on each pedal",
+    "Blending a pedal steel's sustained bends into a mix without masking the lead vocal"
+   ]
+  }
+ ]
+}

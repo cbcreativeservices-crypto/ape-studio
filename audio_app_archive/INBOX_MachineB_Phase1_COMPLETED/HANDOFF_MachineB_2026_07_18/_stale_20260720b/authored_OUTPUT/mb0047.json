@@ -1,0 +1,159 @@
+{
+ "batch": 47,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "c195a967-799d-40ac-b7dc-8323e194bd84",
+   "term": "Formant-offset layering",
+   "fields": {
+    "definition": "A doubling technique in which a copied vocal or instrument track is processed with a formant shift (moving the resonant timbral peaks up or down without changing pitch) and blended under the original to add width and thickness.",
+    "plain_english": "It means copying a track and nudging its tone color a little, then mixing that copy under the first one. This makes the sound fuller and wider, like two slightly different voices singing as one.",
+    "purpose_function": "It thickens and widens a part without retuning it, letting one performance sound like several stacked voices or instruments.",
+    "practical_application": "An engineer duplicates a lead vocal, shifts the formant up or down with a pitch or formant plugin, and tucks the copy beneath the original to build a bigger chorus.",
+    "category": "Layering technique",
+    "related_terms": ["Vocal doubling", "Formant shifting", "Pitch shifting", "Gang-vocal stack", "Comping"],
+    "common_mistakes": ["Shifting the formant too far, which makes the copy sound cartoonish or robotic", "Layering the copy too loud so it fights the lead instead of supporting it", "Forgetting to time-align the copy, which causes phasing or flamming"],
+    "scenario_contexts": ["Thickening a lead vocal for a big chorus", "Building a wider backing-vocal bed from one take", "Adding size to a doubled guitar or synth line without retuning it"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3acd5862-22ae-4682-b7fa-89de6efe7fff",
+   "term": "Fret-noise control",
+   "fields": {
+    "definition": "The practice of minimizing the squeaks, string-slide sounds and finger noise produced on fretted string instruments during tracking, through playing technique, string choice, mic placement, and corrective editing or de-noising.",
+    "plain_english": "Fret noise is the squeak you hear when fingers slide along guitar or bass strings. Controlling it means cutting down those squeaks while recording, or fixing them afterward, so they do not distract from the music.",
+    "purpose_function": "It keeps distracting slide and finger noises from cluttering a recorded guitar or bass part while preserving a natural performance.",
+    "practical_application": "A tracking engineer may suggest coated strings, adjust mic distance, or later ride the level down and use de-noise tools on isolated squeaks.",
+    "category": "Tracking technique",
+    "related_terms": ["Coated strings", "Microphone placement", "De-noising", "Volume automation", "Guitar automation"],
+    "common_mistakes": ["Trying to remove every squeak until the part sounds lifeless and unnatural", "Heavy de-noising that also dulls the guitar's high end", "Blaming the mic when the real fix is the player's technique or old strings"],
+    "scenario_contexts": ["Recording a quiet fingerstyle acoustic passage", "Cleaning up an exposed bass line before mixing", "Tracking a close-miked acoustic guitar in a solo section"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (recording technique articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4fe542d3-ef0b-47f7-815b-2f73471bd4c4",
+   "term": "Gang-vocal stack",
+   "fields": {
+    "definition": "A layered group backing vocal built by recording several singers, or several passes of the same singers, shouting or singing a phrase in unison, then stacking the takes to create a large, crowd-like vocal.",
+    "plain_english": "A gang vocal is a group of people singing or shouting the same line together, like a crowd chant. A gang-vocal stack layers many of these takes on top of each other so it sounds like a big group.",
+    "purpose_function": "It creates the impression of a large crowd or group singing, adding energy and size to choruses and hooks.",
+    "practical_application": "An engineer records a few singers several times around one mic, varying positions, then stacks and pans the takes wide for a full, anthemic chorus.",
+    "category": "Layering technique",
+    "related_terms": ["Backing vocals", "Vocal doubling", "Unison", "Panning", "Formant-offset layering"],
+    "common_mistakes": ["Recording every pass identically, so the stack sounds thin instead of big", "Tuning gang vocals too tightly, which removes the natural human spread", "Stacking so many layers that the words become mushy and unclear"],
+    "scenario_contexts": ["Building a crowd-style chorus for a punk or rock song", "Adding shouted hooks to a hip-hop or pop track", "Creating a chant feel in a bridge section"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b5303d0c-8478-4f7f-9014-80a2c3e3eb5a",
+   "term": "Guitar automation",
+   "fields": {
+    "definition": "The use of automation (recorded, time-based changes to mixer or plugin parameters) applied to a guitar track, such as riding volume, panning, or effect levels across a song.",
+    "plain_english": "Automation lets the software change settings on its own over time. On a guitar track it means you set those moves ahead of time, like turning it up in the solo or adding delay in the chorus.",
+    "purpose_function": "It lets an engineer shape a guitar's level, position, and effects moment by moment instead of settling for one fixed setting.",
+    "practical_application": "An engineer draws volume automation to lift a guitar during its solo and pull it back under vocals, or automates reverb sends between sections.",
+    "category": "Mix automation",
+    "related_terms": ["Volume automation", "Panning", "Fader ride", "Mix automation", "Guitar compression"],
+    "common_mistakes": ["Writing jumpy automation that causes sudden, unnatural level jumps", "Automating volume when a compressor would do the job more smoothly", "Forgetting automation is active later and fighting it with new fader moves"],
+    "scenario_contexts": ["Boosting a rhythm guitar under a solo section", "Panning a doubled guitar part during a breakdown", "Automating delay throws on the last word of a phrase"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "941bc750-7df0-453b-b143-b47a1afc758a",
+   "term": "Guitar body enhancement",
+   "fields": {
+    "definition": "EQ or saturation processing that boosts or reinforces the low-midrange \"body\" of a guitar, roughly the 100-250 Hz region, to add warmth and fullness.",
+    "plain_english": "The \"body\" of a guitar is its warm, full lower-middle tone. Enhancing it means gently boosting those frequencies so the guitar sounds richer and less thin.",
+    "purpose_function": "It restores warmth and weight to a guitar that sounds thin, helping it feel full in the mix.",
+    "practical_application": "An engineer boosts a few decibels in the low mids, or adds gentle saturation, to give a thin-sounding guitar more warmth and size.",
+    "category": "EQ / tone shaping",
+    "related_terms": ["Equalization", "Low mids", "Guitar boxiness reduction", "Guitar depth control", "Saturation"],
+    "common_mistakes": ["Boosting body so much the guitar turns muddy and masks the bass", "Adding low-mid warmth without cutting boxiness, so the tone gets cluttered", "Enhancing body on every guitar, crowding the same frequency range"],
+    "scenario_contexts": ["Warming up a thin single-coil rhythm track", "Adding fullness to a direct-recorded acoustic guitar", "Giving a small-amp recording more weight"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4f794807-d6ea-40e7-bdd8-eda09bfd9bb8",
+   "term": "Guitar boxiness reduction",
+   "fields": {
+    "definition": "Corrective EQ that cuts the honky, hollow \"boxy\" frequencies of a recorded guitar, typically in the 300-600 Hz range, to clear up the tone.",
+    "plain_english": "\"Boxy\" is that hollow, cupped sound, like a guitar recorded inside a cardboard box. Reducing it means cutting those middle frequencies so the guitar sounds clearer and more open.",
+    "purpose_function": "It removes a cluttered, cardboard-like quality so the guitar sits cleaner and more defined in the mix.",
+    "practical_application": "An engineer sweeps a narrow EQ cut through the low mids to find the boxy peak, then dips it a few decibels.",
+    "category": "EQ / tone shaping",
+    "related_terms": ["Equalization", "Low mids", "Guitar body enhancement", "Notch filter", "Guitar cabinet resonance control"],
+    "common_mistakes": ["Cutting too wide or too deep, leaving the guitar thin and lifeless", "Confusing boxiness in the low mids with harshness in the high mids", "Removing boxiness on a solo track without checking it in the full mix"],
+    "scenario_contexts": ["Cleaning up a close-miked amp with a low-mid buildup", "Fixing a boomy acoustic recorded too close to a wall", "Tightening layered rhythm guitars that clutter the mids"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "215d8a25-e98d-4ebc-8d38-957b6729ddd7",
+   "term": "Guitar cabinet resonance control",
+   "fields": {
+    "definition": "The management of resonant frequency peaks produced by a guitar speaker cabinet, from its enclosed air and panel resonances, through mic placement, cabinet treatment, or corrective EQ.",
+    "plain_english": "A guitar speaker cabinet has certain notes that ring out louder than others. Controlling that means taming those ringing frequencies with mic placement or EQ, so the tone stays even.",
+    "purpose_function": "It evens out ringing peaks from the speaker cabinet so the recorded guitar tone stays balanced.",
+    "practical_application": "An engineer moves the mic across the speaker cone, or notches the resonant frequency with EQ, to reduce a boomy or honky cabinet peak.",
+    "category": "EQ / tone shaping",
+    "related_terms": ["Cabinet miking", "Microphone placement", "Notch filter", "Resonance", "Guitar boxiness reduction"],
+    "common_mistakes": ["Assuming a resonant peak is the room when it is the cabinet itself", "Notching so hard the guitar loses its natural character", "Fixing resonance with EQ when simply moving the mic would work better"],
+    "scenario_contexts": ["Taming a boomy 4x12 cabinet in a small room", "Removing a ringing peak from a combo amp recording", "Balancing an open-back cabinet that emphasizes certain notes"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "60e41e43-ed51-4445-bc12-0d1b4558bdfc",
+   "term": "Guitar compression",
+   "fields": {
+    "definition": "Dynamic-range compression applied to a guitar signal, reducing the level difference between loud and soft notes to even out the performance and increase sustain.",
+    "plain_english": "Compression makes the loud notes quieter and lets the soft notes catch up, so the playing sounds more even. On guitar it smooths the volume and helps notes ring on longer.",
+    "purpose_function": "It evens out uneven picking or strumming and adds sustain, helping the guitar sit steadily in the mix.",
+    "practical_application": "An engineer sets a moderate ratio with medium attack and release on a clean guitar to smooth its dynamics, or uses a stompbox compressor while tracking.",
+    "category": "Dynamics processing",
+    "related_terms": ["Compression", "Ratio", "Attack and release", "Sustain", "Guitar automation"],
+    "common_mistakes": ["Over-compressing until the guitar sounds squashed and lifeless", "Using a fast attack that kills the pick attack and transients", "Adding heavy compression on top of an already-compressed amp tone"],
+    "scenario_contexts": ["Smoothing a clean funk rhythm guitar", "Evening out fingerpicked acoustic dynamics", "Adding sustain to a clean arpeggiated part"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ba314504-efaf-4868-ada3-f31190bb296c",
+   "term": "Guitar depth control",
+   "fields": {
+    "definition": "The shaping of a guitar's perceived front-to-back position in a mix, its sense of depth, using reverb, delay, level, and EQ to place it closer or farther in the soundstage.",
+    "plain_english": "Depth is how close or far a sound feels in a mix. Controlling a guitar's depth means using reverb, delay, and volume to push it forward or set it further back behind other parts.",
+    "purpose_function": "It positions the guitar in the front-to-back space of a mix so it supports rather than crowds the other instruments.",
+    "practical_application": "An engineer adds reverb and trims the highs to push a rhythm guitar back, or keeps it dry and forward for a lead line.",
+    "category": "Mixing technique",
+    "related_terms": ["Reverb", "Delay", "Depth of field", "Guitar body enhancement", "Panning"],
+    "common_mistakes": ["Adding so much reverb the guitar washes out and loses definition", "Confusing depth, which is front-to-back, with panning, which is left-right", "Pushing every part back, leaving the mix distant and unfocused"],
+    "scenario_contexts": ["Setting a rhythm guitar behind the lead vocal", "Placing an ambient guitar far back in a soundscape", "Keeping a solo guitar dry and up front"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

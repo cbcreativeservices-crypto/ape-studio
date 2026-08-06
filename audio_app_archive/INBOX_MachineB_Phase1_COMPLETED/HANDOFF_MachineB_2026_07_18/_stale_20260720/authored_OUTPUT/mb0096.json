@@ -1,0 +1,150 @@
+{
+ "batch": 96,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "5ec7c16b-716e-4e74-948a-928bce7470d3",
+   "term": "Digital Performer project",
+   "fields": {
+    "definition": "The saved document used by MOTU Digital Performer, a digital audio workstation. A project stores the session's audio and MIDI tracks, edits, mixer settings, automation, and the links to its recorded audio files.",
+    "plain_english": "It is the file that holds all your work in the Digital Performer recording program. Think of it like a folder that keeps your tracks, edits, and settings together, so you can open the song again later.",
+    "purpose_function": "It keeps every part of a recording session in one organized document, so the whole mix can be reopened and edited exactly as it was left.",
+    "practical_application": "A technician opens, saves, and backs up the project file to continue a mix across sessions or to move it to another Digital Performer rig.",
+    "category": "Project Files",
+    "related_terms": ["Digital audio workstation", "Session file", "MIDI track", "Automation", "Bounce"],
+    "common_mistakes": ["Confusing the project file with the audio files it links to, then moving or deleting the audio so the project opens with missing media.", "Assuming the project opens in other DAWs; Digital Performer projects are not natively compatible with other programs.", "Never saving incremental versions, so one corrupted file loses the whole session."],
+    "scenario_contexts": ["Reopening a multitrack recording to keep mixing the next day.", "Transferring a session between two studios that both run Digital Performer.", "Backing up a finished project before archiving a client's album."]
+   },
+   "sources": ["MOTU Digital Performer User Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "530465c7-32be-4836-87d0-4a93a6287d39",
+   "term": "Disk Allocation",
+   "fields": {
+    "definition": "In Avid Pro Tools, Disk Allocation is the setting that assigns which storage drive each track records its audio to. It lets an engineer spread recording across several drives to balance the data load during large sessions.",
+    "plain_english": "It is a Pro Tools setting that picks which hard drive saves the sound from each track. Spreading recordings across drives keeps any one disk from getting overloaded during big sessions.",
+    "purpose_function": "It exists to direct each track's recording to a chosen drive, so a system can handle high track counts without one disk becoming a bottleneck.",
+    "practical_application": "Before a large tracking session, an engineer opens the Disk Allocation window and points groups of tracks at different fast drives to keep recording stable.",
+    "category": "Session Management",
+    "related_terms": ["Digital audio workstation", "Session file", "Buffer size", "Track", "Hard disk recording"],
+    "common_mistakes": ["Recording all tracks to the system drive, which can cause dropouts on large sessions.", "Allocating tracks to a slow or nearly full drive and then getting disk-performance errors.", "Forgetting that moving a session to a new machine can break the drive assignments."],
+    "scenario_contexts": ["Setting up a 48-track live album recording spread across several drives.", "Troubleshooting record errors caused by a full or slow disk.", "Preparing a session so overflow audio lands on a second drive."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6958ea30-5f4f-4328-a401-b91469711f29",
+   "term": "Distortion prevention",
+   "fields": {
+    "definition": "The practice of keeping every stage of a signal path below its clipping point so no unwanted, non-linear distortion is added to the audio. It relies on proper gain staging and adequate headroom from input to output.",
+    "plain_english": "It means setting levels so the sound never gets pushed too loud and starts to crackle or break up. Like not overfilling a glass, you leave room so the signal stays clean.",
+    "purpose_function": "It protects audio quality and equipment by making sure signals stay within the clean operating range of each device in the chain.",
+    "practical_application": "A technician sets gain at the source, checks meters at each stage, and leaves headroom so peaks do not clip the preamp, converter, or mix bus.",
+    "category": "Gain Staging",
+    "related_terms": ["Gain staging", "Headroom", "Clipping", "Signal-to-noise ratio", "Metering"],
+    "common_mistakes": ["Confusing digital clipping with analog warmth; digital clipping is always harsh and should be avoided.", "Turning down the final fader to hide distortion that was already recorded into the track.", "Watching only the master meter and missing an earlier stage that is already clipping."],
+    "scenario_contexts": ["Setting preamp gain during tracking to avoid recording a clipped take.", "Gain staging a mix so plugins receive signals at their intended level.", "Checking a live console's channel and bus meters to keep the PA clean."]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers", "Rane technical notes"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cbcaa623-3aa8-4e25-98b0-fcac50facade",
+   "term": "Distortion validation",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["All fields left blank: 'Distortion validation' is not an established audio, mixing, or measurement term. Unlike 'Distortion prevention' (a transparent compound for gain staging), 'validation' is not a recognised technique or property paired with distortion, and no >=2 acceptable professional or standards sources define this phrase. Its intended meaning is ambiguous (verifying a signal is distortion-free vs. testing a device against a THD spec), so it is flagged rather than guessed."]
+  },
+  {
+   "id": "e3dc969a-fe19-455d-b24d-56d81fd1f727",
+   "term": "Downbeat marker (Logic)",
+   "fields": {
+    "definition": "In Apple Logic Pro, a downbeat marker indicates where the first beat of a bar falls on the timeline. It is used when aligning recorded audio or MIDI to the project's bar-and-beat grid, such as during beat mapping or Smart Tempo editing.",
+    "plain_english": "It is a mark in Logic that shows where beat one of a measure starts. It helps the program line up your recording with the right bars, so the grid matches the music.",
+    "purpose_function": "It tells Logic where each measure begins, so tempo, quantizing, and looping stay in step with the actual performance.",
+    "practical_application": "When importing a freely played recording, an engineer sets the downbeat so Logic's bars line up with the music before quantizing or adding loops.",
+    "category": "Tempo & Timing",
+    "related_terms": ["Beat mapping", "Smart Tempo", "Quantization", "Grid", "Tempo map"],
+    "common_mistakes": ["Placing the downbeat on the wrong transient, which shifts the whole bar grid out of alignment.", "Confusing the downbeat (beat one) with any other strong beat in the bar.", "Not setting the downbeat before beat mapping, so quantizing pulls notes to the wrong positions."],
+    "scenario_contexts": ["Beat mapping a rubato piano take so the click follows the performance.", "Aligning an imported drum loop to bar one before building a session.", "Fixing a project where the bar lines drifted off the recorded groove."]
+   },
+   "sources": ["Apple Logic Pro User Guide", "Grove Dictionary of Music"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a47dd78e-b268-4799-9e26-5ee977fa5bed",
+   "term": "Drive the system",
+   "fields": {
+    "definition": "In live sound, to drive the system means to feed the sound reinforcement system enough signal level to produce the required output from its amplifiers and loudspeakers. It describes how hard the signal is pushed through the chain toward the speakers.",
+    "plain_english": "It means pushing enough signal into the PA to make it loud enough for the room. Like pressing a gas pedal, more drive gives more output, but too much causes strain and distortion.",
+    "purpose_function": "The idea helps an engineer reach the loudness a room needs while staying within the safe, clean limits of the amplifiers and speakers.",
+    "practical_application": "An engineer sets console and processor levels to drive the system to concert level while watching amp limiters so nothing clips or overheats.",
+    "category": "Signal Level",
+    "related_terms": ["Gain staging", "Headroom", "Amplifier", "Limiter", "Clipping"],
+    "common_mistakes": ["UNSAFE: Driving amplifiers into hard clipping, which sends distorted signal that can overheat and destroy high-frequency drivers.", "Assuming louder input always means cleaner output, when overdriving simply adds distortion.", "UNSAFE: Driving the system hard without hearing protection or without watching safe sound-exposure limits."],
+    "scenario_contexts": ["Bringing a festival PA up to full level during a line check.", "Setting drive levels so a small system fills a room without straining.", "Managing input level to a powered speaker to avoid triggering its protection limiter."]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "McCarthy, Sound Systems", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c395b107-1223-4101-b9c1-ef056490d694",
+   "term": "Drum amplitude envelope",
+   "fields": {
+    "definition": "The amplitude envelope of a drum sound is the curve describing how its loudness changes over time, from the initial attack transient through its decay to silence. In synthesis and sampling it is often shaped with an ADSR (attack, decay, sustain, release) envelope generator.",
+    "plain_english": "It is the shape of how a drum hit gets loud and then fades away. A drum usually starts with a sharp punch and dies down quickly, and this curve describes that rise and fall.",
+    "purpose_function": "It defines the punch and length of a drum sound, letting a producer control how sharp the hit is and how fast it fades.",
+    "practical_application": "When programming drums, a technician shortens the decay to tighten a snare or lengthens it to let a cymbal ring out.",
+    "category": "Sound Design",
+    "related_terms": ["ADSR envelope", "Transient", "Attack", "Decay", "Amplitude"],
+    "common_mistakes": ["Confusing the amplitude envelope with the filter envelope; one shapes loudness, the other shapes tone.", "Setting too long a release so drum hits blur into each other.", "Removing the attack transient and losing the punch of the drum."],
+    "scenario_contexts": ["Tightening a sampled kick by shortening its decay.", "Shaping an electronic snare's tail in a drum synth.", "Using a transient shaper to adjust a drum's attack and sustain."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ce69601f-dd37-427e-a3f4-7e583bc99db4",
+   "term": "Drum filter envelope",
+   "fields": {
+    "definition": "A filter envelope on a drum sound is an envelope generator that changes a filter's cutoff frequency over time as the drum plays. It creates movement in tone, such as a bright attack that quickly darkens.",
+    "plain_english": "It is a control that sweeps a drum's brightness up or down right after it is hit. For example, it can make a drum start bright and then get darker as it fades.",
+    "purpose_function": "It adds tonal motion to a drum, letting a producer sculpt how the sound's brightness evolves from the hit to the tail.",
+    "practical_application": "In a drum synth, a technician sets a fast filter envelope so a kick punches bright and then settles into a rounder low end.",
+    "category": "Sound Design",
+    "related_terms": ["ADSR envelope", "Filter cutoff", "Low-pass filter", "Amplitude envelope", "Resonance"],
+    "common_mistakes": ["Confusing the filter envelope with the amplitude envelope; this one shapes tone, not loudness.", "Setting too much envelope amount so the filter sweep sounds unnatural.", "Forgetting that the chosen filter type changes how the envelope is heard."],
+    "scenario_contexts": ["Adding a bright click to the start of a synth kick.", "Making a percussive tone open and close in brightness over its length.", "Designing an electronic tom that darkens as it decays."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5d9dfc28-c46b-4f27-aee0-3073bb7ecd0f",
+   "term": "Drum multisample",
+   "fields": {
+    "definition": "A drum multisample is a sampled instrument built from many individual recordings of a drum, typically captured at several velocities and often with multiple takes (round robins) per hit. A playback engine selects the appropriate sample based on how hard the pad or key is struck.",
+    "plain_english": "It is a drum sound made from many separate recordings of the same drum played at different strengths. The software picks the right recording based on how hard you play, so soft and loud hits both sound real.",
+    "purpose_function": "It exists to make sampled drums sound natural and expressive by matching the recorded tone to how hard the drum is played.",
+    "practical_application": "A producer loads a multisampled snare so light ghost notes and hard backbeats each trigger different, realistic samples.",
+    "category": "Sampling",
+    "related_terms": ["Velocity layer", "Round robin", "Sampler", "Velocity", "Sample library"],
+    "common_mistakes": ["Programming every hit at the same velocity, which triggers one layer and sounds robotic.", "Confusing a multisample with a single one-shot sample stretched across the keyboard.", "Ignoring round robins, so repeated hits reveal the 'machine gun' effect."],
+    "scenario_contexts": ["Loading a multisampled acoustic kit for a realistic programmed performance.", "Adding velocity variation so a snare pattern feels human.", "Building a sampler instrument from multi-velocity drum recordings."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Native Instruments Kontakt Manual"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

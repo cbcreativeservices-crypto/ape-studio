@@ -1,0 +1,312 @@
+{
+  "batch": 20,
+  "topic": "Instrument Recording — Keys, Winds & Brass",
+  "authored": [
+    {
+      "id": "53bd0463-a6eb-4fe1-a5e2-3762f48e9ffe",
+      "term": "Organ swell box",
+      "fields": {
+        "definition": "A swell box is a wooden (or masonry) enclosure built around a division of pipe-organ pipes, fronted by hinged Venetian-blind-style shutters that the organist opens and closes with an expression (swell) pedal to vary that division's loudness; pipes so enclosed form an expressive or 'swell' division.",
+        "plain_english": "A box with slatted doors built around a set of organ pipes. The player uses a foot pedal to open or close the slats. This makes those pipes louder or softer. It is like opening and closing a window on the sound.",
+        "purpose_function": "Each organ pipe sounds at a fixed loudness, so the swell box exists to give the organist continuous dynamic control (crescendo and diminuendo) over an enclosed division without having to change stops.",
+        "practical_application": "When recording or reinforcing an organ, a technician accounts for the swell shutters because the enclosed division's level and brightness change dramatically as the pedal moves, which affects mic choice, placement and gain staging.",
+        "category": "Pipe organ",
+        "related_terms": [
+          "Reed stop",
+          "Reed pipe",
+          "Pipe organ reverberation",
+          "Flue pipe",
+          "Organ stop"
+        ],
+        "common_mistakes": [
+          "Assuming the swell box sets loudness electronically; it is a purely mechanical acoustic shutter, and closing it also rolls off high frequencies, not just level.",
+          "Confusing the enclosed Swell division with the whole organ; only pipes inside a swell box respond to the expression pedal.",
+          "Setting a close mic without allowing for the large level and tone swing as the shutters open and close, leading to unexpected clipping or a dull sound."
+        ],
+        "scenario_contexts": [
+          "Recording a church pipe organ where the organist uses the swell pedal for crescendos during a hymn.",
+          "Miking a theatre organ whose Swell and Solo divisions each sit in their own swell box.",
+          "Troubleshooting why a captured organ track's level and brightness fluctuate even though no stops were changed."
+        ]
+      },
+      "sources": [
+        "Audsley, 'The Art of Organ Building' (the swell box and expressive divisions)",
+        "Grove Dictionary of Music and Musicians ('Swell-Organ')"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "a74802eb-aa72-4d9d-947c-e233b11d5572",
+      "term": "Piano lid position",
+      "fields": {
+        "definition": "The angle at which a grand piano's top lid is propped, typically full stick (fully raised), short or half stick (partially raised), or closed, which determines how sound radiating from the strings and soundboard reflects off the underside of the lid and projects into the room or toward microphones.",
+        "plain_english": "It is how far the big top lid of a grand piano is opened. Fully up throws the sound out brightly and loudly; propped on the short stick or closed keeps it quieter and more contained.",
+        "purpose_function": "The lid works as both a reflector and a shutter for the piano's sound, so its position controls tone, projection and, in multi-instrument settings, how much the piano is heard versus isolated.",
+        "practical_application": "An engineer chooses lid position to trade a bright, open sound (full stick) against spill control and a mellower tone (short stick or closed), then places mics to suit the reflections off the lid.",
+        "category": "Piano recording",
+        "related_terms": [
+          "Piano phase interaction",
+          "Piano monitor spill",
+          "Spill",
+          "Stereo miking",
+          "Soundboard"
+        ],
+        "common_mistakes": [
+          "Recording on full stick within a live band and then fighting excessive drum and vocal spill that a shorter stick would have reduced.",
+          "Forgetting that closing the lid darkens the tone and lowers high-frequency output, then trying to fix it entirely with EQ.",
+          "UNSAFE: Failing to seat the lid stick fully in its notch, risking the heavy lid dropping and crushing fingers or damaging the instrument."
+        ],
+        "scenario_contexts": [
+          "Setting up a solo grand recording with the lid on full stick for maximum brightness and stereo image.",
+          "Tracking piano with a live rhythm section and lowering to short stick to reduce spill from nearby instruments.",
+          "Miking a piano in a jazz club where the lid is kept closed for a warm, contained sound."
+        ]
+      },
+      "sources": [
+        "DPA Microphones technical guide, 'How to Mic a Piano'",
+        "Huber & Runstein, 'Modern Recording Techniques' (piano recording)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "9aa58bc6-ad58-495a-b529-3a36f0a2e589",
+      "term": "Piano monitor spill",
+      "fields": {
+        "definition": "Piano monitor spill is unwanted sound from stage monitor (foldback) loudspeakers leaking into the piano's open microphones; because grand-piano mics are sensitive and the raised lid presents a large open pickup area, monitor content re-enters the piano channel, degrading isolation and reducing gain-before-feedback.",
+        "plain_english": "It is when the piano mics pick up sound from the stage monitor speakers. So the monitors bleed into the piano channel. This also makes feedback easier to set off.",
+        "purpose_function": "Understanding monitor spill matters because it sets practical limits on monitor level, mic placement and lid position, and it directly affects feedback stability and mix cleanliness in live sound.",
+        "practical_application": "A technician controls piano monitor spill by aiming monitors away from the open lid, lowering the lid to short stick or closed, choosing directional or boundary mics, and limiting the number of open mics to preserve gain-before-feedback.",
+        "category": "Piano recording",
+        "related_terms": [
+          "Spill",
+          "Piano lid position",
+          "Gain before feedback",
+          "Stage monitor",
+          "Comb filtering"
+        ],
+        "common_mistakes": [
+          "Raising monitor level for the pianist without repositioning the wedges, which pushes the system into feedback through the open piano mics.",
+          "Leaving the lid on full stick pointed at a monitor and then blaming the mics for a muddy, feedback-prone channel.",
+          "Ignoring that spill from monitors arrives late and out of phase, causing comb filtering that thins the amplified piano tone."
+        ],
+        "scenario_contexts": [
+          "A live gig where the keyboard player asks for more monitor and the piano channel starts to ring.",
+          "Setting up an open grand on a loud stage and choosing directional mics to reject wedge spill.",
+          "Mixing front-of-house and noticing the piano fader also brings up bleed from the vocal monitor."
+        ]
+      },
+      "sources": [
+        "Yamaha Sound Reinforcement Handbook (microphone leakage, feedback, number of open microphones)",
+        "Ballou, 'Handbook for Sound Engineers' (microphone leakage and gain before feedback)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "3260bbd2-9038-4661-a330-51d18f0509cf",
+      "term": "Piano phase interaction",
+      "fields": {
+        "definition": "Piano phase interaction is the constructive and destructive interference that arises when two or more microphones (or a mic plus reflections) capture the same piano at slightly different distances; the resulting time offsets produce comb filtering that alters the summed frequency response and can hollow out or thin the tone.",
+        "plain_english": "When you use more than one mic on a piano, each mic hears the sound at a slightly different time. Mixing them makes some frequencies get louder. It makes other frequencies cancel out. If the mics are placed badly, the piano can sound thin or hollow.",
+        "purpose_function": "Managing phase interaction keeps a multi-mic piano sounding full and natural when the mics are summed to mono or blended, avoiding comb-filter coloration.",
+        "practical_application": "Engineers minimize it by observing the 3:1 rule (each mic at least three times as far from the source as the mics are from each other), checking mono compatibility, and nudging placement or polarity to find the fullest sound.",
+        "category": "Piano recording",
+        "related_terms": [
+          "Comb filtering",
+          "3:1 rule",
+          "Polarity",
+          "Piano lid position",
+          "Stereo miking"
+        ],
+        "common_mistakes": [
+          "Spacing two piano mics close together without the 3:1 ratio, then hearing a hollow, comb-filtered tone when they are summed.",
+          "Assuming a polarity flip fixes all phase problems; polarity inversion is not the same as a time or distance offset and only helps in specific cases.",
+          "Judging the sound only in stereo and missing severe cancellation that appears when the mix folds to mono."
+        ],
+        "scenario_contexts": [
+          "Blending a close mic and a room mic on a grand and finding the low mids disappear when summed.",
+          "Setting a spaced pair inside the piano and applying the 3:1 rule to control comb filtering.",
+          "Checking mono compatibility of a piano stereo mix before broadcast."
+        ]
+      },
+      "sources": [
+        "DPA Microphones technical note, 'The 3:1 Rule'",
+        "Ballou, 'Handbook for Sound Engineers' (comb filtering and multi-microphone phase)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "1fee5c67-feff-4c84-9207-7ffba1c07151",
+      "term": "Pipe organ reverberation",
+      "fields": {
+        "definition": "Pipe organ reverberation refers to the persistence of reflected sound in the large, hard-surfaced spaces (churches, cathedrals, concert halls) that pipe organs occupy; because organ tone is sustained and the instrument is voiced to its room, the space's reverberation time is an integral part of the perceived sound rather than an added effect.",
+        "plain_english": "Pipe organs sit in big stone rooms that echo for a long time. That natural echo is part of how the organ is meant to sound. The instrument and the room work together.",
+        "purpose_function": "The reverberant space blends the many pipes into a cohesive, sustained tone, which is why organs are voiced for their specific acoustic and why the reverberation must be respected when capturing them.",
+        "practical_application": "When recording an organ, engineers place mics to balance direct pipe sound against the room's reverberation, often using distant or spaced mics rather than close-miking as with a small instrument.",
+        "category": "Pipe organ",
+        "related_terms": [
+          "Reverberation time",
+          "Organ swell box",
+          "Reed pipe",
+          "Room acoustics",
+          "Ambient miking"
+        ],
+        "common_mistakes": [
+          "Close-miking a pipe organ like a guitar amp, capturing pipe chiff and wind noise but losing the blend and grandeur the room provides.",
+          "Adding artificial reverb to a recording that already needs the real room's tail, producing a smeared, unnatural result.",
+          "Assuming the console position sounds the same as the audience area; organ balance and reverberation vary greatly with mic distance and height."
+        ],
+        "scenario_contexts": [
+          "Recording a cathedral organ recital with a distant main pair to capture the natural reverberation.",
+          "Deciding mic distance for an organ in a highly reverberant church versus a drier concert hall.",
+          "Balancing organ and choir where the long reverberation time affects intelligibility."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, 'The Physics of Musical Instruments,' Ch. 17 (Pipe Organs, tonal architecture)",
+        "Audsley, 'The Art of Organ Building' (the organ voiced to its room and acoustics)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "367b937c-fc53-40ba-8530-4de2bd519b9c",
+      "term": "Prepared piano",
+      "fields": {
+        "definition": "A prepared piano is a piano whose timbre has been temporarily altered by placing objects such as screws, bolts, rubber, felt or coins between or on the strings, changing pitch, harmonic content and decay to yield percussive or altered sounds; the technique was systematized by composer John Cage.",
+        "plain_english": "An ordinary piano with small objects stuck onto the strings. People use bolts, rubber, or screws. This turns the normal notes into buzzy, muted, or drum-like sounds.",
+        "purpose_function": "Preparation exists to expand the piano's sonic palette into percussive and unpitched territory for composition and experimental music without permanently modifying the instrument.",
+        "practical_application": "A recording engineer capturing a prepared piano places mics close to the strings to catch the varied and often quiet percussive sounds, and works with the performer to ensure the preparations do not damage strings, hammers or dampers.",
+        "category": "Piano technique",
+        "related_terms": [
+          "Piano lid position",
+          "Piano phase interaction",
+          "Extended technique",
+          "Close miking",
+          "Soundboard"
+        ],
+        "common_mistakes": [
+          "Using sharp or oversized objects that scratch strings or bend hammers and dampers; preparations must be chosen and placed so the instrument is not harmed.",
+          "Expecting consistent tuning and level, since prepared notes vary widely and gain staging set on normal notes may clip or be too quiet.",
+          "Miking from a distance as for a normal piano and missing the subtle percussive detail that close mics reveal."
+        ],
+        "scenario_contexts": [
+          "Recording a contemporary-classical work written for prepared piano with bolts between the strings.",
+          "Reproducing a John Cage sonata that specifies exact preparation objects and positions.",
+          "Capturing experimental percussive textures for a film score using a prepared grand."
+        ]
+      },
+      "sources": [
+        "Grove Dictionary of Music and Musicians ('Prepared piano')",
+        "Adler, 'The Study of Orchestration' (extended piano techniques)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "78759bd7-8def-40eb-848e-71818498b372",
+      "term": "Reed pipe",
+      "fields": {
+        "definition": "A reed pipe (lingual pipe) is a class of organ pipe in which sound is produced by a vibrating metal tongue (the reed) beating against the shallot inside the pipe's boot; the vibrating reed modulates the air stream and a resonator above shapes the timbre, in contrast to flue pipes, which sound like a whistle or flute.",
+        "plain_english": "An organ pipe that makes sound with a small vibrating metal tongue. It works like the reed in a woodwind. It does not blow across an edge like other pipes. This gives brassy or buzzy voices, like trumpet or oboe stops.",
+        "purpose_function": "Reed pipes provide the organ's assertive brass- and woodwind-like colors (chorus and solo reeds), broadening the tonal palette beyond the flute-like flue pipes.",
+        "practical_application": "When miking an organ, a technician notes that reed pipes are richer in harmonics and more directional and edgy than flue pipes, so their location in the case affects captured brightness and balance.",
+        "category": "Pipe organ",
+        "related_terms": [
+          "Reed stop",
+          "Reed plate",
+          "Organ swell box",
+          "Flue pipe",
+          "Shallot"
+        ],
+        "common_mistakes": [
+          "Confusing a reed pipe's beating metal tongue with the free reeds of a harmonium; organ reed pipes use a beating reed on a shallot with a resonator.",
+          "Assuming all organ pipes behave the same, when reed pipes go out of tune with temperature more readily than flue pipes and need retuning.",
+          "Close-miking a reed rank and capturing harsh buzz because reeds are harmonically rich and directional."
+        ],
+        "scenario_contexts": [
+          "Identifying the Trumpet or Oboe rank (reed pipes) when balancing an organ recording.",
+          "Diagnosing a single dead or out-of-tune reed pipe whose tongue has slipped.",
+          "Choosing mic distance to tame the edge of a chorus reed division."
+        ]
+      },
+      "sources": [
+        "Acoustical Society of America, 'Reed Vibration and Sound Generation in Lingual Organ Pipes' (Rossing et al.)",
+        "Fletcher & Rossing, 'The Physics of Musical Instruments,' Ch. 17 (reed pipe ranks)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "ac8b6fff-1ebb-43e9-b110-1f168e465f85",
+      "term": "Reed plate",
+      "fields": {
+        "definition": "A reed plate is the metal frame in a free-reed instrument that carries one or more reed tongues, each riveted at one end over a closely matching slot cut through the plate; air flowing past sets the tongue vibrating freely in and out through its slot to produce the note. Reed plates are used in harmonicas, accordions, concertinas and reed organs/harmoniums.",
+        "plain_english": "The metal plate in a harmonica or accordion that holds the thin vibrating tongues, called reeds. Each reed sits over a matching slot. It swings back and forth through the slot to make sound.",
+        "purpose_function": "The reed plate mounts and aligns the free reeds precisely over their slots so they can vibrate cleanly, forming the sound-producing core of free-reed instruments.",
+        "practical_application": "When recording a harmonica or accordion, an engineer mics close to the reed plates or grille to capture the reeds' tone, aware that each reed sounds on only one air direction (blow or draw, press or pull).",
+        "category": "Free-reed instruments",
+        "related_terms": [
+          "Reed pipe",
+          "Reed stop",
+          "Free reed",
+          "Harmonica",
+          "Accordion"
+        ],
+        "common_mistakes": [
+          "Confusing the free reed on a reed plate with an organ reed pipe's beating reed; free reeds vibrate through the slot and do not strike the frame.",
+          "Expecting a single reed to sound in both air directions, when a given reed responds to only one direction with a separate reed for the other.",
+          "Miking too far off and losing reed detail, or too close and hot and capturing wind and valve noise from the plate."
+        ],
+        "scenario_contexts": [
+          "Close-miking a diatonic harmonica and hearing the blow and draw reeds on their plates.",
+          "Recording an accordion where multiple reed plates per note create the characteristic beating tremolo tuning.",
+          "Servicing a harmonium and gapping the reeds seated on their reed plates."
+        ]
+      },
+      "sources": [
+        "Acoustical Society of America, Acoustics Today, 'Free Reeds: An Intertwined Tale of Asian and Western Musical Instruments' (Braasch & Cottingham)",
+        "Grove Dictionary of Music and Musicians ('Reed organ' / 'Free reed')"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "7c1f4c55-0e4a-4268-bc62-4908daa05b65",
+      "term": "Reed stop",
+      "fields": {
+        "definition": "A reed stop is an organ stop that controls a rank of reed pipes, as opposed to a flue stop controlling flue pipes; drawing it admits wind to reed pipes whose vibrating metal tongues produce brass- or woodwind-like voices such as Trumpet, Oboe, Clarinet, Bassoon or Vox Humana.",
+        "plain_english": "It is the knob or tab that turns on a set of the organ's reed pipes. These pipes sound like trumpets, oboes, or clarinets. The other kind, flue stops, sound more like flutes.",
+        "purpose_function": "Reed stops let the organist select the instrument's reed voices, adding the powerful chorus reeds and characterful solo colors that a flue-only organ would lack.",
+        "practical_application": "A technician balancing or recording an organ tracks which reed stops are drawn, since chorus reeds greatly raise level and brightness and, being reed pipes, are the most sensitive to temperature-related tuning drift.",
+        "category": "Pipe organ",
+        "related_terms": [
+          "Reed pipe",
+          "Organ swell box",
+          "Pipe organ reverberation",
+          "Flue pipe",
+          "Organ stop"
+        ],
+        "common_mistakes": [
+          "Confusing the stop (the control that selects a rank) with the pipes themselves; the reed stop draws wind to a whole rank of reed pipes.",
+          "Setting record levels with flue stops only and then clipping when loud chorus reed stops are added.",
+          "Assuming reeds hold tune like flues, when reed stops often need touch-up tuning as the room temperature changes."
+        ],
+        "scenario_contexts": [
+          "An organist adding the Trumpet reed stop for a fanfare, sharply raising the recorded level.",
+          "Identifying which reed stops are engaged when diagnosing tuning drift in a recording.",
+          "Balancing a chorus of reed stops against the flue chorus in a full-organ passage."
+        ]
+      },
+      "sources": [
+        "Grove Dictionary of Music and Musicians ('Organ stop': flue and reed stops)",
+        "Audsley, 'The Art of Organ Building' (reed stops and their pipes)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

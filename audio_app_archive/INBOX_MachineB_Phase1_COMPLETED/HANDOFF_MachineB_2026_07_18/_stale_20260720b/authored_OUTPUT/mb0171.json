@@ -1,0 +1,159 @@
+{
+ "batch": 171,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "fec988f1-970c-4d54-a934-c2c722412435",
+   "term": "Outer-groove performance",
+   "fields": {
+    "definition": "The audio quality achievable in the outer (largest-diameter) grooves of a disc record, where the higher linear groove velocity at constant rotational speed gives greater high-frequency headroom and lower tracing distortion than the smaller inner grooves.",
+    "plain_english": "A record spins at one steady speed. But the outer edge moves past the needle faster than the middle does. That extra speed gives the needle more room to trace loud, bright sounds cleanly. So songs near the outer edge often sound their best.",
+    "purpose_function": "It describes why groove position affects sound quality on a disc, which guides how a side is sequenced so loud or bright passages land where fidelity is highest.",
+    "practical_application": "A cutting or mastering engineer places the loudest and most high-frequency-heavy tracks toward the start of a side and leaves quieter material for the inner grooves to avoid inner-groove distortion.",
+    "category": "Vinyl Mastering",
+    "related_terms": ["Inner-groove distortion", "Lacquer cutting", "Linear groove velocity", "Side sequencing", "Disc cutting"],
+    "common_mistakes": ["Assuming every point on a record reproduces sound equally well regardless of radius", "Placing the brightest or loudest track at the end of a side, where the inner groove has the least high-frequency headroom", "Confusing the outer groove's linear-velocity advantage with rotational speed (RPM), which is constant across the whole disc"],
+    "scenario_contexts": ["Sequencing an album for vinyl so the most demanding tracks fall on the outer grooves", "Reviewing a test pressing for inner-groove distortion versus clean outer-groove passages", "Deciding how much program time to cut per side to keep grooves at a favorable radius"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (disc recording / lacquer cutting)", "AES E-Library papers on disc recording and groove velocity"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c974bc8d-8d21-4870-ad84-129671d19a51",
+   "term": "Polyester tape base",
+   "fields": {
+    "definition": "The transparent polyethylene terephthalate (PET, trade name Mylar) film used as the flexible backing onto which the magnetic oxide coating of recording tape is applied; from the 1950s-60s it replaced cellulose acetate as the standard base for professional audio tape.",
+    "plain_english": "Recording tape is a thin plastic ribbon with a magnetic coat on it. The plastic underneath is called the base. Modern tape uses a strong, steady plastic called polyester. This helps the tape keep its shape and not snap or dry out.",
+    "purpose_function": "The base provides a strong, dimensionally stable carrier for the magnetic coating; polyester's strength and chemical stability keep tape playable for decades and resist the brittleness and vinegar syndrome that affect older acetate tape.",
+    "practical_application": "When transferring legacy tapes, a technician identifies a polyester base (it tends to stretch rather than snap and does not smell of vinegar) to judge handling risks and whether the binder needs baking.",
+    "category": "Magnetic Tape",
+    "related_terms": ["Cellulose acetate base", "Sticky-shed syndrome", "Tape baking", "Magnetic tape", "Preservation transfer plan", "Binder"],
+    "common_mistakes": ["Assuming a polyester base cannot fail, when its binder can still suffer sticky-shed syndrome even though the base itself is stable", "Confusing the base film with the magnetic oxide coating carried on top of it", "Believing polyester tape breaks cleanly like acetate; under stress it tends to stretch permanently, deforming the recording"],
+    "scenario_contexts": ["Identifying tape base type before transferring an archival reel", "Diagnosing why an old acetate tape is brittle while a polyester tape has stretched", "Choosing storage and handling procedures based on the base material"]
+   },
+   "sources": ["AES E-Library: Mylar Polyester Film and Acetate as Base Materials for Magnetic Recording Tape (elib 227)", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects (magnetic tape)", "U.S. National Archives, Important Characteristics of Audio Formats"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f820f0b6-212c-45d5-a0e8-ee7bd215f390",
+   "term": "PQ editing",
+   "fields": {
+    "definition": "The CD premastering process of placing and adjusting the P and Q subcode data-track starts (Index 1), pauses and pre-gaps (Index 0), index points, and timing offsets-so a Red Book (IEC 60908) disc plays back with correct track boundaries, timing, and cueing.",
+    "plain_english": "A CD has hidden markers. They tell the player where each track starts and stops. PQ editing is the step where the engineer sets those markers. This makes tracks begin, end, and gap in the right place.",
+    "purpose_function": "It defines the disc's navigation-track numbers, start points, and gaps-so players and rippers see the intended layout; without it the audio would play as one undivided stream.",
+    "practical_application": "In mastering software the engineer drops track-start markers between songs, sets pre-gap lengths, enters ISRC and UPC codes, and nudges start and end offsets before exporting a DDP image.",
+    "category": "CD Premastering",
+    "related_terms": ["PQ subcode", "PQ sheet", "Pre-gap audio", "DDP image", "Red Book", "ISRC"],
+    "common_mistakes": ["Placing a track-start marker exactly on the first sample so playback clips the attack instead of allowing a small start offset", "Ignoring the Red Book minimum gap and track-length rules", "Forgetting to enter ISRC or UPC/EAN codes during PQ editing"],
+    "scenario_contexts": ["Setting track IDs for a live album with continuous audio between songs", "Adding a hidden track in the pre-gap before track 1", "Preparing a DDP for a pressing plant with correct track times and codes"]
+   },
+   "sources": ["Sonic Solutions / SonicStudio PQ Editing technical manual (SS-524/SS-525)", "Sonoris DDP Creator User's Manual", "IEC 60908 (Compact Disc Digital Audio / Red Book)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3083c110-6533-48b8-864f-3f7fadacc0c7",
+   "term": "PQ sheet",
+   "fields": {
+    "definition": "A document generated during CD premastering that lists every track's start and end times, index points, pause/pre-gap durations, ISRC codes, and the disc's UPC/EAN (MCN); it is a human-readable record of the PQ subcode used by the pressing plant and for quality control.",
+    "plain_english": "A PQ sheet is like a track list for a CD. It writes down where each song starts and ends. It also notes the gap lengths and the ID codes. The factory and the engineer use it to check everything is right.",
+    "purpose_function": "It documents the intended track layout and metadata so the plant can verify the master and the client can approve timings and codes before replication.",
+    "practical_application": "A mastering engineer exports the PQ sheet alongside the DDP image and checks it against the client's track list and supplied ISRC codes before delivery.",
+    "category": "CD Premastering",
+    "related_terms": ["PQ subcode", "PQ editing", "DDP image", "ISRC", "Pre-gap audio", "Premaster image"],
+    "common_mistakes": ["Treating the PQ sheet as the master itself rather than a reference document describing it", "Not cross-checking ISRC and UPC codes on the sheet against the client's supplied codes", "Overlooking the pre-gap lengths listed on the sheet when approving track spacing"],
+    "scenario_contexts": ["Sending track times and codes to a pressing plant for verification", "Client review of track order and gaps before manufacturing", "QC comparison of the PQ sheet against the finished reference disc"]
+   },
+   "sources": ["Sonic Solutions / SonicStudio PQ Editing technical manual (SS-524/SS-525)", "Sonoris DDP Creator User's Manual", "IEC 60908 (Compact Disc Digital Audio / Red Book)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c051c2dc-c7b0-40c0-a61b-197425eb3a45",
+   "term": "PQ subcode",
+   "fields": {
+    "definition": "The P and Q channels of CD subcode-control and timing data interleaved with the audio at one subcode frame per 588 samples (75 frames per second) under the Red Book (IEC 60908); the P channel flags track and pause boundaries while the Q channel carries track/index numbers, running times, and codes such as ISRC and UPC/EAN.",
+    "plain_english": "Along with the music, a CD carries a stream of hidden data. The PQ part tells the player which track you are on and the time. It also marks where tracks and gaps begin. This is what makes the display and skip buttons work.",
+    "purpose_function": "It provides the navigation and timing layer of the CD standard, letting players locate tracks, show elapsed and remaining time, and mark pauses without interrupting the audio data.",
+    "practical_application": "When an engineer sets track markers and codes in mastering software, they are writing PQ subcode that a CD player later reads to build its track menu and time display.",
+    "category": "CD Premastering",
+    "related_terms": ["PQ editing", "PQ sheet", "Red Book", "Pre-gap audio", "ISRC", "DDP image"],
+    "common_mistakes": ["Confusing the eight subcode channels (P through W); only P and Q carry the basic track and timing data", "Assuming subcode is part of the audio samples rather than separate interleaved data", "Thinking ISRC lives in the audio when it is actually stored in the Q subcode"],
+    "scenario_contexts": ["Troubleshooting a disc whose track times display incorrectly", "Embedding ISRC codes into the Q channel during mastering", "Verifying track and index navigation on a burned reference disc"]
+   },
+   "sources": ["Sonic Solutions / SonicStudio PQ Editing technical manual (SS-524/SS-525)", "IEC 60908 (Compact Disc Digital Audio / Red Book)", "Sonoris DDP Creator User's Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "52c0e91f-dfd9-4963-be90-d4d9e7b0dce8",
+   "term": "Pre-gap audio",
+   "fields": {
+    "definition": "Audio placed in the pause/pre-gap region (Index 0) that precedes a track's Index 1 start point on a CD, used for hidden tracks before track 1 or for continuous audio that runs through the gap between tracks, in place of the Red Book default of silence.",
+    "plain_english": "The short gap before a CD track is usually silent. But you can hide sound there instead. That is pre-gap audio. It is like the secret song some albums tuck in before track 1.",
+    "purpose_function": "It lets engineers use the pause region creatively-hidden intros, count-ins, or seamless transitions-while keeping standard track navigation intact.",
+    "practical_application": "To create a hidden track, an engineer lengthens the pre-gap before track 1 and places audio there; for a live album they let applause run through the pre-gaps so tracks flow without silence.",
+    "category": "CD Premastering",
+    "related_terms": ["Pre-gap", "PQ editing", "PQ subcode", "Index point", "Red Book", "Hidden track"],
+    "common_mistakes": ["Assuming a pre-gap must always be silent, when audio can be placed there instead", "Hiding important audio in the pre-gap before track 1, which some players and rippers will not access", "Confusing pre-gap audio at Index 0 with the actual track start at Index 1"],
+    "scenario_contexts": ["Adding a hidden bonus track before track 1", "Keeping crowd noise continuous across tracks on a live album", "Setting gap lengths so seamless transitions are not broken by silence"]
+   },
+   "sources": ["Sonic Solutions / SonicStudio PQ Editing technical manual (SS-524/SS-525)", "Sonoris DDP Creator User's Manual", "IEC 60908 (Compact Disc Digital Audio / Red Book)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7ba30c0d-bf29-40b3-b16d-3f9ba4bd41b9",
+   "term": "Premaster image",
+   "fields": {
+    "definition": "The final, assembled digital image of a disc-complete with audio, PQ subcode, and metadata-delivered to a replication plant as the production master, most commonly a DDP (Disc Description Protocol) image or, historically, a PMCD.",
+    "plain_english": "A premaster image is the finished, ready-to-copy version of a whole disc. It is one set of files. The factory uses it to stamp out every copy. So it has to be exactly right.",
+    "purpose_function": "It packages everything the plant needs-audio, track markers, and codes-into one verifiable deliverable so every pressed copy matches the approved master.",
+    "practical_application": "After PQ editing, the engineer exports a DDP premaster image, verifies its checksum, and uploads it to the pressing plant instead of mailing a physical disc.",
+    "category": "Delivery & QC",
+    "related_terms": ["DDP image", "PQ sheet", "PQ editing", "Pressing approval", "Red Book", "Checksum"],
+    "common_mistakes": ["Sending a burned audio CD-R instead of a verified DDP premaster image", "Not verifying the image's checksum before delivery", "Editing audio after the premaster image is approved without regenerating and re-verifying the image"],
+    "scenario_contexts": ["Delivering a finished album to a CD or vinyl plant", "Archiving the exact production master for a future repressing", "Verifying a premaster image's integrity with checksums before manufacturing"]
+   },
+   "sources": ["Sonoris DDP Creator User's Manual", "DDP (Disc Description Protocol) specification / Sonic Solutions technical documentation", "IEC 60908 (Compact Disc Digital Audio / Red Book)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8549dd4e-feee-4ccf-bea6-aa1931a2a82a",
+   "term": "Preservation transfer plan",
+   "fields": {
+    "definition": "A documented plan governing the transfer of legacy audio recordings to archival digital form, specifying source-media assessment and handling, playback equipment and signal chain, target file formats and sampling parameters, metadata capture, and quality control, in line with recognized archival practice such as IASA-TC 04.",
+    "plain_english": "Old tapes and records do not last forever. So archives copy them to digital files before they fail. A preservation transfer plan is the written game plan for that work. It keeps the copying careful and the same for every item.",
+    "purpose_function": "It ensures transfers are done consistently, safely, and at archival quality so the digital copy faithfully preserves the original and stays usable long after the source media decays.",
+    "practical_application": "Before digitizing a collection of reel-to-reel tapes, an archivist writes a plan covering tape inspection, whether baking is needed, playback deck and A/D settings, target file format such as high-resolution PCM, and the metadata to log for each item.",
+    "category": "Archival Transfer",
+    "related_terms": ["Polyester tape base", "Sticky-shed syndrome", "Tape baking", "Magnetic tape", "Sample rate", "Metadata"],
+    "common_mistakes": ["Starting transfers with no documented plan, leading to inconsistent formats and missing metadata", "Playing fragile or sticky-shed tapes without inspection or baking, which sheds oxide onto the head and can damage both tape and machine", "Choosing lossy or low-resolution target files that fail archival preservation standards"],
+    "scenario_contexts": ["Planning digitization of a radio station's tape archive", "Setting standard file formats and metadata for a preservation project", "Assessing at-risk acetate and polyester tapes before transfer"]
+   },
+   "sources": ["IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects", "AES archiving standards (e.g. AES49/AES57) and preservation recommended practices"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "aa69b7da-74fd-453f-9a6d-254a6e32fcc4",
+   "term": "Pressing approval",
+   "fields": {
+    "definition": "The quality-control step in which a test pressing (vinyl) or reference/check disc (CD) made from the master is critically auditioned and inspected and then formally approved before the plant proceeds with the full manufacturing run.",
+    "plain_english": "Before a factory makes thousands of records, it makes a few sample copies first. Pressing approval is when someone listens to a sample. They check it for problems. If it sounds right, they give the green light for the full run.",
+    "purpose_function": "It catches defects-noise, distortion, skips, wrong levels, or manufacturing faults-while only a few copies exist, preventing a whole flawed production run.",
+    "practical_application": "The plant sends test pressings; the engineer and client audition them on a good system, check for ticks, warps, and inner-groove distortion, and either sign off or request a recut before mass pressing.",
+    "category": "Delivery & QC",
+    "related_terms": ["Test pressing", "Premaster image", "Inner-groove distortion", "Lacquer cutting", "Reference disc", "PQ sheet"],
+    "common_mistakes": ["Approving a test pressing after only a quick or partial listen instead of auditioning every side in full", "Judging a test pressing on a poor playback system that hides defects", "Confusing normal source-material qualities with pressing faults, or the reverse, when deciding whether to approve"],
+    "scenario_contexts": ["Auditioning vinyl test pressings before a full production run", "Checking a CD reference disc against the approved master", "Deciding whether to approve or request a recut after finding a defect"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (disc record manufacturing)", "AES E-Library papers on disc recording and record manufacturing QC"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

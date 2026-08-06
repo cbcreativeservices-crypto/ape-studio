@@ -1,0 +1,1012 @@
+{
+ "group": 89,
+ "terms": [
+  {
+   "id": "6fb0d3c3-7b44-41ad-b67d-f4e116d75296",
+   "term": "Melodica breath swell",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A dynamic-shaping technique on the melodica in which the player varies breath pressure to raise and lower the loudness of a sustained note, producing a crescendo and decrescendo; because the melodica sounds free reeds, breath pressure mainly changes volume rather than pitch.",
+   "plain_english": "On a melodica, blowing harder makes a held note grow louder and easing off makes it fade. Doing this smoothly gives the note a rising and falling swell, like slowly turning a volume knob up and down.",
+   "purpose_function": "It gives the melodica expressive dynamic control for shape, phrasing, and emphasis, since the player's breath rather than a fixed mechanism sets each note's loudness.",
+   "practical_application": "A player uses steady, controlled breath to fade notes in and out for expressive lines, and an engineer recording it may apply gentle compression to keep the swells within a usable level range.",
+   "category": "Breath Dynamics",
+   "related_terms": [
+    "Free reed",
+    "Crescendo",
+    "Breath control",
+    "Embouchure",
+    "Dynamics"
+   ],
+   "common_mistakes": [
+    "Blowing too hard for a swell, which can make a free reed sound harsh or bend the pitch slightly flat.",
+    "Confusing a breath swell with a pitch bend; a swell changes loudness, not the note.",
+    "Letting breath run out mid-phrase so the swell collapses unevenly."
+   ],
+   "scenario_contexts": [
+    "A studio overdub where a melodica adds a swelling, pad-like line under a song.",
+    "A live performance where the player fades a chord in for atmosphere.",
+    "Reggae or dub recordings where melodica swells are a signature texture."
+   ]
+  },
+  {
+   "id": "965531bb-9e2c-44c7-b20d-d7527c92cf2c",
+   "term": "Meri (chin-lower pitch bend)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A shakuhachi (Japanese end-blown bamboo flute) technique in which the player lowers the chin and head, decreasing the blowing angle across the mouthpiece edge and often partly shading a finger hole, to flatten the pitch and darken the tone; its opposite, raising pitch by lifting the chin, is called kari.",
+   "plain_english": "On the shakuhachi flute, the player tips the chin down to make a note go flat and sound darker. It is like aiming your breath lower across a bottle top to drop the pitch.",
+   "purpose_function": "It lets the player reach the in-between pitches and subtle tone colors the finger holes alone cannot give, which is central to the instrument's expressive, speech-like style.",
+   "practical_application": "A player rocks the head down for meri or up for kari while holding a fingering, bending pitch and shading timbre within a phrase to match the melody or another instrument.",
+   "category": "Pitch Bending",
+   "related_terms": [
+    "Kari",
+    "Embouchure",
+    "Overblowing",
+    "Muraiki (overblown air-blast)",
+    "Pitch bend"
+   ],
+   "common_mistakes": [
+    "Thinking meri is only a fingering; it depends mainly on head angle and blowing, not just covering holes.",
+    "Dropping the chin so far the note weakens or cracks instead of bending cleanly.",
+    "Confusing meri, which lowers pitch, with kari, which raises it."
+   ],
+   "scenario_contexts": [
+    "Playing traditional honkyoku pieces that call for meri notes and sliding pitch.",
+    "Tuning a shakuhachi line to a shamisen or koto in an ensemble.",
+    "Recording where meri's darker, breathier tone needs careful microphone placement."
+   ]
+  },
+  {
+   "id": "f9d377e2-3d6a-48d8-ba68-d3581c2041d6",
+   "term": "Mixture shimmer",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The bright, sparkling brilliance added to an organ's tone by a Mixture, a compound stop that sounds several high-pitched ranks per note tuned to upper octaves and fifths of the harmonic series; drawn on top of the diapason chorus, these ranks crown the sound with high-frequency reinforcement.",
+   "plain_english": "A pipe organ mixture stop adds several tiny high pipes to every note, giving the sound a bright, sparkling top. That extra sparkle on top of the main tone is the shimmer.",
+   "purpose_function": "The mixture reinforces the upper harmonics of the foundation stops, adding brightness and clarity so the full chorus sounds brilliant and carries in a large room.",
+   "practical_application": "An organist draws mixtures on top of principals to build the full plein jeu chorus for hymns and climaxes, blending them so the shimmer adds brilliance without harshness.",
+   "category": "Organ Registration",
+   "related_terms": [
+    "Rank",
+    "Stop",
+    "Principal chorus",
+    "Harmonic series",
+    "Diapason"
+   ],
+   "common_mistakes": [
+    "Drawing a mixture by itself; it is meant to sit on top of foundation stops, not stand alone.",
+    "Assuming a mixture plays one pitch per key; each note sounds several pipes at different pitches.",
+    "Forgetting that mixtures break back down in pitch up the keyboard, so the top does not scream."
+   ],
+   "scenario_contexts": [
+    "Registering a hymn's final verse where full organ with mixtures is wanted.",
+    "Recording a large pipe organ where the bright mixture ranks can sound harsh if the mic is too close.",
+    "Balancing a Baroque plein jeu registration for clarity in counterpoint."
+   ]
+  },
+  {
+   "id": "1a221b67-b344-45f7-a5e1-0d1c28c53075",
+   "term": "Multitonguing",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "An articulation technique on wind and brass instruments in which the player alternates a front-of-tongue stroke (such as \"tu\") with a back-of-tongue stroke (such as \"ku\") to articulate rapid passages faster than single tonguing allows; two-stroke patterns are double tonguing and three-stroke patterns are triple tonguing.",
+   "plain_english": "To play fast repeated notes, wind and brass players use two tongue actions, one at the front and one at the back of the mouth, saying something like tu-ku, tu-ku. It lets the tongue keep up when single tonguing is too slow.",
+   "purpose_function": "It lets players articulate very fast passages cleanly, since a single tongue stroke cannot repeat quickly enough for rapid runs and fanfares.",
+   "practical_application": "A trumpet or flute player uses double or triple tonguing for fast staccato runs, working to make the front and back strokes sound equally strong so every note is even.",
+   "category": "Articulation",
+   "related_terms": [
+    "Single tonguing",
+    "Flutter tonguing",
+    "Staccato",
+    "Articulation",
+    "Embouchure"
+   ],
+   "common_mistakes": [
+    "Letting the back stroke sound weaker or duller than the front stroke, giving uneven notes.",
+    "Pushing the speed up before the tongue coordination is secure.",
+    "Using a double-tonguing pattern for triple-meter groups, which throws off the accents."
+   ],
+   "scenario_contexts": [
+    "Playing a fast trumpet fanfare or a flute's rapid staccato passage.",
+    "Orchestral excerpts that demand rapid repeated articulation.",
+    "Close-miking where uneven tonguing strokes are clearly audible."
+   ]
+  },
+  {
+   "id": "83adadd5-7617-42cf-9ba3-3b4ee45ecb27",
+   "term": "Muraiki (overblown air-blast)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A shakuhachi technique in which the player forcefully overblows to produce a loud, breath-heavy attack, an explosive burst of air noise mixed with the tone, used as an expressive percussive color rather than a clean sustained pitch.",
+   "plain_english": "On the shakuhachi, the player blows a hard, noisy blast of air so the note bursts out with a rush of breath. It sounds stormy and rough, like a strong gust of wind.",
+   "purpose_function": "It adds dramatic, breathy, noise-based color to the music, extending the flute's expressive range beyond clean sustained tones.",
+   "practical_application": "A player uses muraiki at key moments in traditional honkyoku for a stormy, forceful effect, and an engineer leaves extra headroom because the air-blast attack is much louder and noisier than normal notes.",
+   "category": "Extended Technique",
+   "related_terms": [
+    "Overblowing",
+    "Meri (chin-lower pitch bend)",
+    "Ney breath tone",
+    "Embouchure",
+    "Transient"
+   ],
+   "common_mistakes": [
+    "Treating muraiki as an accident; it is a controlled, intentional effect, not a failed note.",
+    "Overblowing so hard the pitch jumps to the wrong overtone.",
+    "Recording with too little headroom, so the loud air-blast clips."
+   ],
+   "scenario_contexts": [
+    "Performing traditional honkyoku pieces that call for a stormy muraiki attack.",
+    "A film or game score wanting a raw, breathy shakuhachi effect.",
+    "Setting record levels so the sudden air-blast does not distort."
+   ]
+  },
+  {
+   "id": "6771cccb-cee7-4c2e-b188-1a364d133982",
+   "term": "Natural bugling",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "Playing melodies on a valveless bugle or natural brass instrument using only the notes of its harmonic series, selecting pitches solely by changing lip tension and air, since there are no valves or slides to alter the tube length.",
+   "plain_english": "A bugle has no valves, so the player changes notes only by tightening or loosening the lips. This limits it to a handful of harmonic notes, which is why bugle calls use just a few pitches.",
+   "purpose_function": "It reflects how a natural brass instrument works: with a fixed tube length, only the harmonic (overtone) series is available, which is why traditional calls and fanfares are built from those few notes.",
+   "practical_application": "A player selects each note by adjusting embouchure and breath alone, which is the basis of military and camp bugle calls and of period natural-trumpet playing.",
+   "category": "Brass Technique",
+   "related_terms": [
+    "Harmonic series",
+    "Embouchure",
+    "Natural trumpet",
+    "Overtone",
+    "Lip slur"
+   ],
+   "common_mistakes": [
+    "Expecting a bugle to play a full scale; only the harmonic-series notes are available without valves.",
+    "Blaming missed notes on the instrument when a secure embouchure is what selects the right harmonic.",
+    "Confusing lipping between harmonics with changing notes by valves."
+   ],
+   "scenario_contexts": [
+    "Playing standard bugle calls such as reveille or taps.",
+    "Historically informed performance on a valveless natural trumpet.",
+    "Teaching the harmonic series by demonstrating which notes a bugle can sound."
+   ]
+  },
+  {
+   "id": "9522ca3d-5310-4e91-bcc2-fbc17af0273a",
+   "term": "Ney breath tone",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The characteristic breathy, airy timbre of the ney, an end-blown reed flute of Middle Eastern music, in which audible breath noise blends with the pitched tone because the player directs the airstream obliquely across the open end of the tube; this breathiness is a prized expressive feature, not a flaw.",
+   "plain_english": "The ney is a reed flute you blow across the end, and its sound always carries a soft rush of breath mixed with the note. That airy, whispery quality is its signature voice.",
+   "purpose_function": "The breathy tone gives the ney its warm, human, voice-like expressiveness, which is central to its role in Middle Eastern and Sufi music.",
+   "practical_application": "A player shapes embouchure and breath to control how much air noise colors the tone, and an engineer mics it to capture that breathiness without harsh wind blasts hitting the capsule.",
+   "category": "Timbre",
+   "related_terms": [
+    "Embouchure",
+    "End-blown flute",
+    "Overblowing",
+    "Muraiki (overblown air-blast)",
+    "Windscreen"
+   ],
+   "common_mistakes": [
+    "Treating the ney's breath noise as a defect to remove; it is an essential part of the sound.",
+    "Blowing straight instead of obliquely across the edge, which kills the tone.",
+    "Close-miking without a pop or wind screen, so breath blasts overload the microphone capsule."
+   ],
+   "scenario_contexts": [
+    "Recording a ney solo for Middle Eastern or world-music production.",
+    "Live Sufi or classical ensemble where the ney's breathy line must sit in the mix.",
+    "Sampling a ney and needing to preserve its breathy attack."
+   ]
+  },
+  {
+   "id": "06e97cbe-dc0a-4f36-82ff-e99a0dc8b016",
+   "term": "Note crack/clam",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A momentary missed or split note, most common on brass, in which the player's lip fails to lock cleanly onto the intended harmonic resonance at the attack, producing a wrong pitch, a brief split, or a noisy break; \"clam\" is the common musician's slang for such a flubbed note.",
+   "plain_english": "A crack or clam is when a brass player's note comes out wrong for an instant. It splits or jumps to the wrong pitch on the attack. It happens because the lips did not quite lock onto the right note.",
+   "purpose_function": "Naming it helps players and engineers identify and fix attack errors, since brass notes depend on the lips matching an exact resonance of the tube.",
+   "practical_application": "In a session, a producer flags a cracked note for a retake or a punch-in, while players reduce clams by centering the pitch and supporting the air at the attack.",
+   "category": "Performance Error",
+   "related_terms": [
+    "Harmonic series",
+    "Embouchure",
+    "Attack",
+    "Punch-in",
+    "Lip slur"
+   ],
+   "common_mistakes": [
+    "Blaming the instrument for clams that come from an unfocused embouchure or weak air.",
+    "Punching in over a cracked note without matching tone and tuning, so the edit shows.",
+    "Trying to fix an obvious clam with pitch software when a clean retake would sound better."
+   ],
+   "scenario_contexts": [
+    "A trumpet solo take where one high entrance cracks and needs a punch-in.",
+    "Live broadcast where a prominent clam is audible and cannot be redone.",
+    "Editing a horn section where one player's split note must be replaced."
+   ]
+  },
+  {
+   "id": "6c7957f7-014b-4cb6-a552-7eb6e8fc47c5",
+   "term": "Organ blower noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "Low-frequency mechanical and aerodynamic sound produced by the electric blower (a rotary or centrifugal fan) that supplies pressurized wind to a pipe organ. It typically appears as a steady rumble, hum, or whir that can transmit through the wind system and building structure into the listening or recording space.",
+   "plain_english": "The steady hum or rumble made by the fan that pushes air into a pipe organ. It sounds like the low whir of a furnace blower running in another room.",
+   "purpose_function": "The blower exists to feed steady wind to the pipes, so its noise is an unwanted by-product that organ builders and recordists work to keep out of the music.",
+   "practical_application": "When recording an organ, a technician locates the blower (often in a separate chamber or basement), checks whether its rumble reaches the mics, and uses distance, isolation, or high-pass filtering to reduce it.",
+   "category": "Organ noise",
+   "related_terms": [
+    "Organ wind noise",
+    "Pipe hiss",
+    "Wind supply",
+    "Windchest",
+    "Low-frequency rumble",
+    "High-pass filter"
+   ],
+   "common_mistakes": [
+    "Assuming all low rumble on an organ track is room noise rather than the blower itself.",
+    "Placing mics near the blower chamber or wind trunk, capturing its rumble along with the pipes.",
+    "Cutting blower rumble with a high-pass filter set so high it also thins out the pedal (low bass) pipes."
+   ],
+   "scenario_contexts": [
+    "Recording a church pipe organ where basement blower rumble leaks up into the room.",
+    "A quiet solo passage where the blower whir becomes audible between phrases.",
+    "Tracing a low hum on an organ stem to the blower rather than to electrical hum."
+   ]
+  },
+  {
+   "id": "4b7f75b2-0894-4224-96f6-a339ae8d3d55",
+   "term": "Organ chiff",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A brief, noisy transient of higher partials heard at the onset (speech) of a flue organ pipe before its steady tone establishes, giving a percussive \"ch\" or spitting attack. Its strength depends on voicing and is prominent on lightly nicked or unnicked pipes and in many flute and principal stops.",
+   "plain_english": "A short, breathy \"ch\" burst at the very start of an organ note before the clear tone settles in. It is like the little puff of air you hear when a flute player first tongues a note.",
+   "purpose_function": "Chiff marks the attack of a pipe's speech and lends articulation and clarity to each note, so voicers deliberately keep, reduce, or add it to control how crisply a stop speaks.",
+   "practical_application": "A voicer judges chiff by ear on note onset and adjusts nicking, windway, and languid position to tame excess chiff, while a recordist places mics to capture a natural rather than exaggerated attack.",
+   "category": "Organ articulation",
+   "related_terms": [
+    "Flue pipe",
+    "Pipe speech",
+    "Nicking",
+    "Attack transient",
+    "Voicing",
+    "Languid"
+   ],
+   "common_mistakes": [
+    "Confusing intentional voiced chiff with a speech fault or pipe defect.",
+    "Close-miking flue pipes so tightly that the chiff is exaggerated and sounds unnatural.",
+    "Assuming chiff is always a flaw when it is often a deliberate articulation of the stop."
+   ],
+   "scenario_contexts": [
+    "Recording a Baroque-style organ whose flute stops chiff strongly on each note.",
+    "A voicer adjusting nicking to reduce harsh chiff on a newly made rank.",
+    "Editing an organ track where prominent chiff makes fast passages sound articulate."
+   ]
+  },
+  {
+   "id": "fb081138-8e33-4e0d-8e63-f0cbd0e6b45e",
+   "term": "Organ wind noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "Broadband rushing or hissing sound produced by air moving through an organ's wind system - trunks, windchests, pallets, and pipe feet - as distinct from the intended pipe tone. It can arise from leaks, high wind pressure, restricted passages, or the air jet at a flue pipe's mouth.",
+   "plain_english": "The rushing, airy sound of wind moving through an organ's pipes and air paths, separate from the musical note. It is like the \"whoosh\" you hear when you blow across a bottle before a clear tone forms.",
+   "purpose_function": "Some air noise is an unavoidable side effect of blowing pipes with wind, so knowing what is normal lets builders and recordists tell healthy speech from a leak or excess turbulence.",
+   "practical_application": "A technician listens for wind noise rising above normal, which can signal a leak or a regulation problem, and positions mics to keep captured hiss low on quiet passages.",
+   "category": "Organ noise",
+   "related_terms": [
+    "Organ blower noise",
+    "Pipe hiss",
+    "Windchest",
+    "Wind pressure",
+    "Flue pipe",
+    "Pallet"
+   ],
+   "common_mistakes": [
+    "Treating all wind noise as a fault when a small amount is natural to pipe speech.",
+    "Ignoring a rise in wind noise that actually signals an air leak in a chest or trunk.",
+    "Boosting high frequencies in the mix and exaggerating the organ's wind hiss."
+   ],
+   "scenario_contexts": [
+    "A leaking pallet or gasket adding audible hiss under sustained chords.",
+    "Recording a soft registration where wind noise competes with the quiet pipes.",
+    "Servicing an organ and tracing excess wind noise to over-high wind pressure."
+   ]
+  },
+  {
+   "id": "069613e9-69a7-4942-b92e-35fd4ea01d9d",
+   "term": "Overblow/overdraw (harmonica)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "Extended diatonic-harmonica techniques in which precise embouchure and breath make the normally silent \"opening\" reed of a cell sound in place of the closing reed, producing a pitch roughly a semitone above that reed's normal note. Overblow uses the blow reed on the exhale; overdraw uses the draw reed on the inhale, together filling in notes missing from the standard diatonic layout.",
+   "plain_english": "Special tricks for playing a blues (diatonic) harmonica. You use your breath and mouth shape to make a hidden higher note sound. They let a player reach notes the harmonica does not normally give.",
+   "purpose_function": "Overblows and overdraws exist to complete the chromatic scale on a ten-hole diatonic harmonica, letting players hit notes that would otherwise need a chromatic harmonica or a different key.",
+   "practical_application": "A player chokes the normal reed and coaxes the opposite reed to sound, usually on a harmonica whose reed gaps are set up for it, then bends the initially flat pitch up to true.",
+   "category": "Extended technique",
+   "related_terms": [
+    "Bending",
+    "Free reed",
+    "Diatonic harmonica",
+    "Reed plate",
+    "Embouchure",
+    "Chromatic scale"
+   ],
+   "common_mistakes": [
+    "Confusing overblowing with note bending; they use different reeds and a different mechanism.",
+    "Expecting overblows to speak cleanly on a stock harmonica without adjusting the reed gaps.",
+    "UNSAFE: Blowing very hard to force an overblow, which can overstress and break reeds."
+   ],
+   "scenario_contexts": [
+    "A blues player using overblows to play a full chromatic melody on one diatonic harp.",
+    "Setting reed gaps on a harmonica so overblows and overdraws speak reliably.",
+    "A studio session where a harmonica part needs a note reachable only by overdraw."
+   ]
+  },
+  {
+   "id": "9ad92a1c-e5a7-4c35-9561-130a7a91aba7",
+   "term": "Overtone/throat singing",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A family of vocal techniques in which a singer sustains a low fundamental drone and shapes the vocal tract to strengthen one upper harmonic sharply enough that it is heard as a separate whistling melody note. Tuvan khoomei and related styles do this by tuning the tract resonances (formants) to isolate successive partials of the voice.",
+   "plain_english": "A way of singing that makes two notes at once: a low steady tone and a clear high whistle above it. The singer shapes the mouth and throat to pick out one high note from the voice's natural overtones.",
+   "purpose_function": "The technique turns the voice's natural harmonics into an audible melody, a core musical practice in Central Asian and other traditions and a subject of voice-acoustics research.",
+   "practical_application": "A recordist captures both the drone and the fragile overtone by choosing a mic and placement that preserve high-frequency detail, since the melody sits in a narrow, easily masked upper band.",
+   "category": "Vocal technique",
+   "related_terms": [
+    "Formant",
+    "Harmonic series",
+    "Fundamental frequency",
+    "Vocal tract",
+    "Drone",
+    "Partial"
+   ],
+   "common_mistakes": [
+    "Thinking the singer makes two separate pitches at the vocal cords rather than reinforcing one existing harmonic.",
+    "Rolling off the highs in the mix and burying the whistling overtone melody.",
+    "Assuming any mic captures the overtone equally; a dull or distant mic can lose it."
+   ],
+   "scenario_contexts": [
+    "Recording a Tuvan khoomei performance where the overtone melody must stay clearly audible.",
+    "A voice-acoustics study measuring formant tuning during overtone singing.",
+    "Mixing a world-music track so the reinforced harmonic sits above the drone."
+   ]
+  },
+  {
+   "id": "517d44f7-4d89-445f-a21a-755a703df952",
+   "term": "Pad noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The mechanical clicking, thumping, or slapping sound made by a woodwind instrument's key pads seating on or lifting off their tone holes, independent of the musical tone. It is most audible in close-miked recordings of flutes, clarinets, saxophones, and similar keyed instruments.",
+   "plain_english": "The soft clicks and thumps a wind instrument's keys make as they open and close over the holes. It is like hearing the keys of a flute clack while the note plays.",
+   "purpose_function": "Pad noise is a by-product of the key mechanism sealing tone holes, and recognizing it helps a technician decide when it is natural detail and when it distracts from the tone.",
+   "practical_application": "A recordist reduces distracting pad noise by moving the mic off the key work (toward the bell or a little farther away) and may edit or gently reduce clicks in quiet passages.",
+   "category": "Mechanical noise",
+   "related_terms": [
+    "Tone hole",
+    "Key pad",
+    "Close miking",
+    "Woodwind",
+    "Transient",
+    "Spot mic"
+   ],
+   "common_mistakes": [
+    "Placing a spot mic right over the keys and capturing loud pad clicks.",
+    "Trying to remove every click and stripping away natural, expected instrument detail.",
+    "Blaming pad noise on the mic when a worn or loose pad is the real cause."
+   ],
+   "scenario_contexts": [
+    "Close-miking a flute where finger and pad clicks stand out in soft passages.",
+    "A saxophone overdub where key noise sits too high against the tone.",
+    "Servicing a clarinet whose worn pads slap loudly on closing."
+   ]
+  },
+  {
+   "id": "451840a7-9d8a-488f-b80d-ad983d602a2a",
+   "term": "Pan-flute chiff",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The breathy attack transient heard at the onset of a pan-flute (panpipe) note: a brief burst of air-jet noise as the edge tone starts, before the pipe's tone stabilizes. It comes from the player's breath striking the pipe's rim, and its strength varies with blowing angle and articulation.",
+   "plain_english": "The airy \"puff\" you hear at the start of a pan-flute note before the clear tone comes in. It is the sound of breath hitting the pipe's edge as the note begins.",
+   "purpose_function": "The chiff is a natural part of how an edge-blown pipe starts to speak, so players and recordists treat it as expressive attack rather than a fault.",
+   "practical_application": "A recordist positions the mic to catch a natural amount of breath attack without exaggerating it, since a very close mic lets the chiff and breath noise dominate.",
+   "category": "Attack transient",
+   "related_terms": [
+    "Edge tone",
+    "Attack transient",
+    "Breath noise",
+    "Panpipe",
+    "Air jet",
+    "Organ chiff"
+   ],
+   "common_mistakes": [
+    "Miking the pan flute so closely that breath chiff overwhelms the tone.",
+    "Treating the natural breath attack as a defect to be fully removed.",
+    "Confusing player breath noise with mechanical or wind-system noise."
+   ],
+   "scenario_contexts": [
+    "Close-recording a panpipe solo where each note starts with an airy chiff.",
+    "Balancing breath attack against tone in a folk-ensemble mix.",
+    "A player adjusting blowing angle to control how much chiff each note has."
+   ]
+  },
+  {
+   "id": "7d9d74a5-9318-4ac8-b2c1-522a727b6cdc",
+   "term": "Partial popping",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "On a brass (lip-reed) instrument, the unintended sounding of a neighboring partial of the harmonic series - the note momentarily \"pops\" to the harmonic above or below the intended one because the lips lock onto the wrong resonance. It produces a cracked or split note, most common in the upper register where partials sit close together.",
+   "plain_english": "When a trumpet or horn player accidentally hits the wrong note in the natural series, so the note jumps or cracks. It happens because the nearby notes are easy to slip onto, especially up high.",
+   "purpose_function": "Understanding partial popping helps players and techs know why brass notes crack and how lip tension and air support keep the intended harmonic locked in.",
+   "practical_application": "A technician or player traces cracked notes to lip setup, air support, or mouthpiece and tuning issues rather than assuming the instrument is faulty.",
+   "category": "Brass technique",
+   "related_terms": [
+    "Harmonic series",
+    "Partial",
+    "Embouchure",
+    "Lip reed",
+    "Cracked note",
+    "Register"
+   ],
+   "common_mistakes": [
+    "Blaming the instrument for popped partials that come from embouchure or air support.",
+    "Expecting clean upper-register notes without enough breath support.",
+    "Confusing a popped partial with a valve or slide error."
+   ],
+   "scenario_contexts": [
+    "A trumpet player cracking a high note as it pops to the next partial.",
+    "A horn section where closely spaced partials make entrances risky.",
+    "Reviewing a brass take and hearing a note split to a neighboring harmonic."
+   ]
+  },
+  {
+   "id": "ed37c62f-f77e-4595-9a33-35799e8b830a",
+   "term": "Pipe hiss",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A steady, broadband high-frequency hiss radiated by an organ flue pipe, produced by turbulent air where the wind jet crosses the pipe's mouth and upper lip, accompanying its tone. Excess hiss can indicate over-high wind pressure, a maladjusted jet, or voicing that emphasizes air noise over harmonic tone.",
+   "plain_english": "The airy, hissing sound that comes from an organ pipe along with its note, made by wind rushing across the pipe's mouth. It is like the breathy hiss you hear when blowing hard across a bottle top.",
+   "purpose_function": "A little jet hiss is built into how a flue pipe makes sound, so judging it helps voicers and recordists tell healthy speech from noisy, poorly regulated pipes.",
+   "practical_application": "A voicer adjusts wind pressure and the pipe's mouth (cut-up and jet) to balance tone against hiss, while a recordist places mics so as not to over-emphasize pipe hiss on soft stops.",
+   "category": "Organ noise",
+   "related_terms": [
+    "Flue pipe",
+    "Organ wind noise",
+    "Air jet",
+    "Cut-up",
+    "Wind pressure",
+    "Voicing"
+   ],
+   "common_mistakes": [
+    "Treating all pipe hiss as a fault when some jet noise is natural to flue speech.",
+    "Raising wind pressure for more volume and adding harsh hiss.",
+    "Boosting treble in the mix and exaggerating pipe hiss on quiet passages."
+   ],
+   "scenario_contexts": [
+    "A softly voiced flute stop whose jet hiss is audible up close.",
+    "A voicer reducing hiss by refining the cut-up and wind pressure.",
+    "Recording a quiet registration where pipe hiss competes with the tone."
+   ]
+  },
+  {
+   "id": "953941d1-79bd-4453-afbd-c0b63d01c9c4",
+   "term": "Pipe-organ wind noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The broadband, non-pitched turbulence and edge-tone hiss produced as pressurized air (organ \"wind\") passes through flue pipes, windways, and windchest components. It includes the breathy hiss at a pipe's mouth and the transient \"chiff\" or speech consonant at note onset, distinct from the sustained musical tone.",
+   "plain_english": "The airy, hissing sound an organ makes as air rushes through its pipes, on top of the musical notes. Like the breathy sound you hear when you blow across a bottle top before the clear tone settles.",
+   "purpose_function": "It is an unavoidable byproduct of exciting flue pipes with an air jet; a small amount of onset chiff gives a note a crisp, articulate start, while excessive hiss signals over-blowing, leaks, or a voicing fault.",
+   "practical_application": "When recording or reinforcing a pipe organ, a technician places mics to balance musical tone against wind and chiff noise, and treats excessive hiss as an instrument voicing or wind-leak issue rather than a fault in the mic or chain.",
+   "category": "Instrument noise",
+   "related_terms": [
+    "Chiff",
+    "Flue pipe",
+    "Reed noise",
+    "Wind pressure",
+    "Voicing",
+    "Attack transient"
+   ],
+   "common_mistakes": [
+    "Mistaking the natural onset chiff of flue pipes for a defect and trying to EQ it all out, which strips the note's articulation.",
+    "Assuming all organ hiss comes from the recording chain, when much of it is acoustic wind noise from the instrument itself.",
+    "Confusing flue-pipe wind noise with reed-pipe buzz, which has a different cause and cure."
+   ],
+   "scenario_contexts": [
+    "Close-miking a pipe organ in a church and hearing breathy hiss at the start of each note.",
+    "Diagnosing excessive hiss that traces to a leaking windchest pallet or too-high wind pressure.",
+    "Balancing soft flue stops on a large organ where wind noise becomes audible in quiet passages."
+   ]
+  },
+  {
+   "id": "aae13383-2593-492c-bb7e-1d211f2ec3e0",
+   "term": "Pitch scoop (brass)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "An expressive brass articulation in which the player approaches the target note from below, bending the pitch upward with the embouchure, air, and (on valved or slide instruments) partial fingerings or slide position, so the note \"scoops\" into tune rather than starting cleanly on pitch. It is common in jazz and pop styles.",
+   "plain_english": "When a brass player slides up into a note from underneath instead of hitting it dead-on. Like a singer swooping up to the right note rather than landing on it straight away.",
+   "purpose_function": "It exists as a stylistic, vocal-sounding inflection that adds a bluesy, expressive lead-in to the start of a note.",
+   "practical_application": "A technician tracking a horn section anticipates scoops on lead lines, avoids gating or transient shaping that would clip the rising pitch, and pitch-corrects only the landing note if any correction is needed at all.",
+   "category": "Articulation",
+   "related_terms": [
+    "Portamento",
+    "Glissando",
+    "Fall-off",
+    "Bend",
+    "Embouchure",
+    "Lip slur"
+   ],
+   "common_mistakes": [
+    "Treating a scoop as sloppy intonation and pitch-correcting it out, removing the intended expression.",
+    "Confusing a scoop, which rises into a note, with a fall or doit that drops off the end of a note.",
+    "Assuming every scoop is a wide glissando; many are quick inflections of a semitone or less."
+   ],
+   "scenario_contexts": [
+    "Recording a jazz trumpet lead that scoops into the first note of each phrase.",
+    "A pop horn section adding scoops to accent the hits in a chart.",
+    "Editing a comped horn take where scoops must line up rhythmically across the section."
+   ]
+  },
+  {
+   "id": "4a3f8368-2d28-463d-be50-46c57a554d6d",
+   "term": "Portamento smear (winds)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A continuous, sliding change of pitch between two notes on a wind instrument—a portamento or glissando—produced by gradually changing embouchure, air, and finger or key coverage so the pitch \"smears\" smoothly rather than moving in discrete steps. The clarinet glissando that opens Gershwin's Rhapsody in Blue is the classic example.",
+   "plain_english": "A smooth slide from one note to another on a wind instrument, with no clear steps in between. Like sliding your finger up a slide whistle so the pitch glides instead of jumping.",
+   "purpose_function": "It is an expressive device that connects two pitches with a continuous glide, giving a vocal or bluesy inflection between notes.",
+   "practical_application": "A technician recording woodwinds keeps mic distance consistent so the glide's tone stays even, and avoids automation or gating that would interrupt the sliding pitch.",
+   "category": "Articulation",
+   "related_terms": [
+    "Portamento",
+    "Glissando",
+    "Pitch scoop (brass)",
+    "Embouchure",
+    "Bend",
+    "Legato"
+   ],
+   "common_mistakes": [
+    "Confusing portamento, a continuous slide, with legato, which connects discrete pitches smoothly but without a glide.",
+    "Assuming any wind instrument can smear a full glissando; smooth slides are easiest on clarinet and saxophone and limited on others.",
+    "Editing out the sliding pitch as if it were a tuning error."
+   ],
+   "scenario_contexts": [
+    "Recording the clarinet glissando that opens Rhapsody in Blue.",
+    "A saxophonist smearing up into a note during a jazz solo.",
+    "Comping wind takes where the start pitch of a smear must be timed to the beat."
+   ]
+  },
+  {
+   "id": "53bfe5d9-6229-4d1f-b171-095e48ed53c7",
+   "term": "Quena airy tone",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The characteristically breathy, wind-rich timbre of the quena, a traditional Andean end-blown notched flute. Because the player's air jet is split across an open notch, the sound carries a strong component of turbulent breath noise alongside the pitched tone, giving it an airy, exhaled quality.",
+   "plain_english": "The breathy, whispery sound of the quena, an Andean flute you blow across a notch at the top. It always sounds a bit like someone breathing out, mixed with the melody.",
+   "purpose_function": "The airy quality is inherent to the quena's notch and edge-tone excitation and is prized as an expressive, vocal characteristic of Andean flute music rather than treated as a fault.",
+   "practical_application": "A technician recording a quena chooses a mic and distance that capture the breathy character without exaggerating wind blast, and avoids heavy de-noising that would strip the instrument's signature air.",
+   "category": "Timbre",
+   "related_terms": [
+    "Breath noise",
+    "Edge tone",
+    "Notched flute",
+    "Embouchure",
+    "Overblowing",
+    "Air jet"
+   ],
+   "common_mistakes": [
+    "Treating the quena's natural breathiness as a recording defect and gating or de-noising it away.",
+    "Miking too close and on-axis to the notch, capturing wind blast and pops instead of a balanced tone.",
+    "Confusing the airy tone with the sound of a leaky or poorly made instrument."
+   ],
+   "scenario_contexts": [
+    "Recording an Andean folk ensemble featuring a solo quena.",
+    "Blending a breathy quena into a mix without losing its signature air.",
+    "Choosing mic placement to tame wind noise on a close-miked quena."
+   ]
+  },
+  {
+   "id": "342381fe-ab75-4c2e-92c0-8fb325000473",
+   "term": "Reed attack",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The onset transient of a note on a reed instrument—the brief interval in which the reed begins vibrating and the air column builds to steady oscillation after the player tongues or starts the note. Its speed and character are shaped by tonguing, breath pressure, and reed response, and largely determine how crisp or soft the note's beginning sounds.",
+   "plain_english": "The very start of a note on a reed instrument, when the reed first begins to buzz and the tone builds up. Like the difference between a sharp t and a soft d at the front of a word.",
+   "purpose_function": "The attack sets articulation and clarity; a clean, well-defined onset lets notes speak precisely, which matters for ensemble timing and for the intelligibility of fast passages.",
+   "practical_application": "A technician sets levels and transient handling with reed attacks in mind, avoiding compression or limiting that dulls the tongued onset, and mics the instrument to preserve articulation.",
+   "category": "Reed acoustics",
+   "related_terms": [
+    "Reed vibration",
+    "Attack transient",
+    "Tonguing",
+    "Articulation",
+    "Embouchure",
+    "Reed noise"
+   ],
+   "common_mistakes": [
+    "Over-compressing reed tracks so the tongued attack is squashed and the articulation blurs.",
+    "Confusing a soft attack chosen by the player with a slow-speaking or damaged reed.",
+    "Gating with too slow an attack setting, which clips the note's start."
+   ],
+   "scenario_contexts": [
+    "Recording a fast staccato clarinet passage where every attack must stay crisp.",
+    "A saxophone lead where the engineer preserves tongued attacks under compression.",
+    "Diagnosing whether a mushy note onset is caused by the player, the reed, or the processing."
+   ]
+  },
+  {
+   "id": "59651ad7-b364-4eaa-a8f1-7914c3eb27dc",
+   "term": "Reed buzz",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The buzzing, harmonically rich sound produced by a musical reed as it beats against the mouthpiece or an opposing reed; more loosely, an unwanted rattling buzz from a chipped, warped, or improperly seated reed. The buzz reflects the reed's non-sinusoidal, valve-like opening and closing of the airflow.",
+   "plain_english": "The buzzy sound a reed makes as it flaps very fast against the mouthpiece. A good buzz gives the tone its edge; a bad one is an unwanted rattle from a damaged reed.",
+   "purpose_function": "The reed's buzzing action is how a reed instrument turns steady breath into a rich, harmonic tone; controlling that buzz shapes the note's brightness and edge.",
+   "practical_application": "A technician distinguishes the musical buzz of a healthy reed from a rattling defect, and chooses mics and EQ that flatter the reed's edge without exaggerating harshness.",
+   "category": "Reed acoustics",
+   "related_terms": [
+    "Reed vibration",
+    "Reed crow",
+    "Harmonics",
+    "Timbre",
+    "Embouchure",
+    "Reed noise"
+   ],
+   "common_mistakes": [
+    "Mistaking the natural buzzy edge of a reed for distortion in the signal chain.",
+    "Ignoring a rattling buzz that actually signals a chipped or warped reed.",
+    "Boosting the upper mids so much that the reed buzz turns harsh and fatiguing."
+   ],
+   "scenario_contexts": [
+    "Miking a bassoon or oboe and capturing the reed's buzzy harmonics.",
+    "Troubleshooting a rattle that turns out to be a damaged reed rather than the mic.",
+    "Taming excessive reed buzz on a close-miked saxophone with gentle EQ."
+   ]
+  },
+  {
+   "id": "8fa81af0-4c3f-4618-ac89-41b57ac46d23",
+   "term": "Reed crow",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The raucous, rattling sound a double reed (oboe, bassoon, or similar) makes when blown by itself, away from the instrument, with the lips near the base of the reed. Reed makers and players judge a reed's response, pitch, and balance by the character and pitches of its \"crow.\"",
+   "plain_english": "The harsh, crackly squawk a double reed makes when you blow it on its own, off the instrument. Reed makers listen to this crow to tell if a reed is ready to play.",
+   "purpose_function": "The crow is a diagnostic test used in reed-making and setup; its pitch and rattle indicate whether a reed is too hard, too soft, or well balanced before it is played on the instrument.",
+   "practical_application": "While not a performance sound, a technician may hear players crowing reeds during setup; recognizing it helps tell reed-testing sounds apart from instrument faults during a session.",
+   "category": "Reed acoustics",
+   "related_terms": [
+    "Reed vibration",
+    "Reed buzz",
+    "Double reed",
+    "Embouchure",
+    "Reed noise",
+    "Reed attack"
+   ],
+   "common_mistakes": [
+    "Thinking the crow is a performance technique rather than an off-instrument test of the reed.",
+    "Assuming a good-sounding crow guarantees good intonation once the reed is on the instrument.",
+    "Confusing a player's reed-crowing during setup with a squeak or fault in the recording."
+   ],
+   "scenario_contexts": [
+    "An oboist crowing a reed to check its pitch before a take.",
+    "A bassoonist adjusting a reed until its crow sits at the expected pitches.",
+    "An engineer recognizing crowing sounds during setup instead of flagging them as noise problems."
+   ]
+  },
+  {
+   "id": "6befba2e-d7f7-422a-9751-727e8441561a",
+   "term": "Reed noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The non-pitched, broadband noise that accompanies the musical tone of a reed instrument—chiefly turbulent breath noise passing the reed and mouthpiece, plus subtle reed rattle—audible especially at soft dynamics and note onsets, and distinct from the harmonic tone the reed produces.",
+   "plain_english": "The airy, hissy sound mixed in with a reed instrument's notes, mostly from breath rushing past the reed. It is most noticeable on quiet notes and at the start of notes.",
+   "purpose_function": "It is a natural byproduct of driving a reed with turbulent airflow; a little adds breathy realism, while too much (or added key and rattle noise) muddies close-miked recordings.",
+   "practical_application": "A technician manages reed noise through mic choice, placement, and gentle high-frequency control, keeping enough for realism without excessive hiss on intimate recordings.",
+   "category": "Reed acoustics",
+   "related_terms": [
+    "Reed buzz",
+    "Reed vibration",
+    "Breath noise",
+    "Key noise",
+    "Reed attack",
+    "Timbre"
+   ],
+   "common_mistakes": [
+    "Aggressively de-noising or de-essing reed tracks until they sound lifeless and unnatural.",
+    "Blaming the preamp or mic for hiss that is actually acoustic breath and reed noise.",
+    "Close-miking directly at the mouthpiece so breath noise overwhelms the tone."
+   ],
+   "scenario_contexts": [
+    "An intimate close-miked clarinet where breath noise is audible on soft notes.",
+    "Choosing mic distance on saxophone to balance body tone against reed and breath noise.",
+    "Cleaning up a solo woodwind recording without stripping its natural air."
+   ]
+  },
+  {
+   "id": "f0405525-d323-4e15-8a9f-a1913400700b",
+   "term": "Reed vibration",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The self-sustained oscillation of a cane or synthetic reed that drives a wind instrument's air column. Acting as a pressure-controlled valve, the reed opens and closes to modulate the airflow into the instrument at the resonance of the coupled air column, converting steady breath into a periodic acoustic tone.",
+   "plain_english": "The fast flapping of a reed that makes a woodwind sound. Steady breath makes the reed open and shut many times a second, chopping the air into a musical note, a bit like a buzzing valve.",
+   "purpose_function": "Reed vibration is the sound source of reed instruments; it turns constant breath pressure into the rapid pressure pulses that excite and sustain the air column's tone.",
+   "practical_application": "Understanding that the reed and air column work together helps a technician interpret tone, tuning, and squeaks, and explains why reed condition and embouchure change the recorded sound so much.",
+   "category": "Reed acoustics",
+   "related_terms": [
+    "Reed attack",
+    "Reed buzz",
+    "Air column",
+    "Embouchure",
+    "Single reed",
+    "Double reed"
+   ],
+   "common_mistakes": [
+    "Thinking the reed vibrates at its own fixed pitch, when the coupled air column largely sets the sounding frequency.",
+    "Assuming a stiffer reed always sounds better, ignoring how it changes response and attack.",
+    "Overlooking that reed condition, such as moisture or chips, strongly affects the recorded tone."
+   ],
+   "scenario_contexts": [
+    "Explaining why a worn reed changes a saxophone's recorded tone mid-session.",
+    "Understanding squeaks as disrupted reed vibration rather than a fault in the signal chain.",
+    "Relating a player's embouchure changes to shifts in the tone captured by the mic."
+   ]
+  },
+  {
+   "id": "6538c72e-ff2e-4ef3-bbc7-22a2d5e79f27",
+   "term": "Reed-stop snarl",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The aggressive, buzzing, brassy timbre of a pipe organ's reed stops — ranks whose pipes sound by a vibrating brass tongue beating against a shallot rather than by an air jet — in which prominent upper harmonics give a raspy, snarling edge, most notably in chorus reeds such as the Trumpet, Bombarde or Trompeta.",
+   "plain_english": "On a pipe organ, some pipes make sound with a small vibrating metal tongue instead of a plain jet of air. These reed pipes have a buzzy, brassy growl. That harsh edge is called the snarl.",
+   "purpose_function": "Reed stops add power, bite and a brass-like voice to the organ chorus; the snarling edge lets them cut through full organ and carry solo lines over the smoother flue ranks.",
+   "practical_application": "An organist hears reed snarl when drawing chorus reeds for a big tutti, and a voicer or tuner sets the tongue curvature and tuning wire to keep the snarl even across the rank without turning harsh or spitting.",
+   "category": "Organ timbre",
+   "related_terms": [
+    "Reed stop",
+    "Shallot",
+    "Chorus reed",
+    "Flue pipe",
+    "Stop-change thunk",
+    "Voicing"
+   ],
+   "common_mistakes": [
+    "Assuming every organ pipe is a reed; most stops are flue (labial) pipes that sound with an air jet, not a beating tongue.",
+    "Mistaking a musical reed snarl for a fault, when a rough, spitting or uneven reed usually means the tongue, tuning wire or shallot needs regulating.",
+    "Thinking the snarl comes from the resonator alone; the tongue and shallot set the buzz, and the resonator shapes and reinforces it."
+   ],
+   "scenario_contexts": [
+    "Drawing chorus reeds like the Trumpet and Bombarde for a full-organ climax and hearing them snarl above the flue chorus.",
+    "A voicer regulating a new reed rank so the snarl is even from bass to treble.",
+    "A tuner curving the tongue and setting the tuning wire on a Trompeta to control brightness and edge."
+   ]
+  },
+  {
+   "id": "4a683819-2393-48dd-b3a6-bd5d50931237",
+   "term": "Rhaita/mizmar blare",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The loud, piercing, buzzy tone of the rhaita (Maghrebi ghaita) and mizmar — conical-bore double-reed shawms of North Africa and the Arab world, related to the zurna — whose wide, open reed and flaring bell produce a penetrating, blaring sound suited to outdoor and ceremonial playing.",
+   "plain_english": "The rhaita and mizmar are loud folk oboes from North Africa and the Middle East. Their big double reed and open bell give a bright, buzzy blast that carries far outdoors. That piercing sound is the blare.",
+   "purpose_function": "The blaring tone lets these shawms lead outdoor processions, weddings and dances without amplification; the double reed and conical bore make the instrument naturally loud and rich in high harmonics.",
+   "practical_application": "An engineer capturing a rhaita or mizmar expects very high levels and sharp upper harmonics, so they pad the input, back the mic off and watch for harshness in the upper mids.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Zurna",
+    "Shawm",
+    "Double reed",
+    "Circular breathing",
+    "Conical bore",
+    "Reed-stop snarl"
+   ],
+   "common_mistakes": [
+    "Calling the rhaita or mizmar a single-reed instrument; both are double-reed shawms like the zurna, not clarinet-type instruments.",
+    "UNSAFE: Close-miking a rhaita or mizmar at full blare with no pad and no hearing protection; these shawms reach very high sound-pressure levels that risk hearing damage and input overload.",
+    "Treating the buzzy blare as distortion to be equalized away, when the strong high harmonics are the instrument's real voice."
+   ],
+   "scenario_contexts": [
+    "Miking a mizmar in an Egyptian wedding band and adding a pad to handle the loud, piercing level.",
+    "A world-music session where the rhaita must sit over drums without swamping the mix.",
+    "An engineer gently taming harsh upper-mid blare while keeping the instrument's character."
+   ]
+  },
+  {
+   "id": "30a664c3-99b4-4446-9f21-b81b269a2c59",
+   "term": "Rip/smear (brass)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "Two expressive brass approaches to a note: a rip is a fast, aggressive upward flourish that races through the harmonic series into a target pitch, while a smear is a slower slide or bend that glides into or between pitches using lip and partial-valve control.",
+   "plain_english": "On brass instruments, a rip is a quick, rough slide up into a note. A smear is a slower slide or bend into it. Think of a trumpet player scooping up to a big note in a jazz band.",
+   "purpose_function": "Rips and smears add jazz and blues expression, letting brass players attack notes with excitement or ease instead of hitting them cleanly; they shape phrasing and style in big-band and pop writing.",
+   "practical_application": "An arranger notates a rip or smear so brass players know to slide into the note, and an engineer mixing the section leaves headroom for the loud, bright peak a rip lands on.",
+   "category": "Brass technique",
+   "related_terms": [
+    "Glissando",
+    "Fall (brass)",
+    "Doit",
+    "Scoop",
+    "Harmonic series",
+    "Half-valve"
+   ],
+   "common_mistakes": [
+    "Confusing a rip with a clean glissando; a rip is a fast, rough flourish through the harmonics, not a smooth continuous slide.",
+    "Playing a smear as a hard, in-tune interval, when the effect depends on bending lazily into the pitch rather than snapping to it.",
+    "Notating a rip with no target note, leaving the player unsure where the flourish should land."
+   ],
+   "scenario_contexts": [
+    "A big-band trumpet section ripping up to a shout-chorus hit.",
+    "A trombonist smearing into a bluesy melody note.",
+    "An arranger marking rips and smears in a horn chart for a pop record."
+   ]
+  },
+  {
+   "id": "b4daca01-1616-4199-80dc-e8b50c587897",
+   "term": "Serpent/ophicleide rasp",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The rough, buzzing, gravelly bass tone of the serpent — a curved, leather-covered wooden lip-reed instrument of the cornett family with open finger holes — and of the ophicleide, its 19th-century keyed-brass successor; both are blown with a cup mouthpiece and noted for a coarse, rasping voice that filled the bass before the tuba.",
+   "plain_english": "The serpent and ophicleide are old bass horns you buzz your lips into, like a tuba's ancestors. Their sound is rough and buzzy. That gritty growl is called the rasp.",
+   "purpose_function": "These instruments supplied the bass voice in early wind bands, churches and orchestras before the tuba; the rasp comes from wide finger or key holes and a large cup mouthpiece that make the low notes speak with a coarse edge.",
+   "practical_application": "A player or engineer working with period instruments expects the serpent's and ophicleide's uneven, rasping low notes and mics them close to capture body without exaggerating the buzz.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Cornett",
+    "Ophicleide",
+    "Cup mouthpiece",
+    "Lip reed",
+    "Tuba",
+    "Keyed bugle"
+   ],
+   "common_mistakes": [
+    "Classing the serpent as a woodwind because it is made of wood; it is sounded by buzzing the lips, so acoustically it belongs with the brass or lip-reed family.",
+    "Treating the natural rasp as a defect, when the coarse tone is characteristic of these instruments rather than a fault.",
+    "Assuming the ophicleide is valved like a modern tuba; it uses keys and tone holes, like a large keyed bugle."
+   ],
+   "scenario_contexts": [
+    "Recording a period-instrument ensemble where the serpent doubles the bass line in a church acoustic.",
+    "An ophicleide standing in for a tuba in a historically informed performance of early Romantic music.",
+    "An engineer choosing mic placement to capture the rasp without harshness."
+   ]
+  },
+  {
+   "id": "47d1b0de-f64e-428b-b64f-55b5f9bc9f46",
+   "term": "Sheng chord tone",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The sheng's ability to sound several of its free-reed bamboo pipes at once, producing chords or intervals rather than a single line — traditionally parallel fourths and fifths and, on modern instruments, full harmonies — since each reed speaks only when its pipe's finger hole is covered and the player blows or draws air.",
+   "plain_english": "The sheng is a Chinese mouth organ made of bamboo pipes. Each pipe has a small vibrating metal reed. Unlike a flute or trumpet, it can play several notes at once, so a player can hold a whole chord.",
+   "purpose_function": "Chord playing lets the sheng provide harmony and sustained accompaniment within an ensemble, a rare trait among wind instruments; the free reeds give steady tone whether the player blows out or draws in.",
+   "practical_application": "An arranger uses the sheng for held chords and clusters under a melody, and an engineer mics it to capture the blend of several pipes without favoring one reed.",
+   "category": "Instrument technique",
+   "related_terms": [
+    "Free reed",
+    "Mouth organ",
+    "Sho",
+    "Tone cluster",
+    "Reed stop",
+    "Harmony"
+   ],
+   "common_mistakes": [
+    "Thinking the sheng plays only one note at a time like a flute, when it is built to sound several pipes together for chords.",
+    "Assuming a pipe sounds when its hole is open; a sheng reed speaks only when the finger hole is covered.",
+    "Expecting sound on the out-breath only, when the free reeds sound on both blowing and drawing air."
+   ],
+   "scenario_contexts": [
+    "A sheng holding sustained chords beneath a dizi melody in a Chinese orchestra.",
+    "A modern keyed sheng playing full harmonies in a contemporary work.",
+    "Miking a sheng to blend its stacked pipe tones evenly."
+   ]
+  },
+  {
+   "id": "aee3bb6d-d78e-4ad5-affa-57e603a9de3a",
+   "term": "Shofar blast",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A tone sounded on the shofar — an ancient natural horn made from a ram's or other kosher animal's horn and blown by buzzing the lips like a brass instrument — which, having no finger holes or valves, yields only two or three harmonic pitches; the ritual calls tekiah, shevarim and teruah are its prescribed blasts in Jewish liturgy.",
+   "plain_english": "A shofar is a ram's horn you play by buzzing your lips, like a simple trumpet with no buttons. Because it has no finger holes, it makes just two or three notes. The loud calls it sounds are its blasts.",
+   "purpose_function": "The shofar's blast serves as a ceremonial signal and call in Jewish worship, above all at Rosh Hashanah and Yom Kippur; with no valves or holes it relies on lip tension to reach its few available pitches.",
+   "practical_application": "An engineer recording a shofar in a service expects a loud, buzzy, narrow-pitch tone and places the mic off the bell axis so the blasts do not overload the input.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Natural horn",
+    "Lip reed",
+    "Harmonic series",
+    "Overblowing",
+    "Embouchure",
+    "Cup mouthpiece"
+   ],
+   "common_mistakes": [
+    "Thinking the shofar can play a melody, when with no holes or valves it sounds only two or three harmonics.",
+    "Assuming it is a woodwind; the shofar is lip-blown, so acoustically it is a natural horn in the brass family.",
+    "Expecting a smooth, refined tone, when the shofar's voice is meant to be raw and penetrating."
+   ],
+   "scenario_contexts": [
+    "Miking a shofar for a Rosh Hashanah service broadcast.",
+    "Capturing the tekiah and teruah calls cleanly despite their loud, buzzy peaks.",
+    "A sound designer using a shofar blast as a signal or dramatic effect."
+   ]
+  },
+  {
+   "id": "f73c62e4-0041-48f5-8011-a36ebe2c7918",
+   "term": "Spit/water gurgle",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A bubbling or crackling sound produced when condensation from the player's warm breath collects in the bore of a wind or brass instrument and disturbs the airflow, typically near valves, tone holes or tubing bends; it is cleared with a water key (spit valve), by emptying slides, or by swabbing.",
+   "plain_english": "When you blow warm breath into a horn, tiny water drops form inside, like fog on a cold window. When that water pools in the tubing, air bubbling through it makes a gurgle. Players open a little water key to drain it.",
+   "purpose_function": "The gurgle is a byproduct of condensation, not a musical feature; recognizing it tells the player to drain the instrument so notes speak cleanly instead of sputtering.",
+   "practical_application": "A brass player empties the water key during a rest to stop gurgling, and a live engineer learns to expect the odd bubbling noise and may edit or ride around it on a recording.",
+   "category": "Wind maintenance",
+   "related_terms": [
+    "Water key",
+    "Spit valve",
+    "Condensation",
+    "Bore",
+    "Swab",
+    "Valve"
+   ],
+   "common_mistakes": [
+    "Thinking the water is mostly saliva, when it is mainly condensation from warm, moist breath cooling inside the metal tubing.",
+    "Blaming a gurgle or airy note on the reed or embouchure when the bore simply needs draining.",
+    "Forgetting to empty the water key or slides during rests, so notes sputter at the worst moment."
+   ],
+   "scenario_contexts": [
+    "A trumpet player draining the water key between phrases to stop a gurgle.",
+    "An engineer hearing a bubbling noise on a trombone take and asking for another pass.",
+    "A tuba player emptying condensation from the slides during a long rehearsal."
+   ]
+  },
+  {
+   "id": "3d55a63d-6e87-4412-bec5-7e7467bc69fb",
+   "term": "Stop-change thunk",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The soft mechanical thump heard on a pipe organ when stops are drawn or retired — the drawknobs, sliders or combination-action pistons moving ranks into or out of play — an incidental noise of the stop action rather than a musical tone.",
+   "plain_english": "A pipe organ turns sets of pipes on and off using stops. When the player changes stops, the mechanism moves. You can hear a soft thunk, most of all when the preset buttons switch many stops at once.",
+   "purpose_function": "The thunk is a side effect of the stop or combination action engaging ranks; hearing it confirms the mechanism moved, though a well-regulated action keeps the noise low.",
+   "practical_application": "An organist times stop changes to musical rests to hide the thunk, and a technician regulates the combination action or slider motors when the noise grows loud or the change is sluggish.",
+   "category": "Organ mechanism",
+   "related_terms": [
+    "Stop (organ)",
+    "Combination action",
+    "Drawknob",
+    "Slider chest",
+    "Reed-stop snarl",
+    "Registration"
+   ],
+   "common_mistakes": [
+    "Mistaking a normal stop-change thunk for a mechanical fault, when a light thump is inherent to slider and combination actions.",
+    "Changing many stops during a quiet passage, letting the thunk intrude instead of hiding it in a louder moment or rest.",
+    "Ignoring a thunk that grows louder or uneven, which can signal a combination action or slider motor needing service."
+   ],
+   "scenario_contexts": [
+    "An organist hitting a general piston mid-piece and hearing the stops thunk in.",
+    "A technician regulating an electro-pneumatic combination action to quiet the change.",
+    "A recording engineer placing mics to minimize audible stop-change noise during a broadcast."
+   ]
+  },
+  {
+   "id": "a68c16c2-098e-4954-9197-40894d527fdf",
+   "term": "Strike-in squeal (bagpipe)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "An unwanted squeal or squawk at the moment of strike-in — the start of the bagpipe, when the player fills the bag and strikes it to set the drone and chanter reeds sounding together — caused when the reeds fail to speak cleanly at once under uneven or insufficient bag pressure.",
+   "plain_english": "A piper starts the pipes by filling the bag and giving it a firm squeeze, so all the reeds sound at once. If the pressure is uneven, a reed can squeak before it settles. That messy start is the strike-in squeal.",
+   "purpose_function": "A clean strike-in is a mark of good piping; the squeal signals that bag pressure or reed setup is off, so removing it means the drones and chanter speak together crisply.",
+   "practical_application": "A piper practices a firm, even strike-in to avoid the squeal, and adjusts reed strength or seating when a reed squawks at start-up every time.",
+   "category": "Bagpipe technique",
+   "related_terms": [
+    "Chanter",
+    "Drone",
+    "Bag pressure",
+    "Reed",
+    "Cut-off",
+    "Strike-in"
+   ],
+   "common_mistakes": [
+    "Filling the bag too slowly or with uneven pressure, so a reed squeals instead of the pipes striking in cleanly.",
+    "Blaming the squeal on the chanter reed alone when a drone reed or the strike itself is at fault.",
+    "Neglecting reed seating and strength, letting the same reed squawk at every start-up."
+   ],
+   "scenario_contexts": [
+    "A piper striking in before a competition and fighting a chanter squeal.",
+    "A pipe band tuning up where uneven strike-ins cause squeals across the corps.",
+    "An engineer recording pipes and editing out a squeal at the start of a take."
+   ]
+  }
+ ]
+}

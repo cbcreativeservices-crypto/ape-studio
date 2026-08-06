@@ -1,0 +1,24 @@
+{
+  "expert": "cognition",
+  "group": 53,
+  "reviews": [
+    {"id": "126cd168-1e05-4630-a31d-7c5d2cd526a5", "term": "Wow and Flutter", "verdict": "OK", "suggestions": []},
+    {"id": "e7f1b7f8-fe60-4966-9ec3-5474da50ece7", "term": "Wye Configuration", "verdict": "OK", "suggestions": []},
+    {"id": "bbdf2c66-9548-48c7-b8ba-a1a896659bc9", "term": "X-Y Stereo Technique (Coincident Pair)", "verdict": "OK", "suggestions": []},
+    {"id": "d8b2bc5f-de81-47ce-8d5a-c3647546b55c", "term": "XLR Connector", "verdict": "OK", "suggestions": []},
+    {"id": "7fd26c78-397c-4156-8042-f6b8bf325dca", "term": "XLR-to-TRS Adapter", "verdict": "OK", "suggestions": []},
+    {"id": "01e9fced-199e-4d64-ab18-02d580761187", "term": "Xmax", "verdict": "OK", "suggestions": []},
+    {"id": "79d5eda2-626d-4e9c-b227-cd0e39dcc765", "term": "Xrun", "verdict": "OK", "suggestions": []},
+    {"id": "a76af371-0cea-46ed-8e4f-292a5399916e", "term": "Y-cable / Y-cord", "verdict": "OK", "suggestions": []},
+    {"id": "5787f149-6511-495d-82e1-6e2514892c6f", "term": "Yagi Antenna", "verdict": "OK", "suggestions": []},
+    {"id": "d135c83a-08fc-48ec-97c6-79abcc725e7a", "term": "Yoke mount", "verdict": "MINOR", "suggestions": [{"field": "related_terms", "severity": "Low", "issue": "The related term \"Body\" is too vague to help a learner build a knowledge map; standing alone it does not clearly connect to the yoke-mount concept and could confuse a beginner about what is being referenced.", "suggestion": "Replace \"Body\" with a clearer, on-topic anchor such as \"Microphone Stand\" or \"Mic Clip\", or qualify it as \"Microphone Body\" so the relationship is explicit."}]},
+    {"id": "f7bd4b1e-102c-4bdb-ad8a-9ee2c246df81", "term": "Z-weighting", "verdict": "OK", "suggestions": []},
+    {"id": "adf296fd-d4e8-4635-b4dd-7361ecea5985", "term": "Zero Latency Monitoring", "verdict": "OK", "suggestions": []},
+    {"id": "fe1b39cb-77cf-4eeb-ada7-a4071c92e2c2", "term": "Zip Cord", "verdict": "OK", "suggestions": []},
+    {"id": "d7c154b7-a3a5-4dae-ae20-516415395ab8", "term": "Zipper noise", "verdict": "OK", "suggestions": []},
+    {"id": "82c89797-22b9-4859-b786-36039f68f600", "term": "Zobel network", "verdict": "OK", "suggestions": []},
+    {"id": "20188bc8-89da-4f61-8f5e-80d292360a88", "term": "Zone / Multi-Zone Audio", "verdict": "MINOR", "suggestions": [{"field": "related_terms", "severity": "Low", "issue": "The related_terms (Coverage map, Optimization, System baseline, Speech intelligibility, Walk test) are all measurement/tuning concepts and do not build a sensible knowledge map for the multi-zone architecture idea; a learner clicking these lands on tuning topics rather than the adjacent zoning concepts. The sibling entry \"Zoning\" links far more coherently (Multi-Zone Audio, Source Selection, Paging System, Home Run).", "suggestion": "Swap in architecture-adjacent anchors such as \"Zoning\", \"Source Selection\", \"Paging System\", and \"Remote Volume Control\" so the map reflects how zones are actually built and controlled."}]},
+    {"id": "25bd5ebc-b3ec-4adf-ab2a-7378c0879d5b", "term": "Zone Mixing", "verdict": "OK", "suggestions": []},
+    {"id": "712aad0d-d1d1-4360-959f-a189f0f33f4d", "term": "Zoning", "verdict": "OK", "suggestions": []}
+  ]
+}

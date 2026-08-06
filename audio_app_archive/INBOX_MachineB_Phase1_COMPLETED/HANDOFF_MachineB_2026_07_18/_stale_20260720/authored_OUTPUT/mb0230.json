@@ -1,0 +1,189 @@
+{
+ "batch": 230,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "f85e49d3-2100-4eb9-9c4e-76e7e2c75a1f",
+   "term": "Gravel footsteps",
+   "fields": {
+    "definition": "A Foley footstep performance created by stepping on loose gravel (or a gravel/dirt pit) in sync with the picture, producing the synchronized footstep sounds of a character moving over stony, rough ground.",
+    "plain_english": "These are footstep sounds made by a Foley artist stepping on real gravel. They are added so a character on screen sounds like they are walking on small stones. It is like acting out the walk with your feet to match the movie.",
+    "purpose_function": "It supplies realistic, sync-accurate footstep sounds for shots where the production audio lacks clean or convincing steps on stony ground, adding weight and texture to a character's movement.",
+    "practical_application": "A Foley artist watches the picture and steps in a gravel pit in time with the actor, while the recordist captures separate takes for heels, scuffs and pivots to match each move.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Footsteps", "Foley pit", "Hard sound effect", "Ambience", "Spotting session"],
+    "common_mistakes": [
+     "Looping one generic gravel sound instead of performing steps in sync with each footfall.",
+     "Ignoring shoe type and body weight, so a heavy boot sounds the same as a light sneaker.",
+     "Recording steps too evenly, losing the natural irregular rhythm of real walking.",
+     "Failing to match the moisture and density of the surface heard or seen in the picture."
+    ],
+    "scenario_contexts": [
+     "Replacing footsteps for a character walking up a gravel driveway when production sound is unusable.",
+     "Building a Foley track for a period drama where actors cross a stony courtyard.",
+     "Adding footstep detail to a wide exterior shot filmed on a dirt-and-gravel road."
+    ]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Ament, The Foley Grail"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c5b83aa1-4ccb-4de3-9b8b-01c2e20dfef7",
+   "term": "Hand contact",
+   "fields": {
+    "definition": "In Foley, a hand-contact sound is a body-Foley effect made when a performer's hand touches, grips, pats or brushes against skin, clothing or a prop, giving on-screen hand movements an audible point of contact.",
+    "plain_english": "This is the small sound a hand makes when it touches something, like skin, cloth, or an object. Foley artists add these touches so hand movements on screen sound real. Without them, a handshake or a pat can feel silent.",
+    "purpose_function": "It adds subtle, believable contact sounds to hand gestures and touches that production microphones rarely capture, helping physical actions feel tangible.",
+    "practical_application": "A Foley artist pats their own arm, a prop or a cushion in sync with an actor shaking hands, gripping a rail or resting a palm on a table, recording each touch as its own contact.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Hand slap", "Foley moves", "Cloth pass", "Hard sound effect", "Spotting session"],
+    "common_mistakes": [
+     "Making hand contacts too loud, so gentle touches sound like slaps.",
+     "Skipping contacts entirely, leaving hand gestures feeling silent and fake.",
+     "Using the wrong material, so a hand on metal sounds like a hand on wood.",
+     "Failing to match the force of the touch shown on screen."
+    ],
+    "scenario_contexts": [
+     "Adding the sound of two characters shaking hands in a dialogue scene.",
+     "Foleying a character gripping a ladder rung during a climb.",
+     "Covering the touch of a hand placed on a shoulder in an emotional moment."
+    ]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f2ee52f3-ebf0-4668-a744-812c3513808b",
+   "term": "Hand slap",
+   "fields": {
+    "definition": "A hand slap is a sharp, percussive sound effect made by striking a flat hand against a surface, skin or another hand, used in Foley and sound design to cover on-screen slaps, pats, high-fives and impact accents.",
+    "plain_english": "A hand slap is the sharp smack you hear when a flat hand hits something. Sound artists make it to match a slap, a high-five, or a pat on screen. They pick the surface and force so it fits the action.",
+    "purpose_function": "It delivers a crisp, well-timed impact sound for hand strikes that need clear emphasis and sync, since real on-set slaps are often mistimed, unsafe to perform, or poorly recorded.",
+    "practical_application": "A Foley artist slaps a palm against skin, a leather cushion or a tabletop in sync with the picture, choosing the surface and strength to match the shot's intensity.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Hand contact", "Hard sound effect", "Impact", "Sweetener", "Spotting session"],
+    "common_mistakes": [
+     "Placing the slap off-sync so the sound lands before or after the on-screen hit.",
+     "Using a slap that is too thin or too big for the action shown.",
+     "Recording only one take, leaving no options to fit the picture.",
+     "Adding heavy reverb that smears the sharp transient."
+    ],
+    "scenario_contexts": [
+     "Covering a dramatic face slap in a confrontation scene.",
+     "Adding a crisp high-five between two characters.",
+     "Sweetening a fight sequence where a slap needs extra snap."
+    ]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3eba25e6-a019-4e1d-a5e7-d26035458016",
+   "term": "Hand synchronization",
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No acceptable source (standards body, manufacturer technical doc, or recognised professional text) defines 'Hand synchronization' as a term in sound-for-picture / post workflow. Searches return only a guitar-technique forum thread (synchronizing fretting and picking hands), which is a non-acceptable source and a different domain. No established canonical audio-post meaning; all fields left blank pending review."
+   ]
+  },
+  {
+   "id": "6bb014c1-109f-4913-bb70-4252345692e9",
+   "term": "Hard sound effect",
+   "fields": {
+    "definition": "A hard sound effect (or 'hard effect') is a synchronous, cut-to-picture sound effect tied to a specific on-screen action or event — such as a gunshot, door slam, phone ring or car pass-by — as distinct from continuous backgrounds/ambiences or performed Foley.",
+    "plain_english": "A hard sound effect is a sound tied to one clear action on screen, like a gunshot or a door slam. It is cut so it hits exactly when the action happens. This is different from steady background sounds that just fill a scene.",
+    "purpose_function": "It provides the specific, sync-critical event sounds that sell key on-screen actions, forming the sound-effects layer that sits between ambient backgrounds and performed Foley.",
+    "practical_application": "A sound-effects editor spots each event, pulls a matching library or recorded effect, and cuts it frame-accurately to the action, often layering several files to build the final sound.",
+    "category": "Sound effects",
+    "related_terms": ["Foley", "Ambience", "Sound effects editing", "Spotting session", "Sync point", "Sweetener"],
+    "common_mistakes": [
+     "Confusing hard effects with Foley; hard effects are cut from recordings, while Foley is performed to picture.",
+     "Placing an effect a frame or two off, which breaks the sense of sync.",
+     "Relying on a single library file without layering for weight and realism.",
+     "Forgetting to match the effect's perspective and space to the shot."
+    ],
+    "scenario_contexts": [
+     "Cutting a gunshot to each muzzle flash in an action scene.",
+     "Adding a door slam and latch to a character leaving a room.",
+     "Placing a phone ring and a car horn as specific events in a city scene."
+    ]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fe2702a6-1c7a-4d5e-8397-de72d0545e86",
+   "term": "Harmonic resynthesis",
+   "fields": {
+    "definition": "Harmonic resynthesis analyzes a sound into its component partials (their frequencies, amplitudes and phases over time) and then reconstructs the sound from those partials, so the harmonic content can be edited, pitch-shifted, time-stretched or cleaned before it is synthesized again.",
+    "plain_english": "Harmonic resynthesis breaks a sound into its separate tone layers, then rebuilds it from those layers. Because it is rebuilt, you can change its pitch or length, or clean it up first. Think of taking a chord apart into single notes, then playing them back any way you like.",
+    "purpose_function": "It lets an engineer reshape a sound at the level of its individual harmonics — for tuning, stretching, noise removal or creative morphing — instead of treating the recording as a fixed waveform.",
+    "practical_application": "In tools such as Melodyne or spectral editors, a dialogue or music editor uses harmonic resynthesis to retune a note, remove a tonal artifact, or stretch a sound while keeping it natural.",
+    "category": "Signal processing",
+    "related_terms": ["Additive synthesis", "Spectral editing", "Time stretching", "Pitch shifting", "Fourier analysis", "Formant"],
+    "common_mistakes": [
+     "Assuming resynthesis is lossless; strong edits can add artifacts or a synthetic quality.",
+     "Pushing pitch or time too far, which exposes smearing and phase problems.",
+     "Forgetting that noisy or inharmonic sounds resynthesize poorly.",
+     "Confusing resynthesis with simple EQ, which only filters the original waveform."
+    ],
+    "scenario_contexts": [
+     "Retuning an off-pitch sung note in a music mix.",
+     "Removing a ringing tone from dialogue without dulling the voice.",
+     "Time-stretching a sound effect to fit a longer on-screen action."
+    ]
+   },
+   "sources": ["Roads, The Computer Music Tutorial", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "02189d6e-4d30-4ed2-9c4f-0f59817916b8",
+   "term": "Head-related transfer function",
+   "fields": {
+    "definition": "A head-related transfer function (HRTF) is the frequency- and direction-dependent filtering that a listener's head, torso and outer ears (pinnae) impose on a sound travelling from a source to the eardrum, encoding the spatial cues the brain uses to localize sound; it is normally measured as a left/right pair of responses for many source directions.",
+    "plain_english": "An HRTF describes how your head and ears change a sound depending on where it comes from. Your brain uses these tiny changes to tell if a sound is to your left, right, above, or behind you. Headphone apps copy these changes to make sounds seem to come from all around you.",
+    "purpose_function": "It captures the direction-dependent cues — level, timing and spectral shaping between the two ears — that let the brain localize sound, and it is the basis for binaural and immersive audio rendered over headphones.",
+    "practical_application": "A technician loads HRTF-based processing, such as a binaural renderer or immersive mix tool, so a headphone mix places dialogue, effects and music at specific positions around the listener.",
+    "category": "Psychoacoustics",
+    "related_terms": ["Binaural audio", "Interaural time difference", "Interaural level difference", "Spatial audio", "Immersive audio", "Localization"],
+    "common_mistakes": [
+     "Assuming one generic HRTF fits everyone; individual ear shapes change localization accuracy.",
+     "Expecting HRTF cues to translate to loudspeakers, where crosstalk changes the result.",
+     "Confusing an HRTF (a directional filter) with reverb, which adds room reflections rather than directional cues.",
+     "Ignoring the front/back and up/down confusions that generic HRTFs commonly cause."
+    ],
+    "scenario_contexts": [
+     "Rendering a binaural headphone mix of a Dolby Atmos program.",
+     "Building a VR or game audio engine that positions sounds around the player.",
+     "Creating an immersive music mix intended for headphone listening."
+    ]
+   },
+   "sources": ["Blauert, Spatial Hearing: The Psychophysics of Human Sound Localization", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "634e9e21-d40c-4fd9-a6ec-dc1d2b764f3f",
+   "term": "Headphone translation room",
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No acceptable source defines 'Headphone translation room'. The established concepts are mix 'translation' (how a mix holds up across playback systems) and 'mixing on headphones', but no professional literature attests a 'headphone translation room'; the compound is internally contradictory (a room versus headphones) and appears to be a coined phrase. All fields left blank pending review."
+   ]
+  },
+  {
+   "id": "9b833db6-04ac-4844-95ec-6bd248452b7f",
+   "term": "Health parameter",
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No acceptable source defines 'Health parameter' as an established term in sound-for-picture / post workflow and deliverables. It is a generic phrase with no attested canonical audio meaning (nearest real usage is device/network 'health' monitoring in system management, not a post-production deliverables concept). All fields left blank pending review."
+   ]
+  }
+ ]
+}

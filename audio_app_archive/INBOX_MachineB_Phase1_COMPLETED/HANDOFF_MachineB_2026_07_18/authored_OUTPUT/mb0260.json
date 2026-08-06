@@ -1,0 +1,240 @@
+{
+ "batch": 260,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "0cc78330-bf40-4aa7-9872-c2677fd15652",
+   "term": "Weight simulation",
+   "fields": {
+    "definition": "In sound design, the practice of giving a recorded or synthesized sound a convincing sense of physical mass and force, chiefly by adding low-frequency energy, sub-bass layers, slower attack transients, and low-end resonance so an on-screen object or creature reads as heavy.",
+    "plain_english": "This means making a sound feel big and heavy. Sound designers add deep, low tones under a sound so a thing on screen seems to have real weight, like a huge door or a giant's footstep.",
+    "purpose_function": "It sells the size and mass of on-screen objects or creatures whose recorded sounds are too thin, so the audience feels the impact and believes what they see.",
+    "practical_application": "A designer layers a sub-bass boom or low rumble under a sword swing, punch, or creature step, then shapes the low end with EQ so the hit lands with felt weight in the room.",
+    "category": "Sound Design",
+    "related_terms": ["Sub layer", "Impact design", "Low-frequency effects (LFE)", "Layering", "Sweetening", "Wood impact"],
+    "common_mistakes": [
+     "Adding so much sub-bass that the mix turns muddy and masks dialogue.",
+     "Relying only on low end and forgetting the mid and high crack that gives a hit definition.",
+     "Ignoring bass management limits, so weight that felt good in one room overloads or vanishes on other systems.",
+     "Using the same low-end layer on every object, so nothing feels distinct."
+    ],
+    "scenario_contexts": [
+     "Making a CG creature's footsteps feel massive in a fantasy film.",
+     "Beefing up a car-door slam that was recorded too thin.",
+     "Giving a punch or body impact felt force in an action scene."
+    ]
+   },
+   "sources": ["Sonnenschein, Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema", "Viers, The Sound Effects Bible", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c781bc04-bb18-4b42-a3f4-16416459877c",
+   "term": "Weighted random playback",
+   "fields": {
+    "definition": "A playback method, common in interactive and game audio engines, in which the system randomly selects one sound from a group of variations each time a cue fires, with each variation given a probability weight so more-likely versions play more often than others.",
+    "plain_english": "This is a way to stop a sound from getting boring. The computer keeps a small set of versions of a sound and picks one at random each time, but you can make some versions come up more often than others.",
+    "purpose_function": "It prevents the machine-gun effect of hearing the exact same sample over and over, adding natural variety while still letting the designer favour certain versions.",
+    "practical_application": "In tools like Wwise or FMOD, a designer drops several footstep or gunshot takes into a random container and sets weights so common variants play often and rare ones only now and then.",
+    "category": "Interactive Audio",
+    "related_terms": ["Random container", "Sample variation", "Round-robin", "Middleware", "Footsteps", "Sound library"],
+    "common_mistakes": [
+     "Thinking equal weights and true random are the same, when weighting changes how often each version plays.",
+     "Using too few variations, so repetition is still obvious.",
+     "Setting one weight so high the other versions almost never play, which defeats the point.",
+     "Forgetting to also randomize pitch or volume, so the variants still sound cloned."
+    ],
+    "scenario_contexts": [
+     "Randomizing footstep samples so a character's walk never sounds looped.",
+     "Varying gunfire or impact hits in a game so they feel alive.",
+     "Cycling ambient bird or insect calls in a game environment."
+    ]
+   },
+   "sources": ["Audiokinetic Wwise documentation (Random Container playback behavior)", "FMOD Studio documentation (multi-instrument and playback probability)", "Stevens & Raybould, Game Audio Implementation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "432af313-0204-4ca7-a217-dbdb924bad49",
+   "term": "Whoosh effect",
+   "fields": {
+    "definition": "A designed sound effect marked by a fast rising-and-falling swish of broadband, filtered noise or air-like tone, used to accent rapid motion, transitions, reveals, and fast camera or object moves.",
+    "plain_english": "A whoosh is that fast swish sound you hear when something flies past or a title zooms onto the screen. Designers often build it from shaped noise or the sound of moving air.",
+    "purpose_function": "It draws the ear to speed and movement, smooths cuts and transitions, and adds energy to moments the picture alone cannot fully sell.",
+    "practical_application": "An editor lays a whoosh on a swinging sword, a fast whip-pan, or a logo sting, often pitch-bending or Doppler-processing noise or recorded air to match the on-screen speed.",
+    "category": "Sound Design",
+    "related_terms": ["Whip-pan", "Transition effect", "Doppler effect", "Riser", "Sweetener", "Wind pass"],
+    "common_mistakes": [
+     "Overusing whooshes so every cut has one, which tires the audience.",
+     "Leaving the whoosh too loud, so it fights dialogue or music.",
+     "Not matching the whoosh timing and direction to the on-screen move.",
+     "Using a stock whoosh that clashes with the scene's tone."
+    ],
+    "scenario_contexts": [
+     "Accenting a fast camera move or whip-pan.",
+     "Adding motion to a title or logo animation.",
+     "Emphasizing a fast swing, throw, or punch in an action scene."
+    ]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Sonnenschein, Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b7749c96-d21b-447f-8b81-dea826048eb2",
+   "term": "Wind pass",
+   "fields": {
+    "definition": "In sound editorial and design, a work pass dedicated solely to the wind element of a scene: building, performing, or editing the layer of moving-air, gust, and breeze sounds separately from dialogue, Foley, and other effects.",
+    "plain_english": "This is when a sound editor focuses on just the wind for a scene. They build or record the moving-air and gust sounds on their own layer, apart from all the other sounds.",
+    "purpose_function": "Handling wind on its own pass lets the team place, shape, and mix gusts precisely, so the weather feels right without covering dialogue or other effects.",
+    "practical_application": "For an outdoor scene, an editor makes a wind pass, laying in steady breeze beds and timed gusts that swell on wide shots and ease back under close dialogue.",
+    "category": "Sound Editorial",
+    "related_terms": ["Ambience", "Backgrounds (BG)", "Layering", "Foley pass", "Whoosh effect", "Sweetening"],
+    "common_mistakes": [
+     "Letting wind cover dialogue instead of easing it under speech.",
+     "Using one static wind loop with no gusts, so it sounds fake and flat.",
+     "Not matching wind level and motion to what the picture shows, such as trees, hair, or dust.",
+     "Building wind so busy that it clashes with music and other effects."
+    ],
+    "scenario_contexts": [
+     "Creating weather for an outdoor dialogue scene.",
+     "Adding gusts to a storm or desert sequence.",
+     "Building an eerie wind bed for a tense, empty location."
+    ]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Wyatt & Amyes, Audio Post Production for Television and Film"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8200d520-6432-4025-801c-e46fbb8038ba",
+   "term": "Window closing",
+   "fields": {
+    "definition": "A Foley or spot sound effect reproducing the sound of a window being shut: typically the slide or swing of the sash, the contact with the frame, and the final thud or rattle of glass and hardware settling.",
+    "plain_english": "This is the sound effect of a window being closed. It usually includes the slide of the window, the bump as it meets the frame, and a small rattle of the glass.",
+    "purpose_function": "It syncs a believable sound to the on-screen action of shutting a window, grounding the moment and supporting continuity and a sense of space.",
+    "practical_application": "A Foley artist performs the move on a matching window prop, or an editor cuts a library window-close effect, timing the frame contact exactly to the picture.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Spot effects", "Window opening", "Window latch", "Props", "Sync"],
+    "common_mistakes": [
+     "Missing sync, so the sound lands before or after the sash actually meets the frame.",
+     "Using a heavy slam when the picture shows a gentle close, or the reverse.",
+     "Forgetting the small glass or latch rattle that makes it read as a window, not a door.",
+     "Ignoring the room's acoustics, so the effect sits outside the scene's space."
+    ],
+    "scenario_contexts": [
+     "Covering an actor shutting a window in a drama.",
+     "Sealing off street noise before a quiet interior scene.",
+     "Marking a character closing off from the outside world."
+    ]
+   },
+   "sources": ["Ament, The Foley Grail: The Art of Performing Sound for Film, Games, and Animation", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "353dc5f7-edf1-49ef-86f2-beee30b9c15f",
+   "term": "Window latch",
+   "fields": {
+    "definition": "A Foley or spot sound effect reproducing the operation of a window's fastening mechanism: the click, snap, or metallic clunk of the latch or lock engaging or releasing.",
+    "plain_english": "This is the small click or clunk of a window latch, the catch that locks a window shut. It is the sound of that catch snapping open or closed.",
+    "purpose_function": "It adds a precise mechanical detail that confirms a window is being secured or freed, reinforcing the action and the character's intent.",
+    "practical_application": "A Foley artist works a real latch or a stand-in metal prop to picture, or an editor cuts a library latch click, placing it exactly on the hand movement.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Window opening", "Window closing", "Spot effects", "Props", "Hardware"],
+    "common_mistakes": [
+     "Placing the click off the exact frame of the hand action.",
+     "Using a latch that sounds too large or heavy for the window shown.",
+     "Skipping the latch detail, so the window action feels incomplete.",
+     "Letting the click sit too loud and jump out of the scene."
+    ],
+    "scenario_contexts": [
+     "A character locking a window before leaving a room.",
+     "Building tension as someone quietly unlatches a window to sneak in.",
+     "Detailing a period window's hardware in a drama."
+    ]
+   },
+   "sources": ["Ament, The Foley Grail: The Art of Performing Sound for Film, Games, and Animation", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1a8bd478-6d68-4e6b-8185-b0a7ac9a80b1",
+   "term": "Window opening",
+   "fields": {
+    "definition": "A Foley or spot sound effect reproducing the sound of a window being opened: the release of the latch, the slide or swing of the sash, frame friction, and any squeak or glass movement.",
+    "plain_english": "This is the sound effect of a window being opened. It can include the latch letting go, the window sliding or swinging up, and a squeak or rattle as it moves.",
+    "purpose_function": "It matches sound to the on-screen act of opening a window and often cues a change in space, such as outside air, noise, or light entering.",
+    "practical_application": "A Foley artist performs the slide and friction on a window prop, or an editor cuts a library effect, then may bring up exterior ambience as the window opens.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Window closing", "Window latch", "Ambience", "Spot effects", "Props"],
+    "common_mistakes": [
+     "Not raising the outside ambience as the window opens, so the space does not change.",
+     "Mismatching a sliding-window sound to a swinging casement window, or the reverse.",
+     "Poor sync between the squeak or slide and the picture.",
+     "Overplaying the squeak, so it distracts from the scene."
+    ],
+    "scenario_contexts": [
+     "A character opening a window to let in air or listen outside.",
+     "Revealing street or nature sounds as a window opens.",
+     "Building suspense as someone slowly opens a window to escape or intrude."
+    ]
+   },
+   "sources": ["Ament, The Foley Grail: The Art of Performing Sound for Film, Games, and Animation", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2b169d2f-099f-4087-815e-d5236adab63d",
+   "term": "Wood impact",
+   "fields": {
+    "definition": "A hard sound effect of wood striking another surface: a sharp, resonant knock, crack, or thud whose tone depends on the wood's size, density, and hollowness, used for hits, collisions, and breaks.",
+    "plain_english": "This is the sound of wood hitting something, a knock, crack, or thud. How it sounds depends on how big, hard, or hollow the wood is.",
+    "purpose_function": "It gives on-screen wooden collisions, blows, and breaks a believable, weighty hit, and is often layered to build bigger crashes and destruction.",
+    "practical_application": "A designer or Foley artist records or cuts wood knocks and cracks, then may layer and pitch them under a fight hit, a falling crate, or a splintering door.",
+    "category": "Sound Effects",
+    "related_terms": ["Hard effects", "Impact design", "Weight simulation", "Layering", "Foley", "Crash"],
+    "common_mistakes": [
+     "Using a hollow, light knock where the picture shows heavy, solid timber.",
+     "Forgetting to layer low end when a big, weighty impact is needed.",
+     "Reusing the same wood hit repeatedly, so it sounds fake.",
+     "Sync drift between the visible contact and the hit."
+    ],
+    "scenario_contexts": [
+     "A fist or body hitting a wooden door or table in a fight.",
+     "A wooden crate or piece of furniture falling and landing.",
+     "Building a splintering, breaking-wood effect for destruction."
+    ]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Sonnenschein, Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5a97ecda-095c-450a-a1cc-ca29b6fc9bee",
+   "term": "Wood-floor footsteps",
+   "fields": {
+    "definition": "Foley footsteps performed or edited to match a character walking on a wood floor: the firm, slightly resonant, sometimes creaky footfalls whose tone reflects solid or hollow boards underfoot.",
+    "plain_english": "These are footstep sounds made to match someone walking on a wooden floor. They sound firm and a little hollow, and sometimes the boards creak.",
+    "purpose_function": "They match a character's movement to the wood surface shown on screen, keeping footsteps in sync and grounding the character in a believable space.",
+    "practical_application": "A Foley artist walks on a wood surface in the studio, matching each step to the actor's weight and shoes, or an editor cuts wood-floor footstep library takes to picture.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Footsteps", "Surfaces", "Wood impact", "Sync", "Heel-toe"],
+    "common_mistakes": [
+     "Steps that drift out of sync with the actor's feet.",
+     "Using a hard shoe sound when the character is barefoot or in soft shoes.",
+     "Matching a hollow, boomy floor to a shot that shows solid ground, or the reverse.",
+     "Even, robotic steps that ignore the actor's real weight and rhythm."
+    ],
+    "scenario_contexts": [
+     "Covering an actor walking across a wooden room in a drama.",
+     "Adding creaky steps to build tension in a quiet house.",
+     "Matching footstep tone to a period wooden interior."
+    ]
+   },
+   "sources": ["Ament, The Foley Grail: The Art of Performing Sound for Film, Games, and Animation", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

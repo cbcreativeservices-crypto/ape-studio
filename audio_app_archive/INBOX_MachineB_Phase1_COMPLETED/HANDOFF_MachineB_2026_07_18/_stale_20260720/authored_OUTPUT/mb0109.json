@@ -1,0 +1,231 @@
+{
+ "batch": 109,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "35acf5b1-fe39-4327-ae72-b2fce54a688c",
+   "term": "Input FX chain",
+   "fields": {
+    "definition": "A series of effects processors placed on a channel's incoming signal path so they act on the audio as it arrives at the input, before it is recorded to disk. In DAWs such as REAPER it is a distinct chain from the track (playback) FX chain, letting the engineer commit processing to the recorded file or monitor it live without altering the stored track effects.",
+    "plain_english": "This is a set of effects that treat a sound the moment it comes in, before it is saved. You can record with the effect baked in, or just use it to hear the sound while you play. Think of it like a filter on a camera lens that shapes the picture before the photo is taken.",
+    "purpose_function": "It lets you shape or clean up a source at the input stage, such as gating noise or setting a tone, so the sound is processed on the way in rather than only on playback.",
+    "practical_application": "A technician adds a gate, EQ, or amp simulator to a track's input FX chain so a guitar or vocal is monitored and, if wanted, recorded with that processing already applied.",
+    "category": "Signal processing",
+    "related_terms": ["Track FX chain", "Insert effect", "Monitoring", "Printing effects", "Signal chain", "Noise gate"],
+    "common_mistakes": [
+     "Confusing the input FX chain with the track FX chain, then wondering why the effect is not heard on playback.",
+     "Accidentally recording an input effect that was only meant for monitoring, leaving it permanently on the file.",
+     "Stacking heavy processing on the input, which adds latency and makes real-time monitoring feel sluggish."
+    ],
+    "scenario_contexts": [
+     "Adding a noise gate to a vocal input so breaths and room noise are cleaned up as it records.",
+     "Monitoring a DI guitar through an amp simulator placed in the input FX chain.",
+     "Committing a compressor to a bass part by recording it through the input chain."
+    ]
+   },
+   "sources": ["Cockos REAPER User Guide (Up and Running) - manufacturer documentation", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c0e8f150-cb6d-4461-ae71-00470457515a",
+   "term": "Insertion Cursor",
+   "fields": {
+    "definition": "The on-screen marker, usually a vertical blinking line, that shows the current position on a track or timeline where recording, pasting, or editing will begin. It sets the point at which new material is inserted and from which many edit and playback commands operate.",
+    "plain_english": "This is the blinking line that marks your spot on the timeline. Whatever you paste or record drops in right there. It works just like the flashing cursor in a word processor, but for sound.",
+    "purpose_function": "It gives every edit and paste a precise starting point, so the software knows exactly where to place new audio or apply a command.",
+    "practical_application": "A technician clicks on the timeline to set the insertion cursor at a bar line, then pastes a copied section or begins recording from that exact point.",
+    "category": "Editing",
+    "related_terms": ["Playhead", "Insertion Follows Playback", "Edit selection", "Timeline", "Snap", "Grid"],
+    "common_mistakes": [
+     "Leaving the cursor in the wrong place, so pasted audio lands at the wrong point in the song.",
+     "Confusing the insertion cursor with the moving playback cursor, and losing the edit position after pressing stop.",
+     "Forgetting that snap is off, so the cursor sits slightly off the grid and edits are misaligned."
+    ],
+    "scenario_contexts": [
+     "Placing the cursor at the start of a chorus before pasting a copied vocal take.",
+     "Setting the insertion point to punch in a re-recorded line.",
+     "Clicking a bar line so a new marker is added at that exact spot."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide - manufacturer documentation", "Sound On Sound, 'Normal Service' (Pro Tools workshop)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1547ccf9-ae95-435f-a639-3b2c5d6f2472",
+   "term": "Insertion Follows Playback",
+   "fields": {
+    "definition": "A Pro Tools option (the Timeline Insertion/Play Start Marker Follows Playback preference) that, when enabled, moves the edit insertion point to wherever playback stops instead of returning it to where playback began. It makes the cursor behave like a tape machine, so the next play starts from the last stop position.",
+    "plain_english": "This is a setting that decides where the cursor lands when you press stop. Turn it on and the cursor stays where you stopped, so you carry on from there. Turn it off and the cursor jumps back to where you started, like rewinding a tape.",
+    "purpose_function": "It lets you choose whether the cursor holds its start position for repeated review of the same spot, or moves forward with playback for tape-style, continue-from-here working.",
+    "practical_application": "An engineer turns it off to keep auditioning the same edit point again and again, or turns it on to keep moving through a session from wherever they last stopped.",
+    "category": "Editing",
+    "related_terms": ["Insertion Cursor", "Playhead", "Edit selection", "Timeline", "Loop playback"],
+    "common_mistakes": [
+     "Leaving it on by accident, then losing a carefully placed edit selection every time playback stops.",
+     "Blaming the software for 'moving' the cursor when this preference is simply enabled.",
+     "Not knowing the shortcut toggles it, so the behavior changes unexpectedly mid-session."
+    ],
+    "scenario_contexts": [
+     "Disabling it so a tricky crossfade can be reviewed from the same start point repeatedly.",
+     "Enabling it to work through a long session like a tape machine, continuing from each stop.",
+     "Troubleshooting why a student's insertion point keeps jumping after playback."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide - manufacturer documentation", "Sound On Sound, 'Normal Service' (Pro Tools workshop)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "35fc2d67-bfe6-4981-8fe1-903711097b0f",
+   "term": "Inspector (Cubase)",
+   "fields": {
+    "definition": "In Steinberg Cubase, the Inspector is the panel in the left zone of the Project window that shows the settings and controls for the selected track, or, in an editor, for the shown event or part. It groups a track's parameters, such as routing, inserts, sends, EQ, and channel settings, into collapsible sections for quick access.",
+    "plain_english": "In Cubase, the Inspector is a panel down the left side that shows the settings for the track you clicked. Instead of opening lots of windows, you find volume, effects, and routing in one place. Think of it as a details page for the selected track.",
+    "purpose_function": "It puts a track's most-used settings in one place so you can view and change routing, inserts, sends, and EQ without opening separate windows.",
+    "practical_application": "A Cubase user selects a track and opens the Inspector to change its output routing, add an insert effect, or set up a send, all from the left zone.",
+    "category": "DAW interface",
+    "related_terms": ["Inspector panel", "Track", "Insert effect", "Channel strip", "Send", "Routing"],
+    "common_mistakes": [
+     "Not realizing the Inspector always follows the selected track, so it seems to change on its own when a different track is clicked.",
+     "Overlooking the collapsible sections and missing controls that are simply hidden.",
+     "Confusing the Inspector's settings with the separate Channel Settings or MixConsole view."
+    ],
+    "scenario_contexts": [
+     "Re-routing a MIDI track's output to a virtual instrument from the Inspector.",
+     "Adding an EQ or insert to the selected audio track using its Inspector sections.",
+     "Checking a track's input and monitoring status before recording."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual - manufacturer documentation", "Steinberg Cubase Operation Manual, 'Opening the Track Inspector'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d852d49b-bf2a-49d9-a0f4-cad0f719d2e4",
+   "term": "Inspector panel",
+   "fields": {
+    "definition": "A context-sensitive panel in a DAW or editing application that displays the properties and controls of whatever item is currently selected, typically a track, clip, or event. It updates automatically as the selection changes, gathering the relevant settings in one editable location.",
+    "plain_english": "This is a side panel that shows the settings for whatever you have selected. Click a track or clip and its details appear there to view and change. It is like an info page that updates each time you pick something new.",
+    "purpose_function": "It centralizes the settings of the selected item so you can inspect and edit them in one spot instead of hunting through menus or separate windows.",
+    "practical_application": "A technician selects a clip or track and uses the inspector panel to adjust its properties, such as name, color, gain, routing, or effects, then clicks another item to edit that one.",
+    "category": "DAW interface",
+    "related_terms": ["Inspector (Cubase)", "Channel strip", "Track", "Clip", "Properties"],
+    "common_mistakes": [
+     "Forgetting the panel is context-sensitive, so it looks empty or wrong when nothing is selected.",
+     "Editing the inspector while the wrong item is selected, changing the wrong track or clip.",
+     "Hiding the panel and then assuming its controls are gone entirely."
+    ],
+    "scenario_contexts": [
+     "Renaming and recoloring a selected track from the inspector panel.",
+     "Adjusting a selected clip's gain or fade settings.",
+     "Reviewing a track's routing before a mix session."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual - manufacturer documentation", "Steinberg Nuendo Operation Manual - manufacturer documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ea585e7b-0b11-4ef3-8d1e-c25059c3ba18",
+   "term": "Intelligent DSP",
+   "fields": {
+    "definition": "Digital signal processing that analyzes the audio, and sometimes the acoustic environment, in real time and automatically adjusts its own settings to reach a target result, rather than applying fixed, manually set parameters. It underlies adaptive tools such as automatic mixers, feedback suppressors, and self-adjusting EQ and dynamics.",
+    "plain_english": "This is digital sound processing that listens to the audio and adjusts itself. Instead of you dialing in every setting, it decides what to change to hit a goal. It is like cruise control for sound, easing off or pushing on by itself.",
+    "purpose_function": "It offloads routine, moment-to-moment decisions to the processor, aiming for a consistent result with less manual tweaking and faster setup.",
+    "practical_application": "A technician uses an automatic mixer or adaptive processor whose intelligent DSP raises, lowers, or shapes signals on its own, then checks and limits its behavior rather than setting every parameter by hand.",
+    "category": "Signal processing",
+    "related_terms": ["Intelligent EQ", "Intelligent dynamics", "Automatic mixer", "Feedback suppression", "Adaptive processing"],
+    "common_mistakes": [
+     "Trusting the automation blindly and not checking the result, so odd decisions slip through.",
+     "Assuming intelligent means flawless, when the tool still needs sensible targets and limits.",
+     "Stacking several adaptive tools that fight each other, causing pumping or unstable tone."
+    ],
+    "scenario_contexts": [
+     "Using an automatic mic mixer at a conference so open mics are managed without a live operator.",
+     "Applying an adaptive processor to even out a podcast voice track.",
+     "Letting an adaptive feedback suppressor tame ringing in a live room."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Sound On Sound, 'SSL reveal autoSeries plug-ins'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3670ade6-0249-4388-b66f-7668631033f0",
+   "term": "Intelligent dynamics",
+   "fields": {
+    "definition": "A dynamics processor (compressor, limiter, or gate) that analyzes the program material and automatically adapts its parameters, such as threshold, ratio, attack, or release, to suit the signal instead of holding fixed manual settings. The aim is transparent, program-dependent level control that reacts to what the audio is doing.",
+    "plain_english": "This is a compressor that adjusts itself to the sound. It watches the audio and changes how hard and how fast it works, so you do not have to set every knob. Think of it as a volume helper that reacts to the music on its own.",
+    "purpose_function": "It delivers consistent, natural-sounding level control on varied or unpredictable material without the engineer constantly re-tuning settings.",
+    "practical_application": "A technician places an adaptive compressor on a lively vocal or a live speech feed and lets it track the changing dynamics, then sets a target and checks that it is not over-working.",
+    "category": "Dynamics processing",
+    "related_terms": ["Compressor", "Limiter", "Intelligent EQ", "Intelligent DSP", "Auto release", "Adaptive processing"],
+    "common_mistakes": [
+     "Assuming an adaptive setting removes the need to listen, so heavy pumping goes unnoticed.",
+     "Using it on already-consistent material where fixed settings would be simpler and cleaner.",
+     "Not setting a sensible target level, so the processor works too hard or barely at all."
+    ],
+    "scenario_contexts": [
+     "Smoothing an inconsistent vocal take with an adaptive compressor.",
+     "Controlling a live speech mic whose level changes as the presenter moves.",
+     "Evening out a dialogue track for broadcast loudness."
+    ]
+   },
+   "sources": ["Sound On Sound, 'Using Your DAW's Compressors & Limiters'", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "15c21576-dccf-4ad3-b09a-71aa1b591418",
+   "term": "Intelligent EQ",
+   "fields": {
+    "definition": "An equalizer that analyzes the incoming signal and automatically adjusts its frequency response, continuously or as a suggested starting curve, to improve tonal balance or reduce masking, rather than relying only on fixed, manually set bands. Tools of this type model hearing or compare the audio to a reference to decide what to boost or cut.",
+    "plain_english": "This is an EQ that listens to the sound and adjusts the tone for you. It finds frequencies that are too strong or too weak and fixes the balance. It is like a smart tone control that shapes the sound automatically.",
+    "purpose_function": "It speeds up tonal balancing and helps unmask elements by letting the processor find and correct problem frequencies that a beginner might miss.",
+    "practical_application": "A technician inserts an adaptive EQ on a track or mix bus, lets it analyze and adjust the frequency balance, then dials back its strength to taste rather than setting each band by hand.",
+    "category": "Equalization",
+    "related_terms": ["Equalizer", "Dynamic EQ", "Masking", "Intelligent dynamics", "Intelligent DSP", "Frequency balance"],
+    "common_mistakes": [
+     "Treating the automatic result as final instead of a starting point to refine by ear.",
+     "Applying it at full strength, which can hollow out or over-correct the tone.",
+     "Confusing an adaptive EQ with a plain static EQ and expecting fixed, unchanging bands."
+    ],
+    "scenario_contexts": [
+     "Balancing a dense mix bus where instruments mask each other.",
+     "Getting a fast tonal starting point on an unfamiliar vocal recording.",
+     "Reducing harsh resonances on a live-streamed source automatically."
+    ]
+   },
+   "sources": ["Sound On Sound, 'Soundtheory Gullfoss' review", "Sound On Sound, 'Sonible release trio of intriguing EQs'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "66076ce3-6c77-449b-b95b-ad31c9eb849c",
+   "term": "Intelligent exciter",
+   "fields": {
+    "definition": "A harmonic exciter or psychoacoustic enhancer that adds or redistributes high-frequency harmonics in a program-dependent way, applying more enhancement to transients or masked detail and less elsewhere, rather than boosting a fixed band. It aims to increase perceived brightness, presence, and detail while adapting to the material.",
+    "plain_english": "This is a brightness tool that adds sparkle to a sound, but only where it helps. It puts more shine on sharp, detailed parts and less on the rest. Think of it as a smart polish that knows which spots need buffing.",
+    "purpose_function": "It brings out clarity and air more naturally than a plain treble boost by generating or lifting harmonics in step with what the audio is doing.",
+    "practical_application": "A technician adds an exciter to a dull vocal or full mix and lets its adaptive processing lift presence on the detailed parts, then keeps the amount subtle to avoid harshness.",
+    "category": "Signal processing",
+    "related_terms": ["Exciter", "Harmonic enhancement", "Psychoacoustic enhancer", "Intelligent EQ", "High-frequency enhancement"],
+    "common_mistakes": [
+     "Adding too much, which makes the sound harsh, brittle, or fatiguing.",
+     "Using an exciter to fix a dull recording that really needs better EQ or a better source.",
+     "Judging the effect only in solo, then finding it too bright in the full mix."
+    ],
+    "scenario_contexts": [
+     "Adding air and presence to a muffled vocal without a harsh treble boost.",
+     "Restoring detail to a dull archival or transferred recording.",
+     "Lifting clarity on a full mix during mastering."
+    ]
+   },
+   "sources": ["Sound On Sound, 'How Enhancers Work'", "Sound On Sound, 'Psychoacoustic Enhancers'"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

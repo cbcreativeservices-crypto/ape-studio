@@ -1,0 +1,223 @@
+{
+ "expert": "audio_technical",
+ "group": 10,
+ "reviews": [
+  {
+   "id": "d824a405-5494-4113-8d1b-9bff0f067ec1",
+   "term": "CIS",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f364a5a0-8a7c-412e-9332-a0cfa233f03a",
+   "term": "Clarity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "60bba438-2494-4845-9d31-8a73893146e2",
+   "term": "Class 1 capability",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e4739c75-dd46-46e0-b27e-7ec91ae5a28d",
+   "term": "Class 2 capability",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "db573402-d0e2-4f27-b63d-8f6e45729afb",
+   "term": "Class A",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f22d56c6-6ffa-4893-8ca4-d612f4fa959a",
+   "term": "Class AB",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "88baa264-ec7a-403b-8455-7a8730ac9415",
+   "term": "Class B",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "50f8e263-a8c2-4d0e-8ab5-c1068ed575ad",
+   "term": "Class D Amplifier",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bb121575-2887-4738-b7c0-4a7b037d6383",
+   "term": "Class G",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cbbea526-411a-4597-b01f-0760a537a260",
+   "term": "Class H",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bab2b0be-bb7d-48c2-8e83-f81b5e0b997e",
+   "term": "Clean Feed",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "59d140d7-038e-448c-abec-ab4a0baba5f2",
+   "term": "Clip LED",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b9b23fcc-3352-4925-8298-8244263d0149",
+   "term": "Clipper",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "Duplicate list item: 'Soft Clipping' appears twice consecutively in related_terms (['Hard Clipping', 'Soft Clipping', 'Soft Clipping', 'True Peak Limiter', 'Look-Ahead Limiter']).",
+     "suggestion": "Remove the duplicate so the list reads ['Hard Clipping', 'Soft Clipping', 'True Peak Limiter', 'Look-Ahead Limiter']. Optionally add 'Inter-sample Peak (True Peak)' since it is referenced in the common_mistakes."
+    }
+   ]
+  },
+  {
+   "id": "11e31b95-ad52-47a9-a3d2-35cda1e16c6e",
+   "term": "Clipping",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c9b2f81a-b99b-47d8-aec7-1c5db19ba8a9",
+   "term": "Closed Captioning",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "58444879-acaf-49db-b2c7-3d40ada3517e",
+   "term": "Closed-Back Headphones",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "198ecd2b-d3b8-4ffb-8edd-1bc766aaa840",
+   "term": "Coaxial",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1dc4c4ec-86b4-4545-9dc5-6c43dfe5c91e",
+   "term": "Coaxial Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d38e638f-a582-4b08-8cf2-3fb09d18d7d0",
+   "term": "Coaxial Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0f3ecf23-fd26-42a1-859f-f20a2892e396",
+   "term": "Coaxial Digital Audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7a4bfd74-6609-4a1d-8ad8-ba07ea59653b",
+   "term": "Coaxial Driver",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f2fb1175-5e7a-4698-b58a-244c89f84ff5",
+   "term": "Coaxial Speakers",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f4b9db47-cab2-4995-b280-c2a3b8073047",
+   "term": "Cocktail Party Effect",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a5105310-f4c8-486d-b9fc-a29af7911b4a",
+   "term": "Codec (Coder-Decoder)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6d3d248b-784d-413b-8523-16cfe226a94f",
+   "term": "Coherence",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fe3de659-67c2-4418-8902-73fdca8e7111",
+   "term": "Coherence trace",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4b26bbdb-f1f4-4fab-912e-ae3c6a2fb116",
+   "term": "Cold solder joint",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f218f734-aded-4fb9-ba88-230369178414",
+   "term": "Column Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a44d83da-7daf-4ad2-926e-4d8db7b9a0b9",
+   "term": "Comb Filtering",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d66a8621-52db-4340-a892-e315a7cc6a44",
+   "term": "Combo Jack",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4e2b32e5-e896-4062-bb41-b006e85ad7f2",
+   "term": "Commercial Audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "76ab378f-af4e-4e57-8475-8bbe094edc08",
+   "term": "Commercial Installation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cdc834c1-697d-48a3-82a6-e564c5503312",
+   "term": "Commissioning",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "178108fc-76a6-4afd-b7a2-41e9e6aaa9f9",
+   "term": "Common-impedance coupling",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d1c45254-92e9-4121-850d-a9a09064c08b",
+   "term": "Common-mode rejection",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

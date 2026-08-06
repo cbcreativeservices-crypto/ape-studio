@@ -1,0 +1,163 @@
+A/B comparison	590
+AES sync error	580
+Amplifier protection mode	580
+Antenna fault	580
+Arcing	580
+Asymmetrical clipping	580
+Audible inspection	590
+Audio latency	580
+Bathtub Curve	590
+Bleeder resistor	580
+Bottom-up troubleshooting	590
+Brownout	580
+Buffer overrun	580
+Buffer underrun	580
+Build-up method	590
+Buzz	580
+Bypass test	590
+Cable flex test	580
+Cable Tester	580
+Capsule contamination	580
+Capsule leakage	580
+Capsule-to-grid connection	580
+Channel swap	590
+Chopstick Test	590
+Clip LED	580
+Cold solder joint	580
+Common-impedance coupling	580
+Companding artifact	580
+Component isolation	590
+Component Tester	580
+Connector strain relief failure	580
+Continuity buzzer	580
+Continuity test	580
+Corrosion	580
+Crackle	580
+crosstalk	580
+Current draw measurement	580
+DC offset	580
+Distortion	580
+Divide and conquer	590
+Dropout	580
+Dropped samples	580
+Earth loop	580
+echo canceller	580
+Electrical reference check	580
+Electronic overload	580
+EMI (Electromagnetic Interference)	580
+Factory reset	590
+Failure Mode	590
+Fault reproduction	590
+Fault tree analysis	590
+Feedback frequency	590
+FFT analysis	580
+Firmware rollback	590
+Five whys	590
+Floating ground	580
+Flutter Echo	590
+Freeze spray test	590
+Gain before feedback	590
+Gain Staging	580
+Glitch	580
+Ground lift	580
+Ground loop	580
+Group delay	580
+Half-split method	590
+Harmonic Distortion	580
+Headroom	580
+Hiss	580
+Howlround (UK)	590
+Hum	580
+Humidity sensitivity	580
+Impedance check	580
+Impedance mismatch	580
+Input/output swap	590
+Insulation resistance test	580
+Intermittent Connection	580
+Intermittent fault diagnosis	590
+Intermittent output	580
+Intermodulation distortion	580
+Known-good reference system	590
+Known-good substitution	590
+Latent Defect	590
+Load test	580
+Loopback test	600
+Low output	580
+Mains Hum Frequencies	580
+Mains polarity	580
+Mic Sensitivity	580
+Moisture intrusion	580
+Mono compatibility	580
+Motorboating	580
+Multimeter	580
+Muting relay	580
+Network audio dropout	580
+No output	580
+Noise	580
+Ohm-out	580
+op-amp (operational amplifier)	580
+Open circuit	580
+Oscillation	580
+Oscilloscope check	580
+out of phase	580
+Packet loss	580
+Peak level	580
+Phantom power fault	580
+Phase popper	580
+Pin-out mismatch	580
+Pink noise check	580
+Plosive	580
+Polarity test	580
+Pot (Potentiometer)	580
+Power cycle	590
+Process of elimination	590
+Reseat	580
+Resistance check	580
+Reverberant buildup	590
+Reversed-polarity cable	580
+RF dead spot	580
+RF desensitization	580
+RF filtering	580
+RF interference	580
+Ring out	590
+Root cause analysis	590
+Safe mode	590
+Safety ground	580
+Sample rate mismatch	580
+Schematic	590
+Scratchy Potentiometer	580
+Short circuit	580
+Shotgunning	590
+Signal injection	580
+Signal tracing	580
+Signal-to-noise ratio	580
+Smoke test	590
+Solder Joint	580
+Solder Joint Inspection	580
+Solder reflow	580
+Strain Relief	580
+Strip-down test	590
+Substitution method	590
+Tap test	590
+Thermal Drift	580
+Thermal imaging	590
+Thermal shutdown	580
+Time-domain reflectometry	580
+Tip-ring-sleeve fault	580
+Tone generator test	580
+Top-down troubleshooting	590
+Triboelectric noise	580
+Tube microphone calibration check	580
+Tube microphone crackle	580
+Tube microphone hum	580
+Tube socket oxidation	580
+Turn-on thump	580
+Voice coil	580
+Voltage check	580
+Voltage sag	580
+Voltage surge	580
+Wiring Diagram	590
+Wiring fault	580
+Word clock error	580
+Xrun	580
+Zipper noise	580

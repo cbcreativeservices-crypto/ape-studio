@@ -1,0 +1,159 @@
+{
+ "batch": 58,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "1a40992f-f503-4492-898c-634cc877a859",
+   "term": "Kick equalization",
+   "fields": {
+    "definition": "The use of equalization to shape the frequency balance of a kick-drum signal, typically boosting low-frequency weight around 50-100 Hz, cutting boxy or muddy midrange around 200-500 Hz, and adding beater attack in the upper mids around 2-5 kHz so the kick sits clearly in a mix.",
+    "plain_english": "Using an EQ tool to change how a kick drum sounds. You can add deep boom, cut the muddy middle, and boost the click so the kick cuts through the song.",
+    "purpose_function": "It carves out a defined frequency slot for the kick so it delivers low-end power and audible attack without clashing with the bass guitar or masking other instruments.",
+    "practical_application": "An engineer sweeps a parametric EQ to find and cut boxy frequencies, then boosts the low thump and beater click, checking the result against the full mix on more than one set of speakers.",
+    "category": "Drum Processing",
+    "related_terms": ["Kick-drum mixing", "Kick resonance control", "Kick low-end enhancement", "Equalization", "Kick gating", "Kick microphone blend"],
+    "common_mistakes": ["Boosting low frequencies so heavily that the kick and bass fight and the low end turns muddy", "Cutting all the midrange, leaving a kick with no body that disappears on small speakers", "EQ-ing the kick while soloed instead of in the context of the full mix", "Adding a huge click boost that sounds harsh over full-range monitors"],
+    "scenario_contexts": ["Dialing in a rock kick so the beater click cuts through distorted guitars", "Making room for the bass guitar by cutting overlapping kick frequencies", "Tightening a boomy live-room kick recording during mixdown", "Matching the kick tone across songs on an album"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Izhaki, Mixing Audio"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4d0a9360-7b7a-4375-84ba-897c3361d39c",
+   "term": "Kick gating",
+   "fields": {
+    "definition": "The application of a noise gate to a kick-drum channel so the signal passes only when the drum is struck, muting the microphone during rests and rejecting spill from snare, toms, and cymbals to keep the kick isolated and tight.",
+    "plain_english": "A gate works like an automatic switch. It lets the kick sound through only when the drum is hit, and stays shut the rest of the time. This keeps out sounds from other nearby drums.",
+    "purpose_function": "It isolates the kick by silencing its channel between hits, removing bleed from the rest of the kit and reducing low-frequency rumble that would otherwise build up in the mix.",
+    "practical_application": "The engineer sets the gate threshold just above the level of the spill, then adjusts attack, hold, and release so the gate opens instantly on each strike and closes cleanly without cutting off the drum's natural decay.",
+    "category": "Drum Processing",
+    "related_terms": ["Noise gate", "Kick-drum mixing", "Kick microphone blend", "Kick sample blend", "Kick sustain control"],
+    "common_mistakes": ["Setting the release too fast so the gate chops off the kick's natural tail", "Setting the threshold too high, so quieter hits are missed and cut out", "Using a slow attack that clips the start of soft hits", "Relying on a gate to fix bad mic placement instead of reducing bleed at the source"],
+    "scenario_contexts": ["Tightening a live drum recording full of cymbal and snare bleed", "Cleaning up low-end rumble on a loud stage during a concert", "Isolating the kick before triggering a sample from it", "Prepping multitrack drums for a tight, modern mix"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "04631a56-ec1f-450a-b192-b20a8fe7fcc2",
+   "term": "Kick low-end enhancement",
+   "fields": {
+    "definition": "Techniques that reinforce the low-frequency content of a kick drum through low-shelf EQ boosts, sub-harmonic synthesis, or blended low-tuned samples, adding weight and power in the sub-bass and low-bass range of roughly 30-100 Hz.",
+    "plain_english": "Making the deep, low part of the kick drum bigger and more powerful. Engineers do this so the kick has more punch and weight, like the boom you can almost feel in your chest.",
+    "purpose_function": "It gives the kick the deep weight and physical impact a full mix needs, especially when the original recording lacks sub energy or must sound powerful on large systems.",
+    "practical_application": "A technician adds a sub-harmonic generator or low-shelf boost, or layers a low-tuned sample, then checks the added energy on a spectrum analyzer and a subwoofer to avoid overloading the low end.",
+    "category": "Drum Processing",
+    "related_terms": ["Kick equalization", "Kick saturation", "Kick-drum mixing", "Kick sample blend", "Kick resonance control"],
+    "common_mistakes": ["Adding so much sub energy that it eats headroom and causes the mix to distort", "UNSAFE: Pushing extreme sub-bass at high volume that can overheat and damage drivers not rated for it", "Boosting lows the small monitors cannot reproduce, so the problem goes unheard", "Enhancing low end without high-passing other tracks, leaving the bottom crowded"],
+    "scenario_contexts": ["Adding club-ready sub weight to an electronic track's kick", "Reinforcing a thin kick recorded with a single dynamic mic", "Preparing a kick to translate on a large festival PA", "Rescuing a weak kick in a dense rock mix"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3c501b1c-22e0-43f4-8cf0-2c708c043d9e",
+   "term": "Kick microphone blend",
+   "fields": {
+    "definition": "The practice of combining two or more kick-drum microphones, commonly an inside mic near the beater for attack and an outside or sub mic for low-end body, and adjusting their relative levels with attention to phase to build a composite kick sound.",
+    "plain_english": "Using more than one mic on the kick drum and mixing them together. One mic catches the click of the beater, another catches the deep boom. Blending them lets you build a full sound.",
+    "purpose_function": "It exists because no single microphone position captures both the sharp beater attack and the deep body of the drum, so combining mics builds a complete sound.",
+    "practical_application": "The engineer sets levels between an inside beater mic and an outside or sub mic, checks that they are in phase, flipping polarity or nudging timing if the low end thins out, and blends to taste.",
+    "category": "Drum Processing",
+    "related_terms": ["Phase alignment", "Kick-drum mixing", "Kick equalization", "Kick gating", "Microphone placement", "Kick low-end enhancement"],
+    "common_mistakes": ["Ignoring phase between the two mics, which cancels low end when they are combined", "Blending in so much sub mic that the beater attack disappears", "Placing both mics without checking each one soloed first", "Forgetting that moving one mic changes the phase relationship with the other"],
+    "scenario_contexts": ["Combining an inside and outside kick mic in a studio drum session", "Adding a sub-kick mic to fatten a rock kick", "Balancing beater click and body for a punchy pop kick", "Phase-aligning kick mics before printing a drum mix"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4d55f3f0-ed2a-4417-9d49-f0b10c24de3c",
+   "term": "Kick resonance control",
+   "fields": {
+    "definition": "The reduction of unwanted resonant ringing or sustained tonal buildup in a kick drum, using narrow EQ cuts, physical damping inside the shell, or dynamic processing so a single dominant pitch does not linger and muddy the low end.",
+    "plain_english": "Taming a ringing or humming note that a kick drum can make. If one note rings too long, it sounds muddy. Engineers cut that note or add padding inside the drum to fix it.",
+    "purpose_function": "It stops a single resonant note or long ring in the kick from dominating and muddying the low end, keeping the drum tight and tonally neutral in the mix.",
+    "practical_application": "The engineer finds the ringing frequency with a narrow EQ boost-and-sweep, then cuts it, or adds internal damping such as a pillow or muffling ring inside the drum before recording.",
+    "category": "Drum Processing",
+    "related_terms": ["Kick equalization", "Kick-drum mixing", "Drum damping", "Kick sustain control", "Kick low-end enhancement"],
+    "common_mistakes": ["Confusing useful low-end body with unwanted resonance and cutting too much", "Over-damping the drum so it sounds dead and lifeless", "Using a wide EQ cut that removes more than the single problem note", "Fixing resonance only with EQ when a physical damping fix would work better"],
+    "scenario_contexts": ["Removing a boomy ringing note from an untuned kick", "Tightening a resonant kick in a small untreated room", "Controlling sustain buildup in a fast double-kick part", "Cleaning a kick that rings at one note and clouds the bass"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "607ead3a-f026-4c9b-9c08-6435a99ad4e7",
+   "term": "Kick sample blend",
+   "fields": {
+    "definition": "The mixing of a pre-recorded or triggered kick-drum sample underneath the recorded kick track, time-aligned to the original hits, to reinforce consistency, attack, or low-end when the source recording is weak or uneven.",
+    "plain_english": "Adding a recorded kick sound under the real kick and playing them together. This helps when the real kick sounds weak or uneven, so every hit sounds strong and the same.",
+    "purpose_function": "It adds consistency and power to a recorded kick, reinforcing weak or uneven hits with a reliable sampled sound while keeping the feel of the original performance.",
+    "practical_application": "Using a trigger or sampler, the engineer aligns a chosen kick sample to each recorded hit, matches its timing and phase to the original, and blends the two so the sample supports rather than replaces the real drum.",
+    "category": "Drum Processing",
+    "related_terms": ["Drum replacement", "Kick gating", "Kick-drum mixing", "Kick microphone blend", "Transient shaping"],
+    "common_mistakes": ["Not time-aligning the sample, causing phase problems that weaken the low end", "Using a sample so loud it replaces the real kick and sounds fake", "Choosing a sample whose tone clashes with the song or the rest of the kit", "Triggering off a bleedy track so the sampler fires on snare or tom hits"],
+    "scenario_contexts": ["Reinforcing an inconsistent live kick recording", "Adding punch to a weak kick captured with poor mic placement", "Making every kick hit uniform for a tight modern mix", "Layering a sampled sub under an acoustic kick for extra weight"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "037a309c-e3cb-4f2e-becc-c64636de7d69",
+   "term": "Kick saturation",
+   "fields": {
+    "definition": "The deliberate addition of harmonic distortion to a kick-drum signal, via tape, tube, or transistor-style saturation, to generate extra harmonics that add warmth, perceived loudness, and presence and help the kick translate on small speakers.",
+    "plain_english": "Adding a gentle, controlled distortion to the kick. This creates extra tones that make the kick sound warmer and louder. It also helps the kick be heard on small speakers like phones.",
+    "purpose_function": "It adds harmonics that increase warmth, presence, and perceived loudness, helping the kick stay audible on small or bass-limited speakers that cannot reproduce deep bass.",
+    "practical_application": "The engineer runs the kick through a tape, tube, or console-style saturation plug-in or hardware, adding drive until the kick gains harmonic bite while watching that it does not become harsh or lose its punch.",
+    "category": "Drum Processing",
+    "related_terms": ["Harmonic distortion", "Kick equalization", "Kick-drum mixing", "Kick low-end enhancement", "Tape saturation"],
+    "common_mistakes": ["Adding so much saturation the kick sounds fuzzy and loses its clean attack", "Using saturation to fix a kick that really needs EQ or a better source", "Not gain-matching, so the louder distorted version only seems better", "Over-driving the low end into harshness that clashes with the bass"],
+    "scenario_contexts": ["Helping a sub-heavy kick cut through on phone and laptop speakers", "Adding warmth and grit to an electronic kick", "Thickening a clean studio kick for a rock mix", "Giving a kick more presence without raising its fader"]
+   },
+   "sources": ["Izhaki, Mixing Audio", "Owsinski, The Mixing Engineer's Handbook", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e10682e5-748e-4bbb-836f-643ccdae5e8e",
+   "term": "Kick sustain control",
+   "fields": {
+    "definition": "The shaping of a kick drum's decay portion, lengthening or shortening the tail after the initial attack using transient shapers, gates, or compression, to control how long the low-end rings and how tight the drum feels.",
+    "plain_english": "Changing how long the kick drum's boom lasts after it is hit. A short tail sounds tight and punchy. A longer tail sounds big and full. Tools called transient shapers help do this.",
+    "purpose_function": "It controls how long the kick's low-end tail rings after the attack, letting the engineer make the drum tight and punchy or big and sustained to suit the song.",
+    "practical_application": "The engineer uses a transient shaper to lengthen or shorten the tail, or a gate or compression to shape decay, listening for how the change affects tightness and how the kick locks with the bass.",
+    "category": "Drum Processing",
+    "related_terms": ["Transient shaping", "Kick gating", "Kick-drum mixing", "Kick resonance control", "Compression"],
+    "common_mistakes": ["Cutting sustain so short the kick sounds clicky and thin", "Leaving too long a tail that overlaps notes and muddies the low end", "Confusing sustain shaping with simple volume changes", "Using a fast gate that chops the tail unnaturally instead of shaping it smoothly"],
+    "scenario_contexts": ["Tightening a boomy kick for a fast punk song", "Shortening kick decay so it fits between quick double-kick hits", "Adding sustain to a thin kick for a big cinematic feel", "Matching kick length to the tempo and bass line of a track"]
+   },
+   "sources": ["Izhaki, Mixing Audio", "Owsinski, The Mixing Engineer's Handbook", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "69682fb5-0710-487f-89cc-9c53b8a627a6",
+   "term": "Kick-drum mixing",
+   "fields": {
+    "definition": "The overall process of balancing, EQ-ing, compressing, and processing a kick-drum track so it fits its role in a mix, providing rhythmic foundation and low-end power while remaining clear against the bass guitar and the rest of the kit.",
+    "plain_english": "Setting the kick drum's sound and volume so it fits the whole song. You balance it with the bass and other drums so the kick gives the beat its punch without covering everything else.",
+    "purpose_function": "It places the kick correctly as the rhythmic and low-end foundation of the mix, keeping it powerful and clear even though it shares low frequencies with the bass guitar.",
+    "practical_application": "The engineer sets the kick level, EQs and compresses it, manages its relationship with the bass through EQ carving or sidechain compression, and checks it on several speakers so the beat drives the song.",
+    "category": "Drum Processing",
+    "related_terms": ["Kick equalization", "Kick gating", "Kick saturation", "Kick sample blend", "Sidechain compression", "Kick low-end enhancement"],
+    "common_mistakes": ["Mixing the kick too loud so it overpowers the rest of the track", "Letting the kick and bass occupy the same frequencies and turn muddy", "Judging the kick soloed instead of against the full mix", "Ignoring how the kick translates on small speakers"],
+    "scenario_contexts": ["Building a drum mix around a solid kick foundation", "Balancing kick and bass guitar so both stay clear", "Setting up sidechain compression between kick and bass", "Getting a kick to hit hard on a club system and a laptop alike"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Izhaki, Mixing Audio"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

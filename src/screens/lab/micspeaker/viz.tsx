@@ -67,8 +67,8 @@ const ACCENT_GREEN = '#5bff85';
 const ACCENT_BLUE = '#6fa8ff';
 const ACCENT_RED = '#ff6b5e';
 const ACCENT_YELLOW = '#ffd76b';
-const GRID = '#2c2c33';
-const GHOST = '#232329';
+const GRID = '#3a3b46';
+const GHOST = '#2e2f38';
 const BG = '#0c0c0f';
 // Illustration tones (light source: upper-left).
 const METAL_HI = '#c6cad4';
@@ -1218,6 +1218,11 @@ export function PolarPatternView({
   const gy = cy + POLAR_MIC_DY; // the grille centre the pickup line runs to
   const thSrc = Math.atan2(sx - cx, -(sy - gy));
   const gain = polarGain(a, b, thSrc);
+  // The source's OWN radiated field (owner 2026-08-05): a soft red→blue
+  // amplitude glow, capped to ~half the canvas so it never blankets the mic's
+  // pickup pattern below; the cabinet's woofer faces the mic.
+  const srcR = Math.min(R * 0.52, 60);
+  const srcTiltDeg = (Math.atan2(gy - sy, cx - sx) * 180) / Math.PI;
 
   const pickupLine = useMemo(() => {
     const p = Skia.Path.Make();
@@ -1263,19 +1268,27 @@ export function PolarPatternView({
       />
       {/* The mic itself, front axis up (1.72·8 + 37 ≈ 3.2 × the 16-px grille). */}
       <HandheldMic x={cx} y={gy} angleDeg={0} grilleR={POLAR_MIC_GR} bodyLen={POLAR_MIC_LEN} />
-      {/* THE SOURCE: crossed claves (owner reference art), the click point —
-          the crossing — sitting exactly at the source position, in TRUE
-          proportion to the mic (20 cm clave vs 16 cm mic) and free to be
-          dragged right up next to the grille. Never rotated (claves don't
-          face); plated so the line art stays readable over the heat field. */}
-      <Claves
-        x={sx}
-        y={sy}
-        scale={clavesScaleForMic(POLAR_MIC_GR, POLAR_MIC_LEN)}
-        tint={ACCENT_GREEN}
-        glow
-        plate
-      />
+      {/* THE SOURCE (owner 2026-08-05): our little speaker cabinet, replacing
+          the claves, radiating its OWN conceptual amplitude field — RED (loud)
+          at the cone fading to BLUE (quiet) — so both the source and the mic
+          show their loud/quiet areas. The field is capped to ~half the canvas
+          so it never blankets the mic's pickup pattern, and the whole source
+          draws LAST (on top of the mic field). The woofer faces the mic. */}
+      <Circle cx={sx} cy={sy} r={srcR} opacity={0.5}>
+        <RadialGradient
+          c={vec(sx, sy)}
+          r={srcR}
+          colors={[
+            withAlpha(heatColor(1), 0.85),
+            withAlpha(heatColor(0.6), 0.5),
+            withAlpha(heatColor(0.25), 0.28),
+            'rgba(0,0,0,0)',
+          ]}
+          positions={[0, 0.4, 0.72, 1]}
+        />
+        <BlurMask blur={7} style="normal" />
+      </Circle>
+      <CabinetSide x={sx} y={sy} tiltDeg={srcTiltDeg} scale={1.55} />
     </Canvas>
   );
 }
@@ -1414,6 +1427,7 @@ export function ResponseCurveView({
   color = WAVE,
   floorDb = -14,
   ceilDb = 14,
+  vStops,
 }: {
   width: number;
   height?: number;
@@ -1422,6 +1436,10 @@ export function ResponseCurveView({
   color?: string;
   floorDb?: number;
   ceilDb?: number;
+  /** Optional VERTICAL level ramp: paints the curve + underfill by dB height
+   *  instead of a flat color (owner 2026-08-05). Give ≥2 { db, color } stops;
+   *  louder dB sits higher. Proximity uses green→red, off-axis blue→red. */
+  vStops?: { db: number; color: string }[];
 }) {
   const w = width;
   const h = height;
@@ -1498,9 +1516,22 @@ export function ResponseCurveView({
   const axisText = {
     fontFamily: fonts.mono,
     fontSize: 8.5,
-    color: '#767a85',
+    color: '#9a9ca8',
   } as const;
   const zeroInRange = floorDb <= 0 && ceilDb >= 0;
+
+  // Optional vertical level ramp (owner 2026-08-05): map each { db, color }
+  // stop to a gradient offset (0 at the top = ceilDb, 1 at the bottom = floorDb)
+  // so the curve is painted warmer where it is louder.
+  const ramp = useMemo(() => {
+    if (!vStops || vStops.length < 2) return null;
+    return [...vStops]
+      .map((s) => ({
+        pos: (ceilDb - Math.max(floorDb, Math.min(ceilDb, s.db))) / (ceilDb - floorDb),
+        color: s.color,
+      }))
+      .sort((a, b) => a.pos - b.pos);
+  }, [vStops, floorDb, ceilDb]);
 
   return (
     <View style={{ width: w, height: h }}>
@@ -1517,15 +1548,51 @@ export function ResponseCurveView({
             strokeWidth={1.4}
           />
         ) : null}
-        {/* Gradient underfill lifts the curve off black (abstract, styled). */}
-        <Path path={under}>
-          <LinearGradient
-            start={vec(0, PAD_T)}
-            end={vec(0, PAD_T + plotH)}
-            colors={[withAlpha(color, 0.26), withAlpha(color, 0.02)]}
-          />
-        </Path>
-        <GlowStroke path={curve} color={color} width={2.4} />
+        {/* Gradient underfill lifts the curve off black (abstract, styled).
+            When a vertical level ramp is supplied the curve + fill are painted
+            by dB height (louder = warmer); otherwise the flat `color`. */}
+        {ramp ? (
+          <>
+            <Path path={under}>
+              <LinearGradient
+                start={vec(0, PAD_T)}
+                end={vec(0, PAD_T + plotH)}
+                colors={ramp.map((s) => withAlpha(s.color, 0.24))}
+                positions={ramp.map((s) => s.pos)}
+              />
+            </Path>
+            {/* Glow copy. */}
+            <Path path={curve} style="stroke" strokeWidth={6.2} strokeCap="round" strokeJoin="round" opacity={0.22}>
+              <BlurMask blur={5.3} style="normal" />
+              <LinearGradient
+                start={vec(0, PAD_T)}
+                end={vec(0, PAD_T + plotH)}
+                colors={ramp.map((s) => s.color)}
+                positions={ramp.map((s) => s.pos)}
+              />
+            </Path>
+            {/* Crisp curve. */}
+            <Path path={curve} style="stroke" strokeWidth={2.4} strokeCap="round" strokeJoin="round">
+              <LinearGradient
+                start={vec(0, PAD_T)}
+                end={vec(0, PAD_T + plotH)}
+                colors={ramp.map((s) => s.color)}
+                positions={ramp.map((s) => s.pos)}
+              />
+            </Path>
+          </>
+        ) : (
+          <>
+            <Path path={under}>
+              <LinearGradient
+                start={vec(0, PAD_T)}
+                end={vec(0, PAD_T + plotH)}
+                colors={[withAlpha(color, 0.26), withAlpha(color, 0.02)]}
+              />
+            </Path>
+            <GlowStroke path={curve} color={color} width={2.4} />
+          </>
+        )}
       </Canvas>
       {/* AMPLITUDE axis (dB) — the actual plotted range. */}
       {dbTicks.map((db) => (
@@ -1551,7 +1618,7 @@ export function ResponseCurveView({
           fontFamily: fonts.oswaldSemiBold,
           fontSize: 8,
           letterSpacing: 0.8,
-          color: '#767a85',
+          color: '#9a9ca8',
         }}
       >
         dB
@@ -1580,7 +1647,7 @@ export function ResponseCurveView({
           fontFamily: fonts.oswaldSemiBold,
           fontSize: 8,
           letterSpacing: 0.8,
-          color: '#767a85',
+          color: '#9a9ca8',
         }}
       >
         Hz
@@ -1964,6 +2031,10 @@ export function PopFilterView({
     const foam = Skia.Path.Make();
     const blimp = Skia.Path.Make();
     const blimpRibs = Skia.Path.Make();
+    // Shotgun interference tube (blimp mode only).
+    const shotBody = Skia.Path.Make();
+    const shotSlots = Skia.Path.Make();
+    const shotCap = Skia.Path.Make();
     if (mode === 'pop') {
       // Hoop with visible mesh + gooseneck.
       hoop.addCircle(barX, mid, 26);
@@ -1987,13 +2058,30 @@ export function PopFilterView({
       foam.cubicTo(gx - 10, mid + 19, gx - 17, mid + 11, gx - 17, mid);
       foam.close();
     } else if (mode === 'blimp') {
-      // Slotted blimp shell surrounding the whole mic.
-      blimp.addRRect(Skia.RRectXY(Skia.XYWHRect(gx - 32, mid - 24, 60, 48), 24, 24));
-      for (const t of [-0.55, 0, 0.55]) {
-        blimpRibs.addOval(Skia.XYWHRect(gx - 32 + 6, mid + t * 24 - 3.4, 48, 6.8));
+      // A TRUE videography shotgun mic (owner 2026-08-05): a long interference
+      // tube, tip facing the source, inside a zeppelin windshield — not the
+      // handheld. Slots along the tube are the interference ports; a small
+      // capsule housing + XLR stub sit at the tail.
+      const tipX = gx - 48;
+      const tailX = gx + 28;
+      const tubeR = 6.5;
+      shotBody.addRRect(Skia.RRectXY(Skia.XYWHRect(tipX, mid - tubeR, tailX - tipX, tubeR * 2), tubeR, tubeR));
+      for (let sx = tipX + 9; sx < tailX - 14; sx += 6) {
+        shotSlots.moveTo(sx, mid - tubeR + 1.6);
+        shotSlots.lineTo(sx, mid + tubeR - 1.6);
+      }
+      shotCap.addRRect(Skia.RRectXY(Skia.XYWHRect(tailX - 4, mid - 8, 14, 16), 3, 3));
+      shotCap.addRRect(Skia.RRectXY(Skia.XYWHRect(tailX + 10, mid - 2.5, 9, 5), 2, 2));
+      // Zeppelin windshield around the whole tube, with vertical rib seams.
+      const zL = tipX - 12;
+      const zR = tailX + 8;
+      blimp.addRRect(Skia.RRectXY(Skia.XYWHRect(zL, mid - 19, zR - zL, 38), 19, 19));
+      for (let rx = zL + 12; rx < zR - 8; rx += 12) {
+        blimpRibs.moveTo(rx, mid - 17);
+        blimpRibs.lineTo(rx, mid + 17);
       }
     }
-    return { hoop, hoopMesh, foam, blimp, blimpRibs };
+    return { hoop, hoopMesh, foam, blimp, blimpRibs, shotBody, shotSlots, shotCap };
   }, [srcX, micX, barX, mid, mode, gx, h]);
 
   // The sound itself (a small steady wave) ALWAYS passes — wind is the enemy.
@@ -2010,26 +2098,45 @@ export function PopFilterView({
     return p;
   }, [phase, srcX, micX, mid]);
 
-  // Plosive puffs: a particle cluster launched each cycle; blocked at the
-  // barrier (only `pass` of the energy continues, spread wider).
+  // Plosive puffs (owner 2026-08-05): a DENSER stream of air particles — two
+  // phase-staggered clusters of 8. Behaviour per barrier:
+  //   none → all cross to the grille.
+  //   pop  → most stop at the hoop; a few (`pass`) slip past, smaller.
+  //   foam / shotgun windshield → particles ENTER the windscreen then quickly
+  //     shrink to nothing as the foam/basket ABSORBS them.
   const puffs = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    const f = (ph / (2 * Math.PI)) % 1; // 0..1 along the flight
-    const x = srcX + 12 + f * (micX - srcX - 16);
-    const blockAt = mode === 'none' ? 1e9 : mode === 'pop' ? barX : micX - 12;
-    for (let i = 0; i < 7; i++) {
-      const spread = 4 + f * 18 + (i % 3) * 3;
-      const yy = mid + (i - 3) * (spread / 3);
-      if (x <= blockAt) {
-        p.addCircle(x, yy, 2.2);
-      } else {
-        // Past the barrier: only a fraction continues (drawn smaller/fewer).
-        if (i / 7 < pass) p.addCircle(x, yy, 1.6);
+    const f0 = (ph / (2 * Math.PI)) % 1;
+    const N = 8;
+    const foamEdge = gx - 17; // foam front surface
+    const blimpEdge = gx - 54; // zeppelin windshield front
+    for (const fo of [0, 0.5]) {
+      const f = (f0 + fo) % 1;
+      const x = srcX + 12 + f * (micX - srcX - 16);
+      for (let i = 0; i < N; i++) {
+        const spread = 4 + f * 20 + (i % 4) * 3;
+        const yy = mid + (i - (N - 1) / 2) * (spread / (N / 2));
+        if (mode === 'none') {
+          p.addCircle(x, yy, 2.2);
+        } else if (mode === 'pop') {
+          if (x <= barX) p.addCircle(x, yy, 2.2);
+          else if (i / N < pass) p.addCircle(x, yy, 1.6);
+        } else {
+          const edge = mode === 'foam' ? foamEdge : blimpEdge;
+          if (x <= edge) {
+            p.addCircle(x, yy, 2.2);
+          } else if (i / N < pass) {
+            // Absorbed: shrink to nothing across the windscreen depth.
+            const depth = (x - edge) / Math.max(1, gx - edge);
+            const rr = 2.0 * (1 - Math.min(1, depth * 1.35));
+            if (rr > 0.2) p.addCircle(x, yy, rr);
+          }
+        }
       }
     }
     return p;
-  }, [phase, srcX, micX, barX, mid, mode, pass]);
+  }, [phase, srcX, micX, barX, mid, mode, pass, gx]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
@@ -2042,7 +2149,9 @@ export function PopFilterView({
       <Path path={puffs} color={ACCENT_BLUE} />
       {/* The talker firing the plosive — TRUE proportion to the mic. */}
       <ProfileHead x={srcX} y={mid} angleRad={0} scale={headScaleForMic(8, 37)} tint={CONE} speaking />
-      <HandheldMic x={gx} y={mid} angleDeg={-90} grilleR={8} bodyLen={37} />
+      {/* Handheld for every mode except the shotgun windshield, which shows a
+          real shotgun mic below. */}
+      {mode !== 'blimp' ? <HandheldMic x={gx} y={mid} angleDeg={-90} grilleR={8} bodyLen={37} /> : null}
       {mode === 'pop' ? (
         <>
           <Path path={gear.hoopMesh} color={PARTICLE} style="stroke" strokeWidth={0.8} opacity={0.4} />
@@ -2061,8 +2170,23 @@ export function PopFilterView({
       ) : null}
       {mode === 'blimp' ? (
         <>
+          {/* Shotgun interference tube, tip facing the source. */}
+          <Path path={gear.shotBody}>
+            <LinearGradient
+              start={vec(0, mid - 7)}
+              end={vec(0, mid + 7)}
+              colors={[METAL_HI, METAL_MID, METAL_LO]}
+              positions={[0, 0.5, 1]}
+            />
+          </Path>
+          <Path path={gear.shotBody} color="#c3c8d4" style="stroke" strokeWidth={1} opacity={0.7} />
+          <Path path={gear.shotSlots} color="#12131a" style="stroke" strokeWidth={1.4} opacity={0.85} />
+          <Path path={gear.shotCap}>
+            <LinearGradient start={vec(0, mid - 8)} end={vec(0, mid + 8)} colors={[METAL_MID, METAL_LO]} />
+          </Path>
+          {/* Zeppelin windshield over the tube, semi-transparent. */}
           <Path path={gear.blimp} opacity={0.3}>
-            <LinearGradient start={vec(gx - 32, mid - 24)} end={vec(gx + 28, mid + 24)} colors={[METAL_HI, METAL_LO]} />
+            <LinearGradient start={vec(gx - 60, mid - 19)} end={vec(gx + 36, mid + 19)} colors={[METAL_HI, METAL_LO]} />
           </Path>
           <Path path={gear.blimpRibs} color={PARTICLE} style="stroke" strokeWidth={1} opacity={0.45} />
           <Path path={gear.blimp} color={METAL_MID} style="stroke" strokeWidth={1.8} />
@@ -2100,7 +2224,7 @@ export function PopFilterView({
 export function ShockMountView({
   phase,
   width,
-  height = 216,
+  height = 262,
   shockMount,
 }: {
   phase: SharedValue<number>;
@@ -2117,18 +2241,24 @@ export function ShockMountView({
   const AMP = 6; // stand excursion, px
 
   // ── Fixed scene geometry ─────────────────────────────────────────────────
-  const CAP_TRACK_Y = 22; // capsule excursion readout
-  const MIC_TOP = 38;
-  const BASKET_BOT = 70;
-  const MIC_BOT = 128;
-  const MIC_HW = 11; // body half-width
-  const RING_CY = 98;
-  const RING_RX = 36;
-  const RING_RY = 28;
-  const CLUTCH_Y = 140;
-  const SHAFT_TOP = 156;
-  const FLOOR_Y = 182;
-  const STAND_TRACK_Y = 196;
+  const CAP_TRACK_Y = 18; // capsule excursion readout
+  // Mic — SMALLER, same slim SM-class proportions (owner 2026-08-05).
+  const MIC_TOP = 40; // top of the head basket
+  const BASKET_BOT = 62; // basket 22 px tall
+  const MIC_BOT = 108; // body to 108 (~46 px)
+  const MIC_HW = 8; // body half-width (was 11)
+  // Shock mount: an outer suspension ring + an inner cradle around the body,
+  // joined by the elastic bands — the shape a real shock mount actually has.
+  const RING_CY = 86;
+  const RING_RX = 30;
+  const RING_RY = 40;
+  const INNER_RX = 15;
+  const INNER_RY = 27;
+  // A TALLER, more normal mic stand.
+  const CLUTCH_Y = 150;
+  const SHAFT_TOP = 168;
+  const FLOOR_Y = 238;
+  const STAND_TRACK_Y = 250;
 
   // Stand: tripod + shaft, riding the FULL excursion.
   const standPath = useDerivedValue(() => {
@@ -2136,13 +2266,13 @@ export function ShockMountView({
     const o = AMP * Math.sin(phase.value * 1.9);
     const p = Skia.Path.Make();
     p.moveTo(cx + o, SHAFT_TOP);
-    p.lineTo(cx + o, FLOOR_Y - 16);
-    p.moveTo(cx + o - 30, FLOOR_Y);
-    p.lineTo(cx + o, FLOOR_Y - 16);
-    p.lineTo(cx + o + 30, FLOOR_Y);
-    p.moveTo(cx + o - 16, FLOOR_Y - 8);
-    p.lineTo(cx + o, FLOOR_Y - 16);
-    p.lineTo(cx + o + 16, FLOOR_Y - 8);
+    p.lineTo(cx + o, FLOOR_Y - 18);
+    p.moveTo(cx + o - 36, FLOOR_Y);
+    p.lineTo(cx + o, FLOOR_Y - 18);
+    p.lineTo(cx + o + 36, FLOOR_Y);
+    p.moveTo(cx + o - 19, FLOOR_Y - 8);
+    p.lineTo(cx + o, FLOOR_Y - 18);
+    p.lineTo(cx + o + 19, FLOOR_Y - 8);
     return p;
   }, [phase, cx]);
 
@@ -2182,26 +2312,40 @@ export function ShockMountView({
     return p;
   }, [phase, cx, shockMount]);
 
-  // THE ELASTIC: each band runs from a RING anchor (moving with the stand) to
-  // a BODY anchor (nearly still). The difference is drawn as a bowed quad, so
-  // the band visibly stretches and slackens through the cycle.
+  // The INNER CRADLE ring that actually holds the mic (moves with the body,
+  // nearly still). Empty for the rigid clip.
+  const innerCradle = useDerivedValue(() => {
+    'worklet';
+    const p = Skia.Path.Make();
+    if (!shockMount) return p;
+    const m = AMP * Math.sin(phase.value * 1.9) * damp;
+    p.addOval(Skia.XYWHRect(cx + m - INNER_RX, RING_CY - INNER_RY, INNER_RX * 2, INNER_RY * 2));
+    return p;
+  }, [phase, cx, damp, shockMount]);
+
+  // THE ELASTIC: each band runs from an OUTER-RING anchor (moving with the
+  // stand) to an INNER-CRADLE anchor (nearly still). The difference is drawn as
+  // a bowed quad, so the band visibly stretches and slackens through the cycle
+  // — the lyre/spider of a real shock mount.
   const bandsPath = useDerivedValue(() => {
     'worklet';
     const p = Skia.Path.Make();
     if (!shockMount) return p;
     const o = AMP * Math.sin(phase.value * 1.9);
     const m = o * damp;
-    for (const t of [-0.86, -0.3, 0.3, 0.86]) {
-      const by = RING_CY + t * RING_RY * 0.82;
-      const edge = RING_RX * Math.sqrt(Math.max(0, 1 - Math.pow((by - RING_CY) / RING_RY, 2)));
+    for (const t of [-0.72, -0.28, 0.28, 0.72]) {
+      const oy = RING_CY + t * RING_RY * 0.9;
+      const oEdge = RING_RX * Math.sqrt(Math.max(0, 1 - Math.pow((oy - RING_CY) / RING_RY, 2)));
+      const iy = RING_CY + t * INNER_RY * 0.9;
+      const iEdge = INNER_RX * Math.sqrt(Math.max(0, 1 - Math.pow((iy - RING_CY) / INNER_RY, 2)));
       for (const sgn of [-1, 1]) {
-        const rx = cx + o + sgn * edge;
-        const mx = cx + m + sgn * MIC_HW;
-        // Bow the band away from the straight line by the mismatch — the
-        // elastic visibly takes up the motion the mic never receives.
-        const bow = (o - m) * 0.55;
-        p.moveTo(rx, by);
-        p.quadTo((rx + mx) / 2, by + bow, mx, by);
+        const ox = cx + o + sgn * oEdge;
+        const ix = cx + m + sgn * iEdge;
+        // Bow the band by the mismatch — the elastic takes up the motion the
+        // mic never receives.
+        const bow = (o - m) * 0.5;
+        p.moveTo(ox, oy);
+        p.quadTo((ox + ix) / 2, oy + bow, ix, iy);
       }
     }
     return p;
@@ -2223,7 +2367,7 @@ export function ShockMountView({
     const m = AMP * Math.sin(phase.value * 1.9) * damp;
     const p = Skia.Path.Make();
     p.addRRect(
-      Skia.RRectXY(Skia.XYWHRect(cx + m - 14, MIC_TOP, 28, BASKET_BOT - MIC_TOP), 13, 11),
+      Skia.RRectXY(Skia.XYWHRect(cx + m - 11, MIC_TOP, 22, BASKET_BOT - MIC_TOP), 11, 10),
     );
     return p;
   }, [phase, cx, damp]);
@@ -2236,13 +2380,13 @@ export function ShockMountView({
     const ry = (BASKET_BOT - MIC_TOP) / 2 - 2;
     for (let i = -3; i <= 3; i++) {
       const yy = cyB + (i / 3.6) * ry;
-      const hw = 12 * Math.sqrt(Math.max(0, 1 - Math.pow((yy - cyB) / (ry + 2), 2)));
+      const hw = 9.5 * Math.sqrt(Math.max(0, 1 - Math.pow((yy - cyB) / (ry + 2), 2)));
       p.moveTo(cx + m - hw, yy);
       p.lineTo(cx + m + hw, yy);
     }
     for (let i = -2; i <= 2; i++) {
-      const xx = cx + m + (i / 2.6) * 12;
-      const hh = ry * Math.sqrt(Math.max(0, 1 - Math.pow((xx - cx - m) / 13, 2)));
+      const xx = cx + m + (i / 2.6) * 9.5;
+      const hh = ry * Math.sqrt(Math.max(0, 1 - Math.pow((xx - cx - m) / 10.5, 2)));
       p.moveTo(xx, cyB - hh);
       p.lineTo(xx, cyB + hh);
     }
@@ -2358,6 +2502,8 @@ export function ShockMountView({
           <BlurMask blur={3} style="normal" />
         </Path>
         <Path path={bandsPath} color={WAVE} style="stroke" strokeWidth={1.5} strokeCap="round" />
+        {/* Inner cradle ring that holds the mic. */}
+        <Path path={innerCradle} color="#8e93a1" style="stroke" strokeWidth={2.2} opacity={0.9} />
         {/* The mic. */}
         <Path path={micBody}>
           <LinearGradient
@@ -2485,15 +2631,20 @@ export function StereoTechniqueView({
       chrome.moveTo(cx + 62, cy + 18);
       chrome.lineTo(cx + 62, cy + 26);
     } else {
-      // Mid-Side: cardioid forward + figure-8 sideways at one point.
+      // Mid-Side (owner 2026-08-05): though truly COINCIDENT, draw the two
+      // capsules SEPARATED VERTICALLY so all three pickup areas read clearly —
+      // the forward CARDIOID (mid) above, and the sideways FIGURE-8 (side) with
+      // its two lobes below it. The tighter field falloff keeps them distinct.
+      const midY = cy - 22;
+      const sideY = cy + 26;
       caps.push(
-        { x: cx, y: cy - 6, angDeg: 0, ...CARD },
-        { x: cx, y: cy + 6, angDeg: 90, a: 0, b: 1 },
+        { x: cx, y: midY, angDeg: 0, ...CARD },
+        { x: cx, y: sideY, angDeg: 90, a: 0, b: 1 },
       );
-      wedge(cx, cy - 6, 0, 80);
-      lobes.push({ x: cx - 26, y: cy + 10, r: 22 }, { x: cx + 26, y: cy + 10, r: 22 });
-      // The side (figure-8) element: a small horizontal capsule.
-      chrome.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - 14, cy + 6, 28, 8), 4, 4));
+      wedge(cx, midY, 0, 80);
+      lobes.push({ x: cx - 24, y: sideY, r: 18 }, { x: cx + 24, y: sideY, r: 18 });
+      // The side (figure-8) element: a small horizontal capsule at its own spot.
+      chrome.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - 14, sideY - 4, 28, 8), 4, 4));
     }
     // Mic bodies to draw (MS draws only the mid capsule as a pencil mic).
     const mics = tech === 'ms' ? [caps[0]] : caps;
@@ -2511,7 +2662,11 @@ export function StereoTechniqueView({
     const ROWS = 120;
     const cw = w / COLS;
     const ch = (h - fieldY0) / ROWS;
-    const refD = h * 0.3;
+    // Tighter reference distance (owner 2026-08-05): the old h*0.3 spread each
+    // capsule's loud zone across most of the canvas so the patterns blurred
+    // together. Pulling it in concentrates the red near each mic, so the
+    // individual pickup areas stay distinct on this small screen.
+    const refD = h * 0.17;
     const src = layout.caps.map((c) => {
       const th = (c.angDeg * Math.PI) / 180;
       return { x: c.x, y: c.y, ax: Math.sin(th), ay: -Math.cos(th), a: c.a, b: c.b };
@@ -2757,7 +2912,14 @@ export function HandPlacementView({
     const p = Skia.Path.Make();
     for (let i = 0; i <= 150; i++) {
       const th = (i / 150) * 2 * Math.PI;
-      const r = pR * Math.max(0.04, polarGain(a, b, th) + ripple * Math.cos(3 * th));
+      // Cupping distortion (owner 2026-08-05 correctness pass): the previous
+      // ripple·cos(3θ) drew an unnatural 3-petal "flower". Real cupping fills
+      // the REAR null and pinches the sides, so weight the irregularity to the
+      // rear hemisphere — the pattern stays a recognizable cardioid collapsing
+      // toward omni, not a decorative shape.
+      const rear = 0.5 - 0.5 * Math.cos(th); // 0 front → 1 rear
+      const bump = ripple * Math.cos(2 * th) * rear;
+      const r = pR * Math.max(0.04, polarGain(a, b, th) + bump);
       const x = pcx + r * Math.sin(th);
       const y = pcy - r * Math.cos(th);
       if (i === 0) p.moveTo(x, y);
@@ -3656,19 +3818,14 @@ function AlignmentOverlay({
     }
     return p;
   }, [phase, rearX, targetX, yTop, yBot, aligned]);
-  // Green "in step" pulse when both fronts converge on the rear rows (g→1).
-  const flashOp = useDerivedValue(() => {
-    const g = (phase.value / (2 * Math.PI)) % 1;
-    const near = Math.max(0, 1 - Math.abs(g - 1) / 0.1);
-    return aligned ? 0.55 * near : 0;
-  }, [phase, aligned]);
+  // Both playheads GREEN and identical in look (owner 2026-08-05): the front
+  // (main) line and the rear-delay line are the same green sweep. The old green
+  // "fizzy ball" pulse at the target rows is removed — the rear SPEAKER flashes
+  // instead (handled in SideCoverageView).
   return (
     <>
-      <Path path={mainPath} color={ACCENT_YELLOW} style="stroke" strokeWidth={2.2} opacity={0.9} />
-      <Path path={rearPath} color={ACCENT_BLUE} style="stroke" strokeWidth={2.2} opacity={0.9} />
-      <Circle cx={targetX} cy={(yTop + yBot) / 2} r={11} color={ACCENT_GREEN} opacity={flashOp}>
-        <BlurMask blur={6} style="normal" />
-      </Circle>
+      <Path path={mainPath} color={ACCENT_GREEN} style="stroke" strokeWidth={2.2} opacity={0.9} />
+      <Path path={rearPath} color={ACCENT_GREEN} style="stroke" strokeWidth={2.2} opacity={0.9} />
     </>
   );
 }
@@ -3729,7 +3886,7 @@ export function SideCoverageView({
   // seats (the classic J so the whole depth hears an even level).
   const arrayBoxes = useMemo(() => {
     const boxDrawnH = CAB_DRAWN_H * boxScale + 1.5;
-    const N = 6;
+    const N = 4; // owner 2026-08-05: 4-box array
     const out: { x: number; y: number; tilt: number }[] = [];
     let a = tiltDeg - 2;
     for (let i = 0; i < N; i++) {
@@ -3784,12 +3941,16 @@ export function SideCoverageView({
     const stage = Skia.Path.Make();
     stage.addRRect(Skia.RRectXY(Skia.XYWHRect(4, stageTop, stageW, floorY - stageTop), 3, 3));
 
-    // Audience extent.
-    const audX0 = stageW + 26;
-    const audW = depth01 * (w - audX0 - 14);
+    // Audience block (owner 2026-08-05): a FIXED-size, fixed-spacing crowd that
+    // always fills from its front edge to the right of the display and beyond.
+    // The AUDIENCE DISTANCE slider moves the WHOLE block nearer/farther from the
+    // stage — it never resizes or re-spaces the seats, and there is never empty
+    // space to the right.
+    const audFront = 4 + stageW + 24 + depth01 * (w * 0.38);
+    const audEnd = w; // always to the right edge (busts continue off past it)
 
-    // Existing DELAY SPEAKER (concept only): hung at ~58% depth.
-    const dlyX = audX0 + audW * 0.58;
+    // Existing DELAY SPEAKER (concept only): hung over the mid audience.
+    const dlyX = audFront + (audEnd - audFront) * 0.55;
     const dlyY = ceilY + 22;
     const delayWedge = Skia.Path.Make();
     if (delayOn) {
@@ -3806,7 +3967,7 @@ export function SideCoverageView({
 
     // NEW distinct DELAYED HANGING speaker, farther back OVER the rear seats,
     // with its own steep coverage wedge onto the rear rows.
-    const rearX = audX0 + audW * 0.84;
+    const rearX = audFront + (audEnd - audFront) * 0.82;
     const rearY = ceilY + 16;
     const rearAxis = (72 * Math.PI) / 180; // steep down onto the rear rows
     const rearHalf = (26 * Math.PI) / 180;
@@ -3822,48 +3983,16 @@ export function SideCoverageView({
       rearWedge.close();
     }
 
-    // Seats: classified audience busts along the depth. classifyCoverage() and
-    // its thresholds are untouched; this inline tint generalises to the array
-    // (even deep coverage) and the two delayed speakers (rear rescue).
-    const seatPaths: Record<CoverageClass, SkPathT> = {
-      red: Skia.Path.Make(),
-      green: Skia.Path.Make(),
-      yellow: Skia.Path.Make(),
-      gray: Skia.Path.Make(),
-    };
-    const topA = arrayBoxes.length ? (arrayBoxes[0].tilt * Math.PI) / 180 : axis;
-    const botA = arrayBoxes.length ? (arrayBoxes[arrayBoxes.length - 1].tilt * Math.PI) / 180 : axis;
-    const NS = 9;
-    for (let i = 0; i < NS; i++) {
-      const sx = audX0 + ((i + 0.5) / NS) * audW;
-      const rise = sloped ? (i / (NS - 1)) * 34 : 0;
-      const hy = floorY - 14 - rise;
-      let cls: CoverageClass;
-      let d: number;
-      if (lineArray) {
-        // The array covers evenly across its whole vertical spread.
-        const vx = sx - spkX;
-        const vy = hy - arrayMidY;
-        d = Math.hypot(vx, vy);
-        const ang = Math.atan2(vy, vx);
-        if (ang >= topA - boxHalf && ang <= botA + boxHalf) cls = 'green';
-        else if (ang >= topA - boxHalf - (6 * Math.PI) / 180 && ang <= botA + boxHalf + (6 * Math.PI) / 180)
-          cls = 'yellow';
-        else cls = 'gray';
-      } else {
-        const vx = sx - spkX;
-        const vy = hy - spkY;
-        d = Math.hypot(vx, vy);
-        const off = Math.abs(Math.atan2(vy, vx) - axis);
-        cls = off <= half ? 'green' : off <= half + (7 * Math.PI) / 180 ? 'yellow' : 'gray';
-      }
-      // Hot zone: front rows blasted point-blank inside the core.
-      if (cls === 'green' && d < w * 0.2) cls = 'red';
-      // Existing delay speaker rescues the mid/rear (concept only).
-      if (delayOn && cls === 'gray' && sx > dlyX - 8) cls = 'green';
-      // Distinct rear hanging speaker rescues the rear rows.
-      if (rearDelayOn && (cls === 'gray' || cls === 'yellow') && sx > rearX - audW * 0.3) cls = 'green';
-      appendBust(seatPaths[cls], sx, floorY - rise, bustScale);
+    // Seats: fixed-spacing GRAY busts from the front edge to past the right of
+    // the display. The audience is ALWAYS gray (owner 2026-08-05) — coverage is
+    // read from the heat map, not from tinting the people — and stays to scale
+    // with the stage figure (same metres-per-pixel).
+    const seats = Skia.Path.Make();
+    const SEAT_DX = Math.max(20, MPP * 0.95);
+    for (let sx = audFront; sx < w + SEAT_DX; sx += SEAT_DX) {
+      const t = Math.min(1, Math.max(0, (sx - audFront) / Math.max(1, w - audFront)));
+      const rise = sloped ? t * 30 : 0;
+      appendBust(seats, sx, floorY - rise, bustScale);
     }
     return {
       wedgeFill,
@@ -3873,13 +4002,13 @@ export function SideCoverageView({
       stage,
       delayWedge,
       rearWedge,
-      seats: seatPaths,
+      seats,
       dlyX,
       dlyY,
       rearX,
       rearY,
-      audX0,
-      audW,
+      audFront,
+      audEnd,
     };
   }, [
     w,
@@ -3918,7 +4047,10 @@ export function SideCoverageView({
         srcs.push({ x: b.x, y: b.y, axis: (b.tilt * Math.PI) / 180, half: 7, refD: w * 0.52, scale: 0.5 });
       }
     } else {
-      srcs.push({ x: spkX, y: spkY, axis: (tiltDeg * Math.PI) / 180, half: vDeg / 2, refD: w * 0.5, scale: 1 });
+      // Shorter reference distance (owner 2026-08-05): a single box falls into
+      // the BLUE by the back of the audience — one box can't hold level over
+      // depth (the teaching point). The line array / rear delay hold it.
+      srcs.push({ x: spkX, y: spkY, axis: (tiltDeg * Math.PI) / 180, half: vDeg / 2, refD: w * 0.3, scale: 1 });
     }
     if (delayOn) {
       // Delay box beam: mid-axis of its drawn wedge (same edges as geo).
@@ -4001,7 +4133,13 @@ export function SideCoverageView({
   // Alignment overlay anchors: main front sweeps from the stage; rear front
   // hops from the rear speaker; both aim at the rear-row target.
   const alignPhase = usePhaseClock(rearDelayOn, 0.5);
-  const rearTargetX = geo.audX0 + geo.audW * 0.96;
+  const rearTargetX = geo.audEnd - 8;
+  // Flash the rear-delay speaker itself (owner 2026-08-05) — replaces the old
+  // green pulse at the target rows.
+  const rearFlash = useDerivedValue(() => {
+    const g = (alignPhase.value / (2 * Math.PI)) % 1;
+    return 0.32 + 0.68 * (0.5 + 0.5 * Math.sin(g * 2 * Math.PI));
+  }, [alignPhase]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
@@ -4044,11 +4182,13 @@ export function SideCoverageView({
           <CabinetSide x={spkX} y={spkY} tiltDeg={tiltDeg} scale={cabScale} />
         )}
         {delayOn ? <CabinetSide x={geo.dlyX} y={geo.dlyY} tiltDeg={48} scale={cabScale * 0.86} /> : null}
-        {rearDelayOn ? <CabinetSide x={geo.rearX} y={geo.rearY} tiltDeg={62} scale={cabScale * 0.86} /> : null}
-        {/* The audience: proportional line-art busts, tinted by coverage class. */}
-        {(['gray', 'yellow', 'green', 'red'] as CoverageClass[]).map((k) => (
-          <LineBusts key={k} path={geo.seats[k]} stroke={SEAT_LINE[k]} sw={1.7} />
-        ))}
+        {rearDelayOn ? (
+          <Group opacity={rearFlash}>
+            <CabinetSide x={geo.rearX} y={geo.rearY} tiltDeg={62} scale={cabScale * 0.86} />
+          </Group>
+        ) : null}
+        {/* The audience: proportional line-art busts, always gray. */}
+        <LineBusts path={geo.seats} stroke={SEAT_LINE.gray} sw={1.7} />
         {/* Delay-alignment race to the rear rows (conceptual timing). */}
         {rearDelayOn ? (
           <AlignmentOverlay

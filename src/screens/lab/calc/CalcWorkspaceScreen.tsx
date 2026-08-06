@@ -6,7 +6,7 @@
  * practical example, common mistakes, standards honesty block, glossary
  * terms, OS share sheet, and the Calculation Chain (SEND → / USE).
  */
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -14,14 +14,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip } from '../LabShell';
-import type { CalcValues, FieldDef, OutputVal, Workspace } from './calcTypes';
+import type { CalcTable, CalcValues, FieldDef, OutputVal, Workspace } from './calcTypes';
 import { fmt, parseList, unitsFor } from './calcUnits';
 import { getWorkspace } from './registry';
 import { setChainValue, useChainValue } from './chainStore';
 
 const SIGS = [3, 4, 5] as const;
 
-function FieldRow({
+const FieldRow = memo(function FieldRow({
   field,
   raw,
   unitIdx,
@@ -79,7 +79,16 @@ function FieldRow({
       {warn ? <Text style={styles.warnText}>⚠ {warn}</Text> : null}
     </View>
   );
-}
+},
+// Skip re-render unless THIS field's own inputs changed — typing in one field
+// no longer re-renders every other field (owner 2026-08-05 perf fix).
+(prev, next) =>
+  prev.field === next.field &&
+  prev.raw === next.raw &&
+  prev.unitIdx === next.unitIdx &&
+  prev.chainLabel === next.chainLabel &&
+  (prev.onUseChain == null) === (next.onUseChain == null),
+);
 
 export function CalcWorkspaceScreen() {
   const insets = useSafeAreaInsets();
@@ -95,17 +104,25 @@ export function CalcWorkspaceScreen() {
   const [sig, setSig] = useState<number>(4);
   const [stepsOpen, setStepsOpen] = useState(false);
 
-  if (!ws) {
-    return (
-      <View style={styles.root}>
-        <Text style={styles.body}>This calculator is not available.</Text>
-      </View>
-    );
+  // Derivations run UNCONDITIONALLY (hooks must never sit behind an early
+  // return — owner 2026-08-05 stability fix; the previous order put a useMemo
+  // after `if (!ws) return`, a Rules-of-Hooks violation that could wedge the
+  // screen). The "not available" fallback renders below, after every hook.
+  const fn = ws ? ws.functions[Math.min(fnIdx, ws.functions.length - 1)] : null;
+
+  function defaultUnitIdx(f: FieldDef): number {
+    if (!f.defaultUnit) return 0;
+    const units = unitsFor(f.quantity, f.unitIds);
+    const i = units.findIndex((u) => u.id === f.defaultUnit);
+    return i < 0 ? 0 : i;
   }
-  const fn = ws.functions[Math.min(fnIdx, ws.functions.length - 1)];
-  const fields = fn.inputs
-    .map((k) => ws.fields.find((f) => f.key === k))
-    .filter((f): f is FieldDef => !!f);
+
+  // Stable field list — recomputes only when the workspace/function changes, so
+  // typing doesn't rebuild it (and the values memo below stays cheap).
+  const fields = useMemo<FieldDef[]>(() => {
+    if (!ws || !fn) return [];
+    return fn.inputs.map((k) => ws.fields.find((f) => f.key === k)).filter((f): f is FieldDef => !!f);
+  }, [ws, fn]);
 
   // Assemble base-unit values; null until every input parses.
   const values: CalcValues | null = useMemo(() => {
@@ -125,27 +142,35 @@ export function CalcWorkspaceScreen() {
       }
     }
     return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fields, raw, unitIdx]);
 
-  function defaultUnitIdx(f: FieldDef): number {
-    if (!f.defaultUnit) return 0;
-    const units = unitsFor(f.quantity, f.unitIds);
-    const i = units.findIndex((u) => u.id === f.defaultUnit);
-    return i < 0 ? 0 : i;
-  }
-
-  let outputs: OutputVal[] = [];
-  let steps: string[] = [];
-  let table = null as ReturnType<NonNullable<typeof fn.table>> | null;
-  let computeError = false;
-  if (values) {
+  // Compute once per (function, values) — NOT on every keystroke's re-render.
+  const { outputs, steps, table, computeError } = useMemo<{
+    outputs: OutputVal[];
+    steps: string[];
+    table: CalcTable | null;
+    computeError: boolean;
+  }>(() => {
+    if (!fn || !values) return { outputs: [], steps: [], table: null, computeError: false };
     try {
-      outputs = fn.compute(values);
-      steps = fn.steps ? fn.steps(values) : [];
-      table = fn.table ? fn.table(values) : null;
+      return {
+        outputs: fn.compute(values),
+        steps: fn.steps ? fn.steps(values) : [],
+        table: fn.table ? fn.table(values) : null,
+        computeError: false,
+      };
     } catch {
-      computeError = true;
+      return { outputs: [], steps: [], table: null, computeError: true };
     }
+  }, [fn, values]);
+
+  if (!ws || !fn) {
+    return (
+      <View style={styles.root}>
+        <Text style={styles.body}>This calculator is not available.</Text>
+      </View>
+    );
   }
 
   const shareResult = () => {
@@ -187,6 +212,7 @@ export function CalcWorkspaceScreen() {
         </View>
 
         <View style={styles.panel}>
+          {/* Inputs FIRST (owner 2026-08-05). */}
           {fields.map((f) => {
             const units = unitsFor(f.quantity, f.unitIds);
             const canChain = chain && chain.quantity === f.quantity && f.quantity !== 'list';
@@ -211,78 +237,86 @@ export function CalcWorkspaceScreen() {
             );
           })}
 
+          {/* ANSWER — DIRECTLY under the inputs (owner 2026-08-05). Always shown:
+              a labeled destination with a placeholder until every value is
+              entered, then the live result. */}
+          <View style={styles.resultPanel}>
+            <Text style={styles.resultEyebrow}>YOUR ANSWER — {fn.name.toUpperCase()}</Text>
+            {!values ? (
+              <Text style={styles.resultPlaceholder}>
+                Your answer appears here. Fill in the values above to calculate.
+              </Text>
+            ) : computeError ? (
+              <Text style={styles.warnText}>⚠ These values don’t produce a valid result — check for zeros or reversed inputs.</Text>
+            ) : (
+              <View style={{ gap: 8 }}>
+                {outputs.map((o) =>
+                  'value' in o ? (
+                    <View key={o.label} style={styles.resultRow}>
+                      <Text style={styles.resultLabel}>{o.label}</Text>
+                      <View style={styles.resultRight}>
+                        <Pressable onPress={() => setOutUnit((m) => ({ ...m, [o.label]: (m[o.label] ?? 0) + 1 }))}>
+                          <Text style={styles.resultValue}>{formatOut(o, 0)}</Text>
+                        </Pressable>
+                        {o.chainable !== false ? (
+                          <Pressable
+                            style={styles.sendBtn}
+                            onPress={() => setChainValue({ label: o.label, quantity: o.quantity, baseValue: o.value, fromWorkspace: ws.name })}
+                          >
+                            <Text style={styles.sendText}>SEND →</Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
+                    </View>
+                  ) : (
+                    <Text key={o.label} style={styles.resultNote}>
+                      <Text style={styles.resultLabel}>{o.label}  </Text>
+                      {o.text}
+                    </Text>
+                  ),
+                )}
+                {table ? (
+                  <View style={styles.table}>
+                    {table.title ? <Text style={styles.eyebrow}>{table.title}</Text> : null}
+                    <View style={styles.tr}>
+                      {table.cols.map((c) => (
+                        <Text key={c} style={[styles.td, styles.th]}>{c}</Text>
+                      ))}
+                    </View>
+                    {table.rows.map((r, i) => (
+                      <View key={i} style={styles.tr}>
+                        {r.map((c, j) => (
+                          <Text key={j} style={styles.td}>{c}</Text>
+                        ))}
+                      </View>
+                    ))}
+                  </View>
+                ) : null}
+                {steps.length ? (
+                  <Pressable onPress={() => setStepsOpen((s) => !s)}>
+                    <Text style={styles.stepsToggle}>{stepsOpen ? '▾ WORKED STEPS' : '▸ WORKED STEPS'}</Text>
+                  </Pressable>
+                ) : null}
+                {stepsOpen
+                  ? steps.map((s, i) => (
+                      <Text key={i} style={styles.stepText}>
+                        {i + 1}. {s}
+                      </Text>
+                    ))
+                  : null}
+                <Pressable style={styles.shareBtn} onPress={shareResult}>
+                  <Text style={styles.sendText}>SHARE / COPY RESULT</Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
+
           <View style={styles.sigRow}>
             <Text style={styles.sigLabel}>SIG. FIGURES</Text>
             {SIGS.map((s) => (
               <LabChip key={s} label={String(s)} selected={sig === s} onPress={() => setSig(s)} />
             ))}
           </View>
-
-          {!values ? (
-            <Text style={styles.caption}>Enter every value above to calculate.</Text>
-          ) : computeError ? (
-            <Text style={styles.warnText}>⚠ These values don’t produce a valid result — check for zeros or reversed inputs.</Text>
-          ) : (
-            <View style={{ gap: 8 }}>
-              {outputs.map((o) =>
-                'value' in o ? (
-                  <View key={o.label} style={styles.resultRow}>
-                    <Text style={styles.resultLabel}>{o.label}</Text>
-                    <View style={styles.resultRight}>
-                      <Pressable onPress={() => setOutUnit((m) => ({ ...m, [o.label]: (m[o.label] ?? 0) + 1 }))}>
-                        <Text style={styles.resultValue}>{formatOut(o, 0)}</Text>
-                      </Pressable>
-                      {o.chainable !== false ? (
-                        <Pressable
-                          style={styles.sendBtn}
-                          onPress={() => setChainValue({ label: o.label, quantity: o.quantity, baseValue: o.value, fromWorkspace: ws.name })}
-                        >
-                          <Text style={styles.sendText}>SEND →</Text>
-                        </Pressable>
-                      ) : null}
-                    </View>
-                  </View>
-                ) : (
-                  <Text key={o.label} style={styles.resultNote}>
-                    <Text style={styles.resultLabel}>{o.label}  </Text>
-                    {o.text}
-                  </Text>
-                ),
-              )}
-              {table ? (
-                <View style={styles.table}>
-                  {table.title ? <Text style={styles.eyebrow}>{table.title}</Text> : null}
-                  <View style={styles.tr}>
-                    {table.cols.map((c) => (
-                      <Text key={c} style={[styles.td, styles.th]}>{c}</Text>
-                    ))}
-                  </View>
-                  {table.rows.map((r, i) => (
-                    <View key={i} style={styles.tr}>
-                      {r.map((c, j) => (
-                        <Text key={j} style={styles.td}>{c}</Text>
-                      ))}
-                    </View>
-                  ))}
-                </View>
-              ) : null}
-              {steps.length ? (
-                <Pressable onPress={() => setStepsOpen((s) => !s)}>
-                  <Text style={styles.stepsToggle}>{stepsOpen ? '▾ WORKED STEPS' : '▸ WORKED STEPS'}</Text>
-                </Pressable>
-              ) : null}
-              {stepsOpen
-                ? steps.map((s, i) => (
-                    <Text key={i} style={styles.stepText}>
-                      {i + 1}. {s}
-                    </Text>
-                  ))
-                : null}
-              <Pressable style={styles.shareBtn} onPress={shareResult}>
-                <Text style={styles.sendText}>SHARE / COPY RESULT</Text>
-              </Pressable>
-            </View>
-          )}
         </View>
 
         <Text style={styles.formula}>FORMULA   {fn.formula}</Text>
@@ -363,6 +397,17 @@ const styles = StyleSheet.create({
   chainUse: { alignSelf: 'flex-start', borderRadius: 7, borderWidth: 1, borderColor: '#245a34', backgroundColor: '#10241a', paddingHorizontal: 9, paddingVertical: 5 },
   chainUseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: '#5bff85' },
   warnText: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: '#ff9b8f' },
+  // Answer destination — pinned at the top of the panel (owner 2026-08-05).
+  resultPanel: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.4)',
+    backgroundColor: '#17140c',
+    padding: 10,
+    gap: 6,
+  },
+  resultEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.amber },
+  resultPlaceholder: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
   sigRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   sigLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.1, color: colors.textSub },
   resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },

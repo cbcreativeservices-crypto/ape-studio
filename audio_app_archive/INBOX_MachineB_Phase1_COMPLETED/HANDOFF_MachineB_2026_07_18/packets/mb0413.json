@@ -1,0 +1,56 @@
+{
+ "batch": 413,
+ "topic": "Music Information Retrieval",
+ "terms": [
+  {
+   "id": "5357e904-024d-4b9e-9ccc-e6da679f67e3",
+   "term": "Key estimation",
+   "topic": "Music Information Retrieval",
+   "seq": 1900,
+   "difficulty": "intermediate",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "a1a8cc58-bbb6-4777-90a2-5d777648e558",
+   "term": "Melody extraction",
+   "topic": "Music Information Retrieval",
+   "seq": 1900,
+   "difficulty": "intermediate",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

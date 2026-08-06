@@ -1,0 +1,316 @@
+{
+ "batch": 91,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "f49b47df-31fc-4e29-a9fc-705d73039ae6",
+   "term": "Clipping validation",
+   "fields": {
+    "definition": "The quality-control step of checking a mix or master for clipping—confirming that no samples reach or exceed the digital ceiling (0 dBFS) and that inter-sample (true) peaks stay within the intended limit—typically using a peak or true-peak (dBTP) meter as defined by ITU-R BS.1770.",
+    "plain_english": "It means checking that the loudest parts of a track do not go over the top and distort. Going past the ceiling is like pouring water past the rim of a full glass.",
+    "purpose_function": "It ensures the delivered audio contains no hard digital distortion or inter-sample overs that can distort on playback devices and converters.",
+    "practical_application": "Before delivery, an engineer runs a true-peak meter and keeps the master at or below the target ceiling (commonly -1 dBTP) to pass clipping checks for streaming and broadcast.",
+    "category": "Quality Control",
+    "related_terms": [
+     "Clipping",
+     "True peak",
+     "Inter-sample peak",
+     "Bus validation",
+     "Broadcast compliance"
+    ],
+    "common_mistakes": [
+     "Trusting a sample-peak meter alone when inter-sample (true) peaks can still clip after digital-to-analog conversion",
+     "Assuming a limiter set to 0 dBFS prevents clipping, ignoring true-peak overshoot on lossy codecs",
+     "Confusing loudness (LUFS) with peak level and checking only one"
+    ],
+    "scenario_contexts": [
+     "Checking a master against a -1 dBTP ceiling before uploading to a streaming platform",
+     "Verifying no clipping after loudness normalization for broadcast delivery",
+     "Spotting inter-sample overs revealed by a true-peak meter that a standard peak meter missed"
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1770 — algorithms to measure audio programme loudness and true-peak audio level",
+    "EBU R128 / EBU Tech 3341 — loudness metering, including Maximum True Peak Level (dBTP)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e44dec5d-4896-4327-aae0-f7c0c71bbe28",
+   "term": "Clippings window",
+   "fields": {
+    "definition": "In MOTU Digital Performer, the Clippings window is a storage palette that holds reusable pieces of project data, called clippings, such as MIDI phrases, audio soundbites, track and channel settings, automation, whole sequences, or even external files. You drag material into the window to store it and drag it back out to reuse it in any project.",
+    "plain_english": "It is a place in Digital Performer where you keep bits you want to reuse, like a favourite drum loop or a saved channel setup. You drag a piece in to store it, then drag it back out whenever you need it. Think of it as a scrapbook of parts.",
+    "purpose_function": "It lets you save and instantly recall commonly used musical parts and settings, so you do not have to rebuild them from scratch in every session.",
+    "practical_application": "A producer stores a go-to hi-hat pattern, a vocal effects chain, and a full mix channel setup as clippings, then drags them into new songs to start faster.",
+    "category": "DAW feature",
+    "related_terms": [
+     "MIDI clip",
+     "Soundbite",
+     "Preset",
+     "Session template",
+     "Automation",
+     "Drag and drop"
+    ],
+    "common_mistakes": [
+     "Confusing clippings with the system clipboard; clippings persist and can be reused across sessions, while the clipboard only holds the last copied item.",
+     "Assuming a clipping stores the actual audio file inside the window, when the data really lives in a folder the clipping points to.",
+     "Forgetting that project clippings stay with one project while global clippings are shared across all projects."
+    ],
+    "scenario_contexts": [
+     "Saving a favourite drum groove as a clipping to reuse in future beats.",
+     "Storing a fully configured vocal channel with EQ, compression and sends for quick recall on new songs.",
+     "Keeping lyric text files and reference audio in the Clippings window alongside musical parts."
+    ]
+   },
+   "sources": [
+    "MOTU Digital Performer documentation: Clippings (Performer product documentation)",
+    "Sound on Sound, Digital Performer Workshop: Save And Recall Clippings"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "df8e7374-109c-4f44-a8c6-81cc3e7f6c3b",
+   "term": "Closed-hi-hat sample",
+   "fields": {
+    "definition": "A closed-hi-hat sample is a recorded sound of a hi-hat cymbal struck while its two cymbals are pressed shut, giving a short, tight tick. In drum programming it is usually placed in the same mute (choke) group as the open-hi-hat sample, so a closed hit cuts off a ringing open hit, imitating a real hi-hat closed with the foot pedal.",
+    "plain_english": "This is a recorded tick sound of a hi-hat with its cymbals clamped shut. Producers link it to the open hi-hat sound so that hitting the closed one stops the ringing open one. That copies what a real drummer does when they close the pedal.",
+    "purpose_function": "It supplies the crisp, short hi-hat sound used to mark the small beats in a groove, and pairing it with the open sample in one choke group makes programmed hi-hats behave like a real player's.",
+    "practical_application": "When building a beat, a producer loads open and closed hi-hat samples into one exclusive or mute group in a sampler or drum machine so the closed hit chokes the open hit for a natural feel.",
+    "category": "Drum sampling",
+    "related_terms": [
+     "Open hi-hat sample",
+     "Choke group",
+     "Mute group",
+     "Drum machine",
+     "Sampler",
+     "One-shot"
+    ],
+    "common_mistakes": [
+     "Not placing the open and closed hi-hats in the same choke or mute group, so open hi-hats ring through closed hits and sound unnatural.",
+     "Layering many overlapping hi-hat hits without cutting the previous one, causing a cluttered, washy sound.",
+     "Using one fixed velocity for every hit, which makes programmed hi-hats sound robotic instead of lively."
+    ],
+    "scenario_contexts": [
+     "Programming a trap or hip-hop hi-hat pattern from one-shot samples.",
+     "Setting up a sampler kit so closed hats choke open hats like an acoustic kit.",
+     "Replacing a weak recorded hi-hat with a sample during drum editing."
+    ]
+   },
+   "sources": [
+    "Native Instruments Battery 4 documentation: setting up cells for hi-hat choking (exclusive groups)",
+    "Huber & Runstein, Modern Recording Techniques (drum recording and sampling)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a6b2a47a-6c26-4bb5-b20b-fa96bfc800dc",
+   "term": "CloudBounce",
+   "fields": {
+    "definition": "CloudBounce is a commercial online, automated (algorithmic/AI-driven) audio mastering service that analyzes an uploaded mix and returns a processed, mastered version; it is offered both as a web service and as a desktop application.",
+    "plain_english": "It is a website and app that masters your song for you automatically. You upload a mix and it sends back a louder, polished version without a human engineer.",
+    "purpose_function": "It gives musicians a fast, low-cost way to obtain a mastered-sounding track without booking a mastering engineer, by applying automated processing based on analysis of the audio.",
+    "practical_application": "A producer uploads a stereo mix to CloudBounce, chooses a style or reference, and downloads the automatically mastered file for a demo or release.",
+    "category": "Mastering",
+    "related_terms": [
+     "Assistive mastering",
+     "Mastering",
+     "Delivery master",
+     "Loudness normalization"
+    ],
+    "common_mistakes": [
+     "Treating automated mastering as a full replacement for a skilled mastering engineer on critical releases",
+     "Uploading an already-loud or clipped mix and expecting the service to fix underlying mix problems",
+     "Assuming one automated result fits every playback target without checking loudness and true-peak levels"
+    ],
+    "scenario_contexts": [
+     "Mastering a demo quickly for a client to review before a full session",
+     "Producing a streaming-ready master on a tight budget",
+     "Comparing an automated master against a manual one to evaluate results"
+    ]
+   },
+   "sources": [
+    "Sound on Sound — 'LANDR, CloudBounce & The Future Of Mastering' (techniques article)",
+    "MusicTech — report on the CloudBounce desktop mastering application"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "97a27e20-d75f-443a-bed6-e4e1a5158133",
+   "term": "Club translation",
+   "fields": {
+    "definition": "Club translation is how well a finished mix holds up when played on a large club or dance-venue sound system, which is typically loud with powerful subwoofers and strong low end, compared with how it sounded in the studio. A mix with good club translation keeps its intended balance, punch and clarity on that system instead of turning boomy, harsh or thin.",
+    "plain_english": "This is how good your mix sounds when it is played loud on a club's big speakers, not just in the studio. Clubs have huge bass, so a mix that felt fine on small speakers can turn into a muddy mess. Checking club translation means making sure it still sounds right there.",
+    "purpose_function": "It exists because playback systems differ hugely; mixing and checking for club translation makes sure a track keeps its impact and balance on the powerful, bass-heavy rigs it will be played on.",
+    "practical_application": "A dance-music engineer checks a mix on large monitors or an actual club rig, taming excess sub-bass and harsh highs so the track stays clear and punchy when it is played out.",
+    "category": "Mix translation",
+    "related_terms": [
+     "Mix translation",
+     "Reference monitors",
+     "Subwoofer",
+     "Low-end management",
+     "Reference track",
+     "Loudness"
+    ],
+    "common_mistakes": [
+     "Mixing only on small speakers or headphones and assuming it will sound the same on a big club system.",
+     "Adding too much sub-bass in the studio, which becomes overwhelming and muddy on a club rig.",
+     "Judging club translation at low volume, since loud playback changes how bass and treble are heard."
+    ],
+    "scenario_contexts": [
+     "Preparing a house or techno track intended mainly for club and festival play.",
+     "Test-playing a mix on a large PA before finalising the low end.",
+     "Comparing a mix against a released club reference track to match its balance."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook (mix translation across playback systems)",
+    "Bob Katz, Mastering Audio: The Art and the Science (monitoring and translation across systems)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1f62dd53-f7e4-4560-89f8-d096345ea07d",
+   "term": "Collect All and Save",
+   "fields": {
+    "definition": "Collect All and Save is an Ableton Live command that copies all external media a Live Set depends on, such as audio samples, video files and Max for Live devices, into the project's own folder so the whole project is self-contained. It does not copy third-party plug-ins, which must still be installed on each computer.",
+    "plain_english": "This is an Ableton command that gathers all the sounds and files your song uses and copies them into one project folder. That way, if you move the project or send it to someone, nothing goes missing. It cannot pack up plug-ins, though, so those must be installed separately.",
+    "purpose_function": "It prevents missing-file problems by pulling every referenced sample and media file into the project folder, which makes the Set easy to back up, archive or move between machines.",
+    "practical_application": "Before handing a project to a collaborator or copying it to an external drive, an engineer runs Collect All and Save so all samples travel with the Set instead of breaking their links.",
+    "category": "Session management",
+    "related_terms": [
+     "Live Set",
+     "Project folder",
+     "Sample",
+     "Missing files",
+     "Max for Live",
+     "Consolidate"
+    ],
+    "common_mistakes": [
+     "Assuming Collect All and Save also copies plug-ins; it does not, so missing plug-ins still break the project on another computer.",
+     "Not collecting before moving a project, which leaves samples behind and causes media-files-missing warnings.",
+     "Collecting huge sample libraries into every project, which can waste a lot of disk space."
+    ],
+    "scenario_contexts": [
+     "Sending a session to another producer for collaboration.",
+     "Archiving a finished project so it still opens correctly years later.",
+     "Moving work between a studio desktop and a laptop."
+    ]
+   },
+   "sources": [
+    "Ableton Live Reference Manual: Managing Files and Sets (Collect All and Save)",
+    "Ableton Knowledge Base: Collect All and Save (Ableton technical documentation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f0741c05-2d6c-4d39-8ae0-efbe2c104a6d",
+   "term": "Combat music",
+   "fields": {
+    "definition": "In video game audio, the music that plays during combat or battle sequences—usually a more energetic, driving cue that contrasts with exploration or ambient music and is triggered when the player enters a fight.",
+    "plain_english": "It is the fast, exciting music that plays while you are fighting enemies in a game. When the fight ends, the game usually switches back to calmer music.",
+    "purpose_function": "It raises energy and tension during fights, cueing the player that they are in danger and reinforcing the pace of the action.",
+    "practical_application": "An audio implementer sets combat music to trigger when enemies engage and to transition back to exploration music—often at a musical boundary—when the threat clears.",
+    "category": "Game Audio",
+    "related_terms": [
+     "Boss music",
+     "Defeat music",
+     "Adaptive music",
+     "Delayed transition"
+    ],
+    "common_mistakes": [
+     "Cutting abruptly between exploration and combat music instead of using a musical transition",
+     "Assuming combat music must always be fast and loud rather than fitting the game's tone",
+     "Looping a single combat cue with no variation, causing listener fatigue in long fights"
+    ],
+    "scenario_contexts": [
+     "Switching from ambient exploration music to combat music when a fight starts",
+     "Layering additional instruments as more enemies appear",
+     "Returning to background music at the next bar after combat ends"
+    ]
+   },
+   "sources": [
+    "Winifred Phillips, A Composer's Guide to Game Music (MIT Press)",
+    "Karen Collins, Game Sound: An Introduction to the History, Theory, and Practice of Video Game Music and Sound Design (MIT Press)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fc75b7c7-eab0-4f4b-af8c-5796d187225d",
+   "term": "Combinator",
+   "fields": {
+    "definition": "The Combinator is a device in Reason (Reason Studios) that holds any combination of instruments, effects and other devices, together with their internal connections, inside a single container called a Combi. The whole Combi can be saved and recalled as one patch, and it has a custom front panel whose controls map to parameters of the devices inside.",
+    "plain_english": "The Combinator is like a box in Reason that holds several instruments and effects wired together as one unit. You can save the whole setup as a single sound and load it again instantly. It even has its own control panel, so a few knobs can steer everything inside.",
+    "purpose_function": "It lets you build, save and reuse complex layered instruments and effect chains as one portable patch, and control many devices at once through a simplified custom panel.",
+    "practical_application": "A producer stacks a piano and a pad into a Combinator to play them as one layered sound, then saves it as a Combi patch to reuse in other songs.",
+    "category": "DAW device",
+    "related_terms": [
+     "Patch",
+     "Layering",
+     "Keyboard split",
+     "Rack",
+     "Effect chain",
+     "Preset"
+    ],
+    "common_mistakes": [
+     "Thinking a Combinator makes its own sound; it only hosts other devices and their connections.",
+     "Overloading a single Combi with many heavy devices, which can strain the computer's CPU.",
+     "Forgetting to map the Combinator's front-panel controls, so its knobs and buttons do nothing."
+    ],
+    "scenario_contexts": [
+     "Building a layered synth-and-pad patch to play from one MIDI keyboard.",
+     "Saving a favourite chain of effects as a reusable Combi.",
+     "Creating a keyboard split with a bass on the low keys and a lead on the high keys."
+    ]
+   },
+   "sources": [
+    "Reason Studios, Reason Operation Manual: The Combinator",
+    "Sound on Sound, Reason Notes: Building Combinator Patches"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "45febc3d-d3d7-4122-9657-f7ae33ac0239",
+   "term": "Comments View",
+   "fields": {
+    "definition": "In Pro Tools, Comments View is a display option that shows each track's editable Comments field, a small text area for notes about that track, in the Edit or Mix window. It is switched on from the View menu and lets engineers store per-track reminders directly in the session.",
+    "plain_english": "This is a Pro Tools setting that shows a little notes box on each track. You can type reminders there, like which mic was used or that a vocal still needs tuning. It keeps your notes right next to the track instead of on paper.",
+    "purpose_function": "It gives each track a place for written notes inside the session, helping engineers remember settings, mic choices or to-do items and pass them on to collaborators.",
+    "practical_application": "During a session an engineer switches on Comments View and types the mic and preamp used on each track, so those details are saved with the project for later recall.",
+    "category": "DAW feature",
+    "related_terms": [
+     "Track",
+     "Markers",
+     "Edit window",
+     "Mix window",
+     "Session",
+     "Memory locations"
+    ],
+    "common_mistakes": [
+     "Confusing track comments with timeline markers; comments describe a track, while markers flag points in time.",
+     "Leaving Comments View hidden and then forgetting the notes exist.",
+     "Typing so much text that it is cut off, since the visible comment area is small."
+    ],
+    "scenario_contexts": [
+     "Noting the microphone and preamp used on each recorded track.",
+     "Leaving instructions for another engineer taking over the mix.",
+     "Tracking which takes still need editing or tuning."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (track Comments; Edit and Mix Window Views)",
+    "Avid Pro Tools Knowledge Base (adding and viewing track comments)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 406,
+ "topic": "Audio Plugin & DSP Development",
+ "authored": [
+  {
+   "id": "2b4c168b-a005-4a07-9407-48e9f7898989",
+   "term": "Parameter automation callback",
+   "fields": {
+    "definition": "A function, implemented by a plugin and invoked by the host, that is called whenever an automated parameter's value is changed by the host, for example from a DAW automation lane, a control surface, or a moved control. In formats such as VST3 the controller receives value changes through methods like parameterValueChanged, while sample-accurate automation reaches the processor as parameter-change queues read during processing.",
+    "plain_english": "It is a bit of code the plugin sets up so the host can tell it a knob just moved. When you draw automation in your DAW, the host calls this code to hand the plugin the new value.",
+    "purpose_function": "It lets the host push parameter changes into the plugin so recorded automation and remote control can move the plugin's settings without the user touching its interface.",
+    "practical_application": "A plugin developer writes this callback to receive automation values and update the DSP, so a filter cutoff drawn in the DAW timeline actually changes the sound during playback.",
+    "category": "Parameter Handling",
+    "related_terms": ["Parameter smoothing", "Parameter mapping", "Parameter interpolation", "Parameter ramping", "Plugin framework"],
+    "common_mistakes": ["UNSAFE: doing heavy work such as memory allocation, locking, or file access inside the callback, which can block the audio thread and cause dropouts or glitches during a live show", "Assuming the callback fires once per sample; hosts commonly deliver one value per processing block unless sample-accurate automation is handled", "Applying the new value to a DSP coefficient abruptly instead of smoothing it, producing zipper noise"],
+    "scenario_contexts": ["A DAW plays back an automation lane that sweeps a plugin's filter cutoff, calling the plugin's automation callback with each new value", "A hardware control surface moves a fader mapped to a plugin parameter, delivering values through the callback", "A user records knob movements into an automation track and the plugin receives them on the next playback"]
+   },
+   "sources": ["Steinberg VST3 SDK Documentation (IEditController parameterValueChanged, IAudioProcessor parameter changes)", "JUCE Framework Documentation (AudioProcessorParameter, AudioProcessorValueTreeState::Listener)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c71b3efd-d1cc-417b-9d1e-cb120be63acf",
+   "term": "Parameter interpolation",
+   "fields": {
+    "definition": "The process of computing intermediate parameter values between successive control updates so a parameter changes gradually rather than in discrete steps. Because automation and control changes typically arrive at block boundaries or at control rate, interpolation generates per-sample or finer-grained values, most commonly by linear interpolation between the old and new value across a processing block.",
+    "plain_english": "A control may update only a few times each second, but audio needs a value for every sample. This fills in the missing values in between, like drawing a smooth line between two dots.",
+    "purpose_function": "It bridges the gap between the slow rate at which parameters update and the fast rate of audio samples, so parameter changes sound continuous instead of stepped.",
+    "practical_application": "A developer interpolates a gain value across each audio block so a volume automation move sounds smooth rather than causing audible steps.",
+    "category": "Parameter Handling",
+    "related_terms": ["Parameter smoothing", "Parameter ramping", "Parameter automation callback", "Parameter mapping", "Plugin framework"],
+    "common_mistakes": ["Confusing parameter interpolation with sample-rate conversion or sample interpolation, which are separate operations", "Interpolating a value that must be quantized, such as an integer mode switch, producing invalid in-between states", "Skipping interpolation and applying the new value at the block start, which creates audible steps"],
+    "scenario_contexts": ["Smoothing a volume automation curve by computing a value for every sample instead of once per block", "Sweeping a filter cutoff where per-sample interpolated values prevent stepping artifacts", "Cross-blending two coefficient sets in an EQ as a parameter moves"]
+   },
+   "sources": ["Will Pirkle, Designing Audio Effect Plugins in C++", "JUCE Framework Documentation (SmoothedValue, linear interpolation of parameters)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9e88cbf8-9c0a-49c4-b8d4-1da6c6563916",
+   "term": "Parameter mapping",
+   "fields": {
+    "definition": "The defined relationship between a parameter's normalized value, the format-neutral 0.0 to 1.0 range used by the host and automation, and its plain (real-world) value used by the DSP, together with the scaling law that connects them. Mappings are commonly linear, logarithmic, or exponential (skewed) so that, for example, a frequency control feels perceptually even across its range.",
+    "plain_english": "Hosts send every control as a number from 0 to 1, but the plugin needs real units like hertz or decibels. Mapping is the rule that turns 0 to 1 into the real value, and back again.",
+    "purpose_function": "It converts between the host's uniform normalized range and the plugin's actual units, and shapes how a control's travel maps to its value so knobs feel natural to use.",
+    "practical_application": "A developer maps a frequency knob logarithmically so equal knob movement gives equal musical pitch change instead of bunching the useful range at one end.",
+    "category": "Parameter Handling",
+    "related_terms": ["Parameter smoothing", "Parameter automation callback", "Parameter interpolation", "Parameter ramping", "Plugin framework"],
+    "common_mistakes": ["Forgetting to invert the mapping so the displayed value and the automation value disagree", "Using a linear taper for frequency or gain where a logarithmic taper is needed, making most of the range unusable", "Confusing the normalized 0-to-1 value with the plain value when saving state or reading automation"],
+    "scenario_contexts": ["Setting a skew factor so a filter frequency knob spreads evenly across the audible range", "Converting an incoming normalized automation value to decibels inside a gain plugin", "Displaying the correct real-world value in a plugin's readout as the host moves a control"]
+   },
+   "sources": ["Steinberg VST3 SDK Documentation (normalized versus plain parameter values, toPlain/toNormalized)", "JUCE Framework Documentation (NormalisableRange, skew factor)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "baa89a75-57ac-4b80-a9dc-e1cc85a26ec5",
+   "term": "Parameter ramping",
+   "fields": {
+    "definition": "A parameter-change technique that moves a parameter from its previous value to a new target along a defined ramp, usually linear, over a fixed number of samples or a set time, rather than jumping instantly. Ramping is a specific form of smoothing that reaches the target in a bounded, predictable interval.",
+    "plain_english": "Instead of jumping a setting straight to its new value, ramping slides it there over a short, fixed time. It is like easing a fader up over one second instead of snapping it.",
+    "purpose_function": "It removes the clicks and zipper noise caused by sudden parameter jumps by spreading the change over a short, known interval.",
+    "practical_application": "A developer ramps a gain change over a few milliseconds when a preset loads so the level shift is inaudible instead of a click.",
+    "category": "Parameter Handling",
+    "related_terms": ["Parameter smoothing", "Parameter interpolation", "Parameter automation callback", "Parameter mapping", "Plugin framework"],
+    "common_mistakes": ["Setting the ramp time too long, so fast automation lags audibly behind the control", "Resetting the ramp target every processing block so the value never settles at the intended setting", "Assuming a linear ramp is inaudible for all parameters; for perceived loudness or frequency a linear ramp can still sound uneven"],
+    "scenario_contexts": ["Ramping output gain over a few milliseconds when the user switches presets to avoid a click", "Smoothing a bypass crossfade by ramping the wet/dry mix", "Moving a filter cutoff to a new automation target over a short fixed interval"]
+   },
+   "sources": ["Will Pirkle, Designing Audio Effect Plugins in C++", "JUCE Framework Documentation (SmoothedValue, ValueSmoothingTypes::Linear)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d7427a24-3c53-4b29-8c7c-19782076d647",
+   "term": "Parameter smoothing",
+   "fields": {
+    "definition": "The general technique of gradually transitioning a parameter from its current value toward a new target over time, instead of applying the change instantly, to prevent audible artifacts. Common implementations include a linear ramp over a set duration or a one-pole low-pass filter that exponentially approaches the target.",
+    "plain_english": "When a setting changes, smoothing moves it gently to the new value instead of all at once. That stops the crackles and zipper sounds you get when a value jumps.",
+    "purpose_function": "It prevents the clicks and zipper noise that occur when a parameter changes abruptly, keeping automation and knob turns free of artifacts.",
+    "practical_application": "A developer wraps a filter cutoff in a smoothing object so quick knob turns or coarse automation sound clean rather than stepped or crackly.",
+    "category": "Parameter Handling",
+    "related_terms": ["Parameter ramping", "Parameter interpolation", "Parameter automation callback", "Parameter mapping", "Plugin framework"],
+    "common_mistakes": ["Applying smoothing to values that must change instantly, such as a discrete mode or filter-type switch, causing invalid intermediate states", "Choosing a smoothing time so long that the plugin feels sluggish and unresponsive", "Smoothing the normalized value instead of the plain value, giving an uneven result for logarithmic controls"],
+    "scenario_contexts": ["Smoothing a gain parameter so rapid fader automation does not produce zipper noise", "Applying exponential smoothing to a filter cutoff for natural-sounding sweeps", "Preventing clicks when a user quickly turns a mix knob during a live set"]
+   },
+   "sources": ["Will Pirkle, Designing Audio Effect Plugins in C++", "JUCE Framework Documentation (SmoothedValue, Linear and Multiplicative smoothing)", "Zolzer, DAFX: Digital Audio Effects"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ad6e6bda-3e67-4f07-893c-bd1fb8f05cca",
+   "term": "Plugin certification",
+   "fields": {
+    "definition": "The process by which a plugin-format owner verifies that a plugin conforms to that format's specification and behaves correctly before it is distributed or officially recognized. Examples include Steinberg's VST3 validator, Apple's auval Audio Unit validation tool, and Avid's AAX qualification and code-signing requirements.",
+    "plain_english": "Before a plugin is allowed into a format like AU or AAX, its maker must prove it follows all the rules and behaves well. Certification is that official check, a bit like a safety inspection.",
+    "purpose_function": "It confirms a plugin loads, saves and recalls state, and handles parameters correctly across hosts, protecting users from crashes and holding the format to a consistent quality bar.",
+    "practical_application": "A developer runs the format's validation tool, such as auval or the VST3 validator, and fixes every reported failure before shipping the plugin.",
+    "category": "Plugin Development",
+    "related_terms": ["Plugin Software Development Kit", "Plugin framework", "Plugin preset format", "Parameter automation callback", "Parameter mapping"],
+    "common_mistakes": ["Assuming a plugin that runs in one DAW will pass certification; validators exercise edge cases many hosts skip", "Ignoring state save-and-recall tests, which are a common certification failure point", "Treating certification as a one-time step rather than re-running it after each change"],
+    "scenario_contexts": ["Running auval to validate an Audio Unit before releasing it to users", "Passing the Steinberg VST3 validator as part of a build pipeline", "Completing Avid's AAX qualification and code signing before releasing a Pro Tools plugin"]
+   },
+   "sources": ["Apple Audio Unit / Core Audio Documentation (auval validation tool)", "Steinberg VST3 SDK Documentation (VST3 validator)", "Avid AAX SDK Documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "15064402-5719-47c1-8c39-db4ed7bb90fb",
+   "term": "Plugin framework",
+   "fields": {
+    "definition": "A software library or toolkit that provides the shared infrastructure for building audio plugins, such as parameter management, state save and recall, the graphical interface, and wrappers for multiple plugin formats, so a developer writes the DSP and UI once and targets several formats. JUCE and iPlug2 are widely used examples.",
+    "plain_english": "It is a ready-made toolkit that handles the dull, repeated parts of making a plugin. That includes menus, saving settings, and supporting many formats. You just add your own sound on top.",
+    "purpose_function": "It removes the need to rewrite the common plugin plumbing for each format, letting developers focus on the audio processing while still shipping VST3, AU, and AAX versions.",
+    "practical_application": "A developer builds a plugin in JUCE and exports VST3, AU, and AAX targets from a single codebase instead of coding to each format's raw SDK.",
+    "category": "Plugin Development",
+    "related_terms": ["Plugin Software Development Kit", "Plugin certification", "Plugin preset format", "Parameter mapping", "Parameter automation callback"],
+    "common_mistakes": ["Confusing a cross-format framework such as JUCE with a single format's SDK such as the VST3 SDK", "Assuming the framework guarantees certification; each target format still has its own validation", "Relying on framework defaults for parameter tapers without setting appropriate mappings"],
+    "scenario_contexts": ["Choosing JUCE to release one plugin across Windows, macOS, VST3, and AU", "Using a framework's parameter classes to handle automation and state automatically", "Prototyping a new effect quickly by building on a framework's example project"]
+   },
+   "sources": ["JUCE Framework Documentation (AudioProcessor, plugin format wrappers)", "Will Pirkle, Designing Audio Effect Plugins in C++"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6f0b2dd0-fb0c-4ec4-9e52-7568bdec16b3",
+   "term": "Plugin preset format",
+   "fields": {
+    "definition": "The defined file structure used to store and recall a plugin's complete parameter state, or preset, so it can be saved, shared, and reloaded. Format-specific examples include Steinberg's .vstpreset files, Apple Audio Unit .aupreset property lists, and the older VST2 .fxp (single preset) and .fxb (bank) files.",
+    "plain_english": "A preset saves all of a plugin's settings so you can recall a sound later. The preset format is the agreed file layout used to store those settings on disk.",
+    "purpose_function": "It gives a consistent, portable way to capture and restore every plugin setting, so users and manufacturers can save, share, and reliably reload sounds.",
+    "practical_application": "A developer implements save and load so the plugin writes its state to the format's preset file, letting users store a favorite sound and reload it later or on another machine.",
+    "category": "Plugin Development",
+    "related_terms": ["Plugin Software Development Kit", "Plugin framework", "Plugin certification", "Parameter mapping", "Parameter automation callback"],
+    "common_mistakes": ["Saving only visible controls and omitting hidden internal state, so a reloaded preset does not fully match", "Assuming presets transfer between formats; a VST3 preset is not directly loadable as an Audio Unit preset", "Storing state without versioning, which breaks old presets when the parameter layout later changes"],
+    "scenario_contexts": ["A user saves a synth patch as a .vstpreset file to recall later", "Sharing an .aupreset between engineers using the same Audio Unit", "Loading a factory preset bank that ships with a plugin"]
+   },
+   "sources": ["Steinberg VST3 SDK Documentation (.vstpreset file format)", "Apple Audio Unit / Core Audio Documentation (.aupreset property list)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b2ff177a-59a9-4b7e-8233-2dde3fa40846",
+   "term": "Plugin Software Development Kit",
+   "fields": {
+    "definition": "A software development kit published by a plugin-format owner that supplies the headers, libraries, interface definitions, documentation, and example code needed to build plugins for that format. The Steinberg VST3 SDK, Apple's Audio Unit APIs in the Core Audio and AudioToolbox frameworks, and the Avid AAX SDK are the principal examples.",
+    "plain_english": "It is the official kit of code and instructions from a format's owner that you need to build a plugin for that format. It is like getting a maker's parts and manual to build something that fits their system.",
+    "purpose_function": "It defines the exact interface a plugin must implement for a given format, so plugins built with it load and communicate correctly in any compatible host.",
+    "practical_application": "A developer downloads the VST3 SDK to get the interfaces and examples required to compile a VST3 plugin, either directly or through a framework that wraps it.",
+    "category": "Plugin Development",
+    "related_terms": ["Plugin framework", "Plugin certification", "Plugin preset format", "Parameter automation callback", "Parameter mapping"],
+    "common_mistakes": ["Confusing a format SDK, which targets one format, with a cross-format framework such as JUCE", "Ignoring the SDK's licensing terms, which govern how plugins built with it may be distributed", "Using an outdated SDK version and missing required interface changes for current hosts"],
+    "scenario_contexts": ["Downloading the Steinberg VST3 SDK to build a plugin against its interfaces", "Using Apple's Audio Unit APIs to create an AUv3 app extension", "Integrating the AAX SDK to produce a Pro Tools-compatible plugin"]
+   },
+   "sources": ["Steinberg VST3 SDK Documentation", "Apple Audio Unit / Core Audio Documentation (AudioToolbox)", "Avid AAX SDK Documentation"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

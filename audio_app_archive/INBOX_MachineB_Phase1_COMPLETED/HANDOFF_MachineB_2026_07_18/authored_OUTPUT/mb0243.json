@@ -1,0 +1,324 @@
+{
+ "batch": 243,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "d1fe76d3-96ec-4619-aff4-ee1a3a701b98",
+   "term": "Physics-driven sound",
+   "fields": {
+    "definition": "An approach to sound creation in which audio is generated or controlled in real time by a physical simulation, so that a sound's pitch, loudness, and timbre are computed from modeled physical events such as collisions, friction, and resonance rather than played back from fixed recordings.",
+    "plain_english": "Sound that a computer builds on the fly by copying the laws of physics. When two things hit in the scene, the program works out what that crash would really sound like. It is like a video game making a fresh bounce noise each time a ball lands.",
+    "purpose_function": "It lets sound respond on its own to on-screen or in-game action, which avoids the repetition and hand-syncing that come with a small set of fixed sound files.",
+    "practical_application": "A technician sets up and tunes procedural or physical-modeling audio tools so that events in a game engine or animation trigger matching sounds, adjusting values like material, mass, and force.",
+    "category": "Sound Synthesis",
+    "related_terms": [
+     "Procedural audio",
+     "Physical modeling synthesis",
+     "Sound design",
+     "Pitch manipulation",
+     "Sample playback"
+    ],
+    "common_mistakes": [
+     "Confusing physics-driven sound with simply attaching recorded effects to a physics scene.",
+     "Assuming it removes the need for sound design; the models still need careful tuning.",
+     "Believing it always sounds more realistic than well-recorded samples."
+    ],
+    "scenario_contexts": [
+     "Generating collision and impact sounds inside a game engine.",
+     "Creating responsive audio for interactive installations or VR.",
+     "Producing procedural rolling, scraping, or wind sounds for animation."
+    ]
+   },
+   "sources": [
+    "Andy Farnell, Designing Sound (MIT Press)",
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "AES papers on physically based and procedural sound synthesis"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f9689aa0-ec3e-4b33-9b76-444646a68b32",
+   "term": "Picture hit",
+   "fields": {
+    "definition": "A precise moment in the edited picture — such as a cut, an impact, or a distinct character action — that a music cue or sound effect is timed to land exactly on for dramatic emphasis; also called a hit point.",
+    "plain_english": "An exact spot in the video where a sound or a note is made to land. Picture a cartoon where the bonk sound hits the very frame a character gets bopped on the head.",
+    "purpose_function": "It gives composers and sound editors a shared sync target so that music and effects reinforce key visual moments and feel deliberately timed.",
+    "practical_application": "A technician marks picture hits with timeline markers so a composer or sound editor can align notes and effects to those exact frames.",
+    "category": "Sync & Timing",
+    "related_terms": [
+     "Picture synchronization",
+     "Hit point",
+     "Spotting session",
+     "Timecode",
+     "Marker"
+    ],
+    "common_mistakes": [
+     "Confusing a single picture hit with the overall sync of a whole scene.",
+     "Placing the hit a frame or two late so it feels loose.",
+     "Overusing hits until the score feels like cartoon 'Mickey Mousing'."
+    ],
+    "scenario_contexts": [
+     "Scoring a trailer so musical stabs land on the cut points.",
+     "Syncing a whoosh to a fast on-screen movement.",
+     "Marking action beats during a spotting session."
+    ]
+   },
+   "sources": [
+    "Tomlinson Holman, Sound for Film and Television",
+    "David Yewdall, The Practical Art of Motion Picture Sound",
+    "Sound On Sound, Media Composers / scoring to picture"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "74ef7e31-341d-4a2d-a6aa-afbe93c18625",
+   "term": "Picture monitor",
+   "fields": {
+    "definition": "A video display in an audio-post, editing, or scoring room that shows the program picture locked in sync with the audio session, letting operators watch the image while cutting or mixing sound to it.",
+    "plain_english": "The screen in a sound studio that plays the video while you work on its audio. It is like the TV a sound editor watches so their sounds match what is happening on screen.",
+    "purpose_function": "It provides the reference image that all sound-to-picture work is timed against, so editors and mixers can judge sync and timing by eye.",
+    "practical_application": "A technician feeds picture from the workstation or a video player to the monitor and confirms it stays locked in sync with the audio during playback.",
+    "category": "Monitoring",
+    "related_terms": [
+     "Picture synchronization",
+     "Timecode",
+     "Genlock",
+     "Video reference",
+     "Studio monitor"
+    ],
+    "common_mistakes": [
+     "Ignoring display processing delay that pushes the picture behind the audio.",
+     "Assuming any consumer TV is accurate enough for sync-critical work.",
+     "Confusing the picture monitor with the audio studio monitor (loudspeaker)."
+    ],
+    "scenario_contexts": [
+     "Watching the cut on the picture monitor while editing dialogue.",
+     "Checking lip sync during a final mix.",
+     "Following the image while recording Foley."
+    ]
+   },
+   "sources": [
+    "Tomlinson Holman, Sound for Film and Television",
+    "Avid Pro Tools Reference Guide (video and synchronization)",
+    "SMPTE synchronization standards"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "43382bcf-e463-45fc-afde-6caac2b251d6",
+   "term": "Picture synchronization",
+   "fields": {
+    "definition": "The alignment of recorded or edited audio with its corresponding moving image so that each sound occurs on the correct picture frame, typically established and maintained using timecode and a shared sync reference.",
+    "plain_english": "Making the sound line up with the video so words and actions match. It is why a person's lips and their voice happen at the same time.",
+    "purpose_function": "It ensures dialogue, effects, and music land on the right frames, which is essential for believable and professional sound for picture.",
+    "practical_application": "A technician locks the audio workstation to timecode and a video reference, then checks lip sync and effect timing throughout the program.",
+    "category": "Sync & Timing",
+    "related_terms": [
+     "Timecode",
+     "Genlock",
+     "Lip sync",
+     "Picture monitor",
+     "Sample rate"
+    ],
+    "common_mistakes": [
+     "Confusing frame rate with sample rate when files drift out of sync.",
+     "Forgetting that monitor display delay can fake a sync error.",
+     "Assuming a clip that is in sync at the start stays in sync to the end."
+    ],
+    "scenario_contexts": [
+     "Locking a Pro Tools session to picture via timecode.",
+     "Fixing lip-sync drift caused by a pull-up or pull-down frame-rate change.",
+     "Syncing production sound to the camera picture in editorial."
+    ]
+   },
+   "sources": [
+    "SMPTE ST 12-1 (time and control code)",
+    "Tomlinson Holman, Sound for Film and Television",
+    "Avid Pro Tools Reference Guide"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a8180264-f54d-4593-a190-dd6f8956d544",
+   "term": "Picture-change conform",
+   "fields": {
+    "definition": "The process of updating an existing audio session to match a revised picture edit — moving, trimming, adding, or removing sound to follow every change between the old and new cut — usually guided by a change list or EDL.",
+    "plain_english": "Fixing your sound session so it matches a new version of the video edit. When the picture editor moves or cuts scenes, you shift your sounds to keep them lined up.",
+    "purpose_function": "It keeps sound work in sync as the picture keeps changing during post, so earlier editing and mixing are not lost when a new cut arrives.",
+    "practical_application": "A technician imports a change list, then uses it to conform the session and verifies that every edit point still lines up with the new picture.",
+    "category": "Conforming",
+    "related_terms": [
+     "Conform",
+     "Change list",
+     "EDL",
+     "Reconform",
+     "Picture synchronization",
+     "Turnover"
+    ],
+    "common_mistakes": [
+     "Conforming by eye instead of using an accurate change list.",
+     "Missing small internal trims that shift everything after them.",
+     "Not backing up the session before applying a large conform."
+    ],
+    "scenario_contexts": [
+     "Reconforming a dialogue session after a new picture turnover.",
+     "Updating effects and music to a revised cut before the mix.",
+     "Applying a change list to a Pro Tools session with a conforming tool."
+    ]
+   },
+   "sources": [
+    "John Purcell, Dialogue Editing for Motion Pictures",
+    "Avid Pro Tools Reference Guide (conforming)",
+    "Sound On Sound, Conforming & Re-conforming in Pro Tools"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1b643a46-491d-4c1a-8195-3d983dfb8033",
+   "term": "Picture-editing suite",
+   "fields": {
+    "definition": "The room and equipment where a film or program's picture is edited, typically built around a nonlinear editing system such as Avid Media Composer, from which the sound department receives its turnovers.",
+    "plain_english": "The room where the video editor cuts the film together. It holds the editing computer that the sound team gets its footage and edit lists from.",
+    "purpose_function": "It is where the edited cut is created and revised, providing the picture, timeline, and edit data that all later sound work depends on.",
+    "practical_application": "A technician collects turnovers such as a reference video, an AAF or OMF, and change lists exported from the picture-editing suite to start or update the sound session.",
+    "category": "Post Facilities",
+    "related_terms": [
+     "Nonlinear editing",
+     "AAF",
+     "OMF",
+     "Turnover",
+     "Change list",
+     "Picture-change conform"
+    ],
+    "common_mistakes": [
+     "Assuming the rough audio settings in the picture-editing suite are accurate for mixing.",
+     "Confusing the picture-editing suite with the sound-editing or mix room.",
+     "Trusting temp audio from the suite instead of the original source recordings."
+    ],
+    "scenario_contexts": [
+     "Receiving an AAF and reference movie exported from the editing suite.",
+     "Coordinating turnovers between picture editorial and sound.",
+     "Checking a locked cut before spotting sound."
+    ]
+   },
+   "sources": [
+    "Tomlinson Holman, Sound for Film and Television",
+    "David Yewdall, The Practical Art of Motion Picture Sound",
+    "Avid Media Composer documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fdcccbe5-1cd0-434e-ac35-9f5a9b67babb",
+   "term": "Pitch manipulation",
+   "fields": {
+    "definition": "The deliberate raising or lowering of the perceived pitch of recorded audio — either tied to playback speed or independent of it through time/pitch processing — for creative or corrective purposes.",
+    "plain_english": "Changing how high or low a sound is. You can make a voice deeper or squeakier, like slowing down or speeding up a record. Modern tools can do it without changing the speed.",
+    "purpose_function": "It lets editors design new sounds, fix out-of-tune or mismatched material, and shift sounds to fit a scene without re-recording them.",
+    "practical_application": "A technician uses pitch-shifting or elastic-audio tools to tune dialogue, build creature or effect sounds, or match a sound to picture.",
+    "category": "Audio Processing",
+    "related_terms": [
+     "Pitch shifting",
+     "Time stretching",
+     "Formant",
+     "Sample rate",
+     "Sound design",
+     "Vari-speed"
+    ],
+    "common_mistakes": [
+     "Confusing pitch shifting with time stretching.",
+     "Shifting pitch so far that unmanaged formants make a voice sound unnatural.",
+     "Forgetting that changing sample-rate playback shifts both pitch and speed together."
+    ],
+    "scenario_contexts": [
+     "Lowering a voice to create a monster or giant.",
+     "Tuning a hummed note or an off-pitch line.",
+     "Pitching an effect up to make it feel smaller and faster."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Avid Pro Tools Reference Guide (Elastic Audio / pitch shift)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "23298695-4a13-4892-a927-67fc14d70482",
+   "term": "Plastic movement",
+   "fields": {
+    "definition": "A Foley movement category covering the crinkle, creak and rustle of plastic materials — bags, packaging, rain gear, tarps and hard plastic props — performed to match on-screen handling or body movement.",
+    "plain_english": "It is the crinkle and creak sound of plastic being moved. Like the noise a shopping bag or a raincoat makes when someone shifts around.",
+    "purpose_function": "It adds material-specific texture to movement, distinguishing plastic from cloth or leather and reinforcing what a character is wearing or handling.",
+    "practical_application": "A Foley artist manipulates matching plastic — a bag, a tarp or a raincoat — in sync with the actor, layering it under footsteps or handling as needed.",
+    "category": "Foley",
+    "related_terms": [
+     "Jacket movement",
+     "Pocket movement",
+     "Paper handling",
+     "Jewelry movement",
+     "Object pickup"
+    ],
+    "common_mistakes": [
+     "Choosing plastic with the wrong stiffness, so soft film sounds like a rigid crate.",
+     "Performing plastic crinkle louder than the scene warrants, pulling focus from dialogue.",
+     "Reusing the same plastic rustle for every material instead of matching the prop."
+    ],
+    "scenario_contexts": [
+     "Adding raincoat crinkle to a character walking in a storm.",
+     "Covering the handling of a plastic shopping bag.",
+     "Layering tarp movement over a construction-site scene."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, The Foley Grail (Focal Press)",
+    "Ric Viers, The Sound Effects Bible (Michael Wiese Productions)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "21a5d546-e93d-49e7-a7ad-d3d1841ba54e",
+   "term": "Playback behavior",
+   "fields": {
+    "definition": "How an audio file, session, or system reproduces its content when played — whether it plays at the correct speed and pitch, stays locked to picture and timecode, and responds correctly to transport, looping, and triggering settings.",
+    "plain_english": "How a sound file or setup acts when you press play. Does it play at the right speed, stay lined up with the video, and loop or stop the way it should?",
+    "purpose_function": "Knowing the expected playback behavior lets a technician predict and verify how audio will perform on a target system, so deliverables play back correctly for the client.",
+    "practical_application": "A technician checks playback behavior during quality control, confirming a file plays at the right sample rate, level, speed, and sync before it is delivered.",
+    "category": "Playback",
+    "related_terms": [
+     "Sample rate",
+     "Timecode",
+     "Picture synchronization",
+     "Transport",
+     "Loop",
+     "Quality control"
+    ],
+    "common_mistakes": [
+     "Assuming a file that plays fine on one system will behave the same on another.",
+     "Ignoring a sample-rate mismatch that changes speed and pitch on playback.",
+     "Confusing a looping or one-shot setting error with a corrupt file."
+    ],
+    "scenario_contexts": [
+     "QC-checking a delivered mix for correct speed and sync.",
+     "Testing how a sample loops or one-shots in a session.",
+     "Confirming a file plays back at the specified sample rate and level."
+    ]
+   },
+   "sources": [
+    "Tomlinson Holman, Sound for Film and Television",
+    "Avid Pro Tools Reference Guide",
+    "SMPTE/EBU deliverable and synchronization references"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

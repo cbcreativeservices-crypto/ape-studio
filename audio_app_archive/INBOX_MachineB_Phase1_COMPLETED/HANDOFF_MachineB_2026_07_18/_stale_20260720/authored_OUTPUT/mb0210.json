@@ -1,0 +1,271 @@
+{
+ "batch": 210,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "5af15700-19ce-47fd-8ba4-80ffafb15b99",
+   "term": "Age matching",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No established, attested meaning for 'Age matching' in sound-for-picture post workflow or deliverables. It is not defined in the recognised post-production literature (Yewdall 'The Practical Art of Motion Picture Sound', Holman 'Sound for Film and Television', Rose 'Producing Great Sound for Film and Video'), in SMPTE/EBU delivery standards, or in manufacturer technical documentation, and it is not a transparent compound of an established technique plus a source/section. All fields left blank pending clarification of the intended sense."
+   ]
+  },
+  {
+   "id": "2ea5e963-8e27-4e1e-945c-391294723daa",
+   "term": "Aggressive Foley",
+   "fields": {
+    "definition": "A Foley performance style in which everyday sync sound effects — footsteps, cloth, and prop handling — are performed with heightened force and energy so they read louder, sharper, and more physically emphatic against the picture.",
+    "plain_english": "Foley is when an artist makes body and prop sounds in time with the picture. Aggressive Foley just means playing those sounds hard and loud, so a punch or a stomp feels big and forceful.",
+    "purpose_function": "It exists to give action physical weight and impact, so hits, footsteps, and movement feel powerful and believable instead of soft or lost in the background.",
+    "practical_application": "A Foley artist uses it on fights, chases, and horror beats — stomping harder and striking props firmly — and the mixer then rides the level to match the on-screen energy.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Sound effects",
+     "Room tone",
+     "Sync",
+     "Backgrounds",
+     "Sound design"
+    ],
+    "common_mistakes": [
+     "Trying to fake it by only raising the fader in the mix instead of actually performing the movement with more force.",
+     "Overplaying every action so quiet scenes lose contrast and the track becomes tiring to listen to.",
+     "Not matching the performance to the character's weight, surface, and footwear seen on screen."
+    ],
+    "scenario_contexts": [
+     "Cutting Foley for a hand-to-hand fight so each punch and body fall lands hard.",
+     "Building footsteps for a heavy, angry character storming through a room.",
+     "Adding forceful cloth and prop sounds to a tense action beat."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, 'The Foley Grail: The Art of Performing Sound for Film, Games, and Animation'",
+    "David Lewis Yewdall, 'The Practical Art of Motion Picture Sound'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "211615a2-1e43-4294-80dc-3bb630762a5d",
+   "term": "Air movement",
+   "fields": {
+    "definition": "The subtle, low-level sound of moving air — drafts, ventilation, wind, or the wash created by a body or object passing the camera — added to a soundtrack to convey open space, motion, or a living environment rather than dead silence.",
+    "plain_english": "Air movement is the soft sound of air on the move, like a breeze, a vent, or the wind when someone runs past. Editors add it so a scene feels alive and open, not empty and dead.",
+    "purpose_function": "It exists to give a scene a sense of space and presence and to smooth over gaps, so quiet moments still feel natural instead of unnaturally silent.",
+    "practical_application": "An editor lays a faint air or wind bed under exteriors and large spaces, or drops in a small air whoosh as a character or object sweeps past frame.",
+    "category": "Ambience",
+    "related_terms": [
+     "Room tone",
+     "Ambience",
+     "Backgrounds",
+     "Whoosh",
+     "Wind",
+     "Sound design"
+    ],
+    "common_mistakes": [
+     "Setting the level too high so the air bed pulls attention away from dialogue.",
+     "Using a looped air sound with an obvious repeat or audible seam.",
+     "Confusing air movement with room tone, which is the still, steady sound of a specific interior."
+    ],
+    "scenario_contexts": [
+     "Adding a faint breeze bed under a wide outdoor shot.",
+     "Placing an air whoosh as a car speeds past frame.",
+     "Filling a large hall with a soft moving-air presence."
+    ]
+   },
+   "sources": [
+    "David Lewis Yewdall, 'The Practical Art of Motion Picture Sound'",
+    "Ric Viers, 'The Sound Effects Bible'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9f1692b9-eb31-48e9-b2f4-e72147fb2c9f",
+   "term": "Alternate-take edit",
+   "fields": {
+    "definition": "A dialogue or performance edit in which a word, line, or phrase from a different recorded take is cut in to replace or improve the matching moment in the chosen take, blended to match its timing, tone, and background.",
+    "plain_english": "Actors usually record a line many times. An alternate-take edit means swapping in a word or line from one of those other tries to get a cleaner read, then blending it so no one hears the join.",
+    "purpose_function": "It exists to fix problem words — noise, flubs, or weak reads — without re-recording, by borrowing the best moments from other takes of the same performance.",
+    "practical_application": "A dialogue editor auditions the alternate takes, finds a clean version of a troublesome word, cuts it into the main take, and smooths the edit with matching room tone and crossfades.",
+    "category": "Dialogue editing",
+    "related_terms": [
+     "Dialogue editing",
+     "ADR",
+     "Room tone",
+     "Crossfade",
+     "Production sound",
+     "Take"
+    ],
+    "common_mistakes": [
+     "Cutting in an alternate take whose background or mic tone does not match, so the join is audible.",
+     "Ignoring lip sync when the alternate word has different timing than the picture.",
+     "Forgetting to fill the edit with matching room tone, leaving a hole in the sound."
+    ],
+    "scenario_contexts": [
+     "Replacing a word ruined by a cough with the same word from another take.",
+     "Swapping in a stronger read of a key line without calling the actor back for ADR.",
+     "Fixing a plosive or noise on a single word using a clean alternate."
+    ]
+   },
+   "sources": [
+    "John Purcell, 'Dialogue Editing for Motion Pictures: A Guide to the Invisible Art'",
+    "Avid Pro Tools Reference Guide"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1d1b0b5f-ac79-45ef-bd77-0e0ccc112bca",
+   "term": "Ambience zone",
+   "fields": {
+    "definition": "A defined region of a scene or space assigned its own ambient sound bed, so that as the picture or listener moves between areas the background changes to match each location's character.",
+    "plain_english": "An ambience zone is an area given its own background sound. Move from a busy street into a quiet shop, and the ambience zone changes the background so each place sounds right.",
+    "purpose_function": "It exists to keep backgrounds believable across a scene, giving each space its own sonic identity and smooth transitions as the story moves between areas.",
+    "practical_application": "An editor maps different ambiences to zones — a lobby, a kitchen, an alley — and crossfades between them as the camera or character crosses from one to the next.",
+    "category": "Ambience",
+    "related_terms": [
+     "Ambience",
+     "Backgrounds",
+     "Room tone",
+     "Crossfade",
+     "Perspective",
+     "Sound design"
+    ],
+    "common_mistakes": [
+     "Cutting hard between zones instead of crossfading, so the change sounds abrupt.",
+     "Making every zone equally loud, which loses the contrast between spaces.",
+     "Forgetting to shift the ambience when the picture clearly changes location."
+    ],
+    "scenario_contexts": [
+     "Changing background sound as a character walks from a party into a bathroom.",
+     "Assigning distinct ambiences to rooms in a house for a walk-through scene.",
+     "Transitioning from interior to exterior ambience through a doorway."
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise Documentation (Ambiences and spatial ambience design)",
+    "David Lewis Yewdall, 'The Practical Art of Motion Picture Sound'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "20a75a4d-b73b-4c39-8a5f-1f5f81f78575",
+   "term": "Ambient loop",
+   "fields": {
+    "definition": "A section of ambient or background recording edited to repeat seamlessly, used to sustain a continuous environmental sound over a duration longer than the original recording.",
+    "plain_english": "An ambient loop is a background sound, like rain or a busy room, edited so it can play over and over with no gap. It lets a short recording fill a long scene without you hearing it restart.",
+    "purpose_function": "It exists to provide continuous, gap-free background for a scene of any length from a limited recording, saving time and keeping the environment consistent.",
+    "practical_application": "An editor finds matching in and out points, crossfades the ends, and loops the clip across the whole scene, checking that no click or obvious repeat gives the loop away.",
+    "category": "Ambience",
+    "related_terms": [
+     "Ambience",
+     "Backgrounds",
+     "Room tone",
+     "Crossfade",
+     "Loop point",
+     "Sound design"
+    ],
+    "common_mistakes": [
+     "Choosing a clip with a unique sound, such as a car horn, that gives away the repeat.",
+     "Leaving a click or level jump at the loop point.",
+     "Making the loop too short, so the repeating pattern becomes obvious."
+    ],
+    "scenario_contexts": [
+     "Looping a short rain recording to cover a long dialogue scene.",
+     "Sustaining crowd ambience under an entire restaurant sequence.",
+     "Filling a forest exterior with a seamless nature bed."
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise Documentation (Looping ambient sounds and blend containers)",
+    "Ric Viers, 'The Sound Effects Bible'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7b262d92-97bd-4d37-b975-00144f0630bf",
+   "term": "Attenuation curve",
+   "fields": {
+    "definition": "A defined relationship showing how a signal's level is reduced as a function of another variable — most often distance in spatial audio, or frequency in a filter — expressed as a curve rather than a single fixed amount.",
+    "plain_english": "An attenuation curve is a graph of how much a sound gets quieter as something changes, like how a sound fades the farther away it is. It sets the rule for how fast the level drops.",
+    "purpose_function": "It exists to control level change in a smooth, predictable way, so sounds fall off naturally with distance or a filter rolls off gently across frequency.",
+    "practical_application": "In spatial or game audio, an editor shapes the distance attenuation curve so a source fades realistically as it moves away; in an EQ, the curve describes how much each frequency is cut.",
+    "category": "Signal processing",
+    "related_terms": [
+     "Attenuation",
+     "Distance attenuation",
+     "Panning",
+     "Filter",
+     "Fade",
+     "Spatial audio"
+    ],
+    "common_mistakes": [
+     "Confusing attenuation, which reduces level, with gain, which raises it.",
+     "Using a curve that drops too fast, so sources vanish unnaturally quickly.",
+     "Assuming attenuation only means volume and ignoring filtering across frequency."
+    ],
+    "scenario_contexts": [
+     "Setting how a sound source fades with distance in an immersive mix.",
+     "Shaping a filter's roll-off across frequency.",
+     "Adjusting a fall-off curve so a passing vehicle recedes smoothly."
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise Documentation (Distance-based attenuation and attenuation editor)",
+    "Glen Ballou (ed.), 'Handbook for Sound Engineers'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e3332f99-3619-4639-b138-178f530cddd6",
+   "term": "Audio asset",
+   "fields": {
+    "definition": "Any discrete piece of audio content — a recording, sound effect, music cue, or edited clip — managed as a named, reusable file within a project, media library, or deliverable package.",
+    "plain_english": "An audio asset is any single piece of sound in a project, like one sound effect, a music track, or a recorded line. Each one is a file you can name, store, and reuse.",
+    "purpose_function": "It exists to treat sound as organised, trackable items, so material can be found, shared, versioned, and delivered reliably across a production.",
+    "practical_application": "An editor imports, labels, and organises assets in the session and media pool, then hands off the required assets as part of the final deliverable package.",
+    "category": "Media management",
+    "related_terms": [
+     "Session",
+     "Deliverables",
+     "Stems",
+     "Metadata",
+     "Sound library",
+     "Consolidate"
+    ],
+    "common_mistakes": [
+     "Leaving assets with default or unclear names, making them hard to find later.",
+     "Delivering a session that points to assets that were never included or consolidated.",
+     "Forgetting to keep metadata with the asset, which loses key information about it."
+    ],
+    "scenario_contexts": [
+     "Organising sound effects in a library for a project.",
+     "Consolidating every clip so the session's assets travel with the deliverable.",
+     "Tracking versions of a music cue as separate assets."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (clips, media, and session data management)",
+    "Tomlinson Holman, 'Sound for Film and Television'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a07b4512-392f-42a8-9163-fa4df2bbe34f",
+   "term": "Audio behavior",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No established, attested meaning for 'Audio behavior' as a standalone term in sound-for-picture post workflow or deliverables. It is an abstract phrase, not a transparent compound of a defined technique plus a source/section, and it is not defined in the recognised post-production literature (Yewdall, Holman, Rose), SMPTE/EBU delivery standards, or manufacturer technical documentation. All fields left blank pending clarification of the intended sense."
+   ]
+  }
+ ]
+}

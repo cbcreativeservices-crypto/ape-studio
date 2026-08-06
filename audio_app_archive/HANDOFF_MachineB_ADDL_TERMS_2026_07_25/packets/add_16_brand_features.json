@@ -1,0 +1,88 @@
+{
+ "packet": "add_16_brand_features.json",
+ "group": "Brand-Specific Features (optional)",
+ "primary_topic": "Dynamics Processing",
+ "difficulty": "intermediate",
+ "terms": [
+  {
+   "id": "8fe23b2b-db0e-4de7-9722-198caaa9cf46",
+   "term": "All Buttons In Mode",
+   "topic": "Dynamics Processing",
+   "topic_id": "d42dcf1d-a730-488c-9633-28e1218563a4",
+   "difficulty": "intermediate",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "authoring_note": "Author as 'All-Buttons-In / British Mode (1176)'."
+  },
+  {
+   "id": "dc570809-69a7-4a2f-a86c-f2fe93178824",
+   "term": "Listen Mic Compressor",
+   "topic": "Dynamics Processing",
+   "topic_id": "d42dcf1d-a730-488c-9633-28e1218563a4",
+   "difficulty": "intermediate",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "055e7714-d98d-48a8-b5d0-38ee899395b8",
+   "term": "Unison Technology",
+   "topic": "Preamp & Converter Engineering",
+   "topic_id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9",
+   "difficulty": "intermediate",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "authoring_note": "Author as 'Unison (preamp impedance/gain modeling)'; vendor-generic concept."
+  }
+ ]
+}

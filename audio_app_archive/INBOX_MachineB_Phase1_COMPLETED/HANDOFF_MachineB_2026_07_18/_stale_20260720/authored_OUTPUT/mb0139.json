@@ -1,0 +1,159 @@
+{
+ "batch": 139,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "9923a422-d4a4-44fb-9617-babff356b2c2",
+   "term": "Smart Tempo",
+   "fields": {
+    "definition": "Smart Tempo is a tempo-management feature in Apple Logic Pro that analyzes the tempo of a performance or audio recording and either conforms that audio to the project tempo or sets the project tempo to follow the performance. It offers Keep, Adapt, and Automatic modes and can flex audio to the grid without manual time-stretching.",
+    "plain_english": "Smart Tempo is a Logic Pro tool that works out the speed of a recording. It can then bend the recording to match the song's beat, or make the song follow the player's timing instead.",
+    "purpose_function": "It exists to reconcile tempo differences between recorded material and the project grid, so freely played or imported audio can line up with the metronome and the other tracks without tedious hand editing.",
+    "practical_application": "An engineer records a guitarist who plays without a click, then uses Smart Tempo's Adapt mode to build a tempo map from the performance so added drums and edits stay in time.",
+    "category": "Tempo & Timing",
+    "related_terms": ["Tempo map", "Flex Time", "Beat mapping", "Click track", "Quantization"],
+    "common_mistakes": ["Leaving Smart Tempo in Automatic when importing loops, so Logic re-analyzes and shifts a tempo the user meant to keep", "Trusting the automatic beat detection on rubato or sparse material without checking beat markers in the Smart Tempo Editor", "Confusing flexing the audio to the tempo (Keep) with adapting the tempo to the audio (Adapt)"],
+    "scenario_contexts": ["Aligning a freely recorded vocal take to a programmed drum grid", "Importing a two-bar drum loop and matching it to the session tempo", "Building a tempo map from a live band recording so overdubs stay in time"]
+   },
+   "sources": ["Apple Logic Pro User Guide (Smart Tempo overview)", "Apple Logic Pro User Guide (Match audio recordings to the project tempo; Match the project tempo to an audio region)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8775ec4e-b48f-45f7-95fc-e20a1ce78a9c",
+   "term": "Smartphone translation",
+   "fields": {
+    "definition": "Smartphone translation is how well a finished mix holds up when played on a phone's small, band-limited built-in speaker or cheap earbuds. Because such speakers reproduce little low end and a narrow stereo image, engineers reference the mix on a phone to confirm that vocals, key elements, and overall balance stay clear.",
+    "plain_english": "This means checking whether a mix still sounds good on a phone's tiny speaker. Phones play almost no bass and are nearly mono, so a mix that works there usually works everywhere else too.",
+    "purpose_function": "It exists because most listeners hear music on phones, so testing on that speaker catches balance problems, such as a buried vocal or a missing bass line, that large studio monitors can hide.",
+    "practical_application": "After mixing on studio monitors, an engineer plays the bounce through a phone speaker to make sure the lead vocal and the groove still come through before the mix is approved.",
+    "category": "Mix Translation",
+    "related_terms": ["Translation", "Reference monitors", "Nearfield monitor", "Mono compatibility", "A/B referencing"],
+    "common_mistakes": ["Assuming a mix that sounds full on big monitors will translate to a phone, then finding the bass and vocal disappear", "Judging tonal balance from a phone speaker instead of using it only as a reality check", "Forgetting that phone speakers are essentially mono, so mono compatibility problems show up there"],
+    "scenario_contexts": ["Checking a pop vocal balance on a phone before client sign-off", "Confirming a podcast stays intelligible on a phone at low volume", "Testing whether the kick and bass still read on a small speaker"]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook (mix translation / reference systems)", "Yamaha Sound Reinforcement Handbook (loudspeaker bandwidth and monitoring)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "acf42b29-cef9-4c9e-a229-237795e23922",
+   "term": "Snapshot recall automation",
+   "fields": {
+    "definition": "Snapshot recall automation is the automated storing and recall of a complete console or mix state, such as fader levels, mutes, routing, and processing settings, saved as named snapshots (scenes) that can be triggered on cue. On digital consoles, recall filters and safes let selected parameters be excluded so live changes carry across snapshots.",
+    "plain_english": "A snapshot saves every setting on the mixer at once, including faders, mutes, and effects, under one name. Recall automation calls those saved settings back on cue, so the whole desk jumps to a new setup in an instant.",
+    "purpose_function": "It exists to reconfigure a large mix instantly for different songs, scenes, or moments, letting one operator manage far more changes than could ever be made by hand in real time.",
+    "practical_application": "A theatre engineer stores a snapshot for each scene, then steps through them with a footswitch or MIDI cue so mics, levels, and effects change exactly on the script.",
+    "category": "Automation",
+    "related_terms": ["Scene recall", "Mix automation", "Recall safe", "Cue list", "MIDI control"],
+    "common_mistakes": ["Forgetting to set recall safes, so a snapshot overrides a fader the operator is riding live", "Storing snapshots with the wrong parameters included, causing unexpected routing or gain jumps on recall", "UNSAFE: Recalling a snapshot that unmutes or raises outputs without checking, risking sudden high levels and feedback"],
+    "scenario_contexts": ["Stepping through scene changes in a musical or play", "Recalling a fresh channel setup between bands at a festival", "Jumping to a preset monitor mix for a guest performer"]
+   },
+   "sources": ["Glen Ballou, Handbook for Sound Engineers (digital consoles, automation and scene recall)", "Yamaha digital mixing console documentation (Scene memory / recall safe)", "Allen & Heath digital console documentation (Scenes, recall filters/safes)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ee668bed-e8e4-4e95-88a1-f1346d0f5295",
+   "term": "Snare layering",
+   "fields": {
+    "definition": "Snare layering is the blending of one or more additional snare sounds, such as samples or separately recorded hits, underneath or alongside the original snare track to reinforce its body, attack, or tone. The layers are time-aligned and balanced so they read as a single, stronger snare.",
+    "plain_english": "Snare layering means stacking extra snare sounds on top of the recorded one. It is like adding a second snare hit in the background to make the main hit sound bigger or punchier.",
+    "purpose_function": "It exists to fix or enhance a weak, dull, or inconsistent recorded snare by adding the crack, ring, or weight it lacks, all without re-recording the drums.",
+    "practical_application": "A mixer triggers a snare sample in time with each recorded hit and blends it low under the original to add attack that cuts through a dense rock mix.",
+    "category": "Drum Processing",
+    "related_terms": ["Snare sample", "Drum replacement", "Sample triggering", "Transient shaping", "Phase alignment"],
+    "common_mistakes": ["Adding a layer without checking phase, so the combined snare sounds thinner instead of bigger", "Letting the sample's tone or tuning clash with the original snare's pitch", "Layering so loud that the sample replaces the natural drum instead of supporting it"],
+    "scenario_contexts": ["Reinforcing a flat studio snare in a rock mix", "Adding consistent attack to uneven live-recorded hits", "Blending a bright sample under a dull snare to help it cut"]
+   },
+   "sources": ["David Miles Huber, Modern Recording Techniques (drum recording, sampling and layering)", "Bobby Owsinski, The Mixing Engineer's Handbook (drum enhancement / sample reinforcement)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2a56725b-987a-471e-8082-ceea20bcafdd",
+   "term": "Snare sample",
+   "fields": {
+    "definition": "A snare sample is a pre-recorded digital recording of a single snare-drum hit, stored for playback so it can reinforce, replace, or program snare sounds in a mix. Samples are commonly triggered from the recorded snare's transients or sequenced within a drum instrument.",
+    "plain_english": "A snare sample is a saved recording of one snare hit. Engineers play it back to add to or swap out the real snare in a song, a bit like using a stock sound in place of the recorded one.",
+    "purpose_function": "It exists to give the engineer a controlled, consistent snare sound on demand, useful for reinforcing a weak recording, replacing a bad one, or building programmed drums.",
+    "practical_application": "When a recorded snare sounds thin, an engineer loads a snare sample into a trigger plug-in that fires it in sync with each original hit.",
+    "category": "Drum Samples",
+    "related_terms": ["Snare layering", "Drum replacement", "Sample triggering", "Sampler", "One-shot"],
+    "common_mistakes": ["Choosing a sample whose room sound or tone does not match the rest of the kit", "Triggering from a snare mic with bleed, so hi-hat hits fire the sample by mistake", "Aligning the sample late so its attack smears against the original hit"],
+    "scenario_contexts": ["Replacing an unusable live snare recording", "Programming snare hits in a beat with a drum sampler", "Reinforcing a recorded snare during mixdown"]
+   },
+   "sources": ["David Miles Huber, Modern Recording Techniques (samplers and drum replacement)", "Bobby Owsinski, The Mixing Engineer's Handbook (sample reinforcement)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "81b79ec2-8704-4158-a4cc-722d894073c8",
+   "term": "Song chunk",
+   "fields": {
+    "definition": "In MOTU Digital Performer, a song chunk is a type of chunk that arranges sequence chunks into an ordered playlist, letting sections or songs be strung together into a larger arrangement within one project. Chunks (sequences, songs, and V-racks) coexist in a single project file and share resources.",
+    "plain_english": "In Digital Performer, a song chunk is a playlist that lines up separate sections in order to build a full song. Think of it as an arrangement list that plays your saved parts one after another.",
+    "purpose_function": "It exists so an arranger can build and reorder a full piece from independent sections without copying data, keeping every version and arrangement inside one project.",
+    "practical_application": "A composer writes the verse and chorus as separate sequence chunks, then uses a song chunk to play them in order and try different arrangements quickly.",
+    "category": "Session Management",
+    "related_terms": ["Soundbite", "Sequence", "V-rack", "Playlist", "Arrangement"],
+    "common_mistakes": ["Confusing a song chunk (a playlist of sequences) with a single sequence chunk", "Editing a source sequence and not realizing the change appears everywhere the song chunk uses it", "Expecting a song chunk to store its own audio rather than referencing existing sequences"],
+    "scenario_contexts": ["Assembling verse and chorus sequences into a finished song", "Trying alternate song arrangements from the same sections", "Building a live set order from separate sequences"]
+   },
+   "sources": ["MOTU Digital Performer product documentation (Chunks: multiple sequences, songs and V-racks in one project; folders and playlists)", "MOTU Digital Performer feature documentation (sequences and chunk management)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e5a381c2-cd9d-4644-bd2b-c52140f1daab",
+   "term": "Sound-Effects Stem",
+   "fields": {
+    "definition": "A sound-effects stem is the submixed group of all sound-effects elements, such as hard effects, Foley, and backgrounds, delivered as one balanced audio unit within the dialogue-music-effects (DME) stem structure of a film or broadcast mix. Kept separate from the dialogue and music stems, it can be re-balanced or swapped for different formats and languages.",
+    "plain_english": "A sound-effects stem holds all the sounds that are not music or speech. Think of footsteps, doors, and background noise, all mixed into one track. Keeping it apart lets editors change the effects later without touching the words or the music.",
+    "purpose_function": "It exists so the effects portion of a mix can be adjusted, archived, or reused on its own, which is key for foreign-language versions where dialogue is replaced but music and effects are retained.",
+    "practical_application": "A re-recording mixer prints separate dialogue, music, and effects stems so the distributor can create a music-and-effects (M&E) version for dubbing into other languages.",
+    "category": "Stems",
+    "related_terms": ["Stem", "DME", "M&E", "Dialogue stem", "Music stem"],
+    "common_mistakes": ["Bouncing effects into the dialogue or music stem, which breaks M&E deliverables", "Assuming a single effects stem when the spec calls for split Foley and backgrounds", "Forgetting that summing the DME stems must reproduce the full final mix"],
+    "scenario_contexts": ["Delivering DME stems for a film master", "Creating an M&E mix for foreign-language dubbing", "Rebalancing the effects level without remixing dialogue"]
+   },
+   "sources": ["Glen Ballou, Handbook for Sound Engineers (film and broadcast mixing, stems and DME)", "SMPTE / post-production delivery practice (DME and M&E stem deliverables)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3f41541e-5f1f-40a5-8843-13d8943abc0a",
+   "term": "Soundbite",
+   "fields": {
+    "definition": "In MOTU Digital Performer, a soundbite is the program's term for a single clip of audio, that is, a region of an audio file that appears in a track and can be edited, arranged, and processed. Soundbites reference audio stored on disk and are managed in the Soundbites window.",
+    "plain_english": "In Digital Performer, a soundbite is one clip of audio you place on a track. It is simply that program's name for an audio chunk you can move, trim, and edit, like a clip in any other editor.",
+    "purpose_function": "It exists as DP's basic unit of audio, letting the user handle recorded or imported sound as discrete, editable pieces rather than as one long file.",
+    "practical_application": "An editor drags a vocal soundbite earlier on the timeline and trims its edges to tighten the phrasing of a take.",
+    "category": "Audio Editing",
+    "related_terms": ["Soundbites window", "Song chunk", "Region", "Waveform editor", "Take"],
+    "common_mistakes": ["Deleting a soundbite from a track but expecting the source audio file to be removed from disk", "Confusing a soundbite (a clip reference) with the underlying audio file itself", "Trimming a soundbite and thinking the audio data has been permanently cut"],
+    "scenario_contexts": ["Comping vocal takes from several soundbites", "Trimming and moving audio clips on a track", "Arranging imported sound effects as soundbites"]
+   },
+   "sources": ["MOTU Digital Performer feature documentation (soundbites: phrases of audio data, waveform editing)", "MOTU Digital Performer product documentation (audio editing / Soundbites window)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "66536b42-2d7b-4a80-b57e-bfbc50eb3640",
+   "term": "Soundbites window",
+   "fields": {
+    "definition": "In MOTU Digital Performer, the Soundbites window is the browser that lists and manages every soundbite (audio clip) in the project, showing details such as name, duration, sample rate, and source file. From it the user can audition, rename, import, and drag soundbites into tracks.",
+    "plain_english": "The Soundbites window in Digital Performer is a list of all the audio clips in your project. You use it to find, preview, and drag any clip onto a track, like a library of your sounds.",
+    "purpose_function": "It exists to give one central place to organize and reuse a project's audio, so clips can be found, previewed, and placed without hunting through the tracks.",
+    "practical_application": "A mixer opens the Soundbites window to audition several recorded snare hits, then drags the best one onto a track.",
+    "category": "Audio Editing",
+    "related_terms": ["Soundbite", "Song chunk", "Audio pool", "Region list", "Import audio"],
+    "common_mistakes": ["Deleting a soundbite from the window and unintentionally removing it from the project", "Assuming the window stores audio when it only references files on disk", "Overlooking the window as the place to import and organize audio"],
+    "scenario_contexts": ["Auditioning takes before placing them on tracks", "Managing all imported sound effects in one list", "Renaming clips to keep a session organized"]
+   },
+   "sources": ["MOTU Digital Performer feature documentation (Soundbites Window organizes audio clips)", "MOTU Digital Performer product documentation (audio management)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

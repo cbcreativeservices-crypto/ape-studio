@@ -1,0 +1,842 @@
+[
+  {
+    "id": "6901b91f-884a-40a5-9d32-45b7463edfdb",
+    "term": "Re-drum",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Re-drum: no authoritative published definition as a DJ mixing/FX technique; only ambiguous/informal usage (and possible confusion with the Reason ReDrum instrument)."
+  },
+  {
+    "id": "3b37411b-27df-43ca-b565-ba042e1cb76c",
+    "term": "Ride the groove",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Ride the groove: coined DJ hype-slang; no authoritative published definition."
+  },
+  {
+    "id": "9659205d-2f0d-4adb-ac82-edbc228824a0",
+    "term": "Riding the mix",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Riding the mix: coined DJ hype-slang; no authoritative published definition."
+  },
+  {
+    "id": "7ee0464f-6ebe-4234-a244-5a72a5b5d00e",
+    "term": "Rip",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Rip: informal slang, meaning ambiguous in a mixing/FX context; no authoritative published definition."
+  },
+  {
+    "id": "d845a6d7-b5ea-42bd-b19c-e7b159ea7dc8",
+    "term": "Safety track (DJ)",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Safety track (DJ): coined slang; no authoritative published definition."
+  },
+  {
+    "id": "d2653ebc-6e4a-4321-a632-0c1a2068d739",
+    "term": "Save the floor",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Save the floor: coined DJ hype-slang; no authoritative published definition."
+  },
+  {
+    "id": "63a5516d-c682-4000-858c-0c289c3883a7",
+    "term": "Slam it in",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Slam it in: coined DJ hype-slang; no authoritative published definition."
+  },
+  {
+    "id": "70b544f1-f595-4bac-a75b-1ed5a54defd4",
+    "term": "Smash cut",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Smash cut: borrowed film-editing term; not attested as a defined DJ mixing/FX technique in authoritative references."
+  },
+  {
+    "id": "2289ade8-040d-4023-944b-fbabcc5d3ff8",
+    "term": "Tease the drop",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Tease the drop: coined DJ hype-slang; no authoritative published definition."
+  },
+  {
+    "id": "4b84f392-f55b-4482-a668-f354d14a368e",
+    "term": "Throwback",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Throwback: coined slang for playing an older track; no authoritative published definition as a technical term."
+  },
+  {
+    "id": "e9dc27b3-29be-47df-a14e-8c26d5dd0cbd",
+    "term": "Trainwreck",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Trainwreck: genuine DJ jargon but attested only in blogs/forums; no authoritative published definition (standard, manufacturer doc, or recognised text)."
+  },
+  {
+    "id": "3d62038e-7720-495d-9ec3-37b17a2ea8d7",
+    "term": "Unreleased",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Unreleased: generic descriptor for an unreleased track, not a defined mixing/FX technique; no authoritative published definition."
+  },
+  {
+    "id": "a92b0942-9be5-4d88-85a9-556fb04f3d93",
+    "term": "VIP mix",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "VIP mix: attested only in blogs/EDM sites/Urban Dictionary; no authoritative published definition."
+  },
+  {
+    "id": "c52d4c63-ab38-4d3e-b551-c301cf6fef6a",
+    "term": "Weapon",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Weapon: coined DJ hype-slang for a floor-filling track; no authoritative published definition."
+  },
+  {
+    "id": "c9b85305-11fe-4dc6-9ffa-0678c5bc8559",
+    "term": "Wedding set",
+    "primary_topic": "Beatmatching, Mixing & FX",
+    "flags": "Wedding set: descriptive slang for a wedding-oriented DJ set; no authoritative published definition as a technical term."
+  },
+  {
+    "id": "13e8c45a-3bf1-4f57-82c6-123449d772b8",
+    "term": "Phase-Coherent AudioWarp",
+    "primary_topic": "DAW: Cubase/Nuendo",
+    "flags": "Term appears only in Steinberg marketing (Cubase 6 era) and user-forum posts; the current Cubase/Nuendo operation manual documents no feature by the name 'Phase-Coherent AudioWarp' and in fact states that AudioWarp quantizing does not maintain phase coherence, so the exact named feature and its behavior cannot be confirmed in the official manual. Phase-coherent multitrack editing is documented under Group Editing, but that is a distinct term."
+  },
+  {
+    "id": "4121f0ec-27d6-4506-8750-a58cdc32caf3",
+    "term": "Consolidate regions",
+    "primary_topic": "DAW: Logic",
+    "flags": "No command named 'Consolidate regions' exists in the official Logic Pro User Guide. Logic combines/renders selected regions into a single unit via the Join command (joining audio regions creates a nondestructive mixdown audio file); 'Consolidate' is Pro Tools terminology, not a Logic feature. Cannot confirm the term as a Logic-specific command as required by the accuracy rule."
+  },
+  {
+    "id": "d5d86e37-2851-474b-9055-e57f900250e2",
+    "term": "Back it off",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Verbal on-console cue slang meaning to reduce a level/gain; no authoritative published definition of the slang term."
+  },
+  {
+    "id": "7631bb90-9ff6-4fa6-9422-b87bb7879d03",
+    "term": "Bad seat",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Colloquial term for a listening position with poor sound/sightlines; no authoritative published definition."
+  },
+  {
+    "id": "d53ea530-6319-44f0-9b66-d791cb45711c",
+    "term": "Button it up",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined crew slang for finalising/securing a setup; no authoritative published definition."
+  },
+  {
+    "id": "4471b174-f6e6-43e7-83a3-cc9ac3a72a2d",
+    "term": "Cook (overdrive)",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for driving a stage or circuit hard; the slang label itself has no authoritative published definition (distinct from the defined term 'overdrive')."
+  },
+  {
+    "id": "97265a1d-99cf-4bbc-8df0-81480c08bf51",
+    "term": "Doghouse loom",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined crew slang for a cable loom/bundle; no authoritative published definition."
+  },
+  {
+    "id": "2ca16e69-ff56-49ea-a9e6-30c1ffc6792d",
+    "term": "Ear break",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for a hearing-rest interval; no authoritative published definition."
+  },
+  {
+    "id": "aa3d2d03-34df-475b-9e50-ab34e86d0be4",
+    "term": "Festival ears",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for fatigued/desensitised hearing after prolonged exposure; no authoritative published definition."
+  },
+  {
+    "id": "5989b1b3-2329-42ac-a9a3-155a69b3604e",
+    "term": "Fifty-eight",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Universal industry nickname for the Shure SM58 microphone, but the slang label has no authoritative published definition."
+  },
+  {
+    "id": "e6ceb8ea-6be6-40d7-ad05-6c48c4d4da63",
+    "term": "Fifty-seven",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Universal industry nickname for the Shure SM57 microphone, but the slang label has no authoritative published definition."
+  },
+  {
+    "id": "1e45798a-63e8-46fb-8bca-70728cc0d69f",
+    "term": "Fireman",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for a troubleshooting/relief engineer brought in to fix problems; no authoritative published definition."
+  },
+  {
+    "id": "638ffc6f-ef5f-4538-8f13-edea358dd050",
+    "term": "Good hang",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Ambiguous coined slang (a well-behaved line-array hang vs. pleasant crew/company); sense unresolved without an anchor and no authoritative published definition."
+  },
+  {
+    "id": "387d364f-72a2-4be5-a99e-3ea1d6258508",
+    "term": "Hot seat",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for the mix operator's high-pressure position; no authoritative published definition."
+  },
+  {
+    "id": "de1b1678-34c5-47c2-88b8-5ed78f51c9a8",
+    "term": "Lean on the limiter",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Verbal slang for relying heavily on limiter action to hold level; no authoritative published definition."
+  },
+  {
+    "id": "ac731d02-6d53-4f90-9fff-d4c9bfa8c2bf",
+    "term": "Limp mode",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Borrowed slang for a reduced-capacity/protection operating state; no authoritative published audio definition."
+  },
+  {
+    "id": "47d50644-6c8d-4b87-8802-18ebb57c2aac",
+    "term": "Living in the red",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for operating continuously at or near clipping on the meters; no authoritative published definition."
+  },
+  {
+    "id": "1f378078-af2f-4208-ac18-276994f1e28d",
+    "term": "Mains",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Ambiguous between AC power mains and the main front-of-house loudspeakers; sense unresolved without an anchor field, so flagged."
+  },
+  {
+    "id": "a85bb9f3-78b1-48dc-8f26-743500a7577b",
+    "term": "Make it loud",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Verbal directive slang; no authoritative published definition."
+  },
+  {
+    "id": "f61d8b4f-217e-40d4-9ae0-1a9bd93e20ee",
+    "term": "Mixing in a hole",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for mixing from an acoustically poor position; no authoritative published definition."
+  },
+  {
+    "id": "7d000041-c2e1-4889-bdd0-9e8b893b2e8b",
+    "term": "Mouse hole",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined crew slang with ambiguous sense; no authoritative published definition."
+  },
+  {
+    "id": "8a13873f-f0ec-4ce0-9828-ef76cc612ceb",
+    "term": "Not enough rig for the gig",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang phrase for an under-specified PA system; no authoritative published definition."
+  },
+  {
+    "id": "18b361a4-ce4e-4451-a4be-7311f2431c93",
+    "term": "Pack",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Slang shorthand that is ambiguous (wireless bodypack transmitter vs. 'to pack' gear); no authoritative published definition of the slang term and sense unresolved without an anchor."
+  },
+  {
+    "id": "f1c8f14f-b40d-4769-ba5b-8f4ccaab9e88",
+    "term": "Rat hole",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined crew slang with ambiguous sense; no authoritative published definition."
+  },
+  {
+    "id": "ba69ba14-8e27-46e5-8060-60f6badf839e",
+    "term": "Reset your ears",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for taking a hearing break to recalibrate perception; no authoritative published definition."
+  },
+  {
+    "id": "c9f697dc-818f-41e6-a74b-1de12561e12f",
+    "term": "Rock-and-roll ready",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for a rugged/ready-to-go setup; no authoritative published definition."
+  },
+  {
+    "id": "fd1142c1-400e-43e2-a95d-af2f13e12ef5",
+    "term": "Sanity check",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "General engineering slang; no authoritative published audio-specific definition."
+  },
+  {
+    "id": "c6101a15-1cb9-4d6c-9526-6a393964d788",
+    "term": "Secret sauce",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for a proprietary technique or setting; no authoritative published definition."
+  },
+  {
+    "id": "8615d32f-aef2-4f09-b142-53e87e77b915",
+    "term": "Show saver",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for a last-minute fix or spare that rescues a performance; no authoritative published definition."
+  },
+  {
+    "id": "9029b45c-d85f-4d14-8adc-40f8f858a1d5",
+    "term": "Spare world",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined crew slang for the pool of backup/spare gear; no authoritative published definition."
+  },
+  {
+    "id": "6808b2bf-eb6d-4e1e-8492-f3f1b1bb8557",
+    "term": "That does not play",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang meaning something is unacceptable or will not work; no authoritative published definition."
+  },
+  {
+    "id": "9d82e74f-ca0b-4aaa-95c7-b1b527b7fbb2",
+    "term": "That plays",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang meaning something is acceptable or will work; no authoritative published definition."
+  },
+  {
+    "id": "3fe634b2-5d66-4058-afbd-1c533c1b50a7",
+    "term": "The drive",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Ambiguous coined slang with no fixed sense; no authoritative published definition."
+  },
+  {
+    "id": "fb07654c-7669-409d-8dd8-46775c1d96fa",
+    "term": "The show must go on",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Show-business idiom rather than a defined technical term; no authoritative published definition."
+  },
+  {
+    "id": "5c3e2e6e-d5b8-4a68-b38e-8b7680f74784",
+    "term": "Voodoo",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for unexplained or inexplicable technical behaviour; no authoritative published definition."
+  },
+  {
+    "id": "2720148e-6a4b-4a49-8f13-86dc7b56daeb",
+    "term": "We are dead in the water",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Borrowed idiom for a total system failure/stoppage; no authoritative published definition."
+  },
+  {
+    "id": "cf4659e0-70ce-4a29-994c-9947d689947c",
+    "term": "White glove",
+    "primary_topic": "Live Sound — Concert-Audio Slang",
+    "flags": "Coined slang for premium/careful-handling service; no authoritative published definition."
+  },
+  {
+    "id": "6c8b5bef-57f6-48a3-96c9-b4a7246fa4ff",
+    "term": "Amplifier world",
+    "primary_topic": "Live Sound — Crew Roles & Departments",
+    "flags": "Informal touring-crew jargon for the amplifier/rack technician's zone of responsibility on a large PA system; no authoritative published definition (standards body, ESTA, or recognised live-sound text) located to fix the sense — flagged rather than guessed."
+  },
+  {
+    "id": "4a8a7ddd-f73f-498c-bdd3-5599744d83e7",
+    "term": "Boneyard",
+    "primary_topic": "Live Sound — Crew Roles & Departments",
+    "flags": "Informal staging/touring slang (variously an area holding empty road cases during a show or a dump for spare/dead equipment); only blog and trade-glossary sources found, no authoritative published definition to confirm the intended sense — flagged."
+  },
+  {
+    "id": "73e1a900-3e2b-48cb-b859-63cb34934e5e",
+    "term": "System world",
+    "primary_topic": "Live Sound — Crew Roles & Departments",
+    "flags": "Informal touring-crew jargon for the PA/system technician's zone of responsibility (the loudspeaker system as a department); no authoritative published definition located to fix the sense — flagged rather than guessed."
+  },
+  {
+    "id": "c1f461ae-6b05-470d-8501-db88390b5fb8",
+    "term": "Desk du jour",
+    "primary_topic": "Live Sound — Festival Changeovers & Guest-Engineer",
+    "flags": "Coined guest-engineer slang for whatever mixing console happens to be provided at a given festival or date ('desk of the day'); no authoritative published definition exists — flagged rather than guessed."
+  },
+  {
+    "id": "35ca5e67-508c-4bb3-b6a0-6abf3870f3a9",
+    "term": "Bring it up",
+    "primary_topic": "Road Crew",
+    "flags": "Bring it up: generic informal mix/level instruction; no authoritative published definition as a distinct term."
+  },
+  {
+    "id": "275e81e8-2b3c-40a9-8a1e-27e338ef7cb6",
+    "term": "Cable coffin",
+    "primary_topic": "Road Crew",
+    "flags": "Cable coffin: crew slang for a cable case; no authoritative published definition (manufacturer usage is marketing)."
+  },
+  {
+    "id": "aeec2f2d-7c7f-42a7-8f2f-70a5b8e33815",
+    "term": "Check one two",
+    "primary_topic": "Road Crew",
+    "flags": "Check one two: microphone-check vocalization, not a defined lexical term in authoritative references."
+  },
+  {
+    "id": "8b8a3e5d-b904-44d5-bf73-ab0808a9ce84",
+    "term": "Coffin",
+    "primary_topic": "Road Crew",
+    "flags": "Coffin: informal term for a DJ/flight case; attested only in manufacturer marketing, no authoritative published definition."
+  },
+  {
+    "id": "cb6e90da-9148-4739-8816-a708d6c94285",
+    "term": "Coming in",
+    "primary_topic": "Road Crew",
+    "flags": "Coming in: informal radio-comms slang; no authoritative published definition."
+  },
+  {
+    "id": "b12c1477-c6a1-4e9d-8b8e-58ceafd61d05",
+    "term": "Coming out",
+    "primary_topic": "Road Crew",
+    "flags": "Coming out: informal radio-comms slang; no authoritative published definition."
+  },
+  {
+    "id": "20f3b92a-00e0-4ca0-9589-9bcd892787bb",
+    "term": "Dead",
+    "primary_topic": "Road Crew",
+    "flags": "Dead: informal slang (no signal/no power); meaning ambiguous and not authoritatively defined as a distinct term."
+  },
+  {
+    "id": "0826ab2b-c6b4-4850-9a6f-3d8044fcbd26",
+    "term": "Dead case",
+    "primary_topic": "Road Crew",
+    "flags": "Dead case: crew slang for an emptied case; no authoritative published definition."
+  },
+  {
+    "id": "ec13591d-53f0-4f67-abdb-747496bcfb39",
+    "term": "Doghouse",
+    "primary_topic": "Road Crew",
+    "flags": "Doghouse: crew slang (various enclosure/position senses); no authoritative published definition."
+  },
+  {
+    "id": "60ee4cbf-b3d8-450c-ae6d-95bb6adc6032",
+    "term": "Get it off the truck",
+    "primary_topic": "Road Crew",
+    "flags": "Get it off the truck: literal informal load-in instruction; no authoritative published definition as a term."
+  },
+  {
+    "id": "ad2dfb2d-520f-4984-ae21-02efc4736035",
+    "term": "Last mile",
+    "primary_topic": "Road Crew",
+    "flags": "Last mile: general logistics/telecom term borrowed as slang; no authoritative touring-specific definition, sense ambiguous."
+  },
+  {
+    "id": "9a38d4af-a648-4fec-8f83-bef05d5faab0",
+    "term": "Lid",
+    "primary_topic": "Road Crew",
+    "flags": "Lid: crew slang (case lid / other senses); no authoritative published definition."
+  },
+  {
+    "id": "9fb1d10a-50ec-475d-a3e3-63abe0cd2495",
+    "term": "Line system",
+    "primary_topic": "Road Crew",
+    "flags": "Line system: ambiguous (line-array/line-level/intercom line); topic does not resolve the intended sense, no authoritative published definition."
+  },
+  {
+    "id": "ab154d29-067c-4204-b300-a237daa35861",
+    "term": "Mark it",
+    "primary_topic": "Road Crew",
+    "flags": "Mark it: informal instruction (spike/marking or slate cue); sense ambiguous, no authoritative published definition."
+  },
+  {
+    "id": "f0256236-7e28-4c11-800a-e518e5cf87e5",
+    "term": "Mix producer",
+    "primary_topic": "Road Crew",
+    "flags": "Mix producer: not a recognised, authoritatively defined touring-crew role."
+  },
+  {
+    "id": "86b9b384-dbe3-4ba9-b415-320bacebe4c4",
+    "term": "Push",
+    "primary_topic": "Road Crew",
+    "flags": "Push: informal load-in/out slang; no authoritative published definition as a term."
+  },
+  {
+    "id": "a0c24f7c-67bc-487f-983b-35c5b18fce88",
+    "term": "Push cases",
+    "primary_topic": "Road Crew",
+    "flags": "Push cases: literal informal instruction; no authoritative published definition as a term."
+  },
+  {
+    "id": "23f8f079-6673-4f30-af53-78275740fe32",
+    "term": "Roll on",
+    "primary_topic": "Road Crew",
+    "flags": "Roll on: informal crew slang; no authoritative published definition."
+  },
+  {
+    "id": "d1527598-9c1f-4923-88ba-c03e3da8d057",
+    "term": "Send it home",
+    "primary_topic": "Road Crew",
+    "flags": "Send it home: informal crew slang; no authoritative published definition."
+  },
+  {
+    "id": "ad65b98c-1d17-4dd2-b130-1a103691282b",
+    "term": "Show box",
+    "primary_topic": "Road Crew",
+    "flags": "Show box: crew slang for a show/tour case; no authoritative published definition."
+  },
+  {
+    "id": "b9f37864-56eb-41d5-9989-cdb4ebd3a2b7",
+    "term": "Take it out",
+    "primary_topic": "Road Crew",
+    "flags": "Take it out: informal load-out instruction; no authoritative published definition as a term."
+  },
+  {
+    "id": "44b08ce9-0bc5-4374-9c40-a7eedd689f86",
+    "term": "Tip the case",
+    "primary_topic": "Road Crew",
+    "flags": "Tip the case: literal informal instruction; no authoritative published definition as a term."
+  },
+  {
+    "id": "b73b7839-04f4-49cc-a6be-81adfd6f1116",
+    "term": "Wheels up",
+    "primary_topic": "Road Crew",
+    "flags": "Wheels up: borrowed aviation idiom for departure; no authoritative published definition as a touring term."
+  },
+  {
+    "id": "566a407d-8530-4aae-ab13-054218948863",
+    "term": "Wrap",
+    "primary_topic": "Road Crew",
+    "flags": "Wrap: borrowed film/production idiom for finishing; no authoritative published definition in the touring-crew sense."
+  },
+  {
+    "id": "d03780f8-dec3-422b-bc00-aa4e30d381c1",
+    "term": "Yellow jacket",
+    "primary_topic": "Road Crew",
+    "flags": "Yellow jacket: ambiguous (cable-protector product / other slang); no authoritative published definition, sense unresolved."
+  },
+  {
+    "id": "f0bd015f-6553-4180-ba54-6d928c248cce",
+    "term": "Voice of God",
+    "primary_topic": "Show Control, Cueing & Communications",
+    "flags": "Established live-event/production term for the disembodied announcement voice delivered over the house PA (safety notices, show-open announcements), but only blog and voiceover-marketing sources located; no authoritative published definition (standards body, ESTA, or recognised production text) confirmed — flagged rather than sourced insufficiently."
+  },
+  {
+    "id": "38ec5834-b3d5-4ede-a011-17b5318eebf3",
+    "term": "Actor tracking",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Ambiguous headword with no single authoritative published definition: could denote manually riding an actor's microphone through the show, a pre-recorded backing 'track', or the actor-to-character assignment system on a theatre console."
+  },
+  {
+    "id": "991889b2-52d7-4399-a132-e9b3bff75734",
+    "term": "Audio-triggered lighting cue",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined cross-domain descriptor with no authoritative published definition; the mechanism (a lighting cue fired from an audio level or from the sound system via show control) is not established as a standard term."
+  },
+  {
+    "id": "e8114273-2e85-4658-879d-e2f12345860d",
+    "term": "Automatic backup takeover",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "House term for redundancy failover with no authoritative published definition; while redundant playback systems are documented, the specific takeover mechanism named here is not a standardised, defined term."
+  },
+  {
+    "id": "4305e406-c6b7-45ed-841e-70ebcc879f0b",
+    "term": "Bodypack handoff",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "House term for physically transferring a bodypack transmitter between performers during quick changes or doubling; a real backstage practice but with no authoritative published definition."
+  },
+  {
+    "id": "6fcc6a90-a7d7-4e24-8262-575e7cf8a2fc",
+    "term": "Conductor camera feed",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Video-relay term outside the authoritative sound literature and lacking a standard published definition; the conductor camera relay is a genuine practice but is not defined as a theatrical-sound term."
+  },
+  {
+    "id": "5dda6637-8d6d-4f5e-9900-0077296dbfaa",
+    "term": "Cue buffering",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined variant of preloading with no distinct authoritative published definition; the documented concept of loading a cue's media into memory before playback is termed preloading or loading rather than 'buffering'."
+  },
+  {
+    "id": "b2e37d6c-42dd-4d85-8f52-7c8c6602e37a",
+    "term": "Cue lockout",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "House term for locking cues against firing or editing with no single authoritative published definition; ambiguous between an edit lock and a playback (go) inhibit."
+  },
+  {
+    "id": "0079e831-a80d-46ea-ab0e-362111728bef",
+    "term": "Cue rehearsal mode",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined term with no authoritative published definition; although systems provide ways to jump to and stand by cues for rehearsal, 'cue rehearsal mode' is not an established, standardised feature name."
+  },
+  {
+    "id": "93923679-51b4-4542-9e0b-2055d3f939ae",
+    "term": "Cue safe mode",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "House jargon for protecting cues from change or firing, with no authoritative published definition and ambiguous scope."
+  },
+  {
+    "id": "6430a0f0-2597-4b77-a90d-a1208031aac9",
+    "term": "Cue speaker feed",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive coined phrase with no distinct authoritative published definition; it denotes nothing more specific than a cue's output routed to a given loudspeaker, which is covered by cue output assignment."
+  },
+  {
+    "id": "495126b5-36e0-4c62-b385-94b3b2d9362f",
+    "term": "Electronic percussion rig",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house term for an electronic-drum/percussion setup used in a pit; no authoritative published definition of the compound as a distinct term."
+  },
+  {
+    "id": "ffac0140-3d14-4306-8525-151dec000190",
+    "term": "Ensemble input channel",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "House routing label for a console input assigned to an ensemble/chorus source; the specific compound has no authoritative published definition (definable only by inference from 'input channel')."
+  },
+  {
+    "id": "7df1737c-a899-4822-be2b-9e482c51fbe9",
+    "term": "Entrance pickup",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined house term for miking/capturing a performer at an entrance; no authoritative published definition."
+  },
+  {
+    "id": "0f60d537-c455-4c09-bf0b-982478df90ea",
+    "term": "Exit mute",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined cue/house term for muting a channel as a performer exits; no authoritative published definition."
+  },
+  {
+    "id": "eb630f17-7256-4e07-8cf3-d267f2ac0991",
+    "term": "Keyboard playback rig",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house term for a keyboard/sampler rig running playback in the pit; no authoritative published definition."
+  },
+  {
+    "id": "d4a9135e-17ba-448c-9513-5b8829483ebb",
+    "term": "Keyboard programming rig",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house term for a keyboard-programming workstation; no authoritative published definition."
+  },
+  {
+    "id": "a1314d9f-cba2-45a6-93e3-247a25f2a4a1",
+    "term": "Lighting-triggered audio cue",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive compound for an audio cue fired from the lighting system; definable only by inference, with no authoritative published definition of the specific term."
+  },
+  {
+    "id": "180b40c9-b22a-4b11-b1e3-0ff3052da9ff",
+    "term": "Line-by-line automation",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined house term for automating console moves line-by-line through a script; no authoritative published definition."
+  },
+  {
+    "id": "5ba716b8-22ce-41fd-b297-f4a338417376",
+    "term": "Lobby feed",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "House term for an audio feed sent to the lobby/public front-of-house areas; no authoritative published definition."
+  },
+  {
+    "id": "beda79c4-865e-4dd5-a138-f2ca61e927f5",
+    "term": "Main playback computer",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house term for the primary show-playback machine; no authoritative published definition of the compound."
+  },
+  {
+    "id": "1e92d049-7801-4d46-8962-be6a093c63e2",
+    "term": "Manual backup takeover",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined house/operational term for an operator manually assuming control from a failed system; no authoritative published definition."
+  },
+  {
+    "id": "f35ac155-8cdd-4ecb-ab95-8af57800051f",
+    "term": "Matrix playback",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house term; 'matrix' is an established console concept but 'matrix playback' has no authoritative published definition (inference)."
+  },
+  {
+    "id": "d7a51fa9-27f4-49d8-961d-48faf99bdf30",
+    "term": "Microphone handoff",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined house term for transferring a wireless mic between performers; no authoritative published definition."
+  },
+  {
+    "id": "f72f0ae0-9fbf-46c4-a545-ef948b526f70",
+    "term": "Mixer operator",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Generic/ambiguous role descriptor (cf. defined roles such as A1/sound-board operator); no authoritative published definition of this specific title."
+  },
+  {
+    "id": "d738b9a0-3562-4ecf-99b8-f9d99043a21a",
+    "term": "Multichannel playback",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive compound; 'multichannel audio' is standardised but 'multichannel playback' has no authoritative published definition as a distinct term (inference)."
+  },
+  {
+    "id": "a69e14a1-7956-4d8e-8049-b05b5554ba32",
+    "term": "Musical-number recall",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined house term for recalling console settings per musical number; no authoritative published definition."
+  },
+  {
+    "id": "944f35d1-6980-42f3-b1f7-c1fd72474fa0",
+    "term": "Musical-theater vocal mix",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive stylistic term for vocal mixing in musical theatre; no authoritative published definition of the specific compound."
+  },
+  {
+    "id": "8941e47f-470f-438b-b7f1-0083959330ab",
+    "term": "Network trigger",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Ambiguous/generic descriptor for triggering over a network (could denote OSC, UDP/TCP, or other transports); no single authoritative published definition (cf. defined 'Open Sound Control trigger')."
+  },
+  {
+    "id": "41113d18-a192-4310-970f-22865fe8bf91",
+    "term": "Orchestra-pit automation",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house term for automated console handling of pit sources; no authoritative published definition."
+  },
+  {
+    "id": "59560241-b802-44f6-b4d9-2916b882d60e",
+    "term": "Orchestra-pit mix",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house term for the mix of pit-orchestra sources; no authoritative published definition of the compound."
+  },
+  {
+    "id": "28ea16d7-78bd-4948-b9e2-439f45999aee",
+    "term": "Parameter recall",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Generic descriptor; the documented console feature is 'scene/snapshot recall' and 'parameter recall' has no authoritative published definition as a distinct term."
+  },
+  {
+    "id": "1c24db0a-984a-47bf-9be3-48f26e3ddfbb",
+    "term": "Performance mix",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive/ambiguous term for the mix used during performance; no authoritative published definition."
+  },
+  {
+    "id": "84fa2716-b7ea-4d8b-849e-c065af972076",
+    "term": "Pit input list",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house term for pit input paperwork (cf. input list/patch list); no authoritative published definition of the specific compound."
+  },
+  {
+    "id": "0681a3be-027b-4a91-ab23-d2400673580e",
+    "term": "Pit patch list",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house term for pit patch paperwork; no authoritative published definition of the specific compound."
+  },
+  {
+    "id": "cbf0faed-a826-4e24-a221-528925b10407",
+    "term": "Playback failover",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house/operational term for redundancy switchover of the playback system; no authoritative published definition of the specific compound."
+  },
+  {
+    "id": "7c0ba793-decb-4744-b39d-c57e8b155568",
+    "term": "Playback output patch",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house term for the output patch of the playback system; no authoritative published definition of the compound."
+  },
+  {
+    "id": "68fb078a-953f-4023-b7ec-06b8bd3e839d",
+    "term": "Playback routing",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Generic descriptor for the routing of playback signals; no authoritative published definition as a distinct term."
+  },
+  {
+    "id": "77408815-84c4-4e5e-858b-0c3d0d3fbc87",
+    "term": "Preset cue",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive house term for a cue that recalls a preset; no authoritative published definition of the specific compound."
+  },
+  {
+    "id": "2fedd942-6f11-4ba5-a14d-6086381ff127",
+    "term": "Production mix",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Descriptive/ambiguous term (could denote the live show mix or a post-production mix); no authoritative published definition."
+  },
+  {
+    "id": "0367c3ce-504d-48c0-803a-9df2782e0b46",
+    "term": "Scene-based mix",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined descriptive label for a mixing workflow; not a defined headword in authoritative sources."
+  },
+  {
+    "id": "c44124c5-c274-4abc-b833-9328d8231d89",
+    "term": "Show mix",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Generic descriptive term with no authoritative published definition distinct from 'the performance mix'."
+  },
+  {
+    "id": "d2dfd58c-9620-4d7e-bef7-e8845e0686ed",
+    "term": "Show playback system",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Generic/coined descriptive term; no authoritative published definition."
+  },
+  {
+    "id": "c68aaef5-be9c-49ee-bad8-13d88784126d",
+    "term": "Synchronized redundant playback",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined descriptive term for a reliability practice; the exact concept has no authoritative published definition."
+  },
+  {
+    "id": "2d11b850-9fad-4ef8-b1f9-eae93d9c99cb",
+    "term": "Theatrical sound mix",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Generic descriptive term with no authoritative published definition distinct from the performance mix."
+  },
+  {
+    "id": "2d1003f6-5564-404a-be4c-4de81a458de1",
+    "term": "Understudy substitution",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "General theatre/casting term, not a defined sound term; no authoritative published sound-domain definition."
+  },
+  {
+    "id": "c8df9307-e8cb-4251-ad02-b3cbc3969b51",
+    "term": "Vocal scene recall",
+    "primary_topic": "Theatrical Sound (commercial card)",
+    "flags": "Coined compound; no authoritative published definition distinct from scene recall."
+  },
+  {
+    "id": "87c455e1-91a5-402f-accc-d947341b073b",
+    "term": "Altar Area",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Coined worship location/coverage descriptor; 'altar' is an architectural term but 'altar area' has no authoritative published definition as an audio/AV term."
+  },
+  {
+    "id": "ae68e50c-6cc4-4131-ab5b-23bc41ca5fc1",
+    "term": "Choir Balance",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Descriptive worship-mixing phrase; no authoritative published definition specific to the term."
+  },
+  {
+    "id": "2e50fa99-0487-40c2-81ab-27b1d3b43e2f",
+    "term": "Choir Image",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Descriptive term; 'stereo image' is defined but 'choir image' has no authoritative published definition."
+  },
+  {
+    "id": "30daf391-cacd-4e5a-809b-1d9850db3083",
+    "term": "Choir-Monitor Interaction",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Coined descriptor of choir feedback/spill-with-monitors behaviour; no authoritative published definition."
+  },
+  {
+    "id": "0607e03b-c0f3-45ce-b19e-e780250f15f9",
+    "term": "Congregational Singing Pickup",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Coined descriptive phrase for capturing congregational singing; no authoritative published definition."
+  },
+  {
+    "id": "c40384a6-f3a8-460d-bb73-35fbea272fd9",
+    "term": "Liturgical Garment Miking",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Coined technique label for mounting microphones on vestments; no authoritative published definition."
+  },
+  {
+    "id": "e20aac31-d54c-456a-8c5d-8057986ddd64",
+    "term": "Liturgical Preset",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Coined term for a console scene/preset used in a liturgy; no authoritative published definition."
+  },
+  {
+    "id": "e00559b9-07c7-4870-b99e-6144b7b7a3ca",
+    "term": "Microphone Sightline",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Coined worship/broadcast concept (keeping microphones clear of camera sightlines); no authoritative published audio definition."
+  },
+  {
+    "id": "c112a6f5-7180-42f2-965a-24ad20829ba1",
+    "term": "Microphone Visibility Constraint",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Coined descriptor for the requirement to minimise on-camera microphone visibility; no authoritative published definition."
+  },
+  {
+    "id": "4d3a480c-bc5b-4042-ad63-d336d2c66749",
+    "term": "Multiple-Talker Position",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Coined and ambiguous descriptor for arrangements involving several talker positions; no authoritative published definition."
+  },
+  {
+    "id": "ebaa562a-67f6-4138-a22b-b3933a33871d",
+    "term": "Natural Choir Support",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Coined ministry/AV jargon; no authoritative published definition."
+  },
+  {
+    "id": "04ca25d3-ad0d-4d33-a0ad-7dede847c2d5",
+    "term": "Wireless Handheld Pass Microphone",
+    "primary_topic": "Worship Sound (commercial card)",
+    "flags": "Coined term for a wireless handheld passed among speakers/congregation; 'wireless handheld' is defined but 'pass microphone' has no authoritative published definition."
+  }
+]

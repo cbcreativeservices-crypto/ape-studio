@@ -1,0 +1,159 @@
+{
+ "batch": 242,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "2afb4481-27f5-4522-9b53-437f0a4524d7",
+   "term": "Pass-by effect",
+   "fields": {
+    "definition": "A sound effect in which a source moves past the listener or camera, so its level rises as it approaches, peaks alongside, then falls as it recedes; a moving source also produces a Doppler pitch shift and a left-to-right pan. Common examples are car, train, and aircraft 'pass-bys' cut or recorded for sound editing.",
+    "plain_english": "It is the sound of something moving past you, like a car whooshing by. It gets louder as it comes closer, then softer as it goes away. The pitch also drops a little as it passes.",
+    "purpose_function": "It sells motion and space on screen, telling the audience a source is traveling through the scene rather than sitting still, and it adds energy and direction to action.",
+    "practical_application": "A sound editor cuts or records vehicle and object pass-bys, then adds panning and a Doppler pitch bend so the effect tracks the on-screen movement.",
+    "category": "Sound Effects",
+    "related_terms": ["Doppler effect", "Panning", "Foley", "Sound effects editing", "Perspective"],
+    "common_mistakes": ["Adding a Doppler pitch shift so extreme it sounds unnatural instead of a subtle drop as the source passes.", "Panning the pass-by faster or slower than the object actually moves on screen, breaking sync.", "Keeping the same brightness and level regardless of distance, so a far-off pass-by is as loud and bright as a close one."],
+    "scenario_contexts": ["Cutting car pass-bys for a busy street scene so traffic moves believably across the screen.", "Adding an aircraft fly-over that travels from one speaker to the other in a surround mix.", "Recording a real vehicle pass-by on location to build a custom effects library."]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Viers, The Sound Effects Bible", "Sonnenschein, Sound Design"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "044efbf8-e986-4a1e-8d6e-ec0acf786236",
+   "term": "Performance exaggeration",
+   "fields": {
+    "definition": "In sound for picture, the deliberate heightening of a sound performance — Foley, effects, or voice — beyond literal reality so it reads as bigger, sharper, or more emphatic than the real event, supporting drama or point of view; a hyperreal approach to performed sound.",
+    "plain_english": "It means making a sound bigger or bolder than real life to add punch. A movie punch, for example, is made to sound much heavier than a real one so the hit feels powerful.",
+    "purpose_function": "It shapes how an audience feels a moment, using weightier or more detailed sound to add impact, emotion, or focus that a plain, realistic recording would miss.",
+    "practical_application": "A sound designer or Foley artist performs and layers sounds with extra weight and detail — a heavier footstep, a meatier punch — to match the dramatic tone of the picture.",
+    "category": "Sound Design",
+    "related_terms": ["Hyperrealism", "Foley", "Sound design", "Sound effects editing", "Sweetening", "Perspective"],
+    "common_mistakes": ["Exaggerating every sound, so nothing stands out and the whole mix becomes tiring.", "Pushing a sound so far it no longer matches the picture and pulls the viewer out of the story.", "Confusing exaggeration with simply raising the fader, instead of performing and layering for weight and detail."],
+    "scenario_contexts": ["Building a larger-than-life punch or body-fall for a fight scene.", "Heightening creature or monster vocals so they feel threatening.", "Making a hero's footsteps heavier to add menace or importance."]
+   },
+   "sources": ["Sonnenschein, Sound Design", "Chion, Audio-Vision: Sound on Screen", "Ament, The Foley Grail"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d52026b0-9574-4686-a2da-25a7c1384148",
+   "term": "Performance match",
+   "fields": {
+    "definition": "In dialogue replacement (ADR/looping), matching a re-recorded or replacement vocal take to the original on-screen performance in timing, pitch, energy, and emotional delivery so the new line is indistinguishable from the production sound.",
+    "plain_english": "It means making a re-recorded line sound just like the actor's original take. The new words must have the same timing, feeling, and energy so no one can tell the line was replaced.",
+    "purpose_function": "It keeps replaced dialogue believable and consistent with the picture, so the audience never notices that a line was recorded later in a studio instead of on set.",
+    "practical_application": "During ADR, the recordist and editor guide the actor to hit the same rhythm and emotion as the guide track, then nudge and process the take to line up with the original.",
+    "category": "Dialogue",
+    "related_terms": ["ADR", "Lip sync", "Dialogue editing", "Guide track", "Production dialogue", "Performance synchronization"],
+    "common_mistakes": ["Matching only the words and timing but missing the emotion, so the line feels flat next to the picture.", "Recording ADR with a very different mic or room and not matching the tone of the original set recording.", "Assuming volume alone makes a match, and ignoring rhythm and breath."],
+    "scenario_contexts": ["Replacing a noisy on-set line with a clean ADR take that still sounds spontaneous.", "Re-recording dialogue for a scene shot near loud traffic.", "Matching a dubbed line to the original actor's delivery for a foreign-language version."]
+   },
+   "sources": ["Purcell, Dialogue Editing for Motion Pictures", "Holman, Sound for Film and Television", "Rose, Producing Great Sound for Film and Video"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d1ab2733-85fc-4904-a39b-98b49078faf1",
+   "term": "Performance realism",
+   "fields": {
+    "definition": "The quality of a recorded, edited, or Foley performance sounding natural and believable within the world of the picture, so voices, footsteps, and actions read as genuine rather than staged or artificial.",
+    "plain_english": "It is how true-to-life a performed sound feels. Good footsteps, for example, should sound like a real person walking in that room, not like someone tapping in a studio.",
+    "purpose_function": "It keeps the audience inside the story by making performed sound feel like it truly belongs to the characters and spaces on screen.",
+    "practical_application": "Foley artists and dialogue editors watch the picture and perform or edit to match the surface, weight, pace, and mood of the action so it feels lived-in.",
+    "category": "Sound Design",
+    "related_terms": ["Foley", "Dialogue editing", "Performance match", "ADR", "Sound design", "Perspective"],
+    "common_mistakes": ["Performing sounds in perfect, even rhythm, when real actions are slightly uneven.", "Ignoring the room and surface, so footsteps or props do not match the space on screen.", "Over-cleaning dialogue until it sounds sterile and loses its natural life."],
+    "scenario_contexts": ["Foley-walking a character across gravel so the steps feel real.", "Editing dialogue so pauses and breaths sound like natural speech.", "Balancing prop sounds so a busy kitchen scene feels genuine."]
+   },
+   "sources": ["Ament, The Foley Grail", "Sonnenschein, Sound Design", "Purcell, Dialogue Editing for Motion Pictures"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "50a04cf0-2827-45ec-a90e-6b2ea8cc1be7",
+   "term": "Performance repair edit",
+   "fields": {
+    "definition": "A dialogue or audio edit that fixes flaws in a recorded performance — a fluffed or mispronounced word, an unwanted breath, a timing slip, or a weak take — by cutting, replacing, nudging, or blending material, ideally from the same production sound, without re-recording.",
+    "plain_english": "It is fixing a mistake in a take by editing instead of recording again. You might swap a stumbled word for a clean one from another take so the line sounds right.",
+    "purpose_function": "It saves a usable performance and avoids costly re-recording, keeping the actor's original delivery while removing distracting errors.",
+    "practical_application": "A dialogue editor pulls a clean word or syllable from an alternate take and blends it in, matching level, tone, and room so the repair is invisible.",
+    "category": "Dialogue",
+    "related_terms": ["Dialogue editing", "ADR", "Alternate take", "Crossfade", "Room tone", "Performance match"],
+    "common_mistakes": ["Splicing in a word from a take with different tone or room, so the repair is obvious.", "Cutting on a hard consonant or mid-breath, creating an audible click or gap.", "Forgetting to fill edits with matching room tone, leaving dead silence."],
+    "scenario_contexts": ["Replacing a single mumbled word with a clearer version from another take.", "Removing a loud breath or lip smack between lines.", "Tightening a slow line by trimming a pause without changing the delivery."]
+   },
+   "sources": ["Purcell, Dialogue Editing for Motion Pictures", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ae6bd55c-2dd6-4896-b671-d20d8597bd44",
+   "term": "Performance synchronization",
+   "fields": {
+    "definition": "Aligning a recorded performance — an ADR line, a Foley pass, or a musical take — precisely to the picture so sound events coincide with the on-screen action, including lip-sync for voice and hit-point sync for effects and Foley.",
+    "plain_english": "It means lining up a performed sound exactly with the picture. A footstep must land when the foot hits the ground, and spoken words must match the moving lips.",
+    "purpose_function": "It makes sound and image feel like one event, so the audience believes the sound is really coming from what they see.",
+    "practical_application": "Editors slide, stretch, or nudge takes against the picture and use timecode and sync references so every hit and word lands on the right frame.",
+    "category": "Synchronization",
+    "related_terms": ["Lip sync", "ADR", "Foley", "Timecode", "Sync point", "Frame rate"],
+    "common_mistakes": ["Syncing the start of a word but letting the end drift, so lip-sync slips.", "Fixing sync by ear alone and ignoring the frame, causing small but visible offsets.", "Time-stretching a take so far to force sync that it sounds unnatural."],
+    "scenario_contexts": ["Lining up an ADR line to an actor's lip movements.", "Placing Foley footsteps on each visible step.", "Syncing a re-recorded music performance to a filmed player's hands."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Purcell, Dialogue Editing for Motion Pictures", "SMPTE ST 12 (timecode)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "56a1592d-ab3f-498e-9d22-75d58e434bd9",
+   "term": "Personalized head-related transfer function",
+   "fields": {
+    "definition": "A head-related transfer function (HRTF) captured or estimated for one specific listener's own head, torso, and outer-ear (pinna) shape, rather than a generic or averaged HRTF, used to render binaural audio that localizes more accurately for that individual.",
+    "plain_english": "An HRTF is a map of how your head and ears change a sound before you hear it. This map lets headphones place sounds all around you. A personalized one is measured for your own ears, so the 3D effect feels more real for you.",
+    "purpose_function": "It improves binaural spatial audio by matching the rendering to a listener's own anatomy, reducing the front-back and up-down errors that generic HRTFs often cause.",
+    "practical_application": "In immersive and VR audio work, a technician captures or derives a listener's HRTF — by measurement, photos, or ear scans — and loads it into a binaural renderer for headphone monitoring or delivery.",
+    "category": "Immersive Audio",
+    "related_terms": ["Head-related transfer function", "Binaural audio", "Spatial audio", "Pinna", "Interaural time difference", "Immersive audio"],
+    "common_mistakes": ["Assuming one generic HRTF works equally well for every listener.", "Confusing a personalized HRTF with simple headphone EQ.", "Expecting perfect localization from headphones without head tracking."],
+    "scenario_contexts": ["Setting up a personalized binaural mix for headphone delivery of an immersive project.", "Improving 3D audio in a VR experience for a specific user.", "Monitoring an object-based mix on headphones using a measured HRTF."]
+   },
+   "sources": ["AES E-Library papers on individualized HRTFs", "Journal of the Acoustical Society of America (ASA)", "IEEE spatial-audio literature"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cf5e5961-30f7-4ed2-a508-7ccc0b19bc5a",
+   "term": "Phantom-center dialogue",
+   "fields": {
+    "definition": "Dialogue reproduced as a phantom center image — equal, in-phase level in the left and right speakers — so the voice appears to come from a point between them, rather than from a discrete center channel; it is how mono-centered dialogue sits in a two-channel (stereo/LtRt) presentation.",
+    "plain_english": "It is dialogue sent equally to the left and right speakers so the voice seems to float in the middle. There is no real center speaker; your ears just place the sound between the two.",
+    "purpose_function": "It keeps a voice centered on screen in stereo playback, and it matters in deliverables because a phantom center is less stable than a real center channel and can shift or thin out when a listener moves off-center.",
+    "practical_application": "When mixing or folding down to stereo, an engineer places dialogue in the phantom center and checks it off to one side, since surround mixes usually anchor dialogue in a discrete center speaker instead.",
+    "category": "Mixing",
+    "related_terms": ["Center channel", "Stereo imaging", "LtRt", "Fold-down", "Downmix", "Panning"],
+    "common_mistakes": ["Assuming a phantom center sounds the same as a discrete center speaker for every seat in the room.", "Letting the two sides drift out of phase, which smears or hollows the centered voice.", "Forgetting to check the phantom-center dialogue after a stereo fold-down of a surround mix."],
+    "scenario_contexts": ["Mixing dialogue for a stereo TV or web deliverable with no center channel.", "Checking a phantom-center voice from an off-center seat.", "Folding a 5.1 mix down to LtRt stereo and confirming the dialogue stays centered."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "AES multichannel/stereo reproduction literature", "Rane technical note on stereo imaging"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "91ce7bd6-fcb7-4feb-a5aa-9c90039d486c",
+   "term": "Phase modulation synthesis",
+   "fields": {
+    "definition": "A digital sound-synthesis technique in which the phase of a carrier oscillator is varied by a modulator oscillator, generating harmonic and inharmonic sidebands. It is closely related to, and for most patches mathematically equivalent to, frequency modulation (FM), and is the method used in Yamaha's DX-series synthesizers.",
+    "plain_english": "It is a way of building sounds by using one wave to bend the timing of another. This creates many new tones from simple parts, which is how classic FM synths make their bright, metallic sounds.",
+    "purpose_function": "It creates rich, evolving timbres — from bells and electric pianos to metallic and bass sounds — using only a few oscillators, making it an efficient way to synthesize complex spectra.",
+    "practical_application": "A sound designer sets carrier and modulator operators, their frequency ratios, and envelope depths to dial in a patch, then plays it for score, sound design, or synth cues.",
+    "category": "Synthesis",
+    "related_terms": ["FM synthesis", "Operator", "Carrier", "Modulator", "Oscillator", "Sideband"],
+    "common_mistakes": ["Believing phase modulation and FM are completely different, when they produce equivalent results for most patches.", "Expecting simple, predictable results, when small ratio changes can shift a tone from harmonic to clangy.", "Confusing the modulator's job with a filter, when it reshapes the harmonic content directly rather than removing it."],
+    "scenario_contexts": ["Programming a DX-style electric piano for a music cue.", "Designing metallic or bell-like textures for sound design.", "Creating punchy synth bass with a phase-modulation instrument."]
+   },
+   "sources": ["Chowning, The Synthesis of Complex Audio Spectra by Means of Frequency Modulation, JAES (1973)", "Roads, The Computer Music Tutorial", "Yamaha DX-series technical documentation"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

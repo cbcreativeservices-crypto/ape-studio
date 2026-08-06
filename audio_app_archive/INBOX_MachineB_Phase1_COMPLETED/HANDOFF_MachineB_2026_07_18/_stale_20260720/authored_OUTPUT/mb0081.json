@@ -1,0 +1,150 @@
+{
+ "batch": 81,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "b4683e9d-5c94-4aa1-b44f-cf8b6f326618",
+   "term": "Archival master",
+   "fields": {
+    "definition": "The highest-quality, long-term preservation copy of a finished recording, stored in a stable format with minimal processing so it serves as the authoritative source for all future copies. It is kept unchanged and separate from the access or production copies used in day-to-day work.",
+    "plain_english": "The archival master is the best, safest copy of a finished recording. You keep it in top quality and never change it. All future copies are made from it. It is like keeping the original of an important photo locked in a safe.",
+    "purpose_function": "It protects the definitive version of a recording against loss, format decay, or accidental change, giving a trusted source for later remasters, reissues, and derivative files.",
+    "practical_application": "An engineer exports a full-resolution, unprocessed master and files it with checksums and metadata in a preservation store, then makes working copies for streaming or CD from it rather than editing the original.",
+    "category": "Masters & Archiving",
+    "related_terms": ["Production master", "Flat master", "Access copy", "Bit depth", "Sample rate", "Metadata"],
+    "common_mistakes": ["Saving only a lossy MP3 or a loudness-limited streaming file as the archival master instead of a full-resolution copy", "Overwriting or editing the archival master rather than working from a duplicate", "Storing the master with no checksums, metadata, or backups so it cannot be verified later", "Confusing the archival master with the final access or distribution copy"],
+    "scenario_contexts": ["A label requests the archival master years later to prepare a remaster or vinyl reissue", "A studio ingests finished mixes into a preservation archive with fixity checks", "Migrating older masters to a new file format before the original media degrades"]
+   },
+   "sources": ["IASA TC-04, Guidelines on the Production and Preservation of Digital Audio Objects", "FADGI (Federal Agencies Digital Guidelines Initiative) Glossary, 'archival master file'", "Bobby Owsinski, The Mastering Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bbee86a9-06e1-488d-9b6d-57025e38de8f",
+   "term": "Archive acceptance review",
+   "fields": {
+    "definition": "A formal quality-control step in which delivered audio materials are checked against archive requirements, such as format, resolution, metadata, file integrity, and completeness, to decide whether they are accepted into the archive or returned for correction.",
+    "plain_english": "Before a recording goes into the archive, someone checks it carefully. They make sure the files, format, and labels all follow the rules. If something is wrong or missing, it gets sent back to be fixed. It is like a librarian checking a book is complete before shelving it.",
+    "purpose_function": "It keeps an archive trustworthy by ensuring only complete, correctly formatted, and verifiable material is accepted, preventing corrupt or non-standard files from entering long-term storage.",
+    "practical_application": "An archivist or QC engineer opens each delivered file, confirms it plays, matches the agreed spec and checksums, and carries the required metadata before signing it off for ingest.",
+    "category": "Masters & Archiving",
+    "related_terms": ["Archival master", "Ingest", "Quality control", "Checksum", "Metadata", "Deliverables"],
+    "common_mistakes": ["Accepting files without verifying checksums or that every promised deliverable is present", "Skipping a listen-through, so dropouts or wrong files reach the archive", "Ignoring required metadata and file-naming conventions", "Treating the review as a formality rather than a gate that can reject material"],
+    "scenario_contexts": ["A broadcast archive reviews a season of program masters before adding them to its store", "A studio checks a client's delivered stems and masters meet the archive spec", "A digitization project verifies transferred tapes before ingest"]
+   },
+   "sources": ["IASA TC-04, Guidelines on the Production and Preservation of Digital Audio Objects", "ISO 14721:2012 (OAIS Reference Model), Ingest and quality assurance"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bb46e763-d598-4b94-b4b8-9c236223da35",
+   "term": "Arrangement region",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No established, named audio/DAW meaning found in acceptable sources. The phrase is ambiguous: it could mean a section defined by Logic-style arrangement markers, an arranger event, or simply any timeline region used while arranging. No >=2 acceptable sources define this exact term, so all fields are left blank pending review."]
+  },
+  {
+   "id": "bfb3adeb-8353-437c-abe3-aba0b0983dd4",
+   "term": "Arrangement track (Logic)",
+   "fields": {
+    "definition": "A global track in Logic Pro that holds arrangement markers, which divide a project into named sections such as intro, verse, and chorus. Moving a marker moves all regions, track markers, and automation within that section, so whole sections can be reordered, copied, or swapped.",
+    "plain_english": "The Arrangement track is a special row at the top of Logic Pro. You drop markers on it to label parts of your song, like verse and chorus. When you drag a marker, everything in that part moves with it. So you can rearrange a song by sliding whole sections around, like moving blocks of a story.",
+    "purpose_function": "It gives a high-level view of song structure and lets you restructure a whole arrangement quickly, without manually selecting and moving every region and automation point.",
+    "practical_application": "A producer marks out song sections, then drags an arrangement marker to move a chorus earlier or Option-drags to duplicate a verse, and every region and automation point in that section follows.",
+    "category": "DAW Arrangement",
+    "related_terms": ["Arranger track", "Arrangement marker", "Global tracks", "Region", "Marker", "Song structure"],
+    "common_mistakes": ["Confusing arrangement markers with ordinary timeline or locator markers", "Forgetting that moving a marker also moves that section's automation and every track's regions", "Expecting it to play sections in a custom order like Cubase's Arranger track, when it actually edits the linear timeline", "Resizing one marker without realizing the adjacent marker resizes too"],
+    "scenario_contexts": ["Restructuring a demo by moving the chorus before the second verse", "Duplicating a verse section to extend a song", "Labeling sections so collaborators can navigate the project quickly"]
+   },
+   "sources": ["Apple, Logic Pro User Guide, 'Add arrangement markers'", "Apple, Logic Pro User Guide, 'Edit arrangement markers'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "215f13c5-edfd-4918-9a74-f8f29c7fabab",
+   "term": "Arranger track",
+   "fields": {
+    "definition": "A track type in Cubase and Nuendo on which you define arranger events (sections) and then build an arranger chain that sets the order and number of repeats in which those sections play back. This allows non-linear rearrangement and live restructuring without permanently moving the underlying events.",
+    "plain_english": "The Arranger track lets you mark parts of your project, like verse and chorus. Then you make a playlist that says what order to play them and how many times. You can change the order without cutting and pasting anything. It is like making a set list from parts you already recorded.",
+    "purpose_function": "It lets you try different song structures and perform arrangements live by controlling the playback order of predefined sections, instead of permanently editing the timeline.",
+    "practical_application": "A composer defines sections on the Arranger track, builds a chain that repeats the chorus twice and skips a verse, auditions it, and can later flatten the chain into a normal linear project.",
+    "category": "DAW Arrangement",
+    "related_terms": ["Arrangement track (Logic)", "Arranger chain", "Arranger Editor", "Cycle markers", "Region", "Song structure"],
+    "common_mistakes": ["Confusing the Arranger track's non-linear playback with simply moving events on the timeline", "Forgetting to flatten (make permanent) the arranger chain before exporting, so the export follows the wrong order", "Expecting Logic's Arrangement track to behave the same way", "Leaving Arranger mode inactive, so the chain is ignored during playback"],
+    "scenario_contexts": ["Auditioning several song structures before committing to one", "Performing a track live and repeating a chorus on cue", "Building a long arrangement from a few recorded sections"]
+   },
+   "sources": ["Steinberg, Cubase Pro Operation Manual, 'Arranger Track'", "Steinberg, Cubase Pro Operation Manual, 'Arranger Editor'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7acc3a2d-2708-43a3-8678-2e61aec0a65c",
+   "term": "Assistive audio technology",
+   "fields": {
+    "definition": "Audio technology designed to help people with hearing or other disabilities access sound, most notably assistive listening systems such as induction (hearing) loops, FM, and infrared systems that deliver clearer sound directly to a listener's hearing aid or receiver.",
+    "plain_english": "Assistive audio technology is gear that helps people who have trouble hearing. It sends sound straight to a hearing aid or a small receiver, cutting out room noise and distance. Hearing loops in theaters and airports are a common example. It makes speech and music much easier to follow.",
+    "purpose_function": "It improves access and speech clarity for people with hearing loss, and is required in many public venues so everyone can hear announcements, performances, and presentations.",
+    "practical_application": "An AV technician installs and tests a hearing loop or infrared system fed from the venue's sound mix, sets its output level, and confirms coverage and compatibility with hearing aids' telecoil.",
+    "category": "Accessibility",
+    "related_terms": ["Assistive listening system", "Hearing loop", "Telecoil", "Infrared system", "Signal-to-noise ratio", "Public address"],
+    "common_mistakes": ["Assuming a normal PA or loudspeaker system meets accessibility rules without a dedicated assistive listening system", "Not testing the system with a receiver or telecoil, so faults go unnoticed", "Ignoring the required coverage area and number of receivers for the venue size", "Confusing assistive listening systems with simply turning up the volume"],
+    "scenario_contexts": ["Fitting a hearing loop in a theater so patrons with hearing aids can hear dialogue", "Providing infrared receivers at a conference for delegates with hearing loss", "Checking a house of worship's assistive listening coverage during commissioning"]
+   },
+   "sources": ["2010 ADA Standards for Accessible Design (Sections 219 and 706, Assistive Listening Systems)", "IEC 60118-4, Electroacoustics - Hearing aids - Induction-loop systems for hearing aid purposes"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "31c14e8e-ba03-46de-9110-7cb6caf77075",
+   "term": "Assistive mastering",
+   "fields": {
+    "definition": "Mastering carried out with the help of an intelligent assistant tool that analyzes a mix and automatically generates a starting master chain, setting EQ, dynamics, and loudness toward a genre target or a loaded reference track, which the engineer then reviews and refines.",
+    "plain_english": "Assistive mastering uses smart software to give you a head start on a master. The tool listens to your song and sets up EQ, compression, and loudness for you. You can also point it at a reference track you like. Then you tweak its suggestions instead of starting from nothing.",
+    "purpose_function": "It speeds up mastering and gives less-experienced users a competent starting point, offering a data-driven baseline that the engineer can accept, adjust, or override.",
+    "practical_application": "An engineer runs a tool like Ozone's Master Assistant on the loudest part of a mix, picks a streaming or reference target, then fine-tunes the generated EQ, limiter ceiling, and loudness before exporting.",
+    "category": "Mastering",
+    "related_terms": ["Archival master", "Reference track", "LUFS", "Maximizer", "Loudness normalization", "Mastering chain"],
+    "common_mistakes": ["Accepting the assistant's output without critical listening or metering", "Treating the AI-generated target as a finished master rather than a starting point", "Chasing a reference track's loudness and crushing the dynamics", "Assuming one genre preset fits every song"],
+    "scenario_contexts": ["Getting a quick master reference for a client demo", "Giving a beginner a solid starting chain to learn from", "Matching a new mix's tone and loudness to a released reference"]
+   },
+   "sources": ["iZotope, Ozone Master Assistant Help Documentation", "Bobby Owsinski, The Mastering Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1a4e076c-2f3b-4cba-872b-af5be19217c7",
+   "term": "Attack layer",
+   "fields": {
+    "definition": "A separate sound or sample layered under a source specifically to reinforce its initial transient (attack), adding click, snap, or punch without changing the body or sustain of the main sound.",
+    "plain_english": "An attack layer is an extra sound stacked on top to sharpen the very start of a hit. It adds click or snap so a drum or note cuts through. Think of it like adding a crisp tap to the front of a soft thud. The main sound stays the same; only the beginning gets punchier.",
+    "purpose_function": "It makes a sound's onset more defined and audible in a busy mix, improving punch and clarity, especially on drums and layered instruments.",
+    "practical_application": "A producer layers a short click or transient sample under a soft kick so it translates on small speakers, time-aligns it to the main hit, and blends its level so it adds snap without sounding separate.",
+    "category": "Sound Layering",
+    "related_terms": ["Transient", "Layering", "Attack (envelope)", "Phase alignment", "Sample layering", "Punch"],
+    "common_mistakes": ["Adding an attack layer that is out of phase with the main sound, thinning the low end", "Setting the attack layer too loud so it sounds like a separate click", "Not time-aligning the layers, which smears the transient", "Layering to patch a part that really needs to be re-recorded or re-sampled"],
+    "scenario_contexts": ["Adding click to a dull kick so it punches on phones and laptop speakers", "Reinforcing the pick attack on a soft bass sample", "Stacking a transient sample under a snare for more snap"]
+   },
+   "sources": ["David Miles Huber and Robert Runstein, Modern Recording Techniques (layering and transient design)", "Bobby Owsinski, The Mixing Engineer's Handbook (layering and phase alignment)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3d82ac37-0ee3-4d32-b413-a989276ef5b3",
+   "term": "Audio Connections window",
+   "fields": {
+    "definition": "A configuration window in Cubase and Nuendo (formerly VST Connections) where you set up input and output busses and map them to the physical ports of your ASIO audio interface, defining their channel format (mono, stereo, or surround) and saving them as presets.",
+    "plain_english": "The Audio Connections window is where Cubase learns how your audio interface is wired. You create input and output paths and connect them to the real sockets on your gear. Without this setup, you cannot record or hear playback. Think of it as a patchbay that tells the software which jack is which.",
+    "purpose_function": "It links the software's audio busses to the hardware interface's ports, which is required before you can record inputs or play sound out of Cubase.",
+    "practical_application": "A technician opens Audio Connections, creates a stereo output bus mapped to the interface's main outs and input busses mapped to the mic preamps, then saves the layout as a preset for future sessions.",
+    "category": "DAW Routing",
+    "related_terms": ["Bus", "Audio interface", "ASIO driver", "Input monitoring", "Signal routing", "Control room"],
+    "common_mistakes": ["Not setting up any output bus, so playback is silent", "Mapping busses to the wrong interface ports, sending audio to the wrong outputs", "Assuming settings transfer automatically after changing the audio device, when busses must be remapped", "Confusing input busses with the tracks that record from them"],
+    "scenario_contexts": ["Setting up a new studio interface in Cubase for the first time", "Reconfiguring routing after moving a project to a different rig", "Adding a dedicated headphone or cue output bus for a performer"]
+   },
+   "sources": ["Steinberg, Cubase Operation Manual, 'Audio Connections Window'", "Steinberg Help Center, 'VST/Audio Connections: Setting up an audio interface in Cubase/Nuendo'"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

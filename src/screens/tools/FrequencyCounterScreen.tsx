@@ -28,7 +28,10 @@ import { PermissionsAndroid, Platform, Pressable, ScrollView, StyleSheet, Text, 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
+import Svg, { Line, Path, Text as SvgText } from 'react-native-svg';
 import { GlassButton } from '../../components/GlassButton';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED } from './ToolLockUi';
 import { useToolUsage } from '../../features/tools/telemetry';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -60,6 +63,15 @@ const MODES: { key: Mode; name: string; blurb: string }[] = [
   // Tuner mode (merged tool, spec 2026-07-23): same engine, musical interpretation.
   { key: 'tuner', name: 'Tuner', blurb: 'Interpret a sustained note musically — note name, octave, and cents against a selectable A4 reference.' },
 ];
+
+// Landing-row accent per mode (owner 2026-08-05): Sound green · Light Pulse
+// amber · Tap blue · Tuner purple.
+const MODE_COLOR: Record<Mode, string> = {
+  sound: colors.green,
+  light: colors.amber,
+  tap: colors.blue,
+  tuner: colors.purple,
+};
 
 // A long pause starts a fresh measurement; only the most recent taps average in.
 const TAP_RESET_GAP_MS = 2500;
@@ -340,6 +352,109 @@ function LightPulseMode({ blurb, help, helpAll }: { blurb: string; help: (key: s
   );
 }
 
+// ---- Tuner arc gauge (owner 2026-08-05) — the LIVE version of the demo's
+// "Hz vs Pitch" needle display, shown ABOVE the compact readout. Same arc +
+// tick + needle language as HzCounterDemo scene 3, driven by the live pitch. ---
+const GAUGE_H = 148;
+const GAUGE_NEEDLE_LEN = 84;
+const GAUGE_DEG_PER_CENT = 0.9; // ±50¢ → ±45° of needle travel
+function gaugePolar(cx: number, cy: number, r: number, deg: number) {
+  const rad = (deg * Math.PI) / 180;
+  return { x: cx + r * Math.sin(rad), y: cy - r * Math.cos(rad) };
+}
+
+function TunerGauge({
+  freq,
+  note,
+  dim,
+  inTune,
+}: {
+  freq: number | null;
+  note: { name: string; octave: number; cents: number } | null;
+  dim: boolean;
+  inTune: boolean;
+}) {
+  const [w, setW] = useState(0);
+  const cx = w / 2;
+  const cy = GAUGE_H - 20;
+  const arcStart = gaugePolar(cx, cy, 100, -45);
+  const arcEnd = gaugePolar(cx, cy, 100, 45);
+  const ticks = useMemo(() => {
+    const out: { key: number; x1: number; y1: number; x2: number; y2: number; major: boolean }[] = [];
+    for (let c = -50; c <= 50; c += 10) {
+      const deg = c * GAUGE_DEG_PER_CENT;
+      const major = c === -50 || c === 0 || c === 50;
+      const a = gaugePolar(cx, cy, major ? 88 : 93, deg);
+      const b = gaugePolar(cx, cy, 100, deg);
+      out.push({ key: c, x1: a.x, y1: a.y, x2: b.x, y2: b.y, major });
+    }
+    return out;
+  }, [cx, cy]);
+  const cents = note ? Math.max(-50, Math.min(50, note.cents)) : 0;
+
+  return (
+    <View style={[styles.gaugeWrap, inTune && styles.gaugeWrapInTune]}>
+      <View style={styles.gaugeHeader}>
+        <Text style={[styles.gaugeHz, dim && styles.readoutDim]}>{freq != null ? `${fmtHz(freq)} Hz` : '— Hz'}</Text>
+        <Text style={styles.gaugeArrow}>→</Text>
+        <Text style={[styles.gaugeNote, dim && styles.readoutDim]}>{note ? `${note.name}${note.octave}` : '—'}</Text>
+      </View>
+      <View style={{ height: GAUGE_H }} onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
+        {w > 0 && (
+          <>
+            <Svg width={w} height={GAUGE_H}>
+              <Path
+                d={`M ${arcStart.x} ${arcStart.y} A 100 100 0 0 1 ${arcEnd.x} ${arcEnd.y}`}
+                stroke={colors.steelBorder}
+                strokeWidth={2}
+                fill="none"
+              />
+              {ticks.map((t) => (
+                <Line
+                  key={t.key}
+                  x1={t.x1}
+                  y1={t.y1}
+                  x2={t.x2}
+                  y2={t.y2}
+                  stroke={t.key === 0 ? (inTune ? colors.green : colors.amber) : t.major ? colors.textSub : colors.hairlineAlt}
+                  strokeWidth={t.key === 0 ? 2.5 : 1.5}
+                />
+              ))}
+              {[-50, 0, 50].map((c) => {
+                const p = gaugePolar(cx, cy, 114, c * GAUGE_DEG_PER_CENT);
+                return (
+                  <SvgText key={c} x={p.x} y={p.y + 4} fill={colors.textSub} fontFamily={fonts.mono} fontSize={12} textAnchor="middle">
+                    {c > 0 ? `+${c}` : `${c}`}
+                  </SvgText>
+                );
+              })}
+            </Svg>
+            {note != null && (
+              <View
+                pointerEvents="none"
+                style={[
+                  styles.gaugeNeedleBox,
+                  {
+                    left: cx - 1.5,
+                    top: cy - GAUGE_NEEDLE_LEN,
+                    height: GAUGE_NEEDLE_LEN * 2,
+                    transform: [{ rotate: `${cents * GAUGE_DEG_PER_CENT}deg` }],
+                  },
+                  dim && styles.readoutDim,
+                ]}
+              >
+                <View style={[styles.gaugeNeedle, inTune && styles.gaugeNeedleInTune]} />
+              </View>
+            )}
+            <View pointerEvents="none" style={[styles.gaugeHub, { left: cx - 6, top: cy - 6 }]} />
+            <Text style={styles.gaugeRefBadge}>±50¢ scale</Text>
+          </>
+        )}
+      </View>
+    </View>
+  );
+}
+
 function LivePitchMode({
   kind,
   help,
@@ -458,6 +573,9 @@ function LivePitchMode({
       : 'no stable pitch';
 
   const note = shownFreq != null ? noteFor(shownFreq, a4) : null;
+  // In tune within ±1 cent (owner 2026-08-05) — LIVE only (a held/stale reading
+  // must never light the container green).
+  const tunerInTune = kind === 'tuner' && accepted && note != null && Math.abs(note.cents) < 1;
   const stats = computePitchStats(histRef.current);
   const outOfRange =
     accepted && live != null && (live.freq < PITCH_RANGE_HZ.min || live.freq > PITCH_RANGE_HZ.max);
@@ -534,57 +652,66 @@ function LivePitchMode({
   return (
     <>
       {kind === 'sound' ? (
-        // Tapping the readout toggles START/STOP (owner 2026-07-31).
+        // Tapping the readout toggles START/STOP (owner 2026-07-31). Readout
+        // green (owner 2026-08-05).
         <Pressable
           style={styles.readout}
           onPress={running ? onStop : onStart}
           accessibilityRole="button"
           accessibilityLabel={running ? 'Tap to stop capture' : 'Tap to start capture'}
         >
-          <Text style={[styles.readoutValue, isHeld && styles.readoutDim]}>
+          <Text style={[styles.readoutValue, styles.readoutValueGreen, isHeld && styles.readoutDim]}>
             {shownFreq != null ? fmtHz(shownFreq) : '—'}
           </Text>
           <Text style={styles.readoutUnit}>Hz</Text>
         </Pressable>
       ) : (
         <>
-          <Pressable
-            style={styles.readout}
-            onPress={running ? onStop : onStart}
-            accessibilityRole="button"
-            accessibilityLabel={running ? 'Tap to stop capture' : 'Tap to start capture'}
-          >
-            <Text style={[styles.readoutValue, isHeld && styles.readoutDim]}>
-              {note ? `${note.name}${note.octave}` : '—'}
+          {/* Top display (owner 2026-08-05): the demo's Hz-vs-Pitch arc gauge,
+              live. */}
+          <TunerGauge freq={shownFreq} note={note} dim={isHeld} inTune={tunerInTune} />
+
+          {/* Current display — compact; the ENTIRE container turns green when in
+              tune within ±1 cent (owner 2026-08-05). */}
+          <View style={[styles.tunerCurrent, tunerInTune && styles.tunerCurrentInTune]}>
+            <Pressable
+              style={styles.tunerNoteRow}
+              onPress={running ? onStop : onStart}
+              accessibilityRole="button"
+              accessibilityLabel={running ? 'Tap to stop capture' : 'Tap to start capture'}
+            >
+              <Text style={[styles.readoutValue, isHeld && styles.readoutDim]}>
+                {note ? `${note.name}${note.octave}` : '—'}
+              </Text>
+            </Pressable>
+            {/* Cents needle: real deviation on a ±50¢ scale; the green band is
+                the ±5¢ in-tune zone. */}
+            <View style={styles.centsScale}>
+              <View style={styles.centsZoneInTune} />
+              <View style={styles.centsZero} />
+              {note && (
+                <View
+                  style={[
+                    styles.centsNeedle,
+                    { left: `${50 + Math.max(-50, Math.min(50, note.cents))}%` },
+                    Math.abs(note.cents) < 5 ? styles.centsNeedleInTune : null,
+                    isHeld && styles.readoutDim,
+                  ]}
+                />
+              )}
+            </View>
+            <Text
+              style={[
+                styles.centsLabel,
+                note != null && !isHeld && Math.abs(note.cents) < 5 && styles.centsLabelInTune,
+                isHeld && styles.readoutDim,
+              ]}
+            >
+              {note != null && shownFreq != null
+                ? `${note.cents >= 0 ? '+' : ''}${note.cents.toFixed(1)} cents · ${fmtHz(shownFreq)} Hz`
+                : 'no stable pitch'}
             </Text>
-          </Pressable>
-          {/* Cents needle: real deviation on a ±50¢ scale; the green band is
-              the ±5¢ in-tune zone. */}
-          <View style={styles.centsScale}>
-            <View style={styles.centsZoneInTune} />
-            <View style={styles.centsZero} />
-            {note && (
-              <View
-                style={[
-                  styles.centsNeedle,
-                  { left: `${50 + Math.max(-50, Math.min(50, note.cents))}%` },
-                  Math.abs(note.cents) < 5 ? styles.centsNeedleInTune : null,
-                  isHeld && styles.readoutDim,
-                ]}
-              />
-            )}
           </View>
-          <Text
-            style={[
-              styles.centsLabel,
-              note != null && !isHeld && Math.abs(note.cents) < 5 && styles.centsLabelInTune,
-              isHeld && styles.readoutDim,
-            ]}
-          >
-            {note != null && shownFreq != null
-              ? `${note.cents >= 0 ? '+' : ''}${note.cents.toFixed(1)} cents · ${fmtHz(shownFreq)} Hz`
-              : 'no stable pitch'}
-          </Text>
         </>
       )}
       {/* The tuner's cents label already says "no stable pitch" — only the
@@ -700,38 +827,6 @@ function LivePitchMode({
         </View>
       )}
 
-      {/* Plain-language live warnings (spec §6) — shared flags first, then the
-          tool's spec-required caveats (multiple tones / out of range). */}
-      {flags.map((f) => (
-        <Text key={f} style={styles.liveWarn}>
-          ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
-        </Text>
-      ))}
-      {live != null && !accepted && !lowSignal && (
-        <Text style={styles.liveWarn}>
-          ⚠ No stable pitch — sustain ONE steady tone. Chords, speech, or multiple tones at once do
-          not reduce to a single frequency.
-        </Text>
-      )}
-      {outOfRange && (
-        <Text style={styles.liveWarn}>
-          ⚠ Frequency is outside the reliable range (≈{PITCH_RANGE_HZ.min} Hz–
-          {PITCH_RANGE_HZ.max / 1000} kHz) — treat this reading as approximate.
-        </Text>
-      )}
-      {kind === 'tuner' &&
-        live != null &&
-        live.voiced &&
-        live.confidence >= PITCH_CONF_MIN &&
-        !lowSignal &&
-        live.freq > 0 &&
-        !inBand(live.freq) && (
-          <Text style={styles.liveWarn}>
-            ⚠ A pitch at {fmtHz(live.freq)} Hz is outside the detection band ({fmtCut(lowCut)}–
-            {fmtCut(highCut)}). Widen or move the band to include your note.
-          </Text>
-        )}
-
       {/* SAVE (Sound mode only) — enabled once a live, confident pitch has held
           long enough for real stats (Phase 2, spec §7). */}
       {kind === 'sound' && (
@@ -766,43 +861,109 @@ function LivePitchMode({
         height={46}
         onPress={running ? onStop : onStart}
       />
+
+      {/* Plain-language live warnings (spec §6) — moved to the BOTTOM of the
+          screen (owner 2026-08-05): shared flags first, then the tool's
+          spec-required caveats (multiple tones / out of range / band). */}
+      {flags.map((f) => (
+        <Text key={f} style={styles.liveWarn}>
+          ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+        </Text>
+      ))}
+      {live != null && !accepted && !lowSignal && (
+        <Text style={styles.liveWarn}>
+          ⚠ No stable pitch — sustain ONE steady tone. Chords, speech, or multiple tones at once do
+          not reduce to a single frequency.
+        </Text>
+      )}
+      {outOfRange && (
+        <Text style={styles.liveWarn}>
+          ⚠ Frequency is outside the reliable range (≈{PITCH_RANGE_HZ.min} Hz–
+          {PITCH_RANGE_HZ.max / 1000} kHz) — treat this reading as approximate.
+        </Text>
+      )}
+      {kind === 'tuner' &&
+        live != null &&
+        live.voiced &&
+        live.confidence >= PITCH_CONF_MIN &&
+        !lowSignal &&
+        live.freq > 0 &&
+        !inBand(live.freq) && (
+          <Text style={styles.liveWarn}>
+            ⚠ A pitch at {fmtHz(live.freq)} Hz is outside the detection band ({fmtCut(lowCut)}–
+            {fmtCut(highCut)}). Widen or move the band to include your note.
+          </Text>
+        )}
       <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
     </>
   );
 }
 
-function ModeSelect({ onPick, onLearn, onDemo }: { onPick: (m: Mode) => void; onLearn: () => void; onDemo: () => void }) {
+function ModeSelect({
+  onPick,
+  onLearn,
+  onDemo,
+  isMember,
+  onUpgrade,
+}: {
+  onPick: (m: Mode) => void;
+  onLearn: () => void;
+  onDemo: () => void;
+  isMember: boolean;
+  onUpgrade: () => void;
+}) {
   return (
     <>
       <Text style={styles.intro}>
         Count how often something repeats — as frequency, period, and tempo — or interpret it
         musically as pitch. Choose a mode:
       </Text>
-      {MODES.map((m) => (
-        <Pressable
-          key={m.key}
-          style={styles.modeBtn}
-          onPress={() => onPick(m.key)}
-          accessibilityRole="button"
-          accessibilityLabel={m.name}
-        >
-          <View style={{ flex: 1 }}>
-            <Text style={styles.modeName}>{m.name}</Text>
-            <Text style={styles.modeBlurb}>{m.blurb}</Text>
+      {MODES.map((m) => {
+        // Light Pulse is Academy-only (owner 2026-08-05) — free accounts see it
+        // grayed + locked; a tap routes to the Paywall.
+        const locked = m.key === 'light' && !isMember;
+        const accent = MODE_COLOR[m.key];
+        return (
+          <View key={m.key}>
+            <Pressable
+              style={[styles.modeBtn, { borderColor: accent }, locked && styles.modeBtnLocked]}
+              onPress={() => (locked ? onUpgrade() : onPick(m.key))}
+              accessibilityRole="button"
+              accessibilityLabel={locked ? `${m.name} — ${MEMBERSHIP_REQUIRED}` : m.name}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.modeName, { color: accent }, locked && styles.modeTextLocked]}>
+                  {locked ? '🔒 ' : ''}
+                  {m.name}
+                </Text>
+                <Text style={[styles.modeBlurb, locked && styles.modeTextLocked]}>{m.blurb}</Text>
+              </View>
+              <Text style={[styles.modeChevron, { color: accent }, locked && styles.modeTextLocked]}>›</Text>
+            </Pressable>
+            {locked && <MembershipRequiredNote what="use Light Pulse mode" style={{ marginTop: -6 }} />}
           </View>
-          <Text style={styles.modeChevron}>›</Text>
-        </Pressable>
-      ))}
-      {/* Phase-1 training layer (spec 2026-07-23) — this tool skips ToolInfo,
-          so LEARN/DEMO live here. Destinations gate the content. */}
+        );
+      })}
+      {/* Phase-1 training layer — this tool skips ToolInfo, so LEARN/DEMO live
+          here. Academy-only (owner 2026-08-05): grayed + locked for free. */}
       <View style={styles.trainRow}>
-        <View style={{ flex: 1 }}>
-          <GlassButton label="LEARN" tint="teal" height={46} fontSize={14} onPress={onLearn} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <GlassButton label="DEMO" tint="teal" height={46} fontSize={14} onPress={onDemo} />
-        </View>
+        {isMember ? (
+          <>
+            <View style={{ flex: 1 }}>
+              <GlassButton label="LEARN" tint="teal" height={46} fontSize={14} onPress={onLearn} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <GlassButton label="DEMO" tint="teal" height={46} fontSize={14} onPress={onDemo} />
+            </View>
+          </>
+        ) : (
+          <>
+            <LockedButton label="LEARN" height={46} onPress={onUpgrade} />
+            <LockedButton label="DEMO" height={46} onPress={onUpgrade} />
+          </>
+        )}
       </View>
+      {!isMember && <MembershipRequiredNote what="open guided training" />}
       <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
     </>
   );
@@ -813,13 +974,33 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
   const [held, setHeld] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Clear the SAVED ✓ timer on unmount (review 2026-07-23).
+  // 5-second trailing average (owner 2026-08-05): the estimated frequency from
+  // taps in the last 5 s. It lingers for 5 s after the final tap so it can be
+  // read, then clears.
+  const [avg5s, setAvg5s] = useState<number | null>(null);
+  const avgClearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Clear the SAVED ✓ + avg-clear timers on unmount (review 2026-07-23).
   useEffect(
     () => () => {
       if (savedTimer.current) clearTimeout(savedTimer.current);
+      if (avgClearTimer.current) clearTimeout(avgClearTimer.current);
     },
     [],
   );
+
+  // Recompute the 5 s trailing average whenever the taps change, and (re)arm the
+  // 5 s clear timer so it holds for 5 s past the last tap.
+  useEffect(() => {
+    if (taps.length < 2) return; // keep the last value visible until the timer clears it
+    const last = taps[taps.length - 1];
+    const recent = taps.filter((t) => last - t <= 5000);
+    if (recent.length >= 2) {
+      const span = recent[recent.length - 1] - recent[0];
+      if (span > 0) setAvg5s((recent.length - 1) / (span / 1000)); // events/sec = Hz
+    }
+    if (avgClearTimer.current) clearTimeout(avgClearTimer.current);
+    avgClearTimer.current = setTimeout(() => setAvg5s(null), 5000);
+  }, [taps]);
 
   const onTap = useCallback(() => {
     if (held) return;
@@ -848,6 +1029,8 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
   const reset = useCallback(() => {
     setTaps([]);
     setHeld(false);
+    setAvg5s(null);
+    if (avgClearTimer.current) clearTimeout(avgClearTimer.current);
   }, []);
 
   /** Honest quality flags from the LIVE tap statistics — shown on the
@@ -895,13 +1078,14 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
 
   return (
     <>
-      {/* Big frequency readout. */}
+      {/* Big frequency readout — green (owner 2026-08-05). */}
       <View style={styles.readout}>
-        <Text style={styles.readoutValue}>{stats ? fmtHz(stats.freq) : '—'}</Text>
+        <Text style={[styles.readoutValue, styles.readoutValueGreen]}>{stats ? fmtHz(stats.freq) : '—'}</Text>
         <Text style={styles.readoutUnit}>Hz</Text>
       </View>
 
-      {/* Tap target — onPressIn samples finger-DOWN (see onTapDown note). */}
+      {/* Tap target — green border + container (owner 2026-08-05). onPressIn
+          samples finger-DOWN (see onTapDown note). */}
       <Pressable
         style={[styles.tapPad, held && styles.tapPadHeld]}
         onPressIn={onTapDown}
@@ -928,6 +1112,7 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
         />
         <StatCell help={help} label="MIN" value={stats?.minFreq != null ? fmtHz(stats.minFreq) : '—'} unit={stats?.minFreq != null ? 'Hz' : undefined} />
         <StatCell help={help} label="MAX" value={stats?.maxFreq != null ? fmtHz(stats.maxFreq) : '—'} unit={stats?.maxFreq != null ? 'Hz' : undefined} />
+        <StatCell help={help} label="AVG (5 s)" value={avg5s != null ? fmtHz(avg5s) : '—'} unit={avg5s != null ? 'Hz' : undefined} />
       </View>
       <DisplayGuideButton onPress={helpAll} />
 
@@ -982,9 +1167,16 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   const { help, helpAll, sheet } = useToolHelp('freqcounter');
   const [mode, setMode] = useState<Mode | null>(null);
   useToolUsage('hzcounter'); // T-1 telemetry (this tool skips ToolInfo)
+  // Academy-gated extras (owner 2026-08-05): Light Pulse, LEARN/DEMO, and the
+  // Saved Measurements library. Free accounts see them locked → Paywall.
+  const { entitlement } = useEntitlement();
+  const isMember = entitlement === 'academy';
 
   const goBack = () => (mode ? setMode(null) : navigation.goBack());
   const modeMeta = MODES.find((m) => m.key === mode) ?? null;
+  // Saved Measurements is Academy-only — non-members route to the Paywall.
+  const openLibrary = () =>
+    isMember ? navigation.navigate('ToolLibrary', { toolKey: 'hzcounter' }) : navigation.navigate('Paywall');
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -1004,18 +1196,15 @@ export function FrequencyCounterScreen({ navigation }: Props) {
             onPick={setMode}
             onLearn={() => navigation.navigate('ToolLearn', { toolKey: 'hzcounter' })}
             onDemo={() => navigation.navigate('ToolDemo', { toolKey: 'hzcounter' })}
+            isMember={isMember}
+            onUpgrade={() => navigation.navigate('Paywall')}
           />
         ) : mode === 'tap' ? (
-          <TapMode help={help} helpAll={helpAll} onOpenLibrary={() => navigation.navigate('ToolLibrary', { toolKey: 'hzcounter' })} />
+          <TapMode help={help} helpAll={helpAll} onOpenLibrary={openLibrary} />
         ) : mode === 'sound' || mode === 'tuner' ? (
           // LIVE (engine build 2026-07-23): YIN pitch — numeric (Sound) or
           // musical (Tuner). Gates itself honestly when the engine is absent.
-          <LivePitchMode
-            kind={mode}
-            help={help}
-            helpAll={helpAll}
-            onOpenLibrary={() => navigation.navigate('ToolLibrary', { toolKey: 'hzcounter' })}
-          />
+          <LivePitchMode kind={mode} help={help} helpAll={helpAll} onOpenLibrary={openLibrary} />
         ) : (
           // Light Pulse: camera-luma optical counter (ape-optical). Gates
           // itself honestly when the native module isn't in the build.
@@ -1060,11 +1249,15 @@ const styles = StyleSheet.create({
   modeName: { fontFamily: fonts.oswaldMedium, fontSize: 20, letterSpacing: 0.4, color: colors.textPrimary },
   modeBlurb: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary, marginTop: 3 },
   modeChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 26, color: '#5fd9c4' },
+  // Locked (Academy-only) mode row — grayed, steel border.
+  modeBtnLocked: { borderColor: '#3a3a3a', backgroundColor: '#141414', opacity: 0.6 },
+  modeTextLocked: { color: colors.textSub },
   trainRow: { flexDirection: 'row', gap: 12, marginTop: 4 },
 
   // Big readout.
   readout: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: 8, marginTop: 4 },
   readoutValue: { fontFamily: fonts.oswaldBold, fontSize: 64, color: '#5fd9c4', letterSpacing: 1 },
+  readoutValueGreen: { color: colors.green }, // Sound/Tap Hz readout (owner 2026-08-05)
   readoutUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.amberLabel },
   // Last-good hold (§1.7): dimmed, never presented as live.
   readoutDim: { opacity: 0.35 },
@@ -1076,12 +1269,12 @@ const styles = StyleSheet.create({
     marginTop: -6,
   },
 
-  // Tap target.
+  // Tap target — green border + container (owner 2026-08-05).
   tapPad: {
     borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: 'rgba(95,217,196,.55)',
-    backgroundColor: '#10171a',
+    borderColor: 'rgba(55,224,95,.6)',
+    backgroundColor: '#0d1710',
     paddingVertical: 34,
     alignItems: 'center',
     gap: 6,
@@ -1186,6 +1379,49 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   centsLabelInTune: { color: '#5bff85' },
+
+  // Tuner top gauge (owner 2026-08-05) — live "Hz vs Pitch" arc needle.
+  gaugeWrap: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#101013',
+    paddingTop: 8,
+    paddingBottom: 4,
+    paddingHorizontal: 8,
+  },
+  gaugeWrapInTune: { borderColor: 'rgba(55,224,95,.55)' },
+  gaugeHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: 10 },
+  gaugeHz: { fontFamily: fonts.mono, fontSize: 22, color: colors.amber },
+  gaugeArrow: { fontFamily: fonts.barlowRegular, fontSize: 18, color: colors.textSub },
+  gaugeNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, letterSpacing: 1, color: colors.textPrimary },
+  gaugeNeedleBox: { position: 'absolute', width: 3, alignItems: 'center' },
+  gaugeNeedle: { width: 3, height: GAUGE_NEEDLE_LEN - 4, borderRadius: 1.5, backgroundColor: colors.amber },
+  gaugeNeedleInTune: { backgroundColor: '#5bff85' },
+  gaugeHub: {
+    position: 'absolute',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#2a2a30',
+    borderWidth: 1,
+    borderColor: colors.steelBorder,
+  },
+  gaugeRefBadge: { position: 'absolute', top: 2, left: 2, fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
+
+  // Tuner current display (compact; turns green in tune within ±1¢).
+  tunerCurrent: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#101013',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    gap: 6,
+  },
+  tunerCurrentInTune: { borderColor: colors.green, backgroundColor: 'rgba(55,224,95,.18)' },
+  tunerNoteRow: { alignItems: 'center' },
+
   // Honest range/unit footnote under the stat grid.
   gridNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
   a4Row: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },

@@ -1,0 +1,159 @@
+{
+ "batch": 226,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "379752b3-3119-4bac-b43a-9e9f286325c4",
+   "term": "Foley cleanup",
+   "fields": {
+    "definition": "The editorial stage in which unwanted noise, extraneous sounds, and timing errors are removed from recorded Foley, and the cues are tightened to sync so the Foley sits cleanly in the mix.",
+    "plain_english": "After Foley is recorded, an editor goes through it and takes out the extra noises and mistakes. It is like editing the coughs and bumps out of a voice recording so only the good sounds are left.",
+    "purpose_function": "It strips recording flaws and background noise so each Foley cue is clean and can be placed tightly against picture. This lets the Foley blend into the mix without drawing attention.",
+    "practical_application": "A Foley editor cuts out breaths, prop bumps, and dead air, then nudges each footstep or cloth move into tight sync before handing the tracks to the re-recording mixer.",
+    "category": "Foley Editing",
+    "related_terms": ["Foley artist", "Sound effects editing", "Sync", "Spotting session", "Re-recording mixer", "Foley library recording"],
+    "common_mistakes": ["Leaving prop bumps, breaths, or chair creaks in the tracks so they intrude on the mix", "Cutting so tightly that natural tails or the start of a sound are clipped off", "Confusing cleanup with mixing, when cleanup only prepares tracks and does not set final levels or EQ"],
+    "scenario_contexts": ["Prepping a reel of recorded footsteps for the final mix", "Removing a director's cough that leaked into a quiet Foley take", "Tightening cloth moves to sync before the re-recording stage"]
+   },
+   "sources": ["Vanessa Theme Ament, The Foley Grail (Focal Press/Routledge)", "David Lewis Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3fa9a532-e442-4235-8333-a929cf3b6b3c",
+   "term": "Foley costume library",
+   "fields": {
+    "definition": "An organized collection of garments, fabrics, and cloth items kept on a Foley stage so the artist can match and perform the cloth-movement sounds of a character's wardrobe.",
+    "plain_english": "A stash of different clothes and fabrics kept in the Foley studio. The artist picks fabric that matches what a character wears, then moves it near a mic to make the rustling sounds of people walking or shifting.",
+    "purpose_function": "It lets the Foley artist reproduce believable clothing rustle that matches each character's wardrobe, adding realism to on-screen movement. Having many fabrics on hand means the right texture is always available.",
+    "practical_application": "When cueing a scene, the Foley artist grabs a jacket or fabric whose weight and weave match the actor's costume, then performs the cloth moves in sync with the picture.",
+    "category": "Foley Library",
+    "related_terms": ["Foley artist", "Cloth pass", "Foley pit", "Foley prop library", "Foley shoe library", "Footsteps"],
+    "common_mistakes": ["Using a fabric whose weight or weave does not match the character's costume", "Forgetting that cloth Foley is needed at all, leaving movement sounding thin", "Letting jewelry, zippers, or buttons add sounds the scene does not call for"],
+    "scenario_contexts": ["Matching a leather jacket's creak for an action scene", "Performing the swish of a long gown as a character walks", "Adding subtle cloth movement so a nearly still character still feels alive"]
+   },
+   "sources": ["Vanessa Theme Ament, The Foley Grail (Focal Press/Routledge)", "David Lewis Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0fd5f5db-73ca-48e8-94b3-4636fed3d3b2",
+   "term": "Foley library recording",
+   "fields": {
+    "definition": "The practice of recording Foley performances as reusable sound-library assets, captured wild rather than to picture and catalogued for later use, instead of performing them in sync to a specific scene.",
+    "plain_english": "Recording Foley sounds on their own to save and reuse later, instead of playing them along to a movie. It is like recording a batch of footstep and door sounds once, then keeping them in a sound bank for future projects.",
+    "purpose_function": "It builds a stock of clean, isolated Foley sounds that editors can pull from when a live session is not scheduled or a quick fill is needed. This saves time and money on later projects.",
+    "practical_application": "A Foley team records clean takes of footsteps, cloth, and prop handling without picture, labels and stores them, and an editor later drops these files into a project as needed.",
+    "category": "Foley Recording",
+    "related_terms": ["Sound library", "Wild recording", "Foley artist", "Sound effects editing", "Foley cleanup", "Spotting session"],
+    "common_mistakes": ["Treating library Foley as a full replacement for performing to picture, which weakens sync", "Recording without clean labeling, so files cannot be found later", "Capturing takes with room noise or handling that limits reuse"],
+    "scenario_contexts": ["Building a stock of footstep sounds during studio downtime", "Recording prop handling sounds for reuse across a TV series", "Capturing a clean set of door sounds to fill gaps in a rushed schedule"]
+   },
+   "sources": ["Vanessa Theme Ament, The Foley Grail (Focal Press/Routledge)", "Ric Viers, The Sound Effects Bible"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e8b53a1d-923b-4e2c-b031-226b6f07f1cb",
+   "term": "Foley printmaster",
+   "fields": {
+    "definition": "The final, fully mixed Foley stem printed at the printmaster stage of the final mix, kept as a separate deliverable so the Foley can be recombined for the M&E track, foreign-language versions, and archival re-mixes.",
+    "plain_english": "The finished Foley track, saved by itself after the final mix. Keeping it apart lets a movie be dubbed in other languages without redoing the Foley.",
+    "purpose_function": "Printing Foley as its own stem lets the mix be rebuilt without dialogue for foreign dubs and preserves the Foley for future re-versioning. It is a standard part of delivery to the studio.",
+    "practical_application": "At the end of the final mix, the re-recording mixer prints the Foley stem alongside the dialogue, music, and effects stems, and it feeds the M&E deliverable.",
+    "category": "Foley Deliverables",
+    "related_terms": ["Printmaster", "M&E", "Stem", "Re-recording mixer", "Final mix", "Deliverables"],
+    "common_mistakes": ["Confusing the Foley stem with the full effects stem", "Forgetting the Foley printmaster is needed to build the M&E for foreign versions", "Assuming a single mixed master is enough and skipping separate stems"],
+    "scenario_contexts": ["Delivering separate stems to the studio at the end of the final mix", "Building an M&E track for a foreign-language dub", "Archiving the Foley element for a future re-release remix"]
+   },
+   "sources": ["Tomlinson Holman, Sound for Film and Television", "David Lewis Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9309ebf8-5564-46b8-87dd-17c459f7836b",
+   "term": "Foley prop library",
+   "fields": {
+    "definition": "An organized collection of physical objects and props kept on a Foley stage to create handling, impact, and manipulation sounds, from keys and dishes to tools and weapons, matched to on-screen action.",
+    "plain_english": "A big collection of everyday objects kept in the Foley studio to make sound effects by hand. Need jingling keys or clinking dishes? The artist grabs the real object from the shelf and performs it.",
+    "purpose_function": "It gives the Foley artist ready access to objects that produce the exact handling and impact sounds a scene needs. A well-stocked prop library speeds up sessions and improves realism.",
+    "practical_application": "For a scene where a character sets down a coffee cup, the artist pulls a matching ceramic cup from the library and performs the placement in sync.",
+    "category": "Foley Library",
+    "related_terms": ["Foley artist", "Foley prop table", "Foley pit", "Foley shoe library", "Sound effects editing", "Footsteps"],
+    "common_mistakes": ["Grabbing a prop that looks right but sounds wrong on mic", "Not returning and organizing props, so the next session wastes time", "Assuming a plug-in library can replace hand-performed prop sounds for tight sync"],
+    "scenario_contexts": ["Finding a ceramic cup to match a kitchen scene", "Pulling keys and coins for a pocket-search moment", "Sourcing a squeaky chair for an office sequence"]
+   },
+   "sources": ["Vanessa Theme Ament, The Foley Grail (Focal Press/Routledge)", "David Lewis Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ca047bb4-bfb8-4df8-aea4-dcd496fc12a9",
+   "term": "Foley prop table",
+   "fields": {
+    "definition": "The work surface on a Foley stage where the artist arranges the props needed for a cue or reel within easy reach of the microphone, so items can be picked up and performed in sync with picture.",
+    "plain_english": "The table in the Foley studio where the artist lays out the objects they need for a scene. Keeping everything close means they can grab each prop right on cue, like a chef keeping ingredients within arm's reach.",
+    "purpose_function": "It keeps the current props organized and reachable so performances stay tight to picture without fumbling. A good layout keeps sessions efficient and reduces unwanted noise.",
+    "practical_application": "Before recording a reel, the Foley artist sets out the cups, papers, and keys they will need on the prop table beside the mic, arranged in performance order.",
+    "category": "Foley Stage",
+    "related_terms": ["Foley artist", "Foley prop library", "Foley pit", "Foley stage", "Footsteps", "Sound effects editing"],
+    "common_mistakes": ["Overloading the table so props knock together and add unwanted noise", "Placing the table too far from the mic to perform in sync", "Not arranging props in cue order, causing fumbling during takes"],
+    "scenario_contexts": ["Laying out props in cue order before recording a reel", "Keeping a phone, keys, and mug within reach for a morning scene", "Reorganizing the table between reels as the props change"]
+   },
+   "sources": ["Vanessa Theme Ament, The Foley Grail (Focal Press/Routledge)", "David Lewis Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b6ee8c56-7043-468f-be70-766e362c89c5",
+   "term": "Foley shoe library",
+   "fields": {
+    "definition": "A collection of footwear of many styles, sizes, eras, and sole types kept on a Foley stage so the artist can match a character's shoes and perform footsteps that suit the surface and action.",
+    "plain_english": "A big shelf of shoes kept in the Foley studio. The artist picks a pair that matches what a character wears, like boots or heels, and walks in them on the right surface to make footstep sounds.",
+    "purpose_function": "It lets the Foley artist reproduce footsteps whose weight, material, and sound match each character and surface. A varied shoe collection covers many characters and time periods.",
+    "practical_application": "For a scene with a woman in heels on a tile floor, the artist selects heeled shoes from the library and performs the steps on the matching surface in the pit.",
+    "category": "Foley Library",
+    "related_terms": ["Foley artist", "Footsteps", "Foley surface pit", "Foley surface library", "Foley pit", "Foley stage"],
+    "common_mistakes": ["Using one pair of shoes for every character regardless of match", "Ignoring how the sole material changes the footstep sound", "Forgetting to match the shoe to the walking surface in the pit"],
+    "scenario_contexts": ["Choosing heels for a character crossing a tile lobby", "Selecting work boots for a construction scene", "Finding period-correct shoes for a historical drama"]
+   },
+   "sources": ["Vanessa Theme Ament, The Foley Grail (Focal Press/Routledge)", "David Lewis Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d2f0446c-3a2b-400a-8b5b-d0efe366a922",
+   "term": "Foley surface library",
+   "fields": {
+    "definition": "The assortment of flooring and ground materials, such as wood, tile, gravel, concrete, grass, and metal, kept on a Foley stage so footsteps and movement can be performed on the surface that matches the scene.",
+    "plain_english": "A set of different floor materials kept in the Foley studio, like wood, gravel, and tile. The artist walks or moves on the one that matches the scene so the footsteps sound right.",
+    "purpose_function": "It provides the correct surface underfoot so footsteps and movement carry the right texture and tone for each location. Matching the surface is key to believable footsteps.",
+    "practical_application": "For a character walking on a gravel path, the artist steps onto the gravel section of the surface library to perform the footsteps in sync.",
+    "category": "Foley Library",
+    "related_terms": ["Foley surface pit", "Footsteps", "Foley shoe library", "Foley artist", "Foley pit", "Foley stage"],
+    "common_mistakes": ["Performing footsteps on the wrong surface for the scene's location", "Assuming one surface can stand in for all grounds", "Neglecting to keep surfaces clean and consistent between sessions"],
+    "scenario_contexts": ["Performing footsteps on gravel for an outdoor path", "Switching to a wood section for footsteps on a porch", "Using a tile surface for indoor hard-floor steps"]
+   },
+   "sources": ["Vanessa Theme Ament, The Foley Grail (Focal Press/Routledge)", "David Lewis Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9060888d-81f8-447c-a8a7-1fb385b3f77b",
+   "term": "Foley surface pit",
+   "fields": {
+    "definition": "A set of built-in floor bays on a Foley stage, each filled with a different walking surface such as gravel, dirt, concrete, wood, or water, into which the artist steps to perform footsteps and movement that match the on-screen ground.",
+    "plain_english": "Special floor boxes in the Foley studio, each filled with a ground material like gravel or dirt. The artist steps into the one that fits the scene. It works a bit like a sandbox built into the floor.",
+    "purpose_function": "It gives the Foley artist real surfaces to walk on so footsteps carry authentic texture and resonance for each location. Building surfaces into the floor keeps them fixed and ready to perform.",
+    "practical_application": "When a character crosses a gravel road, the artist steps into the gravel pit and walks in time with the picture to create the footsteps.",
+    "category": "Foley Stage",
+    "related_terms": ["Foley pit", "Foley stage", "Footsteps", "Foley surface library", "Foley shoe library", "Foley artist"],
+    "common_mistakes": ["Stepping onto a surface that does not match the on-screen ground", "Letting loose material like gravel spill and add stray noise", "UNSAFE: Stepping into wet or uneven pit sections without care, risking slips and falls"],
+    "scenario_contexts": ["Walking in the gravel bay for a country-road scene", "Stepping into the water pit for a scene wading through a puddle", "Using the concrete section for city sidewalk footsteps"]
+   },
+   "sources": ["Vanessa Theme Ament, The Foley Grail (Focal Press/Routledge)", "David Lewis Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,78 @@
+{
+ "batch": 274,
+ "topic": "In-the-Box Mixing & Automation",
+ "authored": [
+  {
+   "id": "ff29436b-28d9-450d-98f3-4448b773d263",
+   "term": "Automation Off",
+   "fields": {
+    "definition": "A track automation mode in a DAW in which the track neither writes new automation nor reads existing automation data; the automated parameter holds at its current manual setting and any recorded automation on that track is ignored during playback.",
+    "plain_english": "This is a mode in mixing software that tells a track to ignore its saved moves. A volume slider or knob just stays where you put it, and earlier recorded changes are skipped. It is like turning off a player piano so the keys only move when you press them.",
+    "purpose_function": "It gives an engineer a static, hands-on state for a control, so a parameter can be auditioned or set manually without triggering or overwriting recorded automation.",
+    "practical_application": "An engineer switches a track to Automation Off to hold a fixed fader or plugin setting while checking a balance, or to silence existing automation moves temporarily without deleting the data.",
+    "category": "Automation Modes",
+    "related_terms": [
+     "Automation Read",
+     "Automation Write",
+     "Touch Mode",
+     "Latch Mode",
+     "Trim Mode",
+     "Automation Lane"
+    ],
+    "common_mistakes": [
+     "Assuming Off erases automation; it only suspends reading and writing, and the recorded data remains intact.",
+     "Confusing per-track Off mode with a session-wide automation suspend, which affects all tracks at once.",
+     "Leaving a track in Off and then wondering why recorded fader moves no longer play back."
+    ],
+    "scenario_contexts": [
+     "Holding a static rough-mix balance before any automation has been written.",
+     "Auditioning a plugin or fader setting by hand without overwriting existing automation.",
+     "Troubleshooting why automated moves are not playing back on a track."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (Mixing Automation)",
+    "Steinberg Cubase Operation Manual (Automation modes)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3835bc9b-7b83-4248-b1af-58cd6d2c133b",
+   "term": "Pre-Fader Metering",
+   "fields": {
+    "definition": "A metering configuration in which a channel's level meter reads the signal at a point ahead of the channel fader, so the displayed level reflects the input and gain-stage signal and does not change when the fader is moved.",
+    "plain_english": "This shows how strong a sound is before it reaches the channel's volume slider. Because the meter sits ahead of the slider, moving the fader up or down does not change the reading. It is like checking the water pressure at the pipe before you open the tap.",
+    "purpose_function": "It lets an engineer watch the true incoming signal level and set gain to avoid clipping, no matter where the fader happens to be set.",
+    "practical_application": "A mixer uses pre-fader metering during soundcheck or tracking to confirm a channel's gain staging is healthy and not overloading, even when the fader is pulled down low.",
+    "category": "Metering",
+    "related_terms": [
+     "Post-Fader Metering",
+     "Gain Staging",
+     "Clipping",
+     "Fader",
+     "Peak Meter",
+     "Signal Level"
+    ],
+    "common_mistakes": [
+     "Confusing pre-fader with post-fader metering; pre-fader ignores the fader while post-fader follows it.",
+     "Expecting a lower fader to fix a pre-fader meter that reads clipping, when the input gain must be reduced instead.",
+     "Using pre-fader meters to judge final mix balance, which is actually controlled by the fader."
+    ],
+    "scenario_contexts": [
+     "Setting input gain during soundcheck so channels do not clip before the fader.",
+     "Diagnosing distortion that persists even when a channel's fader is lowered.",
+     "Confirming signal presence on a muted or pulled-down channel."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Ballou, Handbook for Sound Engineers",
+    "Allen & Heath dLive/GLD Reference Guide (metering)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

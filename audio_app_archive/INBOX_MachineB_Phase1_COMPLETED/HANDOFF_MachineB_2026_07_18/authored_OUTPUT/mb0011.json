@@ -1,0 +1,259 @@
+{
+  "batch": 11,
+  "topic": "Instrument Recording — Strings & Guitar",
+  "authored": [
+    {
+      "id": "82a241d1-cf6b-485d-b6e5-fa1896549e91",
+      "term": "Resonator banjo",
+      "fields": {
+        "definition": "A banjo fitted with a resonator — a bowl- or dish-shaped back (usually wood, sometimes metal) attached to the rear of the pot/rim that encloses the back of the head and reflects the sound forward toward the listener. Compared with an open-back banjo it gives greater volume, projection and a brighter, more cutting tone, and is the type most associated with bluegrass playing.",
+        "plain_english": "A banjo with a rounded back bolted on behind the drum-like head. That back acts like a bowl that throws the sound forward, making it louder and punchier than an open-back banjo.",
+        "purpose_function": "The resonator redirects sound that would otherwise escape out the back of the instrument, increasing loudness and forward projection and reinforcing higher frequencies for a crisper attack.",
+        "practical_application": "A resonator banjo is louder and more directional, so in the studio a technician mics it from the front (often angled toward the head near the bridge) and manages its bright, transient-rich attack; the resonator can usually be unbolted for head maintenance or a softer, open-back sound.",
+        "category": "Acoustic instruments",
+        "related_terms": ["Resonator cone", "Single-cone resonator", "Sound hole", "Banjo head", "Bridge"],
+        "common_mistakes": [
+          "Confusing the banjo resonator with a resonator (resophonic) guitar cone — the banjo resonator is a solid reflective back, not a vibrating aluminum diaphragm",
+          "Assuming every banjo has a resonator; clawhammer and old-time players often use open-back banjos, which sound and mic quite differently",
+          "Cross-threading or overtightening the resonator thumbscrews/lugs when removing or refitting the back"
+        ],
+        "scenario_contexts": [
+          "Close-miking a bluegrass resonator banjo in the studio and taming its loud, bright attack",
+          "Choosing between an open-back and a resonator banjo to match a track's volume and tone",
+          "Removing the resonator to replace or re-tension the head during maintenance"
+        ]
+      },
+      "sources": [
+        "The Grove Dictionary of Musical Instruments (Oxford) — 'Banjo'/'Resonator' entries",
+        "Deering Goodtime Banjo Maintenance Manual (manufacturer technical documentation)",
+        "Gold Tone Banjo Maintenance/Setup manual (manufacturer technical documentation)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "03c455ff-5cbe-4a0d-9a12-16f1c8effbb6",
+      "term": "Resonator cone",
+      "fields": {
+        "definition": "The spun aluminum cone at the heart of a resonator (resophonic) guitar that serves as a mechanical loudspeaker diaphragm: the bridge transfers the strings' vibration to the cone, which radiates it as sound. Designs use either a single cone (with a 'biscuit' or an inverted 'spider' bridge) or three linked cones (tricone).",
+        "plain_english": "A thin metal cone inside a resonator guitar. It works like a small loudspeaker. The strings shake the bridge. The bridge shakes the cone. Then the cone pushes air to make the loud, metal sound.",
+        "purpose_function": "It mechanically amplifies and colors the string energy so the guitar projects louder than a wooden-top acoustic, giving the characteristic bright, metallic 'bark'; it was originally devised to make guitars loud enough to cut through a band before electric amplification.",
+        "practical_application": "A technician recording a resophonic guitar aims a mic near the coverplate/cone area (often with a second mic on the neck) and keeps the cone and bridge correctly seated and pre-loaded, since a loose or wrongly pressured cone rattles or buzzes.",
+        "category": "Instrument components",
+        "related_terms": ["Single-cone resonator", "Resonator banjo", "Sound hole", "Spider bridge", "Biscuit bridge"],
+        "common_mistakes": [
+          "Thinking the cone is a passive reflector like a banjo resonator; it is an active vibrating diaphragm driven by the bridge",
+          "Setting incorrect spider- or biscuit-to-cone pressure, causing buzzes, rattles or weak output",
+          "Denting or mishandling the thin aluminum cone, which permanently changes its tone"
+        ],
+        "scenario_contexts": [
+          "Miking a Dobro/National-style resonator guitar for a blues or bluegrass track",
+          "Diagnosing a buzz traced to a misseated cone or bridge during setup",
+          "Comparing single-cone and tricone tone when selecting an instrument for a session"
+        ]
+      },
+      "sources": [
+        "Fishman Classic Series Resophonic pickup installation guide (manufacturer technical documentation)",
+        "The Grove Dictionary of Musical Instruments (Oxford) — 'Resonator guitar' entry"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "63396b21-003a-4a69-835f-550de8ba358e",
+      "term": "Rotary speaker",
+      "fields": {
+        "definition": "A loudspeaker system, exemplified by the Leslie, in which sound is projected through rotating elements — typically a spinning treble horn and a spinning bass drum/rotor — so their motion imposes continuous amplitude and pitch (Doppler) modulation on the sound. It produces the swirling tremolo/chorale effect classically paired with the Hammond organ, and is also used on guitar and other sources.",
+        "plain_english": "A speaker whose horn and drum physically spin, so the sound seems to swirl and wobble as it reaches you. It is the whooshing, rotating effect famous on Hammond organs.",
+        "purpose_function": "The mechanical rotation creates natural Doppler (pitch) and volume modulation that a fixed speaker cannot, giving a rich, animated 'sound in motion' rather than a static tone.",
+        "practical_application": "In the studio a rotary/Leslie cabinet is usually captured with separate mics on the upper (horn) and lower (bass) rotors — often two on top for stereo and one on the bottom — to catch the swirl; the effect is also emulated by pedals and plug-ins.",
+        "category": "Amplification",
+        "related_terms": ["Rotor speed", "Rotary-speaker brake", "Doppler effect", "Tremolo", "Amplifier"],
+        "common_mistakes": [
+          "Calling the swirl 'tremolo' only — it is combined amplitude AND Doppler pitch modulation produced by the physical rotation",
+          "Miking a rotary cabinet with a single static mic, which misses the stereo swirl created by separating the horn and bass rotors",
+          "UNSAFE: reaching into an open Leslie cabinet while the horn/drum are spinning, or servicing/moving it without unplugging — the rotors and the internal tube amp present moving-part and mains/high-voltage shock hazards"
+        ],
+        "scenario_contexts": [
+          "Recording a Hammond organ through a Leslie with top and bottom mics",
+          "Using a rotary speaker on electric guitar or vocals for a swirling texture",
+          "Switching between chorale and tremolo during a solo for expressive effect"
+        ]
+      },
+      "sources": [
+        "Hammond/Leslie 2101 Owner's Manual (manufacturer technical documentation)",
+        "Hammond Leslie 122A/122XB/147A Owner's Manual (manufacturer technical documentation)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "f952a847-e290-4ba9-8eb7-060dbc146191",
+      "term": "Rotary-speaker brake",
+      "fields": {
+        "definition": "A control mode on a rotary (Leslie-type) speaker or its emulation that stops the rotors, holding the horn and drum stationary so the sound becomes fixed and un-modulated. On many cabinets it is a third position (Stop/Brake) alongside Slow (chorale) and Fast (tremolo), sometimes with an adjustable braking time.",
+        "plain_english": "A 'stop' setting that halts the spinning parts of a rotary speaker, so the swirl freezes and you hear a plain, steady tone.",
+        "purpose_function": "It lets the player instantly kill the rotation for a dry, static sound — useful for held chords or a sudden contrast — instead of waiting for the rotors to coast down on their own.",
+        "practical_application": "A keyboardist footswitches the brake to stop the swirl on a sustained passage; a technician setting up a modern Leslie or a plug-in can dial the brake/stop time — how long the rotors take to halt.",
+        "category": "Amplification",
+        "related_terms": ["Rotary speaker", "Rotor speed", "Doppler effect", "Tremolo"],
+        "common_mistakes": [
+          "Assuming 'brake' means the slow speed — brake stops the rotors entirely, whereas slow (chorale) still rotates",
+          "Expecting an instant stop; real rotors, especially the heavy bass drum, coast for a second or more unless a fast brake time is set",
+          "Confusing the momentary stop with power-off — braking holds the rotors while the amplifier stays live"
+        ],
+        "scenario_contexts": [
+          "Footswitching a Leslie to a dead stop for a sustained organ chord",
+          "Setting the brake/stop time on a Leslie 2101 or a rotary plug-in",
+          "Contrasting a static braked passage against a fast tremolo build"
+        ]
+      },
+      "sources": [
+        "Hammond/Leslie 2101 Owner's Manual (manufacturer technical documentation)",
+        "Hammond Leslie 122A/122XB/147A Owner's Manual (manufacturer technical documentation)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "97d0951a-af75-408c-8601-b543dbccce36",
+      "term": "Rotor speed",
+      "fields": {
+        "definition": "The rate of rotation of a rotary speaker's horn and bass rotors, conventionally switchable between two settings: 'slow' (chorale), a gentle warble of roughly 40 RPM, and 'fast' (tremolo), on the order of 340–400 RPM. The horn and bass rotors run at somewhat different speeds and accelerate/decelerate at different rates when the setting is changed.",
+        "plain_english": "How fast the spinning parts of a rotary speaker turn. There are two speeds — a slow, gentle wobble and a fast, intense whirl — and you switch between them for effect.",
+        "purpose_function": "Changing rotor speed changes the depth and rate of the swirl; switching from slow to fast, and the ramp in between, is a core expressive gesture of the Hammond/Leslie sound.",
+        "practical_application": "A player toggles chorale/tremolo mid-performance; an engineer or programmer setting up a real or emulated Leslie adjusts the target RPMs and the acceleration (rise/fall) times to match a classic cabinet.",
+        "category": "Amplification",
+        "related_terms": ["Rotary speaker", "Rotary-speaker brake", "Doppler effect", "Tremolo"],
+        "common_mistakes": [
+          "Believing the horn and bass rotor spin at the same speed — they run at different RPMs, which is part of the characteristic sound",
+          "Ignoring the ramp: the effect is as much about the acceleration between slow and fast as the final speeds",
+          "Confusing 'stop/brake' with 'slow' — slow still rotates, whereas stop halts the rotors"
+        ],
+        "scenario_contexts": [
+          "Switching from chorale to tremolo during an organ solo",
+          "Dialing target RPM and ramp times when configuring a Leslie emulation",
+          "Matching a plug-in's rotor speeds to a vintage Leslie for a session"
+        ]
+      },
+      "sources": [
+        "Hammond/Leslie 2101 Owner's Manual (manufacturer technical documentation — horn/bass rotor slow and fast speed settings)",
+        "Hammond Leslie 122A/122XB/147A Owner's Manual (manufacturer technical documentation — two-speed chorale/tremolo operation)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "c01b4822-3487-44a3-9de7-9f6819541d7a",
+      "term": "Silent practice output",
+      "fields": {
+        "definition": "A headphone (and usually line/aux) output built into a 'silent' or practice instrument or amplifier that carries the pickup signal for private monitoring, so the player hears the instrument through headphones while it makes little or no acoustic sound in the room. Yamaha's SILENT Guitar and SILENT Violin series are typical, pairing a non-resonant body with an onboard preamp, a PHONES jack and often an aux input for playing along.",
+        "plain_english": "A headphone jack on a quiet practice instrument or amp. You can hear yourself through earphones. This lets you play without bothering anyone. The instrument itself barely makes any sound out loud.",
+        "purpose_function": "It allows realistic practice at any hour without acoustic noise, and doubles as a convenient direct output to an amp, mixer or recorder.",
+        "practical_application": "A player plugs headphones into the PHONES jack of a Silent Guitar or Violin — often feeding a backing track into the aux input — to practice quietly; an engineer can instead take the LINE OUT of the same instrument straight into a DI or interface for recording.",
+        "category": "Instrument features",
+        "related_terms": ["Solid-body violin", "Sound hole", "Line out", "Aux in", "Piezo pickup"],
+        "common_mistakes": [
+          "Assuming the headphone output means the instrument is truly silent — the strings still make a faint acoustic sound",
+          "Plugging the headphone/line output into a mic-level input and overloading it (or the reverse) instead of matching levels",
+          "Forgetting the output is only active when the onboard preamp/battery is powered on"
+        ],
+        "scenario_contexts": [
+          "Practicing a Silent Violin or Guitar on headphones late at night",
+          "Feeding a backing track into the aux input while monitoring on headphones",
+          "Taking the instrument's line output directly into an audio interface to record"
+        ]
+      },
+      "sources": [
+        "Yamaha SILENT Guitar SLG110S Owner's Manual (manufacturer technical documentation — PHONES and LINE OUT jacks, AUX IN)",
+        "Yamaha SILENT Violin SV-200 Owner's Manual (manufacturer technical documentation — stereo earphone/headphone jack, piezo pickup)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "36452dd2-e482-4c3d-8a0a-76cd20a2e05f",
+      "term": "Single-cone resonator",
+      "fields": {
+        "definition": "A resonator (resophonic) guitar design that uses one resonator cone rather than three (tricone). Two variants exist: the 'biscuit' type, where the bridge sits on a small wooden 'biscuit' at the apex of an outward-facing cone, and the 'spider' type, where a cast aluminum 'spider' bridge rests on the rim of an inward-facing (concave) cone.",
+        "plain_english": "A resonator guitar built around a single metal cone instead of three. The one cone can face outward with a small bridge on its point (biscuit) or face inward with a spider-shaped bridge across it.",
+        "purpose_function": "The single-cone layout gives a louder, punchier, more mid-forward and metallic voice than the sweeter three-cone (tricone) design, and is simpler to build; it is the classic sound of blues (biscuit) and bluegrass Dobro (spider) playing.",
+        "practical_application": "When recording, the technician identifies whether it is a biscuit or spider single-cone (they project and sound differently) and positions mics accordingly, and during setup ensures correct cone/bridge pressure and seating to avoid buzzes.",
+        "category": "Acoustic instruments",
+        "related_terms": ["Resonator cone", "Resonator banjo", "Sound hole", "Spider bridge", "Biscuit bridge"],
+        "common_mistakes": [
+          "Assuming all resonator guitars have one cone — tricone models use three linked cones and sound noticeably sweeter and quieter",
+          "Mixing up biscuit and spider single-cones; the cone faces opposite directions and the bridges are completely different",
+          "Setting up a spider bridge with the wrong pressure, causing rattles or a choked, weak tone"
+        ],
+        "scenario_contexts": [
+          "Recording a biscuit single-cone National for slide blues",
+          "Recording a spider-cone Dobro for a bluegrass session",
+          "Choosing single-cone versus tricone based on the desired volume and brightness"
+        ]
+      },
+      "sources": [
+        "Fishman Classic Series Resophonic pickup installation guide (manufacturer technical documentation — single-cone, biscuit and spider bridge/cone assemblies)",
+        "The Grove Dictionary of Musical Instruments (Oxford) — 'Resonator guitar' entry"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "b27596eb-4ab1-4b1a-8230-535104af7bd1",
+      "term": "Solid-body violin",
+      "fields": {
+        "definition": "An electric violin built on a solid (non-hollow) body with no acoustic soundbox, so it produces very little sound on its own and relies on a pickup — typically a piezo transducer under the bridge — feeding an amplifier or interface. The absence of a resonating cavity reduces feedback and lets the amplified tone be shaped electronically.",
+        "plain_english": "An electric violin with a solid body and no hollow space inside. So it is almost silent unless you plug it in. A pickup turns the string shakes into a signal for an amp. This works much like a solid-body electric guitar.",
+        "purpose_function": "The solid body makes the instrument quiet acoustically (good for silent practice and loud stages) and highly resistant to feedback, while the pickup and preamp let the player amplify and tailor the sound.",
+        "practical_application": "On a loud stage a solid-body electric violin resists the feedback that plagues a mic'd acoustic violin; in the studio the engineer records it via DI from its pickup output, adding reverb and EQ to restore an acoustic-like body.",
+        "category": "Electric instruments",
+        "related_terms": ["Silent practice output", "Sound hole", "Piezo pickup", "Line out", "Direct box (DI)"],
+        "common_mistakes": [
+          "Expecting an acoustic violin tone straight from the pickup — with no soundbox the raw signal is thin and usually needs EQ and reverb",
+          "Miking a solid-body violin like an acoustic one, when a direct line/pickup feed is the correct approach",
+          "Assuming 'solid body' means completely silent; the bowed strings still produce a faint acoustic sound"
+        ],
+        "scenario_contexts": [
+          "Playing amplified on a loud stage without feedback",
+          "Silent practice through headphones on an electric violin",
+          "Recording the pickup output via DI and adding reverb in the mix"
+        ]
+      },
+      "sources": [
+        "Yamaha SILENT Violin SV-200 Owner's Manual (manufacturer technical documentation — non-resonant body, under-bridge piezo pickup, headphone output)",
+        "The Grove Dictionary of Musical Instruments (Oxford) — 'Electric violin' entry"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "f697edc8-e094-4683-833d-2ce8e43c53fd",
+      "term": "Sound hole",
+      "fields": {
+        "definition": "An opening cut in the soundboard (top) of a stringed instrument — a round hole on a guitar, paired f-holes on the violin family — that couples the enclosed body air to the outside. With the body cavity it forms a Helmholtz-type resonator whose lowest air resonance (around 100 Hz on a guitar) reinforces the low end and helps radiate sound.",
+        "plain_english": "The hole (round on a guitar, the two f-shaped slots on a violin) in the instrument's top. It lets the air inside pump in and out, boosting the low notes and helping the sound get out — like blowing across a bottle to make a tone.",
+        "purpose_function": "It vents the vibrating air mass inside the body so the cavity acts as a Helmholtz resonator, adding a low-frequency resonance that strengthens the bass and radiates energy the top plate alone would not.",
+        "practical_application": "A recording engineer treats the sound hole as a low-frequency hotspot: aiming a mic straight into it gives a boomy, bass-heavy sound, so mics are usually placed toward the 12th fret or bridge instead, and a soundhole cover can be fitted to fight feedback when the instrument is amplified.",
+        "category": "Instrument components",
+        "related_terms": ["Resonator cone", "Solid-body violin", "Soundboard", "Bridge", "Helmholtz resonance"],
+        "common_mistakes": [
+          "Miking directly at the sound hole and capturing an overly boomy, bass-heavy recording",
+          "Thinking the hole simply 'lets sound out' — it actually forms a tuned air (Helmholtz) resonance with the body cavity",
+          "Covering the sound hole without realizing it shifts the low-frequency response (though a cover is a valid anti-feedback tool)"
+        ],
+        "scenario_contexts": [
+          "Positioning an acoustic-guitar mic away from the sound hole to avoid boom",
+          "Fitting a soundhole cover to stop feedback on an amplified acoustic",
+          "Explaining why a guitar has a strong low-frequency 'air' resonance around 100 Hz"
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, 'The Physics of Musical Instruments' (Springer) — Helmholtz resonator and guitar body air resonance",
+        "T. D. Rossing (ed.), 'The Science of String Instruments' (Springer) — guitar chapter, Helmholtz air resonance (~100 Hz)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

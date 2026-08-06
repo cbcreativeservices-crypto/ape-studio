@@ -1,0 +1,337 @@
+{
+ "batch": 36,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "d35b7ad0-d299-4b2e-96b8-a9e850cd7482",
+   "term": "Bass polarity alignment",
+   "fields": {
+    "definition": "Setting the correct polarity, and matching the timing, between two or more bass signals — such as a direct (DI) track and a miked bass amp, or bass and kick — so their low frequencies add together instead of cancelling.",
+    "plain_english": "When you record bass two ways at the same time, the two tracks can fight and thin out the low end. Flipping the polarity switch usually gets them to line up and sound full again. Sometimes the timing of one track also needs a small nudge.",
+    "purpose_function": "It makes the low end of combined bass sources sum fully and predictably, because mismatched polarity causes partial cancellation that leaves the bass weak and hollow.",
+    "practical_application": "The engineer toggles the polarity switch on the DI or amp channel and keeps the setting that sounds fullest, or slides one track in the DAW so its waveform lines up with the other.",
+    "category": "Phase Alignment",
+    "related_terms": [
+     "Bass reamping",
+     "Bass section balance",
+     "Bass sub layer",
+     "Direct injection (DI)",
+     "Phase cancellation",
+     "Kick-bass relationship"
+    ],
+    "common_mistakes": [
+     "Assuming the DI and amp are automatically in polarity when they are almost never perfectly aligned.",
+     "Flipping polarity by ear on headphones only, where low-end cancellation is hard to hear.",
+     "Confusing polarity (a flip) with phase (a time offset) and expecting one switch to fix timing problems.",
+     "Aligning polarity for a full sound in solo but never checking it against the kick and the full mix."
+    ],
+    "scenario_contexts": [
+     "Blending a bass DI track with a miked bass cabinet during mixing.",
+     "Lining up bass and kick drum so the combined low end stays solid.",
+     "Combining a clean sub layer with a distorted bass layer."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1d012f12-689b-4e22-998a-da6ba2b60315",
+   "term": "Bass reamping",
+   "fields": {
+    "definition": "Recording a clean bass performance as a direct (DI) signal, then later sending that stored signal back out through a bass amplifier or effects and re-recording the result, so the tone can be shaped after tracking.",
+    "plain_english": "You record the bass clean, straight into the computer first. Later you send that clean take back out through a real amp and record its sound, so you can pick the tone after the player has gone home.",
+    "purpose_function": "It separates the performance from the tone, letting the engineer choose or change the amp sound later without needing the bassist to play the part again.",
+    "practical_application": "The engineer plays the stored DI track out of the interface through a reamp box into a bass amp, mics or DIs the amp, and records the new tone alongside the original DI.",
+    "category": "Bass Tracking",
+    "related_terms": [
+     "Bass polarity alignment",
+     "Direct injection (DI)",
+     "Reamp box",
+     "Bass room layer",
+     "Bass saturation"
+    ],
+    "common_mistakes": [
+     "Feeding a line-level DI signal straight into an amp input without a reamp box, causing an impedance mismatch and weak, thin tone.",
+     "Not saving the original clean DI track, so there is nothing left to reamp later.",
+     "Ignoring polarity between the reamped tone and the DI, which can thin the low end when they are blended.",
+     "Creating a ground-loop hum between the interface and amp instead of using a reamp box with a ground lift."
+    ],
+    "scenario_contexts": [
+     "Deciding on a bass amp tone during mixing rather than at tracking.",
+     "Rescuing a session where the recorded amp tone did not fit the final mix.",
+     "Trying several amp and pedal tones from one saved DI take."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound (technique articles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "98f5cddb-7ef5-4a67-a351-51e447542158",
+   "term": "Bass resonance suppression",
+   "fields": {
+    "definition": "The targeted reduction of one or more narrow, over-loud resonant frequencies in a bass track — often caused by the instrument, room, or amp — using a narrow EQ cut or dynamic EQ so the low end stays even across notes.",
+    "plain_english": "Some bass notes ring out much louder than the rest because of an odd peak in the room or the instrument. Fixing it means finding that loud spot and turning it down. Then every note sits at a steady, even level.",
+    "purpose_function": "It evens out note-to-note loudness in the bass so the low end feels smooth and controlled instead of jumping out on certain pitches.",
+    "practical_application": "The engineer sweeps a narrow EQ boost to find the ringing frequency, then cuts it, or sets a dynamic EQ or multiband compressor to pull it down only when it flares up.",
+    "category": "Low-End Processing",
+    "related_terms": [
+     "Bass section balance",
+     "Bass saturation",
+     "Bass sidechain ducking",
+     "Dynamic EQ",
+     "Resonant frequency",
+     "Multiband compression"
+    ],
+    "common_mistakes": [
+     "Using a wide EQ cut that removes the resonance but also guts the surrounding low end.",
+     "Cutting a resonance that only stands out when soloed but is not a problem in the full mix.",
+     "Applying one fixed EQ curve to every song instead of finding each song's real resonant note.",
+     "Confusing a room resonance heard on the monitors with a problem in the actual recording."
+    ],
+    "scenario_contexts": [
+     "Taming a boomy note that jumps out on a five-string bass.",
+     "Controlling a room mode that colors a miked bass amp.",
+     "Smoothing uneven low end before bus compression."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound (technique articles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4ad509fc-d22a-4c7a-b70c-a29f52105e87",
+   "term": "Bass room layer",
+   "fields": {
+    "definition": "An additional recorded track that captures a bass amplifier through one or more distant room microphones, blended with the close-miked or DI bass to add natural room ambience and body.",
+    "plain_english": "This is an extra bass track picked up by a mic placed back in the room, not right on the amp. Mixed in gently, it adds air and a sense of the real space around the close bass sound.",
+    "purpose_function": "It adds depth, ambience, and natural body to the bass by capturing how the amp sounds in the room, which a close mic or DI alone misses.",
+    "practical_application": "The engineer sets a room mic several feet from the bass cabinet, records it on its own track, and blends a little under the DI or close mic while checking polarity and timing.",
+    "category": "Bass Tracking",
+    "related_terms": [
+     "Bass reamping",
+     "Bass polarity alignment",
+     "Room microphone",
+     "Direct injection (DI)",
+     "Bass sub layer"
+    ],
+    "common_mistakes": [
+     "Blending the room track without checking polarity and timing, which thins the low end.",
+     "Adding so much room that the bass loses focus and definition.",
+     "Recording in a small, boomy room and capturing mud instead of useful ambience.",
+     "Expecting a room mic to fix a bad amp tone rather than support a good one."
+    ],
+    "scenario_contexts": [
+     "Adding natural depth to a rock bass track cut in a good-sounding room.",
+     "Blending ambience under a DI so the bass feels less sterile.",
+     "Capturing a live-band feel when bass and drums are tracked together."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Recording Engineer's Handbook",
+    "Sound on Sound (technique articles)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "af65f5f6-c177-4449-bb4d-fc2eca3155ce",
+   "term": "Bass saturation",
+   "fields": {
+    "definition": "The deliberate addition of harmonic distortion to a bass signal — via tubes, tape, transformers, or plugins — that generates upper harmonics of the low fundamental, adding warmth, perceived loudness, and presence on small speakers.",
+    "plain_english": "Saturation adds a gentle, musical grit to the bass by creating higher tones tied to its low notes. This makes the bass feel warmer and louder. It also helps the bass show up on small speakers that can barely play deep notes.",
+    "purpose_function": "It generates harmonics above the bass fundamental so the instrument is heard as fuller and louder, and stays audible on speakers too small to reproduce the lowest frequencies.",
+    "practical_application": "The engineer runs the bass through a tube, tape, or transformer emulation, or a saturation plugin, adding drive by ear until the bass feels solid without turning fuzzy.",
+    "category": "Low-End Processing",
+    "related_terms": [
+     "Bass sub layer",
+     "Bass small-speaker translation",
+     "Bass resonance suppression",
+     "Harmonic distortion",
+     "Tape saturation",
+     "Bass reamping"
+    ],
+    "common_mistakes": [
+     "Adding so much drive that the bass turns fuzzy and loses its clean low end.",
+     "Saturating the whole bass instead of a parallel or high-passed copy, muddying the sub.",
+     "Assuming saturation can replace good level and EQ balance.",
+     "Judging saturation only on large monitors and missing how harsh it gets on small speakers."
+    ],
+    "scenario_contexts": [
+     "Helping a bass cut through on phone and laptop speakers.",
+     "Warming up a sterile DI bass with tape-style drive.",
+     "Adding harmonics so the bass reads on systems that cannot play deep sub."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound (technique articles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f885c67a-a5f0-48dd-940f-bd83654480dd",
+   "term": "Bass section balance",
+   "fields": {
+    "definition": "The relative level and frequency balance between the low-end elements of an arrangement — typically the bass instrument, the kick drum, and any sub layer — so they share the low frequencies clearly instead of masking one another.",
+    "plain_english": "This is about getting the bass and kick drum to share the low end without stepping on each other. You set their levels and tones so both stay clear, instead of turning into one big muddy rumble.",
+    "purpose_function": "It keeps the foundation of the mix tight and clear by making sure the kick, bass, and any sub each have a defined role in the low frequencies.",
+    "practical_application": "The engineer sets kick and bass levels together, often carving a little EQ space so one owns the deep sub and the other the punch, then checks the balance on different speakers.",
+    "category": "Mix Balance",
+    "related_terms": [
+     "Bass sidechain ducking",
+     "Bass sub layer",
+     "Bass small-speaker translation",
+     "Kick-bass relationship",
+     "Frequency masking",
+     "Bass resonance suppression"
+    ],
+    "common_mistakes": [
+     "Turning the bass up in solo until it sounds huge, then finding it buries the kick in the full mix.",
+     "Letting kick and bass both fight for the same low frequency instead of splitting the range.",
+     "Judging low-end balance on speakers or earbuds that cannot reproduce it.",
+     "Fixing balance only with level and never with EQ or arrangement changes."
+    ],
+    "scenario_contexts": [
+     "Setting kick and bass levels early in a rock or pop mix.",
+     "Making room for a sub-bass synth under an electric bass.",
+     "Rebalancing the low end after the drum bus changes."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9a022e69-46a6-46ae-ab7d-b59c05c8ef41",
+   "term": "Bass sidechain ducking",
+   "fields": {
+    "definition": "A technique in which a compressor on the bass is triggered by the kick drum through a sidechain input, so the bass level dips briefly each time the kick hits, clearing space for the kick's transient in the low end.",
+    "plain_english": "A compressor listens to the kick drum and turns the bass down for a split second every time the kick hits. This lets the kick punch through cleanly, then the bass jumps right back up, so both stay clear.",
+    "purpose_function": "It stops the bass and kick from clashing in the same low frequencies by momentarily lowering the bass when the kick lands, keeping both punchy and audible.",
+    "practical_application": "The engineer inserts a compressor on the bass, routes the kick to its sidechain (key) input, and sets threshold, ratio, and release so the bass dips just enough on each kick and recovers by the next note.",
+    "category": "Low-End Processing",
+    "related_terms": [
+     "Bass section balance",
+     "Bass sub layer",
+     "Sidechain compression",
+     "Kick-bass relationship",
+     "Compression ratio",
+     "Bass small-speaker translation"
+    ],
+    "common_mistakes": [
+     "Setting the release too slow so the bass stays ducked and pumps unnaturally.",
+     "Ducking so hard that the bass audibly disappears on every kick.",
+     "Using sidechain ducking to mask a balance problem that EQ or arrangement should solve.",
+     "Triggering from the wrong source, like the whole drum bus, so the bass ducks on the snare too."
+    ],
+    "scenario_contexts": [
+     "Making the kick punch through a busy electronic or pop mix.",
+     "Tightening a muddy low end where kick and bass overlap.",
+     "Creating a rhythmic pumping effect in dance music."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound (technique articles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d9f72529-8cac-484d-87d0-849bb68c7c70",
+   "term": "Bass small-speaker translation",
+   "fields": {
+    "definition": "How well the bass content of a mix stays audible and balanced on small playback devices — phones, laptops, earbuds — that cannot reproduce the lowest fundamentals and rely instead on their harmonics.",
+    "plain_english": "Small speakers like phones and earbuds can barely play deep bass. Good translation means the bass still comes through on them, because you added higher tones that stand in for the deep notes your ears fill in.",
+    "purpose_function": "It ensures the bass and groove still read on the tiny speakers most listeners use, where the deepest frequencies are simply missing.",
+    "practical_application": "The engineer checks the mix on a phone or small reference speaker and adds saturation or upper-harmonic EQ so the bass line stays present even without true sub reproduction.",
+    "category": "Mix Translation",
+    "related_terms": [
+     "Bass saturation",
+     "Bass sub layer",
+     "Bass section balance",
+     "Reference monitoring",
+     "Harmonic distortion",
+     "Bass resonance suppression"
+    ],
+    "common_mistakes": [
+     "Mixing bass only on large monitors and assuming it will translate to phones.",
+     "Relying on deep sub energy that small speakers cannot play, leaving the bass inaudible on them.",
+     "Adding harmonics so aggressively that the bass sounds harsh on full-range systems.",
+     "Judging translation on a single device instead of several small speakers."
+    ],
+    "scenario_contexts": [
+     "Checking a final mix on a phone speaker before release.",
+     "Making a bass line groove on laptop speakers.",
+     "Balancing sub energy against harmonics for streaming playback."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5fe3b352-dcd1-4b4a-a0d3-93c5fe6311e5",
+   "term": "Bass sub layer",
+   "fields": {
+    "definition": "A dedicated low-frequency track — often a sine-like synth or a filtered copy of the bass — placed beneath the main bass to reinforce the deepest fundamentals (roughly below 60–80 Hz) and add weight.",
+    "plain_english": "This is an extra deep track added under the bass to give it more weight down low. It is usually a simple, clean tone that fills in the very deepest notes the main bass is missing.",
+    "purpose_function": "It adds controlled deep-end weight and consistency to the low frequencies, filling in fundamentals the main bass may lack, especially in genres built on heavy sub.",
+    "practical_application": "The engineer adds a sine sub synth or a low-passed duplicate that follows the bass notes, tunes it to the right pitches, and checks polarity and level so it reinforces rather than cancels the main bass.",
+    "category": "Low-End Arrangement",
+    "related_terms": [
+     "Bass section balance",
+     "Bass saturation",
+     "Bass small-speaker translation",
+     "Bass polarity alignment",
+     "Sub-bass",
+     "Bass sidechain ducking"
+    ],
+    "common_mistakes": [
+     "Adding a sub layer out of polarity with the main bass, which cancels the low end.",
+     "Letting the sub play wrong notes because it is not tracked to the bass line.",
+     "Piling on sub energy that sounds huge on big monitors but muddies smaller systems.",
+     "Forgetting to control the sub's level so it eats headroom on the master."
+    ],
+    "scenario_contexts": [
+     "Reinforcing the low end of a hip-hop or EDM track.",
+     "Filling in deep fundamentals under a thin electric bass.",
+     "Adding weight to a bass line for club playback."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound (technique articles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

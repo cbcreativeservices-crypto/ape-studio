@@ -1,0 +1,231 @@
+{
+ "batch": 118,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "b9ff101c-c14c-4ca2-b568-28afde913bf1",
+   "term": "Mixer control panel",
+   "fields": {
+    "definition": "The array of physical or on-screen controls—faders, rotary pots, switches, and meters—on a mixing device through which an operator adjusts levels, tone, routing, and processing of audio signals. It is the operator-facing surface of a hardware console or the control interface of a software mixer.",
+    "plain_english": "A mixer's control panel is the group of knobs, sliders, and buttons on it. You use them to change each sound's volume, tone, and place in the mix. It works like a car dashboard, where each control does one job.",
+    "purpose_function": "It gives the operator a single organized surface to set level, tone, routing, and effects for every signal, making real-time control of a mix possible.",
+    "practical_application": "A technician learns each control's position so they can adjust a channel's gain, EQ, or send quickly during a session or live show without looking away from the work.",
+    "category": "Mixing Console",
+    "related_terms": ["Mixing Board", "Mixer window", "Channel strip", "Fader", "Aux send"],
+    "common_mistakes": [
+     "Assuming every control panel is laid out the same; control functions and layout differ between makes and models.",
+     "Adjusting a control without first checking which channel or layer is currently selected.",
+     "Confusing an interface's DSP-mixer control panel with the DAW's own mixer window."
+    ],
+    "scenario_contexts": [
+     "Setting channel levels on a live console before a show.",
+     "Teaching a new operator where the gain, EQ, and fader controls live.",
+     "Recalling a scene and confirming physical controls match the stored settings."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5d50ffdf-be6a-4279-b515-e52bf5ce417e",
+   "term": "Mixer window",
+   "fields": {
+    "definition": "In a digital audio workstation, the window that presents each track as a vertical channel strip—level fader, pan, input/output routing, insert and send slots, and metering—arranged in a mixing-console layout, as distinct from the arrange/edit window.",
+    "plain_english": "The mixer window is a screen in music software that shows each track as a channel strip. Every strip has a volume slider, a pan knob, and slots for effects. It looks like a picture of a real mixing desk on your computer.",
+    "purpose_function": "It lets an engineer see and adjust every track's level, pan, routing, and processing in one console-style view, separate from arranging or editing clips.",
+    "practical_application": "During mixdown an engineer works mostly in the mixer window to set balances, add inserts, build aux and reverb sends, and group tracks.",
+    "category": "DAW Interface",
+    "related_terms": ["Channel strip", "Insert", "Aux send", "Mixing Board", "Bus"],
+    "common_mistakes": [
+     "Confusing the mixer window with the edit/arrange window; clip edits happen in one, level and routing in the other.",
+     "Adding a plugin as an insert when a send/return was intended, or the reverse.",
+     "Not revealing hidden tracks or busses and assuming a signal path is broken."
+    ],
+    "scenario_contexts": [
+     "Balancing a multitrack song during mixdown.",
+     "Setting up headphone cue sends before a tracking session.",
+     "Creating group or bus channels to process several tracks together."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1dc05874-9468-4915-b8f0-c2519b357f7a",
+   "term": "Mixing Board",
+   "fields": {
+    "definition": "A common name for a mixing console (mixing desk): an electronic device that accepts multiple audio inputs and combines, routes, levels, and processes them into one or more output signals. Channels typically provide input gain, EQ, dynamics, auxiliary sends, panning, and level control.",
+    "plain_english": "A mixing board is the big desk with many sliders that blends sounds together. Each channel handles one sound, like a voice or a drum. You set how loud each one is and send them all out as one mix.",
+    "purpose_function": "It exists to combine many separate sources into a controlled blend, giving each a set level, tone, and position while routing them to speakers, recorders, or broadcast feeds.",
+    "practical_application": "An engineer uses it to set input gain, shape each channel with EQ and dynamics, balance faders, and send the result to the main output and monitor mixes.",
+    "category": "Mixing Console",
+    "related_terms": ["Mixer window", "Channel strip", "Fader", "Aux send", "Bus", "Gain staging"],
+    "common_mistakes": [
+     "Confusing a mixing board with an audio interface; the board mixes and routes, while an interface converts audio for a computer.",
+     "Setting level with the channel fader instead of the input gain/trim, hurting signal-to-noise or causing clipping.",
+     "UNSAFE: Switching phantom power on while patching ribbon mics or unbalanced sources, which can damage gear."
+    ],
+    "scenario_contexts": [
+     "Mixing a band's inputs into a main PA feed at a live gig.",
+     "Combining recorded tracks into a stereo mix in the studio.",
+     "Routing separate monitor mixes to stage performers."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9ad8075f-d248-40be-80b2-f7ef69cf787b",
+   "term": "ML room correction",
+   "fields": {
+    "definition": "Room and monitor correction that uses machine-learning algorithms to analyze acoustic measurements at a listening position and derive equalization and time-domain filters that compensate for room and loudspeaker response errors. It aims to deliver a flatter, more accurate monitoring response than the untreated room.",
+    "plain_english": "ML room correction uses smart software to fix how speakers sound in a room. Rooms add echoes and can boost or cut some notes. The software listens to a test tone and builds a filter to even things out. ML means 'machine learning,' a program that learns from data.",
+    "purpose_function": "It aims to remove the room's and speakers' coloration from what you hear, so mixing decisions translate better to other playback systems.",
+    "practical_application": "An engineer runs a guided measurement with a calibrated mic, and the software generates correction filters applied to the monitor path or a plugin on the monitor bus.",
+    "category": "Monitoring",
+    "related_terms": ["Room correction", "Monitor calibration", "Reference monitor", "Frequency response", "Acoustic treatment"],
+    "common_mistakes": [
+     "Treating correction as a substitute for acoustic treatment; EQ alone cannot fix long reflections or strong bass modes.",
+     "Applying the correction filters to the recorded signal instead of only the monitor path.",
+     "Trusting a single measurement position rather than an averaged set of points."
+    ],
+    "scenario_contexts": [
+     "Calibrating monitors in an untreated home studio.",
+     "Improving low-frequency accuracy at the mix position.",
+     "Matching the sound of two rooms for consistent mixing."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "AES room/monitor correction literature", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "de36c2ae-7f56-482d-ae90-eeabac3df626",
+   "term": "Monitor Auto mode",
+   "fields": {
+    "definition": "An input-monitoring mode in which a record-enabled track automatically switches its monitored source with the transport: it passes the live input while armed for or during recording and monitors previously recorded material during playback. This lets performers hear the incoming source only when it is relevant.",
+    "plain_english": "Auto mode decides for you what a track plays. While you record, you hear the live sound coming in. While you play back, you hear what was already saved. It switches on its own so you don't have to.",
+    "purpose_function": "It automates input monitoring so performers hear the live source only when recording is relevant and hear the existing take during playback, with no manual switching.",
+    "practical_application": "An engineer leaves record-armed tracks in Auto during overdubs so the player hears their live input while recording and the existing take during playback.",
+    "category": "Monitoring",
+    "related_terms": ["Monitor In mode", "Monitor Off mode", "Input monitoring", "Record enable", "Punch in/out"],
+    "common_mistakes": [
+     "Blaming latency or a routing fault when the mode is simply switching sources as designed.",
+     "Expecting to hear the live input during playback, which Auto does not do.",
+     "Leaving tracks in Auto when constant input monitoring is actually needed."
+    ],
+    "scenario_contexts": [
+     "Overdubbing a vocal against a previous take.",
+     "Punch-in recording to fix a small mistake.",
+     "Standard tracking where hands-free monitoring is wanted."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual", "Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b35bc1d2-3a74-47b1-8771-e588fb568d7d",
+   "term": "Monitor In mode",
+   "fields": {
+    "definition": "An input-monitoring mode in which a track always monitors its live input signal regardless of arm state or transport, so the incoming source is heard at all times.",
+    "plain_english": "In mode means the track always plays the live sound coming in. You hear the input all the time, even during playback. It is handy when a player wants to keep hearing their instrument.",
+    "purpose_function": "It forces constant monitoring of the live input so the incoming source is always audible, regardless of transport or record state.",
+    "practical_application": "A technician selects In when a player needs to keep hearing their instrument through the session, or when setting levels and tone before recording.",
+    "category": "Monitoring",
+    "related_terms": ["Monitor Auto mode", "Monitor Off mode", "Input monitoring", "Record enable", "Direct monitoring"],
+    "common_mistakes": [
+     "Leaving In active during playback of a finished take, so the live input bleeds over what you meant to review.",
+     "Creating a doubled or feedback sound when the interface is also monitoring the same input.",
+     "Confusing In-monitoring latency with a recording problem."
+    ],
+    "scenario_contexts": [
+     "Dialing in a guitar tone before hitting record.",
+     "Letting a singer warm up while hearing themselves.",
+     "Checking a mic signal path during setup."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual", "Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "df041167-ea5f-4348-8066-f8698d772071",
+   "term": "Monitor Off mode",
+   "fields": {
+    "definition": "An input-monitoring mode in which a track never monitors its live input; only previously recorded material on the track is heard. It is used when monitoring is handled elsewhere—such as by an external mixer or the recording interface—to avoid double monitoring or latency.",
+    "plain_english": "Off mode stops the track from playing the live sound coming in. You only hear what was already recorded. This helps when another mixer or device already lets you hear the input.",
+    "purpose_function": "It prevents the track from passing the live input to the monitors so only recorded material is heard, leaving source monitoring to other gear.",
+    "practical_application": "An engineer uses Off when the performer already hears the input through a hardware mixer or the interface's low-latency path, avoiding a delayed doubled signal.",
+    "category": "Monitoring",
+    "related_terms": ["Monitor In mode", "Monitor Auto mode", "Direct monitoring", "Latency", "Input monitoring"],
+    "common_mistakes": [
+     "Setting Off and then wondering why the live input cannot be heard at all.",
+     "Using Off while expecting the input to still be recorded—monitoring and recording are separate.",
+     "Forgetting to switch back to In or Auto for the next overdub."
+    ],
+    "scenario_contexts": [
+     "Tracking through an interface that provides its own zero-latency monitoring.",
+     "Avoiding a slap-back caused by hearing both direct and software-monitored input.",
+     "Reviewing recorded takes without the live source in the mix."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual", "Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "28318c5a-8cd4-4780-ad4b-ef37cc28b056",
+   "term": "Monitoring FX chain",
+   "fields": {
+    "definition": "A chain of effects inserted only in the monitoring or cue path so that performers or engineers hear the processing without it being committed to the recorded signal. Common examples include reverb or compression added to a headphone cue while the recorded track stays dry.",
+    "plain_english": "A monitoring FX chain is a set of effects you hear but do not record. For example, a singer can hear reverb in the headphones while the saved take stays dry. It helps a performer feel at ease without changing the file.",
+    "purpose_function": "It lets performers and engineers hear helpful processing without printing it, keeping the recorded signal clean and flexible for later mixing.",
+    "practical_application": "During tracking an engineer adds reverb to the singer's headphone cue so they perform comfortably, while the recorded vocal stays dry.",
+    "category": "Monitoring",
+    "related_terms": ["Cue mix", "Headphone mix", "Aux send", "Reverb", "Wet/dry"],
+    "common_mistakes": [
+     "Accidentally recording the monitor effects onto the track instead of keeping them on the cue only.",
+     "Adding heavy monitor processing that adds latency and throws off the performer's timing.",
+     "Assuming the mix engineer will hear the same monitor effects later; they are not saved with the take."
+    ],
+    "scenario_contexts": [
+     "Giving a vocalist reverb in the headphones while recording dry.",
+     "Adding light compression to a monitor cue so a quiet part is easier to hear.",
+     "Setting up a comfortable headphone blend for a nervous performer."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound", "Avid Pro Tools Reference Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "be52336a-208f-475e-ae82-168ef05ee939",
+   "term": "Mono compatibility validation",
+   "fields": {
+    "definition": "The process of verifying that a stereo or multichannel mix remains coherent when summed to mono, checking for level loss, tonal change, or disappearing elements caused by phase cancellation between correlated channels. It is typically done by auditioning a mono sum and watching a phase-correlation meter or goniometer.",
+    "plain_english": "This is a check to make sure a mix still sounds right when both speakers are joined into one. Sometimes sounds cancel out and get quiet or thin when joined this way. You press a 'mono' button and listen, so phones and clubs that play in mono still sound good.",
+    "purpose_function": "It catches phase and level problems before release, ensuring the mix holds up on mono systems like phone speakers, some clubs, and many broadcast feeds.",
+    "practical_application": "An engineer presses a mono-sum button and listens for elements that vanish or go thin, then fixes phase, panning, or stereo-widening effects that cause the loss.",
+    "category": "Mix Quality Control",
+    "related_terms": ["Mono sum", "Phase cancellation", "Phase correlation meter", "Stereo width", "Goniometer", "Panning"],
+    "common_mistakes": [
+     "Skipping the mono check because the stereo mix sounds fine on studio monitors.",
+     "Over-using stereo wideners, which can make sounds cancel and disappear in mono.",
+     "Mistaking a level change in mono for a broken monitor path rather than phase cancellation."
+    ],
+    "scenario_contexts": [
+     "Checking a mix before it goes to streaming and phone listeners.",
+     "Preparing audio for broadcast or club systems that sum to mono.",
+     "Diagnosing a bass or vocal that weakens when summed to mono."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

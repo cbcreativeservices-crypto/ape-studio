@@ -1,0 +1,159 @@
+{
+ "batch": 310,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "e08e091b-3495-4baa-bf65-1cb032538d72",
+   "term": "aggressive",
+   "fields": {
+    "definition": "A tonal descriptor for sound with a hard, forward, edgy character, typically from emphasized upper-midrange and presence energy (roughly 2-6 kHz) that pushes the sound toward the listener and can feel harsh at high levels.",
+    "plain_english": "An aggressive sound is loud and in-your-face. It has a hard, biting edge in the upper-middle tones. It feels like the sound is pushing right at you.",
+    "purpose_function": "It lets engineers describe a forward, in-your-face tone so they can decide whether to tame or add upper-mid and presence energy for the style of music.",
+    "practical_application": "A mix engineer might call a rock vocal or guitar aggressive and cut a few dB around 2-5 kHz to soften it, or boost there when a part needs more bite.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Bright", "Brittle", "harsh", "presence", "edgy"],
+    "common_mistakes": ["Confusing aggressive with simply loud; it is a spectral quality (a hard upper-mid and presence edge), not just high volume.", "Assuming aggressive always means bad, when many rock and metal tones are meant to sound aggressive.", "Trying to fix an aggressive tone with only a volume cut instead of EQ in the 2-6 kHz range."],
+    "scenario_contexts": ["Describing a distorted electric guitar that cuts hard through a rock mix.", "A lead vocal that sounds forward and edgy and needs presence-range EQ.", "Comparing two synth patches where one is smooth and the other is aggressive and biting."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Rane Pro Audio Reference"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c6de6eb2-f7d1-4327-9af2-68a1e4ab0cce",
+   "term": "Airy",
+   "fields": {
+    "definition": "A tonal descriptor for sound with a strong sense of openness and space, produced by extended, smooth high-frequency response in the upper treble (roughly above 12-15 kHz), giving the impression of air around instruments and voices.",
+    "plain_english": "An airy sound feels open and spacious. It has clear, gentle high notes at the very top of hearing. It is like the sense of air around a singer in a big, bright room.",
+    "purpose_function": "It lets engineers describe pleasant top-end openness so they can decide whether a track needs a gentle high-shelf lift to add that sense of air.",
+    "practical_application": "An engineer may add a broad high-shelf boost above 10 kHz to vocals or acoustic guitar to make them airy, or choose a condenser mic known for an airy top end.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Bright", "open", "presence", "high shelf", "sparkle"],
+    "common_mistakes": ["Confusing airy with bright; airy is very-high-frequency openness and space, while bright emphasizes the lower treble and presence.", "Over-boosting the extreme highs to force air, which also raises hiss and sibilance.", "Expecting cheap or band-limited gear to reproduce air it cannot actually pass."],
+    "scenario_contexts": ["Describing a well-recorded vocal with an open, spacious top end.", "Choosing a condenser microphone for its airy high-frequency character.", "Adding a high-shelf boost to make an acoustic guitar sound more airy in a mix."]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cf3ce6fc-22f9-48f2-aea9-636d3c0e6381",
+   "term": "anemic",
+   "fields": {
+    "definition": "A tonal descriptor for sound that is thin and weak, lacking low-frequency weight, body, and fullness, so the fundamental range feels deficient and the overall tone seems underpowered.",
+    "plain_english": "An anemic sound is thin and weak. It has almost no low-end weight or body. It is like a song played through tiny phone speakers, where the notes feel small and drained of power.",
+    "purpose_function": "It flags a lack of low-end and body so an engineer knows the sound needs more weight, whether from EQ, mic choice, or the arrangement.",
+    "practical_application": "If a bass or kick sounds anemic, the engineer may boost the low end, pick a fuller mic or DI, or thin out competing parts so the fundamentals come through.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["thin", "Brittle", "warmth", "body", "boomy"],
+    "common_mistakes": ["Assuming anemic means quiet; it describes a lack of low-end weight and body, not simply low volume.", "Fixing anemic tone with heavy deep-bass boost that causes boominess instead of adding useful body around 100-300 Hz.", "Blaming the source when a thin cable, mic, or high-pass filter is removing the low end."],
+    "scenario_contexts": ["A kick drum that lacks punch and weight in the mix.", "A vocal that sounds thin and small on a small-diaphragm mic.", "A guitar amp tone that feels underpowered and needs more body."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8759a1b0-3f55-42be-a4ae-3d6660eccb44",
+   "term": "barky",
+   "fields": {
+    "definition": "A tonal descriptor for a harsh, honking, horn-like coloration caused by a peaky emphasis in the midrange (roughly 500 Hz-1 kHz), which makes voices or instruments sound as if they are shouting or barking.",
+    "plain_english": "A barky sound has a honking, shouty middle tone. It sounds a bit like a dog's bark or someone yelling through a cupped hand. It comes from too much energy in the middle frequencies.",
+    "purpose_function": "It points to an unpleasant mid honk so the engineer knows to hunt around 500 Hz-1 kHz for a resonant peak to cut.",
+    "practical_application": "When a vocal, sax, or guitar sounds barky, an engineer sweeps a narrow EQ boost to find the offending mid peak, then cuts it a few dB to smooth the tone.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Boxy", "nasal", "honky", "harsh", "midrange"],
+    "common_mistakes": ["Confusing barky with boxy; the barky honk sits higher (around 500 Hz-1 kHz) while boxy sits lower (around 300-600 Hz).", "Cutting broadly across the whole midrange and hollowing out the tone instead of notching the single resonant peak.", "Overlooking that room reflections or a cupped mic technique can create the barky coloration."],
+    "scenario_contexts": ["A brass or reed instrument that honks harshly in a live mix.", "A vocalist who cups the microphone and produces a barky, shouty tone.", "Tuning out a mid resonance on a guitar cabinet that sounds barky."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "15fedb45-caee-413a-8028-edb240801128",
+   "term": "behind a blanket",
+   "fields": {
+    "definition": "An informal tonal descriptor for sound that is muffled and dull, as if covered by a cloth, because the high frequencies are strongly reduced, leaving the tone lacking clarity and detail.",
+    "plain_english": "Sound that is behind a blanket is muffled and unclear. The bright, detailed high notes are missing. It is like listening to music with a thick blanket thrown over the speaker.",
+    "purpose_function": "The phrase quickly tells everyone the top end is missing, so an engineer knows to look for lost high frequencies from EQ, a bad mic, or an obstruction.",
+    "practical_application": "If a mix sounds like it is behind a blanket, the engineer checks for an accidental high cut, a covered or off-axis mic, or a dull monitor, then restores the highs.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["dull", "dark", "muffled", "blanket over the speakers", "Bright"],
+    "common_mistakes": ["Assuming the source is bad when a covered mic, closed monitor, or engaged low-pass filter is removing the highs.", "Boosting extreme treble to compensate and adding hiss instead of finding why the highs are gone.", "Confusing a muffled behind-a-blanket tone with a simple low volume level."],
+    "scenario_contexts": ["A recording that sounds dull because a mic was pointed away from the source.", "Checking a PA that suddenly sounds muffled, as if behind a blanket, after a setting change.", "Describing playback from a phone left inside a pocket."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Rane Pro Audio Reference"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f129fe6d-f9aa-408a-8232-a0f199720792",
+   "term": "blanket over the speakers",
+   "fields": {
+    "definition": "An informal tonal descriptor for a dull, muffled sound with noticeably reduced high-frequency content, as though a blanket were draped over the loudspeakers, robbing the sound of brightness and detail.",
+    "plain_english": "A blanket over the speakers means the sound is muffled and dull. The crisp high notes are gone. It sounds just like it would if you laid a thick blanket right over your speakers.",
+    "purpose_function": "The phrase signals a clear loss of highs so the engineer knows to check for rolled-off treble in the signal chain, the speakers, or the room.",
+    "practical_application": "Hearing this complaint, a technician checks for a blown tweeter, a wrong EQ or filter setting, speaker covers left on, or heavy drapes and absorption killing the highs.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["dull", "dark", "muffled", "behind a blanket", "Bright"],
+    "common_mistakes": ["Overlooking a blown or disconnected tweeter as the cause of the sudden loss of highs.", "Blaming the mix when the room's heavy curtains and absorption are removing the top end.", "Confusing a muffled tone with an out-of-phase speaker pair, which thins the sound differently."],
+    "scenario_contexts": ["A club PA that sounds dull because a tweeter has failed.", "A studio monitor with its protective grille cloth or cover left on.", "Describing a room so heavily treated with absorption that it deadens the highs."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Rane Pro Audio Reference"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "62763c20-8f05-470b-aa07-19c217ff0817",
+   "term": "Boxy",
+   "fields": {
+    "definition": "A tonal descriptor for a hollow, resonant coloration centered in the lower midrange (roughly 300-600 Hz), which makes a sound resemble the tone of speaking or playing inside a small box or closet.",
+    "plain_english": "A boxy sound is hollow, like it is coming from inside a cardboard box. It has too much of a certain low-middle tone. Think of how your voice sounds inside an empty box.",
+    "purpose_function": "It identifies an unwanted lower-mid buildup so the engineer knows to cut around 300-600 Hz to open up and clarify the sound.",
+    "practical_application": "When drums, guitars, or a room mic sound boxy, the engineer notches a few dB around 400 Hz, or treats reflections from a small tracking room that add the coloration.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["muddy", "nasal", "barky", "hollow", "midrange"],
+    "common_mistakes": ["Confusing boxy (around 300-600 Hz) with muddy, which sits lower, around 100-250 Hz.", "Cutting too wide and thinning the body instead of notching the specific resonant frequency.", "Ignoring that a small, untreated recording room often adds the boxy coloration."],
+    "scenario_contexts": ["A snare or tom recorded in a small room that sounds hollow and boxy.", "A vocal tracked in a closet with a strong lower-mid resonance.", "An acoustic guitar with a boxy body resonance that needs an EQ notch."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e4ea0368-6604-4336-a1ef-5cc7c20b3640",
+   "term": "Bright",
+   "fields": {
+    "definition": "A tonal descriptor for sound with emphasized high-frequency content (roughly above 5 kHz), giving a crisp, present, detailed character; excessive brightness can tip into harshness.",
+    "plain_english": "A bright sound has strong, crisp high notes. It sounds clear, sharp, and full of detail. It is the opposite of dull, like the sparkle of cymbals or crisp new speakers.",
+    "purpose_function": "It describes how much high-frequency emphasis a sound has so engineers can match the tone to the music and keep it from turning harsh.",
+    "practical_application": "An engineer may call a mic or mix bright and add or reduce a high shelf to suit the material, or pick a brighter mic to help a dull source cut through.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Airy", "Brittle", "dull", "presence", "harsh"],
+    "common_mistakes": ["Assuming brighter is always better, when too much high end becomes harsh and tiring.", "Confusing bright with loud; brightness is a high-frequency balance, not overall level.", "Judging brightness on one dull or hyped speaker instead of trusted, calibrated monitors."],
+    "scenario_contexts": ["Describing cymbals and hi-hats that sound crisp and detailed.", "Choosing a brighter microphone to help a dull vocal cut through a mix.", "Comparing two speakers where one sounds noticeably brighter than the other."]
+   },
+   "sources": ["Rane Pro Audio Reference", "Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8da6df45-cdfe-48c7-83ca-fa10ec430827",
+   "term": "Brittle",
+   "fields": {
+    "definition": "A tonal descriptor for a thin, harsh high-frequency character that lacks supporting low-end and body, so the treble sounds glassy and fragile and seems ready to break up, often from excessive or peaky high-frequency emphasis.",
+    "plain_english": "A brittle sound is thin and harsh up high, with no warmth underneath. The high notes sound glassy and sharp, like thin glass about to crack. It can be tiring to hear.",
+    "purpose_function": "It flags harsh, unsupported highs so an engineer knows to reduce peaky treble or add low-mid body to balance the tone.",
+    "practical_application": "If a cymbal or vocal sounds brittle, the engineer may cut a sharp high-frequency peak, add warmth lower down, or swap a harsh-sounding mic or converter.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Bright", "harsh", "thin", "sibilance", "Airy"],
+    "common_mistakes": ["Confusing brittle with bright; bright is pleasant crisp detail, while brittle is thin, harsh, and fatiguing.", "Fixing brittleness only by cutting highs when adding low-mid body may balance the tone better.", "Overlooking cheap converters, clipping, or heavy compression as a cause of a brittle top end."],
+    "scenario_contexts": ["A cheap cymbal recording that sounds glassy and harsh.", "A vocal that becomes brittle after heavy high-frequency EQ boosting.", "Comparing a warm analog chain against a harsh, brittle digital one."]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

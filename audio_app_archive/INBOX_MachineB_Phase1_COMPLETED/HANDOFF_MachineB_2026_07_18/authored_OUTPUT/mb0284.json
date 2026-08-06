@@ -1,0 +1,295 @@
+{
+ "batch": 284,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "84cd5fc6-028e-4be1-a014-a7d42647c69b",
+   "term": "Tape attack",
+   "fields": {
+    "definition": "The onset (attack) portion of a note reproduced by a tape-replay instrument or tape sample: the initial rise of the sound as playback of the recorded tape begins. On instruments such as the Mellotron, a spring returns each tape strip to its start between keystrokes so the recorded instrument's natural attack transient plays back from the beginning of every note.",
+    "plain_english": "The very start of a sound as the tape begins to play. On a tape keyboard, each key rewinds its own tape, so you always hear the true beginning of the note, like a short clip that starts from the first frame every time.",
+    "purpose_function": "An accurate attack lets a tape-based sampler sound like the real instrument it recorded, because the opening transient carries much of an instrument's character.",
+    "practical_application": "A player depends on the tape returning to its start between notes; a tired spring or slipping tape gives late or weak note starts, which a technician spots by listening for soft or delayed attacks.",
+    "category": "Note articulation",
+    "related_terms": [
+     "Tape release",
+     "Tape playback",
+     "Tape frame",
+     "Tape head",
+     "Envelope"
+    ],
+    "common_mistakes": [
+     "Assuming the attack can be shaped with an amplitude envelope like a modern sampler, when on a tape instrument the attack is fixed by the original recording.",
+     "Confusing tape attack (the note's onset) with tape saturation softening the transients of a signal being recorded."
+    ],
+    "scenario_contexts": [
+     "A keyboardist re-triggering a Mellotron flute line where each note must start cleanly from the tape's beginning.",
+     "A technician tracing weak or delayed note starts to a fatigued tape-return spring."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (magnetic recording)",
+    "Sound on Sound, Mellotron MkVI review"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8e394eb6-7b44-4bd2-aa91-0b85ec88c75e",
+   "term": "Tape flutter",
+   "fields": {
+    "definition": "Rapid, short-term variations in tape speed, typically above about 6 Hz, caused by transport imperfections such as an eccentric capstan, worn pinch roller, dirty guides, or uneven tape tension. Flutter modulates the pitch and timbre of the reproduced signal, adding a warbling or rough quality; slower speed variations below that range are called wow.",
+    "plain_english": "A fast wobble in the tape's speed that makes the pitch shake. It is like a trembling singing voice, but here it is caused by the tape not moving at a perfectly steady speed.",
+    "purpose_function": "Flutter is an unwanted artifact, not a feature; measuring and minimizing it is how engineers judge the mechanical quality and health of a tape transport.",
+    "practical_application": "A technician measures wow and flutter with a steady test tone and a meter, then cleans or replaces the capstan, pinch roller, or bearings when the reading exceeds spec.",
+    "category": "Tape artifacts",
+    "related_terms": [
+     "Wow",
+     "Tape motor noise",
+     "Capstan",
+     "Tape playback",
+     "Tape head"
+    ],
+    "common_mistakes": [
+     "Confusing flutter (fast speed changes) with wow (slow speed changes).",
+     "Blaming the tape for flutter when a dirty or worn capstan or pinch roller is usually the real cause."
+    ],
+    "scenario_contexts": [
+     "Restoring an old tape machine and hearing a warbling pitch on sustained notes.",
+     "Evaluating a vintage tape sampler or Mellotron for pitch instability during playback."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (magnetic recording)",
+    "Huber & Runstein, Modern Recording Techniques",
+    "AES/IEC wow and flutter measurement practice"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3d1a6363-341c-4a1a-ac8a-077640ea7b2b",
+   "term": "Tape frame",
+   "fields": {
+    "definition": "On a tape-replay keyboard such as the Mellotron, the removable assembly that holds the bank of individual tape strips (one per key) together with their guides and return springs. Sliding or swapping the frame changes which recorded sounds the instrument plays.",
+    "plain_english": "The tray inside a tape keyboard that holds all the little tapes, one for each key. Swapping the tray gives the instrument a whole new set of sounds, a bit like changing a cartridge.",
+    "purpose_function": "The frame organizes and aligns every tape strip over its playback head, and because it is removable it lets a player change the instrument's entire voice set.",
+    "practical_application": "A technician removes and reinstalls the tape frame to swap sound banks, and adjusts tape alignment and spring tension within it during servicing.",
+    "category": "Instrument mechanics",
+    "related_terms": [
+     "Tape head",
+     "Tape playback",
+     "Tape attack",
+     "Tape release",
+     "Tape splice"
+    ],
+    "common_mistakes": [
+     "Thinking a tape keyboard plays endless loops, when most frames hold finite strips that must spring back to their start.",
+     "Forcing or misaligning the strips when reinstalling the frame, which causes dropouts and uneven levels."
+    ],
+    "scenario_contexts": [
+     "Swapping a Mellotron's tape frame to change from strings to choir sounds.",
+     "Servicing a tape-replay instrument to realign strips and check spring returns inside the frame."
+    ]
+   },
+   "sources": [
+    "Sound on Sound, Mellotron MkVI review",
+    "Mellotron technical/service documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "728475ef-6765-4c31-b34a-964c9c3a7df5",
+   "term": "Tape head",
+   "fields": {
+    "definition": "An electromagnetic transducer that transfers signal between a machine's audio electronics and the magnetic tape. A recorder typically has separate heads for erase, record, and playback (reproduce); each is a small gapped magnetic core with a coil that either magnetizes the passing tape or senses the tape's magnetic field.",
+    "plain_english": "The small magnetic part that reads or writes sound on the tape as it slides past. It works a bit like the needle on a record player, but it uses magnetism instead of a groove.",
+    "purpose_function": "Heads are the link between electrical audio and the magnetic pattern on the tape; without them a machine cannot record, erase, or play back sound.",
+    "practical_application": "A technician cleans and demagnetizes the heads regularly and checks head alignment (azimuth) with a test tape to keep the high frequencies and stereo image correct.",
+    "category": "Tape mechanics",
+    "related_terms": [
+     "Tape playback",
+     "Tape hiss",
+     "Azimuth",
+     "Bias",
+     "Tape frame"
+    ],
+    "common_mistakes": [
+     "Skipping regular head cleaning and demagnetizing, letting oxide build-up dull the highs and raise the noise.",
+     "Confusing the record, playback, and erase heads, or mistaking a misaligned playback-head azimuth for a fault in the tape."
+    ],
+    "scenario_contexts": [
+     "Aligning azimuth on a tape deck with a test tape before a transfer session.",
+     "Tracing lost high frequencies to a dirty or worn playback head."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (magnetic recording)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a0aa02d4-e082-4152-ae33-eb2c23c8b75d",
+   "term": "Tape hiss",
+   "fields": {
+    "definition": "The steady broadband high-frequency noise inherent to magnetic tape, produced by the random size and distribution of the magnetic particles in the tape coating. It sets the noise floor of an analog tape recording and is most audible during quiet passages.",
+    "plain_english": "The soft, steady 'shhh' you hear from tape, especially in quiet parts. It comes from the tiny magnetic specks on the tape not being perfectly even.",
+    "purpose_function": "Hiss defines the noise floor, and therefore the usable dynamic range, of a tape system; understanding it drives choices about recording level and noise reduction.",
+    "practical_application": "Engineers record at healthy levels and may use noise reduction such as Dolby to keep hiss below the music, and roll off unused high frequencies to tame it during a transfer.",
+    "category": "Tape noise",
+    "related_terms": [
+     "Signal-to-noise ratio",
+     "Noise reduction",
+     "Tape motor noise",
+     "Tape playback",
+     "Bias"
+    ],
+    "common_mistakes": [
+     "Recording at too low a level to feel safe, which pushes the music down into the hiss and worsens the signal-to-noise ratio.",
+     "Treating hiss as a fault to repair rather than as an inherent property of the medium."
+    ],
+    "scenario_contexts": [
+     "Setting record levels so a quiet vocal stays well above the tape's noise floor.",
+     "Cleaning up hiss when digitizing an old cassette or reel."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (magnetic recording)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c4615e7e-cfe6-400d-a6d5-01bee849858b",
+   "term": "Tape motor noise",
+   "fields": {
+    "definition": "Unwanted low-frequency rumble and mechanical or electrical noise introduced by a tape machine's motors and transport, including the capstan and reel motors, bearings, and drive components. It couples into the audio as rumble or hum and can also modulate speed, contributing to wow and flutter.",
+    "plain_english": "The low rumble or hum a tape machine's motors add to the sound. It is like the background drone of a fridge in the room, coming from the spinning parts.",
+    "purpose_function": "Recognizing motor noise helps a technician separate transport faults from tape or electronic problems and keep the recording's low end clean.",
+    "practical_application": "A technician isolates rumble by servicing bearings and motors, checking mounts and belts, and confirming the noise follows transport speed rather than the recorded signal.",
+    "category": "Tape noise",
+    "related_terms": [
+     "Tape flutter",
+     "Tape hiss",
+     "Capstan",
+     "Rumble",
+     "Tape playback"
+    ],
+    "common_mistakes": [
+     "Mistaking motor rumble for a low-frequency fault in the recording or the monitors.",
+     "Ignoring worn bearings or dry motors, which raises both rumble and flutter over time."
+    ],
+    "scenario_contexts": [
+     "Chasing a low rumble on a transfer and finding a worn capstan bearing.",
+     "Servicing an old reel machine whose reel motors add hum during fast winding."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (magnetic recording)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7b4ef5bc-6648-43f0-b321-f59757137790",
+   "term": "Tape playback",
+   "fields": {
+    "definition": "The reproduction of a recorded signal from magnetic tape, in which the moving tape's magnetic pattern induces a voltage in the playback (reproduce) head that is then equalized and amplified back to audio. On tape-replay instruments, playback is triggered per note by a key advancing its tape past the head.",
+    "plain_english": "Playing back sound that was stored on tape. The magnetic pattern on the moving tape is turned back into an electrical signal by the head, then made loud enough to hear.",
+    "purpose_function": "Playback is how recorded audio is heard again; on samplers and tape keyboards it is the core mechanism that turns stored recordings into a playable instrument.",
+    "practical_application": "A technician verifies playback level and frequency response with a calibration tape, and on a tape instrument checks that each key reliably starts and stops its tape.",
+    "category": "Sample playback",
+    "related_terms": [
+     "Tape head",
+     "Tape attack",
+     "Tape release",
+     "Tape frame",
+     "Equalization"
+    ],
+    "common_mistakes": [
+     "Confusing playback (reproduce) equalization with tone controls, when playback EQ actually corrects the head's natural response.",
+     "Assuming a playback problem is in the tape when the head or its alignment is at fault."
+    ],
+    "scenario_contexts": [
+     "Transferring a reel to digital and confirming flat playback with a calibration tape.",
+     "Testing a Mellotron so every key plays its recorded note back cleanly."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (magnetic recording)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "76e32a96-bc77-4344-bbf5-a4ee6bc2ccf9",
+   "term": "Tape release",
+   "fields": {
+    "definition": "The release (ending) stage of a note on a tape-replay instrument: what happens to the sound when a key is let go. On instruments such as the Mellotron, releasing the key lifts the tape from the playback head and a spring returns the strip to its start, so the note ends and resets for the next press.",
+    "plain_english": "What happens to a tape keyboard's note when you let go of the key. The tape stops playing and springs back to its start, so the sound ends and the key is ready to play again.",
+    "purpose_function": "Reliable release and reset let each key be replayed accurately and in time; it is the counterpart to the attack in a tape instrument's note cycle.",
+    "practical_application": "A technician checks the return spring and tape freedom so notes end cleanly and reset fully; a sticky return causes hanging notes or a shortened next attack.",
+    "category": "Note articulation",
+    "related_terms": [
+     "Tape attack",
+     "Tape playback",
+     "Tape frame",
+     "Tape head",
+     "Envelope"
+    ],
+    "common_mistakes": [
+     "Expecting an adjustable release tail like a synth, when on a tape instrument the note simply stops as the tape lifts.",
+     "Overlooking a weak return spring, which leaves the tape short of its start and shortens the next note."
+    ],
+    "scenario_contexts": [
+     "Diagnosing hanging or shortened notes on a Mellotron traced to sticky tape returns.",
+     "Setting up a tape-replay keyboard so keys reset fully between fast repeated notes."
+    ]
+   },
+   "sources": [
+    "Sound on Sound, Mellotron MkVI review",
+    "Mellotron technical/service documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c80cd925-aac5-4d87-ac02-a01da6ae940f",
+   "term": "Tape splice",
+   "fields": {
+    "definition": "A join between two pieces of magnetic tape, made by cutting the tape (usually on a 45-degree diagonal in a splicing block) and butting the ends together with special splicing tape. Splicing is the basic method of physically editing analog tape and of forming tape loops.",
+    "plain_english": "A spot where two pieces of tape are cut and joined. Editors cut the tape at an angle and stick the ends with special splicing tape, like cutting and taping film, to rearrange or loop the sound.",
+    "purpose_function": "Splicing is how analog editing is done: removing mistakes, rearranging sections, and building loops, all by physically cutting and rejoining the tape.",
+    "practical_application": "A technician cuts on the diagonal in a splicing block, joins the ends with proper splicing tape (never ordinary adhesive tape), and angles the cut so the edit is inaudible.",
+    "category": "Tape editing",
+    "related_terms": [
+     "Tape loop",
+     "Tape head",
+     "Tape playback",
+     "Leader tape",
+     "Splicing block"
+    ],
+    "common_mistakes": [
+     "Using ordinary sticky tape or the wrong adhesive, which oozes, gums up the heads, and fails over time.",
+     "Splicing straight across instead of on a diagonal, which leaves an audible click at the join."
+    ],
+    "scenario_contexts": [
+     "Editing a reel-to-reel master by cutting out a bad take and splicing the good sections together.",
+     "Making a tape loop by splicing the end of a section back to its beginning."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers (magnetic recording)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

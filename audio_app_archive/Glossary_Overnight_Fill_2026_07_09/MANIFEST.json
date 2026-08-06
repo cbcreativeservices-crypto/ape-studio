@@ -1,0 +1,163 @@
+[
+ {
+  "course": "AUDI201",
+  "topic": "Amplifiers",
+  "count": 7,
+  "safety_critical": false,
+  "file": "AUDI201__Amplifiers.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "Analog Live Sound",
+  "count": 12,
+  "safety_critical": false,
+  "file": "AUDI201__Analog_Live_Sound.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "Assisted Listening Systems",
+  "count": 5,
+  "safety_critical": false,
+  "file": "AUDI201__Assisted_Listening_Systems.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "Audio Measurement & Optimization",
+  "count": 5,
+  "safety_critical": false,
+  "file": "AUDI201__Audio_Measurement_and_Optimization.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "Commercial Audio Systems",
+  "count": 5,
+  "safety_critical": false,
+  "file": "AUDI201__Commercial_Audio_Systems.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "Consumer Audio Systems",
+  "count": 9,
+  "safety_critical": false,
+  "file": "AUDI201__Consumer_Audio_Systems.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "Corporate AV",
+  "count": 8,
+  "safety_critical": false,
+  "file": "AUDI201__Corporate_AV.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "Digital Live Sound",
+  "count": 5,
+  "safety_critical": false,
+  "file": "AUDI201__Digital_Live_Sound.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "Distributed Audio Systems",
+  "count": 4,
+  "safety_critical": true,
+  "file": "AUDI201__Distributed_Audio_Systems.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "Loudspeaker System Deployment",
+  "count": 10,
+  "safety_critical": true,
+  "file": "AUDI201__Loudspeaker_System_Deployment.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "RF Wireless Systems",
+  "count": 6,
+  "safety_critical": false,
+  "file": "AUDI201__RF_Wireless_Systems.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "Troubleshooting",
+  "count": 6,
+  "safety_critical": false,
+  "file": "AUDI201__Troubleshooting.json"
+ },
+ {
+  "course": "AUDI201",
+  "topic": "Vehicle Audio",
+  "count": 7,
+  "safety_critical": false,
+  "file": "AUDI201__Vehicle_Audio.json"
+ },
+ {
+  "course": "MUSI190",
+  "topic": "Amps & Loudspeakers",
+  "count": 8,
+  "safety_critical": false,
+  "file": "MUSI190__Amps_and_Loudspeakers.json"
+ },
+ {
+  "course": "MUSI190",
+  "topic": "Connectors & I/O Connections",
+  "count": 11,
+  "safety_critical": false,
+  "file": "MUSI190__Connectors_and_I-O_Connections.json"
+ },
+ {
+  "course": "MUSI190",
+  "topic": "Dynamics Processing",
+  "count": 6,
+  "safety_critical": false,
+  "file": "MUSI190__Dynamics_Processing.json"
+ },
+ {
+  "course": "MUSI190",
+  "topic": "Equalization (EQ)",
+  "count": 5,
+  "safety_critical": false,
+  "file": "MUSI190__Equalization_EQ.json"
+ },
+ {
+  "course": "MUSI190",
+  "topic": "Grounding & Electrical",
+  "count": 13,
+  "safety_critical": true,
+  "file": "MUSI190__Grounding_and_Electrical.json"
+ },
+ {
+  "course": "MUSI190",
+  "topic": "Microphones",
+  "count": 5,
+  "safety_critical": false,
+  "file": "MUSI190__Microphones.json"
+ },
+ {
+  "course": "MUSI190",
+  "topic": "Mixers & Recorders",
+  "count": 6,
+  "safety_critical": false,
+  "file": "MUSI190__Mixers_and_Recorders.json"
+ },
+ {
+  "course": "MUSI190",
+  "topic": "Reverb & Delay",
+  "count": 4,
+  "safety_critical": false,
+  "file": "MUSI190__Reverb_and_Delay.json"
+ },
+ {
+  "course": "MUSI190",
+  "topic": "Signal Path & Levels",
+  "count": 6,
+  "safety_critical": false,
+  "file": "MUSI190__Signal_Path_and_Levels.json"
+ },
+ {
+  "course": "MUSI190",
+  "topic": "Sound & Acoustics",
+  "count": 11,
+  "safety_critical": false,
+  "file": "MUSI190__Sound_and_Acoustics.json"
+ }
+]

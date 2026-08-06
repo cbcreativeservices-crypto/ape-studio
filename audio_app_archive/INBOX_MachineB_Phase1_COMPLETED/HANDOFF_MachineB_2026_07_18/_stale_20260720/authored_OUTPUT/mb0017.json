@@ -1,0 +1,324 @@
+{
+  "batch": 17,
+  "topic": "Instrument Recording — Keys, Winds & Brass",
+  "authored": [
+    {
+      "id": "c1487ddb-3d53-4114-b251-f43a5e4cbf02",
+      "term": "Acoustic harmonica",
+      "fields": {
+        "definition": "A free-reed aerophone (mouth organ) sounded by the player's breath, in which blowing and drawing air past tuned metal reeds fixed in slots on reed plates makes the reeds vibrate to produce pitches; 'acoustic' denotes capturing its natural, unamplified and undistorted sound (typically close-miked) as opposed to the cupped-mic amplified blues approach.",
+        "plain_english": "A normal harmonica recorded on its own natural sound. You put a mic in front of it instead of plugging it into an amp. When you blow and draw air, tiny metal reeds shake to make the notes.",
+        "purpose_function": "It produces melody and chords from vibrating free reeds; treating it 'acoustically' aims to capture its true, clean tone with natural dynamics and breath detail intact.",
+        "practical_application": "Engineers close-mic an acoustic harmonica with a condenser or dynamic microphone, watching for breath noise and plosive blasts and managing proximity effect and the wide level swings between soft and loud passages.",
+        "category": "Harmonica",
+        "related_terms": [
+          "Chromatic harmonica",
+          "Amplified harmonica",
+          "Free reed",
+          "Close miking",
+          "Condenser microphone",
+          "Proximity effect"
+        ],
+        "common_mistakes": [
+          "Placing the mic too close and getting excessive breath noise and boominess from proximity effect",
+          "Setting gain for quiet passages, then clipping when the player blows a loud chord",
+          "Assuming a harmonica is delicate and quiet; strong playing produces high SPL that can overload a close mic"
+        ],
+        "scenario_contexts": [
+          "Overdubbing a clean folk or country harmonica line onto a singer-songwriter track",
+          "Close-miking harmonica in a studio for a blues ballad without amp distortion",
+          "Capturing a harmonica in an acoustic ensemble where its natural tone must blend with guitar and vocal"
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (free-reed instruments)",
+        "Grove Music Online, 'Harmonica / Mouth organ'",
+        "Huber & Runstein, Modern Recording Techniques (instrument miking)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "e72234d6-3bf1-48b9-8efb-9c859baba192",
+      "term": "Amplified harmonica",
+      "fields": {
+        "definition": "A harmonica whose sound is picked up by a microphone — classically a cupped high-impedance 'bullet' dynamic mic held together with the instrument in the hands — and reproduced through an amplifier (often a tube guitar amp), commonly driven into overdrive to produce the gritty, midrange-heavy, distorted tone of electric blues 'harp.'",
+        "plain_english": "A harmonica played into a small hand-held mic. The mic feeds a guitar-style amp. The amp is turned up until it distorts. This gives that raw, growly blues sound.",
+        "purpose_function": "It turns the quiet acoustic instrument into a loud, saturated electric voice that can cut through a band and sit alongside electric guitars.",
+        "practical_application": "The player cups a bullet mic such as the Shure 520DX 'Green Bullet' with the harmonica into a small amp; the engineer usually mics the amplifier rather than the harmonica, and manages stage level and feedback.",
+        "category": "Harmonica",
+        "related_terms": [
+          "Acoustic harmonica",
+          "Bullet microphone",
+          "Chromatic harmonica",
+          "Overdrive",
+          "Feedback",
+          "High-impedance microphone"
+        ],
+        "common_mistakes": [
+          "Treating a stand-mounted vocal mic as equivalent to a cupped bullet mic; the tight hand cup and high-impedance element are central to the tone",
+          "Running high stage volume with an omnidirectional bullet mic and triggering runaway feedback instead of controlling gain and position",
+          "UNSAFE: opening a tube amplifier chassis to troubleshoot — filter capacitors can retain lethal voltage even when unplugged; only qualified personnel should service it after proper discharge",
+          "UNSAFE: prolonged exposure to loud amplified harp on stage without hearing protection, risking noise-induced hearing loss"
+        ],
+        "scenario_contexts": [
+          "Tracking a Chicago-blues harmonica part through a cranked tube amp for a distorted tone",
+          "A live blues gig where the player cups a bullet mic into a stage amp that is then miked to the PA",
+          "Re-amping a clean harmonica recording through an overdriven amp to add grit in the mix"
+        ]
+      },
+      "sources": [
+        "Shure 520DX 'Green Bullet' technical documentation / user guide (dynamic cartridge, high-impedance, harmonica use, volume control, 1/4-inch output)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (free-reed instruments)",
+        "OSHA 29 CFR 1910.95 (occupational noise exposure)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "a02ce934-da72-4ab7-9720-a204c7830f1f",
+      "term": "Brass bite",
+      "fields": {
+        "definition": "A descriptive term for the aggressive, edgy, cutting quality at the front of a brass note, arising from the sharp attack transient of tonguing/articulation combined with strong upper-midrange to high-frequency harmonic energy; it is what makes brass read as punchy and forward.",
+        "plain_english": "The sharp, snappy 'edge' at the start and top of a trumpet or trombone note. It makes the sound aggressive. It helps the note cut through a mix.",
+        "purpose_function": "It names the attack and high-frequency character engineers listen for to make brass feel present and exciting, and which they shape with mic choice, placement and EQ.",
+        "practical_application": "To add bite an engineer mics closer and more on-axis to the bell and lifts upper-mid/presence frequencies; to tame harshness they move off-axis or cut those bands.",
+        "category": "Brass timbre",
+        "related_terms": [
+          "Brass brightness",
+          "Brass projection",
+          "Attack transient",
+          "Equalization",
+          "Presence",
+          "Brass section balance"
+        ],
+        "common_mistakes": [
+          "Confusing 'bite' (attack and upper-mid edge) with overall 'brightness' (broadband high-frequency content)",
+          "Chasing bite with extreme presence-band EQ boosts that make the brass harsh and fatiguing",
+          "Miking dead-on-axis at the bell and capturing only harsh edge with no body"
+        ],
+        "scenario_contexts": [
+          "Adding aggression to a funk horn stab so it cuts through a dense mix",
+          "Choosing a mic and angle for a lead trumpet that needs an edgy, forward attack",
+          "EQing a trombone section to restore articulation lost to distant miking"
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (brass attack transients and spectral enrichment, Ch. 14)",
+        "Ballou, Handbook for Sound Engineers (brass recording and equalization)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "2a5086d7-21a7-48d6-bc66-0a7d818c3ebe",
+      "term": "Brass brightness",
+      "fields": {
+        "definition": "The timbral quality of brass set by the relative strength of its high-frequency harmonics; brass grows markedly brighter as playing level rises because nonlinear sound propagation in the bore steepens the waveform and transfers energy into higher harmonics (the 'brassy' effect), raising the spectral centroid at forte and fortissimo.",
+        "plain_english": "How bright or brilliant a brass instrument sounds. The louder you play it, the brighter it gets. That is because more high overtones show up.",
+        "purpose_function": "It explains why brass timbre changes with dynamics, letting engineers judge tone and match recorded brightness to the musical intent through mic distance and EQ.",
+        "practical_application": "Because brass brightens at high SPL, engineers set levels and mic distance for the loudest passages and may apply dynamic control so fortissimo brass does not turn harsh.",
+        "category": "Brass timbre",
+        "related_terms": [
+          "Brass bite",
+          "Brass projection",
+          "Spectral centroid",
+          "Harmonic overtones",
+          "Equalization",
+          "Dynamic range"
+        ],
+        "common_mistakes": [
+          "Assuming a brass instrument has one fixed timbre and not expecting it to brighten sharply as it gets louder",
+          "Setting mic distance and gain at a mezzo level, then having fortissimo passages sound harsh and clip",
+          "Boosting highs to add brightness when moving the mic closer to the bell axis would do it more naturally"
+        ],
+        "scenario_contexts": [
+          "Anticipating a fortissimo brass swell so the recorded tone stays musical rather than harsh",
+          "Comparing a distant, mellow orchestral brass sound with a close, bright pop-horn sound",
+          "Using distance and EQ to dial back brightness on an overly bright trumpet overdub"
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (nonlinear propagation and spectral enrichment in brass, Ch. 14)",
+        "Journal of the Acoustical Society of America (ASA) papers on brass 'brassiness'/spectral centroid vs. dynamic level"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "ea29c417-71ea-426d-99ed-8cc8ece53cb0",
+      "term": "Brass projection",
+      "fields": {
+        "definition": "The efficient, directional radiation of sound from a brass instrument's bell, which becomes increasingly beamed forward along the bell axis at higher frequencies while lower frequencies radiate more omnidirectionally; this forward directivity is why brass 'projects' and reads as loud and present out front.",
+        "plain_english": "How strongly a brass instrument throws its sound forward out of the bell. High notes and overtones shoot straight ahead. That is why brass carries so far.",
+        "purpose_function": "It describes the instrument's directivity, which governs mic placement and how far and how brightly the sound travels in a room.",
+        "practical_application": "Engineers place brass mics near and roughly on the bell axis to capture full brightness, and account for the strong on-axis high-frequency beam when choosing angle to avoid a result that is too bright or too dull.",
+        "category": "Brass acoustics",
+        "related_terms": [
+          "Brass brightness",
+          "Brass bite",
+          "Directivity",
+          "Off-axis response",
+          "Microphone placement",
+          "Brass section balance"
+        ],
+        "common_mistakes": [
+          "Placing a mic off to the side of the bell and then wondering why the brass sounds dull and lacks high end",
+          "Treating brass as an omnidirectional source and mispredicting bleed and room excitation",
+          "Getting the player to point the bell away from the audience or mic and losing projection and brightness"
+        ],
+        "scenario_contexts": [
+          "Aiming a mic along the bell axis of a trumpet to capture its bright, projecting tone",
+          "Positioning section mics for a horn line where each bell fires in a slightly different direction",
+          "Judging how far brass carries in a live room to set distant/room mic distances"
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (radiation from the bell and frequency-dependent directivity, Ch. 14)",
+        "Journal of the Acoustical Society of America (ASA) musical-instrument directivity measurements"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "f21ac1e6-4de9-4679-b669-ed2befc53d3b",
+      "term": "Brass section balance",
+      "fields": {
+        "definition": "The relative loudness and blend of the individual instruments within a brass section (e.g., trumpets, horns, trombones, tuba) so that no part dominates and the section reads as a unified whole; it is achieved by the players' dynamic control and, in recording, by mic placement, panning and level control.",
+        "plain_english": "Getting the horns in a brass group to sit at the right volumes. Each one is set so they blend as one section. That way no single horn sticks out.",
+        "purpose_function": "It ensures ensemble blend and correct voicing of chords, so inner harmony parts and bass brass stay audible under the lead line.",
+        "practical_application": "The engineer balances section and/or spot mics, pans for width, and rides levels so lead, harmony and bass brass are all present and blended, complementing the players' own dynamic balance.",
+        "category": "Brass recording",
+        "related_terms": [
+          "Brass projection",
+          "Brass brightness",
+          "Blend",
+          "Microphone placement",
+          "Panning",
+          "Gain staging"
+        ],
+        "common_mistakes": [
+          "Spot-miking only the lead trumpet and letting inner harmonies disappear in the mix",
+          "Ignoring that a higher, brighter instrument (lead trumpet) will mask lower parts unless balanced deliberately",
+          "Assuming equal fader levels equal balance, when projection and brightness differences mean each part needs different treatment"
+        ],
+        "scenario_contexts": [
+          "Balancing a four-piece pop horn section so the harmony parts support rather than fight the lead",
+          "Blending a big-band brass section captured with a section mic plus spot mics",
+          "Correcting a mix where the lead trumpet overpowers the trombones and inner voices"
+        ]
+      },
+      "sources": [
+        "Adler, The Study of Orchestration (brass balance, blend and dynamics)",
+        "Huber & Runstein, Modern Recording Techniques (section/ensemble miking and balance)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "dbc86637-4587-4bda-a49d-92d80c41dfb2",
+      "term": "Chromatic harmonica",
+      "fields": {
+        "definition": "A harmonica fitted with a spring-loaded, button-operated slide that, when pressed, diverts the airflow from one set of reeds to a second set tuned a semitone higher, giving the player the full twelve-note chromatic scale from a single instrument (unlike the fixed-key diatonic harmonica).",
+        "plain_english": "A harmonica with a button on the side. Press it and the note goes up by a half step. So you can play every note, all the sharps and flats. You are not stuck in one key.",
+        "purpose_function": "It provides access to all chromatic pitches for jazz, classical and melodic playing without switching harmonicas or relying solely on note-bending.",
+        "practical_application": "It is recorded like other harmonicas — close condenser mic or the player's cupped mic — and engineers may hear the faint mechanical click of the slide and slight timbre differences between the natural and slide-in reed sets.",
+        "category": "Harmonica",
+        "related_terms": [
+          "Acoustic harmonica",
+          "Amplified harmonica",
+          "Free reed",
+          "Slide mechanism",
+          "Diatonic harmonica",
+          "Close miking"
+        ],
+        "common_mistakes": [
+          "Confusing the chromatic (slide-operated, fully chromatic) with the diatonic harmonica (fixed key, relies on bending)",
+          "Miking so close that the slide's mechanical click and air leakage become distracting",
+          "Expecting the natural and slide-in reed sets to be timbrally identical when their tone can differ slightly"
+        ],
+        "scenario_contexts": [
+          "Recording a jazz solo that needs the full chromatic range from one instrument",
+          "Capturing a legato melodic line where slide changes must stay quiet relative to the notes",
+          "Doubling a chromatic harmonica melody with strings or piano in a film cue"
+        ]
+      },
+      "sources": [
+        "Grove Music Online, 'Harmonica / Mouth organ' (chromatic harmonica and slide mechanism)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (free-reed instruments)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "128ce68d-4519-48ae-9faf-5716ebb5066f",
+      "term": "Clarinet barrel resonance",
+      "fields": {
+        "definition": "The contribution of the clarinet's barrel — the short, often slightly tapered bore section joining the mouthpiece to the upper joint — to the instrument's resonant air column; because the clarinet behaves as a cylindrical pipe effectively closed at the reed end, the barrel forms part of the resonating column, so its length provides the main tuning adjustment (pulling it out lengthens the column and flattens pitch) while its bore dimensions and taper influence intonation and response.",
+        "plain_english": "The barrel is the small removable piece just under the mouthpiece. It is part of the tube of air that makes the sound. Slide it in or out to tune the clarinet. Pulling it out makes the pitch flatter. Its shape also changes tone and tuning a little.",
+        "purpose_function": "It gives the player the primary fine-tuning adjustment and, through its bore, helps shape the clarinet's resonant behavior and intonation.",
+        "practical_application": "Players tune by pulling the barrel out a millimeter or two; players and techs swap barrels of different length or bore to correct intonation or tailor response, and engineers should expect a clarinet's pitch to rise slightly as it warms up.",
+        "category": "Clarinet acoustics",
+        "related_terms": [
+          "Cylindrical bore",
+          "Register",
+          "Intonation",
+          "Tuning",
+          "Woodwind miking",
+          "Mouthpiece"
+        ],
+        "common_mistakes": [
+          "Thinking barrel length alone sets tuning; barrels of equal length can have different bores and tuning tendencies",
+          "Pushing the barrel fully in to raise a warm, sharp instrument rather than the intended small adjustment",
+          "Assuming the barrel is merely a spacer rather than part of the resonating air column"
+        ],
+        "scenario_contexts": [
+          "A clarinettist pulling the barrel out to tune down to a slightly flat ensemble",
+          "A player swapping to a different-bore barrel to fix throat-tone intonation",
+          "Tracking a clarinet where pitch drifts sharp as the instrument warms during a long take"
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (clarinet as a cylindrical closed pipe / air-column resonance, Sec. 15.7)",
+        "Yamaha Musical Instrument Guide and Yamaha technical articles (clarinet barrel: tuning, bore and taper effects)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "51c6d728-e961-4aba-98a1-89c9936d04b1",
+      "term": "Closed-lid piano sound",
+      "fields": {
+        "definition": "The tone captured from a grand piano recorded with its lid closed (or nearly closed) rather than raised on the prop stick; closing the lid reduces radiated high-frequency openness and yields a more contained, mellow, intimate tone, and it also cuts spill/bleed from other instruments into the piano mics during multi-instrument sessions.",
+        "plain_english": "How a grand piano sounds when you record it with the big lid shut. It sounds darker, warmer, and more close-up. A shut lid also keeps other instruments from leaking into the piano mics.",
+        "purpose_function": "It is a recording choice used to get a tighter, more intimate or vintage piano tone and to isolate the piano from bleed when tracking with a band in one room.",
+        "practical_application": "Engineers close the lid — often placing mics inside near the hammers and strings, or using boundary mics on the closed lid — for pop, jazz and singer-accompaniment sounds and for isolation when tracking a full band live.",
+        "category": "Piano recording",
+        "related_terms": [
+          "Grand piano",
+          "Lid position",
+          "Spill / bleed",
+          "Close miking",
+          "Boundary microphone",
+          "Isolation"
+        ],
+        "common_mistakes": [
+          "Closing the lid for isolation but leaving mics far away so the sound is boxy and dead",
+          "Expecting a big, bright open-lid tone from a closed-lid setup",
+          "UNSAFE: reaching inside a grand without confirming the lid prop is seated or the lid is secured; a heavy lid can drop and injure hands"
+        ],
+        "scenario_contexts": [
+          "Recording piano and a live band together, closing the lid to reduce drum and vocal bleed",
+          "Getting an intimate, mellow piano tone for a ballad or singer-songwriter track",
+          "Using boundary mics on a closed lid in a small room to control leakage"
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, Modern Recording Techniques (grand piano miking and lid position)",
+        "Owsinski, The Recording Engineer's Handbook (piano recording and isolation)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

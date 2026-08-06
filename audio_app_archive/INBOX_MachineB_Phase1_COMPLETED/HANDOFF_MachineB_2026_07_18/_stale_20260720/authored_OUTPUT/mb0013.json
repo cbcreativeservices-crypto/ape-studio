@@ -1,0 +1,159 @@
+{
+ "batch": 13,
+ "topic": "Instrument Recording — Strings & Guitar",
+ "authored": [
+  {
+   "id": "532dc553-1fcf-495e-bbd5-4d6742466d78",
+   "term": "String-section main pair",
+   "fields": {
+    "definition": "The primary stereo microphone array placed out in front of a string section (or the full body of orchestral strings) to capture the ensemble's overall blended tone, depth and stereo image, as distinct from close 'spot' mics on individual desks. Common realisations include the Decca tree, spaced omnidirectional pairs (A-B) and coincident/near-coincident pairs (XY, ORTF, Blumlein), set at a distance and height that balance direct sound against room sound.",
+    "plain_english": "The main pair of mics placed out front. They catch how the whole string group sounds together in the room. They do not catch each player up close.",
+    "purpose_function": "It establishes the foundational stereo image, sense of space and natural blend of the section, so that spot mics only reinforce detail; the main pair therefore defines the recording's overall tonal balance.",
+    "practical_application": "An engineer sets the main pair (for example a Decca tree or an ORTF pair) at a chosen distance and height, gets that balance right first, then blends in spot mics against it as the reference around which the mix is built.",
+    "category": "Microphone technique",
+    "related_terms": ["Decca tree", "Spot microphone", "ORTF pair", "Spaced pair (A-B)", "Stereo imaging", "Room microphone"],
+    "common_mistakes": ["Placing the main pair too close to the section, which narrows the stereo image and loses the natural room blend and depth.", "Treating the main pair as an afterthought and building the sound from spot mics, which produces an unnatural, phasey balance.", "Ignoring the spacing/angle spec of the chosen array (e.g. ORTF's 17 cm spacing and 110-degree angle), causing a weak or exaggerated image and mono-compatibility problems."],
+    "scenario_contexts": ["Recording a film-score string section on a scoring stage using a Decca tree as the main pair, with outriggers and desk spots added underneath.", "Capturing a string quartet or small ensemble in a good-sounding room with a single near-coincident main pair.", "Balancing a live orchestral broadcast where the main pair carries the stereo image and spot mics add clarity."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (stereo microphone techniques)", "Ballou, Handbook for Sound Engineers (microphones and stereo miking)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "030d0966-d876-45e3-a6a2-bec0d6cd53c8",
+   "term": "Sul ponticello",
+   "fields": {
+    "definition": "An Italian string-playing instruction meaning 'on the bridge', directing the player to bow very close to (or right on) the bridge. Exciting the string near its termination emphasises the upper harmonics over the fundamental, producing a thin, glassy, metallic timbre.",
+    "plain_english": "A bowing instruction to play right next to the bridge, giving a brittle, glassy, slightly eerie tone.",
+    "purpose_function": "It is a coloristic technique used to change the timbre of a bowed note, exploiting the harmonic-rich sound produced when the string is bowed close to its fixed end; the marking 'modo ordinario' returns the player to normal bowing.",
+    "practical_application": "When an engineer sees 'sul pont.' in a score they can expect a bright, harmonic-heavy sound with strong high-frequency content, and may choose mic placement or gentle EQ to keep it characterful without becoming harsh.",
+    "category": "Bowing technique",
+    "related_terms": ["Sul tasto", "Pizzicato", "Col legno", "Tremolo", "Natural harmonics", "Bowing technique"],
+    "common_mistakes": ["Confusing sul ponticello (on the bridge, bright and glassy) with sul tasto (over the fingerboard, soft and flute-like) — they are opposite timbres.", "Treating it as a dynamic marking; it changes tone colour, not loudness.", "EQ'ing away the characteristic high-harmonic content in the mix, which removes the very effect the composer asked for."],
+    "scenario_contexts": ["A film composer writes a sul ponticello tremolo in the low strings for a tense, shimmering texture.", "Recording a contemporary quartet where sul ponticello passages demand careful mic placement to avoid excessive harshness.", "A player returns to normal bowing after a marked sul ponticello passage within the same phrase."]
+   },
+   "sources": ["Adler, The Study of Orchestration (string bowing and coloristic effects)", "Piston, Orchestration (strings)", "The New Grove Dictionary of Music and Musicians ('Sul ponticello')"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2f28c2b2-c076-4c56-8b65-db0398a40dca",
+   "term": "Sul tasto",
+   "fields": {
+    "definition": "An Italian string-playing instruction meaning 'on the fingerboard', directing the player to bow over the fingerboard, well away from the bridge. Bowing far from the bridge suppresses the upper harmonics and favours the fundamental, yielding a soft, veiled, flute-like tone (also called flautando).",
+    "plain_english": "A note that tells you to bow out over the fingerboard. This gives a soft, airy, flute-like tone.",
+    "purpose_function": "It is a coloristic technique used to soften and darken the timbre of a bowed note; because the string is excited far from the bridge, higher partials are weakened, producing a gentle, less-focused sound.",
+    "practical_application": "Seeing 'sul tasto' tells the engineer to expect a quieter, darker, less-present sound with reduced highs, which may need a closer or lower-noise mic setup and gentle handling in the mix.",
+    "category": "Bowing technique",
+    "related_terms": ["Sul ponticello", "Flautando", "Pizzicato", "Natural harmonics", "Tremolo", "Bowing technique"],
+    "common_mistakes": ["Confusing sul tasto (over the fingerboard, soft and flute-like) with sul ponticello (on the bridge, bright and glassy).", "Treating it as a volume marking; it is primarily a timbral change, although the sound is naturally softer.", "Boosting the highs to 'brighten' a sul tasto part in the mix, defeating the intended veiled character."],
+    "scenario_contexts": ["An arranger marks sul tasto for a hushed, atmospheric string pad under a vocal.", "Recording a slow movement where sul tasto passages need extra gain and low-noise mics because of the reduced level and high-frequency content.", "A score alternates sul tasto and ordinario to shift colour within a single phrase."]
+   },
+   "sources": ["Adler, The Study of Orchestration (string bowing and coloristic effects)", "Piston, Orchestration (strings)", "The New Grove Dictionary of Music and Musicians ('Sul tasto')"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7175ef95-2bbd-467b-86c0-467b9596e192",
+   "term": "Sustain-pedal resonance",
+   "fields": {
+    "definition": "The additional ringing resonance produced on a piano when the sustain (damper) pedal is depressed, which lifts all the dampers so that struck strings ring on and the remaining undamped strings vibrate sympathetically with the played notes' harmonics, enriching and prolonging the tone. Sampled and physically modelled pianos reproduce this as a dedicated 'sustain' or 'sympathetic' resonance layer.",
+    "plain_english": "The rich, ringing sound you hear when a pianist holds down the right pedal. That pedal lifts the dampers off the strings. Now all the other strings are free to buzz along. This adds a fuller sound.",
+    "purpose_function": "It gives the piano its full, blended, sustained character; lifting every damper both prolongs the played notes and frees all other strings to resonate in sympathy, thickening the overall sound.",
+    "practical_application": "Recording engineers hear increased sustain and sympathetic ring with the pedal down and mic and balance for it, while sample-library designers record dedicated pedal-down layers to capture the effect realistically.",
+    "category": "Instrument acoustics",
+    "related_terms": ["Sympathetic resonance", "Sustain pedal", "Damper", "Sostenuto pedal", "Overtones"],
+    "common_mistakes": ["Assuming the sustain pedal only prolongs the notes actually played; it also frees every other string to vibrate sympathetically, adding resonance.", "Confusing the sustain (damper) pedal with the sostenuto (middle) pedal, which sustains only the keys already held when it is pressed.", "In sampled pianos, leaving sympathetic/pedal-resonance modelling switched off and then wondering why the tone sounds thin and unrealistic."],
+    "scenario_contexts": ["Close-miking a grand piano for a ballad where heavy sustain-pedal use creates a rich sustained wash that must be balanced against clarity.", "A sample-library developer records dedicated pedal-down layers to capture sustain-pedal resonance.", "A pianist uses half-pedalling to control how much sympathetic resonance builds up."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (the piano: dampers and sympathetic string vibration)", "The New Grove Dictionary of Music and Musicians ('Pianoforte' / damper action)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1af976ad-5318-4dcc-bb33-d4a0da78fb7e",
+   "term": "Swell box",
+   "fields": {
+    "definition": "In a pipe organ, an enclosure fitted with movable louvered shutters (swell shades) around a division of pipes; opening and closing those shutters with the swell (expression) pedal varies the loudness of the enclosed pipes. Because organ pipes cannot be made louder or softer by touch, the swell box supplies dynamic control; the enclosed division is commonly the 'Swell'.",
+    "plain_english": "A box built around a set of organ pipes. Its front has slats like window shutters. The organist opens or closes them with a foot pedal. This makes those pipes louder or softer.",
+    "purpose_function": "It gives an otherwise fixed-loudness instrument continuous crescendo and diminuendo, by mechanically opening or closing shutters to let more or less of the enclosed pipes' sound escape.",
+    "practical_application": "When recording a pipe organ, engineers note which divisions are enclosed in a swell box, because the operator's use of the shades changes the dynamics and high-frequency content reaching the microphones.",
+    "category": "Pipe organ",
+    "related_terms": ["Swell pedal", "Expression pedal", "Swell division", "Pipe organ", "Crescendo pedal"],
+    "common_mistakes": ["Thinking the swell box changes pitch or registration; it only controls the loudness/expression of the enclosed pipes.", "Assuming every division is enclosed — typically only some (e.g. the Swell) sit in a box, while the Great is often unenclosed.", "Confusing the swell box (the enclosure) with the swell pedal (the control that operates its shutters)."],
+    "scenario_contexts": ["Recording a church organ where the organist uses the swell shades for crescendos, needing mics positioned to capture the dynamic change.", "A registration relies on the enclosed Swell division for expressive solos over the unenclosed Great.", "An organ technician services the swell-box shutter mechanism and its motor and linkage."]
+   },
+   "sources": ["Audsley, The Art of Organ-Building (the swell-box and swell shutters)", "The New Grove Dictionary of Music and Musicians ('Swell')"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bb7cad32-1464-433e-aa85-e3a21f38aff3",
+   "term": "Swell pedal",
+   "fields": {
+    "definition": "On a pipe organ, the balanced foot pedal (a type of expression pedal) that operates the swell-box shutters, opening them to increase and closing them to decrease the loudness of the enclosed division. By extension, a 'swell' or 'volume' pedal on other instruments (pedal steel, electronic organ, guitar) is a foot pedal that varies output level to create the same swelling of loudness.",
+    "plain_english": "A foot pedal on an organ. It opens and closes the shutters of the swell box. This makes the sound grow louder or softer. Guitar and pedal steel use the same idea with a volume pedal.",
+    "purpose_function": "It provides continuous, hands-free dynamic control, by mechanically opening and closing the swell shutters on an organ, or by varying signal level on an electric instrument.",
+    "practical_application": "An organist rocks the swell pedal for crescendos and diminuendos, while a pedal-steel or guitar player uses a volume (swell) pedal to fade notes in for the characteristic swell effect that engineers capture as smooth level rises.",
+    "category": "Expression control",
+    "related_terms": ["Swell box", "Expression pedal", "Volume pedal", "Swell shades", "Pipe organ"],
+    "common_mistakes": ["Confusing the swell pedal (the control) with the swell box (the shuttered enclosure it operates).", "On an organ, expecting the swell pedal to affect the whole instrument — it only controls divisions enclosed in a swell box.", "Confusing the swell/expression pedal with the crescendo pedal, which progressively adds stops rather than opening shutters."],
+    "scenario_contexts": ["An organist uses the swell pedal to shape a long crescendo during a hymn.", "A pedal-steel or guitar player uses a volume (swell) pedal to fade notes in for pad-like swells the engineer records as smooth level rises.", "An organ technician checks that the swell-pedal linkage tracks the shutters smoothly across the full travel."]
+   },
+   "sources": ["Audsley, The Art of Organ-Building (the swell-box and its balanced pedal)", "The New Grove Dictionary of Music and Musicians ('Swell' / expression pedal)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "de485b7b-1a9b-42ac-968a-3a1076ab3640",
+   "term": "Transpose function",
+   "fields": {
+    "definition": "A control on electronic keyboards, synthesizers and MIDI/DAW systems that shifts the pitch of everything played up or down by a set number of semitones (and often octaves) without changing the fingering, so a part can sound in a different key from the one performed. It typically re-maps the output note numbers rather than physically retuning the instrument.",
+    "plain_english": "A setting that shifts every note you play up or down. It moves them by a set number of half-steps. So you can play in an easy key but hear a different one. It works like a capo for a keyboard.",
+    "purpose_function": "It lets a performer match a singer's key, or play a transposing instrument's part at concert pitch, by offsetting the played notes by a fixed interval without relearning the part.",
+    "practical_application": "A keyboardist sets transpose (for example +2 semitones) to accommodate a vocalist, or a producer transposes a MIDI track in the DAW; the engineer must note the setting so tuning and key references stay consistent.",
+    "category": "Keyboard function",
+    "related_terms": ["Octave shift", "MIDI note number", "Master tuning", "Pitch bend", "Capo"],
+    "common_mistakes": ["Confusing transpose (shifting pitch by whole semitones) with fine/master tuning (adjusting overall pitch in cents).", "Forgetting the transpose is still engaged, so a later part plays back in the wrong key.", "Assuming transpose rewrites recorded MIDI note data — on many instruments it offsets the output/playback while the underlying part still reads the original notes."],
+    "scenario_contexts": ["A keyboard player transposes up two semitones so a song sits better in the singer's range without relearning it.", "A producer transposes a MIDI instrument track in the DAW to try the arrangement in a new key.", "Using transpose to play a part written for a transposing instrument at concert pitch."]
+   },
+   "sources": ["The MIDI Association / MIDI 1.0 specification (note numbers and pitch offset)", "Yamaha digital piano owner's manual (Transpose: adjusting the pitch in semitones)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "43336a4e-f444-4777-b4d8-492389dc915b",
+   "term": "Treble-bleed network",
+   "fields": {
+    "definition": "A small circuit — a capacitor, often combined with a parallel or series resistor — wired across the input and wiper terminals of a guitar's volume potentiometer to form a high-pass path, so that high frequencies bypass the pot as the volume is turned down and the treble loss that normally occurs at low settings is prevented. Typical values are on the order of 500 pF to 1 nF capacitance, sometimes with a roughly 100 kOhm to 150 kOhm resistor, tuned by ear.",
+    "plain_english": "A tiny electronic part added across a guitar's volume knob. It keeps the sound bright when you turn the volume down. Without it, the tone goes dull and muddy.",
+    "purpose_function": "It keeps the tone bright and consistent at reduced volume; because a passive volume control together with the guitar cable forms a treble-shedding filter as you turn down, the network shunts the highs around the pot.",
+    "practical_application": "A tech solders a treble-bleed capacitor (and optional resistor) across the volume pot's lugs when a player finds the guitar goes dull as they roll back the volume, then adjusts the values to taste.",
+    "category": "Guitar electronics",
+    "related_terms": ["Volume potentiometer", "Tone capacitor", "Potentiometer taper", "Passive pickup", "High-pass filter", "Guitar wiring"],
+    "common_mistakes": ["Using too large a capacitor value, which passes so much treble that the guitar sounds harsh or thin at low volume.", "Wiring the capacitor to the wrong terminals (e.g. to ground), which alters the tone control instead of preserving treble.", "Assuming one 'correct' value exists — the best capacitor, and whether to add a resistor, depends on the pickups, pot values and taste.", "UNSAFE: Soldering the network without ventilation or eye protection — work per IPC/J-STD-001 practice, avoid inhaling flux fumes, and wash hands after handling lead-bearing solder."],
+    "scenario_contexts": ["A guitar tech installs a treble-bleed on a Stratocaster so the player can use the volume knob for cleanup without losing high end.", "A player who rides the volume control for dynamics adds a treble-bleed to keep the tone consistent from 10 down to 3.", "Comparing a capacitor-only network with a capacitor-plus-resistor network to find the right feel across the volume sweep."]
+   },
+   "sources": ["Fender technical documentation, How a Treble-Bleed Circuit Can Affect Your Tone", "Seymour Duncan technical documentation, Guitar Wiring 102 / treble-bleed mods"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "59720aca-91a3-4658-b364-ad30b6401189",
+   "term": "Treble-string region",
+   "fields": {
+    "definition": "The higher-pitched strings, or upper register, of a stringed instrument, as opposed to its bass strings — for example the treble strings of a piano, harp or guitar. On a piano the treble region uses the shorter, thinner strings strung three-to-a-note (trichords); on a standard six-string guitar the treble strings are typically the top three (G, B and high E).",
+    "plain_english": "The higher notes on an instrument like a piano, harp, or guitar. These are the thin, bright strings. They are not the thick, low bass strings.",
+    "purpose_function": "It denotes the instrument's upper register, whose short, thin strings produce the bright, higher-frequency notes; on a piano these are grouped three-to-a-note to boost the otherwise weaker volume and sustain of the top end.",
+    "practical_application": "Engineers position mics to balance the treble-string region against the bass strings — for instance one mic over the treble strings of a grand piano — so the top end has clarity without harshness.",
+    "category": "Instrument anatomy",
+    "related_terms": ["Bass-string region", "Trichord", "Register", "Soundboard", "String scaling"],
+    "common_mistakes": ["Assuming all piano strings are single — treble notes typically use three strings per note while the lowest notes use one or two.", "Miking only the treble strings and losing the bass (or the reverse), instead of balancing both registers.", "Confusing the treble-string region (a pitch register) with string gauge alone — treble strings are thinner, but the term refers to the higher register."],
+    "scenario_contexts": ["Miking a grand piano with one mic over the bass strings and one over the treble-string region for balance.", "A piano tuner addresses false beats and the tuning of the trichords in the treble region.", "Voicing the treble strings of a piano to even out brightness across the register."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (the piano: string scaling and multiple stringing)", "The New Grove Dictionary of Music and Musicians ('Pianoforte' / string design)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

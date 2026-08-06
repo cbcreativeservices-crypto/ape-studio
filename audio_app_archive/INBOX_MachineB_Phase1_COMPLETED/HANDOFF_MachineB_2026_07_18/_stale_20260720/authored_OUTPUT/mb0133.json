@@ -1,0 +1,150 @@
+{
+ "batch": 133,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "81a89a02-83bb-47c8-a3c3-56fb7aa97a33",
+   "term": "Rhythmic mode",
+   "fields": {
+    "definition": "In medieval music theory, one of the six standard rhythmic patterns used in Notre Dame school polyphony (c. 1150-1250). Each mode fixed a repeating pattern of long and short note values in triple (ternary) groupings, signalled by patterns of ligatures in the notation, and it organized rhythm before the rise of mensural notation.",
+    "plain_english": "A rhythmic mode is one of six set patterns of long and short notes used by composers in the Middle Ages. Think of it like a fixed drum groove: you pick a pattern, then repeat it to drive the music along.",
+    "purpose_function": "Rhythmic modes gave early polyphony a shared, repeatable way to organize time, so several voices could line up rhythmically before there was a precise notation for individual note lengths.",
+    "practical_application": "A performer or scholar working with Notre Dame organum reads the ligature patterns to identify which rhythmic mode applies, then works out the intended long-short rhythm from it.",
+    "category": "Music theory",
+    "related_terms": ["Ligature", "Mensural notation", "Organum", "Ternary meter", "Clausula", "Perfect time"],
+    "common_mistakes": ["Confusing rhythmic mode with the pitch-based church modes such as Dorian or Phrygian, which describe scales rather than rhythm", "Assuming the classic six modes allow duple groupings, when they are built on triple, ternary divisions", "Reading the ligatures as fixed pitches rather than as cues to a rhythmic pattern"],
+    "scenario_contexts": ["Transcribing 13th-century Notre Dame organum from ligature notation into modern rhythm", "Teaching a music-history class on how rhythm was organized before mensural notation", "Directing an early-music ensemble in performing Perotin with the correct modal rhythm"]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians (rhythmic mode)", "Harvard Dictionary of Music, Apel"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "df3d3f05-2785-40ef-a04e-3aa6bd3021a5",
+   "term": "Ride sample",
+   "fields": {
+    "definition": "A recorded audio sample of a ride cymbal being struck, stored for playback in a sampler, drum machine, or virtual drum instrument. It reproduces the sustained, shimmering tone of a real ride cymbal so it can be triggered from a MIDI note or drum pad instead of a live cymbal.",
+    "plain_english": "A ride sample is a recording of one hit on a ride cymbal, saved so software can play it back. It lets you add a real cymbal sound to a beat without recording a drummer.",
+    "purpose_function": "It provides a ready-made, controllable cymbal sound for programmed drum parts, so a producer can get a convincing ride without miking and recording an acoustic kit.",
+    "practical_application": "A producer loads a ride sample into a drum sampler and triggers it from a MIDI pattern, adjusting its level and decay so it sits with the rest of the programmed kit.",
+    "category": "Drum programming",
+    "related_terms": ["Sample", "Sampler", "Drum machine", "MIDI", "Velocity", "One-shot"],
+    "common_mistakes": ["Triggering the same identical ride hit over and over so it sounds robotic, with no velocity or round-robin variation", "Forgetting that a long ride sample can build up unwanted cymbal wash and mask other tracks", "Grabbing any cymbal sample instead of choosing one that fits the song's tempo and style"],
+    "scenario_contexts": ["Programming a drum beat in a DAW with a sampled kit", "Replacing a poorly recorded live ride with a clean sample", "Adding cymbal accents to an electronic track that has no live drums"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "605f4a98-9877-4f92-8169-4ff8a1699ab9",
+   "term": "Ride the solo",
+   "fields": {
+    "definition": "The practice of manually moving a fader in real time (or drawing volume automation) to control the level of a solo instrument throughout its section, raising it so it stays prominent and easing it back at louder moments to keep it balanced against the rest of the mix.",
+    "plain_english": "Riding the solo means moving a fader by hand to keep a solo at the right volume the whole way through. You nudge it up so the solo stands out, then ease it back when it gets too loud.",
+    "purpose_function": "It keeps a featured solo consistently audible and expressive, correcting level swings that a single fixed fader setting or a compressor cannot fully smooth out.",
+    "practical_application": "During a mix the engineer draws automation or moves the fader live so a guitar solo rides a few dB above the band, then returns it to normal when the solo ends.",
+    "category": "Level automation",
+    "related_terms": ["Fader riding", "Gain riding", "Volume automation", "Ride the vocal", "Mix balance", "Automation"],
+    "common_mistakes": ["Pushing the solo so far above the band that it feels detached and unnatural", "Making abrupt fader jumps instead of smooth moves, which draws attention to the level change", "Relying only on a compressor and never riding the fader, so quiet solo phrases still disappear"],
+    "scenario_contexts": ["Bringing up a guitar solo in the bridge of a rock song", "Keeping a saxophone solo even against a busy horn section", "Automating a keyboard solo so every phrase is heard clearly"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c68e4cc4-5530-456a-bf86-af058503b434",
+   "term": "Ride the vocal",
+   "fields": {
+    "definition": "The practice of continuously adjusting the lead vocal fader, by hand or via automation, so the vocal stays at a consistent, intelligible level above the backing track, compensating for the natural loud and soft variations in the performance.",
+    "plain_english": "Riding the vocal means moving the vocal fader up and down as the song plays so the singing is always easy to hear. When a line is soft you push it up; when it is belted you pull it back.",
+    "purpose_function": "It keeps the lead vocal even and clearly on top of the mix, fixing moment-to-moment level changes that compression alone often cannot fully tame.",
+    "practical_application": "The engineer writes volume automation on the vocal track, nudging quiet words up and loud peaks down so every lyric sits at about the same level.",
+    "category": "Level automation",
+    "related_terms": ["Fader riding", "Gain riding", "Volume automation", "Vocal compression", "Lead vocal", "Ride the solo"],
+    "common_mistakes": ["Using heavy compression as a substitute for riding, which can flatten the vocal's natural dynamics", "Flattening the vocal to one uniform volume so it sounds lifeless and pasted on top", "Forgetting to ride quiet consonants and phrase ends, so some words get lost"],
+    "scenario_contexts": ["Keeping a pop lead vocal consistent over a dense mix", "Lifting whispered or quiet lines in a ballad so the words stay clear", "Live mixing, where the engineer rides the vocal fader to match a singer who moves off-mic"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "54644df4-a221-4fc2-aa80-8e114e5dae0c",
+   "term": "Right Zone",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No fields authored: 'Right Zone' has no established, attested meaning in mix fundamentals, workflow, or the wider professional audio literature. It is a bare, ambiguous phrase (not a transparent technique-plus-source compound) and could not be confirmed against two or more acceptable sources, so all fields are left blank pending review."]
+  },
+  {
+   "id": "811caf63-7011-4d76-acc5-94c889a7248a",
+   "term": "Roll programming",
+   "fields": {
+    "definition": "The programming of drum rolls, meaning rapid evenly spaced repeated hits, into a step sequencer, drum machine, or DAW. It is done either by entering fast subdivided notes or by using a dedicated 'roll' or retrigger function that repeats a sound at a set rate.",
+    "plain_english": "Roll programming means telling a drum machine or software to play a fast string of repeated hits, like a snare roll. You either place many quick notes in a row or turn on a built-in roll button.",
+    "purpose_function": "It lets a producer build fills, buildups, and rolls in programmed drum parts without playing them live, giving precise control over the speed and timing of the repeated hits.",
+    "practical_application": "A producer programs a snare roll before a chorus by drawing sixteenth or thirty-second notes on the step grid, or by holding a drum machine's roll button set to the chosen rate.",
+    "category": "Drum programming",
+    "related_terms": ["Step sequencer", "Drum machine", "Fill", "Flam", "Quantization", "Velocity"],
+    "common_mistakes": ["Leaving every hit in the roll at the same velocity, so it sounds mechanical instead of building naturally", "Setting the roll rate out of time with the song's tempo, making the fill feel rushed or dragging", "Overusing rolls so they lose impact instead of marking key transitions"],
+    "scenario_contexts": ["Programming a snare buildup into a chorus in electronic music", "Adding a hi-hat roll for energy in a trap beat", "Recreating a live drum fill with a step sequencer"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a3fd8617-253d-4854-bfe7-a7f53bcce064",
+   "term": "Room fill",
+   "fields": {
+    "definition": "In mixing, the use of recorded room ambience, usually from distant room microphones, blended underneath the close-miked tracks to add natural space, depth, and cohesion, in effect filling out the mix with the sound of the recording space.",
+    "plain_english": "Room fill is the sound of the room itself, picked up by far-away mics and added under the main tracks. Blended in gently, it makes a recording feel like it happened in a real space instead of a dead studio.",
+    "purpose_function": "It supplies natural reverberation and glue that close mics miss, helping separately close-miked instruments sound like a single ensemble in one room.",
+    "practical_application": "An engineer brings up the room mics under a close-miked drum kit, often compressing them, until the kit gains size and depth without washing out the direct sound.",
+    "category": "Ambience",
+    "related_terms": ["Room mic", "Room layer", "Ambient miking", "Reverb", "Depth", "Parallel compression"],
+    "common_mistakes": ["Pushing the room level so high that the mix turns muddy and loses punch", "Ignoring phase between the room mics and close mics, which can thin out the sound", "Assuming artificial reverb and room fill are the same, when captured room sound has a different, natural character"],
+    "scenario_contexts": ["Adding recorded room mics to fatten a close-miked drum kit", "Blending room ambience into a live band recording for a sense of space", "Using captured room sound to glue a multi-mic acoustic session together"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7ac7a22a-c51b-4d56-8d63-971b8fc7ee40",
+   "term": "Room layer",
+   "fields": {
+    "definition": "A track or group of tracks of room-microphone ambience blended in as a distinct layer of a mix, most often on drums, to add depth, natural reverberation, and a sense of the recording space alongside the close-miked sound.",
+    "plain_english": "A room layer is a separate track of room-mic sound that you mix in under the main tracks. Blending it in gives drums or a band a bigger, more open feel, like you can hear the room around them.",
+    "purpose_function": "It gives the engineer independent control over the recorded ambience, so the amount of room and depth can be balanced separately from the close mics.",
+    "practical_application": "The engineer routes the room mics to their own layer, then raises, compresses, or mutes it during a mix to dial in exactly how much of the recording space is heard.",
+    "category": "Ambience",
+    "related_terms": ["Room mic", "Room fill", "Ambient miking", "Parallel compression", "Reverb", "Depth"],
+    "common_mistakes": ["Adding the room layer without checking phase against the close mics, which can hollow out the sound", "Leaving the room layer too loud so it smears transients and buries detail", "Letting a noisy room layer play through quiet sections instead of automating it out"],
+    "scenario_contexts": ["Blending a drum room layer to add size in a rock mix", "Automating the room layer up only in the choruses for extra energy", "Using a compressed room layer as parallel ambience on a live recording"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8822824b-7847-4c4b-8a37-d0121d5ca09d",
+   "term": "Room-Tone Fill",
+   "fields": {
+    "definition": "In audio post-production and editing, the practice of filling silent gaps, edit points, or cleaned-out sections with room tone, the recorded ambient background sound of the location with no dialogue or action, so edits sound seamless and the background never drops to unnatural digital silence.",
+    "plain_english": "Room-tone fill means covering silent gaps in an edit with the quiet background hum of the room. Real spaces are never truly silent, so filling gaps this way hides the joins between clips.",
+    "purpose_function": "It keeps the background sound continuous across cuts and repaired spots, so listeners do not hear jarring drops to dead silence where audio was removed or spliced.",
+    "practical_application": "A dialogue editor records or lifts a chunk of room tone from a scene and lays it into pauses and edit points to smooth over cuts and patched-out noises.",
+    "category": "Post-production",
+    "related_terms": ["Room tone", "Ambience", "Dialogue editing", "Presence", "Crossfade", "Noise floor"],
+    "common_mistakes": ["Filling gaps with true digital silence, which makes edits sound abrupt and obvious", "Using room tone from a different space or session, so the background texture does not match", "Forgetting to capture dedicated room tone on location, leaving nothing clean to fill with later"],
+    "scenario_contexts": ["Smoothing dialogue edits in a film or podcast", "Filling the gap left after removing a cough or noise from a recording", "Matching background ambience between takes captured at different times"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

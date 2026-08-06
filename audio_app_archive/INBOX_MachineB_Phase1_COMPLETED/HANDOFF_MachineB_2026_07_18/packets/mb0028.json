@@ -1,0 +1,31 @@
+{
+ "batch": 28,
+ "topic": "Drum-Kit Recording",
+ "terms": [
+  {
+   "id": "4728f8dd-138f-4322-b3df-52f5ec3c7da8",
+   "term": "Unported kick head",
+   "topic": "Drum-Kit Recording",
+   "seq": 1040,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 371,
+ "topic": "Winds, Brass & Organ",
+ "authored": [
+  {
+   "id": "152229c8-c776-4ef0-839d-06c3f269fa32",
+   "term": "Didgeridoo drone",
+   "fields": {
+    "definition": "The continuous low fundamental tone of the didgeridoo, a lip-blown Australian Aboriginal wooden or bamboo tube sounded by loosely buzzing the lips into one end. The player sustains it indefinitely by circular breathing, and the tube's length fixes the drone's pitch while the vocal tract shapes its timbre.",
+    "plain_english": "This is the deep, steady humming note that a didgeridoo makes without stopping. The player buzzes their lips into the long tube, and the same low tone rings out over and over, like a constant hum.",
+    "purpose_function": "It provides the sustained tonal and rhythmic foundation of didgeridoo playing, over which the player layers overtone, vocal, and rhythmic effects.",
+    "practical_application": "When recording a didgeridoo, a technician expects a strong, sustained low fundamental with heavy low-frequency energy and no natural breath gaps, and places and equalizes microphones accordingly.",
+    "category": "Instrument sound",
+    "related_terms": ["Didgeridoo wobble (vocalized overtone)", "Circular-breathing drone", "Drone", "Embouchure", "Lip buzz", "Fundamental frequency"],
+    "common_mistakes": ["Thinking the drone stops for breaths, when circular breathing keeps it seamless", "Under-powering the low end so the deep fundamental is lost in a recording", "Confusing the steady fundamental drone with the overlaid vocal and overtone effects"],
+    "scenario_contexts": ["Recording a solo didgeridoo drone for a world-music or film session", "Layering a sustained didgeridoo drone under an ambient mix", "Explaining to a student why there are no breath points to edit at"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (didgeridoo and lip-reed excitation)", "Grove Dictionary of Music ('Didjeridu')", "Baines, Woodwind Instruments and their History (drone wind instruments and circular breathing)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e09b0ff8-0160-4b8e-bc7d-648f5edc18d6",
+   "term": "Didgeridoo wobble (vocalized overtone)",
+   "fields": {
+    "definition": "The characteristic rhythmic, wah-like timbral modulation of a didgeridoo, produced by the player altering the vocal-tract shape (tongue, jaw, cheeks) and adding vocalizations such as hums, calls, or vowel sounds over the sustained drone. These changes shift the vocal-tract resonances, emphasizing different overtones of the fundamental so the drone's tone color pulses and 'wobbles' without the pitch itself changing.",
+    "plain_english": "This is the wobbly, wah-wah change in a didgeridoo sound. The player moves the tongue and cheeks and adds voice sounds. That makes different overtones ring out over the steady drone. It is like changing your mouth shape while you hum.",
+    "purpose_function": "It turns a single unchanging drone into a rich, evolving, rhythmic texture, which is the core expressive resource of didgeridoo playing.",
+    "practical_application": "A player shapes the mouth and adds vocal sounds to create rhythmic wobble patterns, and an engineer captures the resulting shifting overtones and formants without smoothing them away with heavy processing.",
+    "category": "Instrument technique",
+    "related_terms": ["Didgeridoo drone", "Circular-breathing drone", "Overtone", "Formant", "Timbre", "Embouchure"],
+    "common_mistakes": ["Thinking the wobble changes the pitch, when only the overtone balance and timbre change", "Assuming it is added electronically, when it comes from vocal-tract movement and vocalizations", "Over-compressing or heavily filtering the signal so the moving overtones are flattened out"],
+    "scenario_contexts": ["Recording rhythmic didgeridoo patterns for a fusion track", "Capturing vocalized overtone effects over a sustained drone", "Teaching how tongue and vocal sounds shape the didgeridoo's tone"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (didgeridoo acoustics; vocal-tract resonances and overtones)", "Grove Dictionary of Music ('Didjeridu'; playing technique and vocal effects)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ced94709-9ea1-4739-ac06-67a8422b4944",
+   "term": "Dimo buzz (membrane)",
+   "fields": {
+    "definition": "The bright, buzzing, reedy resonance added to the tone of the Chinese dizi (bamboo transverse flute) by the dimo, a thin membrane taken from the inner skin of reed or bamboo and glued over a dedicated hole (mokong) between the embouchure and finger holes. The membrane vibrates sympathetically with the air column, enriching the sound with a nasal, penetrating buzz that is essential to the dizi's characteristic timbre.",
+    "plain_english": "On a Chinese dizi flute, a thin skin is glued over one hole. It buzzes along with the notes and gives the flute a bright, reedy, humming edge. It works a little like the paper buzz on a kazoo.",
+    "purpose_function": "The membrane buzz gives the dizi its distinctive bright, carrying, reedy voice; without a properly tensioned dimo the flute sounds dull and muffled.",
+    "practical_application": "A player tunes the buzz by adjusting the membrane's tension with garlic juice or e'jiao glue, and an engineer miking a dizi captures the strong high-frequency buzz, which can sound harsh if the microphone is placed too close.",
+    "category": "Instrument sound",
+    "related_terms": ["Dizi", "Membrane", "Timbre", "Overtone", "Sympathetic resonance", "Embouchure"],
+    "common_mistakes": ["Assuming the buzz is a defect or a bad reed, when it is the intended sound of the dimo membrane", "Tensioning the membrane too tightly, which kills the buzz and dulls the tone", "Miking too closely so the membrane buzz becomes harsh and shrill"],
+    "scenario_contexts": ["Recording a solo dizi where the membrane buzz must stay bright but not harsh", "Diagnosing a dull dizi tone traced to a loose or damaged dimo", "Balancing the buzzy high end of a dizi in a traditional ensemble mix"]
+   },
+   "sources": ["Grove Dictionary of Music ('Dizi'; membrane and timbre)", "Baines, Woodwind Instruments and their History (transverse flutes and membrane resonators)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a4f28f68-b3c1-4b53-adbe-ec3138bb802e",
+   "term": "Duduk subtone",
+   "fields": {
+    "definition": "A soft, breathy, low-dynamic tone on the Armenian duduk, produced by relaxing the embouchure and using gentle breath pressure on the large double reed so that audible air blends with the pitch. As with subtone playing on other wind and reed instruments, it yields a warm, veiled, intimate sound especially in the instrument's low register, rather than a full, focused tone.",
+    "plain_english": "This is a soft, breathy low note on the duduk, played gently so air blends with the tone. It sounds warm and hushed, like speaking in a low, airy whisper.",
+    "purpose_function": "It gives the duduk its mournful, intimate, close-up quality at quiet dynamics, extending the instrument's expressive range downward toward near-whisper.",
+    "practical_application": "A player uses subtone for hushed, plaintive phrases, and an engineer records it with a sensitive, low-noise microphone chain because the breathy tone sits at low level and is easily buried.",
+    "category": "Playing technique",
+    "related_terms": ["Dam drone (duduk)", "Duduk", "Double reed", "Embouchure", "Dynamics", "Circular-breathing drone"],
+    "common_mistakes": ["Pushing too much breath, which turns the intimate subtone into audible hiss with little pitch", "Assuming subtone is only a saxophone term and not applicable to double-reed instruments", "Recording it too far back so the quiet, breathy detail is lost under room noise"],
+    "scenario_contexts": ["A film-score duduk part calling for a hushed, mournful low phrase", "Close-miking a soft, breathy duduk melody in the studio", "Balancing a whisper-quiet subtone passage against a louder accompaniment"]
+   },
+   "sources": ["Grove Dictionary of Music ('Duduk'; reed and tone production)", "Baines, Woodwind Instruments and their History (double reeds and embouchure control)", "Ballou, Handbook for Sound Engineers (microphone technique for low-level sources)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f6d445d0-1327-49e2-905f-f6cc93c63c0f",
+   "term": "Embouchure noise",
+   "fields": {
+    "definition": "Incidental sound generated at the player's mouth-to-instrument interface, distinct from the musical tone, including breath hiss, air escaping around the lips or embouchure hole, lip smacks, and reed or mouthpiece contact noises. It is most audible on breathy or low-dynamic wind playing and under close microphone placement.",
+    "plain_english": "This is the extra breath, hiss, or lip sounds a wind player makes at the mouthpiece, apart from the real notes. It is like hearing someone puff air when they blow across a bottle top.",
+    "purpose_function": "It is an unwanted byproduct of how a wind player forms the tone; recognizing it helps a technician judge technique and control how much of it reaches a recording.",
+    "practical_application": "When close-miking flutes, reeds, or brass, a technician angles and distances the microphone to capture the tone while minimizing breath hiss and lip noise, and may use a small amount of high-frequency control if needed.",
+    "category": "Instrument noise",
+    "related_terms": ["Embouchure", "Flute key noise", "Breath noise", "Close miking", "Windscreen", "Duduk subtone"],
+    "common_mistakes": ["Placing the microphone directly in the breath stream, which exaggerates hiss and pops", "Assuming all embouchure noise is a player fault when some is normal to the instrument", "Trying to remove it entirely with EQ instead of fixing microphone placement first"],
+    "scenario_contexts": ["Close-miking a flute where breath hiss competes with the tone", "Recording a soft, breathy reed passage in a quiet studio", "Choosing microphone angle to reduce lip and air noise on a brass solo"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (microphone technique and wind-instrument miking)", "Fletcher & Rossing, The Physics of Musical Instruments (wind excitation and breath/air-jet noise)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2d2e3b11-4b61-4ae2-a363-9e823952a5cd",
+   "term": "Fall-off/doink",
+   "fields": {
+    "definition": "A jazz brass and wind articulation in which the pitch drops and slides downward at the release of a note. A 'fall-off' (or 'fall') is a longer descending smear off the end of the note, produced by relaxing the embouchure, dropping valves/slide, or a chromatic finger-fall; a 'doink' is a short, quick downward drop of the same kind. The pitch trails off rather than ending cleanly.",
+    "plain_english": "This is a jazz brass sound where a note drops and slides down as it ends. A long slide down is a fall-off, and a short quick drop is a doink. It is like your voice sliding down at the end of a word.",
+    "purpose_function": "It adds expressive, vocal-like shaping and stylistic punctuation to the end of a note, a staple of jazz and big-band phrasing.",
+    "practical_application": "A player reads fall-off and doink symbols in a big-band chart and executes them by lip, slide, or finger, and an engineer captures the trailing downward pitch without gating it off too early.",
+    "category": "Brass technique",
+    "related_terms": ["Glissando smear (trombone)", "Doit", "Scoop", "Embouchure", "Articulation", "Bend"],
+    "common_mistakes": ["Confusing a fall-off (downward) with a doit or scoop, which move upward", "Ending the fall on a definite pitch instead of letting it trail off", "Setting a noise gate to close too fast, cutting off the tail of the fall-off"],
+    "scenario_contexts": ["Playing a big-band shout chorus with fall-offs on accented notes", "A jazz brass section adding doinks for punctuation", "Editing a horn track so fall-off tails are not clipped by gating"]
+   },
+   "sources": ["Adler, The Study of Orchestration (brass articulations and jazz effects)", "Baines, Brass Instruments: Their History and Development (glissando and lip effects)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "670f1ed5-7333-4dab-a727-3b048b255764",
+   "term": "Flute key noise",
+   "fields": {
+    "definition": "The percussive mechanical noise made by a flute's keys and pads as they close against the tone holes, heard as clicks or thumps separate from the musical tone. It arises from the metal keywork and pad seating of a Boehm-system flute and is most noticeable in fast passages, at low dynamics, and under close microphone placement; it is sometimes used deliberately as a percussive extended technique.",
+    "plain_english": "These are the small clicks and thumps a flute's keys and pads make as fingers press them. A close microphone can pick them up along with the music, like hearing key clicks under a voice.",
+    "purpose_function": "It is normally an incidental byproduct of the keywork; recognizing it lets a technician control how much reaches a recording, or capture it on purpose when a composer calls for percussive key clicks.",
+    "practical_application": "When close-miking a flute, a technician chooses microphone position and distance to keep key clacks in balance, and checks a player's pads and mechanism if the noise is unusually loud.",
+    "category": "Instrument noise",
+    "related_terms": ["Embouchure noise", "Flute", "Close miking", "Extended technique", "Pad", "Key click"],
+    "common_mistakes": ["Placing the microphone right over the keywork, which exaggerates clicks and thumps", "Assuming all key noise is a fault when some is inherent to the mechanism", "Confusing normal key noise with worn pads or loose keywork that actually need service"],
+    "scenario_contexts": ["Close-miking a flute solo where key clicks intrude on quiet passages", "Recording deliberate percussive key-click effects in contemporary music", "Diagnosing unusually loud key noise traced to worn pads"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (flute miking and instrument noise)", "Fletcher & Rossing, The Physics of Musical Instruments (flute mechanism and tone holes)", "Adler, The Study of Orchestration (flute extended techniques including key clicks)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "136230b8-cbed-430b-9915-88b3e732f556",
+   "term": "Fujara overtone whistle",
+   "fields": {
+    "definition": "The high, breathy overtones sounded on the fujara, a very large three-holed Slovak overtone shepherd's fipple flute, produced mainly by overblowing to jump the air column up through its natural harmonic series. Melodies are formed largely from these overblown partials above the low fundamental, and each overtone typically speaks with a soft, airy whistle at its onset.",
+    "plain_english": "The fujara is a very long Slovak shepherd's flute. The player blows harder to jump up to high, whistling notes above the low base note. Each jump starts with an airy whistle sound.",
+    "purpose_function": "Overblowing the harmonic series is how the fujara produces its melodic range from only three finger holes, giving it its distinctive high, whistling overtone voice over a deep drone-like fundamental.",
+    "practical_application": "A player controls breath pressure to select and cleanly speak each overtone, and an engineer records both the deep fundamental and the airy high overtones, mindful of the breathy onset transients.",
+    "category": "Instrument technique",
+    "related_terms": ["Overtone", "Harmonic series", "Overblowing", "Fujara", "Fipple", "Fundamental frequency"],
+    "common_mistakes": ["Thinking pitches come mainly from the three finger holes rather than from overblowing the harmonic series", "Using too little breath support so the overtone cracks or drops back to the fundamental", "Miking only the fipple end and missing the breathy overtone character"],
+    "scenario_contexts": ["Recording a solo fujara featuring its overblown overtone melody", "Capturing the airy whistle onsets of each overtone in a folk session", "Explaining how a three-hole flute plays full melodies via overblowing"]
+   },
+   "sources": ["Baines, Woodwind Instruments and their History (overtone and fipple flutes)", "Grove Dictionary of Music ('Fujara'; overblown harmonics)", "Fletcher & Rossing, The Physics of Musical Instruments (air-jet flutes and overblowing the harmonic series)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "27ef794e-8b88-4b3f-91b0-c66b481c68c8",
+   "term": "Glissando smear (trombone)",
+   "fields": {
+    "definition": "A continuous slide in pitch on the trombone (also called a 'smear'), produced by moving the slide while sustaining the tone so the pitch glides smoothly between notes with no discrete steps. A true glissando is limited to the range covered within a single harmonic (up to about a tritone across the slide positions); wider slides require a change of partial and are not fully continuous.",
+    "plain_english": "This is the smooth slide between two notes on a trombone. The player keeps blowing and moves the slide, so the pitch glides with no gaps, like a siren swooping up or down.",
+    "purpose_function": "It exploits the trombone's continuously variable slide to produce a smooth pitch glide for expressive, comic, or dramatic effect, something valved brass cannot do as seamlessly.",
+    "practical_application": "A player executes a smear by moving the slide steadily while keeping the same partial, and an arranger keeps written glissandos within the roughly tritone span playable without switching harmonics.",
+    "category": "Brass technique",
+    "related_terms": ["Fall-off/doink", "Glissando", "Portamento", "Slide", "Harmonic series", "Trombone"],
+    "common_mistakes": ["Writing a continuous glissando wider than one harmonic allows, which forces an audible partial change", "Confusing a smooth slide smear with a stepped chromatic run", "Moving the slide unevenly so the smear speeds up or stalls instead of gliding smoothly"],
+    "scenario_contexts": ["A big-band or Dixieland trombone smear for comic or bluesy effect", "Notating a playable trombone glissando within one harmonic", "Recording a dramatic trombone slide in a film-score cue"]
+   },
+   "sources": ["Baines, Brass Instruments: Their History and Development (trombone slide and glissando)", "Adler, The Study of Orchestration (trombone glissando range and notation)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

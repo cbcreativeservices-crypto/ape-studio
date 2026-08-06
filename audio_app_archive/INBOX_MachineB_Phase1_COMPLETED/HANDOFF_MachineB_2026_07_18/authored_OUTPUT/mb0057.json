@@ -1,0 +1,310 @@
+{
+ "batch": 57,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "86afc2aa-bfd5-42d6-a3ce-18fe4a80395a",
+   "term": "Keyboard layering",
+   "fields": {
+    "definition": "Keyboard layering is the practice of combining two or more keyboard or synthesizer sounds, played from the same performance or stacked in the arrangement, so they sound together as a single fuller composite tone. Layers are usually chosen to cover complementary frequency ranges or timbres, such as a piano paired with a pad or a sub-bass under an organ.",
+    "plain_english": "It means playing two or more keyboard sounds at once so they blend into one bigger sound. Think of it like mixing paint colors to get a richer shade.",
+    "purpose_function": "It exists to build a richer, more complete keyboard texture than any single patch can provide, filling out an arrangement and reinforcing chosen frequency ranges. Complementary layers add weight, brightness, or movement without needing a second player.",
+    "practical_application": "A technician sets up a keyboard split or MIDI stack so several patches trigger together, then balances their levels and EQ so each layer contributes without masking the others. In tracking, the layers may be recorded to separate tracks for independent control at the mix stage.",
+    "category": "Arrangement",
+    "related_terms": [
+     "Keyboard mixing",
+     "Keyboard subgroup",
+     "Doubling",
+     "Synth pad",
+     "Patch",
+     "Arrangement"
+    ],
+    "common_mistakes": [
+     "Stacking too many layers so the parts clash and muddy the mix instead of blending.",
+     "Layering sounds in the same frequency range without EQ, causing frequency buildup.",
+     "Forgetting to check that layered patches are in tune and in phase with each other."
+    ],
+    "scenario_contexts": [
+     "Combining a grand piano patch with a soft string pad to thicken a ballad chorus.",
+     "Stacking a sub-bass synth under an organ to add low-end weight in a live set.",
+     "Layering an electric piano with a bell tone to brighten a verse."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a20a87bd-8638-4985-b8c1-e31d0cb35e8d",
+   "term": "Keyboard mixing",
+   "fields": {
+    "definition": "Keyboard mixing is the process of balancing keyboard and synthesizer tracks within a mix using level, panning, EQ, dynamics, and effects so they support the arrangement without masking other instruments. Because keyboards often span a wide frequency range, mixing them usually involves carving out space for vocals and guitars.",
+    "plain_english": "This is setting the volume, tone, and stereo position of the keyboard parts so they fit the song. It is like arranging furniture so nothing blocks the walkway.",
+    "purpose_function": "Its purpose is to place keyboards at the right level and frequency position so they fill out the song while leaving room for lead elements. Careful keyboard mixing prevents the clutter that wide pads and pianos can otherwise create.",
+    "practical_application": "A technician EQs a piano or pad to reduce buildup in the vocal range, pans parts to open the stereo field, and rides or automates levels through the song sections. Reverb and compression are added to seat the keyboards in the mix.",
+    "category": "Mixing",
+    "related_terms": [
+     "Keyboard layering",
+     "Keyboard subgroup",
+     "EQ",
+     "Panning",
+     "Level balancing"
+    ],
+    "common_mistakes": [
+     "Letting keyboards mask the vocal or guitar because they share the same frequency range.",
+     "Raising keyboard level instead of carving space with EQ and panning.",
+     "Leaving wide stereo pads centered, cluttering the middle of the mix."
+    ],
+    "scenario_contexts": [
+     "Balancing a synth pad under a lead vocal so it supports without covering the voice.",
+     "Panning two keyboard parts left and right to open up a busy arrangement.",
+     "EQing a piano to make room for an acoustic guitar in the same range."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Izhaki, Mixing Audio: Concepts, Practices and Tools"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ce5fab51-47e6-43d9-a546-665edeb27427",
+   "term": "Keyboard subgroup",
+   "fields": {
+    "definition": "A keyboard subgroup is a bus to which multiple keyboard channels are routed so they can be processed and controlled together as one unit. The subgroup fader adjusts the overall keyboard level, and shared processing such as EQ, compression, or reverb can be applied to the whole group at once.",
+    "plain_english": "It is a single fader that controls all the keyboard channels at once. Like a master switch that dims a whole group of lights together.",
+    "purpose_function": "It exists to simplify control of many keyboard channels, letting a single fader move or shared processing affect the entire keyboard section. This keeps the internal balance between the keyboards intact while managing them as one group.",
+    "practical_application": "A technician routes piano, pad, and synth channels to a subgroup (or a VCA/DCA group on a digital console), then rides that one fader to bring the keyboards up or down in the mix. Group compression or reverb on the subgroup glues the parts into a cohesive section.",
+    "category": "Signal Routing",
+    "related_terms": [
+     "Subgroup",
+     "Bus",
+     "VCA group",
+     "Keyboard mixing",
+     "Auxiliary send"
+    ],
+    "common_mistakes": [
+     "Routing keyboards to a subgroup but leaving the subgroup fader down, so they vanish.",
+     "Applying heavy subgroup compression that squashes the dynamics of every keyboard part.",
+     "Double-routing channels to both the main bus and the subgroup, doubling the level."
+    ],
+    "scenario_contexts": [
+     "Routing piano, pad, and synth channels to one subgroup to ride all keyboards with a single fader.",
+     "Applying shared reverb and compression to a keyboard subgroup for a cohesive sound.",
+     "Muting the keyboard section quickly during a breakdown using the subgroup."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Izhaki, Mixing Audio: Concepts, Practices and Tools"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e3d677a1-76d8-4b46-9847-8f0045796e3d",
+   "term": "Keyholing",
+   "fields": {
+    "definition": "Elongation of a cymbal's central mounting hole into a keyhole shape, caused by repeated metal-to-metal contact between the cymbal and an unprotected stand rod. The deformation weakens the cymbal and can lead to cracks radiating from the center hole.",
+    "plain_english": "When a cymbal is mounted on a bare metal rod, the constant banging slowly stretches its center hole into a keyhole shape. That worn hole can weaken the cymbal and make it crack.",
+    "purpose_function": "Knowing about keyholing tells techs to protect the mounting point with a sleeve and felts, preventing costly cymbal damage and sudden failures during a session.",
+    "practical_application": "A drum tech checks cymbals for an oval, worn center hole and always mounts them with a plastic or rubber sleeve and felt washers above and below to prevent keyholing.",
+    "category": "Instrument maintenance",
+    "related_terms": [
+     "Kick beater definition",
+     "Gel damper",
+     "Body knock",
+     "Kick click control"
+    ],
+    "common_mistakes": [
+     "Mounting a cymbal directly on a bare metal rod with no plastic sleeve",
+     "Tightening the wing nut so hard the cymbal cannot move, which speeds up hole wear and cracking",
+     "Ignoring an oval, elongated center hole until the cymbal cracks"
+    ],
+    "scenario_contexts": [
+     "Inspecting a drummer's cymbals before a session for keyholing damage",
+     "Fitting new sleeves and felts to prevent hole wear on a touring kit",
+     "Diagnosing a crack that started at a worn, keyholed center hole"
+    ]
+   },
+   "sources": [
+    "Paiste cymbal care instructions (mounting/'key-hole effect')",
+    "Zildjian cymbal care and setup guidance"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7014b17e-a153-44da-96b7-052f133d5d6d",
+   "term": "Kick attack enhancement",
+   "fields": {
+    "definition": "Kick attack enhancement is the emphasis of the initial transient (the beater click or knock) of a kick drum to increase its definition and audibility. It is achieved with EQ boosts in roughly the 2-5 kHz range, transient shaping, or by layering a sampled attack onto the recorded kick.",
+    "plain_english": "This makes the sharp punch at the start of each kick drum hit stand out more. It helps the drum be heard clearly even in a loud band.",
+    "purpose_function": "It exists to make the kick's front edge clear so the drum reads as rhythmic definition even on small speakers or within a dense mix. The attack is what listeners perceive as the kick's timing and punch.",
+    "practical_application": "A technician boosts the click frequency with EQ, uses a transient designer to raise the attack, or blends in a kick sample to add a consistent click. This is common when the recorded kick sounds dull or lacks presence.",
+    "category": "Drum Processing",
+    "related_terms": [
+     "Kick click control",
+     "Kick beater definition",
+     "Kick compression",
+     "Transient shaper",
+     "Beater"
+    ],
+    "common_mistakes": [
+     "Boosting click so hard the kick sounds thin and clicky, losing its low-end weight.",
+     "Adding attack with EQ when the real problem is a slow compressor attack swallowing the transient."
+    ],
+    "scenario_contexts": [
+     "Adding beater click to a kick so it punches through a dense rock mix.",
+     "Layering a sampled click onto a dull acoustic kick during editing.",
+     "Using a transient shaper to bring out kick attack for a dance track."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "45c58b4e-6a91-4ee9-a163-33396835ce15",
+   "term": "Kick beater definition",
+   "fields": {
+    "definition": "Kick beater definition refers to the clarity and character of the beater's impact (the audible click or attack) that the bass drum pedal beater produces against the drumhead. Beater material and hardness (felt, wood, plastic) strongly shape this attack, with harder beaters yielding a sharper, more defined click.",
+    "plain_english": "This is how clear the click of the drum pedal's beater sounds on the kick drum. A harder beater gives a sharper click, and a soft one gives a duller thump.",
+    "purpose_function": "It matters because the beater attack largely sets how clearly the kick's timing cuts through a mix at the source, before any processing. Getting the definition right at the beater reduces the need to manufacture attack later.",
+    "practical_application": "A technician or drummer selects a harder beater or an impact pad to add a defined click for genres that need cut, or a softer felt beater for a rounder tone. Beater choice is set during drum tuning and sound check, before tracking.",
+    "category": "Drum Sound",
+    "related_terms": [
+     "Kick attack enhancement",
+     "Kick click control",
+     "Beater",
+     "Kick drum microphone",
+     "Attack transient"
+    ],
+    "common_mistakes": [
+     "Blaming the mix for a dull kick when a soft felt beater is the real cause at the source.",
+     "Expecting EQ alone to add attack that the beater never produced when the drum was played."
+    ],
+    "scenario_contexts": [
+     "Choosing a hard plastic beater to get a clear click for a metal recording.",
+     "Switching from a felt to a wood beater to add attack before tracking drums.",
+     "Comparing beater types during a kick sound check."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Bartlett, Practical Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3f8487d1-5933-488a-be66-7faabe083ff7",
+   "term": "Kick click control",
+   "fields": {
+    "definition": "Kick click control is the adjustment of the amount of high-frequency click (the beater attack, roughly 2-5 kHz) present in the kick drum sound. It is managed through beater choice at the source and through EQ, transient shaping, or sample blending at the mix.",
+    "plain_english": "This is adjusting how much sharp click you hear at the front of the kick drum sound. You can add click so the drum is clear, or cut it so the kick sounds softer and rounder.",
+    "purpose_function": "Its purpose is to set how prominent the kick's attack is so the drum is clearly audible without becoming thin and clicky, or too dull to hear on small speakers. Balancing click against low-end weight keeps the kick translating across playback systems.",
+    "practical_application": "A technician adds a focused EQ boost or a sample to bring up click for a pop or metal kick, or cuts the same range for a deep, rounded hip-hop kick. The amount is checked on both large monitors and small speakers to confirm it translates.",
+    "category": "Drum Processing",
+    "related_terms": [
+     "Kick attack enhancement",
+     "Kick beater definition",
+     "Kick compression",
+     "EQ",
+     "Transient shaper"
+    ],
+    "common_mistakes": [
+     "Cutting all the click so the kick disappears on small speakers and phones.",
+     "Adding click with a narrow, harsh EQ boost instead of finding the right frequency."
+    ],
+    "scenario_contexts": [
+     "Dialing in a boost around 3-5 kHz to add click for a pop kick.",
+     "Cutting click on a hip-hop kick to keep it deep and round.",
+     "Balancing click against sub weight so the kick reads on both club and phone speakers."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Izhaki, Mixing Audio: Concepts, Practices and Tools"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e28fadd4-af0e-40d2-9d81-4971f65d6137",
+   "term": "Kick clipping",
+   "fields": {
+    "definition": "Kick clipping is the flattening of a kick drum signal's peaks when its level exceeds the maximum the system can pass, which adds harmonic distortion. It occurs unintentionally as an overload fault, or is applied deliberately with a clipper to tame sharp transients and add harmonic bite.",
+    "plain_english": "Clipping happens when the kick drum signal is too loud and its peaks get cut off flat. Engineers sometimes do this on purpose for grit, but by accident it just sounds broken.",
+    "purpose_function": "As a technique, clipping shaves the kick's fast peaks so the average level can rise without a limiter working hard, and adds harmonics that can make the kick feel more aggressive. As a fault, it signals that gain staging has pushed the signal past full scale.",
+    "practical_application": "A technician may place a clipper on the kick to shave peaks before compression or limiting, using a small amount to keep the sound clean. During tracking, unwanted clipping shows on the meters and is fixed by lowering input gain to restore headroom.",
+    "category": "Drum Processing",
+    "related_terms": [
+     "Kick compression",
+     "Clipping",
+     "Headroom",
+     "Gain staging",
+     "Limiter"
+    ],
+    "common_mistakes": [
+     "Letting the kick clip the master bus by accident, adding harsh digital distortion.",
+     "Clipping in the box without checking gain staging, so the whole mix distorts.",
+     "Confusing a compressor's gain-reduction meter with clipping and over-processing."
+    ],
+    "scenario_contexts": [
+     "Using a clipper to shave kick peaks so the mix can get louder without the limiter working hard.",
+     "Spotting accidental kick clipping on the master meter during tracking.",
+     "Clipping a kick lightly to add harmonic bite in an aggressive mix."
+    ]
+   },
+   "sources": [
+    "Izhaki, Mixing Audio: Concepts, Practices and Tools",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "783337ec-3a8c-4eb2-b955-64d9350589ba",
+   "term": "Kick compression",
+   "fields": {
+    "definition": "Kick compression is the application of dynamic range compression to a kick drum to control its dynamics, even out hit-to-hit level differences, and shape its punch and sustain. Attack and release settings determine how much of the initial transient passes and how the body of the drum is emphasized.",
+    "plain_english": "Compression evens out the loud and soft kick hits so they all punch at a steady level. It works like a fast hand that turns down the loudest hits so nothing jumps out.",
+    "purpose_function": "It exists to make the kick level consistent and to sculpt its envelope, preserving or softening the attack and controlling the decay, so the drum sits solidly in the mix. Consistent kick dynamics anchor the groove and the low end.",
+    "practical_application": "A technician sets attack and release to let the beater transient through while controlling the sustain, using moderate ratios to even out an inconsistent drummer. Parallel compression is often used to add body without crushing the natural dynamics.",
+    "category": "Drum Processing",
+    "related_terms": [
+     "Kick clipping",
+     "Kick attack enhancement",
+     "Compression",
+     "Attack time",
+     "Release time",
+     "Parallel compression"
+    ],
+    "common_mistakes": [
+     "Setting a fast attack that kills the kick's punch by clamping the transient.",
+     "Over-compressing so the kick pumps and loses its natural dynamics.",
+     "Using a slow release that never recovers before the next hit, causing gain buildup."
+    ],
+    "scenario_contexts": [
+     "Compressing a kick to even out an inconsistent drummer's dynamics.",
+     "Using parallel compression to add sustain and body to a thin kick.",
+     "Setting attack and release to shape kick punch for a rock mix."
+    ]
+   },
+   "sources": [
+    "Izhaki, Mixing Audio: Concepts, Practices and Tools",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,1034 @@
+{
+"Sound & Wave Fundamentals": {
+"id": "3b406293-0310-5306-8eb6-206f5fbe3cb1",
+"field": "Foundations & Safety",
+"subject": "Foundations of Sound & Signal",
+"gs": 3000
+},
+"Propagation, Reflection & Room Behavior": {
+"id": "457c528e-05a6-5d18-9cfa-32ecb5e99850",
+"field": "Foundations & Safety",
+"subject": "Foundations of Sound & Signal",
+"gs": 3010
+},
+"Frequency, Pitch & Spectral Concepts": {
+"id": "98dddaa3-a6bf-5089-91fc-68212a7a55c3",
+"field": "Foundations & Safety",
+"subject": "Foundations of Sound & Signal",
+"gs": 3020
+},
+"Signal Path & Levels": {
+"id": "ea9cb6f5-d17c-5132-a5d6-1b4a0f06551b",
+"field": "Foundations & Safety",
+"subject": "Foundations of Sound & Signal",
+"gs": 3030
+},
+"Foundations - Sound, Waveform, Level & Phase": {
+"id": "cb1ff9be-4071-5b30-b6d0-c0cdc0cc4826",
+"field": "Foundations & Safety",
+"subject": "Foundations of Sound & Signal",
+"gs": 3040
+},
+"Digital Audio - Sampling, Quantization & Formats": {
+"id": "5f51a4ae-89aa-5f58-9f93-ca4abb7a94be",
+"field": "Foundations & Safety",
+"subject": "Foundations of Sound & Signal",
+"gs": 3050
+},
+"Professional Audio Safety": {
+"id": "32129be7-4248-5c40-9d69-207b9c89878c",
+"field": "Foundations & Safety",
+"subject": "Safety & Electrical",
+"gs": 3060
+},
+"Grounding & Shielding": {
+"id": "c2681246-efef-5b54-ba44-0c2cf5f079f7",
+"field": "Foundations & Safety",
+"subject": "Safety & Electrical",
+"gs": 3070
+},
+"Electrical Power, Distribution & Safety": {
+"id": "d7219ebc-c094-5b2e-8612-2c5fbf6a37d1",
+"field": "Foundations & Safety",
+"subject": "Safety & Electrical",
+"gs": 3080
+},
+"Microphone Transducer Principles": {
+"id": "9ec261fc-e49a-52e0-9c90-4dcd8d118eaa",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Microphones",
+"gs": 3090
+},
+"Polar Patterns & Microphone Types": {
+"id": "6dc4f1dc-9a15-5409-8cba-a927e3973d06",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Microphones",
+"gs": 3100
+},
+"Specialized & Emerging Microphones": {
+"id": "6baa22ce-3e87-559c-9767-d854a9be3a92",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Microphones",
+"gs": 3110
+},
+"Microphone Specs & Characteristics": {
+"id": "ba8a47bb-16fd-5a73-a24b-09905b1fac06",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Microphones",
+"gs": 3120
+},
+"Stereo & Ensemble Miking Techniques": {
+"id": "2fc86d0e-80cb-5f6f-a7f7-ca3b1da205f6",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Microphones",
+"gs": 3130
+},
+"Close-Miking - Drums & Percussion": {
+"id": "f670905b-93ed-5ef8-94f7-be6223f81bb0",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Microphones",
+"gs": 3140
+},
+"Close-Miking - Guitars, Amps & Strings": {
+"id": "e8d1359d-5f60-55ce-8c91-03fb99ab8409",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Microphones",
+"gs": 3150
+},
+"Close-Miking - Keys, Winds, Brass & Vocals": {
+"id": "84fa7dc9-08ee-5305-9c13-ca6f393a3387",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Microphones",
+"gs": 3160
+},
+"Loudspeaker Types & Drivers": {
+"id": "d53a3bdd-6e9c-55b0-aa0f-a7f0a02c09e8",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Loudspeakers & Amplification",
+"gs": 3170
+},
+"Amplifiers": {
+"id": "80d5bd25-4189-53a1-99f5-6f760bf8b842",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Loudspeakers & Amplification",
+"gs": 3180
+},
+"Vacuum Tubes": {
+"id": "9fe06b64-cbee-521c-861d-d6fd5b049fb7",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Loudspeakers & Amplification",
+"gs": 3190
+},
+"Transducer Design & Motor Systems": {
+"id": "4a1bb31d-f485-5e2b-b11a-694ca6ccc445",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Loudspeakers & Amplification",
+"gs": 3200
+},
+"Enclosure, Horn & Radiation Engineering": {
+"id": "6e5a784a-ad73-51ca-b358-214fe7b86bfa",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Loudspeakers & Amplification",
+"gs": 3210
+},
+"Crossover & System Engineering": {
+"id": "215ec862-8317-5bee-81b3-5901df9de39e",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Loudspeakers & Amplification",
+"gs": 3220
+},
+"Loudspeaker Measurement & Modeling": {
+"id": "f945bcfe-0bd3-5e98-8f4b-244c46d963b9",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Loudspeakers & Amplification",
+"gs": 3230
+},
+"Console Architecture & Bus Structure": {
+"id": "e4cabd40-e33e-573f-9ca4-e5e61a80ad90",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Consoles & Control",
+"gs": 3240
+},
+"Console Signal Flow & Gain Staging": {
+"id": "a1c17071-6405-5888-a94d-34a81b21b0c7",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Consoles & Control",
+"gs": 3250
+},
+"Control Surfaces & Machine Control": {
+"id": "3b0743aa-73ce-5860-b5ea-6e1720735fe2",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Consoles & Control",
+"gs": 3260
+},
+"Connectors & Plugs": {
+"id": "e1d98051-6c6b-56b9-a855-c64442a4a94e",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Cabling, Connectors & Infrastructure",
+"gs": 3270
+},
+"Cables & Wiring": {
+"id": "7c882ca0-0eaf-5a4d-8a02-3ebf477e483a",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Cabling, Connectors & Infrastructure",
+"gs": 3280
+},
+"Racks, Patchbays & Wiring Infrastructure": {
+"id": "468de58e-d43c-53c9-b897-44deef516f6a",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Cabling, Connectors & Infrastructure",
+"gs": 3290
+},
+"Documentation & Diagrams": {
+"id": "f6a75221-09cb-5427-9488-44626b3f0ef8",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Cabling, Connectors & Infrastructure",
+"gs": 3300
+},
+"Recorders & File Formats": {
+"id": "822a0df9-2f0b-5caf-98b6-83ca7a3b8e60",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Recording Hardware & Media",
+"gs": 3310
+},
+"Dante Fundamentals & Routing": {
+"id": "df7a0347-7398-523c-9699-b146d1394a6b",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Audio Networking",
+"gs": 3320
+},
+"Clocking, Redundancy & Network Management": {
+"id": "e3db17f6-6cc3-5798-9a8a-3fe77f67ce07",
+"field": "Audio Equipment & Signal Chain",
+"subject": "Audio Networking",
+"gs": 3330
+},
+"Equalization (EQ)": {
+"id": "39be1419-674d-5174-bff1-9ea9ffaf3c0b",
+"field": "Signal Processing & Effects",
+"subject": "Dynamics & EQ",
+"gs": 3340
+},
+"Compression & Limiting": {
+"id": "07db3829-dc89-597d-b281-c6c8999e6779",
+"field": "Signal Processing & Effects",
+"subject": "Dynamics & EQ",
+"gs": 3350
+},
+"Gates, Expanders & Transient Design": {
+"id": "b98f0ffc-3de9-5dbd-8ba4-c6d70c7eca5d",
+"field": "Signal Processing & Effects",
+"subject": "Dynamics & EQ",
+"gs": 3360
+},
+"Reverb": {
+"id": "abec390f-b86a-5d5e-aed1-48629b23ac8f",
+"field": "Signal Processing & Effects",
+"subject": "Time-Based & Creative FX",
+"gs": 3370
+},
+"Delay & Time-Based Effects": {
+"id": "af15e68f-8ec8-57cf-a15e-7cc67b2fab3f",
+"field": "Signal Processing & Effects",
+"subject": "Time-Based & Creative FX",
+"gs": 3380
+},
+"Creative Effects & Sound Design in the Mix": {
+"id": "bfa59670-af49-5f62-95a4-6009784824ea",
+"field": "Signal Processing & Effects",
+"subject": "Time-Based & Creative FX",
+"gs": 3390
+},
+"Advanced Parallel & Bus Processing": {
+"id": "000b3539-d4c6-595b-a30b-4039099b567a",
+"field": "Signal Processing & Effects",
+"subject": "Time-Based & Creative FX",
+"gs": 3400
+},
+"Plugin Formats, Hosts & Processing": {
+"id": "f19dc335-6375-5da5-bb3c-4e01af31000e",
+"field": "Signal Processing & Effects",
+"subject": "Plugins & Processing Platforms",
+"gs": 3410
+},
+"Acoustic Principles & Room Behavior": {
+"id": "d1bb1f4a-a418-5533-95a2-59d6b0006796",
+"field": "Acoustics & Measurement",
+"subject": "Acoustics & Room Behavior",
+"gs": 3420
+},
+"Room Treatment Layout & Application": {
+"id": "88d16087-4c99-5df4-b8f5-637681c5fac6",
+"field": "Acoustics & Measurement",
+"subject": "Acoustics & Room Behavior",
+"gs": 3430
+},
+"Studio & Facility Design": {
+"id": "f9d9bb62-fe06-5379-b21e-da668b6f219b",
+"field": "Acoustics & Measurement",
+"subject": "Acoustics & Room Behavior",
+"gs": 3440
+},
+"Levels, Metering & Reference Standards": {
+"id": "47512d31-2aa4-5913-adc7-e0fb956aab02",
+"field": "Acoustics & Measurement",
+"subject": "Measurement & Analysis",
+"gs": 3450
+},
+"Frequency & Spectrum Analysis": {
+"id": "e0afbd8c-a552-50e0-be24-090d1c665767",
+"field": "Acoustics & Measurement",
+"subject": "Measurement & Analysis",
+"gs": 3460
+},
+"Acoustic & Room Measurement Methods": {
+"id": "1b304845-50b5-5c6f-ae7a-ad04738e19aa",
+"field": "Acoustics & Measurement",
+"subject": "Measurement & Analysis",
+"gs": 3470
+},
+"Test Signals & Measurement Instruments": {
+"id": "059c051d-f448-56af-82c5-8a0a4e5c6d0e",
+"field": "Acoustics & Measurement",
+"subject": "Measurement & Analysis",
+"gs": 3480
+},
+"Signal & Transfer-Function Analysis": {
+"id": "7a227a24-f62f-5f26-b2fe-d8a7d024272b",
+"field": "Acoustics & Measurement",
+"subject": "Measurement & Analysis",
+"gs": 3490
+},
+"Test & Measurement Instruments": {
+"id": "829d166e-98c5-5bde-8be6-869d0e0447a7",
+"field": "Acoustics & Measurement",
+"subject": "Measurement & Analysis",
+"gs": 3500
+},
+"Troubleshooting Methodology & Diagnostics": {
+"id": "2d66dc43-c861-5e6a-aeb3-1a5fcc592040",
+"field": "Troubleshooting, Maintenance & Repair",
+"subject": "System Troubleshooting",
+"gs": 3510
+},
+"Live & System Fault Isolation": {
+"id": "edd35e4b-43ab-5990-b358-6556a1f5d8b4",
+"field": "Troubleshooting, Maintenance & Repair",
+"subject": "System Troubleshooting",
+"gs": 3520
+},
+"Recording, Mixing & Troubleshooting Concepts": {
+"id": "4a763490-32a4-5ea3-b589-dea62a3c7f00",
+"field": "Troubleshooting, Maintenance & Repair",
+"subject": "System Troubleshooting",
+"gs": 3530
+},
+"Repair": {
+"id": "6cd58053-26aa-5633-abdd-859ff2ea02b5",
+"field": "Troubleshooting, Maintenance & Repair",
+"subject": "Maintenance & Repair",
+"gs": 3540
+},
+"Soldering": {
+"id": "fe7d8cd5-474f-5b99-8572-c86b828a287d",
+"field": "Troubleshooting, Maintenance & Repair",
+"subject": "Maintenance & Repair",
+"gs": 3550
+},
+"Analog Live Sound": {
+"id": "c82b8363-e61a-57ba-a7d8-f39d5fe77986",
+"field": "Live Sound & Production",
+"subject": "Live Systems & Deployment",
+"gs": 3560
+},
+"Digital Live Sound": {
+"id": "2466532c-4a69-57ce-90aa-c344f46e06f2",
+"field": "Live Sound & Production",
+"subject": "Live Systems & Deployment",
+"gs": 3570
+},
+"System Deployment & Rigging": {
+"id": "909cb25c-e491-5fb2-b9b9-7ce343e0ab9c",
+"field": "Live Sound & Production",
+"subject": "Live Systems & Deployment",
+"gs": 3580
+},
+"System Tuning, Optimization & Alignment": {
+"id": "b77f8bc3-d1e1-5ebb-8bff-17223ff72e4b",
+"field": "Live Sound & Production",
+"subject": "Live Systems & Deployment",
+"gs": 3590
+},
+"RF Wireless Systems": {
+"id": "55e1a144-7471-5421-a743-d366b8af7792",
+"field": "Live Sound & Production",
+"subject": "Live Systems & Deployment",
+"gs": 3600
+},
+"Live Sound - FOH Mixing Workflow": {
+"id": "06f6d334-acf6-552a-8dd3-45870fa877a7",
+"field": "Live Sound & Production",
+"subject": "Live Mixing & Crew",
+"gs": 3610
+},
+"Live Sound - Monitor Engineering": {
+"id": "2f059e1b-b9dc-5403-bf09-7e07d06f6292",
+"field": "Live Sound & Production",
+"subject": "Live Mixing & Crew",
+"gs": 3620
+},
+"Live Sound - Concert-Audio Slang": {
+"id": "9f7116f7-4e97-52a9-ae3e-c078ee2f7bb4",
+"field": "Live Sound & Production",
+"subject": "Live Mixing & Crew",
+"gs": 3630
+},
+"Road Crew": {
+"id": "cf800a39-c24c-5014-8c30-d10f2afd8dcd",
+"field": "Live Sound & Production",
+"subject": "Live Mixing & Crew",
+"gs": 3640
+},
+"Beatmatching, Mixing & FX": {
+"id": "362b74be-6051-5e26-9970-86edcb57e8c5",
+"field": "Live Sound & Production",
+"subject": "DJ Performance",
+"gs": 3650
+},
+"Venue Architecture & Spaces": {
+"id": "93a3e205-b32b-5c96-8c4c-da3e40ac1e04",
+"field": "Venue, Stagecraft & Entertainment Systems",
+"subject": "Stage & Venue",
+"gs": 3660
+},
+"Stage Geography & Backstage": {
+"id": "ce72ceeb-1ce5-5326-b39d-cf71da543ece",
+"field": "Venue, Stagecraft & Entertainment Systems",
+"subject": "Stage & Venue",
+"gs": 3670
+},
+"Stage Platforms, Scenery & Soft Goods": {
+"id": "ece77c90-0eac-516e-ba5d-5b46b9754ed4",
+"field": "Venue, Stagecraft & Entertainment Systems",
+"subject": "Stage & Venue",
+"gs": 3680
+},
+"Rigging Hardware, Loads & Motorized Flying": {
+"id": "a5ad3bca-2830-5916-9e25-c8815fe9e3c8",
+"field": "Venue, Stagecraft & Entertainment Systems",
+"subject": "Stage & Venue",
+"gs": 3690
+},
+"Orchestra Pit & Ensemble Layout": {
+"id": "19120786-da36-5d60-aba0-58a2162e1d8d",
+"field": "Venue, Stagecraft & Entertainment Systems",
+"subject": "Stage & Venue",
+"gs": 3700
+},
+"Show Control, Cueing & Communications": {
+"id": "951a9a9e-134b-5b5f-b3b6-f209238dd880",
+"field": "Venue, Stagecraft & Entertainment Systems",
+"subject": "Show Control & Cueing",
+"gs": 3710
+},
+"Theatrical Sound (commercial card)": {
+"id": "697e6247-2d0b-5ac3-b72e-8edf8db52dfe",
+"field": "Venue, Stagecraft & Entertainment Systems",
+"subject": "Theatrical & Worship",
+"gs": 3720
+},
+"Worship Sound (commercial card)": {
+"id": "e7b5b3f6-13be-5e78-8db8-9c45635c4fb4",
+"field": "Venue, Stagecraft & Entertainment Systems",
+"subject": "Theatrical & Worship",
+"gs": 3730
+},
+"Audio System Design & Specification": {
+"id": "cedf4415-3de5-59fe-a092-63c10eda7525",
+"field": "Installed & Commercial Audio",
+"subject": "System Design & Install",
+"gs": 3740
+},
+"Commercial/Install AV & Assisted Listening": {
+"id": "ee48bd63-9b98-5d64-b693-6dd6cda6dbf2",
+"field": "Installed & Commercial Audio",
+"subject": "System Design & Install",
+"gs": 3750
+},
+"HiFi Consumer Audio": {
+"id": "eea93d5a-1502-53e2-8ff7-33d782600648",
+"field": "Installed & Commercial Audio",
+"subject": "Consumer & Vehicle Audio",
+"gs": 3760
+},
+"Vehicle Audio": {
+"id": "d1dfe66f-0fa4-56fb-94aa-73bc13221ab6",
+"field": "Installed & Commercial Audio",
+"subject": "Consumer & Vehicle Audio",
+"gs": 3770
+},
+"Passive Components": {
+"id": "eb14fe79-0d97-5850-bb68-c3d2f6eb936a",
+"field": "Electronics, Engineering & Manufacturing",
+"subject": "Components & Circuits",
+"gs": 3780
+},
+"Active Devices & Semiconductors": {
+"id": "fa75d3f8-5a39-5229-b761-0c8211769db4",
+"field": "Electronics, Engineering & Manufacturing",
+"subject": "Components & Circuits",
+"gs": 3790
+},
+"Electromechanical Parts & Hardware": {
+"id": "814049c3-43aa-54fb-81d3-faca5b84b584",
+"field": "Electronics, Engineering & Manufacturing",
+"subject": "Components & Circuits",
+"gs": 3800
+},
+"Circuits & Topologies": {
+"id": "e6dfa1a1-64e6-5520-8600-2811d6dfc00e",
+"field": "Electronics, Engineering & Manufacturing",
+"subject": "Components & Circuits",
+"gs": 3810
+},
+"Manufacturing, Assembly & Production": {
+"id": "dbda1ca9-2190-5d5c-892c-8d4b6025cfe0",
+"field": "Electronics, Engineering & Manufacturing",
+"subject": "Build & Manufacturing",
+"gs": 3820
+},
+"Preamp & Converter Engineering": {
+"id": "01d3687d-d801-59e4-a16a-98a2e58e1be5",
+"field": "Electronics, Engineering & Manufacturing",
+"subject": "Build & Manufacturing",
+"gs": 3830
+},
+"Recording Fundamentals & Signal Chain": {
+"id": "c672eb36-fb78-5455-b16d-4c4a24ce645f",
+"field": "Studio Recording",
+"subject": "Recording Craft",
+"gs": 3840
+},
+"Session Workflow, Takes & Documentation": {
+"id": "14e8993d-7dc5-53d5-b751-c751773a1032",
+"field": "Studio Recording",
+"subject": "Recording Craft",
+"gs": 3850
+},
+"Band Tracking Workflow & Arrangement": {
+"id": "8ee0cae9-a9bf-5783-b9ae-2e586f64bad5",
+"field": "Studio Recording",
+"subject": "Recording Craft",
+"gs": 3860
+},
+"Instrument Recording (by Source)": {
+"id": "1e340c6d-e0f5-55b9-b05b-a1ab270228ec",
+"field": "Studio Recording",
+"subject": "Recording Craft",
+"gs": 3870
+},
+"Drum-Kit Recording": {
+"id": "3ce88c03-68eb-55c1-9fce-99f1b97b2ff0",
+"field": "Studio Recording",
+"subject": "Recording Craft",
+"gs": 3880
+},
+"Instrument Mixing - Drums & Percussion": {
+"id": "4711441f-08e0-5d6a-942c-c7e0e791202a",
+"field": "Mixing & Mastering",
+"subject": "Mixing",
+"gs": 3890
+},
+"Instrument Mixing - Guitars, Bass & Keys": {
+"id": "5d455194-de57-58d4-9073-96e16fb0de10",
+"field": "Mixing & Mastering",
+"subject": "Mixing",
+"gs": 3900
+},
+"Vocal Mixing": {
+"id": "71bd6da1-555f-5959-892d-ac78dc17770e",
+"field": "Mixing & Mastering",
+"subject": "Mixing",
+"gs": 3910
+},
+"Orchestral, Choir & Acoustic-Ensemble Mixing": {
+"id": "cd253c1a-e10c-5567-813d-a9c656463048",
+"field": "Mixing & Mastering",
+"subject": "Mixing",
+"gs": 3920
+},
+"Mix Automation, Bus & Loudness": {
+"id": "52568514-75a6-5dae-b0f2-e074c7b46d8b",
+"field": "Mixing & Mastering",
+"subject": "Mixing",
+"gs": 3930
+},
+"Mastering Fundamentals & Chain": {
+"id": "db98737f-3352-5cf8-88e1-efed5519cd56",
+"field": "Mixing & Mastering",
+"subject": "Mastering",
+"gs": 3940
+},
+"Loudness, QC, Delivery & Metadata": {
+"id": "bbd5ec07-8f32-583f-b393-896d3e52f1cd",
+"field": "Mixing & Mastering",
+"subject": "Mastering",
+"gs": 3950
+},
+"Vinyl / Disc Mastering": {
+"id": "bd8bf65c-3415-510e-9269-01125cd06c78",
+"field": "Mixing & Mastering",
+"subject": "Mastering",
+"gs": 3960
+},
+"DAW Fundamentals & Session Management": {
+"id": "f95ad7a2-8f16-5d9d-83e8-e845893272d4",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "DAWs & MIDI",
+"gs": 3970
+},
+"DAW: Logic": {
+"id": "9d58b7e3-4b9e-56c1-94a5-b7bfeb3e69ac",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "DAWs & MIDI",
+"gs": 3980
+},
+"DAW: Cubase/Nuendo": {
+"id": "30840dbd-e150-5ac1-8367-87f76f0f7c29",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "DAWs & MIDI",
+"gs": 3990
+},
+"DAW: REAPER": {
+"id": "879bcc94-728e-5a5b-a893-0518a112fb9d",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "DAWs & MIDI",
+"gs": 4000
+},
+"DAW: Ableton Live": {
+"id": "e6eda918-147f-5ee0-97e0-3ab6b17d28b3",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "DAWs & MIDI",
+"gs": 4010
+},
+"DAW: Studio One": {
+"id": "27e3df61-7192-5de0-9924-4fa94017b913",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "DAWs & MIDI",
+"gs": 4020
+},
+"DAW: Digital Performer/Reason": {
+"id": "622312a9-92f0-592d-8d2d-ebb53a799627",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "DAWs & MIDI",
+"gs": 4030
+},
+"MIDI": {
+"id": "41afca54-3f6a-5695-9b47-8c05d6af1d14",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "DAWs & MIDI",
+"gs": 4040
+},
+"Sampling & Sample Instruments": {
+"id": "aa09de93-5eb4-55a5-bc4d-01c6bd235883",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "Sampling & Beat-Making",
+"gs": 4050
+},
+"Sample Editing & Beat Programming": {
+"id": "808e820a-418c-5833-b6fd-cd939f9d345e",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "Sampling & Beat-Making",
+"gs": 4060
+},
+"Synthesis Fundamentals & Oscillators": {
+"id": "43ae4f9f-5ab7-57b9-960d-6e0187d22f24",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "Synthesis & Sound Design",
+"gs": 4070
+},
+"Virtual Instruments & Samplers": {
+"id": "978a7b2d-940b-5eb1-8038-db67d14ffc27",
+"field": "Electronic Music, DAWs & Synthesis",
+"subject": "Synthesis & Sound Design",
+"gs": 4080
+},
+"Radio Production & Studio Workflow": {
+"id": "6f8cc38f-fc04-5573-9f1b-92941a1fc62e",
+"field": "Broadcast, Podcast & Streaming",
+"subject": "Broadcast & Air Chain",
+"gs": 4090
+},
+"Broadcast Air Chain & Transmission": {
+"id": "f713f121-8f8c-54e4-9d6b-daef3a362bcc",
+"field": "Broadcast, Podcast & Streaming",
+"subject": "Broadcast & Air Chain",
+"gs": 4100
+},
+"Broadcast Processing & Loudness": {
+"id": "26207ecb-ad88-54d9-a1a7-d68f2d060733",
+"field": "Broadcast, Podcast & Streaming",
+"subject": "Broadcast & Air Chain",
+"gs": 4110
+},
+"Podcast Production": {
+"id": "ceb8f3a0-209e-5ff3-b392-6cbeb6e8e12c",
+"field": "Broadcast, Podcast & Streaming",
+"subject": "Podcast",
+"gs": 4120
+},
+"Post Workflow, Spotting & Sessions": {
+"id": "39d960a3-09ae-5015-9f80-6da15992a49b",
+"field": "Sound for Picture & Media",
+"subject": "Post Production",
+"gs": 4130
+},
+"Deliverables, Stems & Mastering for Picture": {
+"id": "832d2a29-1dd0-5d2a-9816-ab9ca1305aca",
+"field": "Sound for Picture & Media",
+"subject": "Post Production",
+"gs": 4140
+},
+"Re-Recording & Final Mix": {
+"id": "e9113f03-f0b2-5a67-aed6-809b6ba77f4b",
+"field": "Sound for Picture & Media",
+"subject": "Post Production",
+"gs": 4150
+},
+"Dialogue Editing": {
+"id": "f6874a63-c929-5f4b-ba09-a6d64788ebd4",
+"field": "Sound for Picture & Media",
+"subject": "Post Production",
+"gs": 4160
+},
+"ADR & Looping": {
+"id": "85f90a37-b9e1-53d4-877f-1d731410731a",
+"field": "Sound for Picture & Media",
+"subject": "Post Production",
+"gs": 4170
+},
+"Foley Performance & Recording": {
+"id": "56b5873e-6c87-52b6-94fa-b6feeda746b4",
+"field": "Sound for Picture & Media",
+"subject": "Post Production",
+"gs": 4180
+},
+"SFX Editorial & Sound Design": {
+"id": "455ef72d-d08a-580b-aca3-b78e764e3650",
+"field": "Sound for Picture & Media",
+"subject": "Post Production",
+"gs": 4190
+},
+"Film Scoring - Composition & Orchestration": {
+"id": "490df368-144e-538f-aedc-3c14bdacfb17",
+"field": "Sound for Picture & Media",
+"subject": "Scoring",
+"gs": 4200
+},
+"Film Scoring - Technology & MIDI Mockups": {
+"id": "db0121b5-ed0a-5ed9-9478-cd9ef7137a81",
+"field": "Sound for Picture & Media",
+"subject": "Scoring",
+"gs": 4210
+},
+"Film Scoring - Recording, Mixing & Delivery": {
+"id": "b2765c8a-88a6-56ba-9a4d-bb5832fa5289",
+"field": "Sound for Picture & Media",
+"subject": "Scoring",
+"gs": 4220
+},
+"Dubbing & Localization": {
+"id": "d6e0a74e-8298-5a89-b32b-a1fc9f581297",
+"field": "Sound for Picture & Media",
+"subject": "Localization & Game",
+"gs": 4230
+},
+"Dubbing - Adaptation, Sync & Deliverables": {
+"id": "4104dcb4-edb2-5a5e-b75d-a3630e92d279",
+"field": "Sound for Picture & Media",
+"subject": "Localization & Game",
+"gs": 4240
+},
+"Game Audio": {
+"id": "abf32f52-4061-5b1a-b67e-43c6d8a236e4",
+"field": "Sound for Picture & Media",
+"subject": "Localization & Game",
+"gs": 4250
+},
+"Immersive Formats & Delivery": {
+"id": "8e14b2ba-d4f2-55fe-9ea3-085ecd703c17",
+"field": "Sound for Picture & Media",
+"subject": "Immersive",
+"gs": 4260
+},
+"Hearing Anatomy, Health & Disorders": {
+"id": "505fdd2e-86fb-5400-8177-5e556cc361b5",
+"field": "Hearing, Perception & Listening",
+"subject": "Hearing & Psychoacoustics",
+"gs": 4270
+},
+"Psychoacoustics": {
+"id": "8b0991ce-d098-5d88-96fb-f5f095225afa",
+"field": "Hearing, Perception & Listening",
+"subject": "Hearing & Psychoacoustics",
+"gs": 4280
+},
+"Loudness & Listening Environments": {
+"id": "ce35d675-1d7b-5490-9ff5-85d8a27c6380",
+"field": "Hearing, Perception & Listening",
+"subject": "Hearing & Psychoacoustics",
+"gs": 4290
+},
+"Speech & Voice Perception": {
+"id": "cc2c7e90-f726-557e-b574-b5e020e2227b",
+"field": "Hearing, Perception & Listening",
+"subject": "Hearing & Psychoacoustics",
+"gs": 4300
+},
+"Tonal & Timbre Descriptors": {
+"id": "7893766e-3369-5fb2-b414-ca3a04ad18d7",
+"field": "Hearing, Perception & Listening",
+"subject": "Critical Listening & Ear Training",
+"gs": 4310
+},
+"Attack, Decay, Resonance & Artifact Identification": {
+"id": "bf0d76ca-f34e-50c0-9eda-950adde222ac",
+"field": "Hearing, Perception & Listening",
+"subject": "Critical Listening & Ear Training",
+"gs": 4320
+},
+"Strings, Guitar & Keys": {
+"id": "4308b793-491e-5a67-93d7-57dcb7460b99",
+"field": "Hearing, Perception & Listening",
+"subject": "Critical Listening & Ear Training",
+"gs": 4330
+},
+"Drums & Percussion": {
+"id": "2e5467d2-b621-5493-93cf-d68adf911b2f",
+"field": "Hearing, Perception & Listening",
+"subject": "Critical Listening & Ear Training",
+"gs": 4340
+},
+"Winds, Brass & Organ": {
+"id": "f13fbab2-07b3-56b9-8364-43ad805b3d58",
+"field": "Hearing, Perception & Listening",
+"subject": "Critical Listening & Ear Training",
+"gs": 4350
+},
+"Project Management": {
+"id": "dbff180b-93bb-57cb-9618-eafe5dfff9be",
+"field": "Career, Business & Industry",
+"subject": "Professional Practice",
+"gs": 4360
+},
+"Workplace Skills": {
+"id": "697b1bd1-441b-5534-bb6e-5568d495399d",
+"field": "Career, Business & Industry",
+"subject": "Professional Practice",
+"gs": 4370
+},
+"Audio Career Exploration": {
+"id": "0b62112f-da05-5716-8109-00dd64692638",
+"field": "Career, Business & Industry",
+"subject": "Professional Practice",
+"gs": 4380
+},
+"Music Entrepreneurship": {
+"id": "7ef4c196-bd2a-5d4b-9189-d3f8923c3a48",
+"field": "Career, Business & Industry",
+"subject": "Professional Practice",
+"gs": 4390
+},
+"Industry Foundations": {
+"id": "3d175900-17e2-5752-8f38-c60bad3cab66",
+"field": "Career, Business & Industry",
+"subject": "Professional Practice",
+"gs": 4400
+},
+"AI/ML Foundations for Audio": {
+"id": "3ddc5851-bcf6-5be7-b779-30df61560302",
+"field": "AI Audio",
+"subject": "AI Audio",
+"gs": 4410
+},
+"Audio DSP, MIR, Ethics & Emerging": {
+"id": "9e907b56-bb3f-5ae0-bdbe-1d4f733169f5",
+"field": "AI Audio",
+"subject": "AI Audio",
+"gs": 4420
+},
+"AI Music, Voice & Creative Tools": {
+"id": "a7a851ef-6cce-5c0f-94f5-c0f27ec235fa",
+"field": "AI Audio",
+"subject": "AI Audio",
+"gs": 4430
+},
+"Tape Machine Mechanics & Alignment": {
+"id": "fd96605c-7f73-5f53-8341-86c46599534a",
+"field": "Preservation & Archival",
+"subject": "Analog Formats & Machines",
+"gs": 4440
+},
+"Tape Recording, Formats & Formulations": {
+"id": "debd2f91-0eb1-5fbd-a482-aabccd72b597",
+"field": "Preservation & Archival",
+"subject": "Analog Formats & Machines",
+"gs": 4450
+},
+"Audio Restoration & Archival": {
+"id": "e8694246-b910-5896-b57f-1347bcd33e0a",
+"field": "Preservation & Archival",
+"subject": "Preservation & Restoration",
+"gs": 4460
+},
+"Magnetic Tape Preservation & Conservation": {
+"id": "da57871e-d851-5e55-b187-3ebd03594794",
+"field": "Preservation & Archival",
+"subject": "Preservation & Restoration",
+"gs": 4470
+},
+"Archival Preservation & Obsolete Media": {
+"id": "e65f5e23-4968-5636-8030-8b17c75288c2",
+"field": "Preservation & Archival",
+"subject": "Preservation & Restoration",
+"gs": 4480
+},
+"Standards - Coding, Systems, Metadata & Transport": {
+"id": "9dc02d6e-f511-5777-8233-2f6a5d683417",
+"field": "Standards & Sound Law",
+"subject": "Technical Standards",
+"gs": 4490
+},
+"Standards - General Acoustics & Signal Terms": {
+"id": "81f1cc67-56d7-58d6-99fb-ed95866c680c",
+"field": "Standards & Sound Law",
+"subject": "Technical Standards",
+"gs": 4500
+},
+"Standards - Immersive/Object/Scene, MIR, ML & Loudness": {
+"id": "7460e098-c92e-5a36-b51f-939989ceefcf",
+"field": "Standards & Sound Law",
+"subject": "Technical Standards",
+"gs": 4510
+},
+"Standards - Psychoacoustics, Hearing & Audiology": {
+"id": "a90fa870-ffd1-564e-8b65-2183e7f88292",
+"field": "Standards & Sound Law",
+"subject": "Technical Standards",
+"gs": 4520
+},
+"Standards - Room, Building, Environmental & Measurement": {
+"id": "e72d31b1-36dd-5f30-9fc0-be9af9dd04bd",
+"field": "Standards & Sound Law",
+"subject": "Technical Standards",
+"gs": 4530
+},
+"Sound Law - Framework, Metrics & Compliance": {
+"id": "61f5d2ba-a321-5254-bbee-00fb36ab3ca6",
+"field": "Standards & Sound Law",
+"subject": "Sound Law & Compliance",
+"gs": 4540
+},
+"Sound Law - Assessment, Mapping & Mitigation": {
+"id": "b3b7fc76-158e-507f-836e-92f92ea51b27",
+"field": "Standards & Sound Law",
+"subject": "Sound Law & Compliance",
+"gs": 4550
+},
+"Time/Frequency Displays & Spectrograms": {
+"id": "0b669c02-1744-5558-9287-6ea2ef266e5e",
+"field": "Acoustics Science & Applied Research",
+"subject": "Sound Visualization & Imaging",
+"gs": 4560
+},
+"Acoustic Imaging & Sound-Field Visualization": {
+"id": "5a4dc8f1-9281-5fd8-be70-5b6b3d676727",
+"field": "Acoustics Science & Applied Research",
+"subject": "Sound Visualization & Imaging",
+"gs": 4570
+},
+"Advanced Acoustic Imaging & Sound-Field Reconstruction": {
+"id": "172c34b8-4384-5283-b45d-59e15b733133",
+"field": "Acoustics Science & Applied Research",
+"subject": "Sound Visualization & Imaging",
+"gs": 4580
+},
+"Data Sonification & Auditory Display": {
+"id": "ad8596f5-4419-5362-b31a-179617694129",
+"field": "Acoustics Science & Applied Research",
+"subject": "Sound Visualization & Imaging",
+"gs": 4590
+},
+"Advanced & Physical Acoustics (Nonlinear/Structural/Aero/Materials)": {
+"id": "5b2fc2c9-dde7-5aad-88bf-f588e0f83e96",
+"field": "Acoustics Science & Applied Research",
+"subject": "Physical & Advanced Acoustics",
+"gs": 4600
+},
+"Sound Physics, Measurement & Acoustic Quantities": {
+"id": "c1ab056a-1aad-52cc-9174-367d48025a80",
+"field": "Acoustics Science & Applied Research",
+"subject": "Physical & Advanced Acoustics",
+"gs": 4610
+},
+"Ultrasonics, Underwater & Spatial-Audio Science": {
+"id": "6ed6f1e0-d948-5208-a37e-d6ff0655555e",
+"field": "Acoustics Science & Applied Research",
+"subject": "Physical & Advanced Acoustics",
+"gs": 4620
+},
+"Ultrasonics, NDT & Industrial Inspection": {
+"id": "061a7b3a-05f4-5e0d-926b-c73d6c0aece4",
+"field": "Acoustics Science & Applied Research",
+"subject": "Physical & Advanced Acoustics",
+"gs": 4630
+},
+"Bioacoustics & Ecoacoustics": {
+"id": "077f0cf2-8d8b-5760-936d-3f0bd5c51304",
+"field": "Acoustics Science & Applied Research",
+"subject": "Life, Earth & Space Acoustics",
+"gs": 4640
+},
+"Geologic & Seismoacoustics": {
+"id": "3823058f-9c66-5485-af55-cf3cdaf7aa47",
+"field": "Acoustics Science & Applied Research",
+"subject": "Life, Earth & Space Acoustics",
+"gs": 4650
+},
+"Astronomical & Cosmological Acoustics": {
+"id": "23eb8e17-d4a7-54e3-be33-c2fa539134f4",
+"field": "Acoustics Science & Applied Research",
+"subject": "Life, Earth & Space Acoustics",
+"gs": 4660
+},
+"Chemical & Molecular Acoustics": {
+"id": "c3df1dde-1e5f-5c79-88aa-10f33e4f16ba",
+"field": "Acoustics Science & Applied Research",
+"subject": "Life, Earth & Space Acoustics",
+"gs": 4670
+},
+"Medical, Hearing & Clinical Acoustics": {
+"id": "d032868d-8e90-5174-90d4-374a0e85bcb4",
+"field": "Acoustics Science & Applied Research",
+"subject": "Life, Earth & Space Acoustics",
+"gs": 4680
+},
+"Archaeological & Heritage Acoustics": {
+"id": "95536768-f248-5d53-b171-51fd87fc0714",
+"field": "Acoustics Science & Applied Research",
+"subject": "Human & Heritage Acoustics",
+"gs": 4690
+},
+"Anthropology & Sound Studies": {
+"id": "23d1024b-5085-5bd1-bdae-e8413d8aab42",
+"field": "Acoustics Science & Applied Research",
+"subject": "Human & Heritage Acoustics",
+"gs": 4700
+},
+"Surveillance, Forensic & Covert Audio": {
+"id": "202b1bc5-58ff-5c8b-bc33-e60ae8a4f26f",
+"field": "Acoustics Science & Applied Research",
+"subject": "Forensic & Investigative",
+"gs": 4710
+}
+}

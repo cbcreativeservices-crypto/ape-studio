@@ -1,0 +1,327 @@
+{
+  "batch": 29,
+  "topic": "Guitar, Bass & Amp Recording",
+  "authored": [
+    {
+      "id": "15c52bb2-9e9f-4814-bea1-4efb9e898453",
+      "term": "Active bass",
+      "fields": {
+        "definition": "An active bass is an electric bass guitar with onboard active electronics, typically a battery-powered preamp and often an onboard equalizer, that buffer and amplify the pickup signal before it leaves the instrument; this yields a low output impedance, a hotter and more consistent output, and boost/cut tone control, in contrast to a purely passive bass whose signal comes straight from the pickups.",
+        "plain_english": "A bass guitar with a small battery-powered preamp built inside. The battery boosts the signal and often adds tone controls. It gives a louder, cleaner output than a plain passive bass.",
+        "purpose_function": "The onboard preamp exists to lower the output impedance and drive cables and inputs more strongly, reducing high-frequency loss and noise while adding boost/cut tone shaping the player controls from the instrument.",
+        "practical_application": "An engineer recording an active bass keeps a fresh 9V battery in it, unplugs the instrument cable when idle because the jack switches the battery on, and may engage a pad on the DI or preamp since the hot output can overload an input.",
+        "category": "Electric bass",
+        "related_terms": [
+          "Passive bass",
+          "DI box",
+          "Input impedance",
+          "Preamp",
+          "Pickup",
+          "Pad"
+        ],
+        "common_mistakes": [
+          "Leaving the cable plugged in when not playing, which keeps the battery circuit switched on and drains it flat before or during a session.",
+          "Confusing active electronics with phantom power; an active bass runs on its own internal battery, not the console's 48V phantom.",
+          "Feeding a hot active output into a sensitive input without a pad, causing clipping and distortion that a passive bass would not produce."
+        ],
+        "scenario_contexts": [
+          "Tracking a modern slap-bass part where the player's active EQ is used to add high-end sparkle.",
+          "Sound-checking a bass rig and discovering weak, distorted tone caused by a dying onboard battery.",
+          "Choosing a DI with enough headroom and a pad to handle the strong output of an active bass on stage."
+        ]
+      },
+      "sources": [
+        "EMG Pickups technical/installation documentation (active electronics, 9V battery, output-jack switching)",
+        "Yamaha electric bass owner's manual (active circuit and battery care)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "5b1e3aee-c1cf-4979-92ee-c4d8e4fea50c",
+      "term": "Amp track",
+      "fields": {
+        "definition": "An amp track is a recorded track captured by placing a microphone in front of a guitar or bass amplifier's loudspeaker, so it carries the amplifier and cabinet's actual sound; it is distinguished from a DI track, which is the instrument's direct signal taken before amplification.",
+        "plain_english": "A recorded track made by placing a microphone in front of a guitar or bass amp. It captures the amp's real speaker sound. That is different from the clean signal taken straight from the instrument.",
+        "purpose_function": "The amp track captures the tone, drive and cabinet character that a speaker and microphone add, giving a mix the amplified sound of the instrument rather than a clean direct feed.",
+        "practical_application": "An engineer records an amp track by miking the speaker, often blends it with a DI track for weight and clarity, and can re-amp a stored DI later to create a fresh amp track without the player present.",
+        "category": "Recording technique",
+        "related_terms": [
+          "DI track",
+          "Re-amping",
+          "Cabinet miking",
+          "Bass phase switch",
+          "Comb filtering",
+          "Blend"
+        ],
+        "common_mistakes": [
+          "Combining an amp track with a DI track without checking polarity, so the two cancel and the low end goes thin.",
+          "Placing the mic without noting speaker position, then getting a dull or harsh tone that must be fixed later with EQ.",
+          "Recording only the amp track and keeping no DI, leaving no option to re-amp or fix tone problems afterward."
+        ],
+        "scenario_contexts": [
+          "Miking a guitar cabinet to record an amp track alongside a clean DI for a rock rhythm part.",
+          "Re-amping a saved bass DI through a real amp to build an amp track during mixing.",
+          "Aligning an amp track and a DI track in the DAW so they sum without phase cancellation."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, 'Modern Recording Techniques' (electric guitar/bass amp miking and re-amping)",
+        "Shure technical publication, 'Microphone Techniques for Recording' (miking guitar and bass amplifiers)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "16d5418e-b054-4824-b507-dd26079cc9a1",
+      "term": "Bass amplifier ground lift",
+      "fields": {
+        "definition": "A bass amplifier ground lift is a switch, on the amp's balanced XLR DI output or on an outboard DI box, that disconnects the audio cable's shield/signal ground (pin 1) at that end to break a ground loop between the amp and the mixing console, reducing hum and buzz; it lifts only the audio signal ground and must never disconnect the amplifier's mains protective earth.",
+        "plain_english": "A switch that stops a low humming noise when a bass amp is plugged into a mixer. It cuts one ground wire in the audio cable to break a hum loop. It must never be used to cut the amp's power-cord safety ground.",
+        "purpose_function": "Ground loops form when two devices share both an audio-cable shield and separate mains grounds, letting current flow in a loop and induce hum; the ground lift breaks that loop at the audio interconnect while leaving the mains safety earth fully intact.",
+        "practical_application": "When a bass DI feeding the console hums, a technician flips the DI or amp ground-lift switch to break the loop, and if hum remains addresses grounding at the source rather than ever removing the amplifier's earth pin.",
+        "category": "Grounding and safety",
+        "related_terms": [
+          "Ground loop",
+          "DI box",
+          "Shield",
+          "Balanced connection",
+          "Hum",
+          "Protective earth"
+        ],
+        "common_mistakes": [
+          "UNSAFE: Defeating the amplifier's mains earth with a 3-to-2 cheater adapter or by clipping the ground pin to kill hum; this removes the protective earth and can leave the chassis and metal strings live at a lethal voltage.",
+          "Treating ground lift as a tone or level control; it only changes the shield connection to fight hum and does nothing to the sound quality of a clean signal.",
+          "Lifting the ground on every device at once, which can leave shields floating and increase noise and RF pickup instead of curing the hum.",
+          "Reaching for the ground lift first when the real cause is a faulty cable or a shared circuit with lighting dimmers."
+        ],
+        "scenario_contexts": [
+          "A bass DI feeding front-of-house hums, and the tech engages the DI's ground lift to break the loop.",
+          "Recording a bass amp's XLR DI into an interface on the same mains outlet, where ground lift removes loop hum.",
+          "Troubleshooting stage buzz caused by a musician's cheater plug, and fixing it by restoring the safety ground and using a proper DI ground lift."
+        ]
+      },
+      "sources": [
+        "Rane, 'Sound System Interconnection' (RaneNote 110) — shield connection, ground loops and pin-1 grounding",
+        "Ballou, 'Handbook for Sound Engineers' (grounding, shielding and system interfacing)",
+        "NEC / NFPA 70 (equipment grounding conductor; the mains protective earth must not be defeated)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "7b923b89-e6d2-4817-a65f-76119bbe8f6f",
+      "term": "Bass body resonance",
+      "fields": {
+        "definition": "Bass body resonance is the set of natural mechanical resonant frequencies of a bass guitar's body and neck structure; when a fretted note's fundamental coincides with a strong structural resonance, energy transfers from the string into the vibrating wood, which can reinforce tone but also creates 'dead spots' where that note's sustain is noticeably shortened.",
+        "plain_english": "Every bass guitar body and neck naturally vibrates at certain pitches. When a played note matches that pitch, the wood soaks up the string's energy. That note then fades faster than the others. These weak spots are called dead spots.",
+        "purpose_function": "Understanding body resonance explains why some notes ring longer or shorter than their neighbours, which matters for judging an instrument's sustain and evenness and for predicting how a recorded bass line will decay.",
+        "practical_application": "A technician hearing a note that dies quickly recognises a dead spot from body/neck resonance and works around it by changing the fretting position, adding mass to the headstock, or using compression and note choice rather than blaming the amp.",
+        "category": "Instrument acoustics",
+        "related_terms": [
+          "Dead spot",
+          "Sustain",
+          "Bass compression",
+          "Resonant frequency",
+          "Fundamental",
+          "Neck relief"
+        ],
+        "common_mistakes": [
+          "Blaming a fast-decaying note on the strings or amplifier when it is actually a structural dead spot from body and neck resonance.",
+          "Assuming a solid-body electric bass has no meaningful body resonance; the neck and body still resonate enough to create dead spots.",
+          "Trying to fix an uneven-sustaining note entirely with EQ, which cannot restore energy the resonating structure has already absorbed."
+        ],
+        "scenario_contexts": [
+          "Tracking a sustained bass note that dies early and identifying it as a dead spot around the fourth to sixth fret of the G string.",
+          "Comparing two basses in the studio and choosing the one whose body resonance gives more even note-to-note sustain.",
+          "Applying compression to smooth out the uneven decay caused by body resonance in a recorded bass part."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, 'The Physics of Musical Instruments' (string-instrument body and neck resonances)",
+        "Fleischer & Zwicker, 'Mechanical vibrations of electric guitars' (Acustica) — neck/body resonance and dead spots"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "9534a2fe-374e-4796-ac71-c06e7a37ff6d",
+      "term": "Bass cabinet horn",
+      "fields": {
+        "definition": "A bass cabinet horn is a high-frequency compression driver mounted behind a horn (or a tweeter) inside a bass speaker cabinet, fed through a crossover to reproduce the frequencies above the woofer's range; it is commonly fitted with an L-pad attenuator so the player can adjust or defeat its level.",
+        "plain_english": "A small tweeter speaker built into some bass amp cabinets. It plays the high, bright sounds that the big woofer cannot. Many cabinets have a knob to turn the horn up or down.",
+        "purpose_function": "The horn extends the cabinet's high-frequency response so bright playing styles such as slap, pick attack and effects come through clearly, since the large bass woofer alone cannot reproduce those top frequencies.",
+        "practical_application": "A technician sets the horn's L-pad to taste, dialling it up for slap brightness or down to reduce hiss and harshness, and keeps clipped or heavily distorted signals in check because sustained high-frequency energy can damage the compression driver.",
+        "category": "Bass amplification",
+        "related_terms": [
+          "Compression driver",
+          "Crossover",
+          "L-pad",
+          "Woofer",
+          "Tweeter",
+          "Bass cabinet"
+        ],
+        "common_mistakes": [
+          "Leaving the horn wide open and then blaming the amp for a harsh, clanky top end that the L-pad could tame.",
+          "UNSAFE for the driver: running a clipped or heavily distorted signal at high level, whose excess high-frequency energy can overheat and destroy the compression driver.",
+          "Assuming the horn is broken when it is simply turned all the way down at its L-pad attenuator."
+        ],
+        "scenario_contexts": [
+          "Setting up a bass rig for slap playing and raising the cabinet horn to bring out string brightness.",
+          "Turning the horn's L-pad down to reduce hiss during a quiet fingerstyle passage.",
+          "Diagnosing a cabinet with no high end and finding the horn's attenuator backed fully off."
+        ]
+      },
+      "sources": [
+        "Ballou, 'Handbook for Sound Engineers' (loudspeaker crossovers and compression-driver horns)",
+        "Ampeg bass cabinet owner's/technical manual (horn tweeter and level attenuator)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "d2811c74-a7ce-4c83-90f4-1cf5d41c37ed",
+      "term": "Bass compression",
+      "fields": {
+        "definition": "Bass compression is the use of a compressor to reduce the dynamic range of a bass part by automatically turning down signal that exceeds a threshold, evening out level differences between notes and strings; controls for threshold, ratio, attack and release set how much and how quickly the gain is reduced.",
+        "plain_english": "A tool that turns down the loudest notes so the bass sounds even. It stops some notes from jumping out too loud. This helps the bass stay steady and sit well in a song.",
+        "purpose_function": "Compression exists to control the bass's wide dynamics so quiet and loud notes sit at a more consistent level, adding perceived sustain and helping the low end hold a steady place in the mix.",
+        "practical_application": "An engineer patches a compressor or pedal on the bass DI or channel and sets a moderate ratio with an attack slow enough to preserve the pluck, adjusting release to the tempo so the level stays even without obvious pumping.",
+        "category": "Dynamics processing",
+        "related_terms": [
+          "Compressor",
+          "Threshold",
+          "Ratio",
+          "Attack",
+          "Release",
+          "Limiting"
+        ],
+        "common_mistakes": [
+          "Setting the attack too fast, which clamps the initial pluck and robs the bass of its note definition and punch.",
+          "Over-compressing so heavily that the part pumps and loses all natural dynamics.",
+          "Printing heavy compression while recording, which cannot be undone if it turns out to be too much."
+        ],
+        "scenario_contexts": [
+          "Evening out an uneven fingerstyle bass take so every note sits at a similar level.",
+          "Adding gentle compression to a slap part to tame the loud pops without killing the attack.",
+          "Using a bass compressor pedal live to keep stage and front-of-house level consistent."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, 'Modern Recording Techniques' (dynamic-range processing and compression on bass)",
+        "Ballou, 'Handbook for Sound Engineers' (dynamic-range compressors: threshold, ratio, attack, release)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "9ad4f56c-111c-4db4-8cd9-c728a5103ab8",
+      "term": "Bass phase switch",
+      "fields": {
+        "definition": "A bass phase switch is a polarity-invert control on a bass amp, DI box or preamp that flips the signal's polarity by 180 degrees; it is used to realign two captures of the same bass, such as a DI and a miked cabinet, or the bass against another source, so their combined low end reinforces instead of cancelling. Strictly it inverts polarity rather than shifting phase across frequency.",
+        "plain_english": "A button that flips the bass signal upside down. Engineers use it when a bass is recorded two ways at once, like a mic plus a direct feed. Flipping one keeps them from canceling out and sounding thin.",
+        "purpose_function": "The switch exists to correct polarity mismatches between combined signals, preventing the destructive cancellation that thins or hollows the low end when two versions of the bass are summed.",
+        "practical_application": "A technician engages the switch while listening or watching a meter, choosing the setting that gives the fuller low end when a bass DI and mic, or the bass and kick, are blended together.",
+        "category": "Phase and polarity",
+        "related_terms": [
+          "Polarity",
+          "Phase",
+          "Comb filtering",
+          "DI box",
+          "Amp track",
+          "Mono compatibility"
+        ],
+        "common_mistakes": [
+          "Confusing polarity inversion with true phase or time alignment; the switch flips polarity and cannot fix a delay between two mics.",
+          "Flipping the switch by rule instead of by ear, and locking in the setting that actually thins the sound.",
+          "Assuming it changes tone on its own; with a single source it makes no audible difference until that source is combined with another."
+        ],
+        "scenario_contexts": [
+          "Blending a bass DI with a miked cabinet and using the switch to find the setting with the strongest low end.",
+          "Aligning bass and kick drum polarity so their low frequencies add rather than cancel.",
+          "Checking a bass mix folds to mono cleanly by testing the phase switch position."
+        ]
+      },
+      "sources": [
+        "Rane Professional Audio Reference (polarity vs. phase; signal summation and cancellation)",
+        "Ballou, 'Handbook for Sound Engineers' (polarity, phase, comb filtering and multi-source summation)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "c04bc865-33ca-4beb-94b8-c1f02fdba031",
+      "term": "Bass reeds",
+      "fields": {
+        "definition": "In free-reed instruments such as the accordion, harmonium/reed organ and bass harmonica, the bass reeds are the larger, lower-tuned free reeds — thin metal tongues riveted over slots in a reed plate — that sound the instrument's low notes; being longer and more massive than the treble reeds, they vibrate more slowly to produce lower pitches.",
+        "plain_english": "The larger metal tongues inside an accordion or reed organ that make the low notes. Air rushing past each reed makes it vibrate and sound a pitch. The longer, heavier reeds give the deep bass tones.",
+        "purpose_function": "The bass reeds provide the low-frequency foundation of a free-reed instrument, so their size and tuning set how deep and strong the instrument's bass register sounds.",
+        "practical_application": "When recording an accordion or harmonium, an engineer mics near the bass side or bass grille to capture the bass reeds, aware that each reed sounds on only one air direction and that these low reeds carry strong low-frequency energy.",
+        "category": "Free-reed instruments",
+        "related_terms": [
+          "Free reed",
+          "Reed plate",
+          "Accordion",
+          "Harmonium",
+          "Bass harmonica",
+          "Reed organ"
+        ],
+        "common_mistakes": [
+          "Confusing free bass reeds, which vibrate through their slot, with an organ reed pipe's beating reed that strikes a shallot.",
+          "Expecting one reed to sound on both air directions, when a separate reed handles press versus pull or blow versus draw.",
+          "Miking the bass side too closely and capturing valve slap and air noise instead of a clean low reed tone."
+        ],
+        "scenario_contexts": [
+          "Close-miking the bass side of an accordion to capture the low reeds for a folk recording.",
+          "Servicing a harmonium and gapping or tuning a sluggish bass reed on its reed plate.",
+          "Recording a bass harmonica and managing the strong low-frequency output of its bass reeds."
+        ]
+      },
+      "sources": [
+        "Grove Dictionary of Music and Musicians ('Accordion' and 'Reed organ' — bass reeds and free reeds)",
+        "Acoustical Society of America, Acoustics Today, 'Free Reeds...' (Cottingham) — free-reed acoustics and reed size versus pitch"
+      ],
+      "confidence": "Medium",
+      "flags": [
+        "Topic mismatch: 'Bass reeds' belongs to free-reed instruments, not guitar/bass/amp recording; the canonical free-reed sense (accordion/harmonium/bass harmonica) was defined per authoring rule 6."
+      ]
+    },
+    {
+      "id": "aefbe9f1-69da-400c-81f2-89b45b1eb40f",
+      "term": "Bass rotor",
+      "fields": {
+        "definition": "The bass rotor is the rotating low-frequency element in a rotary (Leslie-type) loudspeaker cabinet: a motor-driven drum or scoop baffle mounted below a fixed bass woofer that spins to project the low frequencies around the room, producing the Doppler pitch modulation and amplitude tremolo characteristic of the effect, paired with a separate rotating treble horn for the highs.",
+        "plain_english": "The spinning drum inside a rotary speaker cabinet, like a Leslie. It throws the low sounds around the room as it turns. This swirling motion gives organ and guitar tones their classic wobble.",
+        "purpose_function": "By physically rotating the low-frequency output, the bass rotor creates continuous Doppler and level modulation that gives the rotary-speaker effect its warm, swirling movement in the bass register.",
+        "practical_application": "An engineer recording a rotary cabinet places one or more mics on the lower bass-rotor drum and separate mics on the treble horn, and notes that the rotor's slow (chorale) and fast (tremolo) speeds change the movement captured.",
+        "category": "Rotary speaker",
+        "related_terms": [
+          "Leslie speaker",
+          "Treble rotor",
+          "Doppler effect",
+          "Tremolo",
+          "Woofer",
+          "Cabinet miking"
+        ],
+        "common_mistakes": [
+          "Confusing the bass rotor drum with the treble horn; the rotor handles lows while the upper horn handles highs, and they are miked separately.",
+          "Assuming the woofer itself spins, when the driver is fixed and only the drum or scoop baffle below it rotates.",
+          "Miking only one side of the cabinet and losing the full stereo swirl the moving rotor produces."
+        ],
+        "scenario_contexts": [
+          "Miking a Leslie cabinet's lower bass rotor and upper horn separately to capture the full rotary effect.",
+          "Recording a Hammond organ through a rotary speaker and switching between chorale and tremolo rotor speeds.",
+          "Sending a guitar through a rotary cabinet and capturing the bass rotor's swirl for a psychedelic tone."
+        ]
+      },
+      "sources": [
+        "Ballou, 'Handbook for Sound Engineers' (rotary/Leslie loudspeakers and Doppler modulation)",
+        "Hammond/Leslie service manual (bass rotor drum and treble horn rotor assembly)"
+      ],
+      "confidence": "High",
+      "flags": [
+        "Topic note: 'Bass rotor' is defined in its canonical audio sense as the low-frequency rotating element of a rotary (Leslie) speaker cabinet."
+      ]
+    }
+  ]
+}

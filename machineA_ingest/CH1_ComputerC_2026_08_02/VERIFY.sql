@@ -1,0 +1,3 @@
+-- After running APPLY_00 then APPLY_01..: total should rise by 1534 (skips = pre-existing terms)
+SELECT (SELECT count(*) FROM glossary) AS glossary_total;
+SELECT a.name, count(*) AS terms FROM glossary_topics gt JOIN achievements a ON a.id=gt.achievement_id WHERE gt.achievement_id IN ('2db4060a-e6e7-4745-b913-33fc37deee4d','363e91ea-a50c-4692-a95c-cc8e52bfb0ca','5133f8bd-e4cc-4be3-8133-ccccd41e05e2','525bdc16-2acc-4b5b-aaa6-781ddb284216','79ec1aac-5b74-44bb-9dc8-deab2d1fdd04','a63ccad5-33c7-4e5c-b9a2-ba6e8c896b29','a75e00b4-4648-4780-8913-cc672bc0ffb3','f4e5d4af-4eb4-4124-91d5-6e4c1bb64a37','fb6ca315-ec17-4334-821c-a44751ae2532') AND gt.is_primary GROUP BY a.name ORDER BY terms DESC;

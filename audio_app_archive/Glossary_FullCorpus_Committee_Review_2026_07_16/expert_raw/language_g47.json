@@ -1,0 +1,223 @@
+{
+ "expert": "language",
+ "group": 47,
+ "reviews": [
+  {
+   "id": "0697ce85-1641-4e35-9ed5-f70161c8566c",
+   "term": "Super Tweeter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e39f655c-281e-4e9d-b5bc-f4750fe71fb6",
+   "term": "Supercardioid",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "purpose_function",
+     "severity": "Medium",
+     "issue": "purpose_function says the pattern has 'slight rear rejection,' which contradicts the rest of the entry (definition: 'some rear pickup'; practical_application/scenario: a 'live rear lobe' and deepest rejection 'at the sides, not the back'). A beginner reading 'rear rejection' then 'live rear lobe' gets mixed signals.",
+     "suggestion": "Reword to match the entry, preserving meaning, e.g.: 'Microphone pattern narrower than cardioid, with its deepest rejection at the sides and a small live rear lobe. Extreme forward directivity.'"
+    }
+   ]
+  },
+  {
+   "id": "80bf397c-14e1-4b42-948a-3e37ff88bc84",
+   "term": "Superposition",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4cce899c-055f-4c17-ad4a-cc4f63c40853",
+   "term": "Surface-Mount Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3187e640-0d07-493c-8087-b67c2610a269",
+   "term": "Surge Protector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3937d314-9936-472d-9284-cd60314e19dc",
+   "term": "Surgical EQ",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cb572cad-94a4-4c6b-a799-c513a1119ccf",
+   "term": "Surround Sound",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1926197a-e099-43e0-a39a-27ef2c69916b",
+   "term": "Surround Sound Formats",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "662a223d-f5d5-4513-9a05-c53e5814e141",
+   "term": "Sweep Generator",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9ed7f49a-1b1e-4e50-bcc4-40204fce4f5e",
+   "term": "Sweet Spot",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "350edfe9-82d8-4201-b14f-7325fc5e9523",
+   "term": "Switch-Mode Power Supply (SMPS)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "50909ecb-4e4a-4e78-b6df-6fba6b47e120",
+   "term": "System baseline",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cd0f435c-8592-495c-bea8-f2863a28bb73",
+   "term": "System Calibration",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "18a82441-00bf-4c45-973c-0b9419003259",
+   "term": "System Documentation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e27f64f6-2b42-4164-8ef3-b84956baa5be",
+   "term": "System Headroom",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9dfe4cf3-4c02-4ea9-b77d-862f4b0ef732",
+   "term": "System Integration",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c162102e-490a-4f4e-9a6c-ca372c461639",
+   "term": "System verification",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d42e69ea-d27a-4441-864e-48cf0ee447b0",
+   "term": "T-power / A-B power",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "213fd600-fff1-45ad-aaf0-40aa3221b537",
+   "term": "Talkback",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2fd4d424-e58c-4940-b75e-0f693f2da23c",
+   "term": "Tap Tempo",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ef5651df-e08c-465f-ba91-6f8a25347a70",
+   "term": "Tap test",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7496ed5c-b68f-499d-a244-b509d72cce1a",
+   "term": "Tape Delay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0753e6fd-a29a-4243-b26a-3965a73c506b",
+   "term": "Target curve",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f9535ae1-ed89-40be-9bfc-e675f50d4d40",
+   "term": "Tech Rehearsal",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1cd1e29e-8dfd-458e-96cf-5799b8dc09d0",
+   "term": "Tech Rider",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "381c11f7-d763-41f5-be3c-c2b0302f14d3",
+   "term": "Technical Ground",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "44a9cfa5-104e-40f9-9948-4010345d4692",
+   "term": "Technical Rehearsal",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5e81087b-46b3-44a9-8b24-db8f15ec432b",
+   "term": "Telecoil (T-Coil)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "10ea5c21-ad22-4284-a999-8f8708ea9f89",
+   "term": "Telematics",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "668ec57d-97a0-443e-93bb-ced13854265e",
+   "term": "Tempo Sync",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f2d5343c-d292-4663-9677-b2c259cafa10",
+   "term": "Tensile Load",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6d5cc5cb-a73f-452a-97a6-53fd3d5ed002",
+   "term": "Test Light",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1c7c4096-2317-4424-af25-7ace47883ab2",
+   "term": "THD",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "54ca2bf3-1ff5-45fe-8000-1fc37b1c0a18",
+   "term": "THD+N",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e65cd962-6ce3-4756-8614-977f67848acc",
+   "term": "Theater Production",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

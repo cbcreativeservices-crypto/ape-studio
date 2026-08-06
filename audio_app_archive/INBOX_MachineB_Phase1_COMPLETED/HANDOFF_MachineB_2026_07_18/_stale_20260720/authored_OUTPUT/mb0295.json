@@ -1,0 +1,159 @@
+{
+ "batch": 295,
+ "topic": "Synthesis Fundamentals & Oscillators",
+ "authored": [
+  {
+   "id": "a5b5b1d4-0513-4e4b-a2b3-951603fc5b0a",
+   "term": "Jukebox",
+   "fields": {
+    "definition": "OpenAI Jukebox is a neural network model that generates raw-audio music, including rudimentary singing, by using a hierarchical VQ-VAE to compress audio into discrete tokens and autoregressive Transformers to predict those tokens conditioned on genre, artist, and lyrics.",
+    "plain_english": "Jukebox is an AI from OpenAI that makes music as real sound, even with singing. You can give it a style, an artist, and words to sing, and it tries to build a matching song.",
+    "purpose_function": "It exists to show that one model can generate long, coherent musical audio with vocals directly as a waveform, rather than as MIDI notes.",
+    "practical_application": "A producer might use Jukebox to generate rough musical sketches or to study how neural models make raw-audio music, keeping in mind its slow, lo-fi output.",
+    "category": "AI Music Generation",
+    "related_terms": ["MusicLM", "MusicGen", "Neural audio synthesis", "Music generation", "Magenta"],
+    "common_mistakes": ["Thinking Jukebox outputs clean studio-quality audio; its raw-audio results are noticeably lo-fi and noisy.", "Confusing it with a coin-operated jukebox machine rather than the AI model.", "Assuming it works in real time; sampling even a short clip can take a long time."],
+    "scenario_contexts": ["Generating a short AI music sketch in a chosen artist style for experimentation.", "Studying VQ-VAE token-based audio generation in a machine-learning course.", "Comparing raw-audio models against text-to-music systems like MusicLM."]
+   },
+   "sources": ["OpenAI — Dhariwal et al., 'Jukebox: A Generative Model for Music' (2020, technical paper)", "OpenAI Jukebox model documentation and technical report"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "12f97c9a-96b4-4b1a-8b03-e5c54d07fe42",
+   "term": "Magenta",
+   "fields": {
+    "definition": "Magenta is an open-source research project, started by the Google Brain team, that explores using machine learning to create music and art, providing models and libraries (built on TensorFlow) for tasks such as melody generation, performance modeling, and neural audio synthesis.",
+    "plain_english": "Magenta is a free Google project that uses AI to help make music and art. It shares models and coding tools so people can build their own music-making programs.",
+    "purpose_function": "It exists to research and share machine-learning tools that help musicians and artists create, giving developers ready-made models to build on.",
+    "practical_application": "A developer might use Magenta's models and libraries to add AI features like melody continuation or a neural instrument to a music app or creative project.",
+    "category": "AI Music Generation",
+    "related_terms": ["Music generation", "Neural synthesizer", "Neural audio synthesis", "MusicGen", "MusicLM"],
+    "common_mistakes": ["Thinking Magenta is a single app rather than a collection of research models and tools.", "Assuming it only makes audio, when many Magenta models work with symbolic MIDI notes.", "Expecting finished songs instead of building blocks a developer must assemble."],
+    "scenario_contexts": ["Adding AI melody generation to a browser-based music toy.", "Prototyping a neural instrument with Magenta's DDSP or NSynth tools.", "Teaching students how ML models handle symbolic music."]
+   },
+   "sources": ["Google Research / Google Brain — Magenta project technical documentation", "Engel et al., 'DDSP: Differentiable Digital Signal Processing' (Google Magenta, ICLR 2020)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "53a1ee18-0ad1-43c0-950e-9c2841ea437e",
+   "term": "Melody-conditioning",
+   "fields": {
+    "definition": "Melody-conditioning is a technique in generative music models where an input melody is supplied as a conditioning signal so the generated output follows that melodic contour, while other attributes such as instrumentation or style are set separately; it is implemented in models such as MusicGen and MusicLM.",
+    "plain_english": "Melody-conditioning means giving an AI a tune to follow while it makes music. The AI keeps your melody but can change the style or instruments around it.",
+    "purpose_function": "It exists to give users control over the tune of AI-generated music, so the result matches a chosen melody instead of being random.",
+    "practical_application": "A producer can hum or play a melody, feed it to a model like MusicGen, and get back a fuller arrangement that keeps that tune in a requested style.",
+    "category": "AI Music Generation",
+    "related_terms": ["MusicGen", "MusicLM", "Music generation", "MuLan", "Neural audio synthesis"],
+    "common_mistakes": ["Thinking the model copies the melody exactly; it usually follows the contour, not every note.", "Confusing melody-conditioning with text prompts, which control style rather than the tune.", "Expecting perfect pitch tracking from a rough or noisy input melody."],
+    "scenario_contexts": ["Turning a hummed tune into a full backing track with a text-to-music model.", "Keeping a known melody while exploring different genres or instruments.", "Guiding AI generation so it stays in key with an existing song part."]
+   },
+   "sources": ["Meta AI — Copet et al., 'Simple and Controllable Music Generation' (MusicGen, 2023, technical paper)", "Google Research — Agostinelli et al., 'MusicLM: Generating Music From Text' (2023, technical paper)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "481dc259-94bf-4c01-b7a4-85037b95c563",
+   "term": "MuLan",
+   "fields": {
+    "definition": "MuLan (Music-Language Network) is a Google Research model that learns a joint embedding linking music audio and free-form natural-language text, trained on large amounts of music paired with descriptions so that audio and matching text land close together in a shared space; it underpins text-conditioned systems such as MusicLM.",
+    "plain_english": "MuLan is a Google AI that connects music sounds with the words that describe them. It learns to place a song and its description near each other, so a computer can match music to text.",
+    "purpose_function": "It exists to bridge audio and language, letting other systems find or generate music that matches a written description.",
+    "practical_application": "Developers use MuLan-style embeddings to power text-to-music search or to give a music generator a text prompt it can understand.",
+    "category": "AI Music Generation",
+    "related_terms": ["MusicLM", "Music generation", "MusicGen", "Melody-conditioning", "Neural audio synthesis"],
+    "common_mistakes": ["Thinking MuLan generates music; it links audio and text but does not create audio by itself.", "Confusing the joint embedding with a simple tag list or keyword match.", "Assuming it needs clean labels, when it learns from noisy real-world descriptions."],
+    "scenario_contexts": ["Building a text search that finds music clips matching a phrase.", "Providing the text understanding behind a text-to-music model.", "Tagging or organizing a music library by natural-language descriptions."]
+   },
+   "sources": ["Google Research — Huang et al., 'MuLan: A Joint Embedding of Music Audio and Natural Language' (ISMIR 2022)", "Google Research — Agostinelli et al., 'MusicLM: Generating Music From Text' (2023, technical paper)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "60256d5d-0fc8-4bcf-9c57-edad44fe5845",
+   "term": "Music generation",
+   "fields": {
+    "definition": "Music generation is the automated creation of new musical content — either symbolic (notes/MIDI) or raw audio — by an algorithm or model, increasingly using machine-learning systems that learn patterns from existing music to produce original melodies, harmonies, or full arrangements.",
+    "plain_english": "Music generation is when a computer makes new music on its own. Modern tools learn from lots of existing songs and then create fresh melodies or full tracks.",
+    "purpose_function": "It exists to let machines compose or assist with music, speeding up creation and enabling tools like backing-track makers and idea generators.",
+    "practical_application": "A producer might use a music-generation tool to create background tracks, spark ideas, or fill in parts, then edit the result in a DAW.",
+    "category": "AI Music Generation",
+    "related_terms": ["MusicGen", "MusicLM", "Jukebox", "Magenta", "Neural audio synthesis"],
+    "common_mistakes": ["Assuming generated music needs no editing; results usually need cleanup and arrangement.", "Confusing symbolic (MIDI-note) generation with raw-audio generation.", "Thinking all music generation uses AI, when rule-based and algorithmic methods also exist."],
+    "scenario_contexts": ["Creating royalty-free background music for a video.", "Generating chord or melody ideas to start a new song.", "Filling out an arrangement with AI-made instrumental parts."]
+   },
+   "sources": ["Google Research — Agostinelli et al., 'MusicLM: Generating Music From Text' (2023, technical paper)", "Meta AI — Copet et al., 'Simple and Controllable Music Generation' (MusicGen, 2023, technical paper)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1c152bf8-5f90-4e7a-ba85-16c3425ff017",
+   "term": "MusicGen",
+   "fields": {
+    "definition": "MusicGen is a music-generation model from Meta AI that uses a single-stage autoregressive Transformer operating over discrete audio tokens from the EnCodec neural codec to produce music conditioned on a text description and, optionally, a reference melody.",
+    "plain_english": "MusicGen is a Meta AI tool that makes music from a text description, and it can also follow a tune you give it. It builds the sound one small piece at a time using a compressed audio code.",
+    "purpose_function": "It exists to generate controllable music from simple text or melody inputs using one streamlined model instead of several stacked stages.",
+    "practical_application": "A creator types a prompt like 'upbeat acoustic folk' and optionally adds a melody, then MusicGen returns a matching audio clip to use or refine.",
+    "category": "AI Music Generation",
+    "related_terms": ["MusicLM", "Melody-conditioning", "Music generation", "Jukebox", "Neural audio synthesis"],
+    "common_mistakes": ["Expecting long, fully arranged songs; outputs are usually short clips.", "Thinking the melody input is copied note-for-note rather than followed loosely.", "Assuming text prompts guarantee exact instruments; results can vary."],
+    "scenario_contexts": ["Generating a short themed music bed from a text prompt.", "Adding a hummed melody to steer the generated track.", "Comparing single-stage MusicGen output with MusicLM's approach."]
+   },
+   "sources": ["Meta AI — Copet et al., 'Simple and Controllable Music Generation' (MusicGen, 2023, technical paper)", "Meta AI — AudioCraft technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "eac48d61-ff7d-4784-8974-41fe318078f4",
+   "term": "MusicLM",
+   "fields": {
+    "definition": "MusicLM is a Google model that generates high-fidelity music from text descriptions by framing generation as a hierarchical sequence-to-sequence task over audio tokens, using representations such as MuLan and audio codecs to stay faithful to the text over long durations.",
+    "plain_english": "MusicLM is a Google AI that turns a written description into music that sounds fairly clean. You can ask for 'calm piano for studying' and it creates a matching piece.",
+    "purpose_function": "It exists to produce longer, higher-quality music from text prompts while keeping the sound consistent with the description.",
+    "practical_application": "A user writes a detailed prompt and MusicLM returns a matching music clip, useful for prototyping moods or background-music ideas.",
+    "category": "AI Music Generation",
+    "related_terms": ["MusicGen", "MuLan", "Music generation", "Melody-conditioning", "Jukebox"],
+    "common_mistakes": ["Thinking it reliably makes clear vocals; it focuses on instrumental music and struggles with lyrics.", "Assuming instant results; high-quality generation is compute-heavy.", "Confusing MusicLM with MusicGen, which is a separate Meta model."],
+    "scenario_contexts": ["Generating background music from a descriptive text prompt.", "Exploring different moods by rewording the prompt.", "Studying text-to-audio generation methods in a course."]
+   },
+   "sources": ["Google Research — Agostinelli et al., 'MusicLM: Generating Music From Text' (2023, technical paper)", "Google Research — Huang et al., 'MuLan: A Joint Embedding of Music Audio and Natural Language' (ISMIR 2022)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8a421a70-deb7-4d51-92b2-f66c1b8285d5",
+   "term": "Neural audio synthesis",
+   "fields": {
+    "definition": "Neural audio synthesis is the generation of audio waveforms using deep neural networks that learn to model sound directly, rather than relying on fixed oscillators and filters; examples include autoregressive models like WaveNet and differentiable approaches such as DDSP.",
+    "plain_english": "Neural audio synthesis makes sound with AI networks instead of the usual electronic parts. The network learns how real sounds work. Then it builds brand-new audio on its own.",
+    "purpose_function": "It exists to create realistic or novel sounds and voices that traditional synthesis struggles to produce, by letting a network learn sound from data.",
+    "practical_application": "Engineers use neural audio synthesis in text-to-speech voices, AI instruments, and sound-design tools that generate audio a network has learned.",
+    "category": "Neural Audio Synthesis",
+    "related_terms": ["Neural synthesizer", "Music generation", "Magenta", "MusicGen", "Jukebox"],
+    "common_mistakes": ["Thinking it always needs huge compute; lightweight models like DDSP can run efficiently.", "Confusing it with sampling, which replays recordings rather than generating new audio.", "Assuming outputs are always artifact-free; some models add noise or glitches."],
+    "scenario_contexts": ["Building a realistic text-to-speech voice.", "Designing a neural instrument that models a real instrument's timbre.", "Generating novel sound effects for media."]
+   },
+   "sources": ["DeepMind — van den Oord et al., 'WaveNet: A Generative Model for Raw Audio' (2016, technical paper)", "Engel et al., 'DDSP: Differentiable Digital Signal Processing' (Google Magenta, ICLR 2020)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1fc373ff-3c69-44a1-b0e5-8f36b116d781",
+   "term": "Neural synthesizer",
+   "fields": {
+    "definition": "A neural synthesizer is a sound-generating instrument or system that produces or shapes audio using neural networks in place of, or alongside, traditional oscillators and filters, learning a model of timbre from data; examples include Magenta's NSynth and DDSP-based instruments.",
+    "plain_english": "A neural synthesizer is an instrument that makes sound using an AI network instead of the usual electronic parts. It learns the character of real sounds and can blend or create new tones from them.",
+    "purpose_function": "It exists to create new and expressive sounds by learning timbre from real audio, going beyond what fixed oscillators can make.",
+    "practical_application": "A sound designer plays a neural synth like NSynth to morph between instrument tones or craft unusual textures for a track.",
+    "category": "Neural Audio Synthesis",
+    "related_terms": ["Neural audio synthesis", "Magenta", "Music generation", "MusicGen", "MusicLM"],
+    "common_mistakes": ["Thinking it works exactly like a subtractive synth with oscillators and filters.", "Expecting instant, low-latency play; some neural synths need pre-rendering.", "Assuming it replaces all synthesis, when it usually complements traditional methods."],
+    "scenario_contexts": ["Morphing between a flute and a guitar tone with NSynth.", "Sound-designing unique textures for electronic music.", "Adding a learned instrument voice to a DAW project."]
+   },
+   "sources": ["Engel et al., 'Neural Audio Synthesis of Musical Notes with WaveNet Autoencoders' (NSynth, Google Magenta, 2017)", "Engel et al., 'DDSP: Differentiable Digital Signal Processing' (Google Magenta, ICLR 2020)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

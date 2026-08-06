@@ -1,0 +1,159 @@
+{
+ "batch": 92,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "fc74f6e8-6f05-4172-8a80-321ef73c309d",
+   "term": "Commit Track",
+   "fields": {
+    "definition": "A DAW operation that renders a track's real-time processing — virtual instruments, plug-in inserts, and clip gain — into a new plain audio track, so the processed sound is baked into audio and the original live processing can be disabled to free CPU.",
+    "plain_english": "Commit turns a track that uses live effects or an instrument into a plain audio recording of its sound. It is like taking a photo of the finished sound so the computer no longer has to build it each time.",
+    "purpose_function": "It frees up computer processing power and locks in a sound, and it lets you open or share a session on a system that lacks the original plug-ins.",
+    "practical_application": "A technician commits heavy virtual-instrument or plug-in tracks when a session starts straining the CPU, or before sending tracks to another studio.",
+    "category": "Track Commit",
+    "related_terms": ["Freeze", "Bounce in Place", "Rendering", "Stem", "Virtual Instrument", "Insert"],
+    "common_mistakes": ["Committing a track before the part is finished, then having to rebuild the processing from scratch", "Deleting the source track after committing instead of hiding it, losing the ability to tweak later", "Forgetting to copy sends, so the committed track loses its reverb or effect routing"],
+    "scenario_contexts": ["A large orchestral template running out of CPU, so soft-synth tracks are committed to audio", "Sharing a session with a collaborator who does not own the same plug-ins", "Archiving a finished project as plain audio so it still opens years later"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Sound on Sound, 'Making Commitments' / 'Archiving With Commit Tracks' (Pro Tools technique)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cdd14021-a52a-433b-a1d4-7da479fe03bc",
+   "term": "Commit up to Insert",
+   "fields": {
+    "definition": "A commit option that renders a track's signal chain only as far as a chosen insert slot, leaving the plug-ins after that point still active and editable on the resulting audio track.",
+    "plain_english": "This bakes in only the first part of a track's effects and keeps the rest live to change later. It is like baking a cake but leaving the icing off so you can still decorate it.",
+    "purpose_function": "It lets you lock in and offload the settled early part of a processing chain while keeping later effects flexible.",
+    "practical_application": "A technician commits up to a CPU-heavy amp simulator or instrument insert but leaves the EQ and compression after it live for mix tweaks.",
+    "category": "Track Commit",
+    "related_terms": ["Commit Track", "Insert", "Signal Chain", "Freeze", "Plug-in", "Bounce in Place"],
+    "common_mistakes": ["Choosing the wrong insert point and baking in an effect you still wanted to adjust", "Assuming the whole chain is rendered when only inserts up to the chosen slot are", "Not noting which insert was the commit point, causing confusion later"],
+    "scenario_contexts": ["Committing a heavy amp simulator while keeping the post-EQ live", "Rendering a virtual instrument but leaving its channel effects editable", "Offloading a settled part of a long insert chain to save CPU"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Sound on Sound, 'Archiving With Commit Tracks' (Pro Tools technique)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c817cc5a-6514-4553-ac86-c57fabd5a53d",
+   "term": "Commit up to Sends",
+   "fields": {
+    "definition": "A commit option that renders a track's full insert processing chain up to the point where its sends tap the signal, so the committed audio carries all insert processing and its send feeds to shared effects are preserved.",
+    "plain_english": "This bakes in all of a track's effects up to the point where its extra outputs, called sends, branch off to things like reverb. So the copy still feeds the same reverb or delay the same way.",
+    "purpose_function": "It captures the full processed sound while keeping the track's send routing to effects such as reverb and delay intact.",
+    "practical_application": "A technician uses this when committing tracks that feed a shared reverb or parallel effect bus, so the rendered track still drives those effects correctly.",
+    "category": "Track Commit",
+    "related_terms": ["Commit Track", "Send", "Aux Bus", "Insert", "Signal Chain", "Return"],
+    "common_mistakes": ["Forgetting that the send effects, such as reverb, live on other tracks and are not part of this render", "Confusing commit up to sends with a full bounce of the wet effect", "Not enabling copy sends, so the committed track loses its effect routing"],
+    "scenario_contexts": ["Committing dry tracks that feed a shared reverb bus", "Offloading CPU while keeping parallel compression sends working", "Preparing tracks for a collaborator while preserving send routing"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Sound on Sound, 'Archiving With Commit Tracks' (Pro Tools technique)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ae011b1f-9fbe-4996-b857-424f742d5b30",
+   "term": "Comp row",
+   "fields": {
+    "definition": "In take-based comping, the row or lane that holds the composite performance assembled by selecting the best sections from multiple recorded takes stored in the take lanes beneath it.",
+    "plain_english": "When you record a part several times, the comp row is where you build one best version by picking the best bits of each take. It is like making one clean sentence from several rough drafts.",
+    "purpose_function": "It gives a single, editable best-of performance without deleting any of the original takes.",
+    "practical_application": "A technician swipes across the comp row to choose which take plays at each moment while comping a lead vocal.",
+    "category": "Comping",
+    "related_terms": ["Comping", "Take Lane", "Playlist", "Take Folder", "Crossfade", "Punch In"],
+    "common_mistakes": ["Editing the original take lanes instead of the comp row and losing a good take", "Not crossfading the joins between takes, causing clicks or pops", "Flattening the comp too early, before checking every phrase"],
+    "scenario_contexts": ["Building a lead vocal from ten recorded passes", "Comping a guitar solo from several takes", "Assembling a tight drum performance from multiple takes"]
+   },
+   "sources": ["Ableton Live Reference Manual, 'Comping'", "Cakewalk Documentation, 'Take lane and comping enhancements'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "af982305-22e2-433b-a45e-b86d372984b5",
+   "term": "Compliance verification",
+   "fields": {
+    "definition": "The quality-control step of measuring a finished mix or master against required technical delivery specifications — such as integrated loudness and true-peak limits (for example EBU R128, ITU-R BS.1770, ATSC A/85), file format, and channel layout — and confirming it meets them before delivery.",
+    "plain_english": "This is the final check that a mix meets the loudness and format rules a broadcaster or platform demands. It is like checking a package fits the size and weight limits before you mail it.",
+    "purpose_function": "It ensures a deliverable will be accepted and will play back at the correct, agreed loudness instead of being rejected or automatically adjusted.",
+    "practical_application": "A technician runs a loudness meter over the final mix to confirm it hits the target LUFS and stays under the true-peak limit before exporting.",
+    "category": "Delivery & QC",
+    "related_terms": ["Loudness", "LUFS", "True Peak", "Metering", "Mastering", "Delivery Spec"],
+    "common_mistakes": ["Checking only peak level and ignoring integrated loudness in LUFS", "Measuring loudness on a short section instead of the whole program", "Confusing sample peak with true peak and exceeding the limit after conversion"],
+    "scenario_contexts": ["Verifying a TV mix meets EBU R128 before delivery", "Checking a podcast hits a streaming platform's LUFS target", "Confirming true-peak level before encoding to a lossy format"]
+   },
+   "sources": ["EBU R 128 and EBU Tech 3343 (loudness normalisation guidelines)", "ITU-R BS.1770 / ATSC A/85 (loudness measurement and delivery)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "794bbe54-5edd-4a8a-9b1a-c2a38d4339e8",
+   "term": "Conditional trigger",
+   "fields": {
+    "definition": "A sequencer trigger set to fire only when a defined condition is met — such as a probability percentage, a specific loop pass (first, last, or every Nth), or a fill state — rather than on every pass of the sequence.",
+    "plain_english": "This is a note or hit in a pattern that only plays when a rule you set is true, such as one time in four. It is like a rule that says knock on the door only every third visit.",
+    "purpose_function": "It adds variation and movement to a repeating pattern without you having to program every change by hand.",
+    "practical_application": "A producer sets drum hits to conditional triggers so a looping beat evolves, with ghost notes or fills appearing only on certain passes.",
+    "category": "Sequencing",
+    "related_terms": ["Step Sequencer", "Probability", "Trig", "Pattern", "Fill", "Parameter Lock"],
+    "common_mistakes": ["Expecting a conditional trigger to sound on every pass and thinking it is broken", "Stacking conditions so tightly that the trig almost never fires", "Confusing a probability condition with a fixed every-Nth condition"],
+    "scenario_contexts": ["Adding occasional ghost notes to a looping drum pattern", "Triggering a fill only on the last bar of a loop", "Creating evolving sequences on a hardware groovebox"]
+   },
+   "sources": ["Elektron Digitakt User Manual, 'Trig Conditions and Conditional Locks'", "Elektron Octatrack MKII User Manual, 'Conditional Locks'"],
+   "confidence": "Medium",
+   "flags": ["Topic label is 'Mix Fundamentals & Workflow' but the established sense is a sequencer feature; authored the canonical sequencing sense per brief rule 6."]
+  },
+  {
+   "id": "f5af3caf-6b3a-432e-a947-9cfd9b79d1e0",
+   "term": "Console view",
+   "fields": {
+    "definition": "A DAW window that presents the project as a mixing console — vertical channel strips for tracks, buses or groups, and outputs, each with a fader, pan, sends, inserts, and metering — as an alternative to the timeline or arrange view.",
+    "plain_english": "This is the view that makes your software look like a mixing desk, with a channel strip and fader for each track. It is like switching from a list of songs to a row of volume sliders.",
+    "purpose_function": "It gives a familiar console-style layout for setting levels, panning, routing, and processing during mixdown.",
+    "practical_application": "A technician switches to the console view to balance faders, set sends to effects, and watch meters while mixing.",
+    "category": "Mixer Views",
+    "related_terms": ["Channel Strip", "Fader", "Bus", "Send", "Insert", "Arrange View"],
+    "common_mistakes": ["Thinking the console view is a separate mixer from the tracks, when it shows the same channels", "Overlooking hidden channel strips that are filtered out of the view", "Adjusting a group or bus fader thinking it is a single track"],
+    "scenario_contexts": ["Setting a rough balance at the start of a mix", "Routing several tracks to a drum bus", "Watching input meters while setting gain staging"]
+   },
+   "sources": ["Cakewalk Documentation, 'Console view'", "Steinberg Cubase Operation Manual, 'MixConsole'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b041884e-cc1f-4684-93bb-7c5933a12e29",
+   "term": "Consolidated Window",
+   "fields": {
+    "definition": "A single, unified DAW workspace window that combines multiple views — such as the tracks list, editing timeline, mixing board, and transport — into one set of panes, rather than spreading them across separate floating windows. It is most associated with MOTU Digital Performer.",
+    "plain_english": "This is one big window that holds all your main tools together instead of lots of separate pop-up windows. It is like a dashboard where everything you need sits on one screen.",
+    "purpose_function": "It keeps a session tidy and fast to navigate by putting editing, mixing, and transport controls in one place.",
+    "practical_application": "A technician works from the consolidated window to move between arranging, editing, and mixing without hunting for floating windows.",
+    "category": "DAW Interface",
+    "related_terms": ["Arrange View", "Console view", "Mixing Board", "Transport", "Workspace", "Sequence Editor"],
+    "common_mistakes": ["Accidentally closing panes and thinking features are gone", "Not resizing panes, so key views stay cramped", "Confusing it with opening a separate window for each editor"],
+    "scenario_contexts": ["Editing and mixing on a single laptop screen", "Keeping a session organized during a long project", "Quickly switching views without managing floating windows"]
+   },
+   "sources": ["MOTU Digital Performer User Guide", "MOTU Digital Performer Getting Started Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "687084d1-ade7-4492-9fb6-61a186844ad3",
+   "term": "Consumer playback optimization",
+   "fields": {
+    "definition": "The practice of mixing and checking a track so it translates well on everyday consumer playback systems — phone speakers, earbuds, laptops, and car stereos — by managing low-end, midrange balance, mono compatibility, and overall loudness for those limited devices.",
+    "plain_english": "This means making sure a song still sounds good on cheap earbuds, phones, and car speakers, not just on studio monitors. It is like testing a recipe in a normal home oven, not only a fancy restaurant one.",
+    "purpose_function": "It ensures a mix holds up where most people actually listen — on small, limited devices — rather than only sounding good in the studio.",
+    "practical_application": "A technician checks the mix on phone speakers, earbuds, and in mono, and controls sub-bass and harsh mids so it survives cheap playback.",
+    "category": "Mix Translation",
+    "related_terms": ["Mix Translation", "Reference Monitoring", "Mono Compatibility", "Low-End Management", "Loudness", "Frequency Balance"],
+    "common_mistakes": ["Mixing loud on big monitors and adding bass the small speakers cannot reproduce", "Never checking the mix in mono, which hides phase problems", "Judging a mix only on expensive headphones or monitors"],
+    "scenario_contexts": ["Checking a pop mix on phone speakers before release", "Testing a mix in a car to judge the low end", "Confirming a mix holds together in mono on a single speaker"]
+   },
+   "sources": ["Owsinski, 'The Mixing Engineer's Handbook' (monitoring and mix translation)", "Ballou (ed.), 'Handbook for Sound Engineers' (monitoring and loudspeakers)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

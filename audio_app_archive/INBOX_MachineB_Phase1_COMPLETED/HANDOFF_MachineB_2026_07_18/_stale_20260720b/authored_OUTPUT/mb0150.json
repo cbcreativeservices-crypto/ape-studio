@@ -1,0 +1,312 @@
+{
+ "batch": 150,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "5785088f-2f0b-4449-93a2-424eb9d4c814",
+   "term": "Universe view",
+   "fields": {
+    "definition": "A display mode on a lighting control console or DMX software that shows the live output values of all 512 slots (channels) of a single DMX512 universe, letting the operator monitor or check each channel's level. A DMX universe is one independent stream of 512 control channels as defined by the DMX512 standard.",
+    "plain_english": "A screen on a lighting desk that shows all 512 control channels in one DMX group at once. It is like a dashboard where you watch the level being sent to every light.",
+    "purpose_function": "It lets a technician see the raw output on every channel of a universe, so they can confirm a fixture is receiving the right level or find an addressing or patch problem.",
+    "practical_application": "When a moving light misbehaves, an operator opens the universe view to see whether the console is actually sending values to that fixture's address.",
+    "category": "Lighting Control",
+    "related_terms": [
+     "DMX512",
+     "DMX universe",
+     "Channel",
+     "Patch",
+     "Address"
+    ],
+    "common_mistakes": [
+     "Confusing a channel number in the console with the raw DMX address shown in the universe view.",
+     "Assuming a blank value in the view means a broken cable, when the fixture may simply be unpatched.",
+     "Forgetting that one universe holds only 512 channels, so large rigs need several universes."
+    ],
+    "scenario_contexts": [
+     "Checking that a dimmer is receiving output during a rig check.",
+     "Diagnosing an unresponsive fixture by watching its address in the universe view.",
+     "Verifying DMX values while troubleshooting an addressing conflict."
+    ]
+   },
+   "sources": [
+    "ANSI E1.11 (USITT DMX512-A) standard",
+    "ETC lighting control technical documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "871e41e5-8b29-48b7-92dc-76466c1dba9c",
+   "term": "V-Rack",
+   "fields": {
+    "definition": "In the Avid VENUE live-sound platform, a V-Rack is a self-contained rackmount chassis that houses a DSP mix engine plus I/O and option cards, adding inputs, outputs, and processing to a VENUE system or running as a standalone engine without a control-surface console attached.",
+    "plain_english": "A box in the Avid VENUE mixing system that adds more inputs, outputs, and processing power. It can work on its own, without a fader surface plugged into it.",
+    "purpose_function": "It exists to expand a VENUE system's channel count, connections, and effects, or to act as a standalone engine for tasks like recording or virtual soundcheck.",
+    "practical_application": "A touring engineer adds a V-Rack to gain extra outputs for more monitor mixes, or to run virtual soundcheck playback while the band is off the stage.",
+    "category": "Live Sound",
+    "related_terms": [
+     "Stage rack",
+     "Mix engine",
+     "Virtual soundcheck",
+     "DSP",
+     "I/O card"
+    ],
+    "common_mistakes": [
+     "Thinking a V-Rack is only I/O, when it also carries the DSP mix engine and processing.",
+     "Assuming it needs a console surface to function, when it can run standalone.",
+     "Under-planning card slots and running out of I/O or plug-in capacity mid-show."
+    ],
+    "scenario_contexts": [
+     "Expanding output count for extra monitor mixes on a large stage.",
+     "Running virtual soundcheck from a V-Rack while musicians are away.",
+     "Adding plug-in processing capacity to a VENUE rig."
+    ]
+   },
+   "sources": [
+    "Avid VENUE system documentation (manufacturer technical documentation)",
+    "Avid VENUE DSP Mix Engine / Systems guides (manufacturer technical documentation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "49e410af-94aa-47ff-a9bb-ea658f83de60",
+   "term": "Variable tempo map",
+   "fields": {
+    "definition": "A tempo map in which the project's tempo changes across the timeline through programmed tempo events or a tempo curve, rather than staying at one fixed value, so the sequencer's beat grid follows tempo shifts such as ritardando, accelerando, or section changes.",
+    "plain_english": "A set of tempo changes written into a song's timeline, so the speed can rise and fall instead of staying fixed. It lets the software's beat grid follow music that speeds up or slows down.",
+    "purpose_function": "It lets a DAW keep its bars-and-beats grid aligned with music that does not hold one steady tempo, which is needed for editing, quantizing, and syncing to free or changing performances.",
+    "practical_application": "An engineer builds a variable tempo map by matching bar lines to a live drummer's shifting tempo so that loops, MIDI, and edits line up with the recording.",
+    "category": "Sequencing",
+    "related_terms": [
+     "Tempo map",
+     "Beat grid",
+     "Quantize",
+     "Bars and beats",
+     "Tempo track"
+    ],
+    "common_mistakes": [
+     "Recording MIDI against a fixed tempo when the audio actually drifts, so nothing lines up later.",
+     "Forgetting to build the tempo map before quantizing, which shifts notes to the wrong grid.",
+     "Confusing tempo changes with time-signature changes."
+    ],
+    "scenario_contexts": [
+     "Mapping tempo to a live band recording that speeds up in the chorus.",
+     "Programming a ritardando at the end of a song.",
+     "Aligning samples and MIDI to a rubato piano take."
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual (manufacturer technical documentation)",
+    "Avid Pro Tools Reference Guide (manufacturer technical documentation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "60a2f228-c92d-4d8d-9460-b3a0f3dd5511",
+   "term": "VCA fader track",
+   "fields": {
+    "definition": "A dedicated track or master fader that remotely controls the gain of a group of assigned channels together without combining their audio into one signal path; moving the VCA fader offsets every member channel's level while each keeps its own fader and routing. The name derives from the voltage-controlled amplifier used for this on analog consoles.",
+    "plain_english": "A single fader that turns a whole group of channels up or down at once, without mixing them into one signal. It is like a master remote that nudges every assigned track while each track keeps its own fader.",
+    "purpose_function": "It lets an engineer ride the overall level of many related channels, such as all the drums, with one fader while preserving the internal balance and each channel's direct routing to the mix.",
+    "practical_application": "A mixer assigns every drum channel to a VCA fader, then rides that one fader to raise the whole kit in the chorus without re-balancing the individual drum faders.",
+    "category": "Mix Control",
+    "related_terms": [
+     "VCA group",
+     "Subgroup",
+     "Bus",
+     "Fader automation",
+     "Mix bus"
+    ],
+    "common_mistakes": [
+     "Confusing a VCA with an audio subgroup; a VCA controls level but does not sum the audio to a bus.",
+     "Expecting to insert a bus processor on a VCA, when a VCA carries no audio to process.",
+     "Forgetting that muting a VCA mutes all of its assigned member channels."
+    ],
+    "scenario_contexts": [
+     "Riding all drum channels with one fader during a mix.",
+     "Controlling a group of background vocals together while keeping their blend.",
+     "Grouping a horn section under one VCA for quick level moves."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (console grouping and VCA control)",
+    "Avid Pro Tools Reference Guide (VCA Master tracks, manufacturer technical documentation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d78d22aa-a04e-4fbd-90ac-4d2b00072352",
+   "term": "Velocity humanization",
+   "fields": {
+    "definition": "The process of introducing small, often randomized variations to the velocity values of MIDI notes so that a programmed part sounds less mechanically uniform and closer to a human performance, in which each note is struck with slightly different force.",
+    "plain_english": "Slightly changing how hard each MIDI note is played so a programmed part does not sound stiff. Real players never hit every note at the same strength, and this copies that natural unevenness.",
+    "purpose_function": "It exists to make step-entered or copied MIDI parts feel more natural and expressive by breaking up the identical dynamics that make programming sound robotic.",
+    "practical_application": "After drawing in a hi-hat pattern, a producer applies velocity humanization so the repeated hits vary in loudness and the groove feels played rather than typed.",
+    "category": "MIDI Sequencing",
+    "related_terms": [
+     "Velocity",
+     "MIDI",
+     "Quantize",
+     "Humanize",
+     "Groove"
+    ],
+    "common_mistakes": [
+     "Applying so much random variation that some notes nearly disappear or jump out unnaturally.",
+     "Humanizing velocity but leaving timing perfectly quantized, which still sounds stiff.",
+     "Assuming every instrument's samples respond to velocity, when some map velocity only to volume."
+    ],
+    "scenario_contexts": [
+     "Loosening a programmed drum pattern so it feels human.",
+     "Varying the dynamics of a repeated synth arpeggio.",
+     "Adding life to a copied-and-pasted MIDI phrase."
+    ]
+   },
+   "sources": [
+    "MIDI Association (MIDI 1.0 specification, note-on velocity)",
+    "Steinberg Cubase Operation Manual (humanize / randomize functions, manufacturer technical documentation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6b3bbcc7-c337-46b1-b09b-cf8d7d41dafa",
+   "term": "Velocity zone",
+   "fields": {
+    "definition": "In a sampler or virtual instrument, a velocity zone is a defined range of MIDI note-on velocity values that triggers a particular sample or layer, so that different playing strengths call up different recordings mapped across the velocity axis.",
+    "plain_english": "A range of how-hard-you-play values that triggers one particular sound in a sampler. Play softly and you fall in one zone; hit harder and you cross into a zone that plays a different recording.",
+    "purpose_function": "It lets an instrument switch between samples captured at different dynamics, so soft and hard notes use recordings that actually sound soft or hard rather than just changing in volume.",
+    "practical_application": "When building a sampled piano, a sound designer assigns quiet recordings to low velocity zones and loud recordings to high ones so dynamics change the tone, not just the level.",
+    "category": "Sampling",
+    "related_terms": [
+     "Velocity",
+     "Velocity layer",
+     "Key zone",
+     "Sample mapping",
+     "Velocity switching"
+    ],
+    "common_mistakes": [
+     "Leaving gaps between zones so some velocities trigger no sample at all.",
+     "Setting hard zone edges that cause an audible jump between samples instead of a crossfade.",
+     "Confusing a velocity zone with a key zone, which maps by pitch rather than by force."
+    ],
+    "scenario_contexts": [
+     "Mapping soft and hard drum hits to different recordings.",
+     "Building a multisampled instrument that changes tone with dynamics.",
+     "Setting a velocity threshold so a hard hit triggers an accent sample."
+    ]
+   },
+   "sources": [
+    "Native Instruments Kontakt Application Reference (manufacturer technical documentation)",
+    "MIDI Association (MIDI 1.0 specification, note-on velocity)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9977f300-7e01-4c72-9cec-30afb106f0e6",
+   "term": "Velocity-layered drum",
+   "fields": {
+    "definition": "A sampled drum instrument in which each drum is represented by several recordings captured at different striking strengths, mapped to velocity ranges so that note-on velocity selects the layer whose loudness and tone match how hard the pad or key was played.",
+    "plain_english": "A sampled drum that holds several recordings of the same drum, each hit at a different strength. How hard you play picks which recording sounds, so soft and hard hits differ in tone, not just volume.",
+    "purpose_function": "It exists to make sampled drums respond realistically to playing dynamics, because a real drum changes tone as well as loudness when struck harder or softer.",
+    "practical_application": "A producer playing a velocity-layered kit on pads gets brighter, harder snare tones on strong hits and softer, duller tones on light hits, so the part breathes like a live drummer.",
+    "category": "Sampling",
+    "related_terms": [
+     "Velocity layer",
+     "Velocity zone",
+     "Velocity",
+     "Round robin",
+     "Sample library"
+    ],
+    "common_mistakes": [
+     "Programming every hit at the same velocity, which defeats the layering and sounds like a machine gun.",
+     "Assuming more layers always sound better, when poorly matched layers cause audible steps.",
+     "Ignoring round-robin needs, so repeated same-velocity hits still sound identical."
+    ],
+    "scenario_contexts": [
+     "Playing expressive drum parts from a pad controller.",
+     "Programming dynamics into a sampled kit.",
+     "Choosing a drum library with enough layers for realistic fills."
+    ]
+   },
+   "sources": [
+    "Native Instruments Kontakt Application Reference (manufacturer technical documentation)",
+    "MIDI Association (MIDI 1.0 specification, note-on velocity)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "77b4f563-d987-4c2f-9955-2a8b4f4cb54a",
+   "term": "Vertical layering",
+   "fields": {
+    "definition": "An adaptive-music technique in which a piece is built from several musical layers that play simultaneously in sync, and the game or application adds or removes layers in real time to raise or lower intensity while the underlying music keeps playing.",
+    "plain_english": "A way of writing game music as stacked parts that all play together in time. The game switches parts on or off to make the music feel calmer or more intense without stopping it.",
+    "purpose_function": "It lets a score react to gameplay smoothly by changing how full the music sounds, avoiding hard stops and giving a sense of rising or falling tension.",
+    "practical_application": "A game composer stems a cue into rhythm, harmony, and lead layers, then has the audio engine fade the lead and rhythm layers in as combat starts.",
+    "category": "Adaptive Music",
+    "related_terms": [
+     "Vertical remixing",
+     "Horizontal resequencing",
+     "Adaptive music",
+     "Stem",
+     "Interactive music"
+    ],
+    "common_mistakes": [
+     "Writing layers that do not share the same tempo and key, so they clash when combined.",
+     "Layering parts that sound wrong when heard alone or in some combinations.",
+     "Switching layers abruptly instead of fading, which draws attention to the change."
+    ],
+    "scenario_contexts": [
+     "Building tension as a player nears an enemy.",
+     "Fading extra parts in during a game's combat state.",
+     "Scoring an open-world area that shifts mood with player action."
+    ]
+   },
+   "sources": [
+    "Sweet, Writing Interactive Music for Video Games: A Composer's Guide (professional text)",
+    "Audiokinetic Wwise documentation (manufacturer technical documentation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8db18048-c46e-4fc0-a995-1159ff23d091",
+   "term": "Vertical remixing",
+   "fields": {
+    "definition": "A form of adaptive music, closely related to vertical layering, in which a single synchronized piece is divided into simultaneous stems whose individual volumes are raised, lowered, muted, or unmuted in real time to remix the arrangement on the fly in response to gameplay, without changing the underlying timeline.",
+    "plain_english": "Changing a game track on the fly by turning its separate parts up, down, or off while it keeps playing in time. It is like a live mixer that adds or drops instruments to match what the player is doing.",
+    "purpose_function": "It exists to vary the mood and energy of a continuous cue by re-mixing which parts are heard, so the music adapts to the action without a jarring cut to a new piece.",
+    "practical_application": "A composer delivers a cue as separate stems and sets rules so the engine mutes the drums during exploration and unmutes them in a chase, remixing the same piece live.",
+    "category": "Adaptive Music",
+    "related_terms": [
+     "Vertical layering",
+     "Horizontal resequencing",
+     "Adaptive music",
+     "Stem",
+     "Interactive music"
+    ],
+    "common_mistakes": [
+     "Treating vertical remixing as writing new sections, when it only re-mixes stems of the same piece.",
+     "Muting stems with hard cuts instead of smooth fades, which sounds abrupt.",
+     "Building stems that do not work in every on/off combination the game can call."
+    ],
+    "scenario_contexts": [
+     "Dropping and adding instrument stems as game intensity changes.",
+     "Muting the melody during dialogue and restoring it afterward.",
+     "Remixing a looping cue live to follow player choices."
+    ]
+   },
+   "sources": [
+    "Sweet, Writing Interactive Music for Video Games: A Composer's Guide (professional text)",
+    "Audiokinetic Wwise / FMOD documentation (manufacturer technical documentation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

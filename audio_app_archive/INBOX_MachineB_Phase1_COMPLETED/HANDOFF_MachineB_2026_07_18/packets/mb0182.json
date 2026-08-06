@@ -1,0 +1,31 @@
+{
+ "batch": 182,
+ "topic": "Delivery Formats & Metadata",
+ "terms": [
+  {
+   "id": "901c252a-e05e-4a2d-8ecf-c7b7544a3a48",
+   "term": "Delivery specifications",
+   "topic": "Delivery Formats & Metadata",
+   "seq": 1180,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

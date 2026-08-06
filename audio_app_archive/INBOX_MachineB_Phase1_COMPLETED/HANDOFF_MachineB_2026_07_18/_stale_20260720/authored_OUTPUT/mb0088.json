@@ -1,0 +1,197 @@
+{
+ "batch": 88,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "8459064d-e117-47fe-9357-c97c93a4b4c9",
+   "term": "Broadcast translation",
+   "fields": {
+    "definition": "The degree to which a finished mix keeps its intended tonal balance, clarity, and impact after passing through broadcast processing and playback on broadcast systems, including loudness normalization, mono fold-down, peak and loudness limiting, and small consumer speakers such as those in televisions and radios.",
+    "plain_english": "How well a song still sounds right after it goes out over TV or radio. Broadcast gear squashes the loud parts and can shrink the sound, so a mix that ignores this may come out weak or muddy on a small TV speaker.",
+    "purpose_function": "It names a quality goal in mixing: making sure the balance and detail a listener hears survives the extra processing and limited speakers used in broadcast, not just sounding good in the studio.",
+    "practical_application": "Engineers check broadcast translation by referencing on small and mono speakers and by metering to broadcast loudness targets, so the mix holds up when aired on TV, radio, or streaming that applies loudness normalization.",
+    "category": "Mixing Concept",
+    "related_terms": ["Mix translation", "Loudness normalization", "Mono compatibility", "Reference monitoring", "LUFS"],
+    "common_mistakes": [
+     "Mixing only on large studio monitors and never checking small or mono speakers, so problems only appear once the mix is aired.",
+     "Ignoring broadcast loudness targets and delivering an over-limited mix that gets turned down and sounds flat on air.",
+     "Assuming heavy low end that sounds good in the studio will survive on tiny broadcast speakers."
+    ],
+    "scenario_contexts": [
+     "Preparing a song mix that will air on FM radio and needs to stay punchy on car and kitchen radios.",
+     "Mixing a TV commercial bed so dialogue and music stay clear through television speakers and loudness limiting.",
+     "Delivering a mix to a streaming service that applies loudness normalization on playback."
+    ]
+   },
+   "sources": ["Sound on Sound (mix translation technique articles)", "Bobby Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0194f4e5-f530-4310-a7b2-496c65d0f6d3",
+   "term": "Build the mix",
+   "fields": {
+    "definition": "The workflow stage of combining recorded tracks into a balanced whole by adding elements in a deliberate order and setting their relative level, panning, tone, and dynamics, typically starting from a foundational element such as the rhythm section or the lead vocal.",
+    "plain_english": "The step where you take all the separate recorded tracks and blend them into one good-sounding song. You usually start with one key part, like the drums or the main singer, then add the rest one at a time until everything fits.",
+    "purpose_function": "It turns a set of isolated recordings into a cohesive, balanced piece, giving the mix a clear structure and priority order rather than adjusting everything at random.",
+    "practical_application": "A mixer builds the mix by bringing up faders in a chosen order, setting levels and panning first, then refining EQ, dynamics, and effects as each part is added.",
+    "category": "Mixing Workflow",
+    "related_terms": ["Static mix", "Gain staging", "Balance", "Rough mix", "Panning", "Bus"],
+    "common_mistakes": [
+     "Adding effects and processing to each track before a solid level balance exists.",
+     "Building the whole mix while soloing tracks, so parts do not fit together when heard as a group.",
+     "Pushing every element louder instead of lowering competing parts, which leaves no headroom."
+    ],
+    "scenario_contexts": [
+     "Starting a mix session by setting a rough level balance before any detailed processing.",
+     "Working a song up from a multitrack recording toward a first full-band balance.",
+     "Rebuilding a balance from scratch after a rough mix reveals level problems."
+    ]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f802202e-849a-4505-b46e-b7c0a3e70ae2",
+   "term": "Bus validation",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No established professional meaning found. 'Bus validation' is not an attested audio/mixing term and its intent is genuinely ambiguous (could mean checking bus routing, gain staging, or signal presence). After searching professional mixing literature and manufacturer documentation, no >=2 acceptable sources define it, so all fields are left blank pending clarification."]
+  },
+  {
+   "id": "a8878869-6751-44c4-a050-1ab197dbf5c0",
+   "term": "Catch Playhead",
+   "fields": {
+    "definition": "A view mode, found in DAWs such as Logic Pro, in which an editor or window automatically scrolls to keep the moving playhead visible during playback or recording, so the display always shows the section currently being played.",
+    "plain_english": "A setting that makes the screen follow along with the moving play line as a song plays. Instead of the music scrolling off the edge, the view keeps jumping to show the part you are hearing right now.",
+    "purpose_function": "It keeps the current playback position on screen without manual scrolling, so an engineer can watch and edit the audio that is playing in real time.",
+    "practical_application": "A user turns Catch on when they want windows to track the playhead during playback, and off when they want the view to stay put on a fixed region while the song plays past it.",
+    "category": "DAW Feature",
+    "related_terms": ["Playhead", "Scroll in Play", "Edit window", "Transport", "Timeline"],
+    "common_mistakes": [
+     "Thinking Catch changes the audio, when it only affects how the display follows the playhead.",
+     "Leaving Catch off and then wondering why the view will not follow playback.",
+     "Confusing Catch, which follows the playhead, with continuous-scroll modes that keep the playhead centered."
+    ],
+    "scenario_contexts": [
+     "Following a long arrangement on screen during playback without manual scrolling.",
+     "Punching in a recording and wanting the editor to stay on the current bar.",
+     "Turning Catch off to keep a zoomed-in edit region in view while the song plays through it."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide, Control windows using Catch modes", "Apple Logic Pro User Guide, Catch settings"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "24687cc7-49cf-4c70-b4d5-51e6729ff62e",
+   "term": "Catch the solo",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No established, attestable professional meaning found. 'Catch the solo' reads as informal jargon and is genuinely ambiguous (could mean riding a fader up in time for a solo passage, capturing a solo take, or catching a solo cue in monitors). After searching professional mixing and live-sound literature and manufacturer documentation, no >=2 acceptable sources define it as a term, so all fields are left blank pending clarification."]
+  },
+  {
+   "id": "1e8f151a-b0d6-4d8a-90ad-9796a0e89fef",
+   "term": "Chain selector",
+   "fields": {
+    "definition": "In an Ableton Live Instrument, Drum, or Effect Rack, a draggable indicator on the Chain Select Ruler (a 0 to 127 scale) that determines which chains are active; only chains whose chain select zones overlap the selector's current value can pass signal and produce output.",
+    "plain_english": "A slider inside an Ableton Live Rack that picks which of the stacked sound or effect paths is switched on. Each path responds to a range of positions, so moving the slider swaps between them, like turning a dial to choose a channel.",
+    "purpose_function": "It lets one Rack hold several chains and switch or blend between them from a single control that can be mapped and automated, instead of needing separate tracks.",
+    "practical_application": "A producer assigns each chain a chain select zone, then maps the chain selector to a knob or an automation lane to switch presets or morph between sounds live.",
+    "category": "DAW Feature",
+    "related_terms": ["Chain zone", "Instrument Rack", "Macro control", "Chain", "MIDI mapping"],
+    "common_mistakes": [
+     "Moving the chain selector but leaving chains with overlapping zones, so more than one chain sounds at once unexpectedly.",
+     "Forgetting that the Chain Select Ruler stays hidden until the Chain Select Editor view is shown.",
+     "Confusing the chain selector with key or velocity zones, which filter by note and by playing strength instead."
+    ],
+    "scenario_contexts": [
+     "Building a single Rack that switches between several synth presets from one knob during a performance.",
+     "Setting up an effect Rack that morphs between different processing chains.",
+     "Mapping the chain selector to automation so a track changes sound over the course of a song."
+    ]
+   },
+   "sources": ["Ableton Reference Manual, Instrument, Drum and Effect Racks", "Ableton help, Using the chain selector in a Rack"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9efed616-e279-4382-8576-c2d05621e529",
+   "term": "Chain zone",
+   "fields": {
+    "definition": "In an Ableton Live Rack, the range on the Chain Select Ruler (0 to 127) assigned to a given chain; the chain is active only when the chain selector's value falls within or overlaps that zone, so the zone acts as a data filter at the Rack's input.",
+    "plain_english": "The stretch of positions on a Rack's selector that turns one sound path on. If the selector lands inside that stretch, the path plays; if not, it stays silent. It works like setting which channel numbers switch on a given speaker.",
+    "purpose_function": "It defines when each chain responds, letting a single Rack route the selector to different chains for switching or crossfading between sounds.",
+    "practical_application": "A user drags the edges of each chain's zone in the Chain Select Editor so the chains switch cleanly, or overlaps them with fades to blend between chains as the selector moves.",
+    "category": "DAW Feature",
+    "related_terms": ["Chain selector", "Instrument Rack", "Chain", "Key zone", "Velocity zone"],
+    "common_mistakes": [
+     "Setting zones with unintended overlap, so two chains sound together when only one was wanted.",
+     "Leaving a chain's zone outside the selector's range, so the chain never plays.",
+     "Mixing up chain zones with key or velocity zones, which filter by note pitch or by playing strength."
+    ],
+    "scenario_contexts": [
+     "Assigning each preset in a Rack its own zone so a knob steps through them.",
+     "Creating overlapping zones with fades to morph between two textures.",
+     "Troubleshooting a chain that never sounds because its zone does not meet the selector value."
+    ]
+   },
+   "sources": ["Ableton Reference Manual, Instrument, Drum and Effect Racks", "Ableton help, Using the chain selector in a Rack"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a1ca4a48-1981-49f8-9da8-aaaeb30ef7a9",
+   "term": "Changeover music",
+   "fields": {
+    "definition": "Recorded music played over a venue's PA system during the changeover between acts, while one performer's equipment is struck and the next is set up and line-checked, used to cover the silence and hold the audience's attention.",
+    "plain_english": "The recorded songs played through the speakers between live acts while the crew swaps gear on stage. It fills the quiet gap so the crowd stays relaxed and the room does not feel dead.",
+    "purpose_function": "It keeps energy up and masks stage noise during the gap between performances, buying the crew time to reset the stage without leaving the audience in silence.",
+    "practical_application": "The front-of-house engineer starts a changeover playlist from a media player or DAW at a comfortable background level, then fades or ducks it out as the next act is ready to begin.",
+    "category": "Live Sound",
+    "related_terms": ["Changeover", "Walk-in music", "Front of house", "Line check", "PA system"],
+    "common_mistakes": [
+     "Playing changeover music so loud that the stage crew cannot communicate during the reset.",
+     "Forgetting to fade the music out before the act begins, so it clashes with the opening number.",
+     "Leaving the media player routed so a line check or feedback burst blasts through it at full level."
+    ],
+    "scenario_contexts": [
+     "Covering the gap between bands at a club show while the stage is reset.",
+     "Filling time during a festival changeover as the next act's backline is placed and line-checked.",
+     "Providing background music before doors and between sets at a corporate event."
+    ]
+   },
+   "sources": ["Sound on Sound (live and festival engineering articles)", "Live Sound International / ProSoundWeb (festival changeover practice)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "56ad7097-ef73-4aba-949d-1c2e5b5f3beb",
+   "term": "Channel Settings window",
+   "fields": {
+    "definition": "In Steinberg Cubase and Nuendo, a window that opens a single MixConsole channel on its own, showing that channel's full signal path, including inserts, EQ, sends, routing, and fader, in one focused view for detailed editing.",
+    "plain_english": "A window in Cubase that shows everything for just one mixer channel at a time, like its effects, EQ, and volume. It lets you fine-tune one track without the clutter of the whole mixer on screen.",
+    "purpose_function": "It gives a clear, single-channel overview so an engineer can edit one channel's processing and routing in detail without hunting through the full mixer.",
+    "practical_application": "A user opens the Channel Settings window for a track to adjust its insert effects, EQ curve, and sends, and can open several windows to compare channels side by side.",
+    "category": "DAW Feature",
+    "related_terms": ["MixConsole", "Insert effect", "Channel EQ", "Send", "Routing"],
+    "common_mistakes": [
+     "Editing in the Channel Settings window without noticing which channel is selected, so changes land on the wrong track.",
+     "Assuming it is a separate mixer, when it only shows the one channel already in the MixConsole.",
+     "Overlooking that the EQ and inserts shown here are the same ones as in the main MixConsole."
+    ],
+    "scenario_contexts": [
+     "Dialing in EQ and compression on a lead vocal channel in detail.",
+     "Comparing two channels by opening a Channel Settings window for each.",
+     "Checking a channel's routing and send levels while troubleshooting a signal path."
+    ]
+   },
+   "sources": ["Steinberg Cubase Pro Operation Manual, Using Channel Settings", "Steinberg Nuendo Operation Manual, Channel Settings"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

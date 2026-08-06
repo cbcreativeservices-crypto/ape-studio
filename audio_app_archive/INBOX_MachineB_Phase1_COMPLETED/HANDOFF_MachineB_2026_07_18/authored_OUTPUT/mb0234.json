@@ -1,0 +1,159 @@
+{
+ "batch": 234,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "7a9f693c-2543-4dc6-99ce-7713e63ff57a",
+   "term": "Layered Foley",
+   "fields": {
+    "definition": "A Foley technique in which several separately performed and recorded sound layers (for example a footstep's heel impact, shoe scuff, and clothing rustle) are combined into a single richer, more realistic effect synchronized to on-screen action.",
+    "plain_english": "Layered Foley means recording a sound in several parts and stacking them. For one footstep you might record the heel hit, the shoe scuff, and the clothes moving, then blend them so the step sounds full and real.",
+    "purpose_function": "It lets the Foley team control each part of a sound on its own, so the finished effect sits believably with the picture and the mix.",
+    "practical_application": "A Foley editor records separate passes for feet, cloth moves, and specific props, then layers and syncs them on the Foley stems for the dub mix.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Foley stem", "Layered sound effect", "Spotting session", "Sound effects editing"],
+    "common_mistakes": ["Recording all layers in one pass so they cannot be balanced separately", "Letting layers drift out of sync with picture", "Over-layering until the effect sounds cluttered and unnatural"],
+    "scenario_contexts": ["Building a convincing footstep from heel, scuff and cloth layers on a Foley stage", "Beefing up a punch by layering a body impact, a whoosh and a cloth movement", "Recreating a character walking on gravel by combining several surface layers"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "923645d9-f9d9-4812-bab3-59a94c30f266",
+   "term": "Layered sound effect",
+   "fields": {
+    "definition": "A sound effect built by combining two or more individual sound elements (recorded, synthesized, or library sounds) into a single composite that is fuller or more specific than any one source alone.",
+    "plain_english": "A layered sound effect is one sound built from several sounds stacked together. A movie explosion might mix a deep boom, a sharp crack, and falling debris so it hits harder than any single recording.",
+    "purpose_function": "Layering gives a sound designer control over the weight, brightness and detail of an effect, letting them build sounds that do not exist or need more impact than a raw recording.",
+    "practical_application": "A sound designer stacks and tunes multiple clips in the DAW, often a low layer, a mid body layer and a high detail layer, to build effects like weapons, creatures or impacts.",
+    "category": "Sound Effects",
+    "related_terms": ["Layered Foley", "Library Effect", "Sound design", "Sweetening", "Sound effects editing"],
+    "common_mistakes": ["Stacking too many layers so the effect turns to mush", "Not filtering overlapping layers, causing frequency buildup and clipping", "Leaving layers unsynced so the composite smears"],
+    "scenario_contexts": ["Designing a sci-fi weapon from a real gunshot plus synth layers", "Building a monster roar from animal recordings and a pitched-down voice", "Creating a car crash from metal impacts, glass and debris layers"]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Sonnenschein, Sound Design"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8f3c5b26-5265-463e-8694-7a2fad2cf43e",
+   "term": "Library Effect",
+   "fields": {
+    "definition": "A pre-recorded sound effect selected from a commercial or in-house sound-effects library, rather than one custom-recorded or performed as Foley for the specific production.",
+    "plain_english": "A library effect is a ready-made sound you pull from a big collection instead of recording it yourself. If a scene needs thunder, you can grab a thunder clip from a sound library rather than wait for a storm.",
+    "purpose_function": "Libraries give editors fast, reliable access to a huge range of sounds, saving the time and cost of recording every effect from scratch.",
+    "practical_application": "A sound-effects editor searches a library by keyword, auditions clips, then drops chosen effects onto the timeline and edits or layers them to fit picture.",
+    "category": "Sound Effects",
+    "related_terms": ["Layered sound effect", "Foley", "Sound effects editing", "Spotting session", "Metadata"],
+    "common_mistakes": ["Using a recognizable stock sound (such as the Wilhelm scream) where it distracts the audience", "Ignoring library licensing terms and clearances", "Grabbing the first search result without auditioning for the right perspective or tone"],
+    "scenario_contexts": ["Dropping a city ambience bed under a street scene from a library", "Pulling a specific car-by from a vehicle library to match the shot", "Filling in hard effects on a tight deadline using library gunshots"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Viers, The Sound Effects Bible"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f9675f4f-c20f-4db5-a7fa-c0438c42ba0b",
+   "term": "Lip-sync dubbing",
+   "fields": {
+    "definition": "The post-production process of replacing a production's original-language dialogue with newly recorded dialogue, usually in another language, timed and performed so the new speech matches the actors' on-screen lip movements.",
+    "plain_english": "Lip-sync dubbing swaps the actors' spoken words for a new recording, often in another language, matched to their mouth movements. It is how a French film can seem to speak English on screen.",
+    "purpose_function": "It lets a production reach audiences who speak other languages while keeping the original picture, so the dialogue still appears to come from the on-screen actors.",
+    "practical_application": "In a dubbing studio a voice actor watches picture and performs translated lines while the director and engineer adjust timing so the words land on the character's mouth movements.",
+    "category": "Dialogue Replacement",
+    "related_terms": ["ADR", "M&E stem", "Localization engineer", "Sync", "Dialogue editing"],
+    "common_mistakes": ["Prioritizing an exact translation over matching lip movements, breaking sync", "Ignoring the M&E stem so original music and effects are lost under new dialogue", "Recording at a level or perspective that does not match the scene's acoustics"],
+    "scenario_contexts": ["Creating a German-language version of a US series", "Re-voicing an animated feature for international release", "Replacing an actor's lines in the same language for an edited broadcast version"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ee81a6df-77ba-4923-b871-3cb42ac047d9",
+   "term": "Listener orientation",
+   "fields": {
+    "definition": "In spatial and immersive audio, the direction a listener is facing relative to the reproduced sound field, which determines how left/right, front/back and height cues are perceived; in head-tracked binaural or VR it is updated in real time as the head turns.",
+    "plain_english": "Listener orientation is which way the listener is facing inside a surround or 3D sound scene. Turn your head to the left and sounds that were in front now seem to come from your right.",
+    "purpose_function": "Tracking orientation lets a system place sounds correctly around the listener, so directions stay convincing as the head or viewpoint moves.",
+    "practical_application": "In VR and 360 audio, engineers feed head-tracking data so the mix rotates with the listener; in a mix room they check that the reference facing direction points at the center speaker and screen.",
+    "category": "Spatial Audio",
+    "related_terms": ["Listener position", "Binaural", "Ambisonics", "Head tracking", "Panning"],
+    "common_mistakes": ["Confusing orientation (facing direction) with position (location)", "Mixing head-locked and head-tracked elements without deciding which should rotate", "Assuming everyone faces the screen when placing critical cues"],
+    "scenario_contexts": ["Mixing a 360 video where sounds must stay put as the viewer looks around", "Setting the reference facing direction in an Atmos or ambisonic session", "Designing a VR game so audio rotates with the player's head"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "AES (spatial and immersive audio literature)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d6cc86b7-737e-4445-8262-5462053bbe0b",
+   "term": "Listener position",
+   "fields": {
+    "definition": "The location of the listener within a reproduction space or sound field, serving as the reference point (such as the surround sweet spot) for which a mix's levels, timing and imaging are optimized.",
+    "plain_english": "Listener position is where the listener sits inside the speaker setup or 3D sound scene. Surround mixes are aimed at one main spot. Sit there and you hear the balance the mixer wanted.",
+    "purpose_function": "Defining a reference position lets the mixer set levels and panning that image correctly, and lets playback systems calibrate around where people actually sit.",
+    "practical_application": "Engineers mix from the sweet spot of a calibrated room, and in games or VR the listener position follows the player or camera so distances and panning update live.",
+    "category": "Spatial Audio",
+    "related_terms": ["Listener orientation", "Sweet spot", "Panning", "Surround sound", "Calibration"],
+    "common_mistakes": ["Mixing while sitting off the sweet spot and misjudging the balance", "Ignoring how much the image degrades away from the reference position", "Confusing listener position with listener orientation"],
+    "scenario_contexts": ["Calibrating a 5.1 room so the sweet spot matches the mix position per the ITU layout", "Setting the camera or player as the listener position in a game engine", "Explaining to a client why the surround image only locks in the center seat"]
+   },
+   "sources": ["ITU-R BS.775 (multichannel reference listening layout)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "034b1b03-adaa-4be8-b530-747c83382780",
+   "term": "Live Foley performance",
+   "fields": {
+    "definition": "The real-time performance of Foley sound effects synchronized to picture or action as it happens, whether recorded live to picture on a Foley stage or performed live before an audience, as in radio drama, theatre, or live-cinema events.",
+    "plain_english": "Live Foley performance means making sound effects by hand in real time while the action plays. A Foley artist might crunch cornstarch for footsteps in snow exactly as the character walks on screen.",
+    "purpose_function": "Performing to picture in real time captures natural timing and human nuance that step-by-step editing can miss, and it can entertain an audience at live events.",
+    "practical_application": "A Foley artist watches picture and performs props, feet and moves in sync while an engineer records; at live shows the same skills score a film or radio play on stage.",
+    "category": "Foley",
+    "related_terms": ["Layered Foley", "Foley", "Foley stage", "Spotting session", "Sync"],
+    "common_mistakes": ["Watching your hands instead of the picture and drifting out of sync", "Performing too hard so levels clip or the prop sounds fake", "Forgetting that a live take still needs to fit the final mix perspective"],
+    "scenario_contexts": ["Recording footsteps and props live to picture on a Foley stage", "Performing sound effects on stage for a live radio-drama show", "Scoring a silent film live with hand-made effects for an audience"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "db97cb95-f4eb-46e1-b043-479eb21d9d19",
+   "term": "Localization director",
+   "fields": {
+    "definition": "The person who oversees the creative side of adapting a production for another language or region: casting and directing dub voice actors, approving translated and adapted scripts, and guiding performances so the localized version matches the intent, timing and lip-sync of the original.",
+    "plain_english": "A localization director leads the team that turns a film or game into another language. They pick and coach the new voice actors and make sure the translated version still feels like the original.",
+    "purpose_function": "The role keeps a foreign-language version faithful and natural, protecting performance quality and lip-sync so localized audiences get the same experience as the original.",
+    "practical_application": "On a dub project the localization director runs casting, sits in on record sessions to direct actors, and signs off that lines match picture and story before the mix.",
+    "category": "Localization",
+    "related_terms": ["Lip-sync dubbing", "Localization engineer", "ADR", "M&E stem", "Voice casting"],
+    "common_mistakes": ["Confusing the localization director (creative lead) with the localization engineer (technical lead)", "Approving a literal translation that breaks lip-sync or tone", "Skipping M&E checks so the dub loses original music and effects"],
+    "scenario_contexts": ["Directing the English dub of an anime series", "Overseeing multi-language versions of a streaming original", "Coaching voice actors to match the lead's on-screen emotion and timing"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c778ce82-61b9-40b5-85a5-cd9f4d5e0a98",
+   "term": "Localization engineer",
+   "fields": {
+    "definition": "The technical specialist who handles the audio and deliverable side of adapting a production for other languages or regions: preparing and conforming M&E stems, recording and editing dubbed dialogue, and building localized mixes and deliverables to spec.",
+    "plain_english": "A localization engineer is the tech person who makes the foreign-language versions of a soundtrack. They record the new voices. Then they mix them with the music and effects and prep the files each region needs.",
+    "purpose_function": "The role turns creative dub decisions into correct, deliverable audio, making sure each localized version meets technical and format requirements without losing the original music and effects.",
+    "practical_application": "The engineer conforms M&E stems, records and edits dub lines, mixes them to match the original, then exports localized deliverables to the distributor's spec.",
+    "category": "Localization",
+    "related_terms": ["Localization director", "Lip-sync dubbing", "M&E stem", "Deliverables", "ADR"],
+    "common_mistakes": ["Confusing the engineer (technical) with the localization director (creative)", "Delivering a mix that does not match the original loudness or spec", "Mislabeling or misconfiguring M&E stems so effects drop out"],
+    "scenario_contexts": ["Conforming M&E stems and mixing a Spanish dub to the original", "Preparing multi-language audio deliverables for a streaming platform", "Editing and syncing recorded dub dialogue before the localized mix"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

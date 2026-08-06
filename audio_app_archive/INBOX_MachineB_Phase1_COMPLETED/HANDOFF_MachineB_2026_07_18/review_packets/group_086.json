@@ -1,0 +1,1014 @@
+{
+ "group": 86,
+ "terms": [
+  {
+   "id": "d8b0fd31-dfee-4b66-a7b2-31b732c71746",
+   "term": "Djembe slap (pa)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The highest and sharpest of the three fundamental djembe tones, produced by striking near the rim with a relaxed, slightly cupped hand so the fingers snap against the head, giving a bright, cracking, high-pitched sound with little sustain. In West African drum language it is commonly vocalized \"pa\" (or \"ta\").",
+   "plain_english": "The slap is the sharp, high crack of a djembe. You hit near the edge with loose fingers so they snap on the skin. Drummers often sing this stroke as \"pa\".",
+   "purpose_function": "The slap adds bright, cutting accents that sit above the bass and tone, giving djembe rhythms their punch, sparkle, and rhythmic detail.",
+   "practical_application": "A djembe player uses slaps for accents and lead phrases, especially when soloing, and teachers use the spoken \"pa ta\" to mark where slaps fall in a pattern.",
+   "category": "Drum stroke",
+   "related_terms": [
+    "Djembe",
+    "Djembe bass (gun)",
+    "Open tone",
+    "Accent",
+    "Rim shot",
+    "Hand drumming"
+   ],
+   "common_mistakes": [
+    "Tensing the hand and hitting flat, which produces a dull thud instead of a sharp, ringing slap.",
+    "UNSAFE: Playing hard slaps for long stretches without rest or proper technique, which can bruise or injure the hands and wrists; build up gradually and stop if pain develops.",
+    "Confusing the slap with the open tone; the slap is sharper and higher, played with snapping fingertips near the rim."
+   ],
+   "scenario_contexts": [
+    "A lead djembe player using slaps to accent a solo.",
+    "Learning the three djembe voices by contrasting bass, tone, and slap.",
+    "Placing bright slap accents in a rhythm to make it cut through an ensemble."
+   ]
+  },
+  {
+   "id": "93cea788-cdd5-4358-a81a-cbb02443df2a",
+   "term": "Djembe tone (go)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "One of the three basic djembe sounds — bass, tone, and slap — the tone is a clear, ringing note produced by striking the edge of the goatskin head with the flat fingers held together and letting them rebound. In the West African oral drum language used to teach djembe, this stroke is vocalized 'go' (or 'do' for the non-dominant hand).",
+   "plain_english": "The clear, ringing note a djembe makes when you hit the edge of the head with flat fingers and let them bounce off. Teachers say the sound 'go' out loud so you can learn the pattern by voice.",
+   "purpose_function": "The tone gives the djembe its clear, pitched middle voice, sitting between the deep bass and the sharp slap so drummers can build layered patterns and melodies from the three sounds.",
+   "practical_application": "A player produces the tone by hitting the rim area with relaxed, closed fingers and lifting off quickly; when miking a djembe, an engineer positions a mic to catch this ringing edge tone as well as the low bass from the center.",
+   "category": "Hand drum stroke",
+   "related_terms": [
+    "Bass stroke",
+    "Slap stroke",
+    "Open tone",
+    "Doum",
+    "Frame drum resonance",
+    "Talking drum"
+   ],
+   "common_mistakes": [
+    "Hitting the drum with tense, spread fingers, which muddies the tone and can bruise the hand.",
+    "Striking too far toward the center, which turns the clear tone into a boomy bass sound.",
+    "Leaving the fingers resting on the head after the strike, which damps the ring and kills the tone.",
+    "UNSAFE: Playing hard for long stretches with tense, poor technique can bruise fingers and strain the wrist; warm up and keep strokes relaxed."
+   ],
+   "scenario_contexts": [
+    "Playing a West African rhythm where tone and slap alternate to form the melody.",
+    "Learning a new pattern by first singing the 'go / do / pa / ta' syllables.",
+    "Miking a djembe for a live world-music set to capture both edge tone and center bass."
+   ]
+  },
+  {
+   "id": "1c8725db-a761-4705-aebb-1ce62d24baea",
+   "term": "Doum",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The deep, low bass sound of a goblet drum (darbuka/doumbek), produced by striking near the center of the head, usually with the dominant hand, and letting the head resonate. It is the drum's fundamental voice, contrasted with the sharp, high 'tek' (or 'tak') played at the rim.",
+   "plain_english": "The deep, booming low note of a darbuka or doumbek drum. You make it by hitting near the middle of the head and letting it ring, the opposite of the sharp 'tek' tap at the edge.",
+   "purpose_function": "The doum marks the strong downbeats of Middle Eastern rhythms, giving the groove its low anchor while the higher tek strokes fill in the offbeats.",
+   "practical_application": "A player strikes the center with the fingers or palm and lifts off to let the low tone ring; in Middle Eastern rhythm notation 'D' marks a doum and 'T' a tek, so a technician reads a pattern as a string of doums and teks.",
+   "category": "Hand drum stroke",
+   "related_terms": [
+    "Tek",
+    "Darbuka",
+    "Finger roll (darbuka)",
+    "Bass stroke",
+    "Goblet drum",
+    "Djembe tone (go)"
+   ],
+   "common_mistakes": [
+    "Confusing the doum with the tek; the doum is the low center note, the tek the high rim note.",
+    "Pressing the hand into the head after the strike and choking the low resonance.",
+    "Hitting dead center too hard, which slaps rather than producing a full, round bass."
+   ],
+   "scenario_contexts": [
+    "Playing a maqsum or baladi rhythm where doum-tek-tek sets the basic pattern.",
+    "Reading a darbuka chart marked with D and T symbols.",
+    "Miking a darbuka so the center doum stays full without booming."
+   ]
+  },
+  {
+   "id": "c57141f1-7fec-4183-9508-bd0012a43b56",
+   "term": "Felt damping",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The use of felt — strips, pads, or mutes placed against a drumhead — to absorb vibration, shorten sustain, and reduce unwanted overtones or ring. On a drum kit it commonly means a felt strip run under the bass-drum head; the same principle appears in timpani mutes and under piano and mallet dampers.",
+   "plain_english": "Using a soft felt pad or strip that touches the drumhead to soak up vibration, so the drum rings less and sounds tighter. It works like resting your hand on a struck drum to stop it humming.",
+   "purpose_function": "Felt damping controls how long a drum rings and tames boomy or clashing overtones, letting a player or engineer get a focused, controlled sound instead of a long, ringing one.",
+   "practical_application": "A technician weaves a felt strip under the bass-drum batter or resonant head to cut sustain, or lays felt on a drum to tame ring, adjusting how much the felt touches the head to fine-tune the amount of damping.",
+   "category": "Damping technique",
+   "related_terms": [
+    "Muffling",
+    "Dampening",
+    "Overtones",
+    "Sustain",
+    "Bass drum",
+    "Gel damper"
+   ],
+   "common_mistakes": [
+    "Adding too much felt and deadening the drum completely, losing tone and projection.",
+    "Assuming felt tunes the drum; it only shortens ring and does not really change the fundamental pitch.",
+    "Letting a felt strip sit unevenly, so it buzzes or mutes the head in only one spot."
+   ],
+   "scenario_contexts": [
+    "Weaving a felt strip into a bass drum for a tight, punchy studio kick.",
+    "Taming a ringy tom with a small felt pad before tracking.",
+    "Placing felt on a snare to reduce ring for a close-miked recording."
+   ]
+  },
+  {
+   "id": "4bc68f13-8003-45b6-9570-e637f1f5e7b9",
+   "term": "Finger roll (darbuka)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A sustained, continuous sound on the darbuka (goblet drum) produced by striking the head with the fingers in rapid succession — often rolling the fingers of one or both hands across the edge — so the individual strokes blur into a smooth roll or buzz. It ornaments a rhythm and sustains sound between the louder doum and tek accents.",
+   "plain_english": "A fast flutter of the fingers on a darbuka that runs the taps together into one smooth, rolling sound. It is like drumming your fingers quickly on a table so the taps blur into a buzz.",
+   "purpose_function": "The finger roll lets a goblet-drum player sustain sound and add decoration on an instrument whose single strokes die away fast, filling gaps and building tension between the main beats.",
+   "practical_application": "A player rolls the fingers of one or both hands near the rim to make a continuous ripple, using it for fills, endings, and ornamented passages in Middle Eastern solos.",
+   "category": "Hand drum technique",
+   "related_terms": [
+    "Doum",
+    "Tek",
+    "Darbuka",
+    "Roll",
+    "Buzz roll",
+    "Ornamentation"
+   ],
+   "common_mistakes": [
+    "Tensing the hand, which makes the roll uneven and stops it sounding smooth.",
+    "Rolling too far toward the center, where the head is looser and the roll loses clarity.",
+    "Playing the roll so loud it covers the main doum and tek accents instead of supporting them."
+   ],
+   "scenario_contexts": [
+    "Adding a finger roll as a fill at the end of a darbuka phrase.",
+    "Ornamenting a slow section of a Middle Eastern solo with rolling fingers.",
+    "Building tension with a rising finger roll before the rhythm drops back in."
+   ]
+  },
+  {
+   "id": "b79aba78-ff0c-4b25-819c-31fd6503e7db",
+   "term": "Frame drum resonance",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The tonal and acoustic response of a frame drum — a shallow, single-headed drum whose diameter is much greater than its depth (e.g., tar, bendir, riq, bodhrán, daf). With little enclosed air volume, its sound is dominated by the membrane's vibrational modes and by hand position: striking near the center gives lower, fuller tones and striking near the rim gives higher, sharper ones.",
+   "plain_english": "How a frame drum rings and colors its sound. Because these drums are wide but very shallow, the tightness of the skin and where you hit it matter most. Hit the middle for a low note, hit near the edge for a higher, snappier one.",
+   "purpose_function": "A frame drum's resonance is what gives it a range of pitches and tone colors from a single head, letting one player draw out bass notes, edge tones, and ringing sustain to shape a rhythm.",
+   "practical_application": "A player varies where and how the head is struck, and may press a finger on the skin to raise pitch or damp it; when recording, an engineer places the mic to balance the low center resonance against the brighter rim tones.",
+   "category": "Percussion acoustics",
+   "related_terms": [
+    "Frame drum",
+    "Membrane",
+    "Head tension",
+    "Djembe tone (go)",
+    "Damping",
+    "Overtones"
+   ],
+   "common_mistakes": [
+    "Thinking a frame drum has one fixed sound; hand position and pressure change its pitch and tone a lot.",
+    "Over-tightening the head chasing volume, which can raise pitch too far and stress the skin or frame.",
+    "Miking only the center and missing the bright rim tones that give the drum its character."
+   ],
+   "scenario_contexts": [
+    "Playing a bodhrán where moving the back hand on the skin bends the drum's pitch.",
+    "Recording a tar and choosing mic placement to catch both low and edge tones.",
+    "Tuning a frame drum head so its resonance suits the key of a song."
+   ]
+  },
+  {
+   "id": "62df420f-188e-4786-8b70-4e45cfe85f58",
+   "term": "Gangan squeeze (talking drum)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The pitch-bending technique of the West African hourglass 'talking drum' (Yoruba gángán, of the dùndún family), in which the player presses the drum under the arm to squeeze the leather tension cords that run between its two heads. Squeezing tightens the heads and raises the pitch, so the drum can 'talk' by sliding between tones to imitate the rise and fall of speech.",
+   "plain_english": "On a talking drum, you tuck it under your arm and squeeze the cords along its side to change the pitch while you play. Squeeze harder and the note slides up, like a voice going higher, which is how the drum seems to 'talk.'",
+   "purpose_function": "The squeeze is what makes the talking drum melodic and speech-like; by changing pitch on the fly it lets the drum imitate the tones of West African languages and carry messages or melodies.",
+   "practical_application": "A player holds the drum under the arm and varies arm pressure while striking the head with a curved beater, gliding the pitch up and down; a sound engineer expects a wide, sliding pitch range and mics for it.",
+   "category": "Hand drum technique",
+   "related_terms": [
+    "Talking drum",
+    "Dundun",
+    "Pitch bend",
+    "Membrane",
+    "Head tension",
+    "Djembe tone (go)"
+   ],
+   "common_mistakes": [
+    "Thinking the drum is tuned to fixed notes; its pitch is changed live by arm pressure.",
+    "Squeezing so hard the heads or cords are over-stressed, risking a torn head or snapped cord.",
+    "Striking with a flat hand instead of the curved stick, which weakens the clear, pitched tone."
+   ],
+   "scenario_contexts": [
+    "Playing a talking-drum phrase that mimics a spoken proverb in a Yoruba language.",
+    "Sliding the pitch up under a lead line in an Afrobeat or highlife groove.",
+    "Miking a talking drum for stage, allowing for its sliding pitch and wide dynamics."
+   ]
+  },
+  {
+   "id": "5d4d0e72-c7df-46a0-b885-efbacba2f4df",
+   "term": "Ganzá shuffle",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A continuous, driving shaker pattern played on the ganzá — a Brazilian tubular shaker (metal or woven) filled with beads or shot — using rapid back-and-forth arm motion so both the forward and return strokes sound. In samba and related styles it lays down a steady stream of sixteenth-note subdivisions, often with a slight swing, that propels the groove.",
+   "plain_english": "A steady shaking pattern on the ganzá, a tube-shaped shaker used in Brazilian music. You shake it forward and back so it makes sound both ways, giving a fast, non-stop rustle that drives the beat.",
+   "purpose_function": "The pattern fills in the fast subdivisions of a samba groove, acting like a hi-hat by keeping continuous time and adding forward motion under the louder drums.",
+   "practical_application": "A percussionist keeps the wrist and forearm moving evenly so the shaker sounds on each stroke, adding accents to match the rhythm; on stage the ganzá is usually close to a mic because it is quieter than the surdos and snares.",
+   "category": "Shaker technique",
+   "related_terms": [
+    "Ganzá",
+    "Shaker",
+    "Samba",
+    "Caixa",
+    "Surdo",
+    "Subdivision"
+   ],
+   "common_mistakes": [
+    "Shaking only on the forward stroke, which loses the steady, even stream the pattern needs.",
+    "Letting the tempo drift, since the ganzá, not the loud drums, is holding the fast subdivisions.",
+    "Overfilling the tube or shaking unevenly, so the accents blur and the groove loses its swing."
+   ],
+   "scenario_contexts": [
+    "Playing continuous sixteenths on a ganzá in a samba bateria.",
+    "Using the ganzá like a hi-hat to keep time in a Brazilian percussion section.",
+    "Recording a ganzá close to the mic so its quiet, fast pattern sits in the mix."
+   ]
+  },
+  {
+   "id": "f013b9af-e0de-4496-9506-e00a202ea1de",
+   "term": "Ge/Ghe (tabla)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A bol (spoken stroke-name) of the tabla, and specifically the open, resonant bass stroke played on the bayan, the larger left-hand drum. It is produced by striking the head with the fingers while the heel of the hand rests on the skin and can slide to bend the pitch, leaving the stroke undamped so it rings. It contrasts with the closed, damped bass stroke 'ke/kat.'",
+   "plain_english": "A named tabla stroke that makes the deep, ringing bass note on the big left-hand drum. You strike with your fingers and let it sing, and by sliding the heel of your hand you can bend the pitch up or down.",
+   "purpose_function": "Ge provides the tabla's resonant low voice and its signature sliding bass, giving weight and pitch movement to rhythmic patterns and letting the drummer shade the low tone within a phrase.",
+   "practical_application": "A player sounds ge by striking the bayan with relaxed fingers while pressing and gliding the wrist to bend the note; students learn it by name as part of reciting bols before playing them.",
+   "category": "Drum stroke",
+   "related_terms": [
+    "Bol",
+    "Bayan",
+    "Tabla",
+    "Dha",
+    "Na",
+    "Pitch bend"
+   ],
+   "common_mistakes": [
+    "Damping the head right after the strike, which turns the ringing 'ge' into a closed, dead 'ke.'",
+    "Keeping the wrist stiff, losing the sliding pitch bend that gives ge its voice.",
+    "Treating 'ge' as just a sound; it names a specific stroke and hand action, not only a syllable."
+   ],
+   "scenario_contexts": [
+    "Reciting a tabla composition's bols, where 'dha' combines ge with a treble stroke.",
+    "Bending the bayan's pitch on a ge stroke to follow a melody.",
+    "Learning left-hand technique by isolating the ge stroke."
+   ]
+  },
+  {
+   "id": "5f25517b-36c8-452e-8b5e-9dd16412bc88",
+   "term": "Glockenspiel sustain",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The relatively long ring, or decay time, of a glockenspiel's tone. Because its bars are hard steel — a material with very low internal damping — a struck bar keeps vibrating and sounds a bright, bell-like note that rings on far longer than the short decay of a wooden-barred xylophone or marimba. Orchestral glockenspiels usually have no resonators, so the sustain comes from the bars themselves.",
+   "plain_english": "How long a glockenspiel keeps ringing after you strike a bar. Its metal bars hold their vibration for a long time, so each note has a bright, bell-like ring, unlike a wooden xylophone that stops almost at once.",
+   "purpose_function": "The long metallic sustain gives the glockenspiel its shimmering, bell-like character and lets its high notes cut through and hang over an ensemble.",
+   "practical_application": "A player controls the ring with mallet choice and, when needed, by damping bars with the hand, since most glockenspiels have no pedal; when recording, an engineer captures the bright attack while managing the long, ringing tail.",
+   "category": "Mallet percussion",
+   "related_terms": [
+    "Glockenspiel",
+    "Xylophone",
+    "Vibraphone",
+    "Sustain",
+    "Decay",
+    "Mallet"
+   ],
+   "common_mistakes": [
+    "Expecting a glockenspiel to stop like a xylophone; its steel bars ring on and can blur fast passages.",
+    "Using very hard mallets carelessly, which can dent bars and give a harsh, clangy sustain.",
+    "Forgetting the ring builds up in fast runs, muddying the line because the notes overlap."
+   ],
+   "scenario_contexts": [
+    "Playing a slow melody where each glockenspiel note rings into the next.",
+    "Hand-damping bars to stop the ring in a passage that needs clarity.",
+    "Miking a glockenspiel to catch its bright attack without an overly long, harsh tail."
+   ]
+  },
+  {
+   "id": "a31941e0-3a9e-4081-a32c-df843e0b7bbc",
+   "term": "Gong swell",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A dynamic effect in which a tam-tam or gong is rolled with two mallets, building smoothly from near silence to a loud peak and often back down. The player begins with a soft priming stroke so the metal is already vibrating, then increases stroke frequency and force so successive tones merge into one continuously growing sound.",
+   "plain_english": "A gong sound that grows slowly from very soft to very loud. The player taps the gong so it is already humming, then hits it faster and harder so the sound swells like a rising wave.",
+   "purpose_function": "It lets a single indefinite-pitch instrument add a long, dramatic rise or fall in loudness, shaping tension and release without a sharp initial attack.",
+   "practical_application": "A percussionist primes the tam-tam with light strokes, then rolls with soft mallets to grow the swell on cue; live engineers ride the fader and anticipate the peak because a full gong swell is extremely loud.",
+   "category": "Playing Technique",
+   "related_terms": [
+    "Tam-tam",
+    "Roll",
+    "Crescendo",
+    "Soft mallet",
+    "Suspended cymbal roll",
+    "Mallet"
+   ],
+   "common_mistakes": [
+    "Striking too hard or in one spot, which chokes the bloom instead of letting the tones merge",
+    "Starting the roll too fast so individual strikes are heard instead of a smooth swell",
+    "UNSAFE: Standing close to a large tam-tam at full swell without hearing protection; peak levels can reach hearing-damaging SPLs"
+   ],
+   "scenario_contexts": [
+    "Orchestral or film-score climax where a slow gong crescendo underlines a dramatic moment",
+    "Live sound reinforcement where the engineer must capture and control a wide dynamic swell",
+    "Studio recording of a tam-tam swell for a cinematic riser or transition effect"
+   ]
+  },
+  {
+   "id": "8f33ea2f-1b50-4881-92ba-5ad2cf84465f",
+   "term": "Gourd buzz (mirliton)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The buzzing timbre produced by a mirliton — a thin membrane stretched over a small hole in a gourd resonator on instruments such as African xylophones (balafon) and gourd-resonated lamellophones (mbira). When a bar or lamella sounds, the membrane vibrates sympathetically and adds a characteristic rasp or buzz to the tone.",
+   "plain_english": "A raspy buzz added to a note by a thin skin stretched over a hole in a gourd. When the instrument plays, the skin shivers and gives the sound a fuzzy edge, a bit like a kazoo.",
+   "purpose_function": "The mirliton enriches an otherwise plain wooden or metallic tone with extra buzzing overtones, giving the instrument its traditional voice and helping it carry and sustain.",
+   "practical_application": "A player or maker tunes the buzz by choosing the membrane material and hole size; when recording these instruments, engineers place mics to capture the buzz without letting it turn harsh.",
+   "category": "Timbre Effect",
+   "related_terms": [
+    "Mirliton",
+    "Balafon",
+    "Mbira",
+    "Gourd resonator",
+    "Marimba",
+    "Sympathetic resonance"
+   ],
+   "common_mistakes": [
+    "Assuming the buzz is a defect to be silenced, when it is a deliberate, traditional feature of the instrument",
+    "Confusing a mirliton buzz with snare buzz or a rattling part that actually needs repair",
+    "Over-tightening or over-damping the membrane so the characteristic buzz is lost"
+   ],
+   "scenario_contexts": [
+    "Recording a West African balafon and deciding how much membrane buzz to keep",
+    "Building or restoring a gourd-resonated marimba or mbira and fitting new mirliton membranes",
+    "Live miking of a traditional percussion ensemble where the buzz is part of the intended sound"
+   ]
+  },
+  {
+   "id": "2f59170c-c414-4c05-8d74-c6a69f744e1c",
+   "term": "Gu bass (handpan)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The low bass tone of a handpan (Hang) associated with the Gu — the circular opening in the bottom shell. The enclosed air cavity behaves as a Helmholtz resonator, so striking near or modulating the Gu port produces a deep bass note below the tuned tone fields on the top shell.",
+   "plain_english": "The deep low note of a handpan that comes from the hole in the bottom. The air inside the shell acts like the air in a bottle you blow across, so the player can shape the bass by covering the hole with a hand.",
+   "purpose_function": "The Gu adds a low foundation and resonant body to the handpan's tuned notes, so one player can sound both bass and melody at the same time.",
+   "practical_application": "Players strike near the bottom port or pulse a hand over it (like an udu) to bring out or bend the bass; recording engineers often add a mic under the Gu to capture this low end.",
+   "category": "Instrument Feature",
+   "related_terms": [
+    "Hang drum",
+    "Handpan",
+    "Helmholtz resonator",
+    "Ding",
+    "Tone field",
+    "Steelpan"
+   ],
+   "common_mistakes": [
+    "Thinking the Gu is just a sound hole with no pitch, when it forms a tuned Helmholtz bass resonance",
+    "Blocking the bottom port while holding the instrument, which muffles the bass and shortens sustain",
+    "Striking the thin bottom shell hard with mallets, which can dent or detune the instrument"
+   ],
+   "scenario_contexts": [
+    "A solo handpan player using Gu bass pulses to underpin a melody",
+    "Close-miking a handpan top and bottom to capture both the tone field and the Gu bass",
+    "Explaining to a student why cupping the bottom port changes the low-end resonance"
+   ]
+  },
+  {
+   "id": "59110bae-4738-4ffd-92cd-b0f999571a4c",
+   "term": "Guiro scrape",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The primary playing technique of the guiro: dragging a stick or scraper (pua) across the parallel notches cut into the hollow gourd (or wood/fiberglass) body, producing a rasping, ratchet-like sound. Long strokes give sustained rasps and short strokes give clipped articulations, and the notches may also be tapped for shorter accents.",
+   "plain_english": "The main way to play a guiro: sliding a stick across the ridges cut into a hollow gourd to make a raspy, scratchy sound. Long slides make long rasps and short slides make short clicks, a bit like running a stick along a fence.",
+   "purpose_function": "The scrape gives Latin and orchestral music a dry, rhythmic rasp that marks the beat and adds texture without a definite pitch.",
+   "practical_application": "A percussionist holds the guiro loosely and works long and short scrapes to lock into a clave or dance pattern; engineers mic it close and watch for harsh high-frequency spikes.",
+   "category": "Playing Technique",
+   "related_terms": [
+    "Guiro",
+    "Pua (scraper)",
+    "Idiophone",
+    "Clave",
+    "Cabasa",
+    "Ratchet"
+   ],
+   "common_mistakes": [
+    "Scraping every stroke at the same length and force, losing the long/short contrast that shapes the pattern",
+    "Muting the sound holes with the holding hand and choking the instrument's resonance",
+    "Treating the guiro as struck-only and missing the sustained rasp that defines it"
+   ],
+   "scenario_contexts": [
+    "Playing a guiro scrape pattern in a salsa or cumbia arrangement",
+    "Orchestral or film percussion needing a Latin-flavored scraping texture",
+    "Overdubbing guiro in the studio and matching the scrape rhythm to the clave"
+   ]
+  },
+  {
+   "id": "4c40a7fc-c160-41b6-a983-fc271a45a1a2",
+   "term": "Güiro scrape",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The primary playing technique of the güiro: dragging a stick or scraper (pua) across the parallel notches cut into the hollow gourd (or wood/fiberglass) body, producing a rasping, ratchet-like sound. Long strokes give sustained rasps and short strokes give clipped articulations, and the notches may also be tapped for shorter accents.",
+   "plain_english": "The main way to play a güiro: sliding a stick across the ridges cut into a hollow gourd to make a raspy, scratchy sound. Long slides make long rasps and short slides make short clicks, a bit like running a stick along a fence.",
+   "purpose_function": "The scrape gives Latin and orchestral music a dry, rhythmic rasp that marks the beat and adds texture without a definite pitch.",
+   "practical_application": "A percussionist holds the güiro loosely and works long and short scrapes to lock into a clave or dance pattern; engineers mic it close and watch for harsh high-frequency spikes.",
+   "category": "Playing Technique",
+   "related_terms": [
+    "Güiro",
+    "Pua (scraper)",
+    "Idiophone",
+    "Clave",
+    "Cabasa",
+    "Ratchet"
+   ],
+   "common_mistakes": [
+    "Scraping every stroke at the same length and force, losing the long/short contrast that shapes the pattern",
+    "Muting the sound holes with the holding hand and choking the instrument's resonance",
+    "Treating the güiro as struck-only and missing the sustained rasp that defines it"
+   ],
+   "scenario_contexts": [
+    "Playing a güiro scrape pattern in a salsa or cumbia arrangement",
+    "Orchestral or film percussion needing a Latin-flavored scraping texture",
+    "Overdubbing güiro in the studio and matching the scrape rhythm to the clave"
+   ]
+  },
+  {
+   "id": "1418b038-3eb8-49e1-a6c7-264283ffe8a5",
+   "term": "Hand-damping (palm mute)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "Muting a drum or other percussion instrument by resting a hand or palm on the vibrating surface to shorten its sustain and tame overtones. On hand drums it produces the muffled or 'mute' stroke; on the drum kit or timpani a hand laid on the head damps the ring and can raise the apparent pitch.",
+   "plain_english": "Quieting a drum by laying a hand or palm on the head so it stops ringing. It works like pressing your hand on a struck bell to cut the sound short and make it drier.",
+   "purpose_function": "Hand-damping controls how long a note rings, so the player can make tight, dry sounds, stop unwanted ring, and add rhythmic shape between open hits.",
+   "practical_application": "A conga or drum-kit player rests fingers or palm on the head to mute individual notes for a tighter groove; engineers rely on this when they want players to control sustain live rather than adding tape.",
+   "category": "Playing Technique",
+   "related_terms": [
+    "Muffling",
+    "Open tone",
+    "Mute stroke",
+    "Sustain",
+    "Palm mute",
+    "Timpani"
+   ],
+   "common_mistakes": [
+    "Confusing hand-damping, which is played live and variable, with permanent muffling using tape, gel, or cloth",
+    "Pressing too hard and choking the note completely instead of shaping its decay",
+    "Forgetting that a hand on the head raises apparent pitch, which can throw off tuned drums"
+   ],
+   "scenario_contexts": [
+    "A conguero muting strokes to create the muffled tone in a tumbao pattern",
+    "A kit drummer palm-muting the snare or toms for a dry, controlled sound",
+    "A timpanist damping heads by hand to stop the ring between notes"
+   ]
+  },
+  {
+   "id": "6ff1aae0-94aa-454c-b068-20a704c232b1",
+   "term": "Hang drum",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A handpan — a convex, gong-like steel percussion instrument played with the hands, first made in 2000 by Felix Rohner and Sabina Schärer of PANArt in Bern, Switzerland. It has a central bass note (Ding) surrounded by a ring of tuned tone fields on the top shell and a bottom port (Gu); 'Hang' is PANArt's trademark, while 'handpan' is the generic term for the wider family.",
+   "plain_english": "A steel instrument shaped like two joined woks that you play with your hands. It has a low center note ringed by tuned dents and gives soft, bell-like tones. Hang drum is a common nickname, but the makers say it is not really a drum.",
+   "purpose_function": "It puts melody, harmony, and bass under one player's hands with a warm, sustaining tone, so a single musician can play complete, meditative pieces.",
+   "practical_application": "Players rest it on their lap and strike the tuned fields with fingers and thumbs; engineers close-mic the top and often the Gu and use gentle compression to even out its wide dynamics.",
+   "category": "Instrument",
+   "related_terms": [
+    "Handpan",
+    "Gu bass (handpan)",
+    "Ding",
+    "Steelpan",
+    "Tone field",
+    "Idiophone"
+   ],
+   "common_mistakes": [
+    "Calling every handpan a 'Hang'; 'Hang' is one maker's (PANArt) trademarked instrument, while 'handpan' is the general term",
+    "Playing it with drumsticks or hard mallets, which dents and detunes the soft steel",
+    "Storing it in a hot car or damp bag, which can rust or detune the instrument"
+   ],
+   "scenario_contexts": [
+    "Recording a solo handpan piece for ambient or meditation music",
+    "Miking a handpan for a live acoustic set",
+    "Advising a student on the difference between a PANArt Hang and a generic handpan"
+   ]
+  },
+  {
+   "id": "1530bda2-3a00-4f6e-8e6f-8263dc5ab6d8",
+   "term": "Hard mallet",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A mallet with a hard head — typically wood, plastic/acrylic, phenolic, or hard rubber — that emphasizes the attack and upper partials, producing a bright, sharp, articulate tone. Hard mallets are used on high, bright instruments such as the xylophone, glockenspiel, and bells, and wherever clear articulation is wanted on marimba or vibraphone.",
+   "plain_english": "A beater with a hard tip that makes a bright, clicky sound. Because the tip does not give, it brings out the attack and the high overtones, like tapping glass instead of a pillow.",
+   "purpose_function": "Hard mallets bring out clarity and cut, so fast, high, or exposed passages speak clearly and project through an ensemble.",
+   "practical_application": "A percussionist matches mallet hardness to the instrument and passage, choosing hard mallets on xylophone or glockenspiel for bright articulation and softer ones when a warmer, rounder tone is needed.",
+   "category": "Mallet / Beater",
+   "related_terms": [
+    "Soft mallet",
+    "Yarn mallet",
+    "Xylophone",
+    "Glockenspiel",
+    "Marimba",
+    "Vibraphone"
+   ],
+   "common_mistakes": [
+    "Using hard mallets too forcefully on glockenspiel or bells, which can chip or damage the bars and produce a harsh clang",
+    "Assuming one mallet suits every instrument instead of matching hardness to the instrument and passage",
+    "Confusing 'hard' with 'loud'; mallet hardness changes tone color and attack, not just volume"
+   ],
+   "scenario_contexts": [
+    "Choosing hard mallets for a bright xylophone solo that must cut through the band",
+    "Selecting glockenspiel mallets in the studio to control brightness and attack",
+    "A student learning why the same marimba sounds different with hard versus soft mallets"
+   ]
+  },
+  {
+   "id": "4330cbcb-8994-48c4-b523-5d4755349d09",
+   "term": "Heel-toe (manoteo)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A conga (and bongo) hand technique in which the hand rocks back and forth between the heel (the base of the palm) and the toe (the fingertips), producing a soft, steady stream of low, muffled sounds. It fills the spaces between the louder open and slap tones to maintain a continuous underlying pulse.",
+   "plain_english": "A hand-drum move where you rock your hand like a seesaw, tapping first the base of your palm, then your fingertips. It makes a quiet, steady pulse that fills the gaps between the louder hits and keeps time under the beat.",
+   "purpose_function": "The heel-toe motion keeps a constant flow of soft strokes so the player holds a steady groove and time while saving the loud open tones and slaps for accents.",
+   "practical_application": "A conguero uses the heel-toe rock to fill the subdivisions of a tumbao or marcha; it is felt more than heard, giving the pattern its drive without adding loud notes.",
+   "category": "Playing Technique",
+   "related_terms": [
+    "Conga",
+    "Open tone",
+    "Slap",
+    "Bass tone",
+    "Tumbao",
+    "Bongo"
+   ],
+   "common_mistakes": [
+    "Playing the heel and toe too loudly so they compete with the accented open tones instead of sitting underneath them",
+    "Stiffening the wrist instead of letting the hand rock freely, which breaks the smooth flow",
+    "Treating the heel-toe as decoration rather than the timekeeping backbone of the pattern"
+   ],
+   "scenario_contexts": [
+    "Holding a tumbao groove on congas in a salsa band",
+    "Teaching a beginner to keep time between open tones and slaps",
+    "Recording congas where the soft heel-toe pulse must be captured without excess low-end rumble"
+   ]
+  },
+  {
+   "id": "b768d0fc-ab56-4f36-8c9e-3fa4c26f602e",
+   "term": "Heel-toe technique",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A bass drum pedal technique in which a drummer sounds two strokes with one foot in a single rocking motion: the first driven with the heel down (using the heel or ball of the foot), the second by the toe as the heel lifts and the foot rocks forward. It lets a single pedal produce fast double strokes without a double pedal.",
+   "plain_english": "A way to hit the bass drum twice with one foot in one smooth rock. You play the first note with your heel down. Then you tip forward onto your toes for the second note. It gives you fast doubles from a single pedal.",
+   "purpose_function": "Enables rapid double strokes and steady fast patterns from one foot and one pedal, improving speed and endurance without adding a second bass drum or a double pedal.",
+   "practical_application": "Drummers use it for fast bass-drum figures and rolls in rock, metal, and fusion; when miked, each of the two beats should read as an even, separately audible hit.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Double bass drumming",
+    "Bass drum pedal",
+    "Beater",
+    "Slide technique",
+    "Kick click",
+    "Kick thump"
+   ],
+   "common_mistakes": [
+    "Letting the two strokes come out uneven, so the second (toe) note is weak or lost",
+    "Tensing the leg and ankle instead of relaxing to let the foot rock, which kills speed and causes fatigue",
+    "Burying the beater into the head on both strokes, choking the tone instead of letting it rebound"
+   ],
+   "scenario_contexts": [
+    "Playing fast double-kick sixteenth notes with only a single pedal",
+    "Adding quick bass drum doubles under a groove",
+    "An engineer setting a gate so both closely spaced beats trigger cleanly"
+   ]
+  },
+  {
+   "id": "e637e2c5-25d7-43f4-b7cd-128301a5574b",
+   "term": "Internal cajón microphone",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A microphone placed inside the cajón, usually reaching in through the rear sound hole, to capture the box's low-frequency body and the rattle of the internal snares. It is commonly paired with an external front mic that captures the slap and attack of the front playing plate (tapa).",
+   "plain_english": "A mic put inside the cajon box, usually through the round hole in the back. It picks up the deep bass boom and the buzzy snare rattle from inside. Players often add a second mic in front for the sharp slap sound.",
+   "purpose_function": "Captures the deep bass and internal snare buzz that a front mic misses, giving a fuller and more controllable low end for live reinforcement or recording.",
+   "practical_application": "A tech clips or tapes a small mic (or uses a cajón with a built-in mic) inside the box, checks polarity against any front mic, and blends the two so bass and slap sit together.",
+   "category": "Microphone technique",
+   "related_terms": [
+    "Cajón",
+    "Kick drum microphone",
+    "Boundary microphone",
+    "Polarity inversion",
+    "Close miking",
+    "Phase cancellation"
+   ],
+   "common_mistakes": [
+    "Combining the inside mic with a front mic without checking polarity, so the low end thins out from phase cancellation",
+    "Placing the mic where the player's hand or the internal snares slap it, causing thumps and rattles",
+    "Boosting inside-mic low end so much that the sound becomes boomy and undefined"
+   ],
+   "scenario_contexts": [
+    "Miking a cajón for a singer-songwriter set in a small club",
+    "Recording an acoustic session and blending inside and front mics",
+    "Using a cajón with a built-in mic plugged into a DI or mixer"
+   ]
+  },
+  {
+   "id": "16ffd74f-ad1c-453f-8657-f4ee044351a4",
+   "term": "Ka (darbuka)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "In darbuka (goblet drum) technique, the 'ka' is a sharp, high-pitched stroke played at the edge of the head with the secondary (usually non-dominant) hand. It produces the same crisp rim tone as a 'tek' but with the other hand, so alternating tek and ka yields fast, even patterns.",
+   "plain_english": "A short, high tap sound on the darbuka, played at the rim with your weaker hand. It matches the sharp tap your strong hand makes, called a tek. Swapping between the two hands lets you play fast, even rolls.",
+   "purpose_function": "Gives the drummer an opposite-hand rim stroke so tek-ka alternation can produce quick, smooth runs and fills that one hand alone could not play evenly.",
+   "practical_application": "A player uses ka as the off-hand fill-in between dum and tek strokes when reading or teaching Middle Eastern rhythms such as maqsum or baladi.",
+   "category": "Drum stroke",
+   "related_terms": [
+    "Dum",
+    "Tek",
+    "Darbuka",
+    "Doumbek",
+    "Maqsum",
+    "Finger technique"
+   ],
+   "common_mistakes": [
+    "Striking too far toward the center, so the ka sounds dull instead of sharp and high",
+    "Letting the weaker-hand ka come out quieter than the tek, making patterns sound uneven",
+    "Confusing ka with dum; ka is a thin rim tone, not the deep center bass"
+   ],
+   "scenario_contexts": [
+    "Learning the maqsum rhythm where tek and ka alternate",
+    "A percussionist filling fast passages by trading tek and ka hands",
+    "Notating a darbuka part that marks D, T, and K strokes"
+   ]
+  },
+  {
+   "id": "6fb33b57-7b46-4f4d-81bd-2354cd99a81e",
+   "term": "Kalimba buzz",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The buzzing or rattling timbre added to the sustained tone of a plucked lamellophone tine. On traditional African instruments (mbira, likembe) it is produced deliberately with attached shells, bottle caps, beads, or a mirliton sleeve and is musically prized; on modern melodic kalimbas an unintended buzz can also arise from a loose tine, debris, or a tine vibrating against its bridge.",
+   "plain_english": "A rattly, buzzing sound layered onto a kalimba or mbira note. On many African instruments this buzz is added on purpose with beads, shells, or bottle caps, and it is wanted. On a modern kalimba, a buzz can also be a fault from a loose or dirty key.",
+   "purpose_function": "Adds a shimmering, sustaining buzz that thickens each note and helps it carry; traditionally it also holds cultural and ritual meaning, while an unwanted buzz signals a setup problem to fix.",
+   "practical_application": "A player adds or removes buzzers (rings, beads, shells) to taste, while a tech traces an unwanted buzz by reseating the tine, cleaning under it, or adjusting where it clamps.",
+   "category": "Sound characteristic",
+   "related_terms": [
+    "Kalimba",
+    "Mbira",
+    "Tine",
+    "Mirliton",
+    "Sympathetic resonance",
+    "Sustain"
+   ],
+   "common_mistakes": [
+    "Assuming every buzz is a fault; on the mbira and many kalimbas the buzz is added deliberately and desired",
+    "Bending or forcing a tine to silence a buzz, which pushes the note out of tune",
+    "Ignoring debris or a loose tine base, so an unwanted rattle keeps returning"
+   ],
+   "scenario_contexts": [
+    "Adding a buzzer ring to a tine for more sustain and shimmer",
+    "A traditional mbira with bottle caps producing its characteristic buzz",
+    "Troubleshooting a new kalimba that rattles on one note"
+   ]
+  },
+  {
+   "id": "38c83af4-acd8-44e6-b1be-31505b1b233c",
+   "term": "Kick click",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The sharp, high-frequency attack of a bass (kick) drum produced by the beater striking the batter head, dominated by energy roughly in the 2-5 kHz range. Engineers emphasize it so the kick's beater 'click' cuts through a dense mix, especially in rock and metal.",
+   "plain_english": "The short, clicky tick you hear when the kick drum beater hits the head. It lives in the higher frequencies, around a few kHz. Engineers boost it so the kick stays clear even in a loud, busy mix.",
+   "purpose_function": "Gives the kick definition and attack so each hit is clearly heard through guitars, bass, and cymbals, and so reinforced kicks translate on small speakers.",
+   "practical_application": "A mixer boosts around 2-5 kHz, uses a harder or plastic beater, adds a patch to the head, or blends a sample to bring out the click when the kick is getting lost.",
+   "category": "Frequency character",
+   "related_terms": [
+    "Kick thump",
+    "Beater",
+    "Attack transient",
+    "EQ",
+    "Kick drum microphone",
+    "Transient"
+   ],
+   "common_mistakes": [
+    "Boosting click so hard the kick sounds thin and clicky with no weight behind it",
+    "Confusing click (beater attack, high frequencies) with thump (body, low frequencies)",
+    "Chasing click with EQ when the real fix is a harder beater or a patch on the head"
+   ],
+   "scenario_contexts": [
+    "Cutting a metal kick through a wall of distorted guitars",
+    "Adding click so the kick shows up on phone and laptop speakers",
+    "Blending a click-heavy sample under a soft acoustic kick"
+   ]
+  },
+  {
+   "id": "256dd2d4-7f6a-43e4-9ce8-30afd04b2709",
+   "term": "Kick thump",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The deep, low-frequency body and weight of a bass (kick) drum, centered roughly in the 50-100 Hz region around its fundamental. It provides the felt 'thump' and power of the kick, as distinct from the higher-frequency beater 'click.'",
+   "plain_english": "The deep, punchy low end of the kick drum that you feel in your chest. It sits down around 50 to 100 Hz. This is the thump part, separate from the higher clicky attack.",
+   "purpose_function": "Delivers the low-end power and rhythmic foundation of a track, giving the kick its size and weight in a mix or through a PA.",
+   "practical_application": "An engineer shapes thump with EQ around 50-100 Hz and by controlling resonance and decay, balancing it against the bass guitar so the low end stays tight, not muddy.",
+   "category": "Frequency character",
+   "related_terms": [
+    "Kick click",
+    "Sub bass",
+    "Fundamental frequency",
+    "EQ",
+    "Muffling",
+    "Bass management"
+   ],
+   "common_mistakes": [
+    "Piling on low end until the kick booms and masks the bass guitar",
+    "Confusing thump (low-frequency body) with click (high-frequency attack)",
+    "Boosting thump on speakers that cannot reproduce it, so the change is inaudible and only wastes headroom"
+   ],
+   "scenario_contexts": [
+    "Tuning kick low end so it locks with the bass guitar",
+    "Dialing chest-thump for a live PA with subwoofers",
+    "Taming an overly boomy kick in a small room"
+   ]
+  },
+  {
+   "id": "9446efa5-3543-41b9-a06f-5374f1edc2ea",
+   "term": "Mallet hardness",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The relative firmness of a percussion mallet's head, ranging from soft yarn or cord through medium rubber to hard plastic, acrylic, or brass, which sets how it excites a bar or drum. Harder heads have shorter contact time and excite more high partials for a brighter, more articulate attack; softer heads emphasize the fundamental for a rounder, darker tone.",
+   "plain_english": "How hard or soft the head of a percussion mallet is, from soft yarn to hard plastic. A hard mallet gives a bright, sharp sound with lots of attack. A soft mallet gives a warm, round tone that brings out the low notes.",
+   "purpose_function": "Lets a player match tone, attack, and volume to the instrument, register, and music, since the same bar can sound bright or mellow depending on the mallet.",
+   "practical_application": "A percussionist picks harder mallets for xylophone, the high register, or bright loud passages, and softer mallets for marimba, the low bars, or warm blended playing.",
+   "category": "Mallet property",
+   "related_terms": [
+    "Marimba",
+    "Xylophone",
+    "Vibraphone",
+    "Marimba resonators",
+    "Attack transient",
+    "Timbre"
+   ],
+   "common_mistakes": [
+    "Using very hard mallets on the low marimba bars, which sounds harsh and can crack the bars",
+    "Assuming harder always means louder; past a point it just adds click and noise, not musical volume",
+    "Ignoring how hardness must change across the range, so low bars sound weak or high bars sound harsh"
+   ],
+   "scenario_contexts": [
+    "Choosing yarn mallets for a warm marimba solo",
+    "Switching to hard plastic mallets for a bright, cutting xylophone part",
+    "Selecting graded mallet sets so each register speaks evenly"
+   ]
+  },
+  {
+   "id": "a4b06ab0-2855-4767-b08b-934839fbb0f2",
+   "term": "Marimba resonators",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The tuned tubes (traditionally gourds or wood, now usually aluminum) suspended below each marimba bar, each acting as a closed pipe whose air column is tuned to the bar's fundamental frequency (about a quarter wavelength). When the bar vibrates, the matched resonator reinforces the fundamental, making the note louder and fuller while shortening its decay.",
+   "plain_english": "The tubes hanging under each marimba bar. Each tube is tuned so the air inside rings at the same pitch as the bar above it. This makes each note louder and richer, though it also fades a bit faster.",
+   "purpose_function": "Amplify and enrich each bar's fundamental so the marimba projects with a full, warm tone rather than the thin, quiet sound of an unmounted bar.",
+   "practical_application": "A tech keeps resonators aligned and dent-free and may adjust tuning stops or end caps to compensate for temperature and humidity so notes stay at full resonance.",
+   "category": "Instrument component",
+   "related_terms": [
+    "Marimba",
+    "Xylophone",
+    "Vibraphone",
+    "Fundamental frequency",
+    "Helmholtz resonance",
+    "Mallet hardness"
+   ],
+   "common_mistakes": [
+    "Thinking resonators change a note's pitch; they reinforce the bar's fundamental, they do not tune the bar",
+    "Denting, clogging, or misaligning tubes, which weakens resonance and volume",
+    "Ignoring temperature and humidity, so bars and resonators drift out of match and lose fullness"
+   ],
+   "scenario_contexts": [
+    "Setting up a marimba and aligning bars over their resonators",
+    "Adjusting resonator tuning stops for a hot, humid venue",
+    "Explaining why an unmounted bar sounds thin without its tube"
+   ]
+  },
+  {
+   "id": "962c83cd-a684-497e-9f8a-1b64130be867",
+   "term": "Martillo",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The basic, steady bongó pattern of Cuban son and salsa, whose name means 'hammer.' It is a continuous eighth-note ostinato played with fingers and thumbs across the two bongo drums (macho and hembra), anchoring the groove while the player also adds improvised fills.",
+   "plain_english": "The main hammer pattern a bongo player keeps going in salsa and Cuban son. It is a steady stream of even notes played across the two little drums. It holds the groove while the player throws in extra fills on top.",
+   "purpose_function": "Provides a constant timekeeping pulse and rhythmic anchor for the ensemble, tying the percussion section to the clave and the rest of the band.",
+   "practical_application": "A bongocero plays martillo through the verse/son sections, breaks from it for fills, and typically switches to the bell (cencerro) in the montuno.",
+   "category": "Rhythm pattern",
+   "related_terms": [
+    "Bongo",
+    "Clave",
+    "Montuno",
+    "Cencerro",
+    "Tumbao",
+    "Son"
+   ],
+   "common_mistakes": [
+    "Rushing or letting the eighth notes get uneven, so the martillo loses its steady drive",
+    "Playing it too loud or too busy so it fights the clave and the rest of the rhythm section",
+    "Never leaving the pattern; martillo should breathe with occasional fills, not run mechanically nonstop"
+   ],
+   "scenario_contexts": [
+    "Holding the groove during the verses of a salsa tune",
+    "A bongo player switching from martillo to the bell at the montuno",
+    "Teaching a beginner the basic bongo timekeeping pattern"
+   ]
+  },
+  {
+   "id": "8864f8f0-2f55-4414-8bec-e6883e0b40bf",
+   "term": "Mbira note pluck",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "The plucking of a single tuned metal tongue (lamella or key) of an mbira, an African lamellophone or 'thumb piano', to sound a note; the player depresses and releases the free end of the tine with the thumb or forefinger, setting it vibrating to produce a soft, bell-like pitched tone that decays gradually, often colored by buzzing rattles attached to the instrument.",
+   "plain_english": "It is plucking one metal key of an mbira, an African thumb piano, to play a note. You press the free end of the key with your thumb and let it spring back. The key then rings out like a tiny bell.",
+   "purpose_function": "It is how sound is made on an mbira, since each pluck sets one tuned tongue vibrating, so the length and stiffness of each key fix its pitch and how long the note rings.",
+   "practical_application": "When recording an mbira, engineers close-mic it to capture the quiet pluck and its bell-like decay, add enough gain because each note is low in level, and expect buzzy overtones from the instrument's rattlers.",
+   "category": "Lamellophone technique",
+   "related_terms": [
+    "Kalimba",
+    "Lamellophone",
+    "Thumb piano",
+    "Pluck transient",
+    "Sustain"
+   ],
+   "common_mistakes": [
+    "Treating the mbira as a struck idiophone when its notes are plucked, not hit",
+    "Setting record gain too low, so the soft pluck and its bell-like tail get lost in noise",
+    "Trying to filter out the buzzing rattles, which are part of the instrument's intended sound"
+   ],
+   "scenario_contexts": [
+    "Close-miking a solo mbira for a world-music recording",
+    "Blending an mbira into a pop arrangement so its quiet plucks sit forward",
+    "Sampling individual mbira notes for a virtual instrument"
+   ]
+  },
+  {
+   "id": "603acfa6-1488-43fe-83d9-d76ff3c1fbb1",
+   "term": "Medium mallet",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A percussion beater of medium hardness whose head — typically yarn or cord wound over a rubber or synthetic core, or a medium-density rubber or felt head — falls between soft and hard mallets, giving a balanced blend of fundamental tone and attack across an instrument's range.",
+   "plain_english": "It is a percussion beater that is neither soft nor hard, but in between. It gives a middle-of-the-road sound, with a good deal of note tone and some attack. That makes it a safe choice for many parts.",
+   "purpose_function": "It offers an all-purpose balance of warmth and clarity, so it serves as a default when a part needs neither the deep tone of a soft mallet nor the bright attack of a hard one.",
+   "practical_application": "A percussionist reaches for medium mallets as a starting point on marimba, vibraphone or timpani, then switches softer or harder if the passage needs more warmth or more articulation.",
+   "category": "Percussion mallet",
+   "related_terms": [
+    "Soft mallet",
+    "Hard mallet",
+    "Yarn mallet",
+    "Timpani mallet",
+    "Marimba"
+   ],
+   "common_mistakes": [
+    "Assuming one medium mallet suits every instrument, when the hardness that balances a marimba may be wrong for a xylophone or timpani",
+    "Choosing mallet hardness by how it looks instead of by the tone and attack the music needs",
+    "Reaching for a mallet harder than the bars can take, which can dent or crack rosewood marimba bars"
+   ],
+   "scenario_contexts": [
+    "Playing a concert-band mallet part that specifies no particular mallet",
+    "Starting a marimba passage with mediums before deciding on softer or harder sticks",
+    "Covering a range of dynamics on vibraphone where mediums balance tone and attack"
+   ]
+  },
+  {
+   "id": "1f692303-f2e9-4031-84b4-b28e4e339ce0",
+   "term": "Moose call (glissando)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A friction-based percussion sound effect — a small friction (string) drum in which a rosined cord passes through a resonating cup or tube; drawing rosined fingers or a cloth along the cord sets it vibrating, and varying its tension produces a continuous roaring or bellowing glissando that imitates the call of a moose or similar animal.",
+   "plain_english": "It is a noisemaker that growls and slides in pitch, like a moose call. You rub a sticky string that runs through a small drum or cup. The pitch then swoops up or down in one smooth glide.",
+   "purpose_function": "It exists to add an animal-like roaring glissando to a piece or sound cue, giving players a controllable voice that slides smoothly in pitch rather than sounding fixed notes.",
+   "practical_application": "A percussionist or foley artist makes the call by drawing rosined fingers or a cloth along the cord, controlling tension for the pitch sweep, and mics it closely because the sound is soft and detailed.",
+   "category": "Friction drum effect",
+   "related_terms": [
+    "Friction drum",
+    "Lion's roar",
+    "Cuica",
+    "Glissando",
+    "Waterphone"
+   ],
+   "common_mistakes": [
+    "Expecting fixed pitches, when the moose call is a glissando effect rather than a tuned instrument",
+    "Using too little rosin, so the cord slips and the roar will not speak",
+    "Miking too far away, so the quiet friction sound is lost"
+   ],
+   "scenario_contexts": [
+    "Adding an animal-call effect to a film or theatre score",
+    "A percussionist covering a sound-effect part in a contemporary piece",
+    "Foley work needing a controllable roaring glissando"
+   ]
+  },
+  {
+   "id": "7a635427-6a90-459c-ab91-5a98543f4aa0",
+   "term": "Motor noise",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "Unwanted sound generated by an electric motor and captured by microphones — mechanical hum, bearing rattle or brush and commutator buzz, plus any radiated electrical interference; in percussion it most often refers to the audible noise of a vibraphone's motor, which spins the fans that create the instrument's vibrato.",
+   "plain_english": "It is the extra humming or whirring a motor makes that a mic can pick up by mistake. On a vibraphone, it is the whir of the small motor that spins the fans for the wobble effect.",
+   "purpose_function": "Naming it helps technicians spot and control it, because motor noise is a fault to be minimized, not a wanted sound, and it muddies quiet passages and reveals that a motor is running.",
+   "practical_application": "When close-miking a vibraphone, engineers aim mics away from the motor housing, may run the motor slower or switch it off for still passages, and service worn bearings that rattle.",
+   "category": "Noise source",
+   "related_terms": [
+    "Vibraphone motor",
+    "Vibrato",
+    "Signal-to-noise ratio",
+    "Mechanical noise",
+    "Hum"
+   ],
+   "common_mistakes": [
+    "Blaming electrical hum for a whir that is really the vibraphone's mechanical motor noise",
+    "Leaving the motor running during quiet passages where its noise is exposed",
+    "Placing the mic right by the motor housing instead of over the bars"
+   ],
+   "scenario_contexts": [
+    "Recording a soft solo vibraphone passage where the motor whir becomes audible",
+    "Troubleshooting a rattle traced to worn motor bearings",
+    "Deciding whether to run the vibraphone motor for a given track"
+   ]
+  },
+  {
+   "id": "e38f2742-b6a3-4dd3-9947-a48379e6c4ec",
+   "term": "Na (tabla)",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A tabla bol (stroke-syllable) played on the dayan, the smaller right-hand treble drum: the index finger strikes the kinar (outer rim) while another finger rests lightly on the syahi to suppress the fundamental, producing a clear, ringing, resonant tone at the drum's tuned pitch.",
+   "plain_english": "It is one of the named strokes on the tabla, the small right-hand drum. You tap the outer edge with a finger while another finger touches the black spot. The drum then rings with a clear, bell-like note.",
+   "purpose_function": "It gives the player a bright, ringing open sound at the drum's pitch, and it is a basic building block of tabla rhythmic patterns and the spoken drum language.",
+   "practical_application": "A player produces Na by striking the rim with the index finger, and an engineer mics the dayan to catch this stroke's ringing, pitched sustain while keeping finger noise low.",
+   "category": "Tabla stroke",
+   "related_terms": [
+    "Tabla",
+    "Dayan",
+    "Syahi",
+    "Bol",
+    "Bayan"
+   ],
+   "common_mistakes": [
+    "Damping the whole head, which kills the ring that defines Na",
+    "Confusing Na with the damped, non-ringing strokes such as Te or Ka",
+    "Striking the center instead of the rim, which loses the clear pitched tone"
+   ],
+   "scenario_contexts": [
+    "Learning tabla bols and reciting rhythmic compositions",
+    "Miking a tabla so the dayan's ringing strokes come through",
+    "Building a tabla sample library with correct open-stroke articulations"
+   ]
+  },
+  {
+   "id": "5290fd2c-070c-4ebb-93c3-b7dea1c394b8",
+   "term": "Open tone",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A fundamental hand-drum stroke on instruments such as conga, djembe and bongo in which the fingers strike the head near the edge and rebound off immediately, letting the head ring freely to produce a clear, resonant, pitched tone that is the drum's characteristic 'singing' note.",
+   "plain_english": "It is the clear, ringing note you get on a hand drum like a conga or djembe. You hit near the edge with your fingers and let your hand bounce right off. The drumhead then sings out its pitch.",
+   "purpose_function": "It provides the drum's main resonant, pitched voice, contrasting with the sharp slap and the deep bass tone, so a single drum can carry singing lines within a rhythm.",
+   "practical_application": "A player gets a good open tone by striking at the edge and lifting off cleanly, and an engineer mics a conga or djembe to capture the open tone's ring while balancing the slap and bass strokes.",
+   "category": "Hand-drum stroke",
+   "related_terms": [
+    "Slap tone",
+    "Bass tone",
+    "Conga",
+    "Djembe",
+    "Muted tone"
+   ],
+   "common_mistakes": [
+    "Leaving the hand on the head after the strike, which chokes the ring and dulls the tone",
+    "Striking too far toward the center, which gives a dead thud instead of a clear open tone",
+    "Confusing the open tone with the slap, when the slap is sharp and high and the open tone is round and pitched"
+   ],
+   "scenario_contexts": [
+    "Playing a conga tumbao where open tones carry the melodic line",
+    "Miking a djembe so open tones ring without excess low thump",
+    "Teaching the three basic hand-drum sounds: bass, open tone and slap"
+   ]
+  },
+  {
+   "id": "675be25f-644f-4da4-aa0d-a4baf06b9663",
+   "term": "Paila",
+   "topic": "Drums & Percussion",
+   "difficulty": null,
+   "definition": "A Spanish term (literally a metal pan or kettle) for the Cuban timbales — the pair of shallow, single-headed, metal-shelled drums, also called 'pailas criollas', played with sticks and mounted on a stand; by extension it also names the metal shell of the drum, the surface struck for the sharp 'cascara' shell pattern.",
+   "plain_english": "It is another name for timbales, the shallow metal Cuban drums played with sticks. The word means a metal pan. Players also use it for the metal side of the drum that they tap for the clicky shell pattern.",
+   "purpose_function": "The metal-shelled paila gives timbales their bright, cutting tone and lets the player switch between ringing head strokes and the sharp cascara pattern on the shell, driving Latin dance rhythms.",
+   "practical_application": "A timbalero plays both heads and shells with sticks, and an engineer mics the timbales to catch the head tone and the bright cascara on the shell, watching levels because shell strokes are sharp and loud.",
+   "category": "Latin percussion",
+   "related_terms": [
+    "Timbales",
+    "Cascara",
+    "Cowbell",
+    "Bongos",
+    "Conga"
+   ],
+   "common_mistakes": [
+    "Thinking paila is a different instrument from timbales, when it is the Cuban name for them",
+    "Miking only the heads and missing the bright cascara played on the metal shell",
+    "Setting one gain for the heads and forgetting that shell strokes peak much louder"
+   ],
+   "scenario_contexts": [
+    "Recording a salsa band's timbales section",
+    "A timbalero switching between head tones and shell (cascara) patterns",
+    "Balancing bright shell strokes against the rest of a Latin percussion mix"
+   ]
+  }
+ ]
+}

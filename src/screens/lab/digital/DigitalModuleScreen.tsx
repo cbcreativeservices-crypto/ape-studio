@@ -56,6 +56,14 @@ export function DigitalModuleScreen() {
     setLessonKey(k);
     setLessonOpen(true);
   };
+  // Top navigation between modules (owner 2026-08-05) — same aesthetic as the
+  // Foundations/Wave labs; swaps the module in place without stacking screens.
+  const idx = DIGITAL_MODULES.findIndex((m) => m.id === meta.id);
+  const last = DIGITAL_MODULES.length - 1;
+  const goToModule = (i: number) => {
+    if (i < 0 || i > last) return;
+    (navigation as { setParams: (p: { id: DigitalModuleId }) => void }).setParams({ id: DIGITAL_MODULES[i].id });
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -67,6 +75,21 @@ export function DigitalModuleScreen() {
           <Text style={styles.title}>{meta.title.toUpperCase()}</Text>
           <Text style={styles.subtitle}>Digital Audio Sampling & Conversion Lab</Text>
         </View>
+      </View>
+      {/* Top module navigation (Foundations aesthetic). */}
+      <View style={styles.topNav}>
+        <Pressable onPress={() => goToModule(0)} disabled={idx <= 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="First module">
+          <Text style={[styles.navBtn, idx <= 0 && styles.navBtnDisabled]}>⏮ START</Text>
+        </Pressable>
+        <Pressable onPress={() => goToModule(idx - 1)} disabled={idx <= 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="Previous module">
+          <Text style={[styles.navBtn, idx <= 0 && styles.navBtnDisabled]}>‹ PREV</Text>
+        </Pressable>
+        <View style={{ flex: 1 }} />
+        <Text style={styles.navPos}>MODULE {idx + 1} / {DIGITAL_MODULES.length}</Text>
+        <View style={{ flex: 1 }} />
+        <Pressable onPress={() => goToModule(idx + 1)} disabled={idx >= last} hitSlop={8} accessibilityRole="button" accessibilityLabel="Next module">
+          <Text style={[styles.navBtn, idx >= last && styles.navBtnDisabled]}>NEXT ›</Text>
+        </Pressable>
       </View>
       <ScrollLockProvider value={setScrollLocked}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
@@ -95,6 +118,10 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
+  topNav: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingBottom: 6 },
+  navBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, color: colors.amber },
+  navBtnDisabled: { color: '#45454d' },
+  navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
   scroll: { padding: 16, paddingBottom: 30, gap: 12 },
   // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
   lessonRow: {

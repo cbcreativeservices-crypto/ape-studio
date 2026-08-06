@@ -30,10 +30,22 @@ export function CalcLabScreen() {
         <Text style={styles.sigma} accessibilityElementsHidden importantForAccessibility="no">
           Σ
         </Text>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flex: 1 }}>
           <Text style={styles.title}>AUDIO CALCULATOR LABORATORY</Text>
           <Text style={styles.subtitle}>Calculate · understand · chain results between tools</Text>
         </View>
+        {/* Symbol key (owner 2026-08-05): Greek letters + math/calculus symbols
+            used across the calculators. Content authored separately. */}
+        <Pressable
+          style={styles.keyBtn}
+          onPress={() => navigation.navigate('CalcSymbolsKey')}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Symbol key — Greek letters and math symbols"
+        >
+          <Text style={styles.keyBtnGlyph}>π</Text>
+          <Text style={styles.keyBtnText}>KEY</Text>
+        </Pressable>
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.body}>
@@ -101,4 +113,18 @@ const styles = StyleSheet.create({
   soonWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   soonChip: { borderRadius: 7, borderWidth: 1, borderColor: '#232329', paddingHorizontal: 9, paddingVertical: 5, backgroundColor: '#101014' },
   soonText: { fontFamily: fonts.barlowMedium, fontSize: 11.5, color: '#5c5d66' },
+  // Symbol-key button (top-right).
+  keyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(55,224,95,.6)',
+    backgroundColor: '#0c2012',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  keyBtnGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.green, marginTop: -1 },
+  keyBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: '#8ff0a8' },
 });

@@ -1,0 +1,320 @@
+{
+ "batch": 85,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "c7f9a8fd-0c4c-4519-b6b1-009d54fa6644",
+   "term": "Automation snapshot",
+   "fields": {
+    "definition": "A stored set of static mixer parameter values, such as fader levels, pans, sends, mutes, and plug-in settings, captured at one instant and recalled as an immediate step change rather than as time-varying moves.",
+    "plain_english": "A saved photo of all your mixer settings at one moment. You can load it later to snap every fader and knob back to those exact positions.",
+    "purpose_function": "It lets an engineer store and recall a whole console or mixer state so different scenes, sections, or songs can be reset instantly and repeatably.",
+    "practical_application": "A live engineer stores a snapshot for each song so the desk reconfigures at the touch of a button, and a studio engineer snapshots a starting balance before trying changes.",
+    "category": "Automation",
+    "related_terms": [
+     "Automation trim mode",
+     "Automation undo",
+     "Scene recall",
+     "Fader automation",
+     "Total recall"
+    ],
+    "common_mistakes": [
+     "Confusing a snapshot, which is an instant static jump, with dynamic automation that records moves over time",
+     "Forgetting that firing a snapshot overwrites current settings, causing an abrupt jump if triggered at the wrong moment",
+     "Not re-saving a snapshot after tweaking settings, so the recall restores old values"
+    ],
+    "scenario_contexts": [
+     "Recalling a full desk setup for each song in a live show",
+     "Storing a baseline mix balance before experimenting during a session",
+     "Resetting a console to a known state at the start of a rehearsal"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound, 'Introduction To Mixer Automation'",
+    "Avid Pro Tools Reference Guide"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7975ef63-ee92-442a-9e65-b96fc9154bf9",
+   "term": "Automation trim mode",
+   "fields": {
+    "definition": "An automation mode that records relative offsets to existing automation rather than absolute values; nudging a control adds or subtracts that amount from the underlying automation curve while preserving its shape.",
+    "plain_english": "An automation mode that saves changes as a little louder or a little quieter instead of exact levels. It keeps the shape of your old moves and just shifts them up or down.",
+    "purpose_function": "It lets an engineer adjust an overall level or balance across a passage without erasing the detailed automation moves already written underneath.",
+    "practical_application": "After writing detailed vocal rides, an engineer switches to trim to raise the whole vocal by a decibel through the chorus while keeping every existing move intact.",
+    "category": "Automation",
+    "related_terms": [
+     "Automation snapshot",
+     "Automation undo",
+     "Write mode",
+     "Touch mode",
+     "Fader automation"
+    ],
+    "common_mistakes": [
+     "Thinking trim writes absolute levels when it only adds an offset to what is already there",
+     "Forgetting to coalesce or commit trim moves, leaving a separate trim layer that confuses later edits",
+     "Leaving a channel in trim when a fresh absolute pass was intended"
+    ],
+    "scenario_contexts": [
+     "Raising a whole vocal line a decibel while keeping existing rides",
+     "Balancing a submix level without redoing detailed automation",
+     "Making a global correction after a client asks for more guitar throughout"
+    ]
+   },
+   "sources": [
+    "Sound on Sound, 'Automation Modes'",
+    "Apple Logic Pro User Guide (automation modes)",
+    "Avid Pro Tools Reference Guide"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "218573e4-1d9f-4593-8832-bb78c6779bd3",
+   "term": "Automation undo",
+   "fields": {
+    "definition": "The function that reverses the most recent automation edit or recorded pass, restoring the automation data to its previous state within the project's edit history.",
+    "plain_english": "A button that takes back your last automation change. If a move sounds wrong, undo puts the settings back the way they were.",
+    "purpose_function": "It gives the engineer a safety net to experiment with automation freely, since any unwanted move can be reversed step by step.",
+    "practical_application": "After a fader pass goes wrong, the engineer hits undo to drop the bad automation and try the ride again from the previous version.",
+    "category": "Automation",
+    "related_terms": [
+     "Automation snapshot",
+     "Automation trim mode",
+     "Write mode",
+     "Edit history",
+     "Fader automation"
+    ],
+    "common_mistakes": [
+     "Assuming undo can recover automation from before the project was closed, when the history usually clears on close",
+     "Undoing past an intended point and losing good edits along with the bad one",
+     "Confusing undo of an automation pass with disabling automation playback"
+    ],
+    "scenario_contexts": [
+     "Reversing a botched fader ride during mixing",
+     "Stepping back through several automation edits to find a better take",
+     "Recovering the previous curve after an accidental overwrite"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide",
+    "Apple Logic Pro User Guide",
+    "Sound on Sound, 'Automation Facilities In Pro Tools'"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "81a6129e-0f9e-4f5e-bed8-7d54fe38534e",
+   "term": "Automotive translation",
+   "fields": {
+    "definition": "How well a finished mix keeps its intended tonal balance, clarity, and level relationships when played over a car audio system, which is one of the most common real-world environments used to check whether a mix holds up.",
+    "plain_english": "How good your mix sounds when you play it in a car. Cars have odd speakers and road noise, so a mix that holds up there usually works almost anywhere.",
+    "purpose_function": "Checking a mix in a car reveals balance and low-end problems that a treated studio can hide, helping ensure the mix works on the systems most listeners actually use.",
+    "practical_application": "After finishing a rough mix, an engineer bounces it to a phone and listens in the car to judge whether the vocal, bass, and kick still sit right.",
+    "category": "Mix translation",
+    "related_terms": [
+     "Mix translation",
+     "Reference monitoring",
+     "Mono compatibility",
+     "A/B referencing",
+     "Nearfield monitor"
+    ],
+    "common_mistakes": [
+     "Judging a car listen at very high volume, which flatters the low end and misleads decisions",
+     "Trusting only one car and treating its coloured sound as the truth",
+     "Making big EQ moves by ear in the car without confirming them back on studio monitors"
+    ],
+    "scenario_contexts": [
+     "Checking a near-final mix on the drive home from the studio",
+     "Comparing a mix to a commercial reference track in the same car",
+     "Spotting excess or weak bass that the studio room masked"
+    ]
+   },
+   "sources": [
+    "Bob Katz, Mastering Audio: The Art and the Science",
+    "Sound on Sound (mix referencing techniques)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1a4ec082-ccb2-487c-87bc-d6f6b2134dd7",
+   "term": "B-side assignment",
+   "fields": {
+    "definition": "The release-planning decision to designate a completed recording as the B-side—the secondary track paired with the promoted A-side (lead single)—of a single release.",
+    "plain_english": "It means picking which finished song rides along as the extra track on a single, behind the main hit. The A-side is the star; the B-side is the bonus track.",
+    "purpose_function": "It determines which mix or master is delivered and promoted as the lead track versus the supporting track, shaping the release package and its metadata.",
+    "practical_application": "When prepping a single for release, an engineer or label labels and delivers one master as the A-side and assigns another finished mix as the B-side.",
+    "category": "Release & Delivery",
+    "related_terms": [
+     "Delivery master",
+     "Broadcast master",
+     "Archival master",
+     "Mastering",
+     "Metadata"
+    ],
+    "common_mistakes": [
+     "Assuming the B-side is a lower-quality or unfinished mix rather than a fully mastered release track",
+     "Confusing the physical A/B sides of vinyl with streaming-era 'single plus bonus track' assignments",
+     "Mislabeling deliverable files so the A-side and B-side masters are swapped"
+    ],
+    "scenario_contexts": [
+     "Choosing which of two finished songs becomes the B-side of a 7-inch vinyl single",
+     "Assigning a remix or alternate version as the B-side of a digital single",
+     "Preparing delivery files and metadata that identify the A-side and B-side"
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music and Musicians — entry on the 'single' (A-side / B-side)",
+    "Huber & Runstein, Modern Recording Techniques — release formats and delivery"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "efd8c411-2f62-4883-a1ea-16d8cd1b5149",
+   "term": "Backgrounds premix",
+   "fields": {
+    "definition": "In audio post-production, a consolidated intermediate mix of all the background (ambience/atmosphere) sound effects, balanced and processed as a group before the final re-recording mix so the many background tracks can be handled as one manageable element.",
+    "plain_english": "A rough mix that blends all the background sounds, like room tone, traffic, or wind, into one tidy group. It gets the atmospheres balanced early so the final mix has fewer things to juggle.",
+    "purpose_function": "It reduces a huge number of background tracks to a controllable sub-mix, letting the re-recording mixer set the overall ambience level quickly during the final mix.",
+    "practical_application": "A sound editor premixes dozens of city-ambience tracks into a backgrounds premix so the dub-stage mixer can ride one background level against dialogue and effects.",
+    "category": "Post-production",
+    "related_terms": [
+     "Backgrounds-only stem",
+     "Premix",
+     "Re-recording mix",
+     "Stem",
+     "Dialogue premix"
+    ],
+    "common_mistakes": [
+     "Baking in too much level or EQ so the final mixer loses room to adjust the backgrounds",
+     "Confusing a backgrounds premix, which is a working sub-mix, with a delivered stem",
+     "Printing backgrounds too loud against dialogue, forcing rework at the dub stage"
+    ],
+    "scenario_contexts": [
+     "Consolidating many ambience tracks before a film's final dub",
+     "Preparing TV episode atmospheres so the mix stage runs efficiently",
+     "Balancing crowd and room tones as one element ahead of the final mix"
+    ]
+   },
+   "sources": [
+    "Tomlinson Holman, Sound for Film and Television",
+    "David Lewis Yewdall, Practical Art of Motion Picture Sound",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2dc6aaa9-f80f-47ad-9f48-76f7e0454724",
+   "term": "Backgrounds-only stem",
+   "fields": {
+    "definition": "A delivered stem containing only the background (ambience/atmosphere) elements of a mix, isolated from dialogue, music, and foreground effects, so the backgrounds can be recalled, replaced, or re-balanced independently.",
+    "plain_english": "A separate audio file that holds just the background sounds of a scene, with no dialogue or music. It lets someone later change or reuse the atmospheres on their own.",
+    "purpose_function": "It exists so backgrounds can be adjusted, muted, or swapped later, for example during foreign-language versions or re-edits, without touching the other elements.",
+    "practical_application": "A studio delivers a backgrounds-only stem so a foreign-language dub can keep the original ambiences while replacing the dialogue.",
+    "category": "Post-production",
+    "related_terms": [
+     "Backgrounds premix",
+     "Stem",
+     "M&E stem",
+     "Dialogue stem",
+     "Re-recording mix"
+    ],
+    "common_mistakes": [
+     "Leaving foreground spot effects or dialogue bleed in what should be a clean backgrounds stem",
+     "Confusing a backgrounds-only stem with a full effects stem that also holds hard effects",
+     "Not matching the stem's level and processing to the final mix, so it will not sum back correctly"
+    ],
+    "scenario_contexts": [
+     "Delivering separated stems for a film's international versions",
+     "Rebalancing ambience level during a client revision without a full remix",
+     "Reusing scene atmospheres in a trailer or re-edit"
+    ]
+   },
+   "sources": [
+    "Tomlinson Holman, Sound for Film and Television",
+    "David Lewis Yewdall, Practical Art of Motion Picture Sound",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c9544dcb-9f86-4011-9ae1-2cee6b1b5a89",
+   "term": "Backline spill",
+   "fields": {
+    "definition": "Unwanted sound from the stage backline, such as guitar and bass amps or the drum kit, that leaks into microphones intended for other sources, colouring those channels and reducing separation.",
+    "plain_english": "When loud gear on stage, like guitar amps or drums, bleeds into microphones meant for other things. The extra sound leaks in and makes each channel harder to control.",
+    "purpose_function": "It names a common cause of poor separation on stage, and recognizing it guides microphone choice, placement, and stage layout so channels stay cleaner.",
+    "practical_application": "Hearing a guitar amp in the vocal mic, an engineer angles or moves the amp, chooses a tighter cardioid mic, or gates the channel to cut backline spill.",
+    "category": "Live sound",
+    "related_terms": [
+     "Spill",
+     "Microphone bleed",
+     "Noise gate",
+     "Stage volume",
+     "Isolation"
+    ],
+    "common_mistakes": [
+     "Trying to EQ out spill instead of fixing stage volume or mic placement, which rarely works",
+     "UNSAFE: Raising stage monitor and amp levels to mask spill, driving stage SPL to levels that risk hearing damage over a show",
+     "Gating too hard so wanted parts of the source get chopped along with the spill"
+    ],
+    "scenario_contexts": [
+     "A loud guitar amp bleeding into the lead vocal mic at a club gig",
+     "Drum spill into vocal mics blurring a live recording of the band",
+     "Bass amp energy leaking into every open channel on a small stage"
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Sound on Sound, 'Working With Mic Bleed'",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "79c0e933-362a-4d00-8fb9-54fb49ed183c",
+   "term": "Bar-aligned transition",
+   "fields": {
+    "definition": "A transition, edit, or arrangement change placed exactly on a bar (measure) boundary so it lands in time with the musical grid, keeping the groove intact across the change.",
+    "plain_english": "A change in the music, like a new section or a cut, that lands right at the start of a bar. Because it hits on the beat grid, the switch feels smooth and in time.",
+    "purpose_function": "Aligning transitions to bars keeps edits musical and rhythmically seamless, which is essential for looping, arranging, and joining sections without breaking the pulse.",
+    "practical_application": "When rearranging a song in a DAW, an engineer snaps the cut between verse and chorus to the downbeat of a bar so the join sounds natural.",
+    "category": "Editing",
+    "related_terms": [
+     "Snap to grid",
+     "Crossfade",
+     "Arrangement",
+     "Downbeat",
+     "Quantize"
+    ],
+    "common_mistakes": [
+     "Cutting on the visual waveform instead of the bar line, so the edit drifts off the beat",
+     "Ignoring pickup notes that start before the bar, which get chopped off by a strict bar cut",
+     "Assuming a bar-aligned cut is beat-perfect when the project tempo map is wrong"
+    ],
+    "scenario_contexts": [
+     "Snapping a verse-to-chorus cut to the downbeat while arranging in a DAW",
+     "Building a seamless loop that repeats cleanly every bar",
+     "Editing a live recording so section joins stay in time"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound (editing and arranging techniques)",
+    "Avid Pro Tools Reference Guide"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,223 @@
+{
+ "expert": "Audio Technical",
+ "group": 35,
+ "reviews": [
+  {
+   "id": "4da9aa47-82ce-4b5a-83b6-27142809be74",
+   "term": "Stinger cue",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "68c8339a-46c7-4095-add0-23e7fa486686",
+   "term": "Streaming compliance",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "definition",
+     "severity": "Medium",
+     "issue": "The definition misattributes the -14 LUFS figure to AES: 'Following AES streaming recommendations, typical targets are around -14 LUFS.' Web-verified via AES TD1008 (Recommendations for Loudness of Internet Audio Streaming, v3.13) and Production Expert's summary of TD1008: AES actually recommends approx -16 LUFS for music and -18 LUFS for speech, not -14. The -14 LUFS value is a platform loudness-normalization target (Spotify, YouTube, Tidal, Amazon), not an AES recommendation. -1 dBTP is a correct/standard true-peak ceiling.",
+     "suggestion": "Attribute -14 LUFS to the streaming platforms rather than AES, e.g. 'Common platform normalization targets are around -14 LUFS integrated (Spotify, YouTube, Tidal) with a maximum true peak of about -1 dBTP; note AES TD1008 itself recommends a quieter target near -16 LUFS.'"
+    }
+   ]
+  },
+  {
+   "id": "a8315cb5-8b5c-4fae-9585-4f072944923b",
+   "term": "Streaming compliance verification",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6e268346-48ae-48db-98dc-41f34b5aeea9",
+   "term": "Streaming mix",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "404b6f71-dd4a-43b1-9a7c-4fee4850802a",
+   "term": "Streaming translation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f6bf16ac-abfe-4b80-b21d-f34ab17ba5c6",
+   "term": "Studio One Project",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "712dfcc9-c528-47c1-b91c-09db3071c73c",
+   "term": "Studio One Show",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e10f6ac7-99bc-46db-b335-e19319d34bfc",
+   "term": "Studio One Song",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4c6c1e3c-2a13-4ab9-9372-32703a06f28f",
+   "term": "Summing Stack",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "935244ee-898c-492c-839f-17cd08c1aff0",
+   "term": "Suspend pan automation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d5ee58fd-bd7e-4aed-9805-1c7be356e964",
+   "term": "Suspend plug-in automation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bc9ab745-350d-43a3-b691-fcb400ce2053",
+   "term": "Suspend send automation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5737556a-8f86-4161-8c8b-17fe81b10953",
+   "term": "Suspend volume automation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7dfa8285-1b77-4a9b-8203-9b06e0b701d5",
+   "term": "Sustain layer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0e69306f-b3a3-4583-8b27-2b5e70ca8f25",
+   "term": "Swing amount",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "67c81746-cd2c-4bfd-b837-1c419aa18f86",
+   "term": "System limiting",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4ea6549f-5f9e-45ac-826f-c036987a9b2c",
+   "term": "Take FX",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e6f7113d-a9a2-4c75-b17e-eda682efb027",
+   "term": "Talk-microphone priority",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "91478040-24df-4b57-9e30-b6c6c2912187",
+   "term": "Target EQ curve",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cf164386-5f79-49f5-a002-ffd818364561",
+   "term": "Technical acceptance test",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c58cd591-5f86-49ef-b3b1-dbb6a5c920ce",
+   "term": "Technical checklist",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ee24ce79-9659-42bb-91dc-0de7ab8a8ade",
+   "term": "Television translation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ceb61064-d1a9-47fd-a1e8-8563a0bd87ab",
+   "term": "Television-score mixing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5c612bc4-36c1-47f7-b673-41f388e0a019",
+   "term": "Tempo analysis",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6844d91c-7d7f-44e2-b047-6e3b8a87a52f",
+   "term": "Tempo List",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f59ca61e-c6c6-43aa-9730-5f0ae5680641",
+   "term": "Tempo set",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "73094ada-a96c-4bc8-8026-95247c477b07",
+   "term": "Tempo track (Logic)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8107e261-29a4-4846-a120-13ee23545e58",
+   "term": "Tension layer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5be87a82-5809-4bf7-9563-8c0277439ba6",
+   "term": "Theatrical printmaster",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "13dc5329-b5d4-41c0-8923-0382df82f73d",
+   "term": "Tick-based Track",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "692c502e-063e-4e1e-844b-d889631e569b",
+   "term": "Timeline Insertion Point",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "48dc2b0a-2a73-43b7-8c08-535b2c90c655",
+   "term": "Timeline Selection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d5ce56a8-c16b-42c8-a963-865fbf34fdeb",
+   "term": "Timing humanization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9b6c8fff-3701-4159-8c68-7112bc8f34e0",
+   "term": "Timing shift",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c23611c4-e376-48a8-aca9-734beeb352b7",
+   "term": "Tom sample",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

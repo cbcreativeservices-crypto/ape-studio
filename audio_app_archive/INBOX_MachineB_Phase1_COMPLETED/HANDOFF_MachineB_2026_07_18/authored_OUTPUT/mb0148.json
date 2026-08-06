@@ -1,0 +1,159 @@
+{
+ "batch": 148,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "5c4634a9-96fc-4a6c-9ddf-b35c41cc8b44",
+   "term": "Track version",
+   "fields": {
+    "definition": "A stored alternative of a single track's content (its regions, events, or parts) that shares the track's channel strip, routing, and settings; you can create several and make any one active for playback while the others stay hidden. In Cubase this feature is called Track Versions, and in Logic Pro the equivalent is Track Alternatives.",
+    "plain_english": "A track version is a saved copy of what is on one track. You can keep a few versions and flip between them. It works like saving different drafts of an essay in one file, so you can pick the best one later.",
+    "purpose_function": "It lets an engineer keep several takes or arrangement ideas for one part inside a single track, instead of cluttering the project with duplicate tracks, so alternatives can be compared and recalled without losing work.",
+    "practical_application": "A technician records a second vocal take onto a new track version, then A/B switches between versions during the mix to choose the best performance while keeping the same plug-ins and fader settings.",
+    "category": "Track Management",
+    "related_terms": ["Take folder", "Track Alternatives", "Comping", "Channel strip", "Playlist"],
+    "common_mistakes": ["Confusing a track version with a separate track; versions share one channel strip and only one plays at a time.", "Assuming plug-in and channel-strip settings are stored per version, when track-level settings are shared across all versions.", "Losing track of which version is active and mixing the wrong take."],
+    "scenario_contexts": ["Keeping several vocal takes on one track and switching to compare them.", "Trying two different arrangement ideas for a chorus without duplicating the track.", "Recalling an earlier edit after a client asks to hear the original."]
+   },
+   "sources": ["Steinberg Cubase Pro Operation Manual (Track Versions)", "Apple Logic Pro User Guide (Work with track alternatives)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "837b7a59-720e-4df0-8a88-a2d8fd34790c",
+   "term": "Track wiring view",
+   "fields": {
+    "definition": "In REAPER, a graphical view within the routing window that draws each track as a block and shows the signal connections between them, hardware inputs, track-to-track sends and receives, and hardware outputs, as a visual patch or flow diagram that can be edited directly.",
+    "plain_english": "This is a picture that shows how your tracks are wired together. It draws the path the sound takes from the inputs, through the tracks, to the outputs. Think of it like a subway map for your audio signal.",
+    "purpose_function": "It exists to make complex routing easy to see and change at a glance, turning an abstract grid of sends and receives into a visual signal-flow diagram.",
+    "practical_application": "An engineer opens the track wiring view to trace why a reverb bus is receiving the wrong signal, then drags a connection in the diagram to reroute the send.",
+    "category": "Routing",
+    "related_terms": ["Routing matrix", "Send", "Bus", "Signal flow", "Aux return"],
+    "common_mistakes": ["Mistaking the wiring view for the mixer; it shows routing, not levels.", "Overlooking that a hidden send shown in the diagram is still passing signal.", "Creating a feedback loop by wiring a track's output back into its own input path."],
+    "scenario_contexts": ["Troubleshooting a routing error in a large session.", "Setting up parallel compression by drawing a new send.", "Teaching signal flow by showing the visual diagram."]
+   },
+   "sources": ["Up and Running: A REAPER User Guide (Cockos) - Track Wiring Diagram", "REAPER v6 change log (Cockos)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a4e3cf94-be17-4bd4-b1e0-1a38ccd91cc0",
+   "term": "Tracks area",
+   "fields": {
+    "definition": "In Logic Pro, the main working area of the arrange window where audio and MIDI regions are recorded, displayed, and arranged along a timeline; each track appears as a horizontal lane with a track header on the left and its regions laid out left to right in time.",
+    "plain_english": "The Tracks area is the main part of the screen where you build a song. Each track is a row that holds your recorded clips. You stack and line up these rows to arrange the whole piece.",
+    "purpose_function": "It is the central workspace for building an arrangement, letting the engineer organize, edit, and time-align all the parts of a project in one timeline view.",
+    "practical_application": "A technician drags recorded regions along the Tracks area to line up a chorus, mutes lanes to audition parts, and uses the track headers to solo and set levels.",
+    "category": "DAW Interface",
+    "related_terms": ["Region", "Track header", "Arrange window", "Playhead", "Track stack"],
+    "common_mistakes": ["Confusing the Tracks area with the Mixer; the Tracks area arranges regions in time, while the Mixer sets levels and routing.", "Editing in the wrong lane because the selected track header was not checked.", "Dragging regions off-screen past the visible timeline and losing sight of them."],
+    "scenario_contexts": ["Arranging a song's sections along the timeline.", "Comping takes by editing regions in a lane.", "Importing audio files and placing them on tracks."]
+   },
+   "sources": ["Apple Logic Pro User Guide (Tracks area interface)", "Apple Logic Pro User Guide (Overview of tracks)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5aaac3db-9fa9-418f-8ffe-fc39068a2e56",
+   "term": "Tracks Overview",
+   "fields": {
+    "definition": "An introductory overview of tracks in a DAW: the horizontal lanes that hold and organize the audio and MIDI material of a project, where each track carries one source or part and is typically assigned to its own mixer channel strip for processing.",
+    "plain_english": "Tracks are the rows that hold your recordings in a project. Each row keeps one part, like drums or vocals, separate from the others. This makes it easy to see and control every sound on its own.",
+    "purpose_function": "The concept exists to explain how a DAW keeps each part separate and controllable, which is the foundation of arranging and mixing.",
+    "practical_application": "A beginner learns from a tracks overview that each instrument goes on its own track, so drums, bass, and vocals can be edited and balanced independently.",
+    "category": "Track Basics",
+    "related_terms": ["Track", "Tracks area", "Audio track", "Software instrument track", "Channel strip"],
+    "common_mistakes": ["Thinking a track and its channel strip are the same thing; a track holds material in time, while the channel strip processes the sound.", "Recording several instruments onto one track and losing separate control of them.", "Believing global tracks such as tempo and key are the same as audio or instrument tracks."],
+    "scenario_contexts": ["Learning the layout of a DAW project for the first time.", "Deciding how many tracks a session needs before recording a band.", "Explaining to a client why each mic gets its own track."]
+   },
+   "sources": ["Apple Logic Pro User Guide (Overview of tracks)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "68473dc0-cb44-4221-8a27-2489a108a7a8",
+   "term": "Trailer mix",
+   "fields": {
+    "definition": "A mix prepared specifically for a film, game, or TV trailer, engineered for maximum short-form impact: high perceived loudness, strong low-end and sub impacts (braams, hits, risers), a wide stereo image, and tightly controlled dynamics so the material cuts through on any playback system in a brief, attention-grabbing form.",
+    "plain_english": "A trailer mix is a mix made for a movie or game trailer. It is very loud and punchy, with big hits and deep bass. The goal is to grab your attention fast in a short clip.",
+    "purpose_function": "It exists to make a short promotional piece hit hard and stay loud and clear, because a trailer must grab a distracted audience quickly and translate well on cinema, TV, and phone speakers alike.",
+    "practical_application": "An engineer mixing to trailer spec pushes impacts and sub hits, rides risers into big downbeats, and uses firm bus limiting to keep the whole piece loud and punchy while meeting the delivery loudness target.",
+    "category": "Mix Types",
+    "related_terms": ["Stem", "Loudness", "Limiting", "Sub-bass", "Mastering"],
+    "common_mistakes": ["Over-limiting until the impacts lose their punch instead of gaining it.", "Ignoring mono and small-speaker translation for phone playback.", "Letting sub-bass hits swamp the mix and mask the dialogue or melody."],
+    "scenario_contexts": ["Mixing a cinematic trailer cue for a game reveal.", "Delivering loud, punchy stems for a movie teaser.", "Balancing braams and risers under a voiceover."]
+   },
+   "sources": ["Sound on Sound, Crafting Loud Mixes That Sound Great", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5ad4f000-dee8-4688-af28-0c7d734e87d8",
+   "term": "Transform to Rendered Audio",
+   "fields": {
+    "definition": "In PreSonus Studio One, a command that renders a track through its insert effects (and, for an instrument track, through its virtual instrument) to a new static audio file that replaces the original in the signal path, freeing CPU; it is reversible with Transform to Real-Time Audio, which restores the original track, instrument, and effects.",
+    "plain_english": "This turns a track and its effects into a plain audio file. The computer plays the effects once and records the result. That frees up your computer, and you can switch it back to editable form later if you need to.",
+    "purpose_function": "It exists to lighten the computer's processing load and lock in a sound by baking effects or an instrument into plain audio, while keeping the option to return to the fully editable state later.",
+    "practical_application": "When a CPU-heavy synth patch strains the system, an engineer transforms the instrument track to rendered audio to free resources, then transforms it back to real-time audio when a sound change is needed.",
+    "category": "Rendering",
+    "related_terms": ["Freeze", "Bounce", "Render in place", "Insert effect", "Virtual instrument"],
+    "common_mistakes": ["Assuming the change is permanent, when Transform to Real-Time Audio reverses it.", "Rendering with the wrong effects in the chain and having to redo the transform.", "Forgetting that reverb or delay tails need extra time, so the rendered file gets cut off."],
+    "scenario_contexts": ["Freeing CPU from a demanding virtual instrument.", "Committing a processed sound before sharing a session.", "Locking in an effect chain to mix on a slower computer."]
+   },
+   "sources": ["PreSonus Studio One Reference Manual (Transform to Rendered Audio)", "Sound on Sound, Studio One: Bouncing Back"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d365c12e-0319-45e4-8988-db3d6528a715",
+   "term": "Transient layer",
+   "fields": {
+    "definition": "In layered sound design, a supplementary sound layer chosen to supply the initial transient, the short high-energy attack, of a composite sound; it is blended beneath the main body or sustain layer to add punch, click, or definition, most commonly when building drum and percussion sounds.",
+    "plain_english": "A transient is the short, sharp start of a sound, like the click of a drum hit. A transient layer is an extra sound added just for that punchy start. You blend it under the main sound to make hits snappier.",
+    "purpose_function": "It exists to give a layered sound a sharper, more defined attack than the main sample provides, improving cut-through and perceived punch in a dense mix.",
+    "practical_application": "To make a soft kick hit harder, an engineer layers a short click sample as the transient layer, filters or gates it to isolate the attack, and blends it under the kick's body.",
+    "category": "Layering",
+    "related_terms": ["Layering", "Transient", "Transient designer", "Attack", "Parallel processing"],
+    "common_mistakes": ["Letting the transient layer's tail overlap the body layer and cause phase or timing smear.", "Failing to time-align the layers, which weakens the combined attack.", "Adding so much transient layer that the sound becomes clicky and harsh."],
+    "scenario_contexts": ["Building a punchy kick from two samples.", "Adding snap to a dull snare.", "Reinforcing the attack of a sampled instrument."]
+   },
+   "sources": ["Sound on Sound, Layers Of Complexity", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dd41f971-54ac-4e31-bcf0-c946c190c55a",
+   "term": "Transient marker (Logic)",
+   "fields": {
+    "definition": "In Logic Pro, a marker that identifies a transient, a point of sharp energy increase such as a drum attack, within an audio file; markers are detected automatically in Transient Editing mode (and can be added, moved, or removed by hand) and serve as anchor points for editing, slicing, quantizing, and selecting audio.",
+    "plain_english": "A transient marker is a tag that Logic places at each sharp attack in an audio clip. The program finds these hit points for you. You then use them to cut, move, or line up the audio in time.",
+    "purpose_function": "They exist to give the software accurate hit points in an audio file, so that timing-based edits such as quantizing, slicing, and Flex time correction can lock to the real rhythm of the performance.",
+    "practical_application": "An engineer tightens a loose drum take by letting Logic detect transient markers, then quantizes or Flex-edits the audio so each hit snaps to the grid, nudging or adding markers by hand where detection was poor.",
+    "category": "Audio Editing",
+    "related_terms": ["Flex Time", "Quantize", "Transient", "Slice", "Zero crossing"],
+    "common_mistakes": ["Trusting automatic detection on soft or blurry material without checking the markers.", "Leaving false markers in place, which creates glitches when slicing or quantizing.", "Confusing transient markers with arrangement or region markers."],
+    "scenario_contexts": ["Quantizing a live drum performance.", "Slicing a drum loop into individual hits.", "Time-aligning a multitracked kit before mixing."]
+   },
+   "sources": ["Apple Logic Pro User Guide (Edit audio files with transient markers)", "Apple Logic Pro User Guide (Flex Time and Pitch overview)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5bba5be9-639d-4986-98e1-9164feeb88bb",
+   "term": "Transition cue",
+   "fields": {
+    "definition": "A cue point or marker that indicates where one section of a piece or program changes into the next; it flags or triggers transition material such as fills, risers, sweeps, or crossfades, and coordinates mix moves, playback, or automation at that point.",
+    "plain_english": "A transition cue is a marker that shows where one section changes into the next. It reminds you when to bring in a build-up or a big drop. It works like a signpost telling you a turn is coming.",
+    "purpose_function": "It exists to mark section boundaries clearly, so the engineer or the system knows exactly when to launch a transition element or execute a planned mix change.",
+    "practical_application": "An engineer drops a transition cue at each chorus entry, then uses it to time a riser and a filter automation move so the build resolves precisely on the downbeat.",
+    "category": "Arrangement",
+    "related_terms": ["Marker", "Riser", "Fill", "Automation", "Crossfade"],
+    "common_mistakes": ["Placing the cue slightly off the beat, so the transition lands late.", "Relying on memory instead of markers and missing the change.", "Cluttering the timeline with unlabeled cues that become hard to read."],
+    "scenario_contexts": ["Marking chorus entries for a build-up.", "Cueing a scene change in post-production audio.", "Coordinating a live playback transition between songs."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

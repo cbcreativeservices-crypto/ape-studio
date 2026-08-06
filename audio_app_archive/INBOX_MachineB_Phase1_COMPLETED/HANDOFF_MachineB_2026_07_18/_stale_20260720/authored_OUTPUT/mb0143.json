@@ -1,0 +1,202 @@
+{
+ "batch": 143,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "935244ee-898c-492c-839f-17cd08c1aff0",
+   "term": "Suspend pan automation",
+   "fields": {
+    "definition": "A DAW command that temporarily disables the reading and writing of pan automation, so recorded pan moves are ignored and no new ones are captured until it is re-enabled. The stored pan automation data is preserved and resumes when suspension is turned off.",
+    "plain_english": "Pan automation is saved left-right moves for a track. This command pauses those moves for now. The pan stays where you set it by hand. Your saved moves are kept and come back when you turn it on again.",
+    "purpose_function": "It lets an engineer freeze automated panning so they can set or audition a static pan without erasing or fighting recorded pan moves.",
+    "practical_application": "During a mix, a technician suspends pan automation to reposition a source by hand or compare a static pan to the automated version, then re-enables it.",
+    "category": "Automation",
+    "related_terms": ["Suspend volume automation", "Suspend send automation", "Suspend plug-in automation", "Automation mode", "Pan automation pass", "Read automation mode"],
+    "common_mistakes": [
+     "Forgetting to turn pan automation back on, so recorded pan moves stay silent for the rest of the session.",
+     "Confusing suspending automation, which keeps the data, with clearing automation, which deletes it.",
+     "Not realizing suspend can be set globally, so pan moves are off across the whole session, not just one track."
+    ],
+    "scenario_contexts": [
+     "Auditioning a fixed pan position against the automated version during a mix.",
+     "Turning off pan moves while troubleshooting a stereo-image problem.",
+     "Holding pan still while re-recording other automation passes."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Automation window: suspending automation by type)", "Steinberg Cubase Pro Operation Manual (automation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d5ee58fd-bd7e-4aed-9805-1c7be356e964",
+   "term": "Suspend plug-in automation",
+   "fields": {
+    "definition": "A DAW command that temporarily disables the reading and writing of automation on plug-in parameters, so automated plug-in settings hold at fixed values and no new plug-in automation is captured until it is re-enabled. The stored automation data is preserved.",
+    "plain_english": "Plug-ins can have settings that move on their own, saved as automation. This command pauses those moving settings. The plug-in knobs hold still for now. The saved moves are kept and return when you switch it back on.",
+    "purpose_function": "It lets an engineer hold automated plug-in settings still so they can dial in or compare fixed values without overwriting recorded parameter moves.",
+    "practical_application": "A technician suspends plug-in automation to tweak an EQ or reverb control while auditioning, then re-enables it so the recorded moves play back.",
+    "category": "Automation",
+    "related_terms": ["Suspend volume automation", "Suspend pan automation", "Suspend send automation", "Automation mode", "Plug-in automation", "Write automation mode"],
+    "common_mistakes": [
+     "Leaving plug-in automation suspended, so a needed filter or level sweep never plays back.",
+     "Thinking suspend erases the plug-in automation, when it only pauses playback and recording.",
+     "Suspending all plug-in automation when only one parameter needed adjusting."
+    ],
+    "scenario_contexts": [
+     "Dialing in a static EQ setting while its automation is temporarily paused.",
+     "Comparing a plug-in's fixed setting against its automated moves.",
+     "Bypassing plug-in automation while chasing a gain-staging issue."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Automation window: suspending automation by type)", "Steinberg Cubase Pro Operation Manual (automation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bc9ab745-350d-43a3-b691-fcb400ce2053",
+   "term": "Suspend send automation",
+   "fields": {
+    "definition": "A DAW command that temporarily disables the reading and writing of automation on aux send controls such as send level, pan, and mute, so send settings hold at fixed values and no new send automation is captured until re-enabled. The stored data is preserved.",
+    "plain_english": "A send feeds part of a track to an effect like reverb. Its level can move on its own from saved automation. This command pauses those send moves. The send holds still, and the saved moves come back when you turn it on again.",
+    "purpose_function": "It lets an engineer hold automated send levels still so they can set or audition a fixed send without overwriting recorded send moves.",
+    "practical_application": "A technician suspends send automation to set a fixed effect send by hand, then re-enables it so automated throws return on playback.",
+    "category": "Automation",
+    "related_terms": ["Suspend volume automation", "Suspend pan automation", "Suspend plug-in automation", "Send automation pass", "Aux send", "Automation mode"],
+    "common_mistakes": [
+     "Forgetting to re-enable send automation, so an automated reverb or delay throw goes missing.",
+     "Confusing suspend, which is temporary, with deleting the send automation data.",
+     "Overlooking that send pan and send mute automation are suspended along with send level."
+    ],
+    "scenario_contexts": [
+     "Setting a static reverb send while comparing it to the automated throws.",
+     "Pausing send automation to rebalance an effect return by hand.",
+     "Turning off send moves while troubleshooting a level issue."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Automation window: suspending automation by type)", "Steinberg Cubase Pro Operation Manual (automation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5737556a-8f86-4161-8c8b-17fe81b10953",
+   "term": "Suspend volume automation",
+   "fields": {
+    "definition": "A DAW command that temporarily disables the reading and writing of volume (fader) automation, so recorded level moves are ignored and no new ones are captured until it is re-enabled. The stored volume automation data is preserved and resumes when suspension is turned off.",
+    "plain_english": "Volume automation is saved fader moves for a track. This command pauses those moves for now. The level stays where you set it by hand. The saved moves are kept and return when you switch it on again.",
+    "purpose_function": "It lets an engineer freeze automated fader levels so they can set or audition a static level without erasing or fighting recorded volume moves.",
+    "practical_application": "A technician suspends volume automation to rebalance a fader by hand or audition a static level, then re-enables it to restore the recorded ride.",
+    "category": "Automation",
+    "related_terms": ["Suspend pan automation", "Suspend send automation", "Suspend plug-in automation", "Automation mode", "Fader automation", "Read automation mode"],
+    "common_mistakes": [
+     "Forgetting to switch volume automation back on, so fader rides never play back.",
+     "Confusing suspending automation with deleting it, and losing recorded moves that were only paused.",
+     "Suspending volume automation globally and wondering why no fader on any track responds."
+    ],
+    "scenario_contexts": [
+     "Auditioning a fixed fader level against an automated vocal ride.",
+     "Pausing volume moves to rebalance a track by hand.",
+     "Holding levels static while re-recording pan or plug-in automation."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Automation window: suspending automation by type)", "Steinberg Cubase Pro Operation Manual (automation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "19921ded-9e00-4d3c-9d78-d7092fd16706",
+   "term": "Suspense music",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "'Suspense music' is not an established audio-engineering or mix-workflow term and could not be confirmed against two or more acceptable sources; it is a loose genre/mood descriptor (tension-building underscore in film, TV, and games) with no single standardized technical definition in the acceptable source set. All fields left blank pending clarification of the intended sense."
+   ]
+  },
+  {
+   "id": "7dfa8285-1b77-4a9b-8203-9b06e0b701d5",
+   "term": "Sustain layer",
+   "fields": {
+    "definition": "In a layered sampled or synthesized instrument, the sustain layer is the component that supplies the steady, held portion of a note after the initial attack, sounding for as long as the note is held. It is combined or crossfaded with attack and release layers to form a complete note.",
+    "plain_english": "A note has a start, a held middle, and an end. The sustain layer is the held middle part. It keeps sounding while you hold the key down. Sampled instruments blend it with the sharp start to sound real.",
+    "purpose_function": "It supplies the continuous body of a note, separating the steady held tone from the transient attack so an instrument can hold and be shaped naturally.",
+    "practical_application": "When programming a sampled instrument, a technician balances the sustain layer against the attack layer to control how much a note holds versus punches.",
+    "category": "Sound Design",
+    "related_terms": ["Attack layer", "Velocity layer", "ADSR envelope", "Sample library", "Round robin", "Crossfade"],
+    "common_mistakes": [
+     "Assuming the sustain layer alone sounds realistic without a matching attack layer.",
+     "Setting the sustain layer too loud, so notes lose their natural attack punch.",
+     "Confusing the sustain layer of a sampled instrument with the sustain stage of an ADSR envelope."
+    ],
+    "scenario_contexts": [
+     "Programming a sampled string patch that holds while a key is pressed.",
+     "Balancing attack and sustain layers to shape a synth pad.",
+     "Adjusting how long the sustained body of a note rings in a sampler."
+    ]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual (sample layering and articulations)", "Huber & Runstein, Modern Recording Techniques (samplers and synthesis)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0e69306f-b3a3-4583-8b27-2b5e70ca8f25",
+   "term": "Swing amount",
+   "fields": {
+    "definition": "Swing amount is a groove parameter that sets how far the off-beat notes of each pair are delayed from their strict grid position, usually expressed as a percentage, to create a swung, less mechanical rhythmic feel. At 50 percent the timing is straight; higher values push the off-beats later toward a triplet feel.",
+    "plain_english": "A grid keeps notes perfectly even, which can sound stiff. Swing amount nudges every other note a little late. This gives the beat a bouncy, groovy feel. Turn it up for more bounce.",
+    "purpose_function": "It humanizes programmed rhythms by shifting off-beats, letting a producer move a stiff quantized part toward a natural swung groove.",
+    "practical_application": "A technician raises the swing amount on a drum or hi-hat pattern in the sequencer until the programmed groove feels right against the track.",
+    "category": "Sequencing",
+    "related_terms": ["Quantize", "Groove template", "Shuffle", "Sequencer", "Ratcheting", "Tempo"],
+    "common_mistakes": [
+     "Applying heavy swing to straight material where it fights the song's feel.",
+     "Assuming 50 percent swing adds groove, when 50 percent is actually straight timing.",
+     "Swinging every track by a different amount, so the groove no longer locks together."
+    ],
+    "scenario_contexts": [
+     "Adding swing to a programmed hi-hat pattern to loosen the groove.",
+     "Matching a drum machine's swing to a sampled loop's feel.",
+     "Dialing back swing on a part that sounds too loose against the band."
+    ]
+   },
+   "sources": ["Ableton Live Manual (Groove and swing)", "Steinberg Cubase Pro Operation Manual (quantize swing)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "67c81746-cd2c-4bfd-b837-1c419aa18f86",
+   "term": "System limiting",
+   "fields": {
+    "definition": "System limiting is the use of limiters within a sound system's signal chain, typically in loudspeaker-management or amplifier DSP, to cap output level and protect drivers and amplifiers from over-excursion, overheating, and clipping. Thresholds are set to the components' rated limits so peaks are held back rather than allowed to cause damage.",
+    "plain_english": "Speakers and amps can be wrecked by too much level. System limiting sets a ceiling the signal cannot pass. It catches loud peaks before they damage the gear. Think of it as a safety cap on volume.",
+    "purpose_function": "It protects loudspeakers and amplifiers from over-excursion, overheating, and clipping damage while keeping the system within safe operating limits.",
+    "practical_application": "During system tuning, a technician sets limiter thresholds in the loudspeaker processor or amplifier DSP to the manufacturer's rated limits so the rig cannot be driven into damage.",
+    "category": "System Processing",
+    "related_terms": ["Loudspeaker management", "Limiter", "Amplifier headroom", "Gain structure", "Peak limiter", "Driver protection"],
+    "common_mistakes": [
+     "UNSAFE: Raising or bypassing system limiters to chase more level, which can destroy drivers and amplifiers.",
+     "Setting limiter thresholds by ear instead of to the loudspeaker and amplifier manufacturer's rated limits.",
+     "Relying on limiting to cover an undersized system instead of providing proper headroom.",
+     "Assuming a limiter removes all risk, when sustained abuse can still overheat voice coils."
+    ],
+    "scenario_contexts": [
+     "Setting limiter thresholds in a loudspeaker processor during system tuning.",
+     "Protecting subwoofers from over-excursion at a high-SPL show.",
+     "Configuring amplifier DSP limiters to the driver's rated power."
+    ]
+   },
+   "sources": ["McCarthy, Sound Systems: Design and Optimization (system processing and limiting)", "Ballou, Handbook for Sound Engineers (loudspeaker protection and limiting)", "QSC loudspeaker-management/processor technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c1346793-79b5-4a64-91bf-d0d491779ac1",
+   "term": "Take a lap",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "'Take a lap' has no established, citable definition in professional audio or mix-workflow literature; it is general slang for stepping away or taking a short break, and no two or more acceptable sources define an audio-specific technical sense. All fields left blank pending clarification of the intended sense."
+   ]
+  }
+ ]
+}

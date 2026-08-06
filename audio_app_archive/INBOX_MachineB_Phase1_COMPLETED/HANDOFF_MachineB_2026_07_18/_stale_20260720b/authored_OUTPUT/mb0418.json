@@ -1,0 +1,159 @@
+{
+ "batch": 418,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "438ac6c9-6a9c-4f3a-89b6-a41c63ecf8dc",
+   "term": "Discrete audio codec tokens",
+   "fields": {
+    "definition": "Discrete audio codec tokens are the integer-valued codes produced by a neural audio codec, which encodes each short frame of audio as one or more indices into learned codebooks, typically through residual vector quantization. This converts a continuous waveform into a compact sequence of symbols that can be transmitted, stored, or modeled by a sequence model.",
+    "plain_english": "These are the small number codes that stand in for a chunk of sound. A neural codec turns each chunk of audio into a short list of numbered codes, like catalog part numbers, so a computer can store it or work with it.",
+    "purpose_function": "They give audio a compact, discrete form so that neural networks, especially language-model-style architectures, can generate, predict, and compress sound with the same tools used for text tokens.",
+    "practical_application": "Engineers feed codec tokens into generative models such as text-to-music or text-to-speech systems, and use them for very low-bitrate transmission by sending code indices instead of raw samples.",
+    "category": "Neural Audio Coding",
+    "related_terms": ["EnCodec", "Residual vector quantization", "Neural audio codec", "Vector quantization", "Feature extraction"],
+    "common_mistakes": ["Confusing codec tokens with text tokens or word embeddings; they index audio codebooks, not a language vocabulary.", "Assuming one token per frame captures the audio; residual vector quantization stacks several codebooks per frame.", "Thinking more codebooks always sound better regardless of bitrate budget and model capacity."],
+    "scenario_contexts": ["Encoding speech into codec tokens to drive a neural text-to-speech model.", "Streaming audio at very low bitrate by sending codebook indices.", "Training a music-generation model that predicts codec tokens frame by frame."]
+   },
+   "sources": ["Zeghidour et al., SoundStream: An End-to-End Neural Audio Codec, IEEE/ACM Transactions on Audio, Speech and Language Processing (2021)", "Defossez et al., High Fidelity Neural Audio Compression (EnCodec), Transactions on Machine Learning Research (2023)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b7d53261-48ba-4bf8-a46b-bbd030791a63",
+   "term": "Drum separation model",
+   "fields": {
+    "definition": "A drum separation model is a music source separation system, usually a deep neural network, trained to isolate the drum and percussion stem from a mixed recording while suppressing vocals, bass, and other instruments. Given a single mixed input it outputs an estimated drums-only signal, and often the remaining stems as well.",
+    "plain_english": "This is a tool that pulls just the drums out of a finished song. It listens to the full mix and gives you back the drum track on its own, like picking one voice out of a crowd.",
+    "purpose_function": "It exists to recover an individual instrument track from a mix when the original separate recordings are unavailable, enabling remixing, practice, transcription, and analysis.",
+    "practical_application": "Engineers use drum separation to extract a drum stem for remixing, sampling, and transcription, or to remove or rebalance drums within a finished mix.",
+    "category": "Source Separation",
+    "related_terms": ["Source separation", "Spectrogram", "Time-frequency masking", "Feature extraction", "Deep neural network"],
+    "common_mistakes": ["Expecting perfect isolation; separated stems usually contain artifacts and bleed from other instruments.", "Assuming a model trained on one genre will separate all material equally well.", "Confusing learned source separation with simple EQ or fixed frequency filtering."],
+    "scenario_contexts": ["Extracting a drum stem from a stereo mix for a remix.", "Isolating drums to transcribe a groove or build a sample library.", "Rebalancing or removing drums in a mastered track for a live backing."]
+   },
+   "sources": ["Defossez et al., Hybrid Spectrogram and Waveform Source Separation (Demucs), and TorchAudio Hybrid Demucs technical documentation", "Mueller, Fundamentals of Music Processing (music source separation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0d27e903-bbe2-44ff-b598-e893cdd8fe1e",
+   "term": "Echo cancellation model",
+   "fields": {
+    "definition": "An echo cancellation model, or acoustic echo canceller (AEC), is a system that removes the echo of a far-end signal that is played by a loudspeaker and picked up again by the near-end microphone. It estimates the echo path, classically with an adaptive filter such as NLMS and increasingly with neural networks, then subtracts or suppresses the echo while preserving near-end speech.",
+    "plain_english": "This tool stops you from hearing your own voice bounce back during a call. It learns how sound from the speaker leaks into the mic, then removes that leaked sound so you only hear the other person.",
+    "purpose_function": "It exists to prevent a talker from hearing a delayed copy of their own voice in two-way communication, which otherwise makes conversation confusing and can trigger howling feedback.",
+    "practical_application": "Technicians rely on echo cancellation in conferencing, video calls, and hands-free intercom systems, and must handle double-talk when both ends speak at once.",
+    "category": "Speech Enhancement",
+    "related_terms": ["Adaptive filter", "Noise suppression", "Double-talk", "Acoustic feedback", "Beamforming"],
+    "common_mistakes": ["Confusing acoustic echo cancellation with noise suppression; they target different unwanted signals.", "Assuming an adaptive filter converges instantly; it needs time and can diverge during double-talk.", "Forgetting that nonlinear loudspeaker distortion limits how much echo a purely linear filter can remove."],
+    "scenario_contexts": ["Removing loudspeaker echo in a video-conference room.", "Enabling hands-free calling on a car system or speakerphone.", "Handling double-talk when both parties speak at the same time on a call."]
+   },
+   "sources": ["Cutler et al., ICASSP 2021/2022 Acoustic Echo Cancellation Challenge: Datasets, Testing Framework, and Results, Microsoft Research (ICASSP/Interspeech)", "Haykin, Adaptive Filter Theory (adaptive echo cancellation, NLMS)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7baf7f4d-213e-4eeb-9672-9c366670281f",
+   "term": "Emotion recognition",
+   "fields": {
+    "definition": "Emotion recognition is the machine-learning task of predicting an emotional state from data, and in audio from speech or music, typically as a discrete category such as anger, happiness, or sadness, or as continuous dimensions such as valence and arousal. Audio systems extract acoustic features such as prosodic, spectral, and learned features, then classify or regress the emotional label.",
+    "plain_english": "This is teaching a computer to guess how someone feels from the sound of their voice or a song. It listens for clues like pitch, loudness, and rhythm, then labels the mood, such as happy or angry.",
+    "purpose_function": "It exists to let systems respond to a user's affective state, powering applications from call-center analytics to adaptive music and human-computer interaction.",
+    "practical_application": "Practitioners build speech-emotion classifiers for call analytics and assistants, and music-emotion models for mood-based tagging and playlist curation.",
+    "category": "Audio Classification",
+    "related_terms": ["Feature extraction", "Mel-frequency cepstral coefficients", "Prosody", "Classification", "Music information retrieval"],
+    "common_mistakes": ["Treating labeled emotion as objective ground truth; annotations are subjective and annotators often disagree.", "Assuming a model trained on acted emotion generalizes to natural, spontaneous speech.", "Ignoring cultural, speaker, and language differences that bias predictions."],
+    "scenario_contexts": ["Flagging caller frustration in call-center speech analytics.", "Tagging songs by mood for playlist and recommendation systems.", "Adapting a voice assistant's response to a user's tone."]
+   },
+   "sources": ["El Ayadi et al., Survey on Speech Emotion Recognition, Pattern Recognition (IEEE-associated literature); Interspeech/ICASSP speech emotion recognition papers", "Mueller, Fundamentals of Music Processing (music classification and features)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "49ac4d0a-9296-4e6b-be4e-f1a58accdb5d",
+   "term": "EnCodec",
+   "fields": {
+    "definition": "EnCodec is a neural audio codec from Meta AI that uses a streaming convolutional encoder-decoder with a residual-vector-quantized latent space, trained end-to-end with reconstruction and adversarial losses using a multiscale spectrogram discriminator. It compresses 24 kHz monophonic and 48 kHz stereophonic audio to low bitrates and emits discrete codes that can be further compressed or modeled by sequence models.",
+    "plain_english": "EnCodec is a smart audio squeezer. It packs sound into a short list of codes and then rebuilds it so it still sounds good, even at very low data rates, which helps with streaming and with AI that makes audio.",
+    "purpose_function": "It exists to compress audio at very low bitrate with high perceived quality and to supply discrete tokens that generative audio models can learn from.",
+    "practical_application": "Engineers use EnCodec to compress speech and music efficiently and as the tokenizer front end for generative systems such as music and speech models.",
+    "category": "Neural Audio Coding",
+    "related_terms": ["Discrete audio codec tokens", "Residual vector quantization", "Neural audio codec", "Autoencoder", "Feature extraction"],
+    "common_mistakes": ["Assuming EnCodec works like a traditional codec such as MP3; it is a learned, data-trained model.", "Reading a bitrate setting as fixed quality; quality depends on content and the number of codebooks used.", "Expecting bit-exact reconstruction; it is lossy and perceptually optimized."],
+    "scenario_contexts": ["Tokenizing audio to train a text-to-music generator.", "Low-bitrate streaming of speech or music.", "Providing compressed audio representations for downstream machine-learning tasks."]
+   },
+   "sources": ["Defossez, Copet, Synnaeve, Adi, High Fidelity Neural Audio Compression (EnCodec), Transactions on Machine Learning Research (2023)", "AudioCraft/EnCodec technical documentation, Meta AI (facebookresearch)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9c4196b4-d55b-4ea3-ac06-1d6d2a1dae17",
+   "term": "Fast convolution",
+   "fields": {
+    "definition": "Fast convolution computes a convolution by transforming the signals to the frequency domain with the FFT, multiplying their spectra pointwise, and inverse-transforming, rather than summing products directly in the time domain. Because pointwise multiplication of DFTs corresponds to circular convolution, zero-padding is applied so the result equals the desired linear convolution.",
+    "plain_english": "This is a shortcut for a slow math step. Instead of multiplying and adding sample by sample, it uses the FFT to do the same job much faster, which matters when a filter is long.",
+    "purpose_function": "It exists to cut the cost of long convolutions, such as long FIR filters or reverbs, from roughly N-squared to N-log-N operations.",
+    "practical_application": "It underlies fast FIR filtering and convolution reverb, letting long impulse responses run efficiently, often in real time.",
+    "category": "DSP Fundamentals",
+    "related_terms": ["Convolution", "Fast Fourier transform", "FFT overlap-add", "FFT overlap-save", "Circular convolution", "Finite impulse response"],
+    "common_mistakes": ["Forgetting to zero-pad, so circular convolution wraps around and corrupts the result.", "Assuming FFT convolution is always faster; for short filters direct convolution can be quicker.", "Ignoring the latency that block-based processing adds in real-time audio."],
+    "scenario_contexts": ["Running a long convolution-reverb impulse response efficiently.", "Implementing a long FIR filter in a plugin.", "Speeding up cross-correlation for alignment or pattern matching."]
+   },
+   "sources": ["Oppenheim & Schafer, Discrete-Time Signal Processing (FFT-based convolution)", "Proakis & Manolakis, Digital Signal Processing: Principles, Algorithms, and Applications"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5d4e73c0-0311-4516-a083-a9f13570742f",
+   "term": "Feature extraction",
+   "fields": {
+    "definition": "Feature extraction is the process of transforming raw data into a set of informative, often lower-dimensional, representations called features that make a downstream learning task easier. In audio it converts a waveform into representations such as spectrograms, mel-frequency cepstral coefficients, or learned embeddings.",
+    "plain_english": "This means turning raw data into useful clues a model can learn from. For audio, it changes a waveform into things like a spectrogram, the way a doctor reads a chart instead of raw noise.",
+    "purpose_function": "It exists to expose the patterns relevant to a task and discard irrelevant detail, improving learning efficiency, accuracy, and generalization.",
+    "practical_application": "Engineers compute features such as MFCCs or mel-spectrograms as input to classifiers for tasks like speech recognition, music tagging, and sound-event detection.",
+    "category": "Feature Engineering",
+    "related_terms": ["Mel-frequency cepstral coefficients", "Spectrogram", "Feature learning", "Dimensionality reduction", "Classification"],
+    "common_mistakes": ["Confusing hand-crafted feature extraction with the feature learning done inside a deep network.", "Extracting features with different settings for training and inference, which causes mismatch.", "Assuming more features always help; irrelevant features can add noise and encourage overfitting."],
+    "scenario_contexts": ["Computing MFCCs as input to a speech recognizer.", "Building mel-spectrograms for a music-tagging model.", "Deriving embeddings for audio similarity search."]
+   },
+   "sources": ["Bishop, Pattern Recognition and Machine Learning", "Goodfellow, Bengio & Courville, Deep Learning (representation learning); Mueller, Fundamentals of Music Processing (audio features)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0b5bcb8d-b430-4146-b645-0898af1c8416",
+   "term": "FFT overlap-add",
+   "fields": {
+    "definition": "Overlap-add is a block-convolution method that computes the linear convolution of a long signal with a filter by splitting the input into non-overlapping blocks, convolving each block with the filter using the FFT, and summing the overlapping tails of consecutive output blocks. The overlap arises because each length-L block convolved with a length-M filter produces an output of length L+M-1.",
+    "plain_english": "This is a way to filter a long sound in small pieces. You process each piece, then add the overlapping ends together so the joins line up, like gluing overlapping strips of paper into one strip.",
+    "purpose_function": "It exists to apply FFT-based fast convolution to signals too long to transform at once and to enable real-time, block-by-block processing.",
+    "practical_application": "It is used to run long FIR filters and convolution reverbs on streaming audio one block at a time.",
+    "category": "DSP Fundamentals",
+    "related_terms": ["FFT overlap-save", "Fast convolution", "Fast Fourier transform", "Convolution", "Circular convolution", "Finite impulse response"],
+    "common_mistakes": ["Confusing overlap-add with overlap-save; overlap-add sums output tails while overlap-save discards wrapped samples.", "Choosing an FFT size too small to hold the length L+M-1 result, which causes aliasing.", "Forgetting the latency added by block buffering."],
+    "scenario_contexts": ["Streaming a long FIR filter in an audio plugin.", "Implementing convolution reverb block by block.", "Real-time filtering where the impulse response is longer than one block."]
+   },
+   "sources": ["Oppenheim & Schafer, Discrete-Time Signal Processing (block convolution, overlap-add)", "Proakis & Manolakis, Digital Signal Processing: Principles, Algorithms, and Applications"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7f3ac16c-18fb-44cf-87f6-31c8c9390cfa",
+   "term": "FFT overlap-save",
+   "fields": {
+    "definition": "Overlap-save is a block-convolution method that computes linear convolution using the FFT by processing overlapping input blocks, keeping the portion of each circular-convolution output that is free of wrap-around aliasing, and discarding the corrupted samples at the block boundaries. Successive input blocks overlap by the filter length minus one so that the discarded region is always covered.",
+    "plain_english": "This is another way to filter a long sound in blocks. Each block overlaps the last one, and you throw away the messed-up edge samples, keeping only the clean middle part.",
+    "purpose_function": "It exists to apply FFT-based fast convolution to long or streaming signals without the output-summation step that overlap-add requires.",
+    "practical_application": "It is used for efficient long FIR filtering on continuous audio, discarding the aliased edge of each processed block.",
+    "category": "DSP Fundamentals",
+    "related_terms": ["FFT overlap-add", "Fast convolution", "Fast Fourier transform", "Convolution", "Circular convolution", "Finite impulse response"],
+    "common_mistakes": ["Discarding the wrong number of samples; you must drop exactly M-1 aliased samples per block.", "Confusing it with overlap-add, which sums output tails instead of discarding samples.", "Setting the overlap incorrectly, which leaves a gap or duplicated samples in the output."],
+    "scenario_contexts": ["Efficient long FIR filtering of a continuous audio stream.", "Block-based fast convolution where avoiding an output-add step is preferred.", "Real-time filtering with a fixed long impulse response."]
+   },
+   "sources": ["Oppenheim & Schafer, Discrete-Time Signal Processing (block convolution, overlap-save)", "Proakis & Manolakis, Digital Signal Processing: Principles, Algorithms, and Applications"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

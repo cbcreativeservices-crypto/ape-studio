@@ -1,0 +1,322 @@
+{
+ "batch": 2,
+ "topic": "Instrument Recording — Strings & Guitar",
+ "authored": [
+  {
+   "id": "c09bf679-ec93-497a-b802-de46ff0b4967",
+   "term": "Bass-string region",
+   "fields": {
+    "definition": "The group of lower-pitched, typically wound strings on a stringed instrument (on a six-string guitar, the E, A and D strings) and the lower-frequency register they produce. It is contrasted with the treble-string region formed by the higher, thinner strings.",
+    "plain_english": "The thicker, lower-sounding strings on a guitar or similar instrument, and the deep tones they make. Think of the left-hand end of a piano, but for strings.",
+    "purpose_function": "It labels the low end of a stringed instrument so players and engineers can tune, discuss, and capture those notes separately, since the wound bass strings carry the harmonic foundation and behave differently from treble strings.",
+    "practical_application": "An engineer positions or angles a mic to balance the bass-string region against the treble strings, and may use EQ so the wound low strings do not sound boomy or dull in the recording.",
+    "category": "String register",
+    "related_terms": [
+     "Bass-string section",
+     "Open string",
+     "Course imbalance",
+     "Drop tuning",
+     "Palm muting"
+    ],
+    "common_mistakes": [
+     "Assuming the bass-string region only needs low-frequency EQ, when its note fundamentals and playing noise span a wide range",
+     "Confusing the bass-string region of a guitar with a separate bass guitar",
+     "Miking only over the soundhole, which exaggerates the boom from the wound low strings"
+    ],
+    "scenario_contexts": [
+     "Balancing the low strings against the high strings when close-miking an acoustic guitar",
+     "Applying gentle EQ so the wound E and A strings do not dominate a fingerpicked part",
+     "Discussing which strings carry the low end during a tracking session"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "15b7789f-ae54-4bd7-b7bd-721cb36c9d35",
+   "term": "Bass-string section",
+   "fields": {
+    "definition": "The set of an instrument's lower-pitched bass strings treated as a single group, such as the wound bass strings of a guitar or the long, thick strings on the bass side of a piano or harp. The term refers to the strings themselves rather than to a frequency range.",
+    "plain_english": "The bunch of thick, low-sounding strings on an instrument, grouped together. On a piano these are the long strings at the left end.",
+    "purpose_function": "Grouping the bass strings lets players, tuners, and engineers address the low strings as a unit for tuning, damping, or miking, because they share construction and tonal behavior.",
+    "practical_application": "When recording a grand piano or harp, an engineer places or aims a microphone to capture the bass-string section evenly with the rest of the instrument.",
+    "category": "String register",
+    "related_terms": [
+     "Bass-string region",
+     "Course imbalance",
+     "Open string",
+     "Pedal harp",
+     "Pizzicato"
+    ],
+    "common_mistakes": [
+     "Treating the bass-string section as a separate instrument rather than part of the whole",
+     "Placing a mic so close to the bass strings that the section overpowers the treble strings",
+     "Forgetting that wound bass strings lose brightness as they age and dull the section's tone"
+    ],
+    "scenario_contexts": [
+     "Positioning a piano mic to balance the bass-string section against the treble",
+     "Checking tuning across the bass-string section of a harp before a take",
+     "Explaining to a client why the low strings sound duller than the high strings"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "81c87375-6e58-42ef-808c-7726e730323d",
+   "term": "Bell direction",
+   "fields": {
+    "definition": "The orientation, or axis, in which a wind or brass instrument's bell is aimed. Because such instruments radiate their higher harmonics as a directional beam that projects along the bell's axis, the bell direction largely determines where the instrument sounds brightest and loudest.",
+    "plain_english": "Which way the open flared end (bell) of a horn is pointing. A trumpet or trombone throws its bright, loud sound mostly straight out of the bell, so where the bell points is where it sounds strongest.",
+    "purpose_function": "Describes the primary direction of high-frequency sound radiation from a bell-loaded instrument; the concept matters because that radiation is directional rather than uniform, which affects both listeners and microphone placement.",
+    "practical_application": "An engineer positions a microphone relative to the bell direction — on-axis for the brightest, most detailed capture and off-axis or slightly across the bell to tame harshness and blend the tone.",
+    "category": "Sound Radiation",
+    "related_terms": [
+     "Bell flare",
+     "On-axis response",
+     "Off-axis coloration",
+     "Directivity",
+     "Polar pattern",
+     "Close-miking"
+    ],
+    "common_mistakes": [
+     "Assuming a brass instrument radiates equally in all directions and placing the mic anywhere around it.",
+     "Aiming the mic straight down the bell axis at close range, capturing a harsh, blaring tone with excessive high harmonics.",
+     "Forgetting that players swing the bell during performance, so a fixed on-axis mic can produce large level and tone changes."
+    ],
+    "scenario_contexts": [
+     "Miking a trumpet or trombone section and choosing on- versus off-axis placement relative to each bell.",
+     "Positioning a saxophone mic while remembering that on woodwinds much sound also leaves the tone holes, not only the bell.",
+     "Recording a live horn player who sways, causing the bell to move on and off the microphone axis."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (brass instruments; sound radiation and directivity)",
+    "UNSW Music Acoustics — Brass instrument (lip reed) acoustics (J. Wolfe)",
+    "Ballou (ed.), Handbook for Sound Engineers (microphone technique for brass)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2a0d8350-d9ec-4f5c-a40c-02f75fc61e93",
+   "term": "Bell flare",
+   "fields": {
+    "definition": "The rapidly widening, trumpet-shaped end section of a brass (and some woodwind) instrument's air column. Its curved flare acts as an acoustic impedance transformer that improves radiation of the higher harmonics into the surrounding air and shapes the instrument's characteristic bright timbre.",
+    "plain_english": "The cone-shaped opening at the end of a horn. This flared shape helps the instrument push its bright, higher tones out into the room efficiently.",
+    "purpose_function": "Matches the high acoustic impedance of the narrow bore to the low impedance of open air so upper harmonics radiate efficiently; it makes the instrument loud and bright and influences which notes resonate.",
+    "practical_application": "Most of a brass instrument's high-frequency energy leaves at the flare, so engineers aim close mics at or just off the bell mouth and account for the flare when judging tone and proximity.",
+    "category": "Instrument Component",
+    "related_terms": [
+     "Bell direction",
+     "Bore",
+     "Impedance matching",
+     "Harmonics",
+     "Close-miking",
+     "Directivity"
+    ],
+    "common_mistakes": [
+     "Believing the flare generates the pitch; pitch is set by the vibrating lips and the full air-column length, while the flare mainly affects radiation and timbre.",
+     "Thinking a wider or longer flare simply makes an instrument louder at all frequencies, when it chiefly boosts higher-harmonic radiation.",
+     "Miking too far inside the bell mouth and capturing an unnaturally harsh, hollow tone."
+    ],
+    "scenario_contexts": [
+     "Explaining why a trumpet sounds brighter and more directional than a French horn, whose bell faces backward.",
+     "Choosing mic distance from the bell flare of a trombone to balance brightness against blare.",
+     "Comparing the tonal effect of different bell tapers when recording brass overdubs."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (the bell as an impedance-matching horn)",
+    "UNSW Music Acoustics — Brass instrument (lip reed) acoustics (J. Wolfe)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b7340853-82c7-4671-8097-cf0ae12cf473",
+   "term": "Bellows movement",
+   "fields": {
+    "definition": "On accordions, concertinas, bandoneons and other free-reed instruments, the opening (draw) and closing (press) of the pleated bellows that pumps air across the reeds. The direction, speed and force of the bellows movement set the air pressure driving the reeds and therefore control loudness, articulation and phrasing.",
+    "plain_english": "Pulling open and pushing shut the folding 'lung' in the middle of an accordion. How fast and hard you move it is how you make the instrument louder, softer and expressive — it is the accordion's version of breath.",
+    "purpose_function": "Supplies and regulates the airflow that sets the free reeds vibrating; the reeds make no sound without moving air, so the bellows is both the power source and the main dynamic and expressive control.",
+    "practical_application": "A recordist mics the instrument to capture reed tone while managing the low-frequency air 'huff' and mechanical thumps that bellows direction changes produce, and coaches players toward consistent bellows control for even levels.",
+    "category": "Playing Technique",
+    "related_terms": [
+     "Free reed",
+     "Reed block",
+     "Bellows shake",
+     "Dynamics",
+     "Air noise",
+     "Articulation"
+    ],
+    "common_mistakes": [
+     "Assuming loudness comes from key pressure; on a free-reed instrument dynamics come almost entirely from bellows movement.",
+     "Ignoring the audible air 'huff' and valve or mechanical noise at bellows direction changes when placing microphones.",
+     "Expecting a steady tone as the bellows runs out of travel, forcing an abrupt, audible direction reversal."
+    ],
+    "scenario_contexts": [
+     "Recording a folk or tango accordion and positioning mics to catch reed detail without excessive bellows air noise.",
+     "Coaching a player to plan bellows direction changes so they fall on rests rather than sustained notes.",
+     "Capturing expressive dynamic swells produced by accelerating the bellows rather than by the keyboard."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (free-reed instruments)",
+    "Adler, The Study of Orchestration (accordion; bellows and dynamics)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ada9395c-8100-4101-ae38-779c9c0089ce",
+   "term": "Biscuit bridge",
+   "fields": {
+    "definition": "A resonator-guitar bridge design in which the string saddle is mounted on a small round wooden disc — the 'biscuit,' usually maple — that sits at the apex of a single inverted (cone-down) resonator cone. String vibration passes through the saddle and biscuit into the cone, which radiates the sound.",
+    "plain_english": "On a metal-bodied resonator guitar, a little maple button called a biscuit sits on the point of a spun-metal cone and holds the string saddle. The strings shake the biscuit, the biscuit shakes the cone, and the cone acts like a built-in speaker.",
+    "purpose_function": "Couples string energy to the resonator cone at a single central point, defining the instrument's loud, cutting resonator tone; it is the single-cone alternative to the tricone and spider-bridge designs.",
+    "practical_application": "A tech sets action and intonation by shaping the biscuit's saddle slot and keeps the biscuit and cone seat flat for full volume; an engineer mics the biscuit/cone area and the body to capture the characteristic metallic resonance.",
+    "category": "Instrument Component",
+    "related_terms": [
+     "Resonator cone",
+     "Spider bridge",
+     "Tricone",
+     "Saddle",
+     "Coverplate",
+     "Slide guitar"
+    ],
+    "common_mistakes": [
+     "Confusing the single-cone biscuit bridge with the spider bridge, which uses an aluminum spider on a cone-up resonator.",
+     "Over-tightening the biscuit screw or leaving an uneven cone seat, which chokes the cone and kills volume and sustain.",
+     "Filing the saddle unevenly so slide/bar action varies from string to string."
+    ],
+    "scenario_contexts": [
+     "Setting up a National single-cone resonator for bottleneck slide blues.",
+     "Diagnosing lost volume traced to a warped biscuit or an uneven cone seat.",
+     "Miking a resonator guitar and balancing the biscuit/cone spot against the coverplate holes for tone."
+    ]
+   },
+   "sources": [
+    "National Reso-Phonic Guitars — technical/setup documentation (biscuit bridges)",
+    "StewMac — National-style biscuit bridge installation guide"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6a58f127-5918-4897-bead-c894a8129f70",
+   "term": "Bleed control",
+   "fields": {
+    "definition": "The practices used to minimize spill — sound from one source leaking into microphones intended for other sources — during multi-mic recording or live sound. Methods include microphone placement and spacing, directional polar patterns, physical isolation, close-miking, and downstream tools such as gates and expanders.",
+    "plain_english": "Keeping each microphone hearing mostly its own instrument, not everything else in the room. You do it with smart mic placement, directional mics, screens or booths, and sometimes noise gates.",
+    "purpose_function": "Preserves separation between tracks so each can be processed and balanced independently, and reduces the comb-filtering and phase problems that arise when the same sound reaches several mics at different times.",
+    "practical_application": "An engineer uses directional (cardioid/figure-8) patterns aimed to null nearby sources, follows the 3:1 spacing guideline, adds gobos or isolation booths, moves loud sources apart, and applies gates only after acoustic measures are exhausted.",
+    "category": "Recording Technique",
+    "related_terms": [
+     "Spill",
+     "Polar pattern",
+     "3:1 rule",
+     "Comb filtering",
+     "Gobo",
+     "Noise gate"
+    ],
+    "common_mistakes": [
+     "Relying on a noise gate to fix bleed that should have been reduced acoustically first, leaving audible artifacts and gated-in spill.",
+     "Placing mics too close together relative to their source distance, so bleed arrives with delays that cause comb filtering when summed.",
+     "Aiming a mic's null at the wrong source, or forgetting a cardioid's limited rear rejection, so rejection is lost."
+    ],
+    "scenario_contexts": [
+     "Tracking a live band in one room and using gobos plus tight cardioid placement to separate the guitar amp from the drums.",
+     "Miking a drum kit where each close mic captures neighboring drums and cymbals.",
+     "Recording a string ensemble and managing spill between adjacent players' spot mics."
+    ]
+   },
+   "sources": [
+    "Sound on Sound — Working With Mic Bleed",
+    "Ballou (ed.), Handbook for Sound Engineers (microphone technique; separation and the 3:1 rule)",
+    "Huber & Runstein, Modern Recording Techniques (microphone placement; leakage)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5b263ea1-7077-4b95-aa93-5519d9cf0fe2",
+   "term": "Body knock",
+   "fields": {
+    "definition": "A low-frequency thump or percussive sound produced when the body of an acoustic stringed instrument (guitar, double bass, cello) is struck, tapped or bumped, exciting the instrument's enclosed-air and top-plate resonances. In recording it appears either as a deliberate percussive element or as unwanted contact/handling noise captured by close microphones.",
+    "plain_english": "The dull thud you get when someone taps or knocks the wooden body of a guitar or bass. Sometimes it is played on purpose for rhythm; other times it is an accidental bump the mic picks up.",
+    "purpose_function": "Names the transient, body-resonance sound as distinct from the strings, so a player can use it musically or an engineer can identify and control it as noise.",
+    "practical_application": "When it is noise, an engineer reduces it with mic placement away from the striking area, shock/handling isolation and a high-pass filter; when it is intentional percussion, they position a mic to capture the body thump cleanly.",
+    "category": "Recording Artifact",
+    "related_terms": [
+     "Body resonance",
+     "Tap tone",
+     "Handling noise",
+     "High-pass filter",
+     "Percussive fingerstyle",
+     "Transient"
+    ],
+    "common_mistakes": [
+     "Mistaking body-knock thumps for low-string content and boosting the lows, which worsens the noise.",
+     "Removing all low end with an over-aggressive high-pass filter and thinning the instrument's natural body warmth.",
+     "Placing a mic right over the area the player taps, so incidental knocks overwhelm the string sound."
+    ],
+    "scenario_contexts": [
+     "Recording percussive fingerstyle guitar where body knocks are part of the groove.",
+     "Cleaning up a singer-songwriter take marred by the guitar bumping the mic stand.",
+     "Miking a double bass and separating intentional body slaps from unwanted contact noise."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (guitar body and air resonances; tap tones)",
+    "Huber & Runstein, Modern Recording Techniques (acoustic instrument miking; low-frequency and handling noise)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "28b93718-6eef-43b8-ba12-6aba27ed622e",
+   "term": "Bow pressure",
+   "fields": {
+    "definition": "The downward force the bow hair applies to the string on a bowed instrument (violin, viola, cello, double bass). Together with bow speed and the bow-to-bridge distance it is one of the primary parameters controlling loudness and timbre; physicists more precisely call it 'bow force.'",
+    "plain_english": "How hard the player presses the bow into the string. Press harder for a fuller, louder, grittier sound; press too little and the note thins out or whistles; press too much and it crushes into a scratch.",
+    "purpose_function": "Sets the friction coupling between bow and string that sustains the string's stick-slip (Helmholtz) vibration; it is a core expressive control, balanced against bow speed and contact point to shape dynamics and tone.",
+    "practical_application": "Players and engineers relate bow pressure to captured tone — light pressure near the fingerboard gives an airy sul-tasto sound, firm pressure near the bridge gives an edgy, harmonic-rich tone — and choose mic distance accordingly.",
+    "category": "Playing Technique",
+    "related_terms": [
+     "Bow speed",
+     "Sounding point",
+     "Sul ponticello",
+     "Sul tasto",
+     "Helmholtz motion",
+     "Timbre"
+    ],
+    "common_mistakes": [
+     "Treating bow pressure as the only loudness control and ignoring bow speed and contact point, producing a crushed tone.",
+     "Using too little bow force for the chosen bridge distance, so the string never locks into stable Helmholtz motion and the tone is thin or 'surface-sounding.'",
+     "Assuming more pressure always means more volume, when past the maximum-force limit the tone breaks up into raucous noise."
+    ],
+    "scenario_contexts": [
+     "A cellist adjusting pressure and sounding point to move between warm and edgy timbres during a take.",
+     "An engineer hearing scratchy attacks and recognizing excessive bow force rather than a mic problem.",
+     "Capturing quiet sul-tasto passages that need close miking because low bow pressure yields little level."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (bowed strings; bow force)",
+    "Rossing (ed.), The Science of String Instruments (bowed strings; Schelleng minimum/maximum bow force)",
+    "Adler, The Study of Orchestration (string bowing and dynamics)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

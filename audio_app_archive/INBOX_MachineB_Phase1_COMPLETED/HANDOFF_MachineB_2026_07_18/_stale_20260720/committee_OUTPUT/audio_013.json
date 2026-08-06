@@ -1,0 +1,216 @@
+{
+ "expert": "Audio Technical",
+ "group": 13,
+ "reviews": [
+  {
+   "id": "5a147ec1-6b84-4520-b743-bbb467364730",
+   "term": "Hard-panned harmonies",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "34d5a9ab-9287-418c-9309-9956c034c98e",
+   "term": "Harmonic layering",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "440a93b3-3e56-4ccd-b8a0-333c24125805",
+   "term": "Harmony alignment",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4269b1e9-6db0-49c3-a130-2d13e3d8fb1b",
+   "term": "Harmony arrangement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0e4d4afc-49aa-4a44-8cdd-849721ac563d",
+   "term": "Harmony automation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b9049e41-2a0f-49e4-ba55-93b1e647da9c",
+   "term": "Harmony bus",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9049c626-565a-436e-b1e8-d50ba9882ba1",
+   "term": "Harmony compression",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3c5621a0-45a2-4962-b461-5f64aa822014",
+   "term": "Harmony de-essing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7c079c71-a101-4c5c-8c2b-85abd344b561",
+   "term": "Harmony delay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a8a12030-4156-4cef-9aed-d7127d6d1894",
+   "term": "Harmony ducking",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6cc5cbd8-9ce1-45f0-9f4a-7703c1ce51c2",
+   "term": "Harmony equalization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c873c977-e548-4b4a-bde9-0969767a949b",
+   "term": "Harmony reverb",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a6d2c19d-06a9-428b-b461-0d4d32fea4a6",
+   "term": "Harmony saturation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0b91c4b7-c93e-4230-81c9-d264304f7b79",
+   "term": "Harmony stack",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "43b4a49c-3b22-4f9c-be4e-fd39d90285ea",
+   "term": "Harmony subgroup",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "da63d5b5-bf8c-44e5-8e21-acb7bcd49421",
+   "term": "Harmony width",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "59185d83-6f16-43d4-b2ae-4bcb7e329182",
+   "term": "Harmony-to-lead balance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5e6a6352-008a-4bc4-887f-2c53bd8e393c",
+   "term": "Hi-hat bark",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0003c0f8-e86c-475c-9f6d-ed0278dfd17a",
+   "term": "Hi-hat bleed",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9bb5623b-f3c9-4cff-b4a4-aee27a8a31e5",
+   "term": "Hi-hat clutch",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0b7d70c7-fec8-498f-80ad-425efa14a603",
+   "term": "Hi-hat opening",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c55d463a-3d31-48cc-b3c3-2a4340fc57f6",
+   "term": "High-frequency reinforcement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dd5d0cf6-b330-4e9b-b614-2a8e2fd38f51",
+   "term": "Instrument air enhancement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1682248f-ab66-4f11-b01f-347fc4189c25",
+   "term": "Instrument ambience blend",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5a9a1c99-949f-4032-9da1-2711c05463e9",
+   "term": "Instrument articulation enhancement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4eebcf4b-c60b-43f9-90c7-28735b798bb6",
+   "term": "Instrument automation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "34f5ad12-f475-4cf5-94c0-8a27db726271",
+   "term": "Instrument delay placement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d475bbec-3e35-47fa-9725-91aac3d24bf4",
+   "term": "Instrument DI blend",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a0ead9df-32b0-4305-9c01-d9c22eb110d0",
+   "term": "Instrument gain ride",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "88b0cc7b-7322-4f36-92a1-7ce848bd1f39",
+   "term": "Instrument image stability",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "92a8b357-1592-4bba-a660-565e32231e5e",
+   "term": "Instrument layering",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eee0a18b-b535-46a0-9663-bfd0a01c0cdb",
+   "term": "Instrument masking control",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bcf0511e-418f-4763-a5a3-b1aca8065d10",
+   "term": "Instrument microphone blend",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3f81ab97-4428-46ac-ab3e-e2326affd528",
+   "term": "Instrument panning",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1c41a1a2-ad3b-406b-8d7e-fc59baccc663",
+   "term": "Instrument phase coherence",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

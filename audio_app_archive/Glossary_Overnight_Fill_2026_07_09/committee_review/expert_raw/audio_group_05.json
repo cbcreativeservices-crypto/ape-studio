@@ -1,0 +1,167 @@
+{
+ "expert": "AUDIO TECHNICAL EXPERT",
+ "group": 5,
+ "reviews": [
+  {
+   "id": "a54a03c1-1fdd-46f2-9ae9-fb038203c9e2",
+   "term": "High-Level Input",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Medium",
+     "issue": "The bullet 'Leaving factory speakers connected in parallel on the same tapped wires ... causing turn-on or load issues' is technically muddled and largely inverted. High-level inputs are high-impedance and do not load the tapped signal, so leaving factory speakers connected in parallel is normal practice and is often required (some factory head units and signal-sense circuits actually need the speaker load present). Framing it as a mistake caused by the amp expecting a 'bridged/high-impedance sense signal' misleads the student.",
+     "suggestion": "Remove this bullet or reframe it accurately, e.g., 'Some factory head units require the original speaker load to remain connected to function correctly or to sustain signal-sense turn-on; disconnecting the factory speakers when tapping high-level inputs can cause the source or amp not to behave as expected.'"
+    }
+   ]
+  },
+  {
+   "id": "7a977cfd-36e2-44ab-b197-8e2485e03cf7",
+   "term": "Signal-Sensing Turn-On",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "623153f8-a0e8-4417-8f2e-00ce19bb109c",
+   "term": "SPL Competition",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9e69f2ea-3f90-4afa-9dfe-e37b34d226dc",
+   "term": "Steering Wheel Control Interface",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "23215c0a-402b-4272-b32f-c34070ed4f63",
+   "term": "Subsonic Filter",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "practical_application",
+     "severity": "Medium",
+     "issue": "The stated numbers are internally inconsistent. A half-octave below 30 Hz is 30/1.414 = ~21 Hz, and '80%' of 30 Hz is 24 Hz, but the worked example gives 25-28 Hz (roughly 83-93% of tuning). 'Half-octave (about 80%)' contradicts both the arithmetic and the example. In real practice the subsonic filter is usually set at or a few Hz below port tuning (which is what 25-28 Hz for a 30 Hz box represents), not a full half-octave down.",
+     "suggestion": "Drop the 'half-octave (about 80%)' characterization and describe it as setting the subsonic filter at or slightly below (a few Hz under) the enclosure tuning frequency, e.g., 'near 25-28 Hz for a box tuned to 30 Hz,' so the descriptor matches the example."
+    }
+   ]
+  },
+  {
+   "id": "37fc85b4-f7e3-452e-9e30-3e4489c739ca",
+   "term": "Alnico Magnet",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "00b6b47a-f1f2-4724-ac05-d2ca24e85ef8",
+   "term": "Beaming",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9d4096d2-1275-4b55-a457-845641f610da",
+   "term": "Doppler Distortion",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e612ea14-fd06-49c7-af09-0bf75547f435",
+   "term": "Ferrofluid",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fb0ee365-00a6-49b7-b30c-3983a69c8f04",
+   "term": "Folded Horn",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5ca53f6d-9817-4cd3-b565-c2945a190b67",
+   "term": "Infinite Baffle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ea49fc9c-9592-4ca9-8b15-17844a6f7e4f",
+   "term": "Isobaric Loading",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f3c8eb62-4fc4-46ca-a8ed-8178251142ca",
+   "term": "Neodymium Magnet",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8bdc86ba-1551-4641-ad9c-1f6c6522b06a",
+   "term": "DisplayPort",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Low",
+     "issue": "'Assuming DisplayPort and HDMI plugs are interchangeable without an active adapter' is imprecise. Passive DP-to-HDMI adapters are extremely common and work when the source is Dual-Mode DisplayPort (DP++); an active adapter is only strictly required from a non-dual-mode source, for the HDMI-to-DP direction, or for high resolutions/refresh beyond DP++ limits.",
+     "suggestion": "Reword to note that a passive adapter works only from a Dual-Mode (DP++) source at limited resolutions, while an active adapter is needed otherwise (and always for HDMI-to-DisplayPort)."
+    }
+   ]
+  },
+  {
+   "id": "0f0ff2e9-cd3d-4061-8dcc-9fb54d4b901c",
+   "term": "EDAC / Elco Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "36ddfe76-343e-414e-a76f-a4a72465a5f6",
+   "term": "GPIO",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "scenario_contexts",
+     "severity": "Medium",
+     "issue": "'Sending a contact closure over a Dante or AoIP network to ... fire an EVAC override' presents an unsupervised GPIO-over-AoIP trigger as a normal way to actuate life-safety evacuation. Emergency voice evacuation / mass-notification triggering is life-safety functionality that must use supervised, certified pathways (NFPA 72, UL 2572, EN 54-16); a standard, unmonitored Dante GPIO contact closure is not a compliant life-safety trigger and this could mislead a student designing such a system.",
+     "suggestion": "Either drop the EVAC example or qualify it, e.g., 'interface with a certified life-safety system (the actual EVAC trigger must originate from a supervised fire-alarm/EN 54 / NFPA 72 pathway, not an unmonitored AoIP GPIO)' to distinguish general zone control from life-safety actuation."
+    }
+   ]
+  },
+  {
+   "id": "490dd2ed-ae24-4e7f-8bae-648cc9cdf60d",
+   "term": "Hirose Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2c6c28e8-4583-4dc1-8f7f-2753ddb9953e",
+   "term": "LC Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "90fcd5fd-525e-43dc-8469-5a2a1d98eaf0",
+   "term": "Lightning Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "97548fb8-af37-4f35-afcc-967191aa3480",
+   "term": "MicroDot Connector",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Medium",
+     "issue": "'TA5F (Lemo)' mislabels the connector. TA5F is a Switchcraft 5-pin mini-XLR (Tini-QG); LEMO is a separate, physically different circular connector brand. The two are distinct connectors, which is exactly why TA5F-to-LEMO adapter cables exist. Equating TA5F with Lemo is a terminology error.",
+     "suggestion": "Correct the parenthetical to 'TA5F (Switchcraft mini-XLR)', and if a Lemo reference is desired, list Lemo as its own separate related term."
+    }
+   ]
+  },
+  {
+   "id": "322881a8-5058-444d-a595-28637ceda69d",
+   "term": "Multipin Connector",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

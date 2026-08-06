@@ -1,0 +1,284 @@
+{
+  "generated": "2026-07-16T02:54:21.140Z",
+  "bucket": "course-cards",
+  "base_url": "https://yjgolswjggmlpeowvtxr.supabase.co/storage/v1/object/public/course-cards/",
+  "carousel_order": [
+    "free:tools",
+    "free:glossary",
+    "free:safety",
+    "free:daw",
+    "course:intro-to-audio",
+    "course:sound-reinforcement-systems",
+    "course:audio-system-design-and-maintenance",
+    "course:recording-arts",
+    "course:music-production",
+    "course:career-and-business",
+    "topic:podcast",
+    "topic:film",
+    "topic:assist",
+    "topic:commercial",
+    "topic:corporate",
+    "topic:dj",
+    "topic:architectural",
+    "topic:vehicle",
+    "topic:hifi",
+    "topic:audio-tech",
+    "topic:theatrical",
+    "topic:audio-elect",
+    "topic:road-crew",
+    "topic:live-sound",
+    "topic:worship"
+  ],
+  "cards": [
+    {
+      "position": 1,
+      "card_id": "free:tools",
+      "tier": "free",
+      "name": "Tools",
+      "label": "tools",
+      "maps_to": "Audio Tools card",
+      "file": "audiomeasurement_tools_card.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 2,
+      "card_id": "free:glossary",
+      "tier": "free",
+      "name": "Glossary",
+      "label": "glossary",
+      "maps_to": "Glossary card",
+      "file": "glossay_card.PNG",
+      "source": "prior"
+    },
+    {
+      "position": 3,
+      "card_id": "free:safety",
+      "tier": "free",
+      "name": "Pro Audio Safety",
+      "label": "safety",
+      "maps_to": "course · pro-audio-safety",
+      "file": "pro_audio_safety_card.PNG",
+      "source": "prior"
+    },
+    {
+      "position": 4,
+      "card_id": "free:daw",
+      "tier": "free",
+      "name": "DAW",
+      "label": "DAW",
+      "maps_to": "free single card",
+      "file": "musi_202_computermusic.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 5,
+      "card_id": "course:intro-to-audio",
+      "tier": "course",
+      "name": "Intro to Audio",
+      "label": "intro",
+      "maps_to": "course · intro-to-audio",
+      "file": "Card_IntroToAudio.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 6,
+      "card_id": "course:sound-reinforcement-systems",
+      "tier": "course",
+      "name": "Sound Reinforcement Systems",
+      "label": "sound rein",
+      "maps_to": "course · sound-reinforcement-systems",
+      "file": "sound_reinforcement_systems.PNG",
+      "source": "prior"
+    },
+    {
+      "position": 7,
+      "card_id": "course:audio-system-design-and-maintenance",
+      "tier": "course",
+      "name": "Audio System Design & Maint.",
+      "label": "audio syst",
+      "maps_to": "course · audio-system-design-and-maintenance",
+      "file": "audi_204_card.PNG",
+      "source": "prior"
+    },
+    {
+      "position": 8,
+      "card_id": "course:recording-arts",
+      "tier": "course",
+      "name": "Recording Arts",
+      "label": "rec arts",
+      "maps_to": "course · recording-arts",
+      "file": "musi_201_rec_arts_card.PNG",
+      "source": "prior"
+    },
+    {
+      "position": 9,
+      "card_id": "course:music-production",
+      "tier": "course",
+      "name": "Music Production",
+      "label": "music prod",
+      "maps_to": "course · music-production",
+      "file": "Card_MusicProductioin.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 10,
+      "card_id": "course:career-and-business",
+      "tier": "course",
+      "name": "Career & Business",
+      "label": "career",
+      "maps_to": "course · career-and-business",
+      "file": "muii_108_business_card.PNG",
+      "source": "prior"
+    },
+    {
+      "position": 11,
+      "card_id": "topic:podcast",
+      "tier": "topic",
+      "name": "Podcasting & Broadcast",
+      "label": "podcast",
+      "maps_to": "course · podcasting-and-broadcast (gs42)",
+      "file": "205a_card.PNG",
+      "source": "prior"
+    },
+    {
+      "position": 12,
+      "card_id": "topic:film",
+      "tier": "topic",
+      "name": "Film & Game Audio",
+      "label": "film",
+      "maps_to": "course · film-and-game (gs44)",
+      "file": "205b_card.PNG",
+      "source": "prior"
+    },
+    {
+      "position": 13,
+      "card_id": "topic:assist",
+      "tier": "topic",
+      "name": "Assisted Listening",
+      "label": "assist",
+      "maps_to": "achievement gs17",
+      "file": "Card_ALS.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 14,
+      "card_id": "topic:commercial",
+      "tier": "topic",
+      "name": "Commercial Audio",
+      "label": "commer",
+      "maps_to": "achievement gs20",
+      "file": "Card_70v.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 15,
+      "card_id": "topic:corporate",
+      "tier": "topic",
+      "name": "Corporate AV",
+      "label": "corporate",
+      "maps_to": "achievement gs19",
+      "file": "Card_AV.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 16,
+      "card_id": "topic:dj",
+      "tier": "topic",
+      "name": "DJ",
+      "label": "DJ",
+      "maps_to": "coming topic",
+      "file": "Card_DJ.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 17,
+      "card_id": "topic:architectural",
+      "tier": "topic",
+      "name": "Architectural",
+      "label": "architectural",
+      "maps_to": "coming topic",
+      "file": "Card_AcousticalAudio.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 18,
+      "card_id": "topic:vehicle",
+      "tier": "topic",
+      "name": "Vehicle Audio",
+      "label": "vehicle",
+      "maps_to": "achievement gs22",
+      "file": "Card_Automotive.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 19,
+      "card_id": "topic:hifi",
+      "tier": "topic",
+      "name": "Hi-Fi Systems",
+      "label": "hifi",
+      "maps_to": "achievement gs18",
+      "file": "Card_HomeHiFi.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 20,
+      "card_id": "topic:audio-tech",
+      "tier": "topic",
+      "name": "Audio Technician",
+      "label": "audio tech",
+      "maps_to": "coming topic",
+      "file": "Card_Technician.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 21,
+      "card_id": "topic:theatrical",
+      "tier": "topic",
+      "name": "Theatrical",
+      "label": "theatrical",
+      "maps_to": "coming topic",
+      "file": "Theatrical.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 22,
+      "card_id": "topic:audio-elect",
+      "tier": "topic",
+      "name": "Audio Electronics",
+      "label": "audio elect",
+      "maps_to": "coming topic",
+      "file": "Electronics.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 23,
+      "card_id": "topic:road-crew",
+      "tier": "topic",
+      "name": "Road Crew",
+      "label": "road crew",
+      "maps_to": "coming topic",
+      "file": "RoadCrew.PNG",
+      "source": "manual"
+    },
+    {
+      "position": 24,
+      "card_id": "topic:live-sound",
+      "tier": "topic",
+      "name": "Live Sound",
+      "label": "Live Sound",
+      "maps_to": "coming topic",
+      "file": "Card_LiveSoundMusic.PNG",
+      "source": "auto"
+    },
+    {
+      "position": 25,
+      "card_id": "topic:worship",
+      "tier": "topic",
+      "name": "Worship",
+      "label": "Worship",
+      "maps_to": "coming topic",
+      "file": "Card_Worship.PNG",
+      "source": "auto"
+    }
+  ]
+}

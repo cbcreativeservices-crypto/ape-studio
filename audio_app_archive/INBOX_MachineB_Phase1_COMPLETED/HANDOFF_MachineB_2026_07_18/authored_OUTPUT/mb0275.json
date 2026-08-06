@@ -1,0 +1,231 @@
+{
+ "batch": 275,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "624fd2d9-b53a-4ece-a80c-e1952bb83082",
+   "term": "Amplitude modulation",
+   "fields": {
+    "definition": "A technique in which the amplitude (level) of a carrier signal is varied in proportion to the instantaneous value of a second, modulating signal. When the modulation rate reaches the audio range, AM produces extra sideband frequencies above and below the carrier, changing the tone.",
+    "plain_english": "Amplitude modulation means using one signal to change the loudness of another. When it happens slowly, you hear the volume wobble, like a tremolo effect. When it happens fast, it adds new tones and changes how the sound feels.",
+    "purpose_function": "It lets one signal shape the loudness of another, creating effects from slow tremolo up to rich new sidebands. In synthesis it is used to add harmonics and reshape a sound's tone.",
+    "practical_application": "A technician uses AM when patching a low-frequency oscillator to a signal's amplifier for tremolo, or when routing one audio-rate oscillator to another to add metallic sidebands in synth sound design.",
+    "category": "Modulation",
+    "related_terms": ["Ring modulation", "Frequency modulation", "Tremolo", "Low-frequency oscillator", "Sideband"],
+    "common_mistakes": [
+     "Confusing amplitude modulation with ring modulation; classic AM keeps the carrier present, while balanced ring modulation suppresses it and leaves only the sidebands.",
+     "Assuming AM only makes tremolo; at audio-rate modulation it generates new sideband frequencies and changes timbre.",
+     "Thinking AM and FM produce the same result; they create different sideband patterns."
+    ],
+    "scenario_contexts": [
+     "Patching an LFO to a VCA for tremolo on a synth pad",
+     "Using audio-rate AM between two oscillators for metallic sound design",
+     "Diagnosing unwanted amplitude modulation, such as hum riding on a signal path"
+    ]
+   },
+   "sources": ["Roads, The Computer Music Tutorial (MIT Press)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d299591d-5a48-4e94-b3ee-eeba92d871a9",
+   "term": "Anti-aliased oscillator",
+   "fields": {
+    "definition": "A digital oscillator designed to generate harmonically rich waveforms, such as sawtooth or square, while suppressing aliasing: the false, inharmonic frequencies that appear when harmonics exceed the Nyquist limit. It uses methods such as band-limited step functions (BLIT/BLEP), additive synthesis, or oversampled wavetables to keep the spectrum below half the sample rate.",
+    "plain_english": "A digital oscillator that makes bright waveforms without adding harsh, wrong tones. Plain digital shapes can create ugly ghost notes called aliasing. This kind of oscillator is built to keep those ghost tones out, so the sound stays clean.",
+    "purpose_function": "It provides classic bright analog-style waveforms in software without the aliasing artifacts that would otherwise dirty the high frequencies. This keeps synth tones clean across the whole keyboard range.",
+    "practical_application": "When choosing or building soft-synth patches, a technician relies on anti-aliased oscillators so high notes and bright saw or pulse waves stay clean instead of developing gritty, out-of-tune overtones.",
+    "category": "Oscillators",
+    "related_terms": ["Band-limited oscillator", "Aliasing", "Nyquist frequency", "Wavetable synthesis", "Oversampling"],
+    "common_mistakes": [
+     "Believing any digital oscillator is automatically alias-free; naive digital waveforms alias badly on high notes.",
+     "Assuming a higher sample rate alone fixes aliasing; oversampling helps but proper band-limiting is still needed.",
+     "Confusing aliasing artifacts with normal high-frequency brightness."
+    ],
+    "scenario_contexts": [
+     "Choosing a soft-synth oscillator that stays clean on high notes",
+     "A/B testing an oscillator for aliasing while sweeping pitch upward",
+     "Building bright saw leads without digital grit"
+    ]
+   },
+   "sources": ["Stilson & Smith, Alias-Free Digital Synthesis of Classic Analog Waveforms (ICMC/AES, CCRMA Stanford)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9390d684-ebfd-4449-8bbb-1877e82b0beb",
+   "term": "Audio sampling",
+   "fields": {
+    "definition": "The process of converting a continuous analog audio signal into digital form by measuring (sampling) its amplitude at regular, evenly spaced points in time, at a fixed sample rate. Per the Nyquist theorem, the sample rate must be more than twice the highest audio frequency present to capture it without aliasing.",
+    "plain_english": "Audio sampling means turning a real sound into numbers a computer can store. The system measures the sound's level many thousands of times each second. Play those measurements back in order and you hear the sound again.",
+    "purpose_function": "It is the basic step that lets analog sound be recorded, stored, edited, and played back digitally. Choosing a high enough sample rate makes sure the full audio range is captured accurately.",
+    "practical_application": "A technician sets the sample rate, such as 44.1 or 48 kHz, at the audio interface or DAW before recording, balancing audio bandwidth against file size and processing load.",
+    "category": "Digital Audio",
+    "related_terms": ["Sample rate", "Nyquist frequency", "Aliasing", "Quantization", "Analog-to-digital converter", "Bit depth"],
+    "common_mistakes": [
+     "Confusing sample rate (how often amplitude is measured) with bit depth (how finely each sample's level is measured).",
+     "Thinking a higher sample rate always sounds better; it raises file size and CPU load with limited audible benefit beyond what the material needs.",
+     "Forgetting the Nyquist rule and recording without proper anti-alias filtering, which lets aliasing spoil the recording."
+    ],
+    "scenario_contexts": [
+     "Setting the sample rate in a DAW before a session",
+     "Configuring an audio interface for a recording",
+     "Explaining why 44.1 kHz captures the full audible range"
+    ]
+   },
+   "sources": ["Watkinson, The Art of Digital Audio", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "57894ecc-012f-487d-a139-c0357d2d3fe3",
+   "term": "Band-limited oscillator",
+   "fields": {
+    "definition": "An oscillator whose output spectrum is deliberately restricted so that it contains no energy above the Nyquist frequency (half the sample rate). By limiting the number of harmonics it generates, it avoids the aliasing that an ideal, mathematically sharp waveform would produce in a digital system.",
+    "plain_english": "An oscillator that only makes tones up to a safe limit. In digital gear, tones above a certain point fold back and sound wrong. A band-limited oscillator stops before that point, so its sound stays clean.",
+    "purpose_function": "It exists to reproduce bright waveforms digitally without aliasing, keeping the harmonics it makes inside the range the system can handle. This is the core idea behind alias-free digital synthesis.",
+    "practical_application": "Sound designers pick band-limited oscillators in a synth to keep sawtooth and square waves clean, especially when playing high notes or sweeping the pitch upward.",
+    "category": "Oscillators",
+    "related_terms": ["Anti-aliased oscillator", "Aliasing", "Nyquist frequency", "Sawtooth wave", "Additive synthesis"],
+    "common_mistakes": [
+     "Assuming a mathematically perfect saw or square can be generated digitally without aliasing; its sharp edges contain harmonics above Nyquist.",
+     "Confusing band-limiting with simply putting a low-pass filter on the output.",
+     "Thinking band-limited oscillators sound dull; they keep every harmonic that fits below Nyquist."
+    ],
+    "scenario_contexts": [
+     "Selecting an alias-free oscillator for a high-register lead",
+     "Comparing band-limited versus naive waveforms for aliasing",
+     "Designing bright synth tones that stay clean across the keyboard"
+    ]
+   },
+   "sources": ["Stilson & Smith, Alias-Free Digital Synthesis of Classic Analog Waveforms (ICMC/AES, CCRMA Stanford)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d7494023-87df-427f-8d56-7b6d48027d90",
+   "term": "Brass library",
+   "fields": {
+    "definition": "A collection of recorded brass-instrument samples, such as trumpet, trombone, French horn, and tuba, both solo and in sections, organized for playback in a sampler or virtual instrument. Libraries typically include multiple dynamic layers, articulations, and round-robin variations to emulate real brass performance.",
+    "plain_english": "A brass library is a set of recorded brass sounds you play from a keyboard or computer. It holds trumpets, trombones, horns, and tubas, captured at different volumes and playing styles. This lets you build realistic brass parts without hiring live players.",
+    "purpose_function": "It lets a producer add convincing brass parts without booking live players, by triggering recorded samples that respond to note, velocity, and articulation. It exists to make orchestral and pop brass writing practical inside a DAW.",
+    "practical_application": "A composer loads a brass library into a sampler, then uses velocity and keyswitches to move between soft sustains, loud accents, and staccato hits while sequencing a horn section.",
+    "category": "Sample Libraries",
+    "related_terms": ["Choir library", "Dynamic layer", "Crossfade layer", "Round robin", "Keyswitch", "Articulation"],
+    "common_mistakes": [
+     "Playing every note at one velocity, so a single fixed dynamic sounds flat and unrealistic.",
+     "Ignoring articulations and keyswitches, leaving fast passages sounding like sustained pads.",
+     "Overlooking legato and release behavior, producing unnatural note transitions."
+    ],
+    "scenario_contexts": [
+     "Scoring a film cue with a sampled horn section",
+     "Adding a punchy brass stab to a pop production",
+     "Layering brass samples under a live horn recording for thickness"
+    ]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e918a5fc-51b3-49f8-9b9f-759da2074f21",
+   "term": "Choir library",
+   "fields": {
+    "definition": "A collection of recorded choral (vocal ensemble) samples, such as soprano, alto, tenor, and bass sections singing sustained vowels or syllables, arranged for a sampler or virtual instrument. Many choir libraries add word-building or syllable-sequencing features and multiple dynamic layers to emulate real choral singing.",
+    "plain_english": "A choir library is a set of recorded singing voices you play from a keyboard. It usually has different voice groups singing vowels like 'ah' and 'oo'. Some let you spell out words so the choir seems to sing real lyrics.",
+    "purpose_function": "It lets a producer add realistic choral parts without hiring a real choir, by triggering recorded voice samples that follow note and dynamics. Word-building tools exist so the sampled choir can appear to sing chosen text.",
+    "practical_application": "A film composer loads a choir library, picks a vowel or builds syllables, and layers sustained voices under an orchestral cue for an epic, human texture.",
+    "category": "Sample Libraries",
+    "related_terms": ["Brass library", "Dynamic layer", "Crossfade layer", "Articulation", "Round robin"],
+    "common_mistakes": [
+     "Expecting any choir library to sing full words; only word-building patches support real lyrics.",
+     "Leaving every voice on one vowel and dynamic, which sounds static and fake.",
+     "Ignoring section balance and divisi, so the choir sounds thin or muddy."
+    ],
+    "scenario_contexts": [
+     "Adding an epic choir pad to a trailer cue",
+     "Building sung syllables for a fantasy soundtrack",
+     "Layering choir under strings for warmth in an orchestral mockup"
+    ]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1403ca6e-d407-463e-923e-53decb10de75",
+   "term": "Crossfade layer",
+   "fields": {
+    "definition": "In a sampler, a layering setup in which two or more sample layers overlap and are smoothly blended (crossfaded) by a control source such as velocity or the mod wheel, rather than switched abruptly. As the control value moves, one layer fades out while the next fades in, avoiding audible steps between layers.",
+    "plain_english": "A crossfade layer blends two recorded sounds smoothly instead of jumping between them. As you press harder or move a control, one layer fades down while the other fades up. This makes changes in tone sound gradual and natural.",
+    "purpose_function": "It smooths the transition between sample layers so changes in volume or brightness sound continuous, not stepped. This is key to realistic dynamics in sampled instruments.",
+    "practical_application": "A sound designer maps mod-wheel or velocity crossfades between soft and loud brass recordings so a held note can swell smoothly from quiet to loud.",
+    "category": "Sample Layering",
+    "related_terms": ["Dynamic layer", "Velocity", "Multisampling", "Modulation wheel", "Round robin"],
+    "common_mistakes": [
+     "Confusing a crossfade (smooth blend) with a velocity switch (a hard jump) between layers.",
+     "Setting overlapping layers without gain compensation, so the blend gets louder in the middle.",
+     "Crossfading two closely related recordings and hitting phase cancellation, which thins the tone."
+    ],
+    "scenario_contexts": [
+     "Mapping a mod-wheel crossfade for a brass swell",
+     "Blending soft and loud layers by velocity in a sampled instrument",
+     "Programming smooth dynamic transitions in a sustained string patch"
+    ]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Steinberg HALion Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fd6e1ce1-3d0a-467c-ba15-844920cbddb2",
+   "term": "Digitally controlled oscillator",
+   "fields": {
+    "definition": "An audio oscillator whose pitch is set by a digital control system, typically a microprocessor and counter dividing a stable crystal clock, instead of an analog control voltage. The waveform itself may still be generated by analog circuitry, but the digital timing gives far better tuning stability than a traditional voltage-controlled oscillator (VCO).",
+    "plain_english": "A digitally controlled oscillator makes a synth's basic tone, but a digital clock sets its pitch. This keeps the tuning steady and stops the drift that older analog oscillators had. You get an analog-style sound that stays in tune.",
+    "purpose_function": "It provides analog-style oscillator tone with rock-solid tuning by locking pitch to a digital clock, solving the drift and calibration problems of pure analog VCOs. This made reliable, affordable polyphonic synths practical.",
+    "practical_application": "A technician servicing or programming a classic DCO synth, such as a Roland Juno, can count on stable tuning across all voices without the frequent recalibration that VCO instruments need.",
+    "category": "Oscillators",
+    "related_terms": ["Voltage-controlled oscillator", "Anti-aliased oscillator", "Band-limited oscillator", "Crystal oscillator", "Subtractive synthesis"],
+    "common_mistakes": [
+     "Assuming a DCO does fully digital sound generation; the tone circuitry is often analog, and only the timing is digital.",
+     "Treating a DCO as identical to a VCO; the DCO uses a digital clock for stable tuning.",
+     "Blaming a DCO synth for tuning drift, when stable tuning is actually its main advantage."
+    ],
+    "scenario_contexts": [
+     "Servicing a Roland Juno-series synthesizer",
+     "Choosing a DCO synth for reliable tuning on stage",
+     "Explaining why a vintage poly stays in tune better than a VCO model"
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Roland Juno Service/Technical Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "16b1f27b-b25c-4df9-be85-58005d2b2ef5",
+   "term": "Dynamic layer",
+   "fields": {
+    "definition": "In a multisampled instrument, a set of samples recorded at one specific playing intensity (dynamic), such as pianissimo, mezzo-forte, or fortissimo. Multiple dynamic layers are mapped across velocity, or another controller, so that playing harder selects brighter, louder recordings, reproducing an instrument's change in tone with dynamics, not just a change in volume.",
+    "plain_english": "A dynamic layer is a recording of an instrument played at one loudness, like soft or loud. Real instruments change their tone, not just their volume, when played harder. Stacking several layers and picking them by how hard you play makes the sampled instrument sound true to life.",
+    "purpose_function": "It captures how an instrument's tone, not just its level, changes with playing effort, so a sampler can respond realistically to velocity. Without dynamic layers, hard and soft notes would differ only in volume.",
+    "practical_application": "When programming a sampled instrument, a technician assigns velocity ranges to each dynamic layer so that light and heavy keystrokes trigger the correct soft or loud recordings.",
+    "category": "Sample Layering",
+    "related_terms": ["Crossfade layer", "Velocity", "Multisampling", "Round robin", "Brass library"],
+    "common_mistakes": [
+     "Confusing dynamic layers (separate recordings per intensity) with a simple volume change.",
+     "Setting too few layers, so the tone jumps noticeably between velocity zones.",
+     "Mismatched levels between layers, which causes uneven jumps in loudness."
+    ],
+    "scenario_contexts": [
+     "Programming velocity zones in a sampled piano",
+     "Mapping pianissimo through fortissimo recordings across velocity",
+     "Troubleshooting an audible jump between two velocity layers"
+    ]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

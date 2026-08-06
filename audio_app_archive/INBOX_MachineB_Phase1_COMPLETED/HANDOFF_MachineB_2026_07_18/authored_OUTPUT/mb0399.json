@@ -1,0 +1,159 @@
+{
+ "batch": 399,
+ "topic": "Preamp & Converter Engineering",
+ "authored": [
+  {
+   "id": "d7e70410-7134-437a-b3a2-0fa9821cd70b",
+   "term": "Analog-to-digital converter stage",
+   "fields": {
+    "definition": "The section of an audio signal chain that samples a continuous analog voltage and quantizes it into a stream of digital audio words, typically built around an oversampling delta-sigma modulator followed by a digital decimation and low-pass filter. Preceded by an anti-alias filter and referenced to a sample clock, it sets the boundary where analog audio becomes digital data at a chosen sample rate and bit depth.",
+    "plain_english": "This is the part that turns a real analog sound signal into digital numbers a computer can store. It takes fast snapshots of the voltage and writes each one down as a value.",
+    "purpose_function": "It exists to change analog audio into digital form so it can be recorded, processed, and moved without further loss, defining the system's sample rate, bit depth, and digital noise floor.",
+    "practical_application": "A technician feeds a preamp's line-level output into the ADC stage of an interface or console, then sets gain so peaks land safely below full scale.",
+    "category": "A/D conversion",
+    "related_terms": ["Anti-aliasing filter", "Sample rate", "Bit depth", "Quantization", "Converter clock input", "Conversion accuracy"],
+    "common_mistakes": ["Confusing the stage's bit depth with real dynamic range; more bits raise the theoretical floor, but analog noise also limits real performance.", "Setting input gain so peaks reach full scale, leaving no headroom and clipping the converter.", "Thinking a higher sample rate always sounds better, when it mainly extends bandwidth and raises the data rate."],
+    "scenario_contexts": ["Tracking a vocal through an interface while watching the ADC meters stay below full scale.", "Choosing 48 kHz, 24-bit at the ADC stage for a video post session.", "Diagnosing digital clipping traced to the input of the ADC stage."]
+   },
+   "sources": ["Analog Devices, Sigma-Delta ADCs Tutorial and MT-series data-conversion notes (manufacturer technical documentation)", "Analog Devices AD1835 audio codec data sheet (manufacturer technical documentation)", "Pohlmann, Principles of Digital Audio (professional text)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1bc92f8a-2807-48a0-a78b-4049ea8209c8",
+   "term": "Anti-imaging filter",
+   "fields": {
+    "definition": "A low-pass filter, usually the analog reconstruction filter placed after a DAC, that removes the spectral images produced by sampling, namely copies of the baseband signal centered at multiples of the sample rate. In oversampling converters a digital interpolation filter suppresses the near images, so only a gentle analog anti-imaging filter is needed to reject energy above the Nyquist frequency.",
+    "plain_english": "When digital audio is turned back into sound, it also makes extra unwanted copies of the signal up high. This filter cleans those copies out so only the real audio is left.",
+    "purpose_function": "It exists to strip the image frequencies left by digital-to-analog conversion, keeping those high-frequency copies from causing distortion or overheating downstream amplifiers and tweeters.",
+    "practical_application": "A technician relies on the DAC's built-in anti-imaging filter and, when a converter offers filter modes, picks a response that trades ringing against image rejection.",
+    "category": "Reconstruction filtering",
+    "related_terms": ["Anti-aliasing filter", "Reconstruction filter", "Nyquist frequency", "Interpolation filter", "Sample rate", "Analog-to-digital converter stage"],
+    "common_mistakes": ["Confusing the anti-imaging filter, which sits after the DAC, with the anti-aliasing filter, which sits before the ADC.", "Assuming oversampling removes the need for any analog output filter, when a gentle one is still required.", "Blaming the anti-imaging filter for all high-frequency roll-off while ignoring the digital interpolation filter's role."],
+    "scenario_contexts": ["Selecting a converter's reconstruction filter type to balance pre-ringing against steepness.", "Troubleshooting ultrasonic images that overheat a tweeter fed from a poorly filtered DAC.", "Comparing sharp and slow filter modes on a modern DAC."]
+   },
+   "sources": ["Analog Devices MT-017, Oversampling Interpolating DACs (manufacturer technical documentation)", "Watkinson, The Art of Digital Audio (professional text)", "Pohlmann, Principles of Digital Audio (professional text)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6629e855-e28c-45ed-aa6c-59c7b23cd2df",
+   "term": "Clock recovery circuit",
+   "fields": {
+    "definition": "A circuit, typically a phase-locked loop, that extracts a stable sample clock from a self-clocking digital audio stream such as AES3 or S/PDIF, locking to the transitions of the biphase-mark-coded data to regenerate a master clock. It also attenuates incoming jitter so the recovered clock can safely drive a converter.",
+    "plain_english": "A digital audio cable carries both the sound data and its timing mixed together. This circuit reads the timing back out of that stream and rebuilds a clean, steady clock from it.",
+    "purpose_function": "It exists so a receiver can derive an accurate clock from an incoming digital stream without a separate cable, while filtering out jitter that would otherwise degrade conversion.",
+    "practical_application": "A technician relies on it when slaving a device to an S/PDIF or AES3 feed, and checks its lock and unlock status when a stream drops or the sample rate changes.",
+    "category": "Clocking",
+    "related_terms": ["Phase-locked loop", "Jitter", "Word clock", "Converter clock input", "Sample rate", "Converter diagnostics"],
+    "common_mistakes": ["Assuming a locked clock is automatically a low-jitter clock; lock only means the loop is tracking.", "Chaining recovered clocks so jitter accumulates, instead of distributing one clean master reference.", "Ignoring unlock and error status bits and blaming audio dropouts on the cable alone."],
+    "scenario_contexts": ["Feeding an S/PDIF output from a player into a converter that recovers the clock from the stream.", "Diagnosing clicks that appear when the loop loses lock on a marginal AES3 cable.", "Choosing to slave to word clock rather than the recovered clock for lower jitter."]
+   },
+   "sources": ["Cirrus Logic CS8416 192 kHz Digital Audio Interface Receiver data sheet (manufacturer technical documentation)", "AES3, Serial transmission format for two-channel linearly represented digital audio data (AES standard)", "Watkinson, The Art of Digital Audio (professional text)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a3d06238-5209-4fce-8ab3-5e39c5f7b79f",
+   "term": "Conversion accuracy",
+   "fields": {
+    "definition": "How faithfully a converter reproduces the original signal, characterized by measured parameters such as THD+N, dynamic range, signal-to-noise ratio, frequency-response flatness, and static linearity errors including integral and differential nonlinearity. For audio converters these are measured under the standardized conditions defined by AES17.",
+    "plain_english": "This is how closely a converter's output matches what went in, adding as little noise or distortion as it can. Think of it as how honestly the converter copies the sound.",
+    "purpose_function": "It exists as a way to specify and compare how truthfully a converter handles a signal, so engineers can judge whether a unit is transparent enough for the task.",
+    "practical_application": "A technician reads a converter's THD+N and dynamic-range figures, then verifies them on an analyzer using AES17 methods before trusting a unit for critical work.",
+    "category": "Performance metric",
+    "related_terms": ["THD+N", "Dynamic range", "Signal-to-noise ratio", "Integral nonlinearity", "Bit depth", "Converter calibration routine"],
+    "common_mistakes": ["Treating bit depth as accuracy; a 24-bit converter rarely resolves a true 24 bits of real performance.", "Comparing specs measured under different bandwidths or weighting curves as if they were equivalent.", "Assuming a higher sample rate improves accuracy, when linearity and noise usually matter more."],
+    "scenario_contexts": ["Comparing datasheet THD+N figures when selecting a converter for a mastering chain.", "Verifying a converter's dynamic range on an analyzer using AES17 procedures.", "Rejecting a unit whose measured accuracy falls short of its published specs."]
+   },
+   "sources": ["AES17, Measurement of digital audio equipment (AES standard)", "Texas Instruments SLAA114, Digital Audio Measurements (manufacturer technical documentation)", "Ballou, Handbook for Sound Engineers (professional text)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "333f8dff-c103-44d3-9a0a-e1b32ceb351d",
+   "term": "Conversion delay",
+   "fields": {
+    "definition": "The processing latency a converter adds to the signal, dominated by the group delay of the ADC's digital decimation filter and the DAC's interpolation filter. It is roughly constant in time for a given filter but varies with sample rate; typical audio codec figures are on the order of tens of samples, for example a few hundred microseconds per direction at 48 kHz.",
+    "plain_english": "Turning sound into digital and back is not instant; the math filters inside take a little time. That small, steady delay is what this term measures.",
+    "purpose_function": "It exists as a spec so engineers can account for the fixed time audio takes to pass through conversion, which matters for monitoring, sync, and combining signals.",
+    "practical_application": "A technician adds converter delay to interface and plug-in latency when estimating round-trip monitoring delay, and uses delay compensation to keep tracks aligned.",
+    "category": "Signal timing",
+    "related_terms": ["Latency", "Decimation filter", "Interpolation filter", "Group delay", "Delay compensation", "Sample rate"],
+    "common_mistakes": ["Ignoring converter delay and blaming all monitoring latency on the DAW buffer.", "Assuming linear-phase filters add no delay; they add a fixed, often larger, group delay.", "Forgetting that both the A/D and D/A paths each contribute delay on a round trip."],
+    "scenario_contexts": ["Estimating round-trip latency for a musician monitoring through the interface.", "Aligning an analog-summed mix printed back through converters against the session.", "Choosing a low-latency filter mode on a converter for live use."]
+   },
+   "sources": ["Analog Devices AD1835 audio codec data sheet, ADC and DAC group-delay specifications (manufacturer technical documentation)", "Texas Instruments SBAA535, Calculating Conversion Latency and System Cycle Time (manufacturer technical documentation)", "Watkinson, The Art of Digital Audio (professional text)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3cff42fd-b2a7-4a02-bb84-5d3565e449b1",
+   "term": "Converter calibration routine",
+   "fields": {
+    "definition": "A procedure that measures and corrects a converter's offset and gain errors, and sometimes its linearity, by referencing known inputs such as a zero (shorted) input and a full-scale reference, then storing correction coefficients. Precision converters often provide internal self-calibration or system-calibration commands invoked at power-up or on demand.",
+    "plain_english": "Over time and heat a converter can drift a little, reading slightly high, low, or off from zero. A calibration routine checks it against known values and corrects those small errors.",
+    "purpose_function": "It exists to remove offset and gain drift so a converter's readings stay accurate across temperature and part-to-part variation.",
+    "practical_application": "A technician runs a converter's self-calibration after warm-up or a large temperature change, or performs a system calibration against a reference level during setup.",
+    "category": "Calibration",
+    "related_terms": ["Offset error", "Gain error", "Conversion accuracy", "Reference voltage", "Converter diagnostics", "Integral nonlinearity"],
+    "common_mistakes": ["Calibrating before the unit has warmed up, so the results drift once it reaches operating temperature.", "Confusing internal self-calibration with a system calibration that also includes external circuitry.", "Assuming calibration fixes nonlinearity; it mainly corrects offset and gain."],
+    "scenario_contexts": ["Running self-calibration on a precision converter after power-up.", "Performing a system calibration against a known reference level before measurements.", "Recalibrating after a large ambient temperature change on location."]
+   },
+   "sources": ["Analog Devices AN-1464, sigma-delta ADC calibration application note (manufacturer technical documentation)", "Texas Instruments SBAA099, calibration routines for data converters (manufacturer technical documentation)", "Ballou, Handbook for Sound Engineers (professional text)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1e04d3f4-b84d-4da7-8547-93c61fef0612",
+   "term": "Converter clock input",
+   "fields": {
+    "definition": "The input that accepts an external sample clock or reference, such as word clock, an AES3 digital audio reference signal, or a master clock, used to synchronize a converter to a house or system reference rather than its internal oscillator. Synchronization practice for such references is defined by AES11, and the clock's quality directly affects converter jitter.",
+    "plain_english": "This is where a converter takes in an outside timing signal so it stays in step with the rest of the rig. It is like a band following one drummer instead of each player counting alone.",
+    "purpose_function": "It exists so multiple digital devices can share one timing reference, keeping their samples aligned and preventing clicks or drift when their signals are combined.",
+    "practical_application": "A technician patches word clock from a master to each converter's clock input and sets the device to external or slave so the whole system locks to one reference.",
+    "category": "Clocking",
+    "related_terms": ["Word clock", "Clock recovery circuit", "Jitter", "Sample rate", "Converter diagnostics", "Analog-to-digital converter stage"],
+    "common_mistakes": ["Leaving a device on internal clock while feeding it digital audio, causing dropouts.", "Forgetting to terminate a word clock line at 75 ohms, which degrades the reference.", "Assuming any external clock improves the sound; a noisy external clock can be worse than a good internal one."],
+    "scenario_contexts": ["Locking every converter in a studio to a single master word clock.", "Setting an interface to slave to an incoming AES3 reference.", "Terminating the last converter's word clock input to keep the signal clean."]
+   },
+   "sources": ["AES11, Synchronization of digital audio equipment in studio operations (AES standard)", "Cirrus Logic CS8416 192 kHz Digital Audio Interface Receiver data sheet (manufacturer technical documentation)", "Ballou, Handbook for Sound Engineers (professional text)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bdf75fd5-390b-4f41-bc1b-ec1a4da0db76",
+   "term": "Converter diagnostics",
+   "fields": {
+    "definition": "The status-monitoring and test functions that report a converter's operating health, such as clock lock and unlock, sample-rate detection, parity or biphase errors, over-range or clip flags, and self-test results, usually read through status registers or a control port. They let a system detect and localize conversion faults.",
+    "plain_english": "These are the built-in checks and warning flags that tell you whether a converter is working right. They flag things like a lost clock, a clipped input, or a data error.",
+    "purpose_function": "It exists so a technician or host system can spot converter faults quickly and tell a clocking problem apart from a level or data problem.",
+    "practical_application": "A technician reads lock and error status on a converter or in its software, using clip and unlock flags to trace whether dropouts come from clocking, cabling, or overload.",
+    "category": "Diagnostics",
+    "related_terms": ["Clock recovery circuit", "Converter clock input", "Jitter", "Converter calibration routine", "Signal-to-noise ratio", "Converter firmware update"],
+    "common_mistakes": ["Ignoring sticky error flags, which stay set until read and can reveal a past dropout.", "Assuming a green lock light rules out jitter or level problems.", "Not checking over-range flags before blaming distortion on the analog stage."],
+    "scenario_contexts": ["Reading a converter's unlock flag to diagnose intermittent digital dropouts.", "Checking over-range indicators while setting input gain.", "Using a manufacturer's status page to confirm sample-rate lock across a network."]
+   },
+   "sources": ["Cirrus Logic CS8416 192 kHz Digital Audio Interface Receiver data sheet, receiver error and status registers (manufacturer technical documentation)", "AES3, Serial transmission format for two-channel linearly represented digital audio data (AES standard)", "Ballou, Handbook for Sound Engineers (professional text)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0b6a3151-5d1f-4c7a-ac72-34187ad45c34",
+   "term": "Converter firmware update",
+   "fields": {
+    "definition": "The process of installing updated embedded software, or FPGA and DSP code, on a converter or audio interface to fix bugs, add features, improve clocking or filter behavior, or support new sample rates and network protocols. It is performed with the manufacturer's utility and must not be interrupted, because a failed update can leave the device unusable.",
+    "plain_english": "A converter runs its own small built-in program. A firmware update swaps that program for a newer version to fix problems or add features, much like updating an app on a phone.",
+    "purpose_function": "It exists to correct faults and extend a converter's capabilities after it ships, keeping it compatible and reliable over its service life.",
+    "practical_application": "A technician backs up settings, connects the unit, and runs the vendor's updater on stable power, avoiding disconnection until the tool confirms success.",
+    "category": "Maintenance",
+    "related_terms": ["Converter diagnostics", "Sample rate", "Audio network", "Converter calibration routine", "Latency", "Converter clock input"],
+    "common_mistakes": ["Interrupting or disconnecting the device mid-update, which can corrupt the firmware and leave it unusable.", "Updating without reading the release notes, then losing a setting or feature that was relied on.", "Skipping a required intermediate version and jumping straight to the newest.", "Assuming a firmware update will fix what is actually a hardware fault."],
+    "scenario_contexts": ["Updating an interface's firmware to add support for a higher sample rate.", "Applying a fix that resolves a clocking bug reported in the release notes.", "Backing up settings before flashing new firmware to a networked converter."]
+   },
+   "sources": ["RME Fireface and related interface firmware/driver technical documentation (manufacturer technical documentation)", "Audinate Dante device firmware update technical documentation (manufacturer technical documentation)", "Ballou, Handbook for Sound Engineers (professional text)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

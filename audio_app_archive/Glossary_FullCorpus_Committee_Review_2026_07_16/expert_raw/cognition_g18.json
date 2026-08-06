@@ -1,0 +1,45 @@
+{
+  "expert": "cognition",
+  "group": 18,
+  "reviews": [
+    {"id": "2814dabb-a4bc-4cc6-8c45-66964a7864a5", "term": "EQ cut", "verdict": "OK", "suggestions": []},
+    {"id": "01af454e-f3e5-4dc2-b0ff-51586c935f3a", "term": "Equalizer Q behavior", "verdict": "OK", "suggestions": []},
+    {"id": "99c57765-e4c2-4a4f-983c-95aae57d3d44", "term": "Equipment Ground", "verdict": "MINOR", "suggestions": [
+      {"field": "related_terms", "severity": "Low", "issue": "This entry and the separate entry 'Equipment Grounding Conductor' describe the same NEC concept at the same difficulty, but neither cross-links the other. A learner meeting both can wrongly conclude the equipment ground and the EGC are two different conductors.", "suggestion": "Add 'Equipment Grounding Conductor' to related_terms (and reciprocally add 'Equipment Ground' to that entry) so the two are presented as the same concept/synonyms rather than distinct parts."}
+    ]},
+    {"id": "e9359175-4bd1-4fdb-8afc-6a8ae64f046d", "term": "Equipment Grounding Conductor", "verdict": "OK", "suggestions": []},
+    {"id": "0437e51c-a75f-49e5-a7ae-d7f5cc21b2a9", "term": "Equipment Rack", "verdict": "OK", "suggestions": []},
+    {"id": "f92bc969-712d-43cb-ad8a-f0feb19b5f4d", "term": "Equipment Room", "verdict": "OK", "suggestions": []},
+    {"id": "e9fb585c-2af0-423e-9d8c-6516a6875f10", "term": "Equivalent noise level", "verdict": "OK", "suggestions": []},
+    {"id": "e6add1bf-2670-47ae-8ffd-7ec18f9d67e5", "term": "etherCON", "verdict": "OK", "suggestions": []},
+    {"id": "b88e818b-2357-4750-a092-04c15861b624", "term": "Euroblock", "verdict": "OK", "suggestions": []},
+    {"id": "8e5355ad-7063-4aa8-bc76-7a750fb01aa4", "term": "Event Coordinator", "verdict": "OK", "suggestions": []},
+    {"id": "dc564b46-3388-499f-a659-d1ed91205f3c", "term": "Event Debrief", "verdict": "OK", "suggestions": []},
+    {"id": "2e5b437f-d8e8-450d-aa5d-1786539c70d0", "term": "Event note", "verdict": "OK", "suggestions": []},
+    {"id": "b6aa5941-170d-4985-8bee-fa324b07c5dc", "term": "Event Report", "verdict": "OK", "suggestions": []},
+    {"id": "59ca40b4-f1e8-4ed2-85f9-307f31b93374", "term": "Excitation signal", "verdict": "OK", "suggestions": []},
+    {"id": "297f0a35-2ed0-40ee-9cb9-e6043b5d4b60", "term": "exciters / enhancers", "verdict": "OK", "suggestions": []},
+    {"id": "bebf9ac2-feee-44fb-9980-d14dae6eae82", "term": "Excursion", "verdict": "OK", "suggestions": []},
+    {"id": "75b40456-8bfe-4194-844e-4b9f277273e7", "term": "Expander", "verdict": "OK", "suggestions": []},
+    {"id": "3ec971d2-a2cd-406c-a62a-6fe77462df2b", "term": "Expansion Card", "verdict": "OK", "suggestions": []},
+    {"id": "e83682ef-f7dc-4b5c-8f32-ba8cff9fe37c", "term": "Exponential Sine Sweep", "verdict": "OK", "suggestions": []},
+    {"id": "b2f8bb86-68fc-459b-a229-f4895f9bc250", "term": "Externally polarized condenser", "verdict": "OK", "suggestions": []},
+    {"id": "3f7d4851-b6d4-46cd-943a-8bb02e36e08b", "term": "F-Connector", "verdict": "OK", "suggestions": []},
+    {"id": "8fa2d736-1e83-4a71-94bb-e6708d27db09", "term": "Factory reset", "verdict": "OK", "suggestions": []},
+    {"id": "d58aa92c-ded5-4a9d-8e41-650d0b3f7ba8", "term": "Fader", "verdict": "MINOR", "suggestions": [
+      {"field": "plain_english", "severity": "Medium", "issue": "The plain_english explains the name wrongly: \"It's called 'linear' because the slider's position maps directly to the level.\" 'Linear' actually refers to the straight-line physical travel (vs a rotary knob). Saying position 'maps directly to the level' asserts a proportional mapping, which contradicts the entry's own definition (a logarithmic 'fader law' in dB) and directly seeds the exact misconception the common_mistakes list then warns against ('assuming the fader's taper is linear in dB'). A beginner is left with a self-contradicting mental model.", "suggestion": "Rewrite the sentence to attach 'linear' to the motion, not the level, e.g.: \"It's called a 'linear' fader because it slides in a straight line (unlike a rotary knob). Its calibrated travel is marked in dB, so equal-looking moves near the bottom change the level far more than moves near the top.\""}
+    ]},
+    {"id": "45d34b88-44e6-49ad-a088-5c1214253d76", "term": "Fader Flip", "verdict": "OK", "suggestions": []},
+    {"id": "bcabae72-88aa-46b5-9495-0024ba149a95", "term": "Failure Mode", "verdict": "OK", "suggestions": []},
+    {"id": "89a7a6d1-50b6-4cce-9e28-cd0baad31969", "term": "Fan-Out Cable", "verdict": "OK", "suggestions": []},
+    {"id": "043c69b5-50e3-4189-9fef-4d0b8dc3e183", "term": "Far Field vs Near Field", "verdict": "OK", "suggestions": []},
+    {"id": "dbf8df8b-9a6e-475a-83df-d5d2c6b8468d", "term": "Fast Fourier Transform (FFT)", "verdict": "OK", "suggestions": []},
+    {"id": "6f0c9dce-a7f5-45d4-ae4c-2b369dfd3db0", "term": "Fault reproduction", "verdict": "OK", "suggestions": []},
+    {"id": "8430197b-9dbb-44e8-a3ed-2004272cbfac", "term": "Fault tree analysis", "verdict": "OK", "suggestions": []},
+    {"id": "573a9efc-fc19-4ea8-b089-a9c3f732752d", "term": "Feed-Forward Detection", "verdict": "OK", "suggestions": []},
+    {"id": "2a92a556-f26f-4df1-87a5-b9315a4c3ed3", "term": "Feedback", "verdict": "OK", "suggestions": []},
+    {"id": "7c21397d-697b-46d1-9e95-415d15a8dff3", "term": "Feedback Delay Network (FDN)", "verdict": "OK", "suggestions": []},
+    {"id": "52635130-0fbe-49ee-b90c-ad4fd1891f09", "term": "Feedback Detection", "verdict": "OK", "suggestions": []},
+    {"id": "bde5495b-7826-40b1-a876-3e53a538b82e", "term": "Feedback frequency", "verdict": "OK", "suggestions": []}
+  ]
+}

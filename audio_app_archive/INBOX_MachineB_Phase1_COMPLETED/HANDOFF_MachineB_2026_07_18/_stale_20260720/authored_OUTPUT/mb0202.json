@@ -1,0 +1,108 @@
+{
+ "batch": 202,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "b7ad9f26-a80d-4d28-9cdb-31b23a9311c0",
+   "term": "Transmission chain",
+   "fields": {
+    "definition": "The complete signal path a broadcast program travels from the studio output, through audio processing and the studio-to-transmitter link, to the transmitter and antenna that radiate it to receivers. It is frequently used interchangeably with 'air chain.'",
+    "plain_english": "It is the whole path a radio show takes from the studio to your radio. The sound moves through a line of gear, one box after another, until an antenna sends it out.",
+    "purpose_function": "It defines every stage the program signal must pass through to reach listeners, so engineers can design, align, and troubleshoot the broadcast path as one connected system.",
+    "practical_application": "A broadcast engineer traces the transmission chain stage by stage to find where audio is lost, distorted, or delayed when the station sounds wrong on air.",
+    "category": "Air Chain",
+    "related_terms": ["Transmission feed", "Transmission monitoring", "Studio-to-transmitter link", "Audio processing", "Transmitter", "Modulation"],
+    "common_mistakes": ["Thinking the transmission chain is just the transmitter, when it also includes studio processing, the STL, and the antenna", "Assuming a fault heard on air is at the studio, when it can be at any point along the chain", "Overlooking gain staging between stages, which causes overmodulation or a weak, noisy signal"],
+    "scenario_contexts": ["Commissioning a new FM station and aligning levels through every stage of the chain", "Diagnosing distorted audio reported by listeners by testing each link in turn", "Documenting the full signal path for a station's technical records"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "14af7dff-c964-47d5-83cb-6dbc3d20a090",
+   "term": "Transmission feed",
+   "fields": {
+    "definition": "The program audio signal delivered from the studio to the transmitter site for broadcast, typically carried over a studio-to-transmitter link (STL) such as a dedicated radio hop, IP circuit, or leased line.",
+    "plain_english": "This is the sound sent from the studio out to the transmitter so it can go on air. Think of it as the pipe that carries the show to the tower.",
+    "purpose_function": "It carries the finished program from where it is made to where it is broadcast, keeping the two sites connected even when they are miles apart.",
+    "practical_application": "An engineer checks the transmission feed for level, silence, or dropouts to confirm the transmitter is receiving clean program audio before it goes to air.",
+    "category": "Air Chain",
+    "related_terms": ["Studio-to-transmitter link", "Transmission chain", "Transmission monitoring", "Program feed", "Silence detection", "Codec"],
+    "common_mistakes": ["Confusing the transmission feed (studio to transmitter) with the off-air signal that returns for monitoring", "Running with no backup feed, so a single link failure takes the station off air", "Ignoring codec delay, which can cause timing problems with backup or split feeds"],
+    "scenario_contexts": ["Switching to a backup IP feed when the main STL radio link fails", "Setting reference levels on the feed so the transmitter is correctly modulated", "Troubleshooting dead air traced to a lost feed between studio and transmitter"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "41f38ed4-8465-460c-8711-1e05fc301004",
+   "term": "Transmission monitoring",
+   "fields": {
+    "definition": "The practice of continuously checking a station's transmitted output — modulation, signal quality, and transmitter status — usually by receiving the off-air signal and reading modulation and telemetry meters to confirm quality and regulatory compliance.",
+    "plain_english": "This means keeping an eye on what the station is actually putting out over the air. Staff listen back to the broadcast and watch meters to catch faults fast.",
+    "purpose_function": "It confirms that what listeners receive is clean, loud enough, and within legal limits, and it warns staff quickly when the transmitter or feed fails.",
+    "practical_application": "An engineer watches a modulation monitor, an off-air receiver, and remote telemetry to spot overmodulation, silence, or transmitter faults and respond before listeners are affected.",
+    "category": "Air Chain",
+    "related_terms": ["Modulation monitor", "Off-air monitoring", "Transmission chain", "Transmission feed", "Telemetry", "Overmodulation"],
+    "common_mistakes": ["Monitoring only the studio output and assuming the transmitted signal matches it", "Allowing overmodulation, which distorts the signal and interferes with adjacent channels in breach of regulations", "Relying on a single monitor point with no alarm, so faults go unnoticed"],
+    "scenario_contexts": ["Watching modulation meters during a loud live broadcast to stay within legal peak deviation", "Receiving a remote alarm that the off-air signal has gone silent", "Verifying signal quality after transmitter maintenance"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4e82cea0-b110-40f1-a6ea-a712a35c217b",
+   "term": "Transmission room",
+   "fields": {
+    "definition": "The room at a station or transmitter site that houses the transmitter and its supporting equipment — exciter, power supplies, patching, monitoring, and antenna feed — where the broadcast signal is generated and sent to the antenna.",
+    "plain_english": "This is the room that holds the transmitter and its gear. It is where the signal gets its power and is passed up to the antenna.",
+    "purpose_function": "It gives the transmitter and related high-power equipment a controlled, secure space with proper cooling, power, and grounding so the station can stay on air reliably.",
+    "practical_application": "A technician enters the transmission room to inspect the transmitter, check cooling and meters, and carry out maintenance under the site's electrical safety procedures.",
+    "category": "Broadcast Facility",
+    "related_terms": ["Transmitter", "Transmission chain", "Antenna", "Studio-to-transmitter link", "Exciter", "Dummy load"],
+    "common_mistakes": ["UNSAFE: Working on or near an energized transmitter without following lockout/tagout and confirming high-voltage supplies are de-energized and discharged", "UNSAFE: Ignoring RF exposure limits when working near an energized antenna feed or transmission line", "Confusing the transmission room at the transmitter site with the studio control room"],
+    "scenario_contexts": ["Performing scheduled transmitter maintenance during a low-listenership overnight window", "Responding to a high-temperature alarm in the transmission room", "Switching to a backup transmitter after a main transmitter fault"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "OSHA 29 CFR 1910.147 (control of hazardous energy, lockout/tagout)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9bd532bc-993a-4153-97bb-5d501702468f",
+   "term": "Voice tracking session",
+   "fields": {
+    "definition": "A radio production technique in which a presenter pre-records the spoken links — introductions, back-announcements, and talk breaks — that will play between songs and other elements, so an automation system can assemble them into a broadcast that sounds live.",
+    "plain_english": "This is when a radio host records their talking bits ahead of time. A computer later drops them between the songs, so the show sounds live even though it was not.",
+    "purpose_function": "It lets one presenter produce many hours, or program several stations, of local-sounding radio quickly, without staying live on air the whole time.",
+    "practical_application": "A presenter loads the upcoming music log, records each link while hearing the song intros and endings, and the automation system plays the links back in sequence on air.",
+    "category": "Radio Production",
+    "related_terms": ["Automation system", "Playout system", "Music log", "Back-announce", "Segue", "Dead air"],
+    "common_mistakes": ["Referring to songs or events by absolute clock time, which breaks when the log shifts", "Recording links that clash with song intros or endings because the presenter did not hear the transitions", "Leaving gaps or dead air between tracked links and the music elements"],
+    "scenario_contexts": ["Pre-recording an evening show so a daytime presenter can voice both", "Voicing local links for several networked stations from one studio", "Recording weekend programming in advance so no live staff are needed"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9e093137-c156-4b58-ae14-b105fcea8c99",
+   "term": "Weather insert",
+   "fields": {
+    "definition": "A short weather report segment placed into a broadcast at scheduled points, often pre-recorded or delivered as a live update, and dropped into the program by the presenter or the automation system.",
+    "plain_english": "This is a quick weather update slotted into a radio show. It can be recorded early or read live, and it plays at set times.",
+    "purpose_function": "It gives listeners timely local weather at predictable points in the schedule without breaking up the main flow of programming.",
+    "practical_application": "A producer records or cues a weather insert and schedules it in the playout log, or a presenter reads it live at the top of the hour.",
+    "category": "Radio Production",
+    "related_terms": ["Voice tracking session", "Automation system", "Playout system", "News insert", "Cart", "Segue"],
+    "common_mistakes": ["Airing a pre-recorded weather insert whose forecast is already out of date", "Scheduling or labeling the insert so the wrong region's weather plays", "Leaving level or timing mismatches so the insert clashes with the surrounding audio"],
+    "scenario_contexts": ["Dropping a live weather update into a morning drive show", "Scheduling automated hourly weather inserts overnight", "Updating a pre-recorded forecast when conditions change suddenly"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

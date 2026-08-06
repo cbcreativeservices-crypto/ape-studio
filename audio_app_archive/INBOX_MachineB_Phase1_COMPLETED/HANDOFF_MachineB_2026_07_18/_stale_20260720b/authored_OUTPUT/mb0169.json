@@ -1,0 +1,240 @@
+{
+ "batch": 169,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "ea44279a-5a8b-4f29-bdd0-970ca90a9860",
+   "term": "Near binaural setting",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No established or attested meaning found. 'Binaural' is a recognized term, but 'near binaural setting' is not a defined mastering-chain term in the professional literature (AES, Ballou, ITU/EBU spatial-audio standards, manufacturer docs), and it is not a transparent compound of a recognized technique with a source or section. Meaning is genuinely ambiguous (a control 'near' binaural? a preset name?), so no >=2 acceptable sources define it. All fields left blank pending clarification of the intended sense."
+   ]
+  },
+  {
+   "id": "24cba83c-f0aa-4e77-a178-dacd1b7cbc82",
+   "term": "No-choir score mix",
+   "fields": {
+    "definition": "An alternate version of a film or television score mixdown delivered with the choir (vocal ensemble) elements muted or removed while the rest of the orchestration remains, so the choir can be controlled, lowered, or replaced independently at the final dub.",
+    "plain_english": "It is a copy of the movie's music mix with the singing choir taken out but everything else kept in. The team saves this version so they can lower or swap the choir later without redoing the whole score.",
+    "purpose_function": "It lets the re-recording mixer or music editor drop, lower, or swap the choir without touching the rest of the score, for example when the choir clashes with a line of dialogue.",
+    "practical_application": "It is delivered alongside the full score mix and stems, and on the dub stage the mixer switches to it whenever the choir needs to sit back under dialogue or be replaced.",
+    "category": "Score Deliverables",
+    "related_terms": ["Score mix", "Stems", "Alternate mix", "Re-recording mix", "No-percussion score mix", "No-soloist score mix"],
+    "common_mistakes": [
+     "Thinking it is a completely separate recording rather than the same score mix with one element muted.",
+     "Confusing it with a stem; a no-choir mix is a full alternate mix, while a stem is one isolated group.",
+     "Letting its level or processing drift so the versions no longer swap cleanly with the main mix."
+    ],
+    "scenario_contexts": [
+     "The choir overpowers dialogue in a key scene, so the dub mixer switches to the no-choir version there.",
+     "A studio note asks to remove the choir from a cue after the score is already mixed.",
+     "A trailer editor needs the score without choir to fit a different picture edit."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook (stems and alternate mixdowns)",
+    "Huber & Runstein, Modern Recording Techniques (mixdown, stems, and film/post delivery)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0858b1de-ef38-40e8-b228-f3f43f10c701",
+   "term": "No-percussion score mix",
+   "fields": {
+    "definition": "An alternate version of a film or television score mixdown delivered with the percussion elements muted or removed while the rest of the orchestration remains, so percussion can be controlled, lowered, or replaced separately at the final dub.",
+    "plain_english": "It is a copy of the movie's music mix with the drums and percussion taken out but the rest kept in. The team saves it so they can change or lower the percussion later without remixing everything.",
+    "purpose_function": "It lets the re-recording mixer or music editor lower, cut, or swap percussion without touching the rest of the score, for example when musical hits collide with sound effects.",
+    "practical_application": "It is delivered with the main score mix, and on the dub stage the mixer uses it when percussion competes with effects such as gunshots or footsteps.",
+    "category": "Score Deliverables",
+    "related_terms": ["Score mix", "Stems", "Alternate mix", "Re-recording mix", "No-choir score mix", "No-soloist score mix"],
+    "common_mistakes": [
+     "Assuming it removes only drum kit when it usually removes all tuned and untuned percussion in the mix.",
+     "Confusing the alternate mix with an isolated percussion stem.",
+     "Changing its level or EQ so it no longer matches the full mix."
+    ],
+    "scenario_contexts": [
+     "Percussion hits clash with sound effects, so the mixer drops to the no-percussion version.",
+     "A director wants a softer, less rhythmic feel in a particular scene.",
+     "Effects editors need room in the low end that the percussion was filling."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook (stems and alternate mixdowns)",
+    "Huber & Runstein, Modern Recording Techniques (mixdown, stems, and film/post delivery)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "68f293b5-a97b-489c-b0c5-ae8a876c5f53",
+   "term": "No-soloist score mix",
+   "fields": {
+    "definition": "An alternate version of a film or television score mixdown delivered with the featured solo instrument or solo voice muted or removed while the accompaniment remains, so the soloist can be controlled, lowered, or replaced separately at the final dub.",
+    "plain_english": "It is a copy of the movie's music mix with the main solo part, like a solo singer or violin, taken out but the backing music left in. The team keeps it so they can adjust or replace the solo later.",
+    "purpose_function": "It lets the re-recording mixer or music editor lower, cut, or re-record the featured soloist without redoing the accompaniment, for example when the solo distracts from dialogue.",
+    "practical_application": "It ships with the main score mix, and the dub mixer chooses it when the soloist must step back under dialogue or when a new solo take is dropped in.",
+    "category": "Score Deliverables",
+    "related_terms": ["Score mix", "Stems", "Alternate mix", "Re-recording mix", "No-choir score mix", "No-percussion score mix"],
+    "common_mistakes": [
+     "Thinking it removes all melody rather than just the featured solo line.",
+     "Confusing the alternate mix with a soloed or isolated stem.",
+     "Letting the version drift in level so it cannot swap cleanly with the main mix."
+    ],
+    "scenario_contexts": [
+     "A solo vocal competes with dialogue, so the mixer uses the no-soloist version there.",
+     "The director asks to replace the original soloist with a new performance.",
+     "A cue is reused in a scene where the featured solo does not fit."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook (stems and alternate mixdowns)",
+    "Huber & Runstein, Modern Recording Techniques (mixdown, stems, and film/post delivery)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "313f1801-ac8b-41fc-96d0-00fabf66663c",
+   "term": "Non-back-coated tape",
+   "fields": {
+    "definition": "Analog magnetic recording tape manufactured without the matte, usually carbon-loaded back coating applied to the non-oxide side of the base film, so it relies only on the base film and oxide layers for its winding and handling behavior.",
+    "plain_english": "It is reel-to-reel tape with no extra rough, dark layer on its back. That back layer normally helps the tape wind evenly and drains static, so tape without it can be more slippery and pick up more static.",
+    "purpose_function": "The distinction matters because the back coating controls static build-up, friction, and how evenly the tape packs on the reel; non-back-coated stock lacks that help and can wind less smoothly and hold more charge.",
+    "practical_application": "A mastering or archive engineer identifies non-back-coated stock, often earlier tapes, because it may wind unevenly, attract more dust and static, and needs careful handling and storage during transfer.",
+    "category": "Tape Media",
+    "related_terms": ["Back coating", "Print-through", "Tape baking", "Oxide shedding", "Reel-to-reel tape", "Analog mastering"],
+    "common_mistakes": [
+     "Assuming all analog tape has a back coating; many early formulations did not.",
+     "Confusing the dull back coating with the glossy oxide (recording) side of the tape.",
+     "Blaming poor winding or static only on the machine when the tape simply lacks a back coat."
+    ],
+    "scenario_contexts": [
+     "Transferring an older archival reel that winds unevenly because it has no back coating.",
+     "Identifying tape stock and its era during a mastering transfer.",
+     "Managing extra static and dust attraction when handling non-back-coated tape."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (magnetic recording / tape construction)",
+    "IASA TC-04 / TC-05, International Association of Sound and Audiovisual Archives (components of magnetic tape and back coating)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2fc7a3d6-aaa3-4bc6-a8f1-b062b21c4831",
+   "term": "NUGEN MasterCheck",
+   "fields": {
+    "definition": "NUGEN MasterCheck is a metering plug-in that measures a master against streaming and broadcast loudness targets, displaying integrated loudness (LUFS), true-peak (dBTP) and peak-to-loudness ratio (PLR/dynamics), and, in the Pro version, auditions how lossy codecs and platform loudness normalization will alter the delivered audio.",
+    "plain_english": "It is a plug-in that checks how loud and how dynamic your final mix is, using the same rules streaming sites like Spotify use. It can also play a preview of how the song will sound after those sites squeeze and re-level it.",
+    "purpose_function": "It exists so engineers master to specific loudness targets instead of just chasing maximum level, and can catch true-peak overs or codec distortion before a platform turns the track down or damages it.",
+    "practical_application": "A mastering engineer runs it on the master bus to hit a platform's LUFS target, watch true-peak headroom, and A/B the codec preview so the release still sounds right after Spotify, Apple Music, or YouTube process it.",
+    "category": "Loudness Metering",
+    "related_terms": ["LUFS", "True peak", "Loudness normalization", "Peak-to-loudness ratio", "Codec", "Loudness metering"],
+    "common_mistakes": [
+     "Treating its loudness reading as a level to hit by over-limiting, which defeats the point of normalization.",
+     "Ignoring the true-peak warning and delivering inter-sample peaks that clip after codec encoding.",
+     "Assuming the codec preview is the exact platform result rather than a close estimate."
+    ],
+    "scenario_contexts": [
+     "Preparing a master to meet Spotify or Apple Music loudness targets.",
+     "Checking true-peak headroom before lossy codec encoding.",
+     "Comparing a mix's loudness and dynamics against commercial reference tracks."
+    ]
+   },
+   "sources": [
+    "NUGEN Audio, MasterCheck Operation Manual",
+    "Sound on Sound, NUGEN Audio MasterCheck review"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b53d2b32-6a30-4660-a4e9-d9593d2fcc3f",
+   "term": "Object automation metadata",
+   "fields": {
+    "definition": "In object-based audio, the metadata that records the time-varying values of an audio object's parameters, most often position but also gain and related controls, so the renderer can move and change the object over time; in the Audio Definition Model this is carried by a sequence of audioBlockFormat blocks, each with a start time and duration.",
+    "plain_english": "It is the saved instructions that tell the system how a single sound should move and change over time, like sliding a voice from left to right. The sound is treated as a movable object, and this data is its recorded path and settings.",
+    "purpose_function": "It exists so an object's motion and parameter changes travel with the mix as data, letting each playback system, whether speakers or headphones, recreate the movement correctly for its own layout.",
+    "practical_application": "When a mixer automates a sound's position or level in a Dolby Atmos or ADM session, that automation is stored as object metadata and rendered live, so the same file adapts from a cinema array to a soundbar.",
+    "category": "Object Metadata",
+    "related_terms": ["Audio object", "Dolby Atmos", "Audio Definition Model", "Object gain metadata", "Object divergence metadata", "Renderer"],
+    "common_mistakes": [
+     "Thinking the object's movement is baked into fixed channels rather than stored as separate metadata.",
+     "Confusing the object metadata with the audio itself; the two travel together but are distinct.",
+     "Assuming automation plays back identically on every system when the renderer adapts it to each layout."
+    ],
+    "scenario_contexts": [
+     "Automating a flyover sound to move overhead in a Dolby Atmos mix.",
+     "Delivering an ADM BWF master where object motion is stored as metadata.",
+     "Re-rendering the same immersive mix for cinema, home, and headphones."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.2076, Audio Definition Model (audioBlockFormat, rtime and duration)",
+    "Dolby Atmos Renderer documentation (object panning and metadata)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ff296754-4b47-42f7-9ced-5855d13fc1b5",
+   "term": "Object divergence metadata",
+   "fields": {
+    "definition": "In object-based audio, the metadata parameter that spreads an audio object's energy from a single point toward two symmetric positions offset around its stated location, trading a tight point source for a wider, more diffuse image; in the Audio Definition Model it is the objectDivergence value with an associated azimuth range, where 0 means no spread.",
+    "plain_english": "It is a setting that tells the system how wide or spread out a sound object should feel. At zero the sound comes from one exact spot, and as you raise it the sound fans out to feel bigger and less pinpointed.",
+    "purpose_function": "It exists so a mixer can control how focused or enveloping an object sounds without changing its core position, helping objects feel larger or blend across nearby speakers.",
+    "practical_application": "In a Dolby Atmos or ADM mix, an engineer raises divergence on an object such as ambience or a pad so it spreads across speakers instead of stabbing from one point.",
+    "category": "Object Metadata",
+    "related_terms": ["Audio object", "Dolby Atmos", "Audio Definition Model", "Object gain metadata", "Object automation metadata", "Renderer"],
+    "common_mistakes": [
+     "Confusing divergence, the spread of one object, with panning, which moves its position.",
+     "Assuming high divergence means louder; it changes spread, not just level.",
+     "Expecting the same spread on every layout when the renderer adapts it to the room's speakers."
+    ],
+    "scenario_contexts": [
+     "Spreading an ambience or pad object so it envelops the room.",
+     "Softening a hard point source that feels too pinpointed.",
+     "Making a large on-screen sound feel wider in a cinema mix."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.2076, Audio Definition Model (objectDivergence parameter)",
+    "Dolby Atmos Renderer documentation (divergence control)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "54e9dd8b-d210-4950-bb52-f99ff44ee241",
+   "term": "Object gain metadata",
+   "fields": {
+    "definition": "In object-based audio, the metadata parameter that sets an audio object's level as a linear multiplier applied by the renderer; in the Audio Definition Model a gain of 1.0 leaves the object's signal unchanged, and the value can vary over time to automate the object's level.",
+    "plain_english": "It is the saved volume setting for a single sound object, telling the system how loud to play it. A value of one means leave it as is, higher makes it louder, and lower makes it quieter.",
+    "purpose_function": "It exists so each object's level is stored as data and applied at playback, letting the renderer balance objects correctly for whatever speaker or headphone system is used.",
+    "practical_application": "A mixer sets or automates an object's gain in a Dolby Atmos or ADM session, and that value rides with the file so the object stays balanced when re-rendered for different systems.",
+    "category": "Object Metadata",
+    "related_terms": ["Audio object", "Dolby Atmos", "Audio Definition Model", "Object automation metadata", "Object divergence metadata", "Renderer"],
+    "common_mistakes": [
+     "Confusing object gain, applied at render, with printing the level into the audio file.",
+     "Assuming a gain of 1.0 boosts the signal when it actually leaves it unchanged.",
+     "Forgetting that object gain interacts with the final render and monitoring level."
+    ],
+    "scenario_contexts": [
+     "Balancing an object against the bed in a Dolby Atmos mix.",
+     "Automating an object's level to fade it in or out.",
+     "Adjusting object gain so the mix translates across cinema, home, and headphones."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.2076, Audio Definition Model (gain parameter)",
+    "Dolby Atmos Renderer documentation (object gain)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

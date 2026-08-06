@@ -1,0 +1,56 @@
+{
+ "batch": 292,
+ "topic": "Drum Programming & Beat-Making",
+ "terms": [
+  {
+   "id": "1828644c-20e9-4cf9-bb5d-fbf1fa4516f9",
+   "term": "Drum library",
+   "topic": "Drum Programming & Beat-Making",
+   "seq": 1370,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "625f757b-a294-40e8-ba15-20c2b908e3c3",
+   "term": "One-shot sample",
+   "topic": "Drum Programming & Beat-Making",
+   "seq": 1370,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

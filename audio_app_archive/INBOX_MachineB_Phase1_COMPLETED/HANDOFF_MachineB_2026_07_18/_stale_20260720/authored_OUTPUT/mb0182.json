@@ -1,0 +1,45 @@
+{
+ "batch": 182,
+ "topic": "Delivery Formats & Metadata",
+ "authored": [
+  {
+   "id": "901c252a-e05e-4a2d-8ecf-c7b7544a3a48",
+   "term": "Delivery specifications",
+   "fields": {
+    "definition": "The documented set of technical requirements a broadcaster, streaming service, or distributor mandates for finished program audio - covering loudness targets (e.g. -23 LUFS under EBU R128 or -24 LKFS under ATSC A/85), true-peak limits, file format and wrapper, sample rate, bit depth, channel and track layout, and required metadata - so the material conforms on ingest and plays back correctly.",
+    "plain_english": "Delivery specifications are the rules a client gives you for making a finished audio file. They cover how loud it should be, the file type, and how many audio channels it has. This makes sure the file plays back right when they use it.",
+    "purpose_function": "It exists to make finished material meet a distributor's technical standards so it passes automated quality control and plays back consistently across their platform. It removes guesswork by stating exact loudness, format, and metadata targets up front.",
+    "practical_application": "Before final export a post engineer reads the spec sheet, then measures integrated loudness and true peak against the stated targets and sets the file format, sample rate, bit depth, and track layout to match before sending it to QC.",
+    "category": "Delivery & QC",
+    "related_terms": [
+     "EBU R128",
+     "True peak",
+     "Integrated loudness",
+     "Metadata",
+     "Stem delivery",
+     "Quality control"
+    ],
+    "common_mistakes": [
+     "Checking only peak level and ignoring integrated loudness, so the file misses the required LUFS target.",
+     "Overlooking the true-peak ceiling, so inter-sample peaks clip after lossy encoding.",
+     "Delivering the wrong sample rate, bit depth, or channel and track layout for the spec.",
+     "Omitting or mislabeling required metadata, causing an automated QC rejection."
+    ],
+    "scenario_contexts": [
+     "Preparing a TV mix to a broadcaster's spec at -23 LUFS integrated with a -1 dBTP true-peak limit under EBU R128.",
+     "Mastering a podcast or music track to a streaming platform's stated loudness target and file format.",
+     "Exporting a film mix with the correct stem and channel layout, sample rate, and bit depth before studio QC.",
+     "Reconforming a delivery that failed automated QC for exceeding the true-peak ceiling or using the wrong wrapper."
+    ]
+   },
+   "sources": [
+    "EBU R128 / EBU Tech 3341 (loudness metering and normalization)",
+    "ITU-R BS.1770 (loudness and true-peak measurement algorithm)",
+    "ATSC A/85 (loudness of broadcast audio, -24 LKFS)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

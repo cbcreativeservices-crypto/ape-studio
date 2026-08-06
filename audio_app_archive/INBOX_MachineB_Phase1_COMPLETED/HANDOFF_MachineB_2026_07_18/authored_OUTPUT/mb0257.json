@@ -1,0 +1,313 @@
+{
+ "batch": 257,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "9f0f2f96-0f00-4294-8541-b0a415bd8026",
+   "term": "Time-coded script",
+   "fields": {
+    "definition": "A production or post-production script in which each line of dialogue, narration, or action is annotated with the SMPTE timecode of the picture at which it occurs. It lets sound and localization teams locate exact frames for ADR, dubbing, subtitling, and editorial reference.",
+    "plain_english": "A time-coded script is a copy of the script with a time stamp next to each line. The time stamp shows the exact point in the video where that line is spoken, so the team can jump straight to it.",
+    "purpose_function": "It ties spoken and on-screen events to precise picture time so dialogue replacement, foreign-language dubbing, captioning, and cueing can be planned and matched frame-accurately.",
+    "practical_application": "An ADR or dubbing editor uses it to spot lines, cue the recording system to each timecode, and check that new takes line up with the original picture.",
+    "category": "Post-production document",
+    "related_terms": [
+     "Timecode",
+     "ADR",
+     "Spotting session",
+     "Dubbing",
+     "Subtitle"
+    ],
+    "common_mistakes": [
+     "Assuming the listed timecodes always match the delivered picture; they must be re-referenced when the edit or start time changes.",
+     "Confusing frame rates (e.g. 23.976 vs 24 or 25) so the listed timecodes drift against the video.",
+     "Treating a plain shooting script as time-coded when it carries no frame references."
+    ],
+    "scenario_contexts": [
+     "Preparing an ADR list for a scene where lines must be re-recorded.",
+     "Handing a translator a time-coded dialogue script for foreign-language dubbing.",
+     "Timing subtitles or captions to match on-screen speech."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (film and post-production chapters)",
+    "SMPTE ST 12-1, Time and Control Code",
+    "Yewdall, Practical Art of Motion Picture Sound"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "168af508-dd89-4e0c-af3e-ac60d43c4d9f",
+   "term": "Time-signature change",
+   "fields": {
+    "definition": "A point in a musical score where the meter changes from one time signature to another (for example from 4/4 to 3/4), altering the number and/or value of beats grouped in each bar from that point onward.",
+    "plain_english": "A time signature tells you how many beats are in each bar of music. A time-signature change is the moment the music switches to a new count, like going from four beats a bar to three.",
+    "purpose_function": "It notates a shift in the metric pulse or grouping of a piece so performers, conductors, and sequencers regroup beats correctly and stay aligned with the music.",
+    "practical_application": "A composer or engineer enters time-signature changes on a DAW's tempo/meter track so the metronome, bar lines, and grid follow the music through mixed-meter passages.",
+    "category": "Rhythm & meter",
+    "related_terms": [
+     "Time signature",
+     "Tempo map",
+     "Bar",
+     "Beat",
+     "Conductor track"
+    ],
+    "common_mistakes": [
+     "Confusing a time-signature change (beat grouping) with a tempo change (beat speed); they are independent.",
+     "Forgetting to enter the meter change on the DAW tempo/conductor track, so the click and grid drift from the score.",
+     "Assuming the beat length changes when only the grouping does; the quarter note usually stays the same from 4/4 to 3/4."
+    ],
+    "scenario_contexts": [
+     "Scoring a film cue that moves between 4/4 and 7/8 to match the action.",
+     "Building a click track for musicians recording a mixed-meter song.",
+     "Aligning a DAW grid to a live performance that shifts meter."
+    ]
+   },
+   "sources": [
+    "The New Grove Dictionary of Music and Musicians",
+    "Adler, The Study of Orchestration"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5c01409a-8ab5-4482-912d-8e988e40fd4e",
+   "term": "Timecode display",
+   "fields": {
+    "definition": "A readout, either hardware or on-screen, that shows the current SMPTE/EBU timecode value in hours:minutes:seconds:frames, indicating the position of audio or video against a timeline or synchronization reference.",
+    "plain_english": "A timecode display is a clock-style readout that shows exactly where you are in a video or recording, counting in hours, minutes, seconds, and frames. It lets everyone name and find the same exact spot.",
+    "purpose_function": "It gives operators a precise, frame-level position reference so recorders, players, and DAWs can be lined up, logged, and synchronized to the same moment.",
+    "practical_application": "An engineer reads the timecode display to confirm devices are locked to the same code, to note the timecode of an event, or to cue a machine to an exact frame.",
+    "category": "Timecode & sync",
+    "related_terms": [
+     "Timecode",
+     "Frame rate",
+     "Drop-frame timecode",
+     "Genlock",
+     "Time-coded script"
+    ],
+    "common_mistakes": [
+     "Misreading drop-frame (semicolon) versus non-drop-frame (colon) timecode as if they count the same.",
+     "Reading the display without checking its frame rate, so it doesn't match the picture.",
+     "Assuming a running display means devices are locked together, when the code may be free-running and not synchronized."
+    ],
+    "scenario_contexts": [
+     "Checking that a field recorder and camera show matching timecode before a take.",
+     "Logging the timecode of a sound event for the edit notes.",
+     "Cueing a playback machine to an exact frame during a mix."
+    ]
+   },
+   "sources": [
+    "SMPTE ST 12-1, Time and Control Code",
+    "Ballou, Handbook for Sound Engineers",
+    "Avid Pro Tools Reference Guide"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e349b673-a62e-4ef4-832b-ec1df23b27a4",
+   "term": "Toe strike",
+   "fields": {
+    "definition": "In footstep sound, the impact produced when the toe or ball of the foot contacts the ground, typically the second component of a normal walking step after the heel strike. In Foley it is performed and recorded as a distinct part of a footstep.",
+    "plain_english": "When you walk, your heel lands first and then the front of your foot slaps down. That second sound, made by the ball and toe of the foot, is the toe strike. Foley artists copy it to match footsteps on screen.",
+    "purpose_function": "It supplies the trailing half of a realistic footstep, giving weight, surface, and gait cues that sell a character's movement to the audience.",
+    "practical_application": "A Foley artist steps heel-then-toe on a matched surface, timing the toe strike to the actor's foot on screen and adjusting shoes or surface for the right texture.",
+    "category": "Foley",
+    "related_terms": [
+     "Heel strike",
+     "Foley",
+     "Footsteps",
+     "Foley surface",
+     "Sync-to-picture"
+    ],
+    "common_mistakes": [
+     "Recording a single flat stomp instead of a heel-then-toe motion, so steps sound unnatural.",
+     "Ignoring the walking surface, so the toe strike doesn't match the on-screen floor.",
+     "Letting the toe strike fall out of sync with the actor's foot contact on screen."
+    ],
+    "scenario_contexts": [
+     "Performing footsteps for a character walking across a wooden floor.",
+     "Rebuilding footsteps for a scene where production sound is unusable.",
+     "Adding weight to a heavy character's walk by emphasizing the toe strike."
+    ]
+   },
+   "sources": [
+    "Ament, The Foley Grail",
+    "Yewdall, Practical Art of Motion Picture Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "85d99013-d277-4b01-8c66-d1e9b9c8c41f",
+   "term": "Tonal sweep",
+   "fields": {
+    "definition": "A sound effect or test signal that glides continuously in pitch or frequency over time, producing a smooth rising or falling tone rather than a fixed note. In sound design it is commonly used as a pitched riser or transition element.",
+    "plain_english": "A tonal sweep is a note that slides smoothly up or down in pitch instead of staying still, a bit like a slide whistle. In film sound it is often used to build tension into a cut or big moment.",
+    "purpose_function": "It creates a sense of motion, rising tension, or release that guides the listener's attention into or out of a scene change or impact.",
+    "practical_application": "An editor drops a tonal sweep before a cut or reveal, tuning its pitch, length, and direction so it lands on the edit and works with the score's key.",
+    "category": "Sound design",
+    "related_terms": [
+     "Riser",
+     "Whoosh",
+     "Trailer hit",
+     "Transient sweetener",
+     "Pitch automation"
+    ],
+    "common_mistakes": [
+     "Letting the sweep clash with the musical key of the scene so it sounds out of tune.",
+     "Making the sweep too long or loud so it overwhelms dialogue.",
+     "Mistiming the peak so it doesn't land on the cut or impact."
+    ],
+    "scenario_contexts": [
+     "Building tension into a trailer before a title card.",
+     "Smoothing a hard scene cut with a pitched riser.",
+     "Leading into a big reveal or impact."
+    ]
+   },
+   "sources": [
+    "Sonnenschein, Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema",
+    "Sound on Sound (sound design / post-production technique articles)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c4b89614-1211-4e62-b3c7-77f64c7d22b9",
+   "term": "Tonal transition",
+   "fields": {
+    "definition": "In sound for picture, a tonal transition is a scene-to-scene transition built from a pitched or sustained tonal element - such as a drone, held note, riser, or resolving chord - rather than a broadband noise effect, used to smooth or emotionally bridge a picture edit.",
+    "plain_english": "It is a smooth scene change made with a musical, pitched sound like a held note or drone. The tone carries you from one shot to the next instead of a whoosh.",
+    "purpose_function": "It bridges two scenes or sections with harmonically coherent sound, guiding the listener's emotion across the cut and masking an abrupt change in picture or ambience.",
+    "practical_application": "An editor places a rising synth pad or sustained tone under a scene change so the cut feels connected, then automates its level to hand off into the next scene's ambience.",
+    "category": "Transitions & Effects",
+    "related_terms": [
+     "Tonal sweep",
+     "Transitional effect",
+     "Transition parameter",
+     "Trailer hit",
+     "Transient sweetener"
+    ],
+    "common_mistakes": [
+     "Confusing a tonal transition (pitched, sustained material) with a noise-based whoosh or riser",
+     "Letting the transition tone clash harmonically with the underscore or the next cue",
+     "Overusing tonal transitions so every scene change sounds the same"
+    ],
+    "scenario_contexts": [
+     "Bridging two dialogue scenes with a sustained drone in a documentary",
+     "Using a resolving chord to move from a tense scene into a calm one",
+     "Covering an ambience mismatch between two locations with a held tone"
+    ]
+   },
+   "sources": [
+    "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)",
+    "Ric Viers, The Sound Effects Bible (Michael Wiese Productions)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c4431a31-323d-4836-928b-cc11825bdab5",
+   "term": "Trailer hit",
+   "fields": {
+    "definition": "A short, powerful percussive or synthesized accent, often a deep boom or braaam, used in film trailers and promos to punctuate a cut, title card, or dramatic beat. Also called a hit, impact, or boom.",
+    "plain_english": "A trailer hit is a big, punchy boom sound you hear in movie trailers, usually landing on a hard cut or when the title flashes up. It grabs attention and adds drama.",
+    "purpose_function": "It emphasizes a visual beat and drives momentum, giving trailers their punchy, high-impact rhythm and marking key moments for the audience.",
+    "practical_application": "A trailer editor or sound designer places hits on cuts and title cards, layering low-end boom with a sharp transient, then balancing level so they hit hard without distorting.",
+    "category": "Sound design",
+    "related_terms": [
+     "Impact",
+     "Riser",
+     "Whoosh",
+     "Tonal sweep",
+     "Sub-bass"
+    ],
+    "common_mistakes": [
+     "Overusing hits so they lose impact and clutter the mix.",
+     "UNSAFE: reviewing sub-heavy hits at very high monitoring levels risks hearing damage and speaker abuse; keep listening within safe exposure limits (e.g. OSHA 29 CFR 1910.95) and leave headroom.",
+     "Placing hits off the picture cut so they feel disconnected from the image."
+    ],
+    "scenario_contexts": [
+     "Cutting a teaser where hits land on each title-card flash.",
+     "Punctuating a montage of quick action shots.",
+     "Marking the logo sting at the end of a trailer."
+    ]
+   },
+   "sources": [
+    "Sonnenschein, Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema",
+    "Sound on Sound (film / trailer sound design articles)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9e52e7d8-56bc-4253-b14f-d0b171533329",
+   "term": "Transient sweetener",
+   "fields": {
+    "definition": "A short added sound layered onto an effect to reinforce its attack, the initial transient, making an impact, footstep, or hit read as sharper, punchier, or more present. It is a specialized use of sweetening, the practice of adding supplementary sounds to enhance an effect.",
+    "plain_english": "A transient sweetener is a tiny extra sound you add to the very start of an effect to give it more snap. It is like adding a click to a punch so it hits harder on screen.",
+    "purpose_function": "It strengthens the attack of a layered sound so the effect cuts through the mix and feels more impactful without changing its body or tail.",
+    "practical_application": "A sound designer layers a short click or crack tight to the attack of a hit or footstep, aligning it sample-accurately and blending its level so it adds punch without sounding separate.",
+    "category": "Sound design",
+    "related_terms": [
+     "Sweetening",
+     "Layering",
+     "Transient",
+     "Trailer hit",
+     "Attack"
+    ],
+    "common_mistakes": [
+     "Placing the sweetener slightly off the main attack so it flams or doubles instead of reinforcing.",
+     "Adding too much so the sweetener is heard as its own separate sound.",
+     "Choosing a sweetener with the wrong tone or character so it doesn't match the effect."
+    ],
+    "scenario_contexts": [
+     "Giving a punch or kick more crack in an action scene.",
+     "Sharpening a footstep that lacks definition.",
+     "Adding snap to a trailer hit or impact."
+    ]
+   },
+   "sources": [
+    "Yewdall, Practical Art of Motion Picture Sound",
+    "Sonnenschein, Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "030b2df5-7600-4e99-b127-86e79da9b97e",
+   "term": "Transition parameter",
+   "fields": {
+    "definition": "A transition parameter is any adjustable setting that controls how one audio clip or scene gives way to another - for example crossfade length, fade-curve shape, overlap amount, or the timing offset of a transition effect.",
+    "plain_english": "It is a setting that controls how one sound blends into the next. Things like how long a fade lasts or what shape it takes are transition parameters.",
+    "purpose_function": "It gives the editor precise control over the speed, shape, and timing of a transition so edits sound smooth and intentional rather than abrupt or clumsy.",
+    "practical_application": "When crossfading two ambiences, a technician adjusts the transition parameters - fade length and curve - in the DAW until the seam between the clips is inaudible.",
+    "category": "Transitions & Effects",
+    "related_terms": [
+     "Transitional effect",
+     "Tonal transition",
+     "Tonal sweep",
+     "Trailer hit"
+    ],
+    "common_mistakes": [
+     "Assuming the default crossfade length works for every edit instead of setting it per transition",
+     "Choosing a linear fade curve where an equal-power curve is needed, causing a level dip",
+     "Adjusting only fade length while ignoring fade-curve shape"
+    ],
+    "scenario_contexts": [
+     "Setting crossfade length and curve when joining two room-tone clips",
+     "Adjusting an effect's transition time so a whoosh lands exactly on the picture cut",
+     "Tuning fade parameters to remove a click at an edit point"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide - fades and crossfades",
+    "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,322 @@
+{
+  "batch": 351,
+  "topic": "Strings, Guitar & Keys",
+  "authored": [
+    {
+      "id": "2df30a3e-3fbe-4f16-9331-c797f2114eeb",
+      "term": "Kora buzz-key rattle",
+      "fields": {
+        "definition": "The buzzing, rattling timbre characteristic of the kora, a 21-string West African harp-lute, traditionally produced by a metal plate fitted with loose jingle rings (the nyenyemo) attached near the bridge, whose sympathetic vibration adds a sustained buzz to each plucked note. Loose leather or metal tuning rings (konso) on the neck can add further rattle. The buzz is a deliberate aesthetic element, though many modern players remove the device for clarity when amplified.",
+        "plain_english": "The soft buzzing, rattly sound a kora makes. The kora is a big West African harp with 21 strings. A small metal plate with loose rings sits near the bridge. The rings shake and buzz as the strings sound. Players like this fuzzy tail, but some take the rings off when they plug in.",
+        "purpose_function": "The buzz enriches and sustains each plucked note and adds a percussive shimmer prized in West African music, which is why the rattle device is built onto the instrument.",
+        "practical_application": "When recording or amplifying a kora a technician expects this buzzy, rattly overtone and sets mic placement and EQ to keep it musical, or works with a player who may remove the rattle plate for a cleaner amplified sound.",
+        "category": "Instrument timbre",
+        "related_terms": [
+          "Sympathetic resonance",
+          "Timbre",
+          "Bridge buzz",
+          "Overtone",
+          "Close miking",
+          "String rattle"
+        ],
+        "common_mistakes": [
+          "Assuming the buzz is a fault or a bad string setup; on a traditional kora the rattle is intentional.",
+          "Trying to EQ out all of the buzz, which strips the instrument of its natural character.",
+          "Confusing the bridge rattle device (nyenyemo) with loose tuning rings, which cause a different, unwanted clatter."
+        ],
+        "scenario_contexts": [
+          "Recording a traditional kora where the buzzing rattle plate is still fitted.",
+          "Amplifying a kora on stage and deciding whether to keep or remove the rattle for clarity.",
+          "Troubleshooting whether a rattle comes from the buzz device or from loose tuning rings."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments (Oxford) — kora entry",
+        "The Garland Encyclopedia of World Music, Vol. 1: Africa",
+        "American Musical Instrument Society — organology of the kora (nyenyemo rattle)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "b13ec23c-6afd-479e-9da3-7f01179891ba",
+      "term": "Lap-steel slide",
+      "fields": {
+        "definition": "The smooth, continuous glide in pitch produced on a lap steel (Hawaiian) guitar by sliding a solid metal or glass bar — the 'steel' — along the strings instead of pressing them onto frets. Because the bar never stops the strings at a fixed fret, the player moves smoothly between and beyond pitches, giving the instrument its singing, vocal-like portamento.",
+        "plain_english": "The sliding, singing sound of a lap steel guitar. Instead of pressing the strings down on frets, the player rests a smooth metal bar on top of the strings and slides it up and down. This lets the notes glide into each other, a bit like a voice sliding between pitches.",
+        "purpose_function": "Sliding the bar lets the player connect notes with a smooth glide and add expressive vibrato, which is the core voice of Hawaiian, country and blues steel-guitar styles.",
+        "practical_application": "A technician recording or amplifying lap steel expects long sustained notes and glides, plus some bar and string noise, and sets levels and EQ so the sustain and slide stay clear without harsh scrape.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Slide guitar",
+          "Glissando",
+          "Portamento",
+          "Vibrato",
+          "Sustain",
+          "Pickup"
+        ],
+        "common_mistakes": [
+          "Confusing lap-steel technique with fretting; the bar rests on the strings and never presses them to the fretboard.",
+          "Pressing the bar down hard enough to touch the frets, which causes buzzing and choked notes.",
+          "Forgetting that pitch depends on exact bar position, so slightly wrong placement plays out of tune."
+        ],
+        "scenario_contexts": [
+          "Recording a lap or Hawaiian steel glide in a country session.",
+          "Amplifying a Hawaiian steel guitar on stage.",
+          "Capturing bluesy slide lines with long sustained glides."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments (Oxford) — steel guitar / Hawaiian guitar",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — plucked/stopped strings"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "0869c4f1-f6fb-4289-a96a-c62974e1a748",
+      "term": "Lunzhi tremolo",
+      "fields": {
+        "definition": "A pipa (Chinese lute) right-hand technique, also called lun, in which the fingers of the right hand strike the string outward in rapid succession — typically index, middle, ring and little finger, then thumb — turning a short plucked note into a continuous, sustained tremolo. It is the pipa's principal means of sustaining a melody, since a single pluck decays quickly.",
+        "plain_english": "A fast finger-rolling trick on the pipa, a pear-shaped Chinese lute. The player flicks each finger of the right hand across the string one after another, over and over. A single pluck fades fast, so this rolling motion keeps the note going in a steady shimmer.",
+        "purpose_function": "Rolling the fingers in sequence sustains a plucked string that would otherwise decay at once, letting the pipa hold long, singing melody notes and swells.",
+        "practical_application": "When recording pipa a technician expects these dense tremolo passages and chooses mic placement and gentle compression that keep every finger-stroke even without exaggerating nail noise.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Pipa",
+          "Tremolo",
+          "Sustain",
+          "Plucked string",
+          "Attack transient",
+          "Fingerpicking"
+        ],
+        "common_mistakes": [
+          "Thinking lunzhi is a single finger's tremolo; it is a roll of several fingers in sequence.",
+          "Assuming it works like mandolin pick tremolo; the pipa uses individual fingers, not a plectrum.",
+          "Over-compressing the roll so the natural swell and decay of the tremolo are flattened."
+        ],
+        "scenario_contexts": [
+          "Recording a solo pipa piece with long sustained tremolo lines.",
+          "Balancing a pipa's tremolo against an ensemble in a fusion track.",
+          "Editing pipa where finger-roll strokes need even level."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments (Oxford) — pipa",
+        "The Garland Encyclopedia of World Music, Vol. 7: East Asia (China)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "f7e068ba-7549-4fc6-85a7-6a7929e12050",
+      "term": "Mandolin feedback",
+      "fields": {
+        "definition": "Acoustic feedback that occurs when an amplified mandolin's pickup or microphone picks up its own amplified sound and drives the hollow body and strings into sustained self-oscillation, usually heard as a howl or ring at a resonant frequency. It is most common with acoustic-electric or close-miked mandolins on loud stages.",
+        "plain_english": "The howling or ringing sound that happens when an amplified mandolin feeds its own sound back into its pickup or mic. The speaker sound shakes the small hollow body and strings, and the loop builds into a squeal. It is like when a singer's mic gets too close to the speaker.",
+        "purpose_function": "Understanding mandolin feedback matters because the small resonant body feeds back easily on stage, so controlling it keeps the instrument loud enough without breaking into a howl.",
+        "practical_application": "To stop feedback a technician lowers gain, moves the mandolin or monitors, notches the ringing frequency with EQ, or fits a soundhole cover, watching the resonant note that first starts to howl.",
+        "category": "Live-sound artifact",
+        "related_terms": [
+          "Acoustic feedback",
+          "Gain before feedback",
+          "Notch filter",
+          "Monitor wedge",
+          "Soundhole cover",
+          "Resonant frequency"
+        ],
+        "common_mistakes": [
+          "UNSAFE: Chasing more volume by pushing gain past the feedback point, which can send a sudden loud squeal through the PA and risk hearing damage.",
+          "Blaming the pickup when the real cause is monitor level or the mandolin facing the speakers.",
+          "Notching so many frequencies to kill feedback that the mandolin's natural tone is lost."
+        ],
+        "scenario_contexts": [
+          "An acoustic-electric mandolin howling on a loud bluegrass stage.",
+          "Setting gain before feedback for a close-miked mandolin.",
+          "Using a soundhole cover to tame feedback during an amplified set."
+        ]
+      },
+      "sources": [
+        "Yamaha Sound Reinforcement Handbook (Davis & Jones) — acoustic feedback",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — feedback and gain before feedback"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "0199fd8d-2326-4ffb-8e26-98dff5900517",
+      "term": "Mandolin tremolo",
+      "fields": {
+        "definition": "A mandolin performance technique in which the player rapidly alternates down-and-up plectrum strokes across a pair (course) of strings to sustain a note or chord, compensating for the quick decay of the plucked double strings. It produces the mandolin's characteristic shimmering, sustained tone on longer notes.",
+        "plain_english": "The fast, shimmery picking that lets a mandolin hold a long note. A plucked mandolin string fades quickly, so the player flicks the pick down and up very fast on the same string pair. This rapid picking blurs into one long, trembling sound.",
+        "purpose_function": "Rapid alternate picking sustains notes that would otherwise die away fast, giving the mandolin a smooth, singing line on melodies and long chords.",
+        "practical_application": "When recording mandolin tremolo a technician expects a dense stream of pick attacks and sets mic position and light compression so the tremolo sounds even and smooth rather than choppy or spiky.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Tremolo",
+          "Course (strings)",
+          "Plectrum",
+          "Sustain",
+          "Alternate picking",
+          "Pick attack"
+        ],
+        "common_mistakes": [
+          "Confusing pick tremolo with pitch vibrato; mandolin tremolo is rapid re-picking, not a pitch wobble.",
+          "Setting compression so hard that the individual pick strokes turn into an unnatural wall of sound.",
+          "Miking so close that each pick attack clicks harshly instead of blending into a smooth tremolo."
+        ],
+        "scenario_contexts": [
+          "Recording a sustained mandolin melody built on tremolo.",
+          "Mixing tremolo-picked mandolin in a bluegrass or classical piece.",
+          "Capturing even tremolo across a mandolin's string courses."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments (Oxford) — mandolin",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — plucked-string decay and sustain"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "1076671d-8a08-497d-b365-300160af774a",
+      "term": "Meend (multi-note bend)",
+      "fields": {
+        "definition": "In Hindustani (North Indian) classical music, meend is a smooth, continuous glide in pitch that connects notes, a portamento central to raga phrasing. On the sitar it is produced by pulling (deflecting) a string laterally across the curved fret so that a single stopped position can bend up through several notes, letting one gesture traverse multiple pitches without re-plucking.",
+        "plain_english": "A smooth pitch slide used in Indian classical music. On a sitar the player pulls the string sideways across a fret, and the pitch rises smoothly through several notes. It is like sliding your finger along a stretched rubber band so the sound climbs with no gaps, all from one pluck.",
+        "purpose_function": "Meend links notes with an unbroken glide that carries the feeling and identity of a raga, which is why smooth bending is a core expressive skill on sitar and in vocal-style playing.",
+        "practical_application": "When recording sitar a technician expects long bent glides after a single pluck and sets levels and any compression so the quiet tail of the bend stays audible instead of dropping out.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Raga",
+          "String bend",
+          "Portamento",
+          "Glissando",
+          "Sitar",
+          "Sustain"
+        ],
+        "common_mistakes": [
+          "Thinking meend is a quick guitar-style bend; it is a smooth, controlled glide that can pass through several notes.",
+          "Gating or compressing so hard that the fading tail of the glide is cut off.",
+          "Assuming each note in the glide is re-plucked; meend flows from one pluck across the bend."
+        ],
+        "scenario_contexts": [
+          "Recording a sitar alap full of long meend glides.",
+          "Preserving the quiet tail of a bend during mixing.",
+          "Capturing vocal-style glides in an Indian classical session."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments (Oxford) — sitar / Indian ornamentation",
+        "The Garland Encyclopedia of World Music, Vol. 5: South Asia (meend / portamento)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "6c9246d5-f456-4a11-bff2-23de51eab722",
+      "term": "Morin khuur wide vibrato",
+      "fields": {
+        "definition": "The broad, expressive vibrato characteristic of the morin khuur, the Mongolian two-string horse-head fiddle, whose strings are stopped from the side by the fingernails or finger pads rather than pressed onto a fingerboard. This side-stopping allows a wide, vocal pitch oscillation used to imitate the human voice and horse sounds in Mongolian long-song and folk styles.",
+        "plain_english": "The wide, wailing pitch wobble of the morin khuur, Mongolia's two-string horse-head fiddle. The player does not press the strings onto a fingerboard; the fingers touch the strings from the side. This lets the pitch swing widely, so the fiddle can cry and sing almost like a human voice.",
+        "purpose_function": "The wide vibrato gives the morin khuur its deeply vocal, expressive voice, letting it imitate singing and horse calls, which is central to Mongolian long-song and storytelling music.",
+        "practical_application": "When recording or amplifying a morin khuur a technician expects broad pitch swings and a rich low-mid tone, and chooses mic placement that captures the expressive vibrato and body resonance without boom.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Vibrato",
+          "Bowing",
+          "Stopped string",
+          "Portamento",
+          "Timbre",
+          "Spot mic"
+        ],
+        "common_mistakes": [
+          "Assuming the strings are pressed to a fingerboard like a violin; the morin khuur is stopped from the side by the fingers.",
+          "Using tuning or editing software that 'corrects' the wide vibrato and destroys the instrument's expressive character.",
+          "Miking so close that bow noise masks the smooth width of the vibrato."
+        ],
+        "scenario_contexts": [
+          "Recording a morin khuur accompanying Mongolian long-song.",
+          "Amplifying the horse-head fiddle in a folk-fusion band.",
+          "Capturing the wide, vocal vibrato in a solo performance."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments (Oxford) — morin khuur",
+        "The Garland Encyclopedia of World Music, Vol. 7: East Asia (Mongolia)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "ef15f2c1-0876-4b3e-b4a8-3e6d5647d8d8",
+      "term": "Nail-pluck attack",
+      "fields": {
+        "definition": "The bright, sharply defined onset of a plucked note produced when the string is released by the player's fingernail rather than the flesh of the fingertip, as on classical guitar, harp or lute. Contact with the harder nail releases the string cleanly and excites more high-frequency partials, giving a crisper, louder, more articulate attack.",
+        "plain_english": "The bright, crisp start of a note when you pluck a string with your fingernail. The hard nail lets go of the string quickly and cleanly, so the note begins with a sharp, clear edge. It sounds brighter and more cutting than plucking with the soft pad of your finger.",
+        "purpose_function": "Using the nail gives a louder, brighter, more precise attack and lets the player shape tone and projection, which is why classical guitarists and harpists carefully shape their nails.",
+        "practical_application": "When recording a nail-plucked instrument a technician expects strong high-frequency attack transients and chooses mic placement and gentle EQ or compression that keep the bright pluck clear without turning it clicky or harsh.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Plucked string",
+          "Attack transient",
+          "Nail-vs-flesh attack",
+          "Timbre",
+          "Fingerstyle",
+          "Transient"
+        ],
+        "common_mistakes": [
+          "Assuming nail attack is just louder; it also shifts the tone brighter by adding high partials.",
+          "Miking too close so the nail attack becomes a harsh click instead of a crisp pluck.",
+          "Compressing the attack so hard that the clear onset of each note is squashed."
+        ],
+        "scenario_contexts": [
+          "Recording classical guitar played with the nails.",
+          "Capturing the bright pluck of a concert harp.",
+          "Comparing nail and flesh tone during a session."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — plucked strings / plucking with nail vs finger",
+        "The New Grove Dictionary of Musical Instruments (Oxford) — guitar (right-hand technique)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "2a92f385-3c2d-4377-ba7e-147a42a14ed3",
+      "term": "Nail-vs-flesh attack",
+      "fields": {
+        "definition": "The tonal contrast between plucking a string with the fingernail versus the bare flesh of the fingertip, a core tone-shaping choice on classical guitar, harp and related instruments. Nail contact yields a brighter, louder, more articulate attack rich in high partials, while flesh produces a warmer, rounder, darker tone with a softer onset; many players use a combined nail-and-flesh contact to blend the two.",
+        "plain_english": "The difference in sound between plucking a string with your nail and with the soft skin of your fingertip. The nail gives a bright, sharp, loud note. The flesh gives a warm, soft, rounder note. Players pick one or blend both to control how bright or mellow each note sounds.",
+        "purpose_function": "Choosing nail, flesh, or a blend lets a player control brightness, volume and attack note by note, which is a main way string players shape tone and expression.",
+        "practical_application": "A technician recording fingerstyle guitar or harp hears whether a player uses nail or flesh and adjusts mic choice, placement and EQ so a bright nail tone does not get harsh or a warm flesh tone does not get dull.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Nail-pluck attack",
+          "Plucked string",
+          "Timbre",
+          "Attack transient",
+          "Fingerstyle",
+          "Tone production"
+        ],
+        "common_mistakes": [
+          "Thinking the choice only changes volume; it mainly changes brightness and attack shape.",
+          "Assuming flesh tone is always better or worse; each suits different music and passages.",
+          "Reaching for EQ to fix a tone that the player is actually creating with nail-versus-flesh technique."
+        ],
+        "scenario_contexts": [
+          "A classical guitarist switching between nail and flesh for contrast.",
+          "A harpist choosing flesh for a warmer passage.",
+          "Deciding mic and EQ to suit a bright nail or warm flesh tone."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — plucked-string excitation and timbre",
+        "The New Grove Dictionary of Musical Instruments (Oxford) — guitar (tone production)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

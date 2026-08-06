@@ -1,0 +1,223 @@
+{
+ "expert": "language",
+ "group": 24,
+ "reviews": [
+  {
+   "id": "d625234a-75f8-46bb-8376-8ababf680954",
+   "term": "In-Ceiling Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "91e47196-7979-455e-a29a-d8637d61e080",
+   "term": "In-Line Console",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0eec8057-e60a-49c6-b062-3528189ee317",
+   "term": "In-Wall Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9ed8281c-5209-4ecb-bc09-ee97aee877ec",
+   "term": "Inclinometer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d1018897-6637-461e-8ea1-b4afee761fef",
+   "term": "Inclusive Design",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eafbc2a7-9d31-43c8-a619-c827771b8cd3",
+   "term": "Induction Loop",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5ca53f6d-9817-4cd3-b565-c2945a190b67",
+   "term": "Infinite Baffle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4b167acc-401a-4e2a-9814-15a374b84b4e",
+   "term": "Infrared System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "117f478a-24cf-4abc-993d-cd1cef105ea9",
+   "term": "Infrasonic",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "43102f33-ea69-4a55-a865-fe9502b7a5a7",
+   "term": "Inline Attenuator",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e171be53-da9d-4627-996d-27c3edbd5596",
+   "term": "Inline Fuse",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "df867e3f-4f8f-4f4b-b5e8-4ab332ec3c22",
+   "term": "Inline Pad",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "purpose_function",
+     "severity": "Low",
+     "issue": "'to prevent input-stage clipping when a mic feeds a very loud source' reverses the logic: a mic does not feed a source; the loud source is what the mic picks up. As written it states the mic feeds the source.",
+     "suggestion": "Rephrase to 'to prevent input-stage clipping when a mic is picking up a very loud source' (or 'when a loud source drives the mic to a very hot output')."
+    }
+   ]
+  },
+  {
+   "id": "e5924cd4-9db3-466c-9f07-f3f3e315f1ac",
+   "term": "Inline RF Amplifier",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d328f853-c402-48d1-8419-fe75e85c6cb1",
+   "term": "Input device",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e6801f04-433f-4759-ac84-9695284495a6",
+   "term": "Input meter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "36367646-3aaa-4cc5-a4cd-4e84e172b72b",
+   "term": "Input Sensitivity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3ebf2047-6611-4921-ba4b-133ab0937322",
+   "term": "Input/output swap",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "848f488c-1c80-455b-9968-797ede572fa8",
+   "term": "Inrush Current",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1171d17b-fc9b-4fcd-aa5e-b06ca9a6b307",
+   "term": "Insert",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ae0cc473-9059-4bc6-ae81-06573e6a7e33",
+   "term": "Insert Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fb6f3804-3012-404b-80ac-b06948bd1eca",
+   "term": "Instrument Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b48d3935-ce1f-4755-bcb1-cfb77d2cfc44",
+   "term": "Instrument level (varies)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "04454b92-4fa7-47b2-89c9-63d699d0d20d",
+   "term": "Insulation resistance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "84a9499c-04e1-4f13-8ed2-73c961e7b04b",
+   "term": "Insulation resistance test",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "91643927-3dea-4c71-bc1a-a9e577d472a6",
+   "term": "Insulation Tester",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6df25197-e1dc-40a1-b1b5-e8ea1db06f7d",
+   "term": "Integrated Amplifier",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8464bdbd-a072-43ae-a46b-d9d9641e8861",
+   "term": "Integrated Loudness (LKFS / LUFS)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "00d53b3a-ec99-44ec-a2d6-1424984b4299",
+   "term": "Integration time",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "74d785aa-d82c-4d2a-90b9-d7240e22195b",
+   "term": "Intelligibility",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a307392d-ae28-4e7d-a5d8-7a9b8d0dadbc",
+   "term": "Inter-Sample Peak",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fb84ea48-9be6-4bce-8be9-fa393167a49f",
+   "term": "Interaural Level Difference (ILD)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2bcaa48b-e606-41a5-b994-59a76cb00db7",
+   "term": "Interaural Time Difference (ITD)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0bb21bf9-8be3-4011-b485-21afe3d94dc0",
+   "term": "Interference",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8d1c8857-eb66-4ac9-8aaf-bf5956c4459b",
+   "term": "Interference tube",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "adea3366-e939-4a68-9baa-9a423d097343",
+   "term": "Intermittent Connection",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

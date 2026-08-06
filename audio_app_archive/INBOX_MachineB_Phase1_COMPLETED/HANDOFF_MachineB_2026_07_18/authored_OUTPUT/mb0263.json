@@ -1,0 +1,159 @@
+{
+ "batch": 263,
+ "topic": "DAW Fundamentals & Session Management",
+ "authored": [
+  {
+   "id": "05478a31-f321-4808-b96f-344f3a9f470e",
+   "term": "Archive catalog",
+   "fields": {
+    "definition": "A searchable index or database that records every archived session and media asset along with its metadata and physical or logical storage location, so items can be found and retrieved without reading the archive media itself.",
+    "plain_english": "It is like a library card catalog for your saved projects. Instead of digging through every tape or drive, you look up a project in the list. It tells you exactly where that project is kept.",
+    "purpose_function": "It lets a facility find and pull any archived project fast, and track what exists across many storage media without mounting each one.",
+    "practical_application": "An engineer searches the catalog by client, date, or title to find which tape or drive holds an old session before pulling it for a recall.",
+    "category": "Archiving & Backup",
+    "related_terms": ["Cold storage archive", "Archive migration plan", "Backup verification", "Cloud replication", "Automatic session backup"],
+    "common_mistakes": ["Treating the catalog as a backup itself, when it is only an index that points to where the real data lives.", "Letting the catalog fall out of date so it lists media that were moved, relabeled, or destroyed.", "Recording too little metadata, so entries cannot be found later by any useful search."],
+    "scenario_contexts": ["A post house looking up which archive tape holds a two-year-old mix for a client re-edit.", "Auditing a tape library to confirm every catalog entry still matches a real, readable volume.", "Handing a project archive to a new facility using the catalog as the inventory list."]
+   },
+   "sources": ["IASA-TC 04 (Guidelines on the Production and Preservation of Digital Audio Objects)", "AES57-2011 (audio object metadata) / AES technical documents on archiving", "Avid Pro Tools Reference Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7b8290c2-329f-4a53-852f-feb3cd8b9908",
+   "term": "Archive migration plan",
+   "fields": {
+    "definition": "A documented strategy for moving archived audio data from aging storage media or file formats onto current ones before the old media or formats become unreadable or unsupported.",
+    "plain_english": "It is a written plan for copying old saved projects onto newer storage before the old tapes or discs wear out. Storage formats go out of date, so you move the files while you can still read them.",
+    "purpose_function": "It protects long-term archives from loss caused by media decay and format obsolescence by scheduling regular, verified transfers to fresh media.",
+    "practical_application": "A facility on a set cycle uses the plan to copy an older tape generation onto the newest one, verifying each transfer before retiring the old tapes.",
+    "category": "Archiving & Backup",
+    "related_terms": ["Archive catalog", "Cold storage archive", "Backup verification", "Cloud replication", "Automatic session backup"],
+    "common_mistakes": ["Assuming a tape or drive will stay readable forever and skipping planned migration.", "Migrating files but not verifying them, so silent copy errors ruin the new archive.", "Forgetting to migrate the software or format needed to open the sessions, not just the raw files."],
+    "scenario_contexts": ["Moving a whole tape library to a new LTO generation as the old drives reach end of life.", "Converting sessions from a discontinued DAW format to a current interchange format like AAF.", "Planning a shift from local tape to a cloud archive over several months."]
+   },
+   "sources": ["IASA-TC 04 (Guidelines on the Production and Preservation of Digital Audio Objects)", "AES technical documents on digital audio archiving and preservation", "SMPTE documentation on archive and interchange formats"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ce43e4d3-a5cf-47fc-b56e-656127c6839e",
+   "term": "Automatic session backup",
+   "fields": {
+    "definition": "A DAW feature that periodically saves timestamped backup copies of the current session file without user action, so recent work can be recovered after a crash, power loss, or file corruption.",
+    "plain_english": "It is a setting that saves spare copies of your project on its own every few minutes. If the program crashes, you can open a recent copy instead of losing your work.",
+    "purpose_function": "It guards against losing work between manual saves by keeping a rolling set of recent session snapshots the user can fall back on.",
+    "practical_application": "An engineer enables auto backup in the DAW preferences and, after a crash, opens the newest file from the backups folder to pick up near where they left off.",
+    "category": "Archiving & Backup",
+    "related_terms": ["Backup verification", "Cloud replication", "Archive catalog", "Bounce / Export", "Cold storage archive"],
+    "common_mistakes": ["Confusing automatic session backups with a real archive; they usually cover only the session file, not all the media.", "Storing backups on the same drive as the session, so one drive failure loses both.", "Setting the backup interval too long, losing many minutes of work between saves."],
+    "scenario_contexts": ["Recovering a session after the DAW crashes mid-mix.", "Rolling back to an earlier snapshot after an edit went wrong.", "Setting a short backup interval before a long, unattended tracking session."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Auto Backup)", "Apple Logic Pro User Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c8e0df68-ed2c-4371-9983-c9b2790e7c1a",
+   "term": "Backup verification",
+   "fields": {
+    "definition": "The process of confirming that a backup is complete, uncorrupted, and actually restorable, typically by comparing checksums against the source or by performing a test restore.",
+    "plain_english": "It means checking that a backup really worked and can be opened again. A copy that looks fine but is broken is useless, so you test it before you trust it.",
+    "purpose_function": "It ensures a backup can be relied on in an emergency, catching silent copy errors or bad media before the original is ever needed.",
+    "practical_application": "After archiving a project to tape, a technician runs a checksum compare or test-restores a few files to confirm the copy matches the source before deleting the originals.",
+    "category": "Archiving & Backup",
+    "related_terms": ["Automatic session backup", "Cold storage archive", "Archive catalog", "Cloud replication", "Archive migration plan"],
+    "common_mistakes": ["Assuming a backup is good just because the copy finished without an error message.", "Deleting the only original before confirming the backup can actually be restored.", "Never test-restoring, so a corrupt or unreadable backup is only discovered when it is too late."],
+    "scenario_contexts": ["Comparing checksums after copying a session to an archive drive.", "Test-restoring a random file from last night's backup during a monthly integrity check.", "Confirming a cloud upload finished intact before clearing local storage."]
+   },
+   "sources": ["IASA-TC 04 (Guidelines on the Production and Preservation of Digital Audio Objects)", "AES technical documents on digital audio archiving (checksum/fixity practice)", "Avid Pro Tools Reference Guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "31eac4da-a479-4aec-9a3c-6b98dd828ba7",
+   "term": "Bounce / Export",
+   "fields": {
+    "definition": "The process of rendering some or all tracks of a DAW session, with their processing and automation applied, into one or more new audio files such as a stereo mix or individual stems.",
+    "plain_english": "It means turning your multi-track project into a finished audio file you can share or play anywhere. The computer plays the mix and records it into a single file like a WAV or MP3.",
+    "purpose_function": "It converts an editable session into deliverable audio files for distribution, mastering, or transfer between systems.",
+    "practical_application": "At the end of a mix, an engineer bounces a stereo master and a set of stems, choosing the file format, bit depth, and sample rate the next stage needs.",
+    "category": "File Operations",
+    "related_terms": ["Stems", "Sample rate", "Bit depth", "Dithering", "Automatic session backup"],
+    "common_mistakes": ["Bouncing with the wrong sample rate or bit depth for the delivery target.", "Leaving a solo, mute, or bypassed plugin engaged, so the bounce does not match the intended mix.", "Clipping the master output during the bounce and not noticing until later.", "Exporting a lossy MP3 as the archive master instead of a lossless file."],
+    "scenario_contexts": ["Rendering a stereo master to send to a mastering engineer.", "Exporting individual stems for a live backing-track rig.", "Bouncing a rough mix to MP3 for a client to review on their phone."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bef9894e-c47a-4c7e-a5a3-ce86800cbad6",
+   "term": "Calibration Mode",
+   "fields": {
+    "definition": "An operating mode in which a device or monitoring system produces or passes a known reference signal so that levels and gain can be aligned to a defined standard, such as setting monitor gain so a reference tone reads a target sound-pressure level.",
+    "plain_english": "It is a special mode that plays a steady test signal so you can line up your levels to a set standard. It is like using a tuning fork so everything is matched to the same reference point.",
+    "purpose_function": "It gives a repeatable reference so meters, monitor levels, and signal chains can be matched to a defined standard across rooms and sessions.",
+    "practical_application": "An engineer switches a monitor controller into calibration mode, plays reference pink noise at a set level, and adjusts monitor gain until an SPL meter reads the target for the room.",
+    "category": "Monitoring & Calibration",
+    "related_terms": ["Reference level", "Pink noise", "SPL", "Monitor controller", "Bounce / Export"],
+    "common_mistakes": ["Confusing the calibration reference level with normal listening level and forgetting to leave calibration mode.", "Measuring SPL with the wrong meter weighting or response setting, giving a false calibration.", "Calibrating the two monitors unevenly, so left and right levels do not match."],
+    "scenario_contexts": ["Calibrating a mix room's monitors to a standard SPL for a known signal level.", "Aligning meters and monitoring before a film re-recording session.", "Matching monitor levels between two studios so mixes translate."]
+   },
+   "sources": ["SMPTE RP 200 (relative and absolute sound-pressure level for motion-picture monitoring)", "Ballou, Handbook for Sound Engineers", "Dolby monitor calibration technical guides"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bec87957-6a9d-4468-b1ff-c079f7c79f44",
+   "term": "Channel aftertouch",
+   "fields": {
+    "definition": "A MIDI channel-voice message that transmits a single pressure value representing how hard keys are pressed after the initial note-on, applied uniformly to all notes sounding on that channel; also called channel pressure.",
+    "plain_english": "It is a MIDI message that senses how hard you press the keys after you have already played them. Pressing harder can add things like vibrato, but the same amount goes to every note you are holding.",
+    "purpose_function": "It lets a player add expression to held notes in real time; unlike polyphonic aftertouch it sends one value for the whole channel, which is simpler and uses less data.",
+    "practical_application": "A keyboardist assigns channel aftertouch in the DAW to control filter cutoff or vibrato depth on a synth, adding movement by leaning into held chords.",
+    "category": "MIDI",
+    "related_terms": ["Polyphonic aftertouch", "MIDI CC", "Note-on velocity", "Pitch bend", "Modulation wheel"],
+    "common_mistakes": ["Confusing channel aftertouch, which is one value for the whole channel, with polyphonic aftertouch, which is per note.", "Recording heavy aftertouch data that clogs the MIDI stream or triggers unwanted modulation.", "Assuming every keyboard sends aftertouch, when many budget controllers do not."],
+    "scenario_contexts": ["Mapping aftertouch to vibrato on a synth pad while playing sustained chords.", "Filtering or thinning aftertouch data in a MIDI editor to clean up a performance.", "Troubleshooting why a controller's key pressure has no effect on a soft synth."]
+   },
+   "sources": ["MIDI Association, MIDI 1.0 Detailed Specification (Channel Pressure / Aftertouch)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dd17c832-2569-43a5-8d02-ed777251bf51",
+   "term": "Cloud replication",
+   "fields": {
+    "definition": "The practice of copying session and media data to remote cloud storage, often keeping multiple synchronized copies across data centers, to provide off-site redundancy and geographic protection against local failure or disaster.",
+    "plain_english": "It means keeping copies of your projects on internet storage, not just on drives in your building. If a fire or theft hits the studio, the work still exists somewhere far away.",
+    "purpose_function": "It protects data against site-level loss and enables access or collaboration from multiple locations by maintaining off-site copies.",
+    "practical_application": "A studio configures automatic sync so each day's session folders replicate to a cloud service, giving an off-site copy in case the local drives fail.",
+    "category": "Archiving & Backup",
+    "related_terms": ["Automatic session backup", "Cold storage archive", "Backup verification", "Archive catalog", "Archive migration plan"],
+    "common_mistakes": ["Treating a live sync as a backup, when a deletion or corruption can replicate to the cloud too.", "Assuming files are safe before the upload has actually finished and been verified.", "Ignoring upload time and bandwidth limits when replicating large multitrack sessions."],
+    "scenario_contexts": ["Setting nightly off-site replication of active projects for disaster recovery.", "Sharing a replicated project folder between two studios in different cities.", "Restoring a session from the cloud after a local drive failure."]
+   },
+   "sources": ["IASA-TC 04 (Guidelines on the Production and Preservation of Digital Audio Objects)", "AES technical documents on digital audio storage and redundancy", "Avid Pro Tools | Cloud Collaboration documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4b484597-0978-44c2-875b-4823ad0a9b04",
+   "term": "Cold storage archive",
+   "fields": {
+    "definition": "A long-term archive kept on offline or rarely-accessed, low-cost media such as LTO tape or a cold cloud tier, used for data that must be retained but is seldom retrieved and can tolerate slow access.",
+    "plain_english": "It is long-term storage for projects you rarely need but must keep. It is cheap and safe but slow to reach, like putting boxes in a storage unit across town instead of your closet.",
+    "purpose_function": "It preserves finished projects affordably and durably for the long term, trading fast access for lower cost and stable, offline media.",
+    "practical_application": "After a project is delivered and signed off, an engineer writes it to LTO tape for cold storage and logs it in the archive catalog for future recall.",
+    "category": "Archiving & Backup",
+    "related_terms": ["Archive catalog", "Archive migration plan", "Cloud replication", "Backup verification", "Automatic session backup"],
+    "common_mistakes": ["Expecting instant access from cold storage, when retrieval can take hours or require loading media.", "Keeping only one cold copy with no verification or migration plan as the media age.", "Confusing a cold archive with an active backup used for day-to-day recovery."],
+    "scenario_contexts": ["Writing a delivered album project to LTO tape for permanent retention.", "Moving completed projects off fast working drives to free space.", "Retrieving a years-old session from tape for a reissue or remix."]
+   },
+   "sources": ["IASA-TC 04 (Guidelines on the Production and Preservation of Digital Audio Objects)", "LTO Ultrium / LTFS technical specifications", "AES technical documents on long-term digital audio preservation"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

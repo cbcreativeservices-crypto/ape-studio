@@ -1,0 +1,223 @@
+{
+ "expert": "Language/Communications",
+ "group": 93,
+ "reviews": [
+  {
+   "id": "23a6430d-7172-482b-9164-d7c4b11fe9ec",
+   "term": "Queue-Line Audio",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "scenario_contexts",
+     "severity": "Low",
+     "issue": "First item reads as a garden-path/awkward construction: 'Looping themed ambience and music play through distributed speakers...' The leading participle 'Looping' makes the subject-verb pairing momentarily unclear.",
+     "suggestion": "Reword to 'Themed ambience and music loop through distributed speakers along a switchback queue to theme the wait.'"
+    }
+   ]
+  },
+  {
+   "id": "9dab4ff6-adbe-4b8d-a1a3-4fc8b80e02f7",
+   "term": "Administrative metadata",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7e20fe06-97c6-469a-8983-48802ac23261",
+   "term": "Archival information package",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8eb52360-4c35-4226-935d-dcb8073e479a",
+   "term": "Archive accession number",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b3828c65-8198-4584-a156-4bb277bc76cf",
+   "term": "Archive authenticity verification",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bc08e0fb-4f66-4002-83de-aca9b89cc310",
+   "term": "Archive integrity audit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a55b1b07-5563-41ad-8476-6d737082017a",
+   "term": "Archive lifecycle management",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bca0e812-4e11-4d29-acad-ae70ac12467a",
+   "term": "Archive refresh cycle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "df9deca5-4be8-4d3d-8514-7e9e3a013505",
+   "term": "Archive restoration drill",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6ae0ef0c-a9b6-49d6-a93c-43ca0f8bfd07",
+   "term": "Chain of custody",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7332c99c-f000-4622-8d54-a82c6ec04440",
+   "term": "Checksum audit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2556628d-1bc5-463b-b2cb-b126965ca3ed",
+   "term": "Codec migration strategy",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3d247d63-244f-4a67-ab9e-58a150c8f991",
+   "term": "Cold archive",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2f774a38-5a75-43e0-b83d-7ca1b8e70918",
+   "term": "Dark archive",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "97e3f6fb-f082-4034-9541-c2fc32271e01",
+   "term": "Deep archive",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "635b55ed-cea1-45ec-bbfa-0a3f470517da",
+   "term": "Descriptive metadata",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f80e6ea8-d9fa-41da-bd41-80a52ecf8a5d",
+   "term": "Digital fingerprinting",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "739fc707-87a0-491d-85e7-545bffa161ff",
+   "term": "Digital preservation policy",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "aae89b36-54bf-4417-856a-c11210557197",
+   "term": "Disaster-recovery exercise",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "637b7d06-cfe9-40ee-a59c-c7baa3c5f74a",
+   "term": "Dissemination information package",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "727abf2a-0713-42f9-a3e7-9c3e09b0b500",
+   "term": "Fixity verification",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "335661e7-137c-456b-b27c-a0716306f457",
+   "term": "Format-obsolescence planning",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "73629bab-91ab-47ec-9316-ac1d1be28863",
+   "term": "Geographic redundancy",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b6b11ab7-d99d-4f0d-bb6d-e368e7f2cbc9",
+   "term": "Heritage recording preservation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "04e28269-db65-4259-9581-244cb2104ed4",
+   "term": "Long-term checksum validation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "107dc81a-ca25-4097-9230-fe78e7591d2a",
+   "term": "Media migration policy",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "068af4e2-5d95-4270-a3ad-d48331dde6eb",
+   "term": "Multiple-copy preservation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "13eb6a50-072f-419e-b28b-7796eb0be85c",
+   "term": "OAIS-compliant archive",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7e7cbc41-2b46-41de-be21-1bcf5cf3ce04",
+   "term": "Permanent preservation copy",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "213eeb10-a307-426f-9bd9-3c1d4cf8f027",
+   "term": "Preservation audit trail",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e312a72d-7cde-47cf-8c6c-5e3d9a27b2ee",
+   "term": "Preservation metadata",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "12e1e1ad-ad83-496f-b4e2-9e427db5f3b6",
+   "term": "Preservation package",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ef16c0c5-4339-4e38-a22d-c73aa4959056",
+   "term": "Preservation planning",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7eff0566-0d5a-4d31-a6dd-71653410e216",
+   "term": "Preservation verification",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7b7b25e9-40fc-4425-aa2f-7e70e1036d8f",
+   "term": "Preservation workflow",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

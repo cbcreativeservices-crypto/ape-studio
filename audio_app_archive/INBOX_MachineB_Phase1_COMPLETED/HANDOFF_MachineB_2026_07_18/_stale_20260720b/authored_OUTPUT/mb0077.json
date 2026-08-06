@@ -1,0 +1,159 @@
+{
+ "batch": 77,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "b3ee3be6-2ded-4b4f-8d31-73c525ffa993",
+   "term": "Vocal syllable replacement",
+   "fields": {
+    "definition": "A vocal comping and editing technique in which a single syllable or short phonetic segment from an alternate take is spliced into the chosen lead vocal to repair a flawed word, pitch, or consonant without re-recording the entire line.",
+    "plain_english": "Swapping just one bad syllable in a sung line for the same syllable from another take. It is like fixing one wrong letter in a sentence instead of rewriting the whole thing.",
+    "purpose_function": "It lets an engineer repair a small vocal flaw while keeping the rest of a strong, emotional performance intact, saving time and avoiding a full re-record.",
+    "practical_application": "In a DAW the engineer finds a matching syllable on another take lane, trims it at zero crossings, crossfades it into the comp, and matches its level, tone, and timing.",
+    "category": "Vocal editing",
+    "related_terms": ["Vocal comping", "Crossfade", "Vocal timing pass", "Vocal tuning pass", "Punch-in"],
+    "common_mistakes": ["Cutting away from a zero crossing so the edit clicks or pops", "Not crossfading the join, leaving an audible seam", "Using a syllable whose tone, level, or room sound does not match the surrounding words", "Fixing the pitch but ignoring that the replacement lands slightly off the beat"],
+    "scenario_contexts": ["A lead vocal is perfect except for one mispronounced word that is patched from an earlier take", "A single flat note on one syllable is replaced rather than tuned", "A popped or distorted consonant is swapped for a clean version from another pass"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (vocal editing/comping articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1e7ddcf5-d4af-48a1-8ad9-e914d6e76766",
+   "term": "Vocal take matrix",
+   "fields": {
+    "definition": "An organizational grid that maps multiple recorded vocal takes against the song's sections or phrases, used to track, rate, and select the strongest segments when building a composite (comp) vocal.",
+    "plain_english": "A chart that lines up every vocal take against each part of the song. It helps you spot the best-sung version of each line, a bit like a scorecard.",
+    "purpose_function": "It gives the engineer and artist a clear overview so the best moments from many takes can be found and combined without losing track of what was recorded.",
+    "practical_application": "Engineers keep ratings and notes for each take against each section, often using DAW take lanes or playlists, then use that map to guide their comp choices.",
+    "category": "Vocal comping",
+    "related_terms": ["Vocal comping", "Take lane", "Playlist", "Vocal syllable replacement", "Comp track"],
+    "common_mistakes": ["Recording many takes but never labeling or rating them, making the matrix useless", "Choosing takes only by pitch and ignoring timing or emotion", "Deleting alternate takes too early before the comp is finished", "Comping across so many takes that phrasing no longer feels natural"],
+    "scenario_contexts": ["A producer compares six chorus takes line by line before comping", "An assistant labels and rates takes so the mixer can find keepers fast", "A remote artist and engineer use shared notes to agree on the best segments"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (vocal comping articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "63a14ec3-5a4d-432c-8443-c633f8af54a3",
+   "term": "Vocal timing map",
+   "fields": {
+    "definition": "A reference outline of the intended rhythmic placement of vocal words or syllables against the song's grid, tempo, or a guide track, used as a target when aligning edited or corrected vocal timing.",
+    "plain_english": "A plan that shows where each word should land in the beat. You use it as a target when nudging vocal timing into place.",
+    "purpose_function": "It defines a consistent timing reference so multiple vocal layers or edited phrases line up tightly with each other and with the music.",
+    "practical_application": "An engineer marks the target positions for key words or downbeats, then moves or stretches vocal segments to match those points during editing.",
+    "category": "Vocal editing",
+    "related_terms": ["Vocal timing pass", "Time stretching", "Quantize", "Guide track", "Vocal comping"],
+    "common_mistakes": ["Forcing every syllable dead onto the grid so the vocal sounds robotic", "Ignoring that lead and backing vocals may need slightly different placement", "Mapping timing to a click when the band plays with natural push and pull", "Confusing a timing reference with pitch correction"],
+    "scenario_contexts": ["Doubled vocals are aligned to one reference take before mixing", "Stacked harmonies are tightened so consonants hit together", "Edited phrases are checked against the beat before a tuning pass"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (vocal editing/timing articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8adf87f0-b33e-4917-8e5f-6e6c65236e66",
+   "term": "Vocal timing pass",
+   "fields": {
+    "definition": "A dedicated editing pass in which the engineer moves, stretches, or nudges vocal words and syllables so their rhythmic placement aligns with the beat, a guide track, or other vocal layers.",
+    "plain_english": "A round of edits focused only on when each word lands. It is like sliding words a little earlier or later so they sit right on the beat.",
+    "purpose_function": "It tightens the rhythmic feel of a vocal and locks stacked or doubled parts together, which helps the vocal sit cleanly in the mix.",
+    "practical_application": "Using DAW editing and time-stretching tools, the engineer works phrase by phrase to fix late or early entries while keeping the performance sounding natural.",
+    "category": "Vocal editing",
+    "related_terms": ["Vocal timing map", "Time stretching", "Quantize", "Vocal comping", "Crossfade"],
+    "common_mistakes": ["Over-tightening until the vocal loses its groove and feel", "Time-stretching so far that artifacts and warble appear", "Cutting off breaths or consonants when sliding segments", "Doing timing edits after tuning, which can undo careful pitch work"],
+    "scenario_contexts": ["Loose double-tracked vocals are aligned to the lead", "A rushed verse entry is pulled back onto the beat", "Backing harmonies are tightened before the tuning pass"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (vocal editing/timing articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b1915d7d-cc5b-4ce3-b604-aba5ffe313b2",
+   "term": "Vocal transient shaping",
+   "fields": {
+    "definition": "Processing a vocal with a transient shaper to increase or reduce the attack, and sometimes sustain, of word onsets and consonants, controlling clarity and punch independently of the overall level or threshold.",
+    "plain_english": "Using a tool to make the start of each word softer or sharper. It is like turning the bite of the singer's words up or down.",
+    "purpose_function": "It shapes how the front edge of vocal sounds cuts through a mix, adding articulation when a vocal is dull or softening harsh, spiky consonants.",
+    "practical_application": "An engineer inserts a transient designer on the vocal and adjusts attack to bring out or tame consonant onsets, often alongside EQ and de-essing.",
+    "category": "Vocal processing",
+    "related_terms": ["Transient designer", "De-essing", "Compression", "Equalization", "Vocal upward compression"],
+    "common_mistakes": ["Pushing attack so hard that consonants become harsh or clicky", "Reducing attack until the vocal sounds mushy and unclear", "Using it to replace EQ or de-essing rather than working with them", "Applying heavy shaping before checking the raw recording quality"],
+    "scenario_contexts": ["A soft-sung vocal needs more articulation to be heard in a dense mix", "Overly sharp consonants are softened for a smoother lead", "Rap or spoken vocals are sharpened for extra punch"]
+   },
+   "sources": ["SPL Transient Designer technical documentation", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "241fa144-2edc-47f4-99e5-1c02a2b41035",
+   "term": "Vocal tuning pass",
+   "fields": {
+    "definition": "An editing pass using pitch-correction software such as Melodyne or Auto-Tune to move off-pitch vocal notes toward their intended pitches, correcting intonation while preserving the singer's phrasing.",
+    "plain_english": "A round of fixing notes that are slightly out of tune. Software nudges each note to the right pitch, like snapping it to the correct key.",
+    "purpose_function": "It corrects intonation problems so a strong performance can be kept, and it can also create a deliberate tuned effect when applied hard.",
+    "practical_application": "The engineer loads the vocal into a pitch editor, sets the key and scale, then corrects notes by hand or with retune speed, checking that vibrato and character stay natural.",
+    "category": "Vocal editing",
+    "related_terms": ["Pitch correction", "Formant", "Vocal vowel editing", "Vocal timing pass", "Vocal comping"],
+    "common_mistakes": ["Setting retune speed so fast that natural vibrato is flattened", "Correcting to the wrong key or scale and making notes sound worse", "Over-tuning until the vocal sounds artificial when a natural sound was wanted", "Tuning before timing edits, which can shift the corrected notes"],
+    "scenario_contexts": ["A few flat notes in an otherwise great take are pulled into tune", "Stacked harmonies are tuned to lock the chord together", "A hard, obvious tuned effect is applied as a creative choice"]
+   },
+   "sources": ["Celemony Melodyne user manual", "Antares Auto-Tune user manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d0df2ce3-5bee-456c-9ea8-306e10fc89f2",
+   "term": "Vocal upward compression",
+   "fields": {
+    "definition": "Dynamic processing that raises the level of the quietest parts of a vocal rather than lowering the loudest, reducing dynamic range from the bottom up to bring out low-level detail such as breaths and word tails.",
+    "plain_english": "A way to make the quiet parts of a vocal louder without squashing the loud parts. It lifts the soft bits up so every word can be heard.",
+    "purpose_function": "It evens out a vocal's dynamics and increases perceived intimacy and consistency without the pumping that heavy downward compression can cause.",
+    "practical_application": "Engineers use upward-compression modes or parallel setups to boost quiet passages, helping a whispered or uneven vocal stay present in the mix.",
+    "category": "Vocal processing",
+    "related_terms": ["Compression", "Parallel compression", "Downward compression", "Dynamic range", "Vocal transient shaping"],
+    "common_mistakes": ["Raising the noise floor and hiss along with the quiet vocal", "Pushing it so far the vocal sounds squashed and lifeless", "Confusing it with normal downward compression and setting the wrong threshold direction", "Using it to rescue a poorly recorded track instead of fixing the source"],
+    "scenario_contexts": ["A soft, breathy verse is lifted so quiet words stay audible", "An uneven performance is smoothed without obvious pumping", "A vocal is prepared to sit at a consistent level for broadcast"]
+   },
+   "sources": ["Bob Ballou, Handbook for Sound Engineers (dynamics processing)", "Sound on Sound (vocal dynamics articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9be7cd38-a85e-4880-a003-e83f70eb99ca",
+   "term": "Vocal vowel editing",
+   "fields": {
+    "definition": "Editing the sustained vowel portions of vocal notes, adjusting their pitch, formant, length, or level in a pitch editor, to refine tone and intonation while leaving the consonants largely untouched.",
+    "plain_english": "Changing the held vowel sounds inside words, like the ah or ee. You can shift their pitch or length to smooth a note without touching the sharp consonants.",
+    "purpose_function": "It gives fine control over the most tonally important part of a sung note, letting an engineer correct pitch drift or reshape vowels without disturbing word attacks.",
+    "practical_application": "In a pitch editor the engineer separates the vowel body of a note and adjusts its center pitch, formant, or transition to smooth intonation and blend stacked vocals.",
+    "category": "Vocal editing",
+    "related_terms": ["Formant", "Vocal tuning pass", "Pitch correction", "Vocal comping", "Time stretching"],
+    "common_mistakes": ["Shifting formants so far the singer sounds unnatural or chipmunk-like", "Editing the vowel but leaving an audible pitch jump at the consonant", "Flattening natural vowel movement so the note sounds static", "Over-editing many notes until the whole vocal loses its human feel"],
+    "scenario_contexts": ["A vowel that drifts flat in a held note is centered on pitch", "Stacked harmonies are matched so their vowels blend", "A vowel formant is nudged to make a doubled vocal sound less identical"]
+   },
+   "sources": ["Celemony Melodyne user manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "896a6604-a72d-4f81-aa5b-627eae0a5386",
+   "term": "Vocal warmth enhancement",
+   "fields": {
+    "definition": "Tonal processing that increases the body and low-mid harmonic content of a vocal, using EQ, harmonic saturation, or tube and tape emulation, to make it sound fuller and less thin or harsh.",
+    "plain_english": "Making a voice sound fuller and rounder instead of thin or harsh. Engineers add a little low-mid boost or gentle saturation, like adding a cozy glow.",
+    "purpose_function": "It adds perceived richness and pleasing harmonics so a vocal feels close and full-bodied, helping a thin or clinical recording sit better in the mix.",
+    "practical_application": "The engineer applies gentle low-mid EQ boosts and light harmonic saturation or a tube emulation, listening in the full mix to avoid muddiness.",
+    "category": "Vocal processing",
+    "related_terms": ["Equalization", "Harmonic saturation", "Compression", "Proximity effect", "Vocal transient shaping"],
+    "common_mistakes": ["Boosting low-mids until the vocal sounds boxy or muddy", "Adding heavy saturation that turns into audible distortion", "Judging warmth on the solo vocal instead of in the full mix", "Using processing to fix a dull recording that a better mic or source would solve"],
+    "scenario_contexts": ["A thin, bright vocal is given more body to sit with a warm track", "A digital-sounding recording gets gentle tube emulation for character", "A distant vocal is warmed to feel closer and more intimate"]
+   },
+   "sources": ["Bob Ballou, Handbook for Sound Engineers (equalizers and signal processing)", "Sound on Sound (vocal processing articles)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

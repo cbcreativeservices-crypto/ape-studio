@@ -1,0 +1,238 @@
+{
+ "batch": 101,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "a3b9da75-014c-46e1-b97c-38c537666526",
+   "term": "Export validation",
+   "fields": {
+    "definition": "The quality-control step of confirming that a rendered (bounced) mix or master file actually meets its target specification before delivery: verifying the correct file format, sample rate and bit depth, absence of clipping or overs, no dropouts or plug-in glitches, correct start/end points and length, appropriate loudness and metadata, and that the file sounds identical to the monitored mix.",
+    "plain_english": "It means checking your finished exported file to make sure nothing went wrong. You confirm it is the right format, has no clipping or gaps, and sounds just like the mix you heard while working.",
+    "purpose_function": "It catches rendering errors such as wrong settings, clipped peaks, muted tracks, dropouts or plug-in glitches before a file reaches the client, mastering engineer or distributor, where mistakes are costly to fix.",
+    "practical_application": "After bouncing, a technician imports the exported file back into the session or a media player, listens start to finish, checks the meters for overs, and confirms the format, length and file name against the delivery spec.",
+    "category": "Delivery & QC",
+    "related_terms": ["Bouncing", "Mastering", "Dithering", "Loudness normalization", "Sample rate", "Headroom"],
+    "common_mistakes": [
+     "Delivering the file without listening back, so a muted track, clipped peak or dropout goes unnoticed.",
+     "Exporting at the wrong sample rate or bit depth for the target platform.",
+     "Ignoring inter-sample overs because the DAW meter read just under 0 dBFS.",
+     "Trusting the settings and file name without confirming the render actually captured real-time external effects."
+    ],
+    "scenario_contexts": [
+     "Confirming a stereo master matches the loudness and format spec before uploading to a streaming distributor.",
+     "Checking exported stems all start at the same point and are the correct length before sending to a mastering engineer.",
+     "Verifying a real-time export captured hardware-processed audio that a normal offline bounce would not print."
+    ]
+   },
+   "sources": ["Sound on Sound", "Ableton Live Reference Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6264fae3-6e8a-4d45-ae28-9b87851f5d8f",
+   "term": "External Audio Effect",
+   "fields": {
+    "definition": "A DAW device that inserts a piece of external hardware, such as an outboard compressor, EQ or reverb, into the signal path by routing audio out through chosen audio-interface outputs to the hardware and back through chosen inputs, with a hardware-latency control that keeps the returned signal in time. Ableton Live names a device this way; Cubase's External FX and Logic's I/O plug-in fill the same role.",
+    "plain_english": "It is a tool in your music software that lets you use a real hardware effect box as if it were a plug-in. The software sends the sound out to the box, the box changes it, and the sound comes back in, while a delay control keeps it lined up in time.",
+    "purpose_function": "It lets engineers use the sound of outboard analog processors inside an otherwise in-the-box session while automatically compensating for the round-trip delay of leaving and re-entering the computer.",
+    "practical_application": "A technician patches an interface output to the hardware input and the hardware output back to an interface input, loads the device on a track or return, and sets the hardware-latency value so the processed audio stays in sync.",
+    "category": "Signal Routing",
+    "related_terms": ["External Instrument", "Insert", "Return track", "Outboard gear", "Latency compensation", "Audio interface"],
+    "common_mistakes": [
+     "Forgetting the effect is not printed to disk until a real-time export is done, so an offline bounce loses it.",
+     "Not setting the hardware-latency value, leaving the returned audio out of time.",
+     "Routing the hardware return back into its own send and creating a feedback loop.",
+     "UNSAFE: Making or breaking these connections with monitor levels up can cause a loud pop that can damage speakers and hearing, so mute or lower levels first."
+    ],
+    "scenario_contexts": [
+     "Running a mix bus through an analog hardware compressor from inside the DAW.",
+     "Using a vintage outboard EQ on a vocal return without leaving the software session.",
+     "Printing the externally processed signal back to an audio track via a real-time export."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "46c7c9ef-a19e-4b72-8851-780e81ae9036",
+   "term": "External Instrument",
+   "fields": {
+    "definition": "A DAW device that integrates a hardware synthesizer or sound module into a track like a software instrument: it sends MIDI out to a chosen port and channel to play the hardware and returns the hardware's audio into the same track, with a latency-compensation control. Ableton Live and Steinberg Cubase both provide a device of this name.",
+    "plain_english": "It is a tool that lets you play a real hardware synth from inside your music software as if it were a built-in instrument. The software sends the notes out to the synth, and the synth's sound comes back into the track.",
+    "purpose_function": "It combines the sound of external hardware synths with the convenience of software, since one device handles both the MIDI going out and the audio coming back and compensates for the resulting delay.",
+    "practical_application": "A technician connects a MIDI output to the synth and the synth's audio to an interface input, loads the device, selects the MIDI port, channel and audio input, then records or renders the returned audio.",
+    "category": "Signal Routing",
+    "related_terms": ["External Audio Effect", "MIDI", "Sound module", "Audio interface", "Latency compensation", "Virtual instrument"],
+    "common_mistakes": [
+     "Expecting the synth audio to record automatically, when you must arm and print the returned audio, often via a real-time render.",
+     "Mismatching the MIDI channel so the hardware does not respond.",
+     "Not accounting for the hardware's own latency, so parts drift out of time.",
+     "Leaving the track's monitoring on so you hear a delayed doubling of the audio."
+    ],
+    "scenario_contexts": [
+     "Sequencing a hardware analog synth from the DAW timeline and recording its audio.",
+     "Playing a rack sound module across a song and printing the result to an audio track.",
+     "Layering a hardware synth with software instruments while keeping everything in time."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "08381517-2725-4934-8b62-752a2b9024d4",
+   "term": "Fader position fallacy",
+   "fields": {
+    "definition": "The mistaken belief that a channel fader's position indicates, or should be used to set, the actual signal level or gain in a chain. A fader only applies gain or attenuation at the mixing stage, downstream of the input/trim gain; proper gain staging is set with input gain rather than by where the fader sits, and DAW faders are deliberately scaled for fine control near unity rather than as a level indicator.",
+    "plain_english": "It is the wrong idea that where a fader sits tells you how loud a track really is. A fader only turns a sound up or down at the end of the chain. You set the real working level earlier, with the input gain, not by moving the fader.",
+    "purpose_function": "Understanding the fallacy stops students from judging or fixing levels by fader position, which protects the signal-to-noise ratio and headroom and keeps gain staging correct through the whole chain.",
+    "practical_application": "Instead of pushing faders to balance levels, a technician sets each source with input or clip gain, aiming for healthy meters with headroom, then uses faders near unity only for the final balance.",
+    "category": "Gain Staging",
+    "related_terms": ["Gain staging", "Unity gain", "Headroom", "Signal-to-noise ratio", "Clip gain", "Trim"],
+    "common_mistakes": [
+     "Assuming a fader at 0 dB (unity) means the track is at a correct level.",
+     "Riding faders to the top for level instead of raising input gain, adding noise or clipping upstream.",
+     "Reading fader position as if it were a loudness meter.",
+     "Pulling a clipping channel's fader down and thinking the clipping is fixed, when the overload happened before the fader."
+    ],
+    "scenario_contexts": [
+     "Setting initial DAW levels with clip or input gain while leaving faders near unity.",
+     "Troubleshooting a distorted channel whose fader is low but whose input stage is overloaded.",
+     "Teaching new engineers why a low fader does not mean a quiet or clean signal."
+    ]
+   },
+   "sources": ["Sound on Sound", "Yamaha Pro Audio technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c519af9f-e40e-49a3-a173-40c302fa0e90",
+   "term": "Field Recorder Workflow",
+   "fields": {
+    "definition": "The post-production process of bringing a location field recorder's multitrack audio into an editing system and matching it to picture: a guide mixdown recorded alongside the isolated (iso) channels is synced by timecode, then expanded using the files' embedded metadata to reveal and edit the individual channels and alternate takes. It relies on Broadcast Wave/iXML metadata and SMPTE timecode written by the recorder.",
+    "plain_english": "It is how sound from an on-location recorder gets loaded into editing software and lined up with the video. First a simple mixed track is matched to picture by timecode. Then it is opened up to show every separate mic track, so the editor can pick the best one.",
+    "purpose_function": "It lets dialogue editors work quickly from a single guide track yet still reach every individual mic channel the field recorder captured, using metadata and timecode so nothing has to be lined up by hand.",
+    "practical_application": "A dialogue editor cuts the production mixdown to picture, then expands each region to swap in the cleanest iso mic, for example a lav instead of the boom, using the recorder's metadata.",
+    "category": "Post-Production",
+    "related_terms": ["Timecode", "Broadcast Wave (BWF)", "iXML metadata", "Double-system sound", "Iso track", "Dialogue editing"],
+    "common_mistakes": [
+     "Recording without valid timecode or metadata, forcing manual, error-prone syncing.",
+     "Assuming the guide mixdown is the only usable audio and never expanding to the iso channels.",
+     "Ignoring sample-rate or frame-rate mismatches between recorder and session.",
+     "Losing the original file metadata by re-exporting through software that strips it."
+    ],
+    "scenario_contexts": [
+     "Conforming double-system location sound to a film's picture edit.",
+     "Expanding a two-track mixdown to individual lav and boom channels for cleaner dialogue.",
+     "Importing a day's field recordings with timecode and scene/take metadata for editing."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "EBU Tech 3285 (Broadcast Wave Format)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "be7d5a9f-517c-4d41-ab4a-ab6cc25b21e3",
+   "term": "File tempo metadata",
+   "fields": {
+    "definition": "Tempo information stored inside an audio file or its metadata that tells software the file's musical tempo in beats per minute, and often its beat or slice positions, so a DAW can automatically time-stretch or warp the file to the project tempo. Common carriers include ACIDized WAV files, Apple Loops, and REX/sliced-loop files.",
+    "plain_english": "It is tempo information saved inside an audio file that says how fast it is, in beats per minute. Music software reads it so a loop can automatically speed up or slow down to fit the song you are working on.",
+    "purpose_function": "It lets loops and samples conform to a project's tempo automatically, so a technician can drop in a loop and have it lock to the beat without manually stretching it.",
+    "practical_application": "When a technician drags an ACIDized or Apple Loops file into a DAW, the software reads its tempo tag and stretches the loop to the session tempo; exporting a loop with correct tempo metadata lets others use it the same way.",
+    "category": "Metadata",
+    "related_terms": ["Warping", "Time-stretching", "BPM", "ACIDized WAV", "Apple Loops", "REX file"],
+    "common_mistakes": [
+     "Assuming every WAV carries tempo data, when a plain WAV does not and will not auto-stretch.",
+     "Trusting an incorrect embedded tempo, such as half- or double-time, and getting timing errors.",
+     "Losing tempo metadata by converting or re-exporting through software that strips it.",
+     "Confusing file tempo metadata with the project tempo, since changing one does not change the other."
+    ],
+    "scenario_contexts": [
+     "Dropping a loop-library file into a session and having it match tempo automatically.",
+     "Exporting a construction-kit loop with an embedded BPM tag for other producers.",
+     "Diagnosing why an imported loop plays at the wrong speed because its tempo tag is wrong or missing."
+    ]
+   },
+   "sources": ["Sound on Sound", "Ableton Live Reference Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "52708dac-3239-4c30-9122-6a5ca2b1ac3f",
+   "term": "Fill Cue",
+   "fields": {
+    "definition": "A cue, meaning a marker, count or signal, indicating the point at which a fill (a short transitional passage that bridges two sections of music) should be played or launched. It coordinates performers, or triggers fill/transition material at the right moment, in an arrangement or performance.",
+    "plain_english": "It is a signal that tells you exactly when to play a fill, which is a short burst of music that connects one part of a song to the next. Like a nod from the band leader, it says to play the fill now.",
+    "purpose_function": "It keeps everyone lined up so a fill lands on the right beat going into a new section, whether the cue comes from a person, a click, a marker, or an arranger keyboard's indicator.",
+    "practical_application": "A performer or playback operator watches or listens for the fill cue, such as a hand signal, a session marker or a count, and plays or launches the fill so it resolves cleanly into the next section.",
+    "category": "Arrangement",
+    "related_terms": ["Fill trigger", "Fill", "Cue", "Arrangement", "Transition", "Click track"],
+    "common_mistakes": [
+     "Missing the cue and starting the fill on the wrong beat, so it does not resolve into the next section.",
+     "Confusing the fill cue, which is when to play it, with the fill trigger, which is the control that fires it.",
+     "Playing a fill so long it overruns the cue point and steps on the downbeat."
+    ],
+    "scenario_contexts": [
+     "A band leader signalling the drummer to play a fill into the chorus.",
+     "A marker in a DAW session cueing where a transitional fill drops in.",
+     "An arranger keyboard's on-screen indicator showing when a fill will play."
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4e2c9168-6026-4bdb-a19d-13445ee9a86c",
+   "term": "Fill trigger",
+   "fields": {
+    "definition": "A control, such as a button, pad, MIDI note or marker, that launches a fill: a short transitional passage, often drums, between sections. Examples include the Fill In button on drum machines and arranger keyboards, which fires a fill variation, and a sampler pad assigned to a drum-fill sample.",
+    "plain_english": "It is a button, pad, or note that fires off a fill, which is a short drum or music burst that leads into the next part of a song. Press it and the fill plays, like hitting a play-the-fill-now button.",
+    "purpose_function": "It lets a player or the software launch a ready-made fill on demand, adding a transition without having to perform it note by note.",
+    "practical_application": "A technician assigns a fill to a pad or the Fill In button, then triggers it at the end of a phrase so the fill plays and leads into the next section or pattern.",
+    "category": "Arrangement",
+    "related_terms": ["Fill Cue", "Fill", "Drum trigger", "Sampler pad", "Arranger keyboard", "Pattern variation"],
+    "common_mistakes": [
+     "Triggering the fill too early or late so it does not line up with the phrase.",
+     "Assuming every pad or button is a fill trigger when it is mapped to something else.",
+     "Forgetting that an auto-fill may also fire when changing pattern or variation, causing a doubled fill."
+    ],
+    "scenario_contexts": [
+     "Pressing a drum machine's Fill In button to lead into a new section.",
+     "Hitting a sampler pad to fire a recorded drum fill during a live set.",
+     "Mapping a MIDI note to launch a fill clip at a transition in a DAW."
+    ]
+   },
+   "sources": ["Sound on Sound", "Yamaha arranger keyboard Owner's Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3027300d-c3b7-4bbb-a058-be540ca78426",
+   "term": "Film-score mixing",
+   "fields": {
+    "definition": "The process of mixing recorded musical score for film and television: balancing orchestral sections, instruments and recorded stems into a coherent music mix, and delivering that music, often as stems, to the re-recording (dub) stage, where it is balanced against dialogue and sound effects. It emphasizes clarity and dynamics that leave room for dialogue and support the picture.",
+    "plain_english": "It is mixing the music written for a movie or TV show so all the instruments sit together well. The finished music is then handed over. It gets blended with the dialogue and sound effects for the final soundtrack.",
+    "purpose_function": "It shapes the score to support the story and emotion of a scene while leaving space, in level and frequency, for dialogue and effects at the final mix.",
+    "practical_application": "A score mixer balances the orchestra and overdubs, prints music stems such as strings, brass, percussion and synths, and delivers them so the re-recording mixer can fit the music around dialogue and effects.",
+    "category": "Post-Production",
+    "related_terms": ["Stems", "Re-recording mix", "Dialogue", "Orchestral balance", "Scoring stage", "Music cue"],
+    "common_mistakes": [
+     "Mixing the score too dense or bright so it fights dialogue at the dub stage.",
+     "Not delivering separated stems, leaving the re-recording mixer no control over the music balance.",
+     "Over-compressing the music and losing the dynamics a scene needs.",
+     "Ignoring the picture and mixing the music as a standalone album track."
+    ],
+    "scenario_contexts": [
+     "Balancing a recorded orchestra into a music mix for a film cue.",
+     "Delivering music stems to a re-recording mixer for the final soundtrack.",
+     "Adjusting a score mix so it sits under dialogue in a dramatic scene."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 329,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "146ab74b-fe51-415d-bf8e-f315c7ba64dc",
+   "term": "Duplex scaling resonance",
+   "fields": {
+    "definition": "Sympathetic vibration of the non-speaking (duplex) string segments in a grand piano — the front and rear portions of each string beyond the agraffe and bridge — which are proportioned to sound harmonics of the struck note, adding high-partial brilliance and sustain to the tone.",
+    "plain_english": "In a grand piano, the short bits of string on each side of the played part can be tuned to ring along with the note. This adds a bright, shimmering top to the sound.",
+    "purpose_function": "It enriches a piano's timbre by letting extra string lengths resonate, reinforcing upper harmonics so the instrument sounds brighter and more sustained without any added striking force.",
+    "practical_application": "An engineer close-miking a grand hears duplex resonance as extra sparkle and ring after each note, and can mute the duplex segments with felt strips when a cleaner, drier tone is wanted.",
+    "category": "Piano Resonance",
+    "related_terms": ["Sympathetic resonance", "Aliquot stringing", "Sustain", "Overtone series", "Decay"],
+    "common_mistakes": ["Confusing designed duplex resonance with stray sympathetic ringing from other undamped strings.", "Treating it as unwanted noise to eliminate rather than a built-in part of the tone.", "Assuming every piano has tuned duplex segments, when many uprights and budget grands do not."],
+    "scenario_contexts": ["Close-miking a concert grand and noticing extra high-frequency shimmer after each note.", "Damping the rear duplex with felt to tame brightness for a pop session.", "Comparing the tonal halo of a piano with duplex scaling against one without it."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (piano chapter)", "Reblitz, Piano Servicing, Tuning, and Rebuilding"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c100f574-356a-47a3-aa3b-6fb3d4d1c748",
+   "term": "Edge strike",
+   "fields": {
+    "definition": "Striking a cymbal at its outer edge, rather than the bow or bell, to produce the loudest and most explosive attack, with a broad, fast-building spread of high overtones and a full crash character.",
+    "plain_english": "Hitting a cymbal right on its outer rim. It gives the biggest, brightest crash and is the loudest way to strike it.",
+    "purpose_function": "It gives a drummer the fullest, most cutting cymbal accent by exciting the widest range of vibration modes, producing a bright, sustaining crash that marks climaxes and transitions.",
+    "practical_application": "When micing cymbals, engineers expect edge strikes to peak much hotter than bow strikes, so they set gain and limiting to survive the transient without clipping.",
+    "category": "Percussion Attack",
+    "related_terms": ["Bell strike", "Crash", "Transient", "Attack", "Cymbal wash"],
+    "common_mistakes": ["Aiming a mic straight at the edge, where the strike moves the most air and can overload the capsule.", "Confusing an edge strike (crash) with a bow strike (ride ping).", "UNSAFE: Ignoring the very high peak SPL of close-miked edge strikes, risking hearing damage without protection."],
+    "scenario_contexts": ["A drummer crashing a ride on the edge for a chorus accent.", "Setting cymbal mic gain to handle loud edge strikes during a rock take.", "Identifying edge-strike crashes versus bell hits while editing drum tracks."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (percussion chapter)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1111a910-4c0e-450e-aef6-7e63ecb04300",
+   "term": "Escapement click",
+   "fields": {
+    "definition": "A faint mechanical click in a grand piano's action at let-off, produced when the jack escapes from under the hammer knuckle and releases the hammer to fly to the string; an incidental noise heard just before or with the note attack.",
+    "plain_english": "A tiny click inside a grand piano when the key's lever lets the hammer go. It happens right as the note starts.",
+    "purpose_function": "The escapement (let-off) exists so the hammer flies free and rebounds instead of jamming against the string; the click is a by-product of that release, not a designed sound.",
+    "practical_application": "Engineers close-miking a piano may capture escapement clicks as mechanical noise and reduce them through mic placement, while a technician can regulate the action to quiet an overly loud let-off.",
+    "category": "Piano Mechanism Noise",
+    "related_terms": ["Let-off", "Piano action", "Attack transient", "Key noise", "Hammer"],
+    "common_mistakes": ["Mistaking a normal escapement click for a fault or buzz in the instrument.", "Adjusting the wrong part instead of regulating let-off to reduce it.", "Assuming it can be removed entirely, when some mechanical noise is inherent to the action."],
+    "scenario_contexts": ["Hearing faint clicks under quiet passages on a close-miked solo piano recording.", "A technician regulating let-off to quiet a noisy action.", "Editing mechanical clicks out of an exposed, intimate piano track."]
+   },
+   "sources": ["Reblitz, Piano Servicing, Tuning, and Rebuilding", "Fletcher & Rossing, The Physics of Musical Instruments (piano action)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "13bd9f24-a9fa-4ebf-8f9a-fd25eeb7da06",
+   "term": "Finger attack",
+   "fields": {
+    "definition": "The onset transient of a note initiated directly by the finger — plucking a string with the fingertip or nail, or depressing a key — typically rounder and less percussive than the attack from a pick, hammer, or bow.",
+    "plain_english": "The start of a note made with the finger instead of a pick. It is usually softer and warmer than a pick's sharp attack.",
+    "purpose_function": "It shapes the very start of a note's envelope, and its gentler transient gives fingerstyle playing a warmer, more vocal character than plectrum or struck attacks.",
+    "practical_application": "An engineer choosing mics and compression for fingerstyle guitar or bass works with a softer attack transient than for pick playing, setting attack times to preserve the natural onset.",
+    "category": "String Articulation",
+    "related_terms": ["Attack transient", "Finger pluck", "Pick attack", "Envelope", "Transient"],
+    "common_mistakes": ["Setting compressor attack too fast and squashing the soft finger transient flat.", "Assuming a finger attack has no transient worth protecting and over-boosting highs.", "Confusing finger attack (the note onset) with finger noise (incidental string sounds)."],
+    "scenario_contexts": ["Recording fingerstyle acoustic guitar and choosing a compressor that keeps the gentle attack.", "Dialing bass tone for a fingered part versus a picked part.", "Comparing the softer onset of fingered notes with slapped or picked ones."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7515079d-164e-4d7d-8711-17a6dacc2f53",
+   "term": "Finger noise",
+   "fields": {
+    "definition": "Incidental, non-pitched sounds produced by a player's fingers contacting the strings or fingerboard — squeaks, scrapes, buzzes and position-shift noises — regarded as an artifact when unwanted in a recording.",
+    "plain_english": "Extra little sounds the fingers make moving on the strings, like squeaks and scrapes. They are often unwanted noise on a recording.",
+    "purpose_function": "It is not a designed feature but a natural by-product of playing; spotting it lets a technician decide whether it adds realism or should be reduced.",
+    "practical_application": "Engineers cut distracting finger noise with mic placement, EQ dips in the squeak range, or editing, while leaving enough to keep a natural, human feel.",
+    "category": "Performance Artifact",
+    "related_terms": ["Finger squeak", "Finger slide", "Fret noise", "String noise", "De-essing"],
+    "common_mistakes": ["Over-editing until the track sounds lifeless and unnatural.", "Confusing normal finger noise with a mechanical fault in the instrument.", "Boosting presence EQ so far that finger noise turns harsh and obvious."],
+    "scenario_contexts": ["Cleaning up an exposed solo acoustic guitar track.", "Choosing a string type that squeaks less for a session.", "Deciding how much natural finger noise to keep for realism."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fa77c3fb-8dea-4be9-b24c-4ef690fd0cad",
+   "term": "Finger pluck",
+   "fields": {
+    "definition": "Setting a string into vibration by pulling it aside with the fingertip or nail and releasing it (fingerstyle), producing a rounder, warmer attack and different harmonic emphasis than a plectrum.",
+    "plain_english": "Playing a string by pulling it with a finger and letting go. It gives a rounder, warmer sound than a pick.",
+    "purpose_function": "It is the basic fingerstyle way to excite a string, giving the player direct control of dynamics and tone and a softer onset than a pick.",
+    "practical_application": "Engineers record finger-plucked bass or guitar with attention to its fuller low end and softer transient, adjusting compression to suit.",
+    "category": "String Articulation",
+    "related_terms": ["Finger attack", "Fingerstyle", "Pizzicato", "Pick attack", "Transient"],
+    "common_mistakes": ["Assuming a finger pluck and a pick stroke need identical processing.", "Overlooking hand and string position, which strongly change plucked tone.", "Confusing a finger pluck with slap technique."],
+    "scenario_contexts": ["Tracking a fingerstyle electric bass line.", "Recording classical guitar plucked with the nails.", "Blending plucked and picked passages within one performance."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Fletcher & Rossing, The Physics of Musical Instruments (plucked strings)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a3abf2ab-4acd-40b7-90c0-54b685384ead",
+   "term": "Finger slide",
+   "fields": {
+    "definition": "The sound produced when a fingertip slides along the length of a string, either as an intentional glissando between notes or as an incidental squeak during a position shift on a fretted instrument.",
+    "plain_english": "The sound of a finger sliding along a string. It can be done on purpose between notes, or happen by accident when the hand shifts.",
+    "purpose_function": "As a technique it connects notes with a smooth glissando; as an artifact it marks hand movement, and telling the two apart helps a technician keep musical slides and reduce accidental ones.",
+    "practical_application": "Engineers keep expressive slides but tame unwanted slide squeaks with EQ or editing, and may suggest flatwound strings to reduce them.",
+    "category": "String Articulation",
+    "related_terms": ["Finger squeak", "Glissando", "Finger noise", "Fret noise", "Portamento"],
+    "common_mistakes": ["Editing out musical slides along with the unwanted squeaks.", "Confusing an intentional glissando with accidental position-shift noise.", "Assuming any string slides the same, when flatwounds squeak far less."],
+    "scenario_contexts": ["An electric guitar solo using slides for expression.", "Cleaning accidental shift squeaks from an acoustic take.", "Choosing strings to reduce slide noise for a close-miked session."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ed98c85d-c556-4b68-aa16-990ead4002e8",
+   "term": "Finger snap",
+   "fields": {
+    "definition": "A sharp, broadband percussive transient produced by snapping the thumb and middle finger together so the finger strikes the palm; used as a rhythmic sound source and recognizable by its brief, click-like envelope.",
+    "plain_english": "The quick, sharp sound made by snapping your fingers. It is a short click used to keep or add rhythm.",
+    "purpose_function": "It provides a natural, portable percussive accent, common in vocal and pop arrangements, with a very fast attack and almost no sustain.",
+    "practical_application": "Engineers record finger snaps up close and often layer several takes for a fuller sound, using fast transient handling to keep the crisp attack.",
+    "category": "Percussion Attack",
+    "related_terms": ["Transient", "Attack", "Hand clap", "Percussive layer", "Envelope"],
+    "common_mistakes": ["Recording a single snap and expecting it to sound big without layering.", "Using slow compressor attack that dulls the snap's sharp transient.", "Placing the mic so close the snap overloads the input."],
+    "scenario_contexts": ["Layering finger snaps as a backbeat in a pop production.", "Capturing snaps for a sample library.", "Adding live snaps over a sparse verse."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7bad7b42-6bb5-47dc-9a79-9ae9dda95885",
+   "term": "Finger squeak",
+   "fields": {
+    "definition": "The squeaking sound made when a finger slides across the ridges of a round-wound string, caused by friction between skin and the winding; a common and often unwanted artifact on close-miked guitar and bass.",
+    "plain_english": "The squeak you hear when a finger slides over a wound string. It comes from the skin rubbing on the string's ridges.",
+    "purpose_function": "It is not a designed sound but a natural by-product of finger movement on wound strings; recognizing it lets a technician decide whether to keep it for realism or reduce it.",
+    "practical_application": "Engineers reduce finger squeak with flatwound or coated strings, string lubricant, EQ dips, or editing, keeping just enough for a natural feel.",
+    "category": "Performance Artifact",
+    "related_terms": ["Finger slide", "Finger noise", "Fret noise", "String noise", "De-essing"],
+    "common_mistakes": ["Trying to remove every squeak and making the track sound unnatural.", "Blaming the instrument for a normal playing artifact.", "Boosting high EQ that makes the squeaks worse."],
+    "scenario_contexts": ["An exposed acoustic guitar intro with audible string squeaks.", "Switching to coated strings to cut squeak for a session.", "Editing squeaks out of position shifts on a bass track."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

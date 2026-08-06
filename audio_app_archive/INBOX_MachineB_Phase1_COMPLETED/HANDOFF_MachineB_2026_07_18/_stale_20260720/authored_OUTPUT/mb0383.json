@@ -1,0 +1,159 @@
+{
+ "batch": 383,
+ "topic": "Immersive Monitoring & Calibration",
+ "authored": [
+  {
+   "id": "f46f7363-20eb-46d3-912d-1eaa39b14766",
+   "term": "5.1 fold-down monitoring",
+   "fields": {
+    "definition": "Monitoring the 5.1 surround downmix (fold-down) that a renderer derives from an immersive mix, to check how the mix translates to a standard 5.1 system. The fold-down sums the immersive bed channels and objects into the five ear-level channels plus LFE using defined downmix coefficients.",
+    "plain_english": "Listening to the 5.1 surround version that the system makes from a full 3D mix. It lets you hear how the mix will sound for people who only have a normal surround setup.",
+    "purpose_function": "It exists so engineers can confirm the immersive mix still sounds balanced when collapsed to 5.1, since many listeners and broadcast paths use 5.1 rather than full immersive playback.",
+    "practical_application": "A technician switches monitoring to the 5.1 fold-down to check that dialogue, balance and levels hold up before delivery, catching problems that only appear when the height and extra channels collapse.",
+    "category": "Monitoring",
+    "related_terms": ["Downmix monitoring", "5.1.4 monitoring", "7.1.4 monitoring", "Binaural monitoring mode", "Center speaker", "Atmos monitoring layout"],
+    "common_mistakes": ["Assuming the 5.1 fold-down sounds identical to the immersive mix, so skipping the check.", "Forgetting that overhead (height) content collapses into the ear-level channels in the fold-down.", "Setting final levels only on the immersive layout and never verifying the 5.1 downmix."],
+    "scenario_contexts": ["Checking that a Dolby Atmos music mix folds down cleanly to 5.1 before delivery.", "Verifying dialogue clarity in the 5.1 downmix of a film mix.", "Comparing the immersive mix and its 5.1 fold-down to judge translation."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1a41d994-434e-4c58-80f9-697037a41f60",
+   "term": "5.1.4 monitoring",
+   "fields": {
+    "definition": "Monitoring an immersive mix on a 5.1.4 loudspeaker layout: five ear-level channels (left, center, right, left surround, right surround), one LFE channel, and four overhead height speakers. It is a common compact immersive monitoring configuration for Dolby Atmos and similar formats.",
+    "plain_english": "Listening to a 3D mix over a set of speakers: five around you at ear level, one for deep bass, and four above you. It is a common smaller setup for immersive sound.",
+    "purpose_function": "A 5.1.4 layout gives engineers a real height-capable monitoring system that follows the ITU-R and Dolby channel plan, so they can judge overhead and surround placement without needing a large room.",
+    "practical_application": "A technician mixing or checking Dolby Atmos in a compact room uses a 5.1.4 rig to audition object height moves and surround balance.",
+    "category": "Monitoring",
+    "related_terms": ["7.1.4 monitoring", "9.1.4 monitoring", "Atmos monitoring layout", "Center speaker", "5.1 fold-down monitoring", "Downmix monitoring"],
+    "common_mistakes": ["Reading the .4 as extra surround speakers instead of four overhead height speakers.", "Assuming a 5.1.4 mix will sound the same on a larger 7.1.4 or 9.1.6 system without checking.", "Placing the overhead speakers by guess rather than at the specified angles and heights."],
+    "scenario_contexts": ["Setting up a small Dolby Atmos music room on a 5.1.4 layout.", "Checking overhead panning in a 5.1.4 monitoring rig.", "Calibrating the four height speakers and the surrounds in a 5.1.4 studio."]
+   },
+   "sources": ["Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories technical documentation)", "ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0876d09c-181a-4e46-85ac-beb47ee6fac3",
+   "term": "7.1.4 monitoring",
+   "fields": {
+    "definition": "Monitoring an immersive mix on a 7.1.4 loudspeaker layout: seven ear-level channels (left, center, right, left/right side surround, left/right rear surround), one LFE channel, and four overhead height speakers. It is a widely used reference layout for Dolby Atmos production.",
+    "plain_english": "Listening to a 3D mix over seven speakers around you, one for deep bass, and four above you. The two rear speakers add a fuller sense of sound coming from behind the listener.",
+    "purpose_function": "The 7.1.4 layout is a common professional reference because its side and rear surrounds plus four heights let engineers hear surround and overhead detail the way many home immersive systems reproduce it.",
+    "practical_application": "A technician mixes and calibrates Dolby Atmos on a 7.1.4 rig, using the rear surrounds to check sounds that move from the sides to behind the listener.",
+    "category": "Monitoring",
+    "related_terms": ["5.1.4 monitoring", "9.1.4 monitoring", "Atmos monitoring layout", "Center speaker", "Downmix monitoring", "5.1 fold-down monitoring"],
+    "common_mistakes": ["Confusing side surrounds with rear surrounds when wiring or calibrating the seven ear-level channels.", "Reading the .4 as surround speakers rather than four overhead heights.", "Assuming a 7.1.4 mix folds down to 5.1 or stereo without checking."],
+    "scenario_contexts": ["Using a 7.1.4 room as the reference for a Dolby Atmos film or music mix.", "Checking a sound move from side surround to rear surround on 7.1.4.", "Calibrating the four overhead speakers of a 7.1.4 studio to reference level."]
+   },
+   "sources": ["Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories technical documentation)", "ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ae761615-f23f-42d4-bc57-91ab727b7680",
+   "term": "9.1.4 monitoring",
+   "fields": {
+    "definition": "Monitoring an immersive mix on a 9.1.4 loudspeaker layout, which adds a pair of front wide speakers to the seven ear-level channels of 7.1.4, giving nine ear-level channels plus one LFE channel and four overhead height speakers. The front wides fill the gap between the front speakers and the side surrounds.",
+    "plain_english": "Listening to a 3D mix over nine ear-level speakers, one for deep bass, and four above you. Two extra front speakers fill the gap between the front and the sides, so sounds move more smoothly across the front.",
+    "purpose_function": "The front wide pair widens and smooths the frontal image, so panning between the front speakers and the side surrounds sounds more continuous than it does on a 7.1.4 layout.",
+    "practical_application": "A technician working in a larger immersive room uses 9.1.4 to check that sounds sweeping across the front stay smooth, then confirms the mix still translates to smaller layouts.",
+    "category": "Monitoring",
+    "related_terms": ["7.1.4 monitoring", "5.1.4 monitoring", "Atmos monitoring layout", "Center speaker", "Downmix monitoring", "5.1 fold-down monitoring"],
+    "common_mistakes": ["Confusing the front wide speakers with the side surrounds.", "Assuming every playback system has front wides; most home systems do not.", "Reading the .4 as surround channels instead of four overhead heights."],
+    "scenario_contexts": ["Monitoring a large-format Dolby Atmos mix on a 9.1.4 rig with front wides.", "Checking that front-stage panning stays smooth across a 9.1.4 layout.", "Confirming a 9.1.4 mix folds down correctly to 7.1.4 and 5.1."]
+   },
+   "sources": ["Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories technical documentation)", "ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e12bde80-ce6b-43b5-b166-9b8b323af4c9",
+   "term": "Atmos monitoring layout",
+   "fields": {
+    "definition": "The physical arrangement and channel plan of loudspeakers used to monitor a Dolby Atmos mix, defined by ear-level, LFE and overhead positions at Dolby-specified angles and heights (for example 5.1.4, 7.1.4 or 9.1.6). It follows Dolby's placement guidance and the ITU-R base surround geometry.",
+    "plain_english": "The set of speakers, and where each one goes, used to listen to a Dolby Atmos mix. Dolby gives exact positions and angles so every studio hears the mix the same way.",
+    "purpose_function": "A defined monitoring layout ensures the mix is judged on a known, repeatable speaker geometry, so decisions made in one room translate to other Atmos rooms and to home systems.",
+    "practical_application": "A technician sets up and calibrates speakers to the chosen Atmos layout, checking each position's angle, height and level against Dolby's specification before mixing.",
+    "category": "Speaker layout",
+    "related_terms": ["5.1.4 monitoring", "7.1.4 monitoring", "9.1.4 monitoring", "Center speaker", "Downmix monitoring", "Binaural monitoring mode"],
+    "common_mistakes": ["Placing overhead or surround speakers by eye instead of at the specified angles and heights.", "Assuming any speaker positions will do as long as the channel count is right.", "Skipping calibration of level and distance for each speaker in the layout."],
+    "scenario_contexts": ["Building a new Dolby Atmos room to a 7.1.4 monitoring layout.", "Aligning speaker angles and heights to Dolby's specification before a mix.", "Choosing between 5.1.4 and 9.1.6 monitoring layouts for a studio."]
+   },
+   "sources": ["Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories technical documentation)", "ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "59baa346-3abf-467b-b3d2-16b04b7a70a7",
+   "term": "Binaural monitoring mode",
+   "fields": {
+    "definition": "A monitoring mode in which the immersive mix is rendered to a two-channel binaural signal for headphones, using head-related transfer functions so that surround and height positions are perceived over stereo headphones. In the Dolby Atmos Renderer, each object can be given a binaural distance setting (Off, Near, Mid or Far) that controls its spatial treatment.",
+    "plain_english": "A way to hear a 3D mix on ordinary headphones, where the system fakes the sense of sound coming from around and above you. It uses a model of how our ears judge direction to place each sound.",
+    "purpose_function": "Binaural monitoring lets engineers check an immersive mix on headphones when no speaker array is available, and it previews how listeners will hear the mix on phones and earbuds.",
+    "practical_application": "A technician switches to binaural monitoring to work on Atmos over headphones and to set each object's Near, Mid or Far binaural distance for the headphone render.",
+    "category": "Monitoring",
+    "related_terms": ["Binaural render check", "Downmix monitoring", "5.1 fold-down monitoring", "Atmos monitoring layout", "Center speaker", "7.1.4 monitoring"],
+    "common_mistakes": ["Treating the binaural headphone render as identical to the speaker mix and making final calls only on headphones.", "Leaving every object's binaural distance at default instead of setting Off, Near, Mid or Far by ear.", "Expecting binaural cues to work well on loudspeakers, where they are meant for headphones."],
+    "scenario_contexts": ["Mixing Dolby Atmos on headphones when no speaker room is available.", "Setting per-object binaural distance to shape the headphone render.", "Previewing how an Atmos mix will sound to streaming listeners on earbuds."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "Dolby Professional Support: What is Binaural Render Mode and how do the settings affect my mix (Dolby Laboratories technical documentation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d5c30083-b5b8-489c-9496-e68ec393e0c1",
+   "term": "Binaural render check",
+   "fields": {
+    "definition": "A quality-control step in which the engineer auditions the binaural (headphone) render of an immersive mix to confirm it translates well to headphones, adjusting each object's binaural distance setting (Off, Near, Mid, Far) as needed. It verifies the two-channel headphone version that many end listeners receive.",
+    "plain_english": "Listening to the headphone version of a 3D mix to make sure it still sounds right on headphones. You check each sound and adjust how near or far it feels.",
+    "purpose_function": "Because a large share of listeners hear immersive music on headphones, the check catches problems such as a weak center image or masked detail that only show up in the binaural render.",
+    "practical_application": "A technician runs a binaural render check near the end of a mix, soloing objects and setting their Near, Mid or Far distance so the headphone version matches the intent of the speaker mix.",
+    "category": "Monitoring",
+    "related_terms": ["Binaural monitoring mode", "Downmix monitoring", "5.1 fold-down monitoring", "Atmos monitoring layout", "Center speaker", "7.1.4 monitoring"],
+    "common_mistakes": ["Skipping the binaural check even though most streaming listeners hear the headphone render.", "Leaving all objects on the default binaural distance instead of setting them by ear.", "Assuming a mix that sounds good on speakers automatically works on headphones."],
+    "scenario_contexts": ["Checking the binaural render of a Dolby Atmos music mix before delivery.", "Setting object binaural distances so the headphone version keeps its depth.", "Comparing the speaker mix and its binaural render to spot translation problems."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "Dolby Professional Support: What is Binaural Render Mode and how do the settings affect my mix (Dolby Laboratories technical documentation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7855b64e-4301-4989-aea6-8a08cca5cbb6",
+   "term": "Center speaker",
+   "fields": {
+    "definition": "The loudspeaker positioned directly in front of the listener at ear level (0 degrees azimuth, the M+000 position), reproducing the center channel. In surround and immersive layouts it anchors the frontal image, most importantly dialogue and lead vocals, to the screen or front of the room.",
+    "plain_english": "The speaker straight ahead of you at ear level. It holds sounds that should stay front and center, like dialogue or the lead singer, so they seem to come from the screen.",
+    "purpose_function": "The center speaker fixes central sounds to one solid point instead of relying on a phantom image between the left and right speakers, keeping dialogue clear and stable for listeners sitting off to one side.",
+    "practical_application": "A technician routes dialogue or a lead vocal to the center speaker and calibrates its level and distance so the front image locks to the screen.",
+    "category": "Loudspeaker",
+    "related_terms": ["Atmos monitoring layout", "5.1.4 monitoring", "7.1.4 monitoring", "Downmix monitoring", "5.1 fold-down monitoring", "9.1.4 monitoring"],
+    "common_mistakes": ["Assuming a phantom center from the left and right speakers is as stable as a real center speaker.", "Setting the center speaker at the wrong height or level, so dialogue pulls away from the screen.", "Ignoring the center channel and mixing dialogue only into left and right."],
+    "scenario_contexts": ["Anchoring film dialogue to the center speaker in a surround or Atmos mix.", "Calibrating the center channel level to match the left and right speakers.", "Placing a lead vocal in the center channel of an immersive music mix."]
+   },
+   "sources": ["ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)", "ITU-R BS.775-3, Multichannel stereophonic sound system (ITU-R Recommendation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b0b22e43-3d0e-4dcb-9619-a81580145160",
+   "term": "Downmix monitoring",
+   "fields": {
+    "definition": "Monitoring the reduced-channel downmixes (for example 5.1 or 2.0 stereo) that a renderer derives from an immersive mix, to verify how it translates to smaller playback formats. The renderer sums the immersive bed channels and objects into the target format using defined downmix coefficients.",
+    "plain_english": "Listening to the smaller versions, like 5.1 or stereo, that the system makes from a full 3D mix. It checks the mix still sounds right for people without immersive speakers.",
+    "purpose_function": "Most listeners hear stereo or 5.1, so downmix monitoring lets engineers confirm the mix stays balanced and mono-compatible in those formats before delivery.",
+    "practical_application": "A technician cycles through the stereo and 5.1 downmixes while mixing, checking levels, balance and phase so problems do not appear only on smaller systems.",
+    "category": "Monitoring",
+    "related_terms": ["5.1 fold-down monitoring", "Binaural monitoring mode", "Atmos monitoring layout", "Center speaker", "5.1.4 monitoring", "7.1.4 monitoring"],
+    "common_mistakes": ["Delivering an immersive mix without ever checking its stereo and 5.1 downmixes.", "Assuming the downmix keeps the immersive balance, when levels and phase can shift.", "Forgetting to check mono compatibility, so elements cancel in the folded-down stereo."],
+    "scenario_contexts": ["Checking the stereo and 5.1 downmixes of a Dolby Atmos master before delivery.", "Testing mono compatibility of the stereo downmix.", "Comparing the immersive mix with its downmixes to judge translation."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

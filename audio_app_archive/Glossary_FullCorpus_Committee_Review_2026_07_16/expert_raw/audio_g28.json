@@ -1,0 +1,223 @@
+{
+ "expert": "AUDIO TECHNICAL EXPERT",
+ "group": 28,
+ "reviews": [
+  {
+   "id": "c3cb14c8-29a6-4c07-9eaa-6606905526eb",
+   "term": "Low-Pass Filter (LPF / High-Cut Filter)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d5a7f722-3ea0-44b3-85f0-ae5e521a3e2a",
+   "term": "Low-Voltage Wiring",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "76d4c8ae-6b53-48e4-907b-e5bd884f2e45",
+   "term": "LUFS (Loudness Units Full Scale)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3b00473f-d46a-4610-ac73-082d01ec66f7",
+   "term": "LUFS meter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "570bd924-172c-40f4-a573-378dc09e9117",
+   "term": "M/S (mid-side) recording",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "00f8d603-999f-4774-8a06-2f157034c3cb",
+   "term": "MADI (Multichannel Audio Digital Interface)",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "purpose_function",
+     "severity": "Low",
+     "issue": "purpose_function states MADI transmits '64 channels of audio over fiber optic cable', naming fiber as the only medium, which contradicts this entry's own definition and practical fields (correctly 'coaxial or fiber'). Web-verified via AES10/Wikipedia and RME docs: MADI runs over 75-ohm coaxial (BNC, ~100 m) or fiber-optic (SC, up to ~2 km); coax is in fact the original/most common medium. A student reading only purpose_function could wrongly conclude fiber is required.",
+     "suggestion": "Change '...over fiber optic cable.' to '...over a single 75-ohm coaxial (BNC) or fiber-optic cable.' to match the definition."
+    }
+   ]
+  },
+  {
+   "id": "1164b893-d0d0-488c-a925-e28e83c460f8",
+   "term": "Magnet",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "68457bf3-e716-4ee4-ba9f-594eb3acde5f",
+   "term": "Magnet assembly",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e6d3727d-08ab-4f5a-bc1a-0e891431f300",
+   "term": "Magnitude",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "802d0e95-567b-441f-8576-8603b746da14",
+   "term": "Magnitude trace",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "47e15c62-64a6-413c-aca4-6d2ec2b8c9ef",
+   "term": "Main PA",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "191ab877-cb5c-4c20-a257-0c8331a62749",
+   "term": "Main Speakers",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "da3a90b8-20b9-4c19-ab6e-10c54fa6fcd0",
+   "term": "Mains Hum Frequencies",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "941712d4-54e2-415d-a781-8f7e7786ed25",
+   "term": "Mains polarity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a4e8b67e-b37e-4179-8864-45905dc40d23",
+   "term": "Mains Power",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6bfa145e-cb10-4764-b0da-3d02022aff2a",
+   "term": "Mains Voltage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "94adf5af-1440-4a92-9f9e-e2ee03887999",
+   "term": "Maintenance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "401f4d45-50e9-4903-b75a-b82dc7f081a2",
+   "term": "Maintenance Schedule",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "05dc816f-16c7-40cb-8130-ee6e51fb1219",
+   "term": "Makeup Gain",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2b3e66e8-3018-4e82-89b2-2bea9b9f911a",
+   "term": "Marine Audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c8b46714-1201-4e41-b7b5-126b4844a615",
+   "term": "Masking",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2ee58f33-b85a-4ae4-b543-61db9da94b2e",
+   "term": "Mass Notification System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1fe50416-9557-455c-a168-5107e76d4810",
+   "term": "Master Fader",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "95f54347-29f1-420e-8399-da2f63ac2216",
+   "term": "Master Output",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "96d6f23f-dba2-4f93-8cce-76fce38e195c",
+   "term": "Master Section",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1b1ef049-ddfa-438a-9d28-b1c4882f3c8d",
+   "term": "Match EQ",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "83939de9-4f0f-498f-89e3-770e147557fc",
+   "term": "matrix mixer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "527ab4ef-cb05-436b-a869-fe50a2ab3ec8",
+   "term": "Matrix output",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "26a0be0d-3253-4bcf-81e1-b029e5e7031e",
+   "term": "Maximizer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3a256cd5-56fc-4c71-833c-0270cb19d74a",
+   "term": "Maximum Length Sequence (MLS)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d964bf30-cab8-47a1-bf23-aa8fb96c3b97",
+   "term": "Maximum SPL",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "83a818e6-792e-4ce4-9642-3efa403bbe8e",
+   "term": "Measurement channel",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0d25aaf3-ada8-4202-a458-5cb07c937733",
+   "term": "Measurement configuration",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b8b8a4fd-b20c-49bb-b883-625ffd64fb99",
+   "term": "Measurement engine",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d4f6c569-4809-42eb-91e7-f381093ad686",
+   "term": "Measurement interface",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

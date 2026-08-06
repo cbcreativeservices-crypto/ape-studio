@@ -1,0 +1,220 @@
+{
+ "batch": 129,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "0d83b565-8808-4701-9a0d-5a2b62595c99",
+   "term": "Punch Guard",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: 'Punch Guard' has no established or attested meaning in professional audio literature. It is not a recognized mixing/DAW term, technique, published standard, or documented product, and its intended sense is genuinely ambiguous (possible readings include a safeguard against accidental punch-in recording, or protection of a track's transient 'punch'). No >=2 acceptable sources define it."
+   ]
+  },
+  {
+   "id": "8250877c-23d7-4096-9cdd-a8a7f4f2e29d",
+   "term": "Punch optimization",
+   "fields": {
+    "definition": "The process of enhancing the perceived punch of a track or mix - its sense of impact and transient energy - by shaping transients with compressor attack and release settings, transient designers, and EQ in the low and low-mid frequencies.",
+    "plain_english": "Punch is the feeling of a sound hitting hard, like the thump of a kick drum. This is the work of tuning a sound so those hits feel stronger and more solid.",
+    "purpose_function": "It gives drums, bass, and full mixes a stronger sense of impact and energy so they feel powerful and drive the song forward.",
+    "practical_application": "An engineer optimizes punch by setting a slower compressor attack so transients pass through, using a transient shaper on the kick or snare, or lifting the low-mids that carry weight.",
+    "category": "Mixing Technique",
+    "related_terms": [
+     "Transient",
+     "Attack time",
+     "Transient shaper",
+     "Compression",
+     "Bus compression"
+    ],
+    "common_mistakes": [
+     "Using a very fast compressor attack that clamps down on transients and actually removes punch",
+     "Over-compressing the whole mix so nothing retains its impact",
+     "Boosting low-end level instead of shaping the transient, which adds mud rather than punch"
+    ],
+    "scenario_contexts": [
+     "Setting compressor attack and release on a kick drum so it hits harder",
+     "Using a transient designer to add snap and impact to a snare",
+     "Tuning bus compression so a full mix feels punchy without being squashed flat"
+    ]
+   },
+   "sources": [
+    "The Mixing Engineer's Handbook (Owsinski)",
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Handbook for Sound Engineers (Ballou)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "551aea62-5166-45a8-b485-739803dca8e4",
+   "term": "PureDSP pitch correction",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: 'PureDSP' does not correspond to any verifiable, recognized pitch-correction product, algorithm, or standard in manufacturer technical documentation or professional texts. The term cannot be confirmed to a professional standard against >=2 acceptable sources, so authoring a definition would be guessing."
+   ]
+  },
+  {
+   "id": "72358ec0-323d-45e4-8a9b-098d4b3b8ab1",
+   "term": "Push the vocal",
+   "fields": {
+    "definition": "A mixing instruction to increase the prominence of the lead vocal in a mix - making it louder or more forward relative to the backing tracks - typically by raising its fader level, riding gain, writing level automation, or increasing compression.",
+    "plain_english": "This means make the singer's voice stand out more in the song. You turn the voice up or bring it forward so it sits on top of the music.",
+    "purpose_function": "It keeps the lead vocal as the clear focal point of a song, so the lyrics and melody stay easy to follow above the instruments.",
+    "practical_application": "During a mix, an engineer pushes the vocal by riding the fader up in a chorus or automating a few extra decibels on quiet lines so the voice cuts through a dense arrangement.",
+    "category": "Mixing Technique",
+    "related_terms": [
+     "Fader ride",
+     "Gain automation",
+     "Vocal compression",
+     "Lead vocal",
+     "Mix balance"
+    ],
+    "common_mistakes": [
+     "Pushing the vocal so loud it no longer blends with the track",
+     "Raising the whole vocal fader instead of automating only the quiet phrases that need it",
+     "Treating 'push' as adding brightness or effects rather than raising level"
+    ],
+    "scenario_contexts": [
+     "Bringing the lead vocal up a couple of dB in the chorus of a pop song",
+     "Automating extra level on quiet verse lines so every word is intelligible",
+     "A producer asking the mix engineer to push the vocal after noting that the lead vocal sounds buried"
+    ]
+   },
+   "sources": [
+    "The Mixing Engineer's Handbook (Owsinski)",
+    "Modern Recording Techniques (Huber & Runstein)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1f60400d-8854-4284-a897-47156b93165e",
+   "term": "Q-Range",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: while 'Q' (filter quality factor / bandwidth) is an established EQ property, 'Q-Range' is not a standard EQ or filter parameter and is an unattested coinage with an ambiguous meaning (the range of available Q values versus the frequency band a filter affects). No >=2 acceptable sources define it as a term."
+   ]
+  },
+  {
+   "id": "c99ecb6b-e64e-47c2-8d15-38d1a6c23f6b",
+   "term": "Q-Strength",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: 'Q-Strength' is not a recognized EQ or filter parameter or established term. 'Q' is a quality factor describing filter bandwidth, not a 'strength', and this coinage does not map to any documented control. No >=2 acceptable sources define it."
+   ]
+  },
+  {
+   "id": "9d77403e-c29b-4883-9fd8-ce9a786b6203",
+   "term": "Quantize audio",
+   "fields": {
+    "definition": "The process of aligning recorded audio to a rhythmic grid (bars, beats, or subdivisions) by detecting transients, slicing the audio into events, and moving those events onto the nearest grid positions, commonly using elastic or flex time processing to preserve continuity between slices.",
+    "plain_english": "This snaps recorded sounds so they land exactly on the beat. The software finds each hit, cuts the audio there, and nudges each piece onto the grid so the timing is tight.",
+    "purpose_function": "It tightens loose or uneven timing in a performance so a part locks to the tempo, without having to re-record it.",
+    "practical_application": "An engineer quantizes a drum recording by detecting each hit and snapping it to the grid, or uses flex/elastic audio to pull a sloppy bass take back into time.",
+    "category": "Timing & Editing",
+    "related_terms": [
+     "Quantize strength",
+     "Quantize swing",
+     "Grid",
+     "Transient detection",
+     "Elastic Audio"
+    ],
+    "common_mistakes": [
+     "Quantizing at full strength so the performance sounds robotic and loses its feel",
+     "Poor transient detection creating audible glitches or double-triggered slices",
+     "Quantizing to the wrong grid value so notes snap to the wrong subdivision"
+    ],
+    "scenario_contexts": [
+     "Tightening a live drum take to the grid before mixing",
+     "Snapping a slightly rushed guitar strum back into time",
+     "Aligning a multi-track drum kit while keeping the mics phase-coherent"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide",
+    "Steinberg Cubase Operation Manual",
+    "Modern Recording Techniques (Huber & Runstein)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d603f6a2-2b72-4345-84fa-384d03ec828e",
+   "term": "Quantize strength",
+   "fields": {
+    "definition": "A quantize parameter, usually expressed as a percentage, that controls how far each note or audio event is moved toward its nearest grid position; 100% snaps events exactly to the grid, while lower values move them only part of the way, preserving some of the original timing.",
+    "plain_english": "This sets how strongly the timing gets corrected. At full strength notes land right on the beat; at a lower setting they move only partway, so the take keeps some of its natural feel.",
+    "purpose_function": "It lets an engineer tighten timing without fully erasing the human feel of a performance, by choosing how much of the original groove to keep.",
+    "practical_application": "Instead of 100%, an engineer might set quantize strength to about 60-80% on drums so the timing tightens but still breathes.",
+    "category": "Timing & Editing",
+    "related_terms": [
+     "Quantize audio",
+     "Quantize swing",
+     "Grid",
+     "Groove",
+     "Humanize"
+    ],
+    "common_mistakes": [
+     "Always using 100% strength, making parts feel stiff and lifeless",
+     "Assuming strength changes pitch or dynamics rather than only timing",
+     "Setting it so low that clearly off notes still sound out of time"
+    ],
+    "scenario_contexts": [
+     "Setting around 70% strength to tighten a drum take while keeping its groove",
+     "Applying gentle strength to a bass line so it locks with the kick but stays natural",
+     "Dialing strength back when full quantize makes a part feel mechanical"
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual",
+    "Apple Logic Pro User Guide",
+    "Modern Recording Techniques (Huber & Runstein)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d7c27ca7-897d-49e3-9ffa-2f8bfb7b24c4",
+   "term": "Quantize swing",
+   "fields": {
+    "definition": "A quantize parameter that shifts every other grid subdivision (typically the off-beat eighth or sixteenth notes) later in time by a set percentage, giving a swung or shuffled rhythmic feel instead of strictly even timing.",
+    "plain_english": "Swing pushes every other note slightly late to create a bouncy, groovy feel. It is the difference between a stiff straight beat and one that shuffles.",
+    "purpose_function": "It adds groove and human-like bounce to programmed or quantized parts that would otherwise sound rigidly even.",
+    "practical_application": "An engineer applies, say, 55-62% swing to a hi-hat or drum pattern so it grooves like a shuffle instead of sitting dead straight.",
+    "category": "Timing & Editing",
+    "related_terms": [
+     "Quantize audio",
+     "Quantize strength",
+     "Groove",
+     "Shuffle",
+     "Grid"
+    ],
+    "common_mistakes": [
+     "Applying heavy swing to parts meant to be straight, making them sound out of time",
+     "Using different swing amounts on layered parts so they fight each other",
+     "Confusing swing with quantize strength or with the grid value"
+    ],
+    "scenario_contexts": [
+     "Adding swing to a straight programmed hi-hat to give it a shuffle feel",
+     "Matching a sampled loop's swing so a new part grooves with it",
+     "Applying subtle swing to quantized drums so they feel less robotic"
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual",
+    "Apple Logic Pro User Guide",
+    "Modern Recording Techniques (Huber & Runstein)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

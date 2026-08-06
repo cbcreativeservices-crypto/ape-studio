@@ -1,0 +1,159 @@
+{
+ "batch": 73,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "5d44a54a-e578-4a81-bc00-5d56a6b0d9c9",
+   "term": "Vocal forward placement",
+   "fields": {
+    "definition": "A mixing approach in which the lead vocal is balanced to sit prominently at the front of the perceived depth field, achieved through relative level, presence-range EQ, and restrained ambience so the voice reads as closer and more immediate than the surrounding arrangement.",
+    "plain_english": "This means setting the singer's voice so it sits right up front in the mix. Like a lead actor standing at the front of the stage, the voice stays clear and easy to hear above the band.",
+    "purpose_function": "It keeps the most important element, the vocal, clearly audible and emotionally central so the listener follows the lyric and melody without effort. It exists because dense band arrangements can easily bury a voice.",
+    "practical_application": "An engineer creates it by lifting the vocal fader relative to the backing, adding a touch of presence-range EQ, and keeping reverb short and lower in level so the voice stays close rather than pushed back into the room.",
+    "category": "Mix Balance",
+    "related_terms": ["Vocal level ride", "Vocal intelligibility enhancement", "Vocal leveling compression", "Vocal gain automation", "Vocal low-cut filtering"],
+    "common_mistakes": ["Pushing the vocal fader up so far that the rest of the band feels weak and disconnected instead of using EQ and dynamics to help the voice cut", "Adding long, loud reverb while trying to sound forward, which actually pushes the voice back and away", "Assuming forward placement means simply louder, ignoring that presence EQ and controlled dynamics do most of the work"],
+    "scenario_contexts": ["Mixing a pop or rock song where the lead vocal must ride clearly on top of guitars, drums, and synths", "Preparing a rough mix for a client who wants to hear the singer front and center", "Balancing a dense full-band arrangement so the lyric stays intelligible on small speakers and earbuds"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "afc0547b-745d-4c51-9942-383c193c30f0",
+   "term": "Vocal gain automation",
+   "fields": {
+    "definition": "The use of a DAW's automation system to write and play back level changes on a vocal track over time, so that individual words, phrases, or sections are raised or lowered to a consistent, intended balance without manual real-time adjustment.",
+    "plain_english": "This is writing volume moves for the vocal track so they play back on their own. The software remembers each change, so quiet words come up and loud words come down every time.",
+    "purpose_function": "It evens out a vocal's changing loudness and keeps every word audible against the arrangement, complementing compression by fixing bigger, section-level balance shifts. It exists so the balance is repeatable and precise.",
+    "practical_application": "An engineer draws or records fader moves on the vocal automation lane, nudging soft syllables up and loud belts down phrase by phrase, then fine-tunes the drawn points while listening in context.",
+    "category": "Level Automation",
+    "related_terms": ["Vocal level ride", "Vocal leveling compression", "Vocal forward placement", "Vocal limiting", "Vocal intelligibility enhancement"],
+    "common_mistakes": ["Relying only on automation to fix dynamics that a compressor should handle first, leading to hundreds of tiny moves", "Writing volume moves so aggressive that the vocal loses its natural feel and sounds flat", "Forgetting that automation happens after the plug-in chain, so heavy moves can change how downstream processors react"],
+    "scenario_contexts": ["Bringing up a mumbled word at the end of a line so the lyric stays clear", "Automating a chorus vocal a bit louder than the verse to lift the energy", "Cleaning up an uneven performance where the singer moved off and on the microphone"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Sound on Sound, mixing technique articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f5f08e32-c334-4969-889d-d402d486bb45",
+   "term": "Vocal gating",
+   "fields": {
+    "definition": "The application of a noise gate to a vocal track so that the signal is attenuated or muted whenever it falls below a set threshold, removing low-level bleed, hum, breaths, and room noise in the gaps between sung or spoken phrases.",
+    "plain_english": "A gate is a switch that mutes a track when the sound drops below a set level. On vocals it cuts the hiss, hum, and breath sounds during the gaps when the singer is not singing.",
+    "purpose_function": "It cleans up the silent spaces in a vocal so noise and bleed do not build up when many tracks play together. It exists to keep a vocal track quiet and controlled between phrases.",
+    "practical_application": "An engineer sets the threshold just above the background noise and adjusts attack, hold, and release so the gate opens instantly on words but does not chop off soft word endings or clamp shut during held notes.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Vocal low-cut filtering", "Vocal leveling compression", "Vocal gain automation", "Vocal limiting", "Vocal level ride"],
+    "common_mistakes": ["Setting the threshold too high so quiet words and breath tails get cut off, making the vocal sound choppy", "Using too fast a release so the gate 'chatters' open and shut on sustained or fading notes", "Gating instead of editing, when muting or fading the gaps by hand would sound cleaner and more natural"],
+    "scenario_contexts": ["Silencing headphone bleed and mic hiss between lines on a tracked studio vocal", "Cleaning up a spoken-word or podcast take with audible room noise in the pauses", "Tightening a live vocal channel so an open mic does not pass stage noise between phrases"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bf8bdeae-86f6-4fe2-a1b3-200dc9c5ab59",
+   "term": "Vocal harshness reduction",
+   "fields": {
+    "definition": "Tonal treatment that tames aggressive, edgy energy in a vocal, typically in the upper midrange and lower presence region around 2 to 5 kHz, using subtractive EQ, dynamic EQ, or multiband compression to soften strident peaks while preserving clarity.",
+    "plain_english": "Some singing has a sharp, edgy tone that can hurt the ears. This means turning down those harsh notes so the voice sounds smooth but still clear.",
+    "purpose_function": "It makes a bright or strident vocal comfortable to listen to over time without dulling the voice or hiding the words. It exists because forceful singing and some microphones push extra energy in the range the ear is most sensitive to.",
+    "practical_application": "An engineer sweeps a narrow EQ boost through the upper mids to find the harsh spot, then cuts it, or uses a dynamic EQ so the reduction only kicks in on the loud, harsh moments and leaves softer passages untouched.",
+    "category": "EQ / Tone",
+    "related_terms": ["Vocal intelligibility enhancement", "Vocal low-cut filtering", "Vocal leveling compression", "Vocal forward placement", "Vocal limiting"],
+    "common_mistakes": ["Cutting too wide or too deep, which removes the presence that helps the vocal cut and makes it sound dull and distant", "Confusing harshness (upper mids) with sibilance (higher 'ess' frequencies) and reaching for the wrong tool", "Fixing with static EQ what really needs a dynamic EQ, so quiet parts lose brightness they never had a problem with"],
+    "scenario_contexts": ["Softening a belted rock chorus that turns brittle and edgy on loud notes", "Taming a bright condenser microphone that exaggerates a singer's upper midrange", "Smoothing a vocal that sounds fine alone but grates once played loud in the full mix"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Sound on Sound, EQ technique articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "05896a93-f7ea-4b8b-939f-f22e29f597ff",
+   "term": "Vocal intelligibility enhancement",
+   "fields": {
+    "definition": "Processing aimed at making the words of a vocal clearly understandable in a mix, primarily by supporting the consonant and presence range (roughly 2 to 6 kHz), controlling dynamics, and clearing competing energy from other instruments so speech cues are not masked.",
+    "plain_english": "This means making the words easy to understand. You lift the sounds that carry speech and clear away anything that covers them, so every word comes through.",
+    "purpose_function": "It ensures the listener can follow the lyric even in a busy arrangement or on small speakers. It exists because consonants, which carry most of the meaning, are low in energy and easily buried by other instruments.",
+    "practical_application": "An engineer adds gentle presence-range EQ, keeps vocal dynamics under control so quiet words stay audible, and carves a little competing energy out of guitars or keys so the voice has its own space.",
+    "category": "EQ / Tone",
+    "related_terms": ["Vocal harshness reduction", "Vocal forward placement", "Vocal leveling compression", "Vocal low-cut filtering", "Vocal gain automation"],
+    "common_mistakes": ["Only boosting presence and ignoring that consistent level (dynamics) matters just as much for hearing every word", "Adding so much high-mid boost that the voice becomes harsh while chasing clarity", "Failing to make room in competing instruments, so the vocal fights guitars and keys for the same frequencies"],
+    "scenario_contexts": ["Making sure the lyric is clear in a dense rock or pop mix on phone speakers", "Improving word clarity on a dialogue or voice-over track for broadcast", "Helping a soft or breathy singer's consonants read against a full band"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b33fc077-e197-4341-a494-bc0c3f419dd4",
+   "term": "Vocal level ride",
+   "fields": {
+    "definition": "The practice of manually adjusting a vocal's fader in real time during playback, pushing quiet phrases up and pulling loud phrases down, to keep the voice at a consistent balance against the arrangement.",
+    "plain_english": "This is moving the fader by hand to keep the voice at a steady level. You pull it down on loud parts and push it up on soft parts, like steering to stay in your lane.",
+    "purpose_function": "It smooths out a vocal's natural loudness changes so every phrase sits right in the mix, often serving as the foundation before or alongside compression. It exists because the ear notices even small balance shifts on a lead vocal.",
+    "practical_application": "An engineer plays the song and rides the vocal fader in passes, recording the moves as automation, focusing on catching phrases that duck under the band or jump out too far.",
+    "category": "Level Control",
+    "related_terms": ["Vocal gain automation", "Vocal leveling compression", "Vocal forward placement", "Vocal limiting", "Vocal intelligibility enhancement"],
+    "common_mistakes": ["Trying to fix every syllable by hand instead of letting a compressor handle fast changes and riding only the bigger moves", "Riding after heavy compression, which can leave little useful range and cause noticeable pumping", "Making moves so large the vocal balance feels unnatural and jumps around"],
+    "scenario_contexts": ["Evening out a dynamic singer whose verses whisper and choruses belt", "Setting up automation passes before committing a final vocal balance", "Rescuing a lively performance where compression alone cannot keep every phrase in place"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5222cde1-3903-4d34-8311-07d1b32455c2",
+   "term": "Vocal leveling compression",
+   "fields": {
+    "definition": "The use of a compressor to reduce the dynamic range of a vocal, attenuating louder passages so that soft and loud portions sit closer in level, giving the voice a steadier, more even presence in the mix.",
+    "plain_english": "A compressor turns down the loudest parts of a track. On vocals it brings soft and loud words closer in level, so the voice stays even and sits well in the mix.",
+    "purpose_function": "It controls the wide loudness swings of a natural voice so the vocal stays audible and consistent without constant manual riding. It exists because untreated vocals vary too much to hold a steady place in a busy mix.",
+    "practical_application": "An engineer sets a moderate ratio and a threshold that catches the louder phrases for a few decibels of gain reduction, adjusting attack and release so the compression evens the level without dulling the delivery, sometimes splitting the work across two compressors.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Vocal limiting", "Vocal level ride", "Vocal gain automation", "Vocal forward placement", "Vocal gating"],
+    "common_mistakes": ["Using too high a ratio with too much gain reduction, squashing the life and breath out of the vocal", "Setting the attack too fast and killing the consonant transients that give the voice clarity", "Leaning entirely on the compressor and skipping level rides for the big section-level balance moves"],
+    "scenario_contexts": ["Evening out a pop lead vocal so it holds a steady spot through verse and chorus", "Controlling a singer who drifts on and off the microphone during a take", "Preparing a vocal to sit consistently in a loud, dense band arrangement"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9065782f-35a7-4fdc-8597-8b7c0d444522",
+   "term": "Vocal limiting",
+   "fields": {
+    "definition": "The application of a limiter, a compressor with a very high ratio and fast response, to a vocal so that peaks are prevented from exceeding a set ceiling, catching sudden transients while leaving the bulk of the signal largely unchanged.",
+    "plain_english": "A limiter is a strong compressor that stops a signal from going past a set ceiling. On vocals it catches sudden loud peaks so nothing clips or distorts.",
+    "purpose_function": "It safeguards against occasional overshoots that would clip or spike above the rest of the vocal, and can add a final touch of loudness. It exists to hold a hard peak ceiling that gentler compression is not designed to enforce.",
+    "practical_application": "An engineer places a limiter after leveling compression, sets the ceiling just below clipping, and lets it grab only the rare loudest peaks, watching that it engages sparingly rather than working constantly.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Vocal leveling compression", "Vocal level ride", "Vocal gain automation", "Vocal gating", "Vocal intelligibility enhancement"],
+    "common_mistakes": ["Driving the limiter hard as a loudness tool, which flattens the vocal and adds distortion", "Using a limiter to do the everyday dynamic control that a normal compressor should handle first", "Setting the ceiling too high so real peaks still slip through and clip downstream"],
+    "scenario_contexts": ["Catching the odd loud consonant or belt that spikes above an already compressed vocal", "Protecting a live vocal channel from sudden peaks that could overload the system", "Placing a peak ceiling on a vocal bus before it hits the mix bus"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1b248a01-99df-4905-9f98-31749ef888fd",
+   "term": "Vocal low-cut filtering",
+   "fields": {
+    "definition": "The use of a high-pass (low-cut) filter on a vocal to attenuate energy below a chosen corner frequency, typically in the roughly 60 to 120 Hz region, removing subsonic rumble, handling and stand noise, and excess proximity-effect buildup that the voice does not need.",
+    "plain_english": "A low-cut filter removes the deep low sounds a voice does not need. It clears out rumble, wind, and pops so the vocal sounds clean and tight.",
+    "purpose_function": "It cleans up unwanted low-frequency content so the vocal does not muddy the mix or waste headroom, and it eases the low-end clutter that many tracks add together. It exists because vocals carry little useful information in the deep bass.",
+    "practical_application": "An engineer engages the console or plug-in high-pass filter and sets the corner frequency just below the singer's lowest useful notes, raising it until rumble and boom disappear while the natural body of the voice stays intact.",
+    "category": "EQ / Tone",
+    "related_terms": ["Vocal harshness reduction", "Vocal intelligibility enhancement", "Vocal gating", "Vocal leveling compression", "Vocal forward placement"],
+    "common_mistakes": ["Setting the corner frequency too high and thinning out the natural warmth and chest of the voice", "Skipping the low cut, letting rumble and proximity boom pile up and muddy the whole mix", "Assuming one fixed cut frequency fits every singer instead of tuning it to each voice's low range"],
+    "scenario_contexts": ["Removing subsonic rumble and mic-stand thumps from a close-miked studio vocal", "Cutting proximity-effect boom when a singer works the microphone tightly", "Cleaning low-end buildup from a live vocal channel to control stage rumble and feedback risk"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

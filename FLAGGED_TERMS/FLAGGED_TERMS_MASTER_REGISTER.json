@@ -1,0 +1,517 @@
+{
+ "title": "AP&E Glossary \u2014 Master Flagged-Terms Register",
+ "purpose": "Single accumulating list of every term/item held OUT of the streamed DB ingest for Prof. Booth to visit, author/adjust, or rule on. Clean terms stream in; flagged terms collect here. SAFETY items are reviewed FIRST.",
+ "updated": "2026-08-05",
+ "entries": [
+  {
+   "term": "Front Sell",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Liner",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Reporter Cut",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Time Check",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Graveyard Shift",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Power Hour",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Driver Flex",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Head-Fi",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Headstage",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Pad Rolling",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Musicality",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Organic Sound",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "PRaT (Pace, Rhythm and Timing)",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Tonal Density",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "trade-slang / subjective descriptor",
+   "reason": "No qualifying primary source; awaiting ruling on whether tertiary refs may define it.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Perfect Clarity Audio",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "low-source / naming",
+   "reason": "Sony/legacy PCA \u2014 confirm exact meaning/scope",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "SFK Peak File",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "low-source / naming",
+   "reason": "Vegas/Sound Forge peak file \u2014 thin primary source",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Sony Wave64",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "low-source / naming",
+   "reason": "W64 format \u2014 confirm authoritative source",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "SSLomation",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "low-source / naming",
+   "reason": "likely should be 'AWSomation' \u2014 confirm SSL naming",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "FastGrab",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "low-source / naming",
+   "reason": "confirm it is a real A&H CQ feature (name/behavior)",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Maschine Sampling History",
+   "batch": "Computer C S5 (2026-07-27)",
+   "category": "low-source / naming",
+   "reason": "documented as 'Audio Pool' \u2014 confirm NI naming",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Basic Folder",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Catch the solo",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Miss the solo",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Navigation Memory",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Polar window",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "rubbery",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "RipX DeepMix",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Accent supervision",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Age matching",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Audio behavior",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Emotional performance",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Finger tap",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Found Prop",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub / unclear scope",
+   "reason": "Left entirely blank by Machine B (no confident source/scope); needs Booth meaning or drop.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "(4 further Machine B Phase-1 blanks \u2014 exact names in mb_intake/flagged_terms.json)",
+   "batch": "Machine B Phase-1",
+   "category": "blank stub",
+   "reason": "Names not in this session; retrieve exact list from prior mb_intake before final pass.",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "EXTRA BASS -> intermediate",
+   "batch": "Computer C S5",
+   "category": "difficulty re-tag (structural)",
+   "reason": "Committee suggested; NOT applied (structural). Approve/deny.",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "MEGA BASS -> intermediate",
+   "batch": "Computer C S5",
+   "category": "difficulty re-tag (structural)",
+   "reason": "Committee suggested; NOT applied (structural). Approve/deny.",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "ULT Power Sound -> intermediate",
+   "batch": "Computer C S5",
+   "category": "difficulty re-tag (structural)",
+   "reason": "Committee suggested; NOT applied (structural). Approve/deny.",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "Phase Tracking -> advanced",
+   "batch": "Computer C S5",
+   "category": "difficulty re-tag (structural)",
+   "reason": "Committee suggested; NOT applied (structural). Approve/deny.",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "Quality-Management System (QMS / ISO 9001) FK11.0",
+   "batch": "Computer C S5",
+   "category": "readability exception (accepted)",
+   "reason": "Grade >9 only due to proper-noun/tech headword, no run-ons. Accept as-is?",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "FCC Equipment Authorization FK10.9",
+   "batch": "Computer C S5",
+   "category": "readability exception (accepted)",
+   "reason": "Grade >9 only due to proper-noun/tech headword, no run-ons. Accept as-is?",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "FCC (Federal Communications Commission) FK10.8",
+   "batch": "Computer C S5",
+   "category": "readability exception (accepted)",
+   "reason": "Grade >9 only due to proper-noun/tech headword, no run-ons. Accept as-is?",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "MasterRig FK10.2",
+   "batch": "Computer C S5",
+   "category": "readability exception (accepted)",
+   "reason": "Grade >9 only due to proper-noun/tech headword, no run-ons. Accept as-is?",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "NIST (Natl Inst of Standards & Technology) FK10.0",
+   "batch": "Computer C S5",
+   "category": "readability exception (accepted)",
+   "reason": "Grade >9 only due to proper-noun/tech headword, no run-ons. Accept as-is?",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "Doubling Equal Incoherent Sources FK9.9",
+   "batch": "Computer C S5",
+   "category": "readability exception (accepted)",
+   "reason": "Grade >9 only due to proper-noun/tech headword, no run-ons. Accept as-is?",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "Yamaha FK9.8",
+   "batch": "Computer C S5",
+   "category": "readability exception (accepted)",
+   "reason": "Grade >9 only due to proper-noun/tech headword, no run-ons. Accept as-is?",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "Native Instruments FK~",
+   "batch": "Computer C S5",
+   "category": "readability exception (accepted)",
+   "reason": "Grade >9 only due to proper-noun/tech headword, no run-ons. Accept as-is?",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "LUNA ARM FK~",
+   "batch": "Computer C S5",
+   "category": "readability exception (accepted)",
+   "reason": "Grade >9 only due to proper-noun/tech headword, no run-ons. Accept as-is?",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "eq_R SINAD definition (numerator = signal+noise+distortion, IEEE 1241)",
+   "batch": "Computer C S5",
+   "category": "equation fix confirm",
+   "reason": "Committee corrected per IEEE 1241; confirm acceptable for DB.",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "AES (Audio Engineering Society)",
+   "batch": "Computer C ingest 2026-07-27",
+   "category": "name collision \u2014 already in DB",
+   "reason": "Existing glossary entry kept; Computer C's newly-authored version NOT applied. Reconcile which wins.",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "HRTF (Head-Related Transfer Function)",
+   "batch": "Computer C ingest 2026-07-27",
+   "category": "name collision \u2014 already in DB",
+   "reason": "Existing glossary entry kept; C's version NOT applied. Reconcile which wins.",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "Common-Mode Rejection Ratio (equation, duplicate)",
+   "batch": "Computer C ingest 2026-07-27",
+   "category": "dropped duplicate",
+   "reason": "Phase-50 list contained CMRR equation twice (identical). Kept one, dropped the exact duplicate. FYI only.",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "Surface Fracture",
+   "batch": "Computer B CYMATICS (2026-08-05)",
+   "category": "unattested headword / rename",
+   "reason": "Not an attested term; canonical = surface disintegration / atomization. Content authored to intended sense; rename before INSERT. Held from the 2026-08-05 cymatics merge (NOT in DB).",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Wave Cell",
+   "batch": "Computer B CYMATICS (2026-08-05)",
+   "category": "unattested headword / rename",
+   "reason": "Not attested; canonical = unit / lattice cell of a Faraday pattern. Rename before INSERT. Held (NOT in DB).",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Cymascope",
+   "batch": "Computer B CYMATICS (2026-08-05)",
+   "category": "proprietary instrument / contested claims",
+   "reason": "Instrument real; vendor therapeutic / DNA-signature claims promotional & uncorroborated. Content neutral, claims flagged not endorsed. Confirm neutral framing before INSERT. Held (NOT in DB). CymaScope(TM).",
+   "safety_review": false,
+   "kind": "author",
+   "status": "open"
+  },
+  {
+   "term": "Liquid Resonance",
+   "batch": "Computer B CYMATICS (2026-08-05)",
+   "category": "duplicate / disambiguation",
+   "reason": "IN DB (merged, gs2260). Overlaps Fluid Resonance \u2014 keep + cross-link, or merge and drop this row.",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  },
+  {
+   "term": "Signal Exciter",
+   "batch": "Computer B CYMATICS (2026-08-05)",
+   "category": "naming / sense",
+   "reason": "IN DB (merged, gs2260). Generic descriptor vs canonical Vibration Exciter \u2014 keep as cross-linked synonym, or merge.",
+   "safety_review": false,
+   "kind": "decision",
+   "status": "open"
+  }
+ ],
+ "counts": {
+  "author_terms": 37,
+  "decisions": 19,
+  "safety_now": 0,
+  "total": 56
+ }
+}

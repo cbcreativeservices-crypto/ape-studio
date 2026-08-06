@@ -1,0 +1,87 @@
+{
+ "range": 5,
+ "applied": [
+  {
+   "pkt": "mb0215",
+   "term": "Clothing rustle",
+   "field": "common_mistakes",
+   "severity": "Low",
+   "summary": "Removed leftover editorial artifact prefix 'UNSAFE: not a safety item, but' from the second mistake item; now reads as clean student-facing text."
+  },
+  {
+   "pkt": "mb0229",
+   "term": "Gender matching",
+   "field": "definition",
+   "severity": "Low",
+   "summary": "Replaced the confusing/incorrect 'a same-to-opposite adapter' with an accurate description: an adapter with the same connector gender on both ends (e.g. female-to-female) to join two same-gender connectors, matching scenario_contexts."
+  },
+  {
+   "pkt": "mb0202",
+   "term": "Transmission monitoring",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Changed 'listen back to the broadcast' (implies replaying a recording, conflating with Aircheck) to 'listen to the station's live off-air signal ... as they happen' to make the real-time nature explicit. FK grade 7.3."
+  },
+  {
+   "pkt": "mb0202",
+   "term": "Voice tracking session",
+   "field": "purpose_function",
+   "severity": "Low",
+   "summary": "Fixed garbled parallel structure; moved 'of local-sounding radio' next to 'many hours' so the interrupting clause no longer misreads as 'program several stations of local-sounding radio'."
+  },
+  {
+   "pkt": "mb0230",
+   "term": "Harmonic resynthesis",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Corrected misleading analogy: 'taking a chord apart into single notes' (polyphonic source separation) replaced with 'splitting one note into its individual overtones', matching the harmonic-partial definition. FK grade 8.3."
+  },
+  {
+   "pkt": "mb0213",
+   "term": "Boom-track priority",
+   "field": "definition",
+   "severity": "Low",
+   "summary": "Replaced coined non-standard adjective 'well-perspectived' with 'the most natural sound of the room, with the truest sense of perspective'."
+  },
+  {
+   "pkt": "mb0219",
+   "term": "Dialogue mixing",
+   "field": "definition",
+   "severity": "Low",
+   "summary": "Fixed transposed industry term 'group loop' to the standard 'loop group' (the ensemble recording crowd/walla), consistent with usage elsewhere in the corpus."
+  },
+  {
+   "pkt": "mb0233",
+   "term": "Language-specific ADR",
+   "field": "practical_application",
+   "severity": "Low",
+   "summary": "Fixed garden-path run-on by adding a comma and reordering: 'cues the picture, and voice actors perform lines in the target language to sync...'."
+  }
+ ],
+ "declined": [
+  {
+   "pkt": "mb0219",
+   "term": "Dialogue localization",
+   "field": "related_terms",
+   "reason": "Pure additive enrichment ('add Dialogue panning'); fixes no error and the list already includes 'Panning'. Not adding list items for cross-link suggestions."
+  },
+  {
+   "pkt": "mb0225",
+   "term": "Extreme time stretching",
+   "field": "difficulty",
+   "reason": "No 'difficulty' field exists in the authored output (adding fields is prohibited), and difficulty tier is a subjective judgment call, not a factual/technical error."
+  },
+  {
+   "pkt": "mb0235",
+   "term": "Localized group ADR stem",
+   "field": "definition",
+   "reason": "Additive enrichment to sharpen a sibling-term distinction; both definitions are individually accurate and the group-ADR def already specifies 'loop-group ... recorded to picture'. No error to fix."
+  },
+  {
+   "pkt": "mb0239",
+   "term": "Music-and-effects package",
+   "field": "definition",
+   "reason": "'music and sound-effects and Foley' with doubled 'and' is grammatically correct and unambiguous; converting to a serial comma list is a style/house-style preference, not an error."
+  }
+ ]
+}

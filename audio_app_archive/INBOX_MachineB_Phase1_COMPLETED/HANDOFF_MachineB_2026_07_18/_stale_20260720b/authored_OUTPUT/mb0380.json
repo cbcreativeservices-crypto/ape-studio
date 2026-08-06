@@ -1,0 +1,159 @@
+{
+ "batch": 380,
+ "topic": "Object & Bed Panning / Authoring",
+ "authored": [
+  {
+   "id": "393f3056-f2f1-4d6b-bf8b-70aab8634c45",
+   "term": "Bed assignment",
+   "fields": {
+    "definition": "The routing of an audio signal to a bed — the channel-based portion of an object-based mix that feeds fixed loudspeaker positions such as a 7.1.2 layout. Assigning a track to a bed makes it play back from set speaker channels rather than carrying dynamic 3D object metadata.",
+    "plain_english": "Sending a sound to the bed, which is the set of fixed speakers in a surround mix. It is like telling a sound to always come from the left speaker, instead of moving around the room.",
+    "purpose_function": "Beds provide a stable channel-based foundation for ambience, music and other content that does not need to move, so mixers do not have to author separate position data for every element.",
+    "practical_application": "A technician assigns steady elements like room tone, reverb returns and music stems to the bed, reserving objects for sounds that must move or sit in a precise spot.",
+    "category": "Signal routing",
+    "related_terms": ["Object assignment", "Bed panning", "Bed-based music mix", "Bed monitoring mode", "Object-based audio", "7.1.2 bed"],
+    "common_mistakes": ["Putting sounds that need to move or sit overhead in the bed, where they are locked to fixed speaker channels.", "Assuming a bed always has height channels; a 5.1 or 7.1 bed has no top layer.", "Duplicating the same signal in both a bed and an object, causing doubled level and comb filtering."],
+    "scenario_contexts": ["Assigning music stems and ambience to a 7.1.2 bed in a Dolby Atmos music session.", "Routing reverb returns to the bed so they wrap around the room from fixed speakers.", "Building a broadcast mix where dialogue stays in the bed's center channel."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "ITU-R BS.2051, Advanced sound system for programme production (ITU-R Recommendation)", "Avid Pro Tools Reference Guide, Dolby Atmos workflow (Avid technical documentation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "382db387-e160-4403-9055-ebf2db7c8ab1",
+   "term": "Bed monitoring mode",
+   "fields": {
+    "definition": "A monitoring mode that isolates the bed — the channel-based layer of an immersive mix — so the engineer hears only the content routed to fixed loudspeaker feeds, separate from the objects. It is used to check the balance and imaging of the bed on its own.",
+    "plain_english": "A way to listen to just the fixed-speaker part of a surround mix by itself. It is like soloing one group of instruments so you can hear only them and check they sound right.",
+    "purpose_function": "Monitoring the bed alone helps the engineer confirm the channel-based foundation is balanced and phase-correct before the moving object sounds are added back in.",
+    "practical_application": "When a mix sounds cluttered, a technician switches to bed-only monitoring to hear whether the problem lives in the static bed content or in the objects.",
+    "category": "Monitoring",
+    "related_terms": ["Bed assignment", "Bed panning", "Object assignment", "Re-render", "Downmix", "Object-based audio"],
+    "common_mistakes": ["Mistaking bed-only monitoring for the full mix and setting levels against an incomplete picture.", "Forgetting to return to full monitoring, then exporting while still soloed to the bed.", "Assuming the bed layer alone shows how the mix renders on smaller speaker layouts."],
+    "scenario_contexts": ["Soloing the bed to check the surround balance of music stems in an Atmos session.", "Isolating the bed to trace an unwanted low-frequency buildup to the LFE channel.", "Comparing bed-only and full playback to judge how much of the mix relies on objects."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "Avid Pro Tools Reference Guide, Dolby Atmos workflow (Avid technical documentation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "270c7e35-5d5e-4286-90b1-db19351acbd1",
+   "term": "Bed panning",
+   "fields": {
+    "definition": "The positioning of a source within a bed by distributing its level across the bed's fixed loudspeaker channels, as in traditional surround panning. Unlike object panning, the result is tied to the bed's discrete speaker feeds rather than a free 3D coordinate.",
+    "plain_english": "Placing a sound among the fixed surround speakers by sending more of it to some speakers than others. It works like a normal surround pan knob, not a dot you drag anywhere in the room.",
+    "purpose_function": "Bed panning lets an engineer place channel-based content in the surround field without turning it into an object, keeping the mix simple and predictable across playback systems.",
+    "practical_application": "A technician uses bed panning to spread a stereo synth pad across the front and surround bed channels, or to seat a backing vocal slightly to one side.",
+    "category": "Panning",
+    "related_terms": ["Object panning", "Bed assignment", "Height panning", "Surround panning", "Bed-based music mix", "7.1.2 bed"],
+    "common_mistakes": ["Expecting bed panning to place a sound overhead when the bed has no height channels.", "Confusing bed panning with object panning; bed pans snap to speaker feeds, not free positions.", "Hard-panning content fully into one surround channel so it vanishes on layouts missing that speaker."],
+    "scenario_contexts": ["Panning a rhythm guitar into the left surround channels of a 7.1.2 bed.", "Spreading crowd ambience evenly across the bed's surround speakers.", "Seating a stereo keyboard part across the front bed channels of a music mix."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "ITU-R BS.2051, Advanced sound system for programme production (ITU-R Recommendation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5dcdf5c6-f7a6-431b-9571-837fac3780fc",
+   "term": "Bed-based music mix",
+   "fields": {
+    "definition": "An immersive music mix built mainly on the channel-based bed, with most elements placed in the bed layer (for example 7.1.2) and few or no discrete objects. It contrasts with an object-based approach that assigns many individual elements to moving objects.",
+    "plain_english": "An immersive music mix where most sounds live in the fixed surround speakers. Few or none are separate moving objects. It is like seating a band in set spots, not letting each player roam the room.",
+    "purpose_function": "A bed-based approach keeps sessions simple and translates predictably across playback systems, which suits music where instruments hold steady positions rather than moving.",
+    "practical_application": "An engineer mixing an album in Atmos may keep drums, bass and pads in the bed and use objects only for lead vocals or special effects.",
+    "category": "Mix approach",
+    "related_terms": ["Bed assignment", "Object-based audio", "Bed panning", "7.1.2 bed", "Height panning", "Downmix"],
+    "common_mistakes": ["Assuming a bed-based mix cannot use height; a 7.1.2 bed includes two overhead channels.", "Overusing the bed so nothing moves, wasting the format's ability to place discrete sounds.", "Ignoring how the bed folds down to stereo and surround, leading to poor translation on smaller systems."],
+    "scenario_contexts": ["Mixing a jazz record in Atmos with the ensemble seated in a 7.1.2 bed.", "Delivering an immersive music master that must fold down cleanly to 5.1 and stereo.", "Choosing a bed-based workflow to speed up mixing a large back catalog."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "Dolby Atmos Music Panner Guide (Dolby Laboratories technical documentation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c7c96c95-21ce-4bab-bb28-f0d724e960cf",
+   "term": "Height panning",
+   "fields": {
+    "definition": "Panning that moves a source in the vertical dimension, raising or lowering its apparent elevation toward the overhead (height) loudspeakers. It controls the elevation component of a position, the axis that distinguishes immersive audio from horizontal-only surround.",
+    "plain_english": "Moving a sound up or down so it seems to come from above you. It is like lifting a sound from ear level up to the ceiling.",
+    "purpose_function": "Height panning adds the vertical dimension that makes a mix immersive, letting engineers place sounds overhead for effects, ambience or a sense of space that flat surround cannot give.",
+    "practical_application": "A technician uses height panning to lift rain, applause or a synth wash into the top speakers, or to raise a helicopter as it flies overhead.",
+    "category": "Panning",
+    "related_terms": ["Object panning", "Bed panning", "Object azimuth", "Object distance", "Overhead speakers", "Elevation"],
+    "common_mistakes": ["Pushing everything overhead, which tires listeners and weakens the main front image.", "Assuming height panning works on any system; playback with no top speakers folds the height content down.", "Confusing elevation (height) with azimuth (horizontal direction) when setting object position."],
+    "scenario_contexts": ["Raising ambience and reverb into the overhead speakers of an Atmos music mix.", "Flying a sound effect from the floor to the ceiling in a film scene.", "Placing a backing choir slightly above the band to open up the vertical image."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "ITU-R BS.2051, Advanced sound system for programme production (ITU-R Recommendation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e2d1e31d-cd18-40df-9070-8968db5084c6",
+   "term": "Object assignment",
+   "fields": {
+    "definition": "The routing of an audio track to an object input in an object-based renderer, so it is carried as an individual element with its own dynamic 3D position metadata rather than as fixed bed channels. In Dolby Atmos, inputs assigned as objects occupy the object slots above the bed channels.",
+    "plain_english": "Turning a track into a movable object the system can place anywhere in the room. It is like giving one sound its own GPS so it can travel around the listener.",
+    "purpose_function": "Object assignment lets a sound be positioned and moved freely in three dimensions and rendered to whatever speaker layout is present, which is the core advantage of object-based audio.",
+    "practical_application": "A technician assigns a lead vocal, a flying effect or any element that must move or sit precisely to an object, then automates its position with a panner.",
+    "category": "Signal routing",
+    "related_terms": ["Bed assignment", "Object panning", "Object azimuth", "Object distance", "Object disable", "Object-based audio"],
+    "common_mistakes": ["Assigning steady, non-moving content to objects and creating needless metadata and session complexity.", "Running out of object slots by making everything an object instead of using the bed.", "Forgetting to set a position, leaving a new object defaulted to the center of the room."],
+    "scenario_contexts": ["Assigning a lead vocal to an object so it can be placed precisely in front.", "Making a sound effect an object so it can fly across and above the room.", "Converting a bed track to an object when a specific element needs to move."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "ITU-R BS.2076, Audio Definition Model (ITU-R Recommendation)", "Avid Pro Tools Reference Guide, Dolby Atmos workflow (Avid technical documentation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "889f22e2-2857-47c2-bf8b-8e68b6de65b9",
+   "term": "Object azimuth",
+   "fields": {
+    "definition": "The horizontal angle of an audio object's position, describing its left-right and front-back direction around the listener in the horizontal plane. In the ADM (ITU-R BS.2076) polar coordinate system, azimuth is expressed in degrees with 0° at front center.",
+    "plain_english": "The direction a sound comes from around you, like whether it is in front, to the side, or behind. Think of it as where the sound sits on a clock face drawn around your head.",
+    "purpose_function": "Azimuth is one of the coordinates the renderer needs to place an object, fixing its horizontal direction so the sound images from the correct point around the listener.",
+    "practical_application": "A technician sets or automates an object's azimuth to move a sound from front to side, for example sweeping an effect from center to the left surround.",
+    "category": "Object metadata",
+    "related_terms": ["Object distance", "Height panning", "Object assignment", "Object panning", "Elevation", "Object-based audio"],
+    "common_mistakes": ["Confusing azimuth (horizontal angle) with elevation (height), so sounds end up in the wrong plane.", "Assuming every renderer uses the same zero point and sign for azimuth without checking the convention.", "Automating azimuth so fast that the sound jumps unnaturally between speakers."],
+    "scenario_contexts": ["Setting an object's azimuth to seat a lead vocal at front center.", "Automating azimuth to pan a sound effect around the horizontal circle.", "Matching an object's azimuth to on-screen action in a film mix."]
+   },
+   "sources": ["ITU-R BS.2076, Audio Definition Model (ITU-R Recommendation)", "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7f530f80-064c-4be6-b463-5fb35e554542",
+   "term": "Object disable",
+   "fields": {
+    "definition": "Turning off an object so the renderer no longer reproduces it as an active positioned element; the object's audio and position metadata are made inactive. Disabling silences or bypasses an object without deleting its assignment or automation.",
+    "plain_english": "Switching an object off so it stops playing and moving in the mix. It is like muting one moving sound while leaving its settings in place for later.",
+    "purpose_function": "Disabling an object lets an engineer silence or bypass a single element, or free its slot, without losing its routing and position data.",
+    "practical_application": "A technician disables an object to audition the mix without it, or to reclaim an object slot when the count runs high, then re-enables it later.",
+    "category": "Signal routing",
+    "related_terms": ["Object assignment", "Bed assignment", "Object panning", "Object azimuth", "Object distance", "Object-based audio"],
+    "common_mistakes": ["Disabling an object instead of muting the source track, then forgetting it is off at export.", "Assuming a disabled object still contributes to downmixes and re-renders; it does not.", "Deleting an object when only a temporary disable was needed, losing its position automation."],
+    "scenario_contexts": ["Disabling an effect object to A/B the mix with and without it.", "Turning off unused objects to stay within the renderer's object limit.", "Bypassing a problem object while troubleshooting a rendering error."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "Avid Pro Tools Reference Guide, Dolby Atmos workflow (Avid technical documentation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d86db8cf-c23d-448b-80d4-f34ee497fe51",
+   "term": "Object distance",
+   "fields": {
+    "definition": "The distance (radius) component of an audio object's position, describing how far the object sits from the listening position alongside its azimuth and elevation. In the ADM (ITU-R BS.2076) polar model, distance is normalized, where 1 corresponds to the reference loudspeaker radius.",
+    "plain_english": "How near or far a sound seems from the listener, on top of which direction it comes from. It is like saying a sound is right next to you versus far across the room.",
+    "purpose_function": "Distance gives the renderer the depth coordinate, letting it push a sound toward or away from the listener so the mix has a sense of near and far, not just direction.",
+    "practical_application": "A technician adjusts object distance to pull a whisper close to the listener or send a call far off, and may automate it to make a source approach or recede.",
+    "category": "Object metadata",
+    "related_terms": ["Object azimuth", "Height panning", "Object assignment", "Object panning", "Divergence", "Object-based audio"],
+    "common_mistakes": ["Assuming every playback system reproduces distance the same way; renderers interpret it differently.", "Confusing distance with level; distance is a position coordinate, not just a volume change.", "Leaving distance at its default and losing the depth the format can provide."],
+    "scenario_contexts": ["Pulling a narrator's voice close by setting a short object distance.", "Automating distance so a vehicle sounds like it approaches from far away.", "Placing crowd sounds at a greater distance to sit them behind the main action."]
+   },
+   "sources": ["ITU-R BS.2076, Audio Definition Model (ITU-R Recommendation)", "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

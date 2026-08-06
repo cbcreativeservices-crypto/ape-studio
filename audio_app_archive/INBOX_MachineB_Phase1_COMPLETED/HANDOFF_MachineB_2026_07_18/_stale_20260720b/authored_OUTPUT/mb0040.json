@@ -1,0 +1,159 @@
+{
+ "batch": 40,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "07e57426-3e42-4e26-a4a4-d9e68c1f7e93",
+   "term": "Choir width",
+   "fields": {
+    "definition": "The perceived left-to-right spatial spread of a choir within a stereo image, set by microphone technique, singer placement, and the panning of section spot mics.",
+    "plain_english": "How wide a recorded choir sounds from your left speaker to your right. A wide choir seems to fill the room; a narrow one sounds squeezed into the middle.",
+    "purpose_function": "Width spreads the voice sections across the stereo field so listeners can sense the size and layout of the group, adding a feeling of space.",
+    "practical_application": "An engineer sets choir width by choosing a spaced or coincident mic pair and by panning section spot mics, widening or narrowing the group to fit the mix.",
+    "category": "Stereo Imaging",
+    "related_terms": ["Choral imaging", "Choral realism", "Stereo width", "Panning", "Spaced pair"],
+    "common_mistakes": ["Panning section mics too hard, leaving a hole in the middle of the choir", "Assuming wider always sounds better, when too much width can smear the blend", "Confusing width with depth; front-to-back space is depth, not width"],
+    "scenario_contexts": ["Recording a concert choir with a spaced pair to capture a wide, natural spread", "Narrowing choir width so the group sits behind a solo vocalist", "Setting up a main pair and outriggers over a choir in a hall"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ea4dc8b4-4d7d-462b-8402-90c2a92da059",
+   "term": "Choral articulation",
+   "fields": {
+    "definition": "The way choral singers attack, sustain, and release notes and consonants, such as legato, staccato, or marcato, which shapes how connected or detached the sung line is.",
+    "plain_english": "How a choir starts, holds, and ends each note and word. Smooth singing joins notes together; crisp singing separates them, like gliding versus tapping.",
+    "purpose_function": "Articulation gives a choral line its rhythmic clarity and musical character, letting a group phrase together and match the style of the piece.",
+    "practical_application": "A recordist captures articulation by miking for consonant detail and clean transients, while the director marks legato or staccato passages to unify the ensemble.",
+    "category": "Vocal Technique",
+    "related_terms": ["Choral diction clarity", "Choral dynamics", "Phrasing", "Legato", "Staccato"],
+    "common_mistakes": ["Smearing crisp articulation with heavy reverb", "Confusing articulation with dynamics; one is note shape, the other is loudness", "Miking so far back that consonant attacks get lost"],
+    "scenario_contexts": ["Capturing crisp consonant attacks in a rhythmic choral passage", "Recording a legato hymn where notes must flow smoothly", "Adjusting mic distance to keep staccato singing tight and clear"]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1edab665-e576-46d0-93d7-ac0e6b4ef209",
+   "term": "Choral brightness",
+   "fields": {
+    "definition": "The amount of high-frequency energy and treble presence in a choir's sound, which makes voices sound clear and open rather than dark or muffled.",
+    "plain_english": "How bright or crisp a choir sounds in its high tones. A bright choir sounds clear and sparkly; a dull one sounds soft and covered.",
+    "purpose_function": "Brightness helps a choir cut through a mix and keeps words and overtones clear, though too much can sound harsh or sibilant.",
+    "practical_application": "An engineer shapes brightness with mic choice, mic placement, and EQ, boosting highs for air or cutting them to tame harshness.",
+    "category": "Tonal Balance",
+    "related_terms": ["Choral diction clarity", "Equalization", "Sibilance", "Presence", "Choral recording mix"],
+    "common_mistakes": ["Boosting high EQ too much, which makes sopranos harsh and sibilant", "Blaming a dull choir on the mic when the room or placement is the real cause", "Confusing brightness with loudness"],
+    "scenario_contexts": ["Adding a gentle high shelf to open up a choir recorded in a dark hall", "Choosing a condenser mic with an airy top end for a chamber choir", "Cutting harsh highs when close-miking sopranos"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ebd2d879-9a3f-41a8-ab2a-ba878c85fde9",
+   "term": "Choral density",
+   "fields": {
+    "definition": "How thick or full a choral texture sounds, set by the number of voices, how many notes are stacked, and how the parts are voiced and doubled.",
+    "plain_english": "How full and thick a choir sounds. Many singers on many notes feel dense and rich; a few voices on simple lines feel thin and open.",
+    "purpose_function": "Density controls the weight and richness of a choral arrangement, helping a section feel powerful or leave room for other parts.",
+    "practical_application": "An arranger adjusts density by adding or removing voice parts and doublings, while an engineer keeps a dense choir clear so parts do not turn to mush.",
+    "category": "Arrangement Texture",
+    "related_terms": ["Choral recording mix", "Choral dynamics", "Voicing", "Doubling", "Texture"],
+    "common_mistakes": ["Stacking too many parts so the texture turns muddy and words vanish", "Thinking more singers always sounds fuller, when spacing and voicing matter more", "Ignoring low-mid buildup when many voices overlap"],
+    "scenario_contexts": ["Thinning a dense choral pad so a lead vocal stays clear", "Arranging a big final chorus with divided parts for maximum fullness", "Managing low-mid mud when a large choir sings close harmony"]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2a0fd15c-ac32-4264-a779-4e506c43f6a5",
+   "term": "Choral diction clarity",
+   "fields": {
+    "definition": "How clearly the words and consonants of a choir can be understood, driven by the singers' enunciation and by mic and mix choices that preserve consonant detail.",
+    "plain_english": "How easy it is to understand the words a choir is singing. Good diction means you can hear each word clearly, not just a wash of sound.",
+    "purpose_function": "Clear diction lets listeners follow the text and gives the choir crisp timing, which matters most in sacred and lyric-driven music.",
+    "practical_application": "An engineer protects diction by miking for consonants and avoiding heavy reverb, while the director drills crisp starts and ends of words.",
+    "category": "Vocal Intelligibility",
+    "related_terms": ["Choral brightness", "Choral articulation", "Intelligibility", "Sibilance", "Reverb"],
+    "common_mistakes": ["Drowning the words in reverb until the text turns mushy", "Cutting too much high EQ, which softens consonants", "Assuming diction is only the singers' job, not the engineer's"],
+    "scenario_contexts": ["Reducing reverb send so a choir's lyrics stay clear in a mix", "Recording a text-heavy anthem where every word must be understood", "Adding slight presence EQ to bring out consonants"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Grove Dictionary of Music and Musicians"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a860d887-7030-47b0-bde7-3190daa57876",
+   "term": "Choral dynamics",
+   "fields": {
+    "definition": "The range and control of loud and soft levels in a choir's performance, from quiet pianissimo passages to full fortissimo, including swells and accents.",
+    "plain_english": "How loud or soft a choir sings, and how it moves between the two. Dynamics are the difference between a gentle whisper and a full, powerful sound.",
+    "purpose_function": "Dynamics give choral music its emotion and shape, and they set the recording levels an engineer must capture without clipping or noise.",
+    "practical_application": "An engineer sets gain and watches headroom for loud peaks, and may use gentle compression so soft and loud passages both sit well in the mix.",
+    "category": "Vocal Technique",
+    "related_terms": ["Choral density", "Headroom", "Compression", "Gain staging", "Choral recording mix"],
+    "common_mistakes": ["Setting gain for soft parts, then clipping when the choir hits full volume", "Over-compressing until the music loses its natural swells", "Forgetting to leave headroom for loud fortissimo peaks"],
+    "scenario_contexts": ["Setting record levels with headroom for a choir that swells from soft to loud", "Riding faders to keep a quiet passage audible in a mix", "Using light compression to control a wide dynamic range"]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d5fe5e46-030c-41e7-a3a7-427b8391cde2",
+   "term": "Choral imaging",
+   "fields": {
+    "definition": "The stereo placement and spatial layout of a choir in a recording, so listeners can locate each voice section and sense the group's size and position.",
+    "plain_english": "Where each part of a choir seems to sit between your speakers, left to right and near to far. Good imaging lets you point to where the basses are.",
+    "purpose_function": "Imaging recreates the real layout of a choir, giving a mix a believable sense of space and helping voice sections stay separate and clear.",
+    "practical_application": "An engineer builds imaging with a main stereo mic pair and panned spot mics, arranging sections across the field to match how the choir stood.",
+    "category": "Stereo Imaging",
+    "related_terms": ["Choir width", "Choral realism", "Panning", "Stereo width", "Spaced pair"],
+    "common_mistakes": ["Panning spot mics so hard that sections detach from the main pair", "Confusing imaging (left-right) with depth (front-back)", "Ignoring phase between mics, which smears the stereo picture"],
+    "scenario_contexts": ["Placing a main pair over a choir to capture a natural stereo image", "Panning section mics to match the choir's stage layout", "Checking mono compatibility so imaging does not collapse"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e9cf4194-ae8c-4279-8285-133bdfafd25f",
+   "term": "Choral realism",
+   "fields": {
+    "definition": "How convincingly a choral recording reproduces the natural sound of a live choir, including its tone, blend, space, and depth.",
+    "plain_english": "How much a recording sounds like a real choir in the room with you. High realism feels live and natural, not thin or fake.",
+    "purpose_function": "Realism is the goal of many choral recordings, keeping the blend and hall sound so the listener feels present at the performance.",
+    "practical_application": "An engineer chases realism with natural mic techniques, good room capture, and restrained processing that keeps the choir sounding true to life.",
+    "category": "Sound Quality",
+    "related_terms": ["Choral imaging", "Choir width", "Room acoustics", "Reverb", "Blend"],
+    "common_mistakes": ["Over-processing until the choir sounds artificial", "Adding fake reverb that fights the real hall sound", "Close-miking so tightly that the natural blend is lost"],
+    "scenario_contexts": ["Recording a choir in a fine hall to capture its natural sound", "Choosing gentle processing to keep a choir sounding lifelike", "Blending room mics with a main pair for a realistic sense of space"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7508a078-aadf-453f-b1ef-d5ef37a37cb5",
+   "term": "Choral recording mix",
+   "fields": {
+    "definition": "The balanced combination of a choir's captured tracks, such as the main pair, spot mics, and room mics, blended in level, EQ, panning, and reverb into a finished stereo recording.",
+    "plain_english": "The final blend of all the mics used to record a choir, set so the group sounds balanced and clear. It is like joining many photos into one good picture.",
+    "purpose_function": "The mix turns separate mic feeds into one cohesive choral sound, controlling tone, space, and level for the listener.",
+    "practical_application": "An engineer builds the mix around the main pair, adds spot mics for detail and room mics for space, then balances levels, EQ, and reverb.",
+    "category": "Mixing",
+    "related_terms": ["Choral imaging", "Choral density", "Choir width", "Reverb", "Equalization"],
+    "common_mistakes": ["Leaning on spot mics so hard the main-pair blend is lost", "Adding so much reverb the words and detail wash out", "Mixing too bright, making sopranos harsh"],
+    "scenario_contexts": ["Balancing main and spot mics into a finished choir recording", "Blending room mics for a sense of space in a choral mix", "Setting reverb and EQ so a choir sounds cohesive"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,322 @@
+{
+ "batch": 427,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "58c4a894-126e-41e9-8066-2c6493125dd4",
+   "term": "Timbre classification",
+   "fields": {
+    "definition": "The machine-learning task of automatically assigning a sound to a timbral category, such as a musical instrument, voice type, or sound source, based on features that capture its spectral and temporal quality independent of pitch and loudness. It is typically posed as supervised classification over audio features such as MFCCs or spectrograms, using models trained on labeled examples.",
+    "plain_english": "This is teaching a computer to tell sounds apart by their tone color, like knowing a trumpet from a flute even when both play the same note. The computer learns from many labeled examples and then guesses the source of a new sound.",
+    "purpose_function": "It exists to let systems identify what is producing a sound from its tonal character alone, enabling automatic labeling, search, and organization of audio by instrument or source.",
+    "practical_application": "A technician meets it in tools that auto-tag instruments in a library, sort samples, or detect which source is active, and may prepare or check the labeled audio used to train such a classifier.",
+    "category": "Audio classification",
+    "related_terms": [
+     "Audio classification",
+     "Instrument recognition",
+     "Feature extraction",
+     "Spectrogram",
+     "Convolutional neural network (CNN)",
+     "Training data"
+    ],
+    "common_mistakes": [
+     "Confusing timbre classification with pitch detection, when timbre describes tone color, not the note being played",
+     "Assuming a model trained on clean isolated recordings will perform well on noisy or polyphonic mixes",
+     "Ignoring class imbalance in the training set, which biases the classifier toward the most common instruments"
+    ],
+    "scenario_contexts": [
+     "Auto-tagging a sample library so users can search by instrument",
+     "Identifying the lead instrument in a recording to fill in metadata",
+     "Sorting field recordings by their sound source"
+    ]
+   },
+   "sources": [
+    "Müller, Fundamentals of Music Processing (2015)",
+    "Bishop, Pattern Recognition and Machine Learning (2006)",
+    "Herrera-Boyer, Peeters & Dubnov, Automatic Classification of Musical Instrument Sounds, Journal of New Music Research (2003)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "171240c8-4be5-4e5c-83f2-c310f95931f8",
+   "term": "Training",
+   "fields": {
+    "definition": "In machine learning, training is the process of fitting a model to data by iteratively adjusting its parameters to minimize a loss function that measures prediction error, typically using an optimization algorithm such as gradient descent. For neural networks the gradients of the loss with respect to the parameters are computed by backpropagation and used to update the weights over many passes through the training data.",
+    "plain_english": "Training is how a model learns by studying lots of examples and slowly fixing its mistakes. It is like practicing a skill over and over, tweaking a little each time until the results get good.",
+    "purpose_function": "It exists to turn a generic model with random initial parameters into one that performs a task well, using data and an error signal to guide the parameters toward useful values.",
+    "practical_application": "A technician encounters training when building or fine-tuning an audio model, monitoring loss curves, choosing hyperparameters, and deciding when the model has learned enough without overfitting.",
+    "category": "Model training",
+    "related_terms": [
+     "Training data",
+     "Inference",
+     "Fine-tuning",
+     "Deep learning",
+     "Transfer learning",
+     "Checkpoint"
+    ],
+    "common_mistakes": [
+     "Confusing training with inference, when training learns the parameters and inference just uses the trained model",
+     "Training too long and overfitting, so the model memorizes the data instead of generalizing",
+     "Assuming more epochs always help while ignoring validation performance"
+    ],
+    "scenario_contexts": [
+     "Training a source-separation model on a stem dataset",
+     "Watching loss and validation curves to decide when to stop",
+     "Re-training a classifier after adding new labeled audio"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning (2016)",
+    "Bishop, Pattern Recognition and Machine Learning (2006)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "85aa4f16-decd-4030-9ab8-d81a2d6260bd",
+   "term": "Training data",
+   "fields": {
+    "definition": "The set of example inputs, and for supervised learning their corresponding target labels, used to fit a model's parameters during training. Its size, quality, coverage, and labeling accuracy strongly determine how well the trained model generalizes to new, unseen data.",
+    "plain_english": "Training data is the set of examples a model studies to learn. Just like a student learns from practice problems, a model can only get as good as the examples it is shown.",
+    "purpose_function": "It provides the experience a model learns from, because without representative training data a model cannot learn the patterns it needs to make correct predictions.",
+    "practical_application": "A technician gathers, cleans, labels, and splits training data, and checks that it matches the real conditions such as microphones, rooms, and noise that the model will face in use.",
+    "category": "ML Fundamentals",
+    "related_terms": [
+     "Training",
+     "Dataset",
+     "Inference",
+     "Transfer learning",
+     "Feature extraction",
+     "Deep learning"
+    ],
+    "common_mistakes": [
+     "Testing a model on its own training data, which hides poor generalization",
+     "Using training data that does not match real deployment conditions, causing domain mismatch",
+     "Mislabeled or biased examples that teach the model the wrong patterns"
+    ],
+    "scenario_contexts": [
+     "Assembling a labeled corpus of instrument sounds for a classifier",
+     "Splitting recordings into training, validation, and test sets",
+     "Adding noisy real-world recordings so a model handles field conditions"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning (2016)",
+    "Bishop, Pattern Recognition and Machine Learning (2006)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a1acc62f-ac9d-4723-900b-633a999956f9",
+   "term": "Transfer learning",
+   "fields": {
+    "definition": "A machine-learning approach in which a model developed for one task or domain is reused as the starting point for a related task, transferring learned representations rather than training from scratch. In practice a model pre-trained on a large dataset is adapted, often by fine-tuning some or all of its layers, to a new task with comparatively little task-specific data.",
+    "plain_english": "Transfer learning means a model reuses what it learned on one job to help it learn a new, related job faster. It is like a guitar player learning bass fast, since a lot of what they know still helps.",
+    "purpose_function": "It exists to save data, time, and compute by reusing general features learned on large datasets, letting good models be built for tasks that have little labeled data of their own.",
+    "practical_application": "A technician uses transfer learning by taking a pre-trained audio model and fine-tuning it on a small in-house dataset for a specific classification or detection task.",
+    "category": "Model training",
+    "related_terms": [
+     "Fine-tuning",
+     "Training",
+     "Training data",
+     "Deep learning",
+     "Audio embedding",
+     "Audio foundation model"
+    ],
+    "common_mistakes": [
+     "Fine-tuning with too high a learning rate and erasing useful pre-trained features",
+     "Assuming a model pre-trained on unrelated data will always transfer well",
+     "Forgetting to match input preprocessing such as sample rate and features to the pre-trained model"
+    ],
+    "scenario_contexts": [
+     "Adapting a large pre-trained audio network to spot one specific sound",
+     "Fine-tuning a speech model for a new accent or language with limited data",
+     "Using embeddings from a foundation model as features for a small classifier"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning (2016)",
+    "Pan & Yang, A Survey on Transfer Learning, IEEE Transactions on Knowledge and Data Engineering (2010)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a7c29b12-600d-4555-9544-97468bc22d31",
+   "term": "Transformer",
+   "fields": {
+    "definition": "A neural-network architecture built primarily on self-attention mechanisms rather than recurrence or convolution, in which each element of a sequence is represented by attending to all other elements weighted by learned relevance. Introduced for sequence transduction, it uses multi-head attention, positional encodings, and feed-forward layers, and enables highly parallel training that captures long-range dependencies.",
+    "plain_english": "A Transformer is a kind of neural network. It lets every part of a sequence look at every other part to decide what matters. It is good at long-range patterns, so it powers many modern language and audio AI tools.",
+    "purpose_function": "It exists to model relationships across a whole sequence at once, capturing long-range context better than older recurrent models while training efficiently in parallel.",
+    "practical_application": "A technician meets Transformers inside modern speech recognition, music, and source-separation models, and when running or fine-tuning such models on audio represented as spectrogram patches or tokens.",
+    "category": "Neural network architectures",
+    "related_terms": [
+     "Attention mechanism",
+     "Deep learning",
+     "Audio language model",
+     "Audio tokens",
+     "Transfer learning",
+     "Convolutional neural network (CNN)"
+    ],
+    "common_mistakes": [
+     "Thinking attention understands meaning rather than computing weighted relevance between elements",
+     "Ignoring the quadratic cost of self-attention as the audio sequence gets longer",
+     "Feeding raw long waveforms without tokenizing or framing them, which exhausts memory"
+    ],
+    "scenario_contexts": [
+     "Running a Transformer-based speech-to-text model",
+     "Using a Transformer stage inside a source-separation network",
+     "Fine-tuning an audio Transformer on a custom sound set"
+    ]
+   },
+   "sources": [
+    "Vaswani et al., Attention Is All You Need, Advances in Neural Information Processing Systems (2017)",
+    "Goodfellow, Bengio & Courville, Deep Learning (2016)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b20f4197-c144-46b2-a507-fd76092f4c5f",
+   "term": "U-Net (spectrogram)",
+   "fields": {
+    "definition": "A U-Net is an encoder-decoder convolutional neural network with skip connections that link each downsampling (contracting) layer to the corresponding upsampling (expanding) layer, giving a symmetric U shape. Applied to spectrograms it takes a time-frequency magnitude representation as input and outputs a same-sized map, commonly a soft mask, used for tasks such as separating or enhancing a target source.",
+    "plain_english": "A U-Net is a network shaped like the letter U that shrinks a picture of sound down to its core and then builds it back up, with shortcuts that keep the fine detail. On a spectrogram it is often used to pull one instrument or voice out of a mix.",
+    "purpose_function": "The skip connections let the decoder recover fine time-frequency detail lost during downsampling, which is why the U-Net is effective at producing masks that isolate or clean up sources in a spectrogram.",
+    "practical_application": "A technician encounters spectrogram U-Nets inside vocal- and stem-separation tools, where the network predicts a mask that is applied to the mixture spectrogram and then converted back to audio.",
+    "category": "Neural network architectures",
+    "related_terms": [
+     "Convolutional neural network (CNN)",
+     "Spectrogram",
+     "Autoencoder",
+     "Blind source separation",
+     "Demucs",
+     "Transformer"
+    ],
+    "common_mistakes": [
+     "Confusing a U-Net with a plain autoencoder, when the skip connections are what preserve detail",
+     "Applying the predicted mask but reusing the wrong phase, which adds artifacts to the output",
+     "Assuming a model trained at one sample rate or FFT size works unchanged at another"
+    ],
+    "scenario_contexts": [
+     "Separating vocals from a stereo mix to make a karaoke track",
+     "Isolating a stem for remixing when no multitrack exists",
+     "Denoising or enhancing a spectrogram before further processing"
+    ]
+   },
+   "sources": [
+    "Ronneberger, Fischer & Brox, U-Net: Convolutional Networks for Biomedical Image Segmentation, MICCAI (2015)",
+    "Jansson et al., Singing Voice Separation with Deep U-Net Convolutional Networks, ISMIR (2017)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f660c5e5-684f-4505-aa23-7270ba18bb30",
+   "term": "Variational autoencoder (VAE)",
+   "fields": {
+    "definition": "A variational autoencoder is a generative latent-variable model that pairs an encoder, which maps inputs to a distribution over a latent space, with a decoder that reconstructs inputs from sampled latent codes. It is trained to maximize a variational lower bound (the ELBO) that combines a reconstruction term with a Kullback-Leibler term regularizing the latent distribution toward a prior, yielding a smooth, sampleable latent space.",
+    "plain_english": "A VAE is an AI that learns to squeeze data into a tidy set of hidden numbers and rebuild it, while keeping that hidden space smooth. Because the space is smooth, you can pick new points in it to create new sounds that resemble the training data.",
+    "purpose_function": "It exists to learn a compact, structured latent representation that can both reconstruct data and generate new, realistic samples, unlike a plain autoencoder whose latent space is not built for sampling.",
+    "practical_application": "A technician meets VAEs in generative and timbre-morphing audio tools and neural codecs, where the smooth latent space lets sounds be encoded, interpolated, or synthesized.",
+    "category": "Generative models",
+    "related_terms": [
+     "Autoencoder",
+     "Generative adversarial network (GAN)",
+     "Diffusion model",
+     "Audio generation",
+     "Codebook",
+     "Deep learning"
+    ],
+    "common_mistakes": [
+     "Confusing a VAE with a plain autoencoder, when only the VAE learns a probability distribution you can sample from",
+     "Ignoring or under-weighting the KL term, which can collapse the latent space or hurt sample quality",
+     "Expecting razor-sharp reconstructions, since VAEs often produce smoother, blurrier output than GANs"
+    ],
+    "scenario_contexts": [
+     "Generating or morphing new timbres from a learned latent space",
+     "Compressing audio into latent codes inside a neural codec",
+     "Interpolating smoothly between two sounds"
+    ]
+   },
+   "sources": [
+    "Kingma & Welling, Auto-Encoding Variational Bayes, ICLR (2014)",
+    "Goodfellow, Bengio & Courville, Deep Learning (2016)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b407a408-8021-4c70-aa40-c25f80749df9",
+   "term": "Voice biometrics",
+   "fields": {
+    "definition": "The use of measurable characteristics of a person's voice to recognize or verify their identity, encompassing speaker verification (confirming a claimed identity) and speaker identification (determining who is speaking from a set). Modern systems extract a fixed-length speaker embedding, such as an i-vector or x-vector, from speech and compare it against enrolled references using a similarity score and threshold.",
+    "plain_english": "Voice biometrics is using the unique sound of someone's voice to check who they are, like a spoken fingerprint. The system stores a voiceprint when you enroll and later compares new speech to it to confirm your identity.",
+    "purpose_function": "It exists to authenticate or identify people from their voice, providing a hands-free biometric factor for access control, phone banking, and forensic or security applications.",
+    "practical_application": "A technician deals with voice biometrics when capturing clean enrollment audio, matching microphone and channel conditions, and setting verification thresholds that balance false accepts against false rejects.",
+    "category": "Speaker recognition",
+    "related_terms": [
+     "Audio embedding",
+     "Feature extraction",
+     "Wake-word detection",
+     "Emotion recognition",
+     "Training data",
+     "Deep learning"
+    ],
+    "common_mistakes": [
+     "Confusing speaker verification (one-to-one) with speaker identification (one-to-many)",
+     "Enrolling on one device or channel and expecting reliable matching on a very different microphone or line",
+     "Assuming voice alone is spoof-proof, when recordings and synthetic voice clones can fool weak systems"
+    ],
+    "scenario_contexts": [
+     "Verifying a caller's identity in a phone-banking system",
+     "Controlling access to a facility or device by voiceprint",
+     "Matching or flagging a speaker in forensic audio analysis"
+    ]
+   },
+   "sources": [
+    "Kinnunen & Li, An Overview of Text-Independent Speaker Recognition, Speech Communication (2010)",
+    "Snyder et al., X-Vectors: Robust DNN Embeddings for Speaker Recognition, ICASSP (2018)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c4cf4e0a-7ff3-4151-87ec-b24aa7bf032b",
+   "term": "Wake-word detection",
+   "fields": {
+    "definition": "The task of continuously monitoring an audio stream to detect a specific trigger phrase (the wake word, e.g. \"Hey Siri\") that activates a larger speech system, while rejecting all other speech and noise. It is a specialized, always-on form of keyword spotting, typically implemented as a small, low-power neural network optimized for low latency and low false-alarm rates on-device.",
+    "plain_english": "Wake-word detection is a small always-listening program that waits for a set phrase, like Hey Siri, before it wakes up the main assistant. It is built to be tiny and fast so it can run all the time without draining the device.",
+    "purpose_function": "It exists to let a device stay responsive without streaming or processing all audio, only activating the heavier speech pipeline when the trigger phrase is heard, which saves power and protects privacy.",
+    "practical_application": "A technician meets wake-word detection when configuring or testing voice-controlled gear, tuning sensitivity to balance missed triggers against false wakes in noisy rooms.",
+    "category": "Speech processing",
+    "related_terms": [
+     "Keyword spotting",
+     "Voice biometrics",
+     "Deep learning",
+     "Convolutional neural network (CNN)",
+     "Inference",
+     "Training data"
+    ],
+    "common_mistakes": [
+     "Confusing wake-word detection with full speech recognition, when it only spots the trigger phrase, not general speech",
+     "Setting sensitivity too high, which causes frequent false wakes in noisy environments",
+     "Testing only in a quiet room, so real-world noise and distance cause missed triggers"
+    ],
+    "scenario_contexts": [
+     "Enabling hands-free control of a voice assistant or smart device",
+     "Tuning trigger sensitivity for a noisy live or studio environment",
+     "Testing wake-word reliability at different distances from the microphone"
+    ]
+   },
+   "sources": [
+    "Chen, Parada & Heigold, Small-Footprint Keyword Spotting Using Deep Neural Networks, ICASSP (2014)",
+    "Sainath & Parada, Convolutional Neural Networks for Small-Footprint Keyword Spotting, Interspeech (2015)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

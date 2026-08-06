@@ -31,6 +31,7 @@ import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../featu
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
+import { GlassButton } from '../../components/GlassButton';
 import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
@@ -208,18 +209,6 @@ export function AutotuneLabScreen() {
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <CollapsibleSection title="READOUTS">
-        <Text style={styles.readMain}>
-          {Math.round(amount * 100)}% correction · {SPEEDS.find((s) => s.key === speedKey)!.label.toLowerCase()} (τ ={' '}
-          {tau}s)
-        </Text>
-        <Text style={styles.caption}>
-          At {Math.round(amount * 100)}% correction a {Math.abs(MELODY[3].offCents)}¢ error ends{' '}
-          {Math.abs(remaining(MELODY[3].offCents))}¢ from the line
-          {amount === 1 ? ' — exactly on pitch' : ''}.
-        </Text>
-      </CollapsibleSection>
-
       <CollapsibleSection title="DISPLAY">
         {/* THE CENTS GRID — vertical semitone lines; notes bend onto them. */}
         <View style={styles.panelCard}>
@@ -278,17 +267,37 @@ export function AutotuneLabScreen() {
         </View>
       </CollapsibleSection>
 
+      {/* READOUTS — now BELOW the user controls (owner 2026-08-05). */}
+      <CollapsibleSection title="READOUTS">
+        <Text style={styles.readMain}>
+          {Math.round(amount * 100)}% correction · {SPEEDS.find((s) => s.key === speedKey)!.label.toLowerCase()} (τ ={' '}
+          {tau}s)
+        </Text>
+        <Text style={styles.caption}>
+          At {Math.round(amount * 100)}% correction a {Math.abs(MELODY[3].offCents)}¢ error ends{' '}
+          {Math.abs(remaining(MELODY[3].offCents))}¢ from the line
+          {amount === 1 ? ' — exactly on pitch' : ''}.
+        </Text>
+      </CollapsibleSection>
+
       <CollapsibleSection title="ACTIONS">
-        {/* PLAY lives in the header (▶) — real audible correction of the
-            generator "singer"; the honest captions stay here. */}
+        {/* Visible PLAY/STOP button (owner 2026-08-05 — the header ▶ alone was
+            easy to miss). Same handler as the header control. */}
         {engineReady ? (
           <>
+            <GlassButton
+              label={playing ? 'STOP' : '▶  PLAY MELODY'}
+              tint="green"
+              height={52}
+              fontSize={15}
+              onPress={() => (playing ? stop() : void play())}
+            />
             <Text style={styles.caption}>
-              GENERATOR DEMO — PLAY (header ▶) sings the demo melody with the app’s tone generator
-              (no microphone), so the correction you hear is real retuning of a synthesized voice.{' '}
+              GENERATOR DEMO — plays the demo melody with the app’s tone generator (no microphone), so
+              the correction you hear is real retuning of a synthesized voice.{' '}
               {additiveReady
                 ? ''
-                : 'This dev build predates the v3 additive engine — the voice falls back to a pure sine. '}
+                : 'This build plays the voice as a pure sine. '}
               Try FAST at 100% for the robotic hard-tune snap, then SLOW for a natural glide. Output{' '}
               {GEN_LEVEL_DB} dBFS · uncalibrated.
             </Text>
@@ -369,7 +378,7 @@ function CentsGrid({ amount, tau, activeNote }: { amount: number; tau: number; a
                   y1={TOP_AXIS - 4}
                   x2={x}
                   y2={h - 4}
-                  stroke={isTarget ? '#3f3f49' : '#232329'}
+                  stroke={isTarget ? '#4a4a56' : '#2e2f38'}
                   strokeWidth={isTarget ? 1.5 : 1}
                 />
                 <SvgText

@@ -1,0 +1,159 @@
+{
+ "batch": 147,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "ac04b9f1-0a10-46f1-9d8b-690c53f2ebfc",
+   "term": "Track Freeze",
+   "fields": {
+    "definition": "A DAW function that renders a track together with its active plug-ins to a temporary audio file and plays back that file instead of processing the effects in real time. The original track, its plug-ins, and settings are preserved and can be unfrozen to resume editing.",
+    "plain_english": "Track freeze records a track and its effects into a plain audio file. The computer then plays that file instead of running the effects live. This saves computer power. You can unfreeze the track later to make changes.",
+    "purpose_function": "It reduces CPU and RAM load from plug-in and virtual-instrument processing so a large project can play back without dropouts, while keeping the ability to revert to full editing later.",
+    "practical_application": "When a session with many virtual instruments and effects starts glitching or overloading the CPU, an engineer freezes finished tracks to recover processing headroom, then unfreezes any track that needs further tweaks.",
+    "category": "Workflow",
+    "related_terms": ["Bounce", "Commit", "CPU load", "Virtual instrument", "Insert effect", "Latency"],
+    "common_mistakes": ["Thinking a frozen track is permanently rendered, when it can be unfrozen to restore full editing", "Forgetting to unfreeze before changing plug-in settings, then wondering why edits have no effect", "Freezing tracks to save CPU but leaving so many unfrozen that the project still overloads"],
+    "scenario_contexts": ["Freezing software-instrument tracks to recover CPU in a large session", "Freezing effect-heavy tracks so playback stops glitching", "Unfreezing a track to adjust its plug-ins before mixdown"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "Apple Logic Pro User Guide", "PreSonus Studio One Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3bbf3efd-c24d-4061-9c03-d1d8782383ec",
+   "term": "Track FX chain",
+   "fields": {
+    "definition": "The ordered set of insert effects and processors loaded on a single track, through which the track's signal passes in series from top to bottom. In REAPER this collection is managed in the track's FX window and can be saved and recalled as an FX chain file.",
+    "plain_english": "A track FX chain is the line-up of effects on one track. The sound flows through them one after another, from top to bottom. The order changes how the final sound turns out. You can save the whole chain and reuse it later.",
+    "purpose_function": "It shapes a track's tone and dynamics by cascading processors in a defined order, and lets that processing be stored and reused across tracks or projects.",
+    "practical_application": "An engineer stacks an EQ, compressor, and reverb on a vocal track, reorders them to taste, then saves the FX chain to drop the same treatment onto other vocals.",
+    "category": "Signal Processing",
+    "related_terms": ["Insert effect", "Signal chain", "Plug-in", "Send", "EQ", "Compressor"],
+    "common_mistakes": ["Assuming processor order does not matter, when EQ-before-compression versus compression-before-EQ gives different results", "Confusing insert FX in the chain with send/aux effects", "Leaving CPU-heavy plug-ins active on many chains instead of freezing or bypassing them"],
+    "scenario_contexts": ["Building a vocal chain of EQ, de-esser, and compressor", "Saving a mastering FX chain to reuse on other songs", "Troubleshooting tone or phase problems caused by effect order"]
+   },
+   "sources": ["Cockos REAPER User Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d2ed20d5-bed5-4bfd-bc59-6ec95d5e3ac7",
+   "term": "Track Height",
+   "fields": {
+    "definition": "The adjustable vertical size of a track lane in a DAW's arrange or edit window, controlling how tall the track and its waveform or MIDI display appear. It affects visibility and editing precision but not the audio itself.",
+    "plain_english": "Track height is how tall a track looks in the edit window. Making a track taller shows the waveform in more detail. Making it shorter lets you fit more tracks on screen. It only changes the view, not the sound.",
+    "purpose_function": "It lets an editor trade screen space for detail, enlarging a track for precise waveform or automation editing and shrinking others to see the whole session.",
+    "practical_application": "When drawing detailed volume automation or editing a drum waveform, a technician increases that track's height for accuracy, then collapses it to scan the full arrangement.",
+    "category": "Editing Interface",
+    "related_terms": ["Zoom", "Arrange window", "Waveform", "Automation lane", "Track manager"],
+    "common_mistakes": ["Thinking track height changes level or the recorded audio, when it only changes the display", "Not knowing per-track versus global height shortcuts, so all tracks resize at once", "Working at tiny track heights and making imprecise edits"],
+    "scenario_contexts": ["Enlarging a track to draw fine automation", "Collapsing tracks to view a large session at a glance", "Zooming into a waveform for a precise crossfade"]
+   },
+   "sources": ["Cockos REAPER User Guide", "Avid Pro Tools Reference Guide", "Apple Logic Pro User Guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "84d37bb8-dc40-43d0-af2b-e34c4e7febd5",
+   "term": "Track manager",
+   "fields": {
+    "definition": "A DAW window or panel that lists all tracks in a project and lets the user show, hide, filter, and organize them without deleting anything. In REAPER it is the Track Manager; Cubase's Track Visibility offers comparable control.",
+    "plain_english": "A track manager is a list of every track in your song. From it you can hide or show tracks to cut clutter. Hidden tracks still play and are not deleted. It helps you find your way around a big project.",
+    "purpose_function": "It manages visual complexity in large sessions by controlling track visibility and organization, so an engineer can focus on relevant tracks while keeping all of them active.",
+    "practical_application": "In a session with dozens of tracks, an engineer opens the track manager to hide finished or unused tracks, then reveals a group when it is time to mix it.",
+    "category": "Session Management",
+    "related_terms": ["Track visibility", "Folder track", "Track Stack", "Arrange window", "Mixer"],
+    "common_mistakes": ["Believing hiding a track in the manager mutes or removes it, when it only affects visibility", "Losing track of hidden tracks that are still playing in the mix", "Confusing show/hide state with mute/solo state"],
+    "scenario_contexts": ["Hiding finished tracks to declutter a large session", "Showing only drum tracks while editing the kit", "Managing visibility of many tracks during a mix"]
+   },
+   "sources": ["Cockos REAPER User Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "05a7815b-9990-41e9-902c-f75b2157ac7b",
+   "term": "Track preset",
+   "fields": {
+    "definition": "A saved file capturing a track's configuration, such as its channel settings, insert effects, EQ, and routing, that can be recalled to create or configure a track instantly. In Cubase these are Track Presets storing inserts, EQ, and channel-strip settings.",
+    "plain_english": "A track preset is a saved setup for a track. It can hold the effects, EQ, and settings you like. Loading it sets up a new track the same way in seconds. It saves you from building the same thing again.",
+    "purpose_function": "It speeds up setup and enforces consistency by storing a track's processing and settings for reuse across projects.",
+    "practical_application": "An engineer who always processes a snare a certain way saves it as a track preset, then recalls it on new sessions instead of rebuilding the chain each time.",
+    "category": "Session Management",
+    "related_terms": ["Track template", "Track Preset Recall", "Channel strip", "Track FX chain", "Preset"],
+    "common_mistakes": ["Confusing a track preset with a single plug-in preset, which stores only one effect's settings", "Expecting a preset to carry recorded audio, when it stores settings only", "Overwriting a saved preset by not using Save As"],
+    "scenario_contexts": ["Saving a favorite vocal channel strip for reuse", "Recalling a drum bus setup on a new project", "Standardizing settings across an engineer's sessions"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "PreSonus Studio One Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e7fd5992-b205-4584-a3ea-4845a0fe3e26",
+   "term": "Track Preset Recall",
+   "fields": {
+    "definition": "The act of loading a previously saved track preset onto a track, applying its stored settings, effects, and routing. It restores a known configuration without rebuilding it manually.",
+    "plain_english": "Track preset recall means loading a saved track setup. It brings back the effects and settings you stored before. The track is ready in one step. It is like opening a saved template instead of starting over.",
+    "purpose_function": "It restores consistent, known-good track configurations quickly, supporting fast setup and repeatable results across sessions.",
+    "practical_application": "At the start of a new session, an engineer recalls a saved vocal track preset so the channel strip and effects load exactly as on previous mixes.",
+    "category": "Session Management",
+    "related_terms": ["Track preset", "Track template", "Recall", "Channel strip", "Track FX chain"],
+    "common_mistakes": ["Assuming recall imports audio as well as settings", "Recalling a preset that relies on plug-ins missing from the current system", "Overwriting current track settings by recalling without checking"],
+    "scenario_contexts": ["Loading a saved vocal chain at session start", "Restoring a standard drum bus configuration", "Recalling a mastering chain preset for a new song"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "PreSonus Studio One Reference Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "67491d63-f991-407d-992f-ef55a112609e",
+   "term": "Track send (REAPER)",
+   "fields": {
+    "definition": "In REAPER, a send routes a copy or portion of a track's signal to another track, folder, or hardware output, with its own volume, pan, and pre- or post-fader tap point. Sends feed aux/effect tracks, submixes, and separate monitor mixes.",
+    "plain_english": "A send in REAPER copies a track's sound to another track or output. It has its own volume and pan. Engineers use sends to feed effects like reverb, or to build a submix. The original track keeps playing as normal.",
+    "purpose_function": "It enables flexible routing so one source can feed shared effects, submixes, or separate monitor mixes without duplicating the track.",
+    "practical_application": "An engineer creates a reverb track and sends several vocals to it, adjusting each send level to control how wet each vocal sounds while sharing one reverb.",
+    "category": "Signal Routing",
+    "related_terms": ["Aux send", "Receive", "Bus", "Return track", "Pre-fader", "Post-fader"],
+    "common_mistakes": ["Confusing pre-fader and post-fader sends, which changes whether the channel fader affects the send level", "Creating a feedback loop by sending a track back into its own signal path", "Adding a send but leaving its level down, so no signal reaches the destination"],
+    "scenario_contexts": ["Sending multiple vocals to a shared reverb track", "Building a pre-fader monitor mix for a performer", "Routing drums to a parallel compression bus"]
+   },
+   "sources": ["Cockos REAPER User Guide", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d49eec68-d1e6-4c87-9f84-0fe9e09041fb",
+   "term": "Track Stack",
+   "fields": {
+    "definition": "In Logic Pro, a Track Stack groups multiple tracks under a single main track for organization and control; a Folder Stack organizes them visually, while a Summing Stack also routes their outputs to a shared bus for combined processing. It collapses a group into one track header.",
+    "plain_english": "A track stack in Logic bundles several tracks under one main track. It tidies the screen by hiding the group until you need it. A summing stack also sends the whole group through one bus. That lets you control and process them together.",
+    "purpose_function": "It organizes related tracks and, in summing form, creates a submix so a group can be leveled and processed with shared effects from one place.",
+    "practical_application": "An engineer puts all drum tracks into a summing stack, then uses the main track's fader and compressor to control and glue the whole kit at once.",
+    "category": "Track Organization",
+    "related_terms": ["Folder track", "Summing Stack", "Bus", "Submix", "VCA", "Track manager"],
+    "common_mistakes": ["Confusing a Folder Stack, which only organizes, with a Summing Stack, which also routes to a bus", "Expecting shared bus processing from a Folder Stack that does not sum outputs", "Losing track of individual routing after collapsing a stack"],
+    "scenario_contexts": ["Grouping drum tracks into a summing stack for bus processing", "Organizing backing vocals under one folder stack", "Building a submix bus with combined compression"]
+   },
+   "sources": ["Apple Logic Pro User Guide", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f0f70cfc-c94c-4556-9518-028e5476772b",
+   "term": "Track template",
+   "fields": {
+    "definition": "A saved file containing one or more preconfigured tracks, including routing, effects, instruments, and settings, that can be inserted into a project to reproduce a setup instantly. In REAPER these are Track Templates; Cubase offers comparable Track Archives and presets.",
+    "plain_english": "A track template is a ready-made track or group of tracks you save. It keeps the routing, effects, and settings in place. Loading it drops the whole setup into a new project. It saves you from building the same tracks over and over.",
+    "purpose_function": "It standardizes and speeds up session setup by storing complete track configurations for reuse across projects.",
+    "practical_application": "A live-recording engineer saves a full drum-mic track template with inputs, routing, and gates, then inserts it whenever tracking a new band to skip the setup.",
+    "category": "Session Management",
+    "related_terms": ["Track preset", "Project template", "Track Stack", "Routing", "Track FX chain"],
+    "common_mistakes": ["Confusing a track template with a full project template, which loads an entire session", "Expecting a template to include recorded audio rather than just track setup", "Loading a template whose plug-ins are not installed on the current system"],
+    "scenario_contexts": ["Inserting a saved drum-mic setup when tracking a band", "Reusing a standard vocal track across projects", "Sharing a configured track setup with a collaborator"]
+   },
+   "sources": ["Cockos REAPER User Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

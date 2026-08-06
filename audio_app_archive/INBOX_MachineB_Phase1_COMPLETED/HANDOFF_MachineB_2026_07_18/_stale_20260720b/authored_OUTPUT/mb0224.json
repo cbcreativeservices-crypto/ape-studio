@@ -1,0 +1,150 @@
+{
+ "batch": 224,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "68254dbd-85fc-46de-b7ae-467282b6a5a0",
+   "term": "Effects-editing suite",
+   "fields": {
+    "definition": "A dedicated post-production room and workstation configured for sound-effects editing, where an effects editor selects, cuts, syncs, and organizes hard effects, backgrounds, and designed elements into structured tracks and stems for the re-recording mix.",
+    "plain_english": "A special editing room where a sound editor picks and lines up the sound effects for a film. It is like a workshop where every crash, footstep, and background noise is placed to match the picture.",
+    "purpose_function": "It gives the sound-effects editor the tools, calibrated monitoring, and track layout needed to build and sync all non-dialogue, non-music sound so it is ready to hand off to the dub stage.",
+    "practical_application": "An effects editor works in the suite to spot the picture, import library and recorded effects, cut them to sync, and split them across organized tracks and stems for the re-recording mixer.",
+    "category": "Post-Production Facility",
+    "related_terms": ["Sound-effects editing", "Foley", "Backgrounds", "Re-recording mix", "Dialogue editing", "Spotting session"],
+    "common_mistakes": ["Confusing the effects-editing suite with the final dub/mix stage; editing prep and re-recording are separate rooms and roles.", "Failing to organize effects onto consistent, clearly named tracks and stems, which slows the mix.", "Not calibrating monitoring to a known reference level, so balance decisions do not translate to the dub stage."],
+    "scenario_contexts": ["Cutting hard effects and backgrounds to sync before a re-recording mix.", "Building organized SFX stems for delivery to the dub stage.", "Editing and cleaning field-recorded effects into usable, synced elements."]
+   },
+   "sources": ["Tomlinson Holman, \"Sound for Film and Television\"", "Ballou, \"Handbook for Sound Engineers\""],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e00efe8d-0a0a-4394-b2fb-877a7c132fba",
+   "term": "Elevation cue",
+   "fields": {
+    "definition": "An auditory cue that conveys the perceived vertical position (height) of a sound source, arising mainly from direction-dependent spectral filtering by the listener's head and outer ears, as captured in the head-related transfer function.",
+    "plain_english": "A clue your ears use to tell how high or low a sound is. Your outer ear changes the sound for high and low sources. Your brain reads that change as height.",
+    "purpose_function": "It lets the hearing system, and immersive audio systems that model it, place sounds above or below the listener rather than only left to right, which is essential for height channels and object-based formats.",
+    "practical_application": "When mixing immersive formats such as Dolby Atmos, an engineer relies on elevation cues (real height speakers, or modeled spectral cues in binaural rendering) to make objects seem to come from overhead.",
+    "category": "Spatial Audio",
+    "related_terms": ["Head-related transfer function", "Binaural rendering", "Object-based audio", "Localization", "Height channel", "Dolby Atmos"],
+    "common_mistakes": ["Assuming left-right panning alone can create height; elevation depends on spectral cues, not horizontal panning.", "Relying on generic, non-individualized HRTFs and expecting reliable height perception for every listener.", "Applying heavy EQ that flattens the spectral cues the ear uses to judge elevation."],
+    "scenario_contexts": ["Rendering height objects in a binaural Dolby Atmos mix for headphones.", "Positioning a flying object overhead in an immersive film mix.", "Diagnosing why a height-panned sound does not seem elevated on headphones."]
+   },
+   "sources": ["AES E-Library papers on spectral cues and median-plane localization", "Journal of the Acoustical Society of America (ASA)", "Blauert, \"Spatial Hearing\""],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8f668858-a710-4294-876b-f46155c8bc58",
+   "term": "Emitter position",
+   "fields": {
+    "definition": "The location, in a 2D or 3D coordinate space, of a virtual sound source (an emitter) relative to the listener, used by a spatial or object-based audio engine to compute direction, distance, level, and filtering for rendering.",
+    "plain_english": "Where a sound sits in the virtual world. The system uses this to know how far away and which way the sound should seem to come from. Move it closer and it gets louder.",
+    "purpose_function": "It drives spatialization: the engine combines the emitter's position with the listener's position to set panning, level, distance attenuation, and reverb so the sound seems to come from the right place.",
+    "practical_application": "In game-audio middleware or object-based mixing, a sound designer sets or animates an emitter's position so effects track on-screen or in-world sources as they move relative to the listener.",
+    "category": "Spatial Audio",
+    "related_terms": ["Listener", "Object-based audio", "Distance attenuation", "Panning", "Spatialization", "Dolby Atmos"],
+    "common_mistakes": ["Confusing emitter position (the source) with listener position (the reference point); they are distinct.", "Forgetting to update or animate the position, so a moving on-screen source stays static in the mix.", "Ignoring distance attenuation and reverb, so a far emitter is still unrealistically loud and dry."],
+    "scenario_contexts": ["Animating a passing car's emitter so it pans and fades across the field.", "Placing an object's position in a Dolby Atmos session to sit above the listener.", "Setting emitter coordinates in game middleware so a sound tracks its in-world object."]
+   },
+   "sources": ["Audiokinetic Wwise technical documentation (positioning/3D emitters)", "Dolby Atmos renderer technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "284d8827-1adf-4c82-b114-1c11c31767f4",
+   "term": "Emotional performance",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No established, standardized audio-technical meaning found in acceptable professional literature. 'Emotional performance' is a general descriptive phrase (an actor's or musician's emotive delivery), not a defined post-production/deliverables term, and it is not a transparent combination of an established technique or property with a source/section, so it cannot be authored to a professional standard. All fields left blank pending clarification of the intended sense."]
+  },
+  {
+   "id": "5be2da77-9cab-448f-af21-3fe4d00a8c73",
+   "term": "Enhancement layer",
+   "fields": {
+    "definition": "In scalable (layered) audio coding, a supplementary bitstream that adds to a self-contained base layer to improve quality, providing higher resolution, extended bandwidth, additional channels, or lossless reconstruction, so a decoder can use the base alone or base-plus-enhancement.",
+    "plain_english": "An extra chunk of audio data added on top of a basic version to make it sound better. A simple player uses just the basic part. A better player adds the extra layer for higher quality.",
+    "purpose_function": "It lets one delivery stream serve different devices and bandwidths: a basic decoder plays the base layer, while a more capable decoder adds the enhancement layer for higher resolution or extra channels.",
+    "practical_application": "In deliverables built on scalable codecs (for example MPEG-4 scalable-to-lossless), an encoding operator manages base and enhancement layers so both compatible and high-end playback are supported from one file.",
+    "category": "Coding & Delivery",
+    "related_terms": ["Base layer", "Scalable coding", "Lossless coding", "Bitstream", "Codec", "Bit depth"],
+    "common_mistakes": ["Assuming the enhancement layer plays on its own; it is meaningless without its base layer.", "Confusing an audio enhancement layer with a video enhancement layer (as in scalable video); they are separate streams.", "Stripping the enhancement layer during transcode and losing the intended lossless or extended-channel quality."],
+    "scenario_contexts": ["Encoding a scalable stream that degrades gracefully for low-bandwidth clients.", "Delivering one file that plays lossy on basic decoders and lossless on capable ones.", "Troubleshooting why high-resolution playback fails when only the base layer survived a transcode."]
+   },
+   "sources": ["ISO/IEC 14496-3 (MPEG-4 Audio, scalable/SLS coding)", "AES convention papers on scalable and scalable-to-lossless audio coding"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "02194985-0db9-44a1-a1fb-2e4f721a987d",
+   "term": "Envelope handling",
+   "fields": {
+    "definition": "The way a process, plug-in, or editor treats the amplitude envelope of a signal (its attack, sustain, and decay over time), including how transients are preserved, shaped, or smoothed during dynamics processing, editing, and level automation.",
+    "plain_english": "How a tool deals with the shape of a sound's loudness over time, its punchy start and its fade out. Good handling keeps a drum hit snappy instead of squashing its sharp start.",
+    "purpose_function": "It determines whether the natural shape and transients of a sound are kept, tightened, or softened, which affects clarity, punch, and how edits and level moves sound.",
+    "practical_application": "An editor watches envelope handling when applying compression, transient shaping, fades, or automation so that attacks stay natural and edits do not create clicks or pumping.",
+    "category": "Signal Processing",
+    "related_terms": ["Amplitude envelope", "Attack", "Transient", "Compression", "Automation", "Fade"],
+    "common_mistakes": ["Setting compressor attack too fast and flattening transients, dulling the sound's natural envelope.", "Editing or fading across a transient, which can cause clicks or an unnatural envelope.", "Confusing an amplitude envelope with a filter or automation envelope; here the term refers to level over time."],
+    "scenario_contexts": ["Preserving a gunshot's sharp attack while controlling its overall level.", "Editing across a sustained tone without creating a click at the cut.", "Using transient shaping to restore punch lost to heavy compression."]
+   },
+   "sources": ["Ballou, \"Handbook for Sound Engineers\"", "Avid Pro Tools Reference Guide (manufacturer technical documentation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8e86180c-095d-405f-99b3-014cb886f570",
+   "term": "Environmental reflection simulation",
+   "fields": {
+    "definition": "The artificial modeling of a space's reflections and reverberation (early reflections and reverb tail) using algorithmic reverb, convolution with an impulse response, or geometric acoustic modeling, to place a dry sound convincingly within a simulated acoustic environment.",
+    "plain_english": "Faking the echoes and reverb of a real room so a clean recording sounds like it was there. It is like adding the natural bounce of a hall or cave to a dry voice.",
+    "purpose_function": "It lets sound editors and mixers match dialogue, effects, and Foley to the on-screen space, creating a believable sense of room size and surfaces without recording in that actual place.",
+    "practical_application": "A re-recording mixer uses convolution or algorithmic reverb to simulate a cathedral, tiled bathroom, or forest so that ADR and effects sit naturally in the scene's environment.",
+    "category": "Reverberation & Acoustics",
+    "related_terms": ["Convolution reverb", "Early reflections", "Impulse response", "Reverberation", "Room tone", "Worldizing"],
+    "common_mistakes": ["Matching the reverb tail of a big space but ignoring early reflections, so the result sounds artificial.", "Over-reverberating dialogue so it loses intelligibility.", "Using a reverb whose character does not match the on-screen room, breaking the illusion of place."],
+    "scenario_contexts": ["Placing ADR into a tiled bathroom so it matches the production sound.", "Simulating a large stone hall for a scene shot on a dry stage.", "Matching effects reverb to a location's acoustics for a seamless mix."]
+   },
+   "sources": ["Ballou, \"Handbook for Sound Engineers\" (reverberation and room acoustics)", "AES E-Library papers on artificial reverberation and convolution"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b6586eb2-23f8-4bec-b0f9-998463217ea6",
+   "term": "Environmental sound effect",
+   "fields": {
+    "definition": "A sound effect that conveys the ambient character of a location, the continuous background layer such as wind, traffic, room tone, crowds, or wildlife, used to establish and sustain a scene's sense of place rather than to mark a single on-screen action.",
+    "plain_english": "The background sounds that tell you where a scene is, like traffic, birds, or a humming office. They set the mood instead of matching one exact action.",
+    "purpose_function": "It establishes the setting, fills silence, and smooths edits by providing a continuous sense of place under dialogue and hard effects.",
+    "practical_application": "A sound editor lays environmental effects (backgrounds, or \"atmos\") on dedicated tracks to build a believable, continuous world beneath the dialogue and spot effects.",
+    "category": "Sound Effects",
+    "related_terms": ["Ambience", "Backgrounds", "Room tone", "Hard effects", "Foley", "Sound design"],
+    "common_mistakes": ["Confusing environmental backgrounds with hard effects; backgrounds are continuous, hard effects are specific and synced.", "Letting a background loop repeat audibly instead of varying it, which breaks realism.", "Mixing environmental effects so loud they mask dialogue."],
+    "scenario_contexts": ["Laying a city-traffic background under a street dialogue scene.", "Adding forest ambience with birds and wind to establish a woodland setting.", "Filling a quiet interior with subtle room tone so cuts feel continuous."]
+   },
+   "sources": ["Tomlinson Holman, \"Sound for Film and Television\"", "Ballou, \"Handbook for Sound Engineers\""],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5569c8e2-2749-492e-8f6e-0847755c460b",
+   "term": "Event-driven audio",
+   "fields": {
+    "definition": "An audio playback approach in which sounds are triggered by discrete events (game actions, user inputs, or system messages) rather than played along a fixed timeline, with audio middleware mapping each event to sounds, parameters, and behaviors at runtime.",
+    "plain_english": "Sound that plays when something happens, not on a set schedule. Press a button or jump, and the matching sound fires right then.",
+    "purpose_function": "It lets interactive media react in real time, so the same session can play different, non-linear sound based on what happens, which a fixed timeline mix cannot do.",
+    "practical_application": "A game-audio designer builds events in middleware such as Wwise or FMOD, linking each game trigger to sounds and mix changes so audio responds to gameplay as it unfolds.",
+    "category": "Interactive Audio",
+    "related_terms": ["Audio middleware", "Trigger", "Emitter position", "Real-time mixing", "Wwise", "FMOD"],
+    "common_mistakes": ["Treating event-driven audio like a linear timeline mix, ignoring that events fire unpredictably.", "Not managing voice count and priority, so many simultaneous events overload playback.", "Forgetting to add variation, so a repeated event plays the exact same sound every time."],
+    "scenario_contexts": ["Triggering a footstep sound each time a character's foot lands in a game.", "Firing a UI click sound when a player selects a menu item.", "Changing the music state when the player enters combat."]
+   },
+   "sources": ["Audiokinetic Wwise technical documentation (events)", "FMOD Studio technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

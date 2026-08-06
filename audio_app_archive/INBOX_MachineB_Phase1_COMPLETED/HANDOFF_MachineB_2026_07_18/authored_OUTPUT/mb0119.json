@@ -1,0 +1,159 @@
+{
+ "batch": 119,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "6fd6c2a0-3b24-425d-859d-fa1b9fe05a90",
+   "term": "Mouse modifier",
+   "fields": {
+    "definition": "A modifier key—typically Shift, Ctrl/Command, or Alt/Option—held down while clicking or dragging with the mouse to temporarily change what the mouse action does in a DAW or editor, such as constraining movement, enabling fine adjustment, overriding snap, or adding to a selection.",
+    "plain_english": "It is a keyboard key you hold while you use the mouse. Holding it changes what your click or drag does. For example, holding Shift can let you pick more than one clip at once.",
+    "purpose_function": "It lets a single mouse tool perform several actions without switching tools, speeding up editing and mixing by giving quick access to variations like fine control or a snap override.",
+    "practical_application": "An engineer holds a modifier while dragging a fader or clip to nudge it in small steps, keep it on one axis, or bypass the grid, keeping a hand on the mouse instead of hunting through menus.",
+    "category": "DAW workflow",
+    "related_terms": ["Keyboard shortcut", "Snap to grid", "Nudge", "Automation lane", "Fader", "Selection tool"],
+    "common_mistakes": ["Assuming the same modifier does the same thing in every DAW—assignments differ between Pro Tools, Cubase, Logic, and Live.", "Forgetting that the modifier must be held before or during the action, not pressed afterward.", "Confusing a mouse modifier with a permanent tool change, then wondering why the behavior reverts once the key is released."],
+    "scenario_contexts": ["Holding a fine-adjust modifier while dragging a fader to set a precise level.", "Shift-clicking several regions to select and move them together.", "Holding a modifier to temporarily disable grid snapping while trimming a clip."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Steinberg Cubase Operation Manual", "Ableton Live Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fe8c61d6-9967-4af0-b4da-c293a3213d01",
+   "term": "Multichannel track",
+   "fields": {
+    "definition": "A single track that carries more than one channel of audio as one linked entity—such as stereo, LCR, 5.1, 7.1, or an immersive bed—rather than a mono track that holds one channel. Its width is set by a channel format, and all of its channels are recorded, edited, routed, and processed together.",
+    "plain_english": "It is one track that holds several audio channels at once, like left and right, or all the speakers in surround. Instead of many separate mono tracks, you handle them as one. It keeps grouped sounds lined up and moving together.",
+    "purpose_function": "It keeps the channels of a stereo or surround signal together so they stay in sync and share editing, routing, and plug-in settings, which simplifies working with multichannel material.",
+    "practical_application": "A technician records a stereo overhead pair or imports a 5.1 stem onto one multichannel track, then edits and routes all of its channels in one move instead of managing each channel separately.",
+    "category": "Track types",
+    "related_terms": ["Mono track", "Stereo track", "Channel format", "Surround sound", "Bus", "Stem"],
+    "common_mistakes": ["Assuming a multichannel track is just several mono tracks stacked—its channels are linked and share one set of controls.", "Placing a mono-only plug-in on a multichannel track and collapsing or misrouting the channels.", "Ignoring channel order, so a 5.1 track's channels end up assigned to the wrong outputs."],
+    "scenario_contexts": ["Importing a 5.1 music stem onto one track for a film re-recording session.", "Recording a stereo room-mic pair to a single stereo track.", "Routing an immersive bed through a multichannel track to the correct output format."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Steinberg Nuendo Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6072bd2b-10b5-4449-bf5e-2bd241cf5963",
+   "term": "Multichannel validation",
+   "fields": {
+    "definition": "The quality-control process of verifying that a multichannel audio file or stem conforms to its intended format specification—correct channel count and order, correct assignment of content to each channel, no empty, swapped, or polarity-inverted channels, and compliance with the loudness and level targets for the deliverable.",
+    "plain_english": "It means checking that a surround or multi-track file is built correctly. You confirm each channel holds the right sound and sits in the right slot. It catches problems like a missing channel or two channels swapped by mistake.",
+    "purpose_function": "It exists to catch channel-mapping and level errors before delivery, so a surround or immersive mix plays back correctly on the client's system and meets its format and loudness requirements.",
+    "practical_application": "Before delivering a 5.1 or immersive master, an engineer checks each channel for correct content, order, and loudness, often soloing channels and reading meters to confirm nothing is empty, swapped, or out of spec.",
+    "category": "Quality control",
+    "related_terms": ["Multichannel track", "Channel order", "Loudness", "Surround sound", "Deliverable", "Metering"],
+    "common_mistakes": ["Checking only the front channels and missing an empty or wrong surround or LFE channel.", "Assuming a correct channel count means correct channel order—content can still be mapped to the wrong speakers.", "Skipping a loudness check, so the deliverable fails the broadcaster's or streaming platform's spec."],
+    "scenario_contexts": ["Verifying a 5.1 stem's channel assignments before handing off to the dub stage.", "Confirming an immersive deliverable meets channel-order and loudness spec before upload.", "Auditioning each channel of a surround master to catch a swapped left-surround/right-surround pair."]
+   },
+   "sources": ["SMPTE recommended practice for multichannel audio channel assignment/order", "ITU-R BS.1770 loudness measurement", "EBU R128 loudness recommendation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "19abb346-1e13-4a37-9555-09d527af2130",
+   "term": "Music callback",
+   "fields": {
+    "definition": "In interactive audio middleware, a music callback is a notification the music engine sends back to game or application code at defined musical points—such as each beat or bar, a segment's entry or exit cue, a user-placed marker, or a playlist jump—so that gameplay events can be synchronized precisely to the music.",
+    "plain_english": "It is a message the music system sends to the game at a set musical moment, like on every beat or bar. The game can then act right in time with the music. For example, an enemy could attack exactly on the downbeat.",
+    "purpose_function": "It exists to let game logic react in musical time, so on-screen action, effects, and transitions can be locked to beats, bars, and cues instead of drifting out of sync with the score.",
+    "practical_application": "A sound designer or programmer registers a callback on beats or a custom cue so that, for example, a light flashes on each bar or a stinger fires when a music segment reaches its exit point.",
+    "category": "Interactive music",
+    "related_terms": ["Music segment", "Music state", "Cue", "Beat", "Marker", "RTPC"],
+    "common_mistakes": ["Expecting sample-accurate visuals from a callback that is delivered on the game thread and may arrive a frame late.", "Registering for beat or bar callbacks and never unregistering them, leaving stale callbacks firing.", "Confusing a music callback (music-timed) with a general event callback that just reports when a sound finished."],
+    "scenario_contexts": ["Flashing an environment light on every musical bar during a boss fight.", "Firing a gameplay stinger when a music segment hits its exit cue.", "Syncing a rhythm-game input window to beat callbacks from the music engine."]
+   },
+   "sources": ["Audiokinetic Wwise SDK documentation (music sync callbacks)", "Firelight FMOD Studio API documentation (event callbacks)", "Stevens & Raybould, Game Audio Implementation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3197b8df-94d9-4067-9de6-03de22d52a7c",
+   "term": "Music intensity layer",
+   "fields": {
+    "definition": "In adaptive music, an intensity layer is one of several stacked, time-aligned music stems that are faded in or out—vertical layering, or vertical re-orchestration—to raise or lower the energy of the score without changing the underlying arrangement, in response to a game or program state.",
+    "plain_english": "It is one layer of a piece of music that can be added or removed to make the music feel bigger or calmer. All the layers play in time together. Adding a drum or brass layer makes a scene feel more intense.",
+    "purpose_function": "It exists to let one piece of music shift energy smoothly—calm to tense and back—by muting or adding layers, avoiding an abrupt jump to a completely different track.",
+    "practical_application": "A game composer builds a cue as several aligned stems and maps a parameter to fade in higher-intensity layers as danger rises, so the music grows without ever restarting.",
+    "category": "Interactive music",
+    "related_terms": ["Vertical layering", "Music state", "Stem", "Music segment", "RTPC", "Crossfade"],
+    "common_mistakes": ["Rendering layers that are not the same length or tempo, so they drift out of sync when combined.", "Fading a layer in too abruptly, making the change obvious instead of smooth.", "Confusing vertical layering (adding or removing layers) with horizontal re-sequencing (switching to different sections)."],
+    "scenario_contexts": ["Fading in a percussion layer as enemies approach the player.", "Removing high-intensity layers when combat ends to return to a calm exploration feel.", "Mapping a health or threat parameter to the volume of each intensity layer."]
+   },
+   "sources": ["Audiokinetic Wwise documentation (interactive music, sub-tracks and RTPC)", "Stevens & Raybould, Game Audio Implementation", "Horowitz & Looney, The Essential Guide to Game Audio"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f3aeb78e-2c9a-4a5d-a26b-87130a4131f5",
+   "term": "Music mixer",
+   "fields": {
+    "definition": "A music mixer is the engineer, console, or software function responsible for combining and balancing the musical sources of a production into a coherent music mix; in film and broadcast post-production it is specifically the re-recording mixer who handles the music stem, alongside the dialogue and effects mixers.",
+    "plain_english": "A music mixer is the person or gear that blends all the musical parts into one balanced mix. In film and TV, it is the engineer who handles just the music. They set how loud each musical element sits.",
+    "purpose_function": "It exists to turn many separate musical elements into one balanced, polished result, and in post-production to keep music as its own stem so it can be weighed against dialogue and effects.",
+    "practical_application": "On a scoring or re-recording stage, the music mixer balances the orchestra or song elements and rides the music level so it supports the scene without covering dialogue.",
+    "category": "Mix roles",
+    "related_terms": ["Re-recording mixer", "Stem", "Music premix", "Dialogue mixer", "Submix", "Mixing console"],
+    "common_mistakes": ["Assuming the music mixer also mixes dialogue and effects—on larger productions these are separate roles.", "Thinking 'music mixer' always means a device, when it often means the engineer or their role.", "Pushing the music level so high it buries dialogue in the final mix."],
+    "scenario_contexts": ["A re-recording mixer balancing the music stem on a film dub stage.", "An engineer mixing a song's multitrack down to a stereo master.", "Setting music levels against dialogue and effects during a TV final mix."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, Practical Art of Motion Picture Sound", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2f694d4f-e373-4f17-9b49-61f878551f2b",
+   "term": "Music premix",
+   "fields": {
+    "definition": "A music premix (or music pre-dub) is a preliminary submix in which all of a program's music elements are balanced and processed together into the music stem, prepared before the final re-recording mix so that music can be handled as one manageable unit against dialogue and effects.",
+    "plain_english": "It is a rough-but-balanced mix of just the music, made before the final mix. It bundles all the music into one group. That makes the last mixing stage simpler, because the music is already sorted.",
+    "purpose_function": "It exists to reduce the number of elements at the final mix by consolidating many music tracks into one balanced stem, while keeping music separate for later level changes, revisions, or foreign-language versions.",
+    "practical_application": "Before the final dub, the mixer balances all cues and song elements into a music premix stem, which is then brought into the final mix and set against dialogue and effects.",
+    "category": "Mix workflow",
+    "related_terms": ["Premix", "Stem", "Music mixer", "Final mix", "Submix", "Dialogue premix"],
+    "common_mistakes": ["Printing the premix with too much processing baked in, leaving no room to adjust music at the final mix.", "Not documenting levels or routing, so the premix cannot be recreated if a cue changes.", "Treating the premix as final—premixes exist to be re-balanced against dialogue and effects."],
+    "scenario_contexts": ["Consolidating dozens of music cues into one 5.1 music stem before a film's final dub.", "Preparing separate music premixes so a show can be re-versioned in another language.", "Delivering a music premix stem to the re-recording mixer for the final balance."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "267e35d9-4ba3-40dd-9bdb-3969957ac9b1",
+   "term": "Music segment",
+   "fields": {
+    "definition": "In interactive music, a music segment is the basic unit of the music hierarchy: a container holding one or more time-aligned music tracks along with entry and exit cues and a defined duration, representing a self-contained musical piece such as an intro, a loop, or a transition that the engine can queue, loop, and join to other segments.",
+    "plain_english": "It is one chunk of music the game can play, like an intro or a looping section. It has a start point and an end point. The music system strings these chunks together to build the score as you play.",
+    "purpose_function": "It exists to break a score into reusable musical building blocks with defined entry and exit points, so the engine can rearrange, loop, and transition between them smoothly at runtime.",
+    "practical_application": "A composer authors an intro segment, a looping gameplay segment, and an ending segment, then the middleware chains them—waiting for each segment's exit cue before moving on—so the music adapts as the game changes.",
+    "category": "Interactive music",
+    "related_terms": ["Music state", "Music callback", "Music intensity layer", "Cue", "Transition", "Playlist container"],
+    "common_mistakes": ["Ignoring entry and exit cues, so segments join at musically wrong points and the transition sounds jarring.", "Building segments of mismatched tempo or length that will not loop or transition cleanly.", "Confusing a music segment (a unit of music) with a music track (a single layer inside a segment)."],
+    "scenario_contexts": ["Looping a gameplay music segment until the player enters combat.", "Transitioning from an exploration segment to a combat segment on a musical bar.", "Queuing an ending segment when a level is completed."]
+   },
+   "sources": ["Audiokinetic Wwise documentation (Music Segment, interactive music hierarchy)", "Stevens & Raybould, Game Audio Implementation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d7cf32a3-a686-424f-a4c2-18e88ebcca29",
+   "term": "Music state",
+   "fields": {
+    "definition": "In adaptive music, a music state is a named, usually global condition of the game or program—such as Exploration, Combat, Stealth, or Victory—that the music system reads to decide which music plays and how it transitions, driving horizontal re-sequencing between different musical sections to match the current situation.",
+    "plain_english": "It is a label for what is happening in the game, like 'exploring' or 'fighting'. The music system watches this label and plays music that fits. When the state changes to combat, the music switches to combat music.",
+    "purpose_function": "It exists to connect gameplay context to musical choice, so the score follows the action by switching or transitioning between sections whenever the situation changes.",
+    "practical_application": "A designer defines states like Explore and Combat and assigns music to each, so when the game sets the state to Combat the music system transitions to the combat music at a musically appropriate point.",
+    "category": "Interactive music",
+    "related_terms": ["Music segment", "Music callback", "Music intensity layer", "Transition", "RTPC", "Switch container"],
+    "common_mistakes": ["Setting transitions to happen immediately instead of on a beat or bar, causing abrupt musical jumps.", "Confusing states (discrete conditions like Combat) with continuous parameters used to fade layers.", "Defining too many states, making transitions hard to author and test."],
+    "scenario_contexts": ["Switching from exploration to combat music when enemies engage.", "Returning to calm music when the player reaches a safe area.", "Triggering victory music by setting a Victory state at the end of a fight."]
+   },
+   "sources": ["Audiokinetic Wwise documentation (States, Music Switch Container)", "Firelight FMOD Studio documentation (parameters and transitions)", "Stevens & Raybould, Game Audio Implementation"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

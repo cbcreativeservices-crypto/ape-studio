@@ -1,0 +1,231 @@
+{
+ "batch": 315,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "63936927-e031-47ad-9c13-0d550137a3d8",
+   "term": "gutless",
+   "fields": {
+    "definition": "A subjective descriptor for a sound that lacks low-frequency energy, weight and power, coming across as thin, weak and underpowered with little punch or body.",
+    "plain_english": "A gutless sound is weak and thin. It has almost no bass or punch, so it feels small and lacks power.",
+    "purpose_function": "Gives engineers a quick shared term for a tonal balance that is short on lows and low-mids, pointing toward more level, low-end support, or a fuller source.",
+    "practical_application": "A tech might call a bass DI 'gutless' and add low-mid EQ, re-amp it, or swap to a fuller-sounding source to restore weight.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["thin", "punchy", "warm", "full", "boomy"],
+    "common_mistakes": [
+     "Confusing gutless (lack of low-end power) with thin (lack of body across the low-mids) and treating them the same.",
+     "Trying to fix a gutless sound only with volume instead of restoring the missing low-frequency content.",
+     "Boosting deep sub-bass to compensate, which adds rumble without the punch that was actually missing."
+    ],
+    "scenario_contexts": [
+     "A bass guitar DI that sounds gutless in the mix and needs low-mid support.",
+     "A kick drum that lacks weight and punch through a small PA.",
+     "A vocal that sounds gutless and underpowered next to a dense backing track."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7d2782fb-57c6-4388-9226-3632818dd247",
+   "term": "Harsh",
+   "fields": {
+    "definition": "A subjective descriptor for an unpleasant, aggressive, edgy quality, usually caused by excess energy or distortion in the upper-midrange/presence region (roughly 2-5 kHz), that is fatiguing to listen to.",
+    "plain_english": "A harsh sound is rough and hard on the ears. It has too much high-mid energy, so it feels sharp and tiring to hear.",
+    "purpose_function": "Flags a specific tonal fault so engineers know to look for a peak, resonance or distortion in the presence band and tame it.",
+    "practical_application": "An engineer hearing a harsh cymbal or vocal will sweep a narrow EQ cut through 2-5 kHz, check for clipping, or ease off a compressor or exciter to smooth it out.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["bright", "sibilant", "edgy", "presence", "ice-pick", "brittle"],
+    "common_mistakes": [
+     "Confusing harsh (aggressive upper-mid/presence energy) with bright (extended but pleasant highs).",
+     "Cutting broad high frequencies and dulling the whole source instead of finding the narrow offending band.",
+     "Blaming the source when the harshness is actually clipping or distortion somewhere in the gain chain."
+    ],
+    "scenario_contexts": [
+     "A vocal that turns harsh on loud notes through a PA.",
+     "Cymbals or an electric guitar amp that sound harsh on a bright console.",
+     "A cheap microphone or converter adding a harsh edge to a recording."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Katz - Mastering Audio", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "20cd27aa-90d7-48d6-8455-b9ec6ad3cf75",
+   "term": "hi-fi",
+   "fields": {
+    "definition": "Short for high fidelity; reproduction that closely and accurately matches the original source, with wide, even frequency response, low distortion and low noise. As a timbre descriptor, a clean, detailed, full-range and refined sound.",
+    "plain_english": "Hi-fi is short for high fidelity. It means the sound is clean, clear, and true to the real thing. It has full lows and highs with very little noise.",
+    "purpose_function": "Serves as a benchmark of accurate, faithful reproduction against which colored or degraded 'lo-fi' sounds are judged.",
+    "practical_application": "A tech describes a monitor chain or recording as hi-fi when it is clean, extended and uncolored, or deliberately degrades a track toward lo-fi for effect.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["lo-fi", "flat response", "transparent", "detailed", "fidelity"],
+    "common_mistakes": [
+     "Assuming hi-fi just means loud or bass-heavy rather than accurate and low in distortion.",
+     "Confusing a 'hyped', exciting sound with true high fidelity.",
+     "Judging fidelity on colored consumer speakers instead of accurate monitors."
+    ],
+    "scenario_contexts": [
+     "Describing a mastering monitor chain that reproduces sources cleanly and accurately.",
+     "Comparing a hi-fi full-range recording against a deliberately lo-fi effected track.",
+     "Evaluating whether a converter or preamp adds coloration or stays hi-fi."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "edf66472-81b8-4dbf-9275-fdd59fd4adac",
+   "term": "Hollow",
+   "fields": {
+    "definition": "A subjective descriptor for a tone with a scooped or notched midrange and resonant coloration, giving a distant, cupped, tube-like quality; often the result of a midrange dip, phase cancellation or comb filtering.",
+    "plain_english": "A hollow sound is missing its middle tones. It sounds far away and cupped, like someone talking into a tube or barrel.",
+    "purpose_function": "Points to a midrange deficiency or comb-filter coloration so engineers can check mic placement, polarity and EQ.",
+    "practical_application": "Hearing a hollow snare or vocal, a tech checks for phase cancellation between mics, corrects polarity or placement, and restores midrange with EQ.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["boxy", "comb filtering", "phase cancellation", "nasal", "scooped"],
+    "common_mistakes": [
+     "Fixing a hollow, comb-filtered sound with EQ alone instead of correcting mic phase or placement.",
+     "Confusing hollow (scooped mids) with boxy (excess low-mids).",
+     "Scooping the mids on purpose and then wondering why the source sits poorly in the mix."
+    ],
+    "scenario_contexts": [
+     "Two mics on one source combining out of phase and sounding hollow.",
+     "A vocal that sounds hollow and distant after a midrange cut.",
+     "A snare recorded in a way that produces a hollow, tube-like tone."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6d817368-2f76-450a-b6cf-4d8670c417f5",
+   "term": "Honky",
+   "fields": {
+    "definition": "A subjective descriptor for a nasal, midrange-heavy coloration with excess energy roughly in the 500 Hz-1 kHz range, resembling speech through cupped hands or a megaphone.",
+    "plain_english": "A honky sound is nasal and pinched. It sounds like someone talking through cupped hands, with too much middle honk.",
+    "purpose_function": "Identifies an over-prominent lower-midrange resonance so it can be located and cut with EQ.",
+    "practical_application": "An engineer tames a honky acoustic guitar or vocal by sweeping a narrow EQ cut through 500 Hz-1 kHz until the nasal quality clears.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["nasal", "boxy", "midrange", "peaky", "hollow"],
+    "common_mistakes": [
+     "Confusing honky (around 500 Hz-1 kHz emphasis) with boxy (lower, around 300-600 Hz emphasis).",
+     "Cutting too wide and hollowing out the midrange instead of notching the honk.",
+     "Assuming the honk is the source when it is a room or enclosure resonance."
+    ],
+    "scenario_contexts": [
+     "An acoustic guitar that sounds honky through a piezo pickup.",
+     "A vocal mic with a midrange resonance that sounds honky.",
+     "A small speaker or wedge with a honky midrange bump."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b8c3f064-1564-4799-93da-6f271d10de93",
+   "term": "hyped",
+   "fields": {
+    "definition": "A subjective descriptor for a sound with a deliberately exaggerated, non-flat frequency response, typically boosted lows and highs with scooped mids ('smile' EQ), that sounds exciting and enhanced rather than accurate.",
+    "plain_english": "A hyped sound has boosted lows and highs and scooped middles. It sounds exciting at first, but it is not a true, flat picture of the music.",
+    "purpose_function": "Names an enhanced, flattering tonal balance so engineers can tell an impressive-sounding presentation from a true, flat one.",
+    "practical_application": "A tech recognizes hyped consumer speakers or a hyped mix and cross-checks decisions on flat monitors so the balance translates elsewhere.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["smile EQ", "scooped", "flat response", "hi-fi", "bright"],
+    "common_mistakes": [
+     "Mixing on hyped speakers and making a dull, thin mix that only sounds right on those speakers.",
+     "Confusing a hyped, exciting sound with an accurate one.",
+     "Adding hype with EQ on every channel until the mix is fatiguing and cluttered."
+    ],
+    "scenario_contexts": [
+     "Consumer earbuds or a boombox with a hyped, smiling response.",
+     "A demo playback system voiced hyped to impress clients.",
+     "A mix bus that has been hyped with too much high and low boost."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Katz - Mastering Audio"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4e4b5c2d-1b84-4bd8-b532-30740094e98a",
+   "term": "ice-pick",
+   "fields": {
+    "definition": "A subjective descriptor for an extremely piercing, painful high-frequency peak, often around 3-8 kHz, that feels like a sharp stab in the ears; a severe, localized form of harshness.",
+    "plain_english": "An ice-pick sound has a sharp, piercing high note that stabs your ears. It is a very painful, extreme kind of harshness.",
+    "purpose_function": "Flags a narrow, painful treble resonance so it can be found and notched out before it causes listener discomfort.",
+    "practical_application": "Hearing an ice-pick peak on cymbals or a vocal, a tech sweeps a narrow boosted EQ to locate the frequency, then cuts it sharply.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["harsh", "sibilant", "bright", "presence", "brittle"],
+    "common_mistakes": [
+     "Cutting a wide band and dulling the whole top end instead of notching the narrow ice-pick frequency.",
+     "Confusing ice-pick (a narrow, piercing peak) with general brightness.",
+     "UNSAFE: Enduring an ice-pick peak at high monitoring levels, risking ear fatigue and hearing damage instead of cutting it."
+    ],
+    "scenario_contexts": [
+     "A cymbal or hi-hat with an ice-pick peak on a bright PA.",
+     "A vocal sibilance region that stabs at a specific high frequency.",
+     "A resonant tweeter or horn producing an ice-pick tone."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Katz - Mastering Audio"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ef909101-6d60-443c-9a61-5ade9c18af30",
+   "term": "in a box",
+   "fields": {
+    "definition": "A subjective descriptor for a closed-in, boxy coloration in which the sound seems enclosed, caused by excess low-midrange resonance (roughly 300-600 Hz) and a lack of openness and air.",
+    "plain_english": "A sound 'in a box' feels closed-in and boxy. It has too much low-middle tone, like the music is trapped inside a small box.",
+    "purpose_function": "Identifies a low-mid buildup and lack of top-end openness so engineers can cut the boxiness and add air.",
+    "practical_application": "A tech cuts around 300-600 Hz and may add a gentle high-frequency lift to open up a source that sounds 'in a box'.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["boxy", "honky", "muddy", "hollow", "closed-in"],
+    "common_mistakes": [
+     "Confusing 'in a box' (low-mid boxiness, around 300-600 Hz) with honky (higher, around 500 Hz-1 kHz).",
+     "Boosting highs to 'open it up' without cutting the low-mid buildup causing the boxiness.",
+     "Overlooking that a small, untreated room or enclosure is adding the boxy resonance."
+    ],
+    "scenario_contexts": [
+     "A vocal recorded in a small untreated room that sounds in a box.",
+     "A guitar cabinet close-mic'd in a way that produces a boxy, closed-in tone.",
+     "A conference or podcast mic in a reflective space sounding in a box."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "24366474-2bf2-421e-b972-89d055d4f76e",
+   "term": "in-your-face",
+   "fields": {
+    "definition": "A subjective descriptor for a very present, forward and immediate sound that seems close to the listener, usually from strong presence-region energy, high directness and little room ambience.",
+    "plain_english": "An in-your-face sound is bold, close, and upfront. It feels like the music is right in front of you, with little room echo.",
+    "purpose_function": "Describes a forward, upfront presentation so engineers can dial presence, dryness and level to place a source aggressively in the mix.",
+    "practical_application": "To make a vocal in-your-face, a tech boosts presence, keeps it dry and compressed, and raises it forward in the balance.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["present", "forward", "dry", "presence", "upfront"],
+    "common_mistakes": [
+     "Pushing every element in-your-face so nothing has depth or sits back in the mix.",
+     "Confusing in-your-face (forward and present) with simply loud.",
+     "Adding so much presence to be upfront that the source becomes harsh."
+    ],
+    "scenario_contexts": [
+     "A lead vocal mixed dry and forward to sound in-your-face.",
+     "A rock guitar meant to be aggressive and upfront.",
+     "A voiceover kept in-your-face for impact in a commercial."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Katz - Mastering Audio"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

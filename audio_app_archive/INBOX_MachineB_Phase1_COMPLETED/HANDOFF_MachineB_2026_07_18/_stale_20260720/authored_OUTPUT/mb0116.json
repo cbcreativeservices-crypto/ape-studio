@@ -1,0 +1,216 @@
+{
+ "batch": 116,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "c3b7b122-71f6-4240-8cda-77bb7c297054",
+   "term": "MIDI part (Cubase)",
+   "fields": {
+    "definition": "In Steinberg Cubase, a MIDI Part is a container object on a MIDI or Instrument track that holds MIDI events such as notes and controller data. It appears as a block in the Project window and is opened in an editor (Key, Drum, or List Editor) to edit the events it contains.",
+    "plain_english": "In Cubase, a MIDI part is a block on a MIDI track that holds the notes you played. You can move or copy the whole block, then open it to change the notes inside. It is like a folder that keeps one section of your performance together.",
+    "purpose_function": "It groups MIDI events into a single moveable, copyable object so a performance can be arranged, repeated, and edited as one unit instead of one note at a time.",
+    "practical_application": "A technician records or draws a MIDI passage, then drags, copies, or loops the resulting Part along the timeline and double-clicks it to edit notes and velocities in the Key Editor.",
+    "category": "MIDI Sequencing",
+    "related_terms": ["MIDI event", "Instrument track", "Key Editor", "Quantize", "Piano roll"],
+    "common_mistakes": [
+     "Confusing a MIDI Part (a container of MIDI data) with an audio event (recorded audio).",
+     "Assuming the Part contains the sound itself, when the actual sound comes from the instrument the track feeds.",
+     "Trimming a Part so that notes falling outside its boundaries stop playing."
+    ],
+    "scenario_contexts": [
+     "Recording a synth bassline on an Instrument track and looping the resulting MIDI Part across the chorus.",
+     "Double-clicking a MIDI Part to fix a wrong note in the Key Editor.",
+     "Copying a drum MIDI Part to repeat a groove through a verse."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (MIDI Parts and Events)", "Steinberg Cubase documentation (steinberg.help)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f1777319-c7e5-4ec5-9006-9f2877965cc0",
+   "term": "MIDI To routing",
+   "fields": {
+    "definition": "In Ableton Live, 'MIDI To' is the output chooser in a track's In/Out section that sets where the track's MIDI signal is sent, typically to another track (to play that track's instrument) or to an external MIDI port or device.",
+    "plain_english": "In Ableton Live, 'MIDI To' picks where a track sends its MIDI notes. You can send those notes to another track so it plays the sound, or send them out to a hardware synth. Think of it as choosing which instrument should listen to this track.",
+    "purpose_function": "It lets one track's notes drive an instrument on a different track or on outboard gear, so where notes are played can be separated from where they make sound.",
+    "practical_application": "A technician sets 'MIDI To' on a track to a software-instrument track (and picks its input) to layer sounds, or routes it to an external MIDI output to trigger a hardware synth.",
+    "category": "MIDI Routing",
+    "related_terms": ["MIDI From", "Instrument track", "MIDI channel", "External Instrument", "Track monitoring"],
+    "common_mistakes": [
+     "Setting 'MIDI To' but forgetting to arm or monitor the destination track, so no sound is heard.",
+     "Confusing 'MIDI To' (the output destination) with 'MIDI From' (the input source).",
+     "Leaving the destination's MIDI input set to 'No Input' so the routed notes never reach its instrument."
+    ],
+    "scenario_contexts": [
+     "Routing a MIDI clip to a hardware synth's MIDI input for tracking.",
+     "Layering two instrument tracks by sending one track's MIDI to the other.",
+     "Sending MIDI to an External Instrument device to play outboard gear in time."
+    ]
+   },
+   "sources": ["Ableton Live Manual - Routing and I/O", "Ableton Live Manual - MIDI routing and setup"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f121a4e1-a72e-4da8-a5f0-a9a320494418",
+   "term": "Miss the solo",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "'Miss the solo' has no established professional meaning as a mixing or workflow term; it appears to be a non-standard or fragmentary phrase rather than a defined concept. After searching mixing literature and DAW/console documentation, no two acceptable sources define it. All fields left blank pending review."
+   ]
+  },
+  {
+   "id": "8aeeff96-eae0-4bec-9538-97fc947c7b46",
+   "term": "Mix around the vocal",
+   "fields": {
+    "definition": "Mixing around the vocal is a vocal-centric mixing approach in which the lead vocal is established as the focal point first, and every other element's level, EQ, panning, and effects are then shaped to support the vocal and stay out of its way.",
+    "plain_english": "Mixing around the vocal means you make the singing the star first, then fit everything else around it. You turn down or carve out sounds that fight the voice so the words stay clear. It is like framing a photo so the main person is never blocked.",
+    "purpose_function": "In most vocal music the voice carries the song, so building the mix around it keeps the lyrics and melody clear and emotionally front-and-center.",
+    "practical_application": "A technician sets the vocal level and tone first, then uses EQ carving, panning, and sometimes ducking on competing parts so nothing masks the voice.",
+    "category": "Mixing Technique",
+    "related_terms": ["Frequency masking", "EQ carving", "Static mix", "Sidechain ducking", "Level balance"],
+    "common_mistakes": [
+     "Mixing the backing tracks loud first, then finding there is no space left for the vocal.",
+     "Fixing vocal masking only by raising the vocal instead of carving the competing parts.",
+     "Forgetting to check the vocal balance on several playback systems."
+    ],
+    "scenario_contexts": [
+     "Balancing a dense pop production so the lead vocal stays clear and intelligible.",
+     "Carving guitars and synths that mask a vocal in the same frequency range.",
+     "Setting the vocal first as the anchor for the rest of the mix."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Sound on Sound (vocal mixing technique articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "33604de0-8e35-451a-8d97-f2916bb5e5b3",
+   "term": "Mix Assistant",
+   "fields": {
+    "definition": "Mix Assistant is an assistive feature in modern mixing software (such as iZotope Neutron) that analyzes the tracks in a session and automatically sets a starting balance of relative levels, usually built around a user-chosen focus element, to provide a quick rough starting point for a mix.",
+    "plain_english": "Mix Assistant is a smart tool that listens to all your tracks and sets a rough volume balance for you. You tell it which part matters most, like the vocal, and it turns the others up or down to fit. It gives you a fast starting point that you then finish by ear.",
+    "purpose_function": "It speeds up the slow first step of getting faders roughly balanced, giving a beginner or a busy engineer a coherent starting mix to refine by ear.",
+    "practical_application": "A technician loads the assistant, selects the lead vocal as the focus, lets it set initial levels across the session, then adjusts each fader by ear from there.",
+    "category": "Mixing Tools",
+    "related_terms": ["Gain staging", "Static mix", "Reference track", "Level balance", "Focus track"],
+    "common_mistakes": [
+     "Treating the assistant's result as a finished mix rather than a rough starting point.",
+     "Skipping proper gain staging first, which skews the levels the tool suggests.",
+     "Assuming it replaces critical listening and arrangement decisions."
+    ],
+    "scenario_contexts": [
+     "Building a fast rough balance on a large session before detailed mixing.",
+     "Setting starting levels around a lead-vocal focus.",
+     "Teaching a beginner how relative levels shape a mix."
+    ]
+   },
+   "sources": ["iZotope Neutron Help Documentation (Mix Assistant)", "Waves StudioRack User Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0c5f8fd7-ea27-42e2-9e6a-92d4aec7126e",
+   "term": "Mix by meters",
+   "fields": {
+    "definition": "Mixing by meters is the practice of making level and balance decisions mainly from visual meter readings (peak, RMS, VU, or LUFS) rather than from critical listening; meters serve as an objective reference but are not a substitute for judging the mix by ear.",
+    "plain_english": "Mixing by meters means setting your levels by watching the screen instead of trusting your ears. Meters are useful guides, but they cannot tell you if a mix sounds good. Skilled engineers glance at meters but make the real call by listening.",
+    "purpose_function": "Meters give an objective reference for level, headroom, and loudness targets, which helps keep gain staging safe and delivery loudness on spec.",
+    "practical_application": "A technician checks meters to confirm headroom and hit a LUFS target, but sets the actual balance of instruments by ear on trusted monitors.",
+    "category": "Mixing Technique",
+    "related_terms": ["LUFS", "Gain staging", "Headroom", "VU meter", "Reference track"],
+    "common_mistakes": [
+     "Setting instrument balance purely by matching meter numbers instead of listening.",
+     "Trusting one meter type for a job it is not designed for, such as using peak meters to judge loudness.",
+     "Treating meters as the only truth and ignoring the room and monitors."
+    ],
+    "scenario_contexts": [
+     "Confirming headroom before printing a mix.",
+     "Meeting a streaming loudness target in LUFS.",
+     "Matching rough levels between song sections while still checking by ear."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Sound on Sound (metering and gain-staging articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "52061b1f-fa4e-4527-93ae-df7375ba7a74",
+   "term": "Mix Channel",
+   "fields": {
+    "definition": "A mix channel is a single signal path in a mixing console or DAW mixer that carries one source and provides controls such as input gain, EQ, dynamics, sends, pan, and a fader before the signal is routed to a bus or the main output.",
+    "plain_english": "A mix channel is one strip in the mixer that handles a single sound, like the kick drum or a vocal. It has its own volume fader, tone controls, and knobs. Using one channel per source lets you shape each sound on its own.",
+    "purpose_function": "It isolates one source so its level, tone, and effects can be controlled independently before all the channels are blended together.",
+    "practical_application": "A technician assigns each mic or track to its own mix channel, sets its fader and EQ, then routes it to a group or the main mix bus.",
+    "category": "Mixing Basics",
+    "related_terms": ["Channel strip", "Bus", "Fader", "Insert", "Aux send"],
+    "common_mistakes": [
+     "Confusing a channel with a bus, which sums several channels together.",
+     "Assigning two sources to one channel and losing separate control of each.",
+     "Running a channel into clipping instead of setting input gain properly first."
+    ],
+    "scenario_contexts": [
+     "Setting up one channel per microphone at a live gig.",
+     "Adjusting the vocal channel's fader and EQ during a mix.",
+     "Routing several instrument channels into a single drum group."
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "83c54bd3-ae8b-4d12-bbfd-30642959ba84",
+   "term": "Mix consistency",
+   "fields": {
+    "definition": "Mix consistency is the degree to which a mix holds a stable tonal balance, level relationship, and character throughout a song and across an engineer's projects, so that mixes translate reliably across different playback systems.",
+    "plain_english": "Mix consistency means your mixes sound steady and dependable. Levels and tone stay balanced from the start of a song to the end, and your work sounds similar in quality from one project to the next. It also means the mix holds up on phones, cars, and big speakers.",
+    "purpose_function": "Consistent mixes reduce surprises when a track is played on unfamiliar systems and make an engineer's results predictable and professional.",
+    "practical_application": "A technician uses reference tracks, careful gain staging, and checks on several monitors and earbuds to keep balance and loudness consistent within and between projects.",
+    "category": "Mixing Technique",
+    "related_terms": ["Reference track", "Translation", "Gain staging", "Level balance", "Monitoring"],
+    "common_mistakes": [
+     "Judging a mix on only one set of speakers, so it fails to translate elsewhere.",
+     "Mixing too loud, which tires the ears and lets balance decisions drift over time.",
+     "Changing tonal balance a lot between sections with no musical reason."
+    ],
+    "scenario_contexts": [
+     "Checking a mix on monitors, earbuds, and a phone speaker to confirm it translates.",
+     "Using a reference track to keep tonal balance in line with a genre standard.",
+     "Keeping level and tone steady across all the songs on an album."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Sound on Sound (mix translation articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "90ab32ae-766c-407f-901f-ebe8e53dbb0c",
+   "term": "Mix Engine FX",
+   "fields": {
+    "definition": "In PreSonus Studio One, Mix Engine FX are processors that plug into the mixer's channel and bus engine and use State Space modeling to add analog-console behavior, such as drive, crosstalk, and subtle noise, across the summed signal; the example included with Studio One is Console Shaper.",
+    "plain_english": "In Studio One, Mix Engine FX add the warm, glued sound of an analog mixing desk to your whole mix. They work deep inside the mixer, not just on one track, adding gentle drive and character. Console Shaper is the one that ships with the program.",
+    "purpose_function": "They recreate the interaction and coloration of a hardware console inside the DAW, giving a digital mix cohesion and analog-style character without outboard gear.",
+    "practical_application": "A technician inserts Console Shaper on the main bus in Studio One and enables per-channel drive to add subtle console glue and saturation across the mix.",
+    "category": "Mixing Tools",
+    "related_terms": ["Console emulation", "Bus processing", "Saturation", "Summing", "Insert effect"],
+    "common_mistakes": [
+     "Overdriving Console Shaper so the mix becomes distorted instead of subtly warmed.",
+     "Expecting Mix Engine FX to behave like a normal insert on a single track, when it processes the wider mix engine.",
+     "Assuming it is available in every DAW, when it is a Studio One feature."
+    ],
+    "scenario_contexts": [
+     "Adding analog-style glue to a fully in-the-box mix.",
+     "Enabling channel drive across a session for subtle saturation.",
+     "Emulating console crosstalk and character on a mix bus."
+    ]
+   },
+   "sources": ["PreSonus Studio One Reference Manual (Mix Engine FX)", "PreSonus Knowledge Base (Console Shaper / Mix Engine FX)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

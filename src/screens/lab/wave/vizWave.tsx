@@ -74,7 +74,7 @@ export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 // ── Lab palette (same tokens as micspeaker/viz.tsx — visual standards §3) ────
 const BG = '#0c0c0f';
-const GRID = '#2c2c33';
+const GRID = '#3a3b46';
 const WAVE = '#ffc64d'; // amber accents / direct energy
 const ACCENT_BLUE = '#6fa8ff'; // energy / 1st reflections
 const ACCENT_GREEN = '#5bff85'; // good / listener tint

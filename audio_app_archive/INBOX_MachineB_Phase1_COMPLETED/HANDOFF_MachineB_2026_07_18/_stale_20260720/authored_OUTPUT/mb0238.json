@@ -1,0 +1,159 @@
+{
+ "batch": 238,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "d7f738ca-5405-4c19-b6a8-828fb535aebd",
+   "term": "Multi-pass Foley",
+   "fields": {
+    "definition": "A Foley recording method in which the performance is built up in separate synchronized passes, each pass capturing one category of sound — typically footsteps, then cloth or body moves, then specific props — rather than performing every element at once. Each pass is recorded to its own track so elements can be balanced and edited independently.",
+    "plain_english": "Foley is live sound effects made by watching the film and acting them out. In multi-pass Foley the artist records one type of sound at a time. First footsteps, then clothing rustle, then props. It is like drawing a picture one layer at a time so each part is easy to fix later.",
+    "purpose_function": "Recording each element on its own pass and track gives the mixer independent control of level, EQ and perspective for footsteps, cloth and props, and lets one element be re-recorded or edited without disturbing the others.",
+    "practical_application": "A Foley artist walks the scene for the footsteps pass, replays it to add cloth movement, then does a third pass for handled props, while the Foley mixer records each to separate tracks for the re-recording mixer.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Spotting session", "ADR", "Sound effects editing", "Sync", "Re-recording mix"],
+    "common_mistakes": ["Trying to perform footsteps, cloth and props in one pass, which makes it impossible to balance or fix them separately", "Recording all passes to a single track, losing the independent control multi-pass is meant to provide", "Not watching picture closely and drifting out of sync on the later passes", "Assuming multi-pass means multiple takes of the same sound rather than separate element categories"],
+    "scenario_contexts": ["A Foley team covers a dialogue scene with a footsteps pass, a cloth-movement pass and a props pass for a feature film", "A TV episode needs full Foley for an international M&E deliverable, built up pass by pass", "A fight scene gets separate passes for footfalls, body impacts and clothing so the mixer can feature each element"]
+   },
+   "sources": ["Vanessa Theme Ament, The Foley Grail (Focal Press)", "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fc042221-76b2-4d23-ae34-ef9e9e72b236",
+   "term": "Music conform",
+   "fields": {
+    "definition": "The process of editing an existing score or temp music so it matches a revised picture edit — cutting, sliding, trimming or re-timing cues so downbeats, hits and transitions still line up with the new cut. It uses a change list or EDL that records the added and removed frames.",
+    "plain_english": "When the picture editor changes the length of a scene, the music no longer fits. A music conform reshapes the music so it still lines up with the new version of the picture. It is like taking in or letting out clothing so it fits after the body has changed shape.",
+    "purpose_function": "It keeps music synchronized to picture after an edit change, so hits, tempo and cue endings stay aligned without re-scoring or re-recording the music from scratch.",
+    "practical_application": "When the picture department issues a new cut, the music editor uses the change list or EDL to find the added and removed frames, then trims and slides the music cues in the DAW to restore sync.",
+    "category": "Music editorial",
+    "related_terms": ["Music reconform", "Music edit decision list", "Change list", "Picture lock", "Music editing", "Spotting session"],
+    "common_mistakes": ["Confusing conform with reconform — conforming aligns music to a cut, reconforming updates it again after a further picture change", "Sliding a whole cue to fix one section and knocking every later hit out of sync", "Cutting mid-phrase without regard to musical phrasing, producing audible jumps", "Working without an accurate change list and guessing where frames were added or removed"],
+    "scenario_contexts": ["A film's reel is re-cut after temp music was laid in, and the music editor conforms the cues to the new length", "A trailer's music must be conformed to a shortened edit before the mix", "Temp score is conformed to a new cut ahead of the composer's spotting session"]
+   },
+   "sources": ["Sound on Sound, Conforming & Re-conforming In Pro Tools", "Tomlinson Holman, Sound for Film and Television (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "10eaa3af-6dcf-4251-ac5b-fcd85ec4bab8",
+   "term": "Music cue assembly",
+   "fields": {
+    "definition": "The task of laying a film's individual music cues into the editorial timeline at their correct start points against picture, and building each cue from its component stems or recorded sections into a finished, synchronized piece ready for the mix.",
+    "plain_english": "A film score is written as many separate pieces called cues, each for a certain scene. Music cue assembly is placing every cue at the right spot in the film and building it from its recorded parts. It is like fitting puzzle pieces into the exact places they belong along the timeline.",
+    "purpose_function": "It turns the composer's raw recorded materials into finished cues positioned correctly against picture, giving the re-recording mixer clean, synced music tracks to work with.",
+    "practical_application": "After a scoring session the music editor imports the recorded stems, lines each cue up to its start frame using the cue sheet or streamers, and assembles the sections into complete cues in the DAW session.",
+    "category": "Music editorial",
+    "related_terms": ["Music editing", "Music editor session", "Music conform", "Cue sheet", "Stems", "Spotting session"],
+    "common_mistakes": ["Placing a cue by ear instead of to its logged start frame, causing sync errors", "Assembling stems out of phase or with a mismatched sample rate", "Forgetting to document cue start and end points for the cue sheet and deliverables", "Treating assembly as final mixing rather than preparing tracks for the re-recording mixer"],
+    "scenario_contexts": ["A music editor assembles orchestral stems recorded at a scoring stage into finished cues on the timeline", "Library cues are assembled into a documentary's timeline at their spotted positions", "A composer delivers cues as multitrack stems that the editor assembles and syncs before the dub"]
+   },
+   "sources": ["Tomlinson Holman, Sound for Film and Television (Focal Press)", "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cc9d24e1-1f9a-4b58-bfca-75a2d856a343",
+   "term": "Music edit decision list",
+   "fields": {
+    "definition": "A text-based edit decision list containing the music events of a program — each cue's source, its source in and out timecodes, and its position on the timeline — used to document music editorial and to rebuild or conform the music in another system.",
+    "plain_english": "An edit decision list, or EDL, is a simple text list that records every edit: what clip, where it came from, and where it sits in the timeline. A music EDL is that list just for the music. It works like a recipe that lets someone rebuild the exact same music edit in another program.",
+    "purpose_function": "It provides a machine-readable, human-readable record of the music edit so cues can be reconstructed, conformed to a new picture cut, or handed between systems and departments without loss.",
+    "practical_application": "A music editor exports a music EDL to hand the score edit to the mix stage, or imports one to conform delivered cues to picture, letting the list's timecodes drive an auto-conform.",
+    "category": "Music editorial",
+    "related_terms": ["Edit decision list", "Music conform", "Music reconform", "Change list", "Timecode", "Cue sheet"],
+    "common_mistakes": ["Confusing a music EDL (an edit list) with a cue sheet (a rights and usage log)", "Assuming an EDL carries the audio itself rather than just edit instructions and timecodes", "Ignoring frame-rate or timecode-format mismatches that break the conform", "Editing the raw EDL text carelessly and corrupting the event numbering"],
+    "scenario_contexts": ["A music editor delivers a music EDL so the re-recording stage can auto-conform the cues", "An EDL is used to reconform the music after the picture department issues a change list", "Music edits are moved between two facilities using an EDL rather than a full session"]
+   },
+   "sources": ["Tomlinson Holman, Sound for Film and Television (Focal Press)", "Sound on Sound, Conforming & Re-conforming In Pro Tools"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ff750874-ba56-4689-ae20-0430a998ed1c",
+   "term": "Music editing",
+   "fields": {
+    "definition": "The craft of preparing and shaping music for a picture — selecting, cutting, timing, layering and conforming score or source music so it fits the edit, supports the story and meets deliverable requirements — without necessarily composing new material.",
+    "plain_english": "Music editing is the job of shaping music so it fits a film or show. The music editor cuts, moves and times pieces of music so they match the scenes and hit the right moments. It is like arranging songs on a playlist so each one starts and ends exactly where you want.",
+    "purpose_function": "It bridges the composer, the picture edit and the mix, making sure music lands in the right place, in sync, at the right length, and is prepared as clean tracks for the re-recording mixer.",
+    "practical_application": "A music editor spots scenes for music, lays in temp tracks, conforms cues to picture changes, maintains the music editor session and prepares stems and cue sheets for the dub and deliverables.",
+    "category": "Music editorial",
+    "related_terms": ["Music editor session", "Music conform", "Music cue assembly", "Music edit decision list", "Spotting session", "Temp music"],
+    "common_mistakes": ["Confusing music editing with music composition — the editor shapes and places music but does not necessarily write it", "Cutting music without regard to phrasing, tempo or key, producing audible seams", "Failing to keep music in sync after picture changes", "Not documenting edits, making later conforms and deliverables difficult"],
+    "scenario_contexts": ["A music editor cuts temp music into a rough cut before the composer is hired", "Editing and conforming a delivered score to fit the final picture", "Preparing music stems and cue sheets for a film's final mix and deliverables"]
+   },
+   "sources": ["Tomlinson Holman, Sound for Film and Television (Focal Press)", "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b9ab009f-7e3b-4353-970d-903f11907d72",
+   "term": "Music editor session",
+   "fields": {
+    "definition": "The DAW session, commonly a Pro Tools session, maintained by the music editor that holds a program's music cues, temp tracks, stems and edits laid against picture, and from which music is conformed, prepared and delivered to the mix.",
+    "plain_english": "A session is the working project file inside music software. The music editor session is that project holding all the film's music lined up to the picture. It is like a workbench where every piece of music for the film is laid out and organized.",
+    "purpose_function": "It centralizes all music elements in sync with picture so the editor can conform, balance and organize cues, and hand a clean, ready-to-mix set of music tracks to the re-recording stage.",
+    "practical_application": "The music editor keeps the session updated to the latest cut, imports new cues, conforms to change lists, and exports stems, EDLs and a mix-ready session for the dubbing stage.",
+    "category": "Music editorial",
+    "related_terms": ["Music editing", "Music cue assembly", "Music conform", "Music reconform", "Stems", "Re-recording mix"],
+    "common_mistakes": ["Letting the session drift out of date with the picture cut", "Not organizing cues and tracks, making the handoff to the mix stage messy", "A mismatched sample rate or timecode start between the session and the picture reference", "Deleting rather than muting material, losing versions needed for later reconforms"],
+    "scenario_contexts": ["A music editor delivers a mix-ready music editor session to the dubbing stage", "The session is updated cue by cue as the composer delivers new music", "The session is reconformed to a new picture version before the final mix"]
+   },
+   "sources": ["David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)", "Sound on Sound, Conforming & Re-conforming In Pro Tools"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5f54940a-b26d-4a57-9282-c806c4fae040",
+   "term": "Music loop",
+   "fields": {
+    "definition": "A section of music, often one or a few bars, arranged to repeat seamlessly end-to-end so it can play continuously for as long as needed.",
+    "plain_english": "A music loop is a short piece of music set up so its end joins smoothly back to its start. Played over and over, it sounds like one continuous piece. It is like a song section on repeat that you cannot hear restart.",
+    "purpose_function": "Looping lets a short recorded passage fill a longer duration, provide a steady musical bed, or extend a cue without new recording, as long as the loop point is seamless.",
+    "practical_application": "A music editor loops a few bars of a cue to underscore a long scene, or builds a loop from source music to cover a montage, tuning the loop point so no click or jump is heard.",
+    "category": "Music editorial",
+    "related_terms": ["Music loop extension", "Music editing", "Crossfade", "Tempo", "Source music", "Music conform"],
+    "common_mistakes": ["Setting a loop point that is not on a musical beat, causing a rhythmic stumble", "Ignoring the reverb tail at the loop point so the join clicks or ducks", "Looping across a tempo or key change, breaking the musical flow", "Assuming any region loops seamlessly without editing the boundary"],
+    "scenario_contexts": ["A short library track is looped to underscore a long dialogue scene", "An interactive or game piece needs seamless music loops of variable length", "A montage is covered by looping a few bars of a delivered cue"]
+   },
+   "sources": ["Tomlinson Holman, Sound for Film and Television (Focal Press)", "Sound on Sound, Conforming & Re-conforming In Pro Tools"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c68a4b91-d04a-4164-8a46-9bcd8fcd1618",
+   "term": "Music loop extension",
+   "fields": {
+    "definition": "The technique of lengthening a piece of music by looping or repeating internal sections so a cue covers a longer duration than originally recorded, while keeping tempo, phrasing and transitions musically seamless.",
+    "plain_english": "Sometimes a scene runs longer than the music written for it. Music loop extension makes the music longer by repeating parts of it so it fills the whole scene. It is like adding extra verses to a song so it lasts until the scene ends.",
+    "purpose_function": "It lets a music editor stretch an existing cue to fit a longer picture length without re-scoring, preserving the music's feel by repeating whole phrases or bars at musical boundaries.",
+    "practical_application": "When a scene is extended, the music editor finds a repeatable section of the cue, copies it and crossfades the loop into place so the cue reaches the new out point without an audible seam.",
+    "category": "Music editorial",
+    "related_terms": ["Music loop", "Music conform", "Music editing", "Crossfade", "Tempo", "Music cue assembly"],
+    "common_mistakes": ["Extending across a musical phrase boundary so the repeat sounds obvious", "Looping a section with a different tempo or dynamic than its surroundings", "Not crossfading the join, leaving a click or level jump", "Reaching for time-compression when a phrase loop would sound more natural"],
+    "scenario_contexts": ["A cue must be extended after a scene is lengthened in a new cut", "A short piece of source music is extended to cover an entire sequence", "Temp music is loop-extended to fit a rough cut before the score is written"]
+   },
+   "sources": ["Tomlinson Holman, Sound for Film and Television (Focal Press)", "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f567aa05-a313-4268-b692-5c3a87bc3139",
+   "term": "Music reconform",
+   "fields": {
+    "definition": "Re-editing music that was already conformed to picture so it matches a further revised cut — applying a new change list to slide, trim or reinsert cues so they stay in sync after additional picture editorial changes.",
+    "plain_english": "After the music is fitted to the picture, editors often change the picture again. A music reconform fits the music to that newer version. It is like altering the same suit a second time because the body changed again.",
+    "purpose_function": "It keeps music in sync through repeated picture revisions, updating the already-conformed music to each new cut without starting the edit over.",
+    "practical_application": "When a new cut and change list arrive, the music editor runs a reconform in the DAW so cues follow the added and removed frames, then checks every hit and transition against the new picture.",
+    "category": "Music editorial",
+    "related_terms": ["Music conform", "Change list", "Music edit decision list", "Picture lock", "Music editor session", "Music editing"],
+    "common_mistakes": ["Confusing reconform with the first conform — reconform updates already-conformed music to a further change", "Reconforming without an accurate change list and knocking cues out of sync", "Assuming an automated reconform is perfect and skipping the manual sync check", "Losing earlier versions so a bad reconform cannot be rolled back"],
+    "scenario_contexts": ["A film gets multiple cuts after temp music is laid in, each requiring a music reconform", "The music editor reconforms cues to a change list issued the night before the mix", "A streaming series episode is reconformed after notes change the picture edit"]
+   },
+   "sources": ["Sound on Sound, Conforming & Re-conforming In Pro Tools", "Tomlinson Holman, Sound for Film and Television (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

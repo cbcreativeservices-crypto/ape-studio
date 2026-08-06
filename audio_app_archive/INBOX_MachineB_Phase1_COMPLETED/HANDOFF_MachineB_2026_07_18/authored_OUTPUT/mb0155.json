@@ -1,0 +1,40 @@
+{
+ "batch": 155,
+ "topic": "Creative & Advanced Mix Processing",
+ "authored": [
+  {
+   "id": "5715f143-8a4b-456c-a283-050a4a20efe6",
+   "term": "Vinyl-stop effect",
+   "fields": {
+    "definition": "A transition effect that emulates a vinyl record or turntable being abruptly braked to a standstill, produced by rapidly sweeping the playback speed, and therefore the pitch, of audio down to zero over a short time. It is typically applied to a full mix or a single element at the end of a phrase or before a drop.",
+    "plain_english": "It makes a sound slow down and drop in pitch, like a record player switched off while the record is still spinning. Producers use it to end a section with a dramatic wind-down.",
+    "purpose_function": "It provides a dramatic, instantly recognisable transition or ending gesture that signals the close of a phrase or section by mimicking a turntable losing power. This adds energy and a sense of release without changing the arrangement itself.",
+    "practical_application": "A technician automates a tape/vinyl-stop plugin or draws a downward pitch or varispeed automation curve on a track or the master bus, timed to hit on the last beat before a breakdown or drop.",
+    "category": "Transition Effect",
+    "related_terms": ["Tape-stop effect", "Varispeed", "Pitch automation", "Riser", "Filter sweep", "Automation"],
+    "common_mistakes": ["Confusing it with a true tape-stop, which follows a different slow-down curve than a spinning platter losing momentum", "Making the effect too long so the wind-down drags and loses impact", "Not lining the effect up to the beat grid, so the return into the next section feels loose"],
+    "scenario_contexts": ["Ending an EDM section right before a drop or breakdown", "Closing out the final bar of a track for a dramatic finish", "Emulating a DJ-style turntable brake inside a DAW mix"]
+   },
+   "sources": ["Sound on Sound (technique articles on transition/tape-stop effects)", "Ableton Live Reference Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "513e6c25-ac92-470f-b30d-6f33b0939362",
+   "term": "Vocal chop",
+   "fields": {
+    "definition": "A production technique in which a vocal recording is sliced into short fragments that are rearranged, re-pitched and re-triggered, often mapped across a sampler and played melodically, to create a rhythmic or melodic hook. The result is a new phrase built from pieces of the original performance.",
+    "plain_english": "It is when you cut a singing recording into tiny pieces. You rearrange the pieces like blocks to build a new catchy, rhythmic tune.",
+    "purpose_function": "It turns an existing vocal recording into a playable instrument or hook, letting a producer add a human-sounding melodic element without recording a new performance. This gives a track a distinctive, memorable motif.",
+    "practical_application": "A technician slices a vocal in a sampler or DAW, maps the slices across a keyboard or pad grid, then plays a fresh melodic or rhythmic pattern, often adding pitch and formant correction to keep it natural.",
+    "category": "Sampling Technique",
+    "related_terms": ["Sampler", "Time-stretching", "Formant shift", "Warping", "Granular synthesis", "Rhythmic gating"],
+    "common_mistakes": ["Leaving clicks or pops at slice edit points instead of adding short fades or crossfades", "Re-pitching slices far up or down without formant control, giving an unnatural chipmunk sound", "Reusing a copyrighted vocal without clearing sample rights"],
+    "scenario_contexts": ["Building a melodic hook for a future bass, pop or EDM track", "Turning a full vocal take into a rhythmic stutter pattern", "Creating a new topline for a remix from an acapella"]
+   },
+   "sources": ["Sound on Sound (vocal editing and sampling technique articles)", "Ableton Live Reference Manual (Simpler slicing)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

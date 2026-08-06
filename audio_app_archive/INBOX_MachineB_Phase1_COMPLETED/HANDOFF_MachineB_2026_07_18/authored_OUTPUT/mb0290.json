@@ -1,0 +1,231 @@
+{
+ "batch": 290,
+ "topic": "Sample Editing & Manipulation",
+ "authored": [
+  {
+   "id": "aa53222e-6e59-4bbb-89bf-a7cf23d020c4",
+   "term": "Grain-stream output",
+   "fields": {
+    "definition": "The continuous audio signal produced when a granular processor emits a sequence, or stream, of short sonic grains one after another. In synchronous granular synthesis the grains follow at a regular rate, and their combined result forms a stream whose pitch and texture depend on grain rate, grain duration, and grain content.",
+    "plain_english": "A granular tool cuts sound into tiny pieces called grains and plays them in a row. The steady flow of grains coming out is the grain-stream output. Think of a string of beads, where each bead is a very short piece of sound.",
+    "purpose_function": "It is the usable result of a granular process, the flowing signal that carries the reshaped pitch, texture, and timing built from many tiny grains. Without a stream the separate grains would not add up to a musical sound.",
+    "practical_application": "A producer routes the grain-stream output of a granular instrument into the mix, then shapes it with grain rate and density controls to get anything from a smooth pad to a stuttering texture.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Particle synthesis", "Granular time stretching", "Microsound", "Granular pitch shifting", "Live granular processing"],
+    "common_mistakes": [
+     "Confusing the grain-stream output with a single grain; the output is the whole ongoing flow, not one snippet.",
+     "Setting the grain rate so low that the stream becomes a series of separate clicks instead of a continuous tone.",
+     "Assuming the output pitch always equals the source pitch, when grain rate and spacing can shift the perceived pitch."
+    ],
+    "scenario_contexts": [
+     "Building an evolving ambient pad by streaming grains from a short vocal sample.",
+     "Feeding a grain-stream output into a reverb to create a shimmering, sustained texture.",
+     "Turning a static field recording into a pitched drone with a steady synchronous grain stream."
+    ]
+   },
+   "sources": ["Roads, Microsound (MIT Press, 2001)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4de6b8d0-df71-4a31-ac00-0891db6a6e58",
+   "term": "Granular delay",
+   "fields": {
+    "definition": "A delay effect in which the incoming signal is broken into short grains that are individually delayed, and often repitched, reversed, or scattered, before being fed back, producing echoes made of granular fragments rather than exact copies of the input.",
+    "plain_english": "A normal delay repeats your sound as clear echoes. A granular delay first cuts the sound into tiny grains, then echoes those, so the repeats can shimmer, blur, or change pitch. It is like an echo made of confetti instead of a clean copy.",
+    "purpose_function": "It extends the delay idea into textural, evolving repeats that add motion and space beyond a plain echo. This lets an engineer build lush tails and clouds from a simple sound.",
+    "practical_application": "An engineer places a granular delay on a synth or vocal to turn simple echoes into a clouded, drifting tail, adjusting grain size and feedback to control how smeared the repeats become.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Granular reverb", "Granular pitch shifting", "Grain-stream output", "Live granular processing", "Microsound"],
+    "common_mistakes": [
+     "Expecting clean, rhythmic echoes, when granular delays smear and randomize the repeats by design.",
+     "Pushing feedback too high, which can build into a runaway, unpredictable grain cloud.",
+     "Setting grain size very small and then wondering why the repeats lose the original sound's character."
+    ],
+    "scenario_contexts": [
+     "Adding drifting, pitch-shifted echoes to a synth lead for an ambient section.",
+     "Turning a spoken word phrase into a blurred, cloud-like tail for a transition.",
+     "Creating rising, reversed echo swells before a drop in electronic music."
+    ]
+   },
+   "sources": ["Roads, Microsound (MIT Press, 2001)", "Sound on Sound, granular synthesis technique articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cd3473b6-806a-40d4-b024-d392a44c57fd",
+   "term": "Granular pitch shifting",
+   "fields": {
+    "definition": "A pitch-shifting method that slices audio into short grains and plays them back at a changed rate or spacing so the pitch moves while the overall duration is preserved. Overlapping grains are crossfaded to smooth the joins between them.",
+    "plain_english": "This raises or lowers the pitch of a sound without making it faster or slower. It works by chopping the sound into tiny grains and repacking them. It is like saying the same sentence in a higher voice but at the same speaking speed.",
+    "purpose_function": "It lets a technician change pitch on its own, separate from time, which is needed for tuning, harmonizing, or transposing recorded audio. This independence is the whole reason the grain method is used.",
+    "practical_application": "A producer uses granular pitch shifting to move a sampled note up or down to fit a new key, or to stack shifted copies of a sound into a chord, watching for artifacts on large shifts.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Granular time stretching", "Grain-stream output", "Granular delay", "Microsound", "Particle synthesis"],
+    "common_mistakes": [
+     "Shifting by large amounts and expecting no artifacts, when big shifts add graininess and a metallic tone.",
+     "Confusing pitch shifting with time stretching, though here the duration stays fixed while pitch moves.",
+     "Ignoring formant changes, which can make voices sound unnatural or chipmunk-like."
+    ],
+    "scenario_contexts": [
+     "Retuning a flat sampled vocal note to match the rest of a take.",
+     "Building a harmony by layering pitch-shifted copies of one sound.",
+     "Dropping a drum loop down an octave for a heavier feel without slowing it."
+    ]
+   },
+   "sources": ["Roads, Microsound (MIT Press, 2001)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5c783e16-2277-4d63-b10a-8d5ae024a346",
+   "term": "Granular reverb",
+   "fields": {
+    "definition": "A reverberation effect that builds its tail by spawning dense clouds of short grains from the input signal and scattering them in time, pitch, and stereo position to create a diffuse, evolving space rather than modeling a real room.",
+    "plain_english": "Normal reverb copies the way sound bounces around a room. Granular reverb instead makes its tail from clouds of tiny grains, so the space can shimmer and slowly change. It is like a mist of sound rather than a plain echo of a hall.",
+    "purpose_function": "It gives a lush, evolving sense of space and texture that a standard room reverb cannot, which is useful for ambient and cinematic sound design. The grain scattering creates the smooth, blurred tail.",
+    "practical_application": "A sound designer sends a pad or vocal into a granular reverb to create a slowly blooming, shimmering wash, tuning grain size and density to control how thick and smeared the tail feels.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Granular delay", "Grain-stream output", "Granular pitch shifting", "Live granular processing", "Microsound"],
+    "common_mistakes": [
+     "Treating it as a realistic room reverb, when it makes an artificial, evolving cloud instead.",
+     "Using very short grains and losing the smoothness that a longer grain gives the tail.",
+     "Overusing it on a busy mix, where the dense grain cloud can quickly muddy everything."
+    ],
+    "scenario_contexts": [
+     "Creating a shimmering ambient wash behind a slow synth pad.",
+     "Adding a huge, blooming tail to a single piano note for a film cue.",
+     "Turning a short vocal into a drifting cloud of sound for a texture bed."
+    ]
+   },
+   "sources": ["Roads, Microsound (MIT Press, 2001)", "Sound on Sound, granular synthesis technique articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "235ad55a-9f4f-4144-8d07-34bb2d4a92b7",
+   "term": "Granular time stretching",
+   "fields": {
+    "definition": "A time-stretching technique that divides audio into short grains and repeats or re-spaces them to change the overall duration while keeping the pitch constant. Grain overlap and crossfading hide the joins so the result stays smooth.",
+    "plain_english": "This makes a sound longer or shorter without changing its pitch. It works by cutting the sound into tiny grains, then spacing them out or repeating them. It is like stretching a row of beads by adding gaps, not by making each bead bigger.",
+    "purpose_function": "It lets a technician change the length or tempo of audio without the pitch going up or down, which is key for matching tempos and fitting sounds to a timeline. This time and pitch independence is the main point.",
+    "practical_application": "An engineer stretches a vocal or drum loop to fit a project's tempo, adjusting grain size to trade off between a smooth sound and audible graininess at extreme settings.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Granular pitch shifting", "Grain-stream output", "Microlooping", "Microsound", "Particle synthesis"],
+    "common_mistakes": [
+     "Stretching by extreme amounts and expecting no artifacts, when large stretches add a grainy, watery tone.",
+     "Confusing it with pitch shifting, though here duration changes while pitch stays fixed.",
+     "Leaving grain size wrong for the material, which can smear transients on drums or add flutter to vocals."
+    ],
+    "scenario_contexts": [
+     "Slowing a sampled loop to fit a slower song without lowering its pitch.",
+     "Stretching a short sound into a long pad for an ambient bed.",
+     "Matching a borrowed vocal take to a new project tempo."
+    ]
+   },
+   "sources": ["Roads, Microsound (MIT Press, 2001)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f0632803-8027-4ac9-903b-89372f64e7d6",
+   "term": "Live granular processing",
+   "fields": {
+    "definition": "Granular synthesis or granular effects applied in real time to an incoming live audio signal, capturing short buffers of the input and re-granulating them on the fly. Barry Truax pioneered real-time granular systems for this kind of live work.",
+    "plain_english": "This takes sound coming in right now, like a live mic or instrument, and chops it into grains as it plays. The reshaped, grainy result comes out with almost no delay. It is like a blender working on the sound the moment it arrives.",
+    "purpose_function": "It brings granular textures and time and pitch effects into live performance and real-time interaction, rather than only offline editing. This lets performers reshape their own sound as they play.",
+    "practical_application": "A performer routes a live instrument into a granular processor and, in real time, freezes, stretches, or clouds the incoming sound, using controllers to steer grain rate and density on stage.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain-stream output", "Granular delay", "Granular reverb", "Microsound", "Particle synthesis"],
+    "common_mistakes": [
+     "Ignoring input buffer length, which sets how much delay and material the live grains have to work with.",
+     "Overloading the CPU with too many grains, causing dropouts during a live set.",
+     "Forgetting gain staging, so a hot live input clips before it even reaches the granular stage."
+    ],
+    "scenario_contexts": [
+     "Freezing and stretching a held guitar note live to build an evolving drone.",
+     "Granulating a live vocal on stage to create a shifting cloud behind the singer.",
+     "Reprocessing an acoustic instrument in real time during an improvised electronic set."
+    ]
+   },
+   "sources": ["Truax, Real-Time Granular Synthesis (Computer Music Journal)", "Roads, Microsound (MIT Press, 2001)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a59572f1-ecae-44f0-9587-c9c7a53e17ef",
+   "term": "Microlooping",
+   "fields": {
+    "definition": "Looping a very short segment of audio, often only a few milliseconds to a few tens of milliseconds, so that rapid repetition produces a sustained, pitched tone or buzzing texture rather than an audible repeating phrase. The loop length sets the perceived pitch.",
+    "plain_english": "This loops a tiny slice of sound over and over, so fast that you no longer hear it repeat. Instead the fast repeats blend into a steady buzzing note. It is like flipping one drawing so quickly that it turns into motion.",
+    "purpose_function": "It turns a short fragment of a sample into a sustained pitched tone or drone, giving new sounds from tiny pieces of existing audio. Because the loop rate sets the pitch, it can also be played like an instrument.",
+    "practical_application": "A producer sets a very short loop inside a sample and shrinks it until the repeats fuse into a pitched buzz, then moves the loop point through the file to sweep the timbre.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Microsound", "Grain-stream output", "Granular time stretching", "Particle synthesis", "Granular pitch shifting"],
+    "common_mistakes": [
+     "Expecting a normal rhythmic loop, when a loop this short fuses into a single pitched tone.",
+     "Overlooking that the loop length controls the pitch, so changing length retunes the sound.",
+     "Leaving clicks at the loop point, which add harsh buzz unless the ends are crossfaded."
+    ],
+    "scenario_contexts": [
+     "Freezing a tiny slice of a vocal into a sustained, pitched vowel tone.",
+     "Sweeping a short loop across a drum hit to pull out a pitched drone.",
+     "Building glitch textures by shrinking a loop until it becomes a buzzing note."
+    ]
+   },
+   "sources": ["Roads, Microsound (MIT Press, 2001)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "61dd1b48-8ad4-4412-97cf-c0318d81f7f4",
+   "term": "Microsound",
+   "fields": {
+    "definition": "Sound events on very short time scales, roughly one millisecond to about one-tenth of a second, sitting between the single-sample level and the level of a musical note. The term also names the family of techniques, such as granular and particle synthesis, that compose sound from these brief particles.",
+    "plain_english": "Microsound means sound bits that last only a tiny moment, from about one thousandth of a second up to a tenth of a second. These pieces are longer than one sample but shorter than a played note. The word also covers the tools that build sound from such tiny pieces.",
+    "purpose_function": "It gives a name to the time scale where grains and particles live, so composers and engineers can work with sound below the note level. Thinking at this scale is what makes granular and particle methods possible.",
+    "practical_application": "A sound designer works at the microsound level when shaping grain size and density in a granular tool, choosing durations short enough to blend into texture yet long enough to carry pitch.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Particle synthesis", "Grain-stream output", "Granular time stretching", "Microlooping", "Live granular processing"],
+    "common_mistakes": [
+     "Treating microsound as one specific effect, when it names a whole time scale and family of methods.",
+     "Assuming grains are single samples, though microsound events are longer than the sample level.",
+     "Overlooking that grain duration in this range strongly shapes the perceived pitch and texture."
+    ],
+    "scenario_contexts": [
+     "Discussing grain size settings that fall in the millisecond range on a granular synth.",
+     "Designing evolving textures from clouds of very short sound events.",
+     "Studying how sound behaves between the sample and note time scales."
+    ]
+   },
+   "sources": ["Roads, Microsound (MIT Press, 2001)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b03dc6a3-1f8a-4488-8d64-91945d88f53d",
+   "term": "Particle synthesis",
+   "fields": {
+    "definition": "An umbrella term for synthesis techniques that build sound from large numbers of brief acoustic particles or grains, including granular, pulsar, glisson, and trainlet synthesis, rather than from continuous waveforms. Each method differs in how it shapes and schedules its particles.",
+    "plain_english": "Particle synthesis builds sound from thousands of tiny sound bits, called grains or particles. Instead of one smooth wave, you get a swarm of short pieces played together. It is like making a picture out of many small dots.",
+    "purpose_function": "It gives a common name to all the ways of making sound from tiny particles, letting engineers create rich, evolving textures that smooth waveforms cannot. Granular synthesis is the best known member of this family.",
+    "practical_application": "A sound designer reaches for a particle synthesis tool to build swarming, cloud-like textures, choosing the specific method, such as granular or pulsar, to fit the sound they want.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Microsound", "Grain-stream output", "Granular time stretching", "Granular pitch shifting", "Live granular processing"],
+    "common_mistakes": [
+     "Treating particle synthesis and granular synthesis as identical, when granular is only one type of it.",
+     "Expecting a single smooth waveform, since the sound is built from many separate particles.",
+     "Ignoring particle density, which strongly controls whether the result is sparse and clicky or thick and smooth."
+    ],
+    "scenario_contexts": [
+     "Choosing between granular and pulsar methods to design an evolving pad.",
+     "Building a dense, swarming texture from many overlapping sound particles.",
+     "Explaining how granular synthesis fits within the wider family of particle methods."
+    ]
+   },
+   "sources": ["Roads, Microsound (MIT Press, 2001)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

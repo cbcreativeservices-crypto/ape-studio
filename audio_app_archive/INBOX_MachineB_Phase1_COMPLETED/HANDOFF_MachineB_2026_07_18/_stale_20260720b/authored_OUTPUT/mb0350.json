@@ -1,0 +1,325 @@
+{
+  "batch": 350,
+  "topic": "Strings, Guitar & Keys",
+  "authored": [
+    {
+      "id": "9e5931e7-4dcc-4f55-aca6-8353775ada5a",
+      "term": "Kemençe reedy bow",
+      "fields": {
+        "definition": "The characteristic reedy, nasal, penetrating tone produced by bowing the kemençe, a family of small pear- or bottle-shaped bowed lutes played upright on the knee, with the strings stopped by the fingernails or fingertips rather than pressed to a fingerboard. Its bright, sharp timbre, often likened to a double-reed instrument, arises from the short body, high string tension and the bow's stick-slip excitation, and is central to Black Sea (Pontic lyra) and Ottoman classical kemençe music.",
+        "plain_english": "The sharp, nasal, oboe-like sound a kemence makes when you play it with a bow. This small upright fiddle from Turkey and the Black Sea has a thin, cutting voice, so it stands out clearly even in a loud band.",
+        "purpose_function": "The reedy, penetrating tone lets the kemençe carry a melody over drums, voices and dancing crowds in Black Sea and Ottoman music, which is why players and builders prize its bright, cutting voice.",
+        "practical_application": "When recording or amplifying a kemençe a technician expects a strong upper-midrange edge and audible bow noise, so they choose mic placement and gentle EQ that keep the reedy character without letting it turn harsh.",
+        "category": "Instrument timbre",
+        "related_terms": [
+          "Arco sound",
+          "Bowing",
+          "Stick-slip motion",
+          "Timbre",
+          "Nasal tone",
+          "Spot mic"
+        ],
+        "common_mistakes": [
+          "Assuming the kemençe is fretted or stopped like a violin; players stop the strings with their fingernails, not by pressing them onto a fingerboard.",
+          "EQ-ing away all of the upper-midrange 'reed' to make it sound smooth, which strips the instrument of its identity.",
+          "Miking too close and exaggerating harsh bow scratch instead of capturing the body and reedy ring."
+        ],
+        "scenario_contexts": [
+          "Recording a Pontic lyra (Black Sea kemençe) for a folk-fusion track.",
+          "Amplifying a kemençe on a live horon-dance stage where it must cut through the mix.",
+          "Blending an Ottoman classical kemençe with other instruments in an ensemble session."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments (Oxford) — kemençe entry",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — bowed strings / stick-slip",
+        "Baines, Musical Instruments Through the Ages (Penguin/Faber)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "cad01d39-0b51-4e15-8e66-4e90eaa19cee",
+      "term": "Key click",
+      "fields": {
+        "definition": "A brief, percussive click transient heard at the very start (and often the end) of a note on an electromechanical or electronic organ, most famously the Hammond tonewheel organ. It occurs because the tone is always present at the key contacts, so making or breaking a contact chops the waveform and produces a sharp attack (and release) spike; it is regarded as a defining part of the vintage organ sound and is deliberately modeled in clonewheel instruments.",
+        "plain_english": "The short, snappy click you hear when an organ key goes down or up. It comes from the electrical contacts under the key turning the sound on and off. This click is a big part of what makes a Hammond organ sound like a Hammond.",
+        "purpose_function": "Originally an unavoidable side effect of the key contacts, key click became a valued musical feature that adds attack and definition to each note, so modern organs let players dial in the amount to imitate vintage instruments.",
+        "practical_application": "A player or engineer sets the attack and release key-click level on a clonewheel or reissue organ to taste, adding more for a percussive, aggressive feel or less for a smoother, pad-like sound.",
+        "category": "Keyboard artifact",
+        "related_terms": [
+          "Drawbar",
+          "Percussion (organ)",
+          "Tonewheel",
+          "Attack transient",
+          "Clonewheel organ",
+          "Key release"
+        ],
+        "common_mistakes": [
+          "Treating all key click as a fault to be removed; on a Hammond it is a wanted part of the tone.",
+          "Confusing electrical key click with mechanical key-action noise, which comes from the physical keys rather than the contacts.",
+          "Cranking click so high that it masks the note attack and sounds unnaturally spiky."
+        ],
+        "scenario_contexts": [
+          "Dialing in vintage key click on a clonewheel organ for a soul or gospel track.",
+          "Recording a real Hammond and preserving its natural attack and release clicks.",
+          "Reducing excessive modeled key click that sounds harsh in a dense mix."
+        ]
+      },
+      "sources": [
+        "Hammond Organ Company, technical documentation — Drawbars & Percussion (key click)",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — electronic organs"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "c79160ff-b544-460f-b737-7359be28415e",
+      "term": "Key noise",
+      "fields": {
+        "definition": "The unwanted mechanical sound made by the keys and their action as they are pressed and released, distinct from the instrument's intended musical tone. On acoustic and digital pianos and organs it includes the impact of keys moving, bottoming out and returning to rest, and it can be captured by microphones or transmitted structurally into pickups.",
+        "plain_english": "The clicky, clunky sound the keys make as you press and release them, apart from the notes. Every keyboard makes some of this. It is like the soft clatter you hear on a quiet digital piano, even through headphones.",
+        "purpose_function": "Key noise is a normal by-product of any physical key mechanism; recognizing it matters because it can intrude on quiet recordings and must be managed so it does not distract from the music.",
+        "practical_application": "When close-miking a soft passage a technician positions mics and sets levels to keep key noise low, and on digital pianos may isolate the instrument from resonant surfaces that amplify the clatter.",
+        "category": "Mechanical noise",
+        "related_terms": [
+          "Key-action noise",
+          "Key thump",
+          "Key return",
+          "Key click",
+          "Acoustic spill",
+          "Close miking"
+        ],
+        "common_mistakes": [
+          "Assuming key noise means the instrument is broken; a certain amount is normal mechanical operation.",
+          "Gating hard to remove key noise and cutting off the quiet start or tail of real notes.",
+          "Blaming the microphone for key noise that is actually structure-borne through the stand or floor."
+        ],
+        "scenario_contexts": [
+          "Recording a soft solo piano passage where key clatter becomes audible between notes.",
+          "Tracking a digital piano late at night and noticing mechanical key sound through headphones.",
+          "Miking an organ manual and picking up the keys as well as the tone."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — piano action",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — instrument recording"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "cd7e96f3-78e9-41a3-a11c-5e8bd2533ce3",
+      "term": "Key release",
+      "fields": {
+        "definition": "The act of letting go of a depressed key, which ends the note's actuation. On a MIDI instrument it sends a Note Off message; on a synthesizer it triggers the release stage of the amplitude envelope; and on acoustic or sampled instruments it lets the damper fall and may produce a distinct key-off or release sound.",
+        "plain_english": "The moment you lift your finger off a key to end a note. On a synth this starts the note fading away, and on a piano it drops the damper back onto the string to stop the sound.",
+        "purpose_function": "Key release tells the instrument when a note should stop, letting the player control note length and phrasing; the speed of the following envelope release then shapes how quickly the sound dies away.",
+        "practical_application": "A technician sets envelope release time so notes end smoothly, and when using sampled pianos enables release samples so the natural key-off sound is heard when keys are lifted.",
+        "category": "Note articulation",
+        "related_terms": [
+          "Key return",
+          "ADSR envelope",
+          "Note Off",
+          "Damper",
+          "Release sample",
+          "Sustain"
+        ],
+        "common_mistakes": [
+          "Confusing key release (letting go of the key) with the envelope's release time (how fast the sound fades).",
+          "Setting a very long envelope release and causing notes to overlap and turn muddy.",
+          "Forgetting that a held sustain pedal keeps notes sounding even after the keys are released."
+        ],
+        "scenario_contexts": [
+          "Programming a synth pad and lengthening the release so chords bloom after keys are lifted.",
+          "Using release samples in a virtual piano for realistic note endings.",
+          "Editing MIDI note-off timing to tighten a staccato keyboard part."
+        ]
+      },
+      "sources": [
+        "MIDI Association, MIDI 1.0 Detailed Specification — Note On / Note Off",
+        "Sound on Sound, 'ADSR — Attack, Decay, Sustain, Release' (Synth Secrets / glossary)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "58a6a5b8-7948-42a4-b031-72042a7de1fe",
+      "term": "Key return",
+      "fields": {
+        "definition": "The mechanical travel of a key back to its rest (up) position after it is released, driven by a spring, gravity or a counterweight, together with the soft impact and noise produced as the key settles. On weighted and hammer-action keyboards it also involves the action parts falling back, and its speed limits how quickly a note can be repeated.",
+        "plain_english": "The way a key springs back up after you let it go, and the little soft thud it makes settling into place. If a key returns slowly, you cannot play fast repeated notes on it.",
+        "purpose_function": "Reliable key return resets the key for the next note and gives the player a consistent feel; the return also generates a small mechanical sound that engineers may need to manage on quiet recordings.",
+        "practical_application": "A technician checks that keys return evenly on a piano or controller so repeated notes trigger reliably, and keeps mic levels in mind because the soft key-return noise can appear in intimate recordings.",
+        "category": "Mechanical noise",
+        "related_terms": [
+          "Key-action noise",
+          "Key noise",
+          "Key thump",
+          "Key release",
+          "Weighted action",
+          "Repetition"
+        ],
+        "common_mistakes": [
+          "Confusing key return (the key rising back up) with key release (the act of letting go of the key).",
+          "Ignoring sluggish key return, which prevents fast note repetition and feels uneven.",
+          "Gating out quiet key-return noise so aggressively that soft note tails are also lost."
+        ],
+        "scenario_contexts": [
+          "Servicing a controller whose sticky keys do not return fully to rest.",
+          "Recording a soft passage where the key-return thud becomes audible.",
+          "Testing action feel by checking even, springy key return across the keyboard."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — piano action mechanics",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — keyboard instruments"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "dd1dcf1f-c579-48f4-a833-a4bcb587169e",
+      "term": "Key thump",
+      "fields": {
+        "definition": "A low-frequency thud produced when a key is pressed hard and bottoms out on the key bed, or when the action falls back on release, transmitting mechanical energy into the instrument's body. It is common on digital pianos and weighted controllers and can be picked up by microphones or radiated as a dull knock, especially on resonant stands or surfaces.",
+        "plain_english": "The dull, low thump you feel and hear when a key hits the bottom of its travel. It is like tapping a table; the energy spreads into the keyboard's body and can be picked up as a soft knock.",
+        "purpose_function": "Key thump is an unwanted by-product of the key hitting its end stop; understanding it helps a technician stop that low-frequency knock from muddying quiet recordings or resonating through the stage.",
+        "practical_application": "A technician reduces key thump by placing the keyboard on an isolating stand or pad, and may use a high-pass filter to remove the low-frequency knock without touching the musical range.",
+        "category": "Mechanical noise",
+        "related_terms": [
+          "Key-action noise",
+          "Key noise",
+          "Key return",
+          "High-pass filter",
+          "Structure-borne noise",
+          "Isolation"
+        ],
+        "common_mistakes": [
+          "Confusing mechanical key thump with a low-frequency electrical thump or pop from the audio signal.",
+          "Trying to EQ out key thump with a broad low cut that also thins the instrument's real bass notes.",
+          "Ignoring structure-borne thump traveling through a shared stand or riser into other microphones."
+        ],
+        "scenario_contexts": [
+          "Recording a weighted digital piano where heavy playing produces a low key thump.",
+          "High-passing a keyboard DI to remove low-frequency knock in a live mix.",
+          "Isolating a controller on foam to stop thump traveling into a resonant desk."
+        ]
+      },
+      "sources": [
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — low-frequency noise / filtering",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — piano action"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "939f8c80-fe42-4753-b89f-1e8172f5bdba",
+      "term": "Key-action noise",
+      "fields": {
+        "definition": "The mechanical noise generated specifically by a keyboard instrument's action, the hammers, jacks, wippens, dampers, springs and key bushings, as these parts move when notes are played. It is inherent to the physical mechanism; felt and cloth cushions are used to quiet it, but some remains and can be captured by close microphones.",
+        "plain_english": "The clicky, knocky sound made by the moving parts inside a keyboard's action, like the hammers and levers, not the strings or speakers. Even good pianos make a little of it, which is why the parts are padded with felt.",
+        "purpose_function": "Key-action noise is an unavoidable result of a mechanical action doing its job; knowing its causes lets a technician minimize it through maintenance and mic choices so it does not intrude on the recording.",
+        "practical_application": "A technician keeps action parts regulated and felts in good condition, and on quiet takes moves mics slightly away from the action or angles them to reduce the mechanical clatter reaching the recording.",
+        "category": "Mechanical noise",
+        "related_terms": [
+          "Key noise",
+          "Key thump",
+          "Key return",
+          "Damper",
+          "Piano action",
+          "Close miking"
+        ],
+        "common_mistakes": [
+          "Assuming audible action noise means a defect; some is normal even on a well-regulated instrument.",
+          "Letting worn or dried-out felt bushings go unserviced, so the action rattles more than it should.",
+          "Placing mics right over the action on a quiet passage and exaggerating the mechanical clatter."
+        ],
+        "scenario_contexts": [
+          "Close-miking a grand piano for a delicate solo and hearing hammer and damper noise.",
+          "Regulating a piano action to reduce excess mechanical clatter before a session.",
+          "Choosing mic distance on an upright to balance tone against action noise."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — piano action",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — instrument recording"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "b833b3f5-32f1-405e-b0d2-ec3e6530a700",
+      "term": "Keyboard ground-loop noise",
+      "fields": {
+        "definition": "A hum or buzz, usually at the mains frequency (50 or 60 Hz) and its harmonics, caused when a keyboard or synthesizer and the mixer or amplifier it feeds are connected to ground through more than one path, forming a closed loop. Small voltage differences between the grounds drive current through the audio cable shield, which is heard as hum in the signal.",
+        "plain_english": "A steady hum or buzz that appears when a keyboard and a mixer are grounded through two different paths at once, making a loop. Stray current flows through the cable shield and you hear it as an annoying hum.",
+        "purpose_function": "This term names a specific, common cause of unwanted hum so technicians can tell it apart from other noise and cure the wiring at its source rather than masking the symptom.",
+        "practical_application": "A technician cures keyboard ground-loop hum with balanced connections, a DI box with a ground-lift switch, or an isolation transformer, and keeps signal cables away from power cables, never by disconnecting the mains safety ground.",
+        "category": "Electrical noise",
+        "related_terms": [
+          "Ground loop",
+          "DI box",
+          "Ground lift",
+          "Balanced connection",
+          "Isolation transformer",
+          "Hum"
+        ],
+        "common_mistakes": [
+          "UNSAFE: Lifting or defeating the mains earth/safety ground (for example with a cheater plug or by cutting the ground pin) to stop the hum; this removes shock protection and can be lethal.",
+          "Using a DI box's signal ground-lift switch and expecting it to fix every loop, when the wiring path itself may still need changing.",
+          "Chasing the hum with EQ or noise gates instead of finding and breaking the ground loop at its source."
+        ],
+        "scenario_contexts": [
+          "A stage keyboard buzzes when plugged into the main mixer on a different power circuit.",
+          "A studio synth hums only when connected to both an audio interface and a separately grounded amp.",
+          "Adding a DI box with a ground lift to silence hum between a keyboard and the front-of-house console."
+        ]
+      },
+      "sources": [
+        "Rane, RaneNote 110 'Sound System Interconnection' (technical note)",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — grounding and interfacing",
+        "Sound on Sound, 'Ground Loops Explained'",
+        "NFPA 70 (National Electrical Code) — equipment grounding requirements"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "487882de-9d7c-4ac1-bfc1-bff0351806a4",
+      "term": "Kokle/kantele pluck",
+      "fields": {
+        "definition": "The bright, ringing, bell-like tone produced by plucking the kokle (Latvian) or kantele (Finnish), related Baltic and Finnic box zithers of the psaltery family in which open strings are stretched over a flat soundboard and plucked with the fingers, fingernails or a plectrum. Plucking sets the strings into free vibration so they sustain and shimmer, while the player's other hand can damp the strings that should not ring.",
+        "plain_english": "The clear, ringing sound you get by plucking the open strings of a kantele or kokle, box zithers from Finland and Latvia. It sounds bright and bell-like, a bit like a small harp, and the notes ring on until they are damped.",
+        "purpose_function": "Plucking excites the free strings so they ring and sustain, giving these zithers their delicate, shimmering voice; damping with the free hand lets the player control which strings ring and keep the harmony clean.",
+        "practical_application": "When recording a kantele or kokle a technician mics the soundboard to capture the bright attack and long ring, and watches for finger and string noise from the plucking hand on quiet passages.",
+        "category": "Instrument timbre",
+        "related_terms": [
+          "Pizzicato",
+          "Plucked string",
+          "Sustain",
+          "Damping",
+          "Soundboard",
+          "Spot mic"
+        ],
+        "common_mistakes": [
+          "Confusing the kantele/kokle with a hammered dulcimer; these zithers are plucked, not struck with beaters.",
+          "Miking too far away and losing the bright pluck attack that defines the sound.",
+          "Forgetting that undamped strings keep ringing, so overlapping notes can blur the harmony."
+        ],
+        "scenario_contexts": [
+          "Recording a solo kantele for a Finnish folk album.",
+          "Amplifying a kokle in an ensemble and controlling string ring with careful damping.",
+          "Capturing the bright plucked attack of a Baltic psaltery for a film score."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments (Oxford) — kantele / kokle (Baltic psaltery) entries",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — plucked strings",
+        "Baines, Musical Instruments Through the Ages (Penguin/Faber)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 206,
+ "topic": "Broadcast Loudness & Compliance",
+ "authored": [
+  {
+   "id": "f91ba847-6961-4249-87df-2c293e6e6617",
+   "term": "Continuous loudness monitoring",
+   "fields": {
+    "definition": "The ongoing, real-time measurement of a program's loudness against a defined target throughout a broadcast, using a loudness meter compliant with ITU-R BS.1770 and reported in LUFS/LKFS. It tracks momentary, short-term, and integrated loudness so operators can confirm the signal stays within regulatory limits such as EBU R128 or ATSC A/85.",
+    "plain_english": "It means watching how loud a show sounds the whole time it airs. A meter checks the sound against a set target so it never gets too loud or too quiet.",
+    "purpose_function": "It exists to keep on-air loudness consistent and within legal limits, alerting staff before a program drifts louder or softer than the target. This helps prevent viewer complaints and regulatory violations.",
+    "practical_application": "An operator keeps a loudness meter on the air feed during a live broadcast, watching the short-term and integrated readings and trimming gain if the program drifts away from the target.",
+    "category": "Loudness Monitoring",
+    "related_terms": ["Integrated loudness", "LUFS", "ITU-R BS.1770", "EBU R128", "Loudness history graph", "True peak"],
+    "common_mistakes": ["Watching only the momentary reading and ignoring the integrated value that actually determines compliance", "Assuming a peak meter shows loudness, when peak level and loudness are different measurements", "Setting the meter to the wrong target or gating standard for the region's rules"],
+    "scenario_contexts": ["Monitoring a live sports broadcast to keep it within ATSC A/85 limits", "Checking a network feed's integrated loudness across a full program", "Watching short-term loudness during a live news studio show"]
+   },
+   "sources": ["ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak level)", "EBU R128 and EBU Tech 3341 (loudness metering)", "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3882d30c-e7fe-408e-bbe3-f717b530d430",
+   "term": "Digital radio processor",
+   "fields": {
+    "definition": "An audio processor designed for digital radio transmission systems such as DAB/DAB+ or HD Radio, conditioning the audio for perceptual codecs rather than an analog RF path. It manages loudness, dynamics, and spectral balance while avoiding the pre-emphasis and aggressive peak clipping used for analog FM.",
+    "plain_english": "It is a sound processor made for digital radio instead of old analog radio. It shapes the audio so it still sounds clear after the digital codec squeezes it.",
+    "purpose_function": "It exists to make audio sound loud, clean, and consistent through the data-compression codecs used in digital radio, where harsh analog-style processing would create artifacts.",
+    "practical_application": "A broadcast engineer sets a digital radio processor to feed a DAB+ or HD Radio encoder, using gentler limiting than the FM path so the codec does not add distortion.",
+    "category": "Broadcast Processing",
+    "related_terms": ["FM processor", "HD Radio processor", "Final broadcast processor", "Loudness normalization engine", "Diversity delay"],
+    "common_mistakes": ["Using aggressive FM-style clipping on a digital path, which the codec turns into audible artifacts", "Assuming pre-emphasis is needed, when digital radio does not use FM pre-emphasis", "Ignoring the loudness target and letting the digital and analog services mismatch in level"],
+    "scenario_contexts": ["Feeding a DAB+ multiplex encoder at a radio station", "Setting up audio for an HD Radio digital service", "Aligning a digital service's loudness with its analog FM simulcast"]
+   },
+   "sources": ["ETSI EN 300 401 (DAB digital radio system)", "Orban Optimod technical documentation (digital/multipath processing)", "ITU-R BS.1770 (loudness measurement)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "067756c2-5d99-4998-bc52-407651c8c232",
+   "term": "Final broadcast processor",
+   "fields": {
+    "definition": "The last audio processor in the air chain before the transmitter or encoder, which sets the station's final loudness, peak control, and overall sonic signature. It guarantees the signal does not exceed modulation or true-peak limits regardless of the source material.",
+    "plain_english": "It is the last sound processor before the signal leaves the station. It sets the final loudness and makes sure the audio never goes over the legal limit.",
+    "purpose_function": "It exists to protect the transmission from over-modulation and to give the station one consistent, controlled sound no matter what program feeds it.",
+    "practical_application": "An engineer places the final broadcast processor right before the FM exciter or stream encoder and adjusts its limiting so every program hits the target loudness without clipping.",
+    "category": "Broadcast Processing",
+    "related_terms": ["FM processor", "Digital radio processor", "True peak", "Loudness normalization engine", "Continuous loudness monitoring"],
+    "common_mistakes": ["Adding gain or EQ after the final processor, which defeats its peak and modulation protection", "Overdriving the input and blaming the processor for distortion it is forced to create", "Chaining two aggressive processors so they fight each other and cause pumping"],
+    "scenario_contexts": ["Setting the last stage before an FM transmitter's exciter", "Protecting a stream encoder from true-peak overshoots", "Giving a music station its signature on-air loudness and tone"]
+   },
+   "sources": ["Orban Optimod-FM technical manual (air-chain processing)", "Telos Alliance / Omnia technical documentation", "ITU-R BS.1770 (loudness and true-peak measurement)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "63316d7c-216a-4299-8ac5-e78c9474828b",
+   "term": "FM processor",
+   "fields": {
+    "definition": "An audio processor optimized for analog FM broadcasting that applies pre-emphasis-aware limiting, tight peak control, and stereo composite (MPX) conditioning to maximize loudness and coverage without over-modulating. Typical units, such as the Orban Optimod-FM, also generate or feed the stereo multiplex signal.",
+    "plain_english": "It is a sound processor built for FM radio. It makes the station sound loud and clear while keeping the signal inside FM's legal limits.",
+    "purpose_function": "It exists to get the most consistent loudness and cleanest coverage from an FM signal while respecting the pre-emphasis curve and the strict peak-modulation limit.",
+    "practical_application": "A radio engineer tunes an FM processor's multiband compression and final clipper to build a competitive on-air sound, then verifies that peak modulation stays within the legal limit.",
+    "category": "Broadcast Processing",
+    "related_terms": ["Final broadcast processor", "Pre-emphasis", "HD Radio processor", "Digital radio processor", "Composite clipping"],
+    "common_mistakes": ["Ignoring the 75 us (US) or 50 us (Europe) pre-emphasis curve when setting high-frequency limiting", "Pushing the clipper so hard that distortion and multipath rise while loudness barely gains", "Confusing peak-modulation control with loudness, when the two need separate attention"],
+    "scenario_contexts": ["Setting up an Orban or Omnia processor before an FM exciter", "Dialing in a station's competitive loudness for its local market", "Managing pre-emphasis limiting to control high-frequency energy"]
+   },
+   "sources": ["Orban Optimod-FM technical manual", "Telos Alliance / Omnia technical documentation", "Ballou, Handbook for Sound Engineers (radio broadcast processing)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "91816a76-9c9d-43c1-9454-4602e7b87a6b",
+   "term": "HD Radio processor",
+   "fields": {
+    "definition": "An audio processor tailored for the HD Radio (IBOC) digital service, which conditions audio for the HDC codec and manages the diversity-delay alignment between the analog FM and digital signals. It applies gentler dynamics and peak control than the analog FM path to prevent codec artifacts.",
+    "plain_english": "It is a sound processor for HD Radio, the digital version of a station. It shapes the audio for the digital codec. It also keeps the digital and analog signals lined up so they blend well.",
+    "purpose_function": "It exists to make the digital audio sound clean through its codec and to match its level and timing with the analog FM signal so receivers blend between them without a jump.",
+    "practical_application": "An engineer configures the HD Radio processor's digital path separately from FM, matching loudness and setting diversity delay so a receiver blending from digital to analog is seamless.",
+    "category": "Broadcast Processing",
+    "related_terms": ["FM processor", "Digital radio processor", "Diversity delay", "Final broadcast processor", "Loudness normalization engine"],
+    "common_mistakes": ["Using the same harsh FM clipping on the digital path, which the HDC codec exposes as artifacts", "Mismatching analog and digital loudness so the blend is audible on air", "Forgetting to set or maintain diversity delay, causing an echo when receivers blend"]
+    , "scenario_contexts": ["Setting up an FM station's HD1 digital simulcast", "Aligning analog and digital loudness for a smooth blend", "Adjusting diversity delay after an air-chain change"]
+   },
+   "sources": ["NRSC-5 (In-band/on-channel digital radio broadcasting standard)", "Xperi/iBiquity HD Radio technical documentation", "Orban Optimod technical documentation (HD/digital path)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "aa59c072-689a-4748-910f-a2d526e433e7",
+   "term": "Loudness correction",
+   "fields": {
+    "definition": "The process of adjusting program audio so its measured loudness meets a defined target, either by a single offset gain change or by real-time adaptive processing, based on ITU-R BS.1770 measurement. It brings non-compliant content in line with standards such as EBU R128 or ATSC A/85.",
+    "plain_english": "It means changing a program's level so it matches the loudness target. Sometimes one fixed gain shift is enough; other times a live processor keeps it on target.",
+    "purpose_function": "It exists to make different programs and commercials sit at the same loudness, so viewers do not need to reach for the volume between segments.",
+    "practical_application": "A technician measures a finished file's integrated loudness, then applies a fixed gain offset to hit the target, or routes live content through a real-time corrector for the same result.",
+    "category": "Loudness Control",
+    "related_terms": ["Loudness normalization engine", "Integrated loudness", "LUFS", "EBU R128", "ATSC A/85", "Dialnorm"],
+    "common_mistakes": ["Normalizing to peak instead of loudness, which leaves programs sounding uneven", "Applying heavy dynamic processing when a simple gain offset would meet the target", "Correcting integrated loudness but ignoring the true-peak limit and causing clipping"],
+    "scenario_contexts": ["Bringing a commercial's loudness down to match program content", "Batch-correcting a library of files to the target loudness", "Real-time correcting a live feed that arrives off-target"]
+   },
+   "sources": ["ITU-R BS.1770 (loudness measurement)", "EBU R128 and EBU Tech 3343 (loudness normalization guidelines)", "ATSC A/85 (loudness management)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2d90a3c0-ea17-4b32-8edc-b9f5b70ce9ce",
+   "term": "Loudness history graph",
+   "fields": {
+    "definition": "A time-based display on a loudness meter that plots loudness, typically momentary and short-term values, over the course of a program, letting operators see trends, peaks, and dips at a glance. It complements the numeric integrated reading defined in EBU Tech 3341 and ITU-R BS.1771 metering.",
+    "plain_english": "It is a chart on a loudness meter that shows how loud a show has been over time. It lets you spot loud or quiet moments fast instead of reading just one number.",
+    "purpose_function": "It exists to show loudness as a trend rather than a single value, making it easy to catch a section that drifted too loud or too soft during a program.",
+    "practical_application": "An operator scans the loudness history graph after a segment to see where short-term loudness spiked, then goes back and fixes that part before delivery.",
+    "category": "Loudness Monitoring",
+    "related_terms": ["Continuous loudness monitoring", "Short-term loudness", "Momentary loudness", "Integrated loudness", "Loudness range", "LUFS"],
+    "common_mistakes": ["Reading the graph's momentary peaks as the compliance value instead of the integrated result", "Confusing the loudness history graph with a peak-level meter", "Ignoring long quiet stretches that pull the integrated loudness below target"],
+    "scenario_contexts": ["Reviewing a recorded program's loudness trend before delivery", "Spotting an over-loud commercial break on the history display", "Checking a live show's short-term loudness pattern in real time"]
+   },
+   "sources": ["EBU Tech 3341 (EBU Mode metering specification)", "ITU-R BS.1771 (Requirements for loudness and true-peak indicating meters)", "TC Electronic / Nugen loudness meter technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "aa0f9039-a3a0-402c-ae03-ce45971a1411",
+   "term": "Loudness logging",
+   "fields": {
+    "definition": "The automatic recording of loudness measurements over time to create a documented, time-stamped record of a channel's compliance with loudness rules. These logs, based on ITU-R BS.1770 measurement, provide proof of compliance for regulators under regimes such as the CALM Act or EBU R128.",
+    "plain_english": "It means saving a record of how loud a channel was over time. Those records prove the station followed the loudness rules if anyone asks.",
+    "purpose_function": "It exists to give stations documented proof that their audio met loudness limits, and to help engineers trace when and why a problem happened.",
+    "practical_application": "An engineer runs a logging system on the channel output so that, if a viewer complaint or audit arrives, they can pull the time-stamped loudness record for that period.",
+    "category": "Loudness Compliance",
+    "related_terms": ["Continuous loudness monitoring", "Integrated loudness", "CALM Act", "ATSC A/85", "EBU R128", "LUFS"],
+    "common_mistakes": ["Logging only integrated loudness and losing the detail needed to investigate a complaint", "Assuming logging fixes loudness, when it only records and does not correct", "Keeping logs too briefly to cover the regulator's required retention period"],
+    "scenario_contexts": ["Producing a compliance record after a viewer loudness complaint", "Auditing a channel's loudness over a broadcast day", "Documenting delivered loudness for a network's quality control"]
+   },
+   "sources": ["ITU-R BS.1770 (loudness measurement)", "ATSC A/85 and the CALM Act (US loudness compliance)", "EBU R128 (loudness recommendation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ebb5f009-aab3-46ff-99f2-87288530b558",
+   "term": "Loudness normalization engine",
+   "fields": {
+    "definition": "The processing block that measures program loudness and applies gain so the output matches a target level in LUFS/LKFS, per ITU-R BS.1770. It is the core of playout, streaming, and file-based systems that deliver every program at a consistent loudness.",
+    "plain_english": "It is the part of a system that sets every program to the same loudness. It measures the sound and turns it up or down to hit one target level.",
+    "purpose_function": "It exists to deliver all content at one consistent loudness automatically, so listeners hear an even level across programs, ads, and platforms.",
+    "practical_application": "A streaming or playout engineer sets the engine's target, for example the broadcast or platform loudness level, and lets it align every asset before delivery.",
+    "category": "Loudness Control",
+    "related_terms": ["Loudness correction", "Integrated loudness", "LUFS", "EBU R128", "ATSC A/85", "Continuous loudness monitoring"],
+    "common_mistakes": ["Normalizing to peak rather than integrated loudness, which leaves levels uneven", "Setting a target that ignores the true-peak ceiling and causes clipping", "Assuming one target fits every platform, when broadcast and streaming differ"],
+    "scenario_contexts": ["Normalizing a playout server's programs to the broadcast target", "Aligning a streaming library to the platform's loudness target", "Passing off-target incoming feeds through the engine before air"]
+   },
+   "sources": ["ITU-R BS.1770 (loudness measurement)", "EBU R128 and EBU Tech 3343 (loudness normalization)", "AES TD1004 (loudness for streaming and on-demand)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

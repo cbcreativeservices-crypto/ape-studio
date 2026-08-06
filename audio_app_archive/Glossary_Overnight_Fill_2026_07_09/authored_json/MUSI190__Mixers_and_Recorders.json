@@ -1,0 +1,103 @@
+{
+  "course": "MUSI190",
+  "topic": "Mixers & Recorders",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "91e47196-7979-455e-a29a-d8637d61e080",
+      "term": "In-Line Console",
+      "fields": {
+        "plain_english": "A mixing desk where each channel strip does double duty, giving you two faders in one strip: one to send sound to the recorder and one to listen to what's coming back.",
+        "purpose_function": "By folding the channel (record) path and the monitor (return) path into a single strip, an in-line console packs far more I/O into a compact frame and keeps recording and monitoring controls in one place for the engineer. It exists to give large multitrack studios high channel counts without an enormous footprint.",
+        "practical_application": "During tracking, a session engineer sets the top fader to feed a track to the multitrack recorder while using the smaller monitor fader on the same strip to balance the playback the musicians hear, all without moving to a separate monitor panel.",
+        "category": "Mixing Consoles",
+        "related_terms": ["Split Console", "Master Section", "Monitor Section", "Channel Path", "Bus"],
+        "common_mistakes": ["Confusing the channel (record) fader with the monitor fader and adjusting the wrong one, so the tracked level or the monitor balance changes unexpectedly", "Assuming an in-line strip is truly two independent channels rather than one strip sharing preamp, EQ, and routing resources between two paths", "Forgetting to flip EQ or dynamics assignment between the channel path and monitor path, then wondering why processing isn't landing where expected"],
+        "scenario_contexts": ["A commercial studio tracking a full band on a 48-input SSL or Neve in-line desk, recording and monitoring 24+ tracks from one operating position", "An engineer flipping the console into 'mix mode' so both faders feed the mix bus, doubling available inputs at mixdown", "Teaching students signal flow by tracing a mic through the channel path to tape and back through the monitor path on the same strip"]
+      },
+      "sources": ["Sound On Sound - mixing console signal flow and channel vs monitor path articles", "AudioMasterClass - 'An inline mixing console. What's that?'", "Ballou, Handbook for Sound Engineers - console architecture"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "96d6f23f-dba2-4f93-8cce-76fce38e195c",
+      "term": "Master Section",
+      "fields": {
+        "plain_english": "The middle 'command center' of a mixing desk, where the main output faders, the meters, the talkback mic, and the control-room listening controls all live.",
+        "purpose_function": "It gathers the console's shared output and monitoring functions - main and subgroup buses, metering, talkback, and control-room feeds - into one central area so the engineer manages the whole mix's final level and monitoring from one spot. It exists as the point where all summed signals converge before leaving the console.",
+        "practical_application": "An engineer rides the main stereo fader, watches the master meters for clipping, and taps the talkback button here to speak to performers in the live room without disturbing the recording.",
+        "category": "Mixing Consoles",
+        "related_terms": ["Monitor Section", "Bus", "Talkback", "Main Mix Fader", "Metering"],
+        "common_mistakes": ["Confusing control-room monitor level (what you hear) with the master output fader (what actually goes to the recorder or PA), then setting record or send levels by ear alone", "Leaving talkback engaged, which dumps the talkback mic into cue or monitor feeds and can cause feedback or unwanted noise", "Assuming the master meters show individual channel levels rather than the summed bus output"],
+        "scenario_contexts": ["Setting overall mix level and checking for clipping on the master bus meters before printing a mix", "Using the talkback mic to cue a vocalist between takes", "Selecting main vs. subgroup bus outputs and matrix routing from the center section on a large-format desk"]
+      },
+      "sources": ["Wikipedia - Mixing console (master/center section, metering, talkback)", "Sound On Sound - Control Room and console technique articles", "Ballou, Handbook for Sound Engineers"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "2b44dc52-dcfe-4945-9a97-9132bf651f3e",
+      "term": "Monitor Section",
+      "fields": {
+        "plain_english": "The part of the desk that decides what comes out of the control-room speakers and how loud - letting you pick a source, switch speaker sets, drop the level with DIM, or check the mix in mono.",
+        "purpose_function": "It controls control-room listening independently of the actual mix output, so the engineer can choose what to hear, at what level, and on which speakers without changing the signal being recorded or sent to the PA. It exists to give a trustworthy, flexible reference for critical listening.",
+        "practical_application": "An engineer uses it to A/B between main and small reference monitors, hit DIM to take a phone call, or sum to mono to check the mix's mono compatibility - all without touching the recorded mix level.",
+        "category": "Mixing Consoles",
+        "related_terms": ["Master Section", "Control Room", "DIM", "Mono Sum", "Monitor Controller"],
+        "common_mistakes": ["Mistaking the monitor/control-room level control for the master output fader, so a quiet monitor level is misread as a low recorded level (or vice versa)", "Forgetting DIM or MONO is still engaged and making mix decisions on an attenuated or mono signal", "Judging a mix on only one speaker set instead of cross-referencing multiple monitors"],
+        "scenario_contexts": ["Switching between main monitors and NS-10-style reference speakers to check translation", "Engaging MONO to verify mono compatibility for broadcast or club playback", "Using DIM to quickly lower control-room volume for a conversation without losing the set listening level"]
+      },
+      "sources": ["Sound On Sound - Control Room monitoring article", "TheAudioPod / manufacturer monitor-section documentation (Lawo mc56, UA Monitor Column)", "Ballou, Handbook for Sound Engineers - monitoring"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "4f81edde-f231-4021-bb60-87e4552d969a",
+      "term": "Scribble Strip",
+      "fields": {
+        "plain_english": "The label space just above (or below) each fader where you write or display the channel's name - 'kick', 'bass', 'lead vox' - so you know what each fader controls. On digital desks it's a little LCD instead of tape and a marker.",
+        "purpose_function": "It gives each channel a clear, at-a-glance identity so the engineer instantly knows what each fader and strip controls, which is essential on high-channel-count desks. On digital consoles the electronic scribble strip stores names and colors with the show file so they recall with each scene.",
+        "practical_application": "A live engineer names and color-codes every input on the digital scribble strips during setup so that mid-show they can grab the right channel instantly without counting faders.",
+        "category": "Mixing Consoles",
+        "related_terms": ["Channel Strip", "Fader", "Master Section", "Scene Recall", "Layers"],
+        "common_mistakes": ["On layered digital desks, forgetting the scribble strip name follows the assigned layer/bank, so the same physical fader shows different names on different layers", "Not updating names after re-patching inputs, leaving misleading labels that cause the wrong channel to be adjusted", "On analog desks, writing directly on the console surface instead of on removable tape, leaving permanent marks"],
+        "scenario_contexts": ["Labeling and color-coding inputs during line check on an X32, SD-series, or Yamaha CL/QL desk", "Recalling a saved show file so all channel names and colors reappear automatically", "Applying fresh console tape and marker labels to an analog desk before a session"]
+      },
+      "sources": ["Sweetwater InSync - 'Scribble Strip' glossary", "Sound On Sound - Behringer X32 and Digidesign Icon reviews (LCD scribble strips)", "Soundcraft / Yamaha console documentation"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b7d64353-ba42-4c89-bc5b-3d041f2066df",
+      "term": "Solo In Place (SIP)",
+      "fields": {
+        "plain_english": "A solo mode that silences every other channel by muting them on the main output, so only the soloed channel is heard - great in the studio, but on a live PA it can kill the whole show's sound.",
+        "purpose_function": "SIP lets an engineer hear a single channel exactly as it sits in the mix - with its pan, fader, and effects intact - by muting all other channels on the main bus. It exists for detailed, in-context checking during mixing, which is why it is called 'destructive' solo monitoring.",
+        "practical_application": "In a studio mixdown an engineer taps SIP to isolate a reverb-drenched vocal in its panned, processed position; in live sound they avoid SIP entirely and use PFL/AFL, since SIP would mute the entire audience mix.",
+        "category": "Mixing Consoles",
+        "related_terms": ["PFL", "AFL", "Solo", "Mute", "Master Section"],
+        "common_mistakes": ["UNSAFE (to the show): Pressing SIP on a live console, which mutes every other channel on the main output and silences the entire PA in front of an audience", "Confusing SIP with PFL/AFL, which only feed the monitor/solo bus and leave the main mix untouched", "Leaving SIP latched on and then wondering why the rest of the mix has disappeared from the outputs"],
+        "scenario_contexts": ["Studio mixdown, isolating one channel in its true panned and processed context to check a detail", "A live engineer deliberately choosing PFL or AFL instead of SIP to protect the front-of-house mix", "A digital desk (e.g. DiGiCo) requiring a deliberate press-and-hold and flashing warning to prevent accidental SIP engagement during a service or show"]
+      },
+      "sources": ["Sound On Sound - 'Q. What do Solo, PFL and AFL do?' and Solo glossary", "Sweetwater SweetCare - 'What are PFL, AFL and SIP?'", "Yamaha Pro Audio - 'Using Solo During Live Mixing'"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "27f9a60a-f2d0-4527-b87f-585cafa8eb48",
+      "term": "Split Console",
+      "fields": {
+        "plain_english": "A mixing desk laid out in clearly separate zones - input channels on one side, a dedicated monitor-mix section on the other, and the master in between - so recording and monitoring controls never overlap.",
+        "purpose_function": "By keeping the recording (channel) path and the monitor path in physically separate sections, a split console makes signal flow obvious and easy to follow, which is why it is common on teaching and smaller-format desks. It exists to keep tracking and monitoring workflows distinct and easy to understand.",
+        "practical_application": "An engineer runs mics through the input channels on one side while building a separate headphone/monitor balance on the dedicated monitor section, always knowing which set of controls does what.",
+        "category": "Mixing Consoles",
+        "related_terms": ["In-Line Console", "Master Section", "Monitor Section", "Channel Path", "Bus"],
+        "common_mistakes": ["Assuming the separate monitor section changes what is recorded - it only affects monitoring, not the level going to the recorder", "Running out of physical channels because, unlike an in-line desk, each input and each monitor return needs its own strip, enlarging the footprint", "Confusing the split (separate-section) layout with an in-line desk's dual-fader strips"],
+        "scenario_contexts": ["A project or educational studio using a split desk so students can clearly trace input, monitor, and master sections", "Tracking a band while maintaining an independent monitor mix on the dedicated monitor side", "Comparing split vs. in-line architectures when specifying a console for a given room size and channel count"]
+      },
+      "sources": ["AudioMasterClass and Sound On Sound - split vs in-line console architecture", "Puremix - 'Andrew Scheps: Inline & Split Line Consoles'", "Ballou, Handbook for Sound Engineers - console types"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

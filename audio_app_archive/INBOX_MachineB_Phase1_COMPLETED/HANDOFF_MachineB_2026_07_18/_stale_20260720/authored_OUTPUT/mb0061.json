@@ -1,0 +1,231 @@
+{
+ "batch": 61,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "b6ebde98-12c6-44eb-a448-2f4f9346502b",
+   "term": "Overhead high-pass filtering",
+   "fields": {
+    "definition": "A tracking and mixing practice in which a high-pass (low-cut) filter is applied to drum overhead microphones to attenuate low-frequency energy below roughly 80-300 Hz, so the overheads capture cymbals and the overall kit image without excessive kick, tom, and stage rumble.",
+    "plain_english": "This means cutting the deep, low sounds out of the drum mics placed above the kit. It lets those mics catch the bright cymbals and the whole drum sound, and keeps out the boomy low rumble.",
+    "purpose_function": "It cleans up the overhead microphones so they add cymbal detail and kit balance rather than muddy low end, keeping the low frequencies under the control of the dedicated kick and tom mics.",
+    "practical_application": "An engineer sweeps a low-cut filter up from around 80 Hz on each overhead channel until the cymbals stay clear but the low boom and rumble drop away.",
+    "category": "Drum Recording",
+    "related_terms": ["Overhead miking", "Low-cut filter", "Cymbal bleed", "Drum bus", "Parallel-drum bus"],
+    "common_mistakes": [
+     "Setting the cut frequency too high, which thins out the snare and removes the natural body of the kit.",
+     "Forgetting that overheads also carry the main image of the whole kit, so over-filtering leaves the drums sounding small.",
+     "Applying the same fixed cut to every session instead of tuning it to the actual kit and cymbals."
+    ],
+    "scenario_contexts": [
+     "Tracking a live drum kit where the overheads pick up unwanted low-end rumble from the room and stage.",
+     "Cleaning up a drum mix so the kick and toms own the low end while the overheads handle cymbals.",
+     "Reducing HVAC or foot-tap rumble captured by condenser overheads during a quiet take."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4876625d-19c0-4a45-be62-1f9777ea4bb4",
+   "term": "Pad layering",
+   "fields": {
+    "definition": "An arrangement and production technique in which two or more sustained synthesizer or keyboard 'pad' sounds are stacked to create a single, fuller, often evolving background texture that fills harmonic space beneath a mix.",
+    "plain_english": "A pad is a soft, held background sound, like a warm cushion under the song. Pad layering means stacking two or more of these held sounds so the background feels fuller and richer.",
+    "purpose_function": "It builds a thicker, more interesting sustained bed than one patch can give, filling out the harmony and adding warmth or movement without crowding the main parts.",
+    "practical_application": "A producer layers a warm analog-style pad with a brighter, airy pad, then balances their levels and filtering so they blend into one supporting texture.",
+    "category": "Arrangement",
+    "related_terms": ["Layering", "Synth pad", "Sound stacking", "Percussion layering", "Doubling"],
+    "common_mistakes": [
+     "Layering pads that occupy the same frequency range, which causes mud instead of richness.",
+     "Stacking so many pads that they overpower the lead and rhythm parts.",
+     "Not checking the combined layers in mono, so phase problems between pads go unnoticed."
+    ],
+    "scenario_contexts": [
+     "Building a lush sustained background under a ballad chorus.",
+     "Adding subtle movement to an otherwise static electronic arrangement.",
+     "Reinforcing a held string section with a synth pad for extra warmth."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "eca28fef-53e9-4757-8c9c-fd71f2b7602b",
+   "term": "Parallel-drum bus",
+   "fields": {
+    "definition": "A mixing setup in which the drum signals are sent to a duplicate (parallel) bus that is heavily processed - typically with aggressive compression and/or saturation - and then blended underneath the original dry drums to add weight and punch while preserving the natural transients.",
+    "plain_english": "This is a copy of the drums on a second channel that gets squashed hard, then mixed back in under the normal drums. It adds power and punch while keeping the real drum hits sounding natural.",
+    "purpose_function": "It lets an engineer add density, sustain, and aggression to drums by blending a crushed copy in, instead of destroying the dynamics of the main drum track.",
+    "practical_application": "The engineer routes the drums to an aux, applies a fast, high-ratio compressor to the copy, and raises its fader until the kit sounds bigger without losing the punch of the dry hits.",
+    "category": "Mix Processing",
+    "related_terms": ["Parallel compression", "Drum bus", "New York compression", "Aux send", "Bus compression"],
+    "common_mistakes": [
+     "Bringing the crushed parallel channel up so loud that it swallows the natural dry drums.",
+     "Forgetting to phase-check the parallel path against the dry drums, causing thin or hollow sound.",
+     "Using heavy processing on the parallel bus without listening in the context of the full mix."
+    ],
+    "scenario_contexts": [
+     "Making a rock drum kit sound bigger and more aggressive in a dense mix.",
+     "Adding sustain and body to a thin-sounding drum recording.",
+     "Gluing a multi-mic drum kit together with a parallel crushed layer."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7c304b3e-0f98-402d-bca1-c7eab3e9a556",
+   "term": "Pedal chick",
+   "fields": {
+    "definition": "The short, crisp 'chick' sound produced when a drummer closes the two hi-hat cymbals together using the foot pedal, without striking them with a stick; it marks the backbeat or subdivisions purely from the foot.",
+    "plain_english": "It is the tight 'chick' sound a drummer makes by pressing the hi-hat pedal so the two cymbals snap shut. No stick is used, just the foot closing the cymbals.",
+    "purpose_function": "It gives a steady rhythmic accent from the drummer's foot, keeping time and the backbeat even when the hands are busy on other drums.",
+    "practical_application": "When recording, an engineer places the hi-hat mic to capture a clean pedal chick without excessive air blast from the closing cymbals.",
+    "category": "Drum Recording",
+    "related_terms": ["Hi-hat", "Backbeat", "Foot pedal", "Hi-hat miking", "Cymbal bleed"],
+    "common_mistakes": [
+     "Confusing the foot-closed pedal chick with a stick-struck closed hi-hat note.",
+     "Miking too close to the edge, so the pedal chick is buried under the puff of air from the closing cymbals.",
+     "Ignoring the pedal chick in the mix, which loses an important part of the groove."
+    ],
+    "scenario_contexts": [
+     "Recording a drum groove where the hi-hat foot keeps time on beats 2 and 4.",
+     "Capturing a jazz ride pattern where the foot chick marks the pulse.",
+     "Editing a drum take and needing the pedal chick to line up with the click."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "651e56ff-7dfd-47be-bf96-721aec9c967d",
+   "term": "Pedal-noise control",
+   "fields": {
+    "definition": "The set of techniques used to reduce unwanted mechanical noise made by foot pedals during tracking - such as kick-drum beater and spring squeak, hi-hat pedal clatter, or piano and keyboard sustain-pedal thumps - through maintenance, lubrication, isolation, and mic placement.",
+    "plain_english": "This means stopping the squeaks, clicks, and thumps that pedals make while playing. You fix it by oiling the pedal, tightening parts, and aiming mics away from the noise.",
+    "purpose_function": "It keeps distracting pedal squeaks and thumps out of the recording so the microphones capture the instrument, not the hardware.",
+    "practical_application": "Before a take, a technician oils a squeaky kick pedal spring and repositions the mic so the beater's mechanical noise does not reach it.",
+    "category": "Tracking Technique",
+    "related_terms": ["Kick pedal", "Sustain pedal", "Mechanical noise", "Piano hammer-noise control", "Isolation"],
+    "common_mistakes": [
+     "Waiting until mixing to notice a squeak that could have been fixed with oil before tracking.",
+     "Lubricating a pedal with the wrong product, which attracts dust or damages parts.",
+     "Assuming EQ can remove pedal noise that overlaps the instrument's own frequencies."
+    ],
+    "scenario_contexts": [
+     "Silencing a squeaking kick-drum pedal spring before a quiet ballad take.",
+     "Reducing sustain-pedal thumps captured by close piano mics.",
+     "Taming hi-hat pedal clatter that bleeds into vocal mics on a live stage."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cd343ea3-1b38-4bf1-a48d-bf4a38fc2ba8",
+   "term": "Percussion layering",
+   "fields": {
+    "definition": "An arrangement technique in which multiple percussion parts or samples - such as shakers, tambourines, congas, or claps - are stacked and blended to build a fuller, more detailed rhythmic texture than a single instrument provides.",
+    "plain_english": "This means stacking several small percussion sounds, like shakers and tambourines, to make one fuller rhythm layer. Together they add energy and detail to the groove.",
+    "purpose_function": "It thickens and enlivens the rhythm section by combining complementary percussion sounds that each fill a different part of the groove and frequency range.",
+    "practical_application": "A producer layers a shaker on the offbeats with a tambourine on the backbeat, panning and balancing them so they lock into the drum groove.",
+    "category": "Arrangement",
+    "related_terms": ["Overdubbing", "Pad layering", "Groove", "Panning", "Shaker"],
+    "common_mistakes": [
+     "Stacking percussion parts that clash rhythmically instead of locking to the same grid.",
+     "Layering many bright percussion sounds that pile up in the high frequencies and sound harsh.",
+     "Leaving all layers dead center, so the added parts crowd the mix instead of widening it."
+    ],
+    "scenario_contexts": [
+     "Adding energy to a chorus by layering shaker, tambourine, and claps.",
+     "Filling out a sparse verse groove with subtle hand percussion.",
+     "Reinforcing a programmed beat with live overdubbed percussion for a human feel."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c0d7eb40-030e-4603-9d1c-bebe356cf455",
+   "term": "Piano compression",
+   "fields": {
+    "definition": "The application of dynamic-range compression to a piano recording to reduce the difference between its loudest and softest notes, producing a more even level and helping the piano sit consistently within a mix.",
+    "plain_english": "A piano can jump from very soft to very loud. Compression gently turns down the loud notes so the whole part stays even and easier to hear in the song.",
+    "purpose_function": "It controls the piano's wide dynamic range so quiet passages stay audible and loud chords do not jump out, keeping the instrument steady within the balance of a mix.",
+    "practical_application": "An engineer sets a moderate ratio and a slower attack so chord strikes keep their initial punch while the sustain is brought up and the overall level evens out.",
+    "category": "Mix Processing",
+    "related_terms": ["Dynamic range", "Compressor", "Attack and release", "Piano equalization", "Makeup gain"],
+    "common_mistakes": [
+     "Using too fast an attack, which dulls the natural attack of the hammer strike.",
+     "Over-compressing until the piano sounds squashed and lifeless.",
+     "Adding heavy makeup gain that also lifts unwanted pedal and bench noise."
+    ],
+    "scenario_contexts": [
+     "Evening out an expressive piano performance so it stays present in a full band mix.",
+     "Controlling loud chord stabs that otherwise poke out of a ballad.",
+     "Bringing up the sustain of a solo piano so soft passages remain audible."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d6ce6665-812f-4f9e-a636-44e25a129aa4",
+   "term": "Piano equalization",
+   "fields": {
+    "definition": "The use of equalization to shape the tonal balance of a piano recording - for example cutting low-mid buildup for clarity, controlling boxiness, or adding high-frequency air - so the instrument sounds balanced and fits the arrangement.",
+    "plain_english": "This means using EQ to fix the tone of a recorded piano. You can cut muddy low notes or add sparkle up top so it sounds clear and fits the song.",
+    "purpose_function": "It corrects tonal problems and carves space for the piano so it sounds clear on its own and does not clash with other instruments in the mix.",
+    "practical_application": "An engineer dips a few decibels around the low mids to clear mud, then adds a gentle high shelf for air so the piano cuts through without harshness.",
+    "category": "Mix Processing",
+    "related_terms": ["Equalizer", "Frequency masking", "Piano compression", "High shelf", "Low-mid buildup"],
+    "common_mistakes": [
+     "Boosting the low end heavily, which clashes with the bass and muddies the mix.",
+     "Adding too much high-frequency boost, which exaggerates hammer and pedal noise.",
+     "Cutting so aggressively that the piano loses its natural body and character."
+    ],
+    "scenario_contexts": [
+     "Clearing low-mid mud so a piano and bass guitar do not fight for the same space.",
+     "Brightening a dull piano recording to help it cut through a dense arrangement.",
+     "Shaping a piano to sit as a supporting layer behind a lead vocal."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "327f23c3-4a20-4804-a5b0-1bd6f68fb4b8",
+   "term": "Piano hammer-noise control",
+   "fields": {
+    "definition": "The techniques used to reduce mechanical action and hammer noise - thumps, clicks, and key clatter - captured when close-miking a piano, achieved through mic placement, instrument maintenance and regulation, and careful gain and processing choices.",
+    "plain_english": "Inside a piano, the hammers and keys make small thumps and clicks. This means keeping those mechanical noises out of the recording by moving the mics and keeping the piano well maintained.",
+    "purpose_function": "It keeps distracting action and hammer noise from overpowering the musical tone, which matters most when mics are placed close to the strings and action.",
+    "practical_application": "A technician moves the close mics slightly away from the hammers and has the action regulated so key clatter drops below the level of the notes.",
+    "category": "Tracking Technique",
+    "related_terms": ["Close miking", "Piano miking", "Mechanical noise", "Pedal-noise control", "Action regulation"],
+    "common_mistakes": [
+     "Placing mics right over the hammers, which exaggerates every click and thump.",
+     "Blaming the room when the noise is actually a worn or unregulated action.",
+     "Trying to fix loud hammer noise with EQ alone when it overlaps the note's own frequencies."
+    ],
+    "scenario_contexts": [
+     "Close-miking a grand piano for a pop record where hammer clicks become distracting.",
+     "Recording a quiet solo piano passage where every mechanical thump is exposed.",
+     "Diagnosing whether piano action noise comes from mic placement or from the instrument itself."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

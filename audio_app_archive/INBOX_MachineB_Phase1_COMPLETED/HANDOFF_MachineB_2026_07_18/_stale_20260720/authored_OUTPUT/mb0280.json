@@ -1,0 +1,159 @@
+{
+ "batch": 280,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "7d0993c6-9afb-4b8a-98cc-7202336eb0fa",
+   "term": "Piano library",
+   "fields": {
+    "definition": "A curated collection of multisampled piano recordings — typically captured at many pitches and velocity layers, with released and pedal-resonance samples — packaged for playback in a sampler or dedicated virtual instrument.",
+    "plain_english": "A piano library is a big set of recordings made from a real piano. You load it into music software so your keyboard can sound like that piano.",
+    "purpose_function": "It lets a musician play a realistic acoustic or electric piano tone from a controller without a physical instrument, by mapping recorded notes across the keyboard. It exists because a single sampled note cannot capture the timbral changes across pitch and dynamics that real pianos produce.",
+    "practical_application": "A technician loads the library into a sampler, sets the disk-streaming and RAM options for the machine, and adjusts velocity mapping and pedal-resonance settings to fit the mix and CPU budget.",
+    "category": "Sampled instruments",
+    "related_terms": ["Multisample", "Velocity layer", "Sample library", "Round-robin", "Disk streaming", "Preload buffer"],
+    "common_mistakes": ["Assuming one recorded note can be stretched across the whole keyboard without audible artifacts, instead of using many sampled pitches", "Loading the full uncompressed library into RAM when disk streaming would use far less memory", "Ignoring velocity layers, so soft and loud playing sound identical"],
+    "scenario_contexts": ["Producing a pop ballad that needs a convincing acoustic grand piano part", "Scoring to picture where a live piano session is not budgeted", "Live performance using a MIDI controller and laptop instead of hauling a real piano"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Native Instruments Kontakt Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "87696b64-a201-4fa0-8b63-a1e37a262687",
+   "term": "Ping-pong loop",
+   "fields": {
+    "definition": "A sample loop mode that plays the looped region forward to its end, then backward to its start, alternating direction indefinitely (also called a bidirectional or alternating loop) rather than jumping straight back to the loop start.",
+    "plain_english": "A ping-pong loop plays a short sound forward, then backward, over and over. It bounces back and forth like a ball, so a held note can keep going smoothly.",
+    "purpose_function": "It sustains a sampled sound for as long as a key is held while avoiding the click or discontinuity that a forward-only loop can produce at its splice point. Reversing at each end can make the loop join smoother and reduce an obvious repeating pulse.",
+    "practical_application": "When editing a sustaining sample, a technician selects ping-pong (bidirectional) loop mode in the sampler and sets loop start and end points at zero crossings so the direction changes are seamless.",
+    "category": "Sample looping",
+    "related_terms": ["Sustain loop", "Loop point", "Zero crossing", "Crossfade loop", "Forward loop", "Sample editor"],
+    "common_mistakes": ["Confusing ping-pong looping with a ping-pong (stereo) delay effect, which is unrelated", "Setting loop points off a zero crossing, causing clicks at each direction change", "Using it on a sound with strong transients, where the reversed pass sounds unnatural"],
+    "scenario_contexts": ["Building a smooth sustaining pad from a short recorded sample", "Repairing a looped instrument sample that clicks with a forward-only loop", "Creating an evolving texture where the back-and-forth motion is desirable"]
+   },
+   "sources": ["Steinberg HALion User Manual", "Roland Sampler Owner's Manual (loop modes)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8953e4c5-8313-4da1-b9bf-b42b5bab6f21",
+   "term": "Pitch-shift sampling",
+   "fields": {
+    "definition": "A sampling technique in which a single recorded sample is played back faster or slower to sound higher or lower in pitch, transposing it across a range of notes rather than recording every note individually.",
+    "plain_english": "This is a trick where one recorded note is sped up or slowed down to make other notes. Playing it faster makes it higher, and slower makes it lower.",
+    "purpose_function": "It lets a sampler cover a full keyboard from only a few recordings, saving memory and recording effort. It exists because early samplers had limited memory, and it remains useful for spreading any sample across pitches.",
+    "practical_application": "A technician assigns a sample to a key zone and lets the sampler transpose it for nearby keys, adding more sample zones when the shifted tone strays too far and starts to sound unnatural.",
+    "category": "Sampling technique",
+    "related_terms": ["Multisample", "Key zone", "Transposition", "Mickey Mouse effect", "Root key", "Time stretching"],
+    "common_mistakes": ["Stretching one sample too far, producing the sped-up 'chipmunk' sound because playback speed and pitch change together", "Confusing simple pitch-shift sampling with formant-corrected pitch shifting, which preserves timbre", "Forgetting to set the correct root key, so notes play at the wrong pitch"],
+    "scenario_contexts": ["Mapping a single instrument recording across a keyboard to save memory", "Detuning a drum hit up or down for variation", "Building a quick playable instrument from one field recording"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1086b2e4-fb23-454e-bc0c-6e3d6d2b263e",
+   "term": "Pizzicato sample",
+   "fields": {
+    "definition": "A recorded sample of a string instrument note produced by plucking the string with a finger (pizzicato articulation) rather than bowing it, giving a short, percussive, quickly decaying tone.",
+    "plain_english": "A pizzicato sample is a recording of a string being plucked with a finger instead of bowed. It gives a short, punchy note like a plucked guitar string.",
+    "purpose_function": "It provides the plucked articulation of orchestral strings within a sampled string library so composers can switch between bowed and plucked playing. It exists because pizzicato has a distinct attack and decay that a bowed sample cannot imitate.",
+    "practical_application": "A technician selects the pizzicato articulation via a keyswitch or separate patch in a string library, then tightens note timing since the short attack exposes any looseness.",
+    "category": "Sampled instruments",
+    "related_terms": ["Articulation", "Keyswitch", "Sample library", "Velocity layer", "Legato", "Round-robin"],
+    "common_mistakes": ["Using bowed (arco) samples where pizzicato is written, losing the plucked attack", "Adding long reverb tails that blur the short, defined pizzicato notes", "Ignoring round-robin variations, so repeated plucks sound mechanically identical"],
+    "scenario_contexts": ["Scoring a light, plucked string passage for film or games", "Layering pizzicato strings under a rhythmic pop arrangement", "Switching mid-phrase from bowed to plucked strings via a keyswitch"]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Spitfire Audio / orchestral sample library technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c3d7f6e6-94b9-41df-a545-b0e6d77a0e82",
+   "term": "Polyphony limit",
+   "fields": {
+    "definition": "The maximum number of voices (simultaneous notes or sample playbacks) a sampler or synthesizer can sound at once, set by its hardware or software voice allocation; requests beyond this cap trigger voice stealing.",
+    "plain_english": "The polyphony limit is the largest number of notes a sampler can play at the same time. Go past it and the oldest notes get cut off to make room.",
+    "purpose_function": "It bounds the processing and memory the instrument must devote to active voices, keeping playback stable. It exists because every sounding voice consumes CPU and RAM, which are finite.",
+    "practical_application": "A technician raises or lowers the voice limit to balance rich sustained playing against CPU load, watching for dropped notes and increasing the cap or freezing tracks when voice stealing becomes audible.",
+    "category": "Voice management",
+    "related_terms": ["Voice stealing", "Monophonic", "Sustain pedal", "Sample streaming", "CPU load", "Note priority"],
+    "common_mistakes": ["Blaming a bad recording for notes that cut off, when the polyphony limit is causing voice stealing", "Forgetting that a held sustain pedal keeps voices alive and quickly exhausts the limit", "Setting the limit needlessly high and overloading the CPU"],
+    "scenario_contexts": ["Playing dense sustained piano passages with the sustain pedal down", "Layering several sampled instruments in one project and running out of voices", "Optimizing an older hardware sampler with a low fixed voice count"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Native Instruments Kontakt Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ae29d43b-1477-4f15-9281-66f5df466a12",
+   "term": "Preload buffer",
+   "fields": {
+    "definition": "In a disk-streaming sampler, the initial portion of each sample held in RAM so a note can start instantly while the remainder is streamed from disk; its size trades memory use against reliable streaming under load.",
+    "plain_english": "A preload buffer is a small first piece of each sound kept ready in memory. It lets a note start right away while the rest is read from the drive.",
+    "purpose_function": "It hides the delay of reading from storage so notes begin without lag, letting large libraries play from disk instead of loading fully into RAM. It exists because disk access is too slow to fetch a sample's start on demand.",
+    "practical_application": "A technician tunes the preload buffer size for the drive and project — larger for slow drives or high voice counts to prevent dropouts, smaller to save RAM when memory is tight.",
+    "category": "Sample streaming",
+    "related_terms": ["Disk streaming", "Sample library", "Latency", "Buffer size", "Voice stealing", "RAM"],
+    "common_mistakes": ["Setting the preload buffer too small on a slow drive, causing audible dropouts or clicks at note starts", "Making it needlessly large and wasting RAM that other instruments need", "Confusing the sample preload buffer with the audio interface's I/O buffer, which controls monitoring latency"],
+    "scenario_contexts": ["Streaming a large orchestral library from an SSD in a big session", "Troubleshooting note-start dropouts on a mechanical hard drive", "Balancing RAM between many streamed instruments in one project"]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Steinberg HALion User Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6f8579b7-f939-42bb-9026-a82f6204c9d4",
+   "term": "Real-time sampling",
+   "fields": {
+    "definition": "Recording audio into a sampler and making it immediately available for triggered playback, so a sound can be captured and performed with little or no processing delay, as opposed to pre-loading edited samples in advance.",
+    "plain_english": "Real-time sampling means recording a sound and playing it back almost instantly. You can grab a sound and jam with it right away.",
+    "purpose_function": "It lets a performer capture a source on the spot and play it across the keys during a session or show. It exists to support live remixing, beat-making, and improvisation where waiting to edit a sample is impractical.",
+    "practical_application": "A technician arms the sampler's input, captures a phrase or hit from a mic or line source, and immediately triggers it from pads or keys, trimming start and end points on the fly.",
+    "category": "Sampling technique",
+    "related_terms": ["Sampler", "Input monitoring", "Latency", "Trigger", "Loop point", "Quantization"],
+    "common_mistakes": ["Setting record levels too high and clipping the captured sample", "Overlooking input latency, so the captured sound sits slightly off the beat", "Not trimming the sample start, leaving a gap before the sound triggers"],
+    "scenario_contexts": ["A live performer sampling a vocal phrase and replaying it during the set", "Beat-making by grabbing a drum hit and mapping it to pads immediately", "Capturing a found sound in the field and playing it back on the spot"]
+   },
+   "sources": ["Akai MPC Operator's Manual", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "450ae690-1fce-405f-9789-41219dc12b2c",
+   "term": "Retriggered oscillator",
+   "fields": {
+    "definition": "An oscillator whose waveform phase is reset to a defined start point each time a new note is triggered, so every note begins at the same point in the cycle rather than at a free-running phase.",
+    "plain_english": "A retriggered oscillator starts its wave over from the beginning each time you press a key. This makes every note begin the same way, so notes sound even.",
+    "purpose_function": "Resetting phase on each note keeps attacks consistent and predictable, which matters for punchy transients and for keeping layered or stacked oscillators in phase. It exists because a free-running oscillator would start each note at a random phase, varying the attack.",
+    "practical_application": "A technician enables oscillator retrigger (key sync) when consistent, punchy note starts are needed, and disables it for a looser, more analog-sounding attack that varies note to note.",
+    "category": "Synthesis",
+    "related_terms": ["Oscillator", "Phase", "Free-running oscillator", "Envelope", "LFO retrigger", "Waveform"],
+    "common_mistakes": ["Confusing oscillator retrigger with envelope or LFO retrigger, which reset different parts of the voice", "Expecting perfectly consistent attacks with retrigger off, when free-running phase varies each note", "Leaving retrigger on when a subtly varying, more organic attack is wanted"],
+    "scenario_contexts": ["Programming a tight bass patch that needs identical, punchy note attacks", "Phase-aligning stacked oscillators so they reinforce rather than cancel", "Designing a plucky lead where every note must start the same way"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Steinberg HALion User Manual (oscillator/retrigger)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d8c8ccb0-484d-48c7-9356-60100742f223",
+   "term": "Sample archive",
+   "fields": {
+    "definition": "An organized, stored collection of audio samples kept for backup and reuse, typically catalogued with folder structure, naming, and metadata so individual sounds can be located and recalled later.",
+    "plain_english": "A sample archive is an organized store of your saved sound files. It works like a labeled filing cabinet so you can find and reuse sounds later.",
+    "purpose_function": "It preserves recorded and collected sounds against loss and makes them easy to search and reload into future projects. It exists because unmanaged sample files quickly become too many to find without a system.",
+    "practical_application": "A technician maintains an archive on a backed-up drive with consistent naming and tags, so a needed sound can be retrieved and dropped into a sampler without re-recording it.",
+    "category": "Sample management",
+    "related_terms": ["Sample library", "Metadata", "Backup", "File naming", "Sample rate", "Disk streaming"],
+    "common_mistakes": ["Keeping a single unbacked-up copy, risking total loss if the drive fails", "Using inconsistent or vague file names, making sounds impossible to find later", "Confusing an organized archive with a working library that is actively streamed during playback"],
+    "scenario_contexts": ["Backing up a studio's accumulated sound-design recordings", "Cataloguing field recordings so they can be searched by tag", "Recalling an old project's custom samples for a remix"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "AES technical documentation on audio file management and metadata"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

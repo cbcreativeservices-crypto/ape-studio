@@ -1,0 +1,80 @@
+{
+ "batch": 261,
+ "topic": "Production Sound & Field Recording",
+ "authored": [
+  {
+   "id": "6116fafa-872e-4e56-a7f7-3706c7d2f202",
+   "term": "Field Sound-Effects Recording",
+   "fields": {
+    "definition": "The practice of capturing real-world sounds on location with portable recording equipment so they can be used as sound effects in film, television, games, and other media. It covers specific effects such as vehicles, doors, footsteps, and weather, as well as backgrounds and ambiences gathered away from the studio.",
+    "plain_english": "It means going out to record real sounds where they happen, like traffic, rain, or a slamming door. A sound person captures them on a portable recorder so editors can add them to a film or game later.",
+    "purpose_function": "It builds a library of authentic, high-quality sounds that are hard to fake in a studio, giving sound editors and designers real material to enhance or replace the audio heard on screen.",
+    "practical_application": "A recordist brings a portable recorder with a shotgun or stereo microphone to a location, captures several clean takes of each sound away from unwanted noise, monitors on headphones, and logs metadata so the files can be found and edited in post.",
+    "category": "Field Recording",
+    "related_terms": [
+     "Wild sound",
+     "Room tone",
+     "Ambience",
+     "Foley",
+     "Shotgun microphone",
+     "Sound library"
+    ],
+    "common_mistakes": [
+     "Recording only one short take instead of several long, usable takes of each sound.",
+     "Skipping metadata (location, mic, notes), which makes sounds hard to find and edit later.",
+     "Letting wind, handling noise, or distant traffic ruin takes by not using a windscreen or not monitoring on headphones.",
+     "Setting record levels too hot and clipping, which cannot be repaired afterward."
+    ],
+    "scenario_contexts": [
+     "A sound recordist spends a day capturing city ambiences and passing vehicles to build a stock library.",
+     "A game audio designer records door slams, gravel footsteps, and metal impacts on location for a sound-effects library.",
+     "A documentary team records regional wildlife and weather to layer under edited scenes in post-production."
+    ]
+   },
+   "sources": [
+    "David Lewis Yewdall, The Practical Art of Motion Picture Sound",
+    "Ric Viers, The Sound Effects Bible",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "418079a9-4dd6-4cc2-a93c-4ff32dd12f18",
+   "term": "Near-field mixing room",
+   "fields": {
+    "definition": "A mixing space set up around near-field monitors, small loudspeakers placed close to the engineer (typically about 1 to 1.5 m, forming an equilateral triangle with the head) so the direct sound dominates and the effect of room reflections and acoustics is reduced.",
+    "plain_english": "It is a mixing room where the speakers sit close to you, about an arm's reach away. Because you hear the speakers directly, the room's echoes matter less, so a good mix should still sound right on other systems.",
+    "purpose_function": "Placing the monitors close lets the engineer hear mostly the direct sound from the speakers rather than the room, giving a more consistent, portable reference for judging balance, tone, and level.",
+    "practical_application": "An engineer sets two near-field monitors an equal distance from each ear at ear height, angles them inward toward the listening spot, and mixes at moderate levels to make decisions that carry over to other playback systems.",
+    "category": "Monitoring",
+    "related_terms": [
+     "Near-field monitor",
+     "Control room",
+     "Monitor placement",
+     "Room acoustics",
+     "Reference monitor",
+     "Far-field monitor"
+    ],
+    "common_mistakes": [
+     "Sitting too close or too far so the monitors are not an equal distance from each ear, smearing the stereo image.",
+     "Assuming near-field placement removes any need for room treatment, when early reflections off the desk and walls still color the sound.",
+     "Judging tone at very high levels, which tires the ears and skews decisions.",
+     "UNSAFE: Prolonged mixing at high monitoring levels can cause permanent hearing damage; keep levels moderate and take regular breaks."
+    ],
+    "scenario_contexts": [
+     "A project studio uses near-field monitors on stands behind the console to mix in a room that is only lightly treated.",
+     "A mixing engineer checks a mix on near-fields for balance before referencing it on headphones and consumer speakers.",
+     "A mobile recording rig relies on near-field monitors in an untreated location room to make monitoring decisions on set."
+    ]
+   },
+   "sources": [
+    "Glen Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,322 @@
+{
+ "batch": 231,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "5342c78a-95dd-42c9-aa10-55f0aae924d9",
+   "term": "Heel strike",
+   "fields": {
+    "definition": "In Foley footstep performance, the heel strike is the initial contact of the shoe's heel with the surface at the start of a footfall, producing the first sharp transient before the weight rolls through to the ball and toe.",
+    "plain_english": "A heel strike is the first tap of a footstep, when the back of the shoe hits the ground. Foley artists make this sound by hand so people walking on screen sound real.",
+    "purpose_function": "It gives each footstep a defined attack and a sense of weight and gait, letting synced footsteps read as convincing, grounded human movement.",
+    "practical_application": "The Foley walker performs heel-then-toe against picture on a matched surface, emphasizing or softening the heel strike to fit the character's pace, weight, and footwear.",
+    "category": "Foley",
+    "related_terms": [
+     "High-heel Foley",
+     "Footsteps",
+     "Foley pit",
+     "Heel-toe technique",
+     "Sync point",
+     "Surfaces"
+    ],
+    "common_mistakes": [
+     "Landing flat-footed so steps lack the natural heel transient and sound artificial.",
+     "Ignoring the actor's gait and weight, so footsteps fall out of sync or feel mismatched.",
+     "Using the wrong surface, so the heel strike does not match the floor seen on screen."
+    ],
+    "scenario_contexts": [
+     "Footstepping a character walking across a hardwood floor.",
+     "Matching a heavy villain's slow, weighty heel strikes.",
+     "Replacing noisy production footsteps in a dialogue scene."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, The Foley Grail",
+    "David Lewis Yewdall, Practical Art of Motion Picture Sound",
+    "Sound on Sound (Foley footstep technique)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "88549e04-2e0f-454d-908f-db66ec09ee40",
+   "term": "High-heel Foley",
+   "fields": {
+    "definition": "High-heel Foley is the performance and recording of footsteps for characters wearing high-heeled shoes, capturing the distinctive sharp, hard-heeled click and the narrow heel contact against each surface.",
+    "plain_english": "This is Foley made with high-heeled shoes to match an actor wearing heels. The artist walks in heels on the right floor so each sharp click lines up with the picture.",
+    "purpose_function": "It supplies footstep sounds that match on-screen heeled footwear, conveying the character, poise, and pace that generic footsteps cannot.",
+    "practical_application": "The Foley artist wears or hand-operates real heels, walking in sync on matched surfaces and adjusting pace and pressure to fit the actor's movement and mood.",
+    "category": "Foley",
+    "related_terms": [
+     "Heel strike",
+     "Footsteps",
+     "Foley pit",
+     "Surfaces",
+     "Sync point",
+     "Props"
+    ],
+    "common_mistakes": [
+     "Using flat-shoe footsteps for a heeled character, losing the characteristic sharp click.",
+     "Not matching the surface, so the heel tone is wrong for the floor on screen.",
+     "Overplaying the clicks so they distract from the dialogue."
+    ],
+    "scenario_contexts": [
+     "Footstepping an actress crossing a marble lobby in heels.",
+     "Adding tension to a slow, deliberate walk down a corridor.",
+     "Replacing heel footsteps lost under location noise."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, The Foley Grail",
+    "Sound on Sound (Foley footstep technique)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a58e251e-1ab0-4ef0-9b81-f8056e77758e",
+   "term": "Hit point",
+   "fields": {
+    "definition": "A hit point (also called a sync point or catch point) is a specific moment in the picture where the music or a sound effect is deliberately aligned to coincide with an on-screen action or dramatic accent.",
+    "plain_english": "A hit point is a moment where the music must land exactly with something on screen. Think of a punch or a door slam. Composers mark these spots so the music hits them right on time.",
+    "purpose_function": "It anchors the score or effect to the image, reinforcing key story beats and making the audio feel purpose-built for the scene.",
+    "practical_application": "During spotting, the composer or editor logs hit points as timecoded markers, then shapes tempo maps or edits so downbeats and accents fall exactly on those frames.",
+    "category": "Synchronization",
+    "related_terms": [
+     "Spotting session",
+     "Sync point",
+     "Timecode",
+     "Marker",
+     "Mickey-mousing",
+     "Tempo map"
+    ],
+    "common_mistakes": [
+     "Confusing a hit point with a general scene marker; a hit point specifically calls for musical or sound emphasis.",
+     "Placing hits by ear without locking markers to timecode, so they drift when the tempo changes.",
+     "Over-hitting every action (excessive Mickey-mousing), which makes the score feel cartoonish."
+    ],
+    "scenario_contexts": [
+     "Aligning an orchestral accent to a sword strike in an action scene.",
+     "Marking the frame where a title card appears so the cue swells to it.",
+     "Syncing a low boom to a hard cut in a trailer."
+    ]
+   },
+   "sources": [
+    "Karlin & Wright, On the Track: A Guide to Contemporary Film Scoring",
+    "Sound on Sound (Media Composers / scoring to picture)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b2a657c5-2321-42e2-909a-73ac42585f29",
+   "term": "Hybrid layering",
+   "fields": {
+    "definition": "Hybrid layering is the technique of stacking organic recorded elements with synthesized or heavily processed elements into a single composite sound, blending real-world detail with designed weight or character.",
+    "plain_english": "Hybrid layering means stacking real recorded sounds with computer-made sounds to build one bigger sound. It is like mixing a real drum hit with a synth boom to make it feel huge.",
+    "purpose_function": "It lets a sound designer combine the realism of recordings with the size and tone of synthesis, producing sounds that are both believable and larger than life.",
+    "practical_application": "A designer might layer a recorded metal clang with a synth sub and a processed whoosh, tuning each layer's level and timing so they fuse into one convincing hit.",
+    "category": "Sound design",
+    "related_terms": [
+     "Hybrid sound design",
+     "Layering",
+     "Sweetener",
+     "Sub drop",
+     "Impact tail",
+     "Transient"
+    ],
+    "common_mistakes": [
+     "Stacking so many layers that the result turns muddy instead of powerful.",
+     "Not time-aligning the layers, so the transients smear.",
+     "Relying only on synth layers and losing believable organic detail."
+    ],
+    "scenario_contexts": [
+     "Building a sci-fi weapon by layering real recordings with synth tones.",
+     "Reinforcing a punch with a recorded impact plus a low synth body.",
+     "Designing a creature vocal from animal recordings and processed synth."
+    ]
+   },
+   "sources": [
+    "David Sonnenschein, Sound Design",
+    "Ric Viers, The Sound Effects Bible"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "795e9368-267a-4d81-9969-75d798da9d6a",
+   "term": "Hybrid sound design",
+   "fields": {
+    "definition": "Hybrid sound design is an approach that combines recorded, real-world sources with synthesized and processed sound, drawing on both to create effects that feel grounded yet stylized or otherworldly.",
+    "plain_english": "Hybrid sound design blends real recorded sounds with synth and computer sounds. Using both gives sounds that feel real but also bigger and stranger than life.",
+    "purpose_function": "It exists to give designers the authenticity of field recordings together with the control and impossibility of synthesis, for modern film, game, and trailer sound.",
+    "practical_application": "A sound designer records real materials, then augments or reshapes them with synthesizers and plug-ins, layering and processing until the effect suits the picture.",
+    "category": "Sound design",
+    "related_terms": [
+     "Hybrid layering",
+     "Sound design",
+     "Foley",
+     "Synthesis",
+     "Field recording",
+     "Sweetener"
+    ],
+    "common_mistakes": [
+     "Treating 'hybrid' as purely synthetic and dropping all organic recordings.",
+     "Over-processing until the sound loses any real-world reference.",
+     "Ignoring the picture's tone, so stylized design fights a realistic scene."
+    ],
+    "scenario_contexts": [
+     "Designing the sound world of a science-fiction film.",
+     "Creating a game's magic and weapon effects.",
+     "Building a movie trailer's impacts and risers."
+    ]
+   },
+   "sources": [
+    "David Sonnenschein, Sound Design",
+    "Ric Viers, The Sound Effects Bible",
+    "Sound on Sound (sound design techniques)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "192d3010-3e80-4ebb-9e74-0b5a6925b8f0",
+   "term": "Hyper-real Foley",
+   "fields": {
+    "definition": "Hyper-real Foley is Foley performed and processed to be more detailed, present, and impactful than the action would sound in reality, heightening everyday movements for dramatic effect.",
+    "plain_english": "Hyper-real Foley makes everyday sounds bigger and clearer than they really are. A punch or a footstep is boosted so it feels more exciting than in real life.",
+    "purpose_function": "It amplifies the emotional and physical presence of on-screen actions, drawing the audience's attention and giving scenes a heightened, cinematic feel.",
+    "practical_application": "The Foley artist and mixer exaggerate cloth, footsteps, and prop handling, performing bigger and adding EQ, layering, or processing so ordinary movements feel vivid and intense.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Heel strike",
+     "Sweetener",
+     "Sound design",
+     "Hybrid layering",
+     "Cloth pass"
+    ],
+    "common_mistakes": [
+     "Pushing effects so far they break believability and pull viewers out of the scene.",
+     "Applying hyper-real treatment everywhere instead of only where the story needs emphasis.",
+     "Letting exaggerated Foley mask or fight the dialogue."
+    ],
+    "scenario_contexts": [
+     "Heightening every movement in a tense action or horror beat.",
+     "Making a superhero's punches and landings feel powerful.",
+     "Emphasizing a character's handling of a key prop."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, The Foley Grail",
+    "David Sonnenschein, Sound Design"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "78b06fdb-fb22-43e6-b1bf-396c6d7ec73e",
+   "term": "Immersive-audio mixing room",
+   "fields": {
+    "definition": "An immersive-audio mixing room is a control room designed and calibrated for object- and channel-based immersive formats such as Dolby Atmos, using a bed of ear-level surround speakers plus overhead height speakers (commonly a 7.1.4 layout) and a renderer so sounds can be placed anywhere in three-dimensional space.",
+    "plain_english": "This is a mix room with speakers all around you and even above your head. The mixer can place each sound in the space so it seems to come from any side, as in Dolby Atmos films.",
+    "purpose_function": "It provides an accurate, standards-calibrated environment for monitoring and mixing height-inclusive immersive audio, so the mix translates to cinema and consumer immersive playback.",
+    "practical_application": "Re-recording mixers work here with a Dolby Atmos renderer, panning objects around and overhead, checking bed and object levels, and confirming the mix folds down correctly to 5.1 and stereo.",
+    "category": "Immersive mixing",
+    "related_terms": [
+     "Dolby Atmos",
+     "Bed",
+     "Object-based audio",
+     "Height channels",
+     "LFE",
+     "Renderer"
+    ],
+    "common_mistakes": [
+     "Assuming any 5.1 room can mix Atmos without adding calibrated height speakers.",
+     "Neglecting bass management and time-alignment across the added overhead speakers.",
+     "Mixing only for the immersive format and never checking the stereo and 5.1 fold-down deliverables."
+    ],
+    "scenario_contexts": [
+     "Mixing a feature's Dolby Atmos theatrical deliverable.",
+     "Creating a 7.1.4 near-field immersive music mix.",
+     "Rendering and QC-ing an Atmos master plus its binaural and 5.1 re-renders."
+    ]
+   },
+   "sources": [
+    "Dolby Atmos studio / renderer technical documentation",
+    "Sound on Sound, Setting Up an Atmos Mixing Room"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "03d52bdc-e0fd-4487-9eee-cd697d3c7de0",
+   "term": "Impact system",
+   "fields": {
+    "definition": "A game-audio system that generates collision and impact sounds at runtime by taking physics data — such as material type, velocity and mass — and selecting or shaping the appropriate hit, thud or crash.",
+    "plain_english": "It is a set-up that makes crash and bump sounds by itself when things collide in a game. It picks the right sound based on what hit what and how hard.",
+    "purpose_function": "It exists so that unpredictable, physics-driven collisions still produce believable, varied impact sounds without a sound designer hand-placing every hit.",
+    "practical_application": "An implementer connects the physics engine's collision events to sound containers keyed by material and velocity, so a light tap and a heavy crash draw from different samples.",
+    "category": "Interactive Audio",
+    "related_terms": [
+     "Physics-driven sound",
+     "Impact tail",
+     "Parameter-driven audio",
+     "Positional audio",
+     "Procedural ambience"
+    ],
+    "common_mistakes": [
+     "Triggering one impact sound regardless of velocity, so gentle and violent hits sound identical.",
+     "Not limiting simultaneous impacts, so a pile-up of collisions creates a harsh, distorted burst.",
+     "Ignoring material data, so a metal-on-stone hit plays a wood sound."
+    ],
+    "scenario_contexts": [
+     "Generating debris and impact sounds as a physics-driven structure collapses.",
+     "Playing correct hit sounds when objects of different materials collide in a sandbox game.",
+     "Scaling impact loudness with collision force in a racing or combat title."
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise documentation — containers and event triggering; Firelight FMOD Studio documentation",
+    "Richard Stevens & Dave Raybould, Game Audio Implementation (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7a7c010b-ecb2-4744-ae0d-01b3d3720aee",
+   "term": "Impact tail",
+   "fields": {
+    "definition": "An impact tail is the resonant decay — the ring, rumble, or reverberant wash — that follows the sharp transient of an impact or hit, sustaining and coloring the sound after its initial strike.",
+    "plain_english": "An impact tail is the ring or rumble that keeps going right after a big hit. Like the boom fading away after a heavy door slam, it makes the hit feel powerful.",
+    "purpose_function": "It gives an impact its sense of size, space, and power, letting a brief hit feel weighty and keep resonating rather than stopping abruptly.",
+    "practical_application": "A designer shapes the impact tail with reverb, pitch, and layered sub or debris elements, then edits its length so hits sit correctly against picture and do not clutter the mix.",
+    "category": "Sound design",
+    "related_terms": [
+     "Reverb tail",
+     "Sub drop",
+     "Layering",
+     "Transient",
+     "Whoosh",
+     "Hybrid layering"
+    ],
+    "common_mistakes": [
+     "Cutting the tail too short, so the hit feels small and abrupt.",
+     "Letting tails overlap and pile up until the low end turns muddy.",
+     "Adding so much reverb tail that the transient loses its punch."
+    ],
+    "scenario_contexts": [
+     "Designing a cinematic trailer impact with a long sub tail.",
+     "Adding a resonant tail to a door slam in a large room.",
+     "Shaping the decay of an explosion hit to match the cut."
+    ]
+   },
+   "sources": [
+    "Ric Viers, The Sound Effects Bible",
+    "David Sonnenschein, Sound Design"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

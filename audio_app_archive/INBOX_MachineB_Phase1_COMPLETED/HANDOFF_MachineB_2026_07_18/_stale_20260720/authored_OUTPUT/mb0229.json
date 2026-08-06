@@ -1,0 +1,159 @@
+{
+ "batch": 229,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "5e22c4a2-f1a3-4666-818e-66aecd0ae526",
+   "term": "Game-audio engine",
+   "fields": {
+    "definition": "The runtime software system in a video game that plays back, processes, and spatializes audio in response to game events, typically implemented with audio middleware such as Audiokinetic Wwise or FMOD. It manages voice allocation, real-time mixing, DSP, and 3D positioning during play, unlike a linear DAW timeline.",
+    "plain_english": "It is the part of a game that plays sound while you play. Instead of a fixed soundtrack, it picks and mixes sounds live as the game reacts to what you do.",
+    "purpose_function": "It exists to turn game events and player actions into sound in real time, managing which sounds play, how they mix, and where they sit in 3D space so audio stays interactive rather than pre-rendered.",
+    "practical_application": "A technician authors and tests audio behaviors inside the engine or its middleware, setting up events, buses, and DSP so assets trigger and mix correctly at runtime on each target platform.",
+    "category": "Game Audio",
+    "related_terms": ["Game-audio integrator", "Game-audio mixer", "Game-state parameter", "Gameplay audio", "Interactive audio"],
+    "common_mistakes": ["Confusing a game-audio engine with a DAW; the engine responds to live game events rather than playing a fixed timeline.", "Assuming the engine chooses sounds on its own; behaviors must be authored in the middleware first.", "Ignoring platform voice limits, which causes sounds to be cut off or dropped at runtime."],
+    "scenario_contexts": ["Setting up footstep sounds that change with the surface type during gameplay.", "Managing the number of simultaneous voices so a busy battle scene does not overload the CPU.", "Positioning a sound in 3D so it follows an on-screen character."]
+   },
+   "sources": ["Audiokinetic Wwise SDK Documentation", "FMOD Studio API Documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "016181fa-847a-4b31-b653-743b24427757",
+   "term": "Game-audio integrator",
+   "fields": {
+    "definition": "The practitioner who implements finished audio assets into a game's engine or middleware, building the events, parameters, and mix structures that determine how sound behaves in response to gameplay. The role bridges sound design and programming, focusing on runtime behavior rather than asset creation.",
+    "plain_english": "This is the person who puts the sound files into the game and sets the rules for when they play. They connect the sounds a designer made to the actions in the game.",
+    "purpose_function": "The role exists to translate creative audio content into working, interactive behavior, ensuring sounds trigger, mix, and adapt correctly as the game runs.",
+    "practical_application": "Working in tools like Wwise or FMOD, the integrator wires audio events to game calls, sets up parameters and mix buses, and tests that assets play back properly on each target platform.",
+    "category": "Game Audio",
+    "related_terms": ["Game-audio engine", "Game-audio mixer", "Game-state parameter", "Gameplay audio", "Interactive audio"],
+    "common_mistakes": ["Thinking the integrator creates the sounds; the role mainly implements assets others record or design.", "Leaving parameters untested, so audio behaves correctly in the tool but not in the running game.", "Forgetting platform memory and voice limits when integrating large sound sets."],
+    "scenario_contexts": ["Hooking up a weapon's fire, reload, and impact sounds to the correct game events.", "Building a music system that shifts intensity as combat starts and ends.", "Debugging why a sound plays in the editor but not in the shipped build."]
+   },
+   "sources": ["Audiokinetic Wwise SDK Documentation", "FMOD Studio API Documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a2e85104-1b0c-46e9-ac35-c3f8795dbaca",
+   "term": "Game-audio mixer",
+   "fields": {
+    "definition": "The practitioner responsible for balancing and mixing a game's audio, setting relative levels, dynamics, and spatial placement of dialogue, music, and effects within the engine or middleware so the mix holds together across unpredictable, interactive playback.",
+    "plain_english": "This is the person who balances all the sounds in a game so nothing is too loud or too quiet. Because players act in different ways, the mix has to sound good no matter what happens.",
+    "purpose_function": "The role exists to keep dialogue, music, and effects clear and well balanced during interactive play, where the exact combination of sounds is not known in advance.",
+    "practical_application": "Using bus structures, side-chaining, and dynamic mix states in middleware, the mixer sets levels and priorities so important sounds stay audible during both busy and quiet moments.",
+    "category": "Game Audio",
+    "related_terms": ["Game-audio engine", "Game-audio integrator", "Game-state parameter", "Gameplay audio", "Real-time mixing"],
+    "common_mistakes": ["Mixing for one playthrough only, so the balance breaks when players act differently.", "Overlooking dynamic range, leaving quiet detail lost or loud moments harsh.", "Not using priority or ducking, so critical dialogue gets buried under effects."],
+    "scenario_contexts": ["Ducking background music and ambience so mission dialogue stays clear.", "Setting voice priorities so key sounds survive when many effects play at once.", "Building a mix state that changes when the player opens a menu or pauses."]
+   },
+   "sources": ["Audiokinetic Wwise SDK Documentation", "FMOD Studio API Documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "81f6bf3e-8003-4a82-875c-96968d00ed12",
+   "term": "Game-state parameter",
+   "fields": {
+    "definition": "A continuously variable value exposed by the game to the audio system that reflects some aspect of game state — such as speed, health, or distance — and is mapped to audio properties in real time. In Wwise this is a Game Parameter driving an RTPC; in FMOD it is a parameter.",
+    "plain_english": "It is a number the game keeps updating, like speed or health, that the sound system watches. As that number changes, it changes the sound, such as making engine noise rise with speed.",
+    "purpose_function": "It exists to let audio respond smoothly and continuously to what is happening in the game, instead of only reacting to on/off events.",
+    "practical_application": "A technician maps a parameter such as vehicle RPM to pitch or volume so the sound tracks the value automatically as the player drives.",
+    "category": "Game Audio",
+    "related_terms": ["Game-audio engine", "Game-audio integrator", "Game-audio mixer", "Gameplay audio", "Interactive audio"],
+    "common_mistakes": ["Confusing a continuous parameter with a one-shot event trigger; the parameter changes sound gradually.", "Setting curves that jump, causing audible steps or zipper noise as the value moves.", "Not clamping the value range, so extreme game states push audio to unintended settings."],
+    "scenario_contexts": ["Raising engine pitch as a car's speed increases.", "Making music more tense as the player's health drops.", "Opening a low-pass filter as the player moves closer to a sound source."]
+   },
+   "sources": ["Audiokinetic Wwise SDK Documentation", "FMOD Studio API Documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ae7e20e8-b324-45a8-82af-29789be00b10",
+   "term": "Gameplay audio",
+   "fields": {
+    "definition": "The interactive audio heard during active play — sound effects, dialogue, music, and ambience triggered and mixed in real time by the game engine — as distinct from linear, pre-rendered material such as cinematics or trailers.",
+    "plain_english": "This is all the sound you hear while actually playing the game, made live as you play. It is different from the fixed sound in a cutscene or a movie clip.",
+    "purpose_function": "It exists to give the player continuous, responsive audio feedback tied to their actions and the game world, supporting immersion and conveying gameplay information.",
+    "practical_application": "Sound teams design and implement gameplay audio to react to events and parameters, testing it in the running game rather than on a fixed timeline.",
+    "category": "Game Audio",
+    "related_terms": ["Game-audio engine", "Gameplay sound effect", "Game-state parameter", "Game-audio mixer", "Interactive audio"],
+    "common_mistakes": ["Treating gameplay audio like a linear mix; it must work across many possible player actions.", "Forgetting that repeated sounds need variation to avoid obvious looping.", "Mixing gameplay audio without testing on the target platform's speakers or headphones."],
+    "scenario_contexts": ["Footsteps, gunfire, and ambience reacting live during a level.", "Interface sounds confirming a menu selection.", "Ambient audio shifting as the player moves between areas."]
+   },
+   "sources": ["Audiokinetic Wwise SDK Documentation", "FMOD Studio API Documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b6cba015-d0d2-432a-97e0-0bcdcf56e9fd",
+   "term": "Gameplay sound effect",
+   "fields": {
+    "definition": "A sound effect triggered by in-game actions or events during play — such as footsteps, weapon fire, item pickups, or impacts — implemented to fire and mix in real time rather than being fixed to a timeline.",
+    "plain_english": "This is a sound that plays because of something you do in the game, like a jump, a hit, or picking up an item. The game plays it right when the action happens.",
+    "purpose_function": "It exists to give immediate audio feedback for player and world actions, helping the player understand what is happening and making the world feel responsive.",
+    "practical_application": "A technician links each effect to its game event and adds variation so it stays convincing when it plays many times.",
+    "category": "Game Audio",
+    "related_terms": ["Gameplay audio", "Game-audio engine", "Game-state parameter", "Game-audio integrator", "Foley"],
+    "common_mistakes": ["Using one identical sample every time, which sounds fake after a few plays.", "Forgetting to limit how many copies can play at once, causing a harsh pile-up.", "Setting the effect too loud relative to dialogue and music."],
+    "scenario_contexts": ["A coin pickup sound firing each time an item is collected.", "A footstep effect changing with the surface underfoot.", "An impact sound playing when a projectile hits a wall."]
+   },
+   "sources": ["Audiokinetic Wwise SDK Documentation", "FMOD Studio API Documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "12581676-9ae7-413c-b530-a0e36a147aa1",
+   "term": "Gender matching",
+   "fields": {
+    "definition": "Ensuring that two mating audio or data connectors have opposite, compatible genders — a male (pin/plug) end joining a female (socket/receptacle) end. Where both ends share the same gender, a gender changer (a same-to-opposite adapter) is used to complete the connection.",
+    "plain_english": "Plugs come in two types, often called male and female, and they only join if they are opposite. Gender matching just means checking that a plug and its socket fit together, and using a small adapter if they do not.",
+    "purpose_function": "It exists to make sure cables and gear actually connect, since two same-gender ends cannot mate; matching genders keeps signal paths complete and reliable.",
+    "practical_application": "When patching or building cables, a technician checks connector gender at each end and keeps gender changers on hand to bridge two same-gender connectors in the field.",
+    "category": "Connectors",
+    "related_terms": ["XLR connector", "Gender changer", "Adapter", "Patch cable", "Connector"],
+    "common_mistakes": ["Assuming any two connectors will join; two male or two female ends will not mate.", "Confusing gender with connector type; an XLR and a TRS differ in type as well as gender.", "Forcing mismatched connectors, which can bend pins or damage the receptacle."],
+    "scenario_contexts": ["Joining two male-ended cables using a female-to-female gender changer.", "Checking whether a device's rear panel needs a male or female cable end.", "Assembling a custom cable and choosing the correct connector gender for each end."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Neutrik connector technical datasheets"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6a9102d1-ff45-4d0b-abc4-00c370e8d1c8",
+   "term": "Glass handling",
+   "fields": {
+    "definition": "In Foley and sound-effects work, the recorded sound of glass objects being handled — picked up, set down, clinked, or slid — performed to match on-screen action. It falls under the handling (prop) category of Foley, alongside footsteps and cloth moves.",
+    "plain_english": "This is the Foley sound of glass being picked up, set down, or clinked, recorded to match what you see on screen. A Foley artist makes it by handling real glass in time with the picture.",
+    "purpose_function": "It exists to add believable, synced sound for glass props that a scene needs but that the production recording did not capture cleanly.",
+    "practical_application": "A Foley artist performs glass handling to picture on a Foley stage, and the editor syncs and mixes it into the effects stems.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Handling noise", "Sound effects editing", "Foley stage", "Effects stem"],
+    "common_mistakes": ["Recording glass handling out of sync with the on-screen movement.", "Using the wrong type of glass, so the sound does not match the object shown.", "UNSAFE: Handling or breaking glass without eye protection and cut-resistant gloves risks injury from shards."],
+    "scenario_contexts": ["Adding the clink of a glass being set on a table in a dialogue scene.", "Replacing the sound of a character picking up a bottle.", "Building a layered sound for a hand sliding across a glass surface."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Ament, The Foley Grail", "OSHA 29 CFR 1910 Subpart I (PPE)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c659712b-241c-48e5-882f-8763a503b01b",
+   "term": "Granular processing",
+   "fields": {
+    "definition": "A sound-processing technique that breaks audio into very short segments called grains (typically about 1 to 100 ms) and recombines them — reordering, layering, repitching, or respacing them — to transform the sound. It underlies granular synthesis and effects such as time-stretching, texture generation, and pitch shifting.",
+    "plain_english": "This chops a sound into tiny pieces, then plays them back in new ways to change how it sounds. It is a bit like cutting a recording into thousands of little bits and rearranging them into clouds of sound.",
+    "purpose_function": "It exists to let a sound designer stretch, freeze, blur, or completely reshape a sound independently of its original speed and pitch.",
+    "practical_application": "A technician uses a granular plug-in or synth to time-stretch dialogue, build evolving textures, or turn a short sample into a long ambient pad.",
+    "category": "Signal Processing",
+    "related_terms": ["Granular synthesis", "Time-stretching", "Pitch shifting", "Sound design", "Sampler"],
+    "common_mistakes": ["Confusing grain size with pitch; grain length changes texture, not the note.", "Setting grains too short or too regular, which adds buzzy or metallic artifacts.", "Expecting clean results on transient-rich material without adjusting grain overlap."],
+    "scenario_contexts": ["Stretching a two-second sample into a minute-long drone.", "Creating a shifting ambient texture from a single recorded note.", "Time-stretching production dialogue to fit a re-timed picture."]
+   },
+   "sources": ["Roads, Microsound", "Roads, The Computer Music Tutorial"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

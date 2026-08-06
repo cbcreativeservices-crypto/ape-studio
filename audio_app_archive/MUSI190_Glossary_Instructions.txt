@@ -1,0 +1,281 @@
+================================================================================
+MUSI 190 INTERACTIVE GLOSSARY REVIEW TOOL
+Quick Reference Guide for Adjunct Instructors
+================================================================================
+
+FILE INFORMATION:
+- Filename: MUSI190_Glossary_Review_Tool.html
+- Size: 54.2 KB
+- Total terms: 239 (all loaded from course Excel file)
+- No setup required—just open the file in your web browser
+
+================================================================================
+GETTING STARTED
+================================================================================
+
+1. OPENING THE FILE:
+   • Double-click the .html file, OR
+   • Right-click → Open With → Your preferred web browser (Chrome, Firefox, Safari, Edge)
+   • The tool works completely offline—no internet connection required
+   • Best viewed on desktop/laptop, but also works on tablets and phones
+
+2. YOUR FIRST REVIEW:
+   • All 239 music terminology terms are already loaded with definitions
+   • Scroll through the glossary to review terms
+   • You'll see each term in large text with its definition below in a gray box
+
+================================================================================
+HOW TO ADD FEEDBACK
+================================================================================
+
+For Each Term:
+1. Find the "Instructor Feedback" box below the definition
+2. Click in the text area (it says "Add feedback here (optional)")
+3. Type your comments, such as:
+   - "Definition needs clarification on..."
+   - "Suggest rewording to: ..."
+   - "This term overlaps with [other term]"
+   - "Add example: ..."
+   - Any other suggestions or corrections
+
+What Happens:
+✓ Your comment automatically saves as you type (watch for "Saved ✓" indicator)
+✓ The term card gets a purple accent bar on the left when you add a comment
+✓ Comments are stored in your browser's local memory—they persist even if
+  you close the page and return later
+
+================================================================================
+SEARCHING & FILTERING
+================================================================================
+
+Use the Search Box (top right):
+• Type any keyword to filter terms
+• Search works for both term names AND definitions
+• Matching terms appear instantly
+• Click the X or clear the box to see all terms again
+
+Example searches:
+- "frequency" → Shows all terms with "frequency" in name or definition
+- "microphone" → Shows microphone-related terms
+- "mix" → Shows mixing-related terms
+
+================================================================================
+TRACKING YOUR PROGRESS
+================================================================================
+
+Progress Indicator (top left):
+• "Total Terms: 239" → The complete glossary size
+• "Terms with Comments: X" → How many terms you've reviewed
+• Progress bar fills up as you comment on more terms
+• Use this to see your review completion percentage
+
+================================================================================
+MANAGING YOUR COMMENTS
+================================================================================
+
+To Clear an Individual Comment:
+1. Find the term you want to clear
+2. Click the gray "Clear" button in the Instructor Feedback section
+3. Confirm when asked
+4. That comment is deleted; the term card no longer shows the purple accent
+
+To Clear ALL Comments at Once:
+1. Click the red "Clear All Comments" button (top right)
+2. Confirm when asked: "This will permanently delete all instructor feedback"
+3. ALL comments across all 239 terms are deleted
+4. WARNING: This cannot be undone—export your comments first if needed!
+
+================================================================================
+EXPORTING YOUR FEEDBACK
+================================================================================
+
+To Download Your Comments as JSON:
+1. Click the blue "Export Comments" button (top right)
+2. A .json file automatically downloads to your computer
+3. Filename format: MUSI190_Glossary_Feedback_YYYY-MM-DD.json
+4. You'll see a confirmation: "Exported successfully! Terms with comments: X"
+
+What's in the JSON File:
+{
+  "termName": "Audio Compression",
+  "originalDefinition": "Compression: a key audio production term...",
+  "instructorComment": "Your feedback here",
+  "timestamp": "2026-05-14T12:30:00Z",
+  "hasComment": true
+}
+
+Use Cases:
+✓ Share feedback with course director/coordinator
+✓ Archive your review for future semesters
+✓ Import into course materials management system
+✓ Send to colleagues for collaborative review
+✓ Backup before clearing browser data
+
+================================================================================
+BROWSER STORAGE & PERSISTENCE
+================================================================================
+
+How Comments are Saved:
+• Comments are stored in your browser's local storage
+• NOT on any server or cloud
+• Completely private to your device
+• Survives page refresh and browser restart
+• Specific to each browser/device
+
+Important Notes:
+⚠ If you clear your browser cache/history, comments may be lost
+⚠ If you switch browsers, comments don't transfer automatically
+⚠ Export your feedback to .json if you want to keep it long-term
+⚠ Clearing browser data = clearing comments (unless exported)
+
+If You Accidentally Clear Comments:
+→ Use your browser's Undo (Ctrl+Z / Cmd+Z)—sometimes works
+→ Check if you exported a .json file previously
+→ Re-enter comments (they auto-save as you type)
+→ Export frequently as you work!
+
+================================================================================
+KEYBOARD ACCESSIBILITY
+================================================================================
+
+Keyboard Navigation:
+• TAB: Move to next field (term, definition, comment box, button)
+• SHIFT + TAB: Move to previous field
+• ENTER: Click buttons, submit
+• SPACE: Check boxes, click buttons
+• ESCAPE: Close any open dialogs/modals
+
+All features are fully keyboard accessible—you don't need a mouse.
+
+================================================================================
+TECHNICAL DETAILS
+================================================================================
+
+Browser Compatibility:
+✓ Chrome/Chromium (v90 and newer)
+✓ Firefox (v88 and newer)
+✓ Safari (v14 and newer)
+✓ Microsoft Edge (v90 and newer)
+✓ Mobile browsers (iOS Safari, Chrome Mobile, Firefox Mobile)
+
+Data Included:
+✓ All 239 MUSI 190 terms from the course Excel file
+✓ Complete, untruncated definitions
+✓ Special characters and punctuation preserved
+✓ Terms are in the exact order and spelling from source
+
+Performance:
+• Page loads in under 1 second
+• Search is instantaneous
+• Export to JSON takes <1 second
+• Works smoothly on older computers and modern devices
+
+File Size:
+• 54.2 KB (includes all terms + code)
+• One single HTML file (no downloads required)
+• Works offline (no internet needed)
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Q: The page looks blank when I open it
+A: Try a hard refresh (Ctrl+F5 or Cmd+Shift+R) or use a different browser
+
+Q: Comments aren't saving
+A: Check if your browser allows localStorage (usually is by default)
+   Try Firefox or Chrome if using Safari/Edge
+   Make sure you see the "Saved ✓" indicator
+
+Q: I can't find a term I'm looking for
+A: Use the Search box at the top—type part of the term name
+   Remember: search works on both names AND definitions
+
+Q: The JSON file didn't download
+A: Check your browser's download settings
+   Try a different browser (Chrome works reliably)
+   Make sure pop-ups aren't blocked
+
+Q: I closed the page and lost my comments
+A: Comments auto-save in your browser—they should still be there
+   Try opening the file again in the same browser on the same computer
+   If lost, re-enter them (they'll auto-save as you type)
+   Future tip: Export your feedback regularly!
+
+Q: My colleague can't see my comments
+A: Comments are stored on YOUR device only—not shared
+   To share feedback, export as JSON and send the .json file
+   They can review the .json file in any text editor or spreadsheet app
+
+Q: Can I edit comments after saving?
+A: Yes! Click in the text box and edit anytime
+   Changes auto-save immediately
+   Click "Clear" button to remove entirely
+
+================================================================================
+BEST PRACTICES FOR USING THIS TOOL
+================================================================================
+
+Recommended Workflow:
+1. Read through all 239 terms once (just browsing)
+2. Go through a second time, adding feedback on unclear or incomplete terms
+3. Use search to find related terms and ensure consistency
+4. Before closing: EXPORT your comments as JSON (backup)
+5. Share feedback with course coordinator
+
+Tips for Effective Feedback:
+✓ Be specific: "Needs clarification on [specific concept]"
+✓ Suggest alternatives: "Consider rewording to..."
+✓ Flag consistency issues: "This overlaps with [term]"
+✓ Add examples: "Example would be: ..."
+✓ Note dependencies: "Readers should understand [prerequisite] first"
+
+When to Use This Tool:
+→ Course review/curriculum development
+→ Preparing to teach the course
+→ Verifying definitions are clear for students
+→ Collaborating with other instructors
+→ Maintaining consistent terminology
+→ Creating learning materials
+→ Updating course glossaries each semester
+
+================================================================================
+SUPPORT & QUESTIONS
+================================================================================
+
+If you encounter issues:
+1. Try the Troubleshooting section above
+2. Test in a different browser (Chrome is most reliable)
+3. Make sure JavaScript is enabled in your browser
+4. Close and re-open the file
+5. Try on a different device if possible
+
+For questions about the MUSI 190 course content/definitions:
+→ Contact the course coordinator
+→ Reference the original Excel file if needed
+
+For technical issues with the tool:
+→ Verify you're using a modern web browser
+→ Try clearing your browser cache and reopening
+→ Test in Chrome or Firefox (most compatible)
+
+================================================================================
+VERSION INFORMATION
+================================================================================
+
+Tool Version: 1.0
+Created: May 2026
+Data Source: MUSI 190 Complete Glossary Final.xlsx
+Terms Loaded: 239
+Status: Production Ready
+
+This tool was created specifically for MUSI 190 course instructors.
+All data is current and verified as of May 2026.
+
+================================================================================
+
+Questions? Check the "How to Use This Tool" section at the top of the webpage!
+
+Good luck with your glossary review! 🎵
+
+================================================================================

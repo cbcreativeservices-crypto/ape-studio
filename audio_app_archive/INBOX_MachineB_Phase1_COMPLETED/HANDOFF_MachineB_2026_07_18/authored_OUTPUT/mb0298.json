@@ -1,0 +1,279 @@
+{
+ "batch": 298,
+ "topic": "Synthesis Fundamentals & Oscillators",
+ "authored": [
+  {
+   "id": "b3310d6d-b4a7-48cb-8969-b8896bfa949a",
+   "term": "Text-to-music",
+   "fields": {
+    "definition": "Text-to-music is a generative-AI approach in which a model produces musical audio (or symbolic music) from a natural-language text prompt that describes qualities such as genre, mood, instrumentation, or tempo.",
+    "plain_english": "Text-to-music makes a piece of music from a written description. You type something like 'calm piano with soft rain,' and the model builds matching audio. It is like ordering a song by describing it in words.",
+    "purpose_function": "It maps text descriptions to sound so people can create sketches, backing tracks, or full pieces without playing instruments or notating music. It exists to make music creation faster and more accessible.",
+    "practical_application": "A content creator types a prompt to generate a royalty-free backing track for a video, then imports and arranges the result in a DAW.",
+    "category": "Neural Audio Synthesis",
+    "related_terms": [
+     "Text-to-SFX",
+     "Timbre transfer",
+     "Generative AI",
+     "Prompt",
+     "MIDI"
+    ],
+    "common_mistakes": [
+     "Assuming the output is automatically original and copyright-clear; licensing and training-data questions still apply.",
+     "Expecting exact control over individual notes; a text prompt gives broad direction, not a precise score.",
+     "Believing longer or more detailed prompts always improve the result."
+    ],
+    "scenario_contexts": [
+     "Generating a mood-based background track for a podcast or video.",
+     "Quickly sketching musical ideas from a short written brief.",
+     "Producing variations of a theme by changing the text prompt."
+    ]
+   },
+   "sources": [
+    "IEEE conference literature on text-conditioned music generation (IEEE Xplore / ICASSP)",
+    "ACM Computing Surveys review of AI music-generation methods and challenges"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "22c1b93e-680a-476b-a904-b00b4e0938ef",
+   "term": "Text-to-SFX",
+   "fields": {
+    "definition": "Text-to-SFX (text-to-sound-effects) is a generative-AI approach in which a model synthesizes non-musical sound effects, such as footsteps, rain, or an explosion, from a natural-language text description.",
+    "plain_english": "Text-to-SFX makes sound effects from a written description. You type something like 'glass breaking on tile,' and the model creates that sound. It is like a sound library that builds the clip you ask for instead of making you search for it.",
+    "purpose_function": "It maps text to audio so sound designers and editors get custom effects on demand without recording them or digging through a sample library. It exists to speed up sound design and cover sounds that are hard to record.",
+    "practical_application": "A game or video editor types a prompt to generate a specific ambience or one-shot effect, then trims and layers it in their editor.",
+    "category": "Neural Audio Synthesis",
+    "related_terms": [
+     "Text-to-music",
+     "Foley",
+     "Sound design",
+     "Generative AI",
+     "Sample library"
+    ],
+    "common_mistakes": [
+     "Expecting broadcast-ready quality every time; generated effects often need cleanup, EQ, or layering.",
+     "Assuming generated effects are automatically license-free for commercial use.",
+     "Confusing text-to-SFX with text-to-music; sound-effect models target non-musical sounds."
+    ],
+    "scenario_contexts": [
+     "Generating a custom ambience bed for a game level.",
+     "Creating a one-off impact or whoosh for a video edit.",
+     "Filling gaps in a Foley session with quick generated effects."
+    ]
+   },
+   "sources": [
+    "IEEE ICASSP conference papers on text-to-audio generation",
+    "IEEE WASPAA conference papers on neural audio / sound-event generation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4b6ac87c-c76b-4aeb-a109-15e40d760df9",
+   "term": "Timbre transfer",
+   "fields": {
+    "definition": "Timbre transfer is a neural audio-synthesis technique that re-renders the timbre (tonal color) of one sound source onto the musical content of another, so that, for example, a sung or whistled melody is reproduced with the timbre of a violin while keeping the original pitch and dynamics.",
+    "plain_english": "Timbre transfer swaps the 'voice' of a sound while keeping the tune. You could hum a melody and have it come out sounding like a trumpet, with the same notes and timing. It is like keeping the words of a song but changing who sings them.",
+    "purpose_function": "It uses machine-learning models trained on a target instrument so a performance played on one instrument can be heard as another. It exists to separate the musical performance from the identity of the instrument.",
+    "practical_application": "A producer records a simple vocal or monophonic line and uses a timbre-transfer model to turn it into a realistic solo instrument part without owning or playing that instrument.",
+    "category": "Neural Audio Synthesis",
+    "related_terms": [
+     "Text-to-music",
+     "Timbre",
+     "Vocoder",
+     "Style transfer",
+     "Synthesis"
+    ],
+    "common_mistakes": [
+     "Assuming timbre transfer changes the melody or timing; it keeps the performance and only changes the tonal color.",
+     "Expecting perfect, artifact-free results; models can add noise or smear fast passages.",
+     "Confusing timbre transfer with pitch correction or EQ, which do not resynthesize the sound."
+    ],
+    "scenario_contexts": [
+     "Turning a hummed melody into a realistic saxophone line in a DAW.",
+     "Reskinning a synth demo so it sounds like an acoustic instrument for a mockup.",
+     "Experimenting with cross-instrument textures in electronic music production."
+    ]
+   },
+   "sources": [
+    "AES E-Library convention papers on neural timbre transfer and audio synthesis",
+    "IEEE / academic literature on differentiable digital signal processing (DDSP) and neural audio synthesis"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d2d2077e-4258-4a7e-a5ee-653db51c88f5",
+   "term": "Timing-conditioning",
+   "fields": {
+    "definition": "Timing-conditioning is a technique in generative audio models where the network is conditioned on timing signals - such as the start offset and total duration of a clip - so it can generate audio of a specified length with coherent structure; Stability AI's Stable Audio uses seconds_start and seconds_total embeddings for this.",
+    "plain_english": "It tells the AI how long the clip should be and where it is in the track. That way the music starts, builds, and ends at the right time instead of just stopping.",
+    "purpose_function": "It lets a generative model produce variable-length outputs with proper beginnings, middles, and endings, rather than fixed-size chunks that cut off abruptly.",
+    "practical_application": "In Stable Audio, a user sets the total seconds so the model renders a clip of that exact length with a natural intro and outro instead of a hard stop.",
+    "category": "Model conditioning",
+    "related_terms": [
+     "Text-conditioning",
+     "Text-to-audio",
+     "Text-to-music",
+     "Stable Audio",
+     "Audio-domain generation"
+    ],
+    "common_mistakes": [
+     "Confusing timing-conditioning with tempo or BPM control - it governs length and position, not beat rate",
+     "Requesting a length beyond the model's training window and expecting coherent structure",
+     "Assuming any generator supports timing control; it must be trained with timing embeddings"
+    ],
+    "scenario_contexts": [
+     "Generating a 30-second cue that ends cleanly for an ad",
+     "Producing audio of an exact duration to fit a video slot",
+     "Rendering clips with proper intros and outros in Stable Audio"
+    ]
+   },
+   "sources": [
+    "Evans et al., Fast Timing-Conditioned Latent Audio Diffusion (Stable Audio), arXiv:2402.04825 (2024)",
+    "Stability AI - Stable Audio research and documentation (stability.ai)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "08ac4b5a-1f3f-4081-98fe-c2a82ba68324",
+   "term": "Udio",
+   "fields": {
+    "definition": "Udio is a commercial text-to-music platform, launched in 2024 by Uncharted Labs, that generates songs with instrumentation and sung vocals from natural-language prompts and user-supplied or AI-generated lyrics.",
+    "plain_english": "Udio makes songs from text. You describe the style and give lyrics, and it produces a track with singing and backing music.",
+    "purpose_function": "It enables fast creation of full, vocal songs from a written description, giving non-musicians and creators finished audio for content, demos, or ideas.",
+    "practical_application": "A user enters a style prompt and lyrics in Udio, generates short sections, then extends and stitches them into a full song for a project.",
+    "category": "AI music generation",
+    "related_terms": [
+     "Suno",
+     "AIVA",
+     "Riffusion",
+     "Text-to-music",
+     "Stable Audio"
+    ],
+    "common_mistakes": [
+     "Assuming outputs are automatically license-cleared for commercial release",
+     "Expecting a full arranged song in one pass rather than extending shorter sections",
+     "Confusing Udio with Suno; they are separate competing platforms"
+    ],
+    "scenario_contexts": [
+     "Creating a full song with vocals from a text brief",
+     "Extending a generated section into a complete track",
+     "Prototyping song ideas before a studio session"
+    ]
+   },
+   "sources": [
+    "Udio official documentation and help center (udio.com)",
+    "Copet et al., Simple and Controllable Music Generation (MusicGen), 2023 - underlying text-to-music paradigm"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ff2d25ea-669c-473b-8053-82749cfdff8e",
+   "term": "VCF",
+   "fields": {
+    "definition": "A voltage-controlled filter (VCF) is an analog filter whose cutoff frequency (and usually resonance) is set by an applied control voltage. In subtractive synthesis it attenuates or emphasizes parts of an oscillator's harmonic content to shape timbre, most commonly as a low-pass filter.",
+    "plain_english": "A VCF shapes the tone of a synth sound by cutting away some of its harmonics. A control voltage moves the cutoff point, which makes the sound brighter or more muffled. It is like a tone knob that something else can turn for you.",
+    "purpose_function": "It sculpts timbre in subtractive synthesis by removing frequencies above (or below) a movable cutoff point. Voltage control lets an envelope or LFO sweep the cutoff to create evolving, dynamic sounds.",
+    "practical_application": "A technician patches an envelope into the VCF cutoff input to create the classic filter sweep, and sets resonance to emphasize the cutoff without letting the filter self-oscillate unintentionally.",
+    "category": "Filters",
+    "related_terms": [
+     "VCO",
+     "VCA",
+     "Cutoff frequency",
+     "Resonance",
+     "Envelope generator",
+     "Low-pass filter"
+    ],
+    "common_mistakes": [
+     "Thinking the filter adds new frequencies; a VCF can only remove or emphasize harmonics already present in the source.",
+     "Confusing cutoff (where filtering begins) with resonance (a boost right at the cutoff).",
+     "Pushing resonance so high the filter self-oscillates when a clean sound was wanted."
+    ],
+    "scenario_contexts": [
+     "Routing an envelope generator to VCF cutoff so a bass note opens up and then closes.",
+     "Adding resonance to a low-pass VCF to get a vocal, squelchy synth lead.",
+     "Using an LFO on the cutoff for a slow, sweeping pad."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (synthesis / electronic music chapters)",
+    "Manufacturer technical documentation for analog synthesizers (e.g. Moog, Roland, Sequential service and technical manuals)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "21fec0f0-f121-4695-afdd-896592cb6902",
+   "term": "VCO",
+   "fields": {
+    "definition": "A voltage-controlled oscillator (VCO) is an analog oscillator circuit whose output frequency is set by an applied control voltage, serving as the primary sound source in analog and modular synthesizers. Music VCOs typically use an exponential (1 volt-per-octave) response so that equal voltage steps produce equal musical intervals.",
+    "plain_english": "A VCO is the part of an analog synth that makes the raw tone. A control voltage tells it what pitch to play, so a higher voltage gives a higher note. It works a bit like pressing higher keys on a piano to raise the pitch.",
+    "purpose_function": "It generates the basic repeating waveform, such as saw, square, or triangle, that the rest of the synth then shapes. Voltage control lets a keyboard, sequencer, or envelope play and modulate the pitch automatically.",
+    "practical_application": "A technician calibrates a VCO's 1 volt-per-octave tracking so the synth stays in tune across the keyboard, and patches control voltages into it to set or sweep pitch.",
+    "category": "Oscillators",
+    "related_terms": [
+     "VCF",
+     "VCA",
+     "LFO",
+     "Envelope generator",
+     "Waveform"
+    ],
+    "common_mistakes": [
+     "Confusing the VCO (the sound source) with the VCF (which shapes tone, not pitch).",
+     "Assuming an analog VCO stays in tune without warm-up; it can drift with temperature until warmed up and calibrated.",
+     "Thinking control voltage sets volume; on a VCO it sets pitch, while a VCA sets level."
+    ],
+    "scenario_contexts": [
+     "Calibrating 1 volt-per-octave tracking on a vintage analog synth so it plays in tune across all octaves.",
+     "Patching an envelope or sequencer control voltage into a modular VCO to create pitch sweeps or melodies.",
+     "Tuning two VCOs slightly apart to create a thick, detuned lead sound."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (synthesis / electronic music chapters)",
+    "Manufacturer technical documentation for analog synthesizers (e.g. Moog, Roland, Sequential service and technical manuals)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "85b856e9-f120-44df-9016-b44ec4557dd6",
+   "term": "w2v-BERT",
+   "fields": {
+    "definition": "w2v-BERT is a self-supervised speech-representation model that learns from unlabeled audio by combining wav2vec 2.0-style contrastive learning (to discretize speech into units) with BERT-style masked-language-modeling over those units, producing features used for downstream tasks such as speech recognition and audio generation.",
+    "plain_english": "w2v-BERT is an AI that teaches itself the building blocks of speech from raw audio, with no labels. Those learned pieces then help other systems understand or make speech.",
+    "purpose_function": "It provides strong, general speech representations learned without transcripts, reducing the labeled data needed to train accurate speech recognition and other audio models.",
+    "practical_application": "An engineer uses a pretrained w2v-BERT model as a feature extractor or fine-tunes it on a smaller labeled set to build a speech recognizer or to tokenize audio for a generative model.",
+    "category": "Speech representation",
+    "related_terms": [
+     "HuBERT",
+     "Audio tokenization",
+     "Autoregressive model",
+     "SoundStream",
+     "Audio-domain generation"
+    ],
+    "common_mistakes": [
+     "Thinking w2v-BERT transcribes speech by itself - it learns representations that other models use",
+     "Confusing it with text BERT; w2v-BERT operates on audio, not written text",
+     "Assuming pretraining alone is enough without fine-tuning for a specific task"
+    ],
+    "scenario_contexts": [
+     "Pretraining speech features to cut labeled-data needs for ASR",
+     "Extracting audio tokens for a music or speech generation pipeline",
+     "Fine-tuning on a low-resource language's speech"
+    ]
+   },
+   "sources": [
+    "Chung et al., w2v-BERT: Combining Contrastive Learning and Masked Language Modeling for Self-Supervised Speech Pre-Training (arXiv:2108.06209; IEEE ASRU 2021)",
+    "Baevski et al., wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations (2020)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

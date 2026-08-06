@@ -1,0 +1,142 @@
+{
+ "expert": "LANGUAGE / COMMUNICATIONS EXPERT",
+ "group": 3,
+ "reviews": [
+  {
+   "id": "53f756da-bd36-46e9-8977-976ac856b84d",
+   "term": "Tracking Force",
+   "verdict": "MINOR",
+   "suggestions": [
+    {"field": "purpose_function", "severity": "Low", "issue": "Single long, semicolon-chained sentence packs the setting, both failure modes, and the fix into one breath, which is hard to parse for a learner.", "suggestion": "Split into two sentences, e.g.: 'It sets the downward stylus weight so the stylus stays properly seated in the groove. Too little causes mistracking and skipping; too much increases groove and stylus wear, so it is set to the cartridge maker's specified value.'"}
+   ]
+  },
+  {
+   "id": "870e8e9e-20d2-42d4-a136-4455c52b4846",
+   "term": "Breakout Room",
+   "verdict": "MINOR",
+   "suggestions": [
+    {"field": "common_mistakes", "severity": "Low", "issue": "The second item bundles two unrelated mistakes (over-ordering vs. inadequate switching) into one entry joined by 'or', breaking the parallel one-idea-per-item structure of the other bullets.", "suggestion": "Split into two items, e.g.: 'Assuming breakout gear needs the same scale as the general session and over-ordering.' and 'Ignoring that rapid presenter/laptop swaps need reliable source switching.'"}
+   ]
+  },
+  {
+   "id": "98361ac6-10cf-4d89-889e-e3ecb8f0ebe5",
+   "term": "General Session",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ab2bad4c-275e-4aa0-95cb-8cd3d06251cb",
+   "term": "Green Room",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a7c872ef-f6a4-47dd-a4d8-153e692537f5",
+   "term": "Lectern",
+   "verdict": "MINOR",
+   "suggestions": [
+    {"field": "practical_application", "severity": "Low", "issue": "Two coordinating 'and's in one sentence ('...confidence display, and selects...') make the list read as a run-on and blur where the actions divide.", "suggestion": "Recast as a clean series, e.g.: 'A tech mounts and tests the gooseneck or podium mic, dresses the cabling, may add a monitor lift or confidence display, and selects an ADA height-adjustable model when accessibility is required.'"}
+   ]
+  },
+  {
+   "id": "3b136c85-d3a7-4d14-ad8a-7323d7b6e54d",
+   "term": "Mult Box",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "856a072f-24a6-4df9-8d4b-91fe353e739c",
+   "term": "Push-To-Talk Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "daa3eb48-cdd7-4a21-b08f-ec53b8432248",
+   "term": "Speaker Timer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "72fbcb14-4dba-46ec-8862-0fb96d07c9d6",
+   "term": "Throwable Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "78d3c31f-5b58-42f6-ba9c-9d11f74838aa",
+   "term": "Digital Snake",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3ec971d2-a2cd-406c-a62a-6fe77462df2b",
+   "term": "Expansion Card",
+   "verdict": "MINOR",
+   "suggestions": [
+    {"field": "common_mistakes", "severity": "Medium", "issue": "Subject-verb agreement error in the first item: the parenthetical 'a DiGiCo DMI card versus a Yamaha mini-YGDAI card are not interchangeable' pairs singular subjects joined by 'versus' with the plural verb 'are', and 'versus' reads awkwardly in a statement of fact.", "suggestion": "Reword to: '(for example, a DiGiCo DMI card and a Yamaha mini-YGDAI card are not interchangeable)'."}
+   ]
+  },
+  {
+   "id": "587893cb-d031-44e1-886b-c31bd83bae7d",
+   "term": "Gain Compensation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c277cc43-d973-497b-bf2c-9ed499684792",
+   "term": "Offline Editor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "447b5197-feff-4002-9188-a4ff47af7d5b",
+   "term": "Remote Head Amp",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0e8c97ef-3184-49d4-9c24-4f203ae133bb",
+   "term": "AVB (Audio Video Bridging)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6c46b314-34e8-44d9-898d-a42c36f2fc59",
+   "term": "Milan",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "da74bad3-8c24-4c1d-be3b-f9755a22abbc",
+   "term": "Ravenna",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "22bca3ec-6362-475e-98de-923e6ec2a39c",
+   "term": "RTP (Real-time Transport Protocol)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "58961882-5c54-404d-b8e8-0b60d54ceb09",
+   "term": "Array Bumper",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5de777e2-1b77-4077-996c-2b34c5849bd1",
+   "term": "Bridle",
+   "verdict": "MINOR",
+   "suggestions": [
+    {"field": "common_mistakes", "severity": "Low", "issue": "In the first item, 'grow toward or past 90-120 degrees' is ambiguous: pairing 'toward or past' with a numeric range leaves unclear whether the threshold is 90 or 120 degrees.", "suggestion": "Name a single threshold and treat the rest as a range, e.g.: 'Letting the included angle at the apex approach or exceed 90 degrees (and certainly 120 degrees), which multiplies each leg's tension far above the shared load...'."}
+   ]
+  },
+  {
+   "id": "d8913652-af40-4dec-ae41-6d730a48cafe",
+   "term": "Chain Hoist",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

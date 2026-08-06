@@ -1,0 +1,159 @@
+{
+ "batch": 183,
+ "topic": "Podcast Production",
+ "authored": [
+  {
+   "id": "2c3dad94-05b0-4ea1-854c-2a5d7a7eb41c",
+   "term": "Acoustic model (TTS)",
+   "fields": {
+    "definition": "In text-to-speech synthesis, the acoustic model is the component that predicts acoustic features - such as a mel-spectrogram, fundamental frequency, and phoneme durations - from the linguistic or phonetic representation of the input text. A separate vocoder then converts these predicted features into an audible waveform.",
+    "plain_english": "In a computer voice system, this is the part that turns written words into the sound details of speech, like pitch and timing. A later step then uses those details to build the voice you actually hear.",
+    "purpose_function": "It bridges symbolic text and the acoustic detail of speech, letting a synthesizer generate natural pitch, timing, and timbre instead of stitching together fixed recordings. Without it a TTS system could not turn arbitrary text into expressive, intelligible speech.",
+    "practical_application": "A producer relies on TTS acoustic models inside synthetic-voice tools to generate narration, ad reads, or a corrected word, picking a voice and adjusting pacing while the model produces the underlying speech features.",
+    "category": "Speech Technology",
+    "related_terms": ["Text-to-speech (TTS)", "Vocoder", "Automatic speech recognition (ASR)", "Phoneme", "Speech synthesis"],
+    "common_mistakes": ["Confusing the TTS acoustic model (text to features) with the ASR acoustic model (audio to phonemes); they run in opposite directions.", "Assuming the acoustic model outputs finished audio, when it outputs acoustic features that a vocoder must still convert to a waveform.", "Thinking one acoustic model equals one fixed voice, when voice identity, style, and prosody can be handled as separate factors."],
+    "scenario_contexts": ["Generating synthetic narration for a podcast segment from a written script.", "Producing an AI voice to fix a mispronounced word without re-recording the host.", "Comparing TTS voices for naturalness and prosody before choosing one for automated ad reads."]
+   },
+   "sources": ["Taylor, Text-to-Speech Synthesis (Cambridge University Press)", "Jurafsky & Martin, Speech and Language Processing"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "982bdaa1-c516-4711-a5b7-cfe0fd720008",
+   "term": "AI captioning",
+   "fields": {
+    "definition": "AI captioning is the automated generation of time-synchronized on-screen text from spoken audio using automatic speech recognition, producing caption or subtitle files aligned to the program timeline. The output is normally reviewed and corrected before publication.",
+    "plain_english": "This is when software listens to the talking in your show and writes it on screen as text, timed to the audio. It saves you from typing out every caption by hand.",
+    "purpose_function": "It provides accessibility for deaf and hard-of-hearing viewers and improves discoverability and engagement, far faster and cheaper than captioning by hand. It exists to meet accessibility needs and platform requirements at scale.",
+    "practical_application": "A producer runs the finished episode video through a captioning tool, then edits the auto-generated file for misheard words, speaker labels, and timing before exporting a standard caption format for the platform.",
+    "category": "AI Production Tools",
+    "related_terms": ["AI transcription", "Automatic speech recognition (ASR)", "Closed captioning", "Subtitles", "Timecode"],
+    "common_mistakes": ["Publishing auto-captions without proofreading, leaving misrecognized words, wrong speaker labels, and off timing.", "Assuming captions and subtitles are identical, when captions also include non-speech sound cues for accessibility.", "Ignoring the caption-file format and timing standards required by the target platform."],
+    "scenario_contexts": ["Auto-generating captions for a video podcast before publishing to a platform.", "Creating subtitle files to meet accessibility requirements for a show.", "Producing burned-in captions for short social clips promoting an episode."]
+   },
+   "sources": ["Jurafsky & Martin, Speech and Language Processing", "EBU Tech 3350 (EBU-TT) subtitling/timed-text documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7f09a819-419c-4205-83d8-824f7bb66a5d",
+   "term": "AI editing",
+   "fields": {
+    "definition": "AI editing is the use of machine-learning tools to perform or assist audio and video editing tasks - such as removing filler words and silences, leveling loudness, reducing noise, or text-based cutting driven by a transcript. A human editor reviews and approves the automated changes.",
+    "plain_english": "This is using smart software to help edit a podcast, like cutting out 'um' sounds or evening out the volume. It does slow, fiddly jobs quickly that a person would otherwise do by hand.",
+    "purpose_function": "It speeds up repetitive, time-consuming editing steps and lowers the skill barrier, letting creators turn out cleaner episodes faster. It exists to automate tedious work so the human can focus on creative and editorial choices.",
+    "practical_application": "An editor loads a recording into an AI-assisted editor, accepts suggested cuts for filler words and long pauses, applies automatic leveling, then fine-tunes the result before export.",
+    "category": "AI Production Tools",
+    "related_terms": ["AI transcription", "Text-based editing", "Noise reduction", "Loudness normalization", "Automatic speech recognition (ASR)"],
+    "common_mistakes": ["Blindly accepting every automated cut, which can clip breaths, words, or timing and make speech sound unnatural.", "Trusting AI leveling or noise reduction so heavily that artifacts or a pumping sound slip through.", "Skipping a full human review and quality check before export."],
+    "scenario_contexts": ["Removing filler words and long silences from a raw interview recording.", "Applying automatic loudness leveling and noise reduction to a remote-recorded episode.", "Using text-based editing to cut audio by deleting words in the transcript."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1698868f-85a5-41b1-98a3-e3b8457d21ce",
+   "term": "AI transcription",
+   "fields": {
+    "definition": "AI transcription is the automatic conversion of recorded speech into written text using automatic speech recognition, often with speaker labels and word-level timestamps. Accuracy depends on audio quality, accents, and vocabulary, so the output usually needs proofreading.",
+    "plain_english": "This is when software listens to a recording and writes down what was said as text. It is like an automatic note-taker for your audio.",
+    "purpose_function": "It produces searchable, editable text from audio for show notes, captions, and text-based editing, replacing slow manual transcription. It exists to make spoken content usable as text quickly and cheaply.",
+    "practical_application": "A producer uploads an interview and receives a timestamped transcript, which they clean up for show notes, quote pulling, and to drive text-based editing of the audio.",
+    "category": "AI Production Tools",
+    "related_terms": ["Automatic speech recognition (ASR)", "AI captioning", "ASR", "Diarization", "Show notes"],
+    "common_mistakes": ["Treating the raw transcript as error-free instead of proofreading names, jargon, and punctuation.", "Expecting high accuracy from noisy, overlapping, or heavily accented audio.", "Forgetting that timestamps and speaker labels may still need manual correction."],
+    "scenario_contexts": ["Generating a timestamped transcript to write show notes and pull quotes.", "Producing a transcript to drive text-based audio editing.", "Creating a searchable text archive of past episodes."]
+   },
+   "sources": ["Jurafsky & Martin, Speech and Language Processing", "Rabiner & Juang, Fundamentals of Speech Recognition"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ddf71d99-ea23-4c8c-abed-51f8284a0dc1",
+   "term": "Air studio",
+   "fields": {
+    "definition": "An air studio (on-air studio) is the studio room from which a live radio, streaming, or broadcast program originates, equipped with microphones, a broadcast console, and monitoring. It is the space actively feeding the transmission or stream while a program is on air.",
+    "plain_english": "This is the studio a show is actually broadcast or streamed from while it is live. It is the room that is 'on air' at that moment.",
+    "purpose_function": "It gives presenters a controlled, acoustically suitable place to perform while the program is mixed for broadcast, keeping live output isolated from other production work. It exists to reliably originate live content.",
+    "practical_application": "A technician preps the air studio before a live show, checking mic channels, headphone feeds, talkback, and the on-air light so the presenter can go live without technical faults.",
+    "category": "Broadcast Facilities",
+    "related_terms": ["Announce booth", "Central apparatus room", "Control room", "Broadcast console", "Talkback"],
+    "common_mistakes": ["Confusing the air studio with the control room; the air studio is where the program is performed and originated.", "UNSAFE: Servicing live mains-powered console or rack wiring in an on-air studio without lockout/tagout and de-energizing per OSHA 29 CFR 1910.147 and NFPA 70E.", "Forgetting to check the on-air/tally light and monitor muting, causing feedback or unintended dead air."],
+    "scenario_contexts": ["Prepping the air studio for a live streamed talk show.", "Switching program origination between two air studios for back-to-back shows.", "Troubleshooting a dead mic channel in the air studio minutes before going live."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Talbot-Smith, Audio Engineer's Reference Book", "NFPA 70E; OSHA 29 CFR 1910.147"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6e62379a-28ae-480a-ac0b-c1d4975b316b",
+   "term": "Announce booth",
+   "fields": {
+    "definition": "An announce booth is a small, acoustically treated and sound-isolated room designed for recording or broadcasting a single voice, such as a narrator, announcer, or host. Its treatment minimizes outside noise and internal reflections for a clean, dry vocal recording.",
+    "plain_english": "This is a small, quiet, sound-treated room used just for recording one person's voice. Its walls hold back noise and echo so the voice sounds clean.",
+    "purpose_function": "It isolates the voice from room noise and equipment sound so recordings stay intelligible and consistent. It exists to give voice work a controlled acoustic space separate from the control room and other areas.",
+    "practical_application": "A voiceover artist records narration in the announce booth while the engineer monitors and directs from the control room over talkback, capturing clean takes for editing.",
+    "category": "Broadcast Facilities",
+    "related_terms": ["Air studio", "Central apparatus room", "Control room", "Acoustic treatment", "Talkback"],
+    "common_mistakes": ["Assuming the booth is fully soundproof, when light treatment only reduces, not eliminates, outside noise.", "Over-treating the booth until it sounds unnaturally dead and boxy.", "Forgetting ventilation, so long sessions get hot and HVAC or handling noise creeps in."],
+    "scenario_contexts": ["Recording clean voiceover narration for an episode intro.", "Tracking a host's solo segments isolated from control-room noise.", "Capturing pickup lines to patch into an already-edited episode."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Talbot-Smith, Audio Engineer's Reference Book"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1015457d-c1b1-4444-b4a3-ddd0f803a3d9",
+   "term": "ASR",
+   "fields": {
+    "definition": "ASR is the abbreviation for automatic speech recognition, the technology that converts spoken language into written text automatically. Modern ASR systems use trained acoustic and language models to transcribe speech.",
+    "plain_english": "ASR is short for automatic speech recognition. It means software that turns spoken words into written text on its own.",
+    "purpose_function": "As shorthand for automatic speech recognition, it underlies transcription, captioning, and voice-command features by turning spoken audio into machine-readable text. It exists so systems can record or act on what is said.",
+    "practical_application": "A producer leans on ASR-powered tools to auto-transcribe episodes and generate captions, then corrects recognition errors before publishing.",
+    "category": "Speech Technology",
+    "related_terms": ["Automatic speech recognition (ASR)", "AI transcription", "AI captioning", "Language model", "Acoustic model (TTS)"],
+    "common_mistakes": ["Reading ASR as one specific product rather than the general technology of automatic speech recognition.", "Assuming ASR understands meaning, when it transcribes words but does not truly comprehend them.", "Expecting perfect accuracy regardless of audio quality or accent."],
+    "scenario_contexts": ["Choosing an ASR-based service to auto-transcribe recorded interviews.", "Using ASR to power automatic captions on a livestream.", "Enabling voice commands in a production tool built on ASR."]
+   },
+   "sources": ["Jurafsky & Martin, Speech and Language Processing", "Rabiner & Juang, Fundamentals of Speech Recognition"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7eb5a29a-66ec-41b9-a8e6-7edb95472041",
+   "term": "Automatic speech recognition (ASR)",
+   "fields": {
+    "definition": "Automatic speech recognition (ASR) is the machine process of converting spoken audio into text, typically combining an acoustic model, a pronunciation/lexicon component, and a language model, or using an end-to-end neural network. Its accuracy is commonly measured by word error rate.",
+    "plain_english": "This is technology that listens to speech and writes it out as text by itself. It is the engine behind voice typing and automatic captions.",
+    "purpose_function": "It lets machines transcribe and respond to human speech, powering transcription, captioning, voice search, and voice assistants. It exists to turn the sound of speech into structured text that software can process.",
+    "practical_application": "In podcast production, ASR drives automatic transcription and captioning; the technician picks a service, feeds it clean audio for best accuracy, and reviews the text output for errors.",
+    "category": "Speech Technology",
+    "related_terms": ["ASR", "AI transcription", "AI captioning", "Acoustic model (TTS)", "Language model"],
+    "common_mistakes": ["Confusing ASR (speech to text) with TTS (text to speech); they are opposite processes.", "Assuming ASR performs equally across accents, languages, and noisy conditions.", "Judging ASR only by polished demo clips instead of word error rate on real material."],
+    "scenario_contexts": ["Feeding clean, single-speaker audio to an ASR engine to maximize transcription accuracy.", "Comparing ASR services by word error rate on sample episodes.", "Using ASR output as the basis for captions and text-based editing."]
+   },
+   "sources": ["Jurafsky & Martin, Speech and Language Processing", "Rabiner & Juang, Fundamentals of Speech Recognition"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "80225d05-63f4-40fd-8bc6-1aade3074c33",
+   "term": "Central apparatus room",
+   "fields": {
+    "definition": "The central apparatus room (CAR), also called the central equipment or central technical area, is the core technical space in a broadcast or production facility that houses central routing, distribution, signal processing, and interconnection equipment. Studios and control rooms interconnect through it, and it is environmentally controlled for the equipment.",
+    "plain_english": "This is the central technical room in a broadcast building that holds the main routing and signal gear. Think of it as the hub where all the audio and video signals meet and get sent where they need to go.",
+    "purpose_function": "It centralizes the facility's signal routing and core hardware so signals can be distributed reliably among studios, control rooms, and transmission and maintained in one place. It exists to keep the technical infrastructure organized, cooled, and accessible.",
+    "practical_application": "An engineer configures router crosspoints, sync/reference generators, and distribution amplifiers in the central apparatus room to route sources between studios and to air.",
+    "category": "Broadcast Facilities",
+    "related_terms": ["Air studio", "Announce booth", "Control room", "Signal routing", "Patch bay"],
+    "common_mistakes": ["Confusing the CAR with a studio or control room; it holds shared core routing and processing gear, not presenters.", "UNSAFE: Servicing energized racks, PDUs, or mains distribution in the CAR without lockout/tagout and PPE per OSHA 29 CFR 1910.147 and NFPA 70E.", "Neglecting cooling and cable management, causing overheating or hard-to-trace signal faults."],
+    "scenario_contexts": ["Patching a new source into the router in the central apparatus room.", "Tracing a signal fault back to distribution gear in the CAR.", "Installing and cooling new processing hardware in the central apparatus room."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Talbot-Smith, Audio Engineer's Reference Book", "NFPA 70E; OSHA 29 CFR 1910.147"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

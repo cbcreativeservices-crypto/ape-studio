@@ -1,0 +1,264 @@
+{
+ "batch": 375,
+ "topic": "Winds, Brass & Organ",
+ "authored": [
+  {
+   "id": "953941d1-79bd-4453-afbd-c0b63d01c9c4",
+   "term": "Pipe-organ wind noise",
+   "fields": {
+    "definition": "The broadband, non-pitched turbulence and edge-tone hiss produced as pressurized air (organ \"wind\") passes through flue pipes, windways, and windchest components. It includes the breathy hiss at a pipe's mouth and the transient \"chiff\" or speech consonant at note onset, distinct from the sustained musical tone.",
+    "plain_english": "The airy, hissing sound an organ makes as air rushes through its pipes, on top of the musical notes. Like the breathy sound you hear when you blow across a bottle top before the clear tone settles.",
+    "purpose_function": "It is an unavoidable byproduct of exciting flue pipes with an air jet; a small amount of onset chiff gives a note a crisp, articulate start, while excessive hiss signals over-blowing, leaks, or a voicing fault.",
+    "practical_application": "When recording or reinforcing a pipe organ, a technician places mics to balance musical tone against wind and chiff noise, and treats excessive hiss as an instrument voicing or wind-leak issue rather than a fault in the mic or chain.",
+    "category": "Instrument noise",
+    "related_terms": ["Organ wind noise", "Pipe hiss", "Chiff", "Flue pipe", "Wind pressure", "Voicing"],
+    "common_mistakes": [
+     "Mistaking the natural onset chiff of flue pipes for a defect and trying to EQ it all out, which strips the note's articulation.",
+     "Assuming all organ hiss comes from the recording chain, when much of it is acoustic wind noise from the instrument itself.",
+     "Confusing flue-pipe wind noise with reed-pipe buzz, which has a different cause and cure."
+    ],
+    "scenario_contexts": [
+     "Close-miking a pipe organ in a church and hearing breathy hiss at the start of each note.",
+     "Diagnosing excessive hiss that traces to a leaking windchest pallet or too-high wind pressure.",
+     "Balancing soft flue stops on a large organ where wind noise becomes audible in quiet passages."
+    ]
+   },
+   "sources": [
+    "Audsley, The Art of Organ-Building",
+    "Fletcher & Rossing, The Physics of Musical Instruments (organ pipe chapter)",
+    "Grove Dictionary of Music and Musicians (organ)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "aae13383-2593-492c-bb7e-1d211f2ec3e0",
+   "term": "Pitch scoop (brass)",
+   "fields": {
+    "definition": "An expressive brass articulation in which the player approaches the target note from below, bending the pitch upward with the embouchure, air, and (on valved or slide instruments) partial fingerings or slide position, so the note \"scoops\" into tune rather than starting cleanly on pitch. It is common in jazz and pop styles.",
+    "plain_english": "When a brass player slides up into a note from underneath instead of hitting it dead-on. Like a singer swooping up to the right note rather than landing on it straight away.",
+    "purpose_function": "It exists as a stylistic, vocal-sounding inflection that adds a bluesy, expressive lead-in to the start of a note.",
+    "practical_application": "A technician tracking a horn section anticipates scoops on lead lines, avoids gating or transient shaping that would clip the rising pitch, and pitch-corrects only the landing note if any correction is needed at all.",
+    "category": "Articulation",
+    "related_terms": ["Portamento", "Glissando", "Fall-off", "Bend", "Embouchure", "Lip slur"],
+    "common_mistakes": [
+     "Treating a scoop as sloppy intonation and pitch-correcting it out, removing the intended expression.",
+     "Confusing a scoop, which rises into a note, with a fall or doit that drops off the end of a note.",
+     "Assuming every scoop is a wide glissando; many are quick inflections of a semitone or less."
+    ],
+    "scenario_contexts": [
+     "Recording a jazz trumpet lead that scoops into the first note of each phrase.",
+     "A pop horn section adding scoops to accent the hits in a chart.",
+     "Editing a comped horn take where scoops must line up rhythmically across the section."
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Grove Dictionary of Music and Musicians (articulation; jazz inflection)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4a3f8368-2d28-463d-be50-46c57a554d6d",
+   "term": "Portamento smear (winds)",
+   "fields": {
+    "definition": "A continuous, sliding change of pitch between two notes on a wind instrument—a portamento or glissando—produced by gradually changing embouchure, air, and finger or key coverage so the pitch \"smears\" smoothly rather than moving in discrete steps. The clarinet glissando that opens Gershwin's Rhapsody in Blue is the classic example.",
+    "plain_english": "A smooth slide from one note to another on a wind instrument, with no clear steps in between. Like sliding your finger up a slide whistle so the pitch glides instead of jumping.",
+    "purpose_function": "It is an expressive device that connects two pitches with a continuous glide, giving a vocal or bluesy inflection between notes.",
+    "practical_application": "A technician recording woodwinds keeps mic distance consistent so the glide's tone stays even, and avoids automation or gating that would interrupt the sliding pitch.",
+    "category": "Articulation",
+    "related_terms": ["Portamento", "Glissando", "Pitch scoop (brass)", "Embouchure", "Bend", "Legato"],
+    "common_mistakes": [
+     "Confusing portamento, a continuous slide, with legato, which connects discrete pitches smoothly but without a glide.",
+     "Assuming any wind instrument can smear a full glissando; smooth slides are easiest on clarinet and saxophone and limited on others.",
+     "Editing out the sliding pitch as if it were a tuning error."
+    ],
+    "scenario_contexts": [
+     "Recording the clarinet glissando that opens Rhapsody in Blue.",
+     "A saxophonist smearing up into a note during a jazz solo.",
+     "Comping wind takes where the start pitch of a smear must be timed to the beat."
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Grove Dictionary of Music and Musicians (portamento; glissando)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "53bfe5d9-6229-4d1f-b171-095e48ed53c7",
+   "term": "Quena airy tone",
+   "fields": {
+    "definition": "The characteristically breathy, wind-rich timbre of the quena, a traditional Andean end-blown notched flute. Because the player's air jet is split across an open notch, the sound carries a strong component of turbulent breath noise alongside the pitched tone, giving it an airy, exhaled quality.",
+    "plain_english": "The breathy, whispery sound of the quena, an Andean flute you blow across a notch at the top. It always sounds a bit like someone breathing out, mixed with the melody.",
+    "purpose_function": "The airy quality is inherent to the quena's notch and edge-tone excitation and is prized as an expressive, vocal characteristic of Andean flute music rather than treated as a fault.",
+    "practical_application": "A technician recording a quena chooses a mic and distance that capture the breathy character without exaggerating wind blast, and avoids heavy de-noising that would strip the instrument's signature air.",
+    "category": "Timbre",
+    "related_terms": ["Breath noise", "Edge tone", "Notched flute", "Embouchure", "Overblowing", "Air jet"],
+    "common_mistakes": [
+     "Treating the quena's natural breathiness as a recording defect and gating or de-noising it away.",
+     "Miking too close and on-axis to the notch, capturing wind blast and pops instead of a balanced tone.",
+     "Confusing the airy tone with the sound of a leaky or poorly made instrument."
+    ],
+    "scenario_contexts": [
+     "Recording an Andean folk ensemble featuring a solo quena.",
+     "Blending a breathy quena into a mix without losing its signature air.",
+     "Choosing mic placement to tame wind noise on a close-miked quena."
+    ]
+   },
+   "sources": [
+    "Baines, Woodwind Instruments and Their History",
+    "Fletcher & Rossing, The Physics of Musical Instruments (air-jet and edge-tone flutes)",
+    "Grove Dictionary of Musical Instruments (quena; flutes)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "342381fe-ab75-4c2e-92c0-8fb325000473",
+   "term": "Reed attack",
+   "fields": {
+    "definition": "The onset transient of a note on a reed instrument—the brief interval in which the reed begins vibrating and the air column builds to steady oscillation after the player tongues or starts the note. Its speed and character are shaped by tonguing, breath pressure, and reed response, and largely determine how crisp or soft the note's beginning sounds.",
+    "plain_english": "The very start of a note on a reed instrument, when the reed first begins to buzz and the tone builds up. Like the difference between a sharp t and a soft d at the front of a word.",
+    "purpose_function": "The attack sets articulation and clarity; a clean, well-defined onset lets notes speak precisely, which matters for ensemble timing and for the intelligibility of fast passages.",
+    "practical_application": "A technician sets levels and transient handling with reed attacks in mind, avoiding compression or limiting that dulls the tongued onset, and mics the instrument to preserve articulation.",
+    "category": "Reed acoustics",
+    "related_terms": ["Reed vibration", "Attack transient", "Tonguing", "Articulation", "Embouchure", "Reed noise"],
+    "common_mistakes": [
+     "Over-compressing reed tracks so the tongued attack is squashed and the articulation blurs.",
+     "Confusing a soft attack chosen by the player with a slow-speaking or damaged reed.",
+     "Gating with too slow an attack setting, which clips the note's start."
+    ],
+    "scenario_contexts": [
+     "Recording a fast staccato clarinet passage where every attack must stay crisp.",
+     "A saxophone lead where the engineer preserves tongued attacks under compression.",
+     "Diagnosing whether a mushy note onset is caused by the player, the reed, or the processing."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (attack transients of wind instruments)",
+    "Benade, Fundamentals of Musical Acoustics",
+    "Baines, Woodwind Instruments and Their History"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "59651ad7-b364-4eaa-a8f1-7914c3eb27dc",
+   "term": "Reed buzz",
+   "fields": {
+    "definition": "The buzzing, harmonically rich sound produced by a musical reed as it beats against the mouthpiece or an opposing reed; more loosely, an unwanted rattling buzz from a chipped, warped, or improperly seated reed. The buzz reflects the reed's non-sinusoidal, valve-like opening and closing of the airflow.",
+    "plain_english": "The buzzy sound a reed makes as it flaps very fast against the mouthpiece. A good buzz gives the tone its edge; a bad one is an unwanted rattle from a damaged reed.",
+    "purpose_function": "The reed's buzzing action is how a reed instrument turns steady breath into a rich, harmonic tone; controlling that buzz shapes the note's brightness and edge.",
+    "practical_application": "A technician distinguishes the musical buzz of a healthy reed from a rattling defect, and chooses mics and EQ that flatter the reed's edge without exaggerating harshness.",
+    "category": "Reed acoustics",
+    "related_terms": ["Reed vibration", "Reed crow", "Harmonics", "Timbre", "Embouchure", "Reed noise"],
+    "common_mistakes": [
+     "Mistaking the natural buzzy edge of a reed for distortion in the signal chain.",
+     "Ignoring a rattling buzz that actually signals a chipped or warped reed.",
+     "Boosting the upper mids so much that the reed buzz turns harsh and fatiguing."
+    ],
+    "scenario_contexts": [
+     "Miking a bassoon or oboe and capturing the reed's buzzy harmonics.",
+     "Troubleshooting a rattle that turns out to be a damaged reed rather than the mic.",
+     "Taming excessive reed buzz on a close-miked saxophone with gentle EQ."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (reed generators)",
+    "Benade, Fundamentals of Musical Acoustics",
+    "Baines, Woodwind Instruments and Their History"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8fa81af0-4c3f-4618-ac89-41b57ac46d23",
+   "term": "Reed crow",
+   "fields": {
+    "definition": "The raucous, rattling sound a double reed (oboe, bassoon, or similar) makes when blown by itself, away from the instrument, with the lips near the base of the reed. Reed makers and players judge a reed's response, pitch, and balance by the character and pitches of its \"crow.\"",
+    "plain_english": "The harsh, crackly squawk a double reed makes when you blow it on its own, off the instrument. Reed makers listen to this crow to tell if a reed is ready to play.",
+    "purpose_function": "The crow is a diagnostic test used in reed-making and setup; its pitch and rattle indicate whether a reed is too hard, too soft, or well balanced before it is played on the instrument.",
+    "practical_application": "While not a performance sound, a technician may hear players crowing reeds during setup; recognizing it helps tell reed-testing sounds apart from instrument faults during a session.",
+    "category": "Reed acoustics",
+    "related_terms": ["Reed vibration", "Reed buzz", "Double reed", "Embouchure", "Reed noise", "Reed attack"],
+    "common_mistakes": [
+     "Thinking the crow is a performance technique rather than an off-instrument test of the reed.",
+     "Assuming a good-sounding crow guarantees good intonation once the reed is on the instrument.",
+     "Confusing a player's reed-crowing during setup with a squeak or fault in the recording."
+    ],
+    "scenario_contexts": [
+     "An oboist crowing a reed to check its pitch before a take.",
+     "A bassoonist adjusting a reed until its crow sits at the expected pitches.",
+     "An engineer recognizing crowing sounds during setup instead of flagging them as noise problems."
+    ]
+   },
+   "sources": [
+    "Baines, Woodwind Instruments and Their History",
+    "Grove Dictionary of Musical Instruments (reed; oboe; bassoon)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6befba2e-d7f7-422a-9751-727e8441561a",
+   "term": "Reed noise",
+   "fields": {
+    "definition": "The non-pitched, broadband noise that accompanies the musical tone of a reed instrument—chiefly turbulent breath noise passing the reed and mouthpiece, plus subtle reed rattle—audible especially at soft dynamics and note onsets, and distinct from the harmonic tone the reed produces.",
+    "plain_english": "The airy, hissy sound mixed in with a reed instrument's notes, mostly from breath rushing past the reed. It is most noticeable on quiet notes and at the start of notes.",
+    "purpose_function": "It is a natural byproduct of driving a reed with turbulent airflow; a little adds breathy realism, while too much (or added key and rattle noise) muddies close-miked recordings.",
+    "practical_application": "A technician manages reed noise through mic choice, placement, and gentle high-frequency control, keeping enough for realism without excessive hiss on intimate recordings.",
+    "category": "Reed acoustics",
+    "related_terms": ["Reed buzz", "Reed vibration", "Breath noise", "Key noise", "Reed attack", "Timbre"],
+    "common_mistakes": [
+     "Aggressively de-noising or de-essing reed tracks until they sound lifeless and unnatural.",
+     "Blaming the preamp or mic for hiss that is actually acoustic breath and reed noise.",
+     "Close-miking directly at the mouthpiece so breath noise overwhelms the tone."
+    ],
+    "scenario_contexts": [
+     "An intimate close-miked clarinet where breath noise is audible on soft notes.",
+     "Choosing mic distance on saxophone to balance body tone against reed and breath noise.",
+     "Cleaning up a solo woodwind recording without stripping its natural air."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (reed instruments; noise)",
+    "Benade, Fundamentals of Musical Acoustics",
+    "Baines, Woodwind Instruments and Their History"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f0405525-d323-4e15-8a9f-a1913400700b",
+   "term": "Reed vibration",
+   "fields": {
+    "definition": "The self-sustained oscillation of a cane or synthetic reed that drives a wind instrument's air column. Acting as a pressure-controlled valve, the reed opens and closes to modulate the airflow into the instrument at the resonance of the coupled air column, converting steady breath into a periodic acoustic tone.",
+    "plain_english": "The fast flapping of a reed that makes a woodwind sound. Steady breath makes the reed open and shut many times a second, chopping the air into a musical note, a bit like a buzzing valve.",
+    "purpose_function": "Reed vibration is the sound source of reed instruments; it turns constant breath pressure into the rapid pressure pulses that excite and sustain the air column's tone.",
+    "practical_application": "Understanding that the reed and air column work together helps a technician interpret tone, tuning, and squeaks, and explains why reed condition and embouchure change the recorded sound so much.",
+    "category": "Reed acoustics",
+    "related_terms": ["Reed attack", "Reed buzz", "Air column", "Embouchure", "Single reed", "Double reed"],
+    "common_mistakes": [
+     "Thinking the reed vibrates at its own fixed pitch, when the coupled air column largely sets the sounding frequency.",
+     "Assuming a stiffer reed always sounds better, ignoring how it changes response and attack.",
+     "Overlooking that reed condition, such as moisture or chips, strongly affects the recorded tone."
+    ],
+    "scenario_contexts": [
+     "Explaining why a worn reed changes a saxophone's recorded tone mid-session.",
+     "Understanding squeaks as disrupted reed vibration rather than a fault in the signal chain.",
+     "Relating a player's embouchure changes to shifts in the tone captured by the mic."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (reed generators)",
+    "Benade, Fundamentals of Musical Acoustics",
+    "Baines, Woodwind Instruments and Their History"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

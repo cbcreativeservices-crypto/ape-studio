@@ -1,0 +1,328 @@
+{
+ "batch": 419,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "2f1ca181-dd56-4ff9-99d3-0f07b6759dd7",
+   "term": "Filter coefficient interpolation",
+   "fields": {
+    "definition": "A technique for changing a digital filter over time by computing intermediate sets of filter coefficients between known coefficient sets, rather than switching abruptly. The interpolated coefficients, or the underlying design parameters, are updated smoothly (commonly per sample or per block) so the filter's frequency response glides continuously from one setting to another.",
+    "plain_english": "It is a way to change a digital filter smoothly instead of jumping straight to new settings. The filter's numbers are eased from the old values to the new ones, like slowly turning a knob so you do not hear a click.",
+    "purpose_function": "It exists so that time-varying or automated filters can move between settings without the clicks, zipper noise, or transients that abrupt coefficient changes cause. By updating the coefficients gradually it keeps the output continuous while the filter's shape changes.",
+    "practical_application": "A technician relies on it whenever an EQ band, filter sweep, or modeled effect is automated, so that moving a cutoff or resonance control sounds smooth rather than stepped. It is built into plug-ins and modeling software, and a developer must also guard against instability when interpolating recursive-filter coefficients directly.",
+    "category": "Digital filtering",
+    "related_terms": [
+     "Finite impulse response filter",
+     "Fractional delay filter",
+     "Hermite interpolation",
+     "Zipper noise",
+     "Time-varying filter",
+     "Parametric equalizer"
+    ],
+    "common_mistakes": [
+     "Interpolating the coefficients of a recursive (IIR) filter directly and assuming the result is stable; the mapping from coefficients to response is nonlinear, so intermediate coefficient sets can ring or become unstable",
+     "Updating coefficients only once per audio block at large block sizes, which still leaves audible steps; smoother or more frequent updates, or output crossfading, are often needed",
+     "Confusing it with upsampling or sample-rate interpolation; here it is the filter's coefficients that are interpolated, not the audio samples"
+    ],
+    "scenario_contexts": [
+     "Automating an EQ band or filter cutoff in a DAW so a sweep sounds continuous instead of stepped",
+     "Morphing smoothly between two stored filter presets in a synthesizer or modeling plug-in",
+     "Driving a resonant filter from an LFO or envelope in real time without zipper noise"
+    ]
+   },
+   "sources": [
+    "Zolzer (ed.), DAFX: Digital Audio Effects, 2nd ed. (Wiley) — time-varying filters and coefficient interpolation",
+    "Oppenheim & Schafer, Discrete-Time Signal Processing (Prentice Hall) — digital filter structures and frequency response"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6252bdf9-a740-4c9a-9130-5d6f24b23e61",
+   "term": "Fine-tuning",
+   "fields": {
+    "definition": "In machine learning, fine-tuning is a transfer-learning procedure in which a model already trained on a large, general dataset is trained further on a smaller, task-specific dataset, adjusting some or all of its parameters. Training continues from the pretrained weights, typically with a low learning rate, so the model adapts to the new task while retaining the representations learned during pretraining.",
+    "plain_english": "Fine-tuning takes a model that already learned from lots of data and trains it a bit more on your own smaller set of examples. It is like hiring someone who is already skilled and giving them a short course for your job.",
+    "purpose_function": "It exists so that useful features learned from large datasets can be reused, letting a model reach good accuracy on a new task with far less data and training time than starting from scratch.",
+    "practical_application": "An audio developer fine-tunes a pretrained model, such as a speech or sound-event network, on a modest labeled set to build a custom detector, classifier, or separator without collecting millions of examples.",
+    "category": "Model training",
+    "related_terms": [
+     "Transfer learning",
+     "Pretrained model",
+     "Learning rate",
+     "Overfitting",
+     "Feature extraction",
+     "Backpropagation"
+    ],
+    "common_mistakes": [
+     "Using too high a learning rate, which can overwrite (catastrophically forget) the useful features learned during pretraining",
+     "Fine-tuning on a very small dataset without regularization or early stopping and then overfitting to it",
+     "Assuming more layers must always be unfrozen; adapting only the final layers often works better on small data",
+     "Feeding inputs in a format (sample rate, feature type, normalization) that does not match what the model was pretrained on"
+    ],
+    "scenario_contexts": [
+     "Adapting a pretrained speech-recognition model to a specific accent, language, or noisy venue",
+     "Fine-tuning a general sound-event classifier to detect a small set of studio-specific sounds",
+     "Customizing a pretrained source-separation model on a particular genre or instrument set"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press) — transfer learning and fine-tuning",
+    "Yosinski, Clune, Bengio & Lipson, How transferable are features in deep neural networks?, NIPS 2014",
+    "Baevski, Zhou, Mohamed & Auli, wav2vec 2.0, NeurIPS 2020 — pretraining and fine-tuning for speech"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bb97d6ca-b5c1-4ade-aebd-ebf59102e81e",
+   "term": "Finite impulse response filter",
+   "fields": {
+    "definition": "A finite impulse response (FIR) filter is a discrete-time filter whose impulse response has a finite number of nonzero samples, so its output is a weighted sum (a convolution) of a finite set of current and past input samples. Because it uses no feedback, an FIR filter is always stable and can be designed to have exactly linear phase.",
+    "plain_english": "An FIR filter makes each new sample by mixing a fixed number of recent input samples, each with its own weight. It never feeds its output back into itself, so it can never run out of control.",
+    "purpose_function": "It exists to shape a signal's frequency content in a stable, predictable way, and its ability to give exactly linear phase makes it valuable where waveform shape and timing must be preserved.",
+    "practical_application": "Technicians meet FIR filters in linear-phase EQs, convolution reverb, loudspeaker and room correction, crossovers, and oversampling, where the filter is applied by convolving the audio with a stored set of coefficients (an impulse response).",
+    "category": "Digital filtering",
+    "related_terms": [
+     "Infinite impulse response filter",
+     "Impulse response",
+     "Convolution",
+     "Linear phase",
+     "Filter coefficient interpolation",
+     "Fractional delay filter"
+    ],
+    "common_mistakes": [
+     "Assuming FIR filters cause no problems; long linear-phase FIR filters add latency and can produce pre-ringing (pre-echo) before transients",
+     "Confusing FIR with IIR; an FIR filter uses only input samples (feedforward), while an IIR filter also feeds back past outputs",
+     "Thinking more coefficients (taps) always sound better; more taps sharpen the response but raise latency and CPU cost"
+    ],
+    "scenario_contexts": [
+     "Loading an impulse response into a convolution reverb to recreate a real room",
+     "Applying a linear-phase EQ during mastering to avoid phase shift",
+     "Running FIR-based room or loudspeaker correction in a live or install system"
+    ]
+   },
+   "sources": [
+    "Oppenheim & Schafer, Discrete-Time Signal Processing (Prentice Hall) — FIR filters and linear phase",
+    "Proakis & Manolakis, Digital Signal Processing: Principles, Algorithms, and Applications (Pearson) — FIR filter design"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "193bc166-4da1-446b-b195-c467eef38bf5",
+   "term": "Fractional delay filter",
+   "fields": {
+    "definition": "A fractional delay filter is a digital filter that delays a signal by a non-integer number of sampling periods, approximating the sample values that would fall between existing samples. It is realized by interpolating the discrete-time signal, using methods such as Lagrange, windowed-sinc, Thiran allpass, or spline interpolation to approximate the ideal fractional-sample delay.",
+    "plain_english": "A fractional delay filter shifts a signal by less than one whole sample, filling in the values that would sit between the samples you have. It is like guessing where something was halfway between two photos.",
+    "purpose_function": "It exists because many tasks need timing resolution finer than one sample period, so the filter provides the sub-sample delay and alignment that plain integer delays cannot.",
+    "practical_application": "Technicians and developers use fractional delay for fine time-alignment of loudspeakers and microphones, in sample-rate conversion, pitch shifting, beamforming, and in physical-modeling synthesis (digital waveguides) that need precise, tunable delays.",
+    "category": "Digital filtering",
+    "related_terms": [
+     "Finite impulse response filter",
+     "Hermite interpolation",
+     "Sample rate conversion",
+     "Allpass filter",
+     "Group delay",
+     "Digital waveguide"
+    ],
+    "common_mistakes": [
+     "Ignoring that fractional delay filters color the signal; simple interpolators roll off high frequencies and add small delay errors that vary with frequency",
+     "Assuming the delay is exactly flat across frequency; real designs only approximate the ideal, with accuracy falling off near the Nyquist frequency",
+     "Using a low-order interpolator for critical time-alignment and getting audible artifacts, when a higher-order or allpass design is needed"
+    ],
+    "scenario_contexts": [
+     "Sub-sample time-aligning a subwoofer to the main loudspeakers during system tuning",
+     "Resampling audio between sample rates such as 44.1 kHz and 48 kHz",
+     "Tuning a digital-waveguide string or wind model to an exact frequency"
+    ]
+   },
+   "sources": [
+    "Laakso, Valimaki, Karjalainen & Laine, Splitting the Unit Delay: Tools for Fractional Delay Filter Design, IEEE Signal Processing Magazine, 1996",
+    "Oppenheim & Schafer, Discrete-Time Signal Processing (Prentice Hall) — interpolation and sampling-rate conversion"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a766d53b-5f5b-4d0b-9e9b-e035ac366cec",
+   "term": "Generative adversarial network (GAN)",
+   "fields": {
+    "definition": "A generative adversarial network is a generative model made of two neural networks trained together in a minimax game: a generator that maps random noise to synthetic samples, and a discriminator that tries to tell real training samples from generated ones. The generator learns to produce increasingly realistic data by trying to fool the discriminator, while the discriminator improves at detecting fakes, until the generated distribution approximates the real data distribution.",
+    "plain_english": "A GAN trains two networks that compete. One makes fake examples and the other tries to spot the fakes, and the two push each other to improve until the fakes look real, like a forger and a detective who both get better.",
+    "purpose_function": "It exists to learn how to generate new data that resembles a training set without being given an explicit formula for the data, by using the discriminator as a learned, adaptive measure of realism.",
+    "practical_application": "In audio, GANs power fast neural vocoders and sound generators such as MelGAN, HiFi-GAN, and GANSynth, letting a technician synthesize speech or musical tones from spectrograms or controls, often faster than sample-by-sample models.",
+    "category": "Generative models",
+    "related_terms": [
+     "Generative audio synthesis",
+     "Neural vocoder",
+     "Variational autoencoder",
+     "Diffusion model",
+     "Discriminator",
+     "Generator"
+    ],
+    "common_mistakes": [
+     "Expecting GAN training to converge smoothly; it can be unstable and suffer mode collapse, where the generator produces only a few kinds of output",
+     "Judging a GAN only by how real single samples look, ignoring whether it covers the full variety of the training data",
+     "Confusing the discriminator with the final product; after training it is usually discarded and only the generator is deployed"
+    ],
+    "scenario_contexts": [
+     "Running a GAN-based vocoder to turn a mel-spectrogram into a waveform in a text-to-speech system",
+     "Generating synthetic instrument tones or drum sounds for sound design",
+     "Creating additional training audio (data augmentation) for a downstream model"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press), ch. 20 — generative adversarial networks",
+    "Goodfellow et al., Generative Adversarial Nets, NIPS 2014",
+    "Kong, Kim & Bae, HiFi-GAN, NeurIPS 2020 — GAN-based neural vocoding"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "15f847b9-f17a-4b4f-a17d-9885e8a25e29",
+   "term": "Generative audio synthesis",
+   "fields": {
+    "definition": "Generative audio synthesis is the use of generative machine-learning models to produce new audio, either as waveforms or as time-frequency representations, rather than shaping a preexisting signal. Models such as autoregressive networks, GANs, variational autoencoders, and diffusion models learn the statistics of a training corpus and sample from them to create speech, music, or sound effects.",
+    "plain_english": "It means using trained AI models to make brand-new sound, not just to change sound that already exists. The model learns from many recordings, then makes fresh audio in a similar style.",
+    "purpose_function": "It exists to create realistic or novel audio from learned data and high-level controls, enabling text-to-speech, neural instruments, and sound generation that traditional signal-based synthesis struggles to achieve.",
+    "practical_application": "A technician encounters it in modern text-to-speech voices, neural vocoders, AI music and sound-design tools, and resynthesis plug-ins, typically driving a pretrained model with text, spectrograms, or control parameters.",
+    "category": "Generative models",
+    "related_terms": [
+     "Generative adversarial network (GAN)",
+     "Neural vocoder",
+     "Autoregressive model",
+     "Diffusion model",
+     "Variational autoencoder",
+     "Text-to-speech"
+    ],
+    "common_mistakes": [
+     "Assuming all neural audio synthesis generates raw waveforms; many systems generate a spectrogram that a separate vocoder then turns into sound",
+     "Overlooking model latency and compute; high-quality generation can be too slow for real-time use without optimization",
+     "Ignoring that models can reproduce artifacts, biases, or copyrighted material present in their training data"
+    ],
+    "scenario_contexts": [
+     "Producing a synthetic narration voice from text in a broadcast or localization workflow",
+     "Generating original instrument or ambience sounds for a production",
+     "Restoring or resynthesizing degraded audio by generating plausible missing content"
+    ]
+   },
+   "sources": [
+    "Engel et al., DDSP: Differentiable Digital Signal Processing, ICLR 2020",
+    "van den Oord et al., WaveNet: A Generative Model for Raw Audio (2016) — autoregressive audio generation",
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press) — deep generative models"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2c124704-819d-4ab0-a00f-d8b71ee8735a",
+   "term": "GPU acceleration",
+   "fields": {
+    "definition": "GPU acceleration is the use of a graphics processing unit, a highly parallel processor with thousands of cores, to speed up computation by running many operations at once. In machine learning it dramatically accelerates the dense matrix and tensor arithmetic of neural-network training and inference compared with a general-purpose CPU.",
+    "plain_english": "It means running heavy math on a graphics card instead of the main chip. A graphics card has thousands of tiny workers doing sums at once, so AI models train and run much faster.",
+    "purpose_function": "It exists because neural networks rely on huge numbers of parallel arithmetic operations, which map well onto a GPU's many cores, cutting training and inference times from days to hours or from seconds to real time.",
+    "practical_application": "A technician uses a GPU to train audio models in reasonable time and to run demanding real-time inference, such as neural noise reduction, source separation, or vocoding, that a CPU alone could not keep up with.",
+    "category": "Compute & hardware",
+    "related_terms": [
+     "Neural network",
+     "Tensor",
+     "Batch size",
+     "Inference",
+     "Fine-tuning",
+     "Real-time processing"
+    ],
+    "common_mistakes": [
+     "Assuming a GPU always makes things faster; small models or tiny batches can be dominated by data-transfer overhead and run no faster than a CPU",
+     "Running out of GPU memory by choosing too large a model or batch size, which halts training",
+     "Forgetting that CPU-to-GPU data transfer and disk loading can become the bottleneck rather than the GPU compute itself"
+    ],
+    "scenario_contexts": [
+     "Training a source-separation or speech model overnight on a workstation GPU",
+     "Running a real-time neural noise-reduction plug-in that offloads processing to the GPU",
+     "Choosing batch size and model size to fit within a GPU's memory"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press), sec. 12.1 — GPU implementations",
+    "NVIDIA CUDA C++ Programming Guide (NVIDIA technical documentation)",
+    "Krizhevsky, Sutskever & Hinton, ImageNet Classification with Deep Convolutional Neural Networks, NIPS 2012 — GPU-based training"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "86507f67-1d3c-48da-be44-b1a675dd52d1",
+   "term": "GRU",
+   "fields": {
+    "definition": "A gated recurrent unit (GRU) is a type of recurrent neural network cell that uses learned update and reset gates to control how its hidden state is carried forward and combined with new input, allowing it to model long-range dependencies in sequences. It is a simpler alternative to the LSTM, merging the cell and hidden state and using fewer gates and parameters.",
+    "plain_english": "A GRU is a building block for networks that read data in order, like audio over time. It uses small gates to decide what to remember and what to forget, so it can track things that happened many steps earlier.",
+    "purpose_function": "It exists to help recurrent networks remember information across long sequences and avoid the vanishing-gradient problem, while being lighter and often faster to train than an LSTM.",
+    "practical_application": "In audio, GRUs are used in models for speech recognition, real-time noise suppression, and source separation, where their smaller size makes them attractive when latency and compute must be kept low.",
+    "category": "Neural network architectures",
+    "related_terms": [
+     "Long short-term memory (LSTM)",
+     "Recurrent neural network",
+     "Hidden state",
+     "Vanishing gradient",
+     "Sequence model",
+     "Backpropagation through time"
+    ],
+    "common_mistakes": [
+     "Assuming a GRU is always worse or always better than an LSTM; their relative performance depends on the task and dataset",
+     "Expecting a GRU to capture very long-range structure as well as attention-based models; it can still struggle over very long sequences",
+     "Confusing the reset and update gates, or assuming a GRU has a separate memory cell like an LSTM (it does not)"
+    ],
+    "scenario_contexts": [
+     "Building a low-latency real-time noise-suppression model for a headset or conferencing system",
+     "Modeling sequences of audio features for speech or music classification",
+     "Choosing a GRU over an LSTM to reduce parameters on a resource-constrained device"
+    ]
+   },
+   "sources": [
+    "Cho et al., Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation, EMNLP 2014",
+    "Chung, Gulcehre, Cho & Bengio, Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling, 2014",
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press), sec. 10.10 — gated recurrent units"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "50696535-2f30-4df3-ad78-c5e4a5f8a150",
+   "term": "Hermite interpolation",
+   "fields": {
+    "definition": "Hermite interpolation is a polynomial interpolation method that fits a curve matching both the values and the derivatives of a function at the sample points, giving a smoother fit than value-only interpolation. In audio the common case is piecewise cubic Hermite interpolation, which uses neighboring samples to estimate values (and slopes) between them for tasks such as resampling and fractional delay.",
+    "plain_english": "Hermite interpolation estimates the values between known samples using a smooth curve. It matches not just the points but also their slopes, so the curve stays smoother than just drawing straight lines between samples.",
+    "purpose_function": "It exists to reconstruct signal values between samples with a good balance of quality and low computation, matching slopes so the interpolated curve stays smooth and avoids sharp corners.",
+    "practical_application": "Developers use cubic Hermite interpolation inside samplers, wavetable oscillators, pitch shifters, and sample-rate converters, reading audio at non-integer positions with better quality than linear interpolation and far less cost than long windowed-sinc filters.",
+    "category": "Interpolation methods",
+    "related_terms": [
+     "Fractional delay filter",
+     "Linear interpolation",
+     "Sample rate conversion",
+     "Cubic spline",
+     "Finite impulse response filter",
+     "Wavetable synthesis"
+    ],
+    "common_mistakes": [
+     "Confusing Hermite interpolation with cubic spline interpolation; splines enforce continuous curvature across the whole signal, while piecewise Hermite only matches values and slopes at each segment",
+     "Assuming it is artifact-free; like all polynomial interpolators it still adds some high-frequency roll-off and aliasing, just less than linear interpolation",
+     "Relying on it alone for large pitch shifts or heavy resampling without oversampling, where aliasing still becomes audible"
+    ],
+    "scenario_contexts": [
+     "Playing back a sampled instrument at a pitch between the recorded sample points",
+     "Reading a wavetable at fractional phase positions in a synthesizer",
+     "Converting audio between sample rates when quality and CPU cost must be balanced"
+    ]
+   },
+   "sources": [
+    "Stoer & Bulirsch, Introduction to Numerical Analysis (Springer) — Hermite interpolation",
+    "Laakso, Valimaki, Karjalainen & Laine, Splitting the Unit Delay, IEEE Signal Processing Magazine, 1996 — polynomial interpolation for fractional delay",
+    "Zolzer (ed.), DAFX: Digital Audio Effects, 2nd ed. (Wiley) — interpolation in resampling"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

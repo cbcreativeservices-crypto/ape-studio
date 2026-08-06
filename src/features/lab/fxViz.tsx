@@ -157,9 +157,9 @@ const AMBER = colors.amber; // processed / designed result
 const AMBER_HI = '#ffd35e'; // hot end of the amber ramp (glow tips, cores)
 const AMBER_LO = '#f09e1a'; // deep end of the amber ramp
 const RED = '#ff6b5e'; // problem (anti-phase / cancellation)
-const DIM = '#767a85'; // reference (flat / dry / before)
-const GRID = '#20242e'; // graticule lines
-const AXIS = '#39404d'; // zero/base reference line — brighter than GRID
+const DIM = '#9a9ca8'; // reference (flat / dry / before)
+const GRID = '#333846'; // graticule lines
+const AXIS = '#5a6376'; // zero/base reference line — brighter than GRID
 const FRAME = '#262b36'; // plot-frame hairline
 const BG = '#0c0c0f'; // plot panel fill (sits inside the labs' dark panels)
 

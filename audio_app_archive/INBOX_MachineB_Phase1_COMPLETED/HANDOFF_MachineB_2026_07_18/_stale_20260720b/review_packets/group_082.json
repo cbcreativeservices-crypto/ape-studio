@@ -1,0 +1,995 @@
+{
+ "group": 82,
+ "terms": [
+  {
+   "id": "9b20c6a7-bf04-4b0d-8d66-12785a5a8ba3",
+   "term": "Wash",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "Wash is a broad, sustained, undamped blend of overlapping sound with no clear pitch or transient focus, typically the ringing spread of open cymbals or a diffuse reverb tail, heard as a continuous, blurry layer of energy rather than as distinct notes.",
+   "plain_english": "Wash is a wide, blurry cloud of sound that keeps ringing, like crash cymbals or heavy echo smearing together. You hear one smooth haze instead of separate notes.",
+   "purpose_function": "Naming wash helps a technician spot when sustained, undamped sound is filling space and possibly masking detail in a mix.",
+   "practical_application": "An engineer hearing too much wash may dampen cymbals, shorten a reverb tail, or gate tracks to restore clarity.",
+   "category": "Resonance",
+   "related_terms": [
+    "Cymbal wash",
+    "Reverb tail",
+    "Sustain",
+    "Decay",
+    "Masking",
+    "Overtone ring"
+   ],
+   "common_mistakes": [
+    "Mistaking a reverb wash for a problem with the source instrument.",
+    "Adding more reverb to fix a thin mix and turning it into a muddy wash.",
+    "Letting cymbal wash build up until it masks the vocals."
+   ],
+   "scenario_contexts": [
+    "A drummer rides open cymbals, filling the mix with wash.",
+    "Shortening a reverb tail to cut excess wash on a vocal.",
+    "Gating room mics to control drum wash."
+   ]
+  },
+  {
+   "id": "62b5fb2b-4698-4166-8c1e-0fbfb3fa27e6",
+   "term": "12-string jangle (chorus)",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The bright, shimmering, chiming timbre of a twelve-string guitar, arising because its strings are arranged in six courses of two: the lower four courses pair the main string with one tuned an octave higher, and the upper two courses are paired in unison. Small, unavoidable differences in tuning, phase and decay between each paired string create a natural chorusing (beating) that gives the instrument its characteristic 'jangle.'",
+   "plain_english": "A 12-string guitar pairs each string with a second one tuned the same or an octave up. The two strings are never quite in tune, so they shimmer and ring together. That bright, ringing sound is the jangle. It acts like a built-in chorus effect.",
+   "purpose_function": "The doubled courses and their slight detuning are what set a twelve-string apart from a six-string, adding density and a lush, self-chorusing shimmer to chords and arpeggios. Understanding it explains why a 12-string sounds 'wide' without any effects pedal.",
+   "practical_application": "A technician records or mics a 12-string knowing the paired strings already provide chorus, so added chorus/detune effects are used sparingly, and careful tuning of each course is critical to keep the jangle sweet rather than sour.",
+   "category": "Guitar tone",
+   "related_terms": [
+    "Chorus effect",
+    "Course (paired strings)",
+    "Beating",
+    "Comb filtering",
+    "Rickenbacker 12-string",
+    "Arpeggio"
+   ],
+   "common_mistakes": [
+    "Adding a heavy chorus pedal on top of a 12-string, muddying the natural jangle instead of enhancing it.",
+    "Tuning only the main strings and ignoring the octave strings, so the courses beat harshly and sound out of tune.",
+    "Assuming a stereo double-track will sound the same as a real 12-string; the fixed octave pairing is what creates the effect."
+   ],
+   "scenario_contexts": [
+    "Tracking a jangly rhythm part on a Rickenbacker or Byrds-style pop record.",
+    "Miking an acoustic 12-string for a folk session where the shimmer must stay clean.",
+    "Tuning a 12-string before a take so each octave course rings in tune."
+   ]
+  },
+  {
+   "id": "50eb0998-dd33-4187-b2b2-8b12d4ef347f",
+   "term": "Acoustic-guitar feedback",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A sustained, self-reinforcing oscillation, typically a low-frequency howl, that occurs when an amplified or miked acoustic guitar's hollow body is re-excited at its main air-cavity (Helmholtz) resonance by sound arriving from loudspeakers or stage monitors, closing an acoustic feedback loop through the sound system.",
+   "plain_english": "When an amplified acoustic guitar sits in front of a speaker, sound from the speaker can shake its hollow body. The body rings back, the speaker makes it louder, and the sound builds into a loud howl. This runaway loop is called feedback.",
+   "purpose_function": "Recognizing acoustic-guitar feedback matters because the guitar's body resonance makes it feed back far more easily than a solid-body electric, so controlling it is essential to reaching usable stage volume without a constant howl.",
+   "practical_application": "A technician fights it by fitting a soundhole cover, notching the offending resonant frequency (often around 90-110 Hz) with EQ, keeping the guitar out of monitor beams, and lowering overall stage level.",
+   "category": "Live sound issue",
+   "related_terms": [
+    "Acoustic feedback",
+    "Helmholtz resonance",
+    "Soundhole cover",
+    "Notch filter",
+    "Stage monitor",
+    "Piezo pickup"
+   ],
+   "common_mistakes": [
+    "UNSAFE: Cranking monitors or the PA to overcome feedback, risking loudspeaker/tweeter damage and hearing injury from the sudden howl.",
+    "Rolling off all the low end to stop feedback and leaving the guitar thin, instead of notching the single resonant frequency.",
+    "Pointing the guitar's soundhole straight at a wedge monitor, which excites the body resonance directly."
+   ],
+   "scenario_contexts": [
+    "A singer-songwriter's amplified dreadnought howls at low volume on a small stage.",
+    "Soundcheck where a piezo-equipped acoustic feeds back as monitor level is raised.",
+    "A loud band setting where the acoustic guitarist stands close to a floor wedge."
+   ]
+  },
+  {
+   "id": "9a6fee10-96ec-4ea1-a4bf-9644d13c3159",
+   "term": "Bachi slap-attack",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The sharp, percussive component of a shamisen note produced when the string is struck with the bachi, a large plectrum whose downward stroke drives the string onto, and strikes, the skin-covered body (kawa). Prominent in tsugaru-jamisen playing, it adds a drum-like 'slap' transient to the pitched tone.",
+   "plain_english": "The shamisen is a Japanese string instrument played with a big pick called a bachi. The player strikes the string and the skin-covered body at the same time. This adds a sharp, drum-like slap to the front of each note.",
+   "purpose_function": "The slap-attack is central to the driving, percussive style of tsugaru-jamisen, giving each note a strong rhythmic punch that carries a melody and a beat at once. It exists because the bachi hits the skin as well as the string.",
+   "practical_application": "When recording shamisen, a technician expects a loud transient 'thwack' from the bachi hitting the skin and sets levels with extra headroom, often close-miking to catch both the string tone and the percussive slap.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Bachi (plectrum)",
+    "Shamisen",
+    "Tsugaru-jamisen",
+    "Transient",
+    "Percussive attack",
+    "Kawa (skin head)"
+   ],
+   "common_mistakes": [
+    "Treating the slap 'thwack' as unwanted noise and gating or EQ-ing it out, removing the sound that defines the style.",
+    "Setting record levels too hot and clipping on the sharp bachi transient.",
+    "Confusing the bachi with a small guitar pick; it is a large, fan-shaped plectrum that also strikes the body."
+   ],
+   "scenario_contexts": [
+    "Recording a solo tsugaru-jamisen performance with strong percussive attacks.",
+    "Miking a shamisen in a fusion band where the slap must cut through a drum kit.",
+    "Balancing a traditional Japanese ensemble where the shamisen's attack marks the rhythm."
+   ]
+  },
+  {
+   "id": "519ef69c-a78a-4983-b155-e68494986d0f",
+   "term": "Balalaika brrr-strum",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The rapid, rattling strummed sound characteristic of balalaika right-hand technique, in which the index finger (or the whole hand) brushes the strings quickly back and forth in fast up-and-down strokes and rattles, producing a continuous, tremolo-like 'brrr' across the courses.",
+   "plain_english": "The balalaika is a Russian instrument with a triangle-shaped body. Players brush the strings fast with one finger, going back and forth. This makes a quick rattling 'brrr' sound, a bit like a drum roll on strings.",
+   "purpose_function": "This rattling strum lets a small, short-sustaining instrument hold long chords and drive a fast dance rhythm, since rapid repeated strokes fill in the sound the way a tremolo does on a mandolin.",
+   "practical_application": "A technician miking a balalaika expects bursts of fast, bright transients from the strum and positions the mic to capture the rattle clearly without the picking hand overloading the input.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Balalaika",
+    "Tremolo",
+    "Strumming",
+    "Rasgueado",
+    "Transient",
+    "Course (paired strings)"
+   ],
+   "common_mistakes": [
+    "Mistaking the fast rattle for a recording fault or buzz and trying to 'clean' it out.",
+    "Miking too close so the rapid strokes sound clacky and lose the instrument's body tone.",
+    "Assuming a single slow strum can imitate the sustained 'brrr'; it needs continuous rapid strokes."
+   ],
+   "scenario_contexts": [
+    "Recording a Russian folk ensemble where the balalaika drives the rhythm with fast strumming.",
+    "Miking a solo balalaika holding a long, rattling chord under a melody.",
+    "Blending a balalaika into a film score cue that needs a driving folk texture."
+   ]
+  },
+  {
+   "id": "a44f8704-132e-402b-b6cc-8a4eea1a5deb",
+   "term": "Banjo feedback",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A sustained, self-reinforcing oscillation on an amplified or miked banjo in which sound from loudspeakers or monitors re-excites the tensioned drum-like head (membrane) and pot at their resonant frequencies, closing an acoustic feedback loop; the responsive membrane also makes the banjo prone to sympathetic ringing on stage.",
+   "plain_english": "A banjo has a tight, drum-like head. On a loud stage, sound from the speakers can make that head ring on its own. The speaker feeds it back louder until it turns into a howl or ring. This runaway loop is called feedback.",
+   "purpose_function": "Understanding banjo feedback matters because the drum head reacts strongly to stage sound, so a banjo can howl or ring uncontrollably before other instruments do, and controlling it protects both the mix and the gear.",
+   "practical_application": "A technician tames it by notching the resonant frequency with EQ, keeping the banjo head out of monitor and PA beams, muting the head lightly, and lowering stage volume rather than chasing gain.",
+   "category": "Live sound issue",
+   "related_terms": [
+    "Acoustic feedback",
+    "Banjo head",
+    "Notch filter",
+    "Stage monitor",
+    "Sympathetic resonance",
+    "Piezo pickup"
+   ],
+   "common_mistakes": [
+    "UNSAFE: Pushing PA or monitor gain to fight the ring, risking loudspeaker damage and hearing harm from a sudden loud howl.",
+    "Blaming the pickup when the untamed drum head is the resonating source.",
+    "Aiming the banjo head straight at a wedge monitor, exciting the membrane directly."
+   ],
+   "scenario_contexts": [
+    "A bluegrass band on a small stage where the amplified banjo rings between songs.",
+    "Soundcheck where the banjo howls as monitor level is raised.",
+    "A loud festival set with the banjo standing close to front-of-house speakers."
+   ]
+  },
+  {
+   "id": "3b890ddd-e2aa-45b1-835e-2bf9ce7db442",
+   "term": "Banjo roll ping",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The bright, sharp, bell-like attack of individual notes within a bluegrass banjo roll, a Scruggs-style three-finger pattern of arpeggiated, syncopated eighth notes, produced by picking with metal fingerpicks on a resonator banjo whose short sustain and strong high-frequency content make each plucked note 'ping.'",
+   "plain_english": "In bluegrass, banjo players pick fast, repeating patterns called rolls. Metal finger picks and the bright banjo make each note snap out clearly and quickly fade. That sharp, bell-like note is the 'ping.'",
+   "purpose_function": "The ping is what makes a banjo roll sound crisp and rhythmic rather than blurred; each note stands out because the banjo has little sustain and lots of high end, which is why rolls sound so distinct.",
+   "practical_application": "When recording bluegrass banjo, a technician places the mic to catch the bright ping without harshness and avoids heavy compression that would kill the attack and even out the roll's bounce.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Banjo roll",
+    "Scruggs style",
+    "Fingerpicks",
+    "Resonator banjo",
+    "Transient",
+    "Arpeggio"
+   ],
+   "common_mistakes": [
+    "Compressing the banjo hard and squashing the ping, so the roll loses its snap and drive.",
+    "Rolling off all the highs to reduce harshness and dulling the ping that defines the tone.",
+    "Confusing the right-hand roll pattern with the resulting 'ping' attack; the roll is the pattern, the ping is each note's sound."
+   ],
+   "scenario_contexts": [
+    "Tracking a fast bluegrass banjo break that must sit crisply over guitar and bass.",
+    "Miking a resonator banjo so each rolled note pings clearly in a mix.",
+    "Mixing a banjo roll where the engineer preserves the attack for rhythmic drive."
+   ]
+  },
+  {
+   "id": "8908d725-5f2d-4261-871d-9ee78f612316",
+   "term": "Bar noise",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The incidental scraping or friction noise made by the steel bar (or slide) as it moves along the strings of a lap-steel, pedal-steel, resonator or slide guitar; a mechanical, unpitched sound distinct from the notes being played, often captured by close mics or magnetic pickups.",
+   "plain_english": "Steel guitar players slide a smooth metal bar along the strings to change notes. The bar can scrape or squeak as it moves. That extra scraping sound, separate from the note, is called bar noise.",
+   "purpose_function": "Some bar noise is a natural, expressive part of steel and slide playing, but too much becomes distracting, so knowing its source lets a player or engineer keep the wanted character while controlling the rest.",
+   "practical_application": "A technician reduces excess bar noise by advising lighter bar pressure and wound-string care, and by using EQ or careful editing to tame the scrape without dulling the slide's natural glide.",
+   "category": "Playing artifact",
+   "related_terms": [
+    "Steel guitar",
+    "Slide guitar",
+    "Tone bar",
+    "String squeak",
+    "Palm muting",
+    "Pickup"
+   ],
+   "common_mistakes": [
+    "Treating all bar noise as a fault; a little is part of the authentic slide sound.",
+    "Pressing the bar too hard, which increases scraping and can also pull notes sharp.",
+    "Trying to fix heavy bar noise only with EQ instead of correcting technique at the source."
+   ],
+   "scenario_contexts": [
+    "Recording a pedal-steel overdub where excess bar scrape distracts from the melody.",
+    "Miking a bottleneck slide guitar that has expressive but noisy bar moves.",
+    "Editing a lap-steel take to reduce squeaks between slides."
+   ]
+  },
+  {
+   "id": "5da7d099-5d51-488c-9ac2-81a4fc3c80d0",
+   "term": "Bar vibrato (steel)",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "Vibrato on a steel guitar produced by rocking or oscillating the hand-held steel bar back and forth along the string's length over a stopped note, cyclically raising and lowering the pitch around the target pitch, rather than by bending or fretting the string.",
+   "plain_english": "On a steel guitar, the player holds a metal bar on the strings instead of pressing frets. Rocking the bar back and forth makes the pitch wobble a little above and below the note. That gentle, singing wobble is bar vibrato.",
+   "purpose_function": "Bar vibrato gives the steel guitar its vocal, crying, sustained quality, adding warmth and expression to long notes much as a singer's vibrato does, and it is a core part of the instrument's identity.",
+   "practical_application": "An engineer recording steel guitar preserves the natural pitch movement of bar vibrato and avoids pitch-correction tools that would fight it, while a player varies its width and speed to shape a phrase.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Steel guitar",
+    "Tone bar",
+    "Vibrato",
+    "Pitch bend",
+    "Portamento",
+    "Sustain"
+   ],
+   "common_mistakes": [
+    "Confusing bar vibrato with a whammy-bar wobble on an electric guitar; here the pitch changes by moving the bar on the string.",
+    "Applying automatic pitch correction that flattens the intentional pitch movement.",
+    "Rocking the bar too wide or too fast so the note sounds unstable rather than singing."
+   ],
+   "scenario_contexts": [
+    "Recording a pedal-steel ballad part where sustained notes need expressive vibrato.",
+    "Miking a lap-steel solo that relies on bar vibrato for its vocal quality.",
+    "Mixing a country track and choosing not to pitch-correct the steel's vibrato."
+   ]
+  },
+  {
+   "id": "0cc54f0b-170d-4afe-a067-d880b48f9dc7",
+   "term": "Bass string clank",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The percussive, metallic 'clank' produced on a bass guitar (or double bass) when the vibrating strings strike the frets or fingerboard, resulting from hard plucking, slapping and popping, or low string action, and adding a sharp attack transient on top of the fundamental note.",
+   "plain_english": "On a bass, the thick strings can smack against the metal frets. This happens with hard picking, slapping, or very low string height. It makes a hard, metallic 'clank' along with the note.",
+   "purpose_function": "A controlled amount of clank adds attack and definition that helps a bass cut through a dense mix, but excess clank buries the pitch, so understanding its cause lets a player or tech dial in the right balance.",
+   "practical_application": "A technician manages clank by adjusting string action and relief on the bass, changing pluck strength or hand position, and using EQ or gentle compression to keep the click without losing the low fundamental.",
+   "category": "Playing artifact",
+   "related_terms": [
+    "Slap bass",
+    "Fret buzz",
+    "String action",
+    "Attack transient",
+    "Neck relief",
+    "Compression"
+   ],
+   "common_mistakes": [
+    "Setting the action so low that the strings clank on every note instead of only when intended.",
+    "Trying to remove clank entirely with EQ and leaving the bass dull and lost in the mix.",
+    "Confusing musical slap clank with a genuine fret-buzz fault caused by bad setup."
+   ],
+   "scenario_contexts": [
+    "Recording a funk slap-bass line where controlled clank gives the groove its snap.",
+    "Setting up a bass so it stops clanking unintentionally on softer passages.",
+    "Mixing a rock track and shaping the bass attack so it drives without excess click."
+   ]
+  },
+  {
+   "id": "d049c27c-1044-434e-96bd-d4d2ad2bc30c",
+   "term": "Bass-port noise",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "An unwanted turbulent-airflow noise, often called port chuffing, emitted from the vent of a bass-reflex (ported) loudspeaker or instrument cabinet when high-excursion, low-frequency signals drive air through the port fast enough to become turbulent, adding a breathy huffing or whistling sound to the low end.",
+   "plain_english": "It is a huffing or whistling noise from the hole, called a port, in a speaker box. When loud, deep notes push air through that hole too fast, the air turns choppy and you hear a breathy sound.",
+   "purpose_function": "Recognizing it tells a technician the port is moving air too fast, so the cure is a larger or flared port, less level, or a sealed design, rather than blaming the driver.",
+   "practical_application": "A tech hearing a huff on deep bass notes checks the port's air velocity, flares or enlarges the vent, or lowers output so the port stops chuffing.",
+   "category": "Enclosure artifact",
+   "related_terms": [
+    "Bass reflex",
+    "Port tuning",
+    "Cone excursion",
+    "Distortion",
+    "Subwoofer"
+   ],
+   "common_mistakes": [
+    "Mistaking port chuffing for a blown or distorting driver.",
+    "Fitting a port that is too small in diameter for the air it must move.",
+    "Ignoring how higher output raises port air velocity and triggers the noise."
+   ],
+   "scenario_contexts": [
+    "A ported subwoofer huffing on sustained low notes at high level.",
+    "A bass guitar cabinet whistling at its tuning frequency when pushed hard.",
+    "Choosing a flared port to cut chuffing while designing a cabinet."
+   ]
+  },
+  {
+   "id": "883711fd-6684-481a-b1d9-495df9787f64",
+   "term": "Bağlama trill/şelpe",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "On the bağlama (Turkish long-necked lute), a fast melodic ornament (trill) rapidly alternating a note with an adjacent one, played within the plectrum-free şelpe fingerstyle technique, in which the right-hand fingers tap, strum, and pluck the strings directly instead of using a pick.",
+   "plain_english": "A fast wobble between two close notes on the bağlama, a Turkish long-necked lute. It is played in the şelpe style, where the fingers tap and pluck the strings instead of using a pick.",
+   "purpose_function": "It adds quick, decorative movement and a percussive, ringing character to a melody, and the şelpe hand gives the player fast fingered ornaments a pick cannot easily make.",
+   "practical_application": "An engineer recording bağlama expects bright finger taps and rapid trills, and uses a close mic with enough headroom to catch the percussive attacks cleanly.",
+   "category": "String articulation",
+   "related_terms": [
+    "Trill",
+    "Ornament",
+    "Hammer-on",
+    "Tremolo",
+    "Fingerstyle"
+   ],
+   "common_mistakes": [
+    "Assuming the bağlama is always played with a pick and missing the fingerstyle şelpe attacks.",
+    "Confusing a trill with a slower tremolo repeated on one note.",
+    "Compressing or gating so hard that quiet finger taps disappear."
+   ],
+   "scenario_contexts": [
+    "Close-miking a bağlama solo full of fast trills and finger taps.",
+    "Editing a Turkish folk take and recognizing şelpe finger noise as intended.",
+    "Setting levels for the bright, percussive attacks of şelpe playing."
+   ]
+  },
+  {
+   "id": "8dc59c5c-503d-421d-89a2-901dd6e62b0a",
+   "term": "Bottleneck slide squeak",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A high-pitched friction noise produced when a glass or metal slide (bottleneck) is dragged along the wound strings of a guitar, as the slide scrapes across the strings' spiral winding; a form of string squeak specific to slide (bottleneck) playing.",
+   "plain_english": "A squeaky scrape you hear when a slide moves along the guitar strings. The slide rubs over the ridged, wound strings and makes a high, squeaky noise, much like a finger sliding on strings.",
+   "purpose_function": "As a listening cue it marks slide movement between notes; some players keep it for feel, while engineers judge whether it adds character or distracts.",
+   "practical_application": "An engineer recording slide guitar decides whether to keep the squeak for feel or reduce it with a lighter touch, flatwound strings, or gentle EQ.",
+   "category": "Playing artifact",
+   "related_terms": [
+    "String squeak",
+    "Slide guitar",
+    "Fret noise",
+    "Wound string",
+    "Glissando"
+   ],
+   "common_mistakes": [
+    "Treating every slide squeak as a fault when it is often part of the style.",
+    "Blaming the pickup or amp for a noise the slide-on-string friction makes.",
+    "Using harsh de-essing that dulls the guitar tone while chasing the squeak."
+   ],
+   "scenario_contexts": [
+    "Tracking a blues slide solo and capturing bottleneck squeaks.",
+    "Deciding whether to edit out slide noise between phrases.",
+    "Switching to flatwound strings to reduce slide friction noise."
+   ]
+  },
+  {
+   "id": "b7ccf105-5ecc-4ef8-948c-6fe2051b6680",
+   "term": "Charango strum sparkle",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The bright, shimmering high-register character of a strummed charango, a small Andean lute with five double courses tuned in a high, partly re-entrant pattern, whose closely spaced high strings and small body produce a sparkling, jangly wash when strummed.",
+   "plain_english": "The bright, sparkly sound of strumming a charango, a small Andean lute. Its short doubled strings are tuned high, so a strum rings out light and glittery, like tiny bells.",
+   "purpose_function": "This sparkle is the charango's signature voice, adding shimmer and rhythmic drive high above guitars and bass in Andean music.",
+   "practical_application": "An engineer miking a charango captures its bright top end, then in the mix carves space so the sparkle sits above the guitar without clashing or sounding harsh.",
+   "category": "Tonal character",
+   "related_terms": [
+    "Course (strings)",
+    "Re-entrant tuning",
+    "Strum",
+    "Timbre",
+    "Air band"
+   ],
+   "common_mistakes": [
+    "Boosting high EQ until the sparkle turns harsh and brittle.",
+    "Treating the charango like a guitar and missing its high, doubled-string tuning.",
+    "Letting the sparkle mask the vocals or guitars instead of blending it in."
+   ],
+   "scenario_contexts": [
+    "Recording an Andean group and placing the charango's sparkle above the guitar.",
+    "Mixing a bright strummed charango so it cuts through without harshness.",
+    "Choosing mic position to balance body warmth against string sparkle."
+   ]
+  },
+  {
+   "id": "03223c6b-6158-436f-8d84-4d80a6142b90",
+   "term": "Chikari ping",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The bright, high-pitched plucked accent of the sitar's chikari strings, a pair of thin drone/rhythm strings tuned high (often to the tonic an octave or more up) and struck with the little finger of the plucking hand to punctuate rhythm, especially in the fast jhala section.",
+   "plain_english": "A bright, high ping from the sitar's thin drone strings. The player flicks them with the little finger to mark the beat, adding a ringing sparkle over the main tune.",
+   "purpose_function": "The chikari ping provides rhythmic drive and a constant high drone, marking the pulse and energizing fast passages on the sitar.",
+   "practical_application": "An engineer recording sitar expects sharp high-frequency pings between melody notes and leaves headroom and picks mic placement so these transients stay clean and are not clipped.",
+   "category": "String articulation",
+   "related_terms": [
+    "Drone string",
+    "Sympathetic strings",
+    "Jhala",
+    "Transient",
+    "Sitar"
+   ],
+   "common_mistakes": [
+    "Confusing the chikari drone strings with the sitar's sympathetic (tarab) strings.",
+    "Setting gain with no headroom for the sharp ping transients.",
+    "Gating too tightly and clipping off the ringing drone."
+   ],
+   "scenario_contexts": [
+    "Miking a sitar and capturing crisp chikari pings in a jhala section.",
+    "Balancing the high drone against the melody strings in a mix.",
+    "Identifying the rhythmic ping as chikari rather than a sympathetic-string ring."
+   ]
+  },
+  {
+   "id": "eb4e7cf6-7824-4944-880c-8cc00d8ef742",
+   "term": "Cimbalom roll",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A sustained tone on the cimbalom, a large Hungarian hammered dulcimer, produced by a rapid tremolo that quickly alternates the two beaters on a string or course to overcome the instrument's natural decay and hold a note or shimmering swell.",
+   "plain_english": "A long, shimmering note on the cimbalom, a large hammered dulcimer. The player taps a string very fast with two beaters so the sound keeps ringing instead of fading away.",
+   "purpose_function": "Because struck strings die away quickly, the roll lets the player sustain notes and shape crescendos, giving the cimbalom a singing, tremolando voice.",
+   "practical_application": "An engineer recording a cimbalom roll captures a dense, sustained tremolo and rides the build in level so the swell neither overloads nor loses its shimmer.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Tremolo",
+    "Sustain",
+    "Hammered dulcimer",
+    "Decay",
+    "Crescendo"
+   ],
+   "common_mistakes": [
+    "Expecting a single struck note to sustain like a bowed string.",
+    "Compressing a roll so hard that its natural swell flattens out.",
+    "Confusing the fast roll with a slow, measured tremolo."
+   ],
+   "scenario_contexts": [
+    "Recording a cimbalom holding a long rolled note in a folk piece.",
+    "Capturing a rolled crescendo without clipping the peak.",
+    "Identifying a sustained cimbalom tone as a two-beater roll."
+   ]
+  },
+  {
+   "id": "1ad40209-19d2-4836-8030-f6c58dbbaafc",
+   "term": "Clawhammer thump (frailing)",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The strong, percussive downstroke accent of clawhammer (frailing) banjo, a plectrum-free style in which the back of a fingernail strikes down across the strings while the thumb sounds the fifth (drone) string, producing the driving 'bum-ditty' rhythm; the thump is that firm downbeat strike.",
+   "plain_english": "The hard, driving downbeat of clawhammer banjo, also called frailing. The player brushes down with the back of a fingernail and plucks the short drone string with the thumb, giving a punchy thump.",
+   "purpose_function": "The thump supplies the strong rhythmic pulse and percussive drive of old-time banjo, letting one player sound both a melody and a steady beat.",
+   "practical_application": "An engineer recording clawhammer banjo captures a punchy, percussive attack and sets compression and mic position so the driving downstroke stays tight without swamping the melody.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Drone string",
+    "Downstroke",
+    "Frailing",
+    "Attack transient",
+    "Banjo"
+   ],
+   "common_mistakes": [
+    "Confusing clawhammer's downstroke frailing with three-finger bluegrass picking.",
+    "Compressing so hard that the percussive thump loses its punch.",
+    "Missing the thumb's fifth-string drone that drives the rhythm."
+   ],
+   "scenario_contexts": [
+    "Recording an old-time banjo player frailing a tune.",
+    "Setting mic and compression for a punchy clawhammer downbeat.",
+    "Telling clawhammer's rhythmic thump apart from bluegrass roll picking."
+   ]
+  },
+  {
+   "id": "b4cad57d-9dec-4682-88ba-af5f6026f9d5",
+   "term": "Controlled guitar feedback",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The intentional use of acoustic feedback, a self-sustaining loop in which sound from the amplifier's loudspeaker vibrates the electric guitar's strings and the pickup re-amplifies that motion, to sustain or swell a note or harmonic, shaped by the player through guitar position, volume, and pickup choice.",
+   "plain_english": "This is guitar feedback used on purpose. Loud sound from the amp shakes the strings, the pickup sends it back to the amp, and the note keeps ringing. The player aims the guitar to hold and shape it.",
+   "purpose_function": "It lets a guitarist sustain notes far longer than a plucked string naturally allows and produce singing, howling swells for expressive lead playing.",
+   "practical_application": "A guitarist stands near the amp and adjusts volume, angle, and distance to coax a sustained feedback note, while a live engineer manages stage level so only the wanted feedback sounds.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Acoustic feedback",
+    "Sustain",
+    "Larsen effect",
+    "Gain",
+    "Resonance"
+   ],
+   "common_mistakes": [
+    "UNSAFE: Cranking stage or monitor level to force feedback, risking hearing damage and a runaway howl through the PA; keep exposure within safe limits and control it at the guitar rig instead.",
+    "Confusing wanted musical feedback with an uncontrolled PA feedback squeal.",
+    "Expecting the same feedback note at every stage volume and guitar position."
+   ],
+   "scenario_contexts": [
+    "A lead guitarist holding a sustained feedback note at the end of a solo.",
+    "Setting up an amp and guitar to get feedback at a manageable stage volume.",
+    "A live engineer keeping controlled guitar feedback from triggering PA feedback."
+   ]
+  },
+  {
+   "id": "2588a01d-fe72-4cf0-9e3c-75d57988abfe",
+   "term": "Dan bau harmonic pluck",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The core sounding technique of the đàn bầu (Vietnamese single-string zither), in which the player plucks the string while lightly touching it at a harmonic node so only a flageolet (harmonic) tone sounds, giving a pure, flute-like note whose pitch is then bent with the flexible rod that anchors the string.",
+   "plain_english": "The way the đàn bầu, a Vietnamese one-string instrument, is played. The player plucks the string while lightly touching a special spot, so only a soft, pure tone rings out, like a whistle.",
+   "purpose_function": "Playing only harmonics gives the đàn bầu its pure, vocal, flute-like voice, and the bending rod lets one string produce a full, sliding melody.",
+   "practical_application": "An engineer recording đàn bầu captures a quiet, pure harmonic tone with wide pitch bends, using a close pickup or mic and careful gain for its low output and soft attacks.",
+   "category": "String articulation",
+   "related_terms": [
+    "Harmonic",
+    "Flageolet",
+    "Node",
+    "Pitch bend",
+    "Monochord"
+   ],
+   "common_mistakes": [
+    "Expecting a normal plucked-string tone rather than a pure harmonic.",
+    "Setting gain too low for the instrument's soft, quiet output.",
+    "Missing that pitch is bent by the flexible rod, not by fretting."
+   ],
+   "scenario_contexts": [
+    "Recording a đàn bầu melody full of sliding harmonic notes.",
+    "Setting gain and mic placement for its soft, pure harmonics.",
+    "Identifying the flute-like tone as a plucked harmonic, not a bowed note."
+   ]
+  },
+  {
+   "id": "c598f20f-597e-44b7-8fe7-31d34645a53a",
+   "term": "Dan bau whammy-bend",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "On the Vietnamese dan bau, a single-string monochord, the technique of flexing the instrument's whippy rod (can dan), to which the string is anchored, to raise or lower the pitch of a plucked harmonic and add vibrato, glissando, or expressive pitch bends.",
+   "plain_english": "The dan bau is a Vietnamese one-string instrument. A bendy rod holds the string. The player pushes or pulls this rod to slide the note up or down, a bit like a guitar whammy bar.",
+   "purpose_function": "It lets a single string produce a wide, smooth range of pitches and expressive inflections, giving the dan bau its speech-like, sliding voice from just plucked harmonics.",
+   "practical_application": "A player sounds a harmonic on the open string, then works the flexible rod with the picking hand to bend into the target pitch, add vibrato, or connect notes with slides.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Portamento",
+    "Vibrato",
+    "Harmonic",
+    "Glissando",
+    "Pitch bend"
+   ],
+   "common_mistakes": [
+    "Thinking the dan bau is fretted or stopped like a guitar, when its pitch comes mainly from harmonics plus rod bending.",
+    "Over-flexing the rod so notes overshoot the intended pitch.",
+    "Confusing the rod bend, which changes pitch, with a guitar tremolo effect that changes volume."
+   ],
+   "scenario_contexts": [
+    "Performing traditional Vietnamese melodies that imitate the sliding contours of the spoken language.",
+    "Recording dan bau for a film score and capturing its expressive pitch bends.",
+    "Amplifying a modern pickup-equipped dan bau in a live ensemble."
+   ]
+  },
+  {
+   "id": "493cf423-89ec-464b-ab6d-bad151ffbeda",
+   "term": "Domra tremolo",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A right-hand technique on the domra, a round-bodied Russian plucked lute, in which the plectrum rapidly alternates down-and-up strokes on a string to sustain an otherwise quickly decaying plucked tone into a continuous, singing line.",
+   "plain_english": "The domra is a round Russian string instrument played with a pick. Its plucked notes fade fast. So the player flicks the pick up and down very quickly to hold a note out and make it sing.",
+   "purpose_function": "It overcomes the short natural decay of a plucked string, letting the domra play smooth, sustained melodies and long held notes much like a bowed instrument.",
+   "practical_application": "A domra player uses steady tremolo for lyrical passages and long notes, switching to single strokes for faster, detached figures.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Tremolo",
+    "Plectrum",
+    "Sustain",
+    "Balalaika",
+    "Mandolin"
+   ],
+   "common_mistakes": [
+    "Playing tremolo unevenly, so the note pulses instead of sounding smooth.",
+    "Gripping the plectrum too tightly, which tires the hand and roughens the tremolo.",
+    "Confusing this continuous tremolo with a measured, notated tremolo rhythm."
+   ],
+   "scenario_contexts": [
+    "Playing a slow, singing melody in a Russian folk orchestra.",
+    "Sustaining a long held note that a single pluck could not carry.",
+    "Blending domra with balalaika in an ensemble arrangement."
+   ]
+  },
+  {
+   "id": "78f51ff2-a611-492f-a43d-a8a1500e9cd9",
+   "term": "Drone-wheel sustain",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "On the hurdy-gurdy, the continuous, organ-like sustain produced when the hand-cranked rosined wheel acts as a rotating bow, keeping the drone (bourdon) strings, and the melody strings, in steady vibration for as long as the wheel turns.",
+   "plain_english": "A hurdy-gurdy has a spinning wheel turned by a crank. The wheel rubs the strings like a never-ending bow. This keeps the drone strings humming steadily, so the sound never stops while you crank.",
+   "purpose_function": "The turning wheel replaces a bow, so the instrument can hold unbroken drones and melody notes indefinitely, giving the hurdy-gurdy its steady, bagpipe-like backdrop.",
+   "practical_application": "A player keeps the crank turning at an even speed to sustain the drones, adjusting cotton and rosin on the wheel to control tone and volume.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Drone",
+    "Bourdon",
+    "Rosin",
+    "Sustain",
+    "Sympathetic resonance"
+   ],
+   "common_mistakes": [
+    "Cranking unevenly, which makes the drone wobble in pitch and volume.",
+    "Neglecting to rosin or cotton the wheel, causing a weak or scratchy tone.",
+    "Assuming the drone strings are plucked rather than bowed by the wheel."
+   ],
+   "scenario_contexts": [
+    "Providing a steady drone under a dance tune in European folk music.",
+    "Setting up a hurdy-gurdy by adjusting wheel rosin for even sustain.",
+    "Recording the instrument's continuous drone as a bed for other parts."
+   ]
+  },
+  {
+   "id": "b9fd143e-83e9-49d5-9635-2c728e095aec",
+   "term": "Electrostatic buzz",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "Unwanted electrical noise, harmonically richer and edgier than smooth power-line hum, induced in an electric instrument's pickups and high-impedance wiring by capacitive (electrostatic) coupling to nearby alternating-current fields such as light dimmers, fluorescent ballasts, and displays; it typically drops when the player touches the grounded strings.",
+   "plain_english": "This is a harsh electrical buzz in an electric guitar. Nearby power wiring and lights leak their electric field into the pickups. Touching the metal strings often makes it fade, because your body helps send the noise to ground.",
+   "purpose_function": "Recognizing it as electrostatic (capacitive) noise rather than magnetic hum tells a technician to fix it with shielding and proper grounding instead of just repositioning the instrument.",
+   "practical_application": "A tech reduces it by shielding the guitar's control and pickup cavities with grounded conductive foil, confirming the bridge-to-string ground, and moving away from dimmers or fluorescent fixtures.",
+   "category": "Electrical noise",
+   "related_terms": [
+    "Hum",
+    "Shielding",
+    "Grounding",
+    "Single-coil pickup",
+    "Electromagnetic interference"
+   ],
+   "common_mistakes": [
+    "Confusing electrostatic buzz with magnetic hum, which shielding alone will not fix.",
+    "UNSAFE: Lifting the mains earth/ground pin to chase the buzz, which defeats safety grounding and can leave a chassis live and lethal.",
+    "Assuming humbucking pickups remove all buzz, when capacitively coupled noise still needs shielding and grounding."
+   ],
+   "scenario_contexts": [
+    "A single-coil guitar buzzing on a stage lit by dimmer packs.",
+    "Recording near a computer monitor or fluorescent light and hearing edgy buzz.",
+    "Shielding a guitar's cavities to cure buzz that touching the strings reduces."
+   ]
+  },
+  {
+   "id": "707a845d-c61a-4d6d-86a3-44a466bb5572",
+   "term": "Erhu horse-whinny",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A programmatic sound effect on the erhu, the Chinese two-string bowed fiddle, in which fast, oscillating finger slides combined with firm bow pressure imitate the neighing or whinnying of a horse; it is most famous from the closing passage of the solo piece 'Horse Racing' (Sai ma).",
+   "plain_english": "The erhu is a Chinese two-string fiddle. By sliding the fingers fast up and down while bowing hard, the player can make it sound like a horse neighing. This trick is famous in the piece 'Horse Racing.'",
+   "purpose_function": "It showcases the erhu's strong power to imitate voices and animal sounds, adding drama and a vivid picture to descriptive, programmatic pieces.",
+   "practical_application": "A player produces it with quick back-and-forth finger slides and firm bowing near the end of 'Horse Racing' to mimic a whinnying horse.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Portamento",
+    "Glissando",
+    "Vibrato",
+    "Bowing",
+    "Tremolo"
+   ],
+   "common_mistakes": [
+    "Sliding too slowly, so the effect sounds like a plain glissando instead of a whinny.",
+    "Using too little bow pressure, which weakens the braying, vocal quality.",
+    "Treating it as fixed notes rather than a free, imitative gesture."
+   ],
+   "scenario_contexts": [
+    "Performing the finale of 'Horse Racing' in a recital.",
+    "Scoring an erhu part that needs an animal or vocal imitation.",
+    "Teaching students expressive glissando control through the whinny effect."
+   ]
+  },
+  {
+   "id": "3e6dd299-f638-4966-b07c-0082c030a136",
+   "term": "Erhu portamento",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The smooth, continuous slide in pitch between two notes on the fretless erhu, produced by moving a stopping finger along the string while bowing; it is a central expressive device that gives erhu melody its vocal, speech-like inflection.",
+   "plain_english": "The erhu has no frets, so the finger can slide along the string. This makes the note glide smoothly from one pitch to the next. It gives the erhu its crying, voice-like sound.",
+   "purpose_function": "Portamento lets the erhu bend and connect notes like a singing voice, carrying much of the emotion and regional style of the music.",
+   "practical_application": "A player controls the speed and width of the slide with the left hand to shape phrases, imitate vocal ornaments, or match a regional style.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Glissando",
+    "Vibrato",
+    "Fingering",
+    "Bowing",
+    "Huqin"
+   ],
+   "common_mistakes": [
+    "Sliding on every note, which makes playing sound sloppy rather than expressive.",
+    "Rushing the slide so it loses its smooth, vocal shape.",
+    "Confusing portamento, a connecting slide, with vibrato, a small pitch wobble."
+   ],
+   "scenario_contexts": [
+    "Shaping a lyrical erhu melody to sound like a human voice.",
+    "Matching the slides typical of a particular regional Chinese style.",
+    "Connecting two widely spaced notes smoothly in a slow piece."
+   ]
+  },
+  {
+   "id": "47ea0a2e-b383-46a9-8e7b-09c0cdc0e83b",
+   "term": "Esraj/dilruba sympathetic ring",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The shimmering, sustained resonance heard on the esraj and dilruba, North Indian bowed instruments, when their numerous under-strings (tarab), tuned to the notes of the raga, vibrate sympathetically in response to the bowed melody strings without being touched.",
+   "plain_english": "The esraj and dilruba are Indian bowed instruments. Under the main strings sit many thin extra strings. When you bow a note, the matching extra strings hum on their own. This adds a soft, ringing halo around the sound.",
+   "purpose_function": "The sympathetic strings enrich and sustain the tone, surrounding each bowed note with a resonant halo tuned to the raga, which reinforces the mode and adds depth.",
+   "practical_application": "A player tunes the sympathetic strings to the current raga so they ring correctly, and uses mic placement or damping to balance that resonance in performance or recording.",
+   "category": "Acoustic resonance",
+   "related_terms": [
+    "Sympathetic resonance",
+    "Tarab",
+    "Drone",
+    "Sarangi",
+    "Sustain"
+   ],
+   "common_mistakes": [
+    "Leaving the sympathetic strings out of tune, so their ringing clashes with the raga.",
+    "Assuming the extra strings are bowed or plucked directly, when they sound on their own.",
+    "Ignoring how strongly the sympathetic ring bleeds into a close microphone."
+   ],
+   "scenario_contexts": [
+    "Tuning the tarab strings to a raga before a Hindustani performance.",
+    "Close-miking a dilruba and managing the wash of sympathetic resonance.",
+    "Comparing the fuller ring of a dilruba with the lighter esraj."
+   ]
+  },
+  {
+   "id": "06da211b-7b1f-4727-b15c-a870d072d42a",
+   "term": "Fifth-string drone",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "On the five-string banjo, the sustained, unchanging note sounded by the short fifth (thumb) string, which runs only from a peg at the fifth fret to the bridge and is tuned to a high pitch (commonly g'); repeatedly struck by the thumb, it provides a constant drone above the melody.",
+   "plain_english": "A five-string banjo has one short string that starts partway up the neck. It is tuned to a high note and is usually left open. The player's thumb keeps hitting it, so the same note rings again and again like a drone.",
+   "purpose_function": "The fifth string adds a steady high drone that drives the rhythm and gives clawhammer and bluegrass banjo their characteristic rolling, ringing sound.",
+   "practical_application": "A player sounds the open fifth string with the thumb on offbeats in rolls and frailing patterns, usually leaving it unfretted as a fixed drone.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Drone",
+    "Open string",
+    "Clawhammer",
+    "Roll",
+    "Capo"
+   ],
+   "common_mistakes": [
+    "Trying to fret the fifth string like the others, when it usually stays open as a drone.",
+    "Changing key without spiking or capoing the fifth string, so the drone clashes.",
+    "Overpowering the melody by striking the drone string too hard."
+   ],
+   "scenario_contexts": [
+    "Playing a bluegrass roll where the thumb keeps sounding the drone string.",
+    "Frailing an old-time tune with a steady fifth-string drone.",
+    "Using fifth-string spikes or a capo to change the drone's pitch for a new key."
+   ]
+  },
+  {
+   "id": "2d339430-2d1d-4d7f-860b-cef7e6be80d6",
+   "term": "Fingerboard slap",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A percussive string technique in which the player pulls a string away from the fingerboard and releases it, or strikes it down, so it snaps back against the fingerboard and frets to produce a sharp click alongside the note; on the upright (double) bass it is the basis of rockabilly slap bass, and on electric bass it forms part of slap-and-pop playing.",
+   "plain_english": "The player pulls a string and lets it snap back onto the fingerboard. This makes a sharp clicking sound along with the note. It adds a drum-like beat to the bass line, as heard in rockabilly.",
+   "purpose_function": "It adds a built-in percussive click to each note, letting a bassist supply both the bass line and a drum-like rhythmic drive at once.",
+   "practical_application": "An upright player slaps the strings against the fingerboard between notes for a rockabilly groove; an electric player combines thumb slaps and finger pops for funk.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Slap bass",
+    "Pizzicato",
+    "Pop",
+    "Percussive attack",
+    "Double bass"
+   ],
+   "common_mistakes": [
+    "Slapping so hard that the strings and fingerboard wear or the instrument is damaged.",
+    "Letting the click drown out the pitch, so the bass line loses its note.",
+    "Confusing upright slap with electric thumb-slap, which use different hand motions."
+   ],
+   "scenario_contexts": [
+    "Driving a rockabilly tune with slap on an amplified upright bass.",
+    "Adding funk rhythm with slap-and-pop on electric bass.",
+    "Miking or using a pickup on an upright to capture the slap click cleanly."
+   ]
+  },
+  {
+   "id": "66e3e14d-ba22-4e75-ad9f-041d2808d3df",
+   "term": "Fret buzz",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A buzzing or rattling tone produced when a vibrating string on a fretted instrument makes unwanted contact with one or more frets instead of ringing cleanly. It typically results from low string action, too little or too much neck relief, or uneven and high frets.",
+   "plain_english": "Fret buzz is the buzzy rattle you hear when a guitar string slaps against the metal frets instead of ringing out. It usually means the strings sit too low, or the neck or frets need a small setup fix.",
+   "purpose_function": "It is a fault symptom rather than a feature; recognizing it tells a technician that the instrument's setup (action, neck relief, or fret height) needs adjustment before recording or performance.",
+   "practical_application": "During a setup, a tech plays each note up the neck to find buzzing frets, then adjusts the truss rod, raises the saddle or bridge height, or levels and crowns high frets until the buzz clears.",
+   "category": "Setup Defect",
+   "related_terms": [
+    "String action",
+    "Neck relief",
+    "Truss rod",
+    "Fret leveling",
+    "Fret noise"
+   ],
+   "common_mistakes": [
+    "Confusing fret buzz with an amp or pickup problem instead of a setup issue",
+    "Cranking the truss rod hard to force the buzz away, which can bow or crack the neck",
+    "Lowering action as far as it will go for comfort, then getting buzz across the whole neck"
+   ],
+   "scenario_contexts": [
+    "Setting up a new electric guitar so it plays cleanly across the whole neck",
+    "Diagnosing a rattly note that shows up on a recorded DI guitar track",
+    "Chasing buzz that appears after seasonal humidity moves the neck"
+   ]
+  },
+  {
+   "id": "522dd0cc-2932-453a-9261-a444290cd4ff",
+   "term": "Fret noise",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The incidental clicks, squeaks, and scrapes made by the fretting hand moving on the strings and frets of a guitar or bass, especially as fingers slide or shift position on wound strings. In sampling it is treated as a distinct articulation and appears in the General MIDI Level 1 sound set as program 121, 'Guitar Fret Noise.'",
+   "plain_english": "Fret noise is the little squeak or scrape you hear when a player's fingers slide along the strings to change chords or notes. It is a normal part of guitar sound, and engineers can leave it in or clean it up.",
+   "purpose_function": "It adds realism and human feel to guitar and bass parts, which is why sample libraries include it as a separate layer; identifying it lets an engineer decide whether to keep or reduce it.",
+   "practical_application": "When editing a recorded acoustic guitar, an engineer may automate short volume dips or use de-noise tools to soften distracting finger squeaks between chords while keeping a natural feel.",
+   "category": "Performance Noise",
+   "related_terms": [
+    "Fret buzz",
+    "String squeak",
+    "Fretless fingerboard noise",
+    "Articulation",
+    "De-noise"
+   ],
+   "common_mistakes": [
+    "Trying to remove all fret noise, which makes the guitar sound fake and lifeless",
+    "Confusing fret noise (finger movement) with fret buzz (a setup fault)",
+    "Boosting high frequencies heavily, which exaggerates the squeaks"
+   ],
+   "scenario_contexts": [
+    "Comping an acoustic guitar take where loud finger squeaks distract between phrases",
+    "Programming a sampled guitar and adding fret-noise samples for realism",
+    "Close-miking a wound-string bass that captures finger slides"
+   ]
+  },
+  {
+   "id": "1bdabc66-0508-4f78-9812-ee4f7add2c6a",
+   "term": "Fret transition",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The movement of the fretting hand from one fret position to another on a fretted string instrument, together with the connected sound of that shift, ranging from a smooth slide (glissando) to an audible finger scrape on wound strings. In sampled instruments it is commonly reproduced as a transition or legato sample linking two notes.",
+   "plain_english": "A fret transition is when a guitarist's hand moves from one fret to another to reach a new note. The move can sound smooth like a slide, or add a small scrape as the fingers travel along the strings.",
+   "purpose_function": "It links notes musically and shapes phrasing; capturing or modeling it convincingly is what makes sampled guitars and basses sound like a real player rather than a set of separate notes.",
+   "practical_application": "A sound designer building a virtual guitar records slide and legato samples so that moving between notes triggers a natural transition instead of an abrupt note change.",
+   "category": "Playing Technique",
+   "related_terms": [
+    "Legato",
+    "Glissando",
+    "Position shift",
+    "Fret noise",
+    "Articulation"
+   ],
+   "common_mistakes": [
+    "Treating every transition as a clean slide and ignoring the finger noise real players make",
+    "Using one transition sample for all speeds, which sounds robotic",
+    "Confusing a musical slide with unwanted fret buzz"
+   ],
+   "scenario_contexts": [
+    "Editing a solo where slide transitions need to feel smooth and in time",
+    "Designing a sampled guitar patch that adds slide samples between held notes",
+    "Notating a passage that calls for an audible position shift"
+   ]
+  },
+  {
+   "id": "5ae3a98f-003e-4ad4-8223-617ab8f0def4",
+   "term": "Fretless fingerboard noise",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The friction, scrape, and singing sounds produced on a fretless instrument (such as fretless bass, the violin family, or the oud) when a finger presses the string directly against the smooth fingerboard and slides between pitches, with no fret to break the contact. It includes the sustained gliding tone characteristic of fretless playing.",
+   "plain_english": "On a fretless instrument there are no metal frets, so the finger presses the string straight onto the smooth board. When the player slides, you hear a smooth gliding or singing sound, and sometimes a soft scrape along the wood.",
+   "purpose_function": "This noise is part of the expressive, vocal-like character players want from fretless instruments; knowing it is normal helps an engineer mic and mix it rather than treat it as a fault.",
+   "practical_application": "Recording a fretless bass, an engineer sets mic placement and EQ to capture the singing slide tone while keeping harsh board scrapes under control.",
+   "category": "Performance Noise",
+   "related_terms": [
+    "Fretless oud slide",
+    "Fret noise",
+    "Glissando",
+    "Fingerboard",
+    "String squeak"
+   ],
+   "common_mistakes": [
+    "Trying to remove the slide or gliding sound, which is the whole point of a fretless instrument",
+    "Confusing normal fingerboard slide with a buzz or a defect",
+    "Pressing too lightly, which gives weak, unclear notes instead of clean pitch"
+   ],
+   "scenario_contexts": [
+    "Recording a fretless bass solo that relies on smooth slides between notes",
+    "Mixing a fretless part where board scrapes are too loud on close mics",
+    "Sampling a fretless instrument and adding slide layers for realism"
+   ]
+  },
+  {
+   "id": "700628a2-3ad7-4149-82c1-ac7ec63aceb3",
+   "term": "Fretless oud slide",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "A glissando or portamento performed on the oud, whose fretless fingerboard lets a finger slide continuously between pitches, including the small microtonal intervals of Arabic and Turkish maqam. The absence of frets makes smooth, vocal-like slides a core expressive device of the instrument.",
+   "plain_english": "The oud has no frets, so a player can slide a finger smoothly along the string to bend from one note to the next. This gliding move is a key part of the oud's singing, expressive sound in Middle Eastern music.",
+   "purpose_function": "Sliding lets the oud reach the in-between (microtonal) notes of maqam scales and add vocal-like ornament, something fretted instruments cannot easily do.",
+   "practical_application": "An engineer recording an oud keeps mic placement and EQ that preserve the smooth slides and finger detail without exaggerating string scrape.",
+   "category": "Playing Technique",
+   "related_terms": [
+    "Oud",
+    "Glissando",
+    "Maqam",
+    "Fretless fingerboard noise",
+    "Microtonality"
+   ],
+   "common_mistakes": [
+    "Assuming the oud is fretted like a lute or guitar",
+    "Editing out slides that carry the maqam's microtonal notes",
+    "Pitch-correcting or quantizing an oud line and destroying its slides"
+   ],
+   "scenario_contexts": [
+    "Recording an oud solo in a world-music session",
+    "Mixing a maqam piece where slides define the melody's character",
+    "Sampling an oud and needing slide articulations for authenticity"
+   ]
+  },
+  {
+   "id": "cfcdcb22-e02d-48dd-909e-dfdd36b98163",
+   "term": "Gadulka sympathetic ring",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "The resonant ringing of the gadulka's sympathetic strings, a set of undamped strings mounted beneath the bowed melody strings of this Bulgarian pear-shaped bowed lute; they vibrate in sympathy when the melody strings sound, producing a shimmering halo around the played note.",
+   "plain_english": "The gadulka is a Bulgarian bowed fiddle with extra strings that no one touches. When the player bows the main strings, these spare strings ring on their own. They add a soft, shimmering echo around the melody.",
+   "purpose_function": "Sympathetic strings enrich and sustain the instrument's tone without being played directly, giving the gadulka its characteristic ringing, reverberant sound.",
+   "practical_application": "When miking a gadulka, an engineer places the mic to capture both the bowed melody and the sympathetic ring, and avoids over-damping the instrument's body.",
+   "category": "Resonance",
+   "related_terms": [
+    "Sympathetic strings",
+    "Gadulka",
+    "Resonance",
+    "Drone",
+    "Bowed string"
+   ],
+   "common_mistakes": [
+    "Thinking the extra strings are fingered and played like the melody strings",
+    "Muting or damping the sympathetic strings and losing the instrument's signature ring",
+    "Confusing the sympathetic ring with reverb added later in the mix"
+   ],
+   "scenario_contexts": [
+    "Recording a Bulgarian folk ensemble featuring gadulka",
+    "Mixing a track where the sympathetic ring needs space to bloom",
+    "Comparing gadulka to other sympathetic-string instruments such as sarangi or viola d'amore"
+   ]
+  },
+  {
+   "id": "981eb2f0-80d0-4bb5-9de1-aa9fcff805f2",
+   "term": "Guqin floating harmonics (fan yin)",
+   "topic": "Strings, Guitar & Keys",
+   "difficulty": null,
+   "definition": "Fan yin are the harmonic (flageolet) tones of the guqin, produced when a left-hand finger lightly touches a string at a nodal point marked by the inlaid hui studs while the right hand plucks, yielding clear, bell-like overtones. They form one of the three main tone categories of the guqin, alongside open-string (san yin) and stopped (an yin) tones.",
+   "plain_english": "Floating harmonics are soft, bell-like notes on the Chinese guqin zither. The player rests a fingertip very lightly on the string, plucks, and lifts, so only a pure, ringing tone sounds. The notes seem to float above the music.",
+   "purpose_function": "Harmonics give the guqin a pure, ethereal timbre used for special passages, and because they sound only at exact points on the string they also serve as position and tuning references.",
+   "practical_application": "Recording solo guqin, an engineer uses a quiet room and a sensitive close mic to capture the delicate, low-level floating harmonics cleanly.",
+   "category": "Playing Technique",
+   "related_terms": [
+    "Harmonic (flageolet)",
+    "Nodal point",
+    "Guqin",
+    "Guqin slide squeak (zou yin)",
+    "Overtone"
+   ],
+   "common_mistakes": [
+    "Pressing the string down instead of touching it lightly, which kills the harmonic",
+    "Touching between the marked points, so no clear overtone sounds",
+    "Setting record levels for loud notes and missing the very quiet harmonics"
+   ],
+   "scenario_contexts": [
+    "Recording a traditional guqin piece with harmonic passages",
+    "Setting gain for a quiet solo instrument with wide dynamic range",
+    "Studying string harmonics and their nodal positions"
+   ]
+  }
+ ]
+}

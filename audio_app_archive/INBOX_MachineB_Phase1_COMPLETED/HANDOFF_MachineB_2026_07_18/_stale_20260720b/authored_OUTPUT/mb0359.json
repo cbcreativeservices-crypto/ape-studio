@@ -1,0 +1,159 @@
+{
+ "batch": 359,
+ "topic": "Drums & Percussion",
+ "authored": [
+  {
+   "id": "040b8c0f-47e1-42b9-881d-3fb35e50dd32",
+   "term": "Conga bass (heel)",
+   "fields": {
+    "definition": "The low, deep tone of the conga, produced by striking the center of the head with the flat palm or heel of the hand and letting it rest briefly to damp the ring. It is the darkest, lowest-pitched of the basic conga strokes; in the heel-tip (heel-toe) rocking motion the heel of the palm supplies this bass pulse.",
+    "plain_english": "The deep, low sound of a conga drum. You make it by pushing the flat of your hand into the middle of the head. It gives a soft, heavy thud that sits under the beat like a heartbeat.",
+    "purpose_function": "It gives the conga part its low-end foundation and marks the pulse, so the higher open and slap tones have a deep note to lock against.",
+    "practical_application": "A player sounds the bass tone on strong beats as part of the heel-tip rocking motion; when miking congas, an engineer positions the mic to capture this low thump without excessive boom.",
+    "category": "Conga technique",
+    "related_terms": ["Conga open tone", "Conga slap (seco)", "Conga muff (mute tone)", "Heel-tip stroke", "Tumbao", "Tumbadora"],
+    "common_mistakes": ["Striking the center with a stiff, flat hand and leaving it there so long the note sounds dead instead of a round, deep bass.", "Confusing the bass tone with the quiet heel of the heel-tip motion; the bass is a distinct deep note, not just filler.", "Hitting harder for a lower sound, when relaxed weight from the palm gives a fuller bass than force does."],
+    "scenario_contexts": ["Laying down the low pulse of a salsa tumbao on the downbeats.", "Anchoring a Latin-jazz groove so the open and slap tones have a deep note to sit over.", "Setting a mic on the conga to capture a full bass thump without boom."]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians (conga/tumbadora entry)", "Blades, Percussion Instruments and Their History", "The Instrumentalist, 'Conga Basics'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5e570438-954b-4f55-bc15-d4e11dca7b15",
+   "term": "Conga muff (mute tone)",
+   "fields": {
+    "definition": "A muted conga stroke played like an open tone near the rim, but with the fingers left pressed on the head so the note is stopped short. It produces a short, dry, dead-sounding tone with little ring, used as soft filler between the ringing strokes.",
+    "plain_english": "A short, dull conga note. You strike near the edge but keep your fingers on the head so it does not ring. It sounds soft and quiet, like a quick tap that gets muffled right away.",
+    "purpose_function": "Muted tones fill the quiet spaces in a conga pattern with soft, non-ringing notes, adding motion and swing without competing with the loud open and slap accents.",
+    "practical_application": "A player uses muff tones as low-volume filler within the heel-tip motion; an engineer keeps them just audible in a mix so the groove's inner rhythm is not lost under the louder strokes.",
+    "category": "Conga technique",
+    "related_terms": ["Conga open tone", "Conga bass (heel)", "Conga slap (seco)", "Muffled tone", "Heel-tip stroke", "Damping"],
+    "common_mistakes": ["Playing muff tones too loud so they compete with the open and slap accents instead of sitting underneath them.", "Lifting the fingers after the strike, which turns the intended muted note into an open, ringing tone.", "Skipping muted filler notes entirely, leaving the pattern stiff and losing its swing."],
+    "scenario_contexts": ["Filling the gaps of a tumbao with quiet, non-ringing notes to keep the groove moving.", "Using the heel-tip rocking motion where muted taps link the louder accents.", "Mixing a busy percussion track and keeping the soft muted notes just audible under the accents."]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians (conga/tumbadora entry)", "Blades, Percussion Instruments and Their History", "The Instrumentalist, 'Conga Basics'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ad32da57-edc6-4c66-87d2-3cad8d86def6",
+   "term": "Conga open tone",
+   "fields": {
+    "definition": "The clear, ringing conga tone produced by striking the edge of the head with the fingers held together and flat, then letting the hand bounce straight off so the head rings freely. It is the fundamental sustained, pitched sound of the drum.",
+    "plain_english": "The clear, ringing sound of a conga. You hit the edge with flat fingers and let your hand bounce right off. Because you do not hold the head down, the drum rings out with a bright, singing note.",
+    "purpose_function": "The open tone is the conga's main melodic, pitched voice; drums tuned to different pitches use open tones to carry the tune and the main accents of a pattern.",
+    "practical_application": "Players sound open tones for the ringing accents in a tumbao; when tuning a set of congas, a player or engineer checks that each drum's open tone gives a clear, distinct pitch.",
+    "category": "Conga technique",
+    "related_terms": ["Conga slap (seco)", "Conga bass (heel)", "Conga muff (mute tone)", "Tumbao", "Drum tuning", "Sustain"],
+    "common_mistakes": ["Leaving the fingers on the head after striking, which mutes the tone and kills the ring.", "Striking too far from the edge or over the center, giving a dull, pitchless thud instead of a clear tone.", "Using too much arm force so tones sound harsh and the hand tires, when a loose wrist gives a cleaner ring."],
+    "scenario_contexts": ["Sounding the ringing melodic accents of a salsa or rumba pattern.", "Tuning a set of two or three congas so each open tone gives a clear, separate pitch.", "Recording a solo where the open tones carry the main melody of the phrase."]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians (conga/tumbadora entry)", "Blades, Percussion Instruments and Their History", "The Instrumentalist, 'Conga Basics'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6d7f19c9-21ba-42b1-ab02-2ddbca7c4642",
+   "term": "Conga slap (seco)",
+   "fields": {
+    "definition": "A sharp, loud, high-pitched conga accent produced with a quick whip of the cupped fingers at the head. In the closed or 'seco' (dry) slap the hand stays on the head after striking, muting the ring to leave a short, cracking pop; an open slap instead lets the head ring.",
+    "plain_english": "A loud, sharp 'crack' on the conga. You snap your cupped fingers onto the head with a fast whip of the hand. The dry, or 'seco', slap keeps the hand down so the sound is short and pops like a clap.",
+    "purpose_function": "The slap is the loudest, most cutting conga stroke; it provides the bright accents that punch through a band and mark key points in a rhythm.",
+    "practical_application": "Players place slaps on offbeats for drive and cut; because slaps are much louder than other strokes, an engineer watches for level spikes and may use light compression to control them.",
+    "category": "Conga technique",
+    "related_terms": ["Conga open tone", "Conga bass (heel)", "Conga muff (mute tone)", "Accent", "Transient", "Dynamic range"],
+    "common_mistakes": ["Trying to make the slap loud with brute force, which strains the hand; the crack comes from a relaxed whip of the fingers.", "Confusing the closed (seco) slap with the open slap; the seco slap keeps the hand on the head to stop the ring.", "UNSAFE: Practicing hard slaps for long stretches without rest, risking bruising and repetitive-strain injury to the hand and wrist."],
+    "scenario_contexts": ["Cutting sharp accents through a full band on the offbeats.", "Trading loud slaps in a rumba or conga solo for excitement.", "Controlling level spikes when recording, since slaps are far louder than open tones."]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians (conga/tumbadora entry)", "Blades, Percussion Instruments and Their History", "The Instrumentalist, 'Conga Basics'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c68030e8-f44a-4448-91a9-2485863f2201",
+   "term": "Corner tone (cajón)",
+   "fields": {
+    "definition": "A high, sharp slapping tone on a cajón, produced by striking the top corner or upper edge of the front playing surface (the tapa), where the panel is loosest. It contrasts with the deep bass tone struck in the center and functions like a snare-style accent.",
+    "plain_english": "The high, snappy sound of a cajon. You get it by hitting the top corner of the front playing face, not the middle. It cracks like a snare drum, while the center gives the deep bass note.",
+    "purpose_function": "Corner tones give the cajon its treble, snare-like accents; playing corners versus center lets one box drum imitate both the snare and the bass drum of a kit.",
+    "practical_application": "A player strikes the top corners for backbeats and the center for bass notes; when miking a cajon, an engineer aims to capture both the corner slap and the internal snare buzz.",
+    "category": "Cajon technique",
+    "related_terms": ["Cajon", "Bass tone", "Slap tone", "Snare wires", "Backbeat", "Close miking"],
+    "common_mistakes": ["Hitting the center for every note, so the playing has no high, snare-like accents and sounds flat.", "Striking the wooden frame instead of the loose top corner of the tapa, giving a hard knock instead of a ringing slap.", "Forgetting that corner and center tones need different hand angles, leading to weak, uneven sounds."],
+    "scenario_contexts": ["Playing the backbeat 'snare' hits on an acoustic pop gig with just a cajon.", "Switching between corner slaps and center bass to imitate a full drum kit.", "Miking a cajon for a live set to capture both the corner slap and the internal snare buzz."]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians (cajon entry)", "Blades, Percussion Instruments and Their History", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d893acdd-4544-4083-abd0-4269f1f31ffc",
+   "term": "Cowbell attack",
+   "fields": {
+    "definition": "The sharp initial transient of a cowbell strike: the loud, bright metallic onset heard the instant the beater hits the bell, before the tone settles. A cowbell has a very fast, pronounced attack and short sustain, giving it a hard, cutting sound.",
+    "plain_english": "The hard, bright 'clank' at the very start of a cowbell hit. That sudden burst of sound is the attack. A cowbell's attack is fast and loud, so it cuts through a band even when other things are playing.",
+    "purpose_function": "The strong attack is what makes the cowbell so easy to hear in a busy mix; its sharp onset marks time clearly and adds a driving accent to a groove.",
+    "practical_application": "A player varies where and how hard the bell is struck to shape the attack; an engineer may use a fast transient or compression setting so the cowbell's onset stays punchy without turning harsh.",
+    "category": "Cowbell sound",
+    "related_terms": ["Attack", "Transient", "Sustain", "Cowbell", "Clave", "Compression"],
+    "common_mistakes": ["Choking the bell by gripping it tightly, which deadens both the attack and the sustain.", "Striking only one spot; the open mouth and the closed end give very different attack and pitch.", "Turning the cowbell up too loud in a mix because its sharp attack already cuts through easily."],
+    "scenario_contexts": ["Marking the clave or timeline in a Latin band with a bright, cutting cowbell.", "Adding a driving accent to a rock or funk groove that needs to punch through.", "Dialing a fast transient or compression setting so the cowbell stays punchy in a dense mix."]
+   },
+   "sources": ["Rossing, Science of Percussion Instruments", "Grove Dictionary of Music and Musicians (cowbell entry)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "13277150-6502-4291-944a-8325f0e71291",
+   "term": "Cuíca squeak (moan)",
+   "fields": {
+    "definition": "The characteristic high, vocal-like cry of the cuica, a Brazilian friction drum. It is made by rubbing a damp cloth along a stick fixed inside and perpendicular to the head; the friction drives the head into vibration, while a finger pressing the head from outside slides the pitch up and down to create the squeaking, moaning or laughing sound.",
+    "plain_english": "The squeaky, moaning cry of the cuica, a Brazilian drum. Inside is a stick joined to the head. You rub the stick with a wet cloth to make it sing, and press the head with a finger to slide the pitch, so it sounds like a voice.",
+    "purpose_function": "The squeak-and-moan is the cuica's whole voice; its rising and falling cry adds a talking, call-and-response feel that drives samba and carnival grooves.",
+    "practical_application": "A player rubs and presses to bend the pitch in time with the music; an engineer close-mics the drum to catch its quiet, high squeak without picking up too much surrounding percussion.",
+    "category": "Cuica technique",
+    "related_terms": ["Friction drum", "Membrane", "Pitch bend", "Samba", "Timbre", "Close miking"],
+    "common_mistakes": ["Rubbing with a dry cloth or too little rosin, so the stick slips and squeals unevenly instead of singing.", "Forgetting to press the head with the other hand, losing the pitch changes that make the moaning voice.", "Rubbing too fast or hard, which produces a harsh screech rather than a controlled cry."],
+    "scenario_contexts": ["Adding the talking, call-and-response cries to a samba bateria at carnival.", "Coloring a percussion track with a vocal-like moaning effect.", "Close-miking the drum in the studio to catch its quiet, high squeak."]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians (cuica entry)", "Blades, Percussion Instruments and Their History", "Rossing, Science of Percussion Instruments (friction drums)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c2ff5775-6ceb-42ee-b798-0137f96c929f",
+   "term": "Cymbal roar",
+   "fields": {
+    "definition": "A loud, dense, sustained wash of cymbal sound, built by striking a cymbal hard or rolling on it until its many closely spaced vibration modes blend into a full, roaring surge of noise. It is most often produced on a crash, ride or suspended cymbal with mallets or fast repeated strokes.",
+    "plain_english": "A big, loud swell of cymbal sound, like a wave of noise growing louder. A cymbal makes so many tones at once that a hard hit or fast roll blends them into a roar. Drummers use it to build up to a big moment.",
+    "purpose_function": "A cymbal roar adds power and tension, filling the top end of the sound to lift a climax or mark a dramatic transition in a piece.",
+    "practical_application": "A drummer rolls with mallets to swell a roar into a chorus or downbeat; an engineer manages overhead mic levels and possible limiting so the roar's peak stays loud but does not distort.",
+    "category": "Cymbal sound",
+    "related_terms": ["Cymbal shimmer", "Cymbal wash", "Crash cymbal", "Suspended cymbal", "Cymbal roll", "Overhead miking"],
+    "common_mistakes": ["Crashing at full force to get a roar, which can crack a thin cymbal; a mallet roll builds the same swell more safely.", "Rolling with sticks too slowly, so the sound stays as separate hits instead of blending into a wash.", "UNSAFE: Standing close to loud, sustained cymbal washes without hearing protection, risking noise-induced hearing loss."],
+    "scenario_contexts": ["Building a mallet roll into a huge wash to launch a chorus or final section.", "Marking a dramatic transition in an orchestral or film score with a suspended-cymbal swell.", "Riding overhead levels and limiting so the roar's peak stays loud but clean."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Rossing, Science of Percussion Instruments", "Ballou, Handbook for Sound Engineers", "OSHA 29 CFR 1910.95 (occupational noise exposure)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "850b0b3d-0f26-45bc-970e-d1228088b60d",
+   "term": "Cymbal shimmer",
+   "fields": {
+    "definition": "The bright, sparkling, sustained high-frequency component of a cymbal's sound: the soft, glistening ring produced by its high vibration modes, especially from a light touch, soft roll or gentle wash on a thin cymbal. It is a delicate, airy sustain rather than a loud attack.",
+    "plain_english": "The soft, sparkly ring of a cymbal that hangs in the air. It is the bright, glittery part of the sound, not a loud crash. A light tap or gentle roll brings it out, adding a shiny sheen on top of the music.",
+    "purpose_function": "Shimmer adds air, sparkle and a sense of space at the top of a mix, giving music a bright, glossy finish without heavy volume.",
+    "practical_application": "A drummer coaxes shimmer with soft rolls or light ride playing under a quiet passage; an engineer captures it with well-placed overhead or room mics and gentle high-end EQ rather than boosting harsh frequencies.",
+    "category": "Cymbal sound",
+    "related_terms": ["Cymbal roar", "Cymbal wash", "Ride cymbal", "Sustain", "Overhead miking", "High frequency"],
+    "common_mistakes": ["Playing too hard, which turns the soft shimmer into a loud crash and loses the delicate sheen.", "Boosting harsh high frequencies to add sparkle, when gentle, well-placed miking captures shimmer more naturally.", "Choosing a thick, heavy cymbal and expecting shimmer; thinner cymbals give the airy, sustained ring more easily."],
+    "scenario_contexts": ["Adding soft, sparkling sustain under a quiet ballad verse.", "Coaxing an airy sheen from a light ride pattern in a jazz brush groove.", "Capturing the delicate high-end ring with overhead or room mics in a session."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Rossing, Science of Percussion Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,82 @@
+{
+ "batch": 408,
+ "topic": "Audio Plugin & DSP Development",
+ "authored": [
+  {
+   "id": "fb691af5-0b4e-4781-abe0-cbe791032ce6",
+   "term": "State serialization",
+   "fields": {
+    "definition": "The process of converting a plugin instance's complete state — its parameter values plus any internal data needed to reproduce its output — into a persistent byte stream a host can store, and reading that stream back to restore the plugin exactly. In VST3 it is implemented through IComponent::getState and setState writing to and reading from an IBStream; in JUCE through AudioProcessor::getStateInformation and setStateInformation using a MemoryBlock.",
+    "plain_english": "It is how a plugin saves everything it is set to, like knob positions, into a small block of data. When you reopen the song, the plugin reads that data and comes back exactly the way you left it.",
+    "purpose_function": "It lets a host store a plugin's full state inside a saved project or preset and reload it later, so settings recall correctly across sessions, machines and even duplicated instances.",
+    "practical_application": "A developer implements the get-state and set-state calls so a DAW reopening a project restores every parameter and internal setting, and a technician relies on it whenever a recalled session must return plugins to their exact prior state.",
+    "category": "State Management",
+    "related_terms": [
+     "Plugin state recall",
+     "Preset serialization",
+     "Plugin preset format",
+     "Automation parameter",
+     "Virtual Studio Technology plugin",
+     "Plugin Software Development Kit"
+    ],
+    "common_mistakes": [
+     "Saving only parameter values but omitting internal or non-automatable state, so the plugin does not fully restore.",
+     "Writing a binary format with no version tag, so newer builds cannot read state saved by older versions.",
+     "Doing heavy or blocking work inside setState without accounting for when the host calls it, risking glitches during load.",
+     "Confusing full state serialization of the whole plugin instance with saving a single preset."
+    ],
+    "scenario_contexts": [
+     "A user saves a DAW project with a synth plugin, and on reopening the host calls setState to restore the exact patch.",
+     "Duplicating a plugin instance across tracks, where the host serializes one instance's state and deserializes it into the copy.",
+     "Migrating a session to another studio's machine and needing every plugin to recall its full state.",
+     "Loading an older project in a newer plugin build that must still parse the previously saved state."
+    ]
+   },
+   "sources": [
+    "Steinberg VST 3 SDK Documentation (Plug-in Structure / Persistence: IComponent::getState/setState, IBStream)",
+    "JUCE API Documentation (AudioProcessor::getStateInformation / setStateInformation)",
+    "Apple Audio Unit Programming / AUAudioUnit documentation (fullState, kAudioUnitProperty_ClassInfo)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ea3c5434-52a9-432c-858f-2c9e96e5243a",
+   "term": "Virtual Studio Technology plugin",
+   "fields": {
+    "definition": "A software audio plugin that conforms to Steinberg's Virtual Studio Technology (VST) interface, letting it load inside a compatible host application to process audio and, optionally, generate audio or respond to MIDI in real time. VST effects process incoming audio while VST instruments (VSTi) synthesize or play back sound; the current generation of the format is VST3.",
+    "plain_english": "A VST plugin is a piece of software, such as an effect or an instrument, that plugs into music software to add new sound tools. It is a bit like adding an app to a phone to give it a new feature.",
+    "purpose_function": "It provides one common interface so third-party effects and instruments can be added to many host DAWs, letting developers write a plugin once and users extend their software with new processing and sounds.",
+    "practical_application": "An engineer loads VST plugins into a DAW as insert effects or instruments to shape or create sound, while a developer builds against the Steinberg VST SDK so the plugin loads and runs in VST-compatible hosts.",
+    "category": "Plugin Formats",
+    "related_terms": [
+     "Audio Units plugin",
+     "CLAP plugin",
+     "Avid Audio Extension plugin",
+     "Plugin Software Development Kit",
+     "State serialization",
+     "Audio plugin architecture"
+    ],
+    "common_mistakes": [
+     "Assuming 'VST' means any plugin; VST is Steinberg's specific format, distinct from Audio Units, AAX and CLAP.",
+     "Confusing a VST effect with a VST instrument, when an instrument generates sound from MIDI and an effect processes existing audio.",
+     "Treating VST2 and VST3 as interchangeable, when they are different SDKs and a host may support one, the other, or both.",
+     "Placing the plugin in the wrong format or folder for the host, so the DAW never finds or loads it."
+    ],
+    "scenario_contexts": [
+     "Loading a VST reverb as an insert effect on a vocal track in a DAW.",
+     "Adding a VST instrument and playing it from a MIDI keyboard to record a synth part.",
+     "A developer packaging a plugin as VST3 so it loads in VST-compatible hosts.",
+     "Troubleshooting a host that will not scan a plugin because it was installed in the wrong format for that host."
+    ]
+   },
+   "sources": [
+    "Steinberg VST 3 SDK Documentation (What is VST? / VST 3 plug-in architecture)",
+    "JUCE API and Tutorial Documentation (VST/VST3 plugin format, AudioProcessor)",
+    "Apple Audio Unit documentation (plugin-format comparison context)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

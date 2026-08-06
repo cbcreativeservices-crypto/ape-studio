@@ -1,0 +1,239 @@
+{
+ "bucket": 4,
+ "packets": [
+  "mb0122",
+  "mb0123",
+  "mb0125",
+  "mb0127",
+  "mb0128",
+  "mb0129",
+  "mb0130",
+  "mb0133"
+ ],
+ "terms": [
+  {
+   "pkt": "mb0122",
+   "id": "d238425c-0814-46f8-bf9d-257a05751da4",
+   "term": "Ozone",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0123",
+   "id": "acf04dd8-ddb2-42e9-a160-87e44553322a",
+   "term": "Peak validation",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0125",
+   "id": "8ea4df99-e305-4900-b0d7-415a087407ff",
+   "term": "Platform optimization",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0125",
+   "id": "2ee11954-c88f-49b1-9633-8e4cf228f9be",
+   "term": "Polar window",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0127",
+   "id": "e6d2574e-645a-45c1-a3df-2e32510fa597",
+   "term": "Production audit",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0127",
+   "id": "04105933-0f8c-4e60-8aae-c968653af587",
+   "term": "Production completion report",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0127",
+   "id": "5bd114ca-c9fc-47fe-90b1-8fefa1a6dc05",
+   "term": "Production quality assurance",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0128",
+   "id": "8335bcd5-c5ca-4eb7-9682-e4ab739e969f",
+   "term": "Public-address contribution",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0129",
+   "id": "0d83b565-8808-4701-9a0d-5a2b62595c99",
+   "term": "Punch Guard",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0129",
+   "id": "551aea62-5166-45a8-b485-739803dca8e4",
+   "term": "PureDSP pitch correction",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0129",
+   "id": "1f60400d-8854-4284-a897-47156b93165e",
+   "term": "Q-Range",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0129",
+   "id": "c99ecb6b-e64e-47c2-8d15-38d1a6c23f6b",
+   "term": "Q-Strength",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0130",
+   "id": "1b796314-46b9-45e1-8f32-de5c9223bc5c",
+   "term": "Rack zone",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0133",
+   "id": "54644df4-a221-4fc2-aa80-8e114e5dae0c",
+   "term": "Right Zone",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  }
+ ]
+}

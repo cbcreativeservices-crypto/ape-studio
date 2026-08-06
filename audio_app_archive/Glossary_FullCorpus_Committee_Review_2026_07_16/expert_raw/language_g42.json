@@ -1,0 +1,223 @@
+{
+ "expert": "language",
+ "group": 42,
+ "reviews": [
+  {
+   "id": "d934b24b-2c84-4c22-bf44-8ca43b699f5c",
+   "term": "Schematic",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2cb58a2c-f450-41e9-92a1-d5511da87b76",
+   "term": "Schroeder Reverberator",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a31f185e-7862-4e7a-9726-95b410411e81",
+   "term": "Scratchy Potentiometer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4f81edde-f231-4021-bb60-87e4552d969a",
+   "term": "Scribble Strip",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d7c8da04-0016-421b-8807-aab192f2a543",
+   "term": "Script",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f0806962-23cf-4b15-a0f6-50356d7b4790",
+   "term": "Sealed Enclosure",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8d23f55d-4d57-4d74-bf72-c455adac4787",
+   "term": "Seat-to-seat variance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e89812a3-059b-47f2-9a6d-fcbf5b935e04",
+   "term": "Self-noise",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9130e995-1158-40f9-8f37-0d88b8f3911c",
+   "term": "Semi-Parametric EQ",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d4a68915-080a-411c-951d-ca8f96e518a4",
+   "term": "Send / Return (Aux Send / Aux Return)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "54296b92-91d3-4d44-9575-27f4a736966d",
+   "term": "sensitivity (dB SPL/mW) / Loudspeaker sensitivity (dB SPL/1W/1m)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "657bb607-9d5c-4758-94cd-992e3ff6f99e",
+   "term": "Sensitivity (rated under standard conditions)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f5fa12fc-c595-44bb-a133-bf9ea3566ac1",
+   "term": "Service Agreement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0cc0b9fd-cffd-4dec-9b56-00c0cd503b44",
+   "term": "Service Call",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a327e99f-0864-4614-a286-919bf7d5c14e",
+   "term": "servo-loop",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b0de99f1-5f52-4ca4-b35e-196bb6d062da",
+   "term": "SFP Module",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "90daecc8-1767-4ef3-9a5f-38b5c278a891",
+   "term": "Shackle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5d727d18-3bc2-4d40-836d-88a9201ae539",
+   "term": "shelving filter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fceef6ce-5ede-4088-98f9-e6c7a9e44137",
+   "term": "Shielding",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b85f311b-0ceb-4517-89e6-043a45b71cc1",
+   "term": "Shimmer Reverb",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e87fe267-e65e-40c9-a572-0616203f53a6",
+   "term": "Shock Hazard Analysis",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e7f59b66-e51c-441b-b12c-47bf6d05de61",
+   "term": "Shock mount",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7f3e89ce-6446-4121-9b73-e6b1538053a0",
+   "term": "Short circuit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ccb0ede7-b2d5-452f-a048-bad82fd0b338",
+   "term": "Short Circuit Protection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7f1af393-f272-48a1-b81f-02c6fc037100",
+   "term": "Shotgun microphone",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "practical_application",
+     "severity": "Low",
+     "issue": "The sentence repeats 'uses shotgun mics' four times in a row, reading as a monotonous, run-on list rather than prose.",
+     "suggestion": "Rewrite to state the applications once, e.g.: 'Shotgun mics are used for film-set dialogue, on-location reporter stand-ups, electronic news gathering, and wildlife recording.'"
+    }
+   ]
+  },
+  {
+   "id": "86195a26-68fa-406f-bda8-cd1b784f65f7",
+   "term": "Shotgunning",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c1ff1748-365d-41df-aa4a-319f5db618d9",
+   "term": "Show Caller",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6c92e2a3-b697-4638-b81d-2ccb4cbcc755",
+   "term": "Show Control",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fa479a78-fc1d-4cc7-9997-8369a3d02487",
+   "term": "Show Stop Procedures",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "367b2c98-e518-4a70-bdd3-283be9589e16",
+   "term": "Show/hide trace",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bd82e71a-0fd7-4944-bf90-7e9cd158731c",
+   "term": "Sibilance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b68ab7a4-2856-425e-a9f5-38e3a43afc74",
+   "term": "Side Fill",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "95b34c79-9cee-4794-8114-04b579504397",
+   "term": "Side-Address",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "911e410c-9e83-497f-9752-7ff291d20002",
+   "term": "side-chain",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f4a8accd-a58c-46a3-9619-357d94aa1dd0",
+   "term": "Sidechain Filter",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

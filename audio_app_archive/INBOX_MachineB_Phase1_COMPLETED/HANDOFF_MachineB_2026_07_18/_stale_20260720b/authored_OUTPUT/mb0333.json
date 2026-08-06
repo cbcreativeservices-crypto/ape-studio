@@ -1,0 +1,216 @@
+{
+ "batch": 333,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "2af7d923-af53-4dbf-915d-6fa80b097663",
+   "term": "Instrument articulation",
+   "fields": {
+    "definition": "The manner in which individual notes on an instrument are started, sustained, connected, and released — including techniques such as legato, staccato, marcato, and accent — which shapes each note's attack, duration, and separation from its neighbours.",
+    "plain_english": "Articulation is how a player starts, holds, and ends each note. It sets whether notes sound smooth and joined or short and clipped. Think of how you can say a word softly or sharply — notes work the same way.",
+    "purpose_function": "It gives music expression and clarity by controlling note onsets, lengths, and transitions, and engineers use articulation cues to read a performance's attack and decay character.",
+    "practical_application": "A technician listens for articulation when setting compressor attack and release, gating, or transient shaping so staccato and legato passages keep their intended feel; in sampling, articulation switches select different recorded playing styles.",
+    "category": "Performance Technique",
+    "related_terms": ["Attack", "Transient", "Envelope", "Legato", "Staccato", "Sustain"],
+    "common_mistakes": [
+     "Confusing articulation with dynamics — articulation is about note shaping and connection, not loudness.",
+     "Setting a fast compressor attack that flattens staccato transients and blurs the articulation.",
+     "Treating legato and staccato as notation marks only, rather than audible attack and decay changes."
+    ],
+    "scenario_contexts": [
+     "Choosing a sample-library articulation (legato vs staccato) for a virtual string part.",
+     "Setting gate and compressor timing so a rapid staccato line stays crisp.",
+     "Deciding whether a muddy passage is a room issue or blurred articulation."
+    ]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Grove Dictionary of Music and Musicians (Articulation)", "Piston, Orchestration"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bb5e8053-60f7-4bf2-a3ef-7ad7a67b6a04",
+   "term": "jangle",
+   "fields": {
+    "definition": "A bright, ringing, treble-rich timbre with prominent high harmonics and a shimmering, chiming quality, most associated with clean electric guitar — especially 12-string and compressed single-coil tones — where doubled or closely tuned strings add sparkle and sustain.",
+    "plain_english": "Jangle is a bright, ringing guitar sound with lots of sparkle up top. It chimes and shimmers, a bit like sunlight on water. It is the classic clean, chiming tone of a 12-string electric guitar.",
+    "purpose_function": "The term labels a specific high-frequency, chiming tonal character so players and engineers can aim for or pull back that sparkle, serving as shorthand for a recognisable clean-guitar timbre.",
+    "practical_application": "An engineer chasing jangle boosts presence and 'air' EQ, adds light compression and chorus, and favours bright pickups or a 12-string, while taming any harshness that tips sparkle into brittleness.",
+    "category": "Timbral Descriptor",
+    "related_terms": ["Chime", "Presence", "Harmonics", "Shimmer", "Sustain", "Chorus"],
+    "common_mistakes": [
+     "Confusing jangle with harshness — jangle is musical sparkle, not thin, fatiguing high end.",
+     "Trying to add jangle with EQ alone, ignoring string type, pickups, and light compression.",
+     "Over-brightening until the tone becomes brittle and masks the vocals."
+    ],
+    "scenario_contexts": [
+     "Mixing a clean 12-string electric rhythm part to sit bright above the band.",
+     "Deciding whether a guitar sounds jangly or simply too trebly.",
+     "Recreating a chiming 1960s-style guitar tone."
+    ]
+   },
+   "sources": ["Sound on Sound (recording and mixing technical articles)", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c7966cc2-d0b3-442c-83db-db5e54edcbaf",
+   "term": "Kalimba resonance",
+   "fields": {
+    "definition": "The resonant response of a kalimba (thumb piano) — the sustained, ringing tone produced when a plucked metal tine vibrates and couples to the instrument's soundboard and hollow body or resonating box, which amplifies and colours the sound and lengthens its decay.",
+    "plain_english": "Kalimba resonance is the ringing hum of a thumb piano after you pluck a metal key. The wooden box under the keys makes the sound louder and last longer. It works like the body of a guitar boosting a plucked string.",
+    "purpose_function": "Body and cavity resonance amplify the quiet vibration of each tine and shape the instrument's warm, bell-like sustain, which explains the kalimba's long decay and its ringing overtones.",
+    "practical_application": "When recording a kalimba, a technician places the mic to balance direct tine attack against body resonance from the sound hole, and manages low-frequency boom or buzzing overtones the body emphasises.",
+    "category": "Instrument Resonance",
+    "related_terms": ["Resonance", "Sustain", "Decay", "Soundboard", "Overtones", "Body resonance"],
+    "common_mistakes": [
+     "Miking only the tines and missing the body resonance that gives the kalimba its warmth.",
+     "Mistaking the instrument's natural buzzing overtones for a fault or rattle.",
+     "Close-miking the sound hole and capturing excessive low-end boom."
+    ],
+    "scenario_contexts": [
+     "Recording a solo kalimba and choosing mic distance to capture body resonance.",
+     "Diagnosing whether a low boom is room resonance or the kalimba body.",
+     "Identifying the long ringing decay of a thumb piano in a mix."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (lamellophones)", "Grove Dictionary of Music and Musicians (Lamellophone/Mbira)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "40d7f496-2fc8-44ed-9fd9-73e6dfc07081",
+   "term": "Knock",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: 'Knock' as a bare single word has no established, single professional audio-technical definition. It is used loosely for a low-frequency percussive transient, for a kick/808 'knock' (production slang), and for a mechanical fault noise. The sense is genuinely ambiguous and no >=2 acceptable sources define it as a fixed term; it needs disambiguation before authoring."
+   ]
+  },
+  {
+   "id": "e8b3da13-18af-47bd-ba30-d113d52869aa",
+   "term": "Leslie motor noise",
+   "fields": {
+    "definition": "The mechanical noise generated by the electric drive motors, belts, and bearings of a Leslie rotating-speaker cabinet — a low-level hum, whir, or rumble that can be captured by close microphones alongside the intended rotating-speaker sound.",
+    "plain_english": "A Leslie speaker spins its horns using small electric motors. Those motors and belts make a faint hum or whir. Leslie motor noise is that mechanical sound leaking into the mic along with the music.",
+    "purpose_function": "Recognising this hum as a mechanical artifact — not part of the musical tone — lets engineers reduce or clean it so it does not intrude on quiet passages.",
+    "practical_application": "When close-miking a Leslie, a technician angles or spaces mics to reject motor and bearing noise, services worn belts and bearings that worsen it, and may gate or edit residual hum during silent sections.",
+    "category": "Mechanical Artifact",
+    "related_terms": ["Leslie swirl", "Rotating speaker", "Mechanical noise", "Rumble", "Close miking", "Doppler effect"],
+    "common_mistakes": [
+     "Mistaking motor rumble for low-frequency room noise or mic handling.",
+     "Ignoring worn belts and bearings that make the noise louder over time.",
+     "Placing mics so close that motor whir becomes audible in quiet passages."
+    ],
+    "scenario_contexts": [
+     "Close-miking a Leslie cabinet for a Hammond organ recording.",
+     "Diagnosing a faint whir under a slow organ passage.",
+     "Servicing a Leslie whose motor noise has grown louder."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Hammond/Leslie service documentation", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9704c393-e845-467b-aa29-d4776e430c07",
+   "term": "Leslie swirl",
+   "fields": {
+    "definition": "The characteristic swirling, pulsating modulation produced by a Leslie rotating-speaker cabinet, created as the spinning treble horn and bass rotor sweep sound around the room and past the microphones, combining Doppler pitch shift, amplitude (tremolo) variation, and shifting phase and comb-filtering into a rich, three-dimensional movement.",
+    "plain_english": "Leslie swirl is the spinning, wobbly sound of a Leslie speaker. As the horns rotate, the pitch and volume rise and fall and the tone seems to move around you. It is like a merry-go-round whooshing the sound past your ears.",
+    "purpose_function": "The swirl adds motion, depth, and animation to organ and other sounds, and identifying its Doppler and tremolo parts helps engineers capture or emulate it faithfully.",
+    "practical_application": "Engineers record the swirl in stereo with spaced mics on horn and rotor to capture its movement, choose chorale (slow) or tremolo (fast) speed, and match rotary-effect plug-in settings to imitate it.",
+    "category": "Modulation Effect",
+    "related_terms": ["Leslie motor noise", "Rotating speaker", "Doppler effect", "Tremolo", "Amplitude modulation", "Comb filtering"],
+    "common_mistakes": [
+     "Miking a Leslie in mono and losing the stereo movement that defines the swirl.",
+     "Assuming the effect is only tremolo (volume) when Doppler pitch shift is a key part.",
+     "Setting a rotary plug-in to a static speed and missing the slow-to-fast ramp between chorale and tremolo."
+    ],
+    "scenario_contexts": [
+     "Recording a Hammond organ through a Leslie for its swirling tone.",
+     "Dialling a rotary-speaker plug-in to emulate the swirl on a synth.",
+     "Distinguishing rotary swirl from chorus modulation in a mix."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4dd95e37-6cec-4b03-8149-6a0e06bd042c",
+   "term": "Lever click",
+   "fields": {
+    "definition": "The audible mechanical click produced when a lever mechanism on an instrument is engaged or released — most commonly the sharping levers of a lever (folk/Celtic) harp that raise a string's pitch by a semitone — heard as a short, percussive tick that can be captured as an artifact in a recording.",
+    "plain_english": "A lever click is the small tick a lever makes when you flip it on an instrument. On a folk harp, players flip levers to raise a string's pitch, and the flip can click. It is like the snap you hear when you click a light switch.",
+    "purpose_function": "Identifying the click as mechanical action noise — separate from the played note — lets engineers minimise or edit it so it does not distract in quiet passages.",
+    "practical_application": "Recording a lever harp, a technician anticipates lever changes, adjusts mic placement, and edits or gates stray clicks, while players may pre-set levers to avoid mid-piece changes near the mic.",
+    "category": "Mechanical Artifact",
+    "related_terms": ["Lever harp", "Mechanical noise", "Transient", "Artifact", "Key click", "String buzz"],
+    "common_mistakes": [
+     "Mistaking a lever click for an edit glitch or digital tick.",
+     "Failing to plan lever changes so clicks land in loud, masked moments.",
+     "Miking too close to the lever mechanism and exaggerating the click."
+    ],
+    "scenario_contexts": [
+     "Recording a Celtic lever harp with frequent lever changes.",
+     "Cleaning stray mechanical ticks from a solo harp take.",
+     "Distinguishing a lever click from a string buzz during editing."
+    ]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians (Harp)", "Camac/Salvi lever-harp technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c9e23079-106d-43d8-a313-f30a36a79d92",
+   "term": "Lip attack",
+   "fields": {
+    "definition": "The onset transient of a brass or lip-reed note as shaped by the player's embouchure and lips at the start of the tone; a lip- or breath-started attack, made without hard tonguing, produces a softer, more gradual onset than a crisply tongued attack.",
+    "plain_english": "Lip attack is how a brass note begins from the player's lips. Starting a note with just the lips and breath gives a soft, gentle start. Using the tongue instead gives a sharper, crisper start.",
+    "purpose_function": "It determines the shape and speed of a brass note's onset, affecting how punchy or smooth the attack sounds, and recognising it guides transient control and mic choice for brass.",
+    "practical_application": "An engineer hearing soft lip attacks may choose a slower compressor attack and a closer mic to keep brass onsets natural, or add transient shaping when the section needs more bite.",
+    "category": "Attack Characteristic",
+    "related_terms": ["Attack", "Transient", "Lip buzz", "Embouchure", "Articulation", "Envelope"],
+    "common_mistakes": [
+     "Confusing a soft lip attack with a slow fade or a slow compressor attack.",
+     "Over-compressing brass and squashing the natural difference between lip and tongued attacks.",
+     "Assuming every brass note starts with a hard tongued transient."
+    ],
+    "scenario_contexts": [
+     "Miking a trumpet section and preserving natural note onsets.",
+     "Setting compressor attack time so soft brass entries keep their shape.",
+     "Deciding whether a gentle brass onset is a lip attack or an edited fade-in."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (lip-reed/brass)", "Baines, Brass Instruments: Their History and Development", "Adler, The Study of Orchestration"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0bdfe754-d7b7-4332-acb6-1311f9426ebe",
+   "term": "Lip buzz",
+   "fields": {
+    "definition": "The vibration of a brass player's lips — the lip reed — that acts as the sound source for brass instruments, produced by forcing air through tensioned, nearly closed lips so they open and close rapidly; the resulting buzz is amplified and filtered by the mouthpiece and instrument. The term also names the practice technique of buzzing on the lips or mouthpiece alone.",
+    "plain_english": "Lip buzz is the buzzing a brass player makes with their lips. Air pushed through tight lips makes them flap open and shut fast, which starts the tone. The instrument then turns that buzz into a full note, a bit like blowing a raspberry into the mouthpiece.",
+    "purpose_function": "The lip buzz is the primary sound generator for every brass instrument; without it the horn cannot sound, and the buzz frequency and strength set the note's pitch and tone.",
+    "practical_application": "Players use lip buzzing, free or on the mouthpiece, to warm up and check embouchure, while engineers may hear the buzz character in close-miked brass and choose mic and EQ to keep the tone full but not harsh.",
+    "category": "Sound Production",
+    "related_terms": ["Lip attack", "Embouchure", "Mouthpiece", "Brass instrument", "Harmonics", "Resonance"],
+    "common_mistakes": [
+     "Thinking the mouthpiece or valves make the sound, when the buzzing lips are the true source.",
+     "Confusing lip buzz with a cane-reed instrument — brass use the lips as the reed.",
+     "Mistaking a player's audible buzz for a mechanical rattle or equipment fault."
+    ],
+    "scenario_contexts": [
+     "A trumpeter warming up by buzzing on the mouthpiece before a session.",
+     "Explaining why brass tone depends on the player's lips, not the valves.",
+     "Identifying lip buzz character in a close-miked trombone recording."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (lip-reed/brass)", "Baines, Brass Instruments: Their History and Development"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

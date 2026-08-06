@@ -56,7 +56,7 @@ const GLOW = '#ffb246';
 const ELECTRON = '#6fa8ff';
 const ACCENT_GREEN = '#5bff85';
 const ACCENT_RED = '#ff6b5e';
-const GHOST = '#232329';
+const GHOST = '#2e2f38';
 const BG = '#0c0c0f';
 
 // Illustration tones (light from the upper-left).

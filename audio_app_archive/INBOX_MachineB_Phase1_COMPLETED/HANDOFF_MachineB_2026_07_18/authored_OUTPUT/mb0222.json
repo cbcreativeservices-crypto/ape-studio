@@ -1,0 +1,288 @@
+{
+ "batch": 222,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "68d862eb-c7a7-49c9-bbf8-a75e5551c930",
+   "term": "Doppler effect simulation",
+   "fields": {
+    "definition": "The recreation in post-production of the Doppler effect — the apparent rise and then fall in a sound's pitch as its source moves toward and then past the listener — using pitch, level, filtering, and panning automation, or a dedicated plug-in, to sell the motion of an object such as a passing vehicle or aircraft.",
+    "plain_english": "It is a trick that makes a sound seem to rush past you. When a car races toward you, its sound seems higher. Once it passes, the sound drops lower. Editors copy that pitch change so a sound moves past you on screen.",
+    "purpose_function": "It adds a convincing sense of speed and motion to moving-source effects, matching what audiences expect from real passing objects and reinforcing the on-screen action.",
+    "practical_application": "A sound editor applies a Doppler plug-in or automates pitch, level, filtering, and pan across a fly-by so a plane, car, or projectile sounds like it truly travels past the camera.",
+    "category": "Sound Design",
+    "related_terms": [
+     "Pitch shifting",
+     "Panning automation",
+     "Sound design",
+     "Whoosh",
+     "Automation"
+    ],
+    "common_mistakes": [
+     "Making the pitch rise and fall equal, when the shift is fastest right as the source passes the listener.",
+     "Automating pitch alone without matching level and pan, so it sounds processed rather than like real motion.",
+     "Overdoing the pitch swing so a slow-moving object sounds unnaturally fast."
+    ],
+    "scenario_contexts": [
+     "Designing a car or motorcycle pass-by for an exterior scene.",
+     "Selling a jet or helicopter fly-over in an action sequence.",
+     "Adding motion to a whoosh, arrow, or bullet as it crosses frame."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (Focal Press)",
+    "Everest & Pohlmann, Master Handbook of Acoustics (McGraw-Hill)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bd68b7e8-9d5a-4eb7-a490-d25ca8028d3e",
+   "term": "Downer effect",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "'Downer effect' (a descending transitional sound-design element, the counterpart of a riser) is attested only in vendor sample-library listings, blogs, and forums. No standards body, manufacturer technical document, or recognized professional text defines it, and as a coined term it is not a transparent technique-plus-source compound, so it cannot be confirmed to the required source standard. All fields left blank."
+   ]
+  },
+  {
+   "id": "ea34bb4c-285c-48ce-b8f7-7046f715b91c",
+   "term": "Drawer slam",
+   "fields": {
+    "definition": "A Foley or hard sound effect consisting of the impact and rattle of a drawer being pushed shut forcefully, recorded or edited in sync with picture to cover an on-screen action.",
+    "plain_english": "It is the sound of a drawer being shoved shut hard. A Foley artist makes it by slamming a real drawer while watching the scene. It adds a solid thud where a character closes a drawer on screen.",
+    "purpose_function": "It supplies the sharp, physical impact an audience expects when a drawer is shut hard, adding realism and emotional weight, such as anger, to the moment.",
+    "practical_application": "A Foley artist performs the slam on a props stage in sync with picture, or a sound editor cuts a library recording to match the exact frame the drawer hits.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Hard effect",
+     "Prop effect",
+     "Drawer slide",
+     "Spot effect"
+    ],
+    "common_mistakes": [
+     "Placing the impact a frame or two off from picture, so the slam looks out of sync.",
+     "Using one generic slam for every drawer instead of matching the size and material on screen.",
+     "Ignoring the secondary rattle or contents shifting, which makes the effect sound flat."
+    ],
+    "scenario_contexts": [
+     "Covering a character angrily shutting a desk drawer.",
+     "Building a kitchen or office scene that needs believable prop sounds.",
+     "Replacing weak or noisy production-sound drawer closes during Foley."
+    ]
+   },
+   "sources": [
+    "Ament, The Foley Grail (Focal Press)",
+    "Yewdall, The Practical Art of Motion Picture Sound (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "28d8f2c6-3b4e-4344-b04b-5b3c6c9b2922",
+   "term": "Drawer slide",
+   "fields": {
+    "definition": "A Foley or hard sound effect of a drawer being pulled open or pushed closed along its runners, capturing the sustained sliding, rolling, or scraping of the drawer in its frame, cut in sync with the on-screen action.",
+    "plain_english": "It is the sound of a drawer sliding open or shut. A Foley artist moves a real drawer in time with the picture to make it. Unlike a slam, it is the smooth rolling sound, not the bang.",
+    "purpose_function": "It gives the continuous movement sound of a drawer opening or closing, so the action feels real even when the production recording is missing or too quiet.",
+    "practical_application": "A Foley artist slides a matching drawer in sync with picture, choosing a wooden, metal, or roller-bearing drawer to fit the object shown on screen.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Drawer slam",
+     "Hard effect",
+     "Prop effect",
+     "Spot effect"
+    ],
+    "common_mistakes": [
+     "Matching the speed of the slide poorly, so the sound ends before or after the on-screen drawer stops.",
+     "Using a metal roller sound for a wooden drawer, which breaks the illusion.",
+     "Forgetting the small bump or stop at the end of the travel."
+    ],
+    "scenario_contexts": [
+     "A character opening a desk drawer to retrieve an object.",
+     "Detailing a bedroom or kitchen scene with furniture movement.",
+     "Adding drawer motion under dialogue where production sound is unusable."
+    ]
+   },
+   "sources": [
+    "Ament, The Foley Grail (Focal Press)",
+    "Yewdall, The Practical Art of Motion Picture Sound (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3aa08930-4ba0-4177-b47c-301d877a1e7f",
+   "term": "Dubbing comp",
+   "fields": {
+    "definition": "A composite dialogue take built by comping — selecting and joining the best portions of several dubbing or ADR takes into one seamless replacement performance fitted to picture.",
+    "plain_english": "It is one good line built from several tries. The editor picks the best word or phrase from each take and joins them together. This gives a clean, well-matched replacement of the actor's dialogue.",
+    "purpose_function": "It lets editors deliver the strongest possible dialogue and lip-sync by combining the best moments from many takes instead of relying on a single flawed one.",
+    "practical_application": "An ADR or dialogue editor auditions the recorded takes for a line, then cuts the best syllables and breaths together into one comped take fitted precisely to picture.",
+    "category": "Dubbing",
+    "related_terms": [
+     "ADR",
+     "Dubbing cue",
+     "Dubbing loop",
+     "Dialogue editing",
+     "Lip sync"
+    ],
+    "common_mistakes": [
+     "Joining takes where tone, level, or room sound differ, creating audible jumps.",
+     "Comping for a perfect read while losing sync with the actor's lip movements.",
+     "Not logging which takes were used, which makes later revisions hard."
+    ],
+    "scenario_contexts": [
+     "Building the final ADR line for a scene from several actor passes.",
+     "Assembling foreign-language dub dialogue that must match lip movement.",
+     "Salvaging a usable performance when no single take is clean throughout."
+    ]
+   },
+   "sources": [
+    "Purcell, Dialogue Editing for Motion Pictures (Focal Press)",
+    "Yewdall, The Practical Art of Motion Picture Sound (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "13f2f768-3c2f-4f03-91df-887ab105e661",
+   "term": "Dubbing cue",
+   "fields": {
+    "definition": "A discrete, numbered segment of dialogue marked for dubbing or ADR — a single line or short passage identified on a cue sheet with its timecode and in and out points, to be re-recorded and fitted to picture.",
+    "plain_english": "It is one short chunk of dialogue that needs to be re-recorded. Each cue has a number and a start and end time. The actor and editor work through the cues one at a time.",
+    "purpose_function": "It breaks a scene's replacement dialogue into small, trackable units so the team can record, log, and edit each line in an organized session.",
+    "practical_application": "Using a cue sheet, the dubbing team loads each cue in turn, records the actor to that segment, and logs which take was kept for the editor.",
+    "category": "Dubbing",
+    "related_terms": [
+     "ADR",
+     "Cue sheet",
+     "Dubbing loop",
+     "Dubbing comp",
+     "Timecode"
+    ],
+    "common_mistakes": [
+     "Setting cue in and out points too tight, cutting off breaths or word endings needed for a natural read.",
+     "Mislabeling or misnumbering cues, so takes get logged against the wrong line.",
+     "Making cues too long, which makes it hard for the actor to match sync."
+    ],
+    "scenario_contexts": [
+     "Preparing an ADR cue sheet from the editor's list of lines to replace.",
+     "Running a recording session line by line through each marked cue.",
+     "Tracking which cues are recorded, approved, or still outstanding."
+    ]
+   },
+   "sources": [
+    "Purcell, Dialogue Editing for Motion Pictures (Focal Press)",
+    "Yewdall, The Practical Art of Motion Picture Sound (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d51a3964-7b0b-4fec-a533-440889e4c407",
+   "term": "Dubbing director",
+   "fields": {
+    "definition": "The person who directs performers during a dubbing session, guiding the timing, delivery, emotion, and lip-sync of replacement or translated dialogue so it matches the original performance and the picture.",
+    "plain_english": "It is the person in charge of the actors during dubbing. They help the voice match the timing, feeling, and lip movements on screen. They make sure the new dialogue fits the original scene.",
+    "purpose_function": "It ensures replacement or foreign-language dialogue stays faithful to the original performance in emotion and sync, keeping a consistent standard across the project.",
+    "practical_application": "In an ADR or localization session the dubbing director coaches each actor line by line, calling for retakes until the delivery and sync satisfy the picture.",
+    "category": "Dubbing",
+    "related_terms": [
+     "ADR",
+     "Dubbing engineer",
+     "Dubbing cue",
+     "Lip sync",
+     "Foreign-language dubbing"
+    ],
+    "common_mistakes": [
+     "Chasing perfect lip-sync at the expense of a believable, emotional performance.",
+     "Failing to reference the original performance, so the dub drifts in tone.",
+     "Confusing the dubbing director's creative role with the engineer's technical one."
+    ],
+    "scenario_contexts": [
+     "Directing voice actors in a foreign-language dub of a film or series.",
+     "Guiding an actor through ADR retakes to match the original take.",
+     "Maintaining consistent character voices across many episodes."
+    ]
+   },
+   "sources": [
+    "Purcell, Dialogue Editing for Motion Pictures (Focal Press)",
+    "Holman, Sound for Film and Television (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "088b1a52-3f7c-4a87-a2b7-aaecf6b5ba50",
+   "term": "Dubbing engineer",
+   "fields": {
+    "definition": "The engineer responsible for the technical side of a dubbing session — configuring and running the recording and playback system, capturing clean, in-sync replacement dialogue, and managing routing and take logging so the director and editor can focus on performance.",
+    "plain_english": "It is the tech person who runs the gear during dubbing. They set up the microphone, record clean lines in time with the picture, and keep the takes organized. This lets the director focus on the actor.",
+    "purpose_function": "It provides reliable, technically clean recording and playback so replacement dialogue is captured in sync and ready for editing without technical faults.",
+    "practical_application": "During a session the dubbing engineer cues playback for each line, records the actor's takes, watches levels and sync, and names and stores the files for the dialogue editor.",
+    "category": "Dubbing",
+    "related_terms": [
+     "ADR",
+     "Dubbing director",
+     "Dubbing cue",
+     "Dubbing loop",
+     "Signal routing"
+    ],
+    "common_mistakes": [
+     "Recording at the wrong level or with a mismatched mic, so the ADR will not sit with the production dialogue.",
+     "Losing sync between playback and the recorder, making takes unusable.",
+     "Poorly naming or logging files, causing confusion in the edit."
+    ],
+    "scenario_contexts": [
+     "Setting up and running an ADR stage for a recording session.",
+     "Capturing foreign-language dub takes to picture.",
+     "Delivering labeled, in-sync dialogue files to the editor."
+    ]
+   },
+   "sources": [
+    "Purcell, Dialogue Editing for Motion Pictures (Focal Press)",
+    "Holman, Sound for Film and Television (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "df2950ad-de39-41d7-911f-55375a058cab",
+   "term": "Dubbing loop",
+   "fields": {
+    "definition": "A short, repeating segment of picture and its guide track covering a single line or phrase, played back over and over during a dubbing or ADR session so a performer can rehearse and then record dialogue in sync — a practice named for the physical film loops originally used.",
+    "plain_english": "It is a short piece of the scene that plays again and again. The actor watches and listens a few times, then records the line to match. The word comes from the old film loops that were spliced end to end.",
+    "purpose_function": "It lets a performer learn the exact rhythm and lip movement of a line through repetition before recording, improving sync and speed in the session.",
+    "practical_application": "The system plays the loop for a cue with beeps or a streamer, the actor rehearses to it, then records take after take against the same loop until the sync and read are right.",
+    "category": "Dubbing",
+    "related_terms": [
+     "ADR",
+     "Looping",
+     "Dubbing cue",
+     "Streamer",
+     "Lip sync"
+    ],
+    "common_mistakes": [
+     "Making the loop too short, so the actor cannot feel the rhythm of the line.",
+     "Not including enough pre-roll, leaving the actor no run-up to the first word.",
+     "Assuming looping and ADR are entirely separate, when ADR grew directly out of loop-based dubbing."
+    ],
+    "scenario_contexts": [
+     "Running an actor through repeated plays of a line before recording ADR.",
+     "Rehearsing lip-sync timing on a difficult on-camera close-up.",
+     "Explaining the historical origin of the term 'looping' to trainees."
+    ]
+   },
+   "sources": [
+    "Yewdall, The Practical Art of Motion Picture Sound (Focal Press)",
+    "Holman, Sound for Film and Television (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

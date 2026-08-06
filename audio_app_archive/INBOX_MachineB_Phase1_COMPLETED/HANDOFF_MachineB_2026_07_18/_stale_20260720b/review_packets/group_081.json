@@ -1,0 +1,1007 @@
+{
+ "group": 81,
+ "terms": [
+  {
+   "id": "ed64219e-4719-4b06-9448-5ae3cfbd58db",
+   "term": "Short decay",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A decay stage that is brief, meaning the sound falls from its peak level down to its sustain level (or to silence) very quickly after the initial attack. Short decay produces tight, articulate notes with little ring-out, as heard in damped, muted, or staccato playing.",
+   "plain_english": "Short decay means a sound fades away fast right after it starts. Think of a hand clap or a tightly muted drum: it hits, then it is gone almost at once.",
+   "purpose_function": "The decay portion of a sound's amplitude envelope controls how long a note rings after its attack; a short decay keeps sounds tight and defined and stops them from cluttering a busy mix.",
+   "practical_application": "Engineers shorten decay with damping, gating, or a synth's envelope controls to tighten drums, palm-muted guitars, and plucked notes so each hit stays clean.",
+   "category": "Amplitude Envelope",
+   "related_terms": [
+    "Attack",
+    "Sustain",
+    "Release",
+    "Amplitude envelope",
+    "Damping"
+   ],
+   "common_mistakes": [
+    "Confusing decay with release; decay is the fall right after the attack peak, while release is the fade after the note is let go.",
+    "Assuming a short decay always means a short overall note, when a high sustain level can still let the sound ring on.",
+    "Using heavy gating to force a short decay and accidentally chopping off natural tails, leaving clipped, unnatural notes."
+   ],
+   "scenario_contexts": [
+    "Programming a tight, punchy synth bass by setting a fast decay on the amplitude envelope.",
+    "Palm-muting an electric guitar so each chord stops quickly for a percussive rhythm part.",
+    "Gating close-miked drums so cymbal bleed and room ring are cut short between hits."
+   ]
+  },
+  {
+   "id": "377acd82-a71a-4f0f-8a17-396f6dccba2b",
+   "term": "Sizzle",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A timbral quality of bright, sustained, finely grained high-frequency energy that gives a sound a shimmering, hissing top end. It is heard in cymbals (notably the rivet-fitted 'sizzle cymbal'), overdriven guitars, and airy vocal material, and it sits in the upper-treble and 'air' bands.",
+   "plain_english": "Sizzle is the bright, fizzy shine at the very top of a sound, like the hiss of a cymbal or a frying pan. It is that crisp, sparkly high end you hear more than you feel.",
+   "purpose_function": "'Sizzle' is a listening descriptor engineers use to name and judge the high-frequency energy that adds air, excitement, and presence to a mix, or that turns harsh when overdone.",
+   "practical_application": "A mix engineer may add sizzle with a high-shelf boost or a saturation/exciter, or tame it when cymbals and vocals get too edgy and fatiguing.",
+   "category": "Timbral Descriptor",
+   "related_terms": [
+    "Air",
+    "Presence",
+    "Sibilance",
+    "Brightness",
+    "Sizzle cymbal",
+    "High-frequency content"
+   ],
+   "common_mistakes": [
+    "Confusing musical sizzle with harsh sibilance or distortion, then boosting highs when the real fix is de-essing or cleaning up the source.",
+    "UNSAFE: Chasing more 'sizzle' by monitoring cymbals and highs at very high SPL for long stretches, risking noise-induced hearing loss without hearing protection or level breaks.",
+    "Adding broad high-shelf boosts on every track, so the summed sizzle becomes fatiguing and masks detail."
+   ],
+   "scenario_contexts": [
+    "Deciding whether an overhead cymbal mix has enough sizzle without becoming harsh.",
+    "Using a high-shelf EQ or exciter to add air and sizzle to a dull vocal or acoustic guitar.",
+    "Identifying excess sizzle from a cheap condenser mic's peaky top end during tracking."
+   ]
+  },
+  {
+   "id": "b0bf05e2-9b62-4390-b292-9f743d01de16",
+   "term": "Slap",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A single, distinct delayed repetition of a sound heard shortly after the original, either as a discrete reflection off a hard parallel surface in a room or as a deliberately created short delay (roughly 40-200 ms) with little or no feedback. Also called slapback or slap echo.",
+   "plain_english": "A slap is one clear echo that bounces back a moment after a sound, like a quick hand-clap answer off a far wall. In the studio it is often added on purpose to vocals to make them sound lively.",
+   "purpose_function": "As a room artifact, slap echo signals a reflection problem a technician must find and treat; as an effect, a short slapback delay adds depth and vintage 'live' character without the smearing of long reverb.",
+   "practical_application": "A technician claps or talks in an empty room to hear slap echo off parallel walls, then adds absorption or angled surfaces; a mix engineer dials a 60-150 ms delay for a rockabilly-style vocal slap.",
+   "category": "Acoustic Artifact",
+   "related_terms": [
+    "Slapback delay",
+    "Flutter echo",
+    "Reflection",
+    "Delay",
+    "Reverberation",
+    "Comb filtering"
+   ],
+   "common_mistakes": [
+    "Confusing slap echo (one discrete repeat) with flutter echo (a rapid series of repeats between parallel surfaces).",
+    "Setting slapback delay time too long so it drifts into rhythmic echo and muddies the timing instead of thickening the sound.",
+    "Treating a room's slap echo with bass trapping alone, when the fix is absorption or diffusion on the parallel reflecting surfaces."
+   ],
+   "scenario_contexts": [
+    "Diagnosing a distinct echo when clapping between two bare parallel walls in an untreated room.",
+    "Adding a short slapback delay to a lead vocal for a 1950s rockabilly feel.",
+    "Identifying slap echo off a rear wall that is blurring speech intelligibility in a live venue."
+   ]
+  },
+  {
+   "id": "6c63e663-1e19-4050-900b-3c3dfa4590e5",
+   "term": "Slide noise",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The incidental scraping or squeaking sound produced when a finger, or a slide, moves lengthwise along a wound string, as on guitar or bass. It is a broadband friction noise from the fingertip crossing the string's ridged winding, distinct from the fretted musical tone.",
+   "plain_english": "Slide noise is the squeak you hear when a player's fingers slide along guitar strings. It comes from skin dragging over the ridged, wound strings, a bit like rubbing a finger across a comb.",
+   "purpose_function": "Recognizing slide noise as a performance artifact lets an engineer decide when it is natural expressive detail to keep and when it is a distraction to reduce.",
+   "practical_application": "Engineers reduce slide noise by choosing flatwound or coated strings, adjusting mic placement, or using spectral-repair and de-noise tools in post to soften the squeaks.",
+   "category": "Performance Artifact",
+   "related_terms": [
+    "Fret noise",
+    "String squeak",
+    "Fingerboard",
+    "Wound strings",
+    "Spectral repair"
+   ],
+   "common_mistakes": [
+    "Trying to EQ out slide noise, which shares frequencies with the guitar's body and rarely works without dulling the tone.",
+    "Assuming all slide noise is a mistake, when tasteful finger squeaks are part of a natural acoustic-guitar performance.",
+    "Blaming the microphone for squeaks that are actually caused by string type and playing technique."
+   ],
+   "scenario_contexts": [
+    "Cleaning up finger squeaks on a close-miked acoustic guitar during mixing.",
+    "Choosing coated or flatwound strings to cut slide noise before tracking.",
+    "Deciding to keep light slide noise on a solo fingerstyle piece for realism."
+   ]
+  },
+  {
+   "id": "f402af48-b389-438d-8c9f-a14be3e47bcb",
+   "term": "Soft attack",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "An amplitude envelope with a slow, gradual onset, meaning the sound takes a relatively long time to rise from silence to its peak level rather than starting abruptly. This gives a gentle, non-percussive beginning to each note, the opposite of a sharp or hard attack.",
+   "plain_english": "A soft attack means a sound eases in gently instead of starting with a sudden punch. It is like slowly turning up a dimmer switch rather than flipping a light on.",
+   "purpose_function": "The attack portion of the envelope sets how a note begins; a soft attack removes the initial transient's bite, giving pads, strings, and swells a smooth, blended feel.",
+   "practical_application": "A technician creates a soft attack with a synth's attack control, volume swells, or slow fade-ins, and can also round off transients with a slow compressor attack time.",
+   "category": "Amplitude Envelope",
+   "related_terms": [
+    "Attack",
+    "Transient",
+    "Amplitude envelope",
+    "Decay",
+    "Compressor attack time"
+   ],
+   "common_mistakes": [
+    "Confusing a soft attack (slow envelope onset) with low volume; a soft attack can still be loud once it reaches its peak.",
+    "Using a very slow compressor attack to soften transients and accidentally letting unwanted initial spikes through.",
+    "Applying a soft attack to percussive parts that need punch, which makes them feel late and lifeless."
+   ],
+   "scenario_contexts": [
+    "Programming a synth pad with a long attack so it swells in under a vocal.",
+    "Setting a slow compressor attack to gently round off a bass without killing its punch.",
+    "Automating volume fade-ins to give a string section a soft, breathing entrance."
+   ]
+  },
+  {
+   "id": "46a98700-7abf-4bc5-bc9a-5d157f58f73c",
+   "term": "Soundboard resonance",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The resonant vibration of an instrument's soundboard (the thin top plate of a guitar, piano, violin, or similar), driven by the strings and radiating their energy into the air. Its characteristic resonant modes and coupled body/air resonances shape the instrument's loudness, tone, and sustain.",
+   "plain_english": "Soundboard resonance is the way an instrument's thin wooden top vibrates and amplifies the strings. Without it the strings alone would be almost too quiet to hear, like a rubber band stretched in open air.",
+   "purpose_function": "The soundboard turns a string's tiny vibration into a much louder radiated sound and colors the tone through its own resonances, which is why body size and bracing so strongly affect an acoustic instrument's voice.",
+   "practical_application": "When miking an acoustic guitar or piano, engineers position mics to balance bright string detail against boomy low-mid soundboard resonances, often avoiding the body 'hot spot' near the sound hole.",
+   "category": "Instrument Resonance",
+   "related_terms": [
+    "Resonance",
+    "Helmholtz resonance",
+    "Body resonance",
+    "Sympathetic resonance",
+    "Sustain",
+    "Miking technique"
+   ],
+   "common_mistakes": [
+    "Miking straight at an acoustic guitar's sound hole, which captures a boomy soundboard/air resonance instead of a balanced tone.",
+    "Confusing the soundboard's air (Helmholtz) resonance with its wood-plate resonances, though both shape the low end.",
+    "Assuming a bigger body always sounds better, when soundboard resonances can also make an instrument boomy or uneven."
+   ],
+   "scenario_contexts": [
+    "Positioning a microphone off-axis from a guitar's sound hole to tame low-end soundboard resonance.",
+    "Hearing a specific note 'bloom' louder on a piano due to a soundboard resonance.",
+    "Diagnosing a boomy, uneven peak on an acoustic instrument during tracking."
+   ]
+  },
+  {
+   "id": "fe3ea9af-9372-483b-8364-7bad4151bac0",
+   "term": "Spiccato attack",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The crisp, percussive onset produced by spiccato bowing, a string technique in which the bow is bounced lightly off the string so each note sounds short and detached. Each stroke gives a clean, articulate attack followed by a very short decay, with the bow leaving the string between notes.",
+   "plain_english": "A spiccato attack is the sharp, bouncy start of each note when a string player lets the bow hop off the string. Every note gets a quick, crisp tap, like lightly bouncing a ball so it barely touches the ground.",
+   "purpose_function": "Spiccato gives rapid string passages a light, rhythmic, clearly separated articulation, and its sharp attack helps each note cut through and stay distinct at speed.",
+   "practical_application": "When recording or programming strings, engineers pick spiccato articulations or samples for fast detached lines and preserve their sharp transients by avoiding heavy compression or slow attack settings.",
+   "category": "Bowing Articulation",
+   "related_terms": [
+    "Staccato",
+    "Sautille",
+    "Detache",
+    "Pizzicato",
+    "Transient",
+    "Articulation"
+   ],
+   "common_mistakes": [
+    "Confusing spiccato (bow bounces off the string) with staccato (short notes usually kept on the string).",
+    "Over-compressing spiccato strings, which flattens the sharp attack that gives the technique its bite.",
+    "Choosing a legato string sample for a fast detached line, losing the crisp spiccato attack the part needs."
+   ],
+   "scenario_contexts": [
+    "Selecting a spiccato articulation in a sample library for a fast, bouncy string ostinato.",
+    "Close-miking a string section to capture the crisp attack of spiccato passages.",
+    "Preserving spiccato transients by using light, fast-release compression during mixing."
+   ]
+  },
+  {
+   "id": "a357022a-c883-4561-8341-f9b5eeb048ed",
+   "term": "Splash",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The short, bright, quickly decaying accent sound of a splash cymbal, a small, thin cymbal (commonly about 6-12 inches) that speaks almost instantly and dies away fast. The term names both this small cymbal type and its sharp, watery burst of high-frequency sound.",
+   "plain_english": "A splash is the quick, bright burst from a small, thin cymbal that sounds and then vanishes fast. It is a short accent, like a tiny splash of water compared with a big crash.",
+   "purpose_function": "The splash cymbal gives a fast, colorful accent that punctuates a moment without the long wash of a crash, so it adds sparkle while staying out of the way.",
+   "practical_application": "A drummer places a splash near the hi-hat for quick accents, and an engineer captures it with the overhead mics, watching that its sharp transient does not overload the channel.",
+   "category": "Cymbal Sound",
+   "related_terms": [
+    "Crash cymbal",
+    "Ride cymbal",
+    "Sizzle",
+    "Transient",
+    "Overhead miking",
+    "Decay"
+   ],
+   "common_mistakes": [
+    "Confusing a splash (short, fast decay) with a crash cymbal (louder, with longer sustain).",
+    "Setting overhead levels for the crash and then clipping on the splash's fast, sharp transient.",
+    "Gating overheads so tightly that the splash's quick decay is cut off unnaturally."
+   ],
+   "scenario_contexts": [
+    "Miking a drum kit's overheads to capture bright splash accents cleanly.",
+    "Identifying a splash cymbal's fast decay when editing drum transients.",
+    "Choosing a splash instead of a crash for a quick accent that will not wash over a vocal."
+   ]
+  },
+  {
+   "id": "57d20619-ad03-47ae-90a6-7028bc197951",
+   "term": "Spring noise",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The characteristic mechanical artifacts of a spring reverb, in which coiled springs delay and disperse the signal. It includes the twangy, metallic 'boing' or 'sproing' heard on transients and, notably, the loud crashing sound produced when the unit is bumped or moved and the springs are physically jostled.",
+   "plain_english": "Spring noise is the boingy, metallic sound a spring reverb makes, and the loud crash you hear if you knock the unit. It happens because the sound really does travel down metal springs that rattle when bumped.",
+   "purpose_function": "The springs create reverb cheaply, but their bouncing adds a signature twang and makes the unit sensitive to vibration, so knowing this helps a technician expect and manage the noise.",
+   "practical_application": "Technicians isolate spring reverb tanks from stage vibration and shock, since footsteps or knocks make the springs crash audibly, and they may gate or edit out the boing on transient-heavy material.",
+   "category": "Effect Artifact",
+   "related_terms": [
+    "Spring reverb",
+    "Reverberation",
+    "Plate reverb",
+    "Transient",
+    "Dispersion",
+    "Flutter echo"
+   ],
+   "common_mistakes": [
+    "Mounting a spring reverb tank on a vibrating surface or amp, so stage bumps make the springs crash into the mix.",
+    "Confusing the spring's twangy dispersion 'chirp' with a fault, when it is normal spring-reverb behavior.",
+    "Sending sharp transients into a spring reverb and being surprised by the exaggerated boing it adds."
+   ],
+   "scenario_contexts": [
+    "Hearing a loud crash from a guitar amp's built-in spring reverb when the cabinet is bumped.",
+    "Identifying the metallic boing of a spring reverb on a surf-guitar recording.",
+    "Isolating a spring reverb unit from floor vibration during a live show."
+   ]
+  },
+  {
+   "id": "d623c1e2-23f6-4549-ab9c-cdabcd350e8b",
+   "term": "Spring resonance",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The natural resonant frequency, together with its overtone modes, at which a metal helical spring oscillates when excited; in audio it governs the ringing, dispersive metallic response of a spring-reverb tank and the low-frequency resonance of spring-suspended microphone shock mounts. At these frequencies the spring stores and returns energy efficiently, producing a pronounced, slowly decaying response.",
+   "plain_english": "Every spring has certain notes it likes to shake at. When something hits those notes, the spring rings loudly and takes a while to stop. This is why a spring reverb makes its famous 'boing' sound.",
+   "purpose_function": "It explains why spring-based devices color sound as they do: a spring-reverb tank uses these resonances to build its dense, metallic reverberation, while in a shock mount the spring's resonance is placed below the audio band so it isolates the mic instead of ringing.",
+   "practical_application": "A technician recognizes spring resonance as the twangy, metallic ring of a reverb tank and damps or EQs it, and checks that a mic shock mount's spring resonance sits well below program material so knocks are absorbed rather than passed through.",
+   "category": "Mechanical Resonance",
+   "related_terms": [
+    "Spring vibration",
+    "Spring reverb",
+    "Resonant frequency",
+    "Shock mount",
+    "Decay time",
+    "Reverberation"
+   ],
+   "common_mistakes": [
+    "Confusing spring resonance with a smooth digital reverb tail; the spring's dispersive, metallic ring is a mechanical artifact",
+    "Assuming a spring-reverb tank can be mounted anywhere, when its springs pick up floor and cabinet vibration and will 'boing' if bumped",
+    "Thinking more spring tension always means more reverb, rather than shifting the resonant modes"
+   ],
+   "scenario_contexts": [
+    "Dialing in a guitar amp's built-in spring reverb and taming the metallic ring",
+    "Diagnosing a 'boing' when a spring-reverb combo amp is bumped during a live set",
+    "Choosing a microphone shock mount whose spring resonance falls below the vocal range"
+   ]
+  },
+  {
+   "id": "2716517d-c0f8-44f0-822b-06cdc84b65e5",
+   "term": "Spring vibration",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The physical back-and-forth oscillation of a spring after it is disturbed, in which the coil transmits waves along its length and rings at its resonant modes before damping out. In audio this is the mechanism by which a spring-reverb tank carries and re-radiates a signal, and also the unwanted motion of shock-mount or floor springs that can inject noise.",
+   "plain_english": "A spring vibration is just a spring shaking after you tap it. The shaking travels up and down the coil and slowly dies away. Inside a spring reverb, that traveling shake is what smears the sound out over time.",
+   "purpose_function": "Understanding spring vibration tells a technician how a spring turns a quick input into a spread-out, ringing output, which is useful for spring reverb, and warns when a spring is instead passing stray shakes into the signal.",
+   "practical_application": "On the job you hear spring vibration as the rattling, springy decay of a reverb tank, and you keep tanks and spring mounts away from anything that could bump them during a take.",
+   "category": "Mechanical Artifact",
+   "related_terms": [
+    "Spring resonance",
+    "Spring reverb",
+    "Damping",
+    "Decay",
+    "Mechanical noise",
+    "Shock mount"
+   ],
+   "common_mistakes": [
+    "Treating every spring 'boing' as a fault when it is the intended reverb mechanism",
+    "Ignoring that a vibrating tank can be re-excited by nearby subwoofers or footsteps",
+    "Confusing spring vibration, which is mechanical, with electrical hum in the signal"
+   ],
+   "scenario_contexts": [
+    "Recording a surf-rock guitar tone that relies on the reverb tank's spring vibration",
+    "Isolating a combo amp so stage thump does not shake its reverb springs",
+    "Troubleshooting a springy noise traced to a knocked reverb pan"
+   ]
+  },
+  {
+   "id": "33e4925f-91fb-45e4-8acc-16be71be12bf",
+   "term": "Stand vibration",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "Low-frequency mechanical energy from footsteps, stage rumble, HVAC, or handling that travels up a microphone stand into the capsule as structure-borne noise, appearing as thumps and low-frequency rumble in the signal rather than airborne sound. It is controlled with shock mounts, isolation feet, high-pass filtering, and careful stand placement.",
+   "plain_english": "Stand vibration is shaking that travels up a mic stand into the microphone. Footsteps or a bumped stand turn into low thumps in the recording. A shock mount and a low-cut filter help stop it.",
+   "purpose_function": "Recognizing stand vibration matters because a mic picks up not only air but anything shaking its body; naming that path lets a technician block it before it muddies a recording.",
+   "practical_application": "A technician suspects stand vibration when low thumps appear in time with footsteps or bumps, then fits a shock mount, adds isolation, and engages a high-pass filter to remove it.",
+   "category": "Mechanical Artifact",
+   "related_terms": [
+    "Shock mount",
+    "Handling noise",
+    "Low-frequency rumble",
+    "High-pass filter",
+    "Structure-borne noise",
+    "Microphone isolation"
+   ],
+   "common_mistakes": [
+    "Blaming stand-vibration rumble on the mic's electronics instead of the mechanical path",
+    "Skipping the shock mount on a sensitive large-diaphragm condenser",
+    "Placing a stand directly on a resonant riser or hollow stage without isolation"
+   ],
+   "scenario_contexts": [
+    "Vocal tracking where the singer taps or leans on the stand",
+    "A live stage where subwoofers and footfalls shake mic stands",
+    "Boom-mounted overheads picking up floor rumble in a drum room"
+   ]
+  },
+  {
+   "id": "5be4fbf2-9f7e-4444-99e3-ee6b6d450620",
+   "term": "Stick attack",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The sharp initial transient produced when a drumstick, mallet, or beater strikes a drum, cymbal, or other percussion surface: the brief, high-amplitude onset that precedes the body and decay of the note and that largely defines its perceived punch and articulation.",
+   "plain_english": "Stick attack is the quick 'crack' at the very start of a drum hit. It is the first burst of sound before the drum rings out. This snap is what makes a hit feel punchy.",
+   "purpose_function": "The stick attack carries most of the cues the ear uses to place a drum in time and judge its impact, so preserving or shaping it is central to a tight, punchy drum sound.",
+   "practical_application": "A technician protects the stick attack with fast-transient mics and careful compressor attack settings, or boosts it with a transient shaper when a drum sounds soft and undefined.",
+   "category": "Transient / Attack",
+   "related_terms": [
+    "Transient",
+    "Attack",
+    "Stick definition",
+    "Stick click",
+    "Transient shaper",
+    "Decay"
+   ],
+   "common_mistakes": [
+    "Setting a compressor's attack too fast and squashing the stick attack, killing the drum's punch",
+    "Confusing the stick attack, a transient, with the drum's tuning or body tone",
+    "Over-boosting the attack until the drum sounds clicky and unnatural"
+   ],
+   "scenario_contexts": [
+    "Compressing a snare while keeping its stick attack intact",
+    "Using a transient designer to add punch to a dull kick",
+    "Choosing overhead mics fast enough to capture cymbal stick attack"
+   ]
+  },
+  {
+   "id": "da9cd79a-01a7-475c-92ba-d7ed6410f4ed",
+   "term": "Stick click",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The brief, high-frequency click heard at the instant a drumstick contacts a head, rim, cymbal, or another stick: the hard, wood-on-surface component of the attack. It can be a desired articulation, such as a defined kick-beater click or a cross-stick, or an unwanted artifact, such as stray stick noise bleeding into cymbal mics.",
+   "plain_english": "Stick click is the little 'tick' of the wooden stick hitting a surface. Sometimes you want it, like a clear kick-drum click. Other times it is just noise leaking into a mic.",
+   "purpose_function": "Naming the stick click lets a technician decide whether to feature it for attack and definition or reduce it when it clutters cymbals and overheads.",
+   "practical_application": "A technician boosts around the click frequency to help a kick cut through a mix, or uses EQ, mic angle, and gating to tame stick clicks bleeding into overhead and cymbal mics.",
+   "category": "Attack Artifact",
+   "related_terms": [
+    "Stick attack",
+    "Beater click",
+    "Cross-stick",
+    "Bleed",
+    "Stick definition",
+    "Transient"
+   ],
+   "common_mistakes": [
+    "Confusing the stick click with the drum's body tone",
+    "Over-gating overhead mics to remove clicks and cutting the cymbal attack as well",
+    "Assuming stick click is always a fault, when a defined beater click helps the mix cut through"
+   ],
+   "scenario_contexts": [
+    "Adding beater click to a kick so it cuts through a dense mix",
+    "Reducing stray stick clicks bleeding into overhead mics",
+    "Capturing a clean cross-stick (rim click) on a ballad"
+   ]
+  },
+  {
+   "id": "99802dd0-9ab7-4bd0-991e-a692f7790305",
+   "term": "Stick definition",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The clarity and audibility of the stick's attack within a drum sound: how distinctly the initial transient and its high-frequency detail come through relative to the body and decay. High stick definition makes each hit read as crisp and articulate, while low definition sounds dull or smeared.",
+   "plain_english": "Stick definition is how clearly you can hear the stick hit in a drum sound. When it is high, each hit sounds crisp and clear. When it is low, the hits sound dull and blurry.",
+   "purpose_function": "Stick definition is what lets a listener follow fast drum parts clearly, so engineers manage it to keep drums articulate without making them harsh.",
+   "practical_application": "A technician improves stick definition with presence-range EQ, transient shaping, or closer mic placement, and eases it back when a part sounds too clicky.",
+   "category": "Transient Clarity",
+   "related_terms": [
+    "Stick attack",
+    "Stick click",
+    "Transient",
+    "Presence",
+    "Definition",
+    "Transient shaper"
+   ],
+   "common_mistakes": [
+    "Chasing stick definition with harsh high-frequency boosts that make cymbals brittle",
+    "Confusing definition, the clarity of the attack, with overall loudness",
+    "Over-compressing so the attack is lost and definition drops"
+   ],
+   "scenario_contexts": [
+    "Restoring articulation to a dull snare with presence EQ",
+    "Balancing stick definition against cymbal harshness on overheads",
+    "Tightening a fast double-kick pattern so each stroke reads clearly"
+   ]
+  },
+  {
+   "id": "610b0ba4-5061-4d48-8cbe-a7132b926de0",
+   "term": "Stick rebound",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The natural bounce of a drumstick back off the drumhead or other surface after impact, driven by the head's tension and elasticity returning stored energy to the stick. Drummers exploit this rebound with a relaxed fulcrum grip to play faster, smoother strokes with less effort and to produce multiple-bounce strokes.",
+   "plain_english": "Stick rebound is the way a stick bounces back up after it hits a drum. The tight, springy head pushes the stick back, like a ball bouncing off the floor. Drummers use that bounce to play fast without tiring out.",
+   "purpose_function": "Rebound turns the drumhead's own springiness into free motion for the next stroke, which is why controlling it is central to speed, evenness, and endurance at the kit.",
+   "practical_application": "A drummer relies on stick rebound for buzz rolls, double strokes, and fast single strokes, adjusting grip pressure and head tension to control how much the stick bounces.",
+   "category": "Playing Technique",
+   "related_terms": [
+    "Stick attack",
+    "Drumhead tension",
+    "Double stroke",
+    "Buzz roll",
+    "Rebound stroke",
+    "Grip"
+   ],
+   "common_mistakes": [
+    "Gripping the stick too tightly, which kills the rebound and forces muscling every stroke",
+    "Expecting the same rebound from a loose head as from a tightly tuned one",
+    "Relying only on rebound and neglecting controlled strokes for softer dynamics"
+   ],
+   "scenario_contexts": [
+    "Practicing double-stroke rolls that depend on even rebound",
+    "Adjusting drumhead tension to get a lively rebound for fast playing",
+    "Playing a soft buzz roll using controlled multiple-bounce rebound"
+   ]
+  },
+  {
+   "id": "85894828-fea5-4be8-84ab-577713871d58",
+   "term": "Sul tasto tone",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The soft, flute-like timbre produced on a bowed string instrument by playing sul tasto, that is, drawing the bow over the fingerboard away from the bridge. Bowing there weakens the upper harmonics and emphasizes the fundamental, giving a veiled, mellow tone; the technique is also called flautando and contrasts with the bright, harmonic-rich sul ponticello.",
+   "plain_english": "Sul tasto tone is a soft, breathy string sound. The player bows over the fingerboard instead of near the bridge. This mellows the sound, a bit like a flute.",
+   "purpose_function": "Sul tasto gives composers and players a gentle, veiled color at the quiet end of the string palette, useful when a normal or bright tone would be too present.",
+   "practical_application": "A player moves the bow over the fingerboard to get a hushed, colorless pad, and an engineer recognizes the tone as intentionally dark rather than a dull mic or muffled recording.",
+   "category": "String Articulation",
+   "related_terms": [
+    "Sul ponticello",
+    "Flautando",
+    "Bow position",
+    "Harmonic content",
+    "Timbre",
+    "Con sordino"
+   ],
+   "common_mistakes": [
+    "Confusing a sul tasto tone with a poorly recorded, muffled string sound and 'fixing' it with EQ",
+    "Bowing too near the bridge and losing the intended soft color",
+    "Assuming sul tasto only changes volume, when it mainly changes timbre"
+   ],
+   "scenario_contexts": [
+    "Recording a string section asked to play sul tasto for a soft passage",
+    "Identifying an intentionally veiled tone versus a dull microphone",
+    "Contrasting sul tasto and sul ponticello colors in an arrangement"
+   ]
+  },
+  {
+   "id": "cd90dd69-e319-42ed-8780-9e1a58842276",
+   "term": "Swell",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A gradual increase in loudness, and often in intensity or brightness, over a note or phrase from soft to louder, a crescendo shaped as a smooth rise that is sometimes followed by a decrease. It can be performed by bowing, breath, or an organ swell box, or created electronically by fading in level with a volume pedal, a guitar volume knob, or a slow envelope or automation.",
+   "plain_english": "A swell is a smooth rise in volume, from quiet to loud. Instead of a sharp start, the sound eases in. Guitarists make one by turning up the volume knob right after they pick a note.",
+   "purpose_function": "A swell removes the hard attack of a note so a sound blooms in gently, which is why it is used for pads, ambient textures, and expressive dynamics.",
+   "practical_application": "A technician creates swells with volume-pedal moves, a slow synth attack, or fade-in automation, and shapes their timing so the sound arrives smoothly under the mix.",
+   "category": "Dynamics / Envelope",
+   "related_terms": [
+    "Crescendo",
+    "Attack",
+    "Volume pedal",
+    "Envelope",
+    "Fade-in",
+    "Dynamics"
+   ],
+   "common_mistakes": [
+    "Confusing a swell, a gradual level change, with tremolo, a rapid repeated pulsing",
+    "Making the swell so slow that the note loses its pitch and timing cues",
+    "Forgetting that a fast envelope attack setting cancels an intended slow synth swell"
+   ],
+   "scenario_contexts": [
+    "Automating a volume swell on a pad so it blooms into a chorus",
+    "Using a volume pedal for attack-less guitar swells",
+    "Setting a slow synth amplitude-envelope attack to make notes swell in"
+   ]
+  },
+  {
+   "id": "890c382c-22f0-4d0d-901b-c1b29673a126",
+   "term": "Tail",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The final, gradually fading portion of a sound after its initial attack and body have ended, most often the decaying reverberation or delay repeats that continue after the source note stops. It is characterized by falling amplitude over time and, in rooms, by a reverberation decay commonly quantified as RT60, the time for the sound to fall 60 dB.",
+   "plain_english": "A tail is the soft, fading part of a sound. It lingers after the main note stops. Think of the echo you hear after you clap in a big empty room.",
+   "purpose_function": "The tail carries the sense of space, size, and sustain in a sound, and engineers listen to it to judge room reverberation, delay settings, and how long a note rings before it fully dies away.",
+   "practical_application": "A technician shapes reverb and delay tails with decay-time, damping, and gating controls, then trims or fades them so they add depth without cluttering the mix or masking the next note.",
+   "category": "Decay characteristic",
+   "related_terms": [
+    "Decay",
+    "Reverberation",
+    "Release",
+    "Delay",
+    "Sustain",
+    "RT60"
+   ],
+   "common_mistakes": [
+    "Confusing the reverb tail (the fading space around a sound) with the dry note's own release or sustain.",
+    "Setting decay times so long that overlapping tails smear the mix and mask following notes.",
+    "Hard-cutting or gating a tail too abruptly, leaving an unnatural chopped-off sound instead of a smooth fade."
+   ],
+   "scenario_contexts": [
+    "Adjusting a reverb's decay time so a vocal's tail fades smoothly between phrases.",
+    "Using a gate or automated fade to shorten a snare reverb tail in a busy rock mix.",
+    "Judging a hall's reverberation tail (RT60) when tuning a live sound system."
+   ]
+  },
+  {
+   "id": "863a02fd-782f-41d0-b198-32a6bf10a55c",
+   "term": "Tap",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A single output point drawn from a specific position along a delay line, producing one discrete delayed copy (echo) of the input signal. Multiple taps at different delay times, each optionally scaled and summed, form a tapped delay line used to create multi-echo, rhythmic, or reverberant effects.",
+   "plain_english": "A tap is one 'listening spot' along a delay that grabs a single echo of the sound. Line up several taps and you get a row of repeats, a bit like bouncing a ball and hearing each bounce.",
+   "purpose_function": "Taps let one delay line yield many timed echoes at once, so designers can build rhythmic multi-tap delays, early-reflection patterns, and reverberation from a single efficient structure.",
+   "practical_application": "On a multi-tap delay plugin or hardware unit, a technician sets each tap's time, level, and pan to place individual echoes in time and space, often synced to the song tempo.",
+   "category": "Delay processing",
+   "related_terms": [
+    "Delay",
+    "Echo",
+    "Feedback",
+    "Early reflections",
+    "Multi-tap delay"
+   ],
+   "common_mistakes": [
+    "Confusing a delay tap (one echo output point) with 'tap tempo,' the button used to set delay time by tapping.",
+    "Assuming each tap needs its own separate delay line, when one delay line can feed many taps.",
+    "Forgetting that raising feedback, not adding taps, is what makes echoes repeat and build up over time."
+   ],
+   "scenario_contexts": [
+    "Programming a multi-tap delay so guitar echoes fall on musically useful beats.",
+    "Designing early reflections in a reverb by placing several short taps.",
+    "Setting individual tap levels and pans to spread echoes across the stereo field."
+   ]
+  },
+  {
+   "id": "7eade947-cee1-491c-b0f1-f6ae6c763827",
+   "term": "thud",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A subjective descriptor for a low-frequency, dull, short-lived percussive sound with a fast decay and little high-frequency content, such as the weighty body of a struck object like a kick drum, floor tom, or a bumped microphone. It denotes energy concentrated in the low and low-mid range with a soft, damped attack rather than a sharp, bright click.",
+   "plain_english": "A thud is a low, dull thump you feel more than hear, like dropping a heavy book on a table. It has plenty of low end but no bright 'click' on top.",
+   "purpose_function": "Naming a sound a 'thud' quickly tells engineers it lives in the low frequencies with a soft attack, guiding EQ and microphone choices to add or control that weight.",
+   "practical_application": "A technician boosting the thud of a kick drum works in the low bass region for weight, and may cut it to tame a boomy, thuddy tom or a handling-noise bump on a microphone.",
+   "category": "Timbral descriptor",
+   "related_terms": [
+    "Attack",
+    "Transient",
+    "Boom",
+    "Punch",
+    "Low frequency"
+   ],
+   "common_mistakes": [
+    "Treating 'thud' as an exact measurement rather than a subjective, low-frequency impression that varies between listeners.",
+    "Boosting low frequencies to add thud without checking on full-range monitors, then overloading small speakers.",
+    "Confusing a musical thud (wanted low-end body) with rumble or handling-noise that should be filtered out."
+   ],
+   "scenario_contexts": [
+    "Describing the low-end body of a kick drum during a mix.",
+    "Diagnosing an unwanted thud from microphone handling or foot noise on a stage.",
+    "EQing a floor tom to keep its thud while removing boxy mid frequencies."
+   ]
+  },
+  {
+   "id": "473916fa-a90c-4196-8f8a-ff9db4320a97",
+   "term": "Thumb slap",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A bass-guitar technique in which the side of the thumb strikes a string near the end of the fingerboard and bounces off, producing a percussive, sharply transient note with a bright attack and strong fundamental. It is the 'slap' half of slap-and-pop playing, where thumb slapping is combined with finger popping (pulling and releasing) of strings.",
+   "plain_english": "Thumb slap is when a bass player bounces the side of their thumb off a string to make a punchy, drum-like note. It gives that snappy, funky 'slap bass' sound.",
+   "purpose_function": "It adds a percussive, attack-heavy sound to the bass, letting the instrument drive rhythm with a bright snap that cuts through a mix in funk, pop, and fusion styles.",
+   "practical_application": "Players slap over the last frets and combine it with popped strings, while engineers capture the extra transient and string noise with careful gain-staging, compression, and sometimes brighter EQ.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Attack",
+    "Transient",
+    "Slap and pop",
+    "Pop",
+    "Percussive attack"
+   ],
+   "common_mistakes": [
+    "Slapping with the flat pad of the thumb instead of bouncing the side off the string, which mutes the tone.",
+    "Hitting too hard and clipping the preamp or interface input from the strong transient peak.",
+    "Confusing the thumb slap (percussive strike) with the popped note (string pulled and released) in slap-and-pop playing."
+   ],
+   "scenario_contexts": [
+    "Recording a funk bass line that alternates thumb slaps and pops.",
+    "Setting input gain to handle the loud transient peaks of slap bass without clipping.",
+    "Compressing a slap-bass track to even out the strong attack against quieter fingered notes."
+   ]
+  },
+  {
+   "id": "995bb478-ca32-48cc-941d-aafe467c250d",
+   "term": "thwack",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A subjective descriptor for a sharp, hard, percussive transient with a strong, fast attack and pronounced mid/high-frequency snap, such as the aggressive crack of a snare hit, a hard beater on a kick, or a slapped bass string striking the frets. It emphasizes a pronounced attack transient rather than sustained body.",
+   "plain_english": "A thwack is the hard, cracking snap at the very start of a hit, like a ruler smacked flat on a desk. It is all sharp attack and very little ring.",
+   "purpose_function": "Calling a sound a 'thwack' flags a strong attack transient in the upper frequencies, telling engineers to protect or enhance that snap with transient shaping and EQ.",
+   "practical_application": "A technician adds thwack to a snare by boosting a few kilohertz and using a transient shaper to lift the attack, while watching that the sharp peak does not trigger limiting too hard.",
+   "category": "Transient descriptor",
+   "related_terms": [
+    "Attack",
+    "Transient",
+    "Snap",
+    "Punch",
+    "Transient shaper"
+   ],
+   "common_mistakes": [
+    "Overusing a transient shaper to add thwack until the sound becomes clicky and unnatural.",
+    "Mistaking a musical thwack (wanted attack) for a distortion click or edit glitch that should be repaired.",
+    "Boosting high-mids for snap without controlling the resulting sharp peaks, causing harsh clipping."
+   ],
+   "scenario_contexts": [
+    "Enhancing the attack thwack of a snare in a rock mix.",
+    "Comparing drum samples by how much thwack their attack has.",
+    "Using a transient designer to restore thwack lost to heavy compression."
+   ]
+  },
+  {
+   "id": "dfd29b95-bc75-4a03-b284-862d1a618b27",
+   "term": "Tick",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A very brief, high-frequency click, a sharp low-level transient often heard as an unwanted artifact, such as a digital sample-level glitch, a word-clock or edit-point click, a metronome/click-track pulse, or surface noise on vinyl. It occupies a tiny slice of time with high-frequency or broadband content and no sustained tone.",
+   "plain_english": "A tick is a tiny, sharp click, like the tap of a clock's second hand. In recordings it is usually an unwanted little pop you want to find and remove.",
+   "purpose_function": "Identifying a tick tells a technician there is a momentary discontinuity or click in the signal, which points to editing, clocking, or playback problems to fix.",
+   "practical_application": "Engineers locate ticks by ear and on the waveform, then remove them with de-click tools, crossfades at edit points, or by fixing the digital clock or connection causing them.",
+   "category": "Audio artifact",
+   "related_terms": [
+    "Click",
+    "Pop",
+    "Artifact",
+    "Word clock",
+    "Crossfade"
+   ],
+   "common_mistakes": [
+    "Confusing a musical click-track tick with an unwanted click artifact in the recording.",
+    "Ignoring a repeating tick that signals a word-clock or sync error rather than a one-off glitch.",
+    "Editing on the waveform without a crossfade, creating a tick at every cut point."
+   ],
+   "scenario_contexts": [
+    "Removing mouth or edit clicks (ticks) from a spoken-word recording.",
+    "Tracing a regular tick to a word-clock or digital-sync fault in a studio setup.",
+    "Cleaning ticks and pops from a needle-drop transfer of a vinyl record."
+   ]
+  },
+  {
+   "id": "dc197406-4aa2-43fd-ada7-fc95222b6be6",
+   "term": "Tone color",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A synonym for timbre: the perceptual attribute of a sound, other than pitch, loudness, and duration, that lets a listener distinguish two sounds presented at the same pitch and loudness, such as a violin versus a flute. It arises mainly from a sound's harmonic (spectral) content and how that content evolves over time, especially during the attack.",
+   "plain_english": "Tone color is what makes two instruments playing the same note still sound different, like a trumpet next to a guitar. It is the 'flavor' or character of a sound, not how high or loud it is.",
+   "purpose_function": "Tone color is how we identify and describe the character of instruments and voices, and engineers shape it with microphone choice, EQ, and processing to make sounds sit and blend in a mix.",
+   "practical_application": "A technician changes tone color by picking microphones, positions, and EQ curves, listening to how the harmonic balance and attack define an instrument's character.",
+   "category": "Timbre",
+   "related_terms": [
+    "Timbre",
+    "Harmonics",
+    "Overtones",
+    "Spectrum",
+    "Attack"
+   ],
+   "common_mistakes": [
+    "Thinking tone color and timbre are different things, when they are two names for the same property.",
+    "Assuming tone color depends only on frequency content, ignoring how the attack and time-evolution shape it.",
+    "Confusing tone color (sound character) with pitch or loudness."
+   ],
+   "scenario_contexts": [
+    "Choosing a microphone to capture the tone color of an acoustic guitar.",
+    "Using EQ to match the tone color of two vocal takes recorded on different days.",
+    "Describing why two synth patches at the same note sound different."
+   ]
+  },
+  {
+   "id": "397562c6-f8e6-494f-8695-91138a27613b",
+   "term": "Tongue click",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A sharp, percussive click produced by forming suction with the tongue against the roof of the mouth or teeth and releasing it, sounding an ingressive click. In phonetics these are click consonants; in recording they appear as mouth-noise click artifacts on close-miked vocal and voice-over tracks, and are also used deliberately in vocal percussion and beatboxing.",
+   "plain_english": "A tongue click is a little clicking sound. You make it by pressing your tongue to the roof of your mouth and pulling it away fast, like a 'tsk-tsk' noise. On close vocal recordings, these clicks show up as unwanted little pops.",
+   "purpose_function": "Recognizing a tongue click helps a technician tell a natural mouth noise from an electronic glitch, so it can be edited out of speech or kept as a rhythmic element.",
+   "practical_application": "On voice-over and vocal tracks, engineers find tongue clicks between words and remove them with de-click tools or manual edits and fades, and keeping the performer hydrated reduces them at the source.",
+   "category": "Mouth-noise artifact",
+   "related_terms": [
+    "Click",
+    "Tick",
+    "Mouth noise",
+    "De-click",
+    "Artifact"
+   ],
+   "common_mistakes": [
+    "Confusing a natural tongue click with a digital click artifact and chasing a gear fault that is not there.",
+    "Removing every tongue click so aggressively that the speech starts to sound unnatural.",
+    "Ignoring the cause, a dry mouth, and only editing clicks out afterward instead of preventing them."
+   ],
+   "scenario_contexts": [
+    "Cleaning tongue clicks from a voice-over before final delivery.",
+    "Coaching a singer to stay hydrated to reduce mouth clicks at the microphone.",
+    "Using a tongue click as a percussive sound in a beatbox or a cappella track."
+   ]
+  },
+  {
+   "id": "587b8a50-22d5-49a4-aa1c-d10fe106f5e6",
+   "term": "Tongued attack",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A note onset on a wind or brass instrument in which the tongue briefly interrupts the airstream, typically with a 'tu' or 'du' motion, to give the note a clean, defined start. It contrasts with a slurred (un-tongued) attack, where consecutive notes are connected with no tongue articulation.",
+   "plain_english": "A tongued attack is when a wind or brass player uses a little 'tu' of the tongue to start a note crisply, instead of letting notes glide together. It gives each note a clear, clean beginning.",
+   "purpose_function": "Tonguing defines the start of each note, controlling articulation, clarity, and rhythm, and it produces the sharp attack transient that shapes how a wind or brass line is perceived.",
+   "practical_application": "When recording winds and brass, engineers position microphones to capture a clear tongued attack without over-emphasizing breath and tonguing noise, and may use transient control to balance attack against body.",
+   "category": "Articulation",
+   "related_terms": [
+    "Attack",
+    "Articulation",
+    "Transient",
+    "Staccato",
+    "Slur"
+   ],
+   "common_mistakes": [
+    "Confusing a tongued attack (tongue-started note) with a slur, where notes connect without tonguing.",
+    "Assuming tonguing stops the air fully, when it only briefly interrupts it to separate notes.",
+    "Close-miking winds so tightly that tonguing and breath noise overpower the note's tone."
+   ],
+   "scenario_contexts": [
+    "Miking a trumpet to capture crisp tongued attacks in a horn section.",
+    "Editing a flute part where soft tongued attacks need a little transient lift.",
+    "Distinguishing tongued (articulated) from slurred passages when comping wind takes."
+   ]
+  },
+  {
+   "id": "5fe6bfda-a3d6-4aca-8944-cb796273eafd",
+   "term": "Transient spike",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A transient spike is a very brief, high-amplitude peak at the onset of a sound that rises and falls far faster than the surrounding signal. It appears as a short, sharp jump in level, typical of drum hits, plucks, and vocal consonants, and carries much of a sound's attack information.",
+   "plain_english": "A transient spike is a quick, sharp jump in loudness at the very start of a sound, like the crack of a snare hit. It lasts only a moment but gives a sound its punch.",
+   "purpose_function": "Recognizing transient spikes lets a technician judge a sound's attack and guard against sudden peaks that can clip converters or trip limiters.",
+   "practical_application": "Engineers watch meters and waveforms for transient spikes when setting gain and compressor attack, keeping drums punchy while avoiding overload.",
+   "category": "Attack Artifact",
+   "related_terms": [
+    "Initial transient",
+    "Attack",
+    "Peak",
+    "Clipping",
+    "Transient shaper",
+    "Headroom"
+   ],
+   "common_mistakes": [
+    "Confusing a musical transient spike with an unwanted click or digital over.",
+    "UNSAFE: Chasing loudness so transient spikes drive amplifiers and drivers into hard clipping, which can overheat and destroy tweeters.",
+    "Using too fast a compressor attack and flattening the spike, killing the punch.",
+    "Trusting slow meters that miss the very fastest peaks."
+   ],
+   "scenario_contexts": [
+    "Setting converter gain so a snare's transient spike does not clip.",
+    "Choosing a limiter to tame transient spikes on a live drum bus.",
+    "Diagnosing intermittent clip lights caused by sharp vocal consonants."
+   ]
+  },
+  {
+   "id": "956caf36-105a-4951-a5a7-8bbd8d845ed5",
+   "term": "trashy",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "Trashy describes a cymbal or similar metallic sound with a dense, noise-like, inharmonic spectrum, a fast and dry decay, and little clear pitch, giving an aggressive, dirty character like a trash or china cymbal rather than a clean, ringing tone.",
+   "plain_english": "Trashy is a dirty, noisy cymbal sound that ends fast and has no clear note, like a china cymbal or a trash-can lid. It sounds rough and splashy instead of smooth and ringing.",
+   "purpose_function": "The label lets a technician quickly describe a rough, noise-heavy metallic tone so they can decide whether it suits a track or needs taming.",
+   "practical_application": "An engineer calls a cymbal trashy when choosing effect cymbals or setting EQ, and may roll off harsh highs or use it deliberately for gritty, aggressive accents.",
+   "category": "Timbral descriptor",
+   "related_terms": [
+    "Sizzle",
+    "Wash",
+    "China cymbal",
+    "Overtone ring",
+    "Decay",
+    "Timbre"
+   ],
+   "common_mistakes": [
+    "Assuming trashy always means bad, when it is often a wanted effect-cymbal sound.",
+    "Confusing a naturally trashy cymbal with a cracked or damaged one.",
+    "Trying to EQ a trashy cymbal into a clean ping, which rarely works."
+   ],
+   "scenario_contexts": [
+    "Choosing a trashy china cymbal for aggressive rock accents.",
+    "Taming harsh, trashy overheads with a high-frequency cut.",
+    "Describing a cymbal's dirty, short character to a producer."
+   ]
+  },
+  {
+   "id": "ad035832-0914-454b-ba84-fa65159170ca",
+   "term": "Tremolo bowing",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "Tremolo bowing (bowed tremolo) is a string technique in which the player rapidly reiterates a note with quick, short back-and-forth bow strokes, usually near the tip, producing a shimmering, sustained, agitated sound. It is normally unmeasured, the strokes played as fast as possible rather than in strict rhythm.",
+   "plain_english": "Tremolo bowing is moving the bow back and forth very fast on the same note so it shivers and buzzes. Film composers use it to build tension or a sense of drama.",
+   "purpose_function": "It lets strings sustain and intensify a note with a trembling, dramatic texture that a single smooth stroke cannot give.",
+   "practical_application": "When recording or mixing strings, an engineer recognizes tremolo bowing by its dense, sustained shimmer and may adjust mics or reverb so the effect stays clear rather than smeared.",
+   "category": "Bowing technique",
+   "related_terms": [
+    "Sul ponticello",
+    "Measured tremolo",
+    "Fingered tremolo",
+    "Articulation",
+    "Sustain",
+    "Bow noise"
+   ],
+   "common_mistakes": [
+    "Confusing bowed tremolo with fingered tremolo, which alternates between two pitches.",
+    "Mistaking the fast bow noise of a tremolo for a recording fault.",
+    "Gating string tracks so hard that the quiet start of a tremolo is cut off."
+   ],
+   "scenario_contexts": [
+    "A film cue where violins play tremolo to build suspense.",
+    "Close-miking a section and hearing extra bow noise from tremolo strokes.",
+    "Adding reverb to a tremolo passage for a lush, sustained bed."
+   ]
+  },
+  {
+   "id": "93eb5e6e-db70-4310-8de2-00f0cb662635",
+   "term": "twang",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "Twang is a bright, sharp, resonant tone with a fast, ringing attack rich in high harmonics and a quick, metallic decay, characteristic of tightly strung plucked instruments such as the banjo, a Telecaster-style guitar, or a jaw harp. It is heard as a pointed, spring-like pinging quality rather than a warm, rounded sound.",
+   "plain_english": "Twang is the bright, sharp, ringing sound of a plucked string, like a banjo or a country guitar. It has a quick, pingy snap with lots of high, metallic zing.",
+   "purpose_function": "Naming twang helps a technician identify and dial in the bright, cutting plucked-string character that defines styles like country and bluegrass.",
+   "practical_application": "An engineer boosts upper-mid and treble EQ or picks bright strings and pickups to bring out twang, and tames it when it turns harsh.",
+   "category": "Tonal descriptor",
+   "related_terms": [
+    "Attack",
+    "Brightness",
+    "Pluck",
+    "Sustain",
+    "Harmonics",
+    "Bite"
+   ],
+   "common_mistakes": [
+    "Confusing twang, a bright plucked tone, with vibrato or pitch bending.",
+    "Over-boosting treble to add twang and making the track thin and harsh.",
+    "Assuming twang is only a guitar term, when banjos and jaw harps twang too."
+   ],
+   "scenario_contexts": [
+    "EQing a Telecaster for more twang in a country mix.",
+    "Choosing bright strings and a bridge pickup for a twangy tone.",
+    "Reducing harsh twang on a banjo track with a gentle treble cut."
+   ]
+  },
+  {
+   "id": "147ebd4a-b5fb-4737-93e1-666c89b60b56",
+   "term": "Uilleann pipes regulators",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The regulators are keyed, closed-ended pipes on a full (concert) set of uilleann pipes, mounted with the drones on the common stock, that the piper sounds by pressing their keys, usually with the wrist or heel of the right hand, to add chords and rhythmic harmony beneath the chanter melody. A full set typically carries three: bass, baritone, and tenor.",
+   "plain_english": "Regulators are extra keyed pipes on Irish uilleann pipes that play chords. The piper taps their keys with the wrist to add harmony under the tune, like a one-person backing band.",
+   "purpose_function": "They let a single piper accompany their own melody with chords and rhythm, a feature that makes the uilleann pipes unusually self-contained among bagpipes.",
+   "practical_application": "When miking uilleann pipes, an engineer positions mics to capture the regulators' chordal accents along with the chanter, since the regulators add loud rhythmic stabs.",
+   "category": "Bagpipe component",
+   "related_terms": [
+    "Chanter",
+    "Drone",
+    "Bellows",
+    "Reed",
+    "Bagpipe",
+    "Harmony"
+   ],
+   "common_mistakes": [
+    "Confusing regulators with drones; drones sound continuously, regulators only when keyed.",
+    "Assuming every uilleann set has regulators, when practice (half) sets often lack them.",
+    "Miking only the chanter and missing the regulators' chords."
+   ],
+   "scenario_contexts": [
+    "Recording a solo piper who uses regulators for chordal accompaniment.",
+    "Balancing chanter and regulator levels in a traditional session mix.",
+    "Identifying rhythmic chord stabs as regulator work, not a second instrument."
+   ]
+  },
+  {
+   "id": "847ae384-5d58-4088-98e6-da1d272ad8f9",
+   "term": "Valve clatter",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "Valve clatter is the mechanical rattling or knocking noise produced by the moving pistons or rotors of a brass instrument's valves, most audible on larger or worn instruments and easily captured by close microphones. It is unwanted percussive noise unrelated to the instrument's musical tone.",
+   "plain_english": "Valve clatter is the rattly, knocking sound a brass instrument valves make as they move up and down. Close mics can pick it up like a faint tapping under the notes.",
+   "purpose_function": "Spotting valve clatter helps a technician separate a mechanical noise problem from the musical sound so it can be fixed at the source.",
+   "practical_application": "An engineer hearing valve clatter repositions the mic, often above and behind the player, or asks the player to oil the valves and press more smoothly.",
+   "category": "Mechanical artifact",
+   "related_terms": [
+    "Valve click",
+    "Valve noise",
+    "Key click",
+    "Mechanical noise",
+    "Close miking"
+   ],
+   "common_mistakes": [
+    "Blaming valve clatter on the microphone instead of the instrument's action.",
+    "Trying to EQ out clatter, which shares frequencies with the instrument's tone.",
+    "Placing the mic right over the valves, maximizing the clatter."
+   ],
+   "scenario_contexts": [
+    "Close-miking a tuba and hearing knocking from the valves.",
+    "Repositioning a trumpet mic to reduce valve clatter.",
+    "Editing out isolated valve clatter in a quiet passage."
+   ]
+  },
+  {
+   "id": "7261dad2-bbc3-4504-a613-4365eaf1cc20",
+   "term": "Valve click",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "Valve click is the short, sharp clicking sound made when a brass instrument's valve seats or returns, often from the piston contacting its casing or from worn felt or cork pads, captured as a brief transient by close microphones. It is a mechanical artifact, not part of the musical tone.",
+   "plain_english": "Valve click is the small, sharp tick you hear when a brass player presses or releases a valve. It is a quick mechanical noise, not a real note.",
+   "purpose_function": "Identifying valve clicks lets a technician tell a harmless mechanical tick apart from an electronic click or an edit glitch.",
+   "practical_application": "An engineer who hears valve clicks moves the mic away from the valve block, or edits out stray clicks in exposed passages during post.",
+   "category": "Mechanical artifact",
+   "related_terms": [
+    "Valve clatter",
+    "Valve noise",
+    "Key click",
+    "Transient",
+    "Close miking"
+   ],
+   "common_mistakes": [
+    "Mistaking a mechanical valve click for a digital click or dropout.",
+    "Assuming worn valve felts are fine, when missing felts make clicks louder.",
+    "Miking too close to the valves in a quiet, exposed part."
+   ],
+   "scenario_contexts": [
+    "Hearing sharp ticks from a trumpet's valves in a soft passage.",
+    "Deciding whether a click is a valve or an edit point.",
+    "Replacing worn valve felts to quiet the clicking."
+   ]
+  },
+  {
+   "id": "3ee7e37e-f53f-4a9c-9ebd-b96f18e86599",
+   "term": "Valve noise",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "Valve noise is the general term for the mechanical sounds, such as clicks, clatter, and rattles, made by the valve mechanism of a brass instrument as the player operates it, distinct from the musical tone and most noticeable with close microphones. In brass close-miking it refers to piston or rotary valve action, not to electronic tube (valve) noise.",
+   "plain_english": "Valve noise is the general name for the clicks and rattles a brass instrument valves make while being played. It is mechanical sound, not part of the music, and close mics make it easier to hear.",
+   "purpose_function": "The term groups the mechanical noises of valve action so a technician can diagnose and reduce them as one category.",
+   "practical_application": "When valve noise intrudes, an engineer changes mic angle and distance, typically miking from above and behind, or asks for smoother technique and freshly serviced valves.",
+   "category": "Mechanical noise",
+   "related_terms": [
+    "Valve click",
+    "Valve clatter",
+    "Key click",
+    "Mechanical artifact",
+    "Close miking"
+   ],
+   "common_mistakes": [
+    "Confusing mechanical brass valve noise with electronic noise from a tube (valve) amplifier.",
+    "Blaming valve noise on the mic rather than the instrument or technique.",
+    "Positioning the mic directly over the valves, worsening the noise."
+   ],
+   "scenario_contexts": [
+    "A close-miked euphonium showing audible valve noise between notes.",
+    "Choosing mic placement to minimize valve noise on trumpet.",
+    "Explaining to a player how valve noise reaches the mic."
+   ]
+  }
+ ]
+}

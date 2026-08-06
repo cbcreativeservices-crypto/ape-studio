@@ -1,0 +1,322 @@
+{
+ "batch": 416,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "c7893120-e6b2-4f2a-8b91-45b327b95143",
+   "term": "Beamforming algorithm",
+   "fields": {
+    "definition": "A signal-processing method that combines the outputs of a sensor or microphone array by applying per-element weights (gains, delays, or phase shifts) so signals arriving from a chosen direction add constructively while signals from other directions are attenuated, forming a directional response called a beam. Classic forms include delay-and-sum and adaptive designs such as the minimum-variance distortionless-response (MVDR) beamformer, and modern audio systems often estimate the weights or masks with machine learning.",
+    "plain_english": "It is a way to make several microphones act like one that listens in a chosen direction. By lining up and mixing their signals, it boosts the sound you want and lowers noise from other directions.",
+    "purpose_function": "It gives a microphone or sensor array spatial selectivity, so a system can capture a target source clearly while rejecting interference, noise, and echoes coming from other directions.",
+    "practical_application": "A technician meets it in conferencing mic arrays, smart speakers, hearing aids, and array microphones that steer pickup toward a talker; beamforming is also used as a front end to clean speech before a recognition or separation model.",
+    "category": "Array signal processing",
+    "related_terms": [
+     "Microphone array",
+     "Blind source separation",
+     "Beam steering",
+     "Spatial filtering",
+     "Adaptive filter",
+     "Speech enhancement"
+    ],
+    "common_mistakes": [
+     "Assuming more microphones always give a tighter beam; array geometry, element spacing, and frequency together set the achievable directivity",
+     "Confusing beamforming with simple panning or mixing; it exploits the phase and time relationships across the array, not just level",
+     "Ignoring spatial aliasing, which occurs when element spacing is too large for the wavelength and creates unwanted extra beams"
+    ],
+    "scenario_contexts": [
+     "Steering a ceiling microphone array toward whoever is speaking in a conference room",
+     "Using an array front end to suppress noise before automatic speech recognition",
+     "Focusing pickup on a soloist while rejecting stage spill during a live capture"
+    ]
+   },
+   "sources": [
+    "Van Trees, Optimum Array Processing (Detection, Estimation, and Modulation Theory, Part IV)",
+    "Benesty, Chen & Huang, Microphone Array Signal Processing",
+    "IEEE Signal Processing literature on adaptive and neural beamforming"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1ec3d0e5-340d-44bd-8608-c380c37bc706",
+   "term": "Biquad coefficient",
+   "fields": {
+    "definition": "One of the constants that define a biquad, a second-order recursive (IIR) digital filter section whose transfer function is H(z) = (b0 + b1 z^-1 + b2 z^-2) / (a0 + a1 z^-1 + a2 z^-2). The feedforward coefficients b0, b1, b2 and the feedback coefficients a1, a2, with a0 normalized to 1, set the section's poles and zeros and therefore its frequency response.",
+    "plain_english": "These are the few numbers that tell a small digital filter exactly how to change a sound. Change the numbers and you change which frequencies get boosted or cut.",
+    "purpose_function": "They encode the filter's design in a compact form a processor can run, and adjusting them tunes the filter's shape, gain, and center or cutoff frequency.",
+    "practical_application": "A technician sets or loads biquad coefficients when programming a DSP crossover, a parametric EQ band, or a speaker-processor preset, often computing them from a cookbook formula for the wanted filter type.",
+    "category": "Digital filtering",
+    "related_terms": [
+     "Cascaded biquad filter",
+     "IIR filter",
+     "Transfer function",
+     "Parametric EQ",
+     "Filter coefficient",
+     "Digital signal processor"
+    ],
+    "common_mistakes": [
+     "Forgetting to normalize by a0, so the filter's gain and response come out wrong",
+     "Assuming the same coefficients work at any sample rate; they are computed for one sample rate and must be recalculated if it changes",
+     "Mixing up the feedforward (b) and feedback (a) coefficients when entering them into a DSP"
+    ],
+    "scenario_contexts": [
+     "Entering EQ biquad coefficients into a loudspeaker DSP preset",
+     "Recomputing coefficients when a project's sample rate changes",
+     "Debugging an unstable filter caused by bad feedback coefficients"
+    ]
+   },
+   "sources": [
+    "Oppenheim & Schafer, Discrete-Time Signal Processing",
+    "W3C / Robert Bristow-Johnson, Audio EQ Cookbook (Cookbook formulae for audio EQ biquad filter coefficients)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "46730394-9f57-4a36-8909-615a0487f173",
+   "term": "Blind source separation",
+   "fields": {
+    "definition": "The recovery of a set of unknown source signals from observed mixtures of them when the mixing process itself is unknown, relying on statistical assumptions about the sources, such as mutual independence, non-Gaussianity, or sparsity, rather than prior knowledge of them. Independent component analysis (ICA) is a canonical approach, and the classic audio case is the cocktail-party problem of separating simultaneous talkers.",
+    "plain_english": "It is a way to pull apart sounds that were recorded mixed together, without knowing how they were combined. It is like picking out single voices at a noisy party using only what the microphones heard.",
+    "purpose_function": "It isolates individual sources such as speakers, instruments, or noise from mixtures so each can be analyzed, enhanced, or processed on its own, even when nothing is known about the room or the mixing.",
+    "practical_application": "A technician meets it in speech-enhancement and un-mixing tools that separate overlapping talkers or pull an instrument out of a mix, often as a step before transcription or remastering.",
+    "category": "Source separation",
+    "related_terms": [
+     "Independent component analysis",
+     "Beamforming algorithm",
+     "Cocktail party problem",
+     "Spectrogram masking",
+     "Microphone array",
+     "Speech enhancement"
+    ],
+    "common_mistakes": [
+     "Expecting perfect separation; results depend on the assumptions, the number of microphones, and how much the sources overlap",
+     "Assuming the outputs come out in a fixed order and level; blind methods leave the order and scale of the recovered sources ambiguous",
+     "Confusing it with beamforming, which uses known array geometry and direction instead of blind statistical assumptions"
+    ],
+    "scenario_contexts": [
+     "Separating two overlapping speakers captured on the same recording",
+     "Extracting a vocal or instrument stem from a stereo mix",
+     "Removing an interfering source before automatic transcription"
+    ]
+   },
+   "sources": [
+    "Comon & Jutten, Handbook of Blind Source Separation: Independent Component Analysis and Applications",
+    "Hyvarinen, Karhunen & Oja, Independent Component Analysis"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "41cc9a02-acef-47c2-b53c-3a8abb5d13f5",
+   "term": "Boomy",
+   "fields": {
+    "definition": "A subjective tonal descriptor for sound with excessive or poorly controlled low-frequency energy, typically an emphasis and resonance in the low bass and lower midrange (roughly the 100-300 Hz region) that makes the sound heavy, thick, and lacking definition. It commonly results from room modes, microphone proximity effect, or over-boosted low-end EQ.",
+    "plain_english": "Boomy sound has too much heavy, thumpy bass that covers up detail. It is the overpowering low end you hear when a room or a mix has far too much energy down low.",
+    "purpose_function": "As a listening term it lets engineers name a specific low-frequency problem, so they can locate its cause and fix it with EQ, placement, or room treatment.",
+    "practical_application": "A technician uses the word when critical listening reveals a bass buildup, then cuts around 100-300 Hz, moves a mic or loudspeaker, or treats room modes to tighten the low end.",
+    "category": "Tonal description",
+    "related_terms": [
+     "Muddy",
+     "Proximity effect",
+     "Room modes",
+     "Low frequency",
+     "Equalization",
+     "Parametric EQ"
+    ],
+    "common_mistakes": [
+     "Assuming boomy just means too much overall bass; it is usually a narrower buildup in the low bass and low mids rather than the deepest sub range",
+     "Trying to fix it only with EQ when the real cause is a room mode or poor speaker placement",
+     "Confusing boomy with muddy; muddy usually points a little higher, in the low mids where clarity is lost"
+    ],
+    "scenario_contexts": [
+     "Describing a vocal that sounds heavy because of close-mic proximity effect",
+     "Diagnosing a room where bass notes ring and overpower the mix",
+     "Noting a kick or bass guitar with too much low-mid buildup during a mix review"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha, Sound Reinforcement Handbook (Davis & Jones)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b1ec672f-9ed2-4b2c-8946-7b6fb3b22734",
+   "term": "Cascaded biquad filter",
+   "fields": {
+    "definition": "A higher-order digital IIR filter built by connecting several second-order biquad sections in series (cascade), so the overall transfer function is the product of the individual section transfer functions. This second-order-section structure is preferred over a single high-order direct-form filter because it is far less sensitive to coefficient quantization and rounding, giving better numerical stability.",
+    "plain_english": "It is a big filter made by chaining several small two-part filters one after another. Splitting the job into small stages keeps the math stable and avoids errors a single large filter would cause.",
+    "purpose_function": "It realizes sharp or complex frequency responses reliably in finite-precision hardware, because breaking a high-order filter into stable second-order stages avoids the numerical problems of one large filter.",
+    "practical_application": "A technician encounters it inside DSP EQs, crossovers, and speaker processors, where multi-band or high-order responses are built as a chain of biquad stages, each with its own coefficients.",
+    "category": "Digital filtering",
+    "related_terms": [
+     "Biquad coefficient",
+     "IIR filter",
+     "Second-order section",
+     "Parametric EQ",
+     "Crossover",
+     "Transfer function"
+    ],
+    "common_mistakes": [
+     "Assuming the order of the sections does not matter; the scaling and ordering of stages affect headroom and noise in fixed-point systems",
+     "Forgetting that each stage needs its own correctly computed coefficients",
+     "Thinking more cascaded stages always sound better; each one adds phase shift and potential noise"
+    ],
+    "scenario_contexts": [
+     "Building a steep crossover from several biquad stages in a loudspeaker DSP",
+     "Implementing a multi-band parametric EQ as a chain of biquads",
+     "Debugging noise traced to poor stage scaling in a fixed-point filter"
+    ]
+   },
+   "sources": [
+    "Oppenheim & Schafer, Discrete-Time Signal Processing",
+    "W3C / Robert Bristow-Johnson, Audio EQ Cookbook (Cookbook formulae for audio EQ biquad filter coefficients)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e0d08562-208e-4223-8216-c8271040475a",
+   "term": "Cepstral analysis",
+   "fields": {
+    "definition": "A signal-analysis technique based on the cepstrum, obtained by taking the inverse Fourier transform of the logarithm of a signal's magnitude spectrum. By turning the multiplicative relationship between a source and a filter into an additive one (homomorphic deconvolution), it separates fine spectral detail from the slowly varying spectral envelope, and it underlies pitch estimation, formant analysis, and features such as MFCCs.",
+    "plain_english": "It studies the shape of a sound's spectrum to split it into a pitch part and an overall tone-color part. This makes it easier to find a voice's pitch or the shape of its vowels.",
+    "purpose_function": "It separates a source signal from the filtering it passed through, so systems can estimate pitch, model a vocal tract or instrument body, and build compact features for recognition.",
+    "practical_application": "A technician meets it in pitch detectors, speech and speaker analysis, and the MFCC front ends of recognition and music-analysis systems.",
+    "category": "Spectral analysis",
+    "related_terms": [
+     "Cepstrum",
+     "Mel-frequency cepstral coefficients",
+     "Spectral envelope",
+     "Fundamental frequency",
+     "Homomorphic filtering",
+     "Fourier transform"
+    ],
+    "common_mistakes": [
+     "Confusing the quefrency axis of the cepstrum with ordinary time or frequency",
+     "Forgetting to take the logarithm, which is exactly what makes the source and filter separable",
+     "Assuming the cepstrum always gives a reliable pitch; noisy or breathy signals can hide the pitch peak"
+    ],
+    "scenario_contexts": [
+     "Estimating the fundamental frequency of a voice for pitch tracking",
+     "Extracting MFCC features to feed a speech or music classifier",
+     "Separating vocal-tract shape from the glottal source in speech analysis"
+    ]
+   },
+   "sources": [
+    "Oppenheim & Schafer, Discrete-Time Signal Processing",
+    "Muller, Fundamentals of Music Processing"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "515bb1fd-3313-42af-8fad-e5d7d6fa62b5",
+   "term": "Checkpoint",
+   "fields": {
+    "definition": "A saved snapshot of a machine-learning model's state taken during or after training, storing the learned parameters (weights and biases) and often the optimizer state, training step, and metadata needed to resume training or restore the model exactly. Checkpoints let long training runs be paused and continued, guard against crashes, and preserve specific versions for evaluation or deployment.",
+    "plain_english": "It is a saved copy of a model's progress while it learns. Like saving your place in a long game, it lets you stop and continue later, or go back to a good earlier version.",
+    "purpose_function": "It lets long, costly training runs survive interruptions and be resumed, and it keeps specific versions of a model available for testing, comparison, or release.",
+    "practical_application": "A technician working with audio models loads a checkpoint to run or fine-tune a pretrained system, and saves checkpoints periodically so a long training job can recover from a crash.",
+    "category": "Model training",
+    "related_terms": [
+     "Model weights",
+     "Fine-tuning",
+     "Pretrained model",
+     "Training",
+     "Inference",
+     "Epoch"
+    ],
+    "common_mistakes": [
+     "Assuming a checkpoint contains the code or architecture; it usually stores only parameters and state, so the matching model definition is still needed",
+     "Saving only the final model and losing the ability to roll back to an earlier, better checkpoint",
+     "Forgetting that the optimizer state must also be saved to resume training seamlessly"
+    ],
+    "scenario_contexts": [
+     "Loading a pretrained checkpoint to run a speech or music model",
+     "Resuming a long training run after a hardware failure",
+     "Keeping periodic checkpoints to pick the best-performing version later"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning",
+    "PyTorch technical documentation (Saving and Loading Models / Checkpoints)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3b464589-d8ca-4673-8d7f-8c3a96946589",
+   "term": "Codebook",
+   "fields": {
+    "definition": "In vector quantization, a finite set of representative vectors, called codewords or code vectors, used to approximate a signal: each input vector is replaced by its nearest codeword and stored or transmitted as that codeword's index. The same idea underlies neural discrete representations such as VQ-VAE, where a learned codebook maps encoder outputs to a set of discrete tokens.",
+    "plain_english": "It is a fixed list of example patterns, each with a number. Instead of sending a full signal, a system sends the number of the closest pattern, like picking the nearest color from a paint chart.",
+    "purpose_function": "It compresses or discretizes data by representing many possible inputs with a small set of prototypes, cutting size and turning continuous signals into compact indices or tokens.",
+    "practical_application": "A technician meets codebooks in speech and audio codecs and in neural audio codecs and tokenizers, where audio is encoded as indices into a learned codebook for storage, transmission, or use by generative models.",
+    "category": "Vector quantization",
+    "related_terms": [
+     "Vector quantization",
+     "VQ-VAE",
+     "Neural audio codec",
+     "Quantization",
+     "Tokenization",
+     "Codec"
+    ],
+    "common_mistakes": [
+     "Assuming a bigger codebook is always better; too many entries raise cost and can go unused, a failure known as codebook collapse in learned models",
+     "Confusing the codebook index with the codeword itself; the index is only a pointer to the stored vector",
+     "Thinking codebook quantization is lossless; replacing an input with its nearest codeword always introduces some error"
+    ],
+    "scenario_contexts": [
+     "Encoding speech with a codebook in a low-bitrate codec",
+     "Tokenizing audio into codebook indices for a generative model",
+     "Diagnosing codebook collapse while training a VQ-VAE on audio"
+    ]
+   },
+   "sources": [
+    "Gersho & Gray, Vector Quantization and Signal Compression",
+    "van den Oord, Vinyals & Kavukcuoglu, Neural Discrete Representation Learning (VQ-VAE)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "094dd776-20ea-4631-b438-f2d372c8cb74",
+   "term": "Conditioning",
+   "fields": {
+    "definition": "In machine learning, the practice of giving a model additional input information (a conditioning signal) that constrains or guides its output, so it learns or samples from a conditional distribution p(x | c) rather than an unconditional one. The conditioning signal can be a class label, text, speaker identity, or acoustic features, and it is what lets a generative model produce a specific, controllable result.",
+    "plain_english": "It means giving a model an extra hint that tells it what to make. For a voice model the hint might be the words to say or whose voice to use, so the output matches the request.",
+    "purpose_function": "It makes model outputs controllable and specific, letting a single model produce different results on demand by changing the side information it is given.",
+    "practical_application": "A technician meets conditioning in text-to-speech and audio generators, where the model is conditioned on text, a target speaker, or a mel-spectrogram to produce the wanted voice or sound.",
+    "category": "Generative modeling",
+    "related_terms": [
+     "Conditional generation",
+     "Generative model",
+     "Text-to-speech",
+     "Latent variable",
+     "Embedding",
+     "Mel-spectrogram"
+    ],
+    "common_mistakes": [
+     "Confusing this sense with numerical conditioning (the condition number) or with electronic signal conditioning",
+     "Assuming the model must obey the conditioning exactly; weak conditioning can be partly ignored during sampling",
+     "Supplying conditioning at training time but forgetting to provide it at inference, so the output comes out uncontrolled"
+    ],
+    "scenario_contexts": [
+     "Conditioning a text-to-speech model on the text to be spoken",
+     "Conditioning a voice model on a target speaker's identity",
+     "Guiding an audio generator with a mel-spectrogram or style embedding"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning",
+    "Bishop, Pattern Recognition and Machine Learning"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

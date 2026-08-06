@@ -1,0 +1,159 @@
+{
+ "batch": 75,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "9fe01ca6-652f-46dd-a47c-8e437ff87983",
+   "term": "Vocal pitch map",
+   "fields": {
+    "definition": "A note-by-note reference of a vocal part's intended melody and target pitches, used to guide pitch-correction tools and manual editing so each sung note is tuned toward its correct scale degree in the song's key.",
+    "plain_english": "A chart of the exact notes a singer is meant to hit. It guides tuning software so each note is nudged to the right place instead of by guesswork.",
+    "purpose_function": "It gives pitch correction a clear target, so off-key notes are moved toward the intended melody and key rather than to the nearest arbitrary pitch.",
+    "practical_application": "Before tuning a lead vocal in a tool like Melodyne, the engineer checks or sets the target notes so corrected pitches follow the written melody, not random snapping.",
+    "category": "Vocal Editing",
+    "related_terms": ["Pitch correction", "Vocal production", "Vocal playlist comp", "Melody", "Scale degree"],
+    "common_mistakes": ["Letting auto-tune snap every note to the nearest semitone without a mapped target, which forces notes to the wrong scale degree", "Mapping to equal temperament and ignoring the song's actual key or mode", "Over-correcting so the vocal loses natural expression and slides"],
+    "scenario_contexts": ["Tuning a lead vocal where the singer drifts flat on sustained notes", "Setting reference pitches before comping a doubled harmony line", "Correcting a modulating chorus so notes track the new key"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles on pitch correction)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c36f72a0-39c9-498a-b988-c3b8e6f4bcfe",
+   "term": "Vocal playlist comp",
+   "fields": {
+    "definition": "A composite lead vocal assembled by selecting the best phrases or words from several recorded takes held on separate playlists (alternate take lanes) of one track, then joining them into a single continuous performance.",
+    "plain_english": "A best-of vocal built from many takes. You pick the strongest bits from each try and join them into one smooth performance.",
+    "purpose_function": "It lets the engineer keep the best moments from many passes and deliver one strong vocal without demanding a single flawless take from the singer.",
+    "practical_application": "In Pro Tools the engineer records several passes into playlists, auditions them lane by lane, and copies the best lines up into the main comp track.",
+    "category": "Vocal Editing",
+    "related_terms": ["Comping", "Take", "Punch-in", "Vocal production", "Crossfade"],
+    "common_mistakes": ["Cutting between takes without crossfades, leaving clicks or breath jumps at the edits", "Choosing takes only for pitch and ignoring timing and tone, so the comp sounds stitched together", "Deleting alternate playlists too early, losing options needed later"],
+    "scenario_contexts": ["Building a final lead vocal from ten recorded passes", "Comping a chorus where each take nailed a different phrase", "Assembling a tight double from several stacked takes"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Recording Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1262f4ec-0793-4e1d-b563-e4e9a246621a",
+   "term": "Vocal plosive repair",
+   "fields": {
+    "definition": "The correction of low-frequency pops caused by plosive consonants (p, b, t) forcing air into the microphone, typically by high-pass filtering just the affected word, drawing volume automation over the burst, or attenuating the low-frequency transient in an editor.",
+    "plain_english": "Fixing the loud pop a mic catches on P and B sounds. You cut the low thump with a filter or turn that split-second down.",
+    "purpose_function": "It removes the distracting low-end thumps plosives create so the vocal sits cleanly in the mix without bursts of boom.",
+    "practical_application": "When a p pops on an otherwise perfect take, the engineer draws a quick volume dip or high-passes just that syllable instead of re-recording the line.",
+    "category": "Vocal Editing",
+    "related_terms": ["Pop filter", "High-pass filter", "Proximity effect", "Vocal production", "Volume automation"],
+    "common_mistakes": ["Applying a broad high-pass across the whole track, thinning the vocal's body instead of just killing the pop", "Assuming a pop filter always prevents plosives so no cleanup is ever needed", "Cutting the entire word rather than just the low-frequency burst beneath it"],
+    "scenario_contexts": ["Cleaning a plosive on a keeper vocal take", "Repairing pops on a close-miced rap vocal", "Fixing wind bursts on a live vocal recording"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles on vocal editing)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6677839c-f9da-4fe6-99ba-10ca196c10f1",
+   "term": "Vocal presence enhancement",
+   "fields": {
+    "definition": "Boosting the upper-midrange presence band of a vocal, roughly 2-8 kHz and often centered around 3-5 kHz, with equalization to increase clarity, articulation, and intelligibility so the voice cuts through a dense mix.",
+    "plain_english": "Adding a small boost in the high-mid range so words sound clear and up front. It helps the voice stand out over the band.",
+    "purpose_function": "It lifts the frequencies where consonants and vocal detail live, improving intelligibility and making the vocal feel closer and more present.",
+    "practical_application": "When a vocal sounds buried, the engineer adds a broad EQ boost around 3-5 kHz, listening in the full mix so it does not turn harsh.",
+    "category": "Vocal Processing",
+    "related_terms": ["Equalization", "Presence", "De-essing", "Vocal production", "Intelligibility"],
+    "common_mistakes": ["Boosting presence too hard, which adds harshness and exaggerates sibilance", "Trying to fix a dull vocal with EQ alone when the take or mic choice is the real problem", "Judging the boost solo instead of in the full mix"],
+    "scenario_contexts": ["Helping a lead vocal cut through a loud guitar mix", "Adding clarity to a dark-sounding vocal take", "Matching the presence of a comped vocal to a bright reference track"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "89f4c200-14b9-40d7-ba9f-1c725badcd31",
+   "term": "Vocal production",
+   "fields": {
+    "definition": "The overall craft of capturing and shaping a sung vocal, spanning performance direction, take selection and comping, tuning, timing correction, editing, and mix processing, to deliver a finished vocal track.",
+    "plain_english": "The whole job of turning a singer's takes into a polished vocal. It covers recording, picking the best bits, tuning, and mixing.",
+    "purpose_function": "It exists to turn raw performances into a controlled, expressive, mix-ready vocal that serves the song and holds the listener's attention.",
+    "practical_application": "A vocal producer coaches the singer during tracking, then comps, tunes, times, and processes the result into the final lead and backing vocals.",
+    "category": "Vocal Production",
+    "related_terms": ["Vocal playlist comp", "Vocal pitch map", "Comping", "Mixing", "Tracking"],
+    "common_mistakes": ["Relying on editing and tuning to rescue a weak performance instead of getting a better take", "Over-processing until the vocal sounds artificial and lifeless", "Neglecting arrangement and levels of backing vocals around the lead"],
+    "scenario_contexts": ["Producing lead and backing vocals for a pop song", "Directing a singer during a tracking session", "Preparing a comped, tuned vocal for the mix engineer"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Recording Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2f29e2f7-4d40-43fe-bc06-c760708bb3c9",
+   "term": "Vocal proximity-effect reduction",
+   "fields": {
+    "definition": "Techniques that counter the low-frequency boost a directional (cardioid) microphone produces as a singer works close to it, using a high-pass filter, a low-shelf cut, greater mic distance, or an omnidirectional pattern to restore a balanced tone.",
+    "plain_english": "Cutting the extra boom you get when a singer sings very close to a directional mic. You use a filter, more distance, or a different mic pattern.",
+    "purpose_function": "It keeps the vocal from turning bass-heavy and muddy when the singer is close, preserving clarity and a consistent tone as they move.",
+    "practical_application": "On a close-miced vocal that sounds boomy, the engineer rolls off the lows with a high-pass filter or asks the singer to back off the mic slightly.",
+    "category": "Vocal Processing",
+    "related_terms": ["Proximity effect", "High-pass filter", "Cardioid", "Microphone technique", "Vocal plosive repair"],
+    "common_mistakes": ["Using a very high high-pass corner that thins the vocal instead of just taming the buildup", "Blaming the mic or preamp when the real cause is working distance and pattern", "Ignoring that omnidirectional patterns show little proximity effect and could solve it at the source"],
+    "scenario_contexts": ["Taming boom on a crooner singing into a large-diaphragm cardioid", "Controlling low buildup on a handheld vocal mic held tight to the lips", "Setting a high-pass on a close-miced backing vocal"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Shure technical documentation (microphone application notes)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5c63b2b4-81ca-4ae1-b8b0-6dc4b891dc33",
+   "term": "Vocal release alignment",
+   "fields": {
+    "definition": "Editing the timing of note and word endings (releases) in a vocal so that doubled, stacked, or comped parts stop together, keeping layered vocals tight and consonants such as final t and s synchronized.",
+    "plain_english": "Making sure doubled vocals end their words at the same moment. If one track holds a note longer, you trim it so both release together.",
+    "purpose_function": "It tightens layered vocals by matching where phrases end, so overlapping consonants and note tails line up instead of smearing or flamming.",
+    "practical_application": "When a double vocal ends words slightly late, the engineer nudges or trims each release so the final consonants of both tracks hit as one.",
+    "category": "Vocal Editing",
+    "related_terms": ["Vocal playlist comp", "Double tracking", "Time alignment", "Sibilance", "Vocal production"],
+    "common_mistakes": ["Aligning note starts but ignoring the releases, so word endings still flam", "Trimming so aggressively that natural breaths and tails are lost", "Editing releases without crossfades, leaving clicks at the cuts"],
+    "scenario_contexts": ["Tightening a doubled lead vocal", "Syncing the final consonants of stacked backing vocals", "Cleaning phrase endings across a comped chorus"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d33f411d-936d-4342-ae52-4ab776d5b062",
+   "term": "Vocal resonance suppression",
+   "fields": {
+    "definition": "The reduction of narrow resonant frequency peaks in a vocal, such as harsh or ringing tones from the voice or recording room, usually with narrow or dynamic EQ cuts applied only when those frequencies become excessive.",
+    "plain_english": "Taming the few harsh, ringing notes that jump out of a vocal. You use a narrow EQ cut, often one that only reacts when that tone gets too loud.",
+    "purpose_function": "It smooths out isolated peaks that make a vocal sound harsh or nasal, without dulling the whole tone the way a broad cut would.",
+    "practical_application": "The engineer sweeps a narrow EQ band to find a ringing frequency, then dips it, often using dynamic EQ so the cut only engages on loud peaks.",
+    "category": "Vocal Processing",
+    "related_terms": ["Dynamic EQ", "Equalization", "De-essing", "Resonance", "Vocal presence enhancement"],
+    "common_mistakes": ["Making static cuts so deep the vocal turns hollow on notes that were not actually harsh", "Confusing sibilance, which is best handled by de-essing, with midrange resonance", "Chasing every small peak until the vocal loses its natural character"],
+    "scenario_contexts": ["Taming a nasal honk around 1 kHz on a lead vocal", "Controlling room ring captured on a home-studio take", "Smoothing a harsh peak that only appears on loud belted notes"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Sound on Sound (technical articles on equalization)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5d96a438-633f-42af-8f83-8e9884ff700e",
+   "term": "Vocal reverb send",
+   "fields": {
+    "definition": "An auxiliary send that routes a portion of the vocal signal to a reverb processor on a separate bus, letting the engineer blend ambience with the dry vocal and feed one shared reverb from multiple sources.",
+    "plain_english": "A control that sends some of the vocal to a reverb effect on its own channel. It adds space and lets you dial in the echo without changing the dry voice.",
+    "purpose_function": "Using a send instead of an insert keeps the dry vocal intact, gives independent control of the wet-to-dry blend, and lets several tracks share the same reverb for a unified space.",
+    "practical_application": "The engineer raises the vocal's reverb-send level to taste and sets the return level, often automating extra send on phrase ends for depth.",
+    "category": "Vocal Mixing",
+    "related_terms": ["Auxiliary send", "Reverb", "Effects bus", "Return", "Wet/dry"],
+    "common_mistakes": ["Placing the reverb on an insert with a wet-heavy mix, losing independent control of the blend", "Feeding a bright vocal full-range into reverb, causing a washy, sibilant tail", "Forgetting to bring up the reverb return so the send appears to do nothing"],
+    "scenario_contexts": ["Adding hall reverb to a ballad lead vocal", "Sharing one plate reverb across lead and backing vocals", "Automating more reverb send on the last word of each phrase"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,264 @@
+{
+ "batch": 297,
+ "topic": "Synthesis Fundamentals & Oscillators",
+ "authored": [
+  {
+   "id": "c1ad14ad-d54e-4637-a028-3bf1cff94c56",
+   "term": "SoundStream",
+   "fields": {
+    "definition": "SoundStream is a neural audio codec that uses a trained encoder, a residual vector quantizer, and a decoder to compress general audio (speech, music, and ambient sound) into a compact stream of discrete tokens and reconstruct it at very low bitrates. Introduced by Google in 2021, it can deliver quality comparable to or better than traditional codecs at bitrates as low as around 3 kbit/s.",
+    "plain_english": "SoundStream is a smart way to shrink audio into a tiny stream of code and rebuild it later. It works like a very good zip file for sound. A computer learned how to do it, so the playback still sounds close to the original.",
+    "purpose_function": "It exists to compress audio to very low bitrates while keeping high perceived quality, so sound can be stored or streamed efficiently; its discrete tokens also serve as building blocks that feed generative audio models.",
+    "practical_application": "Engineers use neural codecs like SoundStream to send good-sounding audio over limited-bandwidth links and to turn recordings into token sequences that drive AI music and speech systems.",
+    "category": "Neural Audio Codec",
+    "related_terms": [
+     "Bitrate",
+     "Audio codec",
+     "Vector quantization",
+     "Text-to-audio",
+     "Waveform"
+    ],
+    "common_mistakes": [
+     "Assuming SoundStream is a synthesizer or oscillator; it is a codec that compresses and reconstructs existing audio, not a tone generator.",
+     "Confusing a neural codec's discrete tokens with MIDI or symbolic notes; the tokens represent compressed audio, not musical notation.",
+     "Expecting lossless output; like other low-bitrate codecs it discards detail to hit its target bitrate."
+    ],
+    "scenario_contexts": [
+     "Streaming voice or music over a low-bandwidth connection where a very low bitrate is required.",
+     "Preparing audio as discrete tokens to train or drive a generative audio model.",
+     "Comparing the perceived quality of a neural codec against a traditional codec at the same bitrate."
+    ]
+   },
+   "sources": [
+    "Zeghidour, Luebs, Omran, Skoglund, Tagliasacchi, 'SoundStream: An End-to-End Neural Audio Codec,' IEEE/ACM Transactions on Audio, Speech, and Language Processing, vol. 30, 2021 (DOI 10.1109/TASLP.2021.3129994)",
+    "Defossez, Copet, Synnaeve, Adi, 'High Fidelity Neural Audio Compression' (EnCodec), Transactions on Machine Learning Research, 2023"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "58596c25-e9c1-4d39-92e9-264ac53fea6a",
+   "term": "Spectral modeling synthesis",
+   "fields": {
+    "definition": "Spectral modeling synthesis (SMS) is an analysis/synthesis method that decomposes a sound into a deterministic part, modeled as a sum of time-varying sinusoids (the stable, pitched partials), plus a stochastic residual part, modeled as time-varying filtered noise. Storing and reshaping these two components lets the original sound be transformed and resynthesized flexibly.",
+    "plain_english": "Spectral modeling synthesis splits a sound into two parts: clear humming tones and leftover noise. A computer studies the sound, saves both parts, and can rebuild or reshape it. It is a bit like separating a singer's steady voice from their breath.",
+    "purpose_function": "It exists to give a flexible, meaningful model of a sound's spectrum so that pitch, timing, and timbre can be changed independently and still sound natural, which plain waveform playback cannot do.",
+    "practical_application": "Sound designers and researchers use SMS tools to time-stretch, transpose, or morph recorded instruments and voices while keeping them sounding realistic.",
+    "category": "Synthesis Technique",
+    "related_terms": [
+     "Additive synthesis",
+     "Partial",
+     "Fourier transform",
+     "Phase vocoder",
+     "Timbre"
+    ],
+    "common_mistakes": [
+     "Treating SMS as pure additive synthesis; the noise (stochastic) component is essential and is exactly what additive-only models miss.",
+     "Assuming partial tracking works perfectly on very noisy or inharmonic sounds, where following the sinusoids becomes unreliable.",
+     "Confusing SMS with a plain FFT display; it is a full analysis-plus-resynthesis model, not just a way to view a spectrum."
+    ],
+    "scenario_contexts": [
+     "Time-stretching a vocal without changing its pitch for a film scene.",
+     "Morphing between two instrument timbres for sound design.",
+     "Transposing a recorded instrument while keeping a natural tone."
+    ]
+   },
+   "sources": [
+    "Serra, Smith, 'Spectral Modeling Synthesis: A Sound Analysis/Synthesis System Based on a Deterministic Plus Stochastic Decomposition,' Computer Music Journal, vol. 14, no. 4, 1990",
+    "Roads, 'The Computer Music Tutorial,' MIT Press"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "14f63351-ec26-464b-8377-ea74786f9e6f",
+   "term": "squelchy",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No acceptable source (standards body, manufacturer technical documentation, or recognised professional text) defines 'squelchy' as a technical term. It is subjective descriptive slang for resonant, filter-sweep sounds (typically TB-303 acid basslines) that appears only in forums, blogs, and product marketing, none of which count as corroboration. All eight fields left blank pending an acceptable, established definition."
+   ]
+  },
+  {
+   "id": "9aea726b-c5bb-4607-a387-bc548cf6f1d3",
+   "term": "Stable Audio",
+   "fields": {
+    "definition": "Stable Audio is a text-to-audio generative system from Stability AI that produces music and sound effects from text prompts using a latent diffusion model conditioned on both the text and timing information, which lets it generate audio of a requested length. Later open releases (Stable Audio Open) were published with documented model details.",
+    "plain_english": "Stable Audio is a tool that makes music or sound effects from a written description. You type what you want, such as 'calm piano with rain,' and the computer creates matching audio. It works much like text-to-image tools that turn words into pictures.",
+    "purpose_function": "It exists to let people create original audio clips of a chosen style and length from a simple text description, without recording or hand-building the sound.",
+    "practical_application": "Producers and content creators use it to quickly generate background music, loops, or sound effects for drafts, videos, or games straight from a text prompt.",
+    "category": "AI Music Model",
+    "related_terms": [
+     "Text-to-audio",
+     "Text-conditioning",
+     "Diffusion model",
+     "Latent space",
+     "Suno"
+    ],
+    "common_mistakes": [
+     "Assuming outputs are automatically cleared for commercial use; licensing and training-data rights depend on the specific version and its terms.",
+     "Expecting exact, controllable musical parts; prompts steer overall style and mood, not precise notes or arrangement.",
+     "Confusing it with a synthesizer; it generates finished audio from a trained model, not from oscillators and filters you patch."
+    ],
+    "scenario_contexts": [
+     "Generating a short background music bed for a video from a text prompt.",
+     "Creating a custom sound effect of a set length for a game prototype.",
+     "Auditioning musical style ideas quickly before recording real instruments."
+    ]
+   },
+   "sources": [
+    "Evans, Carr, Taylor, Hawley, Pons, 'Fast Timing-Conditioned Latent Audio Diffusion,' Proceedings of the 41st International Conference on Machine Learning (ICML), 2024",
+    "Evans, Parker, Carr, Zukowski, Taylor, Pons, 'Stable Audio Open,' 2024"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1c97cf89-5e76-479c-ac40-b8ad589b47b1",
+   "term": "Style transfer",
+   "fields": {
+    "definition": "Style transfer is a technique in which the stylistic characteristics of one signal (for example an instrument's timbre or a genre's texture) are applied to the content of another, so a source performance is re-rendered in a target style. In audio it commonly refers to neural musical timbre or style transfer, which aims to keep the musical content while changing the sound.",
+    "plain_english": "Style transfer means keeping what is played but changing how it sounds. For example, a melody played on a flute can be reshaped to sound like a violin. It is a bit like keeping the same sentence but swapping the speaker's voice.",
+    "purpose_function": "It exists to separate the 'content' of audio from its 'style' so the same musical idea can be re-voiced in a different timbre, instrument, or genre.",
+    "practical_application": "Producers and researchers use audio style transfer to convert a performance from one instrument's tone to another, or to restyle a recording, often as a creative or prototyping tool.",
+    "category": "AI Audio Technique",
+    "related_terms": [
+     "Timbre",
+     "Text-to-audio",
+     "Stable Audio",
+     "Symbolic music generation",
+     "Spectral modeling synthesis"
+    ],
+    "common_mistakes": [
+     "Assuming perfect separation of content and style; pitch, timing, and tone artifacts are common in the output.",
+     "Confusing timbre transfer with simple EQ or a preset; style transfer learns and remaps complex spectral behaviour, not just tone balance.",
+     "Expecting it to work equally well on any material; polyphonic or noisy input is much harder than clean single-note input."
+    ],
+    "scenario_contexts": [
+     "Re-rendering a piano recording to sound like a guitar for a demo.",
+     "Restyling a vocal or instrument tone as a creative effect.",
+     "Researching how musical content can be separated from instrument timbre."
+    ]
+   },
+   "sources": [
+    "Huang, Li, Poole, et al., 'TimbreTron: A WaveNet(CycleGAN(CQT(Audio))) Pipeline for Musical Timbre Transfer,' International Conference on Learning Representations (ICLR), 2019",
+    "Cifka, Simsekli, Richard, 'Groove2Groove: One-Shot Music Style Transfer with Supervision from Synthetic Data,' IEEE/ACM Transactions on Audio, Speech, and Language Processing, vol. 28, 2020"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "abca1197-fd62-47d9-ba72-c0e559583ada",
+   "term": "Suno",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "Suno is a closed commercial AI music-generation product with no peer-reviewed technical paper or manufacturer technical documentation describing its architecture. Only marketing pages, blogs, forums, and non-peer-reviewed preprints (e.g. a third-party TechRxiv upload) discuss it, none of which are acceptable sources or valid corroboration. All eight fields left blank pending an acceptable source."
+   ]
+  },
+  {
+   "id": "ef2836d5-41c5-4bc0-844b-29f9e9aefec1",
+   "term": "Symbolic music generation",
+   "fields": {
+    "definition": "Symbolic music generation is the automatic creation of music in a symbolic representation, such as MIDI, a piano-roll, or score-like tokens that encode notes, timing, and dynamics, rather than as an audio waveform. A model produces sequences of these symbols, which can then be rendered to sound with any instrument.",
+    "plain_english": "Symbolic music generation means a computer writes music as notes, not as a finished sound file. It builds something like sheet music or a MIDI file that you then play back with any instrument sound. It is like writing a recipe instead of cooking the meal.",
+    "purpose_function": "It exists to produce editable, note-level musical material that a musician can change, re-orchestrate, or perform, giving far more control than generating raw audio.",
+    "practical_application": "Composers and producers use symbolic generation to create melodies, chord progressions, or accompaniments as MIDI they can edit and assign to any instrument in a DAW.",
+    "category": "AI Music Generation",
+    "related_terms": [
+     "MIDI",
+     "Piano roll",
+     "Text-to-audio",
+     "Quantization",
+     "DAW"
+    ],
+    "common_mistakes": [
+     "Confusing symbolic output with audio; the model produces notes, not a finished sound recording.",
+     "Assuming the generated notes need no editing; they usually need human correction of timing, voicing, or range.",
+     "Expecting realistic performance nuance from the symbols alone; expression depends on the instrument and rendering used to play them."
+    ],
+    "scenario_contexts": [
+     "Generating a MIDI chord progression to build a track around in a DAW.",
+     "Creating a melody idea that a composer then edits and orchestrates.",
+     "Producing accompaniment parts that are assigned to virtual instruments."
+    ]
+   },
+   "sources": [
+    "Ji, Yang, Luo, 'A Survey on Deep Learning for Symbolic Music Generation: Representations, Algorithms, Evaluations, and Challenges,' ACM Computing Surveys, 2023",
+    "Yang, Chou, Yang, 'MidiNet: A Convolutional Generative Adversarial Network for Symbolic-domain Music Generation,' Proceedings of ISMIR, 2017"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b39bd944-d5f8-41f2-83e4-dc545c6c4a19",
+   "term": "Text-conditioning",
+   "fields": {
+    "definition": "Text-conditioning is the practice of guiding a generative model's output with a text input: a written prompt is encoded (typically by a language or joint text-audio embedding model) and used to steer generation toward the described content. It is the mechanism behind text-to-audio and text-to-music systems.",
+    "plain_english": "Text-conditioning means using written words to steer what a computer creates. The model reads your prompt and uses it as instructions. It is like telling an artist what to draw before they start.",
+    "purpose_function": "It exists to give users simple, natural-language control over what a generative model produces, by linking a text description to the audio that is generated.",
+    "practical_application": "A technician sees text-conditioning at work whenever a prompt like 'warm jazz piano' shapes the output of a text-to-audio tool, and adjusts the wording to change the result.",
+    "category": "Generative AI",
+    "related_terms": [
+     "Text-to-audio",
+     "Stable Audio",
+     "Prompt",
+     "Embedding",
+     "Diffusion model"
+    ],
+    "common_mistakes": [
+     "Assuming the model 'understands' the prompt like a person; it matches learned patterns between text and audio.",
+     "Expecting identical output for the same prompt every time; generation is usually random unless a seed is fixed.",
+     "Writing vague prompts and blaming the model; specific, concrete wording strongly affects the result."
+    ],
+    "scenario_contexts": [
+     "Typing a descriptive prompt to steer a text-to-audio model.",
+     "Refining prompt wording to get closer to a desired sound.",
+     "Combining a text prompt with other controls such as length or tempo."
+    ]
+   },
+   "sources": [
+    "Liu, Chen, Yuan, et al., 'AudioLDM: Text-to-Audio Generation with Latent Diffusion Models,' Proceedings of the 40th International Conference on Machine Learning (ICML/PMLR), 2023",
+    "Evans, Carr, Taylor, Hawley, Pons, 'Fast Timing-Conditioned Latent Audio Diffusion,' Proceedings of the 41st International Conference on Machine Learning (ICML), 2024"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2add0031-320c-482b-978f-6a9a4dd576c5",
+   "term": "Text-to-audio",
+   "fields": {
+    "definition": "Text-to-audio is the task of generating an audio waveform, such as sound effects, ambient sound, or music, directly from a natural-language text description, typically using a text-conditioned generative model such as a latent diffusion or transformer model. It produces finished audio rather than symbolic notes.",
+    "plain_english": "Text-to-audio turns a written description into actual sound. You type what you want to hear and the computer makes the audio. It works much like text-to-image tools that turn words into pictures.",
+    "purpose_function": "It exists to let users create sound directly from words, without recording, sampling, or hand-building the sound.",
+    "practical_application": "Creators use text-to-audio tools to generate sound effects, ambiences, or music beds for videos, games, and drafts straight from a prompt.",
+    "category": "AI Audio Generation",
+    "related_terms": [
+     "Text-conditioning",
+     "Stable Audio",
+     "Symbolic music generation",
+     "Diffusion model",
+     "Waveform"
+    ],
+    "common_mistakes": [
+     "Confusing text-to-audio with symbolic generation; text-to-audio outputs a finished waveform, not editable notes.",
+     "Expecting precise musical control; prompts guide overall style and content, not exact notes or the mix.",
+     "Assuming generated audio is always free to use; usage rights depend on the tool and its training data."
+    ],
+    "scenario_contexts": [
+     "Generating a rain-and-thunder ambience for a scene from a text prompt.",
+     "Creating a short music bed for a video without recording anything.",
+     "Producing a custom sound effect for a game prototype."
+    ]
+   },
+   "sources": [
+    "Liu, Chen, Yuan, et al., 'AudioLDM: Text-to-Audio Generation with Latent Diffusion Models,' Proceedings of the 40th International Conference on Machine Learning (ICML/PMLR), 2023",
+    "Ghosal, Majumder, Mehrish, Poria, 'Text-to-Audio Generation using Instruction Guided Latent Diffusion Model' (Tango), Proceedings of the 31st ACM International Conference on Multimedia, 2023"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

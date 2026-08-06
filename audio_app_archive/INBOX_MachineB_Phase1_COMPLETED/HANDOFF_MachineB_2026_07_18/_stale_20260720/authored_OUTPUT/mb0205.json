@@ -1,0 +1,327 @@
+{
+ "batch": 205,
+ "topic": "Broadcast Loudness & Compliance",
+ "authored": [
+  {
+   "id": "e348271f-96c8-4276-8188-fbeb6c8a9fa4",
+   "term": "Broadcast loudness management",
+   "fields": {
+    "definition": "The facility-wide practice of measuring and controlling program loudness so that all broadcast content meets a regulatory target loudness and true-peak limit, using loudness measurement per ITU-R BS.1770 (K-weighted, gated) together with normalization and processing rather than peak-based leveling. Targets are typically an integrated -23 LUFS under EBU R128 or -24 LKFS under ATSC A/85, with maximum true peak held near -1 dBTP.",
+    "plain_english": "This is the work of keeping every show and advert at about the same loudness. Special meters measure the sound the way our ears hear it, not just the peaks, and staff adjust levels to hit a set target. It stops viewers from reaching for the remote when a program gets too loud or too quiet.",
+    "purpose_function": "It exists to give viewers a steady listening level across programs, channels, and ads, and to keep a broadcaster legally compliant with loudness rules. It replaces older peak-meter leveling, which did not match how loud content actually sounds to people.",
+    "practical_application": "An engineer sets loudness targets across the playout and processing chain, watches integrated loudness and true peak on compliance meters, and normalizes or reprocesses any file that falls outside tolerance before it airs.",
+    "category": "Loudness Compliance",
+    "related_terms": [
+     "LUFS",
+     "Integrated loudness",
+     "True peak",
+     "EBU R128",
+     "ATSC A/85",
+     "Loudness normalization"
+    ],
+    "common_mistakes": [
+     "Confusing loudness (LUFS/LKFS) with peak level (dBFS) and leveling by peaks instead of measured loudness.",
+     "Assuming a limiter alone makes content compliant when its integrated loudness is still off target.",
+     "Ignoring the true-peak limit, so a file passes on loudness but overshoots once a lossy codec is applied."
+    ],
+    "scenario_contexts": [
+     "Preparing episodic programs and ads to a -23 LUFS target before playout.",
+     "Auditing an incoming file that meters at -18 LUFS and normalizing it to spec.",
+     "Setting up a station's transmission chain to hold a consistent on-air loudness."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak level)",
+    "EBU R128 (Loudness normalisation and permitted maximum level of audio signals)",
+    "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness for Digital Television)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "26c148a5-1980-4768-8d6a-c29808e3c8a6",
+   "term": "Broadcast multiband processor",
+   "fields": {
+    "definition": "A dynamics processor that splits the audio spectrum into several frequency bands and applies independent compression, limiting, and automatic gain control to each band, used in the transmission or streaming chain to control loudness, tighten spectral balance, and create a consistent on-air sound. It is followed by a final peak or true-peak limiter to protect the transmitter or encoder from overshoots.",
+    "plain_english": "This tool splits the sound into low, middle, and high parts and squeezes each part on its own. That keeps the bass, voices, and cymbals all steady, even when the music changes a lot. Radio and TV stations use it to get a full, even sound that does not jump in volume.",
+    "purpose_function": "It exists to hold loudness and tone even across very different program material and to give a station its signature sound, while protecting the transmitter or encoder from level overshoots.",
+    "practical_application": "A broadcast engineer installs a processor such as an Orban Optimod or Omnia unit, loads a preset, and adjusts band drive, compression, and final limiting to balance loudness, clarity, and compliance.",
+    "category": "Broadcast Processing",
+    "related_terms": [
+     "Multiband compression",
+     "Automatic gain control",
+     "Peak limiter",
+     "True peak",
+     "Broadcast preset",
+     "Loudness normalization"
+    ],
+    "common_mistakes": [
+     "Over-driving the bands to chase loudness, which causes pumping and audible distortion.",
+     "Assuming heavy processing removes the need to meet an integrated-loudness target.",
+     "Leaving the final true-peak limiter defeated, so overshoots reach the encoder and clip."
+    ],
+    "scenario_contexts": [
+     "Setting the on-air sound for an FM music station.",
+     "Controlling loudness and tone for a live TV feed before the encoder.",
+     "Tuning a streaming chain to hold a target loudness across different genres."
+    ]
+   },
+   "sources": [
+    "Orban Optimod technical/operating documentation",
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak level)",
+    "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness for Digital Television)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6240e4c6-0455-48df-9139-ee20d6925a5d",
+   "term": "Broadcast preset",
+   "fields": {
+    "definition": "A saved set of parameter values for a broadcast processor (band drive, compression ratios, automatic gain control, EQ, and limiting) that can be recalled to reproduce a specific processed sound, matched to a station format, daypart, or program genre.",
+    "plain_english": "A preset is a saved recipe of settings for a broadcast sound processor. Instead of dialing in dozens of controls by hand, you load one and the sound is set. Stations keep different presets for talk, rock, or news.",
+    "purpose_function": "It exists to make a complex processor quick and repeatable to set up, so a station's sound stays consistent and can be switched fast between formats or times of day.",
+    "practical_application": "An engineer starts from a factory preset close to the wanted sound, tweaks it, and saves a custom version, then recalls or schedules it for different dayparts.",
+    "category": "Broadcast Processing",
+    "related_terms": [
+     "Broadcast multiband processor",
+     "Multiband compression",
+     "Automatic gain control",
+     "Daypart",
+     "Equalization",
+     "Loudness normalization"
+    ],
+    "common_mistakes": [
+     "Loading a loud factory preset without checking it still meets the loudness target.",
+     "Overwriting the only copy of a working preset with no backup saved.",
+     "Assuming a preset built for one processor model transfers exactly to another model."
+    ],
+    "scenario_contexts": [
+     "Loading a talk-format preset for a morning news block.",
+     "Backing up custom processor presets before a firmware update.",
+     "Switching presets between music programming and sports coverage."
+    ]
+   },
+   "sources": [
+    "Orban Optimod technical/operating documentation",
+    "Telos Alliance (Omnia) processor technical documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "00f6d8e9-626f-4ad4-b983-c56d4f51f032",
+   "term": "Broadcast quality monitoring",
+   "fields": {
+    "definition": "The continuous checking of technical audio and video parameters across the broadcast chain — including integrated and short-term loudness, true peak, signal presence, phase or correlation, and silence detection — to confirm compliance and detect faults in real time.",
+    "plain_english": "This means watching the sound and picture all the time so problems get caught fast. Meters and alarms flag things like audio that is too loud, too quiet, silent, or out of phase. If something breaks, staff know right away instead of after viewers complain.",
+    "purpose_function": "It exists to catch loudness violations, dropouts, silence, and phase problems before or as they reach air, protecting both compliance and the viewer's experience.",
+    "practical_application": "An operator watches loudness and true-peak meters and automated alarms on a monitoring system, then responds to alerts for silence, over-loud segments, or a lost audio channel.",
+    "category": "Broadcast Monitoring",
+    "related_terms": [
+     "Loudness metering",
+     "True peak",
+     "Integrated loudness",
+     "Phase correlation",
+     "Silence detection",
+     "Broadcast statistics report"
+    ],
+    "common_mistakes": [
+     "Watching only peak meters and missing loudness (LUFS/LKFS) problems.",
+     "Setting alarm thresholds so tight or so loose that the alerts get ignored.",
+     "Monitoring only one point in the chain and missing faults added further downstream."
+    ],
+    "scenario_contexts": [
+     "Master-control staff watching many channels for silence and loudness alarms.",
+     "Checking a live feed's loudness and phase during a broadcast.",
+     "Catching a dropped audio channel before it reaches transmission."
+    ]
+   },
+   "sources": [
+    "EBU R128 (Loudness normalisation and permitted maximum level of audio signals)",
+    "EBU Tech 3341 (Loudness Metering: EBU Mode metering to supplement EBU R128)",
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak level)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e03cfb2f-59e3-476c-bab7-f9fcd396c22c",
+   "term": "Broadcast statistics report",
+   "fields": {
+    "definition": "A summary of measured loudness parameters for a program or time period — integrated (program) loudness, loudness range (LRA), maximum true peak, and maximum momentary and short-term loudness — computed per ITU-R BS.1770 and its metering supplements, used to document and verify compliance.",
+    "plain_english": "This is a summary sheet of a show's loudness numbers. It lists the overall loudness, how much it moved from quiet to loud, and the highest peak. Staff read it to prove a file meets the rules.",
+    "purpose_function": "It exists to condense a whole program's loudness behavior into a few standard numbers, so content can be checked against the target and kept as proof of compliance.",
+    "practical_application": "An engineer generates the report from a loudness meter or file-analysis tool after measuring a deliverable, then compares its integrated loudness and true peak against the required spec.",
+    "category": "Compliance & Reporting",
+    "related_terms": [
+     "Integrated loudness",
+     "Loudness range",
+     "True peak",
+     "Momentary loudness",
+     "Short-term loudness",
+     "Compliance verification report"
+    ],
+    "common_mistakes": [
+     "Reading a momentary or short-term value as if it were the integrated target.",
+     "Ignoring the maximum true-peak line when it exceeds the limit.",
+     "Assuming a passing integrated-loudness number means true peak also passed."
+    ],
+    "scenario_contexts": [
+     "Attaching a loudness report to a delivered program as proof of spec.",
+     "Reviewing an episode's integrated loudness and LRA before accepting it.",
+     "Comparing statistics across a batch of files to find outliers."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak level)",
+    "EBU Tech 3342 (Loudness Range: A measure to supplement EBU R128 loudness normalisation)",
+    "EBU Tech 3341 (Loudness Metering: EBU Mode metering to supplement EBU R128)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a62bc99a-595a-477b-a9b2-0692d5eb7a73",
+   "term": "Commercial loudness control",
+   "fields": {
+    "definition": "The practice and regulatory requirement that advertisements are broadcast at no greater loudness than the surrounding program, achieved by measuring and normalizing spots to the same loudness target per ITU-R BS.1770; in the United States it is mandated by the CALM Act, which adopts the ATSC A/85 recommended practice.",
+    "plain_english": "This keeps adverts from being louder than the show around them. Each advert is measured and set to the same loudness target as the program. It is the reason ads no longer blast you when a show cuts to a break.",
+    "purpose_function": "It exists to stop the long-standing problem of ads sounding much louder than programs, and to meet legal rules that require ads and programs at matched loudness.",
+    "practical_application": "An engineer measures each commercial's integrated loudness, normalizes it to the station target (for example -24 LKFS), and rejects or reprocesses any spot that arrives too loud.",
+    "category": "Loudness Compliance",
+    "related_terms": [
+     "CALM Act",
+     "ATSC A/85",
+     "Integrated loudness",
+     "Loudness normalization",
+     "LKFS",
+     "True peak"
+    ],
+    "common_mistakes": [
+     "Judging a spot's loudness by ear or by peaks instead of measured integrated loudness.",
+     "Assuming a spot mixed 'hot' will be accepted without normalization.",
+     "Confusing per-ad peak limiting with matching the ad's integrated loudness to the program."
+    ],
+    "scenario_contexts": [
+     "Normalizing an incoming ad from -20 LKFS to the -24 LKFS target.",
+     "Rejecting a commercial that exceeds the true-peak limit.",
+     "Auditing a commercial break to confirm ads match program loudness."
+    ]
+   },
+   "sources": [
+    "CALM Act (Commercial Advertisement Loudness Mitigation Act), 47 CFR 73.682",
+    "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness for Digital Television)",
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak level)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1c057bd7-1af1-4b3b-96f9-8ae4a77607dd",
+   "term": "Compliance archive",
+   "fields": {
+    "definition": "A retained store of loudness measurement logs, statistics reports, and as-run data kept as documentary evidence that broadcast content met the applicable loudness regulation over a required retention period.",
+    "plain_english": "This is a saved record of loudness measurements kept as proof. If a regulator or client asks, the station can show that its shows and ads met the rules. It works like keeping receipts in case you are audited.",
+    "purpose_function": "It exists to provide auditable proof of compliance over time, protecting a broadcaster if its loudness practices are questioned or an official complaint is filed.",
+    "practical_application": "An engineer sets up a logging system to record continuous loudness data and reports, and retrieves the relevant period's records when answering an audit or complaint.",
+    "category": "Compliance & Reporting",
+    "related_terms": [
+     "Broadcast statistics report",
+     "Compliance verification report",
+     "As-run log",
+     "Loudness logging",
+     "Integrated loudness",
+     "CALM Act"
+    ],
+    "common_mistakes": [
+     "Keeping records for less than the required retention period.",
+     "Logging loudness data with no time reference to match it to as-run events.",
+     "Assuming a single report replaces continuous logs for audit purposes."
+    ],
+    "scenario_contexts": [
+     "Retrieving a week of loudness logs to answer a viewer complaint.",
+     "Storing continuous loudness data to satisfy a retention rule.",
+     "Matching an as-run log to loudness records during an audit."
+    ]
+   },
+   "sources": [
+    "CALM Act (Commercial Advertisement Loudness Mitigation Act), 47 CFR 73.682",
+    "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness for Digital Television)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a82b0f6d-2a11-4690-9d2c-c107efa379d3",
+   "term": "Compliance certification",
+   "fields": {
+    "definition": "A formal attestation — for a program, deliverable, or facility — that measured loudness and true-peak values meet the applicable standard's targets and tolerances (such as EBU R128 or ATSC A/85), often issued as a signed report or an automated pass result accompanying delivery.",
+    "plain_english": "This is an official 'passed' stamp on a file or facility. It says the loudness was checked and meets the rules. Broadcasters and clients ask for it before they accept content.",
+    "purpose_function": "It exists to give a clear, documented statement that content meets loudness spec, so it can be accepted and aired without further checking.",
+    "practical_application": "A technician runs a file through a loudness-analysis tool, confirms it meets the target and tolerance, and issues or attaches the pass certificate for delivery.",
+    "category": "Compliance & Reporting",
+    "related_terms": [
+     "Compliance verification report",
+     "EBU R128",
+     "ATSC A/85",
+     "Integrated loudness",
+     "True peak",
+     "Delivery specification"
+    ],
+    "common_mistakes": [
+     "Certifying to the wrong regional standard (for example -23 LUFS versus -24 LKFS).",
+     "Passing a file on integrated loudness while ignoring a true-peak overshoot.",
+     "Treating a certificate as valid after re-encoding the file changed its loudness."
+    ],
+    "scenario_contexts": [
+     "Issuing a pass certificate with a delivered program.",
+     "Confirming a facility's chain meets a broadcaster's loudness spec.",
+     "Checking a file's certificate before ingest."
+    ]
+   },
+   "sources": [
+    "EBU R128 (Loudness normalisation and permitted maximum level of audio signals)",
+    "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness for Digital Television)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "26da8e46-02d9-4e98-b18e-ba0e8754ac1c",
+   "term": "Compliance verification report",
+   "fields": {
+    "definition": "A document confirming that a specific deliverable's measured loudness parameters — integrated loudness, loudness range, and maximum true peak — fall within the required target and tolerance of the applicable standard, with a clear pass or fail result.",
+    "plain_english": "This report checks one file against the rules and says pass or fail. It lists the loudness numbers next to the limits they must meet. Staff read it to be sure a file is ready to air.",
+    "purpose_function": "It exists to give a documented, per-file confirmation that content meets spec before it is accepted or aired, and to flag exactly which parameter failed if it does not.",
+    "practical_application": "An operator measures a deliverable, generates the verification report, and either passes it on to delivery or returns it for correction when a value is out of tolerance.",
+    "category": "Compliance & Reporting",
+    "related_terms": [
+     "Broadcast statistics report",
+     "Compliance certification",
+     "Integrated loudness",
+     "Loudness range",
+     "True peak",
+     "Loudness normalization"
+    ],
+    "common_mistakes": [
+     "Airing a file that its own report marks as a fail.",
+     "Reading the wrong tolerance for the target standard.",
+     "Assuming a pass stays valid after the file is transcoded or trimmed."
+    ],
+    "scenario_contexts": [
+     "Verifying a delivered episode against a -23 LUFS spec.",
+     "Returning a file to a producer because its true peak failed.",
+     "Documenting pass results across a batch of files before ingest."
+    ]
+   },
+   "sources": [
+    "EBU R128 (Loudness normalisation and permitted maximum level of audio signals)",
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak level)",
+    "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness for Digital Television)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

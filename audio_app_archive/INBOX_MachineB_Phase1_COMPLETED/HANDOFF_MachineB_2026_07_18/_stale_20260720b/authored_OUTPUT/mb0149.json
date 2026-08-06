@@ -1,0 +1,296 @@
+{
+ "batch": 149,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "fe704389-053f-487e-95a3-ab0c60ce6b9e",
+   "term": "Transition matrix",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "'Transition matrix' has no established, citable meaning within professional audio mixing or workflow; its standard established sense is a mathematics/probability term (the state-change matrix of a Markov chain), which is outside the acceptable audio-source set and this app's scope. No two or more acceptable audio sources define a mixing sense, and it is not a transparent audio compound with a single agreed reading, so all fields are left blank pending clarification of the intended sense."
+   ]
+  },
+  {
+   "id": "6491fd0e-518e-4bbc-b15a-fe92460b2bdc",
+   "term": "Transition segment",
+   "fields": {
+    "definition": "A short passage of audio that connects two main sections of a song or program, such as the link between a verse and a chorus or the join between two cues, where the arrangement and mix are shaped to lead smoothly from one part into the next.",
+    "plain_english": "A short bit of music that links two bigger parts of a song. It works like a hallway between two rooms, helping the listener move from one section to the next.",
+    "purpose_function": "It exists to keep an arrangement flowing, giving the ear a smooth handoff between sections instead of an abrupt jump, and it is where fills, risers, and level moves are often placed.",
+    "practical_application": "A mixer shapes the transition segment with automation, filters, risers, or reverb throws so energy builds or resolves as the track moves from one section into the next.",
+    "category": "Arrangement",
+    "related_terms": [
+     "Arrangement",
+     "Automation",
+     "Riser",
+     "Crossfade",
+     "Fill",
+     "Bridge"
+    ],
+    "common_mistakes": [
+     "Leaving the transition flat with no automation or effect move, so the sections feel disconnected.",
+     "Overloading the transition with risers and effects until it distracts from the song.",
+     "Forgetting to match levels across the join, so the next section jumps up or drops in volume."
+    ],
+    "scenario_contexts": [
+     "Adding a filter sweep and reverb throw to lead from a verse into a chorus.",
+     "Smoothing the join between two scenes or cues in a broadcast or theatre mix.",
+     "Automating a build across the bars before a drop in an electronic track."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook (arrangement and transitions)",
+    "Huber & Runstein, Modern Recording Techniques (song structure and mixing)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f676e9d2-8c96-415e-b2dc-ce0fab9d747f",
+   "term": "Translation optimization",
+   "fields": {
+    "definition": "The practice of adjusting a mix or master so its tonal balance, levels, and stereo image hold up consistently across many playback systems and environments, from studio monitors to earbuds, phone speakers, and car stereos, rather than sounding right on only one system.",
+    "plain_english": "Making a mix sound good on all kinds of speakers, not just the ones you mixed on. It is like checking that a photo still looks right on a phone, a laptop, and a printout.",
+    "purpose_function": "It exists because listeners use very different playback systems, so the goal is a mix whose balance and impact survive on small or cheap speakers as well as on full studio monitors.",
+    "practical_application": "An engineer checks the mix on several playback systems, compares it to reference tracks, and mixes at times in mono or on small speakers, then fixes balance problems that only show up outside the main monitors.",
+    "category": "Mix Fundamentals",
+    "related_terms": [
+     "Translation",
+     "Reference monitor",
+     "Reference track",
+     "Mono compatibility",
+     "Tonal balance",
+     "Room correction"
+    ],
+    "common_mistakes": [
+     "Judging the mix only on one flattering set of speakers, so it falls apart elsewhere.",
+     "Skipping a mono check, then finding parts vanish on phone and club systems.",
+     "Chasing a perfect sound on headphones while ignoring how it plays on small speakers."
+    ],
+    "scenario_contexts": [
+     "Checking a finished mix on phone, laptop, and car speakers before release.",
+     "Comparing a mix against commercial reference tracks on the same system.",
+     "Mixing bass and vocals in mono to keep them solid on small speakers."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook (mix translation and referencing)",
+    "Ballou, Handbook for Sound Engineers (monitoring and tonal balance)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b2b75f84-a24b-47a5-ae6b-09764872e744",
+   "term": "Transpose track",
+   "fields": {
+    "definition": "A global timeline track in a DAW that applies real-time pitch transposition to MIDI parts across sections of the project, shifting them by a set number of semitones without changing the recorded notes; in Steinberg Cubase this is the Transpose Track.",
+    "plain_english": "A special lane in music software that shifts the key of your parts over the song. You set how many steps to move each section up or down, and it changes the pitch without rewriting the notes.",
+    "purpose_function": "It exists to let you try a song in a different key or add key changes quickly, keeping the original MIDI intact so the change stays non-destructive and easy to undo.",
+    "practical_application": "A producer draws transpose values on the track to move a chorus up two semitones or to test a whole song in a higher key before committing to it.",
+    "category": "MIDI Editing",
+    "related_terms": [
+     "Transposition track",
+     "MIDI",
+     "Semitone",
+     "Key change",
+     "Global tracks",
+     "Pitch shift"
+    ],
+    "common_mistakes": [
+     "Expecting the transpose track to move recorded audio, when it acts on MIDI parts.",
+     "Forgetting the track is still active, so a part later plays in the wrong key.",
+     "Confusing this real-time transpose with permanently rewriting the MIDI notes."
+    ],
+    "scenario_contexts": [
+     "Testing a full song a few semitones higher to suit a singer's range.",
+     "Adding a key change to the final chorus without editing every note.",
+     "Auditioning a chord progression in several keys quickly."
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual, Transpose Track (manufacturer technical documentation)",
+    "Huber & Runstein, Modern Recording Techniques (MIDI sequencing and transposition)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "31c0d7df-e56b-4bde-b886-e303cf3c8468",
+   "term": "Transposition track",
+   "fields": {
+    "definition": "A dedicated global track in some DAWs that stores pitch transposition or key-change values along the project timeline and applies them to the associated material, so the key of parts follows the transposition events without altering the original recorded notes.",
+    "plain_english": "A timeline lane that holds the key changes for a song. As the song plays, it shifts the parts to the right key at each point, without changing the notes you recorded.",
+    "purpose_function": "It exists to manage key and pitch changes in one place across a project, keeping transposition non-destructive and consistent for every part that follows it.",
+    "practical_application": "An engineer enters transposition values at each section so the arrangement moves through its key changes, then prints or exports with those changes applied.",
+    "category": "MIDI Editing",
+    "related_terms": [
+     "Transpose track",
+     "Global tracks",
+     "Key change",
+     "Semitone",
+     "MIDI",
+     "Pitch shift"
+    ],
+    "common_mistakes": [
+     "Assuming every DAW names and implements this feature the same way, when hosts differ.",
+     "Leaving old transposition events in place, so a later edit plays in the wrong key.",
+     "Expecting it to retune audio the same way it retunes MIDI parts."
+    ],
+    "scenario_contexts": [
+     "Mapping out a song's key changes on one global track.",
+     "Shifting a whole section up a step to fit a vocal range.",
+     "Keeping transposition consistent across many MIDI parts at once."
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual, Transpose Track (manufacturer technical documentation)",
+    "Apple Logic Pro User Guide (global tracks and transposition)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b73be02a-9c09-4b55-a238-11140da4c40c",
+   "term": "Trim Tool",
+   "fields": {
+    "definition": "An editing tool in a DAW used to adjust the start or end boundary of a clip or region by dragging its edge, revealing or hiding material without moving the clip in time; in Pro Tools it is one of the main Edit tools and includes variants such as TCE and Loop trim.",
+    "plain_english": "A tool in music software that shortens or lengthens a clip by dragging its edge. It is like sliding the edge of a sticky note to show more or less of what is underneath.",
+    "purpose_function": "It exists to set exactly where a clip starts and ends, so a technician can tighten edits, remove unwanted audio at the edges, or extend a clip to reveal more of the take.",
+    "practical_application": "An editor selects the Trim tool and drags a clip's edge to cut off a noisy breath before a vocal line or to open up the tail of a reverb.",
+    "category": "Editing",
+    "related_terms": [
+     "Clip",
+     "Fade",
+     "Crossfade",
+     "Grabber tool",
+     "Selector tool",
+     "Edit window"
+    ],
+    "common_mistakes": [
+     "Trimming past the recorded material and getting silence at the clip edge.",
+     "Confusing the Trim tool with time-compression trim, which changes the audio speed.",
+     "Trimming without a fade, leaving a click at the new clip boundary."
+    ],
+    "scenario_contexts": [
+     "Cutting a noisy breath from the front of a vocal clip.",
+     "Extending a guitar clip's end to keep its natural ring.",
+     "Tightening the edges of drum clips during editing."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide, Edit Tools (manufacturer technical documentation)",
+    "Huber & Runstein, Modern Recording Techniques (digital editing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5715cf76-2cd6-422a-b86f-b9a20bfd9531",
+   "term": "True-peak management",
+   "fields": {
+    "definition": "The practice of controlling the true-peak level of audio, the maximum inter-sample peak reconstructed by a digital-to-analog converter measured in dBTP per ITU-R BS.1770, so it stays below a set ceiling (commonly -1 dBTP) to avoid clipping and distortion after conversion or lossy encoding.",
+    "plain_english": "Keeping the real loudest points of digital audio under a safe limit. Hidden peaks can appear between the digital samples, so you leave a little room to stop distortion when the sound is played back.",
+    "purpose_function": "It exists because peaks can rise between digital samples and overload a converter or encoder even when the sample values look safe, so managing true peak prevents audible clipping on playback and after MP3 or AAC encoding.",
+    "practical_application": "A mastering engineer sets a true-peak limiter to a ceiling such as -1 dBTP and watches a true-peak meter so the final file meets a platform's delivery spec without inter-sample clipping.",
+    "category": "Loudness",
+    "related_terms": [
+     "True peak",
+     "dBTP",
+     "Inter-sample peak",
+     "Loudness normalization",
+     "Limiter",
+     "Headroom"
+    ],
+    "common_mistakes": [
+     "Trusting the sample-peak meter and assuming 0 dBFS is safe, missing higher true peaks.",
+     "Setting the ceiling at 0 dBTP, leaving no room for encoding to add distortion.",
+     "Ignoring true-peak limits until a streaming platform rejects or distorts the file."
+    ],
+    "scenario_contexts": [
+     "Setting a -1 dBTP ceiling before exporting a master for streaming.",
+     "Checking true-peak levels after MP3 or AAC encoding.",
+     "Meeting a broadcast delivery spec that limits true peaks."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1770 (loudness and true-peak measurement)",
+    "EBU R128 and EBU Tech 3341 (loudness normalization and true-peak metering)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0b65a145-3a08-4b1c-b086-a3b6980f023b",
+   "term": "True-peak validation",
+   "fields": {
+    "definition": "The process of measuring and verifying that a finished audio file's true-peak levels, in dBTP per ITU-R BS.1770, comply with a target ceiling required by a delivery or broadcast specification, using a compliant true-peak meter to confirm the file passes before delivery.",
+    "plain_english": "Checking a finished file to prove its loudest hidden peaks stay under the required limit. It is a final pass-or-fail test before you hand the file over.",
+    "purpose_function": "It exists to confirm a deliverable meets a platform or broadcaster's true-peak rule, catching over-ceiling peaks before the file is rejected or distorts on playback.",
+    "practical_application": "Before delivery, an engineer runs the mix through a true-peak meter or loudness-compliance tool and confirms the reading sits at or below the required ceiling, such as -1 dBTP.",
+    "category": "Loudness",
+    "related_terms": [
+     "True peak",
+     "True-peak management",
+     "dBTP",
+     "Loudness normalization",
+     "Delivery spec",
+     "Metering"
+    ],
+    "common_mistakes": [
+     "Validating loudness but forgetting to check true peak against the spec.",
+     "Measuring with a meter that is not true-peak compliant, so the reading is wrong.",
+     "Checking peaks before final encoding instead of on the delivered file."
+    ],
+    "scenario_contexts": [
+     "Confirming a master meets a streaming service's -1 dBTP limit before upload.",
+     "Verifying a broadcast file passes its loudness and true-peak spec.",
+     "Re-checking true peak after a format or codec change."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1770 (loudness and true-peak measurement)",
+    "EBU R128 and EBU Tech 3341 (loudness normalization and true-peak metering)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f858689b-fdfc-4acf-9750-e94c0b210158",
+   "term": "Unity workflow",
+   "fields": {
+    "definition": "An approach to building a signal path so that gain stages pass signal at unity gain (no net boost or cut, a gain of one) wherever possible, keeping levels consistent from input to output and preserving healthy headroom and signal-to-noise ratio throughout the chain.",
+    "plain_english": "A way of setting levels so each step passes the sound through without making it louder or quieter. Keeping everything at this no-change point keeps the signal clean and avoids noise or distortion.",
+    "purpose_function": "It exists to keep good gain structure across a system, so no stage is pushed too hot or run too low, which protects headroom and keeps noise and distortion down.",
+    "practical_application": "An engineer builds a session with faders and sends at unity and matches plugin input and output levels, so bypassing a processor does not change the volume, then rides balance from that neutral starting point.",
+    "category": "Gain Structure",
+    "related_terms": [
+     "Unity gain",
+     "Gain structure",
+     "Gain staging",
+     "Headroom",
+     "Signal-to-noise ratio",
+     "Fader"
+    ],
+    "common_mistakes": [
+     "Boosting makeup gain on plugins until the mix is far louder than the bypassed level.",
+     "Running channels very hot early, then pulling the master down to fix it.",
+     "Confusing a fader at unity (0 dB) with the channel being off."
+    ],
+    "scenario_contexts": [
+     "Matching a plugin's output to its input so bypass does not change level.",
+     "Setting console and DAW faders to unity as a mixing starting point.",
+     "Keeping gain consistent when moving signal between analog and digital gear."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook (gain structure and unity gain)",
+    "Ballou, Handbook for Sound Engineers (gain staging and level management)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

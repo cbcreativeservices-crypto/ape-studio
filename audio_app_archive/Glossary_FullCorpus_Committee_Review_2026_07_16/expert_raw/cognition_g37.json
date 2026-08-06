@@ -1,0 +1,223 @@
+{
+ "expert": "cognition",
+ "group": 37,
+ "reviews": [
+  {
+   "id": "c2183943-63a1-44f4-9cb4-da182560f252",
+   "term": "Power Sequencing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d50f104e-0eb6-4178-9ae7-14254097b9aa",
+   "term": "Power Wire",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8f379972-b64b-4796-977a-18d6c3b5551c",
+   "term": "power-factor-corrected (PFC) supply",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7fb030f5-cf93-4394-9136-548b6d4f4b52",
+   "term": "powerCON",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "29f491b4-222e-4fb1-a586-7a7581e3027c",
+   "term": "Powered loudspeaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cbbba867-e838-4db7-80b8-3320f8621522",
+   "term": "Powered Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e63d9fc9-200c-4d82-9d5d-776881bfda2c",
+   "term": "Powersports Audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "79cedbdc-2a4d-465a-ada5-12f23bf033a3",
+   "term": "PPM (peak program meter)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8b6ad5a9-2e9d-4c41-9034-8aed729ec363",
+   "term": "Pre-Delay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "910a894c-f1e9-4927-bd84-aa4c24211db0",
+   "term": "pre-emphasis / de-emphasis",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0e1053c4-2809-4884-9cbd-5ebea86e0ae7",
+   "term": "Pre-Fader",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "49d10b97-e776-42c1-b13f-1fb69ac75a01",
+   "term": "Pre-Record Buffer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f21e0569-ef45-43d6-bd05-4bca742521e2",
+   "term": "Pre-ringing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e6066436-37ce-4bf9-8761-781787e13bbc",
+   "term": "Pre-Wire",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0fe22c98-97cd-48af-b20d-cce1bef2ccaf",
+   "term": "Pre/Post Fader",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "01344410-7ba4-44d5-914d-8f26bf33801f",
+   "term": "Preamp gain staging",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "71a476bc-3cfd-46d3-bd1a-3ebd4cc12dd8",
+   "term": "Precedence effect",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "difficulty",
+     "severity": "Low",
+     "issue": "The learner-facing difficulty is a malformed two-value string, 'advanced, intermediate' (an artifact of the entry's three topic tags). A student seeing a contradictory dual difficulty label has no clear cue how challenging the term is meant to be.",
+     "suggestion": "Resolve to a single value. Set difficulty to 'advanced' to match the deepest concept here (first-arrival dominance / auditory fusion and delay design), keeping it consistent with the psychoacoustics framing; the practical delay-alignment use is a downstream application, not a separate difficulty level."
+    }
+   ]
+  },
+  {
+   "id": "c219d5fd-a101-45f7-8c22-78fd36d9b871",
+   "term": "Prediction Software",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c3cb545d-3539-4ad4-af4f-4a67dd247f5b",
+   "term": "Preout Voltage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b8d10f51-fa0c-4d89-8f27-b91418f83cbb",
+   "term": "Presence peak",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f75fc6c6-ed8f-4d5d-9f8b-484903747d0a",
+   "term": "Presentation Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "54c56566-4fbe-4a96-adf0-aa4ece42898a",
+   "term": "Presentation System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fea9777c-d38f-46c9-b876-a007c732dea2",
+   "term": "Presentation Workflow",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3e20bfd0-404a-4e77-9d07-d2a9cfe8f4e8",
+   "term": "Presenter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "845a6398-42ed-4cdb-951b-662327aed861",
+   "term": "Presenter Notes",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6632d878-2592-4081-8935-801290d81e9f",
+   "term": "Pressure Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "79b2f42e-6f66-4873-8e73-7db5967cc2d9",
+   "term": "Pressure zone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "628c0de7-8589-4bd4-b723-890aeb12698c",
+   "term": "Pressure-Gradient Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8f7c3682-1ed7-4eae-a05c-8b0b3baed855",
+   "term": "Preventive maintenance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f6515e61-0f5a-468f-9908-3b8ce0c2d8bc",
+   "term": "Priority Paging",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e5b9c557-89b8-41d4-b6e7-7170267c3cc0",
+   "term": "Process of elimination",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "efe2dabe-218f-4ada-ae0e-00d4549a0f8e",
+   "term": "Producer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "218820da-38c6-41ec-adf1-aee97c8c73c3",
+   "term": "Production Advance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dfc0960b-ed68-49da-90b5-ece4fdcf0fd1",
+   "term": "Production Communication",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7364d463-f642-48d8-b510-5eed5e1d1390",
+   "term": "Program Feed",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

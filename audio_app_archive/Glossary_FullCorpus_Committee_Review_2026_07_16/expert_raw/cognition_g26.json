@@ -1,0 +1,223 @@
+{
+ "expert": "cognition",
+ "group": 26,
+ "reviews": [
+  {
+   "id": "7735addb-9e49-451f-94e2-e201aa05806f",
+   "term": "L50",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9f3a4589-09ba-4ce7-81b1-1a25696fbcc7",
+   "term": "L90",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "16f48b65-60cc-4b5c-84fa-3e24fcf41a3e",
+   "term": "LAeq",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a79c73b3-6536-40ad-8429-02f2dae2c061",
+   "term": "Large-diaphragm capsule",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "87835d7e-4334-4c71-8335-6fe937d0191d",
+   "term": "Large-Diaphragm Microphone (LD Mic)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3638b555-6459-4bb2-b67c-44595a19e44d",
+   "term": "Late reverberation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7d6d30ca-3a45-4742-a52a-4927f0d044e1",
+   "term": "Latency",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "82d74ea5-f50c-4b90-ba2f-fcb188fbc993",
+   "term": "Latent Defect",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e9469777-ef48-4ba8-8f34-d54d8838cc49",
+   "term": "Lavalier Microphone (Lapel Mic / Lav)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2c6c28e8-4583-4dc1-8f7f-2753ddb9953e",
+   "term": "LC Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cb4849be-c3ce-410f-af68-35b6a35cb783",
+   "term": "LCeq",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "99d4c400-b77c-4ed0-8500-410f279a13ac",
+   "term": "LCpeak",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a7c872ef-f6a4-47dd-a4d8-153e692537f5",
+   "term": "Lectern",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "db22d31c-3298-46df-81db-14be1dde4123",
+   "term": "LEDE concept",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "83aaffe6-33f5-4cb4-afaf-b08f431c0713",
+   "term": "Lemo Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "28ee787f-56c9-4376-92da-0ea7efdc62fe",
+   "term": "Leq",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a20f0b5e-dc10-4276-9837-b3808098dcb1",
+   "term": "Level",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6c081b5e-0a60-4468-91e3-c9cd2df85bce",
+   "term": "Level meters",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "719ccd3d-e0d7-4fdf-953f-f0ef496f6a57",
+   "term": "Leveling Amplifier",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "59d114b4-4f57-4ad6-ab9c-9b70312d64e7",
+   "term": "LFE (Low-Frequency Effects)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "525fb4bc-d08d-4f8c-a4ec-59fcd539ad01",
+   "term": "Lifecycle Management",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1d4381e6-3273-4b00-ac8a-6aef65679d47",
+   "term": "Lifted Ground Hazard",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "90fcd5fd-525e-43dc-8469-5a2a1d98eaf0",
+   "term": "Lightning Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7f621dc4-6d04-4c29-bc61-e6352f8afcd8",
+   "term": "Limiter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "88fd4164-f99d-4516-91d1-761bcf9f312e",
+   "term": "Line Array",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0caa6532-f888-44b9-93da-bc7b8cef2a06",
+   "term": "Line Array Safety",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c34018ee-64a4-4d56-9d05-b20b365b79bc",
+   "term": "Line Driver",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3a6f24c7-8e1f-4a38-b99c-4e51fd69056f",
+   "term": "Line Level",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "practical_application",
+     "severity": "Medium",
+     "issue": "The entry contradicts itself on the consumer standard: definition and plain_english correctly give consumer line level as -10 dBV, but practical_application says '-10 dBu consumer'. A beginner comparing the fields cannot tell which reference (dBV vs dBu) is right for consumer gear, and this is exactly the entry teaching students to distinguish the two references.",
+     "suggestion": "Change '(+4 dBu professional, -10 dBu consumer)' to '(+4 dBu professional, -10 dBV consumer)' so all fields agree with the definition."
+    }
+   ]
+  },
+  {
+   "id": "d1106338-0e58-48b9-a9ac-dea3260d287c",
+   "term": "Line Level (+4 dBu)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4e51748e-fd51-4836-9f54-9a84f5311a6e",
+   "term": "Line of Sight",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0165337a-2693-4cb4-87ce-b59395233216",
+   "term": "Line Output Converter (LOC)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c524db41-53ae-459b-8d03-cc011f68e922",
+   "term": "Line-by-Line Mixing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c0a0dc39-724d-4b59-b850-0f5afd7376db",
+   "term": "Linear (B)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f481da11-3482-4bc4-9375-9e12fa035347",
+   "term": "Linear averaging",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d7278e31-74e5-4ead-88a4-181def1d6da5",
+   "term": "Linear-Phase EQ",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

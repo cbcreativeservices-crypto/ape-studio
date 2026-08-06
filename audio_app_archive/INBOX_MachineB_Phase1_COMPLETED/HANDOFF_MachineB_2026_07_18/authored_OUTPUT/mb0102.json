@@ -1,0 +1,312 @@
+{
+ "batch": 102,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "e94f4160-4984-490e-b24c-385093a8bb92",
+   "term": "Final dub",
+   "fields": {
+    "definition": "In film and television post-production, the final dub (also called the final mix or re-recording mix) is the last mixing pass in which the dialogue, music, and sound-effects premixes are balanced together and printed to the finished soundtrack for delivery.",
+    "plain_english": "The final dub is the last step where all of a show's sound is mixed together. The voices, music, and sound effects are balanced into one finished soundtrack.",
+    "purpose_function": "It combines and balances every separate sound element into a single approved soundtrack, ensuring clear dialogue, musical balance, and consistent loudness before the program is delivered.",
+    "practical_application": "A re-recording mixer runs the final dub on a mix stage, adjusting premix levels and printing the master soundtrack that will be married to picture for broadcast or release.",
+    "category": "Post-Production Mixing",
+    "related_terms": [
+     "Final mix session",
+     "Final mix stage",
+     "Stems",
+     "Premix",
+     "Mastering"
+    ],
+    "common_mistakes": [
+     "Confusing the final dub with mastering, which is a separate later stage",
+     "Assuming the final dub can fix problems that are better solved in the premixes",
+     "Not checking dialogue intelligibility against loudness targets during the dub"
+    ],
+    "scenario_contexts": [
+     "Balancing dialogue, music, and effects premixes into the finished soundtrack for a TV episode",
+     "Printing a delivery master after client approval on a film mix stage",
+     "Meeting broadcast loudness specs during the final mix of a documentary"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (film and broadcast sound)",
+    "Huber & Runstein, Modern Recording Techniques (post-production)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "55a73748-5fc1-4b27-bf47-ae2b2111d1f4",
+   "term": "Final mix session",
+   "fields": {
+    "definition": "The final mix session is the DAW project or console setup in which the approved, definitive mix of a song or program is created, balanced, and rendered - the last mix before mastering and delivery.",
+    "plain_english": "This is the project file where the final version of the mix is made. It is the last mixing step before the song goes to mastering.",
+    "purpose_function": "It holds every track, level, effect, and automation move needed to produce the finished sign-off mix, so the result can be recalled and rendered exactly.",
+    "practical_application": "A mix engineer opens the final mix session to make last balance tweaks, then bounces the stereo mix and stems for the mastering engineer.",
+    "category": "Mixing Workflow",
+    "related_terms": [
+     "Final mix stage",
+     "Final dub",
+     "Stems",
+     "Mixdown",
+     "Mastering"
+    ],
+    "common_mistakes": [
+     "Not saving a clearly labeled version, so the final mix session gets confused with earlier drafts",
+     "Deleting unused tracks or plugins that may still be needed for recall",
+     "Forgetting to render matching stems alongside the stereo mix"
+    ],
+    "scenario_contexts": [
+     "Making final client-requested tweaks before bouncing the mix",
+     "Rendering the stereo mix and stems for mastering",
+     "Archiving the approved session for future recalls or revisions"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3c70b70d-d3bb-45b8-9c6e-f463131728fb",
+   "term": "Final mix stage",
+   "fields": {
+    "definition": "The final mix stage is the concluding phase of the mixing workflow, in which the balances, processing, and automation are completed and the mix is finalized and approved for delivery to mastering.",
+    "plain_english": "This is the last part of the mixing process. Here the mix is finished, checked, and approved before it moves on to mastering.",
+    "purpose_function": "It exists to lock in the finished balance and creative decisions, producing an approved mix that mastering and delivery can rely on.",
+    "practical_application": "At the final mix stage, the engineer checks the mix on several playback systems, makes last adjustments, and gets client sign-off before rendering.",
+    "category": "Mixing Workflow",
+    "related_terms": [
+     "Final mix session",
+     "Final dub",
+     "Mixdown",
+     "Mastering",
+     "Reference monitoring"
+    ],
+    "common_mistakes": [
+     "Rushing the final mix stage without checking the mix on multiple systems",
+     "Making big arrangement changes this late instead of during earlier mixing",
+     "Confusing this final phase with mastering"
+    ],
+    "scenario_contexts": [
+     "Checking a nearly finished mix on studio monitors, headphones, and a car system",
+     "Getting client approval before rendering the final files",
+     "Preparing an approved mix to hand off to mastering"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "29211841-fef3-4d66-8d29-000272e0b0dd",
+   "term": "Final production package",
+   "fields": {
+    "definition": "The complete set of finished deliverables handed off at the end of a production, typically including the approved final mix and master, alternate versions and stems, session or project files, and accompanying documentation such as track sheets, metadata, and cue sheets.",
+    "plain_english": "It is the full bundle of finished files you hand over when a project is done. It holds the final song plus extras like stems, notes, and the session, so others can use or revisit the work later.",
+    "purpose_function": "It gathers everything a client, label, or post house needs to release, archive, or revise the project, so nothing essential is missing after the team moves on.",
+    "practical_application": "At project close, an engineer bounces the master and stems, exports session files, writes up track and metadata sheets, and delivers them together as one organized, labeled package.",
+    "category": "Deliverables",
+    "related_terms": [
+     "Final mix session",
+     "Music-only stem",
+     "Final release authorization",
+     "Engineering sign-off",
+     "Nearfield printmaster"
+    ],
+    "common_mistakes": [
+     "Delivering only the final master and forgetting stems, alternate mixes, or session files the client later needs",
+     "Sending files with vague names and no track sheet or metadata, causing confusion downstream",
+     "Not confirming the client's required formats, sample rates, and bit depths before packaging"
+    ],
+    "scenario_contexts": [
+     "Handing a finished album's masters, stems, and documentation to a record label for release",
+     "Delivering a film mix package to a post-production house for the final conform",
+     "Archiving a completed project so it can be reopened and revised years later"
+    ]
+   },
+   "sources": [
+    "Yamaha Pro Audio Hub, 'The Art of Mastering, Part 6: Deliverables'",
+    "Bob Katz, 'Mastering Audio: The Art and the Science' (deliverables, archiving, QC)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cddaf31d-5989-471b-b443-8363dbfcd302",
+   "term": "Final release authorization",
+   "fields": {
+    "definition": "The formal approval that a finished master is cleared for release or distribution, given after quality control and client or label sign-off; it marks the point at which no further changes will be made and the audio can be manufactured, uploaded, or published.",
+    "plain_english": "It is the final 'yes, this is done, send it out' step. Once the client signs off and the checks pass, the song is locked and ready to release.",
+    "purpose_function": "It creates a clear, documented go/no-go point so files are not released before they are checked and approved, preventing costly recalls of wrong or faulty audio.",
+    "practical_application": "Before a distributor upload or disc replication, the engineer confirms QC has passed and obtains written client approval, then treats the master as final and locked.",
+    "category": "Workflow",
+    "related_terms": [
+     "Engineering sign-off",
+     "Final production package",
+     "Distortion validation",
+     "Final mix stage",
+     "Dynamic-range validation"
+    ],
+    "common_mistakes": [
+     "Releasing or sending files to manufacturing before written approval, then discovering an error too late",
+     "Skipping a final QC listen because the deadline is tight",
+     "Authorizing release from an unchecked or wrong file version, so the released audio differs from the approved one"
+    ],
+    "scenario_contexts": [
+     "Approving a master for upload to streaming platforms after client sign-off",
+     "Clearing a mastered album for CD or vinyl manufacturing",
+     "Signing off a broadcast mix as ready for air"
+    ]
+   },
+   "sources": [
+    "Bob Katz, 'Mastering Audio: The Art and the Science' (QC and approval before release)",
+    "Yamaha Pro Audio Hub, 'The Art of Mastering' (deliverables and sign-off)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "204309c6-53bb-45bc-a01b-cebd2b4f0c88",
+   "term": "Fine Pitch",
+   "fields": {
+    "definition": "Fine pitch is a small-resolution tuning adjustment, usually calibrated in cents (hundredths of a semitone), used to detune or precisely align the pitch of an oscillator, sample, or track; it complements a coarse control that shifts pitch in whole semitones.",
+    "plain_english": "Fine pitch is a control that changes pitch by very small amounts. It lets you nudge a sound a little sharp or flat so it is tuned just right. One hundred of these tiny steps, called cents, make up one half step.",
+    "purpose_function": "It provides precise control over pitch beyond whole semitones, letting engineers match tuning between layers, add subtle detuning for a thicker sound, or correct small tuning errors.",
+    "practical_application": "A producer uses a fine pitch or fine-tune knob to detune a second oscillator a few cents for a wider sound, or to nudge a sampled note into tune with the track.",
+    "category": "Tuning Control",
+    "related_terms": [
+     "Coarse tune",
+     "Cents",
+     "Detune",
+     "Transpose",
+     "Pitch correction"
+    ],
+    "common_mistakes": [
+     "Confusing fine pitch (cents) with coarse pitch (whole semitones)",
+     "Over-detuning until layers sound out of tune instead of wide",
+     "Forgetting that 100 cents equals one semitone when dialing in values"
+    ],
+    "scenario_contexts": [
+     "Detuning oscillators a few cents to thicken a synth pad",
+     "Matching a sampled instrument's tuning to a song's reference pitch",
+     "Making small tuning corrections on a doubled vocal or guitar layer"
+    ]
+   },
+   "sources": [
+    "Ableton Reference Manual (Live Instrument Reference: Detune/Transpose controls)",
+    "Roland FA-06 Parameter Manual (Coarse Tune / Fine Tune)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4381208f-433a-4a29-b1a0-1d895453417c",
+   "term": "Fixed item lane",
+   "fields": {
+    "definition": "In REAPER, a fixed item lane is one of multiple horizontal lanes within a single track (up to 128) used to record, layer, edit, and comp media items; the lanes behave like 'tracks within a track,' and comping copies the chosen sections into new items while leaving the source lanes unmodified.",
+    "plain_english": "In REAPER, fixed item lanes are like stacked rows inside one track. You can record many takes on separate rows, then pick the best parts from each to build one great take, without changing the original recordings.",
+    "purpose_function": "They keep multiple takes and layers organized within one track so performances can be compared, edited, and comped non-destructively instead of being spread across many separate tracks.",
+    "practical_application": "A tracking engineer records several vocal passes into separate lanes, then swipes across the best phrases to comp a final take into a new lane.",
+    "category": "DAW Editing",
+    "related_terms": [
+     "Comping",
+     "Take",
+     "Swipe comping",
+     "Punch-in",
+     "Non-destructive editing"
+    ],
+    "common_mistakes": [
+     "Confusing fixed item lanes with REAPER's older takes system",
+     "Thinking comping alters the source lanes when it actually copies into new items",
+     "Recording all passes into one lane so they overwrite instead of stacking"
+    ],
+    "scenario_contexts": [
+     "Recording multiple vocal or solo passes for later comping",
+     "Layering doubled parts on separate lanes within one track",
+     "Building a composite take by swiping across lanes"
+    ]
+   },
+   "sources": [
+    "Cockos REAPER User Guide (Fixed Item Lanes)",
+    "Cockos, What's New in REAPER 7 (Fixed Item Lanes and comping)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "52451896-deb6-4305-9acb-94110e558703",
+   "term": "Flam programming",
+   "fields": {
+    "definition": "Flam programming is the sequencing of a flam - a drum rudiment of two nearly simultaneous strokes, a soft grace note placed just before the main accented note - by entering two hits a few milliseconds apart (typically with the grace note at lower velocity) in a drum machine or DAW sequencer.",
+    "plain_english": "A flam is two drum hits played almost together, a quiet one just before a louder one, making a fatter sound. Flam programming means placing those two hits slightly apart in a drum sequencer to copy that sound.",
+    "purpose_function": "It recreates the natural thickness and human feel of an acoustic flam in programmed drums, adding weight and realism to snare or tom hits.",
+    "practical_application": "A beatmaker duplicates a snare hit a few milliseconds early at a lower velocity to program a flam, adjusting the gap and level until it feels natural.",
+    "category": "Drum Programming",
+    "related_terms": [
+     "Velocity",
+     "Quantization",
+     "Grace note",
+     "Ghost note",
+     "Drum sequencer"
+    ],
+    "common_mistakes": [
+     "Spacing the two hits too far apart, so the flam turns into an audible double hit",
+     "Giving both hits equal velocity instead of a softer grace note",
+     "Quantizing the flam so tightly that the offset disappears"
+    ],
+    "scenario_contexts": [
+     "Programming a realistic snare flam in a drum machine pattern",
+     "Adding flams to toms in a programmed drum fill",
+     "Humanizing sequenced drums with flams and velocity changes"
+    ]
+   },
+   "sources": [
+    "Percussive Arts Society International Drum Rudiments (Flam)",
+    "Huber & Runstein, Modern Recording Techniques (MIDI drum programming)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "99b43f74-91fb-487b-9fad-ef9082dbbfb0",
+   "term": "Flatten track (Live)",
+   "fields": {
+    "definition": "In Ableton Live, Flatten is a command that permanently replaces a frozen track's original clips and device chain with the rendered ('frozen') audio, committing all processing to a new audio clip and removing the source devices to save CPU.",
+    "plain_english": "In Ableton Live, Flatten turns a track into plain audio for good. It takes a frozen track and replaces its instruments and effects with a recording of how they sounded, which frees up computer power.",
+    "purpose_function": "It permanently commits a track's instruments, effects, and warping to audio, reducing CPU load and simplifying a project, at the cost of no longer being able to edit the original devices.",
+    "practical_application": "After freezing a CPU-heavy instrument track, an engineer flattens it to lock in the sound and free up processing power for the rest of the mix.",
+    "category": "DAW Editing",
+    "related_terms": [
+     "Freeze track",
+     "Consolidate",
+     "Mixdown",
+     "Warp",
+     "CPU load"
+    ],
+    "common_mistakes": [
+     "Flattening a track before the sound is final, since it removes the original devices and is not reversible",
+     "Confusing Flatten with Freeze, because Freeze is reversible while Flatten is permanent",
+     "Flattening a track that may still need editing, losing the instrument and effect settings"
+    ],
+    "scenario_contexts": [
+     "Committing a CPU-heavy software instrument to audio to free processing power",
+     "Locking in a finished synth part before sharing the project",
+     "Simplifying a busy Live set by flattening frozen tracks before a performance"
+    ]
+   },
+   "sources": [
+    "Ableton Live Reference Manual (Computer Audio Resources: Freeze and Flatten)",
+    "Ableton Knowledge Base, Committing Audio in Live"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

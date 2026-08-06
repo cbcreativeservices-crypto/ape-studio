@@ -1,0 +1,159 @@
+{
+ "batch": 352,
+ "topic": "Strings, Guitar & Keys",
+ "authored": [
+  {
+   "id": "4e80a56c-5959-422a-be07-e67cfa34deef",
+   "term": "Ngoni dry pluck",
+   "fields": {
+    "definition": "On the ngoni, a small West African (Mande) plucked lute with a hide-covered wooden body and gut or nylon strings, a plucked note that sounds with a short, tight, quickly decaying tone having little sustain or ringing resonance, giving a dry, percussive character.",
+    "plain_english": "The ngoni is a small West African lute with a skin-covered body. A dry pluck is a plucked note that stops ringing fast. It sounds short and snappy, not long and echoey.",
+    "purpose_function": "The dry, fast-decaying pluck gives the ngoni its crisp rhythmic drive, letting fast melodic runs stay clear and articulate without notes blurring into one another.",
+    "practical_application": "An engineer captures the ngoni close with a small-diaphragm condenser to preserve its tight transient, avoiding excess room sound that would smear the naturally dry, percussive notes.",
+    "category": "Playing technique",
+    "related_terms": ["Plucked lute", "Attack (transient)", "Sustain", "Damping", "Kora"],
+    "common_mistakes": ["Confusing the ngoni with the kora; the kora is a large 21-string harp-lute with long sustain, while the ngoni is small with a short, dry decay", "Drenching the ngoni in reverb, which masks its tight, percussive attack", "Treating a dry pluck as a technical fault, when it is the instrument's natural short-sustain voice"],
+    "scenario_contexts": ["Miking a ngoni for a Mande griot recording where rhythmic clarity matters", "Blending ngoni with kora and balafon in a West African ensemble mix", "Choosing close mic placement to preserve the ngoni's dry, articulate transient"]
+   },
+   "sources": ["Grove Dictionary of Musical Instruments (ngoni)", "Garland Encyclopedia of World Music, Vol. 1: Africa"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7cfadfe3-00fb-453b-b151-5b374922a34d",
+   "term": "Nyckelharpa shimmer",
+   "fields": {
+    "definition": "On the nyckelharpa, a bowed Swedish keyed fiddle fitted with a set of undertuned sympathetic strings, the bright, ringing, halo-like resonance produced when those sympathetic strings vibrate in sympathy with the bowed melody notes, adding a shimmering, reverb-like sheen to the tone.",
+    "plain_english": "A nyckelharpa is a Swedish fiddle played with a bow and rows of keys. Under the main strings sit extra strings that no one bows. They ring on their own when you play, adding a bright, shimmery glow like a soft echo.",
+    "purpose_function": "The sympathetic-string shimmer enriches the nyckelharpa's tone with a natural, sustained resonance, giving it a characteristic bright, ringing sustain even on short bow strokes.",
+    "practical_application": "An engineer recording nyckelharpa avoids over-close mic placement and heavy upper-mid EQ cuts so the delicate sympathetic shimmer stays audible, often adding a little room capture to let it bloom.",
+    "category": "Sympathetic resonance",
+    "related_terms": ["Sympathetic resonance", "Sympathetic strings", "Sustain", "Bowed string", "Resonance"],
+    "common_mistakes": ["Confusing the sympathetic strings, which are never bowed, with the melody strings the bow and keys play", "Cutting high-mid frequencies so hard in the mix that the shimmer disappears", "Damping the body or using too many close mics, which chokes the ringing resonance"],
+    "scenario_contexts": ["Recording a solo nyckelharpa where the sympathetic shimmer is central to the sound", "Placing a room mic to capture the halo of resonance around the direct tone", "Blending nyckelharpa into a Nordic folk mix without masking its ringing overtones"]
+   },
+   "sources": ["Grove Dictionary of Musical Instruments (nyckelharpa)", "Garland Encyclopedia of World Music, Vol. 8: Europe"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cc55168e-acae-4f81-a67b-69f62e10ef99",
+   "term": "Nylon-string finger noise",
+   "fields": {
+    "definition": "The incidental squeaks, scrapes, and thumps produced when a player's fingers slide along or release the strings of a nylon-string (classical) guitar, most audible on the metal-wound bass strings where the fingertips drag across the winding while shifting position.",
+    "plain_english": "On a classical guitar, the low strings are wrapped in thin metal. When a player slides their fingers along them to change notes, the fingers catch the ridges and squeak. That squeak is finger noise.",
+    "purpose_function": "Finger noise is a natural by-product of moving the fingers on the strings; in a recording it can lend intimate realism, but at high levels it distracts from the notes and must be managed.",
+    "practical_application": "When recording classical guitar, an engineer manages finger squeak through mic choice and placement, gentle high-frequency EQ, or careful editing, and may advise the player on smoother shifts or coated strings.",
+    "category": "Performance noise",
+    "related_terms": ["String squeak", "Wound string", "Fret buzz", "Close miking", "De-essing"],
+    "common_mistakes": ["Trying to erase every squeak, which strips natural realism and sounds artificial", "Blaming the guitar, when smoother left-hand position shifts reduce the noise more than gear changes", "Assuming the plain treble nylon strings squeak, when the noise comes mostly from the metal-wound bass strings"],
+    "scenario_contexts": ["Editing squeaks out of a solo classical guitar take before mastering", "Choosing a mic position that reduces finger noise on a close-miked nylon guitar", "Advising a guitarist on coated strings or cleaner shifts to cut down squeak"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "486753da-1842-45ca-8438-9e0ec20367bc",
+   "term": "Open string ring",
+   "fields": {
+    "definition": "The full, freely sustaining tone produced when a string is played open, sounded along its entire length without being stopped by a finger or fret, allowing it to vibrate and ring longer and more resonantly than a fretted note and to resonate sympathetically with related pitches.",
+    "plain_english": "An open string is one you play without pressing it down. With nothing stopping it, the whole string is free to vibrate. So it rings out longer and louder than a note you hold down with a finger.",
+    "purpose_function": "Open-string ring gives players sustained, resonant tones and lets a note keep sounding while the hand moves elsewhere; it also adds sympathetic resonance that enriches an instrument's overall sound.",
+    "practical_application": "Guitarists and engineers use open-string ring for drones, arpeggios, and sustain, but watch for unwanted ringing bleeding into later notes, muting strings by hand when a cleaner, drier passage is needed.",
+    "category": "String resonance",
+    "related_terms": ["Open string", "Sustain", "Sympathetic resonance", "Damping", "Palm muting"],
+    "common_mistakes": ["Letting open strings ring into a passage where they clash with the harmony, muddying the chord", "Forgetting to mute a ringing open string before it bleeds into the next section", "Assuming a fretted note rings as long as an open string, when open strings usually sustain longer"],
+    "scenario_contexts": ["Using open strings as a drone under a fingerpicked guitar part", "Muting ringing open strings to keep a tight, dry rhythm part clean", "Tuning a mix so sympathetic open-string resonance supports rather than clutters the track"]
+   },
+   "sources": ["Grove Dictionary of Musical Instruments (open string)", "Fletcher & Rossing, The Physics of Musical Instruments"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5dfeaf3f-5b8d-46c3-8999-1b282fcf725e",
+   "term": "Oshide/press-bend",
+   "fields": {
+    "definition": "On the Japanese koto and related zithers, a left-hand technique in which the player presses down on a string on the far side of its movable bridge, increasing tension to raise the pitch, typically by a semitone or whole tone, allowing pitch bends and ornaments beyond the tuning fixed by the bridge positions.",
+    "plain_english": "A koto has movable bridges that set each string pitch. With oshide, the player presses the string down on one side of its bridge. That tightens the string, so the note bends up higher, like bending a guitar string.",
+    "purpose_function": "Oshide lets the koto reach pitches and expressive bends the fixed bridge tuning cannot provide, adding vibrato, ornaments, and note-to-note pitch slides central to the instrument's musical style.",
+    "practical_application": "A player uses oshide to raise a plucked note or add an ornament; a recording engineer captures it with enough dynamic range and low-noise gain to preserve the subtle pitch rise and the string's changing tension.",
+    "category": "Playing technique",
+    "related_terms": ["Pitch bend", "Vibrato", "Koto", "Portamento", "Ornament"],
+    "common_mistakes": ["Pressing so hard the pitch overshoots the intended semitone or whole tone", "Confusing oshide, pressing left of the bridge to raise pitch, with moving the bridge itself to retune", "Pressing on the wrong side of the bridge, which slackens rather than tightens the string"],
+    "scenario_contexts": ["Performing a koto ornament that bends a plucked note up a semitone", "Recording traditional koto where oshide pitch slides must stay clearly audible", "Notating oshide press-bends in a transcription of Japanese zither music"]
+   },
+   "sources": ["Grove Dictionary of Musical Instruments (koto)", "Garland Encyclopedia of World Music, Vol. 7: East Asia"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ac62d938-b709-44fe-b8cb-cd2074b7de29",
+   "term": "Pedal-steel bend/glide",
+   "fields": {
+    "definition": "On the pedal steel guitar, the smooth pitch changes produced two ways: sliding the handheld steel bar along the strings for continuous glides (portamento), and pressing foot pedals or knee levers that mechanically alter the tension of chosen strings through the changer to bend individual notes up or down while other notes sustain.",
+    "plain_english": "A pedal steel is played flat, sliding a metal bar over the strings. Moving the bar slides the pitch up or down smoothly. Foot pedals and knee levers can also bend single strings while the rest hold, giving that crying, gliding country sound.",
+    "purpose_function": "Bends and glides give the pedal steel its vocal, weeping character and let a player bend some notes within a chord while others stay put, creating the smooth voice-leading that defines the instrument.",
+    "practical_application": "A player combines bar glides with pedal and knee-lever bends for expressive lines; an engineer records the instrument with a clean, full-range signal so the sustained, gliding pitches and their overtones come through without distortion.",
+    "category": "Playing technique",
+    "related_terms": ["Portamento", "Pitch bend", "Glissando", "Slide guitar", "Sustain"],
+    "common_mistakes": ["Confusing bar glides, made by moving the steel, with pedal or knee-lever bends, made by mechanical string-tension changes", "Assuming all strings bend together, when pedals and levers bend only the strings they are set to", "Sliding the bar carelessly so glides land off-pitch instead of on the target note"],
+    "scenario_contexts": ["Recording a country ballad where pedal-steel glides answer the vocal line", "Setting up a pedal steel's copedent so specific strings bend on each pedal", "Blending a pedal steel's sustained bends into a mix without masking the lead vocal"]
+   },
+   "sources": ["Grove Dictionary of Musical Instruments (steel guitar / pedal steel guitar)", "Encyclopaedia Britannica (steel guitar)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0446c5bd-a36f-4a82-8b13-c619549792ad",
+   "term": "Pipa snap",
+   "fields": {
+    "definition": "On the pipa, a Chinese four-string fretted lute plucked with the fingernails, a sharp, percussive plucking attack in which a string is struck or pulled and released hard so it produces a bright, biting snap, sometimes rebounding against the frets, adding crisp accent and attack.",
+    "plain_english": "The pipa is a Chinese lute plucked with the fingernails. A snap is a hard, sharp pluck. The string is hit or pulled and let go so it cracks out a bright, punchy sound, a bit like a slapped bass note.",
+    "purpose_function": "The snap gives the pipa strong rhythmic accents and a percussive edge, cutting through an ensemble and marking beats or dramatic moments with a sharp, attacking transient.",
+    "practical_application": "An engineer recording pipa leaves enough headroom for the snap's fast, loud transient so it stays punchy and undistorted, and may use gentle compression to keep snaps even without dulling their attack.",
+    "category": "Playing technique",
+    "related_terms": ["Attack (transient)", "Plectrum", "Pizzicato", "Sao", "Transient"],
+    "common_mistakes": ["Setting record levels too hot so the snap's sharp transient clips and distorts", "Over-compressing until the snap loses its percussive attack", "Confusing the percussive snap with the smooth sweeping strum (sao)"],
+    "scenario_contexts": ["Capturing a pipa solo where sharp snaps punctuate the melody", "Leaving headroom on the pipa channel for loud snapped accents", "Balancing snapped accents against sustained tremolo passages in a mix"]
+   },
+   "sources": ["Grove Dictionary of Musical Instruments (pipa)", "Garland Encyclopedia of World Music, Vol. 7: East Asia (China)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "acd1b1c7-d33e-4d91-8dec-21c2283d1a1e",
+   "term": "Pipa string-scrape (sao)",
+   "fields": {
+    "definition": "On the pipa, the technique called sao, a rapid outward strum in which the fingers sweep across all four strings almost at once, sounding them together in a strong, broad, slightly percussive rush of sound; its reverse-direction counterpart is fu.",
+    "plain_english": "On the pipa, sao means quickly brushing your fingers across all four strings at once. It is like a fast strum on a guitar. All the strings sound together in one broad, sweeping burst.",
+    "purpose_function": "Sao lets the pipa sound full chords and strong accents in a single sweep, adding power, fullness, and rhythmic drive that a single plucked string cannot provide.",
+    "practical_application": "A recording engineer captures sao sweeps with even coverage of all four strings and enough headroom for their combined loud transient, positioning the mic so the sweep sounds balanced rather than favoring one string.",
+    "category": "Playing technique",
+    "related_terms": ["Strum", "Chord", "Transient", "Pipa snap", "Tremolo"],
+    "common_mistakes": ["Confusing sao, a sweeping strum across all strings, with plucking one string at a time", "Micing so close to one string that the sweep sounds uneven across the four strings", "Reversing sao and fu, when sao sweeps outward and fu sweeps back in the opposite direction"],
+    "scenario_contexts": ["Recording a dramatic pipa passage built on strong sao sweeps", "Placing a mic to capture all four strings evenly during strummed sweeps", "Balancing loud sao chords against quieter single-note lines in a mix"]
+   },
+   "sources": ["Grove Dictionary of Musical Instruments (pipa)", "Garland Encyclopedia of World Music, Vol. 7: East Asia (China)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "908018f6-df94-49be-a866-6501cb5fa935",
+   "term": "Prepared-string rattle",
+   "fields": {
+    "definition": "The buzzing, rattling, or percussive timbre produced when an object such as a screw, bolt, coin, or piece of rubber is placed on or between a struck or plucked string, as on a prepared piano or prepared guitar, so the object vibrates loosely against the string and alters its normal pitched tone.",
+    "plain_english": "If you rest a small object like a screw on a piano or guitar string, the string rattles against it when played. Instead of a clear note, you get a buzzy, clattery sound. Composers like John Cage did this on purpose.",
+    "purpose_function": "Preparing a string with an added object turns a pitched instrument into a source of new percussive and noise-like colors, letting composers draw gong-like, buzzing, or drum-like sounds from a piano or guitar.",
+    "practical_application": "A player fixes objects to chosen strings following a preparation table, and an engineer mics the instrument closely to capture the delicate rattles and buzzes, watching levels so sudden loud rattles do not overload the input.",
+    "category": "Extended technique",
+    "related_terms": ["Prepared piano", "Muting", "Fret buzz", "Timbre", "Percussive"],
+    "common_mistakes": ["Placing objects so loosely they fall off, or so tightly they fully mute the string instead of rattling", "UNSAFE: forcing hard objects between piano strings or against the soundboard, which can damage the strings, bridge, or finish", "Assuming any object gives the same sound, when material, size, and position each change the rattle"],
+    "scenario_contexts": ["Recording a prepared-piano piece where each note has a different rattle", "Following a composer's preparation chart to place objects on specific strings", "Close-miking a prepared guitar to capture subtle string rattles"]
+   },
+   "sources": ["Grove Dictionary of Musical Instruments (prepared piano)", "Encyclopaedia Britannica (prepared piano)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

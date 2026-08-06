@@ -1,0 +1,119 @@
+{
+  "course": "AUDI201",
+  "topic": "Amplifiers",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "bb121575-2887-4738-b7c0-4a7b037d6383",
+      "term": "Class G",
+      "fields": {
+        "plain_english": "An amplifier that keeps two (or more) battery-like voltage levels on hand and jumps up to the higher one only when the music gets loud, so it wastes less power the rest of the time.",
+        "purpose_function": "Uses discrete, stepped supply rails and switches to a higher rail only on signal peaks, cutting the wasted heat of a fixed high-rail Class AB design while keeping its clean linear output. It exists to deliver high peak power efficiently in amplifiers that spend most of their time at low average levels.",
+        "practical_application": "A live-sound or install tech encounters Class G in mid-to-high-power touring and installed amps that run cooler and draw less current than comparable Class AB units, meaning smaller heatsinks, less rack heat, and reduced current draw at idle.",
+        "category": "Amplifier Design",
+        "related_terms": ["Class H", "Rail Voltage", "Quiescent Current", "Crossover Distortion", "Switch-Mode Power Supply (SMPS)"],
+        "common_mistakes": ["Confusing Class G (discrete, stepped rail switching) with Class H (continuously modulated rail) — they are related but distinct topologies.", "Assuming Class G is a switching output stage like Class D; the audio output stage is still linear (Class AB), only the supply rails switch.", "Believing rail switching audibly degrades sound; in a competent design the transition is designed to be inaudible."],
+        "scenario_contexts": ["Specifying a touring power amp where reduced heat and current draw matter for rack cooling and generator load.", "Servicing an amplifier and finding two pairs of supply rails feeding one output stage.", "Explaining to a student why a modern high-power amp runs cooler than an older fixed-rail Class AB design."]
+      },
+      "sources": ["ProSoundWeb, 'Riding The (Moving) Rails: Detailing Class-G And Class-H Amplifier Topologies'", "Handbook for Sound Engineers (Ballou), power amplifier chapter", "Nottingham HiFi, 'Amplifier Classes Explained: A/B, D, H & More'"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "cbbea526-411a-4597-b01f-0760a537a260",
+      "term": "Class H",
+      "fields": {
+        "plain_english": "Like Class G, but instead of jumping between fixed voltage steps it smoothly slides its supply voltage up and down to stay just above the music, wasting even less energy.",
+        "purpose_function": "Continuously modulates (tracks) the supply rail so it sits only a few volts above the instantaneous output signal, minimizing the voltage dropped across the output devices and therefore the heat they dissipate. It exists to maximize efficiency in high-power amplifiers while retaining a linear output stage.",
+        "practical_application": "A tech sees Class H in many modern professional power amplifiers where it allows high continuous and peak power with modest heatsinking and lower mains draw, making it common in touring and installed loudspeaker systems.",
+        "category": "Amplifier Design",
+        "related_terms": ["Class G", "Rail Voltage", "Quiescent Current", "Switch-Mode Power Supply (SMPS)", "Crossover Distortion"],
+        "common_mistakes": ["Using 'Class G' and 'Class H' interchangeably — Class H modulates the rail continuously, Class G switches between discrete rails.", "Thinking Class H is a switching (Class D) amplifier; the output stage is still linear and the rail modulation is what changes.", "Assuming Class H needs an SMPS; rail tracking can also be done with a multi-tap linear supply."],
+        "scenario_contexts": ["Choosing between amplifier topologies for a system where efficiency and weight are priorities.", "Reading an amplifier spec sheet that lists 'Class H' and understanding why it runs efficiently at high output.", "Troubleshooting a modern power amp and recognizing the rail-tracking circuitry around the output stage."]
+      },
+      "sources": ["ProSoundWeb, 'Riding The (Moving) Rails: Detailing Class-G And Class-H Amplifier Topologies'", "Handbook for Sound Engineers (Ballou), power amplifier chapter", "SoundBridge, 'Class G/H Amplifier'"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "a5b4946e-ffe4-4096-bcaf-71f44ad230a3",
+      "term": "Crossover Distortion",
+      "fields": {
+        "plain_english": "A little glitch in the sound that happens right as the signal passes through zero, when one half of the amplifier hands off to the other half and neither is quite doing its job for an instant.",
+        "purpose_function": "It is not a feature but an artifact: it identifies the nonlinearity that appears at the zero-crossing when an under-biased push-pull output stage transitions between its positive and negative devices. Understanding it explains why output stages are biased into Class AB rather than pure Class B.",
+        "practical_application": "A tech recognizes crossover distortion as a raspy, buzzy quality most audible at low signal levels, and corrects it by setting the output-stage bias (quiescent current) to the manufacturer's specification during service.",
+        "category": "Amplifier Design",
+        "related_terms": ["Quiescent Current", "Class G", "Class H", "Rail Voltage", "Toroidal Transformer"],
+        "common_mistakes": ["Assuming distortion always worsens with level — crossover distortion is proportionally worst at LOW output levels because the notch is a fixed fraction of a small signal.", "Trying to fix it by adding gain rather than by correctly biasing the output stage.", "Confusing crossover distortion (an output-stage zero-crossing artifact) with the audio crossover network that splits frequencies to drivers."],
+        "scenario_contexts": ["Biasing an amplifier's output stage during a service and confirming the notch has disappeared.", "Diagnosing a raspy, harsh quality on quiet passages that gets proportionally cleaner as level rises.", "Explaining to a student why pure Class B is rarely used and Class AB adds idle bias."]
+      },
+      "sources": ["Electronics Tutorials, 'Crossover Distortion in Class-B Push-pull Power Amplifiers'", "Aiken Amplification, 'What is Crossover Distortion?'", "Handbook for Sound Engineers (Ballou), amplifier distortion section"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "a8290d76-c665-4670-9b20-1f10f006367d",
+      "term": "Quiescent Current",
+      "fields": {
+        "plain_english": "The small trickle of current an amplifier's output transistors draw even when no sound is playing, set so the two halves of the output overlap smoothly instead of glitching.",
+        "purpose_function": "Set by the bias circuit, it holds the output devices slightly conducting at idle so the handoff between positive and negative halves is smooth, trading a small amount of standing heat for the elimination of crossover distortion. It exists to make Class AB output stages both linear and reasonably efficient.",
+        "practical_application": "A tech measures and adjusts quiescent (bias) current to the manufacturer's spec during amplifier service — too low reintroduces crossover distortion, too high wastes power and overheats the output devices.",
+        "category": "Amplifier Design",
+        "related_terms": ["Crossover Distortion", "Rail Voltage", "Class G", "Class H", "Toroidal Transformer"],
+        "common_mistakes": ["Setting bias higher than spec to 'sound better' — this overheats output transistors and shortens their life without audible benefit.", "Setting it too low and reintroducing audible crossover distortion at low levels.", "Measuring bias on a cold amp; it should be set after the unit has thermally stabilized per the service manual."],
+        "scenario_contexts": ["Following a service manual to set output-stage bias with the amp warmed up.", "Investigating an amp that runs unusually hot at idle and finding bias set too high.", "Explaining why an under-biased amp sounds gritty on quiet material."]
+      },
+      "sources": ["Electronics Tutorials, 'Class AB Amplifier Design and Class AB Biasing'", "Aiken Amplification, 'What is Crossover Distortion?'", "Handbook for Sound Engineers (Ballou), output-stage biasing section"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "fe06ef1a-1cfe-4e05-83b6-69f0c32f7f9e",
+      "term": "Rail Voltage",
+      "fields": {
+        "plain_english": "The plus and minus DC supply voltages inside an amplifier that act like the ceiling and floor for how big the output signal can get before it runs out of room and clips.",
+        "purpose_function": "The DC supply rails feed the output stage and set the theoretical maximum output voltage swing; higher rails allow greater output power into a given load. They exist because the output devices can only swing the signal up to (in practice, a little short of) the rail voltages.",
+        "practical_application": "A tech uses rail voltage to reason about maximum output before clipping: the peak output can approach but never fully reach the rail, so an amp clips when the demanded swing exceeds the available rail minus device losses.",
+        "category": "Amplifier Design",
+        "related_terms": ["Quiescent Current", "Class G", "Class H", "Switch-Mode Power Supply (SMPS)", "Toroidal Transformer"],
+        "common_mistakes": ["Assuming output can swing all the way to the rail — real output stages lose a few volts (device saturation and I×R drop), so usable swing is always less than the rail.", "Thinking a sagging rail under load has no effect; supply sag reduces available power and can cause early clipping on peaks.", "Confusing rail voltage (the DC supply level) with output signal voltage (what actually reaches the speaker)."],
+        "scenario_contexts": ["Estimating an amplifier's clipping point from its measured supply rails.", "Diagnosing premature clipping traced to rail voltage sagging under heavy load.", "Explaining why Class G/H switch or track these rails to save power."]
+      },
+      "sources": ["Analog Devices / analogictips.com, 'Amplifiers: what do rail-to-rail and single supply mean?'", "Apex Analog, AN48 'Increasing Output Swing in Power Operational Amplifiers'", "Handbook for Sound Engineers (Ballou), power supply and output-swing section"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "350edfe9-82d8-4201-b14f-7325fc5e9523",
+      "term": "Switch-Mode Power Supply (SMPS)",
+      "fields": {
+        "plain_english": "A power supply that chops the incoming AC at very high speed instead of using a big heavy mains transformer, letting modern amps be light and powerful.",
+        "purpose_function": "Switches DC through a small transformer at high frequency (typically tens to ~150 kHz) and regulates the output, delivering high power from a small, light, efficient package. It exists to replace the bulky low-frequency transformer and give modern amplifiers their weight, efficiency, and often better power-factor performance.",
+        "practical_application": "A tech benefits from SMPS every time they lift a modern touring amp that weighs a fraction of an older linear-supply unit of equal power, and notes its wider mains-voltage tolerance and lower current draw.",
+        "category": "Amplifier Design",
+        "related_terms": ["Toroidal Transformer", "Rail Voltage", "Class G", "Class H", "Quiescent Current"],
+        "common_mistakes": ["Assuming an SMPS is inherently noisy for audio — its high-frequency switching noise is above the audio band and is filtered; good implementation matters more than supply type.", "Thinking SMPS and linear supplies are interchangeable to service; SMPS boards store dangerous energy and require the manufacturer's service procedure.", "Believing a heavier (toroidal/linear) amp is automatically 'better' — implementation quality determines performance, not supply topology alone."],
+        "scenario_contexts": ["Choosing lightweight touring amplifiers where rack weight and truck load matter.", "Explaining why two amps of equal rated power differ greatly in weight.", "Understanding why a modern amp tolerates a wide range of mains voltages worldwide."]
+      },
+      "sources": ["Handbook for Sound Engineers (Ballou), power supply chapter", "QSC / Crown power amplifier technical documentation on switch-mode supplies", "diyAudio and industry technical discussion, 'linear vs switching power supply for amplifiers'"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "76c06f85-266e-4dfd-87c5-c307b1bc879d",
+      "term": "Toroidal Transformer",
+      "fields": {
+        "plain_english": "A donut-shaped mains transformer whose round core keeps its magnetic field contained, so it hums less and leaks less interference into the delicate audio circuits nearby.",
+        "purpose_function": "Its continuous ring core confines the magnetic field in a closed loop with very low leakage, producing a much smaller stray field and less mechanical hum than an EI (laminated) transformer of similar rating. It exists to keep mains-frequency magnetic fields from inducing hum into sensitive low-level audio stages while offering high efficiency in a compact, light package.",
+        "practical_application": "A tech finds toroidals in quality amplifiers and prefers them where a quiet noise floor matters, orienting and positioning them away from input circuitry to minimize induced hum.",
+        "category": "Amplifier Design",
+        "related_terms": ["Switch-Mode Power Supply (SMPS)", "Rail Voltage", "Quiescent Current", "Class G", "Class H"],
+        "common_mistakes": ["Assuming a toroidal has zero external field — it is much lower than an EI type but not nil, so placement relative to input stages still matters.", "Ignoring inrush current — toroidals draw a large turn-on surge that can trip breakers or need soft-start circuitry.", "Believing a toroidal automatically means better sound; it reduces hum and stray field but overall performance depends on the whole design."],
+        "scenario_contexts": ["Diagnosing induced hum and finding a transformer mounted too close to input wiring.", "Specifying a low-noise amplifier or preamp where a quiet background is critical.", "Understanding why a large toroidal amp needs a soft-start or trips a breaker on power-up."]
+      },
+      "sources": ["Audioengine, 'What Are Toroidal Transformers and Why Do They Matter for Quality Sound?'", "Handbook for Sound Engineers (Ballou), transformer and power supply section", "nretec, 'Toroidal Transformers: Are They Really Better?' (stray-field / EMI comparison)"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

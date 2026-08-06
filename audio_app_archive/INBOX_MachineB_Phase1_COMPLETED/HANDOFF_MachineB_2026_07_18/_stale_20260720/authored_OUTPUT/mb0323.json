@@ -1,0 +1,267 @@
+{
+ "batch": 323,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "2892c95d-6b0b-4acd-bfee-eb7c81b38226",
+   "term": "Accent attack",
+   "fields": {
+    "definition": "The stronger, sharper onset transient of a note played with a dynamic accent, in which the attack portion is emphasized so the note's leading edge is louder and more pronounced than the surrounding unaccented notes.",
+    "plain_english": "An accent attack is the extra-strong start of a note that a player hits harder on purpose. It makes the beginning of that note pop out louder than the notes around it.",
+    "purpose_function": "It marks which notes carry rhythmic or musical emphasis, shaping groove and phrasing. Recognizing it helps a technician keep that emphasis instead of flattening it during dynamics processing.",
+    "practical_application": "When mixing, a technician uses gentle or slow-attack compression and careful transient shaping so accented hits keep their punch and still stand out from the rest of a part.",
+    "category": "Attack Descriptor",
+    "related_terms": ["Attack", "Transient", "Attack transient", "Punch", "Dynamics", "Accent"],
+    "common_mistakes": [
+     "Using a fast compressor attack that clamps the accented transient and erases the emphasis.",
+     "Confusing an accent attack (a dynamic emphasis on the note's start) with a brighter tone or added EQ.",
+     "Over-limiting a part until accented and unaccented notes all sound the same."
+    ],
+    "scenario_contexts": [
+     "Keeping accented snare hits punchy while compressing a drum bus.",
+     "Preserving accented notes in a bass or piano line during mastering.",
+     "Editing a MIDI performance so accented beats keep higher velocity and a stronger attack."
+    ]
+   },
+   "sources": [
+    "Samuel Adler, The Study of Orchestration (articulation and accents)",
+    "David Miles Huber & Robert Runstein, Modern Recording Techniques (attack transients and dynamics)",
+    "Bobby Owsinski, The Mixing Engineer's Handbook (transients and dynamics)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c38461e6-54bb-4e84-be29-cc91d833d70c",
+   "term": "Action noise",
+   "fields": {
+    "definition": "Unwanted mechanical noise produced by an instrument's action, the moving mechanism that transfers a player's touch to the sound-producing element, such as key, hammer, damper, or pallet movement in pianos, keyboards, and organs; it is captured as clicks, thumps, or clatter alongside the intended tone.",
+    "plain_english": "Action noise is the clicky, mechanical sound an instrument's moving parts make, like piano keys and hammers working. A microphone can pick it up along with the music, even though it is not the note itself.",
+    "purpose_function": "Naming it lets a technician separate the wanted musical sound from mechanical racket. It exists as a recording and maintenance concern because too much action noise distracts from the performance.",
+    "practical_application": "When recording piano or organ, a technician chooses mic placement and distance to reduce action noise, and flags a worn or poorly regulated action that needs servicing.",
+    "category": "Mechanical Artifact",
+    "related_terms": ["Key click", "Mechanical noise", "Hammer noise", "Bearing noise", "Noise floor", "Rumble"],
+    "common_mistakes": [
+     "Blaming the microphone for action noise when the real cause is a worn or poorly regulated instrument action.",
+     "Placing a mic right over the keys or hammers, which captures the most action noise.",
+     "Trying to EQ out action noise after the fact instead of fixing placement or the instrument first."
+    ],
+    "scenario_contexts": [
+     "Close-miking a grand piano and hearing hammer and key noise in quiet passages.",
+     "Recording a pipe or electronic organ where key and pallet action is audible.",
+     "A pianist's pedal and damper mechanism adding thumps to a solo take."
+    ]
+   },
+   "sources": [
+    "Kawai Musical Instruments - technical support documentation (keyboard and piano action noise)",
+    "David Miles Huber & Robert Runstein, Modern Recording Techniques (piano recording and mic placement)",
+    "Glen Ballou, Handbook for Sound Engineers (acoustic instruments and mechanical noise)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fb615966-16c3-45bd-a538-669480b009f0",
+   "term": "Air burst",
+   "fields": {
+    "definition": "A brief, sudden blast of moving air reaching a microphone that produces a transient thump or overload, such as a vocal plosive, a breath or wind gust, or the puff of air at the onset of a wind-instrument note.",
+    "plain_english": "An air burst is a quick puff or blast of air that hits the mic and makes a sudden thump. It happens with hard 'p' and 'b' sounds, a gust of wind, or a sharp breath.",
+    "purpose_function": "Identifying it helps a technician stop air blasts from thumping or overloading a channel. It matters because a strong air burst can distort the signal or ruin an otherwise good take.",
+    "practical_application": "A technician fits a pop filter or foam windscreen, adjusts mic angle, and may add a high-pass filter to tame air bursts on vocals and on outdoor or wind sources.",
+    "category": "Air Artifact",
+    "related_terms": ["Plosive", "Wind noise", "Pop filter", "Air noise", "Transient", "Windscreen"],
+    "common_mistakes": [
+     "Singing or speaking straight into the mic with no pop filter, so plosive air bursts thump the diaphragm.",
+     "Confusing an air burst (a physical puff of air on the capsule) with electronic clipping.",
+     "Removing air bursts only with EQ instead of preventing them with a screen and better mic angle."
+    ],
+    "scenario_contexts": [
+     "A vocalist's hard 'P' plosive thumping a large-diaphragm condenser.",
+     "Wind gusts hitting a mic during an outdoor live event.",
+     "The breath burst at the start of a flute or reed note."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook (microphones, windscreens, and plosives)",
+    "David Miles Huber & Robert Runstein, Modern Recording Techniques (pop filters and plosives)",
+    "DPA Microphones - technical application notes (wind and pop protection)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2b058e98-5125-41e8-a72f-1cddf3cdfc43",
+   "term": "Air noise",
+   "fields": {
+    "definition": "Broadband rushing or hissing noise caused by moving air reaching a microphone, coming from wind, ventilation and HVAC airflow, fans, or a performer's breath, and heard as an unwanted low-level rush behind the intended sound.",
+    "plain_english": "Air noise is the soft rushing or hissing sound made by moving air, like wind, a fan, or an air vent. A mic can pick it up as an unwanted background rush under the real sound.",
+    "purpose_function": "Naming it helps a technician track down and reduce noise caused by airflow rather than by electronics. It matters because air noise raises the background level and hurts clarity.",
+    "practical_application": "On the job a technician uses windscreens outdoors, turns off or baffles HVAC and fans, and positions mics away from air currents to keep air noise out of a recording.",
+    "category": "Air Artifact",
+    "related_terms": ["Wind noise", "Windscreen", "Air burst", "Noise floor", "Hiss", "Rumble"],
+    "common_mistakes": [
+     "Leaving HVAC or a computer fan running near the mic and blaming the hiss on the preamp.",
+     "Confusing air noise (from moving air) with electronic hiss (from gear and gain).",
+     "Using no windscreen outdoors, then trying to fix heavy air noise in the mix."
+    ],
+    "scenario_contexts": [
+     "An air-conditioning vent adding a steady rush to a quiet studio take.",
+     "Wind across a boom mic on an outdoor shoot.",
+     "A close vocal mic catching breath rush between phrases."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook (wind noise and windscreens)",
+    "Glen Ballou, Handbook for Sound Engineers (microphone environment and noise)",
+    "Shure - technical support and application notes (wind and handling noise)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "76bbf733-e271-4015-972e-59b218924137",
+   "term": "Artificial harmonic",
+   "fields": {
+    "definition": "A harmonic on a string instrument produced by stopping the string firmly with one finger while another finger lightly touches a nodal point above it, most commonly a perfect fourth higher to sound a flute-like tone two octaves above the stopped note; unlike a natural harmonic, it can be produced on a stopped (fingered) string at any pitch.",
+    "plain_english": "An artificial harmonic is a high, bell-like note on a string. The player holds one finger down and lightly touches the string with another. Both fingers move as a pair, so the player can sound these pure tones at almost any pitch.",
+    "purpose_function": "It lets players reach very high, pure, bell-like pitches beyond normal fingering and adds a special glassy color. It exists to extend the range and timbre of violins, guitars, and related strings.",
+    "practical_application": "A technician recognizes the soft, high, pure tone of an artificial harmonic when miking or mixing strings, and takes care to capture its quiet level and delicate attack cleanly.",
+    "category": "Playing Technique",
+    "related_terms": ["Natural harmonic", "Harmonic", "Node", "Overtone", "Fundamental", "Flageolet"],
+    "common_mistakes": [
+     "Confusing an artificial harmonic (touching a node on a stopped string) with a natural harmonic (touching an open string).",
+     "Expecting a loud sound; artificial harmonics are quiet and need careful gain and placement to record well.",
+     "Reading the touched note as the pitch you hear, when the sounding harmonic is much higher."
+    ],
+    "scenario_contexts": [
+     "A violinist playing high artificial harmonics in an orchestral passage.",
+     "A classical guitarist using artificial harmonics for a bell-like melody.",
+     "Miking a string quartet where soft harmonics must stay audible in the mix."
+    ]
+   },
+   "sources": [
+    "Samuel Adler, The Study of Orchestration (string harmonics)",
+    "Walter Piston, Orchestration (harmonics on strings)",
+    "The New Grove Dictionary of Music and Musicians (harmonics)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "607f5a22-12ca-4efa-9408-91e0a7236ae0",
+   "term": "bark",
+   "fields": {
+    "definition": "A subjective timbre descriptor for a harsh, aggressive, honking quality in the lower midrange, typically a forceful, cutting attack from brass, reeds, saxophone, or an overdriven source, in which the sound seems to \"bark\" out with a hard, nasal edge.",
+    "plain_english": "\"Bark\" describes a harsh, honking, aggressive sound, like a sax or trumpet blasting out with a hard edge. It is the sound seeming to snap or shout at you.",
+    "purpose_function": "It gives a technician a quick word for an aggressive, honking midrange they may want to boost for attitude or tame for smoothness. It helps aim EQ at the right midrange.",
+    "practical_application": "An engineer may add bark to a horn or guitar with an upper-mid EQ boost for aggression, or cut around 400 Hz to 1 kHz to reduce an unwanted honk.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["Honk", "Nasal", "Aggressive", "Midrange", "Attack", "Harsh"],
+    "common_mistakes": [
+     "Confusing timbral 'bark' (an aggressive honk) with the Bark scale, a separate psychoacoustic frequency scale.",
+     "Adding so much upper-mid bark that a horn or guitar becomes harsh and fatiguing.",
+     "Blaming the source for bark when a resonant room or mic peak is causing the honk."
+    ],
+    "scenario_contexts": [
+     "Describing a punchy, aggressive baritone sax as having bark.",
+     "Dialing bark into a rock guitar so it cuts through a dense mix.",
+     "Cutting a honky midrange peak so brass stops barking."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook (glossary of descriptive terms)",
+    "Glen Ballou, Handbook for Sound Engineers (timbre and midrange character)",
+    "ProSoundWeb - Glossary of Commonly Used Sound/Audio Terms"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7ae43d61-2367-4a60-9fd6-cc48fb64aca2",
+   "term": "Bearing noise",
+   "fields": {
+    "definition": "Mechanical noise, ranging from low-frequency rumble to a high-pitched whine or grinding, produced by worn, dry, or damaged bearings in rotating equipment such as tape-machine motors and capstans, turntable platters, cooling fans, and hard drives; it can radiate into a room or couple into the signal path.",
+    "plain_english": "Bearing noise is the rumble, whine, or grinding made by worn-out bearings in spinning parts, like motors, fans, or a turntable. As a bearing wears, the smooth spin turns rough and noisy.",
+    "purpose_function": "Identifying bearing noise points a technician to a specific worn part that needs cleaning, lubrication, or replacement. It matters for quiet operation and for preventing equipment failure.",
+    "practical_application": "A technician traces a rumble or whine to a motor, capstan, or fan bearing, then services or replaces it to restore quiet, smooth operation and keep the noise out of recordings.",
+    "category": "Mechanical Artifact",
+    "related_terms": ["Rumble", "Mechanical noise", "Action noise", "Wow and flutter", "Noise floor", "Hum"],
+    "common_mistakes": [
+     "Ignoring early bearing whine until the bearing seizes and damages the motor or shaft.",
+     "Confusing mechanical bearing noise with electrical hum or hiss in the signal path.",
+     "Over-oiling a sealed or self-lubricating bearing instead of replacing a worn one."
+    ],
+    "scenario_contexts": [
+     "A tape machine's capstan bearing adding rumble to playback.",
+     "A turntable platter bearing producing low-frequency rumble picked up by the cartridge.",
+     "A noisy cooling fan bearing whining inside an amplifier or console."
+    ]
+   },
+   "sources": [
+    "Glen Ballou, Handbook for Sound Engineers (mechanical noise and motors)",
+    "David Miles Huber & Robert Runstein, Modern Recording Techniques (rumble and mechanical noise)",
+    "Studer/Revox tape machine service manual documentation (capstan and motor bearing service)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c9779251-162c-4ce4-a5aa-1366a29fad94",
+   "term": "Beater click",
+   "fields": {
+    "definition": "The sharp, high-frequency click at the very start of a bass-drum (kick) note, produced when the beater strikes the batter head, especially with a hard felt, plastic, or wood beater; it forms the attack transient that gives the kick definition and helps it cut through a mix.",
+    "plain_english": "Beater click is the sharp little \"click\" you hear at the start of a kick-drum hit, made by the pedal beater striking the head. A hard beater gives more click, which helps the kick punch through a loud mix.",
+    "purpose_function": "It provides the attack and articulation that let a kick drum be heard clearly, especially on small speakers and in busy arrangements. Engineers manage it to balance punch against boom.",
+    "practical_application": "An engineer adds or emphasizes beater click with a boundary or beater-side mic, a hard beater, or an EQ boost around 2 to 5 kHz so the kick stays audible in the mix.",
+    "category": "Attack Artifact",
+    "related_terms": ["Attack transient", "Kick attack", "Beater slap", "Punch", "Transient", "Click"],
+    "common_mistakes": [
+     "Boosting beater click so hard the kick sounds clicky and thin instead of full and punchy.",
+     "Confusing beater click (the attack transient) with the low-end thump or boom of the drum.",
+     "Removing all click with EQ, leaving a kick that disappears on small speakers."
+    ],
+    "scenario_contexts": [
+     "Adding beater click to a metal kick so it cuts through distorted guitars.",
+     "Swapping to a hard plastic beater for more click in a live show.",
+     "EQ-boosting the click region so a dance kick reads on phone speakers."
+    ]
+   },
+   "sources": [
+    "David Miles Huber & Robert Runstein, Modern Recording Techniques (drum recording and kick attack)",
+    "Sound on Sound - kick drum recording and mixing technique",
+    "Bobby Owsinski, The Recording Engineer's Handbook (drum miking)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a3fad350-82b2-48ae-830b-0edef938cd18",
+   "term": "Beater slap",
+   "fields": {
+    "definition": "The percussive slapping or smacking transient heard when a bass-drum beater strikes and momentarily rests against the batter head, giving a harder, broader attack than a fine click; it is most prominent with hard beaters and a buried-beater pedal technique.",
+    "plain_english": "Beater slap is the hard smack sound of the kick pedal's beater hitting the drumhead. It is a bigger, broader attack than the thin click, more like a slap than a tick.",
+    "purpose_function": "It supplies an aggressive, punchy attack that helps a kick feel powerful and tight, especially in rock and metal. Engineers use it to add impact and articulation to the drum's front edge.",
+    "practical_application": "An engineer captures beater slap with a hard beater and close mic placement, or shapes it with transient tools, to give the kick a strong slapping attack without losing low-end weight.",
+    "category": "Attack Artifact",
+    "related_terms": ["Beater click", "Attack transient", "Kick attack", "Punch", "Transient", "Slap"],
+    "common_mistakes": [
+     "Pushing beater slap so hard the kick sounds slappy and loses its low-end body.",
+     "Confusing beater slap (a broad attack smack) with a thin high-frequency beater click.",
+     "Relying on slap alone for punch while ignoring the drum's tuning and low-end tone."
+    ],
+    "scenario_contexts": [
+     "Getting an aggressive slapping kick attack for a metal track.",
+     "Using a buried-beater technique for a tighter, slappier kick.",
+     "Balancing beater slap against sub-low weight on a rock drum bus."
+    ]
+   },
+   "sources": [
+    "David Miles Huber & Robert Runstein, Modern Recording Techniques (bass drum miking and beater)",
+    "Sound on Sound - kick drum sound and beater choice",
+    "Bobby Owsinski, The Recording Engineer's Handbook (drum miking and attack)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

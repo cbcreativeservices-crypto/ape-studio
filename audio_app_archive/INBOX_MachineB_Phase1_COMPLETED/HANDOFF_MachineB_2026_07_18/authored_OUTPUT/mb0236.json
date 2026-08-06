@@ -1,0 +1,159 @@
+{
+ "batch": 236,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "7b6f9c39-cd03-4ac1-9764-df283680cd40",
+   "term": "Localized nearfield mix",
+   "fields": {
+    "definition": "A near-field (home/consumer) re-recording of a program's soundtrack adapted for a specific language or territory, in which localized (dubbed) dialogue is combined with the original music-and-effects (M&E) and monitored at near-field/home reference level rather than at theatrical level.",
+    "plain_english": "This is the home-video version of a show's sound, remade in another language. The new spoken lines are mixed with the original music and sound effects. It is checked on small studio speakers, like the ones people use at home.",
+    "purpose_function": "It lets a program reach non-original-language home and broadcast audiences by swapping the dialogue while keeping the original musical and effects intent, optimized for consumer near-field playback.",
+    "practical_application": "A re-recording mixer conforms the home mix by placing the dubbed language stem over the delivered M&E, checks balance and loudness on near-field monitors, and outputs the territory's consumer deliverable.",
+    "category": "Localization Deliverable",
+    "related_terms": ["Localized theatrical mix", "Localized streaming mix", "M&E stem", "Printmaster", "Near-field monitoring", "ADR"],
+    "common_mistakes": ["Reusing the theatrical mix at home level without adjusting dialogue clarity and dynamics for near-field playback", "Failing to check that the localized dialogue sits correctly against the original M&E balance", "Delivering at the wrong integrated loudness target for the consumer platform"],
+    "scenario_contexts": ["Preparing a French home-video mix of an English feature", "Creating a consumer or broadcast version after the theatrical mix is locked", "QC of a dubbed near-field deliverable before release"]
+   },
+   "sources": ["Holman, 'Sound for Film and Television'", "Yewdall, 'Practical Art of Motion Picture Sound'", "EBU R128 (loudness normalization)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "73277677-1986-4c0b-a29b-223dc4a84efa",
+   "term": "Localized printmaster",
+   "fields": {
+    "definition": "A printmaster—the final, fully combined mix rendered to its delivery channel layout—prepared for a localized version of a program, in which the territory's dubbed dialogue is printed together with the original music-and-effects (M&E) stems.",
+    "plain_english": "A printmaster is the finished, combined soundtrack that gets sent out. A localized one uses new dubbed voices in place of the first language. The music and sound effects stay the same.",
+    "purpose_function": "It provides the ready-to-encode soundtrack for a specific language so distribution and mastering can proceed without re-opening the full mix session.",
+    "practical_application": "Once the dubbed dialogue is approved, the mixer prints the combined dialogue and original M&E to the required channel layout, creating the localized printmaster used for encoding and QC.",
+    "category": "Localization Deliverable",
+    "related_terms": ["Printmaster", "M&E stem", "Localized theatrical mix", "Localized-delivery package", "ADR", "Stems"],
+    "common_mistakes": ["Confusing a printmaster (fully combined) with stems (separated elements)", "Printing before the dubbed dialogue is fully approved, forcing costly re-prints", "Mismatching channel order or LFE routing versus the delivery spec"],
+    "scenario_contexts": ["Rendering the German 5.1 printmaster of a series episode", "Handing a localized printmaster to mastering for DCP or file encoding", "Archiving language-specific printmasters for future re-release"]
+   },
+   "sources": ["Holman, 'Sound for Film and Television'", "Yewdall, 'Practical Art of Motion Picture Sound'", "SMPTE ST 2067 (IMF) deliverable documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "49d8b964-9328-4f62-bc73-c3e682fdaea6",
+   "term": "Localized streaming mix",
+   "fields": {
+    "definition": "A streaming-platform deliverable of a program's mix adapted for a specific language or territory and conformed to that platform's channel-layout and loudness specifications, combining localized (dubbed) dialogue with the original music-and-effects (M&E).",
+    "plain_english": "This is the sound version made for a streaming service in another language. It follows that service's rules for how loud the sound can be. New voices replace the first language, but the music and effects stay.",
+    "purpose_function": "It delivers a language-specific mix that meets a streaming platform's technical and loudness requirements so it plays back correctly and consistently across consumer devices.",
+    "practical_application": "The mixer conforms the dubbed mix to the platform's channel layout and loudness target, measures integrated loudness and true peak, and delivers the file for that territory.",
+    "category": "Localization Deliverable",
+    "related_terms": ["Localized nearfield mix", "Loudness normalization", "M&E stem", "Integrated loudness", "True peak", "ADR"],
+    "common_mistakes": ["Missing the platform's integrated loudness or true-peak limits", "Assuming one loudness target fits every platform", "Not verifying dubbed dialogue intelligibility on small consumer speakers"],
+    "scenario_contexts": ["Delivering a Spanish 5.1 mix to a streaming service at its loudness spec", "Re-versioning a title for several territories on one platform", "QC of true-peak and integrated loudness before upload"]
+   },
+   "sources": ["EBU R128 (loudness normalization)", "ITU-R BS.1770 (loudness measurement)", "Holman, 'Sound for Film and Television'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "24571d7c-ab8e-4801-882c-7c77ceae9352",
+   "term": "Localized theatrical mix",
+   "fields": {
+    "definition": "A theatrical (cinema) re-recording of a program's soundtrack adapted for a specific language or territory, calibrated to theatrical reference monitoring (about 85 dB SPL per channel with the cinema X-curve response) and combining dubbed dialogue with the original music-and-effects (M&E).",
+    "plain_english": "This is the movie-theater version of the sound, redone in another language. It is set up to be loud and full for a big cinema room. New spoken lines sit over the original music and sound effects.",
+    "purpose_function": "It recreates the cinema soundtrack in another language at theatrical standards so foreign-market audiences get the intended large-room presentation.",
+    "practical_application": "On a calibrated dubbing stage, the mixer places dubbed dialogue over the original M&E and prints the localized theatrical version for DCP mastering.",
+    "category": "Localization Deliverable",
+    "related_terms": ["Localized printmaster", "M&E stem", "X-curve", "Dubbing stage", "Theatrical reference level", "ADR"],
+    "common_mistakes": ["Mixing a theatrical-bound dub on near-field monitors instead of a calibrated stage", "Ignoring the X-curve and theatrical reference level when judging brightness and level", "Letting dubbed dialogue drift away from the original balance"],
+    "scenario_contexts": ["Producing the Italian theatrical dub of a feature for cinema release", "Re-recording localized dialogue on a calibrated dubbing stage", "Delivering a localized DCP audio master"]
+   },
+   "sources": ["Holman, 'Sound for Film and Television'", "SMPTE ST 202 / ISO 2969 (theatrical B-chain / X-curve)", "Yewdall, 'Practical Art of Motion Picture Sound'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "eac3b33a-5369-443e-aa9f-1d539e1845da",
+   "term": "Localized-delivery package",
+   "fields": {
+    "definition": "The complete set of audio deliverables assembled to release a program in a specific language or territory—typically the localized final mixes and printmasters, the music-and-effects (M&E) and stems, and the accompanying metadata and QC/configuration documentation.",
+    "plain_english": "This is the full set of sound files sent out for one language or country. It holds the finished mixes, the music-and-effects track, and notes about each file. Studios use it so a show can be released in that place.",
+    "purpose_function": "It bundles everything a distributor needs for one territory so the correct mixes, source stems, and documentation travel together and match the client's spec.",
+    "practical_application": "A post supervisor assembles the localized printmasters/mixes, M&E, stems, and metadata into one organized package that conforms to the delivery specification.",
+    "category": "Localization Deliverable",
+    "related_terms": ["Localized printmaster", "M&E stem", "Deliverables specification", "Stems", "Metadata", "QC report"],
+    "common_mistakes": ["Omitting the M&E or a required stem set from the package", "Inconsistent file naming or metadata versus the delivery spec", "Delivering the wrong channel layout or loudness variant for the territory"],
+    "scenario_contexts": ["Compiling the French-territory audio package for a distributor", "Cross-checking a localized package against a studio delivery spec", "Archiving a per-territory package for later re-versioning"]
+   },
+   "sources": ["Holman, 'Sound for Film and Television'", "SMPTE ST 2067 (IMF) family", "Yewdall, 'Practical Art of Motion Picture Sound'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "281f2319-25b3-4d4c-a6b9-0591c00250a9",
+   "term": "Looping asset",
+   "fields": {
+    "definition": "A recorded ADR (automated dialogue replacement, historically called 'looping') element—an individual replacement line or a loop-group recording—delivered as a discrete, reusable media asset for dialogue editing and the final mix.",
+    "plain_english": "Looping is when actors re-record their lines in a quiet studio. It is also called ADR. A looping asset is one of those recorded lines, saved as a file for the mix.",
+    "purpose_function": "It supplies clean, controlled replacement dialogue to fix unusable production sound or add lines, giving editors and mixers reusable material.",
+    "practical_application": "A dialogue editor imports the ADR or loop-group recordings, syncs each line to picture, and hands the assets to the re-recording mixer for the dialogue stem.",
+    "category": "ADR / Dialogue",
+    "related_terms": ["ADR", "Loop group", "Walla", "Dialogue editing", "Production dialogue", "M&E stem"],
+    "common_mistakes": ["Assuming 'looping' and 'ADR' are different processes—they are the same", "Poor sync or mismatched room tone between the looping asset and the scene", "Not labeling assets by character and line, which slows the edit"],
+    "scenario_contexts": ["Replacing a noisy on-set line with an ADR looping asset", "Adding loop-group crowd walla to a stadium scene", "Delivering character ADR takes to the dialogue editor"]
+   },
+   "sources": ["Purcell, 'Dialogue Editing for Motion Pictures'", "Yewdall, 'Practical Art of Motion Picture Sound'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1c8d8401-ce86-463b-8603-66b774894330",
+   "term": "Low-frequency enhancement",
+   "fields": {
+    "definition": "The dedicated, band-limited low-frequency channel in a surround deliverable—the '.1' of formats such as 5.1 and 7.1—designated LFE (Low-Frequency Effects in film; also expanded 'low frequency enhancement' in ITU domestic-system terminology), carrying high-level low-frequency content of roughly 20–120 Hz reproduced by the subwoofer.",
+    "plain_english": "This is the deep-bass channel in surround sound, the '.1' in 5.1. It carries the low rumble you feel, like explosions or thunder. A subwoofer plays it.",
+    "purpose_function": "It carries high-level, band-limited bass on its own channel so the main channels are not overdriven and impactful low-frequency content is reproduced by a subwoofer.",
+    "practical_application": "The mixer routes and meters LFE content within the format's band limit and level standard, and confirms bass management and channel order match the delivery spec.",
+    "category": "Surround Channel",
+    "related_terms": ["LFE", "Bass management", "5.1 surround", "Subwoofer", "Printmaster", "Channel layout"],
+    "common_mistakes": ["Confusing the LFE (.1) channel with full-range low bass in the main channels", "Overloading LFE and exceeding the format's headroom and level standard", "Wrong channel-order mapping so LFE lands on the wrong track"],
+    "scenario_contexts": ["Setting LFE level and low-pass for a 5.1 printmaster", "Checking bass management on the monitoring system", "Verifying LFE routing against a delivery channel map"]
+   },
+   "sources": ["ITU-R BS.775 (multichannel sound / LFE channel)", "Dolby technical documentation (5.1 / LFE)", "Holman, 'Sound for Film and Television'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5b915deb-4ffe-41b3-be9d-8c54e561abec",
+   "term": "Mastering review room",
+   "fields": {
+    "definition": "A calibrated, acoustically controlled listening room used to audition and quality-check finished masters and deliverables before release, with monitoring level and response aligned to the applicable delivery standard so evaluations are consistent and repeatable.",
+    "plain_english": "This is a carefully set-up listening room. A team plays the finished sound here to check it before it ships. The speakers and volume are tuned to a set standard so everyone hears it the same way.",
+    "purpose_function": "It provides a trusted, standardized listening environment so finished masters can be evaluated and approved with consistent, repeatable results.",
+    "practical_application": "QC and mastering staff play back deliverables at calibrated level and response to catch loudness, sync, dropout, and channel errors before sign-off.",
+    "category": "Facility / Monitoring",
+    "related_terms": ["Calibration", "Reference level", "Monitoring", "QC report", "Printmaster", "Room acoustics"],
+    "common_mistakes": ["Judging masters on uncalibrated speakers or at an inconsistent level", "Skipping full-length playback and missing dropouts or sync errors", "UNSAFE: Reviewing for long stretches at high SPL without breaks, risking noise-induced hearing loss (observe OSHA 1910.95 exposure limits)"],
+    "scenario_contexts": ["Final QC of a feature's printmaster before delivery", "Comparing localized versions for level and balance consistency", "Signing off a master after calibrated playback"]
+   },
+   "sources": ["SMPTE ST 202 / ISO 2969 (monitoring alignment)", "Holman, 'Sound for Film and Television'", "OSHA 29 CFR 1910.95 (occupational noise exposure)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f6969d30-639f-466f-8e3b-c3cfa1201989",
+   "term": "Material-based footsteps",
+   "fields": {
+    "definition": "Foley footstep performances (or selected library steps) chosen and executed to match the surface material a character walks on—for example wood, concrete, gravel, grass, or metal—so the step sounds correspond to the on-screen ground.",
+    "plain_english": "These are footstep sounds picked to match the ground on screen. A wood floor, gravel, and grass each sound different. Foley artists walk on the right surface so the steps fit the picture.",
+    "purpose_function": "It makes footsteps believable by matching their timbre to the on-screen surface, reinforcing realism and a character's presence in the space.",
+    "practical_application": "A Foley artist selects the right shoe and walks the performance on a matching surface pit (wood, concrete, gravel, and so on), recorded in sync to picture for the Foley/effects stem.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Footsteps", "Foley pit", "M&E stem", "Sound effects editing", "Sync to picture"],
+    "common_mistakes": ["Using one generic footstep sound regardless of the surface on screen", "Mismatched shoe or surface so the steps read as fake", "Poor sync between the step performance and the picture"],
+    "scenario_contexts": ["Performing gravel footsteps for an exterior walking scene", "Building a Foley footstep pass across changing surfaces", "Delivering material-matched footsteps in the Foley stem for the M&E"]
+   },
+   "sources": ["Ament, 'The Foley Grail'", "Yewdall, 'Practical Art of Motion Picture Sound'"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

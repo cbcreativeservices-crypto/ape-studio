@@ -1,0 +1,159 @@
+{
+ "batch": 185,
+ "topic": "Podcast Production",
+ "authored": [
+  {
+   "id": "2e7556d6-25b4-4f32-9fb9-d8c59f0f5f77",
+   "term": "HiFi-GAN",
+   "fields": {
+    "definition": "HiFi-GAN is a neural vocoder built on a generative adversarial network (GAN) that converts a mel-spectrogram into a raw audio waveform for high-fidelity speech synthesis. Introduced in 2020, it pairs a generator with multi-period and multi-scale discriminators to model the periodic patterns of speech, producing near-human-quality audio far faster than real time.",
+    "plain_english": "HiFi-GAN is an AI tool that turns a sound picture, called a spectrogram, into real audio you can hear. It is trained to make computer voices sound clear and natural, and it runs very fast. Think of it as the last step that gives a synthetic voice its lifelike sound.",
+    "purpose_function": "It exists to generate the final audio waveform in a text-to-speech pipeline, taking the acoustic features an earlier model predicts and rendering them as clean, natural-sounding speech quickly enough for practical use.",
+    "practical_application": "A podcast producer meets HiFi-GAN inside AI voice and dubbing tools, where it is the vocoder stage that turns a synthesized voice's spectrogram into the finished audio used for narration, corrections, or synthetic hosts.",
+    "category": "Speech Synthesis",
+    "related_terms": ["Neural vocoder", "Neural TTS", "Mel-spectrogram", "Text-to-speech", "Voice cloning", "Waveform"],
+    "common_mistakes": ["Thinking HiFi-GAN creates speech from text on its own; it only converts a mel-spectrogram into a waveform and needs an acoustic model in front of it", "Assuming a vocoder trained on one voice or sample rate will sound just as good on another without fine-tuning", "Confusing the GAN vocoder with the whole text-to-speech system"],
+    "scenario_contexts": ["Generating a synthetic narrator voice inside an AI text-to-speech plugin", "Rendering corrected words in an overdub tool so they blend with the original recording", "Producing a cloned host voice for automated podcast intros"]
+   },
+   "sources": ["Kong, Kim & Bae, 'HiFi-GAN: Generative Adversarial Networks for Efficient and High Fidelity Speech Synthesis', NeurIPS 2020", "Shen et al., 'Natural TTS Synthesis by Conditioning WaveNet on Mel Spectrogram Predictions' (Tacotron 2), IEEE ICASSP 2018"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5f653dac-6284-48d9-8576-942135839741",
+   "term": "Ingest room",
+   "fields": {
+    "definition": "An ingest room is a space in a media production facility that houses the ingest stations used to capture, digitize, and import incoming audio and video into the facility's shared storage and media asset management (MAM) system. It is where recorded or live source material is quality-checked, tagged with metadata, and made available for editing and production.",
+    "plain_english": "An ingest room is where a studio brings raw recordings into its computers and storage. Staff load or record the material, label it, and check it is clean before anyone edits it. Think of it as the loading dock where all the audio and video first comes in.",
+    "purpose_function": "It exists to get source media into the production system reliably, with the correct format, file naming, and metadata, so the material is ready and easy to find for later editing.",
+    "practical_application": "A technician in an ingest room captures feeds from recorders, cameras, or remote links, confirms levels and file integrity, and imports the files into shared storage so editors can start work.",
+    "category": "Production Facility",
+    "related_terms": ["Media-management room", "Media asset management", "Metadata", "Post-production", "News studio", "Mobile production unit"],
+    "common_mistakes": ["Skipping metadata and clear file naming at ingest, which makes clips almost impossible to find later", "Ingesting at the wrong sample rate, bit depth, or format and creating sync or quality problems downstream", "Assuming ingest is just copying files, when it also includes quality-checking and logging the material"],
+    "scenario_contexts": ["Importing field recordings from an interview shoot into shared storage", "Digitizing older tape archives into files for a documentary podcast", "Capturing an incoming remote feed and tagging it before an editor pulls it up"]
+   },
+   "sources": ["EBU, 'The Dynamic Media Facility: Reference Architecture' white paper (ingest as a media function)", "Ballou (ed.), 'Handbook for Sound Engineers' (broadcast facility and file-based workflow)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "58c16408-1b5b-406b-9bc7-98ae900bf8b5",
+   "term": "Interview studio",
+   "fields": {
+    "definition": "An interview studio is an acoustically treated room set up to record conversations between a host and one or more guests, equipped with individual microphones, headphones, and often cameras. It is designed for controlled, low-noise capture with each participant on a separate channel.",
+    "plain_english": "An interview studio is a quiet, sound-treated room built for recording people talking together. Each person gets a mic and headphones, so their voices stay clear and separate. It is like a small meeting room, but tuned so voices sound clean and free of echo.",
+    "purpose_function": "It exists to capture clear, separate recordings of each speaker in a controlled acoustic space, giving the editor clean tracks to balance and process.",
+    "practical_application": "A podcast engineer sets up an interview studio by placing a mic and headphones for each guest, routing every mic to its own channel, and checking levels and room noise before the conversation starts.",
+    "category": "Production Facility",
+    "related_terms": ["News studio", "Multitrack recording", "Acoustic treatment", "Microphone", "Ingest room", "Mobile production unit"],
+    "common_mistakes": ["Recording all speakers to one shared channel, which removes the ability to fix one person's level or tone later", "Ignoring room acoustics and capturing echo or HVAC noise that cannot be cleaned up afterward", "Forgetting headphones or spill control, so mics pick up each other and cause phase problems"],
+    "scenario_contexts": ["Recording a two-guest interview with each person on a separate track", "Tracking a guest locally in the studio while the host sits in the same room", "Setting mic levels and checking background noise before a live-to-tape session"]
+   },
+   "sources": ["Ballou (ed.), 'Handbook for Sound Engineers' (studio acoustics and broadcast facility design)", "Yamaha, 'Sound Reinforcement Handbook' (microphone technique and room acoustics)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5ba34a15-3373-49c7-848a-607aff2456d4",
+   "term": "Media-management room",
+   "fields": {
+    "definition": "A media-management room is the facility space where staff operate the systems that store, catalog, move, and archive a production's media assets, typically centered on a media asset management (MAM) system and shared storage. It is where files are organized, backed up, transcoded, and tracked through their lifecycle.",
+    "plain_english": "A media-management room is where a studio keeps track of all its audio and video files. Staff there store, label, back up, and archive the material so nothing gets lost. Think of it as the library and filing office for everything the studio records.",
+    "purpose_function": "It exists to keep a production's growing library of files organized, safely backed up, and easy to search, so the right version of any asset can be found and reused.",
+    "practical_application": "A media manager uses this room to check files into the MAM, run backups and transcodes, archive finished projects to free up fast storage, and make sure editors can locate assets.",
+    "category": "Production Facility",
+    "related_terms": ["Media asset management", "Ingest room", "Metadata", "Archive", "Network operations center", "Post-production"],
+    "common_mistakes": ["Treating storage as unlimited and never archiving, so fast drives fill up and the whole workflow slows", "Relying on a single copy with no backup, risking permanent loss of recordings", "Letting file naming and metadata drift, which makes assets impossible to find later"],
+    "scenario_contexts": ["Archiving a finished season to long-term storage to free up working drives", "Restoring an older episode's project files for a re-edit", "Running nightly backups of a shared media library"]
+   },
+   "sources": ["EBU, 'The Dynamic Media Facility: Reference Architecture' white paper (media functions and asset handling)", "Ballou (ed.), 'Handbook for Sound Engineers' (broadcast facility and storage workflow)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b4fcd732-45d0-43ce-a9d6-cf125fed3901",
+   "term": "Mobile production unit",
+   "fields": {
+    "definition": "A mobile production unit is a vehicle or transportable rig fitted out as a complete production facility, containing mixing, recording, monitoring, and signal-routing equipment so a crew can capture and produce content on location. It is the outside-broadcast equivalent of a fixed control room, brought to events away from the studio.",
+    "plain_english": "A mobile production unit is a truck or van built to work like a studio on wheels. It carries the mixers, recorders, and screens a crew needs to record and produce a show at an event. Think of it as a control room you can drive to wherever the action is.",
+    "purpose_function": "It exists to bring full production and monitoring capability to remote locations, letting a crew record, mix, and sometimes broadcast an event that cannot be brought into a fixed studio.",
+    "practical_application": "An engineer uses a mobile production unit to patch in mics and feeds from a venue, mix and record the show inside the vehicle, and send finished audio to a recorder or transmission link.",
+    "category": "Production Facility",
+    "related_terms": ["Network operations center", "Ingest room", "Remote production", "Signal routing", "Interview studio", "Live broadcast"],
+    "common_mistakes": ["Assuming venue power is clean and adequate instead of checking the supply and grounding before connecting gear", "UNSAFE: Running cables across walkways or tying into mains power without proper protection and bonding, creating trip and shock hazards", "Underestimating cable runs and channel counts, then arriving without enough infrastructure for the site"],
+    "scenario_contexts": ["Recording a live podcast or concert from the venue's parking area", "Producing a multi-guest event on location with the mix done inside the truck", "Feeding a remote link back to the main studio from a sports or news event"]
+   },
+   "sources": ["SMPTE / EBU technical documentation on remote and outside-broadcast production (e.g., SMPTE ST 2110 IP media transport)", "Ballou (ed.), 'Handbook for Sound Engineers' (remote/facility systems); NFPA 70 (NEC) and OSHA 29 CFR 1910 for temporary power and grounding"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "85bded86-6832-4c7c-82f0-4082016bdecf",
+   "term": "Network operations center",
+   "fields": {
+    "definition": "A network operations center (NOC) is a centralized room from which staff continuously monitor and control a broadcaster's or network's distribution, transmission, and IT infrastructure. Operators watch signal quality, system health, and alarms, and respond to faults to keep content flowing to the audience.",
+    "plain_english": "A network operations center, or NOC, is a control room where staff watch over a network's signals and systems around the clock. Screens show them what is working and warn them when something breaks. Think of it as the mission control that keeps shows reaching listeners and viewers.",
+    "purpose_function": "It exists to give one place with full visibility of the delivery chain, so problems are spotted and fixed quickly and content keeps reaching the audience without interruption.",
+    "practical_application": "NOC operators watch monitoring dashboards and alarms for streams, feeds, and servers, log incidents, and either fix issues remotely or dispatch engineers when a signal or system fails.",
+    "category": "Production Facility",
+    "related_terms": ["Media-management room", "Mobile production unit", "Distribution", "Signal monitoring", "Ingest room", "Playout"],
+    "common_mistakes": ["Confusing a NOC with a production control room; a NOC monitors delivery and infrastructure, not the creative mix", "Ignoring or silencing alarms instead of investigating them, letting small faults grow into outages", "Assuming monitoring alone fixes problems, when clear escalation and response steps are what actually restore service"],
+    "scenario_contexts": ["Monitoring around the clock that all live streams and feeds stay online", "Catching a failing encoder from an alarm and switching to a backup", "Coordinating with an on-site engineer during a transmission fault"]
+   },
+   "sources": ["EBU, 'The Dynamic Media Facility: Reference Architecture' white paper (distribution and monitoring functions)", "Ballou (ed.), 'Handbook for Sound Engineers' (broadcast distribution and facility operations)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8a335f96-e183-46a7-b31d-f39710d0de1d",
+   "term": "Neural TTS",
+   "fields": {
+    "definition": "Neural TTS (text-to-speech) is speech synthesis that uses deep neural networks to convert written text into natural-sounding spoken audio. A typical system first predicts acoustic features such as a mel-spectrogram from the text, then a neural vocoder turns those features into a waveform.",
+    "plain_english": "Neural TTS is technology that reads text out loud using AI-trained voices. Instead of stitching together recorded clips, it learns from lots of speech to make a voice that sounds natural. It is what lets an app turn a written script into a smooth, human-like voice.",
+    "purpose_function": "It exists to produce speech from text that sounds natural and expressive, replacing older robotic methods so synthetic voices are pleasant and easy to understand.",
+    "practical_application": "A podcast producer uses neural TTS to generate narration, ad reads, or a synthetic host voice from a script, then edits the timing and pronunciation to fit the show.",
+    "category": "Speech Synthesis",
+    "related_terms": ["Neural vocoder", "HiFi-GAN", "Mel-spectrogram", "Voice cloning", "Text-to-speech", "Prosody"],
+    "common_mistakes": ["Thinking neural TTS understands meaning; it predicts sound from text and can still mispronounce names or stress words wrongly", "Expecting perfect output with no editing, when pronunciation, pacing, and emphasis often need manual fixes", "Confusing the full TTS system with the vocoder, which is only the final waveform-generating stage"],
+    "scenario_contexts": ["Turning a written script into a narrated segment", "Generating consistent ad reads across many episodes", "Creating a synthetic voice for automated show intros and outros"]
+   },
+   "sources": ["Shen et al., 'Natural TTS Synthesis by Conditioning WaveNet on Mel Spectrogram Predictions' (Tacotron 2), IEEE ICASSP 2018", "Tan et al. (Microsoft Research), 'A Survey on Neural Speech Synthesis' / ICASSP neural speech synthesis tutorial"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d1f8cc07-8163-411d-92bb-9d142485ea64",
+   "term": "Neural vocoder",
+   "fields": {
+    "definition": "A neural vocoder is a deep neural network that generates a time-domain audio waveform from a compact acoustic representation, most often a mel-spectrogram. It is the final stage of modern speech-synthesis pipelines, replacing traditional signal-processing vocoders to produce more natural audio.",
+    "plain_english": "A neural vocoder is an AI model that builds real, hearable audio from a compressed sound picture like a spectrogram. It learns from lots of recordings how a natural voice should sound. It is the part that gives a computer voice its final, lifelike audio.",
+    "purpose_function": "It exists to reconstruct high-quality audio waveforms from acoustic features, giving text-to-speech and voice tools natural sound that older rule-based vocoders could not match.",
+    "practical_application": "A producer encounters neural vocoders inside AI voice, dubbing, and voice-cloning tools, where they render the final audio from features an acoustic model predicts; well-known examples include WaveNet and HiFi-GAN.",
+    "category": "Speech Synthesis",
+    "related_terms": ["HiFi-GAN", "Neural TTS", "Mel-spectrogram", "Voice cloning", "Text-to-speech", "Waveform"],
+    "common_mistakes": ["Confusing a neural vocoder with a classic music vocoder effect; here it means an AI model that generates a speech waveform", "Assuming the vocoder alone makes speech from text, when it needs an acoustic model to supply the features", "Expecting one trained vocoder to handle any voice or sample rate without fine-tuning"],
+    "scenario_contexts": ["Producing the final audio in an AI text-to-speech tool", "Rendering a cloned voice for narration", "Regenerating clean audio for corrected words in an overdub editor"]
+   },
+   "sources": ["Kong, Kim & Bae, 'HiFi-GAN: Generative Adversarial Networks for Efficient and High Fidelity Speech Synthesis', NeurIPS 2020", "Shen et al., 'Natural TTS Synthesis by Conditioning WaveNet on Mel Spectrogram Predictions' (Tacotron 2), IEEE ICASSP 2018"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e51d0933-2fed-4a2d-8a4e-101e5e9edf85",
+   "term": "News studio",
+   "fields": {
+    "definition": "A news studio is an acoustically controlled broadcast studio built to produce news programs, typically featuring an anchor desk, presenter microphones, multiple cameras, lighting, and links to a control room. It is designed for clear speech capture and reliable, repeatable live or recorded production.",
+    "plain_english": "A news studio is the room where news shows are made, with a desk, cameras, lights, and mics for the presenters. It is sound-treated so voices come through clearly for live or recorded programs. Think of the familiar set where a news anchor sits and reads the headlines.",
+    "purpose_function": "It exists to provide a controlled, camera- and mic-ready space for presenting news reliably, capturing clean speech and feeding a control room for live or recorded output.",
+    "practical_application": "An audio technician in a news studio sets presenter mics (often lavalier or headset), manages levels and background noise, and sends the mix to the control room for broadcast or recording.",
+    "category": "Production Facility",
+    "related_terms": ["Interview studio", "Ingest room", "Acoustic treatment", "Microphone", "Mobile production unit", "Live broadcast"],
+    "common_mistakes": ["Letting studio HVAC or lighting noise into open mics instead of controlling the background noise", "Poor lavalier or headset mic placement causing rustle, popping, or uneven levels", "Ignoring acoustic treatment, so a bright, reflective set makes speech sound harsh or echoey"],
+    "scenario_contexts": ["Micing two anchors at a desk for a live bulletin", "Recording a scripted news segment to feed post-production", "Balancing presenter and guest levels during a live cross to a reporter"]
+   },
+   "sources": ["Ballou (ed.), 'Handbook for Sound Engineers' (broadcast studio design and acoustics)", "Yamaha, 'Sound Reinforcement Handbook' (studio acoustics and microphone technique)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

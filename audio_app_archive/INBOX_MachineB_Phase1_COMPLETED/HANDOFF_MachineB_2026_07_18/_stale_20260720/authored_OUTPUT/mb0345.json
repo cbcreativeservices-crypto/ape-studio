@@ -1,0 +1,325 @@
+{
+  "batch": 345,
+  "topic": "Strings, Guitar & Keys",
+  "authored": [
+    {
+      "id": "62b5fb2b-4698-4166-8c1e-0fbfb3fa27e6",
+      "term": "12-string jangle (chorus)",
+      "fields": {
+        "definition": "The bright, shimmering, chiming timbre of a twelve-string guitar, arising because its strings are arranged in six courses of two: the lower four courses pair the main string with one tuned an octave higher, and the upper two courses are paired in unison. Small, unavoidable differences in tuning, phase and decay between each paired string create a natural chorusing (beating) that gives the instrument its characteristic 'jangle.'",
+        "plain_english": "A 12-string guitar pairs each string with a second one tuned the same or an octave up. The two strings are never quite in tune, so they shimmer and ring together. That bright, ringing sound is the jangle. It acts like a built-in chorus effect.",
+        "purpose_function": "The doubled courses and their slight detuning are what set a twelve-string apart from a six-string, adding density and a lush, self-chorusing shimmer to chords and arpeggios. Understanding it explains why a 12-string sounds 'wide' without any effects pedal.",
+        "practical_application": "A technician records or mics a 12-string knowing the paired strings already provide chorus, so added chorus/detune effects are used sparingly, and careful tuning of each course is critical to keep the jangle sweet rather than sour.",
+        "category": "Guitar tone",
+        "related_terms": [
+          "Chorus effect",
+          "Course (paired strings)",
+          "Beating",
+          "Comb filtering",
+          "Rickenbacker 12-string",
+          "Arpeggio"
+        ],
+        "common_mistakes": [
+          "Adding a heavy chorus pedal on top of a 12-string, muddying the natural jangle instead of enhancing it.",
+          "Tuning only the main strings and ignoring the octave strings, so the courses beat harshly and sound out of tune.",
+          "Assuming a stereo double-track will sound the same as a real 12-string; the fixed octave pairing is what creates the effect."
+        ],
+        "scenario_contexts": [
+          "Tracking a jangly rhythm part on a Rickenbacker or Byrds-style pop record.",
+          "Miking an acoustic 12-string for a folk session where the shimmer must stay clean.",
+          "Tuning a 12-string before a take so each octave course rings in tune."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "Grove Dictionary of Music and Musicians — 'Guitar' / 'Twelve-string guitar'",
+        "Huber & Runstein, Modern Recording Techniques (Focal Press)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "50eb0998-dd33-4187-b2b2-8b12d4ef347f",
+      "term": "Acoustic-guitar feedback",
+      "fields": {
+        "definition": "A sustained, self-reinforcing oscillation, typically a low-frequency howl, that occurs when an amplified or miked acoustic guitar's hollow body is re-excited at its main air-cavity (Helmholtz) resonance by sound arriving from loudspeakers or stage monitors, closing an acoustic feedback loop through the sound system.",
+        "plain_english": "When an amplified acoustic guitar sits in front of a speaker, sound from the speaker can shake its hollow body. The body rings back, the speaker makes it louder, and the sound builds into a loud howl. This runaway loop is called feedback.",
+        "purpose_function": "Recognizing acoustic-guitar feedback matters because the guitar's body resonance makes it feed back far more easily than a solid-body electric, so controlling it is essential to reaching usable stage volume without a constant howl.",
+        "practical_application": "A technician fights it by fitting a soundhole cover, notching the offending resonant frequency (often around 90-110 Hz) with EQ, keeping the guitar out of monitor beams, and lowering overall stage level.",
+        "category": "Live sound issue",
+        "related_terms": [
+          "Acoustic feedback",
+          "Helmholtz resonance",
+          "Soundhole cover",
+          "Notch filter",
+          "Stage monitor",
+          "Piezo pickup"
+        ],
+        "common_mistakes": [
+          "UNSAFE: Cranking monitors or the PA to overcome feedback, risking loudspeaker/tweeter damage and hearing injury from the sudden howl.",
+          "Rolling off all the low end to stop feedback and leaving the guitar thin, instead of notching the single resonant frequency.",
+          "Pointing the guitar's soundhole straight at a wedge monitor, which excites the body resonance directly."
+        ],
+        "scenario_contexts": [
+          "A singer-songwriter's amplified dreadnought howls at low volume on a small stage.",
+          "Soundcheck where a piezo-equipped acoustic feeds back as monitor level is raised.",
+          "A loud band setting where the acoustic guitarist stands close to a floor wedge."
+        ]
+      },
+      "sources": [
+        "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+        "Sound on Sound, 'Preventing Acoustic Feedback On Stage'",
+        "Ballou, Handbook for Sound Engineers (Focal Press)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "9a6fee10-96ec-4ea1-a4bf-9644d13c3159",
+      "term": "Bachi slap-attack",
+      "fields": {
+        "definition": "The sharp, percussive component of a shamisen note produced when the string is struck with the bachi, a large plectrum whose downward stroke drives the string onto, and strikes, the skin-covered body (kawa). Prominent in tsugaru-jamisen playing, it adds a drum-like 'slap' transient to the pitched tone.",
+        "plain_english": "The shamisen is a Japanese string instrument played with a big pick called a bachi. The player strikes the string and the skin-covered body at the same time. This adds a sharp, drum-like slap to the front of each note.",
+        "purpose_function": "The slap-attack is central to the driving, percussive style of tsugaru-jamisen, giving each note a strong rhythmic punch that carries a melody and a beat at once. It exists because the bachi hits the skin as well as the string.",
+        "practical_application": "When recording shamisen, a technician expects a loud transient 'thwack' from the bachi hitting the skin and sets levels with extra headroom, often close-miking to catch both the string tone and the percussive slap.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Bachi (plectrum)",
+          "Shamisen",
+          "Tsugaru-jamisen",
+          "Transient",
+          "Percussive attack",
+          "Kawa (skin head)"
+        ],
+        "common_mistakes": [
+          "Treating the slap 'thwack' as unwanted noise and gating or EQ-ing it out, removing the sound that defines the style.",
+          "Setting record levels too hot and clipping on the sharp bachi transient.",
+          "Confusing the bachi with a small guitar pick; it is a large, fan-shaped plectrum that also strikes the body."
+        ],
+        "scenario_contexts": [
+          "Recording a solo tsugaru-jamisen performance with strong percussive attacks.",
+          "Miking a shamisen in a fusion band where the slap must cut through a drum kit.",
+          "Balancing a traditional Japanese ensemble where the shamisen's attack marks the rhythm."
+        ]
+      },
+      "sources": [
+        "Grove Dictionary of Music and Musicians — 'Shamisen'",
+        "Grove Dictionary of Musical Instruments — 'Bachi'"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "519ef69c-a78a-4983-b155-e68494986d0f",
+      "term": "Balalaika brrr-strum",
+      "fields": {
+        "definition": "The rapid, rattling strummed sound characteristic of balalaika right-hand technique, in which the index finger (or the whole hand) brushes the strings quickly back and forth in fast up-and-down strokes and rattles, producing a continuous, tremolo-like 'brrr' across the courses.",
+        "plain_english": "The balalaika is a Russian instrument with a triangle-shaped body. Players brush the strings fast with one finger, going back and forth. This makes a quick rattling 'brrr' sound, a bit like a drum roll on strings.",
+        "purpose_function": "This rattling strum lets a small, short-sustaining instrument hold long chords and drive a fast dance rhythm, since rapid repeated strokes fill in the sound the way a tremolo does on a mandolin.",
+        "practical_application": "A technician miking a balalaika expects bursts of fast, bright transients from the strum and positions the mic to capture the rattle clearly without the picking hand overloading the input.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Balalaika",
+          "Tremolo",
+          "Strumming",
+          "Rasgueado",
+          "Transient",
+          "Course (paired strings)"
+        ],
+        "common_mistakes": [
+          "Mistaking the fast rattle for a recording fault or buzz and trying to 'clean' it out.",
+          "Miking too close so the rapid strokes sound clacky and lose the instrument's body tone.",
+          "Assuming a single slow strum can imitate the sustained 'brrr'; it needs continuous rapid strokes."
+        ],
+        "scenario_contexts": [
+          "Recording a Russian folk ensemble where the balalaika drives the rhythm with fast strumming.",
+          "Miking a solo balalaika holding a long, rattling chord under a melody.",
+          "Blending a balalaika into a film score cue that needs a driving folk texture."
+        ]
+      },
+      "sources": [
+        "Grove Dictionary of Music and Musicians — 'Balalaika'",
+        "Grove Dictionary of Musical Instruments — 'Balalaika'"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "a44f8704-132e-402b-b6cc-8a4eea1a5deb",
+      "term": "Banjo feedback",
+      "fields": {
+        "definition": "A sustained, self-reinforcing oscillation on an amplified or miked banjo in which sound from loudspeakers or monitors re-excites the tensioned drum-like head (membrane) and pot at their resonant frequencies, closing an acoustic feedback loop; the responsive membrane also makes the banjo prone to sympathetic ringing on stage.",
+        "plain_english": "A banjo has a tight, drum-like head. On a loud stage, sound from the speakers can make that head ring on its own. The speaker feeds it back louder until it turns into a howl or ring. This runaway loop is called feedback.",
+        "purpose_function": "Understanding banjo feedback matters because the drum head reacts strongly to stage sound, so a banjo can howl or ring uncontrollably before other instruments do, and controlling it protects both the mix and the gear.",
+        "practical_application": "A technician tames it by notching the resonant frequency with EQ, keeping the banjo head out of monitor and PA beams, muting the head lightly, and lowering stage volume rather than chasing gain.",
+        "category": "Live sound issue",
+        "related_terms": [
+          "Acoustic feedback",
+          "Banjo head",
+          "Notch filter",
+          "Stage monitor",
+          "Sympathetic resonance",
+          "Piezo pickup"
+        ],
+        "common_mistakes": [
+          "UNSAFE: Pushing PA or monitor gain to fight the ring, risking loudspeaker damage and hearing harm from a sudden loud howl.",
+          "Blaming the pickup when the untamed drum head is the resonating source.",
+          "Aiming the banjo head straight at a wedge monitor, exciting the membrane directly."
+        ],
+        "scenario_contexts": [
+          "A bluegrass band on a small stage where the amplified banjo rings between songs.",
+          "Soundcheck where the banjo howls as monitor level is raised.",
+          "A loud festival set with the banjo standing close to front-of-house speakers."
+        ]
+      },
+      "sources": [
+        "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "Sound on Sound, 'Preventing Acoustic Feedback On Stage'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "3b890ddd-e2aa-45b1-835e-2bf9ce7db442",
+      "term": "Banjo roll ping",
+      "fields": {
+        "definition": "The bright, sharp, bell-like attack of individual notes within a bluegrass banjo roll, a Scruggs-style three-finger pattern of arpeggiated, syncopated eighth notes, produced by picking with metal fingerpicks on a resonator banjo whose short sustain and strong high-frequency content make each plucked note 'ping.'",
+        "plain_english": "In bluegrass, banjo players pick fast, repeating patterns called rolls. Metal finger picks and the bright banjo make each note snap out clearly and quickly fade. That sharp, bell-like note is the 'ping.'",
+        "purpose_function": "The ping is what makes a banjo roll sound crisp and rhythmic rather than blurred; each note stands out because the banjo has little sustain and lots of high end, which is why rolls sound so distinct.",
+        "practical_application": "When recording bluegrass banjo, a technician places the mic to catch the bright ping without harshness and avoids heavy compression that would kill the attack and even out the roll's bounce.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Banjo roll",
+          "Scruggs style",
+          "Fingerpicks",
+          "Resonator banjo",
+          "Transient",
+          "Arpeggio"
+        ],
+        "common_mistakes": [
+          "Compressing the banjo hard and squashing the ping, so the roll loses its snap and drive.",
+          "Rolling off all the highs to reduce harshness and dulling the ping that defines the tone.",
+          "Confusing the right-hand roll pattern with the resulting 'ping' attack; the roll is the pattern, the ping is each note's sound."
+        ],
+        "scenario_contexts": [
+          "Tracking a fast bluegrass banjo break that must sit crisply over guitar and bass.",
+          "Miking a resonator banjo so each rolled note pings clearly in a mix.",
+          "Mixing a banjo roll where the engineer preserves the attack for rhythmic drive."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "Grove Dictionary of Music and Musicians — 'Banjo'"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "8908d725-5f2d-4261-871d-9ee78f612316",
+      "term": "Bar noise",
+      "fields": {
+        "definition": "The incidental scraping or friction noise made by the steel bar (or slide) as it moves along the strings of a lap-steel, pedal-steel, resonator or slide guitar; a mechanical, unpitched sound distinct from the notes being played, often captured by close mics or magnetic pickups.",
+        "plain_english": "Steel guitar players slide a smooth metal bar along the strings to change notes. The bar can scrape or squeak as it moves. That extra scraping sound, separate from the note, is called bar noise.",
+        "purpose_function": "Some bar noise is a natural, expressive part of steel and slide playing, but too much becomes distracting, so knowing its source lets a player or engineer keep the wanted character while controlling the rest.",
+        "practical_application": "A technician reduces excess bar noise by advising lighter bar pressure and wound-string care, and by using EQ or careful editing to tame the scrape without dulling the slide's natural glide.",
+        "category": "Playing artifact",
+        "related_terms": [
+          "Steel guitar",
+          "Slide guitar",
+          "Tone bar",
+          "String squeak",
+          "Palm muting",
+          "Pickup"
+        ],
+        "common_mistakes": [
+          "Treating all bar noise as a fault; a little is part of the authentic slide sound.",
+          "Pressing the bar too hard, which increases scraping and can also pull notes sharp.",
+          "Trying to fix heavy bar noise only with EQ instead of correcting technique at the source."
+        ],
+        "scenario_contexts": [
+          "Recording a pedal-steel overdub where excess bar scrape distracts from the melody.",
+          "Miking a bottleneck slide guitar that has expressive but noisy bar moves.",
+          "Editing a lap-steel take to reduce squeaks between slides."
+        ]
+      },
+      "sources": [
+        "Grove Dictionary of Music and Musicians — 'Steel guitar' / 'Hawaiian guitar'",
+        "Sound on Sound, recording slide/steel guitar technique"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "5da7d099-5d51-488c-9ac2-81a4fc3c80d0",
+      "term": "Bar vibrato (steel)",
+      "fields": {
+        "definition": "Vibrato on a steel guitar produced by rocking or oscillating the hand-held steel bar back and forth along the string's length over a stopped note, cyclically raising and lowering the pitch around the target pitch, rather than by bending or fretting the string.",
+        "plain_english": "On a steel guitar, the player holds a metal bar on the strings instead of pressing frets. Rocking the bar back and forth makes the pitch wobble a little above and below the note. That gentle, singing wobble is bar vibrato.",
+        "purpose_function": "Bar vibrato gives the steel guitar its vocal, crying, sustained quality, adding warmth and expression to long notes much as a singer's vibrato does, and it is a core part of the instrument's identity.",
+        "practical_application": "An engineer recording steel guitar preserves the natural pitch movement of bar vibrato and avoids pitch-correction tools that would fight it, while a player varies its width and speed to shape a phrase.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Steel guitar",
+          "Tone bar",
+          "Vibrato",
+          "Pitch bend",
+          "Portamento",
+          "Sustain"
+        ],
+        "common_mistakes": [
+          "Confusing bar vibrato with a whammy-bar wobble on an electric guitar; here the pitch changes by moving the bar on the string.",
+          "Applying automatic pitch correction that flattens the intentional pitch movement.",
+          "Rocking the bar too wide or too fast so the note sounds unstable rather than singing."
+        ],
+        "scenario_contexts": [
+          "Recording a pedal-steel ballad part where sustained notes need expressive vibrato.",
+          "Miking a lap-steel solo that relies on bar vibrato for its vocal quality.",
+          "Mixing a country track and choosing not to pitch-correct the steel's vibrato."
+        ]
+      },
+      "sources": [
+        "Grove Dictionary of Music and Musicians — 'Steel guitar'",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "0cc54f0b-170d-4afe-a067-d880b48f9dc7",
+      "term": "Bass string clank",
+      "fields": {
+        "definition": "The percussive, metallic 'clank' produced on a bass guitar (or double bass) when the vibrating strings strike the frets or fingerboard, resulting from hard plucking, slapping and popping, or low string action, and adding a sharp attack transient on top of the fundamental note.",
+        "plain_english": "On a bass, the thick strings can smack against the metal frets. This happens with hard picking, slapping, or very low string height. It makes a hard, metallic 'clank' along with the note.",
+        "purpose_function": "A controlled amount of clank adds attack and definition that helps a bass cut through a dense mix, but excess clank buries the pitch, so understanding its cause lets a player or tech dial in the right balance.",
+        "practical_application": "A technician manages clank by adjusting string action and relief on the bass, changing pluck strength or hand position, and using EQ or gentle compression to keep the click without losing the low fundamental.",
+        "category": "Playing artifact",
+        "related_terms": [
+          "Slap bass",
+          "Fret buzz",
+          "String action",
+          "Attack transient",
+          "Neck relief",
+          "Compression"
+        ],
+        "common_mistakes": [
+          "Setting the action so low that the strings clank on every note instead of only when intended.",
+          "Trying to remove clank entirely with EQ and leaving the bass dull and lost in the mix.",
+          "Confusing musical slap clank with a genuine fret-buzz fault caused by bad setup."
+        ],
+        "scenario_contexts": [
+          "Recording a funk slap-bass line where controlled clank gives the groove its snap.",
+          "Setting up a bass so it stops clanking unintentionally on softer passages.",
+          "Mixing a rock track and shaping the bass attack so it drives without excess click."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "Ballou, Handbook for Sound Engineers (Focal Press)",
+        "Huber & Runstein, Modern Recording Techniques (Focal Press)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

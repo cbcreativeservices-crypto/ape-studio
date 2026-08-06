@@ -305,7 +305,158 @@ export function FoundationsPlaygroundScreen() {
       <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
         {!engineReady ? <EngineGate state={gate} /> : null}
 
-        {/* ── SOURCE ─────────────────────────────────────────────────────── */}
+        {/* LEVEL (dBFS · relative) — ABOVE the displays (owner 2026-08-05). */}
+        <Pressable onLongPress={() => help('amplitude')} delayLongPress={260}>
+          <LevelMeterBar levelDb={levelDb} minDb={-48} maxDb={-16} />
+        </Pressable>
+
+        {/* ── THE VIEWS at the TOP — all driven by the same settings ─────── */}
+        <View
+          style={styles.panelCard}
+          onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 24)}
+        >
+          {width > 0 ? (
+            viz ? (
+              <PlaygroundViz
+                viz={viz}
+                width={width}
+                visHz={displayVisHz}
+                amp={0.25 + amp01 * 0.75}
+                airMode={airMode}
+                running={playing}
+                lambdaPx={airLambdaPx}
+              />
+            ) : (
+              <VizUnavailableCard />
+            )
+          ) : null}
+          <ConceptBadge />
+          <DisplayGuideButton onPress={() => help('waveform')} />
+          {width > 0 && viz ? (
+            source === 'sweep' ? (
+              <Text style={styles.caption}>
+                Sweep is a moving tone — the waveform and spectrum drawings pause (a fixed frame
+                would misrepresent a signal that never holds still). Watch the air motion and the
+                level instead.
+              </Text>
+            ) : (
+              <>
+                <Text style={styles.winLabel}>WAVEFORM — pressure vs time (one “window” of the signal)</Text>
+                <viz.AnalyticWaveformView
+                  width={width}
+                  amps={amps}
+                  phasesDeg={phases}
+                  level={0.35 + amp01 * 0.65}
+                  noise={source === 'noise' ? noise : null}
+                />
+                <Text style={styles.winLabel}>
+                  SPECTRUM — which frequencies, how strong{eqCut > 0 ? ' (EQ curve applied)' : ''}{' '}
+                  · {source === 'noise' ? 'log axis 40 Hz–16 kHz' : `linear axis to ${13 * freq} Hz`}
+                </Text>
+                <viz.AnalyticSpectrumView
+                  width={width}
+                  f0={freq}
+                  amps={amps}
+                  gainDbAt={gainDbAt}
+                  noise={source === 'noise' ? noise : null}
+                />
+                <Text style={styles.badge}>
+                  ANALYTIC — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT (the measurement tools do
+                  the real thing)
+                </Text>
+              </>
+            )
+          ) : null}
+          <Pressable style={styles.readoutRow} onLongPress={() => help('readouts')} delayLongPress={260}>
+            {source === 'wave' ? (
+              <>
+                <Readout label="FREQUENCY" value={`${freq} Hz`} />
+                <Readout label="WAVELENGTH" value={`${(SPEED_OF_SOUND / freq).toFixed(2)} m`} />
+                <Readout label="PERIOD" value={`${((1 / freq) * 1000).toFixed(2)} ms`} />
+              </>
+            ) : source === 'sweep' ? (
+              <Readout label="SWEEP" value="100 Hz → 8 kHz" />
+            ) : (
+              <Readout label="CONTENT" value="broadband — no single pitch" />
+            )}
+          </Pressable>
+        </View>
+
+        {/* ── SIGNAL CONTROLS ────────────────────────────────────────────── */}
+        {source === 'wave' ? (
+          <>
+            <DragSlider value={freq01} onChange={setFreq01} label="FREQUENCY" readout={`${freq} Hz`} onHelp={() => help('frequency')} />
+            <View style={styles.chipRow}>
+              {RICHNESS.map((r) => (
+                <LabChip key={r.key} label={r.label} selected={keep === r.key} onPress={() => setKeep(r.key)} onLongPress={() => help('harmonics')} />
+              ))}
+            </View>
+            <View style={styles.chipRow}>
+              {PHASES.map((p) => (
+                <LabChip key={p} label={`PHASE ${p}°`} selected={phase === p} onPress={() => setPhase(p)} onLongPress={() => help('phase')} />
+              ))}
+              <LabChip
+                label={inverted ? 'POLARITY −' : 'POLARITY +'}
+                selected={inverted}
+                onPress={() => setInverted((v) => !v)}
+                onLongPress={() => help('polarity')}
+              />
+            </View>
+            <Text style={styles.caption}>
+              Phase shifts and polarity flips change the DRAWING but are inaudible on a single
+              mono source — hold that thought for Module 10, where two copies collide.
+            </Text>
+            {!additiveReady && engineReady ? (
+              <Text style={styles.caption}>
+                This dev build predates the additive engine — audio falls back to a pure sine;
+                the drawings stay exact.
+              </Text>
+            ) : null}
+          </>
+        ) : source === 'sweep' ? (
+          <Text style={styles.caption}>Sweeping 100 Hz → 8 kHz, repeating — listen to the pitch climb.</Text>
+        ) : (
+          <Text style={styles.caption}>
+            Noise is BROADBAND — every frequency at once, so there is no single pitch and the
+            particles jitter instead of waving. White = equal energy per Hz; pink −3 dB/oct;
+            brown −6 dB/oct.
+          </Text>
+        )}
+
+        <DragSlider value={lvl01} onChange={setLvl01} label="AMPLITUDE (LEVEL)" readout={`${levelDb} dBFS`} onHelp={() => help('amplitude')} levelTint />
+
+        {/* ── PROCESSING (v6 effects path) ───────────────────────────────── */}
+        <Text style={styles.sectionHead}>PROCESSING</Text>
+        <DragSlider
+          value={balance}
+          onChange={setBalance}
+          label="STEREO BALANCE"
+          readout={balance < 0.48 ? `L ${Math.round((0.5 - balance) * 200)}%` : balance > 0.52 ? `R ${Math.round((balance - 0.5) * 200)}%` : 'CENTER'}
+          onHelp={() => help('stereo_balance')}
+        />
+        <View style={styles.chipRow}>
+          {DELAYS.map((d) => (
+            <LabChip key={d.key} label={d.label} selected={delayMs === d.key} onPress={() => setDelayMs(d.key)} onLongPress={() => help('delay')} />
+          ))}
+        </View>
+        <View style={styles.chipRow}>
+          {EQ_CUTS.map((c) => (
+            <LabChip key={c.key} label={c.label} selected={eqCut === c.key} onPress={() => setEqCut(c.key)} onLongPress={() => help('eq')} />
+          ))}
+          {eqCut > 0
+            ? QS.map((q) => (
+                <LabChip key={q.key} label={q.label} selected={eqQ === q.key} onPress={() => setEqQ(q.key)} onLongPress={() => help('filter_q')} />
+              ))
+            : null}
+        </View>
+        {!fxReady && engineReady ? (
+          <Text style={styles.caption}>
+            Balance / delay / EQ audio need the v6+ effects build — the drawings below still
+            respond.
+          </Text>
+        ) : null}
+
+        {/* ── SOURCE — below the other controls, above PLAY (owner 2026-08-05). */}
         <Text style={styles.sectionHead}>SOURCE</Text>
         <View style={styles.chipRow}>
           {WAVES.map((wv) => (
@@ -348,79 +499,6 @@ export function FoundationsPlaygroundScreen() {
           ))}
         </View>
 
-        {source === 'wave' ? (
-          <>
-            <DragSlider value={freq01} onChange={setFreq01} label="FREQUENCY" readout={`${freq} Hz`} onHelp={() => help('frequency')} />
-            <View style={styles.chipRow}>
-              {RICHNESS.map((r) => (
-                <LabChip key={r.key} label={r.label} selected={keep === r.key} onPress={() => setKeep(r.key)} onLongPress={() => help('harmonics')} />
-              ))}
-            </View>
-            <View style={styles.chipRow}>
-              {PHASES.map((p) => (
-                <LabChip key={p} label={`PHASE ${p}°`} selected={phase === p} onPress={() => setPhase(p)} onLongPress={() => help('phase')} />
-              ))}
-              <LabChip
-                label={inverted ? 'POLARITY −' : 'POLARITY +'}
-                selected={inverted}
-                onPress={() => setInverted((v) => !v)}
-                onLongPress={() => help('polarity')}
-              />
-            </View>
-            <Text style={styles.caption}>
-              Phase shifts and polarity flips change the DRAWING but are inaudible on a single
-              mono source — hold that thought for Module 10, where two copies collide.
-            </Text>
-            {!additiveReady && engineReady ? (
-              <Text style={styles.caption}>
-                This dev build predates the additive engine — audio falls back to a pure sine;
-                the drawings stay exact.
-              </Text>
-            ) : null}
-          </>
-        ) : source === 'sweep' ? (
-          <Text style={styles.caption}>Sweeping 100 Hz → 8 kHz, repeating — listen to the pitch climb.</Text>
-        ) : (
-          <Text style={styles.caption}>
-            Noise is BROADBAND — every frequency at once, so there is no single pitch and the
-            particles jitter instead of waving. White = equal energy per Hz; pink −3 dB/oct;
-            brown −6 dB/oct.
-          </Text>
-        )}
-
-        <DragSlider value={lvl01} onChange={setLvl01} label="AMPLITUDE (LEVEL)" readout={`${levelDb} dBFS`} onHelp={() => help('amplitude')} />
-
-        {/* ── PROCESSING (v6 effects path) ───────────────────────────────── */}
-        <Text style={styles.sectionHead}>PROCESSING</Text>
-        <DragSlider
-          value={balance}
-          onChange={setBalance}
-          label="STEREO BALANCE"
-          readout={balance < 0.48 ? `L ${Math.round((0.5 - balance) * 200)}%` : balance > 0.52 ? `R ${Math.round((balance - 0.5) * 200)}%` : 'CENTER'}
-          onHelp={() => help('stereo_balance')}
-        />
-        <View style={styles.chipRow}>
-          {DELAYS.map((d) => (
-            <LabChip key={d.key} label={d.label} selected={delayMs === d.key} onPress={() => setDelayMs(d.key)} onLongPress={() => help('delay')} />
-          ))}
-        </View>
-        <View style={styles.chipRow}>
-          {EQ_CUTS.map((c) => (
-            <LabChip key={c.key} label={c.label} selected={eqCut === c.key} onPress={() => setEqCut(c.key)} onLongPress={() => help('eq')} />
-          ))}
-          {eqCut > 0
-            ? QS.map((q) => (
-                <LabChip key={q.key} label={q.label} selected={eqQ === q.key} onPress={() => setEqQ(q.key)} onLongPress={() => help('filter_q')} />
-              ))
-            : null}
-        </View>
-        {!fxReady && engineReady ? (
-          <Text style={styles.caption}>
-            Balance / delay / EQ audio need the v6+ effects build — the drawings below still
-            respond.
-          </Text>
-        ) : null}
-
         {/* ── PLAY ───────────────────────────────────────────────────────── */}
         {engineReady ? (
           <>
@@ -435,83 +513,6 @@ export function FoundationsPlaygroundScreen() {
           </>
         ) : null}
 
-        {/* ── THE VIEWS — all driven by the same settings ────────────────── */}
-        <View
-          style={styles.panelCard}
-          onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 24)}
-        >
-          {width > 0 ? (
-            viz ? (
-              <PlaygroundViz
-                viz={viz}
-                width={width}
-                visHz={displayVisHz}
-                amp={0.25 + amp01 * 0.75}
-                airMode={airMode}
-                running={playing}
-                lambdaPx={airLambdaPx}
-              />
-            ) : (
-              <VizUnavailableCard />
-            )
-          ) : null}
-          <ConceptBadge />
-          <DisplayGuideButton onPress={() => help('waveform')} />
-          {width > 0 && viz ? (
-            source === 'sweep' ? (
-              // A sweep is a MOVING tone — a fixed waveform/spectrum drawing
-              // would be a stale snapshot, so they pause. The air window above
-              // and the level below still track it.
-              <Text style={styles.caption}>
-                Sweep is a moving tone — the waveform and spectrum drawings pause (a fixed frame
-                would misrepresent a signal that never holds still). Watch the air motion and the
-                level instead.
-              </Text>
-            ) : (
-              <>
-                <Text style={styles.winLabel}>WAVEFORM — pressure vs time (one “window” of the signal)</Text>
-                <viz.AnalyticWaveformView
-                  width={width}
-                  amps={amps}
-                  phasesDeg={phases}
-                  level={0.35 + amp01 * 0.65}
-                  noise={source === 'noise' ? noise : null}
-                />
-                <Text style={styles.winLabel}>
-                  SPECTRUM — which frequencies, how strong{eqCut > 0 ? ' (EQ curve applied)' : ''}{' '}
-                  · {source === 'noise' ? 'log axis 40 Hz–16 kHz' : `linear axis to ${13 * freq} Hz`}
-                </Text>
-                <viz.AnalyticSpectrumView
-                  width={width}
-                  f0={freq}
-                  amps={amps}
-                  gainDbAt={gainDbAt}
-                  noise={source === 'noise' ? noise : null}
-                />
-                <Text style={styles.badge}>
-                  ANALYTIC — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT (the measurement tools do
-                  the real thing)
-                </Text>
-              </>
-            )
-          ) : null}
-          <Pressable onLongPress={() => help('amplitude')} delayLongPress={260}>
-            <LevelMeterBar levelDb={levelDb} minDb={-48} maxDb={-16} />
-          </Pressable>
-          <Pressable style={styles.readoutRow} onLongPress={() => help('readouts')} delayLongPress={260}>
-            {source === 'wave' ? (
-              <>
-                <Readout label="FREQUENCY" value={`${freq} Hz`} />
-                <Readout label="WAVELENGTH" value={`${(SPEED_OF_SOUND / freq).toFixed(2)} m`} />
-                <Readout label="PERIOD" value={`${((1 / freq) * 1000).toFixed(2)} ms`} />
-              </>
-            ) : source === 'sweep' ? (
-              <Readout label="SWEEP" value="100 Hz → 8 kHz" />
-            ) : (
-              <Readout label="CONTENT" value="broadband — no single pitch" />
-            )}
-          </Pressable>
-        </View>
       </ScrollView>
       </ScrollLockProvider>
 
@@ -573,7 +574,7 @@ const styles = StyleSheet.create({
   scroll: { padding: 16, paddingBottom: 30, gap: 12 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
   panelCard: {
     gap: 10,
@@ -583,7 +584,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#131316',
     padding: 12,
   },
-  winLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.1, color: colors.textSub },
+  winLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.1, color: colors.textSecondary },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
   readoutRow: { flexDirection: 'row', gap: 22, flexWrap: 'wrap' },
   readoutLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.1, color: colors.textSub },

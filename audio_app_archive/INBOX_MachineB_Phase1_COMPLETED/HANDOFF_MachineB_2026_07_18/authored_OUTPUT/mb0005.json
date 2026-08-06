@@ -1,0 +1,326 @@
+{
+ "batch": 5,
+ "topic": "Instrument Recording — Strings & Guitar",
+ "authored": [
+  {
+   "id": "14eeb028-525f-4523-bf2f-327e41bae6eb",
+   "term": "Expression-pedal input",
+   "fields": {
+    "definition": "A control input, wired as a 1/4-inch TRS (tip-ring-sleeve) jack, that reads the position of a passive expression pedal by treating the pedal's internal potentiometer as a variable voltage divider; the host device supplies a reference voltage on one conductor and measures the wiper voltage returned on another to derive a continuous control value.",
+    "plain_english": "A jack on a pedal, amp, or keyboard for a rocking foot pedal. Rock it with your foot to sweep an effect like volume or wah, hands-free. It works like a dimmer switch for a light.",
+    "purpose_function": "It gives a musician continuous, real-time foot control over a parameter (volume, wah, filter, delay mix) so both hands stay on the instrument; it exists because performers need to shape effects live while playing.",
+    "practical_application": "A technician patches an expression pedal to this jack with a TRS cable (a mono TS cable will not work) and confirms the pedal's polarity, resistance, and minimum setting match the host so the full sweep is usable.",
+    "category": "Control interface",
+    "related_terms": [
+     "Volume pedal",
+     "Wah-wah pedal",
+     "TRS connector",
+     "Potentiometer",
+     "MIDI continuous controller",
+     "Control voltage"
+    ],
+    "common_mistakes": [
+     "Using a mono TS instrument cable instead of a TRS cable, so the pedal reads no sweep or sticks at one value",
+     "Assuming any expression pedal fits any device when pedal resistance/taper and polarity must match the host",
+     "Confusing an expression-pedal input with a latching or momentary footswitch input",
+     "Leaving the pedal's MIN/heel setting wrong so part of the sweep does nothing"
+    ],
+    "scenario_contexts": [
+     "Assigning a floor multi-effects unit's expression pedal to sweep delay feedback during a solo",
+     "Wiring a keyboard's EXP jack to control filter cutoff live",
+     "Troubleshooting a dead expression pedal that turns out to be connected with a TS cable"
+    ]
+   },
+   "sources": [
+    "Roland technical support documentation (DD-200 and RE-2 expression pedal setup, EV-5/BOSS FV-500)",
+    "Mission Engineering technical article, Understanding Expression Pedals"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2e5eb236-5ddf-4175-83f9-e046c9e26ad6",
+   "term": "F-hole radiation",
+   "fields": {
+    "definition": "The sound radiated outward through the f-shaped openings in the top plate of violin-family instruments and archtop guitars; near the instrument's main air (Helmholtz-type) resonance the enclosed air pumps in and out through these holes, so the f-holes act as the acoustic ports that couple the body cavity's low-frequency output to the surrounding air.",
+    "plain_english": "The f-shaped slots on a violin or archtop guitar are not just for looks. Much of the low, deep sound escapes through them. They act like the port hole on a speaker cabinet.",
+    "purpose_function": "The f-holes let the body's internal air resonance radiate efficiently, reinforcing the instrument's lower register; their elongated shape concentrates air motion along the long edges, which radiates that resonance more effectively than a round hole of equal area.",
+    "practical_application": "When close-miking a violin, cello, or archtop, an engineer accounts for the strong low-frequency energy emerging from the f-holes and avoids aiming a mic straight into one, which over-emphasizes boxy low-mids and captures airflow noise.",
+    "category": "Instrument acoustics",
+    "related_terms": [
+     "Helmholtz resonance",
+     "Guitar body resonance",
+     "Sound hole",
+     "Main air resonance",
+     "Close miking",
+     "Proximity effect"
+    ],
+    "common_mistakes": [
+     "Placing the microphone directly over an f-hole, capturing a boomy, unrepresentative low-mid buildup",
+     "Believing the f-holes mainly radiate high frequencies when they dominate the low-frequency air resonance",
+     "Assuming the f-holes and the vibrating top plate radiate the same spectrum"
+    ],
+    "scenario_contexts": [
+     "Choosing mic distance and angle for a cello where f-hole output boosts the low register",
+     "Recording an archtop jazz guitar acoustically and balancing f-hole versus top-plate radiation",
+     "Explaining why a violin sounds boxy when a clip-on mic sits too close to an f-hole"
+    ]
+   },
+   "sources": [
+    "Acoustics Today (Acoustical Society of America), Gough, Violin Acoustics",
+    "Proceedings of the Royal Society A, Nia et al., air-resonance power efficiency in the violin and its ancestors",
+    "Fletcher & Rossing, The Physics of Musical Instruments"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "23d7f1d2-9137-4004-811f-df5015010c7a",
+   "term": "Fingerstyle attack",
+   "fields": {
+    "definition": "The onset transient of a note plucked with the fingertip, flesh, or fingernail rather than a pick; because the finger is a wider, softer, more compliant exciter, it releases the string more gradually and excites fewer strong high harmonics, giving a rounder, less percussive attack than a hard, narrow plectrum.",
+    "plain_english": "How the start of a note sounds when you pluck a string with your finger, not a pick. It is usually softer and warmer. You lose the sharp click that a pick gives.",
+    "purpose_function": "It describes a core tonal and dynamic characteristic the player controls with the picking hand; understanding it lets engineers and players predict a note's transient content and dynamic range.",
+    "practical_application": "When tracking fingerstyle guitar or bass, an engineer chooses gentler compression settings and mic placement to preserve the softer transient and expects more level variation between fingers than with a pick.",
+    "category": "Playing technique",
+    "related_terms": [
+     "Attack (envelope)",
+     "Transient",
+     "Plectrum",
+     "Pick attack",
+     "Compression",
+     "Palm muting"
+    ],
+    "common_mistakes": [
+     "Over-compressing fingerstyle takes with a very fast attack, flattening the natural dynamic swells that define the style",
+     "Assuming fingerstyle always means quieter or duller when nail attack can be very bright and percussive",
+     "Confusing the attack (onset transient) with the sustain when describing tone"
+    ],
+    "scenario_contexts": [
+     "Recording a fingerpicked acoustic ballad where soft attacks must stay intact",
+     "Comparing DI tones for pick versus fingerstyle bass in a mix",
+     "Coaching a player to use nails versus flesh to change the brightness of the attack"
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (plucked-string excitation, plectrum versus finger)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8715c831-bba4-4b92-a629-8bfa46db5e5c",
+   "term": "Flue pipe",
+   "fields": {
+    "definition": "An organ pipe that produces sound by aerodynamic (air-jet) excitation rather than a vibrating reed: pressurized wind is forced through a narrow slit called the flue or windway to form a thin air sheet that strikes the sharp upper lip of the pipe's mouth, and the resulting oscillating jet drives the standing wave in the pipe's air column, the same mechanism as a recorder or whistle.",
+    "plain_english": "The most common kind of organ pipe. Air blows across a sharp edge and makes the pipe sing, like a whistle or a recorder. Reed pipes are different, since they buzz a metal tongue.",
+    "purpose_function": "Flue pipes generate the organ's principal, flute, and string tone colors; the pipe length sets the pitch while the mouth and jet geometry and the pipe scaling set the timbre and harmonic content.",
+    "practical_application": "When recording a pipe organ, an engineer positions mics to capture the blend of flue pipes across a division and manages the initial chiff transient and the strong low-frequency fundamentals of large flue ranks.",
+    "category": "Instrument acoustics",
+    "related_terms": [
+     "Reed pipe",
+     "Edge tone",
+     "Standing wave",
+     "Air column resonance",
+     "Helmholtz resonance",
+     "Organ rank"
+    ],
+    "common_mistakes": [
+     "Thinking all organ pipes contain a vibrating reed when flue pipes have no reed at all",
+     "Assuming a flue pipe's pitch comes from the jet speed rather than the resonant length of the air column",
+     "Confusing the chiff (attack transient) with a fault"
+    ],
+    "scenario_contexts": [
+     "Miking a church pipe organ and balancing flue versus reed stops",
+     "Explaining why a Principal or Flute stop speaks like a whistle",
+     "Managing the initial chiff transient when recording flue ranks"
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Rossing, The Science of Sound"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a655c256-3701-4306-8fa2-318423ab81a1",
+   "term": "Guitar body resonance",
+   "fields": {
+    "definition": "The set of coupled mechanical and air resonances of an acoustic guitar's body that amplify and color the strings' vibration; the lowest is the main air (Helmholtz-type) resonance formed by the air mass in the soundhole coupling to the cavity's compliance (commonly near 90 to 110 Hz), followed by the main top-plate (soundboard) resonance and higher body modes.",
+    "plain_english": "The notes where a guitar's hollow body rings the most on its own. The wooden box and the air inside it boom at these pitches. This gives an acoustic guitar its warmth and deep low end.",
+    "purpose_function": "These resonances turn the strings' tiny motion into radiated sound and shape the instrument's low-end response and projection; they exist because the body and enclosed air act as coupled resonators driven through the bridge.",
+    "practical_application": "Engineers use body resonance to guide mic placement, aiming near the 12th fret rather than straight at the soundhole to avoid the boomy main-air peak, and may notch it with EQ when it dominates the low-mids.",
+    "category": "Instrument acoustics",
+    "related_terms": [
+     "Helmholtz resonance",
+     "F-hole radiation",
+     "Soundboard",
+     "Main air resonance",
+     "Sound hole",
+     "Wolf note"
+    ],
+    "common_mistakes": [
+     "Miking straight into the soundhole and capturing an unbalanced, boomy main-air resonance",
+     "Assuming the body resonance is a single frequency rather than several coupled modes",
+     "Cutting the low end broadly with EQ instead of notching the specific resonant peak"
+    ],
+    "scenario_contexts": [
+     "Positioning a small-diaphragm condenser off the 12th fret to tame the body resonance",
+     "Diagnosing a boomy note on a dreadnought during tracking",
+     "Explaining why a guitar sounds boxy in a small room near its air-resonance frequency"
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dc9356df-837c-460d-a202-80d62561b52c",
+   "term": "Guitar tone control",
+   "fields": {
+    "definition": "A passive treble-cut control on an electric or electro-acoustic guitar consisting of a potentiometer in series with a fixed capacitor, wired to shunt the high-frequency portion of the pickup signal to ground; rolling the control down lets more treble bleed away, forming a variable low-pass filter that darkens the tone.",
+    "plain_english": "The knob that makes a guitar sound warmer or duller. Turn it down and it bleeds off the bright, high part of the sound. What is left is a rounder, softer tone.",
+    "purpose_function": "It lets a player tailor brightness at the instrument without changing volume; it exists so the tone can be softened for rhythm, jazz, or lead sounds directly from the guitar.",
+    "practical_application": "A tech verifies the tone pot and capacitor by ear and meter, knowing a smaller cap cuts less treble and a larger one darkens more, and checks for a scratchy pot or failed cap that leaves the control ineffective; typical values are 250k pots with single-coils, 500k with humbuckers, and tone caps around 0.022 to 0.047 microfarads.",
+    "category": "Guitar electronics",
+    "related_terms": [
+     "Guitar volume control",
+     "Potentiometer",
+     "Capacitor",
+     "Low-pass filter",
+     "Pickup",
+     "Treble bleed"
+    ],
+    "common_mistakes": [
+     "Assuming the passive tone control can add treble when it can only remove it",
+     "Thinking pot value does not matter, when 250k versus 500k noticeably changes brightness",
+     "Blaming the amp for a dull sound when a rolled-off or faulty tone control is the cause",
+     "Confusing a scratchy (dirty) tone pot with a wiring fault"
+    ],
+    "scenario_contexts": [
+     "Rolling the tone down for a warm jazz archtop sound",
+     "Servicing a guitar whose tone knob does nothing because the tone capacitor has failed",
+     "Choosing a tone-cap value when rewiring a guitar for a darker or brighter response"
+    ]
+   },
+   "sources": [
+    "Seymour Duncan technical wiring guide (Guitar Wiring 102)",
+    "Brosnac, Guitar Electronics for Musicians"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7ecb3c1b-893b-4cf0-a09c-f60b6d89e4d2",
+   "term": "Guitar volume control",
+   "fields": {
+    "definition": "A potentiometer on the guitar wired as a variable voltage divider between the pickup's hot output and ground, with the wiper feeding the output jack; it sets how much of the pickup signal reaches the output, from full level to silence.",
+    "plain_english": "The guitar's volume knob. It drains off part of the pickup's signal to control how loud the guitar is. So you can turn the guitar up or down without touching the amp.",
+    "purpose_function": "It gives the player level control at the instrument for swells, for cleaning up an overdriven amp, and for quick muting; it exists so dynamics and gain can be managed from the guitar itself.",
+    "practical_application": "A tech chooses an audio (logarithmic) taper so the sweep sounds even and knows that rolling the volume down can also dull the highs because of cable capacitance, which is why players fit treble-bleed networks; scratchy pots are cleaned or replaced.",
+    "category": "Guitar electronics",
+    "related_terms": [
+     "Guitar tone control",
+     "Potentiometer",
+     "Pickup",
+     "Audio taper",
+     "Treble bleed",
+     "Output jack"
+    ],
+    "common_mistakes": [
+     "Fitting a linear-taper pot where an audio taper is wanted, so most of the level change crowds into a small part of the rotation",
+     "Not realizing that lowering the volume can also roll off treble due to cable and load capacitance",
+     "Assuming a dead output is the pickup when a failed volume pot or jack is the cause"
+    ],
+    "scenario_contexts": [
+     "Using volume swells for pad-like guitar parts",
+     "Backing the guitar volume off to clean up an overdriven amp",
+     "Replacing a crackling volume pot during a setup"
+    ]
+   },
+   "sources": [
+    "Seymour Duncan technical wiring guide (Guitar Wiring 102)",
+    "Brosnac, Guitar Electronics for Musicians"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4e3bc4fb-f2ac-4b99-84c2-356ef343de6f",
+   "term": "Hand cupping",
+   "fields": {
+    "definition": "The practice of wrapping a hand around the grille or head of a handheld microphone; the cupped hand blocks the rear and side ports that give a directional (cardioid) mic its pattern, pushing it toward omnidirectional, and forms a small resonant cavity that boosts a midrange peak, together sharply increasing feedback and coloring the sound.",
+    "plain_english": "Wrapping your hand around the ball of a mic. It ruins the way the mic aims and adds a honky ring. That is why it makes live sound squeal with feedback.",
+    "purpose_function": "It is mainly described as a fault to avoid, because a directional mic relies on unobstructed rear and side ports; some players such as blues-harp performers cup deliberately for a lo-fi tone, but it trades away feedback rejection and neutral response.",
+    "practical_application": "A live engineer coaches performers not to cup the grille, since it collapses the polar pattern and lowers the gain available before feedback, and recognizes the resulting boxy midrange as a cause of ringing on a vocal mic.",
+    "category": "Microphone technique",
+    "related_terms": [
+     "Cardioid pattern",
+     "Polar pattern",
+     "Feedback",
+     "Proximity effect",
+     "Handheld microphone",
+     "Gain before feedback"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Cupping the grille on a loud stage, which collapses the mic's directional pattern and can trigger sudden feedback and hazardous SPL spikes through the PA",
+     "Believing cupping makes the mic louder or warmer with no downside",
+     "Blaming the mixer for feedback when a cupped mic caused it",
+     "Cupping a mic and expecting its rated directional pattern to hold"
+    ],
+    "scenario_contexts": [
+     "A singer cups the mic and the stage monitors immediately ring with feedback",
+     "A blues harmonica player cups the mic and harp for a gritty tone while the engineer manages feedback",
+     "Explaining to a guest speaker why holding the mic head degrades intelligibility"
+    ]
+   },
+   "sources": [
+    "Shure technical support, Cupping my hands around the microphone head",
+    "Ballou, Handbook for Sound Engineers (microphone directional characteristics)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "03ea5989-5136-4521-974b-6ecf8628e99e",
+   "term": "Harmon mute",
+   "fields": {
+    "definition": "A hollow metal (typically aluminum) mute for trumpet or trombone that seals the entire bell opening with a ring of cork so all of the player's air is forced through the mute; it has a central tube or stem that can be pulled out or left in, and, especially with the stem removed, produces a thin, buzzy, distant timbre rich in upper harmonics, with a wah-wah effect available by opening and closing the hand over the stem cup.",
+    "plain_english": "A metal cup that plugs a trumpet's open end, made famous by Miles Davis. It gives a small, buzzy, far-away sound. Cover and uncover its little tube with your hand to make the classic wah.",
+    "purpose_function": "It transforms the instrument's tone into a quiet, focused, harmonically bright color used heavily in jazz and film scoring; the cork seal and stem act as an acoustic filter that suppresses the fundamental and emphasizes the upper harmonics.",
+    "practical_application": "Because a Harmon-muted trumpet is quiet and highly directional, an engineer close-mics it, often just off the axis of the stem, and may add gain and gentle EQ while watching for the piercing high-harmonic wah peaks.",
+    "category": "Instrument mutes",
+    "related_terms": [
+     "Straight mute",
+     "Cup mute",
+     "Plunger mute",
+     "Brass instrument",
+     "Close miking",
+     "Timbre"
+    ],
+    "common_mistakes": [
+     "Confusing the Harmon (metal, cork-sealed, wah-wah) mute with a straight or cup mute",
+     "Recording it from a distance when the muted level is low and needs close miking",
+     "Forgetting the stem can be removed or adjusted, which changes the tone substantially",
+     "Assuming the mute mainly lowers volume rather than reshaping the harmonic spectrum"
+    ],
+    "scenario_contexts": [
+     "Miking a jazz trumpet using a stemless Harmon mute for an intimate ballad",
+     "A brass section using Harmon mutes with hand wah for a big-band effect",
+     "Adjusting gain and EQ for the quiet, bright output of a Harmon-muted trumpet"
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Fletcher & Rossing, The Physics of Musical Instruments (brass instrument mutes)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

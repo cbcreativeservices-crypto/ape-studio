@@ -1,0 +1,57 @@
+{
+ "batch": 291,
+ "topic": "Sample Editing & Manipulation",
+ "authored": [
+  {
+   "id": "47c99f0e-0e6b-4c90-b881-fcdac1e54a0a",
+   "term": "Spectral freeze",
+   "fields": {
+    "definition": "A spectral-processing technique that captures the frequency-domain content of a single analysis frame from an FFT/phase-vocoder analysis of a sound and repeats it during resynthesis, sustaining that one timbral moment for any length while its magnitude and phase spectrum stay fixed, producing a static drone or pad.",
+    "plain_english": "It grabs one tiny slice of a sound and holds it in place. The tone stays the same, but time seems to stop. A short note can turn into a long, steady hum.",
+    "purpose_function": "It extends a short or decaying sound into a continuous sustained texture; it exists so producers and sound designers can build drones, pads and ambiences from material that would otherwise fade away quickly.",
+    "practical_application": "A technician sets a freeze point on a held vowel, synth chord or cymbal wash in a spectral plugin or editor and captures it to make an evolving background pad or to sustain a tail under a transition.",
+    "category": "Spectral processing",
+    "related_terms": ["Phase vocoder", "FFT", "Time freeze", "Granular synthesis", "Time stretching", "Spectral editing"],
+    "common_mistakes": ["Freezing on a noisy transient, which gives a harsh or metallic drone instead of a smooth tone", "Expecting a freeze to keep evolving on its own — the held spectrum is static unless you modulate it", "Confusing a spectral freeze with looping a slice of audio; a freeze holds a reconstructed spectrum, not a repeated time segment"],
+    "scenario_contexts": ["Turning a sustained vocal note into an ambient pad in a DAW", "Holding a reverb tail or cymbal wash under a scene change in film sound design", "Creating a tension drone from a single instrument hit"]
+   },
+   "sources": ["Roads, C. — The Computer Music Tutorial (MIT Press)", "Hass, J. — Introduction to Computer Music, Phase Vocoding chapter (Indiana University)", "Sound on Sound — Granular Synthesis: A Practical Introduction"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "541a4ecc-825b-4af5-bc37-ae7edddbc74f",
+   "term": "Tempo-synchronized grains",
+   "fields": {
+    "definition": "In granular synthesis, grains — very short fragments of sound, typically a few to a few hundred milliseconds long — whose emission rate or spacing is locked to the host tempo or musical clock, so grain onsets fall on note values such as 1/8 or 1/16 rather than at a free-running rate set in hertz.",
+    "plain_english": "Granular tools chop a sound into tiny pieces called grains. Here the grains play in time with the beat. So the little bursts land right on the groove instead of at random.",
+    "purpose_function": "Locking grain timing to tempo keeps granular textures rhythmically in step with the track; it exists so stuttered, chopped or clouded grain effects groove with the music instead of drifting against the beat.",
+    "practical_application": "A producer switches a granular sampler's grain rate or density parameter from hertz to a note division, so a stutter or grain cloud stays in time whenever the sample is triggered in the project.",
+    "category": "Granular synthesis",
+    "related_terms": ["Granular synthesis", "Grain", "Grain size", "Grain density", "Tempo sync", "Beat slicing"],
+    "common_mistakes": ["Assuming grain rate is always set in hertz — in a DAW it can be switched to musical note values", "Setting grain size longer than the note spacing, so grains overlap and smear away the rhythm", "Confusing tempo-synced grains with simple beat slicing; grains are far shorter and are re-emitted, not just cut and rearranged"],
+    "scenario_contexts": ["Making a tempo-locked stutter or glitch fill from a vocal in a DAW", "Building a rhythmic granular pad that pulses in time with a track", "Designing an in-time hi-hat or texture pattern from a single sampled sound"]
+   },
+   "sources": ["Roads, C. — Microsound (MIT Press)", "Roads, C. — The Computer Music Tutorial (MIT Press)", "Sound on Sound — Granular Synthesis: A Practical Introduction"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "00918395-996b-460d-8097-6c2a6aa4a8d2",
+   "term": "Time freeze",
+   "fields": {
+    "definition": "A sample-manipulation technique that suspends the forward progress of playback at a chosen point so the sound sustains indefinitely at that instant; it is commonly realised either by spectral (phase-vocoder) freezing of one analysis frame or by granular looping of a very short window around the freeze point.",
+    "plain_english": "This holds a sound still at one moment so it plays on and on. It is like pressing pause, but the sound keeps ringing. A quick sound becomes a long, steady tone.",
+    "purpose_function": "It turns a moment of a sound into a sustained tone or texture; it exists so technicians can hold, suspend or fill space with audio to build tension or make pads from short source material.",
+    "practical_application": "A technician sets a freeze point in a granular or spectral processor and engages it live or in a DAW to sustain a chord, note or ambience for as long as needed under a scene or transition.",
+    "category": "Time manipulation",
+    "related_terms": ["Spectral freeze", "Phase vocoder", "Granular synthesis", "Time stretching", "Tempo-synchronized grains", "Looping"],
+    "common_mistakes": ["Thinking a time freeze slows the sound down — it holds one instant rather than stretching the whole timeline", "Freezing on a transient or plosive, which produces an unnatural or buzzy held tone", "Expecting the frozen tone to change on its own; it stays static unless you add modulation or movement"],
+    "scenario_contexts": ["Sustaining a synth chord under a build-up in a DAW", "Holding an ambience or drone live during a pause in a performance", "Freezing a single word or note in sound design to stretch a dramatic moment"]
+   },
+   "sources": ["Roads, C. — The Computer Music Tutorial (MIT Press)", "Hass, J. — Introduction to Computer Music, Phase Vocoding chapter (Indiana University)", "Sound on Sound — Granular Synthesis: A Practical Introduction"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

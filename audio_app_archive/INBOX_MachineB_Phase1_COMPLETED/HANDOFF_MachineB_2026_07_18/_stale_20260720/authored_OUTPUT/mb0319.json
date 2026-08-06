@@ -1,0 +1,312 @@
+{
+ "batch": 319,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "4c1723f5-3735-442a-bda0-5aba2078fed1",
+   "term": "recessed",
+   "fields": {
+    "definition": "A tonal descriptor for a frequency range, most often the midrange, that sits lower in level than the rest of the spectrum, so those frequencies sound set back and distant rather than forward and present.",
+    "plain_english": "A recessed sound has part of its tone pushed back and quiet, usually the middle notes. It is like turning the middle notes down while the lows and highs stay up, so the mids sound set back and the rest stays present.",
+    "purpose_function": "It flags a dip or pull-back in one part of the spectrum so an engineer knows those frequencies may need a lift to bring the sound forward.",
+    "practical_application": "If a vocal or guitar sounds recessed in a mix, the engineer may add a few dB in the presence range around 1-4 kHz, or lower competing parts so it sits more forward.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "forward",
+     "presence",
+     "scooped",
+     "dull",
+     "midrange"
+    ],
+    "common_mistakes": [
+     "Confusing recessed with simply quiet; it describes one frequency range sitting back, not the overall level being low.",
+     "Boosting broadly across the whole spectrum instead of lifting the specific recessed range.",
+     "Blaming the source when a scooped EQ curve or an off-axis mic is pulling the mids back."
+    ],
+    "scenario_contexts": [
+     "A lead vocal that sounds distant and set back behind the band.",
+     "Describing headphones or speakers with a laid-back, recessed midrange.",
+     "A guitar tone that disappears in the mix and needs its mids brought forward."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Rane Pro Audio Reference"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "af49d841-9106-48b2-8438-2b0e19fbef82",
+   "term": "Rich",
+   "fields": {
+    "definition": "A tonal descriptor for a full, warm sound with dense and complex harmonic content, so the tone feels layered and full-bodied rather than thin or plain.",
+    "plain_english": "A rich sound is full and warm, with lots of layers in the tone. Think of a thick soup with many tastes, not thin, plain water.",
+    "purpose_function": "It describes pleasing harmonic fullness so engineers can judge whether a source has enough body and overtone complexity for the music.",
+    "practical_application": "An engineer may call a well-recorded cello or analog synth rich, or reach for tube gear, saturation, or a fuller mic to add harmonic richness to a thin source.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "warmth",
+     "body",
+     "full",
+     "harmonics",
+     "thin"
+    ],
+    "common_mistakes": [
+     "Confusing rich with loud; richness is harmonic fullness and body, not overall level.",
+     "Adding heavy low-end boost to force richness and creating muddiness instead of real harmonic body.",
+     "Assuming more saturation always adds richness, when too much turns pleasant overtones into harshness."
+    ],
+    "scenario_contexts": [
+     "Describing a full-bodied vocal or string tone with warm, complex overtones.",
+     "Choosing a tube preamp to add harmonic richness to a thin digital source.",
+     "Comparing a plain sine tone with a rich, harmonically full analog synth patch."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Rane Pro Audio Reference"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3e02814d-3fae-46c7-8387-49cbe749ed25",
+   "term": "rough",
+   "fields": {
+    "definition": "A tonal descriptor for a coarse, grating, unsmooth texture in a sound; in psychoacoustics, roughness is the sensation produced by rapid amplitude fluctuations, strongest for modulation rates around 70 Hz, which the ear hears as harshness rather than distinct beats.",
+    "plain_english": "A rough sound feels harsh and scratchy, not smooth. It is like the buzz you feel when two close notes clash and grind against each other.",
+    "purpose_function": "It names a coarse, grinding texture so an engineer can trace it to fast amplitude changes, distortion, or clashing tones and decide how to smooth the sound.",
+    "practical_application": "When a distorted synth or overdriven vocal sounds rough, an engineer may ease the drive, soften a harsh EQ peak, or fix beating between two closely tuned sources.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "sandy / grainy",
+     "harsh",
+     "screechy",
+     "smooth",
+     "distortion"
+    ],
+    "common_mistakes": [
+     "Confusing roughness with normal distinct beats; roughness comes from much faster amplitude fluctuations that fuse into a harsh texture.",
+     "Assuming rough always means faulty, when many gritty distorted tones are meant to sound rough.",
+     "Chasing rough texture with EQ alone when the real cause is clipping or over-driven gain."
+    ],
+    "scenario_contexts": [
+     "A heavily distorted guitar or synth with a coarse, grinding edge.",
+     "Two detuned oscillators or voices that beat fast enough to sound rough.",
+     "A clipped or over-compressed signal that has lost its smoothness."
+    ]
+   },
+   "sources": [
+    "Zwicker and Fastl, Psychoacoustics: Facts and Models",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "422c7318-1830-4c42-84fa-f8e231bde853",
+   "term": "Round",
+   "fields": {
+    "definition": "A tonal descriptor for a smooth, warm sound with a gentle top end and strong fundamentals and low-mids, so the tone has no hard or harsh high-frequency edge.",
+    "plain_english": "A round sound is smooth and warm, with no sharp or harsh edge on top. It is soft and easy on the ears, like the mellow tone of a cello.",
+    "purpose_function": "It describes a soft, edge-free tone so engineers can judge whether a source needs its harsh highs tamed or its low-mids supported to feel rounder.",
+    "practical_application": "An engineer may call a mellow bass or vocal round, or gently roll off harsh highs and support the low-mids to give a sharp-sounding source a rounder character.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "warmth",
+     "smooth",
+     "full",
+     "harsh",
+     "dark"
+    ],
+    "common_mistakes": [
+     "Confusing round with dull; round keeps a smooth, pleasant top end, while dull loses the highs entirely.",
+     "Rolling off too much high frequency chasing roundness and making the sound muffled.",
+     "Assuming round means weak, when a round tone can still be full and powerful in the low-mids."
+    ],
+    "scenario_contexts": [
+     "Describing a warm, smooth upright bass or cello tone.",
+     "Softening a harsh vocal so it sounds rounder and easier to listen to.",
+     "Comparing an edgy solid-state tone with a rounder tube-amp sound."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Rane Pro Audio Reference"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "eb9d429b-60bc-4ea3-9a06-75a02838d34f",
+   "term": "sandy / grainy",
+   "fields": {
+    "definition": "A tonal descriptor for a gritty, granular texture in which a sound seems made of many small rough particles rather than being smooth and continuous, often caused by distortion, low bit-depth quantization, or high-frequency intermodulation.",
+    "plain_english": "A grainy sound feels gritty, like it is made of tiny rough bits. It is like a photo full of specks instead of a clean, smooth picture.",
+    "purpose_function": "It names a granular, unsmooth texture so an engineer can trace it to distortion, low-resolution processing, or converter issues and work to smooth it.",
+    "practical_application": "When a track sounds grainy, an engineer may check for low bit-depth files, harsh digital plug-ins, or over-driven gain, then dither properly or ease the processing.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "rough",
+     "harsh",
+     "smooth",
+     "quantization noise",
+     "distortion"
+    ],
+    "common_mistakes": [
+     "Confusing grainy texture with broadband hiss; graininess is a gritty quality tied to the signal, not steady background noise.",
+     "Overlooking low bit-depth or missing dither as a cause of a grainy, granular top end.",
+     "Boosting highs to add detail and only making the grainy texture more obvious."
+    ],
+    "scenario_contexts": [
+     "A low bit-depth or heavily processed sample that sounds gritty and granular.",
+     "A cheap converter or plug-in that adds a sandy texture to the high end.",
+     "An over-driven guitar tone with a coarse, grainy character."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Zwicker and Fastl, Psychoacoustics: Facts and Models"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "00d38e2b-7f6f-4317-8e41-3f9d650578d3",
+   "term": "scooped",
+   "fields": {
+    "definition": "A tonal descriptor for a frequency balance in which the midrange is cut while the lows and highs are emphasized, producing a smiley-face response curve; the classic example is the scooped-mid metal guitar tone.",
+    "plain_english": "A scooped sound has its middle tones turned down while the lows and highs stay up. On a graph the curve dips in the middle and smiles up at each end.",
+    "purpose_function": "It describes a deliberate or accidental mid dip so engineers know the midrange is reduced and can decide whether that helps or hurts the sound.",
+    "practical_application": "A guitarist may scoop the mids around 500-800 Hz for a heavy solo tone, though engineers often add mids back so the part still cuts through a full band mix.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "recessed",
+     "midrange",
+     "smiley EQ",
+     "presence",
+     "forward"
+    ],
+    "common_mistakes": [
+     "Scooping mids so hard that the instrument disappears in a full band mix, since the midrange is where it competes for space.",
+     "Confusing scooped with recessed; scooped is a deliberate mid cut with boosted ends, while recessed just means one range sits back.",
+     "Judging a scooped tone alone in isolation, where it sounds huge, then finding it vanishes in the mix."
+    ],
+    "scenario_contexts": [
+     "A metal rhythm guitar dialed in with deeply scooped mids.",
+     "A graphic EQ set in a smiley-face curve that scoops the midrange.",
+     "Describing a hi-fi speaker with a mid dip that flatters vocals-light material."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3fd51222-4886-4bd0-91d3-27182b9ac027",
+   "term": "screechy",
+   "fields": {
+    "definition": "A tonal descriptor for an unpleasant, piercing, shrill quality caused by excessive or peaky upper-midrange and high-frequency energy (roughly 2-6 kHz and above), which makes a sound sharp and painful to hear.",
+    "plain_english": "A screechy sound is sharp and piercing, and it hurts to hear. It is like nails on a chalkboard or a loud, shrill whistle.",
+    "purpose_function": "It flags a harsh, ear-piercing peak so an engineer knows to hunt for and cut the offending upper-mid or high-frequency resonance.",
+    "practical_application": "When a violin, cymbal, or vocal turns screechy, an engineer sweeps a narrow EQ to find the harsh peak around 2-6 kHz and cuts it, or tames feedback in a live rig.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "harsh",
+     "sibilance",
+     "Brittle",
+     "presence",
+     "feedback"
+    ],
+    "common_mistakes": [
+     "Cutting broadly across the whole top end and dulling the sound instead of notching the single screechy peak.",
+     "Confusing screechy with simply bright; bright is pleasant detail, while screechy is painful and shrill.",
+     "UNSAFE: pushing a screeching live system louder to hear over feedback, risking hearing damage and speaker failure instead of cutting the gain."
+    ],
+    "scenario_contexts": [
+     "A live mic ringing toward feedback with a shrill, screechy edge.",
+     "A cheap cymbal or violin recording with a harsh, piercing top end.",
+     "A vocal with strong sibilance that sounds screechy on loud speakers."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f32125d5-df08-4682-9644-65d82e19df89",
+   "term": "sheen",
+   "fields": {
+    "definition": "A tonal descriptor for a smooth, glossy high-frequency brightness, a pleasant airy brilliance in the upper treble (roughly above 8-10 kHz) that adds polish and shine without harshness.",
+    "plain_english": "Sheen is a smooth, shiny brightness on the top of a sound. It is like the soft gleam on a polished surface, adding a bit of sparkle.",
+    "purpose_function": "It describes a flattering top-end gloss so engineers can decide whether a track needs a gentle high lift to add shine and polish.",
+    "practical_application": "An engineer may add a broad high-shelf boost above 10 kHz, or use an exciter or a bright ribbon or condenser mic, to give vocals or cymbals a pleasing sheen.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "Airy",
+     "sparkle",
+     "Bright",
+     "presence",
+     "high shelf"
+    ],
+    "common_mistakes": [
+     "Confusing sheen with harshness; sheen is smooth high-frequency gloss, not a sharp, peaky top end.",
+     "Over-boosting the extreme highs to force sheen and raising hiss and sibilance instead.",
+     "Expecting band-limited or dull gear to reproduce sheen it cannot actually pass."
+    ],
+    "scenario_contexts": [
+     "A polished pop vocal with a smooth, glossy top end.",
+     "Adding a gentle high-shelf lift to give cymbals a pleasing sheen.",
+     "Choosing a bright condenser mic known for adding sheen to acoustic guitar."
+    ]
+   },
+   "sources": [
+    "Rane Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "208aaae5-4f9a-4bde-8a49-b08c3eded48b",
+   "term": "Shimmering",
+   "fields": {
+    "definition": "A tonal descriptor for a bright, sparkling high-frequency character with a sense of movement and liveliness, as heard in cymbals, bells, or shimmer-style reverb effects, giving an airy, glistening top end.",
+    "plain_english": "A shimmering sound is bright and sparkly, with a lively glow that seems to move. Think of the airy ring of cymbals catching the light.",
+    "purpose_function": "It describes a lively, moving top-end sparkle so engineers can judge whether a source or effect adds the glistening high-frequency motion the music wants.",
+    "practical_application": "An engineer may keep a cymbal's shimmering decay, add a shimmer reverb that pitches reflections up an octave, or lift the air band to enhance a glistening top end.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "Airy",
+     "sparkle",
+     "sheen",
+     "Bright",
+     "reverb"
+    ],
+    "common_mistakes": [
+     "Confusing shimmering with static brightness; shimmering implies movement and sparkle, not just a fixed high-frequency boost.",
+     "Over-lifting the top end to force shimmer and making the sound harsh and hissy.",
+     "Drowning a mix in shimmer reverb so it loses focus and clarity."
+    ],
+    "scenario_contexts": [
+     "Describing the airy, glistening decay of ride and crash cymbals.",
+     "Adding a shimmer reverb to a pad or guitar for a bright, moving wash.",
+     "A vocal or synth with a lively, sparkling top end that catches the ear."
+    ]
+   },
+   "sources": [
+    "Rane Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

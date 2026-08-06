@@ -1,0 +1,312 @@
+{
+ "batch": 244,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "4c0a419a-56e9-4877-80a1-ce535eb4f7a0",
+   "term": "Playback instance",
+   "fields": {
+    "definition": "In audio middleware and game sound engines, a playback instance is a single runtime occurrence of a sound or event actually being played, created each time its source asset is triggered. It is distinct from the source definition, can be individually positioned, controlled, and stopped, and it counts against the engine's voice and instance limits.",
+    "plain_english": "A playback instance is one single time a sound is actually playing. If the same footstep sound plays five times at once, that is five instances. Think of it like five copies of one song playing on five phones. Each one can be controlled on its own.",
+    "purpose_function": "It lets the engine track and manage each sounding voice separately, so the system can position, mix, prioritize, and cap concurrent sounds without changing the shared source asset.",
+    "practical_application": "A sound designer watches active instance counts and sets per-sound instance limits so repeated triggers like gunfire or footsteps do not exhaust voices or cause phasing and clipping.",
+    "category": "Interactive Audio",
+    "related_terms": [
+     "Positional audio",
+     "Playlist container",
+     "Procedural ambience",
+     "Voice management",
+     "Sound event"
+    ],
+    "common_mistakes": [
+     "Confusing the source sound asset with a single playback instance of it",
+     "Forgetting to set instance limits, so repeated triggers stack up and steal voices or overload the mix",
+     "Assuming that stopping the event stops every instance when instances may be scoped to individual game objects"
+    ],
+    "scenario_contexts": [
+     "Limiting how many footstep instances can play at once in a busy game scene",
+     "Debugging why a looping ambience keeps stacking new instances instead of reusing one",
+     "Positioning each active instance of a crowd voice at a different location"
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise SDK documentation (voice and instance management)",
+    "FMOD Engine API documentation (event instances)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3d263996-f5a3-49b6-9a0c-11f595cf6f86",
+   "term": "Playlist container",
+   "fields": {
+    "definition": "A playlist container is a structural object in an audio engine's interactive-music or sound hierarchy that holds a set of child objects, such as music segments or sounds, and defines both the order — sequence or random — and the play mode — step (one child played per trigger) or continuous (children played back-to-back) — by which they are played back.",
+    "plain_english": "A playlist container is a folder that holds several sound or music pieces and decides what plays and in what order. It can play them in a set order or shuffle them. It works like a playlist app told to go in order or on random. This keeps game music from sounding the same every time.",
+    "purpose_function": "It exists to sequence and vary musical or ambient material at runtime, letting one container re-order or randomize its contents so audio stays fresh and adapts to gameplay.",
+    "practical_application": "A game composer places music segments in a playlist container and sets it to random-continuous so the score reshuffles sections instead of repeating one fixed loop.",
+    "category": "Interactive Music",
+    "related_terms": [
+     "Playback instance",
+     "Procedural ambience",
+     "Positional audio",
+     "Music segment",
+     "Random container"
+    ],
+    "common_mistakes": [
+     "Setting the play mode to sequence when random variation was intended",
+     "Nesting containers without checking how parent and child play logic interact",
+     "Forgetting to define transition or loop rules, which causes gaps or hard cuts between segments"
+    ],
+    "scenario_contexts": [
+     "Re-sequencing music segments so a level's theme varies on each loop",
+     "Randomizing several ambience beds so a location never sounds identical twice",
+     "Building a combat music system that steps through intensity segments"
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise User's Guide — Interactive Music (Music Playlist Container)",
+    "Stevens & Raybould, Game Audio Implementation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "877217d2-623f-4778-9bc4-ead06c0afc1e",
+   "term": "Pocket movement",
+   "fields": {
+    "definition": "A Foley movement element covering the sound of a hand entering or leaving a pocket and its contents shifting inside — fabric friction plus the muted rattle of keys, coins or a phone.",
+    "plain_english": "It is the sound of a hand going into a pocket and the stuff inside moving. Like the soft jingle and rustle when someone reaches for their keys.",
+    "purpose_function": "It adds a small but telling layer of realism to a character's movement and business, cueing the audience that something is being reached for or stowed.",
+    "practical_application": "A Foley artist performs the reach into a matching garment pocket, adding coin or key content to sync with the actor's hand action.",
+    "category": "Foley",
+    "related_terms": [
+     "Jacket movement",
+     "Key jingle",
+     "Plastic movement",
+     "Hand contact",
+     "Object pickup"
+    ],
+    "common_mistakes": [
+     "Adding a loud coin rattle when the character's pocket should be empty.",
+     "Letting the pocket sound sit off sync with the visible hand movement.",
+     "Using the same content rattle regardless of what the character carries."
+    ],
+    "scenario_contexts": [
+     "Covering a character reaching for keys or a phone.",
+     "Adding fabric and content movement as someone pockets an object.",
+     "Layering pocket business under a walking shot to build character."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, The Foley Grail (Focal Press)",
+    "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "97f28548-f92f-4e8c-912a-10668bd7686f",
+   "term": "Portal-based audio",
+   "fields": {
+    "definition": "Portal-based audio is a spatial-audio approach in which openings between adjacent acoustic spaces — portals such as doors and windows — are modeled explicitly, so the engine can propagate reverberation, sound transmission, and diffraction from one room into the next through those openings.",
+    "plain_english": "Portal-based audio treats doorways and windows as the paths sound travels between rooms. When you stand in a hallway, noise from the next room leaks in through its open door, and the engine copies that. As you move past the doorway, the sound bends and fades to match. It makes indoor spaces feel connected and real.",
+    "purpose_function": "It exists to make virtual environments sound believable by routing a room's reverb and sound energy through its actual openings, instead of treating every space as fully sealed or fully open.",
+    "practical_application": "A game audio programmer places portal shapes in doorways so a noisy machine room bleeds through to the corridor and smoothly opens up as the player walks through.",
+    "category": "Spatial Audio",
+    "related_terms": [
+     "Positional audio",
+     "Playback instance",
+     "Procedural ambience",
+     "Reverb zone",
+     "Diffraction"
+    ],
+    "common_mistakes": [
+     "Misplacing or mis-sizing portal geometry so sound leaks where there is no real opening",
+     "Forgetting that closing a door should change the portal's transmission, not just mute the sound",
+     "Relying on portals alone and ignoring occlusion for solid walls"
+    ],
+    "scenario_contexts": [
+     "Letting reverb from a large hall spill into a connected corridor through its doorway",
+     "Simulating muffled music leaking through a closed door as a player approaches",
+     "Blending two rooms' acoustics as a character walks through an open threshold"
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise Spatial Audio documentation (Rooms and Portals)",
+    "Valve Steam Audio documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ca362dae-daef-49dd-be38-241de3a0ecc6",
+   "term": "Positional audio",
+   "fields": {
+    "definition": "Positional audio is the rendering of sound so that each source is perceived to come from a specific location in three-dimensional space relative to the listener, achieved through panning, inter-aural level and time differences, distance-based attenuation and filtering, and, for headphones, head-related transfer functions.",
+    "plain_english": "Positional audio makes each sound seem to come from a real spot around you. A sound on your left is louder in your left ear, and a far-off sound is quieter and duller. It is how a game lets you hear that footsteps are behind you. This helps you locate things by ear.",
+    "purpose_function": "It exists to give listeners directional and distance cues, so players or viewers can locate sound sources and feel immersed in a 3D scene.",
+    "practical_application": "A game sound designer assigns 3D attenuation curves and spatialization to a source so its volume, pan, and tone shift correctly as the player moves around it.",
+    "category": "Spatial Audio",
+    "related_terms": [
+     "Portal-based audio",
+     "Playback instance",
+     "Procedural ambience",
+     "Attenuation",
+     "Binaural audio"
+    ],
+    "common_mistakes": [
+     "Leaving important sounds 2D so they do not move with the scene",
+     "Setting attenuation ranges too short or too long, making sources vanish or never fade",
+     "Assuming stereo panning alone gives full 3D cues without distance filtering or elevation"
+    ],
+    "scenario_contexts": [
+     "Making an enemy's gunfire come from its actual direction in a shooter",
+     "Fading and filtering a river's sound as the player walks away from it",
+     "Delivering headphone spatialization so VR sounds track head movement"
+    ]
+   },
+   "sources": [
+    "Valve Steam Audio documentation",
+    "Audiokinetic Wwise SDK documentation (3D positioning and spatialization)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b71dd1e1-700f-47c4-be65-81966251172e",
+   "term": "Post-production facility",
+   "fields": {
+    "definition": "A post-production facility is a commercial establishment equipped with the rooms, systems, and staff to complete film, television, or media projects after shooting, typically housing multiple editing suites, mixing or dubbing stages, machine and server rooms, and often ADR and Foley stages.",
+    "plain_english": "A post-production facility is a building where movies and shows are finished after filming. It holds many rooms for editing, mixing sound, and adding effects. Think of it as a workshop where raw footage is polished into the final product. Big projects rent time there.",
+    "purpose_function": "It exists to gather the specialized rooms, gear, and technical staff needed for finishing work in one managed place, so productions can edit, mix, and master without building their own studios.",
+    "practical_application": "A supervising sound editor books time at a post-production facility to cut dialogue and effects in its edit suites and then final-mix on its dubbing stage.",
+    "category": "Post Facilities",
+    "related_terms": [
+     "Post-production suite",
+     "Pre-roll click",
+     "Playback instance",
+     "Dubbing stage",
+     "ADR"
+    ],
+    "common_mistakes": [
+     "Confusing the whole facility with a single suite or room inside it",
+     "Underbooking stage time and running past the scheduled mix slot",
+     "Assuming every facility supports the required delivery format without checking its calibration and monitoring"
+    ],
+    "scenario_contexts": [
+     "Scheduling picture and sound editorial across several suites in one facility",
+     "Booking a certified dubbing stage for a theatrical final mix",
+     "Choosing a facility because it is calibrated to the target loudness and monitoring standard"
+    ]
+   },
+   "sources": [
+    "Holman, Sound for Film and Television",
+    "Yewdall, Practical Art of Motion Picture Sound"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5cc88b22-9cd9-4d1e-b043-aa681bda6d1c",
+   "term": "Post-production suite",
+   "fields": {
+    "definition": "A post-production suite is a single self-contained room and workstation environment within a facility, configured for a specific finishing task such as a picture edit suite, sound editing suite, or mix suite, with its own monitoring, control surface, and processing gear.",
+    "plain_english": "A post-production suite is one room set up for a single finishing job, like editing or mixing. It has its own screen, speakers, and gear. Think of it as one workstation in a larger workshop. An editor can work there without disturbing other rooms.",
+    "purpose_function": "It exists to give one editor or mixer a controlled, properly monitored space for focused finishing work, isolated from other rooms in the facility.",
+    "practical_application": "A dialogue editor works in an editing suite to clean and sync tracks, then hands the session to a mixer in a separate mix suite.",
+    "category": "Post Facilities",
+    "related_terms": [
+     "Post-production facility",
+     "Pre-roll click",
+     "Playlist container",
+     "Mix stage",
+     "Editing bay"
+    ],
+    "common_mistakes": [
+     "Treating a small editing suite as a calibrated mix room for critical loudness decisions",
+     "Ignoring room acoustics and monitor calibration, so mixes do not translate elsewhere",
+     "Confusing a suite with the entire facility that contains it"
+    ],
+    "scenario_contexts": [
+     "Editing sound effects in a dedicated suite before the final mix",
+     "Recording ADR lines in a suite equipped for voice",
+     "Reviewing a cut with a client in a small screening suite"
+    ]
+   },
+   "sources": [
+    "Holman, Sound for Film and Television",
+    "Yewdall, Practical Art of Motion Picture Sound"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e1ee7e3c-a4ff-4bbc-9545-9c1cba618050",
+   "term": "Pre-roll click",
+   "fields": {
+    "definition": "A pre-roll click is the metronome click sounded during the pre-roll or count-off period immediately before the record punch-in point, giving performers the session tempo and a rhythmic reference beat before recording actually begins.",
+    "plain_english": "A pre-roll click is a metronome beat you hear just before recording starts. It counts you in so you come in on time and in tempo. It works like a drummer clicking sticks 'one, two, three, four' before a song. Then recording begins on the next beat.",
+    "purpose_function": "It exists to lock the performer to the session tempo and grid before the take starts, so the first recorded notes land in time rather than drifting.",
+    "practical_application": "A recording engineer sets a two-bar count-off click so a singer or drummer hears the tempo and enters cleanly at the punch-in.",
+    "category": "Session Recording",
+    "related_terms": [
+     "Post-production suite",
+     "Playback instance",
+     "Click track",
+     "Punch-in",
+     "Tempo map"
+    ],
+    "common_mistakes": [
+     "Setting the pre-roll too short, so the performer cannot lock in before the take",
+     "Leaving the click routed into the recorded bus so it bleeds onto the track",
+     "Assuming the count-off click will be recorded when it usually is not"
+    ],
+    "scenario_contexts": [
+     "Counting a vocalist in before a punch-in on the chorus",
+     "Giving a drummer a two-bar click before tracking to a tempo map",
+     "Setting count-off in a session so overdubs enter on the correct beat"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (Countoff and Pre-roll)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1dac7fee-e89a-40e9-8876-e90e32b410df",
+   "term": "Procedural ambience",
+   "fields": {
+    "definition": "Procedural ambience is background or atmospheric sound generated algorithmically at runtime from rules, parameters, and modular audio building blocks, rather than played back as a fixed pre-recorded loop, so the ambience varies over time and can respond to changing conditions.",
+    "plain_english": "Procedural ambience is background sound a computer builds on the fly instead of playing one recorded loop. It mixes small pieces by rules, so a forest never sounds exactly the same twice. Think of it like a cook making a dish fresh from ingredients each time. It also reacts to things like weather or time of day.",
+    "purpose_function": "It exists to provide non-repeating, adaptive backgrounds that react to the game state, avoiding the obvious looping and memory cost of long fixed recordings.",
+    "practical_application": "A game sound designer sets up rules that trigger scattered bird calls, wind gusts, and insect layers at random intervals so a forest bed feels alive and never loops audibly.",
+    "category": "Procedural Audio",
+    "related_terms": [
+     "Playlist container",
+     "Playback instance",
+     "Positional audio",
+     "Sound bed",
+     "Randomization"
+    ],
+    "common_mistakes": [
+     "Confusing procedural ambience with a single long looped recording",
+     "Under-randomizing timing or pitch so the bed still audibly repeats",
+     "Letting too many random one-shots trigger at once and overloading voices"
+    ],
+    "scenario_contexts": [
+     "Building a forest bed that shifts between day and night sounds",
+     "Generating city traffic ambience that thickens as the player nears a busy street",
+     "Creating weather ambience that responds to wind and rain parameters"
+    ]
+   },
+   "sources": [
+    "Stevens & Raybould, Game Audio Implementation",
+    "Farnell, Procedural Audio in Video Games (Encyclopedia of Computer Graphics and Games, Springer)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

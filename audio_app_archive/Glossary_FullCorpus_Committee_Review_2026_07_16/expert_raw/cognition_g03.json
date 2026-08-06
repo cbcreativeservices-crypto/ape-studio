@@ -1,0 +1,223 @@
+{
+ "expert": "cognition",
+ "group": 3,
+ "reviews": [
+  {
+   "id": "075e14f2-8db4-4a9e-aef5-4fbe457d61ec",
+   "term": "Ambisonic Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bc1bfdd5-8b1e-4378-ad2c-e0b8dfeea48f",
+   "term": "Amp Rack",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7691c893-0c64-4078-9db2-a176736ef54b",
+   "term": "Ampacity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5be534f2-07b7-49f2-a6a5-00c017a64da0",
+   "term": "Amperage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a3eb56c6-2f33-41af-ba4c-382a3a6350c8",
+   "term": "Amplifier",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "695c2ac9-d6e8-40b9-81f2-2d50f5c9f1cd",
+   "term": "amplifier classes",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "82f28fbc-eeb9-405f-8865-9eda1b0b2c76",
+   "term": "Amplifier Overheating",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "976f1284-c39d-4b90-a0aa-88bd3c27f548",
+   "term": "Amplifier protection mode",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e888b683-8b5d-4b05-a374-747bae1dee2a",
+   "term": "Amplifier Ventilation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b5abc50e-bdb3-4c2f-be1b-1e571b5adad6",
+   "term": "Amplitude",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ccb36ced-21c4-4baa-921c-0e3da45cd1e1",
+   "term": "Amplitude scale",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "scenario_contexts",
+     "severity": "Medium",
+     "issue": "The scenario \"Explaining to a student why -6 dB is not 'half' the height on a linear waveform view\" is a learning trap: on a LINEAR amplitude (waveform) display, -6 dB IS approximately half the height (10^(-6/20) = 0.5). As written the statement is backwards and would teach the student a falsehood, undercutting the entry's own linear-vs-log lesson.",
+     "suggestion": "Reword to put the misconception on the dB scale, e.g.: \"Explaining to a student that -6 dB sits near the TOP of a dB meter, not halfway down, even though it is about half the amplitude on a linear waveform view.\" This preserves the intended teaching point without stating something false."
+    }
+   ]
+  },
+  {
+   "id": "26faff51-9e07-41d2-90c4-99eb5a41e71e",
+   "term": "Analog / Analogue",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "de10f849-be99-4e5f-8756-2f81981cdf7f",
+   "term": "Analog console",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c18cb059-7da2-4927-a260-5e59dffbb4c5",
+   "term": "Analog Delay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ae770c05-38eb-4261-b54c-da6b9cedbc7e",
+   "term": "Analog Recording",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8ee8510b-2321-4f52-8b0d-d459e61f9441",
+   "term": "Android Auto",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "634a4ceb-828a-4d34-98ca-63171d193780",
+   "term": "Anechoic",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "20fac9f4-4ecb-4005-900d-84822e691f8c",
+   "term": "Antenna",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8175e2bb-4e97-4242-8b17-3e38d368b845",
+   "term": "Antenna Adapter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "866dfd91-ebb6-4ef1-ab84-a34da8083b88",
+   "term": "Antenna Booster",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "42761431-0f61-478b-ba76-7f5363026336",
+   "term": "Antenna Combiner",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "48573843-61e7-4709-a75d-6afee31f1131",
+   "term": "Antenna distribution",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "07dadd2c-2114-480c-890f-645f5a6e94e4",
+   "term": "Antenna fault",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "087c418f-53e7-4675-afed-129e64afcd79",
+   "term": "Antenna Gain (dBi)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2e1d7daa-5dc0-4536-bf99-56bfce811a52",
+   "term": "Antenna Placement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4633acc5-55f6-4578-8419-5085ead3b7bd",
+   "term": "Anti-aliasing filter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8672e63d-0a52-4bb4-99b5-bc9b8989447f",
+   "term": "Anti-Skate",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8d35a94d-e330-4da1-9640-577e0943f994",
+   "term": "Antinode",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d1c620fd-91de-44d3-b777-42e0874ee553",
+   "term": "Apple CarPlay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e8963018-9732-405b-81cf-5a2d25019ea5",
+   "term": "ARC / eARC (Audio Return Channel / Enhanced Audio Return Channel)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "35aea7c9-591c-4f66-959d-8f1731e5255b",
+   "term": "Arc Flash Awareness",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1f4c5c41-95a9-4854-977b-d4eda1d959d7",
+   "term": "Archive",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8d0dc9e2-8358-4068-9f03-ee88b424fbb8",
+   "term": "Arcing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "16dfa6d8-8048-4661-b330-cd8ec099c56a",
+   "term": "Armored Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "58961882-5c54-404d-b8e8-0b60d54ceb09",
+   "term": "Array Bumper",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

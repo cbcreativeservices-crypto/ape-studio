@@ -40,7 +40,7 @@ import {
   type WaterfallOpts,
 } from './meterEngine';
 import { fonts } from '../../../theme/tokens';
-import { heatColor as levelHeatColor } from '../../../features/tools/levelColor';
+import { heatColor as levelHeatColor, levelColor, LOUDNESS_STOPS } from '../../../features/tools/levelColor';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const TAU = Math.PI * 2;
@@ -48,11 +48,11 @@ type SkPathT = ReturnType<typeof Skia.Path.Make>;
 
 // House palette (lab tokens — same hexes as micspeaker/viz + tube/viz).
 const BG = '#0c0c0f';
-const GRID = '#2c2c33';
-const GHOST = '#232329';
+const GRID = '#3a3b46';
+const GHOST = '#2e2f38';
 const WAVE = '#ffc64d';
 const ACCENT_RED = '#ff6b5e';
-const AXIS_TEXT = '#767a85';
+const AXIS_TEXT = '#9a9ca8';
 const TEACH_TEXT = '#9aa0ad';
 
 /** Copied from micspeaker/viz.tsx (house helper — no cross-lab import). */
@@ -330,23 +330,28 @@ export function SpectrumPatternView(p: {
             colors={[withAlpha(WAVE, 0.24), withAlpha(WAVE, 0.015)]}
           />
         </Path>
-        {/* Layer 2 — fine RTA bars (static bodies + live worklet tips). */}
+        {/* Layer 2 — fine RTA bars, painted by the MIDI loudness ramp so each
+            bar's height (its level) reads in the SAME colors as the left volume
+            scale — blue quiet at the floor → red loud at the top (owner
+            2026-08-05). The top of every Hz band is therefore its level color. */}
         <Path path={bars.body}>
           <LinearGradient
-            start={vec(0, PAD_T)}
-            end={vec(0, baseY)}
-            colors={[withAlpha('#ffd98a', 0.85), withAlpha(WAVE, 0.5), withAlpha('#8a6a2a', 0.32)]}
-            positions={[0, 0.45, 1]}
+            start={vec(0, baseY)}
+            end={vec(0, PAD_T)}
+            colors={LOUDNESS_STOPS.map((s) => s.color)}
+            positions={LOUDNESS_STOPS.map((s) => s.pos)}
           />
         </Path>
-        <Path path={tips} color="#ffe9b8" />
+        <Path path={tips} color={withAlpha('#ffffff', 0.55)} />
         {/* Layer 3 — the smooth glowing envelope over the bars. */}
         <GlowStroke path={envelope.curve} color={WAVE} width={2.2} />
         {/* Peak-of-pattern marker (the feedback spike's thin flag). */}
         <Path path={envelope.marker} color={markerColor} style="stroke" strokeWidth={1} opacity={0.9} />
         <Path path={envelope.marker} color={markerColor} opacity={0.9} />
       </Canvas>
-      {/* dB axis — the actual plotted range. */}
+      {/* dB axis — the actual plotted range, each label in its MIDI level color
+          (blue quiet → red loud) so the left volume scale is color-coded to
+          match the bars (owner 2026-08-05). */}
       {SPEC_DB_TICKS.map((dbV) => (
         <RNText
           key={`d${dbV}`}
@@ -357,6 +362,7 @@ export function SpectrumPatternView(p: {
             top: yOf(dbV) - 5,
             textAlign: 'right',
             ...axisText,
+            color: levelColor((dbV - SPEC_DB_FLOOR) / SPEC_DB_SPAN),
           }}
         >
           {dbV > 0 ? `+${dbV}` : `${dbV}`}
@@ -422,17 +428,23 @@ const LEGEND_SAMPLES = [1, 0.8, 0.6, 0.4, 0.2, 0];
 const LEGEND_COLORS = LEGEND_SAMPLES.map((t) => heatColor(t));
 const LEGEND_POS = LEGEND_SAMPLES.map((t) => 1 - t);
 
-/** M6 — spectrogram teaching view: time→, freq↑, color=level; scrolling
- *  cursor on the phase clock; axis teaching labels always on. */
+/** M6 — spectrogram teaching view: time→, freq↑, color=level; axis teaching
+ *  labels always on. TWO MODES (owner 2026-08-05):
+ *  'scroll' (default — how a real-time spectrogram behaves): new data emerges
+ *  at the RIGHT edge and the picture scrolls LEFT; the right edge is NOW.
+ *  'snapshot': the full loop laid out at once (left = earliest) with the
+ *  sweeping cursor — so the user can compare the complete pattern. */
 export function SpectrogramPatternView(p: {
   width: number;
   height?: number;
   pattern: SpectrogramKey;
   phase: SharedValue<number>;
+  mode?: 'scroll' | 'snapshot';
 }) {
   const w = p.width;
   const h = p.height ?? 220;
   const phase = p.phase;
+  const mode = p.mode ?? 'scroll';
   const PAD_L = 16; // rotated FREQUENCY label gutter
   const PAD_T = 6;
   const PAD_B = 14; // TIME label strip
@@ -463,6 +475,26 @@ export function SpectrogramPatternView(p: {
     path.addRect(Skia.XYWHRect(plotX, plotY, plotW, plotH));
     return path;
   }, [w, h]);
+  const plotRect = useMemo(() => Skia.XYWHRect(plotX, plotY, plotW, plotH), [w, h]);
+
+  // SCROLL mode: the loop is cyclic, so the rolling view is the memoized
+  // image drawn TWICE under a phase-driven translate inside a clip — the
+  // newest column always rides the right edge and history slides off left.
+  const scrollA = useDerivedValue(() => {
+    const u = (((phase.value / TAU) % 1) + 1) % 1;
+    return [{ translateX: plotW * (1 - u) }];
+  }, [phase, w, h]);
+  const scrollB = useDerivedValue(() => {
+    const u = (((phase.value / TAU) % 1) + 1) % 1;
+    return [{ translateX: -plotW * u }];
+  }, [phase, w, h]);
+  // Fixed NOW marker at the right edge (scroll mode).
+  const nowLine = useMemo(() => {
+    const path = Skia.Path.Make();
+    path.moveTo(plotX + plotW - 1, plotY);
+    path.lineTo(plotX + plotW - 1, plotY + plotH);
+    return path;
+  }, [w, h]);
 
   const legend = useMemo(() => {
     const path = Skia.Path.Make();
@@ -491,12 +523,34 @@ export function SpectrogramPatternView(p: {
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        {buckets.map((path, i) => (
-          <Path key={i} path={path} color={HEAT_BUCKETS[i]} />
-        ))}
-        {/* Live column highlight + sweep line (worklet, phase clock). */}
-        <Path path={cursorBand} color="#ffffff" opacity={0.1} />
-        <Path path={cursorLine} color={WAVE} style="stroke" strokeWidth={1.2} opacity={0.8} />
+        {mode === 'scroll' ? (
+          <>
+            {/* Rolling history: two copies of the loop image slide left under
+                the clip; the seam is the loop boundary. Right edge = NOW. */}
+            <Group clip={plotRect}>
+              <Group transform={scrollA}>
+                {buckets.map((path, i) => (
+                  <Path key={`a${i}`} path={path} color={HEAT_BUCKETS[i]} />
+                ))}
+              </Group>
+              <Group transform={scrollB}>
+                {buckets.map((path, i) => (
+                  <Path key={`b${i}`} path={path} color={HEAT_BUCKETS[i]} />
+                ))}
+              </Group>
+            </Group>
+            <Path path={nowLine} color={WAVE} style="stroke" strokeWidth={1.6} opacity={0.85} />
+          </>
+        ) : (
+          <>
+            {buckets.map((path, i) => (
+              <Path key={i} path={path} color={HEAT_BUCKETS[i]} />
+            ))}
+            {/* Live column highlight + sweep line (worklet, phase clock). */}
+            <Path path={cursorBand} color="#ffffff" opacity={0.1} />
+            <Path path={cursorLine} color={WAVE} style="stroke" strokeWidth={1.2} opacity={0.8} />
+          </>
+        )}
         <Path path={frame} color={GRID} style="stroke" strokeWidth={1.2} />
         {/* Color-scale legend strip (hot at the top). */}
         <Path path={legend}>
@@ -519,7 +573,7 @@ export function SpectrogramPatternView(p: {
           ...teachText,
         }}
       >
-        TIME →
+        {mode === 'scroll' ? 'OLDER ←  TIME  → NOW' : 'TIME → · FULL 5 s SNAPSHOT'}
       </RNText>
       <RNText
         style={{
@@ -581,15 +635,17 @@ export function SpectrogramPatternView(p: {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // M7 ⭐⭐ — WaterfallView: the FLAGSHIP. CSD-style pseudo-3D mountain range:
-// X = frequency (log), Y = amplitude, Z = time receding up-right. 56 slices ×
-// 140 log-spaced frequency points; each slice is a CLOSED filled path drawn
-// back-to-front with an OPAQUE fill so nearer slices occlude farther ones —
-// the classic hidden-line CSD look. All geometry frozen in useMemo; the
-// build → hold → collapse loop animates ONLY per-slice opacity windows.
+// X = frequency (log), Y = amplitude, Z = TIME. ORIENTATION (owner 2026-08-05,
+// Altiverb reference screenshots): the loud start (t=0) stands TALL AT THE
+// BACK (upper-right) and each LATER instant steps down-forward toward the
+// viewer — the decay cascades toward you, every slice's front face visible,
+// instead of hiding behind a tall t=0 front wall. 56 slices × 140 log-spaced
+// frequency points; each slice is a CLOSED filled path drawn back-to-front
+// with an OPAQUE fill so nearer slices occlude farther ones — the classic
+// hidden-line CSD look. All geometry frozen in useMemo; the build → hold →
+// collapse loop animates ONLY per-slice opacity windows.
 //
-// RE-SKIN per the owner's reference CSD screenshot (2026-07-29), MIRRORED
-// left-right — the reference recedes upper-LEFT, ours keeps its upper-RIGHT
-// recession and adopts the rest of the grammar:
+// Grammar per the owner's reference CSD screenshots:
 //   • frequency labels across the TOP (30 · 120 · 440 · 1.6k · 6k · 20k) with
 //     thin white posts rising from the front edge, and floor guide lines
 //     running into the depth parallel to the recession;
@@ -603,9 +659,10 @@ export function SpectrogramPatternView(p: {
 // memoization, and the animation architecture are all unchanged.
 
 const WF_SLICES = 56;
-// 3.0 s front→back (owner 2026-07-29, reference CSD): a round span so the
-// 1-second floor division lines land on 1 / 2 / 3 Sec exactly.
-const WF_T_MAX = 3.0; // seconds spanned front (t=0) → back
+// 3.0 s span (owner 2026-07-29, reference CSD): a round span so the 1-second
+// floor division lines land on 1 / 2 / 3 Sec exactly. Time runs BACK (t=0,
+// the loud start) → FRONT (t=3 s, fully decayed) per the 2026-08-05 flip.
+const WF_T_MAX = 3.0; // seconds spanned back (t=0) → front
 const WF_T_DIVISIONS = [1, 2, 3]; // labeled 1-second floor division lines
 const WF_DB_TOP = 12;
 const WF_DB_FLOOR = -60;
@@ -632,8 +689,9 @@ const rgbStr = (c: [number, number, number]) => `rgb(${c[0]},${c[1]},${c[2]})`;
 // slice carries the same vertical amplitude ramp — deep red at the base →
 // orange → yellow → white-hot at ridge peaks. The gradient is anchored to the
 // slice's FULL amplitude range (yTop…yBase), so a ridge only reaching halfway
-// up only reaches the orange band: color = height. DEPTH then dims: older
-// slices mix toward a cool dark, so the front is hot and the back recedes.
+// up only reaches the orange band: color = height. AGE then dims: older
+// slices mix toward a cool dark, so the t=0 back ridge is hot and the decayed
+// front cools toward the viewer (2026-08-05 time flip).
 // All stops stay OPAQUE — the hidden-line occlusion depends on opaque fills.
 const WF_HEAT_STOPS: { pos: number; rgb: [number, number, number] }[] = [
   { pos: 0, rgb: [255, 246, 214] }, // white-hot — ridge peaks
@@ -699,15 +757,20 @@ function WfSlice({
   const op = useDerivedValue(() => {
     if (!animate) return 1;
     const u = (((phase.value / TAU) % 1) + 1) % 1;
+    // Time-flipped ordering (owner 2026-08-05): the t=0 slice is the BACK
+    // (highest index), so the build reveals back → front (the impulse flashes
+    // at the back and the decay cascades toward the viewer), and the melt
+    // removes the oldest (front) slices first.
+    const ri = WF_SLICES - 1 - index; // 0 = the t=0 back slice … N−1 = oldest front
     if (u < WF_GROW_END) {
-      // Phase A: the mountain grows backward, slice by slice.
+      // Phase A: the decay cascades forward, slice by slice.
       const g = easeInOutW(u / WF_GROW_END) * WF_SLICES;
-      return Math.max(0, Math.min(1, g - index));
+      return Math.max(0, Math.min(1, g - ri));
     }
     if (u < WF_HOLD_END) return 1; // Phase B: hold
-    // Phase C: the range melts from the back (oldest) forward.
+    // Phase C: the range melts oldest-first (front → back).
     const c = easeInOutW((u - WF_HOLD_END) / (1 - WF_HOLD_END)) * WF_SLICES;
-    return Math.max(0, Math.min(1, WF_SLICES - index - c));
+    return Math.max(0, Math.min(1, WF_SLICES - ri - c));
   }, [phase, animate, index]);
   return (
     <Group opacity={op}>
@@ -788,7 +851,12 @@ export function WaterfallView(p: {
       const oy = baseY - dyTot * cum;
       const sw = frontW * (1 - 0.2 * cum);
       const amp = ampH * (1 - 0.18 * cum);
-      const t = (i / (WF_SLICES - 1)) * WF_T_MAX;
+      // TIME FLIP (owner 2026-08-05, Altiverb reference): the loud start (t=0)
+      // stands tall at the BACK; each LATER instant steps down toward the
+      // viewer — the decay cascades toward you instead of hiding behind a
+      // tall front wall. So depth cum=1 (back) is t=0 and cum=0 (front) is
+      // the oldest, most-decayed slice.
+      const t = (1 - i / (WF_SLICES - 1)) * WF_T_MAX;
       const stroke = Skia.Path.Make();
       const fill = Skia.Path.Make();
       fill.moveTo(ox, oy);
@@ -803,26 +871,28 @@ export function WaterfallView(p: {
       }
       fill.lineTo(ox + sw, oy);
       fill.close();
-      // Height-graded heat, depth-dimmed: the deeper (older) the slice, the
-      // further every stop mixes toward the cool dark — front hot, back cool.
-      const dim = 0.62 * cum;
+      // Height-graded heat, AGE-dimmed (owner 2026-08-05): the t=0 back ridge
+      // stays white-hot (Altiverb's bright crest); slices cool toward the dark
+      // as they age forward toward the viewer. Perspective width (swid) still
+      // follows depth.
+      const age = t / WF_T_MAX; // 0 = the loud start … 1 = fully decayed
+      const dim = 0.62 * age;
       slices.push({
         fill,
         stroke,
-        strokeColor: rgbStr(mixRgb(WF_STROKE_RGB, WF_COOL_DARK, 0.7 * cum)),
+        strokeColor: rgbStr(mixRgb(WF_STROKE_RGB, WF_COOL_DARK, 0.7 * age)),
         fillColors: WF_HEAT_STOPS.map((st) => rgbStr(mixRgb(st.rgb, WF_COOL_DARK, dim))),
         swid: 1.7 - 0.8 * cum,
-        strokeOpacity: 1 - 0.4 * cum,
+        strokeOpacity: 1 - 0.4 * age,
         yTop: oy - amp,
         yBase: oy,
       });
     }
-    // THE 2-D SIDE PROFILE (the reference's green curve): the CURRENT (front,
-    // t=0) slice's spectrum re-drawn as a flat silhouette standing on the
-    // OUTER SIDE PLANE — the plane where the front slice's right end meets
-    // the receding time axis. Frequency runs along the recession direction;
-    // height is the same a01 × (depth-shrunk) amplitude the slices use. One
-    // fill + one stroke, derived from the already-computed spec[] — cheap.
+    // THE 2-D SIDE PROFILE (the reference's green curve): the t=0 spectrum —
+    // now the BACK slice after the time flip — re-drawn as a flat silhouette
+    // standing on the OUTER SIDE PLANE along the time axis. Frequency runs
+    // along the recession direction; height is the same a01 × (depth-shrunk)
+    // amplitude the slices use. One fill + one stroke from spec[] — cheap.
     const xR0 = xL0 + frontW;
     const sideFill = Skia.Path.Make();
     const sideStroke = Skia.Path.Make();
@@ -839,12 +909,13 @@ export function WaterfallView(p: {
     }
     sideFill.lineTo(xR0 + dxTot, baseY - dyTot);
     sideFill.close();
-    // 1-SECOND FLOOR DIVISION LINES (owner 2026-07-29, reference CSD): one
-    // line across the floor at every whole second of the 3 s span, receding
-    // with the perspective, each labeled at its right end — the ridges cross
-    // them during the collapse, so the viewer SEES time going by.
+    // 1-SECOND FLOOR DIVISION LINES (owner 2026-07-29 + 2026-08-05 Altiverb
+    // reference): one line across the floor at every whole second, each
+    // labeled at its right end — the ridges cross them during the decay, so
+    // the viewer SEES time going by. With the time flip, t=0 lives at the
+    // BACK, so each second's band steps FORWARD toward the viewer.
     const timeMarks = WF_T_DIVISIONS.map((tSec) => {
-      const iF = (tSec / WF_T_MAX) * (WF_SLICES - 1);
+      const iF = (1 - tSec / WF_T_MAX) * (WF_SLICES - 1);
       const cum = norm > 0 ? (1 - Math.pow(q, iF)) / norm : 0;
       const x0 = xL0 + dxTot * cum;
       const y = baseY - dyTot * cum;
@@ -886,13 +957,15 @@ export function WaterfallView(p: {
     const ay0 = geo.baseY - 2;
     const ax1 = ax0 + geo.dxTot * 0.9;
     const ay1 = ay0 - geo.dyTot * 0.9;
+    // Time now increases TOWARD the viewer (t=0 at the back), so the arrow
+    // points down-forward: tail at the back corner, head at the front.
     const arrow = Skia.Path.Make();
-    arrow.moveTo(ax0, ay0);
-    arrow.lineTo(ax1, ay1);
-    const angA = Math.atan2(ay1 - ay0, ax1 - ax0);
+    arrow.moveTo(ax1, ay1);
+    arrow.lineTo(ax0, ay0);
+    const angA = Math.atan2(ay0 - ay1, ax0 - ax1);
     for (const s of [-1, 1]) {
-      arrow.moveTo(ax1, ay1);
-      arrow.lineTo(ax1 - 6 * Math.cos(angA - s * 0.42), ay1 - 6 * Math.sin(angA - s * 0.42));
+      arrow.moveTo(ax0, ay0);
+      arrow.lineTo(ax0 - 6 * Math.cos(angA - s * 0.42), ay0 - 6 * Math.sin(angA - s * 0.42));
     }
     const ref = Skia.Path.Make();
     const rx = geo.xL0 - 8;
@@ -937,7 +1010,8 @@ export function WaterfallView(p: {
         {/* Floor grammar UNDER the mountains: depth guide lines + the labeled
             1-second division lines — ridges cross them as time goes by. */}
         <Path path={axes.depthGuides} color="#3a3e49" style="stroke" strokeWidth={1} />
-        <Path path={axes.timeLines} color="#565b68" style="stroke" strokeWidth={1.1} />
+        {/* 1-second bands — bright, Altiverb-style, so time is unmissable. */}
+        <Path path={axes.timeLines} color="#c6ccda" style="stroke" strokeWidth={1.3} opacity={0.75} />
         <Path path={axes.arrow} color="#4b4e58" style="stroke" strokeWidth={1.2} strokeCap="round" />
         {/* The mountain range: BACK-TO-FRONT so opaque fills occlude. */}
         {Array.from({ length: WF_SLICES }, (_, k) => {
@@ -957,8 +1031,8 @@ export function WaterfallView(p: {
             opacity={0.9}
           />
         </Group>
-        {/* Phase A impulse flash on the front slice. */}
-        <Path path={geo.slices[0].stroke} color="#ffffff" style="stroke" strokeWidth={2.6} opacity={flashOp}>
+        {/* Phase A impulse flash on the t=0 slice — the BACK ridge. */}
+        <Path path={geo.slices[WF_SLICES - 1].stroke} color="#ffffff" style="stroke" strokeWidth={2.6} opacity={flashOp}>
           <BlurMask blur={5} style="normal" />
         </Path>
         {/* Thin white frequency posts OVER the range (reference grammar). */}
@@ -972,17 +1046,18 @@ export function WaterfallView(p: {
           key={`f${d.f}`}
           style={{
             position: 'absolute',
-            left: Math.max(0, Math.min(w - 30, geo.xL0 + lgFrac(d.f) * geo.frontW - 15)),
-            width: 30,
+            left: Math.max(0, Math.min(w - 34, geo.xL0 + lgFrac(d.f) * geo.frontW - 17)),
+            width: 34,
             top: 2,
             textAlign: 'center',
             ...axisText,
+            fontSize: 11,
           }}
         >
           {d.label}
         </RNText>
       ))}
-      <RNText style={{ position: 'absolute', left: 1, top: 2, width: 24, textAlign: 'left', ...teachText }}>
+      <RNText style={{ position: 'absolute', left: 1, top: 2, width: 26, textAlign: 'left', ...teachText, fontSize: 11 }}>
         Hz
       </RNText>
       {/* 1-second division labels riding the right ends of the floor lines. */}
@@ -991,11 +1066,11 @@ export function WaterfallView(p: {
           key={`t${m.t}`}
           style={{
             position: 'absolute',
-            left: Math.max(0, Math.min(w - 36, m.x1 + 5)),
-            width: 36,
-            top: m.y - 4,
+            left: Math.max(0, Math.min(w - 40, m.x1 + 5)),
+            width: 40,
+            top: m.y - 5,
             fontFamily: fonts.mono,
-            fontSize: 7.5,
+            fontSize: 10,
             color: AXIS_TEXT,
           }}
         >
@@ -1006,26 +1081,42 @@ export function WaterfallView(p: {
       <RNText
         style={{
           position: 'absolute',
-          left: Math.min(w - 34, (axes.ax0 + axes.ax1) / 2 + 2),
-          top: (axes.ay0 + axes.ay1) / 2 - 5,
+          left: Math.min(w - 40, (axes.ax0 + axes.ax1) / 2 + 2),
+          top: (axes.ay0 + axes.ay1) / 2 - 6,
           ...teachText,
+          fontSize: 11,
         }}
       >
         TIME
       </RNText>
+      {/* Time now ends at the FRONT (t=0 is the back ridge). */}
       <RNText
         style={{
           position: 'absolute',
-          left: Math.max(0, Math.min(w - 32, axes.ax1 - 26)),
-          top: Math.max(0, axes.ay1 - 13),
-          width: 32,
+          left: Math.max(0, Math.min(w - 36, axes.ax0 - 30)),
+          top: Math.min(h - 12, axes.ay0 + 3),
+          width: 36,
           textAlign: 'center',
           fontFamily: fonts.mono,
-          fontSize: 7.5,
+          fontSize: 10,
           color: AXIS_TEXT,
         }}
       >
         {`${WF_T_MAX} s`}
+      </RNText>
+      <RNText
+        style={{
+          position: 'absolute',
+          left: Math.max(0, Math.min(w - 24, axes.ax1 - 4)),
+          top: Math.max(0, axes.ay1 - 13),
+          width: 24,
+          textAlign: 'center',
+          fontFamily: fonts.mono,
+          fontSize: 10,
+          color: AXIS_TEXT,
+        }}
+      >
+        0
       </RNText>
       {/* dB height reference. */}
       {axes.dbTickYs.map(({ dbV, y }) => (
@@ -1034,11 +1125,11 @@ export function WaterfallView(p: {
           style={{
             position: 'absolute',
             left: 0,
-            width: geo.xL0 - 12,
-            top: y - 4.5,
+            width: geo.xL0 - 10,
+            top: y - 5,
             textAlign: 'right',
             fontFamily: fonts.mono,
-            fontSize: 7.5,
+            fontSize: 10,
             color: AXIS_TEXT,
           }}
         >
@@ -1049,10 +1140,11 @@ export function WaterfallView(p: {
         style={{
           position: 'absolute',
           left: 0,
-          width: geo.xL0 - 10,
-          top: geo.baseY - geo.ampH - 13,
+          width: geo.xL0 - 8,
+          top: geo.baseY - geo.ampH - 14,
           textAlign: 'right',
           ...teachText,
+          fontSize: 11,
         }}
       >
         dB

@@ -36,6 +36,23 @@ const CURRICULUM_INTRO =
 /** Thousands separator without relying on Intl (limited under Hermes). */
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
+/** Spinning number placeholder shown in the GLOSSARY TERMS tile while the count
+ *  loads (owner 2026-08-05, item 3): the digits roll in the same green until the
+ *  official count arrives and replaces it. Deterministic (no Math.random). */
+function SpinningCount({ color }: { color: string }) {
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 90);
+    return () => clearInterval(id);
+  }, []);
+  const rolling = 10000 + ((tick * 7349) % 89999); // rolling 5-digit value
+  return (
+    <Text style={[styles.statValue, { color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+      {fmt(rolling)}
+    </Text>
+  );
+}
+
 /**
  * CurriculumView — overview + expandable curriculum tree + academic goals,
  * WITHOUT a screen header. Rendered as page 1 of the Awards pager. `showBrand`
@@ -85,18 +102,22 @@ export function CurriculumView({
       <View style={styles.statsRow}>
         {(
           [
-            { v: stats.totalTerms != null ? fmt(stats.totalTerms) : '—', label: 'GLOSSARY TERMS', color: '#37e05f' },
+            { v: stats.totalTerms != null ? fmt(stats.totalTerms) : '—', label: 'GLOSSARY TERMS', color: '#37e05f', spin: stats.totalTerms == null },
             { v: MATRIX_TOPIC_COUNT, label: 'STUDY TOPICS', color: colors.textPrimary },
             { v: MATRIX_SUBJECT_COUNT, label: 'SUBJECT CATEGORIES', color: '#ffc64d' },
             { v: SPECIALIZED_CERTIFICATES.length, label: 'CERTIFICATES AVAILABLE', color: '#5bb0ff', nav: 'specialization' },
             { v: PROGRAM_PATHS.length, label: 'PROGRAMS AVAILABLE', color: '#c4a2ff', nav: 'program' },
-          ] as { v: string | number; label: string; color: string; nav?: 'specialization' | 'program' }[]
+          ] as { v: string | number; label: string; color: string; nav?: 'specialization' | 'program'; spin?: boolean }[]
         ).map((s) => {
           const inner = (
             <>
-              <Text style={[styles.statValue, { color: s.color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
-                {s.v}
-              </Text>
+              {s.spin ? (
+                <SpinningCount color={s.color} />
+              ) : (
+                <Text style={[styles.statValue, { color: s.color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+                  {s.v}
+                </Text>
+              )}
               {/* Second word stacked below the first (user request 2026-07-22). */}
               <Text style={styles.statLabel} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>
                 {s.label.replace(' ', '\n')}

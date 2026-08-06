@@ -1,0 +1,330 @@
+{
+ "batch": 302,
+ "topic": "Hearing Anatomy & Function",
+ "authored": [
+  {
+   "id": "2968c09e-e12e-4be3-ad01-288ce9343bd9",
+   "term": "Interaural coherence",
+   "fields": {
+    "definition": "The degree of similarity between the sound signals arriving at the two ears, expressed as the normalized interaural cross-correlation coefficient (IACC) ranging from 0 (completely dissimilar) to 1 (identical). Lower coherence is associated with greater apparent source width and a more enveloping, spacious sound field.",
+    "plain_english": "A number that shows how alike the sounds reaching your two ears are. When they are nearly the same, a sound feels tight and easy to pinpoint; when they differ, it feels wide and wrapped around you.",
+    "purpose_function": "It measures how similar the left- and right-ear signals are, a comparison the brain uses to judge how wide a source sounds and how enveloping a space feels. It exists because binaural hearing works by comparing the two ear signals.",
+    "practical_application": "Acousticians measure interaural cross-correlation (IACC) to predict spaciousness in halls, and engineers decorrelate reverb or space microphones to widen or tighten a stereo or immersive image.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Interaural time difference model",
+     "Interaural level difference model",
+     "Apparent source width",
+     "Spaciousness",
+     "Binaural hearing",
+     "Cross-correlation"
+    ],
+    "common_mistakes": [
+     "Assuming higher coherence always sounds better; lower coherence is what creates a wide, enveloping image.",
+     "Confusing interaural coherence with signal level or loudness, which it does not measure.",
+     "Thinking a mono signal panned center has low coherence; identical ear signals give coherence near 1."
+    ],
+    "scenario_contexts": [
+     "Measuring IACC in a concert hall to rate its spaciousness and listener envelopment.",
+     "Decorrelating reverb returns in a mix to widen the stereo image.",
+     "Choosing spaced versus coincident microphone techniques for a wider or tighter recording."
+    ]
+   },
+   "sources": [
+    "Blauert, Spatial Hearing: The Psychophysics of Human Sound Localization (MIT Press)",
+    "Beranek, Concert Halls and Opera Houses: Music, Acoustics, and Architecture",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "737a753f-7c2e-42de-b121-13905d696e44",
+   "term": "Interaural level difference model",
+   "fields": {
+    "definition": "A model of horizontal sound localization based on the difference in sound-pressure level between the two ears, caused by acoustic shadowing of the head. It dominates localization at higher frequencies (roughly above 1.5 kHz), where the head is large relative to the wavelength and casts a stronger shadow.",
+    "plain_english": "A way of explaining how you tell left from right using loudness. Your head blocks some of the sound, so the far ear hears it a little quieter, and your brain reads that gap to place the sound. It works best for high, hissy sounds.",
+    "purpose_function": "It explains and predicts how the auditory system locates sources using level differences between the ears, mainly in the high frequencies where the head casts an acoustic shadow.",
+    "practical_application": "It underlies pan-pot laws, binaural and HRTF processing, and stereo miking; engineers rely on level differences between channels to place and widen images, especially in the highs.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Interaural time difference model",
+     "Interaural coherence",
+     "Head-related transfer function",
+     "Sound localization",
+     "Head shadow",
+     "Precedence-effect analysis"
+    ],
+    "common_mistakes": [
+     "Assuming level differences work equally at all frequencies; they are weak at low frequencies where the head does not shadow.",
+     "Confusing interaural level difference (level cue) with interaural time difference (timing cue).",
+     "Believing amplitude panning alone reproduces full, natural 3D localization."
+    ],
+    "scenario_contexts": [
+     "Setting pan positions on a console, where high-frequency content localizes largely by level.",
+     "Designing HRTF-based binaural rendering for headphones or VR.",
+     "Diagnosing why a low-frequency, boomy source is hard to localize in a room."
+    ]
+   },
+   "sources": [
+    "Blauert, Spatial Hearing: The Psychophysics of Human Sound Localization (MIT Press)",
+    "Moore, An Introduction to the Psychology of Hearing",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "397c7020-452e-4609-b97d-d727afddd82f",
+   "term": "Interaural time difference model",
+   "fields": {
+    "definition": "A model of horizontal sound localization based on the difference in arrival time, and ongoing phase, of a sound at the two ears due to the path-length difference around the head. It dominates localization below about 1.5 kHz, with a maximum interaural delay of roughly 600-700 microseconds for a source directly to one side.",
+    "plain_english": "A way of explaining how you tell left from right using timing. A sound off to one side reaches the near ear a hair sooner, and your brain uses that tiny head start to place it. It works best for low sounds.",
+    "purpose_function": "It explains and predicts how the auditory system locates sources using time and phase differences between the ears, the dominant cue at low frequencies where level differences are small.",
+    "practical_application": "It underlies spaced-pair (A/B) microphone techniques and binaural recording; engineers exploit small inter-channel time differences to create width and stable low-frequency imaging.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Interaural level difference model",
+     "Interaural coherence",
+     "Head-related transfer function",
+     "Sound localization",
+     "Precedence-effect analysis",
+     "Binaural hearing"
+    ],
+    "common_mistakes": [
+     "Assuming timing cues work at all frequencies; above about 1.5 kHz the phase becomes ambiguous within a wavelength.",
+     "Confusing interaural time difference (timing cue) with interaural level difference (loudness cue).",
+     "Thinking the delay is large; the maximum is under about 0.7 milliseconds."
+    ],
+    "scenario_contexts": [
+     "Explaining why low-frequency sources are localized mainly by timing between the ears.",
+     "Setting spacing on a spaced-pair (A/B) stereo array to capture time differences for width.",
+     "Making a binaural recording with a dummy head that preserves inter-ear delays."
+    ]
+   },
+   "sources": [
+    "Blauert, Spatial Hearing: The Psychophysics of Human Sound Localization (MIT Press)",
+    "Moore, An Introduction to the Psychology of Hearing",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3b964bfe-65c0-4edf-8cde-b9f389c79fa2",
+   "term": "Listener preference model",
+   "fields": {
+    "definition": "A statistical or psychoacoustic model that predicts listeners' subjective preference from objective measurements, for example predicting loudspeaker preference ratings from anechoic frequency-response metrics, or concert-hall preference from measured acoustic parameters. It links measurable physical properties to the average judgment of a listening population.",
+    "plain_english": "A math tool that guesses which sound most people will prefer, using measurements alone. Instead of asking a big panel to rate every speaker, you feed in the numbers and it predicts the likely winner.",
+    "purpose_function": "It lets designers estimate perceived quality without running a full listening panel, by tying measurable parameters such as flatness and smoothness of response to average listener preference.",
+    "practical_application": "Loudspeaker engineers rank prototypes using predicted-preference ratings from anechoic spinorama data, and room or hall designers weigh reflection and reverberation choices against preference models.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Loudspeaker perception study",
+     "Perceptual evaluation protocol",
+     "Frequency response",
+     "Anechoic measurement",
+     "Double-blind listening test",
+     "Sound quality"
+    ],
+    "common_mistakes": [
+     "Treating a predicted preference score as an exact verdict rather than a population average with spread.",
+     "Applying a model outside the conditions and program material it was trained on.",
+     "Assuming personal taste always tracks the model; individual and trained-listener preferences can differ."
+    ],
+    "scenario_contexts": [
+     "Ranking loudspeaker prototypes from anechoic spinorama data before building listening panels.",
+     "Predicting concert-hall preference from acoustic parameters during design.",
+     "Screening headphone tunings against a preference target curve."
+    ]
+   },
+   "sources": [
+    "Toole, Sound Reproduction: The Acoustics and Psychoacoustics of Loudspeakers and Rooms",
+    "Olive, A Multiple Regression Model for Predicting Loudspeaker Preference (AES)",
+    "Ando, Concert Hall Acoustics"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b79ddc1b-0414-4381-859d-6673ebd24d5c",
+   "term": "Loudspeaker perception study",
+   "fields": {
+    "definition": "A controlled subjective listening test that evaluates how listeners perceive loudspeaker sound quality, typically double-blind, level-matched, and position-controlled to remove bias. Its results are related back to measured performance such as anechoic frequency response and directivity.",
+    "plain_english": "A careful listening test that finds out how speakers really sound to people. Listeners judge them without knowing the brand and at matched loudness, so the choice is fair, and the results are tied back to the speaker's measurements.",
+    "purpose_function": "It provides trustworthy subjective data on loudspeaker quality by controlling bias, so engineers can learn which measured properties actually predict what listeners prefer.",
+    "practical_application": "Manufacturers and studios run blind, level-matched speaker comparisons to select monitors and to validate designs against measurements during research and development.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Listener preference model",
+     "Perceptual evaluation protocol",
+     "Double-blind listening test",
+     "Level matching",
+     "Frequency response",
+     "Anechoic measurement"
+    ],
+    "common_mistakes": [
+     "Running sighted comparisons, so brand, price, and appearance bias the result.",
+     "Failing to match levels; the louder speaker is usually preferred regardless of quality.",
+     "Ignoring position and room effects by not swapping speakers into the same location."
+    ],
+    "scenario_contexts": [
+     "Running a double-blind, level-matched speaker shootout to choose studio monitors.",
+     "Correlating listener ratings with anechoic measurements in a manufacturer's research lab.",
+     "Training a listening panel and screening for reliable, consistent listeners."
+    ]
+   },
+   "sources": [
+    "Toole, Sound Reproduction: The Acoustics and Psychoacoustics of Loudspeakers and Rooms",
+    "Bech & Zacharov, Perceptual Audio Evaluation: Theory, Method and Application",
+    "AES20, Recommended Practice for Professional Audio - Subjective Evaluation of Loudspeakers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "94384649-5671-40fe-91ee-5cd38f6c9ef5",
+   "term": "Perceptual evaluation protocol",
+   "fields": {
+    "definition": "A standardized procedure for the subjective assessment of audio quality that specifies the test method, stimuli, listener screening, grading scale, and statistical analysis. Well-known examples include ITU-R BS.1116 for small impairments and ITU-R BS.1534 (MUSHRA) for intermediate-quality evaluation.",
+    "plain_english": "An agreed rulebook for running a listening test the right way. It sets how to pick listeners, play the clips, hide the labels, and score results, so different tests can be trusted and compared.",
+    "purpose_function": "It removes bias and makes listening tests repeatable and comparable across labs by fixing every step, from listener selection to scoring, so results are statistically meaningful.",
+    "practical_application": "Engineers follow protocols such as MUSHRA or BS.1116 when comparing codecs, processors, or devices, and use ABX tests to check whether a change is even audible.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Loudspeaker perception study",
+     "Listener preference model",
+     "MUSHRA",
+     "ABX test",
+     "Double-blind listening test",
+     "Just-noticeable difference"
+    ],
+    "common_mistakes": [
+     "Skipping listener screening and training, which adds noise and unreliable scores.",
+     "Using the wrong protocol for the impairment size, such as MUSHRA for very small differences that BS.1116 targets.",
+     "Reporting results without hidden reference and anchor conditions, so the scale has no fixed meaning."
+    ],
+    "scenario_contexts": [
+     "Running a MUSHRA test to compare audio codecs at matched bitrate.",
+     "Using ITU-R BS.1116 to assess small impairments in a new processor.",
+     "Setting up an ABX test to confirm whether a processing change is audible."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1534 (MUSHRA), Method for the subjective assessment of intermediate quality level of audio systems",
+    "ITU-R BS.1116, Methods for the subjective assessment of small impairments in audio systems",
+    "Bech & Zacharov, Perceptual Audio Evaluation: Theory, Method and Application"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a1cfe1d3-0d0f-4129-bc65-857cdc717da9",
+   "term": "Precedence-effect analysis",
+   "fields": {
+    "definition": "The study of the precedence effect (the law of the first wavefront, or Haas effect), in which a sound and a delayed copy arriving from different directions within roughly 1-40 ms are heard as one event localized toward the first-arriving wavefront. It characterizes how the later sound is fused with the first and not localized separately until it exceeds the echo threshold.",
+    "plain_english": "A look at how your ears lock onto the first sound to arrive. If a copy follows within a few thousandths of a second, you still hear one sound from the first direction. That is why a delayed speaker does not pull your ear off the stage.",
+    "purpose_function": "It explains how the hearing system fuses early reflections with the direct sound and localizes toward the first arrival, which is essential for hearing clearly in reflective rooms.",
+    "practical_application": "Sound designers add delay to fill and delay loudspeakers so the audience localizes toward the stage, typically setting reinforcement to arrive a few to a few tens of milliseconds after the direct sound.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Haas effect",
+     "Interaural time difference model",
+     "Sound localization",
+     "Delay",
+     "Echo threshold",
+     "Comb filtering"
+    ],
+    "common_mistakes": [
+     "Setting delay too long, so the second sound crosses the echo threshold and is heard as a distinct echo.",
+     "Assuming the effect holds at any delay; it breaks down beyond roughly 40 ms depending on the signal.",
+     "Confusing the precedence effect with electronic echo cancellation, which is a different process."
+    ],
+    "scenario_contexts": [
+     "Time-aligning delay and fill loudspeakers so the audience localizes toward the stage.",
+     "Setting a short Haas delay on a vocal for width without a heard echo.",
+     "Diagnosing when a strong reflection becomes an audible echo in a room."
+    ]
+   },
+   "sources": [
+    "Blauert, Spatial Hearing: The Psychophysics of Human Sound Localization (MIT Press)",
+    "Everest & Pohlmann, Master Handbook of Acoustics",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f15ace81-7af2-49f7-b988-f6d00e8d1e5f",
+   "term": "Psychoacoustic masking threshold",
+   "fields": {
+    "definition": "The sound level below which a target signal becomes inaudible in the presence of a louder masker sound. The masker raises the hearing threshold for nearby frequencies, tracing a masking threshold curve that perceptual audio coders exploit to discard inaudible detail.",
+    "plain_english": "The loudness line under which one sound gets hidden by a louder one. A strong tone lifts this line for nearby pitches, so quieter sounds beneath it simply vanish, much as a shout drowns out a whisper next to it.",
+    "purpose_function": "It defines what can be removed or coarsely coded without an audible change, which is the basis of lossy audio compression such as MP3 and AAC, and it explains why one sound buries another.",
+    "practical_application": "Perceptual codecs compute the masking threshold to decide which spectral detail to discard or quantize coarsely, and engineers use the same idea to understand why a loud instrument masks a quieter one in a mix.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Simultaneous masking analysis",
+     "Critical band",
+     "Absolute threshold of hearing",
+     "Temporal masking",
+     "Perceptual audio coding",
+     "Loudness"
+    ],
+    "common_mistakes": [
+     "Thinking a masked sound has been deleted; it is still present but falls below the raised threshold.",
+     "Assuming the threshold is flat; it rises most near the masker's frequency and within the same critical band.",
+     "Confusing the masking threshold with the absolute threshold of hearing in quiet."
+    ],
+    "scenario_contexts": [
+     "Tuning an MP3 or AAC encoder's psychoacoustic model so quantization noise stays masked.",
+     "Understanding why a loud guitar buries a quiet shaker in a mix.",
+     "Choosing EQ carving so overlapping instruments stop masking each other."
+    ]
+   },
+   "sources": [
+    "Zwicker & Fastl, Psychoacoustics: Facts and Models",
+    "Moore, An Introduction to the Psychology of Hearing",
+    "Bosi & Goldberg, Introduction to Digital Audio Coding and Standards"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d690c78f-1c4b-497b-bd19-a72926cd74f8",
+   "term": "Simultaneous masking analysis",
+   "fields": {
+    "definition": "The study of masking that occurs when the masker and target sound are present at the same time, quantifying how a masker raises the detection threshold of other simultaneous sounds as a function of frequency. Masking is greatest within the same critical band and spreads more strongly upward in frequency than downward.",
+    "plain_english": "A study of how a sound hides another that plays at the same moment. A loud tone hides quieter tones close to its pitch, and it blocks higher pitches more than lower ones, much as a bright light makes nearby dim stars disappear.",
+    "purpose_function": "It characterizes how simultaneous sounds mask each other across the spectrum, which underpins codec bit allocation and explains why instruments sharing a frequency range fight for audibility.",
+    "practical_application": "Codec designers use simultaneous masking curves to allocate bits and hide quantization noise, and engineers use the same idea when carving overlapping EQ so a lead cuts through a dense mix.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Psychoacoustic masking threshold",
+     "Temporal masking",
+     "Critical band",
+     "Frequency masking",
+     "Perceptual audio coding",
+     "Absolute threshold of hearing"
+    ],
+    "common_mistakes": [
+     "Confusing simultaneous (spectral) masking with temporal masking, which acts across short time gaps.",
+     "Assuming masking spreads equally up and down in frequency; it spreads more strongly upward.",
+     "Believing a sound must be louder than the masker overall to be heard; it only needs to exceed the local threshold."
+    ],
+    "scenario_contexts": [
+     "Explaining why a kick drum masks a bass note that shares the same frequency band.",
+     "Designing codec bit allocation using simultaneous masking curves.",
+     "Carving overlapping EQ regions so a lead vocal cuts through the mix."
+    ]
+   },
+   "sources": [
+    "Zwicker & Fastl, Psychoacoustics: Facts and Models",
+    "Moore, An Introduction to the Psychology of Hearing",
+    "Bosi & Goldberg, Introduction to Digital Audio Coding and Standards"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

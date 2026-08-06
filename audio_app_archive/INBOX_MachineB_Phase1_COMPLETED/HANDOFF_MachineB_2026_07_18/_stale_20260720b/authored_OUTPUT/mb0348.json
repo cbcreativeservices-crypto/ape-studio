@@ -1,0 +1,159 @@
+{
+ "batch": 348,
+ "topic": "Strings, Guitar & Keys",
+ "authored": [
+  {
+   "id": "66e3e14d-ba22-4e75-ad9f-041d2808d3df",
+   "term": "Fret buzz",
+   "fields": {
+    "definition": "A buzzing or rattling tone produced when a vibrating string on a fretted instrument makes unwanted contact with one or more frets instead of ringing cleanly. It typically results from low string action, too little or too much neck relief, or uneven and high frets.",
+    "plain_english": "Fret buzz is the buzzy rattle you hear when a guitar string slaps against the metal frets instead of ringing out. It usually means the strings sit too low, or the neck or frets need a small setup fix.",
+    "purpose_function": "It is a fault symptom rather than a feature; recognizing it tells a technician that the instrument's setup (action, neck relief, or fret height) needs adjustment before recording or performance.",
+    "practical_application": "During a setup, a tech plays each note up the neck to find buzzing frets, then adjusts the truss rod, raises the saddle or bridge height, or levels and crowns high frets until the buzz clears.",
+    "category": "Setup Defect",
+    "related_terms": ["String action", "Neck relief", "Truss rod", "Fret leveling", "Fret noise"],
+    "common_mistakes": ["Confusing fret buzz with an amp or pickup problem instead of a setup issue", "Cranking the truss rod hard to force the buzz away, which can bow or crack the neck", "Lowering action as far as it will go for comfort, then getting buzz across the whole neck"],
+    "scenario_contexts": ["Setting up a new electric guitar so it plays cleanly across the whole neck", "Diagnosing a rattly note that shows up on a recorded DI guitar track", "Chasing buzz that appears after seasonal humidity moves the neck"]
+   },
+   "sources": ["Fender, 'Buzz Off: How to Deal With Fret Buzz' (maintenance/technical article)", "Taylor Guitars, Truss Rod Adjustment / setup support documentation", "Fletcher & Rossing, The Physics of Musical Instruments (string vibration amplitude and fret clearance)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "522dd0cc-2932-453a-9261-a444290cd4ff",
+   "term": "Fret noise",
+   "fields": {
+    "definition": "The incidental clicks, squeaks, and scrapes made by the fretting hand moving on the strings and frets of a guitar or bass, especially as fingers slide or shift position on wound strings. In sampling it is treated as a distinct articulation and appears in the General MIDI Level 1 sound set as program 121, 'Guitar Fret Noise.'",
+    "plain_english": "Fret noise is the little squeak or scrape you hear when a player's fingers slide along the strings to change chords or notes. It is a normal part of guitar sound, and engineers can leave it in or clean it up.",
+    "purpose_function": "It adds realism and human feel to guitar and bass parts, which is why sample libraries include it as a separate layer; identifying it lets an engineer decide whether to keep or reduce it.",
+    "practical_application": "When editing a recorded acoustic guitar, an engineer may automate short volume dips or use de-noise tools to soften distracting finger squeaks between chords while keeping a natural feel.",
+    "category": "Performance Noise",
+    "related_terms": ["Fret buzz", "String squeak", "Fretless fingerboard noise", "Articulation", "De-noise"],
+    "common_mistakes": ["Trying to remove all fret noise, which makes the guitar sound fake and lifeless", "Confusing fret noise (finger movement) with fret buzz (a setup fault)", "Boosting high frequencies heavily, which exaggerates the squeaks"],
+    "scenario_contexts": ["Comping an acoustic guitar take where loud finger squeaks distract between phrases", "Programming a sampled guitar and adding fret-noise samples for realism", "Close-miking a wound-string bass that captures finger slides"]
+   },
+   "sources": ["MIDI Association, General MIDI Level 1 Sound Set (program 121, 'Guitar Fret Noise')", "Sound on Sound (recording and editing guitar performance noise)", "Fletcher & Rossing, The Physics of Musical Instruments (finger-string interaction)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1bdabc66-0508-4f78-9812-ee4f7add2c6a",
+   "term": "Fret transition",
+   "fields": {
+    "definition": "The movement of the fretting hand from one fret position to another on a fretted string instrument, together with the connected sound of that shift, ranging from a smooth slide (glissando) to an audible finger scrape on wound strings. In sampled instruments it is commonly reproduced as a transition or legato sample linking two notes.",
+    "plain_english": "A fret transition is when a guitarist's hand moves from one fret to another to reach a new note. The move can sound smooth like a slide, or add a small scrape as the fingers travel along the strings.",
+    "purpose_function": "It links notes musically and shapes phrasing; capturing or modeling it convincingly is what makes sampled guitars and basses sound like a real player rather than a set of separate notes.",
+    "practical_application": "A sound designer building a virtual guitar records slide and legato samples so that moving between notes triggers a natural transition instead of an abrupt note change.",
+    "category": "Playing Technique",
+    "related_terms": ["Legato", "Glissando", "Position shift", "Fret noise", "Articulation"],
+    "common_mistakes": ["Treating every transition as a clean slide and ignoring the finger noise real players make", "Using one transition sample for all speeds, which sounds robotic", "Confusing a musical slide with unwanted fret buzz"],
+    "scenario_contexts": ["Editing a solo where slide transitions need to feel smooth and in time", "Designing a sampled guitar patch that adds slide samples between held notes", "Notating a passage that calls for an audible position shift"]
+   },
+   "sources": ["MIDI Association, General MIDI Level 1 Sound Set (fret noise / performance articulation)", "Fletcher & Rossing, The Physics of Musical Instruments (string excitation during position shifts)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5ae3a98f-003e-4ad4-8223-617ab8f0def4",
+   "term": "Fretless fingerboard noise",
+   "fields": {
+    "definition": "The friction, scrape, and singing sounds produced on a fretless instrument (such as fretless bass, the violin family, or the oud) when a finger presses the string directly against the smooth fingerboard and slides between pitches, with no fret to break the contact. It includes the sustained gliding tone characteristic of fretless playing.",
+    "plain_english": "On a fretless instrument there are no metal frets, so the finger presses the string straight onto the smooth board. When the player slides, you hear a smooth gliding or singing sound, and sometimes a soft scrape along the wood.",
+    "purpose_function": "This noise is part of the expressive, vocal-like character players want from fretless instruments; knowing it is normal helps an engineer mic and mix it rather than treat it as a fault.",
+    "practical_application": "Recording a fretless bass, an engineer sets mic placement and EQ to capture the singing slide tone while keeping harsh board scrapes under control.",
+    "category": "Performance Noise",
+    "related_terms": ["Fretless oud slide", "Fret noise", "Glissando", "Fingerboard", "String squeak"],
+    "common_mistakes": ["Trying to remove the slide or gliding sound, which is the whole point of a fretless instrument", "Confusing normal fingerboard slide with a buzz or a defect", "Pressing too lightly, which gives weak, unclear notes instead of clean pitch"],
+    "scenario_contexts": ["Recording a fretless bass solo that relies on smooth slides between notes", "Mixing a fretless part where board scrapes are too loud on close mics", "Sampling a fretless instrument and adding slide layers for realism"]
+   },
+   "sources": ["Encyclopaedia Britannica ('ud' and fretless instrument entries: string contacts board directly)", "Fletcher & Rossing, The Physics of Musical Instruments (string termination and contact on the fingerboard)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "700628a2-3ad7-4149-82c1-ac7ec63aceb3",
+   "term": "Fretless oud slide",
+   "fields": {
+    "definition": "A glissando or portamento performed on the oud, whose fretless fingerboard lets a finger slide continuously between pitches, including the small microtonal intervals of Arabic and Turkish maqam. The absence of frets makes smooth, vocal-like slides a core expressive device of the instrument.",
+    "plain_english": "The oud has no frets, so a player can slide a finger smoothly along the string to bend from one note to the next. This gliding move is a key part of the oud's singing, expressive sound in Middle Eastern music.",
+    "purpose_function": "Sliding lets the oud reach the in-between (microtonal) notes of maqam scales and add vocal-like ornament, something fretted instruments cannot easily do.",
+    "practical_application": "An engineer recording an oud keeps mic placement and EQ that preserve the smooth slides and finger detail without exaggerating string scrape.",
+    "category": "Playing Technique",
+    "related_terms": ["Oud", "Glissando", "Maqam", "Fretless fingerboard noise", "Microtonality"],
+    "common_mistakes": ["Assuming the oud is fretted like a lute or guitar", "Editing out slides that carry the maqam's microtonal notes", "Pitch-correcting or quantizing an oud line and destroying its slides"],
+    "scenario_contexts": ["Recording an oud solo in a world-music session", "Mixing a maqam piece where slides define the melody's character", "Sampling an oud and needing slide articulations for authenticity"]
+   },
+   "sources": ["Encyclopaedia Britannica, 'ud' (fretless fingerboard permits smooth transitions and microtonal maqam intervals)", "The Garland Encyclopedia of World Music: The Middle East (oud construction and performance)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cfcdcb22-e02d-48dd-909e-dfdd36b98163",
+   "term": "Gadulka sympathetic ring",
+   "fields": {
+    "definition": "The resonant ringing of the gadulka's sympathetic strings, a set of undamped strings mounted beneath the bowed melody strings of this Bulgarian pear-shaped bowed lute; they vibrate in sympathy when the melody strings sound, producing a shimmering halo around the played note.",
+    "plain_english": "The gadulka is a Bulgarian bowed fiddle with extra strings that no one touches. When the player bows the main strings, these spare strings ring on their own. They add a soft, shimmering echo around the melody.",
+    "purpose_function": "Sympathetic strings enrich and sustain the instrument's tone without being played directly, giving the gadulka its characteristic ringing, reverberant sound.",
+    "practical_application": "When miking a gadulka, an engineer places the mic to capture both the bowed melody and the sympathetic ring, and avoids over-damping the instrument's body.",
+    "category": "Resonance",
+    "related_terms": ["Sympathetic strings", "Gadulka", "Resonance", "Drone", "Bowed string"],
+    "common_mistakes": ["Thinking the extra strings are fingered and played like the melody strings", "Muting or damping the sympathetic strings and losing the instrument's signature ring", "Confusing the sympathetic ring with reverb added later in the mix"],
+    "scenario_contexts": ["Recording a Bulgarian folk ensemble featuring gadulka", "Mixing a track where the sympathetic ring needs space to bloom", "Comparing gadulka to other sympathetic-string instruments such as sarangi or viola d'amore"]
+   },
+   "sources": ["Grove Dictionary of Music (New Grove), 'gadulka' (bowed lute with sympathetic strings)", "The Garland Encyclopedia of World Music: Europe (Bulgarian gadulka construction and sympathetic strings)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "981eb2f0-80d0-4bb5-9de1-aa9fcff805f2",
+   "term": "Guqin floating harmonics (fan yin)",
+   "fields": {
+    "definition": "Fan yin are the harmonic (flageolet) tones of the guqin, produced when a left-hand finger lightly touches a string at a nodal point marked by the inlaid hui studs while the right hand plucks, yielding clear, bell-like overtones. They form one of the three main tone categories of the guqin, alongside open-string (san yin) and stopped (an yin) tones.",
+    "plain_english": "Floating harmonics are soft, bell-like notes on the Chinese guqin zither. The player rests a fingertip very lightly on the string, plucks, and lifts, so only a pure, ringing tone sounds. The notes seem to float above the music.",
+    "purpose_function": "Harmonics give the guqin a pure, ethereal timbre used for special passages, and because they sound only at exact points on the string they also serve as position and tuning references.",
+    "practical_application": "Recording solo guqin, an engineer uses a quiet room and a sensitive close mic to capture the delicate, low-level floating harmonics cleanly.",
+    "category": "Playing Technique",
+    "related_terms": ["Harmonic (flageolet)", "Nodal point", "Guqin", "Guqin slide squeak (zou yin)", "Overtone"],
+    "common_mistakes": ["Pressing the string down instead of touching it lightly, which kills the harmonic", "Touching between the marked points, so no clear overtone sounds", "Setting record levels for loud notes and missing the very quiet harmonics"],
+    "scenario_contexts": ["Recording a traditional guqin piece with harmonic passages", "Setting gain for a quiet solo instrument with wide dynamic range", "Studying string harmonics and their nodal positions"]
+   },
+   "sources": ["UNESCO Intangible Cultural Heritage, 'Guqin and its music' (fan: left hand touches string lightly, right hand plucks, producing floating overtones)", "Fletcher & Rossing, The Physics of Musical Instruments (string harmonics at nodal points)", "Encyclopaedia Britannica, 'qin' (seven-string fretless zither)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9a3de45d-2443-46d4-b5e5-03857ae4a5c1",
+   "term": "Guqin slide squeak (zou yin)",
+   "fields": {
+    "definition": "The sliding-hand tone of the guqin (zou yin), the sustained gliding sound made when a left-hand finger presses a string after plucking and slides along it to new pitches, often with an audible friction squeak against the string. It is central to the guqin's expressive, speech-like melodic style rather than an unwanted noise.",
+    "plain_english": "On the guqin, after plucking a string the player often slides a finger along it to move between notes. This makes a smooth gliding tone, and sometimes a light squeak as the finger rubs the string. It is a wanted, expressive part of the music.",
+    "purpose_function": "Sliding tones connect notes and imitate the rise and fall of the human voice, giving the guqin its distinctive singing, expressive melodic lines.",
+    "practical_application": "When recording guqin, an engineer decides how much of the natural slide friction to keep, capturing the expressive glides while avoiding overly harsh finger squeaks.",
+    "category": "Playing Technique",
+    "related_terms": ["Portamento", "Glissando", "Guqin floating harmonics (fan yin)", "Guqin", "Vibrato"],
+    "common_mistakes": ["Treating the slide squeak as a mistake and editing it all out", "Confusing the expressive slide with a fault such as fret buzz", "Over-compressing the track, which pushes quiet slide sounds forward harshly"],
+    "scenario_contexts": ["Recording a guqin performance rich in sliding tones", "Editing finger friction on a close-miked solo instrument", "Analyzing guqin melodic ornaments and slides"]
+   },
+   "sources": ["UNESCO Intangible Cultural Heritage, 'Guqin and its music' (an: left-hand finger presses and slides, producing sliding tones)", "Henbing & Leman, 'A Gesture-based Typology of Sliding-tones in Guqin Music', Journal of New Music Research 36(2)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b9a8c15b-04df-4539-a714-a378c86e1e94",
+   "term": "Gusle raspy drone",
+   "fields": {
+    "definition": "The rough, buzzing sustained tone of the gusle, a Balkan bowed instrument with one (rarely two) horsehair string bowed against a skin-bellied wooden body; its many-stranded string and sideways finger-stopping produce a raspy, penetrating drone that accompanies epic singing.",
+    "plain_english": "The gusle is a Balkan folk instrument with a single thick horsehair string played with a bow. It makes a rough, buzzing, droning sound that backs a singer telling long epic stories. The scratchy tone is just what the instrument is meant to have.",
+    "purpose_function": "The raspy drone provides a steady, speech-supporting backdrop for a solo epic singer, its rough timbre helping the voice cut through and carry the story.",
+    "practical_application": "Recording a gusle, an engineer chooses a mic and placement that capture its raw, raspy character without harsh distortion, keeping voice and instrument balanced.",
+    "category": "Timbre",
+    "related_terms": ["Drone", "Bowed string", "Timbre", "Sympathetic strings", "Gadulka sympathetic ring"],
+    "common_mistakes": ["Trying to make the gusle sound smooth and clean, removing its natural rasp", "Treating the buzzy tone as distortion that needs fixing", "Overpowering the singer, when the gusle should support the voice"],
+    "scenario_contexts": ["Recording a Balkan guslar performing epic poetry", "Mixing voice and gusle so the story stays clear", "Documenting traditional single-string bowed instruments"]
+   },
+   "sources": ["Encyclopaedia Britannica, 'gusla' (single horsehair string, bowed, string stopped by sideways finger pressure, accompanies epic singers)", "The Metropolitan Museum of Art, Department of Musical Instruments, gusle (Serbian) collection entry"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,243 @@
+{
+ "bucket": 2,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "bb46e763-d598-4b94-b4b8-9c236223da35",
+   "term": "Arrangement region",
+   "fields": {
+    "definition": "A defined section of a song's overall arrangement—such as an intro, verse, chorus, or bridge—treated as a single selectable block on a DAW timeline, commonly delimited by arrangement markers so it can be named, moved, copied, or deleted as a unit.",
+    "plain_english": "It is a labeled chunk of a song, like the chorus or verse. You can grab that whole chunk and move it or copy it in one go.",
+    "purpose_function": "It lets an engineer organize and restructure a song at the section level rather than editing individual regions or notes, speeding up arrangement changes and navigation.",
+    "practical_application": "An engineer marks the intro, verse, and chorus as arrangement regions, then drags a chorus block to a new spot to try a different song order without cutting each track by hand.",
+    "category": "Arrangement",
+    "related_terms": ["Arrangement track (Logic)", "Arranger track", "Marker", "Region", "Cycle area"],
+    "common_mistakes": ["Confusing an arrangement region (a whole song section) with an individual audio or MIDI region on a single track", "Moving an arrangement region without checking that markers and automation stay aligned to the new position", "Assuming section boundaries snap to bars automatically when they may sit off the grid"],
+    "scenario_contexts": ["Reordering a song's structure by dragging the chorus section earlier during a mix revision", "Duplicating a verse arrangement region to extend a song for an alternate edit", "Navigating quickly to the bridge by selecting its arrangement region"]
+   },
+   "sources": ["Apple, Logic Pro User Guide — 'Add arrangement markers' / 'Build a project with arrangement markers'", "Steinberg, Cubase Operation Manual — Arranger track and arrangement sections"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1a4ec082-ccb2-487c-87bc-d6f6b2134dd7",
+   "term": "B-side assignment",
+   "fields": {
+    "definition": "The release-planning decision to designate a completed recording as the B-side—the secondary track paired with the promoted A-side (lead single)—of a single release.",
+    "plain_english": "It means picking which finished song rides along as the extra track on a single, behind the main hit. The A-side is the star; the B-side is the bonus track.",
+    "purpose_function": "It determines which mix or master is delivered and promoted as the lead track versus the supporting track, shaping the release package and its metadata.",
+    "practical_application": "When prepping a single for release, an engineer or label labels and delivers one master as the A-side and assigns another finished mix as the B-side.",
+    "category": "Release & Delivery",
+    "related_terms": ["Delivery master", "Broadcast master", "Archival master", "Mastering", "Metadata"],
+    "common_mistakes": ["Assuming the B-side is a lower-quality or unfinished mix rather than a fully mastered release track", "Confusing the physical A/B sides of vinyl with streaming-era 'single plus bonus track' assignments", "Mislabeling deliverable files so the A-side and B-side masters are swapped"],
+    "scenario_contexts": ["Choosing which of two finished songs becomes the B-side of a 7-inch vinyl single", "Assigning a remix or alternate version as the B-side of a digital single", "Preparing delivery files and metadata that identify the A-side and B-side"]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians — entry on the 'single' (A-side / B-side)", "Huber & Runstein, Modern Recording Techniques — release formats and delivery"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1a86dd6f-0b4b-496b-8cd0-f85f000d4a25",
+   "term": "Basic Folder",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["All fields left blank: 'Basic Folder' could not be confirmed as an established, named feature or concept in any DAW, plug-in, or professional audio reference. DAWs use 'folder track' (Cubase/Studio One/Nuendo), 'track folder/group', or a browser 'User Library', but no authoritative source documents a distinct 'Basic Folder'. Possible mis-transcription or a specific product's factory-content folder name; confirm intended term before authoring."]
+  },
+  {
+   "id": "9027107a-9075-4770-9ca6-bf07d5d0d5c0",
+   "term": "Boss music",
+   "fields": {
+    "definition": "In video game audio, a distinct musical cue that plays during a boss encounter—typically a heightened, more intense or dramatic piece that signals a major challenge and often differs sharply from the surrounding level music.",
+    "plain_english": "It is the special, intense music that kicks in when you fight a big enemy in a game. It tells you this fight is a huge deal.",
+    "purpose_function": "It heightens tension and signals the stakes of a major fight, giving players an emotional and gameplay cue that the encounter matters more than normal combat.",
+    "practical_application": "A game composer writes a dedicated boss theme, and an audio implementer triggers it—often with a transition from the level music—when the boss fight begins.",
+    "category": "Game Audio",
+    "related_terms": ["Combat music", "Defeat music", "Adaptive music", "Delayed transition"],
+    "common_mistakes": ["Assuming boss music must be loud or fast when its role is to signal significance, which some games do with quieter, ominous themes", "Forgetting to score a smooth transition into and out of the boss cue, causing an abrupt musical jump", "Treating boss music as a fixed loop when many games layer or adapt it to the fight's phases"],
+    "scenario_contexts": ["Triggering a unique theme when the player enters a boss arena", "Transitioning from exploration music into boss music as a fight begins", "Layering an extra intensity section of the boss theme when the boss reaches a second phase"]
+   },
+   "sources": ["Winifred Phillips, A Composer's Guide to Game Music (MIT Press)", "Karen Collins, Game Sound: An Introduction to the History, Theory, and Practice of Video Game Music and Sound Design (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f802202e-849a-4505-b46e-b7c0a3e70ae2",
+   "term": "Bus validation",
+   "fields": {
+    "definition": "The quality-control step of confirming that a mix's bus (subgroup/aux) routing, assignments, and levels are correct—verifying each source feeds the intended bus, that bus outputs reach the proper destinations, and that no unintended sums, gain errors, or missing feeds exist before printing or delivery.",
+    "plain_english": "It means double-checking that every group of channels is wired to the right place before you finish the mix. It is like making sure each pipe empties into the correct tank.",
+    "purpose_function": "It catches routing mistakes—wrong assignments, doubled signals, or dead buses—so the printed mix and stems match what the engineer intended.",
+    "practical_application": "Before bouncing stems, an engineer checks the routing matrix and solos each bus to confirm drums, vocals, and effects land on their assigned subgroups at the right levels.",
+    "category": "Signal Routing",
+    "related_terms": ["Bus", "Subgroup", "Aux send", "Signal flow", "Clipping validation"],
+    "common_mistakes": ["Assuming a channel is routed correctly because it makes sound, without confirming which bus it feeds", "Accidentally summing a signal to both a subgroup and the main bus, so it is counted twice", "Overlooking a bus whose output is unassigned, so its audio never reaches the mix or print"],
+    "scenario_contexts": ["Verifying subgroup routing before printing stems for a film re-recording mix", "Checking that all input channels feed the correct buses after loading a session template", "Troubleshooting a missing instrument by confirming its bus assignment"]
+   },
+   "sources": ["Glen Ballou (ed.), Handbook for Sound Engineers — consoles, mixing and signal routing", "Yamaha Sound Reinforcement Handbook (Davis & Jones) — buses, subgroups and signal flow"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "24687cc7-49cf-4c70-b4d5-51e6729ff62e",
+   "term": "Catch the solo",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["All fields left blank: 'Catch the solo' could not be confirmed as an established, defined term in standards, manufacturer technical documentation, or recognized professional audio texts. It reads as informal jargon (possibly 'be ready to bring up a soloist at the right moment' in live mixing, or a confusion with the DAW 'Catch Playhead' view-follow feature), but no authoritative source defines it. Confirm intended meaning before authoring."]
+  },
+  {
+   "id": "f49b47df-31fc-4e29-a9fc-705d73039ae6",
+   "term": "Clipping validation",
+   "fields": {
+    "definition": "The quality-control step of checking a mix or master for clipping—confirming that no samples reach or exceed the digital ceiling (0 dBFS) and that inter-sample (true) peaks stay within the intended limit—typically using a peak or true-peak (dBTP) meter as defined by ITU-R BS.1770.",
+    "plain_english": "It means checking that the loudest parts of a track do not go over the top and distort. Going past the ceiling is like pouring water past the rim of a full glass.",
+    "purpose_function": "It ensures the delivered audio contains no hard digital distortion or inter-sample overs that can distort on playback devices and converters.",
+    "practical_application": "Before delivery, an engineer runs a true-peak meter and keeps the master at or below the target ceiling (commonly -1 dBTP) to pass clipping checks for streaming and broadcast.",
+    "category": "Quality Control",
+    "related_terms": ["Clipping", "True peak", "Inter-sample peak", "Bus validation", "Broadcast compliance"],
+    "common_mistakes": ["Trusting a sample-peak meter alone when inter-sample (true) peaks can still clip after digital-to-analog conversion", "Assuming a limiter set to 0 dBFS prevents clipping, ignoring true-peak overshoot on lossy codecs", "Confusing loudness (LUFS) with peak level and checking only one"],
+    "scenario_contexts": ["Checking a master against a -1 dBTP ceiling before uploading to a streaming platform", "Verifying no clipping after loudness normalization for broadcast delivery", "Spotting inter-sample overs revealed by a true-peak meter that a standard peak meter missed"]
+   },
+   "sources": ["ITU-R BS.1770 — algorithms to measure audio programme loudness and true-peak audio level", "EBU R128 / EBU Tech 3341 — loudness metering, including Maximum True Peak Level (dBTP)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a6b2a47a-6c26-4bb5-b20b-fa96bfc800dc",
+   "term": "CloudBounce",
+   "fields": {
+    "definition": "CloudBounce is a commercial online, automated (algorithmic/AI-driven) audio mastering service that analyzes an uploaded mix and returns a processed, mastered version; it is offered both as a web service and as a desktop application.",
+    "plain_english": "It is a website and app that masters your song for you automatically. You upload a mix and it sends back a louder, polished version without a human engineer.",
+    "purpose_function": "It gives musicians a fast, low-cost way to obtain a mastered-sounding track without booking a mastering engineer, by applying automated processing based on analysis of the audio.",
+    "practical_application": "A producer uploads a stereo mix to CloudBounce, chooses a style or reference, and downloads the automatically mastered file for a demo or release.",
+    "category": "Mastering",
+    "related_terms": ["Assistive mastering", "Mastering", "Delivery master", "Loudness normalization"],
+    "common_mistakes": ["Treating automated mastering as a full replacement for a skilled mastering engineer on critical releases", "Uploading an already-loud or clipped mix and expecting the service to fix underlying mix problems", "Assuming one automated result fits every playback target without checking loudness and true-peak levels"],
+    "scenario_contexts": ["Mastering a demo quickly for a client to review before a full session", "Producing a streaming-ready master on a tight budget", "Comparing an automated master against a manual one to evaluate results"]
+   },
+   "sources": ["Sound on Sound — 'LANDR, CloudBounce & The Future Of Mastering' (techniques article)", "MusicTech — report on the CloudBounce desktop mastering application"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f0741c05-2d6c-4d39-8ae0-efbe2c104a6d",
+   "term": "Combat music",
+   "fields": {
+    "definition": "In video game audio, the music that plays during combat or battle sequences—usually a more energetic, driving cue that contrasts with exploration or ambient music and is triggered when the player enters a fight.",
+    "plain_english": "It is the fast, exciting music that plays while you are fighting enemies in a game. When the fight ends, the game usually switches back to calmer music.",
+    "purpose_function": "It raises energy and tension during fights, cueing the player that they are in danger and reinforcing the pace of the action.",
+    "practical_application": "An audio implementer sets combat music to trigger when enemies engage and to transition back to exploration music—often at a musical boundary—when the threat clears.",
+    "category": "Game Audio",
+    "related_terms": ["Boss music", "Defeat music", "Adaptive music", "Delayed transition"],
+    "common_mistakes": ["Cutting abruptly between exploration and combat music instead of using a musical transition", "Assuming combat music must always be fast and loud rather than fitting the game's tone", "Looping a single combat cue with no variation, causing listener fatigue in long fights"],
+    "scenario_contexts": ["Switching from ambient exploration music to combat music when a fight starts", "Layering additional instruments as more enemies appear", "Returning to background music at the next bar after combat ends"]
+   },
+   "sources": ["Winifred Phillips, A Composer's Guide to Game Music (MIT Press)", "Karen Collins, Game Sound: An Introduction to the History, Theory, and Practice of Video Game Music and Sound Design (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7bec3ce6-53e3-4b65-b5ec-f49e8c8f269f",
+   "term": "Creative acceptance test",
+   "fields": {
+    "definition": "A review step in which a deliverable is evaluated against the agreed creative brief or artistic intent—rather than only its technical specifications—to decide whether the client or creative lead accepts it as meeting the intended sound and feel.",
+    "plain_english": "It is a check to see if a mix actually sounds the way the client asked for, not just whether it meets the tech rules. It is the 'does this feel right?' sign-off.",
+    "purpose_function": "It confirms that subjective, artistic requirements are satisfied before final acceptance, catching mismatches between what was delivered and the creative vision.",
+    "practical_application": "A mixer plays the near-final mix for the artist or director against the brief, and only moves to delivery once the creative stakeholders sign off.",
+    "category": "Quality Control",
+    "related_terms": ["Creative checklist", "Delivery certification", "Broadcast compliance verification", "Delivery master"],
+    "common_mistakes": ["Confusing creative acceptance (artistic approval) with technical compliance checks like loudness or clipping", "Skipping written sign-off, so later disputes arise over whether the mix met the brief", "Judging against the engineer's taste instead of the client's stated creative goals"],
+    "scenario_contexts": ["Playing a mix for a director to confirm it matches the emotional intent of a scene", "Getting artist approval on a mix's vibe before mastering", "Reviewing a jingle against the ad agency's creative brief before final delivery"]
+   },
+   "sources": ["ISTQB Glossary / ISO/IEC/IEEE 29119 — acceptance testing (evaluation against agreed requirements before acceptance)", "Glen Ballou (ed.), Handbook for Sound Engineers — mix approval and delivery workflow"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fbf0dee9-1559-4fd2-aa70-2bbea73fb89b",
+   "term": "Creative checklist",
+   "fields": {
+    "definition": "A predefined list of creative or artistic tasks and decisions to review before a mix is considered complete—covering elements such as arrangement balance, effects, and automation, and adherence to the creative brief—used to ensure nothing is overlooked.",
+    "plain_english": "It is a to-do list of artistic things to check before you call a mix finished, like 'are the vocals loud enough?' It helps make sure you did not forget anything.",
+    "purpose_function": "It standardizes the final creative review so recurring artistic details are checked consistently, reducing missed elements from project to project.",
+    "practical_application": "Before printing a mix, an engineer runs through a creative checklist confirming vocal level, effect returns, automation moves, and brief requirements are handled.",
+    "category": "Quality Control",
+    "related_terms": ["Creative acceptance test", "Delivery certification", "Bus validation", "Clipping validation"],
+    "common_mistakes": ["Treating the checklist as a substitute for critical listening rather than a support for it", "Mixing technical delivery items (formats, loudness) with creative items and losing focus on either", "Reusing a generic checklist without adapting it to the project's specific brief"],
+    "scenario_contexts": ["Running a final creative pass before bouncing a song", "Onboarding an assistant with the studio's standard creative checklist", "Ensuring each track on an album meets the same set of creative goals"]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook — the mix critique and evaluating a finished mix", "Glen Ballou (ed.), Handbook for Sound Engineers — mixing workflow and review"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b0fb497a-1d60-45fb-9244-8ac9b79e8aa1",
+   "term": "Cycle action",
+   "fields": {
+    "definition": "In REAPER (via the SWS/S&M extension), a user-programmable command that performs a different action or step each time its shortcut is triggered, cycling through a defined sequence of actions or states, so one key command can step through multiple behaviors in turn.",
+    "plain_english": "It is a shortcut in Reaper that does a different thing each time you press it, moving through a list you set up. One button, several jobs in a set order.",
+    "purpose_function": "It lets a user pack several related commands onto one shortcut and step through them, streamlining repetitive multi-step workflows and toggles.",
+    "practical_application": "An editor builds a cycle action so one key repeatedly steps through a set of zoom levels or track views during editing.",
+    "category": "Workflow",
+    "related_terms": ["Custom action", "Macro", "Key command", "Action list"],
+    "common_mistakes": ["Confusing a cycle action (steps through actions on repeated presses) with a custom action/macro (runs all its steps at once)", "Forgetting that cycle actions require the SWS/S&M extension to be installed in REAPER", "Losing track of the cycle's current state, so the shortcut appears to do the 'wrong' thing"],
+    "scenario_contexts": ["Assigning one shortcut to step through several zoom presets in REAPER", "Toggling between mixer and arrange views with repeated presses", "Rotating through take lanes while comping"]
+   },
+   "sources": ["Cockos REAPER — SWS/S&M Extension, Cycle Action editor documentation (CockosWiki)", "Cockos REAPER User Guide — Actions list and custom actions"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e1a64248-9646-4ff2-aeaf-18ff4a394388",
+   "term": "Dashboard",
+   "fields": {
+    "definition": "A consolidated screen or window that presents key status information and controls at a glance; in Pro Tools specifically, the Dashboard is the window shown when creating or opening a session, where the user sets sample rate, bit depth, file type, and I/O settings and locates recent or existing sessions.",
+    "plain_english": "It is a single screen that shows the important info and controls in one place. In Pro Tools, it is the window that pops up to set up or open a session.",
+    "purpose_function": "It centralizes the settings and choices needed to start work, so the user configures a session or reviews status from one place instead of hunting through menus.",
+    "practical_application": "When launching Pro Tools, an engineer uses the Dashboard to create a new session at 48 kHz / 24-bit or to reopen a recent project.",
+    "category": "Interface",
+    "related_terms": ["Session", "Sample rate", "Bit depth", "Audio Connections window"],
+    "common_mistakes": ["Rushing past the Dashboard and creating a session at the wrong sample rate or bit depth", "Assuming the Dashboard is only for new sessions when it also opens recent and existing ones", "Confusing a software 'dashboard' overview with a hardware metering panel"],
+    "scenario_contexts": ["Setting sample rate and bit depth when starting a new Pro Tools session", "Reopening a recent project from the Dashboard at launch", "Choosing file type and I/O settings before recording begins"]
+   },
+   "sources": ["Avid, Pro Tools Reference Guide / User Guide — 'Starting a new session' (the Dashboard window)", "Sound on Sound — 'Pro Tools Dashboard' (techniques article)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8def116f-2cbd-467c-b584-6cd98cd3459a",
+   "term": "Defeat music",
+   "fields": {
+    "definition": "In video game audio, a musical cue that plays when the player loses—such as a game-over, death, or failure state—typically a short, downbeat or resolving piece that signals the negative outcome.",
+    "plain_english": "It is the sad or 'you lost' music that plays when you fail or die in a game. It tells you the round is over and you did not win.",
+    "purpose_function": "It gives clear emotional feedback that the player has failed, marking the end of an attempt and setting the tone before a retry.",
+    "practical_application": "A composer writes a brief defeat cue, and an implementer triggers it on the game-over or death event, usually stopping the gameplay music first.",
+    "category": "Game Audio",
+    "related_terms": ["Boss music", "Combat music", "Adaptive music", "Delayed transition"],
+    "common_mistakes": ["Confusing defeat music (a loss cue) with victory or level-complete music", "Letting gameplay music keep playing under the defeat cue instead of stopping or ducking it", "Making the defeat cue so long it delays the player's retry"],
+    "scenario_contexts": ["Playing a game-over theme when the player's health reaches zero", "Triggering a short failure sting when a timed mission is lost", "Transitioning from combat music to a defeat cue on player death"]
+   },
+   "sources": ["Winifred Phillips, A Composer's Guide to Game Music (MIT Press)", "Karen Collins, Game Sound: An Introduction to the History, Theory, and Practice of Video Game Music and Sound Design (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a7cfdb4b-261f-4230-b160-ef6729a17031",
+   "term": "Delayed transition",
+   "fields": {
+    "definition": "A change from one section, cue, or mix state to another that is intentionally deferred—executing only after a set time delay or at the next musical boundary (such as the next bar or an exit marker)—rather than taking effect the instant it is triggered.",
+    "plain_english": "It is a switch between two parts that waits for the right moment instead of happening right away. Like waiting for the end of a musical phrase before changing the song.",
+    "purpose_function": "It keeps changes musical and smooth by aligning them to a natural point, avoiding abrupt jumps when a cue or state change is triggered off-beat.",
+    "practical_application": "In interactive game music, an implementer sets a combat-to-explore transition to wait until the next bar, so the music switches cleanly after the trigger.",
+    "category": "Transitions",
+    "related_terms": ["Bar-aligned transition", "Beat-aligned transition", "Combat music", "Adaptive music"],
+    "common_mistakes": ["Confusing a delayed transition (deferred to a sync point) with a slow crossfade, which is about fade length, not timing", "Setting the delay so long the change feels disconnected from its trigger", "Forgetting to define an exit point, so the transition waits far longer than intended"],
+    "scenario_contexts": ["Waiting for the next bar before switching from exploration to combat music", "Delaying a mix scene change until a song section ends", "Scheduling a stinger to land on the next downbeat"]
+   },
+   "sources": ["Winifred Phillips, A Composer's Guide to Game Music (MIT Press) — transitions in interactive scores", "Karen Collins, Game Sound: An Introduction to the History, Theory, and Practice of Video Game Music and Sound Design (MIT Press)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

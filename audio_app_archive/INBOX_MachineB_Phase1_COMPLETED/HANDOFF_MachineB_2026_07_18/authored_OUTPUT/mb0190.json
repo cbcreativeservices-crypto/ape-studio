@@ -1,0 +1,316 @@
+{
+ "batch": 190,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "2447208f-3798-438b-9187-65913ee8e567",
+   "term": "Audio outside-broadcast vehicle",
+   "fields": {
+    "definition": "A self-contained mobile facility, typically a van, truck, or trailer, fitted with mixing consoles, recorders, communications, and transmission links to capture and produce audio programming at a remote site away from the studio. It is the audio-focused member of a broadcaster's outside-broadcast (OB) fleet, used for sports, concerts, and live events.",
+    "plain_english": "It is a truck or van packed with audio gear. A crew drives it to a game or concert. From inside, they mix the sound and send it back to the station.",
+    "purpose_function": "It brings a full studio's worth of audio production and transmission capability to events that cannot come to the studio, letting a broadcaster originate live or recorded programming from the field.",
+    "practical_application": "A radio engineer parks the vehicle at a stadium, patches microphone and stage feeds into its console, and sends the finished mix back to the station over an IP, ISDN, or satellite link.",
+    "category": "Remote Broadcast",
+    "related_terms": [
+     "Broadcast audio console",
+     "Broadcast audio matrix",
+     "Backup program source",
+     "Studio-transmitter link",
+     "Audio codec"
+    ],
+    "common_mistakes": [
+     "Confusing an audio-only OB vehicle with a full television OB truck, which also carries video switching and camera systems",
+     "Assuming the vehicle needs no independent power and grounding plan once parked on site",
+     "UNSAFE: Powering the vehicle from an unverified venue mains outlet without checking grounding and bonding, risking shock and equipment damage"
+    ],
+    "scenario_contexts": [
+     "Broadcasting live match commentary from a stadium car park",
+     "Producing a multi-day music festival radio show from the site",
+     "Covering breaking news from a remote location where no studio exists"
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook (11th ed.)",
+    "Ballou, Handbook for Sound Engineers",
+    "EBU technical guidelines on contribution and remote production"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a5ea757c-6033-4ba5-b018-294e4d94b5e4",
+   "term": "Automation assist mode",
+   "fields": {
+    "definition": "An operating mode of a radio broadcast automation (playout) system in which a live operator manually triggers and sequences programme elements, such as songs, jingles, adverts, and links, while the software handles file loading, logging, and playback. It sits between fully manual live operation and fully unattended automation, keeping a human in control of timing and content.",
+    "plain_english": "The computer lines up the songs and ads for the show. But a person clicks to play each one. So the show feels live, with a human in charge of the timing.",
+    "purpose_function": "It lets a presenter drive a live-sounding show while keeping the log accuracy and safety net of automation, so timing and content stay under human control and the system does the file handling.",
+    "practical_application": "A daytime presenter runs the show in assist mode, hitting play-next after each song so links land naturally, then switches the system to full automation when leaving for the night.",
+    "category": "Automation",
+    "related_terms": [
+     "Backup program source",
+     "Broadcast audio console",
+     "Broadcast alarm system",
+     "Playout system",
+     "Voice tracking"
+    ],
+    "common_mistakes": [
+     "Believing elements fire on time by themselves; in assist mode items only play when the operator triggers them, so inattention causes dead air",
+     "Confusing live-assist with voice tracking, where links are pre-recorded rather than performed live",
+     "Forgetting that the on-air log still records what actually played, so skipped adverts create reconciliation problems"
+    ],
+    "scenario_contexts": [
+     "A live morning show where the host controls timing around traffic and news",
+     "Dropping a live sports result into an otherwise automated schedule",
+     "Training a new presenter to drive the playout system before trusting full automation"
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook (11th ed.)",
+    "Radio automation/playout system technical manuals (e.g., ENCO, RCS, WideOrbit)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e2ac95e0-80d5-4a39-9f7e-c2cba63e34e3",
+   "term": "Backup program source",
+   "fields": {
+    "definition": "A secondary audio source held ready to feed the air chain when the primary programme feed fails, ranging from an emergency playout of stored content to an alternate studio, satellite, or network feed. It is selected automatically by a changeover or silence-sensing device, or manually by an operator, to prevent dead air.",
+    "plain_english": "It is a spare source of sound for the station. If the main feed dies, the station switches to it. This stops silence from going out on air.",
+    "purpose_function": "It exists to keep programming on the air during a failure of the main source, protecting against dead air that can breach licence conditions and drive listeners away.",
+    "practical_application": "An engineer loads several hours of evergreen music onto an emergency player and wires it to a silence sensor so it takes over automatically if the studio feed drops.",
+    "category": "Redundancy",
+    "related_terms": [
+     "Broadcast alarm system",
+     "Automation assist mode",
+     "Audio outside-broadcast vehicle",
+     "Silence sensor",
+     "Studio-transmitter link"
+    ],
+    "common_mistakes": [
+     "Never testing the backup source, so it fails when it is finally needed",
+     "Routing the backup through the same failure-prone path (same server or link) as the primary",
+     "Assuming automatic changeover repairs the primary; someone must still fix it and switch back"
+    ],
+    "scenario_contexts": [
+     "Studio automation crashes overnight and the backup player keeps music on air",
+     "A satellite network feed drops and the station falls back to local content",
+     "A silence sensor detects dead air and switches to the emergency source"
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook (11th ed.)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "22f2a3f2-f756-41bb-9090-91da52deff12",
+   "term": "Broadcast alarm system",
+   "fields": {
+    "definition": "A monitoring and warning system in a broadcast facility that detects fault conditions in the air chain, such as prolonged silence (dead air), loss of carrier, over-modulation, or transmitter faults, and alerts staff or triggers automatic corrective action. It typically combines silence sensors, remote-control telemetry, and audible, visual, or messaging alerts.",
+    "plain_english": "It watches the station's sound and gear for problems. If the air goes silent or a fault appears, it warns the staff. Some systems can even switch to a backup on their own.",
+    "purpose_function": "It protects continuity of service by catching failures, especially dead air, quickly, so staff can respond before listeners are lost or licence rules are broken.",
+    "practical_application": "An engineer sets a silence sensor to trigger after a few seconds of quiet, sending a text alert and switching to the backup source automatically.",
+    "category": "Monitoring",
+    "related_terms": [
+     "Backup program source",
+     "Broadcast archive server",
+     "Automation assist mode",
+     "Silence sensor",
+     "Transmitter remote control"
+    ],
+    "common_mistakes": [
+     "Setting silence thresholds so tight that quiet passages of programme trigger false alarms",
+     "UNSAFE: Bypassing or muting transmitter fault alarms to stop nuisance alerts, masking conditions that can damage the transmitter or breach RF exposure limits",
+     "Relying on alarms that nobody monitors outside office hours"
+    ],
+    "scenario_contexts": [
+     "Overnight unattended operation where alarms are the only line of defence",
+     "Detecting a stuck audio feed that has gone silent",
+     "Warning staff of a transmitter power fault at a remote site"
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook (11th ed.)",
+    "Silence-monitor/remote-control manufacturer technical manuals (e.g., Broadcast Tools, DEVA)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "262dac5e-217c-4eab-9133-a451f2b20a4e",
+   "term": "Broadcast archive server",
+   "fields": {
+    "definition": "A networked storage system that ingests, catalogues, and retains broadcast audio, including finished programmes, raw recordings, and continuous off-air logs, for reuse, repurposing, and regulatory compliance. It provides searchable, often long-term storage kept separate from the fast online storage used for daily playout.",
+    "plain_english": "It is a big storage computer for a station's audio. It keeps old shows and recordings in an organized way. Staff can search it and pull files back when they need them.",
+    "purpose_function": "It preserves programme material and legally required recordings so content can be found and reused later, while keeping the active playout storage free for current work.",
+    "practical_application": "A producer searches the archive server for a past interview, retrieves the file, and re-edits it into a new feature.",
+    "category": "Storage",
+    "related_terms": [
+     "Broadcast audio post suite",
+     "Backup program source",
+     "Broadcast alarm system",
+     "Logging recorder",
+     "Playout system"
+    ],
+    "common_mistakes": [
+     "Treating the archive as a backup; it stores masters, but without a second copy it is not disaster-proof",
+     "Failing to enter consistent metadata, which makes files impossible to find later",
+     "Ignoring the retention period that regulators require for off-air logs"
+    ],
+    "scenario_contexts": [
+     "Retrieving a broadcast recording to answer a listener complaint or regulator request",
+     "Repurposing archived material into a highlights programme",
+     "Meeting a legal duty to retain recordings of everything aired"
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook (11th ed.)",
+    "EBU technical documentation on production storage and archiving"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "76a69c61-b4b1-4ebb-8410-9e3833decf59",
+   "term": "Broadcast Atmos recorder",
+   "fields": {
+    "definition": "A recorder or recording system that captures immersive Dolby Atmos audio, meaning channel beds plus object-based elements carrying positional metadata, for broadcast and streaming production. It stores the multichannel audio together with its metadata so the immersive mix can be reproduced and re-rendered downstream.",
+    "plain_english": "It records surround sound that can also come from above you. It saves the sound plus data about where each sound sits. This lets the full 3D mix play back later.",
+    "purpose_function": "It exists to capture immersive, object-based audio for programmes made in Dolby Atmos, keeping the audio and its positional metadata intact through the production chain.",
+    "practical_application": "An audio engineer on a live concert broadcast records the Atmos bed and objects so the immersive mix can be finished and delivered for streaming.",
+    "category": "Immersive Audio",
+    "related_terms": [
+     "Broadcast audio post suite",
+     "Broadcast audio console",
+     "Object-based audio",
+     "Loudness normalization",
+     "Digital audio workstation"
+    ],
+    "common_mistakes": [
+     "Recording only the channel bed and losing the object metadata, which collapses the immersive mix",
+     "Assuming an Atmos recording folds down to stereo automatically without checking the downmix",
+     "Confusing Dolby Atmos with plain 5.1 surround, which has no height or object layer"
+    ],
+    "scenario_contexts": [
+     "Capturing an immersive mix of a live orchestral broadcast",
+     "Recording sports crowd atmosphere in Atmos for a streaming platform",
+     "Delivering an Atmos programme master for on-demand playback"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos technical documentation (Dolby Laboratories)",
+    "AES and SMPTE material on object-based/immersive audio"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "919f9d4a-4630-4ae1-96ed-5cc1da1acc4e",
+   "term": "Broadcast audio console",
+   "fields": {
+    "definition": "A mixing console designed for on-air broadcast use, combining program and audition (off-air) buses, mix-minus outputs, telephone and codec integration, and monitor-muting/tally logic for the studio. It routes and mixes microphones, playout, and remote sources into the station's programme feed.",
+    "plain_english": "It is the mixing desk in a radio studio. It blends mics, music, and phone callers into one feed for air. It also mutes the studio speakers when a mic is live, to stop feedback.",
+    "purpose_function": "It is the central point where all studio and remote audio is combined, leveled, and routed to air, adding broadcast-specific features such as mix-minus and mic-triggered monitor muting.",
+    "practical_application": "A presenter opens their mic fader, brings up a music bed, and takes a phone caller on a mix-minus bus so the caller does not hear their own delayed voice.",
+    "category": "Mixing",
+    "related_terms": [
+     "Broadcast audio matrix",
+     "Audio outside-broadcast vehicle",
+     "Automation assist mode",
+     "Mix-minus",
+     "Playout system"
+    ],
+    "common_mistakes": [
+     "Sending a caller or remote guest a full mix instead of mix-minus, causing echo or feedback",
+     "Ignoring monitor-muting logic and creating howl-round when the studio mic is live over the speakers",
+     "Confusing the audition/cue bus with the program bus and putting off-air content to air"
+    ],
+    "scenario_contexts": [
+     "Running a live phone-in show with multiple callers",
+     "Mixing a live music session in the on-air studio",
+     "Handing a remote OB feed onto air through the console"
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook (11th ed.)",
+    "Ballou, Handbook for Sound Engineers",
+    "Broadcast console manufacturer technical documentation (e.g., Wheatstone/Axia, Lawo, Calrec)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "75d4efa3-9ab9-4f08-8d46-30839d15ea74",
+   "term": "Broadcast audio matrix",
+   "fields": {
+    "definition": "A crosspoint routing system that connects many audio sources to many destinations in a broadcast facility, letting any input be assigned to any output under operator or automation control. Modern implementations are commonly networked over AES67 audio-over-IP, distributing signals across studios, playout, and transmission paths.",
+    "plain_english": "It is a big audio switchboard for the station. It can send any source to any place. Staff pick which input goes to which output, by hand or by software.",
+    "purpose_function": "It provides flexible, central signal distribution so any source can reach any studio, processor, or transmitter path without repatching physical cables.",
+    "practical_application": "An engineer uses the router control panel to send the incoming satellite network feed to Studio 2's console and to the transmitter path at the same time.",
+    "category": "Routing",
+    "related_terms": [
+     "Broadcast audio console",
+     "Audio outside-broadcast vehicle",
+     "Backup program source",
+     "Audio over IP",
+     "Studio-transmitter link"
+    ],
+    "common_mistakes": [
+     "Making a routing change on air without checking which destinations are live, cutting a source off air",
+     "Assuming a salvo or preset recalls levels as well as routes when it may only recall crosspoints",
+     "Confusing an audio matrix with a mixing console; a matrix routes but does not mix or blend levels"
+    ],
+    "scenario_contexts": [
+     "Distributing a shared network feed to several studios at once",
+     "Switching the transmitter feed from the main studio to a backup studio",
+     "Routing remote OB returns to the correct production room"
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook (11th ed.)",
+    "AES67 (Audio-over-IP interoperability standard)",
+    "Broadcast router manufacturer technical documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f02ba2da-1c47-4fff-93af-457e94469bbd",
+   "term": "Broadcast audio post suite",
+   "fields": {
+    "definition": "A dedicated production room and its equipment, including a digital audio workstation, calibrated monitoring, and processing, used to edit, mix, and finish audio for broadcast programmes after acquisition. Work includes dialogue editing, sound design, music, and a loudness-compliant final mix that meets the broadcaster's delivery specifications.",
+    "plain_english": "It is an editing room for finishing a show's sound. Staff clean up speech, add music and effects, and set the loudness. The result is ready to broadcast.",
+    "purpose_function": "It exists to turn raw recorded material into a polished, loudness-compliant final mix that meets the broadcaster's technical delivery standards.",
+    "practical_application": "An audio editor cuts the dialogue for a documentary in the post suite, adds effects and music, then mixes to the required loudness target before delivery.",
+    "category": "Post-Production",
+    "related_terms": [
+     "Broadcast archive server",
+     "Broadcast Atmos recorder",
+     "Broadcast audio console",
+     "Loudness normalization",
+     "Digital audio workstation"
+    ],
+    "common_mistakes": [
+     "Mixing to peak level instead of the required integrated loudness target, so the programme is rejected or re-leveled",
+     "Monitoring at inconsistent levels, leading to dialogue that is too quiet or too loud on air",
+     "Delivering in the wrong file format or channel layout for the broadcaster's specification"
+    ],
+    "scenario_contexts": [
+     "Finishing the audio mix of a radio drama or documentary",
+     "Editing and sweetening a pre-recorded interview before transmission",
+     "Mixing a programme to EBU R128 or ATSC A/85 loudness compliance"
+    ]
+   },
+   "sources": [
+    "EBU R128 and ITU-R BS.1770 (loudness)",
+    "ATSC A/85 (loudness) ",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,319 @@
+{
+ "bucket": 8,
+ "packets": [
+  "mb0257",
+  "mb0258",
+  "mb0293",
+  "mb0296",
+  "mb0297",
+  "mb0298",
+  "mb0307",
+  "mb0308"
+ ],
+ "terms": [
+  {
+   "pkt": "mb0257",
+   "id": "c4b89614-1211-4e62-b3c7-77f64c7d22b9",
+   "term": "Tonal transition",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0257",
+   "id": "030b2df5-7600-4e99-b127-86e79da9b97e",
+   "term": "Transition parameter",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0258",
+   "id": "e37cad22-5a7d-4f34-9382-cc2b8b654e75",
+   "term": "Two-dimensional-to-three-dimensional blend",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0258",
+   "id": "7b43e0ac-cbdf-4281-837c-41491c6a30c8",
+   "term": "Virtual-reality audio room",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0293",
+   "id": "b2e69598-c087-49b7-bdbc-eb402b397c48",
+   "term": "AIVA",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Synthesis Fundamentals & Oscillators"
+  },
+  {
+   "pkt": "mb0296",
+   "id": "d7c957f3-6943-49b4-bd95-88a1c40cfdc0",
+   "term": "Prompt-based sound design",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Synthesis Fundamentals & Oscillators"
+  },
+  {
+   "pkt": "mb0296",
+   "id": "3e81bc60-2efe-4d3d-a3e9-466362f6c632",
+   "term": "RAVE",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Synthesis Fundamentals & Oscillators"
+  },
+  {
+   "pkt": "mb0296",
+   "id": "0d9dd182-b069-4e03-8dc0-b4c44209b3ed",
+   "term": "Riffusion",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Synthesis Fundamentals & Oscillators"
+  },
+  {
+   "pkt": "mb0296",
+   "id": "15432b00-c7e8-448c-804f-27778ca7070f",
+   "term": "rubbery",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Synthesis Fundamentals & Oscillators"
+  },
+  {
+   "pkt": "mb0297",
+   "id": "14f63351-ec26-464b-8377-ea74786f9e6f",
+   "term": "squelchy",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Synthesis Fundamentals & Oscillators"
+  },
+  {
+   "pkt": "mb0297",
+   "id": "abca1197-fd62-47d9-ba72-c0e559583ada",
+   "term": "Suno",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Synthesis Fundamentals & Oscillators"
+  },
+  {
+   "pkt": "mb0298",
+   "id": "d2d2077e-4258-4a7e-a5ee-653db51c88f5",
+   "term": "Timing-conditioning",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Synthesis Fundamentals & Oscillators"
+  },
+  {
+   "pkt": "mb0298",
+   "id": "08ac4b5a-1f3f-4081-98fe-c2a82ba68324",
+   "term": "Udio",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Synthesis Fundamentals & Oscillators"
+  },
+  {
+   "pkt": "mb0298",
+   "id": "85b856e9-f120-44df-9016-b44ec4557dd6",
+   "term": "w2v-BERT",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Synthesis Fundamentals & Oscillators"
+  },
+  {
+   "pkt": "mb0307",
+   "id": "dac52a44-566f-475a-a649-342eda969c61",
+   "term": "ACE Studio",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Voice & Vocal Perception"
+  },
+  {
+   "pkt": "mb0307",
+   "id": "643d6613-9bae-40dd-b5d5-1dc9b34f28e5",
+   "term": "ElevenLabs",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Voice & Vocal Perception"
+  },
+  {
+   "pkt": "mb0307",
+   "id": "dc36b473-e383-410f-8a37-e551210bf99b",
+   "term": "Resemble AI",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Voice & Vocal Perception"
+  },
+  {
+   "pkt": "mb0307",
+   "id": "cf9c1ddf-1bff-4cfd-ba1f-5c34ecc9387c",
+   "term": "Retrieval-based voice conversion (RVC)",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Voice & Vocal Perception"
+  },
+  {
+   "pkt": "mb0308",
+   "id": "0676f8ce-89fc-407d-8cde-a8887eea9fd7",
+   "term": "so-vits-svc",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Voice & Vocal Perception"
+  }
+ ]
+}

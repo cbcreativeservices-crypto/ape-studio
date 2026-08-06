@@ -1,0 +1,31 @@
+{
+ "batch": 387,
+ "topic": "Dialogue Editing",
+ "terms": [
+  {
+   "id": "63e6e0d0-6516-43f4-8ecc-67df3cc0f37d",
+   "term": "Dialogue-editing suite",
+   "topic": "Dialogue Editing",
+   "seq": 1700,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

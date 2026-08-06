@@ -1,0 +1,159 @@
+{
+ "batch": 115,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "9e536c6a-8f79-451e-a32b-7e1872c61bce",
+   "term": "Media Explorer",
+   "fields": {
+    "definition": "In REAPER (Cockos), the Media Explorer is a docked browser window used to navigate the file system, audition audio and MIDI files, and insert them into a project. It can auto-match a previewed loop to the project tempo and pitch before import.",
+    "plain_english": "It is a file browser built into the REAPER program. You use it to find sound files on your computer, listen to them, and drop the ones you like into your song.",
+    "purpose_function": "It gives a technician one place to search, audition, and import media without leaving the DAW, which speeds up choosing loops and samples.",
+    "practical_application": "A technician opens the Media Explorer to browse a sample library, plays a loop to hear it in time with the project, then drags it onto a track.",
+    "category": "DAW Feature",
+    "related_terms": ["Media item", "MediaBay", "Audio import", "Loop", "Project tempo", "Sample library"],
+    "common_mistakes": ["Confusing previewing a file with inserting it; auditioning does not add the file to the project.", "Forgetting that tempo-matching is applied on import, so loops get time-stretched and can sound different from the raw file.", "Assuming the browser edits or moves the source files on disk rather than just pointing to them."],
+    "scenario_contexts": ["Auditioning drum loops against a project's tempo before committing them to a track.", "Importing a folder of recorded takes into a mix session.", "Searching a sample library for a specific one-shot during sound design."]
+   },
+   "sources": ["Cockos REAPER User Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0ff0319f-ca7a-40a4-a172-96076131af31",
+   "term": "Media item",
+   "fields": {
+    "definition": "In REAPER, a media item is the basic container object placed on a track's timeline that references source media (audio or MIDI) and holds one or more takes. Editing operations such as trimming, fades, moving, and splitting act on the media item rather than on the underlying source file.",
+    "plain_english": "A media item is one block of sound or MIDI sitting on a track's timeline. You move, cut, and fade these blocks to build your song, and doing so does not change the original file on your drive.",
+    "purpose_function": "It lets the DAW arrange and edit recorded or imported media on the timeline without altering the source files, keeping editing non-destructive.",
+    "practical_application": "A technician trims, splits, and crossfades media items to comp takes and tighten an arrangement on the timeline.",
+    "category": "DAW Feature",
+    "related_terms": ["Media Explorer", "Take", "Non-destructive editing", "Clip", "Crossfade", "Timeline"],
+    "common_mistakes": ["Thinking that deleting a media item deletes the source audio file; it only removes the reference from the project.", "Confusing a media item with a take, when one item can hold several takes.", "Assuming edits to the item change the source file, rather than just the item's view of it."],
+    "scenario_contexts": ["Splitting a vocal recording into media items to comp the best phrases.", "Crossfading two adjacent media items to hide an edit point.", "Moving a media item to line a sound effect up with a video cue."]
+   },
+   "sources": ["Cockos REAPER User Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4beff751-2070-4f18-a253-9fb487f0c5e8",
+   "term": "MediaBay",
+   "fields": {
+    "definition": "MediaBay is Steinberg's media-management system in Cubase and Nuendo: a database-backed browser for finding, previewing, tagging, and organizing audio files, MIDI loops, presets, and track presets across the system using attribute filters and text search.",
+    "plain_english": "MediaBay is a search tool inside Cubase and Nuendo. It scans your drives so you can find, tag, and preview sounds, loops, and presets, a bit like a search engine for your own audio files.",
+    "purpose_function": "It indexes a user's media and presets so they can be found by attributes such as tempo, key, or category instead of by remembering folder paths.",
+    "practical_application": "A technician tags a sample library once, then uses MediaBay filters to pull up, for example, all 120 BPM minor-key drum loops during a session.",
+    "category": "DAW Feature",
+    "related_terms": ["Media Explorer", "Preset", "Track preset", "Loop", "Metadata", "Attribute"],
+    "common_mistakes": ["Expecting MediaBay to find files it has never scanned; folders must be indexed first.", "Confusing MediaBay's attribute tags with the file's own embedded metadata.", "Assuming a rating or tag edits the file itself rather than MediaBay's database."],
+    "scenario_contexts": ["Building a tagged loop library for fast recall across projects.", "Filtering presets by category when searching for a synth patch.", "Auditioning construction-kit loops in key and tempo before dragging them in."]
+   },
+   "sources": ["Steinberg Cubase Pro Operation Manual", "Steinberg Nuendo Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1e1f49c6-1927-47f8-9a06-6763fa524d42",
+   "term": "Melody layer",
+   "fields": {
+    "definition": "A melody layer is one of the sound sources or tracks in an arrangement that carries the primary melodic line, often stacked or doubled with other timbres to thicken and reinforce the tune. As a layer, it is one element among several combined to build the full melodic part.",
+    "plain_english": "The melody layer is the part of a song that plays the main tune. Producers often stack two or more sounds on the same notes, like several singers on one line, to make the melody fuller and stronger.",
+    "purpose_function": "It gives the melody more weight, character, or width by combining several sounds on the same line, and lets a mixer balance each contribution on its own.",
+    "practical_application": "A producer layers a lead synth with a doubled octave or a plucked sound to reinforce the melody, then balances the layers in the mix.",
+    "category": "Arrangement",
+    "related_terms": ["Layering", "Doubling", "Lead", "Arrangement", "Countermelody", "Timbre"],
+    "common_mistakes": ["Stacking too many melody layers so the parts mask each other and the tune loses clarity.", "Layering sounds that are out of tune or out of phase, which weakens rather than reinforces the melody.", "Forgetting to balance the level of each layer, letting one sound dominate the line."],
+    "scenario_contexts": ["Doubling a vocal melody with a synth to add width in a pop production.", "Stacking octaves on a lead line so a hook cuts through a busy mix.", "Blending a soft and a bright sound so the melody layer sits well in the arrangement."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "63bdb03b-b5f7-40d3-94e2-2f8b124095c6",
+   "term": "Menu music",
+   "fields": {
+    "definition": "Menu music is the looping musical cue that plays behind the menu, title, or pause screens of a video game, DVD/Blu-ray, or other interactive media. It is written to loop seamlessly and to set tone while the user navigates, distinct from in-scene or gameplay score.",
+    "plain_english": "Menu music is the tune that plays while you sit on a game's start or pause screen. It is written to loop over and over without an obvious join, so it can keep going for as long as the player stays on the menu.",
+    "purpose_function": "It sets mood and keeps the interface feeling alive while the user makes choices, filling time of unknown length, which is why it must loop cleanly.",
+    "practical_application": "A composer or editor prepares a seamless loop and sets loop points so the menu track repeats without a click or gap during navigation.",
+    "category": "Interactive Audio",
+    "related_terms": ["Loop", "Seamless loop", "Game audio", "Underscore", "Stinger", "Ambience"],
+    "common_mistakes": ["Creating a loop with an audible seam or gap at the loop point, so the repeat is obvious.", "Making menu music too loud or too busy, so it competes with menu sound effects and voice.", "Writing the cue to end rather than loop, forgetting it may play for an unknown length of time."],
+    "scenario_contexts": ["Scoring the title screen of a video game with a looping theme.", "Providing background music for a DVD or Blu-ray menu.", "Composing a calm loop for a game's pause or settings screen."]
+   },
+   "sources": ["Collins, Game Sound (MIT Press)", "Stevens & Raybould, The Game Audio Tutorial"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "93ef30dc-c66f-4fd9-99a9-a079d090d038",
+   "term": "Metadata validation report",
+   "fields": {
+    "definition": "A metadata validation report is the output of a check that confirms a media file's metadata conforms to a required delivery specification or schema. It lists which fields are present, correctly formatted, and within allowed values, and flags any that are missing or non-compliant.",
+    "plain_english": "It is a checklist result that shows whether a file's information tags meet the rules a broadcaster or platform requires. It tells you which tags are correct and which are missing or wrong, so you can fix them before you send the file.",
+    "purpose_function": "It catches metadata errors before a file is delivered, so a program is not rejected for wrong titles, IDs, timecodes, or audio-track labels.",
+    "practical_application": "Before delivering a program, a technician runs an automated check against the delivery spec and uses the validation report to correct any failed metadata fields.",
+    "category": "Delivery/QC",
+    "related_terms": ["Metadata", "Delivery specification", "Quality control", "Timecode", "Loudness compliance", "Broadcast delivery"],
+    "common_mistakes": ["Treating a passed validation report as proof the picture and sound are correct; it only checks metadata, not content.", "Acting only on hard failures and ignoring warnings, then having the file rejected on delivery.", "Assuming embedded metadata matches the sidecar or delivery document without validating it."],
+    "scenario_contexts": ["Checking an AS-11 broadcast master against a broadcaster's delivery spec.", "Validating loudness and program metadata before uploading to a streaming platform.", "Confirming timecode and track-layout metadata on a finished deliverable."]
+   },
+   "sources": ["EBU Tech 3293 (EBUCore metadata)", "AMWA AS-11 / DPP delivery specification"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f96904b8-9222-4ab3-8aea-cf3eb869f378",
+   "term": "Microtiming",
+   "fields": {
+    "definition": "Microtiming refers to small, expressive deviations in the timing of musical events relative to the underlying metric grid or beat, usually on the order of a few to tens of milliseconds. These deviations shape the groove or feel of a performance and can be preserved, added, or reduced through quantize settings and groove templates.",
+    "plain_english": "Microtiming is the tiny push and pull in when notes are played, just ahead of or behind the strict beat. These small shifts are what make a groove feel human or laid-back instead of stiff and robotic.",
+    "purpose_function": "It carries the human feel and groove of a performance, which is why producers control it with quantize strength and groove templates instead of snapping everything hard to the grid.",
+    "practical_application": "A technician applies a groove template or lowers quantize strength to keep some microtiming, so a programmed drum part grooves instead of sounding mechanical.",
+    "category": "Timing",
+    "related_terms": ["Quantize", "Groove template", "Swing", "Humanize", "Grid", "Nudge"],
+    "common_mistakes": ["Quantizing everything to full strength and removing the microtiming that gave the part its feel.", "Confusing microtiming with tempo changes; microtiming shifts individual hits, not the overall speed.", "Assuming any timing offset is an error to fix rather than intentional feel."],
+    "scenario_contexts": ["Extracting a groove template from a live drummer to apply its microtiming to programmed parts.", "Loosening quantize on a hi-hat pattern so it grooves.", "Nudging a bass note slightly behind the kick to create a laid-back feel."]
+   },
+   "sources": ["Steinberg Cubase Pro Operation Manual (Groove Quantize)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dcc754a1-9fd0-4dbb-baac-38f365851fb2",
+   "term": "MIDI Editor",
+   "fields": {
+    "definition": "A MIDI Editor is a DAW window for viewing and editing the MIDI data on a part or track, including note pitch, start, length, and velocity plus controllers such as pitch bend and modulation, most commonly shown as a piano-roll grid. It edits performance data, not audio.",
+    "plain_english": "The MIDI Editor is the screen where you draw and change the notes a virtual instrument will play. Notes usually show as bars on a grid next to a piano keyboard, so you can move, lengthen, or delete them by hand.",
+    "purpose_function": "It lets a technician correct and shape MIDI performances, fixing wrong notes, timing, and loudness, before those notes are turned into sound by an instrument.",
+    "practical_application": "A technician opens the MIDI Editor to fix a wrong note, adjust velocities for dynamics, and quantize the timing on a recorded keyboard part.",
+    "category": "MIDI",
+    "related_terms": ["Piano roll", "Velocity", "Quantize", "MIDI note", "Controller data", "Key Editor"],
+    "common_mistakes": ["Editing MIDI notes and expecting the audio waveform to change, forgetting the sound comes from the instrument playing the notes.", "Confusing note velocity with track volume; velocity sets how hard each note is played.", "Overwriting recorded controller data by drawing over it without checking what is already there."],
+    "scenario_contexts": ["Correcting a fluffed note in a recorded piano performance.", "Drawing in a hi-hat pattern step by step for a drum machine.", "Editing velocities to add dynamics to a stiff programmed part."]
+   },
+   "sources": ["Steinberg Cubase Pro Operation Manual (Key Editor)", "MIDI Association, MIDI 1.0 Specification"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "288d11ae-7d7c-4dd0-b4a2-24575c0b4401",
+   "term": "MIDI From routing",
+   "fields": {
+    "definition": "In Ableton Live, 'MIDI From' is the upper input-routing chooser in a MIDI track's In/Out section that selects the source of incoming MIDI for that track, such as an external hardware input, another track, or a plug-in, together with the specific MIDI channel. A separate Monitor setting then determines when that input is passed through.",
+    "plain_english": "'MIDI From' is the menu in Ableton Live that picks where a track's MIDI notes come in from, such as a keyboard or another track. You choose the source and the MIDI channel so the track listens to the right controller.",
+    "purpose_function": "It routes control data into a track so the right MIDI source drives that track's instrument, and it lets one track's MIDI feed another for layering or processing.",
+    "practical_application": "A technician sets 'MIDI From' to a keyboard's input and channel to record a part, or points one MIDI track's input at another track to stack instruments.",
+    "category": "MIDI",
+    "related_terms": ["MIDI Editor", "Input routing", "Monitor", "MIDI channel", "Track routing", "Audio From"],
+    "common_mistakes": ["Leaving 'MIDI From' on the wrong source or channel, so the track receives no notes.", "Confusing 'MIDI From' input routing with 'MIDI To' output routing.", "Forgetting that the Monitor setting, not just 'MIDI From', controls whether the input is heard."],
+    "scenario_contexts": ["Selecting a hardware keyboard as a track's MIDI input before recording.", "Routing one MIDI track to another to layer two instruments from one part.", "Choosing a specific MIDI channel to separate parts from a multi-timbral controller."]
+   },
+   "sources": ["Ableton Live Manual (Routing and I/O)", "MIDI Association, MIDI 1.0 Specification"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

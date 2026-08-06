@@ -1,0 +1,159 @@
+{
+ "batch": 99,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "29988c6f-0b01-4572-b245-44710c365d18",
+   "term": "Edit Cursor",
+   "fields": {
+    "definition": "In a DAW's edit (arrange) window, the edit cursor is the blinking insertion point placed with the selector tool that marks the exact timeline location where editing operations begin. It defines a zero-length edit position on a track, distinct from the moving playback cursor.",
+    "plain_english": "The edit cursor is the blinking marker that shows where you clicked on a track. It tells the software where your next edit or paste will land, like the text cursor in a word app.",
+    "purpose_function": "It gives every edit a single, precise reference point on the timeline so cuts, pastes, and inserts happen exactly where intended rather than approximately.",
+    "practical_application": "A technician clicks with the selector to place the edit cursor before pasting a clip, spotting a marker, or setting where a fade or punch-in will start.",
+    "category": "Editing",
+    "related_terms": ["Edit Selection", "Edit Group", "Playback Cursor", "Selector Tool", "Timeline"],
+    "common_mistakes": ["Confusing the edit cursor (a fixed insertion point) with the moving playback cursor.", "Assuming the cursor stays put after clicking elsewhere; a new click moves it.", "Placing the cursor on the wrong track so an edit lands where it was not intended."],
+    "scenario_contexts": ["Placing the edit cursor before pasting a copied clip at a precise bar line.", "Setting the point where a punch-in recording will begin.", "Clicking to position the cursor before spotting a sound effect to picture."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d84cf8b9-464d-4a21-acd1-d9407362b8c1",
+   "term": "Edit Group",
+   "fields": {
+    "definition": "An edit group is a set of tracks linked so that editing actions performed on any member, such as selecting, cutting, trimming, fading, or moving material, are applied identically to all members. In Pro Tools a group can be edit-only, mix-only, or linked for both.",
+    "plain_english": "An edit group ties several tracks together so they act as one when you edit. Cut or move one track and the same change happens to the rest, like sliding a whole stack of paper instead of one sheet.",
+    "purpose_function": "It keeps related tracks, such as a multi-mic drum kit, time-aligned by ensuring edits apply to every member at once.",
+    "practical_application": "An engineer groups all drum tracks so trimming or sliding one clip keeps the whole kit in sync, then suspends the group to edit a single track.",
+    "category": "Editing",
+    "related_terms": ["Edit Selection", "Edit Cursor", "Mix Group", "Track", "Playlist"],
+    "common_mistakes": ["Forgetting a group is active and editing every track when only one was intended.", "Confusing edit groups with mix groups, which link fader and mute moves instead of edits.", "Not suspending the group before editing a single member."],
+    "scenario_contexts": ["Grouping multi-mic drum tracks so edits keep the kit aligned.", "Trimming a whole band's tracks to a new song start at once.", "Suspending a group to slide just one tom hit into place."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4df8d7ec-560b-4733-8160-6748d1aa1d25",
+   "term": "Edit Selection",
+   "fields": {
+    "definition": "An edit selection is the highlighted range of material, on one or more tracks over a span of time, that defines what an editing command will act upon. Its start and end points set the boundaries for operations such as cut, copy, fade, or process.",
+    "plain_english": "An edit selection is the part of the audio you highlight so the software knows what to work on. It is like selecting words in a document before you delete or copy them.",
+    "purpose_function": "It scopes every edit and process to a defined region so a command affects only the chosen material and nothing else.",
+    "practical_application": "A technician drags across a clip to make an edit selection, then applies a fade, deletes noise, or renders a plug-in over exactly that range.",
+    "category": "Editing",
+    "related_terms": ["Edit Cursor", "Edit Group", "Timeline Selection", "Selector Tool", "Playlist"],
+    "common_mistakes": ["Confusing an edit selection with a timeline selection when the two are unlinked.", "Leaving a selection active so the next command affects more material than expected.", "Selecting across the wrong tracks and processing material unintentionally."],
+    "scenario_contexts": ["Highlighting a breath in a vocal take to silence it.", "Selecting a chorus section to duplicate it later in the song.", "Choosing a range to bounce or consolidate to a new file."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3cde4aa9-cd20-438c-9d17-ce6814f89f82",
+   "term": "Effects Channel track",
+   "fields": {
+    "definition": "An effects (FX) channel track is a dedicated auxiliary channel that hosts one or more send effects such as reverb or delay; other channels feed it through their sends, and its processed output returns to the mix. It lets several sources share a single effect instance.",
+    "plain_english": "An effects channel is a special track that holds an effect like reverb. You send a bit of each track's sound to it, and it adds the same reverb to all of them, like everyone dipping into one shared pot of sauce.",
+    "purpose_function": "It centralizes a send effect so many tracks can share it, saving processing power and giving one fader to control the whole effect return.",
+    "practical_application": "An engineer creates an FX channel loaded with a reverb, raises each vocal and snare send to place them in the same space, and sets the wet level with the channel's fader.",
+    "category": "Signal Routing",
+    "related_terms": ["Aux Send", "Send Effect", "Return Track", "Bus", "Effects mixer"],
+    "common_mistakes": ["Leaving the effect's mix below 100% wet on the channel, which doubles the dry signal.", "Confusing an FX channel (a shared send effect) with an insert effect on the source track.", "Routing the channel's output to the wrong bus so the effect is not heard."],
+    "scenario_contexts": ["Adding one reverb FX channel that several vocals share.", "Creating a delay FX channel fed from guitar and synth sends.", "Automating the FX channel fader to swell reverb into a chorus."]
+   },
+   "sources": ["Steinberg Cubase Pro Operation Manual", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ec6ab903-7677-4409-a8f9-d49b9ae1d707",
+   "term": "Effects Fill",
+   "fields": {
+    "definition": "In post-production sound, effects fill is background sound-effects or ambience material laid continuously beneath a scene to bridge the silent gaps between individual spot effects and smooth edits, giving the effects track an unbroken, natural bed.",
+    "plain_english": "Effects fill is quiet background sound, like wind or city hum, spread under a scene to cover gaps between louder effects. It stops the track from dropping to sudden silence, like a steady base coat under the big details.",
+    "purpose_function": "It keeps an effects track continuous and natural so the audience never hears an abrupt drop to silence between separate effects.",
+    "practical_application": "A sound editor lays an ambience or backgrounds track as effects fill under a scene, then places spot effects like footsteps and door slams on top.",
+    "category": "Post-Production",
+    "related_terms": ["Room Tone", "Ambience", "Effects premix", "Effects-only stem", "Sound Effects"],
+    "common_mistakes": ["Confusing effects fill (a bed under effects) with room tone used under dialogue.", "Leaving gaps in the fill so the background pops in and out.", "Setting fill too loud so it competes with dialogue and spot effects."],
+    "scenario_contexts": ["Laying a city ambience as fill under an exterior street scene.", "Filling gaps between separate gunshots with a continuous battlefield background.", "Smoothing effect edits with a steady room ambience bed."]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": ["Confidence Medium: 'Effects Fill' is authored as a transparent compound of the established post-production concept of fill (continuous background/ambience used to cover gaps) applied to the effects track; not found as a single fixed dictionary headword."]
+  },
+  {
+   "id": "c0b67a6a-9e78-4038-8833-c20e051de850",
+   "term": "Effects mixer",
+   "fields": {
+    "definition": "On a film or television dubbing stage staffed by more than one operator, the effects mixer is the re-recording mixer responsible for balancing and processing the sound-effects elements, including spot effects, Foley, and backgrounds, while colleagues handle dialogue and music.",
+    "plain_english": "An effects mixer is the person on a film mix team who blends all the sound effects, like footsteps, doors, and crashes. On big projects the job is split, so one mixer handles only effects while others handle voices and music.",
+    "purpose_function": "Splitting the mix among specialists lets one experienced operator concentrate on the many effects elements, speeding a large mix and improving its balance and detail.",
+    "practical_application": "During a re-recording session, the effects mixer rides the Foley and backgrounds faders and adds EQ and reverb to seat the effects with the picture while the dialogue mixer works alongside.",
+    "category": "Post-Production",
+    "related_terms": ["Re-recording Mixer", "Effects premix", "Effects-only stem", "Foley", "Backgrounds"],
+    "common_mistakes": ["Assuming one person always mixes everything; large films split the roles.", "Confusing the effects mixer (a person) with an effects submixer or FX channel (a signal path).", "Thinking the effects mixer creates the effects rather than balancing already-edited elements."],
+    "scenario_contexts": ["A multi-operator dubbing stage where the effects mixer handles all FX.", "Balancing Foley and backgrounds during a final mix.", "Building an effects premix before the final dub."]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": ["Confidence Medium: 'Effects mixer' authored in its established film re-recording sense (the operator responsible for the effects stem); the term can also loosely denote an effects submixer/FX channel, and the packet gives no disambiguation."]
+  },
+  {
+   "id": "125c823b-6fb4-46ba-bb5f-e23d56aa39f2",
+   "term": "Effects premix",
+   "fields": {
+    "definition": "An effects premix, or predub, is a preliminary re-recording pass that combines and balances the many sound-effects elements (spot effects, Foley, and backgrounds) into a smaller set of tracks or stems, done before the final mix. It cuts track count and locks in effects balances ahead of the final dub.",
+    "plain_english": "An effects premix is a rough mix that blends all the sound effects together before the final movie mix. It shrinks hundreds of effect tracks down to a few, so the last mixing stage is easier to handle.",
+    "purpose_function": "It manages complexity by pre-balancing effects into manageable stems, letting the final mix focus on blending effects with dialogue and music rather than juggling every element.",
+    "practical_application": "A re-recording mixer creates an effects premix of Foley and backgrounds, then brings that premix into the final dub to balance against dialogue and music.",
+    "category": "Post-Production",
+    "related_terms": ["Effects mixer", "Effects-only stem", "Backgrounds", "Foley", "Final Mix"],
+    "common_mistakes": ["Committing effects premixes too hard, leaving no room to rebalance in the final mix.", "Confusing a premix (an intermediate stage) with the final effects stem delivered at the end.", "Not documenting premix routing, which makes later revisions difficult."],
+    "scenario_contexts": ["Premixing dozens of background tracks into a few before the final dub.", "Balancing Foley into an effects premix for a TV episode.", "Recalling an effects premix to adjust a scene during the final mix."]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "15a2f67d-85e8-4976-ae3a-97617870fb37",
+   "term": "Effects-only stem",
+   "fields": {
+    "definition": "An effects-only stem is a final mix delivered as a separate sub-mix containing just the sound-effects elements (spot effects, Foley, and backgrounds), kept apart from the dialogue and music stems. Summed together, the dialogue, music, and effects stems reproduce the full mix.",
+    "plain_english": "An effects-only stem is a copy of the finished soundtrack that holds just the sound effects. It has no voices and no music. Keeping the effects on their own makes it easy to swap languages or change the mix later, like keeping each paint color in its own jar.",
+    "purpose_function": "It lets the effects be reused, rebalanced, or combined with new dialogue and music, which is essential for foreign-language versions and future remixes.",
+    "practical_application": "For delivery, a mixer prints dialogue, music, and effects stems; the effects-only stem is combined with translated dialogue to build a foreign dub or an M&E master.",
+    "category": "Post-Production",
+    "related_terms": ["Stem", "M&E", "Effects premix", "Effects mixer", "Music Stem"],
+    "common_mistakes": ["Confusing an effects-only stem with M&E, which also includes music.", "Leaving processing on the master bus so the stems do not sum back to the original mix.", "Forgetting to include backgrounds and Foley, leaving the effects stem incomplete."],
+    "scenario_contexts": ["Delivering separate dialogue, music, and effects stems to a studio.", "Combining the effects stem with a new language track for a foreign dub.", "Rebalancing effects during a remix without re-editing."]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e780c840-4a05-43bb-aa6c-46b1d35aad34",
+   "term": "Elastic Audio Track",
+   "fields": {
+    "definition": "An Elastic Audio track in Pro Tools is an audio track with Avid's Elastic Audio time-stretching engine enabled, letting clips be tempo-conformed, quantized, and warped, compressing or expanding audio in time without creating a new file. Warp markers anchor and stretch chosen points in the audio.",
+    "plain_english": "An Elastic Audio track lets you stretch or squeeze recorded sound to fix its timing. You do not have to record it again. It works like a rubber band, so a note that lands a little late can snap onto the beat.",
+    "purpose_function": "It lets recorded performances be matched to a session's tempo or tightened rhythmically, so timing can be fixed and material can follow tempo changes.",
+    "practical_application": "An engineer enables Elastic Audio on a drum loop to conform it to the session tempo, then drags warp markers to nudge individual hits into time.",
+    "category": "Editing",
+    "related_terms": ["Warp Marker", "Time Stretch", "Quantize", "Edit Selection", "Tempo Map"],
+    "common_mistakes": ["Choosing the wrong warp algorithm, such as Monophonic on a full mix, which causes artifacts.", "Applying heavy stretching that introduces audible smearing or warble.", "Forgetting Elastic Audio is enabled, so clips shift unexpectedly with tempo changes."],
+    "scenario_contexts": ["Conforming a recorded loop to the session tempo.", "Tightening a live drum take by warping individual hits.", "Matching a doubled vocal to the timing of the lead."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

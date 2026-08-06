@@ -1,0 +1,231 @@
+{
+ "batch": 381,
+ "topic": "Object & Bed Panning / Authoring",
+ "authored": [
+  {
+   "id": "e2451883-2106-4a57-b8c0-709b84e0f3f5",
+   "term": "Object divergence",
+   "fields": {
+    "definition": "A per-object panner parameter that sets the attenuation curve used as an object is positioned along an axis (front x-axis, rear x-axis, front/rear y-axis, and height z-axis), governing how sharply the image collapses onto the nearest speaker versus spreading across neighboring speakers. Higher divergence widens and softens the source; lower divergence produces a tighter, more localized image.",
+    "plain_english": "It controls how tightly a sound is focused on one speaker or spread across nearby ones. Low values keep the sound in a tight spot; high values let it bleed into the speakers around it.",
+    "purpose_function": "It lets a mixer trade pinpoint localization for a wider, smoother spatial image and shape how an object blends into surrounding speakers as it moves through the room.",
+    "practical_application": "A technician raises divergence to soften a hard-panned object so it does not jump speaker to speaker, or lowers it for a sharply localized effect such as a passing car.",
+    "category": "Object Panning",
+    "related_terms": ["Object size", "Object panning", "Object elevation", "Speaker snap", "Object linking"],
+    "common_mistakes": [
+     "Confusing divergence with object size; divergence shapes the attenuation/spread curve per axis while size sets the physical spread area of the object.",
+     "Assuming maximum divergence always sounds better; too much spread smears localization and weakens the intended image.",
+     "Forgetting that divergence is set independently per axis (front, rear, front/rear, height), so one axis can behave differently from another."
+    ],
+    "scenario_contexts": [
+     "Widening a synth pad object so it fills the room without collapsing onto the nearest speaker.",
+     "Tightening divergence on a sound-effect object that must localize precisely to a screen position in a film mix.",
+     "Adjusting height divergence so an overhead object spreads smoothly across the ceiling array."
+    ]
+   },
+   "sources": ["Steinberg Nuendo 'Mixing with VST MultiPanner' manual (divergence: front, rear, front/rear, height)", "Steinberg Nuendo 'Mixing for Dolby Atmos' manual", "Dolby Atmos Music Panner user guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9dc00d52-99bf-4d96-a203-afd92a09176b",
+   "term": "Object elevation",
+   "fields": {
+    "definition": "The vertical (z-axis / height) position of an audio object in the three-dimensional Dolby Atmos space, measured from the listener plane up toward the overhead speakers. In object panners it can be set manually or driven automatically by predefined elevation patterns (for example Wedge, Ceiling, Sphere, Cup, Tunnel, Half-Pipe, Ridge) that make height follow a fixed curve as the object moves in the horizontal plane.",
+    "plain_english": "It is how high off the floor a sound sits, from ear level up to the ceiling speakers. You can set the height by hand or let a preset path raise and lower it as the sound moves.",
+    "purpose_function": "It adds the vertical dimension that separates immersive object audio from flat surround, letting sounds be placed overhead or lifted off the listener plane.",
+    "practical_application": "A mixer raises a helicopter object toward the ceiling speakers, or applies a Wedge or Ceiling elevation pattern so a panned object automatically rises as it moves to the sides.",
+    "category": "Object Panning",
+    "related_terms": ["Object panning", "Object size", "Object divergence", "Bed", "Overhead speakers"],
+    "common_mistakes": [
+     "Assuming every playback system has real height speakers; on many layouts elevation is virtualized, so extreme height cues may not translate.",
+     "Confusing the manual height parameter with elevation patterns, which override manual height while active.",
+     "Overusing height so the mix feels disconnected from the on-screen action."
+    ],
+    "scenario_contexts": [
+     "Placing ambience or rain in the overhead speakers of a cinema mix.",
+     "Using an elevation pattern so a lead ad-lib lifts as it sweeps to the sides.",
+     "Automating a rising riser effect from ear level to the ceiling in a music mix."
+    ]
+   },
+   "sources": ["Steinberg Nuendo 'Mixing with VST MultiPanner' manual (elevation patterns: Wedge, Ceiling, Sphere, Cup, Tunnel, Halfpipe, Ridge)", "Steinberg Nuendo 'Mixing for Dolby Atmos' manual", "Dolby Atmos Music Panner user guide (elevation modes)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c48a4163-7236-44b9-aec4-177052b927f4",
+   "term": "Object enable",
+   "fields": {
+    "definition": "The authoring action of designating a track's output as a Dolby Atmos object rather than part of a channel-based bed, routing it to an object bus/ID so its position is carried as dynamic metadata instead of being fixed to speaker channels.",
+    "plain_english": "It is the switch that turns a normal track into a movable object. Once on, the track carries its own position that can travel anywhere in the room instead of staying locked to fixed speakers.",
+    "purpose_function": "It exists so specific sounds can be panned freely in three dimensions and stay independent of the speaker layout, which is the core idea of object-based audio.",
+    "practical_application": "A technician enables object mode on a lead-vocal or effect track and maps it to an object ID so the panner can move it in three dimensions.",
+    "category": "Object Authoring",
+    "related_terms": ["Object panning", "Object numbering", "Bed", "Object grouping", "Object monitoring mode"],
+    "common_mistakes": [
+     "Enabling more objects than the renderer supports (up to 118 object channel paths), which blocks additional assignments.",
+     "Leaving sounds as objects when a static bed channel would be more appropriate, wasting object slots.",
+     "Forgetting to map the enabled object track to an object ID, so its metadata never reaches the renderer."
+    ],
+    "scenario_contexts": [
+     "Turning a dialogue stem into an object so it can follow on-screen movement.",
+     "Enabling a guitar track as an object for a wide, moving pan in a music mix.",
+     "Deciding which stems become objects versus staying in the 7.1.2 bed during session setup."
+    ]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (object tracks configured to an object bus path mapped to a renderer object; up to 118 object channel paths)", "Steinberg Nuendo 'Mixing for Dolby Atmos' manual (Object Mode / object mapping)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "aa87ecce-80f8-43ec-9575-c53cca839c0d",
+   "term": "Object grouping",
+   "fields": {
+    "definition": "The authoring practice of organizing multiple objects (and bed channels) into a named group so they can be managed and routed together, for example assigning them to a custom group in the Dolby Atmos Renderer to produce a combined re-render/stem output. It is distinct from spatial-coding clusters, which the encoder forms automatically by grouping nearby objects to fit the delivery bitstream.",
+    "plain_english": "It means bundling several objects together so you can manage or route them as one. For example, you can group objects to bounce them out as a single stem.",
+    "purpose_function": "Grouping keeps large object counts organized and lets a mixer output related sounds together, such as all dialogue or all effects, as one re-render.",
+    "practical_application": "A technician assigns objects to custom groups in the renderer to create dialogue, music, and effects re-renders for delivery or archiving.",
+    "category": "Object Authoring",
+    "related_terms": ["Object enable", "Object numbering", "Bed", "Object linking", "Object panning"],
+    "common_mistakes": [
+     "Confusing custom re-render groups with spatial-coding clusters; the first is a mixer choice, the second is automatic during encoding.",
+     "Assuming grouping merges objects into one; grouping organizes them, but each object keeps its own position metadata.",
+     "Forgetting to update group assignments after adding new objects, so re-renders miss content."
+    ],
+    "scenario_contexts": [
+     "Grouping all dialogue objects to output a clean dialogue re-render.",
+     "Organizing dozens of effect objects into groups for easier management in a large film session.",
+     "Creating music-and-effects (M&E) stems from grouped objects for international delivery."
+    ]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Managing custom groups; groups for re-rendering)", "Dolby Atmos Music Panner user guide / Dolby spatial coding (dynamic grouping of nearby objects into clusters)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5fa29eaf-47a7-4d3f-bd84-2b44a30939bb",
+   "term": "Object linking",
+   "fields": {
+    "definition": "Tying two or more object panner instances (or the channels of a multichannel object) together so their positions move in a fixed relationship, with one channel copying the other or mirroring it across the X, Y, or both axes, rather than being automated independently.",
+    "plain_english": "It connects objects so they move together. For example, the right side of a stereo object can mirror the left, so one move controls both.",
+    "purpose_function": "Linking keeps related objects in a consistent spatial relationship and saves the mixer from automating each one separately.",
+    "practical_application": "A mixer links the left and right halves of a stereo object with a mirror mode so a single pan gesture spreads and moves both sides symmetrically.",
+    "category": "Object Panning",
+    "related_terms": ["Object panning", "Object grouping", "Object size", "Object divergence", "Object enable"],
+    "common_mistakes": [
+     "Confusing linking with grouping; linking ties positions together, while grouping bundles objects for management or output.",
+     "Forgetting a link is active and wondering why a second object moves when only one is edited.",
+     "Choosing the wrong mirror axis (X versus Y), which places the partner object in an unintended location."
+    ],
+    "scenario_contexts": [
+     "Mirroring the two channels of a stereo object so it stays symmetrical while panning.",
+     "Linking a pair of effect objects so they move through the room in lockstep.",
+     "Copying one object's motion to another to build a widened, coherent image."
+    ]
+   },
+   "sources": ["Dolby Atmos Music Panner user guide (stereo linking: Copy, Mirror X, Mirror Y, Mirror XY)", "Steinberg Nuendo 'Mixing with VST MultiPanner' manual (panner position linking)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "77693cdd-edc0-44bb-bd01-4b52dc1f1dec",
+   "term": "Object monitoring mode",
+   "fields": {
+    "definition": "The setting or approach that governs how an individual object is auditioned during authoring, including the per-object binaural render mode in the Dolby Atmos Renderer (Off, Near, Mid, or Far) that determines how much perceived distance and space is applied to that object when the mix is monitored over headphones.",
+    "plain_english": "It is how you listen to a single object while you work. On headphones, each object can be set to sound close, mid, or far, or be left out of the headphone mix.",
+    "purpose_function": "It lets a mixer check how each object translates on different outputs, especially headphones, and control the perceived distance of each object in the binaural render.",
+    "practical_application": "A technician sets a lead-vocal object to Near and a reverb object to Far so the headphone (binaural) mix has clear depth, then compares it against speaker monitoring.",
+    "category": "Object Authoring",
+    "related_terms": ["Object enable", "Object panning", "Object elevation", "Binaural rendering", "Bed"],
+    "common_mistakes": [
+     "Assuming binaural render mode changes the speaker mix; it only affects the binaural/headphone render.",
+     "Setting every object to Far, which pushes the whole headphone mix back and muddies it.",
+     "Forgetting that these per-object choices are written as metadata and affect consumer headphone playback, not just the studio."
+    ],
+    "scenario_contexts": [
+     "Assigning Near/Mid/Far binaural render modes per object before a headphone-focused music release.",
+     "Soloing an individual object to check its placement and level.",
+     "Comparing an object's sound on speakers versus binaural headphones during quality control."
+    ]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Working with binaural; per-object binaural render mode metadata: Off, Near, Mid, Far)", "Apple Logic Pro User Guide (binaural render modes for Dolby Atmos objects)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e1713fbd-28f5-4655-8deb-97d055ce9a10",
+   "term": "Object numbering",
+   "fields": {
+    "definition": "The assignment of a unique object ID to each object so the Dolby Atmos Renderer can address it and pair its audio with the correct position metadata. A standard configuration provides 128 input channels total: a bed on the lowest channels (for example 1-10 for 7.1.2) and up to 118 objects numbered after it (for example IDs 11-128).",
+    "plain_english": "It is the ID number each object gets so the system can tell them apart. A standard setup has 128 channels total, with the bed first and up to 118 objects numbered after it.",
+    "purpose_function": "Unique IDs let the renderer keep every object separate and match each one with the right position data through mixing and delivery.",
+    "practical_application": "A technician maps each object track to its object ID (with a 7.1.2 bed, objects start at ID 11) so the renderer receives them in the correct slots.",
+    "category": "Object Authoring",
+    "related_terms": ["Object enable", "Bed", "Object panning", "Object grouping", "Object monitoring mode"],
+    "common_mistakes": [
+     "Assigning two tracks to the same object ID, so one overwrites the other at the renderer.",
+     "Forgetting the bed occupies the first channels, then mis-numbering objects into bed slots.",
+     "Assuming there are 128 objects; with a 7.1.2 bed only 118 object channel paths remain."
+    ],
+    "scenario_contexts": [
+     "Mapping many object tracks to sequential object IDs during session setup.",
+     "Troubleshooting a missing object by checking its ID assignment in the renderer's input view.",
+     "Documenting object ID assignments so a mix can be recalled or handed off."
+    ]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (up to 118 mono objects / object channel paths; object IDs; 128 total input channels)", "Steinberg Nuendo 'Mixing for Dolby Atmos' manual (object mapping to object IDs)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5ca84196-cf5e-4fad-9335-e2d94194cc73",
+   "term": "Object panning",
+   "fields": {
+    "definition": "The placement and movement of an audio object anywhere within the three-dimensional Dolby Atmos listening space using X (left-right), Y (front-back), and Z (height) coordinates carried as metadata, independent of the physical speaker layout, so the renderer reproduces the intended position on whatever system is present.",
+    "plain_english": "It is moving a sound to any spot in the room, left or right, front or back, low or high. The position travels as data, so it plays back correctly on big and small systems alike.",
+    "purpose_function": "It lets sounds be positioned by location rather than by speaker, so the same mix adapts to different rooms and speaker counts.",
+    "practical_application": "A mixer drags an object across the top-view and rear-view panners, or automates its X/Y/Z path, to move a sound through the room in sync with the action.",
+    "category": "Object Panning",
+    "related_terms": ["Object divergence", "Object size", "Object elevation", "Object enable", "Bed"],
+    "common_mistakes": [
+     "Panning objects to extreme positions that only translate on full speaker layouts and collapse on smaller systems.",
+     "Confusing object panning (metadata-based, layout-independent) with bed panning (fixed to channels).",
+     "Over-automating object motion, which can distract from the mix rather than support it."
+    ],
+    "scenario_contexts": [
+     "Following an on-screen car as it drives from left to right and overhead.",
+     "Placing individual instruments around the listener in a music mix.",
+     "Automating a flyover effect from the front wall to the rear of the room."
+    ]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (position audio objects in a three-dimensional audio field)", "Steinberg Nuendo 'Mixing with VST MultiPanner' manual (top/rear view positioning; L-R, rear-front, bottom-top)", "Dolby Atmos Music Panner user guide (X, Y, Z position)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "255a0a66-271a-403c-b15f-8f38e5279352",
+   "term": "Object size",
+   "fields": {
+    "definition": "A per-object parameter that spreads an object's audio over a region of the room around its position, engaging additional active speakers based on the object's location, so the source is perceived as large and diffuse rather than as a single point. It is mutually exclusive with speaker snap, which instead forces the object to the nearest single speaker.",
+    "plain_english": "It sets how big a sound feels in the room. A small size is a tight point; a large size spreads the sound out so it seems to come from a wide area.",
+    "purpose_function": "It lets a mixer make an object feel large and enveloping or small and pinpoint, adding a sense of scale that simple positioning cannot.",
+    "practical_application": "A technician increases size on an ambience or pad object to wrap it around the room, and keeps size small for effects that must localize sharply.",
+    "category": "Object Panning",
+    "related_terms": ["Object divergence", "Object panning", "Object elevation", "Speaker snap", "Object linking"],
+    "common_mistakes": [
+     "Confusing size with divergence; size sets how large the source area is, while divergence shapes the attenuation/spread curve along each axis.",
+     "Expecting size to work while speaker snap is enabled; the two are mutually exclusive.",
+     "Maxing out size on many objects, which blurs localization across the whole mix."
+    ],
+    "scenario_contexts": [
+     "Enlarging a crowd or ambience object to fill the room.",
+     "Keeping a fast fly-by effect small so it localizes to a precise point.",
+     "Growing a synth pad's size so it envelops the listener in a music mix."
+    ]
+   },
+   "sources": ["Steinberg Nuendo 'Mixing with VST MultiPanner' manual (Object Size spreads audio in the room; deactivated if Speaker Snap active)", "Steinberg Nuendo 'Mixing for Dolby Atmos' manual", "Dolby Atmos Music Panner user guide (Size parameter)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

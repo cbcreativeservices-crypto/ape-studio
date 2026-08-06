@@ -1,0 +1,229 @@
+1/3-octave display	560
+1/48-octave display	560
+A-weighted (dBA)	540
+Active trace	560
+Airborne sound	550
+Alarm threshold	550
+Alignment window	570
+all-pass filter	570
+Amplitude scale	540
+Arrival time	570
+ASCII import	560
+Audio Analyzer	560
+Audio Test Set	560
+Audyssey / Auto Room Calibration	570
+Averaging	540
+back-EMF	560
+Banding	560
+Bode plot	560
+Brown	560
+C-weighted (dBC)	540
+Calibration	550
+Calibration offset	550
+Calibrator	550
+Channel delay	570
+Characteristic curves	560
+CIS	550
+Clarity	550
+Class 1 capability	550
+Class 2 capability	550
+Coherence	560
+Coherence trace	560
+Complex averaging	540
+Control bar	560
+Correlation Meter	540
+Cross-correlation	560
+Crossover alignment	570
+crosstalk	560
+Cursor readout	560
+Data register	550
+dB SPL	540
+dBm	540
+De-esser	570
+Decibel reference levels	540
+Delay field	560
+Delay finder	560
+Delay Locator	560
+Destructive Interference	550
+Device options	560
+Diagnostic measurement	560
+Digital peak meter	540
+Distortion Analyzer	560
+Distortion measurements	560
+Drop IR Data Window	560
+Dual-channel FFT	560
+Dynamic Range	560
+Energy-time curve (ETC)	560
+Equivalent noise level	550
+Event note	560
+Excitation signal	560
+Exponential Sine Sweep	560
+Fast Fourier Transform (FFT)	560
+FFT bin	560
+FFT size	560
+Find delay workflow	560
+Frequency resolution	560
+Frequency Response	540
+Frequency zoom	560
+Gain Before Feedback (GBF)	570
+Gain structure	570
+Generator	560
+Goniometer	540
+Ground-Plane Measurement	550
+Group delay	560
+Harmonic Distortion	560
+House curve	570
+Hum Components	560
+HVAC noise	550
+IACC	550
+IMD (SMPTE, ITU-R/CCIF, DIM/TIM)	560
+Impedance Meter	560
+Impulse response	560
+Impulse Response Mode	560
+Input meter	540
+Insulation Tester	560
+Integrated Loudness (LKFS / LUFS)	540
+IR ETC view	560
+IR Histogram	560
+IR Linear view	560
+IR Log view	560
+IR Spectrograph	560
+Johnson (thermal) noise	560
+K-weighted (LUFS)	540
+L10	550
+L50	550
+L90	550
+LAeq	550
+LCeq	550
+LCpeak	550
+LEDE concept	550
+Leq	550
+Level	540
+Line Level (+4 dBu)	540
+Linear averaging	540
+Linearity	560
+Live IR	560
+Load impedance	560
+Locked trace	560
+Logarithmic frequency axis	560
+Loopback measurement	560
+loudness (perceptual)	540
+loudness meter	540
+LUFS meter	540
+Magnitude	560
+Magnitude trace	560
+Maximum Length Sequence (MLS)	560
+Measurement channel	560
+Measurement configuration	560
+Measurement engine	560
+Measurement interface	560
+Measurement microphone	550
+Measurement position	550
+Measurement tab	560
+Mic Calibrator	550
+Mic correction curve	550
+Mic Sensitivity	550
+Multi-engine measurement	560
+Near-field measurement	550
+Network Analyzer	560
+Noise - spectral colors	560
+Noise Floor	560
+Octave band	540
+Octave banding control	560
+Octave smoothing	540
+Off-axis coloration	570
+Optimization	570
+out of phase	560
+Period-matched noise	560
+Phase Checker	560
+Phase Meter	540
+Phase trace	560
+Phase unwrapping	560
+Phase wrapping	560
+Phons	540
+Pink Noise	560
+Pink-noise generator	560
+Pistonphone	550
+Plot area	560
+Polarity check	560
+Polarity test	560
+Polarity Tester	560
+PPM (peak program meter)	540
+Preamp gain staging	570
+Precedence effect	570
+Pressure zone	550
+Pseudorandom setting	560
+Quasi-Anechoic Measurement	560
+Quick Reference Tables	560
+Real-Time Mode	560
+Reference channel	560
+Reference Microphone	550
+Reference signal	560
+Remote viewing	560
+Report generation	560
+Reverberation time (RT60)	550
+RF filtering	560
+RMS (Root Mean Square)	540
+Room Correction	570
+Room mode	550
+RT band	550
+RTA (Real-Time Analyzer)	560
+RTA view	560
+Saturation	560
+Self-noise	560
+Sensitivity (rated under standard conditions)	560
+Show/hide trace	560
+Signal Generator	560
+Signal levels (nominal)	540
+Signal-to-Noise Ratio (SNR)	560
+sine wave	540
+Single-channel measurement	560
+SMAART	560
+Smoothing	540
+Sound Level Calibrator	550
+Sound level meter view	550
+Spectral leakage	560
+Spectrogram	560
+Spectrograph view	560
+Spectrum	560
+Spectrum measurement	560
+SPL (sound pressure level)	540
+SPL history plot	550
+SPL Meter (Sound Level Meter)	550
+SPL Mode	550
+STI	550
+STIPA	550
+Stored trace	560
+Sweep Generator	560
+Sweet Spot	570
+System baseline	570
+System verification	570
+Target curve	570
+third-octave (1/3-octave)	540
+Time window	560
+Time-Domain Reflectometer (TDR)	560
+Tonal imbalance	570
+Tone Generator	560
+Trace averaging	540
+Trace capture	560
+Trace math	540
+Transfer function	560
+Transfer Function measurement	560
+Transient response	540
+Transmission loss	550
+True Peak (dBTP)	540
+Tube noise	560
+Tube warm-up	560
+Tuning position	570
+ultrasonic	540
+Unbanded spectrum	560
+VU Meter (Volume Unit Meter)	540
+Walk test	570
+Waterfall Plot (CSD)	560
+Weather effects	550
+Weighting filters	540
+Weighting selector	540
+White Noise	560
+White Noise Generator	560
+Window function	560
+Z-weighting	540

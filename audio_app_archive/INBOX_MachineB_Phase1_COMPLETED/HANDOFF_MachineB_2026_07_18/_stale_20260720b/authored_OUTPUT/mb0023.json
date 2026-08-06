@@ -1,0 +1,312 @@
+{
+  "batch": 23,
+  "topic": "Drum-Kit Recording",
+  "authored": [
+    {
+      "id": "5943310c-2143-40e9-bc66-c74226f6dc52",
+      "term": "Cymbal buildup",
+      "fields": {
+        "definition": "The gradual accumulation of sustained high-frequency energy from cymbals during a performance or recording, in which their long wash and overlapping overtones add up so the top end becomes cluttered, harsh, or masks other instruments.",
+        "plain_english": "When cymbals keep ringing, their bright hiss piles up over time. It can bury the rest of the kit. Think of many people all talking at once until you cannot hear anyone clearly.",
+        "purpose_function": "It names a common problem that engineers watch for; spotting it helps them keep the high end clear and stop the cymbal wash from swamping the mix.",
+        "practical_application": "A technician manages it through cymbal choice and placement, overhead mic position, high-frequency EQ, or by gating and riding overhead levels so the wash does not overwhelm the drums.",
+        "category": "Cymbals",
+        "related_terms": [
+          "Cymbal decay",
+          "Cymbal sizzle rivets",
+          "Drum bleed",
+          "Overhead miking",
+          "Cymbal mute"
+        ],
+        "common_mistakes": [
+          "Thinking more or bigger cymbals always sound better; excessive wash accumulates and clutters the top end.",
+          "Trying to fix buildup with EQ alone instead of addressing cymbal choice, playing, and mic placement at the source.",
+          "Placing overheads too close to loud crashes, so cymbals dominate the drum sound and pile up."
+        ],
+        "scenario_contexts": [
+          "Mixing a busy rock track where crashes ring into each other and hide the vocal.",
+          "Recording a heavy-handed drummer whose overheads become harsh and washy.",
+          "Choosing darker, thinner cymbals for a session to reduce clutter in the top end."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, 'Modern Recording Techniques' (drum miking and overheads)",
+        "Ballou, 'Handbook for Sound Engineers' (microphone technique)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b488412f-2639-42bb-8c5d-5d5a2a0119e1",
+      "term": "Cymbal choke",
+      "fields": {
+        "definition": "A playing technique in which the drummer strikes a cymbal (usually a crash) and immediately grabs its edge to stop it ringing, producing a short, abrupt accent; on electronic kits it is a triggered feature that mutes the sampled cymbal in the same way.",
+        "plain_english": "The drummer hits a cymbal, then grabs it fast to cut the sound short. It is like clapping your hand over a ringing bell to make it stop.",
+        "purpose_function": "It gives a sharp, staccato accent that punctuates a beat or ends a phrase tightly, instead of leaving a long ring.",
+        "practical_application": "Engineers must capture the choke cleanly on the overhead or crash mic, and on electronic pads they program the choke trigger so it mutes the cymbal sample when the edge is grabbed.",
+        "category": "Cymbals",
+        "related_terms": [
+          "Cymbal decay",
+          "Cymbal mute",
+          "Cymbal edge blast",
+          "Overhead miking",
+          "Drum bleed"
+        ],
+        "common_mistakes": [
+          "Gating the overhead too hard so the short choke gets cut off or lost.",
+          "On electronic kits, failing to enable the choke zone, so the pad rings out instead of stopping.",
+          "Confusing a choke with a mute; a choke is a live hand grab, while a mute is a fixed accessory on the cymbal."
+        ],
+        "scenario_contexts": [
+          "A metal drummer choking a crash for tight, punchy stabs between riffs.",
+          "Setting up an electronic drum pad so its choke zone mutes the sampled crash.",
+          "Editing a drum take where the choked accent must stay short and defined."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, 'Modern Recording Techniques' (drum-kit capture)",
+        "Sound on Sound (recording and triggering electronic drums)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b2bffea3-b4cf-41ba-a828-86601c8952c2",
+      "term": "Cymbal decay",
+      "fields": {
+        "definition": "The gradual fading of a cymbal's sound after it is struck, as the vibrating metal loses energy; the decay time is how long the tone rings out before falling silent.",
+        "plain_english": "It is how long a cymbal keeps ringing after you hit it. A big crash rings for a long time. A tight cymbal fades away fast.",
+        "purpose_function": "Decay shapes a cymbal's character and sustain, so knowing it helps players and engineers judge note length and how much wash a part adds.",
+        "practical_application": "Engineers weigh decay when placing overheads, setting reverb tails, and choosing gate release times; long decay can smear fast passages, so darker or muted cymbals may be picked.",
+        "category": "Cymbals",
+        "related_terms": [
+          "Cymbal buildup",
+          "Cymbal mute",
+          "Cymbal sizzle rivets",
+          "Drum damping",
+          "Overhead miking"
+        ],
+        "common_mistakes": [
+          "Setting a gate release too short, which chops off the natural decay and sounds unnatural.",
+          "Assuming all cymbals decay the same; thickness, size, and alloy change the ring time a lot.",
+          "Ignoring long decay in fast parts, so the wash blurs the groove."
+        ],
+        "scenario_contexts": [
+          "Choosing a fast-decaying cymbal for a quick, articulate jazz passage.",
+          "Setting reverb so it does not fight a crash's own long decay.",
+          "Timing a fade-out so the last cymbal is allowed to ring fully."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, 'The Physics of Musical Instruments' (cymbals and plate vibration)",
+        "Huber & Runstein, 'Modern Recording Techniques' (drum miking)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "c95ee755-3829-4d58-83f0-4accde1dfe0a",
+      "term": "Cymbal edge blast",
+      "fields": {
+        "definition": "Striking a cymbal at its outer edge — typically with the shoulder of the stick on a crash or china — to produce the loudest, fullest, most explosive attack with the widest spread of overtones, as opposed to the more controlled tone from the bow or bell.",
+        "plain_english": "Hitting a cymbal right on its outer rim for the biggest, loudest crash. The edge is the springiest part, so it gives the most powerful smash.",
+        "purpose_function": "The edge moves the most when struck, so playing there gives maximum volume and a wide burst of sound used for accents and big impacts.",
+        "practical_application": "Engineers expect high peak levels from edge hits, so they set overhead gain and any limiting with headroom, and may choose sturdier cymbals and careful mic placement to avoid clipping.",
+        "category": "Cymbals",
+        "related_terms": [
+          "Cymbal choke",
+          "Cymbal buildup",
+          "Cymbal decay",
+          "Overhead miking",
+          "Drum bleed"
+        ],
+        "common_mistakes": [
+          "Leaving no headroom on overheads, so a hard edge hit clips the recording.",
+          "Assuming edge and bow hits sound the same; the edge is louder and washier while the bow is more defined.",
+          "Placing an overhead directly over the edge, exaggerating loud crashes over the rest of the kit."
+        ],
+        "scenario_contexts": [
+          "A rock drummer smashing crash edges for big chorus accents.",
+          "Setting overhead gain to survive loud edge blasts without clipping.",
+          "Choosing thicker crashes that hold up to hard edge playing."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, 'The Physics of Musical Instruments' (cymbal vibration and striking position)",
+        "Huber & Runstein, 'Modern Recording Techniques' (drum-kit capture and headroom)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "b7c55bcf-6512-4d93-aa42-a709f51c1253",
+      "term": "Cymbal mute",
+      "fields": {
+        "definition": "Any accessory or method used to shorten a cymbal's sustain and tame its overtones, such as adhesive gel pads, tape, rubber rings, or clip-on mutes placed on the metal to absorb vibration.",
+        "plain_english": "Anything stuck on a cymbal to make it ring less and sound shorter. It works like resting a finger on a guitar string to stop it buzzing.",
+        "purpose_function": "It reduces unwanted wash and sustain, giving a drier, more controlled cymbal sound that fits denser mixes or quieter rooms.",
+        "practical_application": "A technician adds mutes when overheads capture too much ring or when a cymbal clashes with the mix, trimming sustain without changing mic placement.",
+        "category": "Cymbals",
+        "related_terms": [
+          "Cymbal decay",
+          "Cymbal buildup",
+          "Drum damping",
+          "Cymbal choke",
+          "Overhead miking"
+        ],
+        "common_mistakes": [
+          "Over-muting, which kills the cymbal's tone and life instead of just trimming the ring.",
+          "Confusing a mute with a choke; a mute is a fixed accessory, while a choke is a live hand grab.",
+          "Using tape residue that gums the cymbal and dulls it unevenly over time."
+        ],
+        "scenario_contexts": [
+          "Adding gel pads to a ride that rings too long in a close-miked studio.",
+          "Taming a bright crash so it stops masking the vocal in a dense mix.",
+          "Quieting cymbals for a low-volume rehearsal or podcast recording."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, 'Modern Recording Techniques' (drum sound control)",
+        "Sound on Sound (drum-kit damping and cymbal control)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "d2e0f99a-80de-4778-8fd7-63da5a31712b",
+      "term": "Cymbal sizzle rivets",
+      "fields": {
+        "definition": "Small metal rivets fitted loosely through holes drilled near the edge of a cymbal — most often a ride — that rattle against the metal when it is struck, adding a sustained sizzling wash on top of the cymbal's normal tone.",
+        "plain_english": "Little metal pins set loose in a cymbal so they buzz when it is hit. They add a long, sizzly hiss, like a snare's rattle riding on top of the cymbal.",
+        "purpose_function": "The rivets extend and color the cymbal's sustain, giving a shimmering wash prized in jazz and ballads without needing an added effect.",
+        "practical_application": "Engineers mic a sizzle ride knowing the extra high-frequency wash lingers, adjusting overhead placement, EQ, or gating so the sizzle sits in the mix rather than smearing it.",
+        "category": "Cymbals",
+        "related_terms": [
+          "Cymbal decay",
+          "Cymbal buildup",
+          "Cymbal mute",
+          "Overhead miking",
+          "Drum bleed"
+        ],
+        "common_mistakes": [
+          "Expecting a sizzle ride to sound clean; the rivets add constant wash that fills the top end.",
+          "Gating the overheads so hard that the sizzle tail is cut off unnaturally.",
+          "Adding too many rivets, which drowns the cymbal's core tone in rattle."
+        ],
+        "scenario_contexts": [
+          "Recording a jazz ride whose rivets add shimmer under a brushed groove.",
+          "Micing a ballad kit where the sizzle wash needs to sit softly behind the vocal.",
+          "Deciding whether a sizzle ride's wash will clash with a busy arrangement."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, 'The Physics of Musical Instruments' (cymbals and added rivets/rattles)",
+        "Huber & Runstein, 'Modern Recording Techniques' (cymbal miking)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b04105ba-ad9d-49ae-a1ea-26969aa5f99d",
+      "term": "Double-headed tom",
+      "fields": {
+        "definition": "A tom-tom fitted with both a batter (top) head and a resonant (bottom) head so the shell is enclosed at both ends; this two-head design gives more sustain, a fuller tone, and a pronounced pitch bend compared with a single-headed (open concert) tom.",
+        "plain_english": "A tom with a drum skin on both the top and the bottom. Closing both ends makes it ring longer and sound fuller than a tom that is open underneath.",
+        "purpose_function": "The resonant head lets the shell ring and reinforce the note, producing the warm, singing tone and sustain most drum kits are built around.",
+        "practical_application": "A technician tunes both heads in relation to each other to set pitch and sustain, and decides whether to mic only the top or add a bottom mic to capture the resonant head.",
+        "category": "Toms",
+        "related_terms": [
+          "Drum damping",
+          "Drum bleed",
+          "Resonant head",
+          "Batter head",
+          "Overhead miking"
+        ],
+        "common_mistakes": [
+          "Ignoring the bottom head when tuning, which leaves the tom ringing badly or choked.",
+          "Assuming a bottom mic is always needed; the top head often captures enough of the tone.",
+          "Confusing it with a single-headed concert tom, which has no resonant head and far less sustain."
+        ],
+        "scenario_contexts": [
+          "Tuning a rack tom's two heads for a warm, sustaining rock tone.",
+          "Deciding to add a bottom mic to capture a floor tom's resonant head.",
+          "Damping a double-headed tom that rings too long for a close-miked session."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, 'The Physics of Musical Instruments' (membranophones and two-headed drums)",
+        "Huber & Runstein, 'Modern Recording Techniques' (drum tuning and miking)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "93025126-1e4f-494a-b2bb-adc2274499c6",
+      "term": "Drum bleed",
+      "fields": {
+        "definition": "Sound from one drum or source that is picked up by a microphone aimed at a different one — for example the snare leaking into the tom mics or into the overheads; also called spill or leakage.",
+        "plain_english": "When a mic meant for one drum also picks up the others nearby. It is like a phone catching your neighbor's voice, not just yours.",
+        "purpose_function": "Bleed is a natural result of close-miking many loud sources near each other; understanding it lets engineers control the balance and glue of a kit.",
+        "practical_application": "Engineers manage bleed with mic choice, polar pattern, placement, gates, and phase checks, since too much leakage muddies the mix while a little can make a kit sound cohesive.",
+        "category": "Microphone technique",
+        "related_terms": [
+          "Overhead miking",
+          "Drum damping",
+          "Cymbal buildup",
+          "Phase cancellation",
+          "Gate"
+        ],
+        "common_mistakes": [
+          "Assuming all bleed is bad; a controlled amount can make a kit sound natural and glued together.",
+          "Ignoring phase between mics, so bleed causes cancellation and a thin, hollow sound.",
+          "Gating aggressively to kill bleed, which chops transients and sounds unnatural."
+        ],
+        "scenario_contexts": [
+          "Snare leaking heavily into the tom mics on a tightly packed kit.",
+          "Checking phase because hi-hat bleed thins out the overheads.",
+          "Choosing cardioid mics to reduce bleed from nearby cymbals."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, 'Modern Recording Techniques' (leakage and close-miking)",
+        "Ballou, 'Handbook for Sound Engineers' (microphone polar patterns and isolation)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "e7151d04-f87a-4939-a44d-538b3c552aaa",
+      "term": "Drum damping",
+      "fields": {
+        "definition": "The deliberate reduction of a drumhead's sustain and unwanted overtones using muffling materials — gel pads, dampening rings, tape, or a pillow or blanket inside the kick — to give a shorter, more focused tone.",
+        "plain_english": "Adding something soft to a drum so it rings less and sounds tighter. It is like pressing a towel on a drum to stop the long boom.",
+        "purpose_function": "It controls ring and boom that can clash in a mix, letting a technician tune the length and focus of a drum's sound at the source.",
+        "practical_application": "Engineers add moongel, rings, or a kick pillow when a drum rings too long or muddies the track, tightening the sound before reaching for EQ or gates.",
+        "category": "Drum tuning",
+        "related_terms": [
+          "Cymbal mute",
+          "Double-headed tom",
+          "Drum bleed",
+          "Resonant head",
+          "Gate"
+        ],
+        "common_mistakes": [
+          "Over-damping, which chokes the drum and kills its natural tone and sustain.",
+          "Reaching for EQ to fix ring that should be tamed at the source with damping.",
+          "Using heavy tape that leaves residue and dampens unevenly across the head."
+        ],
+        "scenario_contexts": [
+          "Adding a pillow inside the kick to tighten a boomy, ringing bass drum.",
+          "Placing moongel on a snare that rings too long for a pop track.",
+          "Fitting a dampening ring on a tom to control overtones before miking."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, 'Modern Recording Techniques' (drum tuning and muffling)",
+        "Sound on Sound (drum damping and recording technique)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+{
+ "bucket": 6,
+ "packets": [
+  "mb0209",
+  "mb0210",
+  "mb0213",
+  "mb0216",
+  "mb0222",
+  "mb0224",
+  "mb0225",
+  "mb0228"
+ ],
+ "terms": [
+  {
+   "pkt": "mb0209",
+   "id": "e44fa56e-af46-408a-beac-07c1a9f76b4c",
+   "term": "Accent supervision",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0210",
+   "id": "5af15700-19ce-47fd-8ba4-80ffafb15b99",
+   "term": "Age matching",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0210",
+   "id": "a07b4512-392f-42a8-9163-fa4df2bbe34f",
+   "term": "Audio behavior",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0213",
+   "id": "46e3c0c9-2f63-4705-9ada-c83e60740272",
+   "term": "Braam",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0216",
+   "id": "14a5770f-33d0-42a9-9115-8c2c87935929",
+   "term": "Conducting offset",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0216",
+   "id": "ced5b08b-055a-44dd-bd05-8cb2df985ec8",
+   "term": "Cone attenuation",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0222",
+   "id": "bd68b7e8-9d5a-4eb7-a490-d25ca8028d3e",
+   "term": "Downer effect",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0224",
+   "id": "284d8827-1adf-4c82-b114-1c11c31767f4",
+   "term": "Emotional performance",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0225",
+   "id": "1aeae003-1e78-4ae3-8496-e05cbe33ebf1",
+   "term": "Exploration-state parameter",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0225",
+   "id": "5f144024-9020-446d-a810-29960e244cf8",
+   "term": "Finger tap",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  },
+  {
+   "pkt": "mb0228",
+   "id": "a9b0695c-acf1-48ff-9949-df21c4edf13e",
+   "term": "Found Prop",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Sound for Picture — Post Workflow & Deliverables"
+  }
+ ]
+}

@@ -1,0 +1,293 @@
+{
+ "group": 101,
+ "terms": [
+  {
+   "id": "d3aa758e-1bea-44db-b216-80c00e03e260",
+   "term": "Building a mix",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "difficulty": null,
+   "definition": "The step-by-step process of assembling a live mix by bringing channels up in order of importance, setting relative levels, and then refining tone, dynamics, and effects until the whole ensemble sits balanced in the room. Engineers commonly start with the rhythm section (kick and snare, then the rest of the kit and bass) and the lead vocal, then layer in the remaining instruments.",
+   "plain_english": "Building a mix means turning up the instruments one at a time and getting their levels right, instead of pushing every fader up at once. Most engineers start with the kick drum, bass, and lead vocal, then add the rest.",
+   "purpose_function": "Working in a set order lets the engineer establish the rhythmic foundation and the most important elements first, so the mix stays clear and controlled instead of becoming a wall of competing sound.",
+   "practical_application": "During soundcheck or the opening song the engineer builds the mix channel by channel, using faders for balance before reaching for EQ and compression.",
+   "category": "Mixing Workflow",
+   "related_terms": [
+    "Gain structure",
+    "Festival mix",
+    "House EQ",
+    "Subgroups / VCAs",
+    "Backing tracks (tracks)"
+   ],
+   "common_mistakes": [
+    "Pushing all faders up at once, which makes it impossible to hear what each source is contributing.",
+    "Reaching for EQ and compression before setting a basic fader balance.",
+    "Building the mix at a quiet soundcheck level that does not match show level or a full room."
+   ],
+   "scenario_contexts": [
+    "An engineer builds a mix outward from the kick and vocal during the first song of a support slot.",
+    "At soundcheck the engineer sets each channel's level and tone before running a full song.",
+    "A festival engineer quickly rebuilds the mix for each new band on a shared console."
+   ]
+  },
+  {
+   "id": "1411d066-1fa4-43d2-8e70-28730720de77",
+   "term": "Click distribution",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "difficulty": null,
+   "definition": "The routing of a metronome (click) signal to individual performers during a show so they stay locked to backing tracks, timecode, or each other, while keeping that click out of the front-of-house mix. It is typically fed to players' in-ear monitors or a drummer's wedge from dedicated aux or matrix outputs on the monitor console or the playback rig.",
+   "plain_english": "Click distribution is how the steady beep that keeps players in time gets sent to their ears. It goes only to the musicians' monitors, never out to the crowd.",
+   "purpose_function": "It keeps every performer, and any backing tracks, in tight time, which is essential when a rig runs playback, loops, or synced lighting and video.",
+   "practical_application": "The engineer routes the click from the playback machine to a monitor aux or IEM mix, confirms each musician can hear it, and mutes it from every audience-facing output.",
+   "category": "Playback & Sync",
+   "related_terms": [
+    "Backing tracks (tracks)",
+    "In-ear monitors (IEMs)",
+    "Timecode",
+    "Aux send",
+    "Monitor mix"
+   ],
+   "common_mistakes": [
+    "Letting the click bleed into the FOH mix or into open microphones so the audience hears it.",
+    "Sending one click level to everyone instead of tailoring it to each player's monitor mix.",
+    "Relying on a single distribution path with no backup, so one fault leaves the band with no time reference."
+   ],
+   "scenario_contexts": [
+    "A drummer receives click and backing tracks in ear monitors while the rest of the band gets click in their own IEM mixes.",
+    "A monitor engineer sets separate click levels for each performer's mix.",
+    "A playback operator sends click and timecode so lighting and video stay in sync with the band."
+   ]
+  },
+  {
+   "id": "ae03a732-78a5-45af-a2e4-ae0e21a2a01d",
+   "term": "Cue-to-cue",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "difficulty": null,
+   "definition": "A technical rehearsal method in which the production skips the intervening dialogue, songs, or action and runs only from one technical cue to the next, so the crew can set, time, and refine sound, lighting, and scene-change cues without performing the whole show. It is used to build and verify the cue sequence efficiently before a full run-through.",
+   "plain_english": "Cue-to-cue is a rehearsal where you jump straight from one technical moment to the next and skip the parts in between. It lets the crew practice the sound and lighting changes without running the whole show.",
+   "purpose_function": "It saves rehearsal time by focusing only on the moments where technical elements change, letting operators and the stage manager lock in and troubleshoot each cue.",
+   "practical_application": "During tech week the sound engineer uses cue-to-cue to confirm every console snapshot or scene recall, mute change, and playback trigger fires correctly on its cue.",
+   "category": "Show Preparation",
+   "related_terms": [
+    "Scene recall / snapshots",
+    "Technical rehearsal",
+    "Cue",
+    "Show file",
+    "Playback triggers"
+   ],
+   "common_mistakes": [
+    "Treating cue-to-cue as a full run-through and wasting time playing whole songs between cues.",
+    "Not saving or labeling console snapshots as cues are set, so changes are lost.",
+    "Skipping the check of transitions into and out of each cue, where most mistakes actually happen."
+   ],
+   "scenario_contexts": [
+    "A musical's tech rehearsal jumps between scene changes to verify each lighting and sound cue.",
+    "An engineer steps through console snapshots cue by cue to confirm channel mutes and levels recall correctly.",
+    "The stage manager calls a cue-to-cue to time complex transitions before the first full run."
+   ]
+  },
+  {
+   "id": "59bd9da7-bbdf-41ba-95df-ac22c0f29a84",
+   "term": "Festival mix",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "difficulty": null,
+   "definition": "A front-of-house mixing approach used when many acts share one stage, PA, and often one console with fast changeovers and little or no soundcheck. The engineer builds a usable, robust mix very quickly, often during the first song, using broad fader moves and pre-programmed or generic settings rather than detailed per-channel refinement.",
+   "plain_english": "A festival mix is what you do when band after band shares the same stage and gear with almost no time to check sound. You get a solid, clear mix fast, usually within the first song, using big simple moves.",
+   "purpose_function": "It exists because festival schedules leave no time for a normal soundcheck, so the engineer must deliver a clear, safe, and musical mix almost immediately for each act.",
+   "practical_application": "The engineer prepares a console file in advance, takes levels from a quick line check, and prioritizes kick and lead vocal first, then builds the rest as the band plays.",
+   "category": "Mixing Workflow",
+   "related_terms": [
+    "One-mix (festival one-off)",
+    "Building a mix",
+    "Line check",
+    "House EQ",
+    "Changeover"
+   ],
+   "common_mistakes": [
+    "Trying to do detailed EQ and compression on every channel instead of getting a fast, solid balance.",
+    "Re-tuning a professionally set house PA during the set instead of trusting it and mixing on it.",
+    "Not preparing a console file in advance, so setup eats into the short changeover time."
+   ],
+   "scenario_contexts": [
+    "An engineer mixes six bands in an afternoon on a shared console with short changeovers.",
+    "A guest engineer arrives with a USB show file and gets only a line check before the set.",
+    "A house engineer covers acts that bring no engineer, building each mix on the fly."
+   ]
+  },
+  {
+   "id": "3e122f36-9707-4c3d-a627-70adbbe92e48",
+   "term": "House EQ",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "difficulty": null,
+   "definition": "The overall equalization applied to the main PA to correct the combined response of the loudspeaker system and the room, giving a consistent, balanced tonal starting point before individual channels are mixed. It is normally set on the system processor or main/master bus with parametric and/or graphic EQ, often guided by measurement, and is intended as broad system tuning rather than per-song mixing.",
+   "plain_english": "House EQ is the tone shaping put on the whole PA so the room sounds even before you mix any instruments. It fixes the system and room, not the single channels.",
+   "purpose_function": "It compensates for how the speakers and room color the sound, so the engineer starts from a neutral, predictable tonal balance and mixes translate better in that space.",
+   "practical_application": "A system tech tunes house EQ during setup with measurement software and a reference microphone, then leaves it largely fixed while the mix engineer works the channels.",
+   "category": "System Tuning",
+   "related_terms": [
+    "System tuning",
+    "Graphic EQ",
+    "Parametric EQ",
+    "Ringing out the room",
+    "Target curve"
+   ],
+   "common_mistakes": [
+    "Using house/system EQ to fix a single instrument instead of adjusting that channel.",
+    "Applying large boosts to force a target curve rather than fixing placement and processing first.",
+    "Confusing broad system tuning with the per-band mixing done on channel EQ."
+   ],
+   "scenario_contexts": [
+    "A system engineer measures the PA and sets house EQ before doors so the room is balanced.",
+    "An engineer inherits a tuned house EQ at a festival and mixes on top of it without changing it.",
+    "A venue keeps a stored house EQ curve on its installed processor for all events."
+   ]
+  },
+  {
+   "id": "4d2b975c-28c3-4915-9ce8-24bf323a1115",
+   "term": "One-mix (festival one-off)",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "difficulty": null,
+   "definition": "A single, standalone show — as opposed to an ongoing tour — that the engineer mixes in one pass with minimal preparation, typically on unfamiliar house equipment and with only a line check or a short soundcheck. There is effectively one chance to get the mix right, so preparation and fast, reliable decisions matter more than fine detail.",
+   "plain_english": "A one-off is a single show that is not part of a tour, so you get just one shot at the mix. You usually work on gear you did not choose, with little time to check it, so you plan ahead and keep it simple.",
+   "purpose_function": "The term captures the high-pressure reality of one-off and festival gigs, where the engineer cannot rely on a repeated soundcheck or a familiar rig and must deliver a good mix the first and only time.",
+   "practical_application": "For a one-off the engineer pre-programs a console file, arrives early to patch and gain-check, and focuses on the essentials because there is no second performance in which to fix anything.",
+   "category": "Mixing Workflow",
+   "related_terms": [
+    "Festival mix",
+    "Building a mix",
+    "Line check",
+    "Show file",
+    "House EQ"
+   ],
+   "common_mistakes": [
+    "Arriving without a prepared show file and losing the little setup time to programming.",
+    "Assuming a second chance exists and leaving problems to fix later, when there is no later.",
+    "Not confirming gain structure on the unfamiliar console before the downbeat."
+   ],
+   "scenario_contexts": [
+    "An engineer travels to a festival to mix one artist's set on a rented console and PA.",
+    "A band plays a single show with a guest engineer who has never used that venue's rig.",
+    "A corporate event has one performance with no rehearsal on the installed system."
+   ]
+  },
+  {
+   "id": "4c57082f-a67c-4a30-b59c-d430855b26b3",
+   "term": "Ringing out the monitors",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "difficulty": null,
+   "definition": "The process of maximizing gain before feedback in a stage monitor by slowly raising its level until it begins to ring (feed back), identifying the offending frequency, and cutting it with a graphic or parametric equalizer, then repeating until the monitor is loud enough without feeding back. Feedback frequencies commonly cluster from the low-mids through the highs (roughly 250 Hz to a few kHz).",
+   "plain_english": "Ringing out a monitor means slowly turning it up until it starts to squeal, finding that note, and cutting it with an EQ. You repeat this so the players' monitor can get loud enough without howling.",
+   "purpose_function": "It increases how loud a monitor can go before feedback, so performers can hear themselves clearly on stage without the system breaking into a howl.",
+   "practical_application": "Before doors the monitor engineer raises each mix or open mic until it rings, notches that frequency, and works the level up in stages, moving carefully because feedback can get painfully loud.",
+   "category": "System Tuning",
+   "related_terms": [
+    "Ringing out the room",
+    "Gain before feedback",
+    "Graphic EQ",
+    "Parametric EQ",
+    "Stage monitor / wedge"
+   ],
+   "common_mistakes": [
+    "UNSAFE: Driving the system into loud, sustained feedback while ringing out; sustained feedback can reach hearing-damaging levels and can blow drivers, so raise gain slowly, protect your hearing, and never let it howl.",
+    "Cutting large, wide EQ chunks instead of narrow notches, which thins the monitor's tone.",
+    "Moving several EQ sliders at once, so you cannot tell which frequency was actually ringing.",
+    "Ringing out at a level well below show level, so new frequencies feed back once the band plays loud."
+   ],
+   "scenario_contexts": [
+    "A monitor engineer rings out each wedge mix before soundcheck to gain headroom for a loud vocalist.",
+    "An engineer notches a ring around 2.5 kHz in a singer's monitor to stop it whistling at stage level.",
+    "A one-person FOH and monitor operator rings out the wedges before doors at a small club gig."
+   ]
+  },
+  {
+   "id": "a88e9231-bd39-4b78-b6e3-e78047efdd22",
+   "term": "Ringing out the room",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "difficulty": null,
+   "definition": "Applying the ring-out technique to the main PA in a venue to maximize gain before feedback for open microphones, especially where the mics and the PA share the same space. The engineer slowly raises system or mic gain until the room rings, identifies the frequency, and notches it with EQ, repeating to raise usable gain; the process also helps reveal room and system resonances.",
+   "plain_english": "Ringing out the room is the same squeal-and-cut trick used on the main PA instead of the stage monitors. You slowly raise the level until it rings, find the note, and cut it so open mics can be louder without feedback.",
+   "purpose_function": "It raises how much gain open microphones can have through the main system before feedback, which matters for speech mics, lecterns, and rooms with reflective surfaces.",
+   "practical_application": "In a house of worship or conference room the tech rings out the room to get more level from wireless and podium mics before the PA starts to ring.",
+   "category": "System Tuning",
+   "related_terms": [
+    "Ringing out the monitors",
+    "Gain before feedback",
+    "House EQ",
+    "Graphic EQ",
+    "Feedback"
+   ],
+   "common_mistakes": [
+    "UNSAFE: Letting the room feed back loudly and repeatedly to find frequencies; sustained feedback can harm hearing and damage speakers, so raise gain slowly and keep levels controlled.",
+    "Relying only on ringing out instead of also improving mic and speaker placement, which does more for gain before feedback.",
+    "Notching so many frequencies that the system ends up sounding thin and unnatural.",
+    "Ringing out an empty room, then finding the response changes once it fills with people."
+   ],
+   "scenario_contexts": [
+    "An AV tech rings out a conference room so lectern and lapel mics stay clear of feedback.",
+    "A worship tech rings out the main PA to raise gain on handheld vocal mics.",
+    "An engineer rings out a reflective gymnasium before a speech event to control howl."
+   ]
+  },
+  {
+   "id": "d29b20db-374a-47a4-a7f3-f325e30e062c",
+   "term": "System tuning (PA tuning)",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "difficulty": null,
+   "definition": "The process of measuring and adjusting a sound reinforcement system in its venue so that frequency response, level balance, and time/phase alignment are optimized across the intended listening area. It typically combines dual-channel FFT (transfer function) measurement with corrective equalization, crossover settings, subsystem delay and level matching, and critical listening.",
+   "plain_english": "System tuning means adjusting a PA to sound its best in the room where it is set up. The tech uses a measurement mic and software to fix the tone and timing, then checks the result by ear.",
+   "purpose_function": "It exists to make the system sound clear and even for every listener despite how the room and multiple loudspeakers interact. Correcting response and timing errors before the show gives the mix engineer a consistent, predictable starting point instead of fighting the room during the performance.",
+   "practical_application": "Before doors, the system tech places a measurement microphone in the audience area, drives pink noise or program through a dual-FFT analyzer, and sets equalization, delay times, and relative levels for the mains, subs, and fill speakers. The FOH engineer then mixes on top of that known, calibrated baseline.",
+   "category": "System Optimization",
+   "related_terms": [
+    "Front of house (FOH)",
+    "Transfer function measurement",
+    "Time alignment",
+    "Crossover",
+    "Equalization (EQ)",
+    "Sound pressure level (SPL)"
+   ],
+   "common_mistakes": [
+    "Tuning to force the analyzer into a perfectly flat trace while ignoring how the system actually sounds; measurement guides the work but the ear makes the final judgment.",
+    "Taking a measurement at a single microphone position and assuming that result represents the whole venue.",
+    "Using equalization to fix problems that are really time or phase misalignment between loudspeakers.",
+    "UNSAFE: Tuning or testing the system at full concert level for extended periods without hearing protection, risking noise-induced hearing loss beyond OSHA 1910.95 exposure limits."
+   ],
+   "scenario_contexts": [
+    "A festival system tech aligns the subs to the main hangs and sets house EQ each morning before the first band's line check.",
+    "In a theater, under-balcony delay speakers are time-aligned to the mains so distant seats hear speech in sync with the stage.",
+    "After the audience arrives and changes the room's acoustics, the engineer trims the house EQ to keep the response even.",
+    "A rental-company tech verifies and calibrates a newly hung line array against a design prediction before handing it to the visiting FOH engineer."
+   ]
+  },
+  {
+   "id": "5f2dd7e1-71e0-4ed2-9e28-e96ca046c512",
+   "term": "Top of show",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "difficulty": null,
+   "definition": "The exact starting point of a performance — the first moment of the program after any pre-show music, house announcements, or walk-in. In live-sound workflow it is the reference cue at which the opening console state (levels, mutes, and recalled scene/snapshot) must be set and ready.",
+   "plain_english": "The top of the show is the moment the performance begins. The sound tech has everything set and ready so the very first note or word comes through right.",
+   "purpose_function": "It marks the handoff from pre-show to the live program and gives the whole crew a single shared reference for when audio, lighting, and stage cues must be ready. For the FOH engineer it defines the starting console state that the rest of the mix builds from.",
+   "practical_application": "As the stage manager calls the top of show, the FOH engineer fades out the walk-in music, recalls the opening scene/snapshot, unmutes the correct inputs, and confirms levels so the first cue lands cleanly.",
+   "category": "Show Operation",
+   "related_terms": [
+    "Front of house (FOH)",
+    "Soundcheck",
+    "Line check",
+    "Scene/snapshot recall",
+    "Walk-in music",
+    "Cue"
+   ],
+   "common_mistakes": [
+    "Confusing 'top of show' with soundcheck or doors; it refers specifically to the moment the performance itself starts.",
+    "Leaving walk-in music routed up or channels muted from soundcheck, so the opening cue is late, doubled, or silent.",
+    "Failing to recall the correct opening scene/snapshot, so the console begins the show in the wrong state.",
+    "Treating the top of show as a moment to still be trimming gains, rather than arriving with a prepared and verified starting state."
+   ],
+   "scenario_contexts": [
+    "The stage manager calls 'standby for top of show,' and the FOH engineer fades out the house music and unmutes the opening inputs.",
+    "A touring engineer stores an 'opening' snapshot that is recalled at the top of show so every night starts from the same console state.",
+    "At a corporate event, the walk-in playback loop stops and the presenter's microphone goes live exactly at the top of show.",
+    "During a theatrical production, the top-of-show cue triggers the overture playback and the first vocal channels in one console scene."
+   ]
+  }
+ ]
+}

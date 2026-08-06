@@ -1,0 +1,296 @@
+{
+ "batch": 425,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "daf926b0-0031-4d33-9bca-791928f9575f",
+   "term": "Reverberation estimation",
+   "fields": {
+    "definition": "Reverberation estimation is the task of determining the reverberant characteristics of an acoustic space from recorded audio, typically by estimating parameters such as the reverberation time (RT60), the direct-to-reverberant ratio, or clarity. When these parameters are inferred directly from a reverberant speech or music signal without access to a measured impulse response, it is called blind reverberation estimation, and modern approaches often use machine-learning models trained on labelled or simulated data.",
+    "plain_english": "It means working out how echoey a room is just by listening to a recording made in it. A computer studies the sound and guesses things like how long the echoes take to fade away.",
+    "purpose_function": "It gives a compact description of how a space adds reverberation, which downstream systems need in order to dereverberate speech, match reverb between takes, or adapt recognition and separation models to room conditions.",
+    "practical_application": "An engineer or algorithm uses it to gauge a room's reverberation time from a recording, which helps decide how much dereverberation to apply or how to blend a new take into an existing reverberant recording.",
+    "category": "Acoustic parameter estimation",
+    "related_terms": [
+     "Room-impulse estimation",
+     "Reverberation time (RT60)",
+     "Dereverberation",
+     "Direct-to-reverberant ratio",
+     "Room impulse response",
+     "Blind source separation"
+    ],
+    "common_mistakes": [
+     "Confusing reverberation estimation with dereverberation; estimation measures the room's effect, while dereverberation tries to remove it",
+     "Assuming a single RT60 value fully describes a room, when reverberation time varies with frequency and with source and receiver positions",
+     "Trusting a blind estimate from a very short or noisy recording, where too little reverberant decay is captured to estimate parameters reliably"
+    ],
+    "scenario_contexts": [
+     "Estimating a room's reverberation time from a dialogue recording to set up matching dereverberation in post-production",
+     "Adapting a speech-recognition or source-separation model to the acoustics of an unfamiliar room",
+     "Checking whether two recorded takes were made in acoustically similar spaces before editing them together"
+    ]
+   },
+   "sources": [
+    "Eaton, Gaubitch, Moore & Naylor, Estimation of Room Acoustic Parameters: The ACE Challenge (IEEE/ACM Transactions on Audio, Speech, and Language Processing)",
+    "Naylor & Gaubitch (eds.), Speech Dereverberation (Springer)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c4010bf3-7c19-491a-b349-530895887564",
+   "term": "RipX DeepMix",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: no product or feature named 'RipX DeepMix' could be verified against any acceptable source. Hit'n'Mix RipX's documented editions are DeepAudio, DeepRemix and DeepCreate (and RipX DAW / DAW PRO); no 'DeepMix' appears in the manufacturer's technical pages or in independent literature. The term appears to be an error or a nonexistent product; authoring a definition would require guessing. Recommend the packet owner confirm the intended term (likely RipX DeepRemix or RipX DAW)."
+   ]
+  },
+  {
+   "id": "56df2325-0ca1-4de2-8fc4-0f81d326b250",
+   "term": "Room-impulse estimation",
+   "fields": {
+    "definition": "Room-impulse estimation is the task of determining a room impulse response (RIR) — the time-domain signal describing how sound travels from a source to a receiver in a given space, including direct sound, early reflections, and late reverberation. When the RIR is recovered from ordinary reverberant recordings rather than from a dedicated measurement with a known excitation signal, the problem is called blind RIR estimation and is commonly tackled with statistical or machine-learning methods.",
+    "plain_english": "A room impulse response is a kind of sound fingerprint that shows how a room echoes. This task is about working out that fingerprint, sometimes just from normal recordings instead of a special test sound.",
+    "purpose_function": "It captures the whole path a sound takes through a room in one response, which lets engineers recreate that space with convolution reverb, remove its effect, or simulate how new sounds would behave in it.",
+    "practical_application": "A technician measures or estimates a room impulse response to build a convolution reverb of that space, or to feed dereverberation and acoustic-analysis tools that need to know how the room colours sound.",
+    "category": "Acoustic parameter estimation",
+    "related_terms": [
+     "Room impulse response",
+     "Reverberation estimation",
+     "Convolution reverb",
+     "Dereverberation",
+     "Impulse response",
+     "Sine sweep measurement"
+    ],
+    "common_mistakes": [
+     "Thinking one room impulse response describes the whole room, when it is specific to the source and microphone positions used",
+     "Ignoring background noise and the loudspeaker or microphone response, which corrupt a measured impulse response if not accounted for",
+     "Assuming blind estimation from music or speech is as accurate as a proper swept-sine or MLS measurement, when it is generally only an approximation"
+    ],
+    "scenario_contexts": [
+     "Capturing the impulse response of a concert hall to create a convolution reverb preset",
+     "Estimating a room's response from location dialogue so its reverberation can be reduced in post",
+     "Modelling how a loudspeaker system will sound in a venue before installation"
+    ]
+   },
+   "sources": [
+    "Naylor & Gaubitch (eds.), Speech Dereverberation (Springer)",
+    "Eaton, Gaubitch, Moore & Naylor, Estimation of Room Acoustic Parameters: The ACE Challenge (IEEE/ACM Transactions on Audio, Speech, and Language Processing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "30ddc997-6aa3-4bc2-a907-c4ad0dfc9b8b",
+   "term": "RX Music Rebalance",
+   "fields": {
+    "definition": "RX Music Rebalance is a module in iZotope RX audio-repair software that uses a machine-learning source-separation algorithm to break a mixed music recording into four components — Vocals, Bass, Percussion, and Other — and lets the user independently adjust their levels or export them as separate stems. Because it operates on an already-mixed file, it enables level changes and isolation that would normally require the original multitrack session.",
+    "plain_english": "It is a tool that splits a finished song into vocals, bass, drums, and everything else. You can then turn each part up or down, even though you only have the mixed track.",
+    "purpose_function": "It exists to give engineers control over individual elements of a mix when the original separate tracks are unavailable, for example to raise a quiet vocal, tame loud drums, or pull out a stem.",
+    "practical_application": "A post or mastering engineer uses it to rebalance or isolate parts of a stereo mix — lifting a vocal, reducing bass, or extracting an a cappella — choosing a quality setting that trades processing time against separation artifacts.",
+    "category": "Source separation",
+    "related_terms": [
+     "Singing-voice separation",
+     "Blind source separation",
+     "Stem",
+     "Demucs",
+     "Music source separation",
+     "Serato Stems"
+    ],
+    "common_mistakes": [
+     "Expecting perfectly clean stems, when aggressive separation introduces artifacts such as smearing or bubbling, especially on dense mixes",
+     "Assuming the 'Other' component holds only one instrument, when it contains every melodic part not classed as vocals, bass, or percussion",
+     "Treating rebalanced stems as true multitrack originals, when they are estimates and can leak between components"
+    ],
+    "scenario_contexts": [
+     "Raising a buried lead vocal in a stereo mix that has no available multitracks",
+     "Extracting an instrumental or a cappella version for a remix or live backing track",
+     "Reducing overpowering drums or bass in an archival recording during restoration"
+    ]
+   },
+   "sources": [
+    "iZotope RX Help Documentation — Music Rebalance module",
+    "Rafii, Liutkus, Stöter, Mimilakis, FitzGerald & Pardo, An Overview of Lead and Accompaniment Separation in Music (IEEE/ACM Transactions on Audio, Speech, and Language Processing)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0254ab5c-da50-463f-9043-49841bc900dc",
+   "term": "SampleRNN",
+   "fields": {
+    "definition": "SampleRNN is a deep generative model for raw audio that produces a waveform one sample at a time using a hierarchy of recurrent neural network modules running at different time scales. Coarser, slower tiers capture long-range structure and condition the finer tiers, while the lowest tier autoregressively predicts each individual audio sample from the samples before it.",
+    "plain_english": "SampleRNN is a neural network that makes sound by guessing the next tiny piece of a waveform over and over. It works at several speeds at once, so it can handle both the big shape of a sound and its fine detail.",
+    "purpose_function": "It exists to generate realistic audio directly in the time domain without hand-built synthesis rules, using its multi-scale recurrent design to model both short-term detail and longer musical or speech structure.",
+    "practical_application": "Researchers and audio developers use it as a baseline or building block for neural audio generation and text-to-speech, and to explore unconditional generation of music or environmental sound.",
+    "category": "Generative audio modeling",
+    "related_terms": [
+     "WaveNet",
+     "Recurrent neural network (RNN)",
+     "Autoregressive model",
+     "Sequence model",
+     "Generative audio synthesis",
+     "GRU"
+    ],
+    "common_mistakes": [
+     "Confusing SampleRNN with WaveNet; both generate raw audio sample by sample, but WaveNet uses dilated convolutions while SampleRNN uses hierarchical recurrent networks",
+     "Assuming it can generate in real time, when autoregressive sample-by-sample synthesis is inherently slow",
+     "Expecting long, coherent compositions, when the model captures local texture well but can drift over long spans"
+    ],
+    "scenario_contexts": [
+     "Training an unconditional model to generate piano or speech audio for research",
+     "Serving as a baseline when benchmarking newer neural audio generators",
+     "Teaching how hierarchical recurrent models handle very long sequences of audio samples"
+    ]
+   },
+   "sources": [
+    "Mehri, Kumar, Gulrajani, Kumar, Jain, Sotelo, Courville & Bengio, SampleRNN: An Unconditional End-to-End Neural Audio Generation Model (ICLR)",
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8f8022c1-054b-468f-b17c-a681efafe6ab",
+   "term": "Self-attention",
+   "fields": {
+    "definition": "Self-attention, also called intra-attention, is a neural network mechanism in which each element of a sequence is represented as a weighted combination of all elements of the same sequence, with the weights computed from learned pairwise compatibilities between elements. Using query, key, and value projections and typically a scaled dot-product, it lets a model relate any two positions directly regardless of their distance, and it is the core operation of the Transformer architecture.",
+    "plain_english": "Self-attention lets each part of a sequence look at every other part and decide which ones matter most. It is like reading a sentence and letting every word check all the other words to grasp the meaning.",
+    "purpose_function": "It exists to model relationships between distant positions in a sequence in a single step, avoiding the step-by-step bottleneck of recurrent networks and allowing efficient parallel computation over long inputs.",
+    "practical_application": "Audio developers rely on it inside Transformer-based models for tasks such as speech recognition, music tagging, source separation, and audio generation, where long-range context across many time frames matters.",
+    "category": "Neural network architectures",
+    "related_terms": [
+     "Transformer",
+     "Sequence model",
+     "Attention mechanism",
+     "Recurrent neural network (RNN)",
+     "Positional encoding",
+     "Encoder-decoder"
+    ],
+    "common_mistakes": [
+     "Confusing self-attention with attention in general; self-attention relates a sequence to itself, whereas cross-attention relates one sequence to another",
+     "Forgetting that plain self-attention has no built-in sense of order, so positional information must be added separately",
+     "Overlooking that its compute and memory cost grows with the square of the sequence length, which limits very long audio inputs"
+    ],
+    "scenario_contexts": [
+     "Building a Transformer for automatic speech recognition over long utterances",
+     "Modelling long-range musical structure in a music-generation network",
+     "Capturing relationships across time frames in a Transformer-based source separator"
+    ]
+   },
+   "sources": [
+    "Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser & Polosukhin, Attention Is All You Need (Advances in Neural Information Processing Systems)",
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fe61ffdc-10cb-4b7c-99ba-d692f5b12a3c",
+   "term": "Sequence model",
+   "fields": {
+    "definition": "A sequence model is a machine-learning model designed to process or produce ordered sequences of data, mapping inputs indexed by position or time to outputs while capturing dependencies between elements. Common examples include hidden Markov models, recurrent neural networks and their gated variants, temporal convolutional networks, and Transformers, all of which exploit the order of the data rather than treating inputs as an unordered set.",
+    "plain_english": "A sequence model is a model built to handle data that comes in order, like audio samples or words in a sentence. It pays attention to what came before so it can make sense of what comes next.",
+    "purpose_function": "It exists to capture how earlier elements in a sequence influence later ones, which is essential for data such as audio, speech, and music where timing and order carry meaning.",
+    "practical_application": "A technician meets sequence models inside speech recognizers, music transcription, and audio generation tools, wherever a system must read or produce a stream of time-ordered frames or samples.",
+    "category": "Neural network architectures",
+    "related_terms": [
+     "Recurrent neural network (RNN)",
+     "Self-attention",
+     "Transformer",
+     "GRU",
+     "Autoregressive model",
+     "Hidden Markov model"
+    ],
+    "common_mistakes": [
+     "Assuming sequence models must be recurrent, when convolutional and attention-based models also handle sequences",
+     "Treating input frames as independent and ignoring their order, which discards the temporal information a sequence model is meant to use",
+     "Confusing sequence length with batch size when preparing audio data, which leads to mismatched tensor shapes"
+    ],
+    "scenario_contexts": [
+     "Feeding a stream of audio feature frames into a recognizer that predicts words over time",
+     "Generating audio or MIDI note by note, where each output depends on the previous ones",
+     "Modelling the changing spectral content of a sound across successive analysis frames"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press) — Sequence Modeling: Recurrent and Recursive Nets",
+    "Bishop, Pattern Recognition and Machine Learning (Springer) — Sequential Data"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6ab67e85-dca8-437e-8829-e94851b2cceb",
+   "term": "Serato Stems",
+   "fields": {
+    "definition": "Serato Stems is a real-time audio-separation feature in Serato DJ software that splits a playing track into four stems — vocals, melody, bass, and drums — so a DJ can isolate, mute, or blend individual elements live during a performance. It performs the separation on the fly rather than from pre-rendered stem files, and its outputs can also drive stem-based effects.",
+    "plain_english": "Serato Stems splits a song into vocals, melody, bass, and drums while it plays. A DJ can then mute or bring back each part live, right in the middle of a mix.",
+    "purpose_function": "It exists to let DJs remix and transition on the fly by controlling separate parts of a track that was only ever released as a finished mix, without needing official stem files.",
+    "practical_application": "A DJ uses it to drop out a track's drums or vocals during a transition, create instant a cappellas or instrumentals, or layer parts of two songs together in real time.",
+    "category": "Source separation",
+    "related_terms": [
+     "Singing-voice separation",
+     "RX Music Rebalance",
+     "Stem",
+     "Blind source separation",
+     "Music source separation",
+     "Real-time processing"
+    ],
+    "common_mistakes": [
+     "Expecting studio-quality isolation, when real-time separation can leave artifacts or bleed, especially on dense or heavily processed tracks",
+     "Assuming all four stems separate equally cleanly, when vocals and drums usually separate better than melody",
+     "Relying on flawless separation live without auditioning tracks first, since results vary from song to song"
+    ],
+    "scenario_contexts": [
+     "Dropping the vocal of one track over the instrumental of another during a live set",
+     "Creating an instant a cappella or instrumental on the fly for a mashup",
+     "Muting drums during a transition to smooth the beat change between two songs"
+    ]
+   },
+   "sources": [
+    "Serato Support — Serato DJ Pro Stems documentation",
+    "Rafii, Liutkus, Stöter, Mimilakis, FitzGerald & Pardo, An Overview of Lead and Accompaniment Separation in Music (IEEE/ACM Transactions on Audio, Speech, and Language Processing)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5f7012ea-69ba-4be9-9650-430a9b0bfb33",
+   "term": "Singing-voice separation",
+   "fields": {
+    "definition": "Singing-voice separation is the task of decomposing a music recording into the lead singing voice and the accompanying instrumental backing, a special case of music source separation. Approaches range from signal-processing methods that exploit structural differences between voice and accompaniment to supervised deep-learning models trained on multitrack data to estimate a vocal, and often an accompaniment, track.",
+    "plain_english": "This is the job of splitting a song into the singer's voice and the backing music. It is what lets you make a karaoke version or pull out just the vocals.",
+    "purpose_function": "It exists to recover an isolated vocal or instrumental from a finished mix, supporting remixing, karaoke, music analysis, and further tasks such as lyrics recognition or melody extraction.",
+    "practical_application": "Engineers and researchers use it to produce a cappellas or instrumentals, prepare training data, or clean up vocals, often through source-separation tools built into audio software.",
+    "category": "Source separation",
+    "related_terms": [
+     "Music source separation",
+     "Blind source separation",
+     "RX Music Rebalance",
+     "Demucs",
+     "Serato Stems",
+     "Melody extraction"
+    ],
+    "common_mistakes": [
+     "Using 'vocals' and 'lead voice' loosely, when backing vocals and harmonies may or may not be grouped with the lead depending on the method",
+     "Expecting artifact-free results, when separated vocals often contain residual accompaniment or musical-noise artifacts",
+     "Judging separation quality by loudness alone instead of using measures such as signal-to-distortion ratio"
+    ],
+    "scenario_contexts": [
+     "Creating a karaoke instrumental by removing the lead vocal from a song",
+     "Extracting an isolated vocal for a remix or sample",
+     "Preparing separated vocal tracks as input to lyrics transcription or pitch analysis"
+    ]
+   },
+   "sources": [
+    "Müller, Fundamentals of Music Processing (Springer)",
+    "Rafii, Liutkus, Stöter, Mimilakis, FitzGerald & Pardo, An Overview of Lead and Accompaniment Separation in Music (IEEE/ACM Transactions on Audio, Speech, and Language Processing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

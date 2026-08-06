@@ -1,0 +1,159 @@
+{
+ "batch": 227,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "379cbe86-60da-42eb-a8c3-72c78e90b93f",
+   "term": "Foot slide",
+   "fields": {
+    "definition": "A Foley footstep element in which the foot is dragged or scraped along the surface instead of lifted cleanly, producing a sliding, scuffing sound synced to a character shuffling, pivoting, or dragging their feet on screen.",
+    "plain_english": "A footstep sound made by sliding a foot along the ground instead of taking a clean step. A Foley artist makes it to match a character who shuffles or turns.",
+    "purpose_function": "It adds realism to movement by covering shuffles, turns, and drags that plain steps miss, so on-screen walking sounds natural and complete.",
+    "practical_application": "A Foley artist performs foot slides in the Foley pit while watching picture, sliding a matching shoe across a matching surface to hit each scuff or pivot.",
+    "category": "Foley",
+    "related_terms": ["Footstep performance", "Footstep cue", "Foley pit", "Foley artist", "Footstep synchronization"],
+    "common_mistakes": ["Recording foot slides so loud they overpower the clean footsteps in the mix.", "Forgetting that pivots and turns need slides, leaving movement sounding stiff.", "Sliding on the wrong surface so the texture does not match what is on screen."],
+    "scenario_contexts": ["A character shuffles across a wooden floor in slippers.", "A dancer pivots and the shoe scrapes the stage.", "Someone drags their feet down a gravel path."]
+   },
+   "sources": ["Ament, The Foley Grail (Focal Press)", "Yewdall, The Practical Art of Motion Picture Sound (Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "51bd3752-06b9-47f5-8287-9ca00ca62cec",
+   "term": "Footstep cue",
+   "fields": {
+    "definition": "A specific point in a scene, marked against picture, where a character's footsteps must be created and placed in sync; it is treated as one discrete item of Foley or editorial work.",
+    "plain_english": "A marked spot in a scene where footsteps need to be added and matched to the picture. It is one job on the Foley to-do list.",
+    "purpose_function": "It tells the Foley team exactly where footsteps are needed, so nothing is missed and the work can be planned scene by scene.",
+    "practical_application": "During a spotting session the team logs footstep cues, then the Foley artist works through each cue while watching the matching picture.",
+    "category": "Foley",
+    "related_terms": ["Spotting session", "Footstep performance", "Footstep synchronization", "Foley artist", "Cue sheet"],
+    "common_mistakes": ["Confusing a footstep cue with a music cue on the same timeline.", "Missing off-screen footsteps that still need a cue.", "Logging cues without noting the surface, so the wrong texture gets recorded."],
+    "scenario_contexts": ["Spotting a scene and marking every place a character walks.", "Building a Foley cue sheet before a record day.", "Checking off footstep cues as each one is recorded."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound (Focal Press)", "Ament, The Foley Grail (Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ddd6559d-7f09-4fe4-a5cf-e60170c6fc60",
+   "term": "Footstep performance",
+   "fields": {
+    "definition": "The physical act of a Foley artist walking or stepping in real time to picture, matching a character's pace, weight, gait, and surface to create their footstep sounds.",
+    "plain_english": "This is a Foley artist actually walking in the studio to make a character's footsteps. They match the speed, weight, and floor of the person on screen.",
+    "purpose_function": "It gives on-screen movement believable footsteps with the right rhythm and feel, which pre-recorded library steps often cannot match exactly.",
+    "practical_application": "The Foley artist watches picture, chooses matching shoes and a surface in the pit, and walks the scene in sync while it is recorded.",
+    "category": "Foley",
+    "related_terms": ["Foley artist", "Footstep cue", "Footstep synchronization", "Foley pit", "Foot slide"],
+    "common_mistakes": ["Matching only the beat but not the character's weight or mood.", "Wearing shoes that do not suit the character or the surface.", "UNSAFE: leaving loose props or trip hazards in the Foley pit during a walking performance."],
+    "scenario_contexts": ["Walking a character's approach down a hallway.", "Performing a nervous, uneven gait for a tense scene.", "Matching a soldier's heavy boots on gravel."]
+   },
+   "sources": ["Ament, The Foley Grail (Focal Press)", "Holman, Sound for Film and Television (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "809b1806-d56f-48aa-8c66-16c58d00445a",
+   "term": "Footstep synchronization",
+   "fields": {
+    "definition": "The process of aligning performed or edited footstep sounds so that each step lands precisely on the corresponding foot contact seen on screen.",
+    "plain_english": "This means lining up each footstep sound with the exact moment a foot hits the ground on screen. If it is off, the walking looks wrong.",
+    "purpose_function": "Tight sync makes footsteps feel like they belong to the character, keeping the audience from noticing the sound was added later.",
+    "practical_application": "The editor nudges footstep sounds frame by frame in the DAW so each hit matches the on-screen foot plant.",
+    "category": "Foley",
+    "related_terms": ["Footstep performance", "Footstep cue", "Sync", "Frame accuracy", "Foley artist"],
+    "common_mistakes": ["Syncing to the leg swing instead of the moment the foot actually lands.", "Ignoring sync drift after a picture re-cut.", "Assuming close is good enough when the steps are exposed in a quiet scene."],
+    "scenario_contexts": ["Lining up boots to a slow, deliberate walk.", "Fixing footsteps after the picture is re-cut.", "Matching running steps in an action chase."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound (Focal Press)", "Ament, The Foley Grail (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4cf15c84-d566-4844-b46a-41b68d35dd45",
+   "term": "Footstep system",
+   "fields": {
+    "definition": "The overall setup and method used to produce footstep sounds — the range of pit surfaces, the shoe and prop collection, and the microphone and recording arrangement — organized so a Foley team can match any character and location.",
+    "plain_english": "This is the whole setup a Foley team uses to make footsteps: different floor surfaces, a shelf of shoes, and the microphone. It lets them match any character and place.",
+    "purpose_function": "An organized footstep setup lets the team quickly pick the right surface and shoes, so steps for any scene can be made in a consistent, efficient way.",
+    "practical_application": "A Foley stage keeps pits of wood, gravel, tile, and grass, a shoe wardrobe, and a close mic ready so the artist can switch surfaces between cues.",
+    "category": "Foley",
+    "related_terms": ["Foley pit", "Footstep performance", "Foley stage", "Footstep cue", "Foot slide"],
+    "common_mistakes": ["Thinking one surface can cover every scene.", "Neglecting the shoe collection, so characters all sound alike.", "Poor mic placement that misses the detail of each step."],
+    "scenario_contexts": ["Setting up a Foley stage before a project starts.", "Switching from a tile pit to gravel between scenes.", "Choosing shoes and surface to match a new character."]
+   },
+   "sources": ["Ament, The Foley Grail (Focal Press)", "Yewdall, The Practical Art of Motion Picture Sound (Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0d1caa23-d82f-4c88-b920-ccb3204a65a4",
+   "term": "Foreground sound effect",
+   "fields": {
+    "definition": "A prominent, story-relevant sound effect placed clearly in the mix and usually synced to on-screen action, as opposed to the quieter background or ambient effects that fill out a scene.",
+    "plain_english": "A sound effect meant to stand out and be noticed, like a slamming door or a gunshot. It sits up front in the mix, unlike quiet background sounds.",
+    "purpose_function": "It draws attention to key actions and objects, helping tell the story and guiding what the audience focuses on.",
+    "practical_application": "The sound editor cuts foreground effects to picture, and the re-recording mixer keeps them loud and clear above the background ambience.",
+    "category": "Sound Effects",
+    "related_terms": ["Hard effect", "Background effect", "Ambience", "Spot effect", "Foley"],
+    "common_mistakes": ["Burying a key foreground effect under music or ambience.", "Confusing foreground effects with background fill.", "Forgetting to sync a foreground effect to the action it represents."],
+    "scenario_contexts": ["A door slam that punctuates a dramatic exit.", "A phone ringing that a character reacts to.", "A sword clash in a fight scene."]
+   },
+   "sources": ["Holman, Sound for Film and Television (Focal Press)", "Yewdall, The Practical Art of Motion Picture Sound (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8f14622d-a3dd-4c3c-bcb2-768db31b9ff5",
+   "term": "Foreign-language ADR",
+   "fields": {
+    "definition": "The re-recording of dialogue in a language other than the production's original language, performed in sync to picture, used to create localized versions or to supply foreign-language lines within a film.",
+    "plain_english": "Recording a scene's lines again in a different language while matching the actors' mouths on screen. It is used to make versions of a film for other countries.",
+    "purpose_function": "It lets a film be released in other languages while keeping the lip-sync and performance believable for local audiences.",
+    "practical_application": "In an ADR studio a voice actor watches picture and records lines in the target language, matching the timing and lip movement of the original.",
+    "category": "Localization",
+    "related_terms": ["ADR", "Foreign-language dubbing", "Lip sync", "Foreign-language dialogue stem", "M&E"],
+    "common_mistakes": ["Focusing on translation accuracy while ignoring lip sync.", "Forgetting that the M&E mix must support the new dialogue.", "Assuming timing from the original will fit the translated lines exactly."],
+    "scenario_contexts": ["Recording a French version of an English film.", "Replacing a foreign-language line the audience must understand.", "Dubbing a series for release in several countries."]
+   },
+   "sources": ["Purcell, Dialogue Editing for Motion Pictures (Focal Press)", "Holman, Sound for Film and Television (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d99b2876-660e-4848-98dd-1bbeb21cff14",
+   "term": "Foreign-language dialogue stem",
+   "fields": {
+    "definition": "A mix stem containing only the dialogue of a foreign-language (dubbed) version, delivered separately so it can be combined with the music and effects stems to build a fully localized final mix.",
+    "plain_english": "This is a separate track holding just the dialogue for a dubbed, foreign-language version. It is combined with the music and effects tracks to finish that version's mix.",
+    "purpose_function": "Keeping the foreign dialogue on its own stem lets each language version be mixed and adjusted without redoing the music and effects.",
+    "practical_application": "The mix is delivered as split stems, and the foreign-language dialogue stem is dropped in over the shared M&E to create each localized master.",
+    "category": "Deliverables",
+    "related_terms": ["Dialogue stem", "M&E", "Foreign-language dubbing", "Stem", "Printmaster"],
+    "common_mistakes": ["Confusing a dialogue stem with the full final mix.", "Mismatching stem levels so the dubbed dialogue does not sit like the original.", "Delivering stems out of sync or at the wrong sample rate."],
+    "scenario_contexts": ["Delivering split stems for international versions.", "Swapping in a dubbed dialogue stem over shared M&E.", "Archiving stems so future language versions can be built."]
+   },
+   "sources": ["Holman, Sound for Film and Television (Focal Press)", "Purcell, Dialogue Editing for Motion Pictures (Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "97684062-de8d-4eac-b10d-8f90fee24d06",
+   "term": "Foreign-language dubbing",
+   "fields": {
+    "definition": "The post-production process of replacing a production's original dialogue with performances recorded in another language, synced to the picture, so the work can be released for audiences who speak that language.",
+    "plain_english": "Dubbing means swapping a film's original speech for new voices in another language, matched to the actors' mouths. It lets people watch in their own language.",
+    "purpose_function": "It makes films and shows accessible in other markets while keeping the story and lip movement believable.",
+    "practical_application": "A dubbing studio casts local voice actors who record translated lines to picture, which are then mixed over the original music and effects.",
+    "category": "Localization",
+    "related_terms": ["Foreign-language ADR", "M&E", "Foreign-language dialogue stem", "Lip sync", "Localization"],
+    "common_mistakes": ["Translating literally so the lines no longer match the lip movement.", "Mixing dubbed dialogue without a proper M&E stem to sit it over.", "Ignoring the energy and timing of the original performance."],
+    "scenario_contexts": ["Releasing a film dubbed for another country.", "Recording local-language voices for a streaming series.", "Building a dubbed master from the M&E and new dialogue."]
+   },
+   "sources": ["Holman, Sound for Film and Television (Focal Press)", "Purcell, Dialogue Editing for Motion Pictures (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

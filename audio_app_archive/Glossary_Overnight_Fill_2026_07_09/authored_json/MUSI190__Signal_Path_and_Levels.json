@@ -1,0 +1,187 @@
+{
+  "course": "MUSI190",
+  "topic": "Signal Path & Levels",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "433e7be0-ef3b-4725-9cb9-35b3dee41e0f",
+      "term": "Consumer Level (−10 dBV)",
+      "fields": {
+        "plain_english": "The quieter level standard used by home and prosumer gear (CD/media players, cassette decks, computer outputs), roughly 12 dB softer than the professional standard, so pro and consumer devices do not level-match directly.",
+        "purpose_function": "It defines the nominal signal voltage consumer equipment expects—about 0.316 VRMS referenced to 1 VRMS = 0 dBV—which lets simpler, cheaper unbalanced circuitry work reliably within the consumer domain.",
+        "practical_application": "A tech spots −10 dBV I/O (often unbalanced RCA or TS jacks) and inserts a level-matching stage or interface when patching it to +4 dBu pro gear, because the two standards differ by about 11.8 dB.",
+        "category": "Signal Levels",
+        "related_terms": ["Professional Level (+4 dBu)", "dBV", "dBu", "Impedance Bridging", "Line Driver", "Gain Staging"],
+        "common_mistakes": [
+          "Confusing the dBV reference (1 VRMS) with the dBu reference (0.7746 VRMS), and treating the two levels as interchangeable",
+          "Assuming −10 dBV and +4 dBu differ by 14 dB instead of the actual ~11.8 dB",
+          "Feeding a hot +4 dBu pro output straight into a −10 consumer input and driving it into clipping",
+          "Reading the minus sign as meaning the signal is inverted or negative rather than simply a level below the reference"
+        ],
+        "scenario_contexts": [
+          "Patching a consumer CD or media player into a professional console",
+          "Interfacing a laptop line/headphone output with a pro audio interface",
+          "Setting a −10/+4 level switch on a piece of outboard gear",
+          "Troubleshooting weak level when a consumer source feeds a pro input"
+        ]
+      },
+      "sources": [
+        "Wikipedia, \"Line level\" (nominal levels, dBV/dBu references, voltage equivalents)",
+        "Audio University, \"Consumer vs Professional Audio Levels: -10 dBV vs +4 dBu\"",
+        "Biamp Cornerstone, \"Gain structure: input and output levels\""
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "53c65e81-e982-442d-baa5-00d4e2acfca0",
+      "term": "Impedance Bridging",
+      "fields": {
+        "plain_english": "Connecting a low-impedance output into a much higher-impedance input so the receiver reads the source's voltage without loading it down; nearly every modern line-level connection works this way.",
+        "purpose_function": "By making the load impedance roughly ten times (or more) the source impedance, almost all of the source voltage appears across the input while very little current is drawn, maximizing voltage transfer and preserving level and frequency response.",
+        "practical_application": "A tech relies on bridging when fanning a line output out to several inputs, checking that the source's output impedance stays at least about 10x below the combined input impedance so level and tone do not sag.",
+        "category": "Signal Levels",
+        "related_terms": ["Impedance Matching", "Output Impedance", "Input Impedance", "Line Driver", "Line Level", "Gain Staging"],
+        "common_mistakes": [
+          "Confusing bridging with impedance matching, which pairs equal source and load impedances for maximum power transfer",
+          "Believing modern line-level audio needs matched impedances for best sound, rather than a high load-to-source ratio",
+          "Fanning one output to too many inputs so the combined load drops below ~10x and the source is loaded down",
+          "Applying line-level bridging logic to loudspeaker/amplifier connections, where impedance behaves differently"
+        ],
+        "scenario_contexts": [
+          "Splitting one line output to feed several destinations at once",
+          "Connecting a ~150 Ω microphone to a preamp input of ~1.5–3 kΩ",
+          "Interfacing a DI or line driver to a long cable run",
+          "Deciding whether a passive splitter will load down the source"
+        ]
+      },
+      "sources": [
+        "Wikipedia, \"Impedance bridging\" (load impedance >> source impedance; factor-of-10 rule)",
+        "ProSoundWeb, \"Answers to Frequently Asked Questions About Impedance & Impedance Matching in Sound Systems\"",
+        "sengpielaudio, \"Voltage Bridging\" / impedance bridging interface calculations"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "c34018ee-64a4-4d56-9d05-b20b365b79bc",
+      "term": "Line Driver",
+      "fields": {
+        "plain_english": "An active booster/buffer that strengthens a line signal and gives it a strong low-impedance push so it survives long cable runs without losing level or high-frequency detail.",
+        "purpose_function": "It presents a high input impedance and a low output impedance with enough current capability to drive cable capacitance, letting a signal travel long distances—often as a balanced feed—without treble loss, noise pickup, or level drop.",
+        "practical_application": "A tech inserts a line driver (or an active DI/balancing stage) when sending audio across a stage, between rooms, or down a long snake, frequently to turn a weak unbalanced source into a robust balanced signal.",
+        "category": "Signal Flow",
+        "related_terms": ["Impedance Bridging", "Balanced Audio", "DI Box", "Output Impedance", "Buffer", "Line Level"],
+        "common_mistakes": [
+          "Confusing a line driver with a power amplifier—it drives line inputs, not loudspeakers",
+          "Assuming any line output can drive very long cables equally well",
+          "Forgetting that cable capacitance rolls off high frequencies on long unbalanced runs",
+          "Adding drive gain without checking level and overdriving the downstream input"
+        ],
+        "scenario_contexts": [
+          "Running audio hundreds of feet to a remote amplifier rack",
+          "Converting an unbalanced keyboard or laptop output to balanced for a long run",
+          "Distributing one source to multiple distant destinations",
+          "Overcoming high-frequency loss on a long cable"
+        ]
+      },
+      "sources": [
+        "Wikipedia, \"Balanced audio\" (long cable runs, differential drive, HF preservation)",
+        "Rane, Note 126, \"Practical Line-Driving Current Requirements\"",
+        "Analog Devices, SSM2142 Balanced Line Driver data sheet"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "e89c36ae-1bcf-48fe-9a47-426adf47e7df",
+      "term": "Meter Ballistics",
+      "fields": {
+        "plain_english": "How fast a meter's needle or bar jumps up and falls back, which determines whether it is showing average loudness (VU) or brief peaks (PPM or digital peak).",
+        "purpose_function": "The defined attack (integration) and return (decay) times set what a reading represents—a VU meter's ~300 ms rise and fall tracks perceived average level, while a PPM's fast 5–10 ms rise with a slow decay catches peaks—so the operator can interpret the display correctly.",
+        "practical_application": "A tech interprets levels knowing a VU under-reads fast transients while a peak/PPM meter reveals them, and sets appropriate headroom for whichever meter type is in front of them.",
+        "category": "Metering",
+        "related_terms": ["VU Meter", "Peak Program Meter (PPM)", "Peak Hold", "Headroom", "dBFS", "Gain Staging"],
+        "common_mistakes": [
+          "Treating a VU reading as if it shows true peak level",
+          "Assuming all meters respond to the signal identically",
+          "Ignoring that a VU misses short transients that can still clip a digital converter",
+          "Confusing integration (attack) time with the meter's decay/fallback time"
+        ],
+        "scenario_contexts": [
+          "Comparing a VU meter and a digital peak meter on the same source",
+          "Setting broadcast levels with a PPM",
+          "Gain-staging analog gear by VU while watching converter peaks",
+          "Explaining why a 0 VU analog signal is not the same as 0 dBFS"
+        ]
+      },
+      "sources": [
+        "AES, \"Learn More: Peak Metering\" (Loudness Project)",
+        "av-info.eu, \"Audio Level Meters\" (VU ~300 ms integration; PPM Type I/II integration and fallback times)",
+        "ESE / Elliott Sound Products (sound-au.com), \"VU and PPM Audio Metering\""
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "e53f1402-952e-4d52-ba70-a695a0ce258b",
+      "term": "Peak Hold",
+      "fields": {
+        "plain_english": "A meter feature that freezes the highest level it just saw for a moment so you do not miss a quick spike you would otherwise blink past.",
+        "purpose_function": "It captures and briefly—or indefinitely—retains the maximum peak value, so transients too fast to see on a falling meter stay visible, helping catch clipping and set headroom.",
+        "practical_application": "A tech turns on peak hold while gain-staging or tracking to see the true maximum a source reached, then clears it after adjusting levels.",
+        "category": "Metering",
+        "related_terms": ["Peak Meter", "Meter Ballistics", "dBFS", "Headroom", "Clipping", "Over Indicator"],
+        "common_mistakes": [
+          "Confusing the held peak marker with the live, moving level",
+          "Forgetting to reset the held value, so a stale old peak misleads later readings",
+          "Assuming peak hold prevents clipping, when it only displays it",
+          "Ignoring a held over on a very fast transient that already caused distortion"
+        ],
+        "scenario_contexts": [
+          "Checking the loudest transient of a snare hit while tracking",
+          "Verifying a mix never exceeded 0 dBFS over a full pass",
+          "Setting input gain with safe headroom margin",
+          "Catching an occasional over on a long take"
+        ]
+      },
+      "sources": [
+        "The Broadcast Bridge, \"Audio For Broadcast: Metering\" (peak-hold on bargraph meters)",
+        "Bjorn Roche, \"Peak Meters, dBFS and Headroom\"",
+        "B&H eXplora, \"Audio Metering 101\""
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "d6a6964e-0a66-4bb2-a176-4d235dcf526a",
+      "term": "Signal Present Indicator",
+      "fields": {
+        "plain_english": "A small LED (usually green) that lights when a channel is actually receiving audio, making it the first thing to check when tracing where signal is or is not.",
+        "purpose_function": "It confirms that signal above a low threshold (commonly around −20 dB) has reached that point in the chain, giving a quick indication of signal flow without needing a full meter, which speeds setup and troubleshooting.",
+        "practical_application": "When a channel is silent, a tech works down the signal path checking each signal-present LED to find the first stage where the light goes dark and isolate the fault.",
+        "category": "Metering",
+        "related_terms": ["Peak/Clip Indicator", "Gain Staging", "Signal Flow", "Meter Ballistics", "Preamp", "Peak Hold"],
+        "common_mistakes": [
+          "Assuming a lit signal-present LED means the level is correct, when it only means some signal exists",
+          "Confusing the signal-present LED with the peak/clip (overload) LED",
+          "Expecting it to light for very quiet sources that fall below its threshold",
+          "Reading no light as always meaning a dead channel rather than simply a low-level signal"
+        ],
+        "scenario_contexts": [
+          "Tracing a dead channel from source to output",
+          "Confirming a mic or DI is passing audio during line check",
+          "Verifying a patch is actually connected",
+          "A quick input check before soundcheck"
+        ]
+      },
+      "sources": [
+        "Fibos, \"How Do I Add An Audio Signal Indicator To My Mixer?\" (green = signal present, red = overload; ~−20 dB threshold)",
+        "Wikipedia, \"Mixing console\" (channel indicators / signal flow)",
+        "AstralSound, \"PA System Fault-Finding and Problem-Solving\" (signal-present LEDs in troubleshooting)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

@@ -1,0 +1,285 @@
+{
+ "batch": 265,
+ "topic": "DAW Fundamentals & Session Management",
+ "authored": [
+  {
+   "id": "e65cf940-e50d-4c01-8b3c-bafb65df8e45",
+   "term": "Dynamic Transport",
+   "fields": {
+    "definition": "A Steinberg Cubase/Nuendo transport mode that decouples the project cursor and cycle range from the play/stop state, so the cursor can be repositioned and the left/right locators moved freely while playback keeps running.",
+    "plain_english": "A play mode in Cubase that lets you jump the playback line to a new spot without stopping the music. It is like being able to skip around a song while it keeps playing.",
+    "purpose_function": "It removes the stop-and-restart step from looping and auditioning, so an engineer can move the cursor or resize a loop on the fly and hear the change right away.",
+    "practical_application": "An engineer turns it on to reposition the cursor or resize the cycle range while a track keeps playing, quickly checking edits or comping takes without halting playback.",
+    "category": "Transport & Playback",
+    "related_terms": [
+     "Transport controls",
+     "Cycle / loop playback",
+     "Locators",
+     "Playhead",
+     "Grid / Snap Value"
+    ],
+    "common_mistakes": [
+     "Confusing Dynamic Transport with normal transport, then being surprised that the cursor moves without stopping playback",
+     "Assuming it is a Pro Tools or Logic feature; it is specific to Steinberg Cubase and Nuendo",
+     "Leaving it enabled and accidentally repositioning the cursor in the middle of a take"
+    ],
+    "scenario_contexts": [
+     "Auditioning several sections of a mix in a row without stopping playback",
+     "Adjusting a loop range on the fly while comping vocal takes",
+     "Jumping quickly between song sections during an editing session in Cubase"
+    ]
+   },
+   "sources": ["Steinberg Cubase Pro Operation Manual (Dynamic Transport)", "Steinberg Nuendo Operation Manual (Transport)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ef65dcb8-6e0e-41df-b4d5-d3ea10aa31d7",
+   "term": "Event editor",
+   "fields": {
+    "definition": "A list-style DAW editor that shows each recorded event, such as MIDI notes, controllers, program changes or automation points, as a separate line so the exact numeric properties of any single event, including position, type, pitch, velocity and value, can be inspected and edited.",
+    "plain_english": "A tool that shows every note and control message in your track as a list you can edit. It is like a spreadsheet of everything the music does, with one row per event.",
+    "purpose_function": "It gives precise numeric control over individual events that are hard to grab accurately in a graphical view, such as fixing one note's timing or a single controller value.",
+    "practical_application": "A technician opens it to correct an exact note length, delete a stray controller message, or change one event's velocity that would be fiddly to edit by dragging in the piano roll.",
+    "category": "MIDI Editing",
+    "related_terms": [
+     "Piano roll",
+     "List editor",
+     "MIDI editing",
+     "Velocity",
+     "Quantization"
+    ],
+    "common_mistakes": [
+     "Confusing the event editor with the piano roll; both change the same data but in different views",
+     "Editing raw controller numbers without knowing which controller number does what",
+     "Deleting note-off or controller events and leaving stuck notes or hanging values"
+    ],
+    "scenario_contexts": [
+     "Fixing the exact start position of a single MIDI note",
+     "Removing a duplicate program-change message from a track",
+     "Checking the precise velocity values of a recorded drum part"
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide (Event List editor)", "Steinberg Cubase Operation Manual (List Editor)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "33d8c023-27c9-4fe0-9928-4193195c8bc3",
+   "term": "Expression-pedal data",
+   "fields": {
+    "definition": "The stream of MIDI Continuous Controller messages a moving expression pedal produces, most commonly Controller 11 (Expression) but often assignable to other controllers, carrying values from 0 to 127 that a DAW records and plays back as controller or automation data.",
+    "plain_english": "The control messages a foot pedal sends as you rock it, usually to change volume or an effect. Your DAW saves this as a moving value from 0 to 127, like a dimmer for sound.",
+    "purpose_function": "It lets a performer shape a sound continuously with the foot, freeing the hands, and gives the DAW a recordable controller stream for expression such as volume swells, wah or effect depth.",
+    "practical_application": "A technician assigns the pedal to the correct controller, records its moves along with a performance, then edits the resulting controller lane to smooth or fix the expression.",
+    "category": "MIDI Data",
+    "related_terms": [
+     "MIDI control change",
+     "Controller lane",
+     "Automation",
+     "Sustain pedal data",
+     "Event editor"
+    ],
+    "common_mistakes": [
+     "Assuming every expression pedal sends Controller 11; many are assignable and may default to a different controller",
+     "Confusing an expression pedal, which is a variable controller, with a sustain footswitch, which is on/off",
+     "Recording jumpy data from a mis-calibrated pedal and not smoothing it afterward"
+    ],
+    "scenario_contexts": [
+     "Recording volume swells on a synth pad with a foot pedal",
+     "Controlling wah or filter cutoff hands-free during a guitar or keyboard take",
+     "Mapping a pedal to a plug-in parameter and capturing its movement as automation"
+    ]
+   },
+   "sources": ["MIDI Association, MIDI 1.0 Detailed Specification (Control Change, Controller 11 Expression)", "Steinberg Cubase Operation Manual (MIDI controller data)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0bda4ada-0c9d-4c60-a51f-9d3dfa5b0d53",
+   "term": "External hard-drive recording",
+   "fields": {
+    "definition": "The practice of streaming recorded audio to a hard disk drive housed outside the computer and connected by an interface such as USB, Thunderbolt or FireWire, keeping the record media separate from the system/boot drive.",
+    "plain_english": "Recording your audio onto a separate hard drive that plugs into your computer, instead of the built-in drive. This gives the recording its own space, so the computer runs more smoothly.",
+    "purpose_function": "It separates audio streaming from the operating-system and application load, which cuts disk contention, supports reliable track counts, and makes a whole project portable between systems.",
+    "practical_application": "An engineer records and plays back sessions from a dedicated external drive, then unplugs it to move the full project to another studio or keep it as a working copy.",
+    "category": "Storage & Media",
+    "related_terms": [
+     "External SSD recording",
+     "Full backup",
+     "Disk streaming",
+     "Buffer size",
+     "Sample rate"
+    ],
+    "common_mistakes": [
+     "Recording large sessions to a slow, bus-powered USB drive and hitting audio dropouts",
+     "Using one drive for both the system and audio, overloading the disk on high track counts",
+     "Treating the working external drive as a backup; a working drive is not a backup"
+    ],
+    "scenario_contexts": [
+     "Tracking a live multitrack session to a dedicated external drive",
+     "Carrying a project between two studios on one portable drive",
+     "Freeing the internal drive by streaming audio playback from an external disk"
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (hard drive requirements / audio drives)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "86800d2a-16c3-4905-8efe-73bd089c18c5",
+   "term": "External SSD recording",
+   "fields": {
+    "definition": "Streaming recorded audio to a solid-state drive connected outside the computer, typically over USB 3, USB-C or Thunderbolt, which has no moving parts and offers high sustained transfer rates and low access latency for large track counts.",
+    "plain_english": "Recording your audio onto an external solid-state drive, which has no spinning parts and is very fast. It is like swapping a slow disk for quick flash memory, so many tracks record without stutter.",
+    "purpose_function": "It provides fast, shock-resistant, low-latency storage for recording and playback, supporting higher track counts and denser sessions than a spinning disk while keeping media off the system drive.",
+    "practical_application": "An engineer uses a bus-powered external SSD to track high-channel-count sessions on location, knowing it tolerates movement far better than a hard disk during transport.",
+    "category": "Storage & Media",
+    "related_terms": [
+     "External hard-drive recording",
+     "Full backup",
+     "Disk streaming",
+     "Buffer size",
+     "Track count"
+    ],
+    "common_mistakes": [
+     "Assuming any USB enclosure delivers full SSD speed; a slow bridge chip or a USB 2 port throttles it",
+     "Running the SSD nearly full, which can slow sustained write speed during recording",
+     "Trusting a single SSD as the only copy of a session, since flash failure can be sudden; always keep a backup"
+    ],
+    "scenario_contexts": [
+     "Recording a large location session onto a rugged bus-powered SSD",
+     "Running a high-track-count mix directly from an external SSD",
+     "Choosing an SSD over a hard drive for reliable playback during a mobile shoot"
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (storage requirements)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7ca5d946-0817-4757-af6b-61407cfe7d73",
+   "term": "File corruption detection",
+   "fields": {
+    "definition": "The process of identifying audio, MIDI or session files whose data has been damaged or altered, for example by incomplete writes, media faults or transfer errors, typically by comparing a stored checksum or hash against a freshly computed one or by a program's own file-validation routines flagging unreadable data.",
+    "plain_english": "Checking whether a saved file has been damaged and can no longer be read correctly. It works like a fingerprint: if the file's fingerprint changes, you know something went wrong.",
+    "purpose_function": "It catches damaged files early, before a corrupt take or session is trusted in a project or archive, so the file can be replaced from a backup while a good copy still exists.",
+    "practical_application": "A technician runs a checksum or a DAW's verify function after copying a session, and if a file fails the check they restore it from another copy instead of opening the bad file.",
+    "category": "Data Integrity & Backup",
+    "related_terms": [
+     "File integrity monitoring",
+     "Checksum",
+     "Full backup",
+     "Session archiving",
+     "Data redundancy"
+    ],
+    "common_mistakes": [
+     "Assuming a file that copied without an error message is intact; only a checksum or verify pass proves it",
+     "Detecting corruption but having no backup to restore the file from",
+     "Ignoring early read errors on a drive until more files are lost"
+    ],
+    "scenario_contexts": [
+     "Verifying a session after copying it to an archive drive",
+     "Tracking down why one audio file plays back as noise or silence",
+     "Checking delivered files against supplied checksums before a mastering session"
+    ]
+   },
+   "sources": ["IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects (checksums / fixity)", "Huber & Runstein, Modern Recording Techniques (backup and archiving)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ad3fe46b-d938-4104-a585-06519ca4b5d6",
+   "term": "File integrity monitoring",
+   "fields": {
+    "definition": "The ongoing checking of stored files over time to confirm they have not changed or degraded, done by periodically recomputing each file's checksum and comparing it to a recorded value (a fixity check), so that silent corruption or accidental modification is detected.",
+    "plain_english": "Regularly re-checking your stored files to make sure they have not changed or gone bad over time. If a file's fingerprint no longer matches, you know it needs restoring from a backup.",
+    "purpose_function": "It catches silent data rot and accidental or unauthorized changes in an archive, so long-term project and master files stay trustworthy across years of storage.",
+    "practical_application": "A technician keeps a checksum manifest of an archived project and re-runs fixity checks on a schedule, restoring any file that fails from a redundant copy.",
+    "category": "Data Integrity & Backup",
+    "related_terms": [
+     "File corruption detection",
+     "Checksum",
+     "Full backup",
+     "Session archiving",
+     "Data redundancy"
+    ],
+    "common_mistakes": [
+     "Confusing a one-time copy verification with ongoing monitoring; integrity must be re-checked over time",
+     "Storing the checksum list on the same drive as the files, so one drive failure loses both",
+     "Assuming a single archive copy is safe without periodic checks and a second copy"
+    ],
+    "scenario_contexts": [
+     "Maintaining a long-term archive of finished album masters",
+     "Scheduling periodic fixity checks on a studio's project library",
+     "Detecting bit rot on aging backup drives before a restore is needed"
+    ]
+   },
+   "sources": ["IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects (fixity / integrity checking)", "AES technical documentation on digital audio archiving"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "06a1c11e-1de7-4c7c-9770-9cc87b1e3a1c",
+   "term": "Full backup",
+   "fields": {
+    "definition": "A backup that copies the complete set of selected data, all files in a session, project or drive, in a single operation, as opposed to an incremental or differential backup that copies only what has changed since a previous backup.",
+    "plain_english": "A backup that copies everything at once, not just the parts that changed. It is like photocopying a whole notebook instead of only the newest page.",
+    "purpose_function": "It provides one self-contained copy from which everything can be restored, simplifying recovery because no earlier backups are needed to rebuild the data set.",
+    "practical_application": "An engineer makes a full backup of a finished project to an archive drive, so the entire session can be restored later from that single copy.",
+    "category": "Data Integrity & Backup",
+    "related_terms": [
+     "Incremental backup",
+     "External hard-drive recording",
+     "File integrity monitoring",
+     "Session archiving",
+     "Data redundancy"
+    ],
+    "common_mistakes": [
+     "Confusing a full backup with an incremental one and assuming a partial copy holds everything",
+     "Keeping the only full backup on a drive stored next to the original, so one accident destroys both",
+     "Never testing a restore, then finding the backup is incomplete or unreadable when it is needed"
+    ],
+    "scenario_contexts": [
+     "Archiving a completed album project to two separate drives",
+     "Making a complete copy of a session before a major edit or plug-in change",
+     "Backing up an entire working drive before reformatting or upgrading a system"
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (backup and archiving)", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bb2209e8-6c43-4f0e-9fe7-7437452490b9",
+   "term": "Grid / Snap Value",
+   "fields": {
+    "definition": "The timing resolution to which edits and moves align in a DAW timeline, such as bars, beats, note divisions like 1/4, 1/8 or 1/16, or absolute units like frames or milliseconds, so that when snapping is enabled events jump to the nearest point on this grid.",
+    "plain_english": "The setting that decides where your edits snap to on the timeline, such as every beat or every 1/16 note. It works like the lines on ruled paper, keeping your edits lined up instead of landing anywhere.",
+    "purpose_function": "It keeps edits musically and rhythmically aligned, so cutting, moving and looping stay in time with the project tempo without constant manual nudging.",
+    "practical_application": "An engineer sets the snap value to match the task, using a coarse value like 1/4 for arranging blocks, a fine value like 1/16 for detailed edits, or turning it off for free placement.",
+    "category": "Editing",
+    "related_terms": [
+     "Snap",
+     "Quantization",
+     "Tempo / BPM",
+     "Bars and beats",
+     "Event editor"
+    ],
+    "common_mistakes": [
+     "Leaving snap on a coarse value and wondering why edits jump away from where they were dropped",
+     "Confusing the grid/snap value with quantize; snap constrains manual edits, while quantize moves recorded notes",
+     "Editing freely played material to the grid until it feels stiff and mechanical"
+    ],
+    "scenario_contexts": [
+     "Setting snap to 1/16 to line up a chopped drum loop",
+     "Turning snap off to nudge a clip into a natural-feeling spot",
+     "Using bar snapping to move whole song sections cleanly"
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Grid mode / Nudge)", "Ableton Live Reference Manual (Grid and Snapping)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

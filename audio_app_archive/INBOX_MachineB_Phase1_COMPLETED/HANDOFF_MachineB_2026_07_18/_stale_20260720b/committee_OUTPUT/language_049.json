@@ -1,0 +1,43 @@
+{
+ "expert": "Language/Communications",
+ "group": 49,
+ "reviews": [
+  {"id": "8b653777-304b-49df-ac3e-b2e3fb2d0396", "term": "Silence detector", "verdict": "OK", "suggestions": []},
+  {"id": "204d28fa-963e-4c46-a2dd-8c3b768ed3c6", "term": "Simulcast audio mix", "verdict": "OK", "suggestions": []},
+  {"id": "f3f43c4d-703a-4cbe-bab7-90b3ffacdef1", "term": "Stadium ambience array", "verdict": "OK", "suggestions": []},
+  {"id": "36bf4679-0c72-42b6-b77b-836e92462e1e", "term": "Station identification", "verdict": "OK", "suggestions": []},
+  {"id": "ef74499d-16ad-43ff-b42c-3a628bbd299d", "term": "Stopset", "verdict": "OK", "suggestions": []},
+  {"id": "860a04e4-5f86-473a-b896-06d263198a08", "term": "Studio-transmitter link", "verdict": "OK", "suggestions": []},
+  {"id": "a1c275e1-a0c4-4b4a-bd48-87fe82680b77", "term": "Sweep production", "verdict": "OK", "suggestions": []},
+  {"id": "c27d02fd-b1b3-4142-9de7-16974201a242", "term": "Time announcement", "verdict": "OK", "suggestions": []},
+  {"id": "c2e8bc21-e674-46f5-868b-d001f65ba0ba", "term": "Traffic insert", "verdict": "OK", "suggestions": []},
+  {"id": "b7ad9f26-a80d-4d28-9cdb-31b23a9311c0", "term": "Transmission chain", "verdict": "OK", "suggestions": []},
+  {"id": "14af7dff-c964-47d5-83cb-6dbc3d20a090", "term": "Transmission feed", "verdict": "OK", "suggestions": []},
+  {"id": "41f38ed4-8465-460c-8711-1e05fc301004", "term": "Transmission monitoring", "verdict": "OK", "suggestions": []},
+  {"id": "4e82cea0-b110-40f1-a6ea-a712a35c217b", "term": "Transmission room", "verdict": "OK", "suggestions": []},
+  {"id": "9bd532bc-993a-4153-97bb-5d501702468f", "term": "Voice tracking session", "verdict": "MINOR", "suggestions": [
+    {"field": "purpose_function", "severity": "Low", "issue": "The interrupting clause breaks the sentence's parallel structure: 'produce many hours, or program several stations, of local-sounding radio' reads as 'program several stations of local-sounding radio,' which does not parse.", "suggestion": "Rewrite as: 'It lets one presenter quickly produce many hours of local-sounding radio, or program several stations, without staying live on air the whole time.'"}
+  ]},
+  {"id": "9e093137-c156-4b58-ae14-b105fcea8c99", "term": "Weather insert", "verdict": "OK", "suggestions": []},
+  {"id": "8634c6ea-40dc-4153-8fd1-4151df253798", "term": "Streaming studio", "verdict": "OK", "suggestions": []},
+  {"id": "483c61d9-018b-4182-8d29-6f6bf1df9576", "term": "Air-chain verification", "verdict": "OK", "suggestions": []},
+  {"id": "cc25d837-d12f-4723-b438-7b9dd9c58f92", "term": "Aircheck analysis", "verdict": "OK", "suggestions": []},
+  {"id": "2499742e-784e-49ba-8a4e-0968ece3cd57", "term": "AM processor", "verdict": "OK", "suggestions": []},
+  {"id": "8b75e14a-cdd9-484f-bd3a-33372fe371ab", "term": "Broadcast audio processor", "verdict": "OK", "suggestions": []},
+  {"id": "d56e37f8-8124-49b3-9d00-816457304141", "term": "Broadcast clipping processor", "verdict": "OK", "suggestions": []},
+  {"id": "db8fe4c1-3372-4e8b-8f9a-519e5cafb607", "term": "Broadcast engineering report", "verdict": "OK", "suggestions": []},
+  {"id": "174595fb-1922-4879-81b3-f21beca1c1b2", "term": "Broadcast headroom policy", "verdict": "OK", "suggestions": []},
+  {"id": "4d5fef52-53df-4f69-8cd0-8a3eb99f4572", "term": "Broadcast limiter chain", "verdict": "OK", "suggestions": []},
+  {"id": "9af64f26-73f1-4754-96f0-4052af1fa578", "term": "Broadcast logging system", "verdict": "OK", "suggestions": []},
+  {"id": "e348271f-96c8-4276-8188-fbeb6c8a9fa4", "term": "Broadcast loudness management", "verdict": "OK", "suggestions": []},
+  {"id": "26c148a5-1980-4768-8d6a-c29808e3c8a6", "term": "Broadcast multiband processor", "verdict": "OK", "suggestions": []},
+  {"id": "6240e4c6-0455-48df-9139-ee20d6925a5d", "term": "Broadcast preset", "verdict": "OK", "suggestions": []},
+  {"id": "00f6d8e9-626f-4ad4-b983-c56d4f51f032", "term": "Broadcast quality monitoring", "verdict": "OK", "suggestions": []},
+  {"id": "e03cfb2f-59e3-476c-bab7-f9fcd396c22c", "term": "Broadcast statistics report", "verdict": "OK", "suggestions": []},
+  {"id": "a62bc99a-595a-477b-a9b2-0692d5eb7a73", "term": "Commercial loudness control", "verdict": "OK", "suggestions": []},
+  {"id": "1c057bd7-1af1-4b3b-96f9-8ae4a77607dd", "term": "Compliance archive", "verdict": "OK", "suggestions": []},
+  {"id": "a82b0f6d-2a11-4690-9d2c-c107efa379d3", "term": "Compliance certification", "verdict": "OK", "suggestions": []},
+  {"id": "26da8e46-02d9-4e98-b18e-ba0e8754ac1c", "term": "Compliance verification report", "verdict": "OK", "suggestions": []},
+  {"id": "f91ba847-6961-4249-87df-2c293e6e6617", "term": "Continuous loudness monitoring", "verdict": "OK", "suggestions": []}
+ ]
+}

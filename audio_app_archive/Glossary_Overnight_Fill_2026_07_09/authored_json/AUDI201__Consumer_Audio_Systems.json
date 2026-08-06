@@ -1,0 +1,151 @@
+{
+  "course": "AUDI201",
+  "topic": "Consumer Audio Systems",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "8672e63d-0a52-4bb4-99b5-bc9b8989447f",
+      "term": "Anti-Skate",
+      "fields": {
+        "plain_english": "A small outward tug the turntable applies to the arm so the needle doesn't get dragged toward the middle of the record.",
+        "purpose_function": "It counteracts the inward skating force created by the tonearm's offset angle and groove friction, keeping the stylus centered in the groove for even left/right channel balance and reduced distortion and wear.",
+        "practical_application": "During cartridge setup a tech dials the anti-skate control to roughly match the tracking force in grams as a starting point, then fine-tunes by ear or with a test record.",
+        "category": "Turntables",
+        "related_terms": ["Tracking Force", "Tonearm", "Platter", "Direct Drive", "Belt Drive"],
+        "common_mistakes": ["Assuming anti-skate is optional or purely cosmetic when it directly affects channel balance and record wear.", "Setting anti-skate wildly higher or lower than the tracking force instead of starting near a 1:1 match.", "Confusing skating force (an inward pull) with tracking force (downward stylus weight)."],
+        "scenario_contexts": ["Setting up a new cartridge and tonearm on a hi-fi turntable.", "Diagnosing a record that mistracks or distorts more in one channel than the other.", "Troubleshooting a tonearm that drifts inward across a stationary record."]
+      },
+      "sources": ["Audio-Technica: Audio Solutions Question of the Week — What Does the Anti-Skate Feature On My Turntable Do?", "Elusive Disc: Turntable Setup Guide — Tracking Force, Anti-Skate & More", "Crutchfield: Troubleshooting turntable tonearm sway"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "5352cf8a-7a6c-44d3-90ea-76ff75f3a1d1",
+      "term": "Bass Shaker (Tactile Transducer)",
+      "fields": {
+        "plain_english": "A gadget bolted to a seat or floor that shakes you with deep bass instead of making sound you hear.",
+        "purpose_function": "It uses a voice-coil-driven weight to turn low-frequency audio into physical vibration you feel through your body, adding a tactile 'rumble' layer to home theater, gaming, and simulator setups without adding audible sound.",
+        "practical_application": "A tech mounts the transducer solidly to the seat frame or platform and drives it from a dedicated amplifier fed a low-frequency (roughly 20-80 Hz) signal, often tapped from the LFE/subwoofer channel.",
+        "category": "Home Theater",
+        "related_terms": ["Subwoofer", "LFE Channel", "Crossover", "Amplifier", "Network Streamer"],
+        "common_mistakes": ["Treating a bass shaker as a replacement for a subwoofer rather than a tactile supplement to one.", "Attaching it to a soft or flimsy surface that absorbs the vibration instead of a rigid seat frame.", "Driving it full-range instead of feeding it only low frequencies, which wastes power and can overheat the unit."],
+        "scenario_contexts": ["Adding physical impact to explosions and engine rumble in a home theater seat.", "Building a racing or flight simulator rig that transmits road and engine feel.", "Enhancing a gaming chair so low-end effects are felt as well as heard."]
+      },
+      "sources": ["Wikipedia: Tactile transducer (voice-coil driven weight, amplifier-driven low-frequency operation)", "TheaterSeatStore / SeatUp: Bass Shakers for Home Theater (mounting, 25-50W amplification)", "Valencia Theater Seating: Beginner's Guide to Bass Shakers (LFE-derived tactile range)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "03f944ae-d8e9-4ea0-a8c1-2f61fa52c439",
+      "term": "Belt Drive",
+      "fields": {
+        "plain_english": "A turntable where a stretchy rubber belt links the motor to the platter, so the motor's buzz doesn't reach the record.",
+        "purpose_function": "The elastic belt mechanically decouples the motor from the platter, absorbing motor vibration and noise so it doesn't reach the stylus, which favors low-rumble, smooth playback in home hi-fi decks.",
+        "practical_application": "A tech loops the belt around the motor pulley and platter sub-platter during assembly, and periodically replaces a stretched or slipping belt that causes slow speed or wow and flutter.",
+        "category": "Turntables",
+        "related_terms": ["Direct Drive", "Platter", "Tonearm", "Tracking Force", "Anti-Skate"],
+        "common_mistakes": ["Expecting DJ-style instant startup and high torque from a belt drive, which spins up slowly.", "Ignoring a stretched or aged belt that causes speed drift, wow, and flutter.", "Assuming belt drive is always sonically superior rather than a design trade-off against direct drive."],
+        "scenario_contexts": ["Choosing a home hi-fi turntable prioritizing low rumble and quiet playback.", "Replacing a worn drive belt that has caused the platter to run slow.", "Comparing turntable designs for a casual listening system versus DJ use."]
+      },
+      "sources": ["The Sound Organisation: Belt Drive and Direct Drive Turntables — Everything You Need To Know", "House of Marley: Direct Drive vs Belt Drive Turntable", "Audio Exchange: Direct-Drive vs Belt-Drive Turntables"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b051f7fb-bfe4-4ad4-96a7-f66e587bad48",
+      "term": "Direct Drive",
+      "fields": {
+        "plain_english": "A turntable where the platter sits right on the motor, giving instant start-up and strong grip — the kind DJs use.",
+        "purpose_function": "Placing the platter directly on the motor shaft delivers high torque, near-instant start-up, and stable speed with no belt to stretch, which is why it is the standard for DJ and scratch use.",
+        "practical_application": "A tech relies on its instant torque for cueing, back-cueing, and scratching, and can use its speed stability and quartz-lock pitch control for reliable playback and mixing.",
+        "category": "Turntables",
+        "related_terms": ["Belt Drive", "Platter", "Tonearm", "Tracking Force", "Anti-Skate"],
+        "common_mistakes": ["Assuming direct drive is only for DJs when it is also valued for speed accuracy in hi-fi.", "Believing direct-drive motor vibration always ruins sound quality; modern designs isolate it well.", "Forgetting that its high torque makes it suited to hand manipulation like scratching and back-cueing."],
+        "scenario_contexts": ["Selecting turntables for a DJ booth requiring instant start and scratching.", "Choosing a deck where precise, stable speed and quick spin-up matter.", "Comparing drive types when speed stability is prioritized over belt isolation."]
+      },
+      "sources": ["The Sound Organisation: Belt Drive and Direct Drive Turntables — Everything You Need To Know", "House of Marley: Direct Drive vs Belt Drive Turntable", "Audio Exchange: Direct-Drive vs Belt-Drive Turntables"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "ff5faf7b-1e86-47f7-8dee-f7e11bfc1dab",
+      "term": "MQA",
+      "fields": {
+        "plain_english": "A proprietary streaming format that squeezes hi-res music into a smaller file and claims to restore studio quality, but its lossless claims were widely disputed.",
+        "purpose_function": "Master Quality Authenticated, launched by Meridian in 2014, applies proprietary processing and lossy compression to 'fold' high-frequency data into a FLAC container for smaller hi-res streams, plus an authentication step meant to certify the master; critics showed the process is not truly lossless.",
+        "practical_application": "A tech encounters MQA when a service or file needs an MQA-capable DAC or decoder to 'unfold' it, and should note that major support has been withdrawn — Tidal dropped MQA in favor of standard FLAC in 2024.",
+        "category": "Digital Audio",
+        "related_terms": ["Network Streamer", "FLAC", "DAC", "Sample Rate", "Lossy Compression"],
+        "common_mistakes": ["Believing MQA is fully lossless; independent testing found it introduces noise and artifacts.", "Assuming MQA is an open standard rather than a proprietary, licensed format.", "Expecting the full 'unfolded' resolution without MQA-compatible decoding hardware or software."],
+        "scenario_contexts": ["Encountering MQA-flagged tracks on a streaming service and needing a compatible decoder.", "Evaluating a DAC's feature list and finding MQA rendering support.", "Advising a listener on format choices as services migrate from MQA back to standard FLAC."]
+      },
+      "sources": ["Wikipedia: Master Quality Authenticated (Meridian 2014, lossy folding, authentication, Lenbrook acquisition)", "Digital Trends: What is MQA? The controversial digital audio format fully explained", "TechHive: End of an era — Tidal to drop last remaining MQA tracks"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "4305a61f-12a8-4f2f-b7a7-68c9b2be3b88",
+      "term": "Network Streamer",
+      "fields": {
+        "plain_english": "A hi-fi box that pulls music off the internet or your home network and feeds it into your stereo.",
+        "purpose_function": "It connects to the home network to access streaming services (Spotify, Tidal, Qobuz) and local libraries on a NAS via protocols like UPnP, Roon Ready, and AirPlay, delivering that audio to a hi-fi system through digital or analog outputs.",
+        "practical_application": "A tech wires the streamer to the router (or Wi-Fi), points it at streaming accounts and NAS shares, and connects its output either to an outboard DAC/amplifier or, if it has a built-in DAC, straight to an amp or receiver.",
+        "category": "Digital Streaming",
+        "related_terms": ["DAC", "MQA", "Amplifier", "NAS", "Bass Shaker (Tactile Transducer)"],
+        "common_mistakes": ["Confusing a bare network streamer (transport) with a streaming DAC that has analog outputs built in.", "Overlooking the need for a stable network connection to the router and NAS for reliable playback.", "Assuming all streamers support the same services and protocols (Roon Ready, UPnP, Tidal Connect) without checking."],
+        "scenario_contexts": ["Adding streaming and NAS library playback to a traditional hi-fi system.", "Feeding a high-quality outboard DAC from a dedicated network transport.", "Building a multi-room setup with networked endpoints controlled from an app."]
+      },
+      "sources": ["What Hi-Fi?: Best music streamers — top network audio players tested", "Upscale Audio: How to Set Up a Digital Audio System", "NAD Electronics: CS1 Endpoint Network Streamer product documentation"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "a71c9c9e-2c7b-4e9e-a4e7-536c1fbc30b7",
+      "term": "Platter",
+      "fields": {
+        "plain_english": "The heavy spinning plate on a turntable that the record sits on.",
+        "purpose_function": "It supports and spins the record at a constant speed; its mass acts as a flywheel to smooth out speed variations, while a precise bearing keeps rotation stable and quiet.",
+        "practical_application": "A tech checks that the platter spins true and level, often adds a mat between platter and record, and relies on its mass and bearing quality for consistent speed with low wow and flutter.",
+        "category": "Turntables",
+        "related_terms": ["Belt Drive", "Direct Drive", "Tonearm", "Tracking Force", "Anti-Skate"],
+        "common_mistakes": ["Assuming a heavier platter is always better regardless of the motor and bearing designed for it.", "Placing a record directly on a bare platter when a mat is intended to protect it and manage resonance.", "Ignoring a worn or dry platter bearing that adds rumble and speed instability."],
+        "scenario_contexts": ["Assembling a turntable and seating the platter on its bearing.", "Diagnosing rumble or speed instability traced to the platter bearing.", "Selecting or swapping a platter mat to tune resonance and grip."]
+      },
+      "sources": ["Elusive Disc: Turntable Setup Guide — Tracking Force, Anti-Skate & More", "The Sound Organisation: Belt Drive and Direct Drive Turntables — Everything You Need To Know", "Audio-Technica: Setting up the tonearm on a turntable"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "d5523d8c-27f8-4871-b3ed-2b1498543a8f",
+      "term": "Tonearm",
+      "fields": {
+        "plain_english": "The pivoting arm that holds the needle and lets it swing smoothly across the record.",
+        "purpose_function": "It carries the cartridge and stylus across the record with controlled geometry, applying the correct tracking force while allowing free movement so the stylus can follow the groove accurately.",
+        "practical_application": "A tech mounts and aligns the cartridge on the headshell, sets the counterweight for tracking force and the anti-skate, and checks arm height (VTA) so the stylus sits correctly in the groove.",
+        "category": "Turntables",
+        "related_terms": ["Tracking Force", "Anti-Skate", "Platter", "Belt Drive", "Direct Drive"],
+        "common_mistakes": ["Misaligning the cartridge in the headshell, causing tracking distortion across the record.", "Setting the counterweight without zero-balancing the arm first, giving an inaccurate tracking force.", "Neglecting arm height (VTA) and anti-skate, which affect tracking and channel balance."],
+        "scenario_contexts": ["Installing and aligning a new cartridge on a turntable.", "Balancing the arm and dialing in tracking force and anti-skate during setup.", "Adjusting tonearm height to correct tracking geometry for a taller or shorter cartridge."]
+      },
+      "sources": ["Audio-Technica: Setting up the tonearm on a turntable", "Elusive Disc: Turntable Setup Guide — Tracking Force, Anti-Skate & More", "Crutchfield: Troubleshooting turntable tonearm sway"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "53f756da-bd36-46e9-8977-976ac856b84d",
+      "term": "Tracking Force",
+      "fields": {
+        "plain_english": "How hard the needle presses down into the record groove, set in grams.",
+        "purpose_function": "It sets the downward stylus weight so the stylus stays properly seated in the groove; too little causes mistracking and skipping, too much increases groove and stylus wear, so it is set to the cartridge maker's specified value.",
+        "practical_application": "A tech zero-balances the tonearm, then sets the counterweight (or uses a stylus gauge) to the cartridge's recommended figure, commonly around 1.5-2.5 g, verifying with a digital scale.",
+        "category": "Turntables",
+        "related_terms": ["Anti-Skate", "Tonearm", "Platter", "Belt Drive", "Direct Drive"],
+        "common_mistakes": ["Setting tracking force below the cartridge's spec, causing mistracking, chatter, and skips that can gouge the groove.", "Setting it too high, which increases wear on both stylus and record.", "Guessing the value instead of using the cartridge manufacturer's specified range and a stylus scale."],
+        "scenario_contexts": ["Setting downforce during cartridge installation using the counterweight and a stylus scale.", "Diagnosing skipping or mistracking traced to insufficient tracking force.", "Following a cartridge manufacturer's spec sheet to dial in the recommended weight."]
+      },
+      "sources": ["Sumiko: What is Tracking Force — What to Know Before Playing Records", "Elusive Disc: Cartridge Brand Stylus Tracking Force Chart", "Fluance: Why Tracking Force is Important for Turntables"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

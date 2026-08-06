@@ -1,0 +1,153 @@
+{
+ "expert": "LANGUAGE / COMMUNICATIONS EXPERT",
+ "group": 5,
+ "reviews": [
+  {
+   "id": "a54a03c1-1fdd-46f2-9ae9-fb038203c9e2",
+   "term": "High-Level Input",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7a977cfd-36e2-44ab-b197-8e2485e03cf7",
+   "term": "Signal-Sensing Turn-On",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Low",
+     "issue": "The second bullet packs three distinct ideas (turn-on delay, possible pop, drop-out on silence) into one comma-spliced run-on, which is harder to parse than the crisp parallel bullets around it.",
+     "suggestion": "Split into two clauses, e.g.: 'Expecting instant, click-free operation — signal-sensing adds a short turn-on delay and can produce a pop. With AC-signal detection (rather than DC-offset detection), it can also drop out during silent passages.'"
+    }
+   ]
+  },
+  {
+   "id": "623153f8-a0e8-4417-8f2e-00ce19bb109c",
+   "term": "SPL Competition",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9e69f2ea-3f90-4afa-9dfe-e37b34d226dc",
+   "term": "Steering Wheel Control Interface",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "23215c0a-402b-4272-b32f-c34070ed4f63",
+   "term": "Subsonic Filter",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "practical_application",
+     "severity": "Low",
+     "issue": "The phrase 'roughly a half-octave (about 80%) below the enclosure tuning frequency' gives the learner two different, non-matching characterizations of the same offset (a half-octave down is closer to 71 percent of the tuning frequency, not 80 percent). The mixed framing is confusing regardless of which figure is intended. Flagging as a clarity/consistency note; the technical reviewer should confirm the intended number.",
+     "suggestion": "Pick one characterization and drop the other, e.g. 'somewhat below the enclosure tuning frequency — for example, near 25–28 Hz for a box tuned to 30 Hz', or keep a single consistent fraction/octave figure."
+    }
+   ]
+  },
+  {
+   "id": "37fc85b4-f7e3-452e-9e30-3e4489c739ca",
+   "term": "Alnico Magnet",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "00b6b47a-f1f2-4724-ac05-d2ca24e85ef8",
+   "term": "Beaming",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9d4096d2-1275-4b55-a457-845641f610da",
+   "term": "Doppler Distortion",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e612ea14-fd06-49c7-af09-0bf75547f435",
+   "term": "Ferrofluid",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fb0ee365-00a6-49b7-b30c-3983a69c8f04",
+   "term": "Folded Horn",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5ca53f6d-9817-4cd3-b565-c2945a190b67",
+   "term": "Infinite Baffle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ea49fc9c-9592-4ca9-8b15-17844a6f7e4f",
+   "term": "Isobaric Loading",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "practical_application",
+     "severity": "Low",
+     "issue": "'accepting the extra driver cost and weight, and no gain in efficiency, in exchange for a smaller box' reads awkwardly, because 'accepting ... no gain in efficiency' pairs the verb 'accepting' with a benefit that isn't being accepted, breaking the list's logic.",
+     "suggestion": "Set the efficiency point off as its own aside, e.g.: 'accepting the extra driver cost and weight — with no gain in efficiency — in exchange for a smaller box.'"
+    }
+   ]
+  },
+  {
+   "id": "f3c8eb62-4fc4-46ca-a8ed-8178251142ca",
+   "term": "Neodymium Magnet",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8bdc86ba-1551-4641-ad9c-1f6c6522b06a",
+   "term": "DisplayPort",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0f0ff2e9-cd3d-4061-8dcc-9fb54d4b901c",
+   "term": "EDAC / Elco Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "36ddfe76-343e-414e-a76f-a4a72465a5f6",
+   "term": "GPIO",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "490dd2ed-ae24-4e7f-8bae-648cc9cdf60d",
+   "term": "Hirose Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2c6c28e8-4583-4dc1-8f7f-2753ddb9953e",
+   "term": "LC Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "90fcd5fd-525e-43dc-8469-5a2a1d98eaf0",
+   "term": "Lightning Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "97548fb8-af37-4f35-afcc-967191aa3480",
+   "term": "MicroDot Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "322881a8-5058-444d-a595-28637ceda69d",
+   "term": "Multipin Connector",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

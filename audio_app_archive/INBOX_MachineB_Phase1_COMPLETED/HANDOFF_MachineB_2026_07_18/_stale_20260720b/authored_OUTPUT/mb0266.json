@@ -1,0 +1,339 @@
+{
+ "batch": 266,
+ "topic": "DAW Fundamentals & Session Management",
+ "authored": [
+  {
+   "id": "d9afcdf7-7ca6-4371-a106-2e707269229e",
+   "term": "Groove extraction",
+   "fields": {
+    "definition": "The process of analyzing a piece of audio or MIDI to capture its timing and, in some tools, its accent pattern, and saving that information as a reusable groove (quantize) template. That template can then be applied to other tracks so they follow the same feel.",
+    "plain_english": "This means pulling the timing 'feel' out of one part and saving it as a pattern. You can then place that same pattern onto other parts so they all lock together. It is like tracing the beat of a great drum take and using the tracing to line up the rest of the song.",
+    "purpose_function": "It lets an engineer transfer the natural push-and-pull of a good performance onto other material instead of using stiff, robotic grid timing. This keeps a mix feeling human while still tightening how parts line up.",
+    "practical_application": "A technician might extract the groove from a live drum loop and apply it to a programmed bass line so the two sit together. In Cubase, Logic, and Pro Tools this is done by dragging a part to create a groove template and then quantizing other tracks to it.",
+    "category": "Editing & Timing",
+    "related_terms": [
+     "Quantization",
+     "Groove template",
+     "Swing",
+     "MIDI editing",
+     "Elastic Audio",
+     "Transient detection"
+    ],
+    "common_mistakes": [
+     "Extracting a groove from audio with poorly placed transient markers, which captures the wrong timing points",
+     "Applying 100% strength so the target follows the template exactly and loses its own feel",
+     "Assuming groove extraction fixes wrong notes; it only affects timing, not pitch or content",
+     "Extracting from a sloppy source take and spreading its timing errors across the whole session"
+    ],
+    "scenario_contexts": [
+     "Matching a programmed hi-hat pattern to the feel of a recorded live drummer",
+     "Tightening a doubled guitar part to the groove of the main rhythm track",
+     "Building a custom groove library from a favorite drum break for reuse across projects",
+     "Making quantized MIDI drums feel less mechanical by applying an extracted human groove"
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual (Groove Quantize / Create Groove)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3f7f337f-4d62-4452-90f8-f2691b85d1ed",
+   "term": "Half-Speed Record/Playback",
+   "fields": {
+    "definition": "A transport mode that plays back or records material at half the normal sample-clock or tape speed, dropping pitch by one octave and doubling the apparent duration. It is used to slow fast passages for learning or precise editing, or to record a difficult part slowly so it plays back at correct speed and pitch.",
+    "plain_english": "This slows the audio down to half speed so it is easier to follow. When you slow it down, the sound also drops one octave lower. Musicians slow it down to hear and learn a fast part more easily. Or they record a fast part at half speed so that, played back at full speed, it lands at the right pitch and tempo.",
+    "purpose_function": "It gives an engineer or player a way to handle passages that are too fast to hear clearly or perform cleanly. Slowing the transport makes fine editing and tricky takes far more accurate.",
+    "practical_application": "A technician may set half-speed playback to place edit points inside a rapid drum fill, or record a fast solo at half speed so it lands perfectly when returned to normal speed. On tape machines this used a mechanical speed switch; in a DAW it is a transport or varispeed setting.",
+    "category": "Transport & Recording",
+    "related_terms": [
+     "Varispeed",
+     "Transport controls",
+     "Tape machine",
+     "Sample rate",
+     "Punch recording",
+     "Time stretching"
+    ],
+    "common_mistakes": [
+     "Forgetting that half-speed drops recorded pitch an octave, then being surprised by the octave shift at full speed",
+     "Confusing half-speed transport with time stretching, which changes length without changing pitch",
+     "Not checking that plugins and monitoring track the speed change, causing tuning or timing errors",
+     "Assuming half-speed mastering and half-speed practice playback are the same feature"
+    ],
+    "scenario_contexts": [
+     "Slowing a rapid passage to identify and edit a single wrong note",
+     "Recording a very fast instrumental line at half speed for a cleaner take",
+     "Learning a complex part by ear at a manageable speed",
+     "Placing precise crossfade or edit points inside dense fast material"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound, recording technique articles (varispeed / half-speed)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1bf3e8b6-738b-4856-ada4-4905a9e5bb89",
+   "term": "Hot-swappable storage",
+   "fields": {
+    "definition": "Storage devices, drive bays, or enclosures designed to be connected or removed while the host system remains powered on and running, without a shutdown or reboot. This relies on interfaces and controllers that support safe surprise insertion and removal.",
+    "plain_english": "This is a drive you can plug in or pull out while the computer stays on. You do not have to shut down first. It is like changing a battery in a toy that keeps running while you swap it.",
+    "purpose_function": "It keeps a session or system available while media is changed, so recording and playback do not have to stop for a hardware swap. This matters where downtime is costly, such as long sessions or continuous operation.",
+    "practical_application": "A technician might swap a full project drive for an empty one between sessions without powering down the rig, using the operating system's eject or unmount step first. Hot-swap bays are common in RAID enclosures and rackmount recorders.",
+    "category": "Storage & Backup",
+    "related_terms": [
+     "Incremental backup",
+     "Immutable backup",
+     "RAID",
+     "Session archiving",
+     "External drive",
+     "Data redundancy"
+    ],
+    "common_mistakes": [
+     "Pulling a drive without first ejecting or unmounting it, which can corrupt open files",
+     "Assuming every USB or drive bay is hot-swappable when the interface or slot is not rated for it",
+     "Removing a drive while the DAW is still writing to it, losing the current take",
+     "Confusing hot-swap capability with data safety; a hot-swap drive still needs a backup"
+    ],
+    "scenario_contexts": [
+     "Changing project drives between clients without shutting down the studio computer",
+     "Replacing a failed disk in a hot-swap RAID array while the system stays online",
+     "Rotating removable backup drives on a recorder during a long event",
+     "Handing a client their finished session on a caddy pulled from a hot-swap bay"
+    ]
+   },
+   "sources": [
+    "Serial ATA (SATA) specification, hot-plug provisions",
+    "Storage enclosure manufacturer technical documentation (hot-swap bay guides)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "53da4cca-a3cf-4bfe-9da8-6ca991f375a5",
+   "term": "Immutable backup",
+   "fields": {
+    "definition": "A backup copy stored so that it cannot be modified, overwritten, or deleted for a defined retention period, typically using write-once-read-many (WORM) storage or object-lock settings. This protects the data against accidental changes, ransomware, and tampering.",
+    "plain_english": "This is a saved copy that no one can change or erase until a set time passes. Once it is written, it is locked. It is like sealing a document in a safe with a timer, so it stays exactly as saved.",
+    "purpose_function": "It guarantees that a known-good copy of a session or archive survives even if the main system is attacked or files are altered by mistake. This gives a reliable point to restore from.",
+    "practical_application": "A studio might push finished project archives to object-locked cloud or WORM storage so a locked master copy cannot be encrypted by ransomware or overwritten. The technician sets a retention period during which deletion is blocked.",
+    "category": "Storage & Backup",
+    "related_terms": [
+     "Incremental backup",
+     "Session archiving",
+     "Data redundancy",
+     "Hot-swappable storage",
+     "Cloud backup",
+     "Version control"
+    ],
+    "common_mistakes": [
+     "Treating any offline copy as immutable when it can still be overwritten or deleted",
+     "Setting a retention period too short to be useful for recovery",
+     "Assuming immutability replaces having multiple copies in different locations",
+     "Locking a huge working set immutably and running out of storage before the period ends"
+    ],
+    "scenario_contexts": [
+     "Protecting delivered master files against ransomware in a commercial facility",
+     "Archiving legal or contractual session deliverables that must not be altered",
+     "Keeping a tamper-proof copy of raw multitrack recordings for a client",
+     "Meeting a client or label requirement for locked, unchangeable project backups"
+    ]
+   },
+   "sources": [
+    "NIST SP 800-209 / storage security guidance on WORM and immutability",
+    "Backup and object-storage vendor technical documentation (object lock / immutability)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "20a2f513-7f1e-4392-9e47-1d1165a51b9f",
+   "term": "Incremental backup",
+   "fields": {
+    "definition": "A backup method that copies only the data that has changed since the most recent previous backup (full or incremental), rather than copying everything each time. Restoring requires the last full backup plus every incremental made since it.",
+    "plain_english": "This kind of backup saves only what changed since the last backup. It is faster and uses less space than copying everything again. It is like adding just today's new pages to a folder instead of recopying the whole folder each day.",
+    "purpose_function": "It lets a system back up frequently without the time and storage cost of repeated full copies. This makes regular protection of an active session practical.",
+    "practical_application": "A studio backup tool might run a full backup weekly and short incrementals nightly so each day's edits are captured quickly. To restore, the technician applies the full backup and then each incremental in order.",
+    "category": "Storage & Backup",
+    "related_terms": [
+     "Immutable backup",
+     "Session archiving",
+     "Data redundancy",
+     "Hot-swappable storage",
+     "Cloud backup",
+     "Full backup"
+    ],
+    "common_mistakes": [
+     "Losing one incremental in the chain and being unable to fully restore",
+     "Confusing incremental with differential backup, which copies changes since the last full backup",
+     "Relying on incrementals without ever verifying that a restore actually works",
+     "Never taking a fresh full backup, leaving an impractically long incremental chain"
+    ],
+    "scenario_contexts": [
+     "Backing up a large session nightly while capturing only the day's changes",
+     "Protecting an ongoing mix project without long full-backup windows",
+     "Keeping storage use low while still backing up often",
+     "Restoring a session to a specific day by applying the full plus that day's incrementals"
+    ]
+   },
+   "sources": [
+    "NIST SP 800-34, Contingency Planning Guide (backup types)",
+    "Backup software vendor technical documentation (incremental vs differential)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "252db885-fa67-4a71-a140-7ed5d0747a9f",
+   "term": "Input Routing",
+   "fields": {
+    "definition": "The assignment of incoming signals, such as audio interface inputs or MIDI ports, to specific tracks, channels, or buses within a DAW or console so they are recorded or processed in the intended place. It defines the path each source takes from input to destination.",
+    "plain_english": "This is choosing which incoming signal goes to which track. It tells the system where each microphone or instrument should land. It is like deciding which mailbox each letter drops into before it is delivered.",
+    "purpose_function": "It ensures each source is captured on the correct track or channel, which is the foundation of an organized multitrack recording. Without correct input routing, sources record to the wrong place or not at all.",
+    "practical_application": "Before tracking a band, a technician assigns interface input 1 to the kick track, input 2 to snare, and so on, then arms those tracks. In a DAW this is set in each track's input selector; on a console it is the channel input patching.",
+    "category": "Signal Flow",
+    "related_terms": [
+     "Signal flow",
+     "Bus routing",
+     "Track arming",
+     "Audio interface",
+     "Patchbay",
+     "Monitoring"
+    ],
+    "common_mistakes": [
+     "Assigning two tracks to the same input and missing a source entirely",
+     "Confusing input routing with output routing and monitoring the wrong signal",
+     "Forgetting to arm a track after routing, so nothing records",
+     "Mismatching mono and stereo input assignments, capturing only one side"
+    ],
+    "scenario_contexts": [
+     "Setting up a multitrack drum session with each mic on its own track",
+     "Patching a synth's MIDI and audio into the correct DAW tracks",
+     "Reassigning inputs when a source is moved to a different interface channel",
+     "Routing a talkback or reference input to a separate monitoring track"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (I/O and track input assignment)",
+    "Yamaha Sound Reinforcement Handbook (signal routing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "074900d7-ace9-4b5d-ba7c-182c575462f6",
+   "term": "List editor",
+   "fields": {
+    "definition": "A MIDI editing view that displays events as a scrollable text-and-number list, showing each event's position, type, pitch or controller, value, and length rather than a graphical piano roll. It allows precise numeric inspection and editing of individual MIDI events.",
+    "plain_english": "This shows MIDI notes and controls as a written list instead of a picture. Each line gives one event and its exact numbers. It is like reading a spreadsheet of every note instead of looking at a drawing of them.",
+    "purpose_function": "It lets an editor find and correct exact values that are hard to grab in a graphical view, such as a single stray controller message or an off-position note. This gives fine, precise control over MIDI data.",
+    "practical_application": "A technician uses the list editor to delete a stuck sustain-pedal message or nudge one note to an exact tick position. It appears in DAWs such as Cubase and Logic as an alternative to the piano-roll editor.",
+    "category": "MIDI Editing",
+    "related_terms": [
+     "Piano roll",
+     "MIDI editing",
+     "Quantization",
+     "Control change",
+     "Velocity",
+     "Event"
+    ],
+    "common_mistakes": [
+     "Editing a value in the list without noticing it belongs to a different event type",
+     "Overlooking non-note events like controllers or program changes that the list also shows",
+     "Assuming the list editor changes audio; it only affects MIDI data",
+     "Deleting an event by value alone and removing more than intended"
+    ],
+    "scenario_contexts": [
+     "Removing a stuck note or hung sustain message from a MIDI part",
+     "Setting a note to an exact bar, beat, and tick position",
+     "Cleaning up unwanted controller data recorded from a keyboard",
+     "Inspecting the precise velocity of individual notes in a phrase"
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual (List Editor)",
+    "Apple Logic Pro User Guide (Event List editor)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a8148b08-be34-4b42-87e3-46a391220741",
+   "term": "Loop Record",
+   "fields": {
+    "definition": "A recording mode in which the transport repeats a defined loop range and captures a new take on each pass, stacking the takes so the best one can be chosen or comped later. Each pass is preserved rather than overwritten.",
+    "plain_english": "This records the same section over and over, saving each pass as a separate take. You can loop a part many times, then pick the best version. It is like doing several tries of one line and keeping all of them to choose from.",
+    "purpose_function": "It lets a performer keep playing a tricky section while the DAW collects multiple takes automatically, without stopping to reset. This makes it easy to gather options for later comping.",
+    "practical_application": "A technician sets a loop around a chorus vocal and enables loop record so the singer runs it several times, then comps the strongest phrases. In Pro Tools and Logic this is a loop or cycle record mode with take management.",
+    "category": "Transport & Recording",
+    "related_terms": [
+     "Comping",
+     "Take",
+     "Punch recording",
+     "Cycle mode",
+     "Track arming",
+     "Playlist"
+    ],
+    "common_mistakes": [
+     "Leaving loop record off and overwriting the previous take on each pass",
+     "Not enabling take stacking, so only the last pass is kept",
+     "Setting loop points loosely and cutting off the start or end of the phrase",
+     "Confusing loop record with looping playback, which does not capture takes"
+    ],
+    "scenario_contexts": [
+     "Capturing several vocal passes of a chorus for later comping",
+     "Recording repeated attempts at a difficult solo without stopping",
+     "Building a take pool for a short instrumental phrase",
+     "Letting a drummer run a fill several times to pick the best pass"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (Loop Record)",
+    "Apple Logic Pro User Guide (Cycle record / take folders)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2a11fb89-4bda-43b2-92e8-6f2f22e62be3",
+   "term": "Low Latency Monitoring",
+   "fields": {
+    "definition": "A monitoring approach that minimizes the delay between a performer's input and what they hear, either by routing the input directly through the interface hardware or by using a low-latency path that bypasses or limits latency-inducing plugins. It keeps the audible delay small enough not to disturb performance.",
+    "plain_english": "This keeps the delay between playing and hearing yourself very short. A long delay makes it hard to perform in time, so the signal is sent back almost instantly. It is like hearing your own voice with no echo lagging behind you.",
+    "purpose_function": "It lets a musician perform comfortably in time, because even a small round-trip delay through the computer can throw off timing and feel. Reducing that delay is essential during tracking.",
+    "practical_application": "A technician enables direct hardware monitoring on the audio interface or a low-latency mode in the DAW while a vocalist records, so the singer hears themselves without distracting delay. Buffer size and monitoring path are adjusted to control latency.",
+    "category": "Monitoring",
+    "related_terms": [
+     "Latency",
+     "Buffer size",
+     "Direct monitoring",
+     "Audio interface",
+     "Input Routing",
+     "ASIO"
+    ],
+    "common_mistakes": [
+     "Setting the buffer size very large during tracking, which raises monitoring latency",
+     "Using both DAW software monitoring and hardware direct monitoring at once, causing doubling or comb filtering",
+     "Blaming the interface for latency caused by heavy plugins in the monitoring path",
+     "Ignoring that very low buffers can overload the CPU and cause audio dropouts"
+    ],
+    "scenario_contexts": [
+     "Tracking a vocalist who needs to hear themselves without distracting delay",
+     "Recording a guitarist through amp-sim plugins while keeping monitoring tight",
+     "Using an interface's direct monitoring for a live overdub",
+     "Balancing buffer size for low latency while tracking versus stability while mixing"
+    ]
+   },
+   "sources": [
+    "Sound on Sound, articles on latency and monitoring during recording",
+    "Audio interface manufacturer technical documentation (direct / low-latency monitoring)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

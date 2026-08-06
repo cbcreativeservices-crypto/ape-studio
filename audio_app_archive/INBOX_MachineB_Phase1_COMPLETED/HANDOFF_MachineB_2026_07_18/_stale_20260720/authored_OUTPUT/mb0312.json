@@ -1,0 +1,159 @@
+{
+ "batch": 312,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "6cc2a3fc-dbfb-4e37-b5f6-1969e59f241f",
+   "term": "closed-in",
+   "fields": {
+    "definition": "A subjective timbral descriptor for sound that seems restricted in the high frequencies and lacking openness or air, as if the upper treble has been rolled off or the source is enclosed; the opposite of open or airy.",
+    "plain_english": "A closed-in sound feels shut off at the top, like music playing with a blanket over the speakers. The bright, airy high notes are missing, so it seems dull and boxed in.",
+    "purpose_function": "It gives engineers a shared word for a lack of high-frequency openness, pointing to where treble or air is missing so the problem can be diagnosed and corrected.",
+    "practical_application": "Hearing a closed-in mix, a technician checks for rolled-off highs, a dull microphone, or heavy room absorption, then adds gentle high-shelf or air-band EQ to open it up.",
+    "category": "Timbre descriptor",
+    "related_terms": ["dull", "dark", "airy", "open", "muffled", "boxy"],
+    "common_mistakes": ["Confusing closed-in with dark; closed-in stresses a lack of air and openness at the very top, not just weak treble overall", "Boosting a broad treble band and adding harshness instead of a narrow lift of the top air region", "Blaming the source when an absorptive or over-damped room is dulling the highs"],
+    "scenario_contexts": ["A vocal recorded with a dynamic mic aimed off-axis sounds closed-in and needs high-shelf lift", "Playback in a heavily treated, over-damped room feels closed-in compared with a livelier space", "A tape or lossy digital copy loses top-end air and is described as closed-in"]
+   },
+   "sources": ["Sound on Sound", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c1b7621e-93a4-4138-b640-07e19b75e63b",
+   "term": "cluttered",
+   "fields": {
+    "definition": "A subjective descriptor for a mix or sound in which too many competing elements or frequencies crowd the same space and mask one another, so individual parts lose clarity and definition.",
+    "plain_english": "A cluttered mix is like a room where everyone talks at once. So many sounds pile into the same space that you can't clearly pick out any single one.",
+    "purpose_function": "It labels a loss of clarity caused by crowding, helping engineers spot masking and decide what to thin out, pan, or EQ so parts can separate.",
+    "practical_application": "When a mix sounds cluttered, a technician carves competing instruments with EQ, pans them apart, or mutes parts to open up space and restore clarity.",
+    "category": "Timbre descriptor",
+    "related_terms": ["congested", "muddy", "masking", "busy", "dense", "separation"],
+    "common_mistakes": ["Confusing cluttered with simply loud; a quiet mix can still be cluttered when parts fight for the same frequencies", "Trying to fix clutter by raising levels, which usually deepens the masking", "Assuming clutter is only about the number of tracks rather than overlapping frequency ranges"],
+    "scenario_contexts": ["A dense arrangement with several guitars and keys all in the midrange sounds cluttered", "A live mix where every channel is wide open competes for space and turns cluttered", "Layered synths occupying the same octave blur together until parts are EQ-carved"]
+   },
+   "sources": ["Sound on Sound", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ed1ce59a-95c6-45c7-80d5-d4b05261d566",
+   "term": "cold",
+   "fields": {
+    "definition": "A subjective timbral descriptor for sound weighted toward the upper mids and highs with weak low-mid warmth, giving a clinical, analytical, or emotionally distant character; the opposite of warm.",
+    "plain_english": "A cold sound is thin and clinical, like harsh office lighting instead of a cozy lamp. It has plenty of treble but little of the warm lower-middle body that makes music feel inviting.",
+    "purpose_function": "It gives engineers a word for tone that lacks warmth and lower-mid body, flagging when a source or system feels sterile so warmth can be restored.",
+    "practical_application": "If a track sounds cold, a technician may add low-mid EQ, choose a warmer mic or preamp, or use gentle saturation to bring back body and warmth.",
+    "category": "Timbre descriptor",
+    "related_terms": ["warm", "clinical", "thin", "bright", "sterile", "harsh"],
+    "common_mistakes": ["Treating cold as the same as bright; a sound can be bright yet still warm, while cold specifically lacks low-mid body", "Adding broad treble to fix coldness, which makes it thinner rather than warmer", "Assuming cold is always a fault, when a clean, analytical tone is sometimes the goal"],
+    "scenario_contexts": ["A digital recording with scooped low-mids is described as cold compared with an analog version", "A condenser mic with a rising top and lean lower mids sounds cold on a solo voice", "A room or monitor with little low-mid support makes mixes feel cold"]
+   },
+   "sources": ["Sound on Sound", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "07a22ef9-9089-43d5-84cc-a527a527b7d3",
+   "term": "colored",
+   "fields": {
+    "definition": "A descriptor for reproduction that departs from flat, neutral response by adding its own tonal character through frequency-response deviations, resonances, or harmonic distortion, so it audibly colors the sound rather than passing it unchanged.",
+    "plain_english": "Colored sound has the gear's own flavor added on top, like a photo run through a filter. Instead of hearing the source exactly as it was, you hear it tinted by the equipment.",
+    "purpose_function": "The term separates neutral, accurate reproduction from gear that imposes character, letting engineers judge whether coloration is a fault to avoid or an effect to use on purpose.",
+    "practical_application": "A technician labels a mic, preamp, or speaker as colored when it stresses certain bands, then either picks a flatter tool for accuracy or uses the coloration deliberately for tone.",
+    "category": "Timbre descriptor",
+    "related_terms": ["coloration", "neutral", "transparent", "resonance", "harmonic distortion", "flat"],
+    "common_mistakes": ["Assuming colored always means bad; many prized mics and preamps are valued precisely for pleasant coloration", "Confusing coloration with simple volume change rather than a tonal-balance or distortion change", "Blaming a source for coloration that is actually coming from the room or monitors"],
+    "scenario_contexts": ["A vintage ribbon mic colors a voice with a warm, rolled-off top", "A resonant room adds coloration heard as peaks and dips on pink noise", "A saturating tube preamp is chosen to color a clean DI bass"]
+   },
+   "sources": ["Ballou - Handbook for Sound Engineers", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1b733574-4b79-461f-924d-8d86d1481d2b",
+   "term": "congested",
+   "fields": {
+    "definition": "A subjective descriptor for sound, usually in the low-mids and midrange, that seems crammed and lacking space, where dense energy blurs together and reduces clarity and separation; closely related to cluttered but stressing a thick, stuffy quality.",
+    "plain_english": "A congested sound feels stuffed and stuffy, like a blocked nose. The middle of the sound is so packed that notes smear together and lose their edges.",
+    "purpose_function": "It names a thick, crowded midrange so engineers can target the buildup and thin it out, restoring space and definition to the sound.",
+    "practical_application": "Facing a congested mix, a technician cuts low-mid buildup with EQ, uses high-pass filters on non-bass tracks, and creates space so parts breathe.",
+    "category": "Timbre descriptor",
+    "related_terms": ["cluttered", "muddy", "boxy", "masking", "dense", "separation"],
+    "common_mistakes": ["Confusing congested with muddy; congestion is about crowding and lack of space, while mud is a specific low-mid tonal excess", "Cutting the wrong band and thinning the mix instead of clearing the crowded low-mids", "Adding compression to fix congestion, which can squeeze parts closer together and worsen it"],
+    "scenario_contexts": ["A mix where kick, bass, and low guitars pile up in the low-mids sounds congested", "A full arrangement with no high-pass filtering builds congestion in the lower midrange", "Heavy reverb on many tracks fills the space and leaves the mix congested"]
+   },
+   "sources": ["Sound on Sound", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e207ddd6-c957-42ff-a4ae-df326bf4ffe5",
+   "term": "creamy",
+   "fields": {
+    "definition": "A subjective descriptor for a smooth, rich, pleasing tone free of harshness, often applied to a warm, full midrange or to smooth, well-blended overdrive or saturation.",
+    "plain_english": "A creamy tone is smooth and rich, like melted ice cream instead of something sharp and scratchy. It sounds full and easy on the ears, with no harsh edges.",
+    "purpose_function": "It gives engineers a word for smooth, pleasing richness, describing a target tone that flatters warmth and softens harsh edges.",
+    "practical_application": "A technician chasing a creamy sound may pick a smooth-saturating amp or preamp, tame harsh upper mids, and use gentle compression to round the tone.",
+    "category": "Timbre descriptor",
+    "related_terms": ["smooth", "warm", "silky", "harsh", "saturation", "round"],
+    "common_mistakes": ["Confusing creamy with muddy; creamy stays clear and smooth, while muddy loses definition", "Over-saturating in search of creaminess until the tone turns fuzzy or lifeless", "Assuming creamy means dull; a creamy tone can still have detail, just without harshness"],
+    "scenario_contexts": ["A mildly overdriven tube guitar amp is prized for a creamy lead tone", "Smooth analog-style compression gives a vocal a creamy, rounded character", "A saxophone through a warm ribbon mic is described as creamy"]
+   },
+   "sources": ["Sound on Sound", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7ec5dd6f-9c6c-499f-bfe4-d9340748180b",
+   "term": "Crisp",
+   "fields": {
+    "definition": "A subjective descriptor for clean, clear, well-defined high-frequency detail and sharp transient response, giving articulate, precise sound without harshness.",
+    "plain_english": "A crisp sound has clear, sharp detail up top, like a fresh, snappy photo that is in focus. Fast sounds such as cymbals and picked strings come through clean and well defined.",
+    "purpose_function": "It names clear high-end detail and sharp transients, describing a target for clarity and articulation that engineers aim for without tipping into harshness.",
+    "practical_application": "To make a mix crisp, a technician adds tasteful high-frequency EQ, tightens transients, and keeps the top end clean so detail reads clearly.",
+    "category": "Timbre descriptor",
+    "related_terms": ["bright", "airy", "harsh", "transient", "articulate", "dull"],
+    "common_mistakes": ["Confusing crisp with harsh; crisp is clean and detailed, while harsh is aggressive and fatiguing", "Over-boosting treble to force crispness and adding sibilance or hiss instead", "Thinking crispness is only EQ, when clean transients and low distortion matter just as much"],
+    "scenario_contexts": ["A well-recorded acoustic guitar with clear pick detail is called crisp", "Adding a gentle high shelf makes a drum overhead track sound crisp", "A hi-hat with clean, defined top end reads as crisp in the mix"]
+   },
+   "sources": ["Sound on Sound", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d0eca9a2-59cd-4541-b6d0-02f8368e370f",
+   "term": "crunchy",
+   "fields": {
+    "definition": "A subjective descriptor for a gritty, moderately distorted tone with an aggressive, textured character, such as an overdriven guitar amp or light clipping, sitting between a clean sound and heavy saturation.",
+    "plain_english": "A crunchy tone is gritty and rough on purpose, like biting into a crunchy snack. It is the growling, textured sound of a guitar amp turned up until it just starts to break up.",
+    "purpose_function": "It names a controlled, gritty distortion so engineers and players can aim for that textured character without pushing into full, mushy overdrive.",
+    "practical_application": "To get a crunchy guitar tone, a technician sets an amp or overdrive pedal to the edge of breakup, balancing grit and note clarity.",
+    "category": "Timbre descriptor",
+    "related_terms": ["overdrive", "distortion", "gritty", "saturation", "clean", "fuzzy"],
+    "common_mistakes": ["Confusing crunch with heavy distortion; crunch keeps note definition, while heavy gain smears it", "Adding too much gain and losing the tight, gritty texture that defines crunch", "Assuming crunch comes only from pedals, when amp breakup and speaker choice shape it too"],
+    "scenario_contexts": ["A rock rhythm guitar set to the edge of amp breakup gives a crunchy tone", "An overdrive pedal adds crunch to a clean amp for a driving part", "Light clipping on a drum bus is described as crunchy"]
+   },
+   "sources": ["Sound on Sound", "Ballou - Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e3d103de-fa47-4eb7-8bea-1d883aed5fe8",
+   "term": "cupped",
+   "fields": {
+    "definition": "A subjective descriptor for a hollow, honky midrange coloration resembling the sound of speaking through cupped hands, caused by a mid-frequency peak with reduced presence and openness; often heard when a vocalist cups a hand around a microphone's grille.",
+    "plain_english": "A cupped sound is hollow and honky, like talking with your hands cupped around your mouth. It has a boxy middle and loses its clear, open top end.",
+    "purpose_function": "It names a specific hollow, mid-boosted coloration so engineers can recognize its cause, often hand-cupping of a mic, and fix the tone or feedback it creates.",
+    "practical_application": "Hearing a cupped vocal, a technician asks the singer not to cup the mic grille, since cupping raises feedback risk and adds a boxy, honky coloration.",
+    "category": "Timbre descriptor",
+    "related_terms": ["boxy", "honky", "coloration", "nasal", "feedback", "hollow"],
+    "common_mistakes": ["Assuming a cupped tone is only an EQ issue when it is often caused by a hand cupped over the mic grille", "Confusing cupped with nasal; cupped is a hollow, boxy hand-cup coloration, while nasal is a pinched upper-mid honk", "UNSAFE: Cupping a handheld mic to boost low end greatly raises feedback risk and can trigger sudden loud howl-round through the PA"],
+    "scenario_contexts": ["A performer wraps a hand around the mic ball and the vocal turns cupped and honky", "A directional mic loses its rear rejection when cupped, so feedback rises on stage", "A boxy midrange peak on a recording is described as sounding cupped"]
+   },
+   "sources": ["Shure - microphone technique documentation", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

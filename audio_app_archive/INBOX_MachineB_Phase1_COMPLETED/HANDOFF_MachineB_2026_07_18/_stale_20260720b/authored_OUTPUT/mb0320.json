@@ -1,0 +1,266 @@
+{
+ "batch": 320,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "21199af6-b66d-49b5-aa6f-f1f77ca7689d",
+   "term": "Silky",
+   "fields": {
+    "definition": "A subjective timbre descriptor for a smooth, refined high-frequency character (roughly 5-20 kHz) that stays detailed yet free of harshness, grain, edge, or sibilance, giving the treble a soft, flowing quality.",
+    "plain_english": "\"Silky\" means the high notes sound smooth and easy on the ears, with no harsh or scratchy edge. It is like the difference between rough cloth and soft silk.",
+    "purpose_function": "It names a desirable treble quality so engineers can aim for detailed highs without listener fatigue. It exists to describe the goal of clear yet gentle high frequencies.",
+    "practical_application": "An engineer may call a vocal or cymbal \"silky\" after gentle high-shelf EQ, de-essing, or a smooth-sounding mic or preamp, and the word guides gear and EQ choices toward non-fatiguing highs.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["Smooth", "Sweet", "Bright", "Harsh", "Sibilant", "Air"],
+    "common_mistakes": [
+     "Assuming 'silky' just means more treble; boosting highs can add harshness, which is the opposite of silky.",
+     "Confusing 'silky' (smooth, refined highs) with 'dull' (highs rolled off and lacking detail).",
+     "Thinking any bright sound is silky, when brightness full of peaks and edge is not silky at all."
+    ],
+    "scenario_contexts": [
+     "Describing a lead vocal after gentle de-essing and a smooth high shelf.",
+     "Praising the top end of a well-designed condenser or ribbon mic.",
+     "Choosing a converter or preamp said to have 'silky' highs for strings or acoustic guitar."
+    ]
+   },
+   "sources": [
+    "iZotope Learn - A Glossary of Common and Confusing Mixing Terms",
+    "ProSoundWeb - Glossary of Commonly Used Sound/Audio Terms",
+    "Bobby Owsinski, The Mixing Engineer's Handbook (glossary of descriptive terms)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8b07767f-77e7-4280-a4ea-d485fde1ea09",
+   "term": "Sits on top",
+   "fields": {
+    "definition": "A mixing descriptor meaning a sound sits clearly at or near the front and upper layer of a mix, audible above the surrounding elements rather than buried within or beneath them.",
+    "plain_english": "If a sound \"sits on top,\" you can hear it clearly above everything else in the song. It floats on the surface instead of hiding underneath.",
+    "purpose_function": "It describes good foreground placement in the mix balance so a key part, often the lead vocal, stays present and easy to follow. It exists to talk about where an element lives in the mix's level and front-to-back hierarchy.",
+    "practical_application": "An engineer raises a fader, adds presence-range EQ, or uses light compression so a vocal sits on top of the band without being buried or too loud.",
+    "category": "Mix Placement",
+    "related_terms": ["Presence", "Upfront", "Buried", "Balance", "Punchy", "Cut through"],
+    "common_mistakes": [
+     "Just cranking the fader to make something sit on top, which throws off the overall balance instead of using EQ and compression.",
+     "Confusing 'sits on top' (correct foreground balance) with simply being too loud.",
+     "Forgetting that carving space in competing tracks can help an element sit on top better than boosting it."
+    ],
+    "scenario_contexts": [
+     "Getting a lead vocal to sit on top of a dense rock arrangement.",
+     "Placing a lead synth so it sits on top of pads and rhythm parts.",
+     "Balancing a snare so its crack sits on top of the drum bus."
+    ]
+   },
+   "sources": [
+    "iZotope Learn - A Glossary of Common and Confusing Mixing Terms",
+    "Bobby Owsinski, The Mixing Engineer's Handbook (mix balance and placement)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "75eb023a-728d-4057-817c-1e6b9dacf3b2",
+   "term": "slammy",
+   "fields": {
+    "definition": "A subjective descriptor for sound with strong, aggressive dynamic impact, a powerful wall-of-sound punch, usually from drums or a heavily compressed mix, that hits the listener with force.",
+    "plain_english": "\"Slammy\" means the sound hits hard and feels powerful, like a punch you can feel in your chest. It often comes from heavy compression on drums.",
+    "purpose_function": "It names the sensation of forceful impact and loudness-driven energy, helping engineers describe an aggressive, high-impact target sound. It exists to capture the wallop a mix or drum sound delivers.",
+    "practical_application": "An engineer uses heavy bus or parallel compression plus level to make drums slammy for rock, hip-hop, or EDM, trading some dynamic range for perceived power.",
+    "category": "Dynamics Descriptor",
+    "related_terms": ["Punchy", "Slam", "Compression", "Tight", "Aggressive", "Parallel compression"],
+    "common_mistakes": [
+     "UNSAFE: Chasing a 'slammy' sound by pushing monitors to very high SPL for long stretches risks hearing damage; keep to safe listening levels and take breaks.",
+     "Over-compressing for slam until the mix becomes flat, lifeless, and fatiguing.",
+     "Confusing 'slammy' (aggressive impact) with simply loud; slam is about impact, not just level."
+    ],
+    "scenario_contexts": [
+     "Making a rock drum bus slammy with parallel compression.",
+     "Getting a hip-hop beat to hit slammy on club systems.",
+     "Describing an aggressively compressed master that slams."
+    ]
+   },
+   "sources": [
+    "iZotope Learn - A Glossary of Common and Confusing Mixing Terms (punch/impact)",
+    "Bobby Owsinski, The Mixing Engineer's Handbook (glossary of descriptive terms)",
+    "Sound on Sound - Drum Compression (impact and slam via compression)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "999bdba8-456b-425b-a3d2-c9940c41cab1",
+   "term": "sloppy",
+   "fields": {
+    "definition": "A subjective descriptor for a loose, imprecise sound that lacks tightness, showing smeared or ill-defined transients, poor timing, or an uncontrolled, boomy low end; it is the opposite of \"tight.\"",
+    "plain_english": "\"Sloppy\" means the sound is loose and messy, not clean and controlled. Notes or beats feel smeared together or slightly out of time.",
+    "purpose_function": "It flags a lack of rhythmic and transient control so the problem can be fixed. It works as the negative counterpart to \"tight,\" pointing to timing or low end that needs cleaning up.",
+    "practical_application": "On the job a sloppy low end is tightened with EQ, gating, or shorter reverb, while sloppy timing may be fixed by editing, quantizing, or re-tracking.",
+    "category": "Timing Descriptor",
+    "related_terms": ["Tight", "Smeared", "Boomy", "Muddy", "Transient", "Loose"],
+    "common_mistakes": [
+     "Blaming EQ for a sloppy low end when the real cause is loose playing or timing that editing must fix.",
+     "Confusing 'sloppy' (loose and uncontrolled) with 'warm' (full but still defined low end).",
+     "Over-gating to fix sloppiness and cutting off the natural sustain of notes."
+    ],
+    "scenario_contexts": [
+     "A bass part that sounds sloppy because notes ring into each other.",
+     "A live kick that is sloppy and boomy in a resonant room.",
+     "Describing a rhythm section that plays slightly loose or sloppy."
+    ]
+   },
+   "sources": [
+    "ProSoundWeb - Glossary of Commonly Used Sound/Audio Terms (tight/smeared)",
+    "iZotope Learn - A Glossary of Common and Confusing Mixing Terms",
+    "Bobby Owsinski, The Mixing Engineer's Handbook (glossary of descriptive terms)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d4893a8b-c25f-4dad-90e4-de7e3220fbc0",
+   "term": "Smear",
+   "fields": {
+    "definition": "The blurring or loss of detail and transient definition in a sound, in which distinct events or stereo images run together in time or space; it is commonly caused by phase problems, resonance, excess reverb, or time-domain processing artifacts.",
+    "plain_english": "\"Smear\" is when sounds blur together and lose their sharp edges, like a photo that is slightly out of focus. Fine detail and clear timing get lost.",
+    "purpose_function": "It names a loss of clarity so its cause can be found and reduced. It exists to describe blurred transients or imaging that make a mix less clear and detailed.",
+    "practical_application": "A technician traces smear to phase misalignment, room resonance, heavy reverb, or linear-phase EQ pre-ringing, then corrects timing, damping, or processing to restore focus.",
+    "category": "Transient Descriptor",
+    "related_terms": ["Smeary", "Smooth", "Tight", "Transient", "Phase", "Definition"],
+    "common_mistakes": [
+     "Adding lots of reverb without noticing that it smears transients and blurs the mix.",
+     "Assuming all EQ is neutral, when linear-phase EQ can smear transients through pre-ringing.",
+     "Confusing time smear (blurred transients) with a simple loss of high frequencies."
+    ],
+    "scenario_contexts": [
+     "Transients smearing after heavy linear-phase EQ or convolution reverb.",
+     "Stereo image smear from a phase problem between two mics.",
+     "Low-end smear caused by room resonance blurring bass notes together."
+    ]
+   },
+   "sources": [
+    "ProSoundWeb - Glossary of Commonly Used Sound/Audio Terms (smeared)",
+    "iZotope Learn - A Glossary of Common and Confusing Mixing Terms (smearing)",
+    "Glen Ballou, Handbook for Sound Engineers (transient response and time-domain behavior)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a9ae33b3-6628-40a3-919d-ae6e4ebde27d",
+   "term": "smeary",
+   "fields": {
+    "definition": "A subjective descriptor for sound that exhibits smear, with blurred, poorly defined transients or imaging, so detail and clarity are lost and events run together instead of sounding distinct.",
+    "plain_english": "\"Smeary\" describes a blurry sound where details run together and nothing is sharp. It is the fuzzy look of a smudged window, but for your ears.",
+    "purpose_function": "It describes the audible result of smearing so engineers can flag and reduce it. It exists to label a lack of transient and spatial focus.",
+    "practical_application": "When a mix sounds smeary, a technician reduces reverb, fixes phase, or avoids pre-ringing EQ to sharpen transients and tighten imaging.",
+    "category": "Transient Descriptor",
+    "related_terms": ["Smear", "Tight", "Smooth", "Muddy", "Transient", "Focus"],
+    "common_mistakes": [
+     "Treating a smeary mix with more EQ when the real fix is less reverb or better phase alignment.",
+     "Confusing 'smeary' (blurred detail, a fault) with 'smooth' (pleasantly non-harsh, a good thing).",
+     "Not checking in mono, which can reveal phase-related smear that is hidden in stereo."
+    ],
+    "scenario_contexts": [
+     "A vocal that turns smeary under too much plate reverb.",
+     "A drum bus sounding smeary after aggressive time-domain processing.",
+     "Bass and kick sounding smeary together because their transients overlap."
+    ]
+   },
+   "sources": [
+    "ProSoundWeb - Glossary of Commonly Used Sound/Audio Terms (smeared)",
+    "iZotope Learn - A Glossary of Common and Confusing Mixing Terms (smearing)",
+    "Glen Ballou, Handbook for Sound Engineers (transient response and time-domain behavior)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "267026cb-d0e2-479e-a9d9-53dbbee05ad2",
+   "term": "Smooth",
+   "fields": {
+    "definition": "A subjective descriptor for sound that is easy on the ears and free of harshness, with a flat, even frequency response lacking sharp peaks or dips and with low distortion, especially through the midrange and highs.",
+    "plain_english": "\"Smooth\" sound has no harsh or jagged edges. It is easy to listen to for a long time, like a flat, even road with no bumps.",
+    "purpose_function": "It describes an even, non-fatiguing tonal balance that engineers often aim for. It exists to capture the goal of clean response without harsh peaks.",
+    "practical_application": "An engineer smooths a track by taming resonant peaks with EQ, lowering distortion, and choosing gear with even response, making it pleasant over long listening.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["Silky", "Sweet", "Harsh", "Bright", "Warm", "Flat"],
+    "common_mistakes": [
+     "Thinking smooth means dull; smooth keeps detail while removing harshness, but dull loses the highs.",
+     "Over-smoothing until the mix loses life, presence, and definition.",
+     "Confusing a smooth, even response with a scooped one that has real dips in it."
+    ],
+    "scenario_contexts": [
+     "Taming a harsh peak near 3 kHz to make a vocal smooth.",
+     "Choosing a smooth-sounding EQ or preamp for strings.",
+     "Describing a well-balanced master that plays smoothly on many systems."
+    ]
+   },
+   "sources": [
+    "ProSoundWeb - Glossary of Commonly Used Sound/Audio Terms (smooth)",
+    "iZotope Learn - A Glossary of Common and Confusing Mixing Terms (smoothness)",
+    "Bobby Owsinski, The Mixing Engineer's Handbook (glossary of descriptive terms)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "add482a0-f4e5-42c9-8a17-ba02d6af25a2",
+   "term": "snappy",
+   "fields": {
+    "definition": "A subjective descriptor for sound with fast, well-defined transient attack, a quick and crisp initial snap, typically on drums (especially the snare) or plucked and percussive sounds, giving a tight, articulate leading edge.",
+    "plain_english": "\"Snappy\" means the start of each hit is quick and sharp, like the snap of your fingers. You clearly hear the crack at the front of the sound.",
+    "purpose_function": "It highlights a strong, fast transient so engineers can dial in punch and articulation. It exists to describe a crisp attack that helps a sound cut through and feel tight.",
+    "practical_application": "An engineer makes a snare snappy with transient shaping, attack-preserving compression, or a small boost around 2-5 kHz, keeping the initial crack intact.",
+    "category": "Transient Descriptor",
+    "related_terms": ["Punchy", "Tight", "Transient", "Attack", "Crisp", "Smeared"],
+    "common_mistakes": [
+     "Using a fast compressor attack that clamps the transient and kills the snap.",
+     "Confusing 'snappy' (a fast transient) with 'bright' (extra high-frequency content); they are not the same.",
+     "Boosting highs to fake snap instead of preserving the real transient."
+    ],
+    "scenario_contexts": [
+     "Shaping a snare to be snappy with a transient designer.",
+     "Getting a funk bass to sound snappy and articulate.",
+     "Keeping drum overheads snappy by using a slow compressor attack."
+    ]
+   },
+   "sources": [
+    "iZotope Learn - A Glossary of Common and Confusing Mixing Terms (transient/punch)",
+    "ProSoundWeb - Glossary of Commonly Used Sound/Audio Terms (tight, transient response)",
+    "Bobby Owsinski, The Mixing Engineer's Handbook (glossary of descriptive terms)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "49dbea99-c131-4da9-8769-07d58b433e24",
+   "term": "spanky",
+   "fields": {
+    "definition": "A subjective descriptor for a bright, percussive, aggressive transient character, a sharp upper-midrange snap or slap, most often applied to funk or clean electric guitar, snare, or slap bass, combining a crisp attack with cutting brightness.",
+    "plain_english": "\"Spanky\" means a sharp, bright, slapping attack, like the crack of a funk guitar chord. The sound has a quick, cutting snap to it.",
+    "purpose_function": "It describes a lively, cutting mix of transient and brightness that helps percussive parts pop in a mix. It exists to name the spank of aggressive, bright attacks.",
+    "practical_application": "An engineer gets a clean funk guitar or slap bass spanky with upper-mid and high EQ plus attack-preserving dynamics so it cuts through the groove.",
+    "category": "Transient Descriptor",
+    "related_terms": ["Snappy", "Punchy", "Bright", "Attack", "Crisp", "Transient"],
+    "common_mistakes": [
+     "Adding too much high EQ for spank until the part becomes harsh and thin.",
+     "Confusing 'spanky' (a bright percussive attack) with 'warm' (full, rounded low-mids).",
+     "Over-compressing and removing the very attack that makes a part spanky."
+    ],
+    "scenario_contexts": [
+     "Dialing a clean funk guitar to be spanky in the mix.",
+     "Getting slap bass to sound spanky and cut through.",
+     "Describing a bright, aggressive snare as spanky."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook (glossary of descriptive terms)",
+    "iZotope Learn - A Glossary of Common and Confusing Mixing Terms (transient/brightness)",
+    "ProSoundWeb - Glossary of Commonly Used Sound/Audio Terms (attack and brightness family)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

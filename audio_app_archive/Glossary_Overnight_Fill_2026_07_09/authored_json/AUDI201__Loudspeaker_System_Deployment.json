@@ -1,0 +1,357 @@
+{
+ "course": "AUDI201",
+ "topic": "Loudspeaker System Deployment",
+ "safety_critical": true,
+ "authored": [
+  {
+   "id": "58961882-5c54-404d-b8e8-0b60d54ceb09",
+   "term": "Array Bumper",
+   "fields": {
+    "plain_english": "The load-rated metal frame that hangs at the very top of a flown speaker stack; the cabinets bolt onto it and it is the part the hoist actually lifts.",
+    "purpose_function": "Provides a single rated structural interface between the loudspeaker cabinets and the hoist/rigging points, letting a whole array hang from one or two pick points while its pick-point selection sets the array's overall trim angle.",
+    "practical_application": "A tech attaches the bumper (fly bar/grid) to the top cabinet, connects the chain hoist to a rated pick-point hole, and chooses that hole to dial in the array's up/down aiming angle before lifting.",
+    "category": "Rigging Hardware",
+    "related_terms": [
+     "Chain Hoist",
+     "Shackle",
+     "Splay Angle",
+     "Inclinometer",
+     "Round Sling",
+     "Bridle"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Flying more cabinets or a longer array than the bumper's manufacturer-rated capacity and approved configuration allow.",
+     "UNSAFE: Rigging from a hole or point not designated as load-rated, or mixing bumpers and cabinets from different series/manufacturers.",
+     "Forgetting that changing the pick point changes the array's overall aiming angle, not just its front/back balance.",
+     "Skipping the manufacturer's safety pins/capture hardware between the bumper and the top cabinet."
+    ],
+    "scenario_contexts": [
+     "Flying a line array from a single motor at an arena, suspended from the bumper's pick points.",
+     "Setting front array angle by selecting the correct pick-point hole on the bumper before the lift.",
+     "Ground-stacking where the bumper serves as the top frame and handling point of the stacked array."
+    ]
+   },
+   "sources": [
+    "ANSI/ESTA E1.6 series (Entertainment Technology - Powered Hoist / Rigging)",
+    "Adaptive Technologies Group loudspeaker rigging documentation",
+    "Polar Focus line array rigging documentation",
+    "ProSoundWeb - Center of Gravity in Line Array Design & Deployment"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5de777e2-1b77-4077-996c-2b34c5849bd1",
+   "term": "Bridle",
+   "fields": {
+    "plain_english": "A two-legged sling arrangement that creates a hang point out in the open space between two beams instead of directly under one.",
+    "purpose_function": "Positions a load's pick point where no structural steel exists directly overhead by splitting the load between two beams, so a motor or array can hang exactly where the design requires.",
+    "practical_application": "A rigger calculates the two leg lengths and the resulting leg tensions with trigonometry, connects each leg to a rated beam point, and joins them at an apex shackle that carries the hoist.",
+    "category": "Rigging Hardware",
+    "related_terms": [
+     "Shackle",
+     "Round Sling",
+     "Chain Hoist",
+     "Array Bumper"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Letting the included angle at the apex grow toward or past 90-120 degrees, which multiplies each leg's tension far above the shared load and can overload slings and truss chords.",
+     "UNSAFE: Guessing leg lengths and tensions instead of calculating them, or exceeding a beam point's or sling's WLL because sling-angle load multipliers were ignored.",
+     "Forgetting that a wider apex angle raises the tension in each leg for the same suspended load.",
+     "UNSAFE: Attaching bridle legs to non-structural or unverified points."
+    ],
+    "scenario_contexts": [
+     "Hanging a line array motor between two roof beams where no steel sits directly above the desired array position.",
+     "Bridling across two grid beams in a theatre to land a pick point over an offstage location.",
+     "Adjusting bridle leg lengths to move an apex point horizontally without relocating the beams."
+    ]
+   },
+   "sources": [
+    "ASME B30.9 - Slings (sling angle / load factor)",
+    "OSHA 29 CFR 1926.251 (rigging equipment for material handling)",
+    "ESTA/PLASA entertainment rigging practice (bridle apex angle limits)",
+    "Entertainment rigging reference (bridle leg tension and trigonometry)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d8913652-af40-4dec-ae41-6d730a48cafe",
+   "term": "Chain Hoist",
+   "fields": {
+    "plain_english": "An electric motor that hauls a chain to lift and then hold heavy loads like speaker arrays and trusses up in the air.",
+    "purpose_function": "Provides controlled powered lifting and static holding of overhead loads so arrays and trusses can be raised to trim height and held there for the duration of an event.",
+    "practical_application": "A tech rigs the hoist to a rated overhead point, connects the load's rigging to the hoist hook, and raises the array to trim, choosing a duty class (e.g., D8, D8+, C1) appropriate to whether people will be beneath the load.",
+    "category": "Rigging Hardware",
+    "related_terms": [
+     "Array Bumper",
+     "Shackle",
+     "Round Sling",
+     "Bridle"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Holding a load over people with a standard D8 hoist and no independent secondary safety; only D8+ (static hold over people) or C1 (moving over people) rated systems are built for loads above personnel.",
+     "UNSAFE: Exceeding the hoist's rated capacity, or side-/angle-loading the chain instead of a straight vertical pull.",
+     "UNSAFE: Treating the hoist as a structural member without verifying the attachment point and full load path are rated.",
+     "Neglecting pre-use inspection of the load chain, hook latch, and limit switches."
+    ],
+    "scenario_contexts": [
+     "Flying a line array to trim height in an arena.",
+     "Raising a PA or lighting truss with several synchronized motors.",
+     "Statically holding an array over an audience using a D8+ rated motor with the correct duty class."
+    ]
+   },
+   "sources": [
+    "ANSI/ESTA E1.6-2 - Design, Inspection, and Maintenance of Electric Chain Hoists for the Entertainment Industry",
+    "ANSI E1.6-1 - Powered Hoist Systems (Sapsis Rigging archive)",
+    "Columbus McKinnon / CM entertainment hoist documentation and SQP2:2018",
+    "GIS AG entertainment electric chain hoist D8/D8+/C1 documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dbc16ee5-d302-4149-a8b7-387d62cc5865",
+   "term": "Front Fill",
+   "fields": {
+    "plain_english": "Small speakers spread along the front edge of the stage to cover the first few rows that the big main speakers are aimed over.",
+    "purpose_function": "Covers the near-stage seats the mains miss and restores sound localization to the stage/performer for the closest listeners.",
+    "practical_application": "A tech spaces low-profile cabinets along the stage lip and time-aligns (delays) them slightly late so the audience still localizes to the stage rather than to the fill boxes.",
+    "category": "Coverage & Fills",
+    "related_terms": [
+     "Side Fill",
+     "Splay Angle",
+     "Prediction Software"
+    ],
+    "common_mistakes": [
+     "Not delaying front fills to the mains/stage, so nearby listeners localize sound to the fill boxes instead of the performers.",
+     "Mounting fills so low that their vertical coverage dies after only a row or two.",
+     "Running fills too loud, drawing attention to the stage lip and unbalancing the mix for close seats.",
+     "Assuming the mains already cover the front rows when they are actually aimed over them."
+    ],
+    "scenario_contexts": [
+     "Covering the first two or three rows in a theatre where the flown mains begin their coverage several rows back.",
+     "Restoring stage/center localization for pit seats directly in front of the stage.",
+     "Adding low-profile lip fills so front-row patrons are not left in a coverage hole."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook (Davis & Jones)",
+    "ProSoundWeb - Filling The Gap: Approaches & Variables With Front Fills",
+    "Front of House Magazine - Using Front-Fill and Delay Speakers",
+    "McCarthy, Sound Systems: Design and Optimization"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9ed8281c-5209-4ecb-bc09-ee97aee877ec",
+   "term": "Inclinometer",
+   "fields": {
+    "plain_english": "A tool, often with a built-in laser, that measures an angle so you can check a flown array is hanging at exactly the tilt the design called for.",
+    "purpose_function": "Verifies the array frame's actual site/trim angle against the modeled prediction so the real-world hang matches the intended coverage.",
+    "practical_application": "After flying the array, a tech reads the inclinometer mounted on the bumper or top cabinet (and its laser aim point) and compares it to the target angle from the prediction software.",
+    "category": "Alignment Tools",
+    "related_terms": [
+     "Array Bumper",
+     "Splay Angle",
+     "Prediction Software",
+     "Chain Hoist"
+    ],
+    "common_mistakes": [
+     "Assuming the array is aimed correctly without measuring, so the real hang differs from the modeled angle.",
+     "Referencing the device to the wrong surface, giving a reading that does not represent the array's actual acoustic aim.",
+     "Not accounting for any offset between the frame/mounting angle and the true box aiming angle.",
+     "Ignoring where the laser aim point lands relative to the intended top-of-coverage target."
+    ],
+    "scenario_contexts": [
+     "Confirming a flown array's top-box angle matches the ArrayCalc/Soundvision model before doors.",
+     "Using the laser to check where the top of the array is pointed relative to the last row.",
+     "Documenting hang angles for a repeatable install or touring rig."
+    ]
+   },
+   "sources": [
+    "Wikipedia - Line array (inclinometer on top frame, laser aiming point)",
+    "TEQSAS LAP-TEQ PLUS inclinometer product documentation",
+    "L-Acoustics laser/inclinometer mount documentation (K1-LASERMOUNT)",
+    "ProSoundWeb - Field Testing The Alignarray Laser Inclinometer Platform"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c219d5fd-a101-45f7-8c22-78fd36d9b871",
+   "term": "Prediction Software",
+   "fields": {
+    "plain_english": "Manufacturer computer programs that simulate how loud and how evenly a speaker array will cover a venue before it is ever hung.",
+    "purpose_function": "Lets designers model array geometry, splay angles, and SPL coverage in a virtual venue so problems are solved on the computer rather than on site.",
+    "practical_application": "A system tech builds the venue and array in the software, sets element count and splay angles, checks the SPL/coverage maps, and exports the resulting angles and settings to program the physical rig.",
+    "category": "System Design Tools",
+    "related_terms": [
+     "Splay Angle",
+     "Inclinometer",
+     "Array Bumper",
+     "Front Fill"
+    ],
+    "common_mistakes": [
+     "Treating the prediction as exact reality and skipping on-site measurement, ignoring the room reflections and acoustics the model simplifies.",
+     "Entering wrong venue dimensions, rigging height, or audience-plane data, producing a confident but useless prediction.",
+     "Failing to transfer the software's calculated splay angles accurately to the physical array.",
+     "Using generic settings instead of the specific cabinet model and its directivity data."
+    ],
+    "scenario_contexts": [
+     "Modeling coverage and required box count for a festival mains hang before load-in.",
+     "Comparing SPL maps of different splay schemes to even out front-to-back level.",
+     "Exporting inter-cabinet angles from ArrayCalc/Soundvision to set the array on site."
+    ]
+   },
+   "sources": [
+    "L-Acoustics Soundvision product documentation",
+    "Meyer Sound MAPP 3D product documentation",
+    "d&b audiotechnik ArrayCalc documentation",
+    "ProSoundWeb - Array/Room Modeling & Sound System Optimization Tools"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a6d8cfa6-9a5b-472b-84ae-02dbd9e22b18",
+   "term": "Round Sling",
+   "fields": {
+    "plain_english": "A soft, continuous loop of synthetic fiber inside a protective cover, wrapped around a beam or truss to hang rigging from it.",
+    "purpose_function": "Provides a rated, flexible attachment that spreads load and grips structure, typically in a choker or basket hitch, to connect rigging hardware to beams and truss.",
+    "practical_application": "A rigger wraps the sling around a beam, chooses vertical, choker, or basket hitch (each with a different rated capacity), protects it from edges, and connects it to a shackle or hoist.",
+    "category": "Rigging Hardware",
+    "related_terms": [
+     "Shackle",
+     "Chain Hoist",
+     "Bridle",
+     "Array Bumper"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Continuing to use a sling with cuts, cover damage exposing core fibers, heat/chemical damage, or a missing/illegible capacity tag; it must be removed from service immediately.",
+     "UNSAFE: Running the sling over a sharp edge or corner without edge protection, which can cut it under load.",
+     "UNSAFE: Applying the vertical WLL to a choker hitch or otherwise ignoring the reduced capacity of the hitch and sling angle.",
+     "Exceeding the tag's working load limit or shock-loading the sling."
+    ],
+    "scenario_contexts": [
+     "Basketing a round sling over a roof beam to hang a chain hoist for a line array.",
+     "Choking a sling around a truss chord to attach a shackle and pick point.",
+     "Inspecting and tagging slings during pre-show rigging checks."
+    ]
+   },
+   "sources": [
+    "ASME B30.9 - Slings (synthetic roundslings, hitch ratings, edge protection, removal criteria)",
+    "OSHA 29 CFR 1926.251 (synthetic web/round sling use and inspection)",
+    "Mazzella - How to Inspect a Synthetic Roundsling to ASME B30.9",
+    "Holloway Houston - Round Sling Edge Protection & Capacity Ratings"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "90daecc8-1767-4ef3-9a5f-38b5c278a891",
+   "term": "Shackle",
+   "fields": {
+    "plain_english": "A U-shaped metal link closed by a removable pin; it is the basic connector that joins rigging pieces together.",
+    "purpose_function": "Provides a rated, removable connection point between slings, hoists, bumpers, and structure, forming the fundamental link in a rigging assembly.",
+    "practical_application": "A tech reads the WLL stamped on the bow, selects the right type (screw-pin or bolt/safety type), fully seats the pin, and connects the sling to the pick point, keeping the load in line with the bow.",
+    "category": "Rigging Hardware",
+    "related_terms": [
+     "Round Sling",
+     "Chain Hoist",
+     "Bridle",
+     "Array Bumper"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Side-loading a shackle (pulling at an angle across the bow/pin), which can cut capacity drastically - roughly 50% at 90 degrees - and bend the bow.",
+     "UNSAFE: Judging capacity by size instead of the WLL marking stamped on the body, or using an unmarked/unrated shackle.",
+     "UNSAFE: Using a screw-pin shackle where motion can back the pin out, without mousing it or using a bolt-type (safety) shackle.",
+     "Loading the shackle so the sling bears on the pin instead of the bow, or not fully seating the pin."
+    ],
+    "scenario_contexts": [
+     "Connecting a round sling to a chain hoist hook or to an array bumper pick point.",
+     "Building the apex connection of a bridle.",
+     "Joining rated rigging components in an overhead array assembly."
+    ]
+   },
+   "sources": [
+    "ASME B30.26 - Rigging Hardware (shackle marking, WLL, side-load reduction)",
+    "OSHA 29 CFR 1926.251 (shackles and rigging hardware)",
+    "Mazzella - ASME B30.26 Shackle Inspection & Best Practices",
+    "Holloway Houston - Understanding Shackle Capacity Charts and Load Angles"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b68ab7a4-2856-425e-a9f5-38e3a43afc74",
+   "term": "Side Fill",
+   "fields": {
+    "plain_english": "Larger monitor speakers placed at the sides of the stage that give the whole band a broad general mix on top of their individual floor wedges.",
+    "purpose_function": "Provides broad, full-range on-stage monitoring across the performance area so performers hear a balanced overall band mix, complementing individual wedge mixes.",
+    "practical_application": "A monitor tech places full-range stacks (often a top plus a sub) at stage left and right, feeds them a rough band mix, and balances their level against the wedges and overall stage volume.",
+    "category": "Stage Monitoring",
+    "related_terms": [
+     "Front Fill",
+     "Splay Angle",
+     "Prediction Software"
+    ],
+    "common_mistakes": [
+     "Turning side fills up so loud they raise overall stage volume, invite feedback, and make FOH harder to mix.",
+     "UNSAFE: Exposing performers to excessive on-stage SPL from side fills without hearing-conservation awareness.",
+     "Confusing side fills (a broad band mix for everyone) with individual wedges (personal per-performer mixes).",
+     "Placing side fills where they spill straight into vocal mics or wash into the audience."
+    ],
+    "scenario_contexts": [
+     "Giving a five-piece band an enveloping overall mix alongside individual wedges.",
+     "Filling stage sound for performers who move away from their own wedge.",
+     "A festival stage using side-fill stacks as a common reference mix across changing acts."
+    ]
+   },
+   "sources": [
+    "Sound on Sound - Stage Monitoring & Monitor Mixing",
+    "Wikipedia - Stage monitor system",
+    "Sweetwater InSync - Sidefill",
+    "ProSoundWeb - Stage Monitoring 101"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "18b275cc-f2f3-4d8e-a8a5-bc56c82dd842",
+   "term": "Splay Angle",
+   "fields": {
+    "plain_english": "The angle between two neighbouring boxes in a line array; usually tight at the top for far throw and progressively wider toward the bottom for near coverage.",
+    "purpose_function": "Shapes the array's vertical coverage by controlling how much adjacent cabinets overlap or spread, trading long-throw focus against near-field spread.",
+    "practical_application": "A tech sets each inter-cabinet angle (often only a few degrees, tighter up top and progressively wider down the array) per the prediction software to cover front to back evenly.",
+    "category": "Array Configuration",
+    "related_terms": [
+     "Prediction Software",
+     "Inclinometer",
+     "Array Bumper",
+     "Front Fill"
+    ],
+    "common_mistakes": [
+     "Using splay angles too wide near the top (e.g., beyond roughly 4-5 degrees), causing low-frequency phase/comb issues and lost long-throw energy.",
+     "Applying a uniform splay when a progressive scheme (tight top to wide bottom) is needed for even coverage.",
+     "Ignoring the prediction software's calculated angles and eyeballing the array instead.",
+     "Confusing splay (angle between cabinets) with the overall array/site angle set at the bumper."
+    ],
+    "scenario_contexts": [
+     "Setting progressive splay angles down a flown array to cover a raked seating bowl evenly.",
+     "Tightening top-box splay to reach the back of a deep arena.",
+     "Adjusting splay in prediction software to smooth front-to-back SPL before load-in."
+    ]
+   },
+   "sources": [
+    "McCarthy, Sound Systems: Design and Optimization (line array splay and coverage)",
+    "ProSoundWeb - Real World Gear: Medium-Format Line Arrays",
+    "L-Acoustics / d&b line array configuration and prediction documentation",
+    "audiomeasurements.com - To Splay Or Not To Splay"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

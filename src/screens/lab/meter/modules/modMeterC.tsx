@@ -15,7 +15,7 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
-import { LabChip } from '../../LabShell';
+import { LabChip, CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
 import {
@@ -147,7 +147,6 @@ export function PhaseModule(p: MeterModuleProps) {
         ) : (
           <VizUnavailableCard />
         )}
-        <Badge text="SYNTHESIZED TEACHING SIGNAL — DETERMINISTIC STEREO PAIR, SAME PICTURE EVERY VISIT" />
         <DisplayGuideButton onPress={() => p.help('phase_meter')} />
         <DragSlider
           value={widthV}
@@ -177,15 +176,14 @@ export function PhaseModule(p: MeterModuleProps) {
         <Text style={[styles.verdict, { color: zoneColor }]}>{monoVerdict(corr, foldDb)}</Text>
       </PanelCard>
 
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>THE DOT CLOUD (GONIOMETER)</Text>
+      <CollapsibleSection title="THE DOT CLOUD (GONIOMETER)">
         <Text style={dstyles.body}>
           The picture attached to the number: every instant of the stereo signal lands as one dot. A
           vertical line is mono, a fat ball is wide, and a HORIZONTAL line is pure anti-phase — the
           shape the correlation meter summarizes as −1. A lean to one side means channel imbalance.
         </Text>
         <DisplayGuideButton onPress={() => p.help('goniometer')} />
-      </PanelCard>
+      </CollapsibleSection>
 
       <MythReality
         myth="Out-of-phase tricks just make a mix sound wider — the width is free."
@@ -289,7 +287,6 @@ export function StereoModule(p: MeterModuleProps) {
         ) : (
           <VizUnavailableCard />
         )}
-        <Badge text="SYNTHESIZED TEACHING SIGNAL — NAMED WIDTH PRESETS, NOT A LIVE MEASUREMENT" />
         <DisplayGuideButton onPress={() => p.help('stereo_width')} />
         <View style={dstyles.chipRow}>
           {STEREO_PRESETS.map((s) => (
@@ -313,19 +310,29 @@ export function StereoModule(p: MeterModuleProps) {
         />
       </PanelCard>
 
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>MID = SHARED · SIDE = DIFFERENCE</Text>
+      <CollapsibleSection title="MID = SHARED · SIDE = DIFFERENCE">
         <Text style={dstyles.body}>
-          Mid is everything left and right agree on (L + R) — the vocal, the bass, the kick living at
-          center. Side is everything they disagree about (L − R) — the room, the doubles, the spread
-          pads. Width is not an effect: it is simply the RATIO of Side to Mid.
+          A stereo signal is two channels: LEFT and RIGHT. MID and SIDE are just a different way to
+          look at those same two channels:
         </Text>
         <Text style={dstyles.body}>
-          That is why these presets are POSITIONS of energy, not qualities. Turning Side up past Mid
-          buys size and costs focus; a mono fold throws the Side away entirely and keeps only the
-          Mid — which is why the mono check and this display belong together.
+          • MID = L + R — everything the two channels have IN COMMON. Anything panned dead center —
+          lead vocal, bass, kick, snare — is fully in the Mid. If you collapse to mono, the Mid is
+          all that is left.
         </Text>
-      </PanelCard>
+        <Text style={dstyles.body}>
+          • SIDE = L − R — everything the two channels DISAGREE about. A sound only appears in the
+          Side to the extent it differs between left and right: hard-panned guitars, stereo room
+          and reverb, widening effects, doubled parts. A perfectly centered sound has ZERO Side; a
+          sound only in one speaker is half Mid, half Side.
+        </Text>
+        <Text style={dstyles.body}>
+          WIDTH is not a separate effect — it is simply how loud Side is compared to Mid. Turn Side
+          UP and the image spreads (more size, less focus); turn it DOWN toward zero and everything
+          pulls back to the center (mono). That is why a mono fold-down — which throws the Side away
+          and keeps only the Mid — reveals exactly what was hiding in the difference signal.
+        </Text>
+      </CollapsibleSection>
 
       <MythReality
         myth="Wider is always better — push every element to the sides."
@@ -433,7 +440,6 @@ export function ScopeModule(p: MeterModuleProps) {
         ) : (
           <VizUnavailableCard />
         )}
-        <Badge text="SYNTHESIZED TEACHING SIGNAL — DETERMINISTIC SHAPES, SAME TRACE EVERY VISIT" />
         <DisplayGuideButton onPress={() => p.help(xy ? 'lissajous' : 'oscilloscope')} />
         <View style={dstyles.chipRow}>
           <LabChip
@@ -489,15 +495,14 @@ export function ScopeModule(p: MeterModuleProps) {
         </Text>
       </PanelCard>
 
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>THE RAWEST VIEW</Text>
+      <CollapsibleSection title="THE RAWEST VIEW">
         <Text style={dstyles.body}>
           The oscilloscope draws the voltage itself against time — no averaging, no ballistics, no
           weighting. Sine = one smooth curve, square = shelves with fast edges, saw = ramps, speech =
           bursts with gaps. It answers one question no other meter answers as directly: what is the
           signal actually DOING right now?
         </Text>
-      </PanelCard>
+      </CollapsibleSection>
 
       <MythReality
         myth="If no meter shows red, nothing is clipping anywhere in the chain."
@@ -930,15 +935,14 @@ export function DetectiveModule(p: MeterModuleProps) {
 
   return (
     <View style={{ gap: 12 }}>
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>THE GRADUATION EXERCISE</Text>
+      <CollapsibleSection title="THE GRADUATION EXERCISE">
         <Text style={dstyles.body}>
           An unlabeled display, configured with a real-world fault. Work each case in order: name the
           meter, read what it shows, spot the problem, prescribe the fix. Everything you learned in
           modules 1–10 is in this deck.
         </Text>
         <DisplayGuideButton onPress={() => p.help('detective')} />
-      </PanelCard>
+      </CollapsibleSection>
 
       <PanelCard>
         <Text style={styles.caseCounter}>
@@ -949,7 +953,6 @@ export function DetectiveModule(p: MeterModuleProps) {
         ) : (
           <VizUnavailableCard />
         )}
-        <Badge text="SYNTHESIZED TEACHING SIGNAL — DISPLAY DELIBERATELY UNLABELED" />
         <View style={dstyles.chipRow}>
           <LabChip
             label="‹ PREV"
@@ -972,13 +975,13 @@ export function DetectiveModule(p: MeterModuleProps) {
       <CheckQuestion key={`${idx}-problem`} spec={kase.problem} />
       <CheckQuestion key={`${idx}-fix`} spec={kase.fix} />
 
-      <PanelCard>
+      <CollapsibleSection title="WHY IT WORKS">
         <Text style={dstyles.caption}>
           Wrong guesses teach as much as right ones — every reveal explains WHY the answer is what it
           is. Cycle the deck until naming the meter, reading the story, spotting the fault and
           prescribing the fix is automatic. That reflex is the whole lab.
         </Text>
-      </PanelCard>
+      </CollapsibleSection>
     </View>
   );
 }

@@ -1,0 +1,42 @@
+{
+ "batch": 262,
+ "topic": "Re-Recording & Final Mix",
+ "authored": [
+  {
+   "id": "92e09153-e833-4598-883e-3fc0c3619d5b",
+   "term": "Re-recording stage",
+   "fields": {
+    "definition": "A re-recording stage is a large, acoustically calibrated mixing theater used in film and television post-production, where re-recording mixers combine the edited dialogue, music, and sound-effects stems into the final soundtrack. It is tuned to a standardized monitoring reference so the finished mix translates predictably to the target venue such as a cinema.",
+    "plain_english": "A re-recording stage is a room built like a small movie theater. It is where the final movie sound gets mixed. Engineers blend the talking, the music, and the sound effects into one soundtrack there. The room is set up so the mix will sound right in a real cinema.",
+    "purpose_function": "It provides a calibrated, venue-representative listening space so the final blend of dialogue, music, and effects can be judged accurately. This lets the mix translate reliably to cinemas or broadcast playback instead of sounding correct only in one room.",
+    "practical_application": "A re-recording mixer works at the console on the stage, riding levels and balancing the premixed stems while the picture plays, to deliver the approved final mix. The same room is used to produce the separate stem and print-master deliverables the distributor requires.",
+    "category": "Post-Production",
+    "related_terms": [
+     "Final mix",
+     "Stems",
+     "Re-recording mixer",
+     "Dialogue premix",
+     "Foley",
+     "Dubbing"
+    ],
+    "common_mistakes": [
+     "Thinking 're-recording' means performing or recording material again; it actually means combining and mixing already-recorded elements.",
+     "Confusing the re-recording stage with a tracking studio; it is a calibrated mixing theater, not a room for recording live performances.",
+     "Assuming any control room qualifies, when a true re-recording stage is calibrated to a monitoring standard and sized to represent the final playback venue."
+    ],
+    "scenario_contexts": [
+     "Mixing a feature film by combining the dialogue, music, and effects stems into the final soundtrack on the dubbing stage.",
+     "Balancing a television episode to its target loudness in a calibrated re-recording theater before delivery.",
+     "Checking how the mix translates from the large-room stage monitors to smaller playback before signing off on the final master."
+    ]
+   },
+   "sources": [
+    "Tomlinson Holman, Sound for Film and Television",
+    "Ballou, Handbook for Sound Engineers (post-production/film sound chapters)",
+    "SMPTE ST 202 (dubbing/review room monitoring reference)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

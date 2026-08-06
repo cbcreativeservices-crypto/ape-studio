@@ -1,0 +1,320 @@
+{
+ "batch": 207,
+ "topic": "Broadcast Loudness & Compliance",
+ "authored": [
+  {
+   "id": "2a121fa4-2027-4688-817d-629fe76ae192",
+   "term": "Momentary loudness measurement",
+   "fields": {
+    "definition": "A real-time loudness reading averaged over a 400 ms sliding window, expressed in LUFS and computed with the K-weighting of ITU-R BS.1770, and left ungated in momentary mode per EBU Tech 3341. It reflects the loudness of program audio over the most recent fraction of a second.",
+    "plain_english": "This is a loudness reading taken over the last fraction of a second. It shows how loud the sound is right now, almost live. Think of it like a speedometer that reacts the instant the audio gets louder or softer.",
+    "purpose_function": "It gives operators an instant sense of loudness so they can catch sudden loud moments while mixing, complementing the slower short-term and whole-program readings.",
+    "practical_application": "A broadcast engineer watches the momentary meter to spot quick loudness spikes during live mixing and to trim faders or gain before they reach air.",
+    "category": "Loudness Measurement",
+    "related_terms": [
+     "Short-term loudness measurement",
+     "Program loudness measurement",
+     "LUFS",
+     "True peak",
+     "EBU R128"
+    ],
+    "common_mistakes": [
+     "Treating the momentary reading as the value used for compliance, when compliance is judged on integrated program loudness.",
+     "Confusing the 400 ms momentary window with the 3-second short-term window.",
+     "Chasing every momentary spike with gain changes, which over-processes the audio."
+    ],
+    "scenario_contexts": [
+     "Riding levels during a live sports broadcast to catch sudden crowd surges.",
+     "Checking a voice-over for instant loud peaks before it airs.",
+     "Monitoring a live music feed where dynamics change quickly."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak audio level)",
+    "EBU Tech 3341 (Loudness Metering: EBU Mode)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "affb635c-40f5-4378-b9d4-915dd96c2f92",
+   "term": "On-air processor",
+   "fields": {
+    "definition": "A dedicated audio processor placed in the broadcast signal chain ahead of the transmitter or encoder that applies gain control, multiband compression, equalization, limiting and true-peak control to condition program audio for consistent loudness and to keep peaks within transmission limits. Established examples include the Orban Optimod and Telos/Omnia processor families.",
+    "plain_english": "This is a box that automatically shapes a station's sound just before it goes out. It keeps the loudness even and stops the signal from getting too strong for the transmitter. It works like an automatic sound engineer that never takes a break.",
+    "purpose_function": "It exists to deliver a consistent, controlled on-air sound and to keep peak levels within the limits the transmitter and regulations allow.",
+    "practical_application": "Engineers load a preset into the on-air processor and tune its compression and limiting so the station sounds even across quiet and loud content without breaking peak or loudness rules.",
+    "category": "Broadcast Processing",
+    "related_terms": [
+     "Program optimization processor",
+     "Transmission peak control",
+     "Processing preset recall",
+     "Regulatory loudness compliance",
+     "Multiband compression"
+    ],
+    "common_mistakes": [
+     "Over-driving the processor for loudness, which crushes dynamics and can push measured loudness above legal targets.",
+     "Assuming the processor alone guarantees compliance without checking integrated program loudness.",
+     "Confusing the processor's peak limiting with loudness normalization; they solve different problems."
+    ],
+    "scenario_contexts": [
+     "Setting up the sound signature for a new FM station.",
+     "Adjusting a TV station's processor to meet loudness rules.",
+     "Switching processor presets between talk and music dayparts."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Orban Optimod technical documentation",
+    "Telos Alliance / Omnia processor technical documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "27a7a506-9868-4515-897c-1ceb5ef6fb16",
+   "term": "Processing preset recall",
+   "fields": {
+    "definition": "The act of loading a stored set of audio-processor parameters — compression, EQ, limiting and loudness settings — into an on-air or program processor so a known configuration is restored at once. Presets let a station switch its processing for different formats, dayparts or program types.",
+    "plain_english": "This means loading a saved group of settings into a sound processor. Instead of dialing everything in by hand, you pick a saved setup and it loads all at once. It is like choosing a saved profile on a game console.",
+    "purpose_function": "It exists so operators can switch between tested processing setups quickly and repeatably, avoiding manual re-tuning and human error.",
+    "practical_application": "An operator recalls a 'news' preset before a bulletin and a 'music' preset afterward, so the sound matches each program type without rebuilding settings by hand.",
+    "category": "Broadcast Processing",
+    "related_terms": [
+     "On-air processor",
+     "Program optimization processor",
+     "Multiband compression",
+     "Regulatory loudness compliance"
+    ],
+    "common_mistakes": [
+     "Recalling a preset without confirming it still meets the current loudness target.",
+     "Saving over a proven preset by accident and losing the known-good settings.",
+     "Assuming a preset built for one format is safe for all content."
+    ],
+    "scenario_contexts": [
+     "Loading a daypart preset at the start of a morning show.",
+     "Restoring a backup preset after a processor is replaced.",
+     "Switching presets between live sports and studio programming."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Orban Optimod technical documentation",
+    "Telos Alliance / Omnia processor technical documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2e5cce1e-5233-4ad2-9dc1-a741421ac9fd",
+   "term": "Program loudness measurement",
+   "fields": {
+    "definition": "The measurement of the overall loudness of a complete program or segment, computed as the gated integrated loudness over its full duration in LUFS (LKFS in ATSC) per ITU-R BS.1770 and EBU R128. This single value is the basis for loudness compliance and normalization.",
+    "plain_english": "This is the average loudness of a whole show or clip, measured from start to end. It gives one number that describes how loud the program is overall. It is like an average grade for the whole program rather than one moment.",
+    "purpose_function": "It provides the single, standardized loudness figure stations use to match programs to a target and to prove compliance.",
+    "practical_application": "An engineer measures a finished program's integrated loudness and adjusts overall gain so it lands on the required target before delivery or air.",
+    "category": "Loudness Measurement",
+    "related_terms": [
+     "Momentary loudness measurement",
+     "Short-term loudness measurement",
+     "Program normalization",
+     "Regulatory loudness compliance",
+     "LUFS"
+    ],
+    "common_mistakes": [
+     "Reading integrated loudness before the whole program has played, giving an incomplete value.",
+     "Confusing program (integrated) loudness with peak level.",
+     "Ignoring the gating rules and letting long silences drag the result down."
+    ],
+    "scenario_contexts": [
+     "Checking a finished episode against a -23 LUFS or -24 LKFS target.",
+     "Verifying a commercial's loudness before it enters playout.",
+     "Documenting program loudness for a broadcaster's delivery specs."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak audio level)",
+    "EBU R128 (Loudness normalisation and permitted maximum level of audio signals)",
+    "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c693caba-4da2-4309-a007-1a07f93aa70f",
+   "term": "Program normalization",
+   "fields": {
+    "definition": "The process of adjusting a program's overall gain so its measured integrated loudness matches a defined target, for example -23 LUFS under EBU R128 or -24 LKFS under ATSC A/85. Normalization aligns different programs to a common loudness rather than to peak level.",
+    "plain_english": "This means turning a whole program up or down so its loudness hits an agreed number. It makes different shows and ads sound about equally loud. It is like setting every song in a playlist to the same volume.",
+    "purpose_function": "It exists to stop jarring loudness jumps between programs and commercials and to help content meet loudness rules.",
+    "practical_application": "An operator measures a file's integrated loudness, then applies a fixed gain offset so it meets the station's loudness target before playout.",
+    "category": "Loudness Compliance",
+    "related_terms": [
+     "Program loudness measurement",
+     "Regulatory loudness compliance",
+     "Program optimization processor",
+     "True peak",
+     "LUFS"
+    ],
+    "common_mistakes": [
+     "Normalizing to peak level instead of to integrated loudness.",
+     "Applying so much gain that true-peak limits are exceeded.",
+     "Assuming normalization also fixes internal dynamics; it only shifts overall level."
+    ],
+    "scenario_contexts": [
+     "Bringing a delivered episode to -24 LKFS for a US network.",
+     "Leveling a batch of commercials to a common loudness target.",
+     "Preparing streaming files to a platform's loudness spec."
+    ]
+   },
+   "sources": [
+    "EBU R128 (Loudness normalisation and permitted maximum level of audio signals)",
+    "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness)",
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak audio level)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "88b5d3d6-2de9-4cc7-a5db-60c770443235",
+   "term": "Program optimization processor",
+   "fields": {
+    "definition": "An audio processor that conditions complete program audio for delivery or transmission, optimizing loudness, dynamics and spectral balance through gain control, multiband compression, equalization and limiting so the output meets loudness targets and sounds consistent. In practice it overlaps with the on-air processor, with emphasis on program-level optimization.",
+    "plain_english": "This is a processor that fine-tunes a whole program's sound for broadcast. It balances loudness, punch and tone so the program sounds even and clean. Think of it as an automatic mastering tool for TV or radio.",
+    "purpose_function": "It exists to make program audio consistent and on-target for loudness while keeping it clear and controlled across varied content.",
+    "practical_application": "An engineer routes program audio through the optimization processor and tunes its settings so the output meets loudness and peak limits without obvious pumping.",
+    "category": "Broadcast Processing",
+    "related_terms": [
+     "On-air processor",
+     "Processing preset recall",
+     "Program normalization",
+     "Regulatory loudness compliance",
+     "Multiband compression"
+    ],
+    "common_mistakes": [
+     "Pushing optimization for maximum loudness, which flattens dynamics and can exceed loudness targets.",
+     "Treating optimization as a substitute for correct source levels.",
+     "Not verifying the processed output with a compliant loudness meter."
+    ],
+    "scenario_contexts": [
+     "Conditioning a network feed before distribution.",
+     "Optimizing a live program's audio for consistent delivery.",
+     "Tuning a processor to balance loudness and quality on music content."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Orban Optimod technical documentation",
+    "Telos Alliance / Omnia processor technical documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a11428fe-2f7e-46b7-a768-1f6204b9085f",
+   "term": "Regulatory loudness compliance",
+   "fields": {
+    "definition": "Meeting the legal or mandated loudness requirements that govern broadcast audio, such as the US CALM Act enforcing ATSC A/85 (target -24 LKFS) or EBU R128 (target -23 LUFS) in Europe. Compliance is judged mainly on gated integrated program loudness together with true-peak limits.",
+    "plain_english": "This means following the loudness rules that broadcasters are legally required to obey. These rules keep shows and ads at similar loudness so nothing blasts the viewer. It is like a speed limit, but for how loud audio can be.",
+    "purpose_function": "It exists to protect audiences from sudden loud content and to give broadcasters a clear, measurable standard to meet.",
+    "practical_application": "Engineers measure integrated loudness and true peak against the required target and keep logs to prove a station meets the rules.",
+    "category": "Loudness Compliance",
+    "related_terms": [
+     "Program loudness measurement",
+     "Program normalization",
+     "Transmission peak control",
+     "True peak",
+     "LUFS"
+    ],
+    "common_mistakes": [
+     "Assuming that meeting a peak level also meets loudness rules; loudness and peak are separate.",
+     "Checking only momentary or short-term loudness instead of integrated program loudness.",
+     "Failing to keep the compliance logs that regulators may require."
+    ],
+    "scenario_contexts": [
+     "Preparing content to satisfy the CALM Act in the United States.",
+     "Delivering programs to a European broadcaster under EBU R128.",
+     "Auditing commercials for loudness before they air."
+    ]
+   },
+   "sources": [
+    "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness)",
+    "EBU R128 (Loudness normalisation and permitted maximum level of audio signals)",
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak audio level)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4cc93295-3156-48f6-b976-e75a8383eaf1",
+   "term": "Short-term loudness measurement",
+   "fields": {
+    "definition": "A loudness reading averaged over a 3-second sliding window, expressed in LUFS and computed with the K-weighting of ITU-R BS.1770, and left ungated in short-term mode per EBU Tech 3341. It reflects the loudness of audio over the most recent few seconds.",
+    "plain_english": "This is a loudness reading taken over the last three seconds. It smooths out quick jumps and shows the loudness of a short passage. It is like a rolling average of how loud a scene or sentence is.",
+    "purpose_function": "It exists to show the loudness trend of recent content, sitting between the instant momentary reading and the whole-program integrated value.",
+    "practical_application": "A mixer watches the short-term meter to keep dialogue and scenes within a sensible loudness range while working.",
+    "category": "Loudness Measurement",
+    "related_terms": [
+     "Momentary loudness measurement",
+     "Program loudness measurement",
+     "Loudness range",
+     "LUFS",
+     "EBU R128"
+    ],
+    "common_mistakes": [
+     "Confusing the 3-second short-term window with the 400 ms momentary window.",
+     "Using short-term readings for compliance instead of integrated program loudness.",
+     "Expecting short-term loudness to match the final program value exactly."
+    ],
+    "scenario_contexts": [
+     "Checking that a dialogue scene stays within a target loudness range.",
+     "Balancing loudness between sections of a program while mixing.",
+     "Spot-checking a segment's loudness during editing."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak audio level)",
+    "EBU Tech 3341 (Loudness Metering: EBU Mode)",
+    "EBU Tech 3342 (Loudness Range: A measure to supplement EBU R128 loudness normalisation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f2bfd1e5-6b2c-457a-a529-1b61659a74d7",
+   "term": "Transmission peak control",
+   "fields": {
+    "definition": "The management of peak signal levels in the transmission chain, typically through peak limiting and true-peak limiting, to prevent overmodulation, clipping and inter-sample overs that would distort the signal or breach peak limits (for example a maximum of -1 dBTP under EBU R128). It protects both signal quality and the transmission equipment.",
+    "plain_english": "This means stopping the audio peaks from getting too high before the signal is sent out. It keeps the loudest moments from distorting or overloading the transmitter. It is like a guardrail that catches the tallest spikes.",
+    "purpose_function": "It exists to keep the signal clean, hold peaks within legal limits, and protect transmission equipment from overload.",
+    "practical_application": "Engineers set a true-peak limiter so program peaks stay below the allowed ceiling, avoiding distortion and overmodulation on air.",
+    "category": "Broadcast Processing",
+    "related_terms": [
+     "True peak",
+     "On-air processor",
+     "Regulatory loudness compliance",
+     "Program normalization",
+     "Peak limiting"
+    ],
+    "common_mistakes": [
+     "Confusing sample peak with true peak; inter-sample peaks can exceed the sample reading.",
+     "Setting the peak ceiling too high and causing overmodulation or clipping.",
+     "Relying on peak control to fix loudness, which it does not address."
+    ],
+    "scenario_contexts": [
+     "Setting a -1 dBTP ceiling for an EBU R128 delivery.",
+     "Preventing overmodulation on an FM transmission.",
+     "Guarding against inter-sample overs when encoding for streaming."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak audio level)",
+    "EBU R128 (Loudness normalisation and permitted maximum level of audio signals)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

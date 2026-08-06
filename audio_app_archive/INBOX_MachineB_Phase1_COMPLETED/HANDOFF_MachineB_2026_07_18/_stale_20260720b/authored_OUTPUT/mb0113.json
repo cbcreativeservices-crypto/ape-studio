@@ -1,0 +1,231 @@
+{
+ "batch": 113,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "15bf9ee5-ba3a-48b2-90c0-abb34bfb4ad7",
+   "term": "Loudness consistency",
+   "fields": {
+    "definition": "The property of a mix, program, or catalogue holding a stable perceived loudness over time and from track to track, typically quantified as integrated loudness in LUFS per ITU-R BS.1770 and managed against a target such as EBU R128's -23 LUFS or a streaming reference near -14 LUFS.",
+    "plain_english": "This means the sound stays about the same volume the whole way through, and from one song to the next. It is like keeping every plate of food at a party warm, so no one dish is cold. Listeners should not have to keep grabbing the volume knob.",
+    "purpose_function": "It exists so listeners are not forced to keep adjusting volume, and so a mix meets broadcast and streaming loudness targets for fair, comfortable playback.",
+    "practical_application": "An engineer reads integrated loudness on a meter across a whole track and compares songs on an album, riding levels or trimming master gain so nothing jumps out as far louder or softer.",
+    "category": "Loudness",
+    "related_terms": ["Loudness validation", "Loudness contour", "Integrated loudness (LUFS)", "Loudness normalization", "Dynamic range", "Metering"],
+    "common_mistakes": [
+     "Confusing loudness (LUFS) with peak level, and assuming a track that peaks at 0 dBFS is loud enough.",
+     "Chasing one loud moment instead of measuring integrated loudness over the whole program.",
+     "Crushing the dynamics with a limiter just to hit a loudness number, which harms the mix."
+    ],
+    "scenario_contexts": [
+     "Mastering an album so every track sits at a similar perceived level.",
+     "Preparing a podcast so speech volume stays even across episodes.",
+     "Delivering a mix to a streaming service that normalizes to about -14 LUFS."
+    ]
+   },
+   "sources": ["ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak level)", "EBU R128 (Loudness normalisation and permitted maximum level of audio signals)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a17a83c8-ee15-4d8c-8225-a2295b57b59b",
+   "term": "Loudness contour",
+   "fields": {
+    "definition": "A curve mapping the sound pressure levels, across frequency, that are perceived as equally loud by the average listener, as standardized in the equal-loudness contours of ISO 226 (originally the Fletcher-Munson curves); it shows the ear is less sensitive to low and very high frequencies, especially at low levels, and it underlies the 'loudness' compensation control on playback gear.",
+    "plain_english": "Our ears do not hear every pitch as equally loud. Deep bass and very high notes seem quieter than middle sounds, mostly when the volume is low. A loudness contour is a map of this, and it is why music can sound thin when you turn it down.",
+    "purpose_function": "It describes how human hearing weights frequency against level, which is why bass seems to vanish at low volume and why 'loudness' buttons and tonal choices are used to make up for it.",
+    "practical_application": "Engineers keep it in mind while mixing or checking at different monitor levels, knowing bass and treble balance shift with volume, and they avoid judging tone only at very quiet or very loud settings.",
+    "category": "Loudness perception",
+    "related_terms": ["Loudness consistency", "Fletcher-Munson curves", "Equalization", "Monitoring level", "Frequency response", "Phon"],
+    "common_mistakes": [
+     "Thinking the ear hears all frequencies equally at every volume.",
+     "UNSAFE: Turning monitors up very loud just to 'hear the bass,' risking hearing damage instead of trusting metering and moderate levels.",
+     "Setting bass balance at only one volume, then finding it wrong when the mix is played louder or softer."
+    ],
+    "scenario_contexts": [
+     "Explaining why a mix loses its bass when played quietly.",
+     "Picking a steady reference monitor level so tonal balance is judged the same way each time.",
+     "Understanding a hi-fi 'loudness' switch that boosts bass and treble at low volume."
+    ]
+   },
+   "sources": ["ISO 226 (Normal equal-loudness-level contours)", "Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fec0bbfa-2c95-4a9d-9f6d-82e9b2873b92",
+   "term": "Loudness validation",
+   "fields": {
+    "definition": "The process of measuring a finished mix or master against a defined loudness delivery specification-integrated loudness, loudness range, and true-peak limits per standards such as EBU R128 or ATSC A/85 using ITU-R BS.1770 metering-to confirm it passes before delivery.",
+    "plain_english": "This is the final check that a track meets the loudness rules a platform asks for. You measure the whole thing and make sure it is not too loud or too soft, and that the peaks are safe. It is like weighing a parcel before you post it to be sure it fits the limit.",
+    "purpose_function": "It exists to catch loudness or true-peak problems before delivery, so a program is not rejected by a broadcaster or quietly turned down by a streaming service.",
+    "practical_application": "An engineer runs a loudness meter or offline analysis over the final render, reads integrated LUFS, loudness range, and true-peak, and re-adjusts if any value falls outside the target spec.",
+    "category": "Loudness",
+    "related_terms": ["Loudness consistency", "Integrated loudness (LUFS)", "True-peak", "Loudness range (LRA)", "Delivery specification", "Metering"],
+    "common_mistakes": [
+     "Checking only the peak meter and ignoring integrated loudness and true-peak.",
+     "Validating a single section instead of the whole program.",
+     "Assuming inter-sample (true) peaks are safe just because sample peaks read below 0 dBFS."
+    ],
+    "scenario_contexts": [
+     "Confirming a TV mix meets -24 LKFS per ATSC A/85 before broadcast.",
+     "Checking a master against a streaming loudness spec before upload.",
+     "Quality-checking a batch of podcast episodes for a consistent target loudness."
+    ]
+   },
+   "sources": ["EBU R128 (Loudness normalisation and permitted maximum level of audio signals)", "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness for Digital Television)", "ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak level)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bc62385b-74aa-42b1-9a93-ea4bc65b39f8",
+   "term": "Low-frequency layer",
+   "fields": {
+    "definition": "A distinct element or group of elements in a mix that carries the low-frequency energy-such as a kick, bass guitar, synth sub, or an added sub-octave part-arranged so the bottom end is full and controlled without masking or phase conflict.",
+    "plain_english": "This is the part of a mix that makes the deep, low sound you feel as much as hear. It usually comes from the kick drum and the bass. Building it well is like laying a solid foundation under a house.",
+    "purpose_function": "It provides the weight and power at the bottom of a mix, and because low frequencies use a lot of energy and headroom, it is managed carefully so it stays tight and does not swamp the rest.",
+    "practical_application": "A mixer balances kick and bass together, may add a sub layer to reinforce the lowest octave, and uses EQ, high-pass filtering, and mono placement to keep the low end clean and easy to translate.",
+    "category": "Mix balance",
+    "related_terms": ["Kick drum", "Bass management", "Sub-bass", "High-pass filter", "Frequency masking", "Mono compatibility"],
+    "common_mistakes": [
+     "Letting kick and bass fight in the same frequency range so the low end turns muddy.",
+     "Judging bass balance on small speakers or earbuds that cannot reproduce it.",
+     "Leaving low frequencies wide in stereo, which can weaken mono playback and vinyl cutting."
+    ],
+    "scenario_contexts": [
+     "Balancing kick and bass in a dance track.",
+     "Adding a sub layer under a thin bass recording.",
+     "High-passing non-bass tracks to clear room for the low end."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "77986925-d523-4ec1-b2d7-fe1fc0d91dda",
+   "term": "Lower Zone",
+   "fields": {
+    "definition": "In MIDI Polyphonic Expression (MPE), one of two configurable channel zones; the Lower Zone uses MIDI channel 1 as its Master Channel and assigns ascending Member Channels (from channel 2 upward) to individual notes, so each note has its own channel for per-note pitch bend and control. It contrasts with the Upper Zone, which uses channel 16 as its master.",
+    "plain_english": "In a MIDI system called MPE, notes are spread across many channels so each note can bend and change on its own. The Lower Zone is one group of these channels, led by channel 1. Think of it as one team of channels with channel 1 as the captain.",
+    "purpose_function": "It exists so an MPE controller can send separate expression for every note, using channel 1 as a shared master for zone-wide messages and individual member channels for each note's own control.",
+    "practical_application": "A technician setting up an MPE controller and synth selects the Lower Zone, sets how many member channels it spans, and makes sure both devices agree so per-note slides and pressure work.",
+    "category": "MIDI",
+    "related_terms": ["Upper Zone", "MIDI Polyphonic Expression (MPE)", "MIDI channel", "Pitch bend", "Master channel", "Member channel"],
+    "common_mistakes": [
+     "Setting the controller and synth to different zones or channel counts, so notes do not respond.",
+     "Expecting per-note pitch bend on a normal single-channel MIDI setup instead of an MPE zone.",
+     "Confusing the zone's Master Channel with a member (per-note) channel."
+    ],
+    "scenario_contexts": [
+     "Configuring an MPE keyboard controller to play an MPE-capable synth.",
+     "Setting up per-note pitch slides for a DAW software instrument.",
+     "Troubleshooting why note expression is not passing between a controller and a plug-in."
+    ]
+   },
+   "sources": ["MIDI Association, MIDI Polyphonic Expression (MPE) Specification (M1-100-UM)", "MIDI Association, MIDI 1.0 Detailed Specification"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3d70390a-e8d8-4719-a399-37f2b454684f",
+   "term": "Macro variation",
+   "fields": {
+    "definition": "Large-scale change across a piece-shifts in energy, arrangement density, dynamics, or texture between whole sections such as verse and chorus-as opposed to micro variation in small, moment-to-moment detail; it shapes the overall dynamic journey of a mix.",
+    "plain_english": "This is the big-picture change in a song from one part to the next. A quiet verse that grows into a loud chorus is macro variation. It is like the rise and fall of a story, not the tiny details inside each line.",
+    "purpose_function": "It exists to give a track contrast and momentum over its whole length, keeping the listener engaged as sections build, drop, and lift.",
+    "practical_application": "In mixing and arrangement, an engineer uses level rides, mutes, added parts, and dynamic contrast so sections differ in energy, protecting the impact of a chorus or drop.",
+    "category": "Arrangement",
+    "related_terms": ["Micro variation", "Dynamic range", "Arrangement", "Automation", "Macrodynamics", "Section contrast"],
+    "common_mistakes": [
+     "Making every section the same loudness so the song feels flat and tiring.",
+     "Confusing macro variation (whole sections) with micro detail (single notes or hits).",
+     "Using a heavy limiter that flattens the loud-quiet contrast between sections."
+    ],
+    "scenario_contexts": [
+     "Planning for a verse to sit lower in energy than the chorus.",
+     "Automating levels so a bridge pulls back before the final chorus.",
+     "Reviewing a mix to check that sections have enough contrast."
+    ]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dd908d12-99e3-45b1-b613-12b52549447c",
+   "term": "Main Mixer",
+   "fields": {
+    "definition": "The primary mixing console or software mixer through which the main signals of a session are summed, processed, and routed to the master output, as distinct from sub-mixers, monitor mixers, or auxiliary buses.",
+    "plain_english": "The main mixer is the central desk where all the sound channels are blended together. It sets each part's volume and tone and sends out the final mix. Think of it as the control center for the whole sound.",
+    "purpose_function": "It exists to combine every input into one balanced final mix and route that mix to the main outputs, giving a single place to control levels, tone, and effects.",
+    "practical_application": "An engineer sets channel levels, EQ, and sends on the main mixer to build the front-of-house or recording mix, then routes its master bus to the amplifiers or recorder.",
+    "category": "Mixing",
+    "related_terms": ["Mix bus", "Master fader", "Submix", "Auxiliary send", "Channel strip", "Front of house"],
+    "common_mistakes": [
+     "Pushing every channel fader up instead of balancing them, which clips the main bus.",
+     "UNSAFE: Sending a hot, clipping main mix into powered speakers or amplifiers without proper gain staging, which can damage drivers.",
+     "Confusing the main mix bus with a monitor or aux mix and adjusting the wrong one."
+    ],
+    "scenario_contexts": [
+     "Building a front-of-house mix at a live show.",
+     "Summing all tracks to a stereo master bus in a studio session.",
+     "Routing the main mix to a recorder for a live capture."
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fd606cd4-fcae-42d6-ab69-2efb6f3ed026",
+   "term": "Main window",
+   "fields": {
+    "definition": "In a DAW or audio application, the primary application window that hosts the core workspace-typically the arrangement/edit area, transport, and track layout-from which other windows such as the mixer, editors, or plug-in windows are opened.",
+    "plain_english": "The main window is the first big screen you see in your music software. It shows your tracks and the timeline, and it is where you do most of your work. Other panels, like the mixer, open from it.",
+    "purpose_function": "It exists as the central hub of the program's interface, giving quick access to tracks, the timeline, transport controls, and the menus that open every other tool.",
+    "practical_application": "A technician records, arranges, and edits in the main window, opens the mixer or plug-in windows from it, and arranges the layout to suit the task at hand.",
+    "category": "DAW interface",
+    "related_terms": ["Arrange view", "Mixer window", "Transport", "Track", "Timeline", "Marker List"],
+    "common_mistakes": [
+     "Losing a floating window off-screen and thinking the program has frozen.",
+     "Confusing the main arrange window with the separate mixer window.",
+     "Not saving a window layout, so the workspace resets every session."
+    ],
+    "scenario_contexts": [
+     "Opening a DAW project and seeing the tracks in the main window.",
+     "Switching between the main window and the mixer while balancing a mix.",
+     "Setting up one screen layout for editing and another for mixing."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "Avid Pro Tools Reference Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8ba43b12-06ac-44b1-848d-977662bf19a4",
+   "term": "Marker List",
+   "fields": {
+    "definition": "A DAW feature that shows all markers (cue points or memory locations) placed on the timeline as a navigable list, letting the user name, edit, and jump to specific positions such as song sections, edit points, or sync references.",
+    "plain_english": "A marker list is like a set of bookmarks for your song. Each marker points to a spot on the timeline, such as the chorus or a scene change. You click one to jump straight there.",
+    "purpose_function": "It exists to speed up navigation and organization, letting an engineer label sections and move instantly to any point instead of scrolling through the whole project.",
+    "practical_application": "An engineer drops markers at section starts, edit points, or sync cues, names them, and uses the marker list to jump between them while editing, mixing, or working with a client.",
+    "category": "DAW navigation",
+    "related_terms": ["Marker", "Memory location", "Timeline", "Locate", "Cue point", "Main window"],
+    "common_mistakes": [
+     "Leaving markers unnamed, so the list is hard to read later.",
+     "Confusing timeline markers with clip or arrangement locators.",
+     "Forgetting that markers are saved with the project and re-creating them each time."
+    ],
+    "scenario_contexts": [
+     "Labeling verse, chorus, and bridge for fast navigation in a mix.",
+     "Marking edit or sync points when working to picture.",
+     "Jumping between sections during a client revision session."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Memory Locations)", "Steinberg Cubase Operation Manual (Markers)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

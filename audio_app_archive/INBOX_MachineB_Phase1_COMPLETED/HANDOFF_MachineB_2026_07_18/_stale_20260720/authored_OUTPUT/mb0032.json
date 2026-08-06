@@ -1,0 +1,312 @@
+{
+ "batch": 32,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "c6f57177-bb46-4a9f-bc26-2f4293869c43",
+   "term": "Background-vocal automation",
+   "fields": {
+    "definition": "The use of a DAW's automation to vary the level, mute state, or effect parameters of background-vocal tracks across a song, so their balance follows the arrangement moment to moment rather than sitting at one fixed setting.",
+    "plain_english": "This means telling your software to move the backing-vocal volume or effects on its own as the song plays. It works like a helper riding the faders for you, so the harmonies rise in the chorus and drop back in quiet parts.",
+    "purpose_function": "It keeps background vocals sitting correctly against the lead and the band at every point in the song, instead of settling for one static fader level that only works in some sections.",
+    "practical_application": "An engineer draws or records automation to push the harmonies up in a chorus, pull them down under a busy verse, or open a delay throw on the last word of a line.",
+    "category": "Background Vocal Mixing",
+    "related_terms": [
+     "Background-vocal bus",
+     "Background-vocal production",
+     "Background-vocal reverb",
+     "Background-vocal delay",
+     "Lead vocal"
+    ],
+    "common_mistakes": [
+     "Setting one average level for the whole song and never automating, so the harmonies vanish in loud sections and stick out in quiet ones.",
+     "Automating only the group bus fader when the real problem was the balance between individual tracks, baking in a bad blend.",
+     "Writing jumpy, stepped level changes that sound unnatural instead of smooth fader rides."
+    ],
+    "scenario_contexts": [
+     "Riding a harmony stack up a couple of dB only during a pop chorus.",
+     "Ducking backing vocals under a lead ad-lib in the final chorus.",
+     "Automating a reverb or delay send so it blooms on a held note at the end of a phrase."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d69969da-9723-4c0f-8d52-cc8b6e13f509",
+   "term": "Background-vocal bus",
+   "fields": {
+    "definition": "An aux or group bus that sums all background-vocal channels to a single signal path, allowing shared processing, level control, and routing of the combined backing vocals as one unit.",
+    "plain_english": "This is one channel that all your backing-vocal tracks flow into. It lets you shape and set the level of the whole group of harmonies with a single fader, instead of touching each track one by one.",
+    "purpose_function": "It exists so an engineer can treat many backing-vocal tracks as one blended part, applying shared EQ, compression, or effects and moving them together in the mix.",
+    "practical_application": "The engineer routes every harmony and double to a stereo group bus, then adds glue compression and a high-pass filter there so the whole stack sits as one unit behind the lead.",
+    "category": "Background Vocal Mixing",
+    "related_terms": [
+     "Background-vocal compression",
+     "Background-vocal automation",
+     "Background-vocal equalization",
+     "Background-vocal reverb",
+     "Background-vocal production"
+    ],
+    "common_mistakes": [
+     "Processing each vocal separately and never bussing them, making the stack hard to balance and glue.",
+     "Routing lead and backing vocals to the same bus, so bus compression on the harmonies also pumps the lead.",
+     "Leaving the bus mono, which collapses wide-panned harmonies to the center."
+    ],
+    "scenario_contexts": [
+     "Summing eight harmony tracks to one group so a single compressor works the whole stack.",
+     "Sending the backing-vocal bus to a shared reverb for one unified space.",
+     "Riding one fader to drop all harmonies under a spoken bridge."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8128910a-7a67-4426-ad20-eec2b9a86c57",
+   "term": "Background-vocal compression",
+   "fields": {
+    "definition": "Dynamic-range compression applied to background-vocal tracks or their bus to even out level differences, so the harmonies sit consistently and cohesively behind the lead vocal.",
+    "plain_english": "This means using a compressor to make the loud and soft parts of the backing vocals more even. It works like an automatic volume knob that turns down the loudest words, so the harmonies stay steady and blend together.",
+    "purpose_function": "It controls the natural level swings of sung harmonies so they stay present and glued in the mix without jumping out or fading away.",
+    "practical_application": "An engineer often compresses the backing-vocal bus fairly firmly to push the stack back and make it feel like one smooth, blended layer under the lead.",
+    "category": "Background Vocal Mixing",
+    "related_terms": [
+     "Background-vocal bus",
+     "Background-vocal equalization",
+     "Background-vocal de-essing",
+     "Lead vocal",
+     "Background-vocal production"
+    ],
+    "common_mistakes": [
+     "Over-compressing until the harmonies sound flat, lifeless, and pumping.",
+     "Compressing each track and then the bus so hard that gain builds up and the noise floor rises.",
+     "Setting the attack too fast and squashing the natural consonants and breath of the vocals."
+    ],
+    "scenario_contexts": [
+     "Adding a few dB of gain reduction on the harmony bus to blend a layered stack.",
+     "Using a slower attack to keep clarity on rhythmic backing chants.",
+     "Parallel-compressing backing vocals to keep them audible without pushing them forward."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "16c9501a-fd41-4894-9d57-0258aa036244",
+   "term": "Background-vocal de-essing",
+   "fields": {
+    "definition": "The targeted reduction of sibilance, the harsh energy from \"s,\" \"sh,\" and \"t\" sounds around 5 to 10 kHz, on background-vocal tracks or bus, using a de-esser or frequency-dependent compressor.",
+    "plain_english": "This tames the harsh, hissy \"s\" and \"sh\" sounds in the backing vocals. A de-esser works like a fast volume knob that only turns down those sharp sounds, so stacked harmonies do not add up into a painful hiss.",
+    "purpose_function": "It stops sibilance from piling up when many vocal layers are stacked, which would otherwise create a harsh, whistling top end in the mix.",
+    "practical_application": "The engineer places a de-esser on the backing-vocal bus, and sometimes on bright individual tracks, to control combined sibilance before reverb or bright EQ makes it worse.",
+    "category": "Background Vocal Mixing",
+    "related_terms": [
+     "Background-vocal equalization",
+     "Background-vocal compression",
+     "Background-vocal bus",
+     "Background-vocal reverb",
+     "Background-vocal production"
+    ],
+    "common_mistakes": [
+     "De-essing so hard that the singers seem to develop a lisp and lose clarity.",
+     "De-essing only individual tracks and ignoring how sibilance adds up on the stacked bus.",
+     "Adding bright EQ or reverb before de-essing, so the harshness gets boosted first."
+    ],
+    "scenario_contexts": [
+     "Taming stacked 's' sounds on a doubled, tripled harmony chorus.",
+     "De-essing before a bright plate reverb to stop sibilant tails.",
+     "Setting the de-esser threshold so it acts only on the sharpest consonants."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Sound on Sound (technique articles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f2655ed2-1792-4d89-862e-0b7d350805f2",
+   "term": "Background-vocal delay",
+   "fields": {
+    "definition": "A time-based (echo) effect applied to background vocals, adding one or more delayed repeats, often tempo-synced, to create depth, width, or rhythmic interest behind the lead.",
+    "plain_english": "This adds echoes to the backing vocals. Like a short repeat of a word bouncing back, it can make the harmonies feel wider and deeper, and the repeats are often timed to the beat of the song.",
+    "purpose_function": "It pushes background vocals back in the depth of the mix and can widen them or add rhythm, without the wash that heavy reverb brings.",
+    "practical_application": "The engineer sends harmonies to a tempo-synced delay, such as a quarter or eighth note, on an aux, often filtering the repeats darker so they support rather than clutter the lead.",
+    "category": "Background Vocal Mixing",
+    "related_terms": [
+     "Background-vocal reverb",
+     "Background-vocal panning",
+     "Background-vocal bus",
+     "Background-vocal automation",
+     "Background-vocal production"
+    ],
+    "common_mistakes": [
+     "Setting the delay time off the tempo, so repeats fight the groove and muddy the track.",
+     "Leaving the repeats full-range and bright, so they mask the lead vocal.",
+     "Feeding back too much, burying the mix in a wash of repeats."
+    ],
+    "scenario_contexts": [
+     "Adding a ping-pong delay to spread a harmony line across the stereo field.",
+     "Throwing a timed delay on the last word of a backing phrase.",
+     "Using a slapback delay to thicken doubled backing vocals."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "266631fb-f1a5-48c5-8cb4-e8a615f4fe41",
+   "term": "Background-vocal equalization",
+   "fields": {
+    "definition": "The use of EQ to shape the tone of background-vocal tracks or bus, commonly high-passing low rumble and carving competing midrange, so the harmonies support the lead vocal without masking it.",
+    "plain_english": "This means using EQ to change the tone of the backing vocals. Engineers often cut low rumble and some middle tones so the harmonies leave room for the lead voice instead of covering it up.",
+    "purpose_function": "It carves a tonal space for backing vocals so they blend and add richness while leaving the lead vocal clear and up front.",
+    "practical_application": "The engineer high-passes the backing-vocal bus, dips tones that clash with the lead, and may roll off some brightness so the stack sits softly behind the main voice.",
+    "category": "Background Vocal Mixing",
+    "related_terms": [
+     "Background-vocal bus",
+     "Background-vocal compression",
+     "Background-vocal de-essing",
+     "Lead vocal",
+     "Background-vocal production"
+    ],
+    "common_mistakes": [
+     "Boosting the same presence range on backing vocals as the lead, so they mask each other.",
+     "Not high-passing the stack, letting low rumble and pops build up across many tracks.",
+     "EQing each track bright, so the combined stack turns harsh and sibilant."
+    ],
+    "scenario_contexts": [
+     "High-passing harmonies around 100 to 150 Hz to clean up the low end of a stack.",
+     "Dipping the 2 to 4 kHz range on backing vocals to keep the lead's presence clear.",
+     "Darkening backing vocals so they sit softly behind a bright lead."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e9806221-daef-4ddc-b372-6fab47ec2c8d",
+   "term": "Background-vocal panning",
+   "fields": {
+    "definition": "The placement of background-vocal tracks across the stereo field, often spreading doubles and harmonies left and right, to create width and separate them from the typically centered lead vocal.",
+    "plain_english": "This is about where the backing vocals sit from left to right in the stereo picture. Spreading the harmonies out to the sides makes the mix feel wide and keeps them clear of the lead voice, which usually sits in the middle.",
+    "purpose_function": "It widens the vocal arrangement and separates harmonies from the lead, so the backing vocals add size without crowding the center of the mix.",
+    "practical_application": "The engineer pans matched double takes hard left and right, or spreads a harmony stack across the field, keeping the lead centered so it stays focused and up front.",
+    "category": "Background Vocal Mixing",
+    "related_terms": [
+     "Background-vocal bus",
+     "Background-vocal delay",
+     "Background-vocal reverb",
+     "Lead vocal",
+     "Background-vocal production"
+    ],
+    "common_mistakes": [
+     "Leaving all harmonies in the center, so they pile up on top of the lead vocal.",
+     "Panning a single unmatched take hard to one side, which unbalances the mix.",
+     "Spreading so wide that the vocals fade out when the mix is played in mono."
+    ],
+    "scenario_contexts": [
+     "Panning a left and right double of a harmony hard to each side for width.",
+     "Spreading a four-part stack evenly across the stereo field.",
+     "Checking a wide backing-vocal spread in mono for a club or broadcast."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "56377c2f-0f9c-4160-8d07-fa316425a963",
+   "term": "Background-vocal production",
+   "fields": {
+    "definition": "The overall craft of arranging, recording, layering, and processing background vocals, choosing harmonies, doubles, and stacks and shaping them so they support the lead vocal and the song's arrangement.",
+    "plain_english": "This is the whole job of creating the backing vocals, from writing the harmonies to recording and mixing them. It is like building a soft bed of extra voices that sits behind the main singer and makes the song feel fuller.",
+    "purpose_function": "It exists to add depth, harmony, and energy to a song, reinforcing hooks and choruses while keeping the lead vocal clear and central.",
+    "practical_application": "A producer plans which lines get harmonized, records doubles and stacks for width and power, then blends them with EQ, compression, and effects so they lift the song without swamping the lead.",
+    "category": "Background Vocal Mixing",
+    "related_terms": [
+     "Background-vocal bus",
+     "Background-vocal automation",
+     "Background-vocal panning",
+     "Background-vocal reverb",
+     "Lead vocal"
+    ],
+    "common_mistakes": [
+     "Stacking too many layers, so the backing vocals overpower the lead and clutter the mix.",
+     "Recording sloppy, untuned harmonies and expecting the mix to fix the blend.",
+     "Ignoring the arrangement, so backing vocals play all the time instead of lifting key sections."
+    ],
+    "scenario_contexts": [
+     "Layering a doubled three-part harmony to make a pop chorus bigger.",
+     "Recording call-and-response backing lines for a soul or gospel track.",
+     "Adding subtle unison doubles to thicken a lead in the final chorus."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "55fa4756-2d04-47cb-bab7-a123fb345551",
+   "term": "Background-vocal reverb",
+   "fields": {
+    "definition": "Reverberation applied to background vocals to place them in a sense of space and depth, commonly through a send to a shared reverb so the harmonies sit back behind a drier lead vocal.",
+    "plain_english": "This adds a sense of room or space to the backing vocals, like the echo you hear when you sing in a large hall. It makes the harmonies feel further back, behind the lead voice, which usually stays drier and closer.",
+    "purpose_function": "It creates depth and blends stacked harmonies into a shared space, pushing them behind the lead so the arrangement feels three-dimensional.",
+    "practical_application": "The engineer sends the backing-vocal bus to a reverb such as a plate or hall, often pre-delayed and filtered, so the stack sits back and glues together without washing out the lead.",
+    "category": "Background Vocal Mixing",
+    "related_terms": [
+     "Background-vocal delay",
+     "Background-vocal bus",
+     "Background-vocal panning",
+     "Background-vocal de-essing",
+     "Background-vocal production"
+    ],
+    "common_mistakes": [
+     "Drowning the harmonies in reverb, pushing them so far back they lose impact.",
+     "Using the same bright reverb without filtering, so sibilant tails build up.",
+     "Putting reverb on each track separately instead of a shared send, wasting CPU and blurring the blend."
+    ],
+    "scenario_contexts": [
+     "Sending a harmony stack to a plate reverb to sit it behind a dry lead.",
+     "Using a longer hall reverb on backing vocals for a ballad's space.",
+     "Adding pre-delay so the harmonies stay clear before the reverb tail blooms."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

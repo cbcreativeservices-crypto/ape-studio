@@ -186,6 +186,7 @@ export type RootStackParamList = {
   /** Audio Calculator Laboratory (owner 2026-07-29) — unified calc workspaces. */
   CalcLab: undefined;
   CalcWorkspace: { id: string };
+  CalcSymbolsKey: undefined;
   /** Digital Audio Sampling & Conversion Lab (owner 2026-07-29) — standalone
    *  laboratory with its own home + 8 modules. */
   DigitalLab: undefined;

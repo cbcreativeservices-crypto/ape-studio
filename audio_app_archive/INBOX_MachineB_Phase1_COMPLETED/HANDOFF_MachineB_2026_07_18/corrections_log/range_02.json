@@ -1,0 +1,20 @@
+{
+ "range": 2,
+ "applied": [
+  {"pkt": "mb0082", "term": "Audio Effect Rack", "field": "definition", "severity": "Medium", "summary": "Corrected outdated Macro count: 'up to eight Macro controls' -> 'up to 16 Macro controls (eight shown by default)', web-verified against the Ableton Reference Manual (up to 16 Macro Controls, eight shown by default since Live 11)."},
+  {"pkt": "mb0105", "term": "Freeze track (Live)", "field": "related_terms", "severity": "Low", "summary": "Replaced two irrelevant/DAW-mismatched list items: 'Global Tracks' (a Logic Pro feature) -> 'Flatten' and 'Get a rough mix' (unrelated workflow) -> 'Virtual instrument'; both audio and cognition experts flagged the same issue."},
+  {"pkt": "mb0105", "term": "Frequency-response validation", "field": "purpose_function", "severity": "Low", "summary": "Fixed faulty parallelism: 'reproduces all frequencies evenly, or to a defined target' -> 'reproduces all frequencies evenly, or matches a defined target' so the clause is grammatical."},
+  {"pkt": "mb0084", "term": "Automation offset", "field": "plain_english", "severity": "Low", "summary": "Fixed contradictory/ambiguous phrasing 'either louder and softer or earlier and later' -> 'either up or down in level, or earlier or later in time' (FK grade 7.4)."},
+  {"pkt": "mb0089", "term": "Chase Events", "field": "purpose_function", "severity": "Low", "summary": "Fixed garbled wrong-word construction 'off pitch-bend' -> 'incorrect pitch bend', restoring list parallelism."},
+  {"pkt": "mb0108", "term": "Hybrid score mix", "field": "plain_english", "severity": "Low", "summary": "Disambiguated score-vs-engineer: 'A hybrid score mixes...' -> 'A hybrid score combines...' and '...is the job of blending' -> '...is the engineer's job of blending' (FK grade 7.8)."}
+ ],
+ "declined": [
+  {"pkt": "mb0083", "term": "Automation copy", "field": "related_terms", "reason": "Enrichment: 'consider adding Automation paste' to cross-link the pair. No offending/wrong item to replace; adding a term is enrichment, not an error fix."},
+  {"pkt": "mb0087", "term": "Broadcast printmaster", "field": "difficulty", "reason": "Debatable pedagogical re-tag (beginner->intermediate). Difficulty leveling is a preference judgment, not a factual/technical error; current value is null and the change fixes no error."},
+  {"pkt": "mb0093", "term": "Control-voltage routing (Reason)", "field": "difficulty", "reason": "Debatable pedagogical re-tag (beginner->intermediate). Difficulty leveling is subjective preference, not a genuine error."},
+  {"pkt": "mb0100", "term": "Electronic score mix", "field": "difficulty", "reason": "Debatable pedagogical re-tag (beginner->intermediate). Difficulty leveling is subjective preference, not a genuine error."},
+  {"pkt": "mb0104", "term": "Foley-only stem", "field": "definition", "reason": "Enrichment: add a clause to distinguish from a separate 'Foley Stem' entry. The definition is correct and readable on its own; suggestion adds material rather than fixing an error."},
+  {"pkt": "mb0113", "term": "Loudness contour", "field": "plain_english", "reason": "Enrichment: 'add one clause' distinguishing perceptual contour from LUFS metering. Current text is accurate (equal-loudness perception); no error to fix."},
+  {"pkt": "mb0119", "term": "Music callback", "field": "common_mistakes", "reason": "Style/level preference: reword to drop 'game thread' jargon. The item is technically correct; the reword targets accessibility, not a factual/grammatical error."}
+ ]
+}

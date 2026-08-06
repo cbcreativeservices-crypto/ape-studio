@@ -1,0 +1,159 @@
+{
+ "batch": 256,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "a9143cd2-f86a-4c66-bd5d-e9330c2929bb",
+   "term": "Tempo event",
+   "fields": {
+    "definition": "A discrete entry in a sequence's tempo map that sets the playback tempo, in beats per minute, from a specific timeline position onward. In a Standard MIDI File it is stored as a Set Tempo meta event expressing the tempo as microseconds per quarter note.",
+    "plain_english": "A marker on the timeline that tells the software how fast to play from that point on. It works like a speed sign that sets the pace until the next one.",
+    "purpose_function": "It defines the musical pulse at a given point so a DAW or sequencer can align beats, bars, and grid to clock time. It exists so tempo can be stored, edited, and reproduced exactly.",
+    "practical_application": "An editor inserts or edits tempo events in the tempo track so the metronome, MIDI parts, and bar grid line up with a cue or with picture.",
+    "category": "Tempo & Sync",
+    "related_terms": ["Tempo ramp", "Tempo-map conform", "Beats per minute", "Time signature", "Click track"],
+    "common_mistakes": ["Confusing a tempo event with a time signature (meter) event; one sets speed, the other sets beats per bar.", "Moving beat markers but forgetting to insert a matching tempo event, so playback drifts.", "Assuming one tempo event covers a whole piece when the music changes tempo in sections."],
+    "scenario_contexts": ["Setting a fixed session tempo so the metronome and MIDI parts lock to the bar grid.", "Adding tempo events at each section change of a cue to follow the composer's map.", "Reading tempo events from an imported MIDI file to rebuild a click track."]
+   },
+   "sources": ["MIDI Association — MIDI 1.0 Detailed Specification / Standard MIDI Files (Set Tempo meta event)", "Avid Pro Tools Reference Guide (Tempo track / tempo events)", "Steinberg Cubase Operation Manual (Tempo Track)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7c6ad9da-6c48-4b29-8cb1-c56e50d36cdf",
+   "term": "Tempo ramp",
+   "fields": {
+    "definition": "A gradual, continuous change in tempo between two values across a span of the timeline, producing an accelerando or ritardando rather than an instantaneous jump. It is represented in a tempo map as an interpolated curve between tempo events.",
+    "plain_english": "A smooth speed-up or slow-down in the beat, not a sudden jump. It is like a car easing onto the gas instead of flooring it at once.",
+    "purpose_function": "It lets tempo change musically over time so click, MIDI, and grid follow a natural rise or fall in pace. It exists to model performances that speed up or slow down instead of stepping between fixed tempos.",
+    "practical_application": "An editor draws a ramp between two tempo events so the click accelerates or decelerates smoothly under a scene or musical phrase.",
+    "category": "Tempo & Sync",
+    "related_terms": ["Tempo event", "Tempo-map conform", "Click track", "Beats per minute", "Metronome"],
+    "common_mistakes": ["Using a single stepped tempo change where a smooth ramp is needed, causing an audible jump.", "Placing the ramp's start and end points on the wrong bars so the change finishes off the beat.", "Forgetting that a ramp shifts the timing of later bars, which can break downstream sync."],
+    "scenario_contexts": ["Writing a gradual accelerando into a building chase-scene cue.", "Slowing the click smoothly into a final ritardando at a piece's ending.", "Matching a live take that naturally speeds up by drawing a tempo ramp."]
+   },
+   "sources": ["MIDI Association — MIDI 1.0 Detailed Specification / Standard MIDI Files", "Steinberg Cubase Operation Manual (Tempo Track, ramps)", "Avid Pro Tools Reference Guide (Tempo events and curves)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bbc23283-0739-404a-937b-255f903ca543",
+   "term": "Tempo-map conform",
+   "fields": {
+    "definition": "The process of adjusting a project's tempo map so its bars and beats realign with a reference such as a re-edited picture or a new cut, keeping the musical grid and events in sync after timeline changes.",
+    "plain_english": "Fixing the tempo track so the beats line up again after the video or edit is changed. You slide and stretch the beat map to match the new cut.",
+    "purpose_function": "It restores the relationship between the musical grid and picture after editorial changes, so MIDI, click, and score markers still fall where they should. It exists to keep music timing valid through repeated re-edits.",
+    "practical_application": "After picture editorial delivers a new cut, a music editor conforms the tempo map so the bar/beat grid, click, and MIDI follow the revised timeline.",
+    "category": "Tempo & Sync",
+    "related_terms": ["Tempo event", "Tempo ramp", "Conform", "Bar/beat grid", "Picture lock"],
+    "common_mistakes": ["Conforming the audio edits but leaving the old tempo map, so bars no longer match the new cut.", "Assuming conform fixes musical timing automatically when the tempo map must be updated by hand.", "Not sending the revised tempo map back to the composer or music editor after conforming."],
+    "scenario_contexts": ["Updating the tempo track after picture editorial delivers a new cut.", "Aligning a borrowed or temp music tempo map to a re-timed scene.", "Rebuilding the bar/beat grid so MIDI and click follow the conformed timeline."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Tempo track, conform workflows)", "Steinberg Cubase Operation Manual (Tempo Track)", "Jay Rose, Producing Great Sound for Film and Video (post workflow / conform)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "612aafec-0e88-468d-8c0d-87253cb42962",
+   "term": "Textless-elements package",
+   "fields": {
+    "definition": "A delivery set of program picture elements supplied without any burned-in text, such as clean backgrounds free of titles, credits, subtitles, and lower thirds, provided so localized or replacement text can be added for other territories and versions.",
+    "plain_english": "Clean video shots with no words printed on them. They are sent so other countries can add their own titles and captions.",
+    "purpose_function": "It lets distributors localize a program by laying translated titles and captions over clean backgrounds, avoiding re-shooting or re-rendering. It exists so one master can serve many territories.",
+    "practical_application": "The post team renders or pulls every shot that carries burned-in text and delivers clean versions alongside the finished master to the versioning or localization house.",
+    "category": "Deliverables",
+    "related_terms": ["Master", "M&E", "Localization", "Deliverables", "Lower third"],
+    "common_mistakes": ["Delivering only the finished picture and forgetting the clean textless backgrounds.", "Supplying textless shots that are the wrong length or color grade versus the final master.", "Assuming subtitles are exempt; burned-in text of any kind must be removed."],
+    "scenario_contexts": ["Preparing a feature for foreign-language title and credit replacement.", "Delivering clean lower-third backgrounds for a documentary's international cut.", "Supplying textless main and end titles to a streaming platform's delivery spec."]
+   },
+   "sources": ["Netflix Studios Partner Help Center — Textless Elements Creation and Delivery Guidelines (technical delivery specification)", "Amazon Studios — Delivery & QC technical delivery documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "276acfbe-e9f7-4e91-9e2b-ea524f468109",
+   "term": "Texture layer",
+   "fields": {
+    "definition": "A supporting sound-design or music layer that adds tonal color, movement, or atmosphere beneath the primary elements of a mix, filling sonic space without carrying the main melodic, dialogue, or narrative content.",
+    "plain_english": "A background sound layer that adds color and mood under the main sounds. It fills out the space, like the soft wash of strings behind a singer.",
+    "purpose_function": "It adds depth, warmth, and continuity by occupying frequency and stereo space that lead elements leave open. It exists to shape mood and help glue a mix together.",
+    "practical_application": "A sound designer or composer layers subtle pads, tones, drones, or ambiences under dialogue and effects to support emotion without drawing attention.",
+    "category": "Sound Design",
+    "related_terms": ["Ambience layer", "Sound bed", "Room tone", "Sound design", "Layering"],
+    "common_mistakes": ["Mixing texture layers too loud so they mask dialogue or the lead line.", "Stacking many textures until they clutter the low-mids and muddy the mix.", "Forgetting to high-pass textures, letting rumble and low-end build up."],
+    "scenario_contexts": ["Adding a low drone under a tense scene.", "Layering room tone and soft pads to smooth transitions between shots.", "Building a bed of textures beneath a trailer's impact hits."]
+   },
+   "sources": ["Jay Rose, Producing Great Sound for Film and Video (sound design layering)", "Glen Ballou, Handbook for Sound Engineers (mixing and layering practice)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1f047744-337f-4dd3-a0a7-2704e7426c61",
+   "term": "Theatrical mixing room",
+   "fields": {
+    "definition": "A calibrated re-recording environment, or dubbing stage, designed and aligned for cinema playback, with monitoring set to the standardized B-chain electroacoustic response and reference level used in theaters so that a mix translates predictably to the auditorium.",
+    "plain_english": "A movie sound mixing room set up to sound like a real cinema. It is tuned to an agreed standard so the mix plays back the same way in theaters.",
+    "purpose_function": "It gives re-recording mixers a controlled reference that predicts how the mix will sound in a real cinema, so level and tone translate to the auditorium. It exists to standardize monitoring from stage to stage.",
+    "practical_application": "Mixers calibrate the room's B-chain response and reference monitoring level to the theatrical standard, then mix the film knowing it will play back consistently across theaters.",
+    "category": "Mix Environment",
+    "related_terms": ["Dubbing stage", "Re-recording mixer", "X-curve", "Reference level", "B-chain"],
+    "common_mistakes": ["Assuming a small near-field studio translates to a large theater without theatrical calibration.", "Mixing at a level other than the calibrated reference, so theatrical playback ends up too loud or too soft.", "Judging tone on an uncalibrated system instead of the standardized room response."],
+    "scenario_contexts": ["Final re-recording mix of a feature for cinema release.", "Calibrating a dubbing stage to the theatrical playback standard before a session.", "Checking a near-field mix against the room's theatrical B-chain response."]
+   },
+   "sources": ["SMPTE ST 202 — Dubbing Stages (Mixing Rooms), Screening Rooms and Indoor Theaters: B-Chain Electroacoustic Response", "Glen Ballou, Handbook for Sound Engineers (cinema/dubbing stage monitoring)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2a0e0a9b-072e-49c8-82e4-b29611fa0f26",
+   "term": "Three-dimensional game audio",
+   "fields": {
+    "definition": "Interactive audio that positions sounds in three-dimensional space around the listener and updates them in real time as the player and objects move, using techniques such as positional panning, distance attenuation, and head-related transfer function (HRTF) binaural rendering.",
+    "plain_english": "Game sound that seems to come from all around you and moves as you play. If you turn away from a sound, it shifts to match, so the world feels real.",
+    "purpose_function": "It makes a game world believable and helps players locate action by placing sounds in space and updating them with player movement. It exists to support immersion and give gameplay cues.",
+    "practical_application": "A game audio designer authors sounds in an engine with 3D positioning, distance rolloff, and often HRTF binaural rendering so audio responds to the player in real time.",
+    "category": "Game Audio",
+    "related_terms": ["Spatial audio", "Binaural rendering", "HRTF", "Object-based audio", "Distance attenuation"],
+    "common_mistakes": ["Treating game audio like a fixed linear film mix instead of a real-time interactive system.", "Applying full 3D to sounds that should stay 2D, such as music or UI beeps.", "Ignoring distance attenuation so far-off sounds stay unrealistically loud."],
+    "scenario_contexts": ["Placing footsteps and gunfire around a player in a first-person shooter.", "Rendering binaural 3D audio for a VR headset.", "Cueing an off-screen enemy by its position in the sound field."]
+   },
+   "sources": ["Jens Blauert, Spatial Hearing (HRTF / binaural localization; ASA/MIT Press)", "Glen Ballou, Handbook for Sound Engineers (binaural and spatial reproduction)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "20d3fb28-60e5-4e5a-b508-da24a4da2f3d",
+   "term": "Time manipulation",
+   "fields": {
+    "definition": "The broad category of editing and processing techniques that alter the temporal characteristics of audio, including time stretching or compression, varispeed, and reversal, changing a clip's duration or timing without necessarily changing its other properties.",
+    "plain_english": "Changing the timing or speed of a sound with editing tools. You can make it longer, shorter, faster, slower, or play it backward.",
+    "purpose_function": "It lets editors fit audio to a new duration, correct timing, or create effects without re-recording. It exists to give flexible control over when and how fast sound plays.",
+    "practical_application": "An editor time-stretches a line to fit a shortened scene, or reverses a hit for a whoosh, using a DAW's time-editing and processing tools.",
+    "category": "Editing & Processing",
+    "related_terms": ["Time stretching", "Time reversal", "Varispeed", "Pitch shifting", "Elastic audio"],
+    "common_mistakes": ["Stretching audio too far so it sounds warbly or full of artifacts.", "Expecting a stretch to hold pitch when varispeed changes both speed and pitch together.", "Forgetting that stretching changes region length and can break downstream sync."],
+    "scenario_contexts": ["Fitting a voice-over to an exact shot length.", "Slowing a sound effect to match a slow-motion shot.", "Reversing a cymbal to build a transition swell."]
+   },
+   "sources": ["Jay Rose, Producing Great Sound for Film and Video (editing and time processing)", "Avid Pro Tools Reference Guide (Elastic Audio, TCE, AudioSuite)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d92bc7a1-29a7-4742-97eb-3ea04873a6ad",
+   "term": "Time reversal",
+   "fields": {
+    "definition": "A process that plays or renders an audio segment backwards so its samples run from end to start, reversing the waveform and its amplitude envelope in time.",
+    "plain_english": "Playing a sound backward, from the end to the start. It is like running a tape or video in reverse.",
+    "purpose_function": "It creates rising swells, whooshes, and unnatural effects, or restores a clip that was reversed by mistake. It exists as a simple way to flip a sound's shape in time.",
+    "practical_application": "An editor applies a reverse process to a clip so a reverb tail builds up into a hit, or so a sound leads smoothly into a cut.",
+    "category": "Editing & Processing",
+    "related_terms": ["Time manipulation", "Reverse reverb", "AudioSuite", "Transition effect", "Sound design"],
+    "common_mistakes": ["Reversing a clip but forgetting to render or commit it, so playback stays forward.", "Expecting reversal alone to make a smooth swell without adding reverb or a fade.", "Setting the wrong region boundaries so the reversed effect starts or ends off the beat."],
+    "scenario_contexts": ["Making a reverse-reverb lead-in before a big story moment.", "Creating a whoosh for a scene transition.", "Designing a sci-fi effect from a reversed metallic hit."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (AudioSuite Reverse)", "Jay Rose, Producing Great Sound for Film and Video (sound design / reverse effects)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

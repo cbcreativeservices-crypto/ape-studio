@@ -1,0 +1,159 @@
+{
+ "batch": 66,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "febcfda8-1da5-4f77-a771-154cfbd508f4",
+   "term": "Snare sustain control",
+   "fields": {
+    "definition": "The practice of shaping how long a snare drum rings after each hit, using physical damping (moongel, tape, muffling rings) or signal processing (noise gating, expansion, transient shaping) to shorten or extend its decay so it suits the arrangement.",
+    "plain_english": "This is how you control how long the snare rings after each hit. You can add a small gel pad to the head, or use a gate that cuts the sound off sooner. It is like resting your hand on a bell to stop the ringing fast.",
+    "purpose_function": "It keeps the snare's ring from smearing the mix or masking other instruments, and stops the drum from sounding either too boomy or too lifeless. Controlling sustain helps the snare sit tightly with the rest of the kit and the song's tempo.",
+    "practical_application": "A technician sticks a moongel pad on the batter head, tunes the drum, or sets a noise gate's hold and release, or dials in a transient shaper's sustain control to tighten a ringing snare during tracking or mixing.",
+    "category": "Drum Processing",
+    "related_terms": ["Snare-top processing", "Snare-drum mixing", "Noise gating", "Transient shaping", "Snare-wire control"],
+    "common_mistakes": ["Gating a ringing snare so hard that soft ghost notes disappear", "Over-damping the head with tape until the drum sounds dead and toneless", "Confusing sustain (the ring after the hit) with the attack transient"],
+    "scenario_contexts": ["Tightening a long-ringing snare in a fast rock song so it does not blur the groove", "Adding moongel during tracking to reduce overtones before the take", "Using a transient shaper in the mix to shorten snare decay that fights the guitars"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cbc4b760-9747-446d-a217-29361021dd52",
+   "term": "Snare-bottom processing",
+   "fields": {
+    "definition": "Signal processing applied to the bottom (snare-side) microphone of a snare drum, which chiefly captures the rattle of the snare wires; typical treatment includes high-pass filtering, EQ to lift wire crispness, gating to cut bleed, and phase alignment against the top mic.",
+    "plain_english": "This is the work you do on the mic placed under the snare. That mic mostly picks up the buzzy wires on the bottom of the drum. You shape it with EQ and a gate so the snap of those wires is clear but not noisy.",
+    "purpose_function": "It brings out the bright, buzzy 'snap' of the snare wires that the top mic misses, adding crispness and definition. It exists so the engineer can blend wire detail into the snare sound without extra bleed from the rest of the kit.",
+    "practical_application": "A technician high-passes the bottom mic, boosts around the wire buzz, checks polarity so it adds instead of cancelling with the top mic, and often gates it to remove hi-hat bleed.",
+    "category": "Drum Processing",
+    "related_terms": ["Snare-top processing", "Snare-wire control", "Phase alignment", "Noise gating", "Snare-drum mixing"],
+    "common_mistakes": ["UNSAFE: leaving the bottom mic out of polarity so it cancels the top mic and thins the snare", "Forgetting to flip polarity on the bottom mic and losing body", "Boosting the bottom mic so much the hi-hat bleed becomes obvious"],
+    "scenario_contexts": ["Blending a bottom-mic track under the top mic to add wire snap in a mix", "Gating the bottom mic to cut heavy hi-hat spill", "Checking polarity between top and bottom snare mics at the start of a session"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dc07e0f8-2adc-4791-b63b-645c74aa90e0",
+   "term": "Snare-drum mixing",
+   "fields": {
+    "definition": "The overall process of balancing and shaping the snare drum within a drum kit and full mix, combining level, EQ, compression, gating, transient shaping and often parallel compression or reverb across the top and bottom snare microphones.",
+    "plain_english": "This is the whole job of making the snare sound right in a song. You set its level, shape its tone with EQ, and even it out with compression. The goal is a snare that cuts through clearly without being harsh.",
+    "purpose_function": "It gives the snare the power, tone and consistency needed to anchor the backbeat and drive the song. Because the snare is a focal point of most drum parts, mixing it well shapes the whole feel of the rhythm section.",
+    "practical_application": "A technician balances the top and bottom snare mics, applies EQ and compression, gates out bleed, and may add reverb or a parallel-compressed copy to make the snare sit strongly in the mix.",
+    "category": "Drum Mixing",
+    "related_terms": ["Snare-top processing", "Snare-bottom processing", "Parallel compression", "Noise gating", "Drum bus"],
+    "common_mistakes": ["Over-compressing the snare until it pumps and loses dynamics", "Adding so much reverb the backbeat gets washed out and loses punch", "Ignoring phase between the snare mics and the overheads"],
+    "scenario_contexts": ["Building a punchy snare sound for a rock mix from top and bottom mics", "Adding parallel compression to thicken a thin-sounding snare", "Matching snare tone and level across sections of a song"]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "430ad23e-103d-436e-876d-f7ad8471cb73",
+   "term": "Snare-top processing",
+   "fields": {
+    "definition": "Signal processing applied to the top (batter-side) microphone of a snare drum, which captures the drum's attack, body and tone; typical treatment includes EQ, compression, transient shaping and gating to control bleed.",
+    "plain_english": "This is the work you do on the mic placed above the snare. That mic picks up the main crack and body of the drum. You shape it with EQ and compression so the hit is strong and even.",
+    "purpose_function": "It shapes the core sound of the snare, the attack and fullness that most listeners hear as the backbeat. It exists so the engineer can make the main snare tone punchy, even and clear before blending in the bottom mic.",
+    "practical_application": "A technician EQs the top mic for body and crack, compresses it for even hits, applies transient shaping for attack, and gates it to reduce hi-hat and tom bleed.",
+    "category": "Drum Processing",
+    "related_terms": ["Snare-bottom processing", "Snare-drum mixing", "Transient shaping", "Noise gating", "Parallel compression"],
+    "common_mistakes": ["Boosting harsh high-mids until the snare sounds brittle", "Compressing so hard the natural attack is squashed flat", "Gating too tightly so quiet ghost notes are cut off"],
+    "scenario_contexts": ["Shaping the main snare tone in a pop or rock mix", "Compressing the top mic to even out a drummer's uneven hits", "Gating the top mic to reduce spill from the hi-hat"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7ddc2e05-2830-4908-bbb6-ebf7059e2447",
+   "term": "Snare-wire control",
+   "fields": {
+    "definition": "Managing the sound of the snare wires (the coiled strands stretched across the bottom head) through tension adjustment via the throw-off/strainer, drum tuning, and mix processing such as gating or EQ to control unwanted sympathetic buzz.",
+    "plain_english": "The snare wires are the springy strands under the drum that give it its buzz. Controlling them means setting how tight they sit and taming extra buzz. You adjust the strainer on the drum, or use a gate and EQ in the mix.",
+    "purpose_function": "It sets how crisp or loose the snare's buzz sounds and reduces annoying sympathetic rattle when other instruments play. Good wire control keeps the snare lively without a constant buzzing ring bleeding into the rest of the kit.",
+    "practical_application": "A technician adjusts the strainer tension on the drum, retunes the bottom head, or in the mix uses gating and EQ to reduce sympathetic snare buzz picked up from the bass or toms.",
+    "category": "Drum Processing",
+    "related_terms": ["Snare-bottom processing", "Snare sustain control", "Sympathetic resonance", "Noise gating", "Snare-drum mixing"],
+    "common_mistakes": ["Cranking wire tension so tight the snare chokes and loses buzz", "Leaving wires so loose they rattle and sustain uncontrollably", "Blaming mic bleed for buzz that is really sympathetic wire rattle"],
+    "scenario_contexts": ["Adjusting the strainer to fix a snare that buzzes when the bass plays", "Tuning the snare-side head for a crisper wire response before tracking", "Gating in the mix to cut sympathetic snare buzz between hits"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a986e5a7-dcda-436d-97c0-67f0003bad98",
+   "term": "Soloist balance",
+   "fields": {
+    "definition": "Setting the level of a featured solo part relative to the accompaniment so the soloist stays clearly audible and prominent without overpowering the ensemble, using fader level, and often gain riding and light compression.",
+    "plain_english": "This means setting how loud the soloist is against the rest of the band. You want them clearly on top but not so loud the band disappears. It is like making sure the lead singer stands out over the music.",
+    "purpose_function": "It keeps the featured player or singer at the front of the mix where the listener's attention should be, while the accompaniment supports rather than covers them. It exists to preserve the musical hierarchy the arrangement intends.",
+    "practical_application": "An engineer sets the soloist's fader above the accompaniment, rides the level through quiet and loud passages, and may add gentle compression so the solo stays present throughout.",
+    "category": "Mix Balance",
+    "related_terms": ["Soloist ride", "Fader riding", "Gain staging", "Vocal level", "Mix balance"],
+    "common_mistakes": ["Setting the solo loud in one passage and losing it when the band gets louder", "Compressing the soloist so hard it sounds unnatural and pinned in place", "Boosting the soloist's level instead of pulling the accompaniment down when it is masking them"],
+    "scenario_contexts": ["Keeping a guitar solo above the rhythm section during a build", "Balancing a saxophone feature over a full horn arrangement", "Riding a vocal ad-lib so it stays clear over the chorus"]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3fa5e10f-08bc-443d-930c-17e8d578d88a",
+   "term": "Soloist ride",
+   "fields": {
+    "definition": "The technique of continuously adjusting (riding) a soloist's fader or gain during a performance or mix so the solo stays at a consistent, prominent level against changing accompaniment dynamics.",
+    "plain_english": "This is moving the soloist's fader up and down as the song plays. You push it up in quiet parts and ease it back when the band gets loud. It keeps the solo sitting at the same clear level the whole way through.",
+    "purpose_function": "It smooths out the natural loud and soft moments of a solo so it never gets buried or jumps out too far. Riding by hand or with automation gives a more musical result than a compressor alone.",
+    "practical_application": "An engineer keeps a hand on the soloist's fader (or draws automation) throughout the take, nudging it up on weak notes and down on strong ones to hold a steady balance.",
+    "category": "Fader Automation",
+    "related_terms": ["Soloist balance", "Fader riding", "Automation", "Gain riding", "Mix balance"],
+    "common_mistakes": ["Making rides so large and sudden they sound unnatural and obvious", "Riding the level up but forgetting to bring it back down after the loud section", "Relying only on a compressor when small manual rides would sound smoother"],
+    "scenario_contexts": ["Riding a fiddle solo up during a quiet verse in a live mix", "Automating a lead vocal fader to hold ad-libs steady", "Nudging a solo up over a loud band passage so it stays audible"]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "aa4ebf06-3e83-4cdb-b451-570fcf0308fd",
+   "term": "Soprano section balance",
+   "fields": {
+    "definition": "Setting the relative level and blend of the soprano (highest) voices within a choir or vocal ensemble so they carry the melody clearly while blending with the alto, tenor and bass sections, achieved through mic placement, section levels and EQ.",
+    "plain_english": "In a choir the sopranos are the highest voices and often carry the tune. Balancing them means setting how loud they sit against the other sections. You want them clear on top but still blended, not sticking out too far.",
+    "purpose_function": "It ensures the melody line the sopranos usually carry is present and clear without covering the harmony parts below. Balancing the section keeps the whole choir sounding unified rather than top-heavy or thin.",
+    "practical_application": "An engineer positions or levels the soprano section mics, adjusts their fader against the other sections, and uses gentle EQ so the sopranos lead the blend without harshness.",
+    "category": "Ensemble Balance",
+    "related_terms": ["Alto section balance", "Choir balance", "Sectional balance", "Blend", "Stereo imaging"],
+    "common_mistakes": ["Pushing the sopranos so loud the inner harmony parts vanish", "Boosting high frequencies until the sopranos sound harsh and sibilant", "Balancing sections in solo instead of in the context of the full choir"],
+    "scenario_contexts": ["Bringing up the sopranos so the melody carries over a full choir", "Balancing choir sections with spaced overhead mics in a hall", "EQing the soprano section to reduce harshness on high notes"]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Sound Systems: Design and Optimization (McCarthy)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f97329bc-ec7b-45f9-aad4-0b647b802f19",
+   "term": "Staggered vocal panning",
+   "fields": {
+    "definition": "A stereo-placement technique in which multiple vocal tracks (usually doubled or layered backing vocals) are panned to offset positions across the stereo field rather than stacked at center, widening the vocal image and separating individual parts.",
+    "plain_english": "This is spreading backing vocals across the stereo field instead of piling them all in the middle. One take sits a bit left, another a bit right, and so on. It makes the vocals sound wider and easier to tell apart.",
+    "purpose_function": "It widens the stereo image of layered or doubled vocals and keeps each part distinct so the stack does not sound crowded in the center. It exists to add width and clarity without simply turning parts up.",
+    "practical_application": "An engineer records or copies several vocal takes and pans them to spread positions (for example hard left and right for a double, or fanned out for a three-part stack) to build a wide, clear vocal bed.",
+    "category": "Stereo Imaging",
+    "related_terms": ["Double tracking", "Backing vocals", "Panning", "Stereo width", "Mix balance"],
+    "common_mistakes": ["Panning a single mono vocal take to one side, leaving the stereo field lopsided", "Spreading vocals so wide the center of the mix feels empty", "Panning identical copies of the same take, which just moves it rather than widening it"],
+    "scenario_contexts": ["Panning a doubled backing vocal hard left and right for width", "Fanning out a three-part harmony stack across the stereo field", "Placing layered gang-vocal takes at staggered positions in a chorus"]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,112 @@
+{
+ "packet": "add_02_radio_imaging.json",
+ "group": "Radio \u2014 Imaging",
+ "primary_topic": "Broadcast / Radio Production & Air Chain",
+ "difficulty": "intermediate",
+ "terms": [
+  {
+   "id": "c7502feb-4d0b-4f02-8073-3a93c1a801b9",
+   "term": "Imaging Package",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "1e7ce563-81b6-4d82-8d35-dc4257a7569c",
+   "term": "Imaging Voice",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "1a2d415a-f14b-4b49-8bcf-ca00300cdd2d",
+   "term": "Sonic Branding",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "ecff8b1c-0579-465c-9b56-8fecdd86df84",
+   "term": "Sonic Logo",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

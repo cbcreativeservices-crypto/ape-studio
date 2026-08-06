@@ -1,0 +1,78 @@
+{
+ "batch": 303,
+ "topic": "Hearing Anatomy & Function",
+ "authored": [
+  {
+   "id": "512aa3b4-5e40-4bf8-bdfa-3f347c70a86e",
+   "term": "Spatial hearing research",
+   "fields": {
+    "definition": "The scientific study of how the auditory system locates sound sources and perceives the spatial qualities of a sound field, including direction, distance, and spaciousness. It examines the cues the brain uses to do this: interaural time differences (ITD), interaural level differences (ILD), and spectral shaping from the head and pinnae, captured in head-related transfer functions (HRTFs).",
+    "plain_english": "The study of how your ears and brain work out where a sound is coming from. For example, you can tell a car is on your left because the sound reaches that ear a bit sooner and a bit louder.",
+    "purpose_function": "It explains the mechanisms of sound localization so audio systems, from stereo mixing to surround and immersive formats, can recreate a convincing sense of direction and space for the listener.",
+    "practical_application": "Engineers apply its findings when panning tracks, choosing microphone spacing and angle for stereo imaging, building binaural or surround mixes, and time-aligning loudspeaker arrays so the audience perceives stable, accurate placement.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Interaural time difference",
+     "Interaural level difference",
+     "Head-related transfer function",
+     "Precedence effect",
+     "Binaural hearing",
+     "Sound localization"
+    ],
+    "common_mistakes": [
+     "Assuming localization relies only on loudness differences between the ears, and ignoring timing (ITD) and pinna spectral cues.",
+     "Confusing left-right localization with front-back and up-down judgments, which depend mainly on spectral cues rather than interaural differences.",
+     "Believing simple amplitude panning reproduces real-world localization; it lacks the natural HRTF and timing cues the ear expects."
+    ],
+    "scenario_contexts": [
+     "Setting the spacing and angle of a stereo microphone pair to capture a stable, well-localized image.",
+     "Producing a binaural or immersive (e.g. Dolby Atmos) mix intended for headphone listening.",
+     "Time-aligning and delaying a live loudspeaker system so the audience localizes sound toward the stage."
+    ]
+   },
+   "sources": [
+    "Blauert, Spatial Hearing: The Psychophysics of Human Sound Localization (MIT Press)",
+    "Moore, An Introduction to the Psychology of Hearing",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "19481162-a1e6-4b63-86e8-14d4a00e9cdd",
+   "term": "Temporal masking analysis",
+   "fields": {
+    "definition": "The study and measurement of temporal masking, in which one sound reduces the audibility of another sound that is close to it in time. It characterizes forward (post-) masking, where a preceding sound masks a following one, and backward (pre-) masking, where a following sound masks a preceding one, describing how the threshold shift depends on level and on the time gap between the sounds.",
+    "plain_english": "Looking at how one sound can hide another that comes just before or right after it. For example, a loud drum hit can cover up a soft note for a short moment.",
+    "purpose_function": "It quantifies how the ear hides sounds across short time gaps, which underpins perceptual audio coding (such as MP3 and AAC) and helps predict when edits, noise, or artifacts will be inaudible.",
+    "practical_application": "Engineers use it when setting bitrates for lossy codecs that discard masked detail, when timing edits, crossfades, or noise-gate action so any glitch falls under a masker, and when judging whether a quiet element will be heard next to a loud transient.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Simultaneous masking",
+     "Frequency masking",
+     "Auditory threshold",
+     "Critical band",
+     "Perceptual audio coding",
+     "Forward masking"
+    ],
+    "common_mistakes": [
+     "Confusing temporal masking with simultaneous (frequency) masking, which occurs between sounds present at the same time.",
+     "Assuming forward and backward masking are equal; forward masking lasts far longer (up to about 100-200 ms) than backward masking (only a few ms).",
+     "Thinking a masked sound has been removed from the signal; it is still present but simply not audible to the listener."
+    ],
+    "scenario_contexts": [
+     "Choosing bitrate and encoder settings for a lossy codec (MP3/AAC) that relies on masking to hide discarded data.",
+     "Placing an edit or crossfade just after a loud transient so any glitch is masked.",
+     "Judging whether a quiet reverb tail or artifact remains audible right after a strong drum hit."
+    ]
+   },
+   "sources": [
+    "Moore, An Introduction to the Psychology of Hearing",
+    "Zwicker & Fastl, Psychoacoustics: Facts and Models",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

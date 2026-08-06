@@ -1,0 +1,321 @@
+{
+ "batch": 76,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "a835410c-4a12-4bde-8e69-26dbe100062c",
+   "term": "Vocal ride",
+   "fields": {
+    "definition": "The practice of manually adjusting a lead or backing vocal's level in real time, either by moving a fader during a pass or by drawing volume automation, so every word sits at a consistent, intelligible level within the mix.",
+    "plain_english": "Moving the volume up and down on a vocal by hand so no word gets lost or too loud. It is like turning up the TV for a quiet whisper and back down for a shout, so you always hear the words clearly.",
+    "purpose_function": "It keeps the vocal steady and clear over a changing backing track, catching soft words a compressor would miss and taming loud ones without the pumping a heavy compressor can add. It exists because musical phrasing varies too much for level alone to be handled by dynamics processing.",
+    "practical_application": "An engineer records fader moves or draws clip-gain and volume automation phrase by phrase, often riding before the compressor so the compressor sees a more even signal and works less hard.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Vocal serial compression",
+     "Vocal sidechain compression",
+     "Automation",
+     "Fader",
+     "Gain staging",
+     "Compression"
+    ],
+    "common_mistakes": [
+     "Relying only on a compressor for level control instead of riding, which leaves quiet consonants buried and forces heavy gain reduction",
+     "Riding after the compressor when the goal was to feed it a steadier signal, undoing the benefit",
+     "Making moves too coarse or too fast so the ride sounds unnatural or audibly steps"
+    ],
+    "scenario_contexts": [
+     "Bringing up dropped word endings in a soft verse before a loud chorus",
+     "Evening out a singer who leans in and out of the mic during a dynamic take",
+     "Feeding a smoother signal into a compressor so it reacts gently instead of clamping down"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "76de6815-a866-44d4-a6ae-e66036a289ae",
+   "term": "Vocal room-tone matching",
+   "fields": {
+    "definition": "The editing practice of making the quiet background ambience under a vocal consistent across edits, comps and punch-ins by inserting or level-matching room tone, so joins between takes do not reveal an audible change in the noise floor.",
+    "plain_english": "Making the quiet background hiss under a vocal sound the same all the way through, so edits do not click or jump. It is like patching a wall so the paint matches and you cannot see where the repair is.",
+    "purpose_function": "It hides edit points and silences by keeping the natural room sound continuous, which stops the listener from hearing sudden gaps or shifts in background noise. It exists because splicing takes recorded at different moments or in gated silence otherwise creates jarring holes in the ambience.",
+    "practical_application": "An editor captures a few seconds of the room's tone during the session, then pastes or crossfades it under muted gaps and across take boundaries, matching its level so the noise floor stays even.",
+    "category": "Vocal Editing",
+    "related_terms": [
+     "Vocal syllable editing",
+     "Room tone",
+     "Comping",
+     "Crossfade",
+     "Noise floor",
+     "Punch-in"
+    ],
+    "common_mistakes": [
+     "Using a hard gate or absolute silence between phrases, which makes the background drop out and edits stand out",
+     "Pasting room tone from a different session or room whose tone does not match",
+     "Forgetting to crossfade the room-tone joins, leaving clicks at the splice points"
+    ],
+    "scenario_contexts": [
+     "Filling gaps between lines in a comped lead vocal so the background stays continuous",
+     "Smoothing a punch-in where the fixed word was recorded on a different day",
+     "Cleaning up breath and mouth noise so the edited spots do not sound like dead holes"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2480e595-3e30-4a47-a475-1fd5b29e4964",
+   "term": "Vocal saturation",
+   "fields": {
+    "definition": "The deliberate addition of harmonic distortion to a vocal, using tube, tape or analog-modeling processors, to add harmonics and gentle dynamic compression that make the voice sound warmer, denser and more present without a large level increase.",
+    "plain_english": "Adding a touch of warm, controlled distortion to a vocal to make it sound fuller and richer. It is like toasting bread: the same slice, but browned so it has more flavor and character.",
+    "purpose_function": "It generates extra harmonics that add richness and help a vocal cut through a dense mix, while its soft compression rounds off peaks. It exists because a clean, dynamically flat vocal can sound thin or dull against a loud band.",
+    "practical_application": "An engineer inserts a saturation, tube or tape plug-in on the vocal and drives it lightly, often in parallel, listening for added warmth and presence while avoiding obvious grit or harshness.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Vocal serial compression",
+     "Harmonic distortion",
+     "Parallel processing",
+     "Tape emulation",
+     "Compression",
+     "Overdrive"
+    ],
+    "common_mistakes": [
+     "Driving the saturation so hard the vocal sounds gritty or fizzy instead of warm",
+     "Adding saturation on every stage until harshness and sibilance build up",
+     "Judging saturation soloed instead of in the mix, where a little goes a long way"
+    ],
+    "scenario_contexts": [
+     "Warming up a clean digital vocal so it sits better with an analog-style track",
+     "Helping a soft vocal cut through a loud rock mix without just raising its level",
+     "Adding density to a lead vocal in parallel so the dry take stays intact"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e2c42e05-5a9d-45ec-8978-4af658b1fcf1",
+   "term": "Vocal serial compression",
+   "fields": {
+    "definition": "A vocal dynamics technique that chains two or more compressors in series, each applying only a small amount of gain reduction, so the overall control is heavier yet more transparent than forcing a single compressor to do all the work.",
+    "plain_english": "Using two or more compressors on a vocal, one after another, each doing just a little. This works better than one compressor doing all the work. It is like two people sharing a heavy box, so neither one strains.",
+    "purpose_function": "Spreading the gain reduction across several stages tames a wide dynamic range without the obvious pumping or squashing a single hard-working compressor produces. It exists because vocals often need a lot of control, and one compressor pushed that far sounds unnatural.",
+    "practical_application": "An engineer places a slower compressor to catch broad level swings and a faster one to catch quick peaks, setting each for only a few decibels of gain reduction so their effects add up gently.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Vocal ride",
+     "Vocal saturation",
+     "Compression",
+     "Gain reduction",
+     "Limiter",
+     "Attack and release"
+    ],
+    "common_mistakes": [
+     "Setting each compressor for heavy gain reduction, which stacks up and over-squashes the vocal",
+     "Using two compressors with identical settings instead of giving each a distinct job",
+     "Chaining more stages to fix a level problem that a fader ride would solve more cleanly"
+    ],
+    "scenario_contexts": [
+     "Controlling a singer with a very wide loud-to-soft range for a dense pop mix",
+     "Getting a consistent, upfront lead vocal without obvious pumping",
+     "Combining a leveling compressor with a fast peak compressor on a rap or spoken vocal"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "598cb6a0-eced-4511-a31f-a23871a6e164",
+   "term": "Vocal sibilance automation",
+   "fields": {
+    "definition": "The practice of controlling harsh 's', 'sh' and 't' sounds on a vocal by drawing targeted volume or gain automation on just those consonants, as an alternative or complement to a de-esser, so each sibilant is tamed by exactly the amount it needs.",
+    "plain_english": "Turning down only the sharp 'ess' and 'shh' sounds in a vocal by hand, spot by spot. It is like dabbing down just the shiny spots on a photo instead of dimming the whole picture.",
+    "purpose_function": "It removes piercing sibilant peaks precisely where they occur while leaving the rest of the vocal untouched, avoiding the lisping or dulling a heavy de-esser can cause. It exists because sibilance varies word to word and a single automatic setting rarely fits every one.",
+    "practical_application": "An engineer zooms in on each harsh consonant and draws a short dip in clip gain or volume automation, or automates a de-esser's threshold, listening so the 's' softens without turning into an 'f' or 'th'.",
+    "category": "Vocal Editing",
+    "related_terms": [
+     "Vocal syllable editing",
+     "Vocal ride",
+     "De-esser",
+     "Sibilance",
+     "Automation",
+     "Clip gain"
+    ],
+    "common_mistakes": [
+     "Cutting sibilants so far they turn into a lisp, making 's' sound like 'th'",
+     "Automating whole-word dips instead of targeting only the sibilant, dulling the consonant",
+     "Relying on one de-esser setting for a whole track when sibilance level changes line to line"
+    ],
+    "scenario_contexts": [
+     "Taming a few piercing 's' sounds a de-esser missed on a bright pop vocal",
+     "Smoothing sibilance on a close-miked whispery vocal that trips a de-esser too easily",
+     "Fixing harsh consonants on a doubled or layered vocal where sibilance stacks up"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5306902e-20a5-4f18-ac1b-d6d97b893781",
+   "term": "Vocal sidechain compression",
+   "fields": {
+    "definition": "A technique in which a compressor's gain reduction is triggered by the vocal signal fed to its sidechain input, so that another element such as a synth, pad or reverb return automatically ducks in level whenever the vocal is present and recovers when it stops.",
+    "plain_english": "The vocal itself makes another sound get quieter whenever the singer sings. It is like a car radio that turns down the moment someone talks, then back up when they stop.",
+    "purpose_function": "It carves space for the vocal by dipping competing parts only while the singer is active, keeping words clear without permanently lowering those parts. It exists because busy backing elements can mask a vocal, and manual level juggling every phrase is tedious.",
+    "practical_application": "An engineer routes the vocal to the sidechain (key) input of a compressor placed on the part to be ducked, then sets threshold and release so that element drops a couple of decibels under the vocal and returns smoothly in the gaps.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Vocal ride",
+     "Vocal serial compression",
+     "Sidechain",
+     "Ducking",
+     "Compression",
+     "Bus routing"
+    ],
+    "common_mistakes": [
+     "Confusing sidechain ducking with putting a compressor directly on the vocal",
+     "Setting release too fast so the ducked part audibly pumps between words",
+     "Ducking so deeply the backing part disappears instead of just making room"
+    ],
+    "scenario_contexts": [
+     "Dipping a wide synth pad or reverb wash under the lead vocal so lyrics stay clear",
+     "Ducking a music bed under a voiceover in broadcast or podcast work",
+     "Keeping a busy guitar or keyboard layer from masking the vocal in a dense chorus"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9fae88c3-4efd-4c0b-bc89-78d4b5d18485",
+   "term": "Vocal slapback",
+   "fields": {
+    "definition": "A single short, discrete echo applied to a vocal, typically delayed roughly 80 to 150 milliseconds with little or no feedback, producing one distinct repeat rather than a decaying reverb tail; it is the classic rockabilly and early rock-and-roll vocal effect.",
+    "plain_english": "One quick echo added just after a vocal, like a fast bounce back. Think of shouting toward a nearby wall and hearing a single clear repeat, not a long fading echo.",
+    "purpose_function": "It thickens and energizes a vocal and adds a sense of space and vintage character while staying rhythmic and out of the way, because it is one repeat rather than a wash of reverb. It exists as a period-accurate way to make a dry vocal feel bigger without muddying the mix.",
+    "practical_application": "An engineer sets a delay to a single repeat around 80 to 150 milliseconds with feedback near zero, then blends it under the dry vocal, sometimes tuning the time to the song's tempo for a musical bounce.",
+    "category": "Vocal Effects",
+    "related_terms": [
+     "Vocal spread",
+     "Delay",
+     "Reverb",
+     "Feedback",
+     "Doubling",
+     "Pre-delay"
+    ],
+    "common_mistakes": [
+     "Adding feedback so the delay repeats several times instead of the single slap",
+     "Setting the delay so short it flams or so long it sounds like a separate word",
+     "Mixing the slap so loud it competes with the dry vocal instead of supporting it"
+    ],
+    "scenario_contexts": [
+     "Getting a rockabilly or early rock-and-roll vocal sound on a lead take",
+     "Adding vintage energy and space to a dry vocal without long reverb",
+     "Timing a single delay to tempo so the repeat locks with the groove"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "41a4dee8-c47c-43a9-ba16-fa4ce01ecf8d",
+   "term": "Vocal spread",
+   "fields": {
+    "definition": "The widening of a vocal's stereo image so it occupies more of the left-right field, achieved through techniques such as hard-panned doubles, short stereo delays, pitch-based stereo wideners or micro-timing offsets, most often applied to backing vocals.",
+    "plain_english": "Making a vocal sound wide across the left and right speakers instead of coming from one spot in the middle. It is like a choir spread across a stage rather than one person standing dead center.",
+    "purpose_function": "It creates a bigger, more enveloping vocal and frees the center for the lead by pushing supporting voices out to the sides. It exists because backing vocals and effects sound fuller and less cluttered when they surround the lead rather than stacking on top of it.",
+    "practical_application": "An engineer hard-pans doubled takes left and right, or applies a stereo widener or short offset delay to backing vocals, checking mono compatibility so the widening does not collapse or thin out.",
+    "category": "Vocal Effects",
+    "related_terms": [
+     "Vocal slapback",
+     "Doubling",
+     "Stereo width",
+     "Panning",
+     "Mono compatibility",
+     "Haas effect"
+    ],
+    "common_mistakes": [
+     "Widening with out-of-phase tricks that cancel and vanish when the mix is summed to mono",
+     "Spreading the lead vocal so wide it loses its solid center focus",
+     "Over-widening backing vocals until they sound hollow or disconnected from the track"
+    ],
+    "scenario_contexts": [
+     "Panning doubled backing vocals wide to build a lush chorus around a centered lead",
+     "Adding width to a harmony stack so it wraps around the lead vocal",
+     "Checking a widened vocal in mono to confirm it still holds up for club or broadcast playback"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "06b22a27-bedb-4f0a-a97b-05cbbed80d74",
+   "term": "Vocal syllable editing",
+   "fields": {
+    "definition": "Detailed editing of a recorded vocal at the level of individual syllables, cutting, nudging, crossfading, retiming or replacing them to fix timing, comp the best pieces of multiple takes, or tighten phrasing without re-recording.",
+    "plain_english": "Editing a vocal one syllable at a time to fix timing or swap in the best bits from different takes. It is like cutting and rearranging words in a document to make a sentence read just right.",
+    "purpose_function": "It lets an engineer perfect timing and assemble a flawless performance from several takes when a whole-phrase edit is too coarse. It exists because a single syllable can be late, weak or flat while the rest of the line is perfect.",
+    "practical_application": "An editor zooms in, splits the vocal at syllable boundaries, then slides, stretches or crossfades those pieces, matching room tone and level so the joins are inaudible.",
+    "category": "Vocal Editing",
+    "related_terms": [
+     "Vocal room-tone matching",
+     "Vocal sibilance automation",
+     "Comping",
+     "Crossfade",
+     "Time stretching",
+     "Pitch correction"
+    ],
+    "common_mistakes": [
+     "Cutting across a syllable's breath or tail so the edit clicks or sounds chopped",
+     "Skipping crossfades at splice points, leaving audible pops",
+     "Over-editing until the vocal loses its natural flow and feel"
+    ],
+    "scenario_contexts": [
+     "Nudging a late syllable back into time on an otherwise great take",
+     "Comping the best syllables from several passes into one clean lead vocal",
+     "Tightening a doubled or stacked vocal so the layers line up word for word"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

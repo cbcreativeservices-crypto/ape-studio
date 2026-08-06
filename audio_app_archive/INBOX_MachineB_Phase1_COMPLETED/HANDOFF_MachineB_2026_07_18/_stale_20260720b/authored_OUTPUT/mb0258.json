@@ -1,0 +1,141 @@
+{
+ "batch": 258,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "b413e050-e674-475f-b5b0-aafd4e3b496e",
+   "term": "Transitional effect",
+   "fields": {
+    "definition": "A designed sound element—commonly a whoosh, riser, swell, or impact—placed at a picture cut or scene change to smooth or emphasize the visual transition and carry the audience from one shot, scene, or segment to the next.",
+    "plain_english": "A sound, like a whoosh, played right when the picture cuts to a new scene. It helps the change feel smooth. Think of a page-turn sound telling you the story has moved on.",
+    "purpose_function": "It bridges edits so scene or segment changes feel intentional and fluid, and it can build energy or signal a shift in time, place, or mood.",
+    "practical_application": "An editor drops a whoosh or riser on the cut between segments in a trailer, promo, or documentary, timing its peak to the exact frame of the visual change.",
+    "category": "Sound Design",
+    "related_terms": ["Sound effect", "Whoosh", "Riser", "Sweetener", "Sound design", "Crossfade"],
+    "common_mistakes": ["Placing the effect's peak off the actual picture cut so it feels disconnected from the edit", "Overusing transitional whooshes until they lose impact and clutter the mix", "Failing to match the effect's tone and length to the pace and genre of the piece"],
+    "scenario_contexts": ["Adding whooshes between shots in a fast-cut promo or trailer", "Bridging chapter or segment changes in a documentary or corporate video", "Marking a flashback or time jump in a scripted scene"]
+   },
+   "sources": ["Ric Viers, The Sound Effects Bible", "David Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "afadec72-f740-4126-a8a9-fbd3004a5c8d",
+   "term": "Translated script",
+   "fields": {
+    "definition": "A version of a program's dialogue and narration rendered into a target language, used as the source text for dubbing, voice-over, or subtitle creation during localization.",
+    "plain_english": "The show's spoken words written out in another language. Voice actors and subtitle makers work from it, like a recipe translated so cooks in another country can make the same dish.",
+    "purpose_function": "It gives the dubbing director, voice talent, and subtitlers an accurate, timing-aware text so the localized version matches the original meaning and screen action.",
+    "practical_application": "A localization team receives the translated script and records replacement dialogue or builds subtitle files from it, checking that lines fit the on-screen timing and lip movement.",
+    "category": "Localization",
+    "related_terms": ["Dubbing", "Subtitle", "UN-style voice-over", "Localization", "ADR", "Voice-over"],
+    "common_mistakes": ["Translating word-for-word instead of adapting lines to fit timing and lip sync", "Ignoring on-screen text and context that the translation must account for", "Assuming one translated script serves both dubbing and subtitles without adaptation"],
+    "scenario_contexts": ["Preparing a foreign-language dub of a film for international release", "Creating subtitles for a streaming series in several languages", "Recording a UN-style voice-over for a documentary interview"]
+   },
+   "sources": ["Frederic Chaume, Audiovisual Translation: Dubbing", "Diaz-Cintas & Remael, Audiovisual Translation: Subtitling"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "66db68d7-cd00-4295-b35f-bef3d6ea05cc",
+   "term": "Translation-accuracy review",
+   "fields": {
+    "definition": "A quality-control step in localization where a qualified reviewer checks that a translated script, dub, or subtitle correctly conveys the meaning, tone, and context of the original before the deliverable is approved.",
+    "plain_english": "A check to make sure the translation really says the same thing as the original. It is like having a second person proofread your work in another language before you hand it in.",
+    "purpose_function": "It catches mistranslations, missing context, and tone errors so the localized version stays faithful to the original and meets client or broadcaster standards.",
+    "practical_application": "Before final delivery, a reviewer compares the translated subtitles or dub against the source, flags errors, and sends corrections back to the translator or dubbing team.",
+    "category": "Localization",
+    "related_terms": ["Translated script", "Quality control", "Subtitle", "Dubbing", "Localization", "Deliverable"],
+    "common_mistakes": ["Reviewing only the words without watching the picture for context and on-screen action", "Skipping the review to save time, letting errors reach final delivery", "Treating personal style preferences as genuine accuracy errors"],
+    "scenario_contexts": ["Signing off subtitles before a streaming platform delivery", "Checking a dubbed episode's script against the original for a broadcaster", "Verifying a translated voice-over for a corporate or training video"]
+   },
+   "sources": ["Diaz-Cintas & Remael, Audiovisual Translation: Subtitling", "Frederic Chaume, Audiovisual Translation: Dubbing"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e37cad22-5a7d-4f34-9382-cc2b8b654e75",
+   "term": "Two-dimensional-to-three-dimensional blend",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No established or attested meaning for this exact phrase as a named audio term. It is ambiguous between several readings (e.g. blending a 2D channel-based mix with a 3D immersive/height mix, a stereo-to-immersive upmix crossfade, or a picture-side 2D/3D concept). No >=2 acceptable sources define it, so all fields left blank pending clarification."]
+  },
+  {
+   "id": "19e407fd-74b8-4ad1-be65-ff1406655455",
+   "term": "United Nations-style voice-over",
+   "fields": {
+    "definition": "A localization technique in which the original speech is kept audible at a low level while a translated voice-over is laid over it, so the audience hears both the source voice and the translation; it is widely used for documentary and news interviews.",
+    "plain_english": "You still hear the first speaker quietly underneath. A new voice reads the translation over the top. It is the style you often hear in TV news interviews with guests from other countries.",
+    "purpose_function": "It preserves the authenticity and identity of the original speaker while making the content understandable to a new-language audience, unlike full dubbing which replaces the voice entirely.",
+    "practical_application": "A post mixer lowers the original interview audio by several dB and rides the translated voice-over on top, usually starting the translation a beat after the original begins.",
+    "category": "Localization",
+    "related_terms": ["Voice-over", "Dubbing", "Translated script", "Localization", "Narration", "Subtitle"],
+    "common_mistakes": ["Muting the original voice completely, which defeats the purpose of the style", "Starting the translation at the exact same instant so the speaker's identity is lost", "Setting the original too loud so the translation is hard to follow"],
+    "scenario_contexts": ["Translating an on-camera interview in a documentary", "Localizing eyewitness testimony in a news package", "Voicing a foreign-language speaker in a corporate or factual program"]
+   },
+   "sources": ["Frederic Chaume, Audiovisual Translation: Dubbing", "Diaz-Cintas & Remael, Audiovisual Translation: Subtitling"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b71f193f-5108-44c4-8711-fb04484010b5",
+   "term": "User-interface sound",
+   "fields": {
+    "definition": "A short designed sound that gives audible feedback for an interaction with a device, app, or on-screen interface—such as a button press, notification, error, or menu move—confirming that an action registered.",
+    "plain_english": "The little beep or click a phone or app makes when you tap a button or get a message. It tells your ears the device noticed what you did, like a doorbell confirming someone pressed it.",
+    "purpose_function": "It confirms user actions and signals system state without the user needing to look, which improves usability and accessibility.",
+    "practical_application": "A sound designer creates and edits sets of clicks, chimes, and alerts for an app, game menu, or product, matching each to its interface event and level-matching them to be noticeable but not annoying.",
+    "category": "Sound Design",
+    "related_terms": ["Sound effect", "Notification sound", "Foley", "Sound design", "Game audio", "Sweetener"],
+    "common_mistakes": ["Making UI sounds too loud or harsh so they annoy the user", "Reusing one generic sound for actions that should feel different", "Relying on the sound as the only feedback, ignoring accessibility"],
+    "scenario_contexts": ["Designing button and menu sounds for a mobile app", "Creating alert and notification tones for a product or device", "Adding on-screen interface sounds to a game's menus"]
+   },
+   "sources": ["Ric Viers, The Sound Effects Bible", "David Sonnenschein, Sound Design"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1f050ce8-3eff-4d7b-acba-8fa2293217f2",
+   "term": "Variable click track",
+   "fields": {
+    "definition": "A metronome guide for scoring to picture whose tempo changes over time according to a tempo map, letting musical beats and downbeats line up with specific picture hit points instead of staying at one fixed tempo.",
+    "plain_english": "A count-in click for musicians that speeds up or slows down on purpose. Its tempo shifts so the music lands exactly on key moments in the film, like a drummer changing pace to match the action.",
+    "purpose_function": "It lets a composer and players hit precise on-screen events—a punch, a door slam, a cut—while staying in time, by mapping tempo changes to those cue points.",
+    "practical_application": "A composer builds a tempo map in a DAW with tempo changes and streamers or punches, then musicians perform to that variable click so downbeats align with the picture.",
+    "category": "Music & Scoring",
+    "related_terms": ["Click track", "Tempo map", "Spotting", "Streamers and punches", "Scoring to picture", "Hit point"],
+    "common_mistakes": ["Confusing a variable click with a fixed-tempo click that never changes", "Placing tempo changes carelessly so hits land off the picture", "Not warning players before a tempo change so they fall out of time"],
+    "scenario_contexts": ["Recording an orchestral film cue that must hit several action beats", "Scoring a scene where the music must slow for an emotional moment", "Syncing a live ensemble to picture on a scoring stage"]
+   },
+   "sources": ["Fred Karlin & Rayburn Wright, On the Track: A Guide to Contemporary Film Scoring", "Frans Absil, Film and Video Game Music technical notes"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fd794144-134b-4d2b-8cfc-34c46be1c855",
+   "term": "Vehicle sound",
+   "fields": {
+    "definition": "A category of sound effect covering the noises made by cars, trucks, motorcycles, and other vehicles—engine, tires, doors, brakes, pass-bys—recorded or designed and edited to match on-screen vehicles.",
+    "plain_english": "The sounds a car or other vehicle makes on screen, like the engine, tires, and doors. Editors add or replace them so the vehicle you see matches the vehicle you hear.",
+    "purpose_function": "It gives on-screen vehicles believable, matched sound, supporting realism and storytelling—a roaring engine for a chase, a quiet idle for tension.",
+    "practical_application": "A sound editor cuts recorded engine, tire, and door sounds, or library effects, to picture, syncing starts, stops, gear changes, and pass-bys to the vehicle's action.",
+    "category": "Sound Design",
+    "related_terms": ["Sound effect", "Foley", "Backgrounds", "Hard effects", "Sound library", "Sound design"],
+    "common_mistakes": ["Using an engine sound that does not match the type of vehicle on screen", "Ignoring perspective, so a distant car sounds as loud as a close one", "Forgetting the Doppler pitch shift on fast pass-bys"],
+    "scenario_contexts": ["Cutting engine and tire sounds for a car-chase scene", "Adding a car door and start for a character driving off", "Building traffic backgrounds for a city street scene"]
+   },
+   "sources": ["Ric Viers, The Sound Effects Bible", "David Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7b43e0ac-cbdf-4281-837c-41491c6a30c8",
+   "term": "Virtual-reality audio room",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No established or attested meaning for this exact phrase as a named post-production term. It is ambiguous between several readings (e.g. a simulated virtual acoustic room used for VR reverb/room modelling, a social-VR spatial-audio 'room', or a monitoring space for VR mixing). No >=2 acceptable sources define this specific phrase, so all fields left blank pending clarification."]
+  }
+ ]
+}

@@ -1,0 +1,1010 @@
+{
+ "group": 91,
+ "terms": [
+  {
+   "id": "c48a4163-7236-44b9-aec4-177052b927f4",
+   "term": "Object enable",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The authoring action of designating a track's output as a Dolby Atmos object rather than part of a channel-based bed, routing it to an object bus/ID so its position is carried as dynamic metadata instead of being fixed to speaker channels.",
+   "plain_english": "It is the switch that turns a normal track into a movable object. Once on, the track carries its own position that can travel anywhere in the room instead of staying locked to fixed speakers.",
+   "purpose_function": "It exists so specific sounds can be panned freely in three dimensions and stay independent of the speaker layout, which is the core idea of object-based audio.",
+   "practical_application": "A technician enables object mode on a lead-vocal or effect track and maps it to an object ID so the panner can move it in three dimensions.",
+   "category": "Object Authoring",
+   "related_terms": [
+    "Object panning",
+    "Object numbering",
+    "Bed",
+    "Object grouping",
+    "Object monitoring mode"
+   ],
+   "common_mistakes": [
+    "Enabling more objects than the renderer supports (up to 118 object channel paths), which blocks additional assignments.",
+    "Leaving sounds as objects when a static bed channel would be more appropriate, wasting object slots.",
+    "Forgetting to map the enabled object track to an object ID, so its metadata never reaches the renderer."
+   ],
+   "scenario_contexts": [
+    "Turning a dialogue stem into an object so it can follow on-screen movement.",
+    "Enabling a guitar track as an object for a wide, moving pan in a music mix.",
+    "Deciding which stems become objects versus staying in the 7.1.2 bed during session setup."
+   ]
+  },
+  {
+   "id": "aa87ecce-80f8-43ec-9575-c53cca839c0d",
+   "term": "Object grouping",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The authoring practice of organizing multiple objects (and bed channels) into a named group so they can be managed and routed together, for example assigning them to a custom group in the Dolby Atmos Renderer to produce a combined re-render/stem output. It is distinct from spatial-coding clusters, which the encoder forms automatically by grouping nearby objects to fit the delivery bitstream.",
+   "plain_english": "It means bundling several objects together so you can manage or route them as one. For example, you can group objects to bounce them out as a single stem.",
+   "purpose_function": "Grouping keeps large object counts organized and lets a mixer output related sounds together, such as all dialogue or all effects, as one re-render.",
+   "practical_application": "A technician assigns objects to custom groups in the renderer to create dialogue, music, and effects re-renders for delivery or archiving.",
+   "category": "Object Authoring",
+   "related_terms": [
+    "Object enable",
+    "Object numbering",
+    "Bed",
+    "Object linking",
+    "Object panning"
+   ],
+   "common_mistakes": [
+    "Confusing custom re-render groups with spatial-coding clusters; the first is a mixer choice, the second is automatic during encoding.",
+    "Assuming grouping merges objects into one; grouping organizes them, but each object keeps its own position metadata.",
+    "Forgetting to update group assignments after adding new objects, so re-renders miss content."
+   ],
+   "scenario_contexts": [
+    "Grouping all dialogue objects to output a clean dialogue re-render.",
+    "Organizing dozens of effect objects into groups for easier management in a large film session.",
+    "Creating music-and-effects (M&E) stems from grouped objects for international delivery."
+   ]
+  },
+  {
+   "id": "5fa29eaf-47a7-4d3f-bd84-2b44a30939bb",
+   "term": "Object linking",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "Tying two or more object panner instances (or the channels of a multichannel object) together so their positions move in a fixed relationship, with one channel copying the other or mirroring it across the X, Y, or both axes, rather than being automated independently.",
+   "plain_english": "It connects objects so they move together. For example, the right side of a stereo object can mirror the left, so one move controls both.",
+   "purpose_function": "Linking keeps related objects in a consistent spatial relationship and saves the mixer from automating each one separately.",
+   "practical_application": "A mixer links the left and right halves of a stereo object with a mirror mode so a single pan gesture spreads and moves both sides symmetrically.",
+   "category": "Object Panning",
+   "related_terms": [
+    "Object panning",
+    "Object grouping",
+    "Object size",
+    "Object divergence",
+    "Object enable"
+   ],
+   "common_mistakes": [
+    "Confusing linking with grouping; linking ties positions together, while grouping bundles objects for management or output.",
+    "Forgetting a link is active and wondering why a second object moves when only one is edited.",
+    "Choosing the wrong mirror axis (X versus Y), which places the partner object in an unintended location."
+   ],
+   "scenario_contexts": [
+    "Mirroring the two channels of a stereo object so it stays symmetrical while panning.",
+    "Linking a pair of effect objects so they move through the room in lockstep.",
+    "Copying one object's motion to another to build a widened, coherent image."
+   ]
+  },
+  {
+   "id": "77693cdd-edc0-44bb-bd01-4b52dc1f1dec",
+   "term": "Object monitoring mode",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The setting or approach that governs how an individual object is auditioned during authoring, including the per-object binaural render mode in the Dolby Atmos Renderer (Off, Near, Mid, or Far) that determines how much perceived distance and space is applied to that object when the mix is monitored over headphones.",
+   "plain_english": "It is how you listen to a single object while you work. On headphones, each object can be set to sound close, mid, or far, or be left out of the headphone mix.",
+   "purpose_function": "It lets a mixer check how each object translates on different outputs, especially headphones, and control the perceived distance of each object in the binaural render.",
+   "practical_application": "A technician sets a lead-vocal object to Near and a reverb object to Far so the headphone (binaural) mix has clear depth, then compares it against speaker monitoring.",
+   "category": "Object Authoring",
+   "related_terms": [
+    "Object enable",
+    "Object panning",
+    "Object elevation",
+    "Binaural rendering",
+    "Bed"
+   ],
+   "common_mistakes": [
+    "Assuming binaural render mode changes the speaker mix; it only affects the binaural/headphone render.",
+    "Setting every object to Far, which pushes the whole headphone mix back and muddies it.",
+    "Forgetting that these per-object choices are written as metadata and affect consumer headphone playback, not just the studio."
+   ],
+   "scenario_contexts": [
+    "Assigning Near/Mid/Far binaural render modes per object before a headphone-focused music release.",
+    "Soloing an individual object to check its placement and level.",
+    "Comparing an object's sound on speakers versus binaural headphones during quality control."
+   ]
+  },
+  {
+   "id": "e1713fbd-28f5-4655-8deb-97d055ce9a10",
+   "term": "Object numbering",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The assignment of a unique object ID to each object so the Dolby Atmos Renderer can address it and pair its audio with the correct position metadata. A standard configuration provides 128 input channels total: a bed on the lowest channels (for example 1-10 for 7.1.2) and up to 118 objects numbered after it (for example IDs 11-128).",
+   "plain_english": "It is the ID number each object gets so the system can tell them apart. A standard setup has 128 channels total, with the bed first and up to 118 objects numbered after it.",
+   "purpose_function": "Unique IDs let the renderer keep every object separate and match each one with the right position data through mixing and delivery.",
+   "practical_application": "A technician maps each object track to its object ID (with a 7.1.2 bed, objects start at ID 11) so the renderer receives them in the correct slots.",
+   "category": "Object Authoring",
+   "related_terms": [
+    "Object enable",
+    "Bed",
+    "Object panning",
+    "Object grouping",
+    "Object monitoring mode"
+   ],
+   "common_mistakes": [
+    "Assigning two tracks to the same object ID, so one overwrites the other at the renderer.",
+    "Forgetting the bed occupies the first channels, then mis-numbering objects into bed slots.",
+    "Assuming there are 128 objects; with a 7.1.2 bed only 118 object channel paths remain."
+   ],
+   "scenario_contexts": [
+    "Mapping many object tracks to sequential object IDs during session setup.",
+    "Troubleshooting a missing object by checking its ID assignment in the renderer's input view.",
+    "Documenting object ID assignments so a mix can be recalled or handed off."
+   ]
+  },
+  {
+   "id": "5ca84196-cf5e-4fad-9335-e2d94194cc73",
+   "term": "Object panning",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The placement and movement of an audio object anywhere within the three-dimensional Dolby Atmos listening space using X (left-right), Y (front-back), and Z (height) coordinates carried as metadata, independent of the physical speaker layout, so the renderer reproduces the intended position on whatever system is present.",
+   "plain_english": "It is moving a sound to any spot in the room, left or right, front or back, low or high. The position travels as data, so it plays back correctly on big and small systems alike.",
+   "purpose_function": "It lets sounds be positioned by location rather than by speaker, so the same mix adapts to different rooms and speaker counts.",
+   "practical_application": "A mixer drags an object across the top-view and rear-view panners, or automates its X/Y/Z path, to move a sound through the room in sync with the action.",
+   "category": "Object Panning",
+   "related_terms": [
+    "Object divergence",
+    "Object size",
+    "Object elevation",
+    "Object enable",
+    "Bed"
+   ],
+   "common_mistakes": [
+    "Panning objects to extreme positions that only translate on full speaker layouts and collapse on smaller systems.",
+    "Confusing object panning (metadata-based, layout-independent) with bed panning (fixed to channels).",
+    "Over-automating object motion, which can distract from the mix rather than support it."
+   ],
+   "scenario_contexts": [
+    "Following an on-screen car as it drives from left to right and overhead.",
+    "Placing individual instruments around the listener in a music mix.",
+    "Automating a flyover effect from the front wall to the rear of the room."
+   ]
+  },
+  {
+   "id": "255a0a66-271a-403c-b15f-8f38e5279352",
+   "term": "Object size",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "A per-object parameter that spreads an object's audio over a region of the room around its position, engaging additional active speakers based on the object's location, so the source is perceived as large and diffuse rather than as a single point. It is mutually exclusive with speaker snap, which instead forces the object to the nearest single speaker.",
+   "plain_english": "It sets how big a sound feels in the room. A small size is a tight point; a large size spreads the sound out so it seems to come from a wide area.",
+   "purpose_function": "It lets a mixer make an object feel large and enveloping or small and pinpoint, adding a sense of scale that simple positioning cannot.",
+   "practical_application": "A technician increases size on an ambience or pad object to wrap it around the room, and keeps size small for effects that must localize sharply.",
+   "category": "Object Panning",
+   "related_terms": [
+    "Object divergence",
+    "Object panning",
+    "Object elevation",
+    "Speaker snap",
+    "Object linking"
+   ],
+   "common_mistakes": [
+    "Confusing size with divergence; size sets how large the source area is, while divergence shapes the attenuation/spread curve along each axis.",
+    "Expecting size to work while speaker snap is enabled; the two are mutually exclusive.",
+    "Maxing out size on many objects, which blurs localization across the whole mix."
+   ],
+   "scenario_contexts": [
+    "Enlarging a crowd or ambience object to fill the room.",
+    "Keeping a fast fly-by effect small so it localizes to a precise point.",
+    "Growing a synth pad's size so it envelops the listener in a music mix."
+   ]
+  },
+  {
+   "id": "1ca3a65f-7e71-40b6-b92f-9ea55cbbed28",
+   "term": "Object snap",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "A per-object panning setting in object-based audio (e.g. Dolby Atmos) that routes an object's signal to the single nearest active loudspeaker at its position rather than rendering a phantom image across several speakers. Enabling snap forces discrete, speaker-locked reproduction and typically disables the object's spread/size control.",
+   "plain_english": "Snap sends a sound straight to the one closest speaker instead of spreading it between several. It is like clipping a note onto a grid line so it lands right on a speaker.",
+   "purpose_function": "It gives an object a tight, discrete point of origin that stays locked to real speakers, avoiding the level and timbre shifts that phantom imaging between speakers can introduce.",
+   "practical_application": "A mixer enables snap on a spot effect or cue that must come cleanly from one location so it reproduces consistently regardless of how many speakers a playback room has.",
+   "category": "Object panning",
+   "related_terms": [
+    "Audio object",
+    "Object spread",
+    "Object trajectory",
+    "Bed",
+    "Phantom image"
+   ],
+   "common_mistakes": [
+    "Assuming snap always improves localization; on a moving object it can cause abrupt jumps between speakers instead of smooth panning.",
+    "Enabling snap and then trying to adjust the object's spread/size, which is deactivated while snap is active.",
+    "Confusing snap with divergence: snap locks energy to one speaker, while divergence deliberately spreads it across several."
+   ],
+   "scenario_contexts": [
+    "Locking a doorbell or phone-ring effect to a specific surround speaker in a film mix.",
+    "Placing a discrete percussion hit in a Dolby Atmos music mix so it always fires from one speaker.",
+    "Anchoring a narration or dialog object to the screen-center loudspeaker."
+   ]
+  },
+  {
+   "id": "65b5770b-d3d3-4fe4-ae5f-9e5d674625ce",
+   "term": "Object spread",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "An object panning parameter that increases the perceived spatial size of an audio object by distributing its energy across multiple loudspeakers around its position, ranging from a compact point source to a wide, diffuse source. In the ITU-R BS.2076 Audio Definition Model it corresponds to width, height and depth extent; in Dolby tools it is the Size control.",
+   "plain_english": "Spread makes a sound feel big and wide by sharing it across many speakers instead of one spot. Think of a spotlight you can widen from a tiny dot to a broad wash of light.",
+   "purpose_function": "It lets an engineer set how large or enveloping an object sounds, so sources like pads, ambience or crowd noise can fill the room while spot sounds stay small and precise.",
+   "practical_application": "A mixer raises spread/size on reverb returns or synth pads to wrap them around the audience, and lowers it to keep lead vocals or effects tight and localized.",
+   "category": "Object panning",
+   "related_terms": [
+    "Audio object",
+    "Object snap",
+    "Divergence",
+    "Object trajectory",
+    "Bed"
+   ],
+   "common_mistakes": [
+    "Thinking spread simply raises level; it changes how many speakers reproduce the object, not its gain.",
+    "Maxing out spread on every object, which smears imaging and removes contrast between wide and pinpoint sources.",
+    "Expecting spread to work while Speaker Snap is enabled, which deactivates the spread control."
+   ],
+   "scenario_contexts": [
+    "Widening an ambient synth pad so it envelops the listener in a Dolby Atmos music mix.",
+    "Spreading room and crowd ambience across the surround field in a live-concert immersive mix.",
+    "Keeping a lead vocal narrow while pads are wide to build front-to-surround depth contrast."
+   ]
+  },
+  {
+   "id": "4c2b101f-e1f7-4a48-9ad4-1a14008554be",
+   "term": "Object trajectory",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The time-varying path an audio object follows through three-dimensional space, defined by its position metadata (azimuth/elevation/distance or X/Y/Z) changing over time via panning automation. Renderers interpolate between successive positions to produce continuous movement on any speaker layout.",
+   "plain_english": "A trajectory is the route a sound travels through the room over time, like the flight path of a plane moving overhead. The system draws smooth motion by joining the sound positions from moment to moment.",
+   "purpose_function": "It makes sounds move convincingly in a scene (flying, circling or passing by) by storing position changes as metadata the renderer plays back correctly on whatever speakers are present.",
+   "practical_application": "An engineer draws or automates an object's path, for example a helicopter circling the audience, so the movement renders correctly on a large cinema array, a soundbar or headphones.",
+   "category": "Object panning",
+   "related_terms": [
+    "Audio object",
+    "Panning automation",
+    "Object snap",
+    "Object spread",
+    "Interpolation"
+   ],
+   "common_mistakes": [
+    "Automating position too abruptly, causing audible steps when the renderer interpolates or snaps between points.",
+    "Confusing a trajectory (movement over time) with a single static object position.",
+    "Forgetting that trajectory metadata is layout-independent, so a path tuned by ear in one room may translate differently elsewhere."
+   ],
+   "scenario_contexts": [
+    "Sending a sound effect flying from the front of the room to the rear during a film scene.",
+    "Circling a synth line around the listener in a Dolby Atmos music mix.",
+    "Automating a passing vehicle across the sound field for a game or VR scene."
+   ]
+  },
+  {
+   "id": "b0c55bdb-e144-4ffb-ac1f-e93f7a1af0bd",
+   "term": "Object trim",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "A level (gain) adjustment applied to an individual audio object in an object-based mix, offsetting the object's contribution up or down without changing its position or spatial metadata. It corresponds to the per-object gain parameter carried in the object's metadata; it is distinct from a renderer's Trim controls, which attenuate whole surround and height groups during automatic downmix.",
+   "plain_english": "An object trim is a small volume tweak for one sound in the mix. It is like nudging a single fader up or down so that one part sits right, without moving where the sound comes from.",
+   "purpose_function": "It lets an engineer balance the loudness of each object relative to the rest of the mix while the object's position and movement stay untouched.",
+   "practical_application": "A mixer trims an object's level to bring a vocal or effect forward or back in an immersive mix, or to match its loudness across different sections of a piece.",
+   "category": "Object authoring",
+   "related_terms": [
+    "Audio object",
+    "Bed",
+    "Object spread",
+    "Object-based music mix",
+    "Re-render"
+   ],
+   "common_mistakes": [
+    "Confusing an object trim (a per-object level offset) with the renderer's Trim controls, which lower surround and height groups during downmix.",
+    "Assuming trimming an object changes its position or spread; it only changes level.",
+    "Leaning on large trims late in the mix instead of setting proper gain structure earlier, causing rebalancing headaches."
+   ],
+   "scenario_contexts": [
+    "Nudging a lead-vocal object up a decibel so it sits above the bed in a Dolby Atmos music mix.",
+    "Trimming an effect object down so it does not overpower dialogue in a film scene.",
+    "Matching object levels between verse and chorus sections of an immersive song."
+   ]
+  },
+  {
+   "id": "00b13fd4-d2dc-4e5b-ae96-8b1a20d8bc5a",
+   "term": "Object-based music mix",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "A music mix authored as audio objects (individual sound elements each carrying positional and level metadata) rather than as fixed channels, so a renderer places each object in three-dimensional space for whatever playback layout is present, usually alongside a channel-based bed. Dolby Atmos Music, delivered as an ADM master, is a common form.",
+   "plain_english": "It is a song mixed as separate sounds that each know where they belong in the room, instead of being locked to set speakers. The playback system then places each sound to fit whatever speakers or headphones you have.",
+   "purpose_function": "It delivers immersive, layout-independent music that adapts from cinema arrays to soundbars to headphones while preserving the mixer's spatial intent.",
+   "practical_application": "An engineer assigns instruments and vocals to objects (and a bed for ambience), positions and moves them in a renderer, and exports an ADM master for immersive streaming services.",
+   "category": "Immersive mixing",
+   "related_terms": [
+    "Audio object",
+    "Bed",
+    "Object trajectory",
+    "Object spread",
+    "Dolby Atmos"
+   ],
+   "common_mistakes": [
+    "Thinking object-based mixing is just spreading a stereo mix wider; it requires assigning discrete elements to objects with intentional placement.",
+    "Putting everything into objects and neglecting the bed, wasting object count and complicating the mix.",
+    "Ignoring the binaural/headphone and downmix renders, so the mix translates poorly outside a full speaker array."
+   ],
+   "scenario_contexts": [
+    "Producing a Dolby Atmos Music version of a song for an immersive streaming service.",
+    "Placing backing vocals and effects around the listener while keeping drums and bass in the bed.",
+    "Delivering an ADM BWF master alongside a stereo mix for a new album release."
+   ]
+  },
+  {
+   "id": "f46f7363-20eb-46d3-912d-1eaa39b14766",
+   "term": "5.1 fold-down monitoring",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "Monitoring the 5.1 surround downmix (fold-down) that a renderer derives from an immersive mix, to check how the mix translates to a standard 5.1 system. The fold-down sums the immersive bed channels and objects into the five ear-level channels plus LFE using defined downmix coefficients.",
+   "plain_english": "Listening to the 5.1 surround version that the system makes from a full 3D mix. It lets you hear how the mix will sound for people who only have a normal surround setup.",
+   "purpose_function": "It exists so engineers can confirm the immersive mix still sounds balanced when collapsed to 5.1, since many listeners and broadcast paths use 5.1 rather than full immersive playback.",
+   "practical_application": "A technician switches monitoring to the 5.1 fold-down to check that dialogue, balance and levels hold up before delivery, catching problems that only appear when the height and extra channels collapse.",
+   "category": "Monitoring",
+   "related_terms": [
+    "Downmix monitoring",
+    "5.1.4 monitoring",
+    "7.1.4 monitoring",
+    "Binaural monitoring mode",
+    "Center speaker",
+    "Atmos monitoring layout"
+   ],
+   "common_mistakes": [
+    "Assuming the 5.1 fold-down sounds identical to the immersive mix, so skipping the check.",
+    "Forgetting that overhead (height) content collapses into the ear-level channels in the fold-down.",
+    "Setting final levels only on the immersive layout and never verifying the 5.1 downmix."
+   ],
+   "scenario_contexts": [
+    "Checking that a Dolby Atmos music mix folds down cleanly to 5.1 before delivery.",
+    "Verifying dialogue clarity in the 5.1 downmix of a film mix.",
+    "Comparing the immersive mix and its 5.1 fold-down to judge translation."
+   ]
+  },
+  {
+   "id": "1a41d994-434e-4c58-80f9-697037a41f60",
+   "term": "5.1.4 monitoring",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "Monitoring an immersive mix on a 5.1.4 loudspeaker layout: five ear-level channels (left, center, right, left surround, right surround), one LFE channel, and four overhead height speakers. It is a common compact immersive monitoring configuration for Dolby Atmos and similar formats.",
+   "plain_english": "Listening to a 3D mix over a set of speakers: five around you at ear level, one for deep bass, and four above you. It is a common smaller setup for immersive sound.",
+   "purpose_function": "A 5.1.4 layout gives engineers a real height-capable monitoring system that follows the ITU-R and Dolby channel plan, so they can judge overhead and surround placement without needing a large room.",
+   "practical_application": "A technician mixing or checking Dolby Atmos in a compact room uses a 5.1.4 rig to audition object height moves and surround balance.",
+   "category": "Monitoring",
+   "related_terms": [
+    "7.1.4 monitoring",
+    "9.1.4 monitoring",
+    "Atmos monitoring layout",
+    "Center speaker",
+    "5.1 fold-down monitoring",
+    "Downmix monitoring"
+   ],
+   "common_mistakes": [
+    "Reading the .4 as extra surround speakers instead of four overhead height speakers.",
+    "Assuming a 5.1.4 mix will sound the same on a larger 7.1.4 or 9.1.6 system without checking.",
+    "Placing the overhead speakers by guess rather than at the specified angles and heights."
+   ],
+   "scenario_contexts": [
+    "Setting up a small Dolby Atmos music room on a 5.1.4 layout.",
+    "Checking overhead panning in a 5.1.4 monitoring rig.",
+    "Calibrating the four height speakers and the surrounds in a 5.1.4 studio."
+   ]
+  },
+  {
+   "id": "0876d09c-181a-4e46-85ac-beb47ee6fac3",
+   "term": "7.1.4 monitoring",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "Monitoring an immersive mix on a 7.1.4 loudspeaker layout: seven ear-level channels (left, center, right, left/right side surround, left/right rear surround), one LFE channel, and four overhead height speakers. It is a widely used reference layout for Dolby Atmos production.",
+   "plain_english": "Listening to a 3D mix over seven speakers around you, one for deep bass, and four above you. The two rear speakers add a fuller sense of sound coming from behind the listener.",
+   "purpose_function": "The 7.1.4 layout is a common professional reference because its side and rear surrounds plus four heights let engineers hear surround and overhead detail the way many home immersive systems reproduce it.",
+   "practical_application": "A technician mixes and calibrates Dolby Atmos on a 7.1.4 rig, using the rear surrounds to check sounds that move from the sides to behind the listener.",
+   "category": "Monitoring",
+   "related_terms": [
+    "5.1.4 monitoring",
+    "9.1.4 monitoring",
+    "Atmos monitoring layout",
+    "Center speaker",
+    "Downmix monitoring",
+    "5.1 fold-down monitoring"
+   ],
+   "common_mistakes": [
+    "Confusing side surrounds with rear surrounds when wiring or calibrating the seven ear-level channels.",
+    "Reading the .4 as surround speakers rather than four overhead heights.",
+    "Assuming a 7.1.4 mix folds down to 5.1 or stereo without checking."
+   ],
+   "scenario_contexts": [
+    "Using a 7.1.4 room as the reference for a Dolby Atmos film or music mix.",
+    "Checking a sound move from side surround to rear surround on 7.1.4.",
+    "Calibrating the four overhead speakers of a 7.1.4 studio to reference level."
+   ]
+  },
+  {
+   "id": "ae761615-f23f-42d4-bc57-91ab727b7680",
+   "term": "9.1.4 monitoring",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "Monitoring an immersive mix on a 9.1.4 loudspeaker layout, which adds a pair of front wide speakers to the seven ear-level channels of 7.1.4, giving nine ear-level channels plus one LFE channel and four overhead height speakers. The front wides fill the gap between the front speakers and the side surrounds.",
+   "plain_english": "Listening to a 3D mix over nine ear-level speakers, one for deep bass, and four above you. Two extra front speakers fill the gap between the front and the sides, so sounds move more smoothly across the front.",
+   "purpose_function": "The front wide pair widens and smooths the frontal image, so panning between the front speakers and the side surrounds sounds more continuous than it does on a 7.1.4 layout.",
+   "practical_application": "A technician working in a larger immersive room uses 9.1.4 to check that sounds sweeping across the front stay smooth, then confirms the mix still translates to smaller layouts.",
+   "category": "Monitoring",
+   "related_terms": [
+    "7.1.4 monitoring",
+    "5.1.4 monitoring",
+    "Atmos monitoring layout",
+    "Center speaker",
+    "Downmix monitoring",
+    "5.1 fold-down monitoring"
+   ],
+   "common_mistakes": [
+    "Confusing the front wide speakers with the side surrounds.",
+    "Assuming every playback system has front wides; most home systems do not.",
+    "Reading the .4 as surround channels instead of four overhead heights."
+   ],
+   "scenario_contexts": [
+    "Monitoring a large-format Dolby Atmos mix on a 9.1.4 rig with front wides.",
+    "Checking that front-stage panning stays smooth across a 9.1.4 layout.",
+    "Confirming a 9.1.4 mix folds down correctly to 7.1.4 and 5.1."
+   ]
+  },
+  {
+   "id": "e12bde80-ce6b-43b5-b166-9b8b323af4c9",
+   "term": "Atmos monitoring layout",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The physical arrangement and channel plan of loudspeakers used to monitor a Dolby Atmos mix, defined by ear-level, LFE and overhead positions at Dolby-specified angles and heights (for example 5.1.4, 7.1.4 or 9.1.6). It follows Dolby's placement guidance and the ITU-R base surround geometry.",
+   "plain_english": "The set of speakers, and where each one goes, used to listen to a Dolby Atmos mix. Dolby gives exact positions and angles so every studio hears the mix the same way.",
+   "purpose_function": "A defined monitoring layout ensures the mix is judged on a known, repeatable speaker geometry, so decisions made in one room translate to other Atmos rooms and to home systems.",
+   "practical_application": "A technician sets up and calibrates speakers to the chosen Atmos layout, checking each position's angle, height and level against Dolby's specification before mixing.",
+   "category": "Speaker layout",
+   "related_terms": [
+    "5.1.4 monitoring",
+    "7.1.4 monitoring",
+    "9.1.4 monitoring",
+    "Center speaker",
+    "Downmix monitoring",
+    "Binaural monitoring mode"
+   ],
+   "common_mistakes": [
+    "Placing overhead or surround speakers by eye instead of at the specified angles and heights.",
+    "Assuming any speaker positions will do as long as the channel count is right.",
+    "Skipping calibration of level and distance for each speaker in the layout."
+   ],
+   "scenario_contexts": [
+    "Building a new Dolby Atmos room to a 7.1.4 monitoring layout.",
+    "Aligning speaker angles and heights to Dolby's specification before a mix.",
+    "Choosing between 5.1.4 and 9.1.6 monitoring layouts for a studio."
+   ]
+  },
+  {
+   "id": "59baa346-3abf-467b-b3d2-16b04b7a70a7",
+   "term": "Binaural monitoring mode",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A monitoring mode in which the immersive mix is rendered to a two-channel binaural signal for headphones, using head-related transfer functions so that surround and height positions are perceived over stereo headphones. In the Dolby Atmos Renderer, each object can be given a binaural distance setting (Off, Near, Mid or Far) that controls its spatial treatment.",
+   "plain_english": "A way to hear a 3D mix on ordinary headphones, where the system fakes the sense of sound coming from around and above you. It uses a model of how our ears judge direction to place each sound.",
+   "purpose_function": "Binaural monitoring lets engineers check an immersive mix on headphones when no speaker array is available, and it previews how listeners will hear the mix on phones and earbuds.",
+   "practical_application": "A technician switches to binaural monitoring to work on Atmos over headphones and to set each object's Near, Mid or Far binaural distance for the headphone render.",
+   "category": "Monitoring",
+   "related_terms": [
+    "Binaural render check",
+    "Downmix monitoring",
+    "5.1 fold-down monitoring",
+    "Atmos monitoring layout",
+    "Center speaker",
+    "7.1.4 monitoring"
+   ],
+   "common_mistakes": [
+    "Treating the binaural headphone render as identical to the speaker mix and making final calls only on headphones.",
+    "Leaving every object's binaural distance at default instead of setting Off, Near, Mid or Far by ear.",
+    "Expecting binaural cues to work well on loudspeakers, where they are meant for headphones."
+   ],
+   "scenario_contexts": [
+    "Mixing Dolby Atmos on headphones when no speaker room is available.",
+    "Setting per-object binaural distance to shape the headphone render.",
+    "Previewing how an Atmos mix will sound to streaming listeners on earbuds."
+   ]
+  },
+  {
+   "id": "d5c30083-b5b8-489c-9496-e68ec393e0c1",
+   "term": "Binaural render check",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A quality-control step in which the engineer auditions the binaural (headphone) render of an immersive mix to confirm it translates well to headphones, adjusting each object's binaural distance setting (Off, Near, Mid, Far) as needed. It verifies the two-channel headphone version that many end listeners receive.",
+   "plain_english": "Listening to the headphone version of a 3D mix to make sure it still sounds right on headphones. You check each sound and adjust how near or far it feels.",
+   "purpose_function": "Because a large share of listeners hear immersive music on headphones, the check catches problems such as a weak center image or masked detail that only show up in the binaural render.",
+   "practical_application": "A technician runs a binaural render check near the end of a mix, soloing objects and setting their Near, Mid or Far distance so the headphone version matches the intent of the speaker mix.",
+   "category": "Monitoring",
+   "related_terms": [
+    "Binaural monitoring mode",
+    "Downmix monitoring",
+    "5.1 fold-down monitoring",
+    "Atmos monitoring layout",
+    "Center speaker",
+    "7.1.4 monitoring"
+   ],
+   "common_mistakes": [
+    "Skipping the binaural check even though most streaming listeners hear the headphone render.",
+    "Leaving all objects on the default binaural distance instead of setting them by ear.",
+    "Assuming a mix that sounds good on speakers automatically works on headphones."
+   ],
+   "scenario_contexts": [
+    "Checking the binaural render of a Dolby Atmos music mix before delivery.",
+    "Setting object binaural distances so the headphone version keeps its depth.",
+    "Comparing the speaker mix and its binaural render to spot translation problems."
+   ]
+  },
+  {
+   "id": "7855b64e-4301-4989-aea6-8a08cca5cbb6",
+   "term": "Center speaker",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The loudspeaker positioned directly in front of the listener at ear level (0 degrees azimuth, the M+000 position), reproducing the center channel. In surround and immersive layouts it anchors the frontal image, most importantly dialogue and lead vocals, to the screen or front of the room.",
+   "plain_english": "The speaker straight ahead of you at ear level. It holds sounds that should stay front and center, like dialogue or the lead singer, so they seem to come from the screen.",
+   "purpose_function": "The center speaker fixes central sounds to one solid point instead of relying on a phantom image between the left and right speakers, keeping dialogue clear and stable for listeners sitting off to one side.",
+   "practical_application": "A technician routes dialogue or a lead vocal to the center speaker and calibrates its level and distance so the front image locks to the screen.",
+   "category": "Loudspeaker",
+   "related_terms": [
+    "Atmos monitoring layout",
+    "5.1.4 monitoring",
+    "7.1.4 monitoring",
+    "Downmix monitoring",
+    "5.1 fold-down monitoring",
+    "9.1.4 monitoring"
+   ],
+   "common_mistakes": [
+    "Assuming a phantom center from the left and right speakers is as stable as a real center speaker.",
+    "Setting the center speaker at the wrong height or level, so dialogue pulls away from the screen.",
+    "Ignoring the center channel and mixing dialogue only into left and right."
+   ],
+   "scenario_contexts": [
+    "Anchoring film dialogue to the center speaker in a surround or Atmos mix.",
+    "Calibrating the center channel level to match the left and right speakers.",
+    "Placing a lead vocal in the center channel of an immersive music mix."
+   ]
+  },
+  {
+   "id": "b0b22e43-3d0e-4dcb-9619-a81580145160",
+   "term": "Downmix monitoring",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "Monitoring the reduced-channel downmixes (for example 5.1 or 2.0 stereo) that a renderer derives from an immersive mix, to verify how it translates to smaller playback formats. The renderer sums the immersive bed channels and objects into the target format using defined downmix coefficients.",
+   "plain_english": "Listening to the smaller versions, like 5.1 or stereo, that the system makes from a full 3D mix. It checks the mix still sounds right for people without immersive speakers.",
+   "purpose_function": "Most listeners hear stereo or 5.1, so downmix monitoring lets engineers confirm the mix stays balanced and mono-compatible in those formats before delivery.",
+   "practical_application": "A technician cycles through the stereo and 5.1 downmixes while mixing, checking levels, balance and phase so problems do not appear only on smaller systems.",
+   "category": "Monitoring",
+   "related_terms": [
+    "5.1 fold-down monitoring",
+    "Binaural monitoring mode",
+    "Atmos monitoring layout",
+    "Center speaker",
+    "5.1.4 monitoring",
+    "7.1.4 monitoring"
+   ],
+   "common_mistakes": [
+    "Delivering an immersive mix without ever checking its stereo and 5.1 downmixes.",
+    "Assuming the downmix keeps the immersive balance, when levels and phase can shift.",
+    "Forgetting to check mono compatibility, so elements cancel in the folded-down stereo."
+   ],
+   "scenario_contexts": [
+    "Checking the stereo and 5.1 downmixes of a Dolby Atmos master before delivery.",
+    "Testing mono compatibility of the stereo downmix.",
+    "Comparing the immersive mix with its downmixes to judge translation."
+   ]
+  },
+  {
+   "id": "0b180e2e-f1c6-4b08-a422-8c08c42924c1",
+   "term": "Head-tracked monitoring",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A binaural (headphone) monitoring method in which head-position sensors continuously update the head-related transfer function (HRTF) processing so the rendered immersive sound field stays anchored to the screen or device instead of rotating with the listener's head. It lets an engineer preview how spatial-audio playback behaves on head-tracked consumer devices.",
+   "plain_english": "This is headphone listening that follows your head. When you turn your head, the sound stays fixed in place, like real speakers in a room, instead of moving with your ears.",
+   "purpose_function": "It exists so engineers can check how an immersive mix will behave on consumer head-tracked playback, where sensors keep sources locked to the visual scene as the head moves.",
+   "practical_application": "A technician enables head tracking on a binaural monitor path to confirm that objects stay stable and correctly placed as the listener's head moves before approving a spatial-audio deliverable.",
+   "category": "Immersive Monitoring",
+   "related_terms": [
+    "Headphone-rendered monitoring",
+    "Binaural rendering",
+    "HRTF",
+    "Immersive monitoring system",
+    "Object-based audio"
+   ],
+   "common_mistakes": [
+    "Assuming a head-tracked binaural render sounds identical to the loudspeaker mix",
+    "Making tonal or level decisions on head-tracked headphones instead of a calibrated speaker array",
+    "Forgetting that head tracking is referenced to a device or screen origin, not to the headphones themselves"
+   ],
+   "scenario_contexts": [
+    "Previewing a spatial-audio release on earbuds with dynamic head tracking",
+    "Checking object stability during head movement before final QC",
+    "Demonstrating immersive playback to a client on headphones"
+   ]
+  },
+  {
+   "id": "47e42201-bf17-4c60-9281-81863ad8a863",
+   "term": "Headphone-rendered monitoring",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "Monitoring an immersive channel- and object-based mix over headphones by folding the multichannel/object signal into a two-channel binaural signal using HRTF-based processing, so overhead and surround positions are simulated for two ears. In the Dolby Atmos Renderer this is set per object with Off/Near/Mid/Far distance modes.",
+   "plain_english": "This is checking a surround-sound mix using normal headphones. Special processing fakes the sound of speakers all around you and above you, using just the two earcups.",
+   "purpose_function": "It lets engineers audition and approve an immersive mix without a full speaker array, and shows how the mix will translate to the headphone listeners who make up much of the audience.",
+   "practical_application": "A technician switches the renderer to binaural, sets per-object near/mid/far distances to judge depth, and checks the fold-down before delivering the binaural version.",
+   "category": "Immersive Monitoring",
+   "related_terms": [
+    "Head-tracked monitoring",
+    "Binaural rendering",
+    "HRTF",
+    "Downmix",
+    "Immersive monitoring system",
+    "Object-based audio"
+   ],
+   "common_mistakes": [
+    "Making final tonal or panning decisions only on binaural headphones instead of a calibrated loudspeaker array",
+    "Assuming every listener hears the same binaural result, when HRTFs vary between people",
+    "Ignoring the per-object distance (near/mid/far) setting when judging depth"
+   ],
+   "scenario_contexts": [
+    "Mixing an immersive project in a room without overhead speakers",
+    "Auditioning the binaural deliverable that ships to streaming services",
+    "Spot-checking a mix on headphones while away from the studio"
+   ]
+  },
+  {
+   "id": "2dee66d0-e809-4015-bd13-85209b0ef926",
+   "term": "Height speaker",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A loudspeaker in the upper layer of an immersive array, mounted above the listener's ear-height (horizontal) plane to reproduce overhead and elevated content. In ITU-R BS.2051 these are the upper-layer (\"U\") loudspeakers; in Dolby Atmos home layouts they are the \"top\" surround speakers (the \".4\" or \".6\" in 7.1.4 or 9.1.6), which Dolby specifies at a minimum height of 2.4 m at the mix position with defined elevation angles.",
+   "plain_english": "This is a speaker placed up high, near the ceiling. It plays sounds that should come from above you, like rain or a helicopter, that normal ear-level speakers cannot.",
+   "purpose_function": "Height speakers add the vertical dimension that separates immersive audio from flat surround, letting sounds be placed and moved overhead.",
+   "practical_application": "A technician mounts and aligns the top/height speakers at the specified elevation, then sets their level and delay during calibration so overhead pans track smoothly.",
+   "category": "Immersive Playback",
+   "related_terms": [
+    "Immersive monitoring system",
+    "Immersive delay calibration",
+    "Immersive level calibration",
+    "Bed",
+    "Surround speaker",
+    "Object-based audio"
+   ],
+   "common_mistakes": [
+    "Confusing height/top speakers with ordinary surround speakers on the ear-level plane",
+    "Mounting height speakers too low or at the wrong elevation angle, collapsing the overhead image",
+    "UNSAFE: Rigging or flying overhead speakers without rated mounting hardware, a secondary safety attachment, and the manufacturer's specified suspension practice"
+   ],
+   "scenario_contexts": [
+    "Installing a 7.1.4 room where four top speakers form the height layer",
+    "Calibrating overhead pans in an immersive mix",
+    "Troubleshooting a collapsed vertical image caused by misplaced height speakers"
+   ]
+  },
+  {
+   "id": "c5788623-18df-43c0-8ee3-5593b99413e0",
+   "term": "Immersive delay calibration",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The alignment step that sets a time delay (and matching level trim) for each loudspeaker in an immersive array so signals from speakers at unequal distances arrive at the mix position together. Dolby applies delay and amplitude compensation for distance differences up to a maximum of 10 ms, and the Dolby Atmos Renderer provides global and per-speaker delay controls.",
+   "plain_english": "This lines up the timing of every speaker. Closer speakers get a tiny delay added so sound from near and far speakers reaches your seat at the same moment.",
+   "purpose_function": "It preserves accurate imaging and object localization by removing arrival-time errors between speakers set at different distances from the listener.",
+   "practical_application": "A technician measures each speaker's distance to the mix position and enters the delay (or lets the processor compute it) so pans and phantom images stay stable and centered.",
+   "category": "Immersive Calibration",
+   "related_terms": [
+    "Immersive level calibration",
+    "Immersive monitoring system",
+    "Height speaker",
+    "Mix position",
+    "Bass management",
+    "Reference level"
+   ],
+   "common_mistakes": [
+    "Calibrating levels but skipping delay, leaving overhead and surround images smeared",
+    "Measuring distances from the wrong reference point instead of the defined mix position",
+    "Placing speakers at very unequal distances so the required compensation exceeds the system limit"
+   ],
+   "scenario_contexts": [
+    "Aligning a 7.1.4 room where the surrounds sit closer than the fronts",
+    "Setting per-speaker delay in the Dolby Atmos Renderer",
+    "Re-checking alignment after moving a speaker"
+   ]
+  },
+  {
+   "id": "898e64a8-bdae-4d56-80ff-0b0697bd3371",
+   "term": "Immersive level calibration",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "Setting each loudspeaker in an immersive array to a defined sound-pressure level so the reproduced field matches a reference. Band-limited pink noise is measured on the SPL meter's slow setting and all full-range channels are aligned to the same level (Dolby near-field/home reference is 79-85 dBC), with the LFE/subwoofer set 10 dB higher in-band per Dolby/SMPTE practice.",
+   "plain_english": "This makes every speaker equally loud from your seat. You play a steady test noise and adjust each speaker to hit the same meter reading, with the sub set a bit louder.",
+   "purpose_function": "Equal, referenced levels let pans move smoothly around the room and help the mix translate to other calibrated rooms and consumer systems.",
+   "practical_application": "A technician routes pink noise to one speaker at a time and trims each to the target SPL with a calibrated meter, then adds the LFE offset.",
+   "category": "Immersive Calibration",
+   "related_terms": [
+    "Immersive delay calibration",
+    "Reference level",
+    "Pink noise",
+    "LFE",
+    "Bass management",
+    "Immersive monitoring system"
+   ],
+   "common_mistakes": [
+    "Using an uncalibrated or phone SPL meter, or the wrong weighting or time setting",
+    "Forgetting the +10 dB in-band offset for the LFE/subwoofer",
+    "UNSAFE: Running loud calibration tones or mixing at high SPL for long periods without attention to occupational noise-exposure limits and hearing protection"
+   ],
+   "scenario_contexts": [
+    "Aligning all channels of a 7.1.4 room to reference level",
+    "Trimming a replaced speaker back to match the array",
+    "Verifying reference level before a mastering session"
+   ]
+  },
+  {
+   "id": "d44eb525-fc4e-437b-9736-80f52c0f9b19",
+   "term": "Immersive monitor controller",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A hardware or software device in the immersive monitoring chain that takes the many rendered speaker feeds and provides central control of monitor level, mute/solo, speaker and downmix selection, bass management, and often room correction, feeding the loudspeaker array from the renderer or DAW. In Dolby-certified rooms it sits between the rendering/mastering workstation and the speakers, providing overall level control and a separate 5.1/7.1 bypass path.",
+   "plain_english": "This is the master volume and switching box for a room full of speakers. It sets one level for all of them at once and lets you mute, solo, or switch between speaker setups.",
+   "purpose_function": "It gives one trusted point of gain and routing control over a large speaker count, so the engineer can change monitor level and configuration without touching the mix.",
+   "practical_application": "A technician uses the monitor controller to dim, solo a single height speaker, or switch to a 5.1 fold-down while checking an immersive mix.",
+   "category": "Monitor Control",
+   "related_terms": [
+    "Immersive monitoring system",
+    "Immersive routing layout",
+    "Bass management",
+    "Immersive level calibration",
+    "Downmix",
+    "Reference level"
+   ],
+   "common_mistakes": [
+    "Confusing a monitor controller with an audio interface — it controls monitoring, not conversion of the mix",
+    "Forgetting that room correction or bass management applied in the controller is active during critical listening",
+    "Leaving trims or offsets in the controller that break the calibrated reference level"
+   ],
+   "scenario_contexts": [
+    "Switching between 7.1.4 and stereo to check translation",
+    "Soloing individual speakers during calibration",
+    "Setting a repeatable reference monitoring level for a session"
+   ]
+  },
+  {
+   "id": "6e374706-d888-4705-acbf-54f8adae7fb1",
+   "term": "Immersive monitor quality control",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The structured checking of an immersive mix or deliverable by auditioning it on a calibrated monitoring system: verifying speaker assignments and routing, levels and loudness, object placement and overhead content, the downmix and binaural fold-downs, and the metadata against the target specification before delivery.",
+   "plain_english": "This is the final listening check of a surround mix. You play it back on trusted, calibrated speakers to catch wrong routing, bad levels, or missing overhead sounds before you send it out.",
+   "purpose_function": "It catches routing, level, metadata, and fold-down errors that would otherwise reach the listener, protecting the integrity of the immersive deliverable.",
+   "practical_application": "A technician plays the finished mix and its downmixes on the calibrated array, confirms every channel maps to the right speaker and levels match reference, and logs any faults for correction.",
+   "category": "Quality Control",
+   "related_terms": [
+    "Immersive monitoring system",
+    "Immersive routing layout",
+    "Downmix",
+    "Immersive level calibration",
+    "Reference level",
+    "Binaural rendering"
+   ],
+   "common_mistakes": [
+    "Doing QC only in binaural or on headphones and missing loudspeaker-only problems",
+    "Checking the immersive mix but never auditioning the stereo and 5.1 fold-downs",
+    "Skipping verification that channels are routed to the correct physical speakers"
+   ],
+   "scenario_contexts": [
+    "Final QC of an immersive music master before upload",
+    "Verifying a broadcast immersive deliverable against a spec",
+    "Confirming fold-downs and metadata after a re-render"
+   ]
+  },
+  {
+   "id": "a9e94ee2-d197-4321-825e-66ec099dd610",
+   "term": "Immersive monitoring system",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The complete calibrated playback rig used to audition immersive audio, comprising the loudspeaker array in the horizontal and upper (height) layers plus subwoofer(s), the renderer/monitor controller and amplification, and the room, set up and calibrated to a defined layout such as 7.1.4 or 9.1.6 per Dolby and ITU-R BS.2051 practice.",
+   "plain_english": "This is the whole speaker setup used to listen to surround-with-height mixes. It includes the speakers around and above you, the sub, and the gear and room that make them play back right.",
+   "purpose_function": "It provides a trustworthy, reference reproduction of channel- and object-based audio so mix and calibration decisions translate to other rooms and to consumer systems.",
+   "practical_application": "A technician installs, aligns, and calibrates the array and controller so the room meets a standard layout and reference level before any mixing begins.",
+   "category": "Immersive Monitoring",
+   "related_terms": [
+    "Height speaker",
+    "Immersive monitor controller",
+    "Immersive level calibration",
+    "Immersive delay calibration",
+    "Immersive routing layout",
+    "Bass management"
+   ],
+   "common_mistakes": [
+    "Adding height speakers but never calibrating level and delay for the full array",
+    "Using mismatched speaker models around the array, causing timbre shifts as objects pan",
+    "Treating the room and its acoustics as unimportant to an immersive system"
+   ],
+   "scenario_contexts": [
+    "Commissioning a new 7.1.4 mix room",
+    "Comparing a mix across two certified immersive rooms",
+    "Upgrading a 5.1 room to immersive by adding a height layer"
+   ]
+  },
+  {
+   "id": "67fa5212-2c2a-4e26-ba31-272d6ef504fb",
+   "term": "Immersive routing layout",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": "intermediate",
+   "definition": "The defined mapping of an immersive program's channels and rendered outputs to physical loudspeaker feeds (and DAW/renderer output buses) for a given layout, so each bed channel and object render lands on the correct speaker — for example, assigning the twelve feeds of a 7.1.4 layout to their outputs in the specified channel order.",
+   "plain_english": "This is the plan for which output goes to which speaker. It makes sure the left-height signal reaches the left-height speaker and nothing gets crossed.",
+   "purpose_function": "A correct routing layout guarantees that the renderer's speaker feeds arrive at their intended physical positions, without which imaging, calibration, and QC are meaningless.",
+   "practical_application": "A technician patches the renderer/DAW outputs to interface and amplifier channels following the layout's channel order, then verifies each with a test signal.",
+   "category": "Signal Routing",
+   "related_terms": [
+    "Immersive monitoring system",
+    "Immersive monitor controller",
+    "Height speaker",
+    "Bed",
+    "Immersive monitor quality control",
+    "Object-based audio"
+   ],
+   "common_mistakes": [
+    "Swapping surround and height feeds because the channel order was assumed instead of checked",
+    "Confusing the Dolby channel order or label with the DAW or interface output numbering",
+    "Not verifying each output with a test tone after patching"
+   ],
+   "scenario_contexts": [
+    "Patching a 7.1.4 renderer to an audio interface and amplifiers",
+    "Reconfiguring routing when moving from 7.1.4 to 9.1.6",
+    "Diagnosing a mix where overhead content plays from the wrong speaker"
+   ]
+  },
+  {
+   "id": "3f168b77-15f5-4737-898f-7a6a2e7cd867",
+   "term": "Low-frequency effects speaker",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The loudspeaker, typically a subwoofer, that reproduces the dedicated low-frequency effects (LFE) channel, the '.1' in formats such as 5.1, 7.1 and 7.1.4. It carries band-limited deep bass, nominally 20 to 120 Hz, reproduced with roughly 10 dB of additional in-band headroom relative to a single main channel, and is a discrete effects channel rather than a substitute for bass in the full-range channels.",
+   "plain_english": "It is the subwoofer that plays the special deep-bass channel in a surround mix, often called the point-one. It carries the low rumble, like the boom of an explosion, so the other speakers do not have to.",
+   "purpose_function": "It reproduces the discrete LFE channel so high-level, low-frequency effects can be delivered with extra headroom without overloading the main and height speakers.",
+   "practical_application": "A technician routes and calibrates the LFE channel to the subwoofer, setting its upper band limit around 120 Hz and its in-band level about 10 dB above a single main channel.",
+   "category": "Monitor loudspeaker",
+   "related_terms": [
+    "Bass management",
+    "Subwoofer",
+    "Reference level",
+    "Renderer calibration",
+    "Overhead speaker",
+    "Multichannel monitor controller"
+   ],
+   "common_mistakes": [
+    "Treating the LFE channel as a general bass channel and routing all low end to it, when it is meant only for added effects.",
+    "Confusing the LFE channel with bass management; redirected bass from full-range speakers is not the same as the LFE signal.",
+    "Forgetting the 10 dB in-band offset, so the LFE plays too quietly or too loudly against the mains.",
+    "UNSAFE: Running sustained high-SPL bass during subwoofer calibration without limiting exposure time or wearing hearing protection, risking noise-induced hearing loss."
+   ],
+   "scenario_contexts": [
+    "Calibrating the subwoofer so the LFE channel sits about 10 dB above a main channel in-band.",
+    "Routing the LFE track of a 7.1.4 Atmos mix to the dedicated subwoofer output.",
+    "Checking that deep effects such as explosions reach the LFE speaker without clipping."
+   ]
+  },
+  {
+   "id": "a052db32-b402-4082-b44a-145b9b45f6a7",
+   "term": "Multichannel monitor controller",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A hardware or software device that manages monitoring for multichannel and immersive playback, providing source selection, calibrated level control across all speaker feeds, per-channel trim and delay, bass management, downmix or fold-down monitoring, and solo/mute of individual speakers. It sits between the mix outputs and the monitor amplifiers or speakers so an engineer can audition surround and immersive formats such as 7.1.4.",
+   "plain_english": "A control box that lets an engineer switch sources and set the volume for a whole room of speakers at once. It can also mute or solo one speaker, or fold the mix down to fewer speakers to check it.",
+   "purpose_function": "It gives one calibrated, repeatable point of control over many speaker feeds so the engineer can hold a reference level, compare sources, and check fold-downs without re-patching.",
+   "practical_application": "A technician uses it to select the renderer output, set the room to reference level, trim and delay each speaker, and solo a channel to trace a problem.",
+   "category": "Monitoring hardware",
+   "related_terms": [
+    "Reference level",
+    "Bass management",
+    "Downmix",
+    "Renderer speaker mapping",
+    "Renderer calibration",
+    "Overhead speaker"
+   ],
+   "common_mistakes": [
+    "Assuming the controller's volume knob changes the mix; it sets only the monitoring level, not the recorded signal.",
+    "Forgetting that per-speaker trim and delay in the controller are separate from the renderer's own calibration.",
+    "Leaving a downmix or a soloed speaker engaged and mixing against a wrong picture of the sound field."
+   ],
+   "scenario_contexts": [
+    "Switching between the Atmos renderer output and a stereo reference on the same speakers.",
+    "Setting the whole immersive rig to a calibrated reference SPL before a mix session.",
+    "Soloing the top-front speaker to check a suspected wiring or level error."
+   ]
+  },
+  {
+   "id": "abbf665d-df53-4913-a20c-42e821365bff",
+   "term": "Overhead speaker",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A loudspeaker mounted above the listening position to reproduce the height (top) channels of an immersive layout, providing the vertical dimension that distinguishes immersive audio from horizontal surround. In ITU-R BS.2051 layouts these are the top loudspeakers, such as TpFL, TpFR, TpSiL, TpSiR, TpBL and TpBR, typically at roughly +30 to +45 degrees elevation.",
+   "plain_english": "A speaker placed in the ceiling or high on a wall so sound can come from above you. It adds the up-and-down layer that makes a mix feel like it wraps around you in three dimensions, not just at ear level.",
+   "purpose_function": "It delivers the elevation cues and overhead content that create a sense of height, letting formats such as 7.1.4 place sounds above the listener.",
+   "practical_application": "A technician installs, aligns and calibrates overhead speakers at the correct elevation angle, then confirms the renderer maps the top channels to them.",
+   "category": "Monitor loudspeaker",
+   "related_terms": [
+    "Side surround speaker",
+    "Rear surround speaker",
+    "Renderer speaker mapping",
+    "Renderer calibration",
+    "Multichannel monitor controller",
+    "Low-frequency effects speaker"
+   ],
+   "common_mistakes": [
+    "Placing overhead speakers too far forward or back, so the height image does not sit above the listener.",
+    "Confusing top-front and top-back positions when wiring, which reverses the overhead image.",
+    "Assuming any ceiling speaker will do; overhead speakers should timbre-match the main monitors.",
+    "UNSAFE: Hanging overhead speakers without rated mounts and a secondary safety attachment, risking a fall that can injure people below."
+   ],
+   "scenario_contexts": [
+    "Mounting four overhead speakers for a 7.1.4 monitoring setup.",
+    "Calibrating the top channels so overhead pans track smoothly across the ceiling.",
+    "Verifying that an effect authored overhead actually plays from the top speakers."
+   ]
+  },
+  {
+   "id": "f2c9368e-304e-4285-be1b-ad909d778f83",
+   "term": "Rear surround speaker",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "A loudspeaker positioned behind the listening position to reproduce the rear (back) surround channels of a 7.1-based or immersive layout. In ITU-R BS.2051 these are the left and right rear surround (Lrs, Rrs) at roughly plus or minus 120 to 150 degrees azimuth and ear level (0 degrees elevation), distinct from the side surround speakers.",
+   "plain_english": "A speaker set behind you that plays sounds coming from the back of the room. It fills the space directly behind the listener, which the side speakers cannot cover on their own.",
+   "purpose_function": "It provides discrete rear imaging so sounds can be placed and moved behind the listener, completing the horizontal surround field in 7.1 and larger layouts.",
+   "practical_application": "A technician places the rear surrounds behind the seat at the correct angle, wires them to the rear channels, and calibrates their level and delay to match the array.",
+   "category": "Monitor loudspeaker",
+   "related_terms": [
+    "Side surround speaker",
+    "Overhead speaker",
+    "Low-frequency effects speaker",
+    "Renderer speaker mapping",
+    "Renderer calibration",
+    "Multichannel monitor controller"
+   ],
+   "common_mistakes": [
+    "Confusing rear surrounds with side surrounds and wiring them to the wrong channels.",
+    "Placing rear surrounds too close together or too wide, collapsing or over-spreading the back image.",
+    "Assuming a 5.1 room has rear surrounds; 5.1 uses only a single surround pair, not separate rears."
+   ],
+   "scenario_contexts": [
+    "Adding rear surround speakers to expand a 5.1 room to 7.1.",
+    "Calibrating the rear pair so a sound panned front to back stays centered.",
+    "Checking that the renderer routes the rear surround channels to the correct outputs."
+   ]
+  },
+  {
+   "id": "87c33102-7157-4e70-a5af-601cac862fbb",
+   "term": "Renderer calibration",
+   "topic": "Immersive Monitoring & Calibration",
+   "difficulty": null,
+   "definition": "The process of configuring and aligning an object-audio renderer to a specific room and speaker layout so its output is correct and consistent: defining the speaker configuration and setting per-speaker trim (level), distance and delay, bass-management crossovers, and a defined monitoring reference SPL. It ensures the rendered mix is judged on an accurate system and translates to other calibrated rooms.",
+   "plain_english": "Setting up the renderer so it plays back correctly in your exact room and speakers. You tell it where the speakers are, match their volumes and timing, and set a standard loudness so your mix sounds right and matches other rooms.",
+   "purpose_function": "It makes the renderer's output match a known reference so mixes are made on an accurate, repeatable system and translate to other calibrated rooms.",
+   "practical_application": "A technician sets each speaker to reference level with test noise, enters speaker distances so the renderer applies correct delays, and sets crossovers before any mixing begins.",
+   "category": "Calibration",
+   "related_terms": [
+    "Renderer speaker mapping",
+    "Reference level",
+    "Bass management",
+    "Multichannel monitor controller",
+    "Room-rendered monitoring",
+    "Low-frequency effects speaker"
+   ],
+   "common_mistakes": [
+    "Skipping distance or delay entry, so speakers arrive out of time and the image smears.",
+    "Calibrating to the wrong reference SPL for the room, making the mix too loud or too soft.",
+    "Forgetting to recalibrate after moving a speaker or changing the layout.",
+    "Confusing calibration with speaker mapping; mapping sets routing, calibration sets levels and timing."
+   ],
+   "scenario_contexts": [
+    "Setting each channel to reference level with pink noise before a mix.",
+    "Entering speaker distances so the renderer applies correct per-speaker delays.",
+    "Recalibrating after swapping a monitor or adding overhead speakers."
+   ]
+  }
+ ]
+}

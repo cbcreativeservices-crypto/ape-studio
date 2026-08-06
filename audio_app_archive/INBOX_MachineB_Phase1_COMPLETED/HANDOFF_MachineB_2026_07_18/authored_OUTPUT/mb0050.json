@@ -1,0 +1,159 @@
+{
+ "batch": 50,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "b5afcead-27a3-454a-ba0c-ef71d76c5ba0",
+   "term": "Guitar reamp blend",
+   "fields": {
+    "definition": "The blending of a re-amplified guitar signal (a recorded direct-input track sent back out through a reamp box into a real amplifier and re-recorded through a microphone) with the original direct signal or a second reamped pass, to combine their tonal characteristics in the mix.",
+    "plain_english": "A clean guitar take can be played back through a real amp and recorded again. This trick lets you mix that fresh amp sound with the first clean take to build a fuller tone.",
+    "purpose_function": "It lets an engineer shape or change a guitar's amp tone after tracking is finished, then set the exact ratio of amp character to direct sound without asking the player to perform the part again.",
+    "practical_application": "An engineer feeds a stored direct-input track through a reamp box to an amp and microphone, records the result, then rides that returned track against the clean direct signal on a fader to taste.",
+    "category": "Guitar Recording",
+    "related_terms": ["Reamping", "DI box", "Double tracking", "Parallel processing", "Mic placement", "Guitar-bus processing"],
+    "common_mistakes": ["Not recording a clean direct-input track during tracking, which leaves nothing to reamp later", "Feeding a line-level signal into an amp without a proper reamp box, causing impedance mismatch, hum, and possible input damage", "Failing to time-align and phase-check the reamped track against the original, which causes hollow or thin blends", "Blending in so much dry direct signal that the amp character is lost"],
+    "scenario_contexts": ["Re-recording a scratch direct-input guitar through a favorite amp after the band has left the studio", "Blending a clean direct signal with a heavily distorted reamped tone to keep note definition in a metal rhythm", "Trying several amps on the same performance to find the best fit during mixing", "Adding a second reamped layer through a different cabinet to thicken a guitar part"]
+   },
+   "sources": ["Radial Engineering technical documentation (reamping application notes)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "63709f24-8deb-4030-aed3-f19a02493e92",
+   "term": "Guitar resonance control",
+   "fields": {
+    "definition": "The practice of taming unwanted resonant peaks in a guitar recording, such as boxy body resonances on acoustic guitar or ringing frequencies on electric, typically using narrow-band equalization cuts or dynamic EQ.",
+    "plain_english": "Some notes on a guitar ring out louder than the rest and sound boomy or harsh. Resonance control finds those spots and turns them down so the tone stays even.",
+    "purpose_function": "It smooths a guitar's frequency balance by removing peaks that jump out and mask other parts, so the instrument sits evenly in the mix rather than jumping forward on certain notes.",
+    "practical_application": "An engineer sweeps a narrow EQ band to locate a ringing frequency and cuts it, or uses a dynamic EQ to reduce that frequency only on the notes where it becomes too loud.",
+    "category": "Guitar Processing",
+    "related_terms": ["Parametric EQ", "Dynamic EQ", "Notch filter", "Resonance", "Feedback", "Body resonance"],
+    "common_mistakes": ["Cutting with too wide an EQ band, which removes desirable tone instead of just the problem resonance", "Boosting to find the resonance but forgetting to switch the band to a cut", "Over-cutting until the guitar sounds thin and lifeless", "Using a static cut when the resonance only appears on certain notes, where a dynamic EQ works better"],
+    "scenario_contexts": ["Taming a boomy body resonance on a close-miked acoustic guitar", "Removing a ringing frequency from an electric guitar amp recording", "Controlling a resonant note that jumps out during a sustained chord", "Cleaning up low-mid buildup where several stacked guitar tracks reinforce the same frequency"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8548a4cd-f0dd-49d5-8e56-802722936c98",
+   "term": "Guitar room blend",
+   "fields": {
+    "definition": "Mixing the signal from a distant room microphone with a close-miked guitar amp signal to add natural space, depth, and ambience to the recorded tone.",
+    "plain_english": "One mic sits close to the amp for a tight sound. Another mic across the room catches the natural echo. Blending the two adds a sense of space and size.",
+    "purpose_function": "It lets the engineer control how live or roomy a guitar sounds by balancing dry close-mic detail against ambient room reflections, without relying on artificial reverb.",
+    "practical_application": "While tracking, the engineer places a room mic several feet back, checks it for phase against the close mic, and rides its level to taste against the close signal.",
+    "category": "Guitar Recording",
+    "related_terms": ["Room mic", "Close miking", "Phase", "Ambience", "Reverb", "Parallel processing"],
+    "common_mistakes": ["Not phase-checking the room mic against the close mic, which causes thin or hollow tone when the two are blended", "Adding too much room signal so the guitar loses focus and clarity", "Placing the room mic where it captures unwanted noise or bleed from other instruments", "Assuming the room blend can replace close-mic detail rather than complement it"],
+    "scenario_contexts": ["Adding natural space to a close-miked amp in a good-sounding live room", "Blending room ambience into a rock rhythm guitar for depth", "Capturing a big room sound behind a lead guitar solo", "Using room mics to make a small guitar part feel larger without artificial reverb"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d027b62f-91b2-4caa-ae4b-8de31870986f",
+   "term": "Guitar saturation",
+   "fields": {
+    "definition": "The deliberate addition of harmonic distortion to a guitar signal, via tube, tape, transformer, or plugin emulation, to add warmth, harmonics, perceived loudness, and thickness.",
+    "plain_english": "Pushing a guitar signal a little past clean adds a gentle grit and warmth. It makes the tone feel fuller and louder without a big jump in volume.",
+    "purpose_function": "It enriches a guitar's harmonic content and softly rounds off peaks, helping the part feel thicker and cut through a dense mix.",
+    "practical_application": "An engineer runs a guitar track through a tape or tube saturation plugin, adding drive until the tone thickens but before it becomes obviously distorted.",
+    "category": "Guitar Processing",
+    "related_terms": ["Harmonic distortion", "Tape saturation", "Overdrive", "Tube stage", "Distortion", "Drive"],
+    "common_mistakes": ["Adding so much saturation that the tone becomes muddy or obviously distorted", "Using saturation to rescue a poorly recorded guitar instead of improving the source", "Not compensating for the level boost saturation adds, so the track seems better only because it is louder", "Applying heavy saturation on every track until the whole mix becomes harsh and fatiguing"],
+    "scenario_contexts": ["Warming up a clean direct-input guitar with gentle tube saturation", "Thickening a thin-sounding rhythm guitar in a dense mix", "Adding harmonics so a guitar still reads on small speakers", "Using tape saturation to soften harsh pick attack on an acoustic"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f50a4d1b-ff97-4645-bdb1-97459d0fcbbb",
+   "term": "Guitar subgroup",
+   "fields": {
+    "definition": "A mix bus that combines multiple guitar tracks onto a single set of faders so they can be level-controlled, processed, and routed together as one unit.",
+    "plain_english": "When you have many guitar tracks, you can send them all to one extra fader. Moving that single fader turns every guitar up or down at once.",
+    "purpose_function": "It simplifies control of a whole guitar section and allows shared processing, keeping the guitars balanced together while reducing the number of moves needed on the main mix.",
+    "practical_application": "An engineer routes rhythm and lead guitar channels to a stereo subgroup, then adjusts the whole section's level or adds bus compression on that one path.",
+    "category": "Signal Routing",
+    "related_terms": ["Bus", "Auxiliary send", "VCA group", "Bus compression", "Signal routing", "Stem"],
+    "common_mistakes": ["Confusing a subgroup, which audio actually passes through, with a VCA or aux, which behave differently", "Processing the subgroup heavily without realizing it affects every guitar routed to it", "Leaving individual track levels unbalanced before grouping, so bus moves cannot fix the internal balance", "Routing a guitar to both the subgroup and the main output at once, causing doubled signal and level errors"],
+    "scenario_contexts": ["Combining rhythm, lead, and clean guitars onto one fader for easy level control", "Adding bus compression across all guitars to glue them together", "Muting the whole guitar section at once during an arrangement change", "Printing a guitar stem from the subgroup for a mix handoff"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "50432619-cad6-414f-b579-9f682bac0c59",
+   "term": "Guitar transient control",
+   "fields": {
+    "definition": "Shaping the attack and sustain portions of a guitar signal, using a transient designer, compressor, or limiter, to emphasize or soften the initial pick attack.",
+    "plain_english": "The sharp pluck at the start of each note is called the transient. Transient control lets you make that attack punchier or softer to fit the song.",
+    "purpose_function": "It manages how much the pick attack pokes out, helping a guitar feel tighter or smoother and sit better against drums and other rhythm parts.",
+    "practical_application": "An engineer uses a transient shaper to boost attack on a palm-muted rhythm for tightness, or reduces attack on a strummed acoustic that sounds too clicky.",
+    "category": "Guitar Processing",
+    "related_terms": ["Transient designer", "Compression", "Attack", "Sustain", "Limiter", "Envelope"],
+    "common_mistakes": ["Over-boosting attack until the guitar sounds clicky and unnatural", "Using a slow compressor attack that squashes the transient by accident", "Reducing attack so much that a rhythm part loses its punch and drive", "Applying one transient setting across parts that each need different treatment"],
+    "scenario_contexts": ["Tightening palm-muted rhythm guitar so each chug hits cleanly", "Softening a too-clicky strummed acoustic", "Adding attack to a buried guitar so it cuts through the mix", "Evening out inconsistent picking dynamics across a take"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8d96e7a8-ae0e-4aab-8e32-66130e3be313",
+   "term": "Guitar width control",
+   "fields": {
+    "definition": "Adjusting the stereo spread of guitar tracks using panning, double-tracking, or mid-side techniques to set how wide or narrow they appear across the stereo field.",
+    "plain_english": "This decides how far apart guitars sit between the left and right speakers. You can make them feel wide and spacious or pull them tight toward the center.",
+    "purpose_function": "It controls the stereo image of the guitars so they fill the sides without crowding the vocal or bass, and helps keep the mix balanced and mono-compatible.",
+    "practical_application": "An engineer hard-pans double-tracked rhythms left and right for width, or uses a mid-side tool to widen a single part while checking mono for phase problems.",
+    "category": "Stereo Imaging",
+    "related_terms": ["Panning", "Double tracking", "Mid-side processing", "Stereo field", "Mono compatibility", "Hard-panned doubles"],
+    "common_mistakes": ["Over-widening with stereo tools until the guitars collapse or weaken when summed to mono", "Hard-panning a single mono guitar and expecting real stereo width from it", "Widening guitars so far that they clash with vocal or bass placement", "Forgetting to check mono compatibility for club and broadcast playback"],
+    "scenario_contexts": ["Setting the stereo spread of double-tracked rhythm guitars", "Narrowing a wide guitar part so it stops fighting the vocal", "Widening a single clean guitar with a mid-side plugin", "Balancing guitar width against keys and backing vocals in the stereo field"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c63297da-4e0b-4f82-a68f-4b49c51c2628",
+   "term": "Guitar-bus processing",
+   "fields": {
+    "definition": "Applying processing such as EQ, compression, or saturation across the combined guitar bus rather than on individual tracks, in order to glue the guitars into a cohesive whole.",
+    "plain_english": "Instead of treating each guitar track one by one, you process them all together on one channel. This helps the guitars sound like one solid, glued-together part.",
+    "purpose_function": "It creates cohesion across multiple guitar tracks and applies shared tone or dynamics in one place, saving effort and helping the section move as a single unit.",
+    "practical_application": "An engineer places a compressor and EQ on the guitar bus, using gentle gain reduction to glue the tracks and a broad EQ move to shape the whole section at once.",
+    "category": "Bus Processing",
+    "related_terms": ["Guitar subgroup", "Bus compression", "Glue compression", "Parallel processing", "Equalization", "Signal routing"],
+    "common_mistakes": ["Over-compressing the bus so the guitars lose their dynamics and energy", "Trying to fix a single track's problem on the bus, where it cannot be isolated", "Stacking heavy processing on both the individual tracks and the bus, causing an over-cooked sound", "Not gain-staging the bus, so its plugins receive too hot a signal"],
+    "scenario_contexts": ["Gluing several guitar tracks together with gentle bus compression", "Shaping the whole guitar section's tone with one EQ move", "Adding saturation across the guitar bus for cohesion", "Automating the guitar bus level to duck under a solo"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c5c5d381-103a-4c17-860e-006ded382a15",
+   "term": "Hard-panned doubles",
+   "fields": {
+    "definition": "A production technique in which two separately performed takes of the same guitar part are panned fully left and right to create a wide, thick stereo image.",
+    "plain_english": "You record the same guitar part twice, then send one take far left and the other far right. The tiny differences between them make the guitars sound big and wide.",
+    "purpose_function": "It widens and thickens rhythm guitars by using the natural performance differences between two takes, creating stereo width that a single panned track cannot produce.",
+    "practical_application": "A guitarist plays a rhythm part twice; the engineer pans take one hard left and take two hard right, building a wide wall of guitars around the centered vocal.",
+    "category": "Stereo Imaging",
+    "related_terms": ["Double tracking", "Panning", "Stereo field", "Guitar width control", "Overdub", "Comping"],
+    "common_mistakes": ["Copying one recorded take to both sides instead of using two separate performances, which gives no real width, only more volume", "Assuming hard-panned doubles are automatically mono-compatible; timing and phase differences can thin or comb-filter the guitars in mono", "Playing the two takes so tightly identical that the natural variation which creates width is lost", "Neglecting tuning between takes, so the doubled guitars sound out of tune with each other"],
+    "scenario_contexts": ["Recording two takes of a rock rhythm and panning them hard left and right", "Creating a wide wall of guitars behind a centered lead vocal", "Doubling a riff to make it sound bigger than a single track", "Setting up a classic hard-rock stereo guitar arrangement"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

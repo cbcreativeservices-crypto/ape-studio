@@ -1,0 +1,150 @@
+{
+ "batch": 87,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "8146d1a2-0a30-4396-87ed-ec0bf371befb",
+   "term": "Body layer",
+   "fields": {
+    "definition": "In sound layering, the body layer is the component of a stacked or composite sound that supplies its fullness and weight, carrying the low-mid fundamental energy (roughly the 150 Hz to 800 Hz region). It sits between the sub layer, which provides the deepest lows, and the top or attack layer, which provides high-frequency click and definition.",
+    "plain_english": "When you stack sounds to build one big sound, the body layer is the part that gives it fullness and warmth. Think of it like the trunk of a tree: the sub layer is the roots and the top layer is the leaves, but the body is the solid middle that holds it together.",
+    "purpose_function": "It gives a layered sound its core tone and perceived size, filling the low-mid range so the sound feels full instead of thin or hollow.",
+    "practical_application": "When layering a kick, bass, or synth, a producer chooses or shapes a body layer to add warmth and mass, often using EQ to carve its low-mids so it does not clash with other parts.",
+    "category": "Sound Layering",
+    "related_terms": ["Sub layer", "Attack layer", "Layering", "Equalization", "Frequency masking", "Sound design"],
+    "common_mistakes": ["Choosing a body layer that sits in the same frequencies as the bass, causing a muddy, masked low-mid buildup.", "Leaving every layer full-range instead of filtering each one so the body layer owns its band.", "Confusing the body layer (low-mid fullness) with the sub layer (deep lows) and boosting the wrong one."],
+    "scenario_contexts": ["Stacking two or three kick samples where one gives the click, one the body, and one the sub.", "Designing a lead synth by combining a bright top layer with a warmer body layer for weight.", "Reinforcing a thin recorded bass by adding a synth body layer underneath it."]
+   },
+   "sources": ["Sound On Sound, 'Layers Of Complexity'", "Sound On Sound, 'Sound Design In The Mix'", "Ballou, Handbook for Sound Engineers (frequency ranges / equalization)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9027107a-9075-4770-9ca6-bf07d5d0d5c0",
+   "term": "Boss music",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No acceptable source (standards body, manufacturer technical document, or recognised professional text) defines 'Boss music' as a professional audio or mix-workflow term. It is a colloquial video-game genre/context label (music accompanying a boss encounter), attested only in blogs, wikis, and enthusiast media, which do not count as corroboration. It is not a transparent compound of an established mixing technique either, so all fields are left blank pending review."]
+  },
+  {
+   "id": "f8ac5abc-1e7d-4360-8428-55e226dc2097",
+   "term": "Bounce Mixer Channels",
+   "fields": {
+    "definition": "Bouncing mixer channels is the process of rendering the output of one or more mixer channels to new audio files, either as a single combined mixdown or as separate stems. The bounce prints all channel processing (level, pan, EQ, dynamics, and effects) into fixed audio, performed offline (faster than real time) or in real time.",
+    "plain_english": "To bounce mixer channels means to turn what you hear on those channels into new audio files. It is like taking a photo of the finished sound so you can save it, send it, or free up the computer.",
+    "purpose_function": "It commits a mix or a group of channels to audio for delivery, archiving, or to lighten the processing load on the computer during a session.",
+    "practical_application": "A technician bounces the master bus to create the final mix file, or bounces groups of channels into stems that a mastering engineer or another studio can reopen.",
+    "category": "Mixdown & Export",
+    "related_terms": ["Stems", "Mixdown", "Rendering", "Freeze track", "Master bus", "Offline bounce"],
+    "common_mistakes": ["Bouncing with a channel or plug-in accidentally muted or soloed, so the exported file is missing parts.", "Choosing real-time bounce when offline would be fine, wasting time, or using offline when a hardware insert needs real time.", "Forgetting to match the bounce sample rate and bit depth to the delivery specification."],
+    "scenario_contexts": ["Exporting the final stereo mix to send for mastering.", "Printing stems for a live-show playback rig.", "Committing a heavy virtual instrument to audio to save CPU."]
+   },
+   "sources": ["Avid, Pro Tools Reference Guide (Bounce / Track Bounce)", "Sound On Sound, 'Pro Tools: Alternatives To Bouncing Audio'", "Huber & Runstein, Modern Recording Techniques (mixdown / stems)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2bddb806-624f-494c-bde2-7c97061d712e",
+   "term": "Breakbeat slicing",
+   "fields": {
+    "definition": "Breakbeat slicing is the technique of cutting a sampled drum break into individual segments, usually at the transient of each hit, so the pieces can be rearranged, retriggered, and matched to a new tempo. The slices are mapped to a sampler, drum pads, or MIDI notes for creative resequencing.",
+    "plain_english": "A breakbeat is a drum loop taken from a record. Slicing means chopping it into single drum hits so you can play them back in any order and at any speed, like cutting a sentence into words and making a new sentence.",
+    "purpose_function": "It frees a drum loop from its original tempo and order, letting a producer reshape the groove and lock it to the project tempo.",
+    "practical_application": "A producer loads a break such as the Amen into a slicer, detects the transients, and remaps the hits to build new jungle, drum-and-bass, or hip-hop patterns.",
+    "category": "Sampling & Editing",
+    "related_terms": ["Transient detection", "Sampler", "Quantization", "Time-stretching", "Warping", "Breakbeat"],
+    "common_mistakes": ["Placing slice points off the transient, so hits start late or with an audible click.", "Relying only on auto-slicing without checking and nudging the markers by hand.", "Time-stretching carelessly after slicing, so the break loses its natural swing."],
+    "scenario_contexts": ["Chopping the Amen break to program a jungle drum pattern.", "Rearranging a funk drum loop to fit a new song at a different tempo.", "Extracting single hits from a break to build a custom drum kit."]
+   },
+   "sources": ["Sound On Sound, 'Studio One: Chopping Breakbeats'", "Huber & Runstein, Modern Recording Techniques (sampling / looping)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a0927cd8-386e-435c-8d54-365ae19c1ad3",
+   "term": "Broadcast compliance",
+   "fields": {
+    "definition": "Broadcast compliance is the state of a programme meeting a broadcaster's technical delivery specifications, most importantly integrated loudness and true-peak limits. In practice this means normalising the programme to a loudness target such as -23 LUFS under EBU R128 or -24 LKFS under ATSC A/85, measured with an ITU-R BS.1770 meter, with true peaks kept at or below -1 dBTP.",
+    "plain_english": "Broadcast compliance means your mix follows the loudness and level rules a TV or radio station sets. It is like the weight limit for airline bags. If the audio is too loud, or peaks too high, the station will turn it down.",
+    "purpose_function": "It keeps loudness consistent between programmes and adverts so viewers are not blasted or forced to ride the volume, which is also a legal requirement in some regions.",
+    "practical_application": "Before delivery, an engineer sets the mix to the required loudness target and true-peak ceiling for the destination and checks it on a compliant loudness meter.",
+    "category": "Broadcast Delivery",
+    "related_terms": ["LUFS", "True peak", "EBU R128", "ITU-R BS.1770", "Loudness normalization", "Dialnorm"],
+    "common_mistakes": ["Mixing by peak meters alone and ignoring integrated loudness, so the mix fails the specification.", "Confusing loudness units (LUFS) with sample peak and letting true peaks exceed -1 dBTP.", "Assuming one target fits every outlet instead of checking each broadcaster's specification."],
+    "scenario_contexts": ["Delivering a TV commercial that must meet the CALM Act / ATSC A/85 target.", "Preparing a programme for a European broadcaster to EBU R128.", "Re-checking loudness after a last-minute re-edit before hand-off."]
+   },
+   "sources": ["EBU R128 (EBU Tech 3341)", "ATSC A/85:2013", "ITU-R BS.1770"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f79fbc90-541c-41f8-8134-fade2f8af274",
+   "term": "Broadcast compliance verification",
+   "fields": {
+    "definition": "Broadcast compliance verification is the quality-control step of measuring a finished programme against the broadcaster's technical specification and confirming it passes before delivery. It typically means running an ITU-R BS.1770 loudness meter to check integrated loudness, loudness range, and maximum true peak against the required limits, for example -23 LUFS and -1 dBTP under EBU R128.",
+    "plain_english": "This is the final check that proves your mix obeys the station's loudness and level rules. It is like weighing your suitcase on the airport scale before you fly, so you know it will pass.",
+    "purpose_function": "It catches loudness or peak problems before hand-off, preventing costly rejects, re-deliveries, or on-air penalties.",
+    "practical_application": "An engineer runs the completed file through a loudness meter or automated QC tool, reads the integrated loudness and true-peak values, and logs that they meet the delivery specification.",
+    "category": "Broadcast Delivery",
+    "related_terms": ["Integrated loudness", "True peak", "EBU R128", "ITU-R BS.1770", "Loudness meter", "Quality control"],
+    "common_mistakes": ["Measuring only a short section instead of the whole programme for integrated loudness.", "Trusting a plug-in meter that is not ITU-R BS.1770 compliant.", "Verifying loudness but forgetting the separate true-peak limit."],
+    "scenario_contexts": ["Running final QC on a documentary before uploading to a broadcaster portal.", "Checking a batch of adverts for CALM Act loudness before air.", "Confirming a re-versioned mix still passes after edits."]
+   },
+   "sources": ["EBU R128 (EBU Tech 3341 / 3343 metering)", "ITU-R BS.1770", "ATSC A/85:2013"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3e6fadc7-b998-412f-b30c-73c20c77c9c0",
+   "term": "Broadcast master",
+   "fields": {
+    "definition": "A broadcast master is the final approved master version of a mix conformed to a broadcaster's delivery requirements and ready for air or hand-off. It carries the correct integrated loudness, true-peak ceiling, channel layout, and file format for the target outlet.",
+    "plain_english": "The broadcast master is the finished, approved audio made to fit a TV or radio station's rules. It is the ready-to-play copy the station actually airs, not a rough draft.",
+    "purpose_function": "It provides a single, spec-correct deliverable so the programme airs at the right loudness and levels without further adjustment.",
+    "practical_application": "After the mix is signed off, the engineer renders a broadcast master at the required loudness and format, checks it, and delivers it to the broadcaster.",
+    "category": "Broadcast Delivery",
+    "related_terms": ["Broadcast compliance", "Broadcast printmaster", "Master bus", "LUFS", "Deliverables", "Stems"],
+    "common_mistakes": ["Delivering the streaming or CD master instead of one conformed to the broadcaster's loudness specification.", "Wrong channel order or missing M&E, making the broadcast master unusable.", "Skipping a final loudness check on the rendered master."],
+    "scenario_contexts": ["Rendering the on-air master of a TV episode to EBU R128.", "Creating the broadcast master of a commercial for network delivery.", "Archiving the approved broadcast master alongside the stems."]
+   },
+   "sources": ["EBU R128", "ATSC A/85:2013", "Ballou, Handbook for Sound Engineers (delivery / mastering)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e961511d-3849-4bef-ad93-3a83f25f9c5c",
+   "term": "Broadcast mix version",
+   "fields": {
+    "definition": "A broadcast mix version is an alternate version of a programme's mix prepared specifically for broadcast delivery, conformed to the outlet's loudness and true-peak specifications and, where required, edited for content (such as removing explicit language) or for timing. It sits alongside other versions such as the theatrical, streaming, or clean mixes.",
+    "plain_english": "This is a copy of the mix made just for TV or radio. It follows the station's loudness rules and may swap out swear words or fit a set run time, so it can differ from the version you stream at home.",
+    "purpose_function": "It lets one project meet different outlets' technical and content rules by supplying a mix tailored to broadcast, without changing the original mix.",
+    "practical_application": "An engineer creates a broadcast mix version by conforming loudness to spec and muting or replacing flagged words, then delivers it as a separate file.",
+    "category": "Broadcast Delivery",
+    "related_terms": ["Broadcast master", "Clean version", "M&E", "Loudness normalization", "Deliverables", "Broadcast compliance"],
+    "common_mistakes": ["Overwriting the original mix instead of saving broadcast as a separate version.", "Editing language but forgetting to re-check loudness afterwards.", "Assuming the broadcast version and streaming version share the same loudness target."],
+    "scenario_contexts": ["Making a radio-clean version of a song with explicit lyrics.", "Delivering a TV-timed cut of a programme to a network's loudness spec.", "Supplying a broadcast version plus a streaming version from the same session."]
+   },
+   "sources": ["EBU R128", "Ballou, Handbook for Sound Engineers (delivery / versions)", "ATSC A/85:2013"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a39250b5-d7c4-4313-9c94-2ea7c2952a57",
+   "term": "Broadcast printmaster",
+   "fields": {
+    "definition": "A broadcast printmaster is the final combined mixed master of a programme, with dialogue, music, and effects summed together, conformed to broadcast delivery specifications and used to produce the on-air deliverable. It is the broadcast-spec form of the printmaster, distinct from the separate dialogue, music, and effects stems delivered for versioning and foreign-language dubbing.",
+    "plain_english": "A printmaster is the finished soundtrack with dialogue, music, and effects all mixed into one. The broadcast printmaster is that finished soundtrack set to a TV station's rules, ready to go on air.",
+    "purpose_function": "It supplies the single, fully mixed, spec-correct soundtrack a broadcaster plays, while the matching stems allow later re-versioning or foreign-language dubs.",
+    "practical_application": "In post-production, the re-recording mixer prints the final mix to a broadcast printmaster at the required loudness and format, and also prints the dialogue, music, and effects stems for delivery.",
+    "category": "Broadcast Delivery",
+    "related_terms": ["Broadcast master", "Stems", "M&E", "Final mix", "Broadcast compliance", "Deliverables"],
+    "common_mistakes": ["Confusing the printmaster (the combined full mix) with stems (the separated dialogue, music, and effects groups).", "Delivering a printmaster that misses the broadcaster's loudness or channel specification.", "Failing to keep the printmaster and its stems in sync after a late change."],
+    "scenario_contexts": ["Printing the final broadcast soundtrack of a TV drama once the mix is locked.", "Delivering a broadcast printmaster plus dialogue, music, and effects stems to a network.", "Re-conforming an existing printmaster to a broadcaster's loudness target."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (film / TV sound, deliverables)", "EBU R128", "SMPTE deliverable / M&E specifications"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

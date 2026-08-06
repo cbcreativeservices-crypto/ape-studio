@@ -595,6 +595,42 @@ function Chip({
   );
 }
 
+/** Animated "…" — cycles 1→3 dots so a loading state never looks frozen. */
+function useDots(intervalMs = 400): string {
+  const [n, setN] = useState(1);
+  useEffect(() => {
+    const id = setInterval(() => setN((x) => (x % 3) + 1), intervalMs);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+  return '.'.repeat(n);
+}
+
+/** Header term-count while the corpus pages in — animated so it isn't a frozen
+ *  "… Terms" (owner 2026-08-05). */
+function LoadingCount() {
+  const dots = useDots(350);
+  return (
+    <Text style={styles.count}>
+      {dots}
+      <Text> Terms</Text>
+    </Text>
+  );
+}
+
+/** Full-width "loading the corpus" panel (owner 2026-08-05) — shown in the term
+ *  list area while the ~21k definitions page in, so it never just looks paused. */
+function GlossaryLoading() {
+  const dots = useDots();
+  return (
+    <View style={styles.loadingBox}>
+      <Text style={styles.loadingTitle}>Loading glossary{dots}</Text>
+      <Text style={styles.loadingSub}>
+        Fetching the full term list and definitions — this can take a few seconds. Terms will appear here as soon as they arrive.
+      </Text>
+    </View>
+  );
+}
+
 export function GlossaryScreen({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const { courseId: presetCourseId, achievementId: presetTopicId } = route.params ?? {};
@@ -1199,15 +1235,11 @@ export function GlossaryScreen({ route, navigation }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        {/* Booth 2026-07-08: the mode icon always returns to the Dashboard. */}
-        <Pressable
-          onPress={() => (navigation as any).navigate('Dashboard')}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel="Back to Dashboard"
-        >
-          <MethodIcon method="glossary" size={34} />
-        </Pressable>
+        {/* Decorative glossary mark (owner 2026-08-05): no longer a link — just
+            the icon, a touch larger. */}
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <MethodIcon method="glossary" size={42} />
+        </View>
         <Text style={styles.title} numberOfLines={1}>GLOSSARY</Text>
         {/* Cards/List toggle lives here now — always visible, both modes, so it
             stays reachable even while a term/popup is expanded (Booth 2026-07-09b). */}
@@ -1279,13 +1311,14 @@ export function GlossaryScreen({ route, navigation }: Props) {
             the cached daily total (owner 2026-08-02) in the default ALL/no-search
             state so the number appears instantly; once loaded, or when a
             filter/search narrows the set, show the exact live visible.length. */}
-        <Text style={styles.count}>
-          {loading
-            ? filter === 'all' && !search.trim() && cachedCount != null
-              ? `${cachedCount} Terms`
-              : '… Terms'
-            : `${visible.length} Terms`}
-        </Text>
+        {!loading ? (
+          <Text style={styles.count}>{visible.length} Terms</Text>
+        ) : filter === 'all' && !search.trim() && cachedCount != null ? (
+          <Text style={styles.count}>{cachedCount} Terms</Text>
+        ) : (
+          // Still paging in with no cached total — animate so it isn't frozen.
+          <LoadingCount />
+        )}
       </View>
 
       <View style={styles.searchBox}>
@@ -1457,7 +1490,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
             )
           }
           ListEmptyComponent={
-            loading ? null : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
+            loading ? <GlossaryLoading /> : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
           }
           extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search]}
           renderItem={({ item }) => {
@@ -1851,7 +1884,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
       </View>
 
       {coach.visible && (
-        <CoachMark text="Tap a term to expand or collapse all definitions & details" bottom={18} />
+        <CoachMark text="Tap a term to expand or collapse the complete definition" bottom={18} />
       )}
 
       {/* Share preview pop-up (user request 2026-07-17). */}
@@ -2170,6 +2203,19 @@ const styles = StyleSheet.create({
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1 },
   list: { paddingBottom: 16 },
   empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, paddingTop: 12 },
+  // Loading panel (owner 2026-08-05) — shown while the corpus pages in.
+  loadingBox: {
+    marginTop: 24,
+    paddingVertical: 22,
+    paddingHorizontal: 18,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    gap: 8,
+  },
+  loadingTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 0.6, color: colors.textPrimary },
+  loadingSub: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
   // Result count above the list (user request 2026-07-17).
   resultCount: {
     fontFamily: fonts.oswaldSemiBold,

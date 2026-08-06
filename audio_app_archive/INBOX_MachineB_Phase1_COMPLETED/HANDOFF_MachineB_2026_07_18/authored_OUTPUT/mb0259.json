@@ -1,0 +1,159 @@
+{
+ "batch": 259,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "2838e532-e396-45a9-8bb7-5f0f76153328",
+   "term": "Visual synchronization cue",
+   "fields": {
+    "definition": "A visual reference point in the picture used to align a sound precisely with the image, such as a clapperboard slate mark, a frame-accurate flash frame, or the streamers and punches that count a performer into an ADR or Foley take. It gives the editor and performer an exact frame at which a sound must occur.",
+    "plain_english": "A visual marker that shows the exact moment a sound should line up with the picture. It works like a countdown, so the sound lands on the right frame.",
+    "purpose_function": "It provides a frame-accurate anchor so dialogue, effects, and music stay locked to the picture. Without it, replaced sounds would drift out of sync with the image.",
+    "practical_application": "An editor lays streamers and punches ahead of an ADR line so the actor speaks in exact sync, or uses the clapper mark to line up production sound with the picture.",
+    "category": "Synchronization",
+    "related_terms": ["ADR", "Streamers and punches", "Clapperboard", "Lip sync", "Two-pop", "Sync point"],
+    "common_mistakes": ["Confusing the visual cue with the audible beep countdown often used alongside it", "Ignoring the project frame rate, so cues land on the wrong frame", "Relying on eyeballed sync instead of a precise cue mark"],
+    "scenario_contexts": ["Cueing an actor into an ADR line with streamers and punches", "Lining up a clapper slate to sync dailies", "Placing punch marks for a Foley artist to hit a footstep"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television", "SMPTE ST 12-1 (timecode)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3ff86cbd-5483-40d8-9e39-468d69364b11",
+   "term": "Vocoding",
+   "fields": {
+    "definition": "A signal-processing technique that analyzes the changing spectral envelope of one sound (the modulator, such as a voice) and imposes it onto a second sound (the carrier, such as a synth) through a bank of matched filters, so the carrier appears to speak or sing. It is used to create robotic, harmonized, and otherworldly vocal effects.",
+    "plain_english": "An effect that stamps the shape of your voice onto another sound, like a synth. It makes the synth seem to talk, giving that classic robot-voice sound.",
+    "purpose_function": "It transfers the tone and syllables of a voice onto a musical or synthetic sound to create expressive or robotic voices. It exists to blend the clarity of speech with the character of another instrument.",
+    "practical_application": "A sound designer routes a spoken line as the modulator and a synth pad as the carrier to build a talking-robot or alien voice for a film or track.",
+    "category": "Voice Processing",
+    "related_terms": ["Carrier signal", "Modulator", "Formant", "Talk box", "Synthesizer", "Sidechain"],
+    "common_mistakes": ["Confusing a vocoder with auto-tune, which corrects pitch instead", "Confusing vocoding with a talk box, which shapes sound acoustically in the mouth", "Feeding a carrier with too few harmonics, so the speech is unintelligible", "Forgetting the carrier must sound continuously for words to come through"],
+    "scenario_contexts": ["Creating a robot voice for a sci-fi character", "Making a synth 'sing' lyrics in a music production", "Designing an alien or computer voice for a game"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Roads, The Computer Music Tutorial"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a48d2f34-43a7-43d1-91c7-fa049503ac92",
+   "term": "Voice casting",
+   "fields": {
+    "definition": "The process of selecting and hiring voice performers whose vocal quality, range, and delivery suit a character or narration in animation, dubbing, games, or advertising. It matches a voice to the role's age, personality, and tone.",
+    "plain_english": "Choosing the right voice actor for a character or ad. It is like casting an on-screen actor, but the job is judged by the voice, not the face.",
+    "purpose_function": "It ensures each character or narration is voiced by a performer who fits the role and the project's audience. It exists to make characters believable and consistent across a production.",
+    "practical_application": "A casting director auditions actors, reviews demo reels, and selects voices for an animated series or a dubbed foreign release.",
+    "category": "Dialogue Production",
+    "related_terms": ["Voice-over dialogue", "Dubbing", "Voice matching", "ADR", "Narration", "Demo reel"],
+    "common_mistakes": ["Casting on a single line instead of the character's full emotional range", "Ignoring how the voice will fit lip movements when the work is dubbed", "Assuming a famous voice always suits the role"],
+    "scenario_contexts": ["Selecting voices for characters in an animated feature", "Casting a narrator for a documentary", "Choosing dub actors to match the original cast for a foreign release"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8842538e-eb19-4148-865d-d560a6d87726",
+   "term": "Voice limiting",
+   "fields": {
+    "definition": "Applying a limiter to a voice or dialogue signal to cap peaks at a set ceiling, preventing overloads and holding the loudest moments in check without changing the overall level much. It keeps dialogue from clipping and helps meet delivery loudness and true-peak limits.",
+    "plain_english": "Using a tool that stops a voice from getting too loud. It puts a ceiling on the loudest peaks so the sound never overloads or distorts.",
+    "purpose_function": "It protects against clipping and holds dialogue peaks under broadcast or streaming limits. It exists to keep speech clean and within delivery specs.",
+    "practical_application": "A dialogue mixer places a limiter on the voice bus to catch sudden plosives or shouts before they clip the mix or breach the true-peak spec.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Limiter", "Compression", "True peak", "Loudness (LUFS)", "Dialogue mixing", "Clipping"],
+    "common_mistakes": ["Setting the threshold so low that the voice sounds squashed and lifeless", "Confusing limiting with compression, which acts more gently over a range", "Relying on a limiter instead of setting a sensible recording level", "Ignoring true-peak limiting, so inter-sample peaks still clip on playback"],
+    "scenario_contexts": ["Catching plosive peaks on a narration track", "Keeping dialogue under a broadcast true-peak ceiling", "Taming sudden shouts in a film dialogue mix"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "ITU-R BS.1770 / EBU R128 (loudness and true peak)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "342f667c-fb73-47c6-9af2-cfa7205dce24",
+   "term": "Voice matching",
+   "fields": {
+    "definition": "The craft of selecting and directing a substitute performer (or processing a voice) so it closely resembles an original actor's voice for replacement dialogue, dubbing, or continuity when the original performer is unavailable. The goal is a seamless match in timbre, accent, and delivery.",
+    "plain_english": "Making one person's voice sound like another actor's voice. It is used when the first actor cannot record, so a new voice blends in without anyone noticing.",
+    "purpose_function": "It keeps a character's voice consistent when the original actor cannot perform the lines. It exists to preserve continuity so audiences do not notice the swap.",
+    "practical_application": "A supervisor casts and coaches a sound-alike to record ADR lines a lead actor could not complete, matching accent, tone, and pace.",
+    "category": "Dialogue",
+    "related_terms": ["ADR", "Voice casting", "Dubbing", "Voice-over dialogue", "Dialogue replacement", "Continuity"],
+    "common_mistakes": ["Matching timbre but ignoring the original's rhythm and accent", "Forgetting to match the room tone and mic sound of the original recording", "Assuming EQ alone can turn one voice into another"],
+    "scenario_contexts": ["Replacing lines for an actor who has become unavailable", "Dubbing a returning character with a new performer", "Completing pickups when a lead cannot attend an ADR session"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9a04efbf-5461-4221-b88d-62fec27a032f",
+   "term": "Voice-over dialogue",
+   "fields": {
+    "definition": "Recorded speech, such as narration or a character's unseen commentary, that is heard over the picture without the speaker's lips being seen on screen. It includes documentary narration, internal monologue, and off-camera storytelling.",
+    "plain_english": "Speech you hear over a scene when you cannot see the person talking. Think of a narrator telling a story, or a character's thoughts spoken out loud.",
+    "purpose_function": "It delivers narration, story information, or inner thoughts without an on-screen speaker. It exists to guide, explain, or add a voice the picture alone cannot show.",
+    "practical_application": "A mixer records and places a narrator's track above the music and effects, keeping it clear and free of sync-sensitive lip timing.",
+    "category": "Dialogue",
+    "related_terms": ["Narration", "Voice casting", "Voice-over translation", "Dialogue", "ADR", "Walla"],
+    "common_mistakes": ["Confusing voice-over with sync dialogue that must match on-screen lips", "Mixing the narration too low to hear under music and effects", "Recording the VO in a room with a tone that clashes with picture scenes"],
+    "scenario_contexts": ["Recording narration for a documentary", "Adding a character's inner monologue over a scene", "Voicing a commercial over on-screen visuals"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "23c75105-a098-40e2-bcbe-35d4afda6103",
+   "term": "Voice-over translation",
+   "fields": {
+    "definition": "A form of language transfer in which a translated spoken track is recorded over the original dialogue, which stays faintly audible underneath, rather than fully replacing it as in lip-sync dubbing. It is common for documentaries, news, and interviews in many markets.",
+    "plain_english": "This translates a show by speaking the new language over the original voice. You can still hear the first voice quietly underneath. It is often used for interviews and news.",
+    "purpose_function": "It makes foreign-language content understandable while keeping the original voice audible for authenticity. It exists as a faster, cheaper option than full lip-sync dubbing.",
+    "practical_application": "A mixer lowers the original interview audio and lays the translated read on top, leaving a moment of original voice at the start for authenticity.",
+    "category": "Localization",
+    "related_terms": ["Dubbing", "Subtitling", "Voice-over dialogue", "Localization", "M&E track", "Voice casting"],
+    "common_mistakes": ["Confusing voice-over translation with lip-sync dubbing", "Ducking the original voice so far that it disappears entirely", "Starting the translation over the first words, losing the original's opening"],
+    "scenario_contexts": ["Translating a foreign news interview for broadcast", "Localizing a documentary with a narrator-style read", "Making a foreign reality show understandable without full dubbing"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0c9f0fe2-0aa7-49ec-b214-48193c3239e0",
+   "term": "Walking footsteps",
+   "fields": {
+    "definition": "Foley footstep sounds performed and recorded in sync with a character's steps on screen, matched to the surface, footwear, weight, and pace of the movement. They replace or reinforce footstep sounds that are missing or weak in the production track.",
+    "plain_english": "The sound of footsteps added to match a character walking on screen. A Foley artist walks in time with the picture, using the right shoes and floor to make it real.",
+    "purpose_function": "They restore believable, sync-accurate footsteps that the production recording often lacks. They exist to ground characters in the scene and support the sense of space and movement.",
+    "practical_application": "A Foley artist watches the picture and walks on a matching surface, using different shoes and pace to fit each character's steps.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Foley artist", "Sync point", "Sound effects", "Ambience", "Prop foley"],
+    "common_mistakes": ["Using the wrong surface or shoe, so the steps do not match the picture", "Performing the steps out of sync with the character's pace", "Recording the footsteps too loud relative to the scene"],
+    "scenario_contexts": ["Adding footsteps for a character crossing a wooden floor", "Replacing missing footstep sound in a dialogue-only production track", "Matching heavy boots to a soldier marching on gravel"]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0683d37d-6c6d-408c-a110-b188dca8d729",
+   "term": "Weapon sound",
+   "fields": {
+    "definition": "Designed or recorded sound effects representing firearms, blades, or other weapons, typically built from layered elements such as the mechanical action, the report or impact, and the tail or reverberation. In post they are edited in sync with the on-screen weapon action.",
+    "plain_english": "The sound made for guns, swords, or other weapons in a film or game. It is usually built from several layered sounds to feel powerful and real.",
+    "purpose_function": "It gives on-screen weapons a convincing, impactful sound that supports the action. It exists because real or production-recorded weapon sounds are often unusable or missing.",
+    "practical_application": "A sound designer layers a mechanical click, a body, and a reverb tail, then syncs each shot to the muzzle flash on screen.",
+    "category": "Sound Design",
+    "related_terms": ["Sound design", "Layering", "Foley", "Sync point", "Sound effects", "Reverb tail"],
+    "common_mistakes": ["Using one flat gunshot for every shot instead of varied takes", "Ignoring the space, so a shot has no matching reverb tail", "Placing the report out of sync with the muzzle flash"],
+    "scenario_contexts": ["Designing gunfire for an action scene", "Adding a sword 'shing' for a fight sequence", "Creating a sci-fi blaster from layered synths and recordings"]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

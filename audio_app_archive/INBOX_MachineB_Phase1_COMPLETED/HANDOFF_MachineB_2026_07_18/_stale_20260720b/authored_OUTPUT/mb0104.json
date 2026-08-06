@@ -1,0 +1,159 @@
+{
+ "batch": 104,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "4900cbbc-e617-4101-be84-55915b618358",
+   "term": "Foley Fill",
+   "fields": {
+    "definition": "Foley performed and recorded specifically to supply the incidental human-made sounds — footsteps, cloth movement, prop handling — that exist only on the production dialogue track, so they remain present in the effects/M&E stem once dialogue is removed. It fills the gaps in effects coverage needed for a complete music-and-effects deliverable.",
+    "plain_english": "Extra Foley made to cover the small everyday sounds, like footsteps or rustling clothes, that were only picked up along with the actors' voices. It fills those sounds back in so they stay in the film when the voices are taken out for a dubbed version.",
+    "purpose_function": "It makes sure the music-and-effects (M&E) stem carries every incidental sound, so a film can be dubbed into another language without losing footsteps, movement, or prop noise.",
+    "practical_application": "A Foley editor spots the dialogue track for sounds that would vanish if dialogue were muted, then records Foley fill to cover them for the M&E deliverable.",
+    "category": "Foley & Post",
+    "related_terms": ["Foley premix", "Foley stem", "M&E stem", "Foreign-language mix", "Dialogue stem", "Effects stem"],
+    "common_mistakes": ["Assuming production-recorded footsteps and moves are safe when they live only on the dialogue track and will vanish in the dub.", "Recording Foley fill with the wrong perspective or room so it does not match the picture.", "Covering only obvious footsteps and missing quieter prop and cloth sounds needed for a full M&E."],
+    "scenario_contexts": ["Filling in movement sounds for a dialogue-heavy scene so the M&E stem stays complete.", "Preparing a title for foreign dubbing where every incidental sound must exist off the dialogue track."]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound (Focal Press)", "Holman, Sound for Film and Television (Routledge/Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8e13b16a-ea34-445e-b5f6-fb0138bea843",
+   "term": "Foley Premix",
+   "fields": {
+    "definition": "An intermediate mix that combines and balances the many individual Foley recordings — footsteps, movement, and prop sounds — into a smaller set of pre-balanced tracks or a submix, ready to be brought into the final re-recording mix.",
+    "plain_english": "A rough mix of just the Foley sounds. All the footsteps, clothing, and prop noises are balanced together first, so they are easier to handle in the final mix.",
+    "purpose_function": "It streamlines the final re-recording mix by pre-balancing dozens of Foley tracks down to a tidy, consistent set before dialogue, music, and effects are combined.",
+    "practical_application": "A Foley mixer premixes the recorded Foley to even out footstep levels and perspective, delivering a clean premix that the re-recording mixer folds into the final.",
+    "category": "Foley & Post",
+    "related_terms": ["Foley stem", "Foley fill", "Premix", "Re-recording mix", "Effects stem", "M&E stem"],
+    "common_mistakes": ["Premixing so aggressively that the re-recording mixer loses control over individual sounds.", "Baking in heavy processing that cannot be undone in the final mix.", "Ignoring perspective and space so the premix does not match the picture."],
+    "scenario_contexts": ["Balancing a scene's footsteps and cloth passes into one premix before the final dub.", "Delivering Foley premixes to the re-recording stage for a feature's final mix."]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound (Focal Press)", "Holman, Sound for Film and Television (Routledge/Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4c22c483-748d-45ef-ab12-ea864e754bed",
+   "term": "Foley Stem",
+   "fields": {
+    "definition": "A stem — an isolated submix printed as part of the final mix deliverables — that contains only the mixed Foley elements, kept separate from dialogue, music, and other effects so it can be recombined or replaced later.",
+    "plain_english": "A separate track that holds only the finished Foley sounds. Keeping it on its own means it can be reused or swapped without touching the music or dialogue.",
+    "purpose_function": "It preserves the Foley as an independent layer of the final mix, supporting music-and-effects versions, foreign dubs, and future re-mixes or format changes.",
+    "practical_application": "At the end of a mix, the Foley is printed to its own stem alongside dialogue, music, and effects stems so the film can be re-versioned for TV or overseas release.",
+    "category": "Foley & Post",
+    "related_terms": ["Stem", "Foley premix", "Effects stem", "Dialogue stem", "M&E stem", "Foley-only stem"],
+    "common_mistakes": ["Confusing a stem with the full final mix — a stem is only one isolated layer.", "Merging Foley into the general effects stem, which breaks M&E and dubbing versions.", "Failing to keep stem levels matched so they sum back to the approved final mix."],
+    "scenario_contexts": ["Printing a separate Foley stem so a title can be conformed for airline and broadcast versions.", "Delivering discrete Foley stems for an M&E package used in foreign-language dubbing."]
+   },
+   "sources": ["Holman, Sound for Film and Television (Routledge/Focal Press)", "Yewdall, Practical Art of Motion Picture Sound (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2e3bf00a-159e-493c-8c92-46564676efad",
+   "term": "Foley-only stem",
+   "fields": {
+    "definition": "A deliverable stem carrying exclusively Foley content, separated from hard effects and backgrounds, so Foley can be handled on its own within a music-and-effects package or re-versioning workflow.",
+    "plain_english": "A stem with nothing but Foley on it, no other effects mixed in. Keeping Foley by itself makes it easy to reuse or replace when a film is prepared for another language or format.",
+    "purpose_function": "It isolates Foley from other sound-effects layers so localization and re-versioning teams can adjust or rebuild Foley without disturbing designed effects or backgrounds.",
+    "practical_application": "A mixer delivers a Foley-only stem within the M&E package so a dubbing studio can rebalance footsteps and movement independently of the effects stem.",
+    "category": "Foley & Post",
+    "related_terms": ["Foley stem", "Effects stem", "M&E stem", "Stem", "Foley premix", "Foley fill"],
+    "common_mistakes": ["Bundling Foley with hard effects, which defeats the point of a Foley-only stem.", "Assuming a single combined effects stem is enough for full M&E and dubbing needs.", "Leaving level offsets that stop the stems summing to the approved mix."],
+    "scenario_contexts": ["Supplying a Foley-only stem so a localization vendor can re-time footsteps for a dubbed cut.", "Including a Foley-only stem in deliverables for a streaming platform's international versions."]
+   },
+   "sources": ["Holman, Sound for Film and Television (Routledge/Focal Press)", "Yewdall, Practical Art of Motion Picture Sound (Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cde569a5-603a-4237-a0d4-f840b8517d59",
+   "term": "Follow the arrangement",
+   "fields": {
+    "definition": "A mixing approach in which level, automation, panning, and effects evolve section by section to support the musical arrangement, foregrounding whichever element is most important at each moment rather than holding a single static balance across the whole song.",
+    "plain_english": "Changing the mix as the song moves along so the right part is always in front. In the verse you might feature the voice, then let the guitars grow in the chorus.",
+    "purpose_function": "It keeps a mix clear and engaging by making sure the most important part of each section is heard, matching the emotional shape the arrangement was written to create.",
+    "practical_application": "An engineer writes fader and effect automation across the timeline, pushing lead vocals up in the chorus or pulling a busy pad down under a solo so each section reads clearly.",
+    "category": "Mixing Technique",
+    "related_terms": ["Automation", "Fader ride", "Arrangement", "Static mix", "Dynamic mix", "Focal point"],
+    "common_mistakes": ["Setting one static balance for the whole song and never adjusting it section to section.", "Automating so hard that levels jump unnaturally and distract the listener.", "Featuring every element at once so nothing actually stands out."],
+    "scenario_contexts": ["Riding the lead vocal up a decibel in the chorus and back down in the verse.", "Bringing a synth pad forward during an instrumental break, then tucking it under the returning vocal."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio: Concepts, Practices and Tools (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6dc664f0-6717-4f7a-a51b-5c4a6b1bb3e9",
+   "term": "Foreign-language mix",
+   "fields": {
+    "definition": "A version of a program's final mix prepared for release in another language, typically built from the music-and-effects (M&E) stems with the original dialogue removed so that translated, re-recorded dialogue can be added in its place.",
+    "plain_english": "A copy of the film's sound made ready for another language. The original talking is taken out, but the music and sound effects stay, so new voices in the new language can be dropped in.",
+    "purpose_function": "It lets a film or show be released internationally by allowing dubbed dialogue to replace the original while keeping all music and effects exactly as mixed.",
+    "practical_application": "A re-recording mixer delivers M&E stems and a foreign-language mix template so a dubbing studio can add localized dialogue without rebuilding the effects and music.",
+    "category": "Post Deliverables",
+    "related_terms": ["M&E stem", "Dialogue stem", "Foley fill", "Foley stem", "Re-recording mix", "Effects stem"],
+    "common_mistakes": ["Leaving incidental sounds only on the dialogue track, so they disappear in the dubbed version.", "Assuming a stereo print master can be dubbed instead of delivering proper M&E stems.", "Forgetting narration or on-screen source cues that the foreign version still needs to reproduce."],
+    "scenario_contexts": ["Preparing M&E stems so a series can be dubbed into Spanish and German for international streaming.", "Delivering a fully filled M&E mix to a localization vendor for theatrical release abroad."]
+   },
+   "sources": ["Holman, Sound for Film and Television (Routledge/Focal Press)", "Yewdall, Practical Art of Motion Picture Sound (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0daf7485-6c92-46cd-b35a-fc58b42ab14e",
+   "term": "Formant Shift (Flex)",
+   "fields": {
+    "definition": "In flexible pitch-editing tools, a parameter that raises or lowers a sound's formants — the fixed resonant peaks that give a voice or instrument its timbral character — independently of pitch, altering the perceived vocal-tract size or tone without changing the note.",
+    "plain_english": "A control that changes the size or character of a voice without changing the note it sings. Push it up and a singer sounds smaller or brighter; pull it down and they sound bigger or deeper.",
+    "purpose_function": "It lets an editor reshape timbre after pitch changes — keeping a pitch-shifted voice natural, or deliberately making it sound larger, smaller, or more like a different singer.",
+    "practical_application": "When tuning a vocal with Flex Pitch or VariAudio, an engineer nudges the formant shift to undo the thin, chipmunk sound that large pitch moves cause, or to thicken a backing vocal.",
+    "category": "Pitch Editing",
+    "related_terms": ["Flex Pitch", "VariAudio", "Pitch correction", "Formant", "Pitch shift", "Time stretch"],
+    "common_mistakes": ["Confusing formant shift with pitch shift — formants change tone, not the note.", "Pushing formants so far that the voice sounds robotic or unnatural.", "Forgetting that large pitch edits usually need a matching formant tweak to stay believable."],
+    "scenario_contexts": ["Fixing a lead vocal that was pitched up several semitones and now sounds thin and chipmunky.", "Shaping a doubled backing vocal to sit slightly larger or brighter than the lead."]
+   },
+   "sources": ["Apple, Logic Pro User Guide (Flex Pitch)", "Steinberg, Cubase Operation Manual (VariAudio)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c84c55bc-9da7-4ead-9db1-ed5159a727df",
+   "term": "Freeze and Flatten",
+   "fields": {
+    "definition": "A two-stage DAW process in which a track is first frozen — its instruments and effects temporarily rendered to audio to save CPU — and then flattened, which permanently replaces the track's original devices and MIDI with that rendered audio.",
+    "plain_english": "A two-step trick to save computer power. First you freeze a track, turning its live effects into a plain audio recording. Then you flatten it to make that change permanent.",
+    "purpose_function": "It frees up processing power and locks in a sound: freezing gives temporary relief, while flattening commits the result so heavy plugins or virtual instruments can be removed for good.",
+    "practical_application": "When a project runs low on CPU, an engineer freezes CPU-heavy virtual-instrument tracks, then flattens the ones that are finished to reclaim resources permanently.",
+    "category": "DAW Workflow",
+    "related_terms": ["Freeze audio track", "Bounce in place", "Commit", "CPU load", "Virtual instrument", "Rendering"],
+    "common_mistakes": ["Flattening before a part is final, since it removes the original plugins and MIDI for good.", "Assuming freezing is permanent — it stays reversible until you flatten.", "Forgetting that a flattened track can no longer have its instrument or effect settings changed."],
+    "scenario_contexts": ["Flattening finished software-instrument tracks in a large session to permanently lower CPU use.", "Committing a resource-heavy synth part so the project opens and plays reliably on a slower machine."]
+   },
+   "sources": ["Ableton, Live Manual (Freeze and Flatten)", "Apple, Logic Pro User Guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2e1cae46-0984-4ad6-90ed-c56311bbbd79",
+   "term": "Freeze Audio Track",
+   "fields": {
+    "definition": "A DAW function that temporarily renders a track's real-time processing — plugins and, for instrument tracks, the virtual instrument — to a hidden audio file so it plays back without ongoing CPU load, while remaining reversible so the original settings can be restored by unfreezing.",
+    "plain_english": "A button that records a track's effects into a temporary file so the computer stops working hard to play them. You can unfreeze it later to change the settings again.",
+    "purpose_function": "It reduces CPU and disk load in large sessions by playing a pre-rendered version of a track, letting a machine handle projects that would otherwise stutter or overload.",
+    "practical_application": "When a mix starts glitching from too many plugins, an engineer freezes the heaviest tracks to keep playback smooth, then unfreezes any track that needs further editing.",
+    "category": "DAW Workflow",
+    "related_terms": ["Freeze and flatten", "Bounce in place", "Commit", "CPU load", "Latency", "Virtual instrument"],
+    "common_mistakes": ["Trying to edit or automate a track's plugins while it is frozen — you must unfreeze first.", "Confusing freezing with bouncing; freezing is reversible and stays on the track.", "Freezing a track with live inputs or sidechains and losing that routing until it is unfrozen."],
+    "scenario_contexts": ["Freezing several software-synth tracks so a laptop can play back a dense arrangement without dropouts.", "Freezing a CPU-hungry, reverb-laden track to free processing for mixing the rest of the session."]
+   },
+   "sources": ["Apple, Logic Pro User Guide (Freeze)", "Steinberg, Cubase Operation Manual (Freeze)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

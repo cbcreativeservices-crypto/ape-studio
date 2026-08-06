@@ -1,0 +1,159 @@
+{
+ "batch": 281,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "0caf0493-7ff3-405e-a10d-c21d127fda72",
+   "term": "Sample cache",
+   "fields": {
+    "definition": "A region of fast memory, typically RAM, into which audio samples or their initial portions are pre-loaded so a sampler's playback engine can read them with minimal latency instead of fetching every note from slower disk storage.",
+    "plain_english": "A sample cache is fast memory that holds sounds ready to play. It keeps them close by so a note starts the instant you press a key, instead of waiting on a slow drive.",
+    "purpose_function": "It lowers access latency and prevents dropouts by keeping the start of each sample, or frequently used sounds, in fast memory while the rest streams from disk.",
+    "practical_application": "A technician sets the RAM preload size in a sampler like Kontakt so a large library loads its sample starts into memory and streams the tails from disk.",
+    "category": "Playback & Memory",
+    "related_terms": ["Sample playback engine", "Disk streaming", "Latency", "Buffer size", "Voice allocation"],
+    "common_mistakes": ["Assuming a bigger cache improves tone, when it mainly affects loading and streaming, not sound.", "Setting the preload size so high that RAM runs out and the system slows or crashes.", "Confusing the RAM cache with permanent storage; restarting or purging empties it."],
+    "scenario_contexts": ["Loading a large orchestral library and adjusting preload memory to avoid dropouts.", "Increasing a sampler's cache size while troubleshooting audio glitches.", "Purging unused samples from the cache to free RAM during a big session."]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8bd3ce4f-b852-48d2-9de9-3772ebd38e7d",
+   "term": "Sample capture",
+   "fields": {
+    "definition": "The process of recording audio through an input and converting it to a stored digital sample via an analog-to-digital converter, producing raw material ready for editing, mapping, or playback in a sampler.",
+    "plain_english": "Sample capture means recording a sound and saving it as a digital clip. A mic or line feeds the sound in, and the sampler turns it into a file you can play back later.",
+    "purpose_function": "It creates the source material for a sampler by turning a real-world or line-level sound into a stored digital recording.",
+    "practical_application": "A technician sets input gain and sample rate, then records a single note or hit into a sampler or DAW to build a new instrument.",
+    "category": "Sample Acquisition",
+    "related_terms": ["Sample rate", "Bit depth", "Analog-to-digital converter", "Sample editing", "Gain staging"],
+    "common_mistakes": ["Setting input gain too high and clipping the capture, which cannot be undone later.", "Recording with background noise or at the wrong sample rate for the project.", "Leaving monitor speakers open near the mic during capture, causing feedback."],
+    "scenario_contexts": ["Recording a drum hit to build a custom sampler instrument.", "Capturing a field recording to use as a one-shot sound.", "Sampling a synth line into a DAW for later editing."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3b3f9d4b-a8fb-4561-a815-ff9b6a1a52e6",
+   "term": "Sample catalog",
+   "fields": {
+    "definition": "An organized, searchable index of stored audio samples, usually holding metadata such as name, category, tempo, key, and tags, that lets a user browse and recall sounds within a library or sampler.",
+    "plain_english": "A sample catalog is an organized list of your sounds. Like a library index, it lets you search by name, type, or tempo so you can find the right clip fast.",
+    "purpose_function": "It makes large collections usable by tagging and indexing sounds so they can be found and loaded quickly instead of hunting through folders.",
+    "practical_application": "A technician tags and organizes a sample library so producers can search by instrument, key, or tempo inside the browser.",
+    "category": "Library Management",
+    "related_terms": ["Sample library", "Metadata", "Tagging", "Sample consolidation", "Preset browser"],
+    "common_mistakes": ["Relying on file names alone instead of adding tags and metadata.", "Moving sample files after cataloging, which breaks the stored links.", "Not backing up the catalog database, losing all organization if it corrupts."],
+    "scenario_contexts": ["Building a searchable library in a sampler's browser.", "Tagging loops by tempo and key for a production template.", "Recovering sample locations after a drive is remounted."]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cd604973-dc4f-4cac-972d-82c85d039e4e",
+   "term": "Sample consolidation",
+   "fields": {
+    "definition": "The process of combining audio into a single continuous file, or gathering all sample files a project references into one folder, so the material is self-contained and easier to manage, archive, or transfer.",
+    "plain_english": "Sample consolidation gathers your audio into one place. It can join clips into a single file. It can also copy every sound a project uses into one folder, so nothing gets lost.",
+    "purpose_function": "It makes a project portable and reliable by turning scattered edits or file references into one file or one collected folder.",
+    "practical_application": "A technician runs a consolidate command before archiving or moving a session so every sample travels with the project instead of staying on random drives.",
+    "category": "Library Management",
+    "related_terms": ["Sample editing", "Sample catalog", "Bounce", "Session archive", "Region"],
+    "common_mistakes": ["Confusing consolidate, which gathers files, with bounce, which renders a new mix.", "Forgetting to consolidate before moving a session, leaving samples offline.", "Consolidating clips too early and losing separate edit points."],
+    "scenario_contexts": ["Preparing a Pro Tools session for transfer to another studio.", "Merging many small edits into one clean audio file.", "Collecting all used samples into a project folder before backup."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c3b92a27-e736-4bc4-9a1a-9a3cc31555d2",
+   "term": "Sample editing",
+   "fields": {
+    "definition": "Modifying a recorded audio sample using operations such as trimming, cutting, gain change, fading, and pitch or time adjustment, to clean it up and prepare it for mapping and playback.",
+    "plain_english": "Sample editing means cleaning up and shaping a recorded sound. You trim the ends, fix the volume, and remove noise so the clip is ready to play.",
+    "purpose_function": "It turns raw recordings into clean, usable samples by removing unwanted parts and correcting level, timing, and tone.",
+    "practical_application": "A technician trims silence, sets fades, and adjusts gain on a captured hit before mapping it across a keyboard.",
+    "category": "Sample Editing",
+    "related_terms": ["Sample capture", "Sample fade", "Sample normalization", "Zero crossing", "Trimming"],
+    "common_mistakes": ["Cutting a sample at a non-zero crossing, which causes an audible click.", "Editing the only copy without keeping a backup of the original.", "Over-processing and adding artifacts that cannot be removed later."],
+    "scenario_contexts": ["Trimming silence from the start of a recorded note.", "Removing a cough or noise from a vocal sample.", "Preparing a one-shot for a drum kit."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "aa7894aa-ec6f-4fcc-a507-b6db3bc54d69",
+   "term": "Sample fade",
+   "fields": {
+    "definition": "A short amplitude ramp applied at the start (fade-in) or end (fade-out) of a sample, gradually raising or lowering level to prevent clicks or pops caused by an abrupt start or stop away from zero.",
+    "plain_english": "A sample fade is a quick volume ramp at the start or end of a sound. It eases the level up or down so you don't hear a click when the clip begins or stops.",
+    "purpose_function": "It removes clicks and pops from starting or ending a waveform away from zero, making edits and loop points sound smooth.",
+    "practical_application": "A technician adds a few milliseconds of fade to trimmed sample edges or loop points to stop clicks during playback.",
+    "category": "Sample Editing",
+    "related_terms": ["Sample editing", "Zero crossing", "Sample looping", "Crossfade", "Envelope"],
+    "common_mistakes": ["Making fades too long and softening the attack of a sound.", "Skipping fades on edits, leaving audible clicks.", "Confusing a short edit fade with a volume envelope on the whole note."],
+    "scenario_contexts": ["Adding a short fade-out to stop a click at a sample's end.", "Smoothing a loop point with a crossfade.", "Cleaning up edited drum hits."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "27c442b0-7934-404c-bbc0-be41a0576ecd",
+   "term": "Sample looping",
+   "fields": {
+    "definition": "Repeating a defined section of a sample seamlessly so a sound can sustain longer than the original recording, using matched loop points and often a crossfade to hide the seam.",
+    "plain_english": "Sample looping repeats part of a sound over and over so it can hold as long as you need. Good loop points make the repeat sound seamless, with no bump.",
+    "purpose_function": "It lets a short recording sustain indefinitely, so held notes on a sampled instrument do not run out of audio.",
+    "practical_application": "A technician sets loop start and end points in the steady part of a sustained note and crossfades them so a held key sounds continuous.",
+    "category": "Sample Editing",
+    "related_terms": ["Sample fade", "Crossfade", "Zero crossing", "Sample playback engine", "Sustain"],
+    "common_mistakes": ["Placing loop points at mismatched levels, causing a click each cycle.", "Looping across a section where the tone changes, creating a noticeable pulse.", "Setting loop points off zero crossings without a crossfade."],
+    "scenario_contexts": ["Looping the sustain of a sampled string so held notes last.", "Creating a seamless ambient loop.", "Extending a short recorded note for a keyboard instrument."]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7f70ea1c-c245-4ce1-89b5-8c34dab8b16c",
+   "term": "Sample normalization",
+   "fields": {
+    "definition": "An amplitude adjustment that scales a sample's gain so its peak (peak normalization) or measured loudness (loudness normalization) reaches a chosen target level, without altering its dynamics or tone.",
+    "plain_english": "Sample normalization raises or lowers a clip's volume to hit a set level. It finds the loudest peak, then scales the whole clip so that peak sits at your target.",
+    "purpose_function": "It brings samples to a consistent reference level so they sit together predictably and make use of the available headroom.",
+    "practical_application": "A technician peak-normalizes captured one-shots to a set level, such as -1 dBFS, so a drum kit's hits are balanced before mixing.",
+    "category": "Sample Editing",
+    "related_terms": ["Sample editing", "Gain staging", "Peak level", "Headroom", "Loudness"],
+    "common_mistakes": ["Thinking normalization is the same as compression; it does not change dynamics.", "Normalizing to 0 dBFS and leaving no headroom for later processing.", "Normalizing noisy samples, which raises the noise floor along with the signal."],
+    "scenario_contexts": ["Leveling a set of recorded drum hits to a common peak.", "Bringing a quiet sample up before mapping.", "Preparing one-shots to a consistent reference level."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e7f925a9-b3ac-4951-b410-36242c953201",
+   "term": "Sample playback engine",
+   "fields": {
+    "definition": "The hardware or software component of a sampler that reproduces stored samples, handling voice allocation, sample-rate conversion and pitch shifting, envelopes, filtering, and mixing to turn triggered notes into audio output.",
+    "plain_english": "The sample playback engine is the part of a sampler that actually makes the sound. When you press a key, it picks the right clip, shifts its pitch, and plays it back.",
+    "purpose_function": "It converts note triggers into audio by selecting, pitching, shaping, and mixing samples in real time, letting one recording play across many notes.",
+    "practical_application": "A technician watches the engine's voice limit and streaming settings when loading big instruments so notes do not cut off during dense passages.",
+    "category": "Playback & Memory",
+    "related_terms": ["Sample cache", "Sample looping", "Voice allocation", "Pitch shifting", "Polyphony"],
+    "common_mistakes": ["Exceeding the engine's voice count, causing notes to cut off.", "Blaming the samples for artifacts actually caused by pitch-shifting far from the root note.", "Ignoring the engine's interpolation quality setting that trades CPU for sound."],
+    "scenario_contexts": ["Loading a multi-gigabyte instrument and setting voice limits.", "Diagnosing dropped notes during dense passages.", "Choosing interpolation quality to balance CPU load and sound."]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

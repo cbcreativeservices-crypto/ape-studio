@@ -85,14 +85,15 @@ export function Badge({ text }: { text: string }) {
   return <Text style={styles.badge}>{text}</Text>;
 }
 
-/** Honest placeholder for listening tests that need the native DSP release. */
+/** Honest placeholder for listening tests that need the native DSP release.
+ *  (Retained for the Meter lab; the Digital Sampling lab no longer uses it.) */
 export function ListeningSoonCard({ what }: { what: string }) {
   return (
     <View style={styles.soonCard}>
       <Text style={styles.soonTitle}>🔈 LISTENING TEST — IN DEVELOPMENT</Text>
       <Text style={styles.soonBody}>
-        {what} needs real-time bit-depth/dither/conversion processing in the native audio engine —
-        arriving in a future release. The visuals above show exactly what you will hear.
+        {what} needs real-time processing in the native audio engine — arriving in a future
+        release. The visuals above show exactly what you will hear.
       </Text>
     </View>
   );

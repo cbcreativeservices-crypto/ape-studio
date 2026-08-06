@@ -1,0 +1,57 @@
+# Machine B — COMPLETION NOTES (AP&E Glossary work package)
+_Prof. Booth's AP&E Studio · covers all 431 packets (mb0001–mb0431). Last updated 2026-07-20._
+
+## 1. Headline status
+
+| Stage | Range | Status |
+|---|---|---|
+| **Authoring** | mb0001–mb0431 (431 packets) | **COMPLETE** — verify.py 0 errors |
+| **Committee (3-expert)** | mb0001–mb0431 authored terms | **COMPLETE** for all Machine-B-authored terms; see §5 for a scope question on 112 pre-filled terms |
+| **Corrections** | mb0001–mb0431 | **COMPLETE** for all reviewed terms |
+
+This session completed the outstanding work: **authored mb0381–mb0431 (51 packets, 362 terms)**, ran the **3-expert committee for mb0341–mb0431 (710 terms, groups 81–101)**, and **applied corrections** for that range. Authoring/committee/corrections for mb0001–mb0340 were completed in prior sessions.
+
+## 2. What this session produced (mb0341–mb0431)
+
+**Authoring — mb0381–mb0431 (362 terms, 51 packets).** All empty_fields authored to the strict-sourcing standard, every `plain_english` at Flesch–Kincaid grade ≤ 9 (wave maxima 6.3–8.9), `verify.py` 0 errors, 0 forbidden sources. Confidence across the full mb0341–431 range: **382 High, 327 Medium** (transparent compound descriptors, per the brief), **1 FLAG-FOR-REVIEW**. Topics: immersive object/bed authoring & monitoring, dialogue/ADR/dubbing/Foley post, game & themed-entertainment audio, audio restoration & archival, preamp/converter engineering, plugin/DSP development, cloud/emerging production, AI/ML foundations & source separation, and live-sound crew/FOH.
+
+**Committee — groups 81–101 (710 terms × 3 experts = 2,130 reviews).** Verdicts: **2,083 OK (97.8%), 43 MINOR, 4 NEEDS_REVISION** — matching the mb0001–340 quality bar (~98% OK). 47 actionable suggestions (1 High, 10 Medium, 36 Low). Coverage verified: `verify_committee.py` 0 errors across all 21 groups (all three roles, exact count and id-order per group).
+
+**Corrections — 40 applied, 5 declined.** The High-severity item and all NEEDS_REVISION items were handled by hand with live web-verification (see §3). The rest were applied by per-range editor agents (web-verifying technical fixes, declining pure style). `verify.py` 0 errors across mb0341–431 after corrections.
+
+## 3. Notable fixes caught by the committee (all web-verified before applying)
+
+- **mb0424 Quantization (High).** The authored entry claimed undithered bit-depth truncation "can produce sudden full-scale artifacts that risk hearing and speaker damage." Inaccurate. Corrected to the real effect — undithered truncation converts low-level quantization error into *signal-correlated (harmonic) distortion*, most audible on quiet passages and fade-outs — and removed the erroneous UNSAFE hazard claim. Confirmed vs quantization/dither literature.
+- **mb0353 Risha/mizrab attack (NEEDS_REVISION).** Original conflated the sitar and sarod plectra. Corrected: the **sitar** uses the wire *mizrab* worn on the finger; the **sarod** is played with a hand-held *java (jawa)* plectrum. Confirmed vs organological references (India Instruments encyclopedia, Chandraveena, sarod pedagogy).
+- **mb0357 Bar resonance.** "Octave and twelfth" overtone relationship corrected (idiophone bars tune to a twelfth on xylophone, double octave on marimba/vibraphone; never a 2:1 octave). Confirmed vs Fletcher & Rossing.
+- **mb0374 Overblow/overdraw (harmonica).** Reversed reed attribution corrected (overblow sounds the draw reed; overdraw sounds the blow reed). Grounded in Fletcher & Rossing and Cottingham (ASA).
+- **mb0345 Balalaika, mb0385/mb0386 immersive elevation, mb0400 Object monitoring** — smaller accuracy/consistency fixes, each web-verified (e.g. Top-speaker elevation checked against Dolby installation guidelines).
+
+## 4. Flags for Prof. Booth (items needing a ruling)
+
+- **mb0425 "RipX DeepMix" — FLAGGED, left blank (do not launch).** No such product exists. Hit'n'Mix RipX editions are **DeepAudio, DeepRemix, DeepCreate** (and RipX DAW / DAW PRO) — confirmed against the manufacturer (hitnmix.com) and Sound on Sound / MusicTech reviews. Two committee experts assumed it was real and asked to author the full entry; that suggestion was **declined** because authoring it would mean inventing a nonexistent product (violates flag-don't-guess). Booth should confirm the intended term — most likely **RipX DeepRemix** or **RipX DAW**.
+- **327 transparent compound descriptors** in mb0341–431 authored at **Medium** confidence per the brief (e.g. object/bed panning compounds, "Cold/Deep archive", "Converter/Conversion X", "NPU acceleration", "On-device/edge inference"). These are correct as authored; noted for awareness, consistent with the mb0001–340 clusters.
+
+## 5. Open scope question — 112 pre-filled terms with no committee review
+
+The original committee grouping (groups 1–80, prior session) ordered terms by topic, not by packet, and covered the first 2,787 terms. **112 terms in packets mb0002–mb0337 fell outside those 80 groups and have no 3-expert review.** On inspection, **every one of these 112 terms was delivered with all content fields pre-filled** (their `empty_fields` list was empty), so Machine B authored nothing for them — the authored_OUTPUT entries carry `fields: {}` and their content exists only in the source packets.
+
+This raises a genuine scope/coordination question that only Booth (or Machine A) can settle: **do pre-filled terms that Machine B never authored still require Machine B's committee pass, or does that content belong to Machine A's pipeline?** They were left as-is rather than guessed at — and their content could not be reviewed this session anyway, because the device bridge dropped and their source packets were not staged. The complete id/term/packet list is in `UNREVIEWED_PREFILLED_TERMS.json` (delivered with this package). Recommended next step: confirm ownership; if they are in Machine B's scope, stage packets mb0002–mb0337 (only the ~50 that contain these terms), run `build_review.py`, and complete groups + corrections exactly as done for mb0341–431.
+
+## 6. mb0377 / mb0379 re-verification (prior-session literature-only packets)
+
+Both were re-checked this session through the full committee pass (they sit in groups 81–101). mb0377 received one clarity fix (garbled modifiers), applied. mb0379's single suggestion (a "head-locked" gloss) was reviewed and **declined** as ambiguous/unverifiable — the original wording stands. Both are structurally clean and stand at their committee-reviewed state.
+
+## 7. Infrastructure note (important for the next session)
+
+This session started in a **fresh cloud container**: the working dir `/home/claude/apne` was empty, and the pipeline **scripts and `AGENT_INSTRUCTIONS.md` were not on the device** (only the briefs and data were). They were **reconstructed from the briefs and the output contracts**, then validated — `verify.py` passes the 40 already-finished packets clean, and `build_review.py`'s grouping was checked against the existing committee files. All reconstructed scripts (`verify.py`, `verify_committee.py`, `build_review.py`, `aggregate_suggestions.py`, `make_assignments.py`) and `AGENT_INSTRUCTIONS.md` are included in this package so they persist. **Committee grouping change:** rather than rebuild the topic-ordered groups 1–80 (which would renumber them and invalidate existing reviews), new work was placed in **new groups 81–101** covering only un-reviewed terms — existing committee output is untouched.
+
+## 8. Final gates (this session's range)
+
+- `python3 verify.py` on mb0341–mb0431: **0 errors, 0 warnings** (91 packets).
+- `python3 verify_committee.py 81..101`: **0 errors** (21 groups, 3 roles each).
+- Reading level: every authored/corrected `plain_english` in-range at FK ≤ 9.
+- Sourcing: 0 forbidden-source packets in the new authoring (standards bodies / manufacturer technical docs / recognized professional texts only).
+
+## 9. Deliverables in this package
+`authored_OUTPUT/` (final, corrections folded in), `committee_OUTPUT/` (groups 1–101), `corrections_log/` (range_00–12), `review_packets/` (groups 81–101), the reconstructed scripts + `AGENT_INSTRUCTIONS.md`, `corrections_todo.json`, `UNREVIEWED_PREFILLED_TERMS.json`, and this file.

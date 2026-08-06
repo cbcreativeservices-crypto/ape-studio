@@ -23,7 +23,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
-import { InteractionZone, LabChip } from '../LabShell';
+import { InteractionZone, LabChip, CollapsibleSection } from '../LabShell';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { requireMsViz, skiaAvailable, type MsVizModule } from './skiaGate';
@@ -111,14 +111,29 @@ function clampPolarSource(x: number, y: number, w: number): { x: number; y: numb
   return { x: px, y: py };
 }
 
-const PROX_DISTANCES: { label: string; inches: number; boostDb: number }[] = [
-  { label: '12 in', inches: 12, boostDb: 1 },
-  { label: '6 in', inches: 6, boostDb: 3 },
-  { label: '3 in', inches: 3, boostDb: 6 },
-  { label: '1 in', inches: 1, boostDb: 10 },
+const OFF_ANGLES = [0, 30, 60, 90, 180];
+
+// Vertical level ramps for the response graphs (owner 2026-08-05). PROXIMITY
+// only boosts (0…+10 dB): green at unity → red at the top. OFF-AXIS spans a
+// loss range: MIDI blue at the −25 dB floor up through warm to red on top.
+const PROX_STOPS = [
+  { db: 0, color: '#37e05f' },
+  { db: 6, color: '#ffd76b' },
+  { db: 12, color: '#ff5a48' },
+];
+const OFFAXIS_STOPS = [
+  { db: -26, color: '#2f74ff' },
+  { db: -14, color: '#37e05f' },
+  { db: -2, color: '#ffd76b' },
+  { db: 6, color: '#ff5a48' },
 ];
 
-const OFF_ANGLES = [0, 30, 60, 90, 180];
+/** Illustrative proximity low-shelf boost (dB) as the mic nears the mouth —
+ *  smooth so a slider can drive it. ~+10 dB at 1 in, tapering to ~0 by 12 in. */
+function proxBoostForInches(inches: number): number {
+  const t = Math.max(0, Math.min(1, (12 - inches) / 11));
+  return Math.round(10 * Math.pow(t, 1.4) * 10) / 10;
+}
 
 const POP_MODES: { key: 'none' | 'pop' | 'foam' | 'blimp'; label: string; pass: number; note: string }[] = [
   { key: 'none', label: 'NONE', pass: 1, note: 'The full plosive blast hits the capsule — a low-frequency POP that can overload it.' },
@@ -197,14 +212,6 @@ function IllustrationBadge({ text }: { text?: string }) {
   return <Text style={styles.badge}>{text ?? 'ILLUSTRATIVE MODEL — DRAWN FROM THE EQUATIONS, NOT A MEASUREMENT'}</Text>;
 }
 
-function FutureAudioNote() {
-  return (
-    <Text style={styles.futureNote}>
-      🔈 Audio demonstrations — coming in a future release. This lab teaches visually first.
-    </Text>
-  );
-}
-
 /** A thin labeled meter bar (RN — works on every client). */
 function MeterBar({ label, frac, color }: { label: string; frac: number; color: string }) {
   return (
@@ -272,7 +279,7 @@ function PolarSection({ viz, width, focused, help, onLock }: SectionProps) {
           {viz ? <PolarViz viz={viz} width={width} a={pat.a} b={pat.b} src={src} running={focused} /> : <VizUnavailableCard />}
         </View>
       </InteractionZone>
-      <IllustrationBadge text="CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASURED POLAR RESPONSE · color = r(θ) = |A + B·cosθ| × 1/d falloff · drag the head anywhere — it can come right up next to the mic, but never through it" />
+      <IllustrationBadge text="CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASURED POLAR RESPONSE · color = r(θ) = |A + B·cosθ| × 1/d falloff · drag the speaker anywhere — it can come right up next to the mic, but never through it" />
       <DisplayGuideButton onPress={() => help('polar_pattern')} />
       <View style={styles.chipRow}>
         {PATTERNS.map((p, i) => (
@@ -283,11 +290,13 @@ function PolarSection({ viz, width, focused, help, onLock }: SectionProps) {
         Source at {((angle % 360) + 360) % 360}° · pickup{' '}
         {g < 0.05 ? 'NULL (−30 dB or more down)' : `${(20 * Math.log10(g)).toFixed(1)} dB`}
       </Text>
-      <Text style={styles.caption}>
-        The pattern is the mic’s sensitivity by direction. Cardioid rejects the rear (monitor
-        wedges live there). Figure-8 has two lobes and two deep side nulls. Omni hears everything —
-        no proximity effect, no null to aim.
-      </Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('polar_pattern')}>
+        <Text style={styles.caption}>
+          The pattern is the mic’s sensitivity by direction. Cardioid rejects the rear (monitor
+          wedges live there). Figure-8 has two lobes and two deep side nulls. Omni hears everything —
+          no proximity effect, no null to aim.
+        </Text>
+      </CollapsibleSection>
     </View>
   );
 }
@@ -332,11 +341,13 @@ function DistanceSection({ viz, width, focused, help }: SectionProps) {
       />
       <MeterBar label="DIRECT SOUND (falls with distance)" frac={direct} color="#5bff85" />
       <MeterBar label="ROOM SOUND (stays roughly constant)" frac={room} color="#6fa8ff" />
-      <Text style={styles.caption}>
-        Halving the distance gains ~6 dB of DIRECT sound while the room stays put — that ratio is
-        what “close” sounds like. Typical speech working distance: about 4–12 inches. Beyond that,
-        the room starts winning.
-      </Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('distance')}>
+        <Text style={styles.caption}>
+          Halving the distance gains ~6 dB of DIRECT sound while the room stays put — that ratio is
+          what “close” sounds like. Typical speech working distance: about 4–12 inches. Beyond that,
+          the room starts winning.
+        </Text>
+      </CollapsibleSection>
     </View>
   );
 }
@@ -361,38 +372,52 @@ const PROX_CHECK: CheckSpec = {
 };
 
 function ProximitySection({ viz, width, focused, help }: SectionProps) {
-  const [distIdx, setDistIdx] = useState(0);
+  // Distance is now a continuous slider (owner 2026-08-05): drag the mic in
+  // toward the mouth and watch the low-shelf grow. d01 = 0 far (12 in) → 1
+  // close (1 in).
+  const [d01, setD01] = useState(0);
   const [directional, setDirectional] = useState(true);
-  const d = PROX_DISTANCES[distIdx];
+  const inches = Math.round((12 - d01 * 11) * 10) / 10;
+  const boostDb = proxBoostForInches(inches);
   return (
     <View style={styles.panelCard}>
       {/* The approach: watch the mic physically close in on the singer. */}
       {viz ? (
-        <ProxApproachViz viz={viz} width={width} inches={d.inches} boostDb={d.boostDb} directional={directional} running={focused} />
+        <ProxApproachViz viz={viz} width={width} inches={inches} boostDb={boostDb} directional={directional} running={focused} />
       ) : (
         <VizUnavailableCard />
       )}
       {viz ? (
-        <viz.ResponseCurveView width={width} dbAt={(f) => (directional ? viz.proximityDb(f, d.boostDb) : 0)} />
+        <viz.ResponseCurveView
+          width={width}
+          dbAt={(f) => (directional ? viz.proximityDb(f, boostDb) : 0)}
+          floorDb={0}
+          ceilDb={12}
+          vStops={directional ? PROX_STOPS : undefined}
+        />
       ) : null}
       <IllustrationBadge text="ILLUSTRATIVE — conceptual approach scene + a simplified low-shelf response; real mics vary by design" />
       <DisplayGuideButton onPress={() => help('proximity')} />
-      <View style={styles.chipRow}>
-        {PROX_DISTANCES.map((p, i) => (
-          <LabChip key={p.label} label={p.label} selected={distIdx === i} onPress={() => setDistIdx(i)} onLongPress={() => help('proximity')} />
-        ))}
-      </View>
+      <DragSlider
+        value={d01}
+        onChange={setD01}
+        label="MIC DISTANCE — DRAG IN TOWARD THE MOUTH"
+        readout={inches >= 12 ? '12 in · no boost' : `${inches} in · +${boostDb} dB low-shelf`}
+        onHelp={() => help('proximity')}
+      />
       <View style={styles.chipRow}>
         <LabChip label="CARDIOID" selected={directional} onPress={() => setDirectional(true)} onLongPress={() => help('proximity')} />
         <LabChip label="OMNI" selected={!directional} onPress={() => setDirectional(false)} onLongPress={() => help('proximity')} />
       </View>
       <Text style={styles.readout}>
-        {directional ? `≈ +${d.boostDb} dB low-shelf at ${d.label}` : 'OMNI — flat at every distance (no proximity effect)'}
+        {directional ? `≈ +${boostDb} dB low-shelf at ${inches} in` : 'OMNI — flat at every distance (no proximity effect)'}
       </Text>
-      <Text style={styles.caption}>
-        Radio-voice warmth IS this effect, used on purpose. It is also why a singer who swallows
-        the mic turns muddy — and why the high-pass filter exists on every channel strip.
-      </Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('proximity')}>
+        <Text style={styles.caption}>
+          Radio-voice warmth IS this effect, used on purpose. It is also why a singer who swallows
+          the mic turns muddy — and why the high-pass filter exists on every channel strip.
+        </Text>
+      </CollapsibleSection>
       <CheckQuestion spec={PROX_CHECK} />
     </View>
   );
@@ -431,7 +456,15 @@ function OffAxisSection({ viz, width, help }: SectionProps) {
   return (
     <View style={styles.panelCard}>
       {viz ? <viz.OffAxisMicView width={width} angleDeg={angle} /> : <VizUnavailableCard />}
-      {viz ? <viz.ResponseCurveView width={width} dbAt={(f) => viz.offAxisDb(f, angle)} floorDb={-26} ceilDb={6} /> : null}
+      {viz ? (
+        <viz.ResponseCurveView
+          width={width}
+          dbAt={(f) => viz.offAxisDb(f, angle)}
+          floorDb={-26}
+          ceilDb={6}
+          vStops={OFFAXIS_STOPS}
+        />
+      ) : null}
       <IllustrationBadge text="ILLUSTRATIVE — broadband polar loss + growing high-frequency rolloff off-axis" />
       <DisplayGuideButton onPress={() => help('off_axis')} />
       <View style={styles.chipRow}>
@@ -439,11 +472,13 @@ function OffAxisSection({ viz, width, help }: SectionProps) {
           <LabChip key={a} label={`${a}°`} selected={angle === a} onPress={() => setAngle(a)} onLongPress={() => help('off_axis')} />
         ))}
       </View>
-      <Text style={styles.caption}>
-        Off-axis sound isn’t just QUIETER — it’s DULLER: the highs fall off faster than the lows.
-        That’s why a singer drifting off-mic changes tone before they change level, and why good
-        off-axis behavior is a mark of a great microphone.
-      </Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('off_axis')}>
+        <Text style={styles.caption}>
+          Off-axis sound isn’t just QUIETER — it’s DULLER: the highs fall off faster than the lows.
+          That’s why a singer drifting off-mic changes tone before they change level, and why good
+          off-axis behavior is a mark of a great microphone.
+        </Text>
+      </CollapsibleSection>
     </View>
   );
 }
@@ -464,11 +499,13 @@ function PopSection({ viz, width, focused, help }: SectionProps) {
         ))}
       </View>
       <MeterBar label="PLOSIVE ENERGY REACHING THE CAPSULE" frac={m.pass} color={m.pass > 0.6 ? '#ff6b5e' : m.pass > 0.35 ? '#ffd76b' : '#5bff85'} />
-      <Text style={styles.caption}>{m.note}</Text>
-      <Text style={styles.caption}>
-        “P” and “B” fire a jet of air, not just sound. The fix is always the same idea: break up
-        the MOVING AIR before it hits the diaphragm while letting the sound wave through.
-      </Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('pop_filter')}>
+        <Text style={styles.caption}>{m.note}</Text>
+        <Text style={styles.caption}>
+          “P” and “B” fire a jet of air, not just sound. The fix is always the same idea: break up
+          the MOVING AIR before it hits the diaphragm while letting the sound wave through.
+        </Text>
+      </CollapsibleSection>
     </View>
   );
 }
@@ -491,11 +528,13 @@ function ShockSection({ viz, width, focused, help }: SectionProps) {
         <LabChip label="SHOCK MOUNT" selected={shock} onPress={() => setShock(true)} onLongPress={() => help('shock_mount')} />
       </View>
       <MeterBar label="VIBRATION TRANSMITTED INTO THE MIC" frac={shock ? 0.15 : 0.9} color={shock ? '#5bff85' : '#ff6b5e'} />
-      <Text style={styles.caption}>
-        Footsteps, cable tugs and stand knocks travel THROUGH solids into the capsule as
-        low-frequency thumps. A shock mount is a soft spring between stand and mic — the vibration
-        stays in the stand. (The high-pass filter is the electrical version of the same idea.)
-      </Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('shock_mount')}>
+        <Text style={styles.caption}>
+          Footsteps, cable tugs and stand knocks travel THROUGH solids into the capsule as
+          low-frequency thumps. A shock mount is a soft spring between stand and mic — the vibration
+          stays in the stand. (The high-pass filter is the electrical version of the same idea.)
+        </Text>
+      </CollapsibleSection>
     </View>
   );
 }
@@ -519,11 +558,13 @@ function StereoSection({ viz, width, help }: SectionProps) {
           <LabChip key={s.key} label={s.label} selected={techIdx === i} onPress={() => setTechIdx(i)} onLongPress={() => help('stereo_pair')} />
         ))}
       </View>
-      <Text style={styles.caption}>{t.note}</Text>
-      <Text style={styles.caption}>
-        Two mics make stereo from LEVEL differences, TIME differences, or both — every named
-        technique is just a different trade between width, focus, and mono compatibility.
-      </Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('stereo_pair')}>
+        <Text style={styles.caption}>{t.note}</Text>
+        <Text style={styles.caption}>
+          Two mics make stereo from LEVEL differences, TIME differences, or both — every named
+          technique is just a different trade between width, focus, and mono compatibility.
+        </Text>
+      </CollapsibleSection>
     </View>
   );
 }
@@ -584,7 +625,9 @@ function HandSection({ viz, width, help, onLock }: SectionProps) {
         ))}
       </View>
       <Text style={[styles.readout, !zone.good && pos >= ZONE_P_RIM ? styles.readoutBad : null]}>{zone.title}</Text>
-      <Text style={styles.caption}>{zone.note}</Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('hand_position')}>
+        <Text style={styles.caption}>{zone.note}</Text>
+      </CollapsibleSection>
       <View style={styles.chipRow}>
         <LabChip label={why ? 'HIDE — WHY IT HAPPENS ▴' : 'WHY IT HAPPENS ▾'} selected={why} onPress={() => setWhy((v) => !v)} onLongPress={() => help('cupping_why')} />
       </View>
@@ -636,10 +679,12 @@ function MistakesSection({ viz, width, help }: SectionProps) {
           ))}
         </View>
       </ScrollView>
-      <Text style={styles.caption}>
-        Swipe through — these habits apply immediately in live sound, presentations, theater,
-        houses of worship, and broadcast.
-      </Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('mistakes')}>
+        <Text style={styles.caption}>
+          Swipe through — these habits apply immediately in live sound, presentations, theater,
+          houses of worship, and broadcast.
+        </Text>
+      </CollapsibleSection>
     </View>
   );
 }
@@ -689,7 +734,6 @@ export function MicPrinciplesLabScreen() {
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
-        <FutureAudioNote />
         {!skiaAvailable ? <VizUnavailableCard /> : null}
         <View style={styles.chipRow}>
           {SECTIONS.map((sec, i) => (
@@ -737,17 +781,6 @@ const styles = StyleSheet.create({
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
   readout: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.5, color: colors.amber },
   readoutBad: { color: '#ff6b5e' },
-  futureNote: {
-    fontFamily: fonts.barlowMedium,
-    fontSize: 12.5,
-    lineHeight: 17,
-    color: colors.textSub,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#101014',
-    padding: 10,
-  },
   meterLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.1, color: colors.textSecondary },
   meterTrack: { height: 9, borderRadius: 5, backgroundColor: '#1c1c22', overflow: 'hidden' },
   meterFill: { height: 9 },

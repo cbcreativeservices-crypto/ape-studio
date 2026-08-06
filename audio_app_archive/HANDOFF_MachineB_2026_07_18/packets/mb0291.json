@@ -1,0 +1,81 @@
+{
+ "batch": 291,
+ "topic": "Sample Editing & Manipulation",
+ "terms": [
+  {
+   "id": "47c99f0e-0e6b-4c90-b881-fcdac1e54a0a",
+   "term": "Spectral freeze",
+   "topic": "Sample Editing & Manipulation",
+   "seq": 1360,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "541a4ecc-825b-4af5-bc37-ae7edddbc74f",
+   "term": "Tempo-synchronized grains",
+   "topic": "Sample Editing & Manipulation",
+   "seq": 1360,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "00918395-996b-460d-8097-6c2a6aa4a8d2",
+   "term": "Time freeze",
+   "topic": "Sample Editing & Manipulation",
+   "seq": 1360,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

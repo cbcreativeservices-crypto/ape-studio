@@ -1,0 +1,106 @@
+{
+ "batch": 403,
+ "topic": "Preamp & Converter Engineering",
+ "terms": [
+  {
+   "id": "831322e8-62bb-4856-81fb-85080f8a6aa6",
+   "term": "Sample-rate switching",
+   "topic": "Preamp & Converter Engineering",
+   "seq": 1810,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "628c02ee-2521-46fa-8284-9036dbe2508c",
+   "term": "Signal-to-noise-and-distortion ratio",
+   "topic": "Preamp & Converter Engineering",
+   "seq": 1810,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "33719eb0-e6a9-4c2a-8f99-d1b21d695c1c",
+   "term": "Successive-approximation converter",
+   "topic": "Preamp & Converter Engineering",
+   "seq": 1810,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "3b66b740-c0e8-44ba-aba5-d987f1c39ffb",
+   "term": "Track-and-hold circuit",
+   "topic": "Preamp & Converter Engineering",
+   "seq": 1810,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

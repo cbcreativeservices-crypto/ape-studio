@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width, initial-scale=1">
+<title>AP&E Missing-Term Approval</title>
+<style>
+:root{--add:#2e8b57;--addbg:#e9f7ef;--grey:#8a8f98;--line:#e3e6ea;--ink:#1f2733;--brand:#1f3864}
+*{box-sizing:border-box}
+body{font:15px/1.45 -apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;color:var(--ink);background:#fafbfc}
+header{position:sticky;top:0;background:var(--brand);color:#fff;padding:14px 16px;z-index:5}
+h1{font-size:18px;margin:0 0 4px}
+.sub{font-size:13px;opacity:.9}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:56px;z-index:4}
+.bar button,.bar select{font:14px inherit;padding:8px 12px;border:1px solid #ccd2da;border-radius:8px;background:#fff;cursor:pointer}
+.bar .primary{background:var(--add);color:#fff;border-color:var(--add);font-weight:600}
+.count{margin-left:auto;font-weight:600}
+.grp{margin:0}
+.grp h2{font-size:14px;margin:0;padding:10px 16px;background:#f1f3f6;border-top:1px solid var(--line);color:var(--brand);position:sticky;top:106px}
+.row{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none}
+.row:hover{background:#f6f9ff}
+.dot{flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:2px solid #c3cad4;background:#fff;position:relative;transition:.12s}
+.row.on .dot{background:var(--add);border-color:var(--add)}
+.row.on .dot:after{content:"";position:absolute;left:7px;top:3px;width:6px;height:12px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg)}
+.term{flex:1;font-weight:600}
+.tag{font-size:11px;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.tag.add{background:var(--addbg);color:var(--add)}
+.tag.cov{background:#eef0f2;color:var(--grey)}
+.tag.skip{background:#fdf0ec;color:#b5502e}
+.reason{flex:0 0 100%;font-size:12px;color:#6b727c;padding-left:36px;margin-top:2px}
+.hidden{display:none}
+footer{padding:24px 16px;color:#6b727c;font-size:12px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1f2733;color:#fff;padding:10px 16px;border-radius:8px;opacity:0;transition:.2s;pointer-events:none}
+#toast.show{opacity:1}
+</style></head><body>
+<header><h1>AP&amp;E — Phase 49: Audio/Acoustics Mathematics</h1>
+<div class=sub>Tap a dot to approve. 64 math terms (all pass the audio-relevance lens). ~21 already had full entries and are excluded.</div></header>
+<div class=bar>
+<select id=filter>
+<option value=add>Show: Recommended (64)</option>
+<option value=all>Show: All 641</option>
+<option value=on>Show: Approved only</option>
+</select>
+<button onclick="pick(true)">Approve all shown</button>
+<button onclick="pick(false)">Clear shown</button>
+<button class=primary onclick="copyList()">Copy approved</button>
+<button onclick="downloadList()">Download .csv</button>
+<span class=count><span id=n>0</span> approved</span>
+</div>
+<div id=list></div>
+<footer>Approved terms export as a plain list you can paste back to me. Nothing is written to the database from this page.</footer>
+<div id=toast></div>
+<script>
+const ROWS=[{"group": "Phase 49 \u2014 Math (new entries)", "term": "Analytic Signal", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Angular Frequency", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Autocorrelation", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Blackman-Harris Window", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Cepstrum", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Coherent Summation", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Common Logarithm", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Complex Conjugate", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Complex Number", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Convolution", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Cosine", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Deconvolution", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Derivative", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Difference Equation", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Discrete Fourier Transform", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Dot Product", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Eigenvalue", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Eigenvector", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Equivalent Noise Bandwidth", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Euler's Formula", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Exponential Decay", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Fast Fourier Transform", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Flat-Top Window", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Fourier Analysis", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Fourier Series", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Fourier Transform", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Function", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Gradient", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Hilbert Transform", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Incoherent Summation", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Integral", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Inverse Problem", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Inverse-Square Relationship", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Laplace Transform", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Laplacian", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Least-Squares Solution", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Linear Scale", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Linear Time-Invariant System", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Logarithmic Scale", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Natural Logarithm", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Order of Magnitude", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Overlap-Add", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Partial Differential Equation", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Periodic Function", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Phasor", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Pole-Zero Plot", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Power Spectral Density", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Probability Density Function", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Radian", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Random Process", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Reciprocal", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Regularization", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Root-Mean-Square", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Scalar", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Short-Time Fourier Transform", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (promote from cross-reference)", "term": "Singular-Value Decomposition", "cov": "cross-ref", "rec": "ADD", "reason": "Fundamental \u2014 currently only a related-term link; give it a full entry"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Sinusoid", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Spectral Resolution", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Standard Deviation", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Time-Frequency Tradeoff", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Vector", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Wavelet Transform", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Z-Transform", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}, {"group": "Phase 49 \u2014 Math (new entries)", "term": "Zero Padding", "cov": "No", "rec": "ADD", "reason": "Core DSP/acoustics math \u2014 missing"}];
+const list=document.getElementById('list');
+const byGroup={};
+ROWS.forEach((r,i)=>{r._i=i;(byGroup[r.group]=byGroup[r.group]||[]).push(r)});
+const order=[...new Set(ROWS.map(r=>r.group))];
+function tagClass(r){return r.rec==='ADD'?'add':(r.cov.startsWith('Yes')?'cov':'skip')}
+function tagText(r){return r.rec==='ADD'?'RECOMMEND':(r.cov.startsWith('Yes')?'covered':'skip')}
+order.forEach(g=>{
+  const sec=document.createElement('div');sec.className='grp';sec.dataset.group=g;
+  sec.innerHTML='<h2>'+g+'</h2>';
+  byGroup[g].forEach(r=>{
+    const d=document.createElement('div');d.className='row';d.dataset.i=r._i;d.dataset.rec=r.rec;
+    d.innerHTML='<div class=dot></div><div class=term>'+esc(r.term)+'</div><div class="tag '+tagClass(r)+'">'+tagText(r)+'</div><div class=reason>'+esc(r.reason)+'</div>';
+    d.onclick=()=>{d.classList.toggle('on');refresh()};
+    sec.appendChild(d);
+  });
+  list.appendChild(sec);
+});
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+const approved=()=>[...document.querySelectorAll('.row.on')].map(d=>ROWS[+d.dataset.i].term);
+function refresh(){document.getElementById('n').textContent=approved().length}
+function pick(on){document.querySelectorAll('.row:not(.hidden)').forEach(d=>d.classList.toggle('on',on));refresh()}
+function applyFilter(){const v=document.getElementById('filter').value;
+  document.querySelectorAll('.row').forEach(d=>{
+    const on=d.classList.contains('on'),rec=d.dataset.rec;
+    let show = v==='all' || (v==='add'&&rec==='ADD') || (v==='on'&&on);
+    d.classList.toggle('hidden',!show);
+  });
+  document.querySelectorAll('.grp').forEach(s=>{const any=[...s.querySelectorAll('.row')].some(r=>!r.classList.contains('hidden'));s.classList.toggle('hidden',!any)});
+}
+document.getElementById('filter').onchange=applyFilter;applyFilter();refresh();
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}
+function copyList(){const a=approved();if(!a.length)return toast('Nothing approved yet');navigator.clipboard.writeText(a.join('\\n')).then(()=>toast(a.length+' terms copied')).catch(()=>toast('Copy blocked — use Download'))}
+function downloadList(){const a=approved();if(!a.length)return toast('Nothing approved yet');
+  const csv='term\\n'+a.map(t=>'"'+t.replace(/"/g,'""')+'"').join('\\n');
+  const b=new Blob([csv],{type:'text/csv'});const u=URL.createObjectURL(b);
+  const x=document.createElement('a');x.href=u;x.download='approved_terms.csv';x.click();URL.revokeObjectURL(u);toast(a.length+' terms downloaded')}
+</script></body></html>

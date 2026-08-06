@@ -1,0 +1,223 @@
+{
+ "expert": "cognition",
+ "group": 50,
+ "reviews": [
+  {
+   "id": "347e1cba-00b5-44a7-b9a0-75733c4d93fc",
+   "term": "True Wireless (TWS)",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "difficulty",
+     "severity": "Low",
+     "issue": "Tagged 'advanced', but every field teaches at a beginner level (pair the buds, charge the case, one bud drops out). The plain_english and scenarios assume no prior knowledge, and sibling consumer-audio terms of equal or greater complexity (Turntable, tweeter, Two-Way Speaker) are tagged 'beginner'. The mismatch mis-sets a learner's expectation of depth.",
+     "suggestion": "Retag to 'beginner' (or at most 'intermediate' if the firmware/sync-troubleshooting angle is meant to carry it), so the difficulty label matches the entry's actual cognitive demand and its consumer-audio siblings."
+    }
+   ]
+  },
+  {
+   "id": "a9292af4-96ae-4d47-a5a1-275f1ef2f550",
+   "term": "True1",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c4cffd2b-11d9-4eb6-96e7-b2df5308a3c0",
+   "term": "TS Connector (Tip-Sleeve)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "64bc7bdc-a819-4c66-a622-1507619d5222",
+   "term": "TT/Bantam (Tiny Telephone)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bebde210-e837-4387-866e-fcc3db4c7280",
+   "term": "Tube condenser microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bd1340c6-e9c5-4955-857d-38ed130118b9",
+   "term": "Tube impedance converter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b42d6589-5048-4efe-8a7b-4475effa91fc",
+   "term": "Tube microphone calibration check",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "91e7e8da-2e2c-4f87-891f-cf3eddfffff3",
+   "term": "Tube microphone crackle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cf84bb58-1352-4014-a5c0-b18d32b22408",
+   "term": "Tube microphone hum",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a961cc08-ea19-49f5-b5f8-7c3ad5825490",
+   "term": "Tube microphone power supply",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dc12305c-34fd-47ca-8757-81f97010aeb6",
+   "term": "Tube noise",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4f730199-a7c8-4a81-a051-afc19883bf61",
+   "term": "Tube socket oxidation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "53a82b15-6e44-4b73-83d2-eb67e7f193f8",
+   "term": "Tube warm-up",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "24386d8f-d277-4e24-8419-c6fe797a9d16",
+   "term": "Tuning position",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3581436d-b99d-4c5a-bfb3-09627ab8e208",
+   "term": "Turn-on thump",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e4822d40-d5ef-40a3-bedb-13330bd3f99a",
+   "term": "Turnaround Adapter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dc820b0c-5e44-4a9f-b9ba-77b8c6da7c39",
+   "term": "Turntable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b72392e0-3f6e-441c-aa5d-8dd68a7604c7",
+   "term": "TV Band",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "62de87de-5511-4d70-919e-7bf0a4b636e2",
+   "term": "TV Wall Mount",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b0738d44-1c71-4a0a-8914-74e48e4d246e",
+   "term": "tweeter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "990a705d-a401-4f83-8603-ea6bacac7fbf",
+   "term": "Tweeter Pod",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cd93d2fa-798f-4c94-9c3d-4cead96edd0e",
+   "term": "Twist-Lock Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f6e619a9-04f7-47ad-9558-2f66c823fad6",
+   "term": "Twisted-pair (UTP/STP)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "98247925-7b36-446c-bdc0-6eb0f1b00fe5",
+   "term": "two cascaded Butterworth",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4a399431-477c-4563-8d8f-3d687c53643c",
+   "term": "two-way / three-way crossover",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "552cd19a-cf3c-44aa-9520-d62d95071aec",
+   "term": "Two-Way Radio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c5966927-bcbd-4e9d-be21-244701cad6cb",
+   "term": "Two-Way Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "03a29585-3663-4cf5-b25a-56b1552490bf",
+   "term": "UHF Band",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b0f86a69-4c4f-4faa-b66b-970fa875f436",
+   "term": "ultrasonic",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "960a1cfb-5e2f-4028-9612-b93ef82f5440",
+   "term": "Unbalanced Connection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "569095e9-e486-40e0-839c-75ab76640072",
+   "term": "Unbalanced line",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f8691286-c6ab-4afa-beaa-9b8572c0c7d8",
+   "term": "Unbalanced Signal",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6a0e3ab1-a8e2-4d24-96de-8613a8ee9280",
+   "term": "Unbanded spectrum",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0cdaef65-7025-4add-bba4-f6668a8ef246",
+   "term": "Uninterruptible Power Supply (UPS)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "10978c6d-9529-4b33-bc4b-9cba0cb899fd",
+   "term": "unity gain",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

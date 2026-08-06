@@ -1,0 +1,159 @@
+{
+ "batch": 254,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "00535974-edfc-4a3f-9296-53bae2ff770f",
+   "term": "Subtle Foley",
+   "fields": {
+    "definition": "Foley performed at a quiet, understated level — the small, incidental body and prop sounds such as light footsteps, cloth movement, and gentle handling — recorded to blend naturally beneath dialogue and key effects rather than to draw attention.",
+    "plain_english": "Foley is when an artist re-creates everyday sounds in time with the picture. Subtle Foley means the very quiet ones, like soft steps or rustling clothes, that you feel more than you notice.",
+    "purpose_function": "It adds realism and a sense of presence by filling in the tiny human and object sounds in a scene, without competing with dialogue or the main effects.",
+    "practical_application": "A Foley artist walks and handles props gently in sync with the actor, and the mixer keeps these tracks low so they support the scene rather than stand out.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Surface-based footsteps", "Cloth movement", "Spot effects", "Ambience", "Dialogue"],
+    "common_mistakes": ["Performing subtle Foley too loudly so it distracts from the dialogue", "Skipping quiet Foley entirely and leaving scenes feeling lifeless and empty", "Failing to match the timing of small movements to the actor on screen"],
+    "scenario_contexts": ["Recording soft footsteps and cloth rustle for a quiet dialogue scene", "Adding gentle prop handling under a tense, whispered conversation", "Filling in body-movement sounds after the production dialogue has been cleaned up"]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, Practical Art of Motion Picture Sound", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "87c849c7-79a7-4255-9a0a-552f9642290c",
+   "term": "Surface change",
+   "fields": {
+    "definition": "In Foley and footstep work, the point at which a character moves from one walking surface to another — for example wood to gravel — requiring the performer or editor to switch to the matching surface material so the footstep sound changes with the ground.",
+    "plain_english": "It is the moment a character steps from one kind of ground onto another, like moving off a tiled floor onto grass. The footstep sounds have to change to match the new surface.",
+    "purpose_function": "Matching the footstep sound to each surface keeps the scene believable and helps tell the audience where the character is walking.",
+    "practical_application": "A Foley artist swaps to the correct surface, such as a gravel tray, at the exact frame the actor's foot lands on the new ground.",
+    "category": "Foley",
+    "related_terms": ["Surface-based footsteps", "Foley", "Switch container", "Surface damping", "Subtle Foley"],
+    "common_mistakes": ["Continuing the old surface sound after the character has clearly changed ground", "Mistiming the change so the switch happens on the wrong step", "Using a surface sound that does not match what is shown on screen"],
+    "scenario_contexts": ["A character walks from a wooden porch down onto a gravel path", "Footsteps move from a carpeted room out onto a tiled hallway", "A game character crosses from grass onto a metal walkway"]
+   },
+   "sources": ["Ament, The Foley Grail", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3774135d-b355-425f-bb51-be59c7f99969",
+   "term": "Surface damping",
+   "fields": {
+    "definition": "The reduction of unwanted vibration or resonance in a surface by adding a lossy or absorbent material, lowering the amplitude and ring-out of the sound the surface produces when struck or excited.",
+    "plain_english": "Damping means stopping a surface from ringing after it is hit. You add a soft or heavy material so the vibration dies away fast, like resting a hand on a cymbal to quiet it.",
+    "purpose_function": "It controls resonance and unwanted ringing so a surface or object produces a cleaner, shorter, more controlled sound.",
+    "practical_application": "A Foley artist may damp a Foley table or prop with foam or tape to remove a hollow ring before recording footsteps or impacts.",
+    "category": "Acoustics",
+    "related_terms": ["Surface-based footsteps", "Foley", "Resonance", "Reverberation", "Ambience"],
+    "common_mistakes": ["Confusing damping with soundproofing when it only shortens a surface's ring", "Over-damping so the sound becomes dull and lifeless", "Ignoring a resonant table or prop that colors every recorded hit"],
+    "scenario_contexts": ["Deadening a hollow Foley table so footsteps do not ring", "Adding foam to a metal prop to remove an unwanted resonant tone", "Damping a panel that rattles when nearby impacts are performed"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Fletcher & Rossing, The Physics of Musical Instruments"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5a25f34b-2cfb-4c9d-8a87-89eed081ba92",
+   "term": "Surface-based footsteps",
+   "fields": {
+    "definition": "Footstep sounds organized, selected, or generated according to the surface a character walks on — such as concrete, wood, grass, metal, or water — so that the correct material sound plays for each step.",
+    "plain_english": "These are footstep sounds sorted by the type of ground. On wood you hear wood steps, and on gravel you hear gravel, so each surface has its own set of sounds.",
+    "purpose_function": "Matching footsteps to the surface underfoot makes movement sound real and helps the audience or player sense the environment.",
+    "practical_application": "In game audio, footstep sounds are split into surface groups and triggered by the ground type under the character; in Foley, artists record a separate pass for each surface.",
+    "category": "Foley",
+    "related_terms": ["Surface change", "Footsteps", "Switch container", "Foley", "Subtle Foley"],
+    "common_mistakes": ["Playing the wrong surface set so footsteps do not match the ground on screen", "Recording only one surface and reusing it everywhere", "Forgetting to cover every surface a character actually walks on"],
+    "scenario_contexts": ["Building separate footstep sets for wood, gravel, and metal in a game", "Recording per-surface Foley passes for a chase across mixed terrain", "Assigning surface footstep groups to a character's movement in middleware"]
+   },
+   "sources": ["Ament, The Foley Grail", "Audiokinetic Wwise documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "037c50b1-55f6-4dcb-82d7-11b8b313d015",
+   "term": "Sweetener effect",
+   "fields": {
+    "definition": "An additional sound layered onto an existing effect or recording to enhance, thicken, or add impact — for example a low boom or metallic ring placed under a gunshot or impact to make it more powerful.",
+    "plain_english": "A sweetener is an extra sound added on top of another to make it bigger or better. It is like adding a deep boom under a punch so the hit feels much stronger.",
+    "purpose_function": "It builds a richer, more dramatic sound by combining layers, giving effects more weight or excitement than a single recording can provide.",
+    "practical_application": "A sound editor layers a sweetener, such as an added whoosh or a sub-bass thump, under a key action moment to give it more impact in the mix.",
+    "category": "Sound Design",
+    "related_terms": ["Sound design", "Layering", "Sub-bass", "Spot effects", "Sound effects"],
+    "common_mistakes": ["Adding so many sweeteners that the effect becomes cluttered and muddy", "Leaving a sweetener out of sync with the main sound it supports", "Using a sweetener that does not fit the object or action being enhanced"],
+    "scenario_contexts": ["Adding a sub-bass layer under an explosion for more weight", "Placing a metallic ring under a sword clash to make it sharper", "Layering a whoosh under a fast camera move or title reveal"]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c80a62f1-96b1-4ac5-8b2c-edf0c60ec9ad",
+   "term": "Switch container",
+   "fields": {
+    "definition": "In interactive audio middleware such as Wwise, a container that holds several sound objects or groups and plays the one assigned to the currently active switch state — commonly used so that, for example, footstep sounds change with the ground surface.",
+    "plain_english": "It is a container in game sound tools that holds several versions of a sound and plays the right one for the current setting. For footsteps, that setting could be the ground type, so the matching surface sound plays.",
+    "purpose_function": "It lets a single event automatically pick the correct sound for the current game state, so audio responds to changing conditions without extra scripting.",
+    "practical_application": "A game sound designer places wood, gravel, and metal footstep sets in a switch container tied to a surface switch, and the engine plays the right set as the character moves.",
+    "category": "Game Audio",
+    "related_terms": ["Surface-based footsteps", "Surface change", "Random container", "Event", "Middleware"],
+    "common_mistakes": ["Forgetting to set a default so an unmapped switch state plays nothing", "Assigning sounds to the wrong switch state so the wrong surface plays", "Confusing a switch container with a random container that varies sound by chance"],
+    "scenario_contexts": ["Driving footstep surface changes from the ground type in a game", "Swapping weapon-handling sounds by the currently equipped weapon", "Changing an ambience bed based on the player's current area"]
+   },
+   "sources": ["Audiokinetic Wwise Fundamentals documentation", "Audiokinetic Wwise SDK reference documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "41d2b1d9-bcfb-495d-8c7c-ee0b2d098d8f",
+   "term": "Sync-quality review",
+   "fields": {
+    "definition": "A checking pass in which an editor or QC operator reviews a program to confirm that sound aligns correctly with picture — dialogue lip-sync, effects, and music hits all landing on the right frames — before delivery.",
+    "plain_english": "It is a check to make sure the sound lines up with the picture. You watch and listen for lips matching speech and sounds hitting at the right moment before the project is sent out.",
+    "purpose_function": "It catches timing errors and drift so a finished program does not go out with sound that is out of step with the picture.",
+    "practical_application": "During quality control, an operator watches the cut and flags any spots where dialogue, effects, or music slip out of sync so they can be fixed before delivery.",
+    "category": "Quality Control",
+    "related_terms": ["Lip sync", "Timecode", "Synchronization display", "Deliverables", "Quality control"],
+    "common_mistakes": ["Checking sync on only one scene instead of the whole program", "Missing slow drift that builds up over a long reel", "Reviewing on a system whose own delay hides real sync errors"],
+    "scenario_contexts": ["Watching a full episode for lip-sync before it is delivered", "Confirming effects and music hits land on frame after a re-conform", "Spot-checking sync at reel changes in a feature mix"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8f2233c1-0156-4049-9cae-ab89af627630",
+   "term": "Synchronization display",
+   "fields": {
+    "definition": "An on-screen readout that shows synchronization information — such as matching timecode, frame position, or lock status between audio and video devices — so an operator can confirm that sources are running in step.",
+    "plain_english": "It is a screen or readout that shows whether the sound and picture are locked together. It displays things like timecode so you can see at a glance that everything is running in step.",
+    "purpose_function": "It gives the operator a clear sign that devices are synchronized, or that they are not, helping catch a loss of lock before it affects the work.",
+    "practical_application": "An engineer watches the sync or timecode display on a deck or interface to confirm audio and video are locked to the same reference before recording or playback.",
+    "category": "Synchronization",
+    "related_terms": ["Timecode", "Genlock", "Sync-quality review", "Word clock", "Lip sync"],
+    "common_mistakes": ["Assuming a running display means locked when it only shows free-running numbers", "Ignoring a dropped-lock warning during playback", "Reading the display but not confirming both devices share one reference"],
+    "scenario_contexts": ["Confirming a recorder is locked to timecode before a take", "Watching for loss of lock during a layback to picture", "Verifying two decks share the same reference before capture"]
+   },
+   "sources": ["SMPTE ST 12 (timecode standard)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d990e2c3-549d-466d-8424-4d5305cc0e17",
+   "term": "Synchronization hit",
+   "fields": {
+    "definition": "A specific moment where a sound or musical accent is deliberately aligned to a visual action or cut on screen — a hit point — so the audio lands exactly with the on-picture event.",
+    "plain_english": "It is a point where a sound or music note is timed to strike exactly with something on screen, like a stinger landing as a door slams. The sound and the picture hit at the same moment.",
+    "purpose_function": "Placing hits on key visual moments strengthens the emotional or dramatic impact and ties the sound tightly to the picture.",
+    "practical_application": "A composer or sound editor marks hit points on the timeline and lines up accents or effects so they land on the exact frame of an action.",
+    "category": "Synchronization",
+    "related_terms": ["Hit point", "Spotting", "Sync point", "Scoring", "Spot effects"],
+    "common_mistakes": ["Landing the hit a frame or two late so it feels loose", "Overusing hits until the score feels cartoonish", "Marking hit points to a picture cut that later moves and not updating them"],
+    "scenario_contexts": ["Timing a music stinger to a sudden on-screen reveal", "Landing an impact effect on the frame a punch connects", "Aligning an accent to a title card or hard cut"]
+   },
+   "sources": ["Karlin & Wright, On the Track: A Guide to Contemporary Film Scoring", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

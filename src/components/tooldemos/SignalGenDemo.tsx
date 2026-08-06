@@ -17,16 +17,18 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Path, Rect } from 'react-native-svg';
+import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
+import { levelColor, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts, radius } from '../../theme/tokens';
 
 type SceneKey = 'shapes' | 'sweep' | 'levels';
 type WaveKey = 'sine' | 'white' | 'pink';
 
-const PANEL_H = 356;
-const PANE_VIZ_H = 96;
-const SWEEP_VIZ_H = 140;
-const LEVELS_H = 192;
+// Taller displays (owner 2026-08-05, item 5): more room for the view + labels.
+const PANEL_H = 452;
+const PANE_VIZ_H = 118;
+const SWEEP_VIZ_H = 168;
+const LEVELS_H = 228;
 
 const SCENES: { key: SceneKey; label: string }[] = [
   { key: 'shapes', label: 'SIGNAL SHAPES' },
@@ -40,9 +42,11 @@ const WAVES: { key: WaveKey; label: string }[] = [
   { key: 'pink', label: 'PINK' },
 ];
 
+// Per-signal trace/button colours (owner 2026-08-05, item 1): sine = blue,
+// white noise = white, pink noise = pink.
 const WAVE_COLOR: Record<WaveKey, string> = {
-  sine: colors.amber,
-  white: colors.cyanBright,
+  sine: colors.blue,
+  white: '#f2f2f5',
   pink: '#ff8fae', // pink noise drawn pink — no token exists for this hue
 };
 
@@ -53,11 +57,22 @@ const CAPTIONS: Record<WaveKey, string> = {
   pink: 'Pink noise carries equal energy per octave, sloping down about 3 dB per octave. That balance mirrors hearing, so it is the standard for speaker and room checks.',
 };
 
+// "Log" explained (item 2): logarithmic = equal time per OCTAVE (each frequency
+// doubling), matching how we hear pitch — so low frequencies get as much of the
+// pass as the highs. Also names it a "frequency sweep" and its measurement use.
+const SWEEP_INTRO =
+  '"Log" is short for logarithmic: the tone spends equal time in every OCTAVE (each doubling of frequency), the way we hear pitch — so the lows get as much of the pass as the highs. A linear sweep instead races through the lows and lingers on the highs.';
 const SWEEP_CAPTION =
-  'A log sweep glides from 20 Hz to 20 kHz, spending equal time in every octave. One pass excites each frequency in order — the backbone of loudspeaker measurement.';
+  'Also called a frequency sweep: one glide from 20 Hz to 20 kHz exciting every frequency in order. It is the backbone of measurement — feed it to a speaker or room and capture the response to read frequency balance, resonances and (as a log sweep) the reverb decay / RT60.';
 
+const LEVELS_INTRO =
+  'Why the limit: the generator can produce full-scale energy at any frequency, and a hot tone straight into monitors or headphones can damage HEARING and blow SPEAKERS in an instant. So output opens at a safe −20 dBFS and is capped at −12 dBFS.';
 const LEVELS_CAPTION =
-  'Output opens at −20 dBFS and caps at −12 dBFS. Hotter levels stay locked until you confirm the unlock (once per session), protecting speakers and hearing.';
+  'To go louder than the −12 dBFS cap you must confirm an authorization (remove headphones / lower the monitors first). That unlock lasts for this session only, then re-locks — a deliberate speed bump so louder output is always a conscious choice, for your ears and your gear.';
+
+// Chart metric-mark colours (owner 2026-08-05: graphs must have visible marks).
+const GRID_C = '#33343d';
+const ZERO_C = '#565a66';
 
 // ---- Levels-scene geometry: 0 dBFS (top) … −60 dBFS (bottom) --------------
 const DB_TOP = 14;
@@ -272,12 +287,15 @@ export function SignalGenDemo() {
             </View>
 
             <View style={styles.paneRow}>
-              {/* Time domain */}
+              {/* Time domain — amplitude vs time. Metric marks: 0 line + ±½ FS. */}
               <View style={styles.pane}>
-                <Text style={styles.paneLabel}>TIME</Text>
+                <Text style={styles.paneLabel}>TIME · AMPLITUDE</Text>
                 <View style={[styles.paneViz, { height: PANE_VIZ_H }]}>
                   <Svg width={svgW} height={PANE_VIZ_H} style={StyleSheet.absoluteFill}>
-                    <Line x1={0} y1={PANE_VIZ_H / 2} x2={svgW} y2={PANE_VIZ_H / 2} stroke={colors.hairlineDim} strokeWidth={1} />
+                    {/* ±½ full-scale guide marks (dashed) + solid zero line. */}
+                    <Line x1={0} y1={PANE_VIZ_H * 0.18} x2={svgW} y2={PANE_VIZ_H * 0.18} stroke={GRID_C} strokeWidth={1} strokeDasharray="3 5" />
+                    <Line x1={0} y1={PANE_VIZ_H * 0.82} x2={svgW} y2={PANE_VIZ_H * 0.82} stroke={GRID_C} strokeWidth={1} strokeDasharray="3 5" />
+                    <Line x1={0} y1={PANE_VIZ_H / 2} x2={svgW} y2={PANE_VIZ_H / 2} stroke={ZERO_C} strokeWidth={1} />
                   </Svg>
                   {wave === 'sine' ? (
                     <Animated.View
@@ -309,50 +327,90 @@ export function SignalGenDemo() {
                     </>
                   )}
                 </View>
+                <Text style={styles.axisUnder}>time →</Text>
               </View>
 
-              {/* Spectrum shape */}
+              {/* Spectrum — how much energy sits at each frequency (level vs
+                  frequency). Metric marks: amplitude gridlines + frequency ticks;
+                  the shape is filled with the MIDI amplitude ramp (loud = red at
+                  the top → quiet = blue toward the floor). */}
               <View style={styles.pane}>
-                <Text style={styles.paneLabel}>SPECTRUM</Text>
+                <Text style={styles.paneLabel}>SPECTRUM · LEVEL × FREQ</Text>
                 <View style={[styles.paneViz, { height: PANE_VIZ_H }]}>
                   <Animated.View style={{ opacity: specOpacity }}>
                     <Svg width={svgW} height={PANE_VIZ_H}>
-                      <Line x1={2} y1={PANE_VIZ_H - 8} x2={svgW - 2} y2={PANE_VIZ_H - 8} stroke={colors.steelBorder} strokeWidth={1} />
+                      <Defs>
+                        <LinearGradient id="specAmp" x1={0} y1={8} x2={0} y2={PANE_VIZ_H - 8} gradientUnits="userSpaceOnUse">
+                          {[0, 0.25, 0.5, 0.75, 1].map((o) => (
+                            <Stop key={o} offset={o} stopColor={levelColor(1 - o)} />
+                          ))}
+                        </LinearGradient>
+                      </Defs>
+                      {/* Amplitude gridlines (loud → quiet) + frequency gridlines. */}
+                      {[0.25, 0.5, 0.75].map((f) => (
+                        <Line key={`h${f}`} x1={2} y1={PANE_VIZ_H * f} x2={svgW - 2} y2={PANE_VIZ_H * f} stroke={GRID_C} strokeWidth={1} strokeDasharray="2 5" />
+                      ))}
+                      {[0.28, 0.56, 0.84].map((f) => (
+                        <Line key={`v${f}`} x1={svgW * f} y1={8} x2={svgW * f} y2={PANE_VIZ_H - 8} stroke={GRID_C} strokeWidth={1} strokeDasharray="2 5" />
+                      ))}
+                      {/* Baseline (0 level). */}
+                      <Line x1={2} y1={PANE_VIZ_H - 8} x2={svgW - 2} y2={PANE_VIZ_H - 8} stroke={ZERO_C} strokeWidth={1.2} />
                       {wave === 'sine' ? (
                         <>
-                          <Line x1={svgW * 0.42} y1={PANE_VIZ_H - 8} x2={svgW * 0.42} y2={10} stroke={accent} strokeWidth={7} opacity={0.2} />
-                          <Line x1={svgW * 0.42} y1={PANE_VIZ_H - 8} x2={svgW * 0.42} y2={10} stroke={accent} strokeWidth={2.5} />
+                          <Line x1={svgW * 0.42} y1={PANE_VIZ_H - 8} x2={svgW * 0.42} y2={10} stroke="url(#specAmp)" strokeWidth={8} opacity={0.28} />
+                          <Line x1={svgW * 0.42} y1={PANE_VIZ_H - 8} x2={svgW * 0.42} y2={10} stroke="url(#specAmp)" strokeWidth={3} />
                         </>
                       ) : wave === 'white' ? (
                         <>
-                          <Rect
-                            x={2}
-                            y={PANE_VIZ_H * 0.3}
-                            width={svgW - 4}
-                            height={PANE_VIZ_H - 8 - PANE_VIZ_H * 0.3}
-                            fill={accent}
-                            opacity={0.1}
-                          />
-                          <Line x1={2} y1={PANE_VIZ_H * 0.3} x2={svgW - 2} y2={PANE_VIZ_H * 0.3} stroke={accent} strokeWidth={2} />
+                          <Rect x={2} y={PANE_VIZ_H * 0.3} width={svgW - 4} height={PANE_VIZ_H - 8 - PANE_VIZ_H * 0.3} fill="url(#specAmp)" opacity={0.22} />
+                          <Line x1={2} y1={PANE_VIZ_H * 0.3} x2={svgW - 2} y2={PANE_VIZ_H * 0.3} stroke="url(#specAmp)" strokeWidth={3} />
                         </>
                       ) : (
                         <>
                           <Path
                             d={`M 2 ${(PANE_VIZ_H * 0.2).toFixed(1)} L ${svgW - 2} ${(PANE_VIZ_H * 0.72).toFixed(1)} L ${svgW - 2} ${PANE_VIZ_H - 8} L 2 ${PANE_VIZ_H - 8} Z`}
-                            fill={accent}
-                            opacity={0.1}
+                            fill="url(#specAmp)"
+                            opacity={0.22}
                           />
-                          <Line x1={2} y1={PANE_VIZ_H * 0.2} x2={svgW - 2} y2={PANE_VIZ_H * 0.72} stroke={accent} strokeWidth={2} />
+                          <Path
+                            d={`M 2 ${(PANE_VIZ_H * 0.2).toFixed(1)} L ${svgW - 2} ${(PANE_VIZ_H * 0.72).toFixed(1)}`}
+                            stroke="url(#specAmp)"
+                            strokeWidth={3}
+                            fill="none"
+                          />
                         </>
                       )}
                     </Svg>
                   </Animated.View>
                 </View>
+                <View style={styles.freqAxisRow}>
+                  <Text style={styles.axisUnder}>low</Text>
+                  <Text style={styles.axisUnder}>freq →</Text>
+                  <Text style={styles.axisUnder}>high</Text>
+                </View>
               </View>
             </View>
 
+            {/* MIDI amplitude legend (item 1): quiet = blue → loud = red. */}
+            <View style={styles.legendRow}>
+              <Text style={styles.legendCap}>QUIET</Text>
+              <View style={styles.legendBar}>
+                <Svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 10">
+                  <Defs>
+                    <LinearGradient id="ampLegend" x1={0} y1={0} x2={100} y2={0} gradientUnits="userSpaceOnUse">
+                      {WAVE_LEVEL_STOPS.filter((s) => s.offset >= 0.5).map((s) => (
+                        <Stop key={s.offset} offset={(s.offset - 0.5) * 2} stopColor={s.color} />
+                      ))}
+                    </LinearGradient>
+                  </Defs>
+                  <Rect x={0} y={0} width={100} height={10} rx={2} fill="url(#ampLegend)" />
+                </Svg>
+              </View>
+              <Text style={styles.legendCap}>LOUD</Text>
+            </View>
+
             <View style={styles.metaRow}>
-              <Text style={styles.metaMono}>AMPLITUDE / TIME</Text>
+              <Text style={styles.metaMono}>energy at each frequency</Text>
               <Text style={[styles.metaMono, { color: accent }]}>
                 {wave === 'sine' ? 'ONE FREQUENCY' : wave === 'white' ? 'FLAT' : '−3 dB/OCT'}
               </Text>
@@ -362,11 +420,24 @@ export function SignalGenDemo() {
 
         {scene === 'sweep' ? (
           <>
+            <Text style={styles.introText}>{SWEEP_INTRO}</Text>
             <Text style={styles.paneLabel}>SWEPT SINE — LOW TO HIGH</Text>
             <View style={[styles.sweepViz, { height: SWEEP_VIZ_H }]}>
               <Svg width={chirpW} height={SWEEP_VIZ_H}>
-                <Line x1={0} y1={SWEEP_VIZ_H / 2} x2={chirpW} y2={SWEEP_VIZ_H / 2} stroke={colors.hairlineDim} strokeWidth={1} />
-                <Path d={chirpD} stroke={colors.amber} strokeWidth={1.8} fill="none" />
+                <Defs>
+                  {/* MIDI amplitude ramp about the zero line (item 2). */}
+                  <LinearGradient id="sweepAmp" x1={0} y1={0} x2={0} y2={SWEEP_VIZ_H} gradientUnits="userSpaceOnUse">
+                    {WAVE_LEVEL_STOPS.map((s) => (
+                      <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                    ))}
+                  </LinearGradient>
+                </Defs>
+                {/* Octave metric marks — each doubling of frequency (log spacing). */}
+                {[0.2, 0.4, 0.6, 0.8].map((f) => (
+                  <Line key={f} x1={chirpW * f} y1={6} x2={chirpW * f} y2={SWEEP_VIZ_H - 6} stroke={GRID_C} strokeWidth={1} strokeDasharray="2 6" />
+                ))}
+                <Line x1={0} y1={SWEEP_VIZ_H / 2} x2={chirpW} y2={SWEEP_VIZ_H / 2} stroke={ZERO_C} strokeWidth={1} />
+                <Path d={chirpD} stroke="url(#sweepAmp)" strokeWidth={1.8} fill="none" />
               </Svg>
               <Animated.View
                 style={[
@@ -380,7 +451,7 @@ export function SignalGenDemo() {
             </View>
             <View style={styles.metaRow}>
               <Text style={styles.metaMono}>20 Hz</Text>
-              <Text style={styles.axisMid}>LOG FREQUENCY</Text>
+              <Text style={styles.axisMid}>LOG FREQUENCY · EQUAL TIME PER OCTAVE</Text>
               <Text style={styles.metaMono}>20 kHz</Text>
             </View>
           </>
@@ -388,6 +459,7 @@ export function SignalGenDemo() {
 
         {scene === 'levels' ? (
           <>
+            <Text style={styles.introText}>{LEVELS_INTRO}</Text>
             <Text style={styles.paneLabel}>OUTPUT LEVEL — dBFS</Text>
             <View style={styles.levelsWrap}>
               <Svg width={w} height={LEVELS_H}>
@@ -450,7 +522,10 @@ export function SignalGenDemo() {
 
 const styles = StyleSheet.create({
   root: {
-    height: PANEL_H,
+    // minHeight (not fixed): scenes vary in height and the taller displays +
+    // above-display explanations must grow the panel, not overflow it. Hosted in
+    // a ScrollView, so growth is fine.
+    minHeight: PANEL_H,
     borderRadius: radius.card,
     borderWidth: 1,
     borderColor: '#26262c',
@@ -471,7 +546,7 @@ const styles = StyleSheet.create({
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: colors.textSub },
   chipTextActive: { color: colors.amber },
 
-  viz: { flex: 1, marginTop: 10 },
+  viz: { marginTop: 10 },
 
   waveRow: { flexDirection: 'row', gap: 6 },
   waveChip: {
@@ -497,7 +572,17 @@ const styles = StyleSheet.create({
 
   metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 6 },
   metaMono: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
-  axisMid: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.textMuted },
+  axisMid: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
+
+  // Above-display explanation (items 2 & 3).
+  introText: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17.5, color: colors.textSecondary, marginBottom: 8 },
+
+  // Per-pane axis labels + MIDI amplitude legend (item 1).
+  axisUnder: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub, marginTop: 2 },
+  freqAxisRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  legendRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
+  legendCap: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
+  legendBar: { flex: 1, height: 10, borderRadius: 2, overflow: 'hidden' },
 
   sweepViz: {
     borderWidth: 1,
@@ -550,6 +635,6 @@ const styles = StyleSheet.create({
   },
   handleLine: { height: 2, borderRadius: 1, backgroundColor: '#6d4a00' },
 
-  captionBox: { height: 60, marginTop: 8, justifyContent: 'center' },
+  captionBox: { minHeight: 60, marginTop: 8, justifyContent: 'center' },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
 });

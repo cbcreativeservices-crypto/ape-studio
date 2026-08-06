@@ -1,0 +1,159 @@
+{
+ "batch": 385,
+ "topic": "Immersive Monitoring & Calibration",
+ "authored": [
+  {
+   "id": "3f168b77-15f5-4737-898f-7a6a2e7cd867",
+   "term": "Low-frequency effects speaker",
+   "fields": {
+    "definition": "The loudspeaker, typically a subwoofer, that reproduces the dedicated low-frequency effects (LFE) channel, the '.1' in formats such as 5.1, 7.1 and 7.1.4. It carries band-limited deep bass, nominally 20 to 120 Hz, reproduced with roughly 10 dB of additional in-band headroom relative to a single main channel, and is a discrete effects channel rather than a substitute for bass in the full-range channels.",
+    "plain_english": "It is the subwoofer that plays the special deep-bass channel in a surround mix, often called the point-one. It carries the low rumble, like the boom of an explosion, so the other speakers do not have to.",
+    "purpose_function": "It reproduces the discrete LFE channel so high-level, low-frequency effects can be delivered with extra headroom without overloading the main and height speakers.",
+    "practical_application": "A technician routes and calibrates the LFE channel to the subwoofer, setting its upper band limit around 120 Hz and its in-band level about 10 dB above a single main channel.",
+    "category": "Monitor loudspeaker",
+    "related_terms": ["Bass management", "Subwoofer", "Reference level", "Renderer calibration", "Overhead speaker", "Multichannel monitor controller"],
+    "common_mistakes": ["Treating the LFE channel as a general bass channel and routing all low end to it, when it is meant only for added effects.", "Confusing the LFE channel with bass management; redirected bass from full-range speakers is not the same as the LFE signal.", "Forgetting the 10 dB in-band offset, so the LFE plays too quietly or too loudly against the mains.", "UNSAFE: Running sustained high-SPL bass during subwoofer calibration without limiting exposure time or wearing hearing protection, risking noise-induced hearing loss."],
+    "scenario_contexts": ["Calibrating the subwoofer so the LFE channel sits about 10 dB above a main channel in-band.", "Routing the LFE track of a 7.1.4 Atmos mix to the dedicated subwoofer output.", "Checking that deep effects such as explosions reach the LFE speaker without clipping."]
+   },
+   "sources": ["ITU-R BS.775-3, Multichannel stereophonic sound system (ITU-R Recommendation)", "ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)", "Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories technical documentation)", "OSHA 29 CFR 1910.95, Occupational noise exposure"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a052db32-b402-4082-b44a-145b9b45f6a7",
+   "term": "Multichannel monitor controller",
+   "fields": {
+    "definition": "A hardware or software device that manages monitoring for multichannel and immersive playback, providing source selection, calibrated level control across all speaker feeds, per-channel trim and delay, bass management, downmix or fold-down monitoring, and solo/mute of individual speakers. It sits between the mix outputs and the monitor amplifiers or speakers so an engineer can audition surround and immersive formats such as 7.1.4.",
+    "plain_english": "A control box that lets an engineer switch sources and set the volume for a whole room of speakers at once. It can also mute or solo one speaker, or fold the mix down to fewer speakers to check it.",
+    "purpose_function": "It gives one calibrated, repeatable point of control over many speaker feeds so the engineer can hold a reference level, compare sources, and check fold-downs without re-patching.",
+    "practical_application": "A technician uses it to select the renderer output, set the room to reference level, trim and delay each speaker, and solo a channel to trace a problem.",
+    "category": "Monitoring hardware",
+    "related_terms": ["Reference level", "Bass management", "Downmix", "Renderer speaker mapping", "Renderer calibration", "Immersive monitor controller"],
+    "common_mistakes": ["Assuming the controller's volume knob changes the mix; it sets only the monitoring level, not the recorded signal.", "Forgetting that per-speaker trim and delay in the controller are separate from the renderer's own calibration.", "Leaving a downmix or a soloed speaker engaged and mixing against a wrong picture of the sound field."],
+    "scenario_contexts": ["Switching between the Atmos renderer output and a stereo reference on the same speakers.", "Setting the whole immersive rig to a calibrated reference SPL before a mix session.", "Soloing the top-front speaker to check a suspected wiring or level error."]
+   },
+   "sources": ["Grace Design m908 Multichannel Monitor Controller User Manual (Grace Design technical documentation)", "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "Ballou, Handbook for Sound Engineers (professional text)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "abbf665d-df53-4913-a20c-42e821365bff",
+   "term": "Overhead speaker",
+   "fields": {
+    "definition": "A loudspeaker mounted above the listening position to reproduce the height (top) channels of an immersive layout, providing the vertical dimension that distinguishes immersive audio from horizontal surround. In ITU-R BS.2051 layouts these are the top loudspeakers, such as TpFL, TpFR, TpSiL, TpSiR, TpBL and TpBR, typically at roughly +30 to +45 degrees elevation.",
+    "plain_english": "A speaker placed in the ceiling or high on a wall so sound can come from above you. It adds the up-and-down layer that makes a mix feel like it wraps around you in three dimensions, not just at ear level.",
+    "purpose_function": "It delivers the elevation cues and overhead content that create a sense of height, letting formats such as 7.1.4 place sounds above the listener.",
+    "practical_application": "A technician installs, aligns and calibrates overhead speakers at the correct elevation angle, then confirms the renderer maps the top channels to them.",
+    "category": "Monitor loudspeaker",
+    "related_terms": ["Side surround speaker", "Rear surround speaker", "Renderer speaker mapping", "Renderer calibration", "Height speaker", "Low-frequency effects speaker"],
+    "common_mistakes": ["Placing overhead speakers too far forward or back, so the height image does not sit above the listener.", "Confusing top-front and top-back positions when wiring, which reverses the overhead image.", "Assuming any ceiling speaker will do; overhead speakers should timbre-match the main monitors.", "UNSAFE: Hanging overhead speakers without rated mounts and a secondary safety attachment, risking a fall that can injure people below."],
+    "scenario_contexts": ["Mounting four overhead speakers for a 7.1.4 monitoring setup.", "Calibrating the top channels so overhead pans track smoothly across the ceiling.", "Verifying that an effect authored overhead actually plays from the top speakers."]
+   },
+   "sources": ["ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)", "Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories technical documentation)", "ANSI E1.2, Design, Manufacture and Use of Aluminium Trusses and Towers (ANSI/ESTA rigging standard)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f2c9368e-304e-4285-be1b-ad909d778f83",
+   "term": "Rear surround speaker",
+   "fields": {
+    "definition": "A loudspeaker positioned behind the listening position to reproduce the rear (back) surround channels of a 7.1-based or immersive layout. In ITU-R BS.2051 these are the left and right rear surround (Lrs, Rrs) at roughly plus or minus 120 to 150 degrees azimuth and ear level (0 degrees elevation), distinct from the side surround speakers.",
+    "plain_english": "A speaker set behind you that plays sounds coming from the back of the room. It fills the space directly behind the listener, which the side speakers cannot cover on their own.",
+    "purpose_function": "It provides discrete rear imaging so sounds can be placed and moved behind the listener, completing the horizontal surround field in 7.1 and larger layouts.",
+    "practical_application": "A technician places the rear surrounds behind the seat at the correct angle, wires them to the rear channels, and calibrates their level and delay to match the array.",
+    "category": "Monitor loudspeaker",
+    "related_terms": ["Side surround speaker", "Overhead speaker", "Low-frequency effects speaker", "Renderer speaker mapping", "Renderer calibration", "Multichannel monitor controller"],
+    "common_mistakes": ["Confusing rear surrounds with side surrounds and wiring them to the wrong channels.", "Placing rear surrounds too close together or too wide, collapsing or over-spreading the back image.", "Assuming a 5.1 room has rear surrounds; 5.1 uses only a single surround pair, not separate rears."],
+    "scenario_contexts": ["Adding rear surround speakers to expand a 5.1 room to 7.1.", "Calibrating the rear pair so a sound panned front to back stays centered.", "Checking that the renderer routes the rear surround channels to the correct outputs."]
+   },
+   "sources": ["ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)", "Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories technical documentation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "87c33102-7157-4e70-a5af-601cac862fbb",
+   "term": "Renderer calibration",
+   "fields": {
+    "definition": "The process of configuring and aligning an object-audio renderer to a specific room and speaker layout so its output is correct and consistent: defining the speaker configuration and setting per-speaker trim (level), distance and delay, bass-management crossovers, and a defined monitoring reference SPL. It ensures the rendered mix is judged on an accurate system and translates to other calibrated rooms.",
+    "plain_english": "Setting up the renderer so it plays back correctly in your exact room and speakers. You tell it where the speakers are, match their volumes and timing, and set a standard loudness so your mix sounds right and matches other rooms.",
+    "purpose_function": "It makes the renderer's output match a known reference so mixes are made on an accurate, repeatable system and translate to other calibrated rooms.",
+    "practical_application": "A technician sets each speaker to reference level with test noise, enters speaker distances so the renderer applies correct delays, and sets crossovers before any mixing begins.",
+    "category": "Calibration",
+    "related_terms": ["Renderer speaker mapping", "Reference level", "Bass management", "Multichannel monitor controller", "Room-rendered monitoring", "Low-frequency effects speaker"],
+    "common_mistakes": ["Skipping distance or delay entry, so speakers arrive out of time and the image smears.", "Calibrating to the wrong reference SPL for the room, making the mix too loud or too soft.", "Forgetting to recalibrate after moving a speaker or changing the layout.", "Confusing calibration with speaker mapping; mapping sets routing, calibration sets levels and timing."],
+    "scenario_contexts": ["Setting each channel to reference level with pink noise before a mix.", "Entering speaker distances so the renderer applies correct per-speaker delays.", "Recalibrating after swapping a monitor or adding overhead speakers."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide, Room Setup and speaker calibration (Dolby Laboratories technical documentation)", "Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories technical documentation)", "ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bda23d7d-456b-4b05-8d0a-2309d92ea5fc",
+   "term": "Renderer latency",
+   "fields": {
+    "definition": "The processing delay introduced by a real-time object-audio renderer between its input (the bed and object feeds from the DAW) and its monitored or recorded output. Because the renderer and the audio driver buffer and process audio, this latency must be handled by delay compensation so monitoring and any recorded re-renders stay time-aligned with the session.",
+    "plain_english": "The small delay a renderer adds while it turns the mix into speaker or headphone sound. If you do not account for it, what you hear or record can drift out of time with the rest of the session.",
+    "purpose_function": "Knowing the renderer's latency lets the system apply delay compensation so what you hear and what you record line up with the DAW timeline.",
+    "practical_application": "A technician keeps delay compensation active and matches buffer settings so the renderer's return signal and re-renders sync with the picture and tracks.",
+    "category": "Signal timing",
+    "related_terms": ["Renderer speaker mapping", "Renderer calibration", "Room-rendered monitoring", "Multichannel monitor controller", "Re-render", "Buffer size"],
+    "common_mistakes": ["Disabling automatic delay compensation, then wondering why the return is out of sync.", "Assuming an external renderer adds no delay and printing re-renders that drift against picture.", "Setting a very large audio buffer for stability while ignoring the extra latency it adds."],
+    "scenario_contexts": ["Aligning a recorded re-render from the renderer back to the timeline.", "Troubleshooting sync drift between picture and an Atmos monitor feed.", "Choosing a buffer size that balances stability against added latency."]
+   },
+   "sources": ["Dolby Atmos Renderer, developer knowledge base on delay compensation (Dolby Laboratories technical documentation)", "Avid Pro Tools Reference Guide, Automatic Delay Compensation and Dolby Atmos workflow (Avid technical documentation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e1cb17b5-6971-406b-8cf5-e5e224c87015",
+   "term": "Renderer speaker mapping",
+   "fields": {
+    "definition": "The assignment of a renderer's internal output channels (the speakers defined in its room setup, such as L, R, C, LFE, side and rear surrounds, and the top channels) to the physical outputs of the audio interface that feed each monitor. It is set in the renderer's room or output configuration and determines which speaker each rendered channel drives.",
+    "plain_english": "Telling the renderer which real speaker jack each of its channels should go to. It is like labeling the wires so a left-top sound actually comes out of the left-top speaker.",
+    "purpose_function": "It routes each rendered channel to the correct physical speaker so the immersive layout plays back as intended, with no swapped or misrouted channels.",
+    "practical_application": "A technician sets the speaker layout, maps each channel to an interface output, and plays test noise per channel to confirm the right speaker responds.",
+    "category": "Signal routing",
+    "related_terms": ["Renderer calibration", "Room-rendered monitoring", "Multichannel monitor controller", "Overhead speaker", "Rear surround speaker", "Side surround speaker"],
+    "common_mistakes": ["Mapping channels to the wrong outputs, so sounds come from the wrong speakers.", "Confusing speaker mapping with calibration; mapping is routing, calibration is levels and delays.", "Forgetting to re-check the map after changing the interface or its output order."],
+    "scenario_contexts": ["Assigning the renderer's 7.1.4 channels to interface outputs one through twelve.", "Running per-channel test noise to verify each speaker is mapped correctly.", "Re-mapping outputs after adding a second interface for more speakers."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide, Room Setup and output channel configuration (Dolby Laboratories technical documentation)", "ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a880e67e-78d6-4c0d-9e61-4f5fa1b40212",
+   "term": "Room-rendered monitoring",
+   "fields": {
+    "definition": "Monitoring in which the object-based mix is rendered in real time to the actual loudspeaker layout installed in the room, so the engineer hears it on the physical speakers rather than through binaural headphone rendering or a fixed downmix. What is heard depends on the room's speaker configuration and its calibration.",
+    "plain_english": "Listening to an immersive mix on the real speakers in your room, with the renderer feeding sound to each one live. It is different from checking on headphones, where the space is faked for your ears.",
+    "purpose_function": "It lets the engineer judge the mix on the true speaker layout it is made for, revealing imaging, level and translation issues that headphone monitoring can hide.",
+    "practical_application": "A technician monitors on the room speakers through the renderer during a mix, switching to binaural only to spot-check the headphone experience.",
+    "category": "Monitoring",
+    "related_terms": ["Renderer calibration", "Renderer speaker mapping", "Multichannel monitor controller", "Renderer latency", "Downmix", "Overhead speaker"],
+    "common_mistakes": ["Judging a mix mainly on binaural headphones, then finding it does not translate to the speaker layout.", "Monitoring on the room speakers before calibration, so level and timing errors are mistaken for mix problems.", "Assuming room-rendered monitoring sounds the same across studios; each room's layout and calibration differ."],
+    "scenario_contexts": ["Mixing an Atmos session on a 7.1.4 room through the renderer.", "Comparing the room-speaker render against a binaural check before delivery.", "Diagnosing whether an imaging problem is in the mix or the room by listening on the calibrated speakers."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide, speaker and binaural monitoring (Dolby Laboratories technical documentation)", "ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0b3cd382-35a5-4aaa-9c45-9c926bcaf711",
+   "term": "Side surround speaker",
+   "fields": {
+    "definition": "A loudspeaker positioned to the side of the listening position, roughly abreast of the listener, to reproduce the side surround channels of a 7.1-based or immersive layout. In ITU-R BS.2051 these are the left and right side surround (Lss, Rss) at roughly plus or minus 85 to 110 degrees azimuth and ear level (0 degrees elevation), distinct from the rear surround speakers.",
+    "plain_english": "A speaker placed beside you, level with your ears, that plays sounds coming from your left or right side. It handles the sound that should feel right next to you, between the front and the back.",
+    "purpose_function": "It provides discrete side imaging so sounds can be placed and panned along the listener's sides, filling the gap between the front speakers and the rear surrounds.",
+    "practical_application": "A technician mounts the side surrounds at ear height beside the seat, wires them to the side channels, and calibrates their level and delay with the array.",
+    "category": "Monitor loudspeaker",
+    "related_terms": ["Rear surround speaker", "Overhead speaker", "Low-frequency effects speaker", "Renderer speaker mapping", "Renderer calibration", "Multichannel monitor controller"],
+    "common_mistakes": ["Confusing side surrounds with rear surrounds and wiring them to the wrong channels.", "Placing side surrounds too far forward or behind the listener instead of to the side.", "Assuming a 5.1 setup has separate side and rear surrounds; 5.1 has only one surround pair."],
+    "scenario_contexts": ["Placing the side surrounds at the listener's sides when expanding a room to 7.1.", "Calibrating the side pair so a left-to-right pan stays smooth.", "Verifying the renderer maps the side surround channels to the correct speakers."]
+   },
+   "sources": ["ITU-R BS.2051-2, Advanced sound system for programme production (ITU-R Recommendation)", "Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories technical documentation)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

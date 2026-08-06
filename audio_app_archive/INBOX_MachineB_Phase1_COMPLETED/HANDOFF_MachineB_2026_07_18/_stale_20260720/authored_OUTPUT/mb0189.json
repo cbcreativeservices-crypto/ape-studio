@@ -1,0 +1,159 @@
+{
+ "batch": 189,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "a60b6710-c88c-43bc-9395-9f6e28bae877",
+   "term": "Air monitor",
+   "fields": {
+    "definition": "A monitoring feed or dedicated receiver that reproduces a station's actual off-air signal, letting staff hear the program exactly as the audience does, after all processing, encoding, and transmission delay.",
+    "plain_english": "A speaker or radio that plays back what the station is really sending out. It lets the crew hear just what people at home hear, after all the gear has done its job.",
+    "purpose_function": "It confirms the station is on the air and that the signal still sounds right after processing and transmission, catching dead air, distortion, or the wrong content.",
+    "practical_application": "An engineer or host keeps the air monitor up to verify the broadcast and to spot faults before listeners call in to complain.",
+    "category": "Monitoring",
+    "related_terms": ["Air chain", "Modulation monitor", "Broadcast delay", "Audio control room", "Air-check recording"],
+    "common_mistakes": ["Assuming the console output matches the air signal, ignoring processing and transmission delay", "Confusing the air monitor with the console monitor feed", "Turning the air monitor off during a shift and missing dead air or an outage"],
+    "scenario_contexts": ["An engineer verifying the transmitter is passing clean audio", "A host checking that a recorded spot actually aired", "Troubleshooting distortion heard by listeners but not on the console"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "87ce8af6-c37e-493f-a0fb-a347cbeb399d",
+   "term": "Air talent microphone",
+   "fields": {
+    "definition": "The microphone used by on-air talent (announcer, host, or DJ) to deliver spoken program audio; in radio it is typically a large-diaphragm cardioid dynamic mic chosen for a warm, present voice and strong rejection of room noise.",
+    "plain_english": "The mic the on-air host talks into. It is usually a tough dynamic mic that makes the voice sound full and blocks out room noise.",
+    "purpose_function": "It captures the presenter's voice at broadcast quality while rejecting background noise and handling close, loud speech without popping or distortion.",
+    "practical_application": "Engineers mount it on a shock-mounted boom arm with a pop filter, set it a few inches from the mouth, and route it through a mic processor before the console.",
+    "category": "Microphones",
+    "related_terms": ["Announcer booth", "Announcer feed", "Audio control room", "Air monitor", "Air-check recording"],
+    "common_mistakes": ["Working too far from the mic, which raises room noise and lowers voice level", "Skipping the pop filter, so plosives cause loud popping", "Setting gain too high and clipping loud speech", "Treating a rugged dynamic mic like a fragile condenser and vice versa"],
+    "scenario_contexts": ["A morning-show host speaking live on a music station", "A sportscaster calling play-by-play from a booth", "Voice-tracking pre-recorded segments for later airing", "A news reader delivering a live top-of-hour bulletin"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Shure technical documentation (SM7B/broadcast microphones)", "Electro-Voice technical documentation (RE20)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e4ca64dc-f7a3-4a72-9320-1b5e8f7f01ea",
+   "term": "Air-check recording",
+   "fields": {
+    "definition": "A recording of a station's actual broadcast output, captured for later review, talent critique, compliance logging, or as a demo of on-air work.",
+    "plain_english": "A recording of what a station actually put on the air. People use it to review how a show sounded or to prove what was broadcast.",
+    "purpose_function": "It documents exactly what went out over the air so managers can coach talent, confirm content ran, and meet legal logging rules.",
+    "practical_application": "A host saves an aircheck of their shift to build a demo, while engineers keep automated airchecks to settle complaints and provide regulatory proof.",
+    "category": "Recording",
+    "related_terms": ["Aircheck recorder", "Air monitor", "Air talent microphone", "Audio control room", "Off-air signal"],
+    "common_mistakes": ["Recording the console feed instead of the true off-air signal, missing processing changes", "Not logging continuously and losing proof of what aired", "Confusing an edited demo aircheck with an unedited compliance log"],
+    "scenario_contexts": ["A DJ compiling a demo reel from recent shows", "Reviewing a broadcast after a listener complaint", "Keeping a legal log of everything transmitted"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "38390a37-3383-4928-ab8f-6f843b2f08f1",
+   "term": "Aircheck recorder",
+   "fields": {
+    "definition": "A device or software system that automatically records a station's on-air signal, often as a continuous logging recorder or as a skimmer that captures only the mic-open talk segments.",
+    "plain_english": "A machine or program that records what the station broadcasts, usually all day long. Some versions only save the parts where the host is talking.",
+    "purpose_function": "It provides an automatic archive of the broadcast for legal logging, complaint resolution, and reviewing talent performance without anyone hitting record.",
+    "practical_application": "Engineers feed it the off-air or console output; a skimmer mode triggered by the mic switch stores short talk breaks so a host can grab an aircheck quickly.",
+    "category": "Recording",
+    "related_terms": ["Air-check recording", "Air monitor", "Audio control room", "Off-air signal", "Air talent microphone"],
+    "common_mistakes": ["Feeding it a pre-processing source, so the log does not match the true air signal", "Letting the storage fill and overwrite required legal logs", "Assuming skimmer mode captured everything when it only records mic-open segments"],
+    "scenario_contexts": ["Maintaining a 24-hour legal log of the broadcast", "A host retrieving a talk-break aircheck for a demo", "Pulling archived audio after a compliance query"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "43b1ced3-4e67-40e1-8144-22614356ecda",
+   "term": "Announcer booth",
+   "fields": {
+    "definition": "A small, acoustically treated room built for a presenter to record or broadcast voice, isolated from control-room and studio noise so speech is captured cleanly.",
+    "plain_english": "A small, sound-treated room where the announcer talks into the mic. It is quiet and isolated so the voice is recorded clearly.",
+    "purpose_function": "It gives the announcer a quiet, low-reflection space so the microphone picks up a clean, dry voice free of room echo and outside noise.",
+    "practical_application": "A technician sets up the talent mic, headphones, and a talkback link inside the booth, then treats the walls to cut reflections and seals the door for isolation.",
+    "category": "Facilities",
+    "related_terms": ["Air talent microphone", "Audio control room", "Announcer feed", "Air monitor", "Air-check recording"],
+    "common_mistakes": ["Assuming any small room is dead enough without acoustic treatment", "Leaving noisy fans or computers inside the booth", "Poor door sealing that lets control-room sound leak into the mic"],
+    "scenario_contexts": ["Recording station voice-overs and imaging", "A news anchor reading live from an isolated booth", "Tracking narration for a documentary or promo"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "10eee908-2ec7-43ce-8200-94083913ad0c",
+   "term": "Announcer feed",
+   "fields": {
+    "definition": "A dedicated audio feed carrying the on-air announcer's voice, routed separately from music and other program elements so it can be mixed, distributed, or sent to remote sites on its own.",
+    "plain_english": "A separate audio path that carries just the announcer's voice. Keeping it on its own makes it easy to mix or send it where it is needed.",
+    "purpose_function": "It isolates the announcer's voice as a discrete signal so it can be balanced against program audio, recorded alone, or delivered to another site or network.",
+    "practical_application": "An engineer splits the talent mic to a dedicated bus, then routes that announcer feed to the console, a remote codec, or a separate recorder.",
+    "category": "Signal Routing",
+    "related_terms": ["Air talent microphone", "Announcer booth", "Audio control room", "Audio contribution codec", "Mix-minus"],
+    "common_mistakes": ["Confusing the announcer feed with a full program mix that already includes music", "Sending a feed with the announcer's own return audio, causing echo instead of a clean mix-minus", "Not labeling routing, so the wrong source reaches a remote site"],
+    "scenario_contexts": ["Feeding an announcer's voice to a remote sports venue", "Routing a clean voice track to a separate recorder", "Sending narration to another studio for a shared broadcast"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e94d99bf-0f9d-4bae-b96c-c75edf3eb7df",
+   "term": "Audience microphone array",
+   "fields": {
+    "definition": "A set of microphones arranged to capture audience sound, such as applause, laughter, and crowd ambience, during a broadcast or recorded event, then mixed in to convey atmosphere.",
+    "plain_english": "A group of mics aimed at the crowd to pick up clapping, laughter, and general noise. The sound is mixed in so the show feels live.",
+    "purpose_function": "It captures the room's reaction and ambience so the broadcast sounds live and energetic instead of dry, while keeping crowd noise controllable in the mix.",
+    "practical_application": "A technician places several mics around the seating, balances their levels to avoid feedback and harshness, and rides the crowd level up during applause.",
+    "category": "Microphones",
+    "related_terms": ["Air talent microphone", "Audio control room", "Announcer feed", "Air monitor", "Audio contribution codec"],
+    "common_mistakes": ["Placing mics where they pick up the PA and feed back", "Leaving crowd mics wide open, raising the noise floor between reactions", "Too few mics for the space, giving thin or uneven audience sound"],
+    "scenario_contexts": ["Broadcasting a live comedy or game show", "Covering a sports event to capture crowd reaction", "A live concert broadcast that needs audience ambience"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7e43d8ec-fb14-4257-84d4-40d01336906f",
+   "term": "Audio contribution codec",
+   "fields": {
+    "definition": "An audio codec, in hardware or software, that encodes and transports high-quality contribution audio, meaning program material sent from a remote site back to the studio or network, typically over IP, ISDN, or dedicated links with an emphasis on quality and low latency.",
+    "plain_english": "A box or program that squeezes high-quality audio so it can travel from a remote spot back to the studio. It aims for great sound and little delay, not just small file size.",
+    "purpose_function": "It carries program-grade audio between locations reliably and with low delay, so remote broadcasts sound as good as studio audio while using available network links.",
+    "practical_application": "An engineer connects the codec at a remote venue over IP or ISDN, sets a codec algorithm and bit rate, and monitors latency and dropouts across the link.",
+    "category": "Transmission",
+    "related_terms": ["Announcer feed", "Audio control room", "Air monitor", "Mix-minus", "Air chain"],
+    "common_mistakes": ["Confusing contribution links with lower-quality distribution codecs", "Choosing a low-latency setting without enough network headroom, causing dropouts", "Ignoring buffer and jitter settings, so audio glitches over IP"],
+    "scenario_contexts": ["Sending a reporter's audio from the field to the studio", "Linking two studios for a shared program", "Backhauling a live remote concert to the broadcast center"]
+   },
+   "sources": ["EBU technical documentation (audio contribution over IP)", "Comrex technical documentation (broadcast audio codecs)", "Tieline technical documentation (IP audio codecs)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c301e9fd-b476-49e5-893e-10c48461aa74",
+   "term": "Audio control room",
+   "fields": {
+    "definition": "The room in a broadcast facility that houses the main mixing console and audio processing and routing gear, where an operator mixes and controls all program audio for a studio or on-air channel.",
+    "plain_english": "The room with the main mixing desk where an operator controls all the sound for a show. It is where the audio for the broadcast is put together.",
+    "purpose_function": "It centralizes mixing, monitoring, and routing so one operator can combine mics, playback, and remote feeds into the finished program audio.",
+    "practical_application": "An engineer works the console here to balance talent mics, music, and remote sources, monitor the air signal, and send the mix on down the air chain.",
+    "category": "Facilities",
+    "related_terms": ["Announcer booth", "Air talent microphone", "Air monitor", "Announcer feed", "Air chain"],
+    "common_mistakes": ["Confusing the audio control room with the on-air studio or talent booth", "Poor monitor calibration, so mixes sound wrong on the air", "Cluttered routing labels that cause the wrong source to go to air"],
+    "scenario_contexts": ["Operating the console for a live radio show", "Mixing a live sports broadcast from the control room", "Routing and monitoring remote feeds during a special broadcast"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

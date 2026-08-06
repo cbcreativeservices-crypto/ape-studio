@@ -1,0 +1,159 @@
+{
+ "batch": 156,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "ce04d3aa-caf8-40fe-842c-3b62f5b06ca8",
+   "term": "5.1 re-render",
+   "fields": {
+    "definition": "A 5.1-channel version of an immersive (object-based) master produced by the renderer, which folds the objects and beds of the immersive mix down into the six channels of the standard 5.1 layout (L, C, R, Ls, Rs, LFE). It is one of several channel-based re-renders derived from a single ADM/immersive master.",
+    "plain_english": "A 5.1 surround copy made from an Atmos mix. The tool takes the moving sounds and fits them into six speakers. That way, people without Atmos still get surround sound.",
+    "purpose_function": "It lets one immersive master serve older 5.1 delivery targets such as broadcast, Blu-ray and streaming without a separate manual mix, keeping every format matched to the immersive source.",
+    "practical_application": "In the Dolby Atmos Renderer a mastering engineer selects the 5.1 re-render output, then checks its balance, dialogue level and LFE before delivering it alongside the ADM master.",
+    "category": "Immersive Deliverable",
+    "related_terms": ["7.1 re-render", "ADM BWF master", "Binaural render", "Downmix", "Bed (immersive audio)", "Dolby Atmos Renderer"],
+    "common_mistakes": ["Assuming the 5.1 re-render sounds identical to the immersive mix, when overhead objects collapse down into the surround plane.", "Not re-checking dialogue and LFE level after re-rendering, so the fold-down clips or the center is too quiet.", "Delivering the re-render at the wrong loudness or bit depth for the target platform."],
+    "scenario_contexts": ["Creating a 5.1 broadcast deliverable from a Dolby Atmos music or film master.", "Producing a surround version for Blu-ray from an object-based master.", "QC-ing a batch of re-renders against the immersive reference before delivery."]
+   },
+   "sources": ["Dolby Atmos Renderer technical documentation (Dolby)", "ITU-R BS.2076 (Audio Definition Model)", "ITU-R BS.775 (multichannel stereophonic sound systems)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c9561968-f295-4279-a42e-e833c494372c",
+   "term": "7.1 re-render",
+   "fields": {
+    "definition": "A 7.1-channel version of an immersive (object-based) master produced by the renderer, which folds the objects and beds of the immersive mix down into the eight channels of the 7.1 layout (L, C, R, Lss, Rss, Lrs, Rrs, LFE). It is one of several channel-based re-renders derived from a single ADM/immersive master.",
+    "plain_english": "A 7.1 surround copy made from an Atmos mix. It spreads the sounds across eight speaker feeds instead of six. This gives more speakers around the room than a 5.1 copy.",
+    "purpose_function": "It provides a 7.1-compatible deliverable from the immersive master for cinema and home-theater targets that use side and rear surrounds, without remixing the program.",
+    "practical_application": "A mastering engineer generates the 7.1 re-render in the renderer, confirms the surround channel mapping is correct, and delivers it with the ADM master and other re-renders.",
+    "category": "Immersive Deliverable",
+    "related_terms": ["5.1 re-render", "ADM BWF master", "Binaural render", "Downmix", "Bed (immersive audio)", "Dolby Atmos Renderer"],
+    "common_mistakes": ["Confusing the 7.1 surround channel order with the 7.1.2/7.1.4 bed order, so channels are mislabeled.", "Assuming height information survives, when a 7.1 re-render has no dedicated overhead speakers.", "Skipping a level and balance check after the fold-down."],
+    "scenario_contexts": ["Delivering a 7.1 home-theater version from a Dolby Atmos master.", "Supplying a 7.1 cinema-compatible fold from an object-based mix.", "Comparing 5.1 and 7.1 re-renders against the immersive reference during QC."]
+   },
+   "sources": ["Dolby Atmos Renderer technical documentation (Dolby)", "ITU-R BS.2076 (Audio Definition Model)", "ITU-R BS.775 (multichannel stereophonic sound systems)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d91ec217-3903-4b5b-b682-91a76ff79919",
+   "term": "Acetate tape base",
+   "fields": {
+    "definition": "The cellulose acetate film substrate used as the flexible backing of magnetic recording tape from the mid-1930s until the early 1970s, onto which the magnetic oxide coating was bound. It was progressively replaced by more stable polyester (PET) base, and is prone to embrittlement and hydrolysis (vinegar syndrome) with age.",
+    "plain_english": "The clear plastic backing that older recording tape was built on. It holds the coating that stores the sound. Over time it turns brittle and can smell like vinegar.",
+    "purpose_function": "The base carries the fragile magnetic coating on a flexible, stable carrier so tape can be wound, run past the heads and stored; identifying the base type tells an archivist how a reel will age and how to handle it.",
+    "practical_application": "When transferring old reels, a technician spots acetate base (it is translucent when held to light and may smell of vinegar) and handles it gently, because it can snap under normal playback tension.",
+    "category": "Archive & Preservation",
+    "related_terms": ["Polyester tape base", "Vinegar syndrome", "Magnetic tape", "Print-through", "Oxide shedding", "Archive media migration"],
+    "common_mistakes": ["Confusing brittle acetate with polyester base, when acetate snaps cleanly and polyester stretches and distorts.", "Applying higher tension to a brittle acetate reel to improve head contact, which breaks it.", "Storing acetate tapes in warm, humid conditions, which speeds up vinegar syndrome (hydrolysis)."],
+    "scenario_contexts": ["Assessing an old reel-to-reel master before digital transfer.", "Identifying vinegar syndrome by smell and warping in an archive.", "Prioritising fragile acetate holdings for urgent migration."]
+   },
+   "sources": ["IASA-TC 05 (Handling and Storage of Audio and Video Carriers)", "IASA-TC 04 (Guidelines on the Production and Preservation of Digital Audio Objects)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e2ea50a7-2b16-4780-aa06-242ae0e281d8",
+   "term": "ADM BWF master",
+   "fields": {
+    "definition": "A Broadcast Wave Format (BWF) file that carries Audio Definition Model (ADM) metadata, per ITU-R BS.2076 and EBU Tech 3364, describing the channels, objects and their spatial positions of an immersive mix. It serves as the open, self-contained interchange master for object-based programs such as Dolby Atmos.",
+    "plain_english": "One file that holds an Atmos mix plus a map of where each sound sits in 3D space. It is the master copy studios hand off. Any system can use it to rebuild the mix the right way.",
+    "purpose_function": "It bundles all audio and spatial metadata into one open, standardized file, so an immersive master can be delivered, archived and re-rendered without a proprietary session.",
+    "practical_application": "A mastering engineer exports the ADM BWF from the renderer or DAW as the primary immersive deliverable, then generates channel re-renders and a stereo master from it.",
+    "category": "Immersive Deliverable",
+    "related_terms": ["ADM validation", "5.1 re-render", "7.1 re-render", "Audio Definition Model", "Broadcast Wave Format", "Dolby Atmos Renderer"],
+    "common_mistakes": ["Treating the ADM BWF as an ordinary WAV and stripping its metadata chunk during editing or conversion.", "Delivering at the wrong sample rate or bit depth, when immersive masters are typically 48 kHz / 24-bit.", "Assuming any player reads it, when non-ADM software ignores the object metadata and plays only the raw audio."],
+    "scenario_contexts": ["Delivering a Dolby Atmos music master to a distributor.", "Archiving an object-based film mix as a single interchange file.", "Importing an ADM BWF into a renderer to generate re-renders."]
+   },
+   "sources": ["ITU-R BS.2076 (Audio Definition Model)", "EBU Tech 3285 (Broadcast Wave Format)", "EBU Tech 3364 (ADM metadata specification)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cfd30a85-39df-4fe6-87cd-f720e8a4b7d7",
+   "term": "ADM validation",
+   "fields": {
+    "definition": "The process of checking that an ADM BWF file conforms to the Audio Definition Model specification (ITU-R BS.2076 / EBU Tech 3364) and to any required delivery profile, such as the Dolby Atmos ADM profile. It verifies that the XML metadata is well-formed and complete, that references resolve, and that channel/object counts, layout and sample rate meet requirements.",
+    "plain_english": "A check that makes sure an Atmos master file is built by the rules before you send it. It is like a spell-check for the file's sound map. It catches missing or mislabeled parts early.",
+    "purpose_function": "It catches metadata errors before delivery, so a distributor or broadcaster does not reject the master or play it back incorrectly.",
+    "practical_application": "Before delivery, an engineer runs the file through an ADM validator, such as the EBU tool or a distributor's QC check, and fixes any flagged metadata or profile violations.",
+    "category": "Immersive Deliverable",
+    "related_terms": ["ADM BWF master", "Audio Definition Model", "Broadcast Wave Format", "Dolby Atmos Renderer", "Loudness metering", "Quality control (QC)"],
+    "common_mistakes": ["Confirming only that the file plays, and skipping metadata validation entirely.", "Validating against the generic ADM spec but not the stricter delivery profile the distributor requires.", "Ignoring warnings about unresolved object references or mismatched channel counts."],
+    "scenario_contexts": ["QC-ing an ADM BWF before uploading to a streaming distributor.", "Debugging why a delivered Atmos file was rejected.", "Confirming a renderer export meets the Dolby Atmos ADM profile."]
+   },
+   "sources": ["ITU-R BS.2076 (Audio Definition Model)", "EBU Tech 3364 (ADM metadata specification)", "Dolby Atmos ADM Profile specification (Dolby)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ce10ccd4-9bf4-4b83-a593-be24e90092cc",
+   "term": "Alternate score mix",
+   "fields": {
+    "definition": "A version of a program's final soundtrack in which the musical score is substituted or re-balanced while the dialogue and sound effects stay the same, produced as a deliverable when a title needs different music for a territory, edit or rights reason.",
+    "plain_english": "A second version of a finished soundtrack that uses different music. It keeps the same speech and sound effects. Studios make it when a show needs new music for another country or a re-edit.",
+    "purpose_function": "It lets the same picture ship with different music without remixing the whole soundtrack, covering rights, regional or creative needs.",
+    "practical_application": "In post, a re-recording mixer swaps the score stem into the final mix, then re-checks balance and loudness before delivering the alternate version.",
+    "category": "Mix Deliverable",
+    "related_terms": ["M&E mix", "Music stem", "Dialogue stem", "Final mix", "Stem (mixing)", "Deliverables"],
+    "common_mistakes": ["Confusing the alternate score mix with an M&E (music-and-effects) mix, which removes dialogue.", "Forgetting to re-check loudness and balance after swapping the score.", "Delivering the alternate without matching the technical specs of the original mix."],
+    "scenario_contexts": ["Preparing a version with replacement music for a foreign territory.", "Delivering a re-edited cut that needs a different score.", "Supplying a cleared-music alternate to replace a temp score."]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "39999617-5626-4648-ac44-3c8a12c801c6",
+   "term": "Archive media migration",
+   "fields": {
+    "definition": "The scheduled transfer of archived audio content from one storage medium or format to a newer one (for example from one LTO tape generation to the next, or from aging analog tape to file-based storage) to prevent loss from media degradation and from hardware or format obsolescence.",
+    "plain_english": "Copying stored recordings onto newer media before the old media wears out. It is like moving photos off old floppy disks onto a new drive. You do it so the files are never lost.",
+    "purpose_function": "It keeps preserved audio accessible over decades by staying ahead of media decay and the obsolescence of the drives and formats needed to read it.",
+    "practical_application": "An archivist migrates data every few years, for example off an older LTO generation whose drives are no longer sold, and verifies checksums so nothing is corrupted in the copy.",
+    "category": "Archive & Preservation",
+    "related_terms": ["Archive storage container", "Archive retrieval system", "Checksum", "LTO (Linear Tape-Open)", "Format obsolescence", "Acetate tape base"],
+    "common_mistakes": ["Waiting until drives are already obsolete or the media has degraded before migrating.", "Migrating without verifying checksums, so silent data corruption is copied forward.", "Keeping only one copy after migration instead of multiple, geographically separate copies."],
+    "scenario_contexts": ["Moving a master library from an older LTO generation to a current one.", "Transferring aging analog tape masters to file-based digital storage.", "Refreshing a digital archive on a fixed migration schedule."]
+   },
+   "sources": ["IASA-TC 04 (Guidelines on the Production and Preservation of Digital Audio Objects)", "IASA-TC 03 (The Safeguarding of the Audio Heritage)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1dfd3e49-7c91-4033-ae48-24c2059487bd",
+   "term": "Archive retrieval system",
+   "fields": {
+    "definition": "The catalog, database and storage infrastructure, such as a media asset management system paired with an LTO tape library or nearline storage, used to locate, request and restore archived audio masters and their metadata on demand.",
+    "plain_english": "The system an archive uses to find and pull back a stored recording. It works like a library catalog joined to the shelves. You look up a title and the system fetches it.",
+    "purpose_function": "It makes a large archive usable by letting staff search metadata and restore the exact master they need, instead of hunting manually through shelves of media.",
+    "practical_application": "To reissue an album, an engineer searches the retrieval system by title or ID, requests the master, and the system restores it from the tape library to online storage.",
+    "category": "Archive & Preservation",
+    "related_terms": ["Media asset management (MAM)", "Metadata", "Archive storage container", "Archive media migration", "LTO (Linear Tape-Open)", "Nearline storage"],
+    "common_mistakes": ["Relying on filenames alone instead of proper catalog metadata, so assets become unfindable.", "Not testing restores, so a needed master turns out to be unreadable when finally requested.", "Failing to update the catalog when media is migrated or physically moved."],
+    "scenario_contexts": ["Recalling an original master for a remaster or reissue.", "Pulling archived stems for a sync licensing request.", "Auditing which titles are stored on which media."]
+   },
+   "sources": ["IASA-TC 04 (Guidelines on the Production and Preservation of Digital Audio Objects)", "IASA-TC 03 (The Safeguarding of the Audio Heritage)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b51728fe-c0d4-4415-9491-5064843f3431",
+   "term": "Archive storage container",
+   "fields": {
+    "definition": "A standardized file container (wrapper) format used to bundle archived audio essence with its metadata for long-term preservation, for example Broadcast Wave (BWF) for audio-only or MXF for wrapped audio with video. Open, well-documented containers are chosen so the content stays readable across technology cycles.",
+    "plain_english": "A file format that wraps a recording together with its notes in one package. Think of it as a labeled box holding both the sound and its paperwork. That keeps them from getting split up.",
+    "purpose_function": "It keeps the audio and its metadata together in one open, documented file, so archived content stays intact and readable when systems and software change.",
+    "practical_application": "When archiving a master, a technician wraps the audio as a BWF (or MXF for audio-with-picture) so future users can open it and read its embedded metadata without proprietary tools.",
+    "category": "Archive & Preservation",
+    "related_terms": ["Broadcast Wave Format", "MXF (Material Exchange Format)", "Wrapper format", "Metadata", "Archive media migration", "Archive retrieval system"],
+    "common_mistakes": ["Choosing a proprietary or poorly documented container that may become unreadable later.", "Confusing the container (wrapper) with the codec, when the container holds the audio and the codec encodes it.", "Storing metadata in a separate file that gets lost from the audio during migration."],
+    "scenario_contexts": ["Wrapping a preservation master as BWF for deposit in an archive.", "Choosing MXF to archive an audio-with-picture program.", "Keeping embedded metadata with the essence during a format migration."]
+   },
+   "sources": ["IASA-TC 04 (Guidelines on the Production and Preservation of Digital Audio Objects)", "EBU Tech 3285 (Broadcast Wave Format)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

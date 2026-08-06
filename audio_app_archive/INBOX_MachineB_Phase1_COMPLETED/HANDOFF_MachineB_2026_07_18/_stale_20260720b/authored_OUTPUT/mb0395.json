@@ -1,0 +1,327 @@
+{
+ "batch": 395,
+ "topic": "Audio Restoration & Archival",
+ "authored": [
+  {
+   "id": "7332c99c-f000-4622-8d54-a82c6ec04440",
+   "term": "Checksum audit",
+   "fields": {
+    "definition": "A checksum audit is the scheduled, repeated recalculation of a file's checksum (a fixed-length value derived from its bitstream by an algorithm such as MD5 or SHA-256) and comparison against a stored reference value, performed to detect bit-level corruption, incomplete transfers, or tampering in archived audio files over time.",
+    "plain_english": "A checksum is a short code worked out from a file's exact data. An audit means the archive works out that code again over time and checks it still matches, so it can catch any file that has gone bad.",
+    "purpose_function": "It provides ongoing evidence of fixity—assurance that stored files remain bit-for-bit unchanged—so an archive can catch silent data corruption, failed copies, or unauthorized changes and restore from a good copy before the damage spreads.",
+    "practical_application": "An archivist runs fixity software on ingest and then on a set schedule (for example every six months for disk and yearly for tape) to compare each file's current checksum with its recorded value, then investigates and repairs any mismatch from a verified backup.",
+    "category": "Fixity & integrity",
+    "related_terms": [
+     "Fixity",
+     "Checksum",
+     "Bit rot",
+     "Digital fingerprinting",
+     "Digital preservation policy",
+     "Disaster-recovery exercise"
+    ],
+    "common_mistakes": [
+     "Assuming a single checksum check at ingest is enough, when integrity must be re-verified on a schedule for the life of the file",
+     "Believing a checksum can locate or repair corruption—it only signals that the file has changed, not where or how",
+     "Treating MD5 as tamper-proof; it detects accidental errors but can be deliberately defeated, so SHA-256 is preferred where malicious change is a concern",
+     "UNSAFE: overwriting the last remaining good copy after a failed check instead of restoring from a verified backup, which can destroy the only recoverable version"
+    ],
+    "scenario_contexts": [
+     "Verifying that a batch of newly digitized tapes transferred to preservation storage without corruption before deleting the working copies",
+     "Running a scheduled integrity sweep across a tape or disk repository and flagging files whose checksums no longer match",
+     "Confirming a file retrieved from a dark or deep archive is identical to the original before delivering an access copy"
+    ]
+   },
+   "sources": [
+    "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, 6.3.25 Integrity and Checksums",
+    "Digital Preservation Coalition, Digital Preservation Handbook — Fixity and checksums",
+    "NDSA, Checking Your Digital Content: Fixity Guidance Report"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2556628d-1bc5-463b-b2cb-b126965ca3ed",
+   "term": "Codec migration strategy",
+   "fields": {
+    "definition": "A codec migration strategy is a documented plan for moving archived audio out of an encoding or codec that is becoming obsolete, unsupported, or at risk and into a current, well-supported preservation format, while preserving the essential information and metadata of the original. In audio archiving the preferred target is uncompressed linear PCM in a WAVE/BWF container, and lossy perceptual codecs are avoided for preservation masters.",
+    "plain_english": "A codec is the method used to store audio in a file. Some codecs stop being supported over time. So this is a written plan to move the recordings into a newer, safer format before the old one dies out.",
+    "purpose_function": "It guards against technical obsolescence—the point where software or hardware can no longer decode a format—by planning migrations in advance so that content stays accessible and playable across changing generations of technology.",
+    "practical_application": "An archive monitors format viability, and when a codec is flagged as at risk it batch-transcodes affected files to the current preservation target (typically linear PCM WAV/BWF), verifies each result with checksums and quality checks, and records the action in preservation metadata.",
+    "category": "Preservation strategy",
+    "related_terms": [
+     "Linear PCM",
+     "Broadcast Wave Format",
+     "Preservation master",
+     "Descriptive metadata",
+     "Digital preservation policy",
+     "Checksum audit"
+    ],
+    "common_mistakes": [
+     "Migrating to another lossy or proprietary codec, which risks generation loss and simply repeats the obsolescence problem",
+     "Waiting until a format is already unreadable instead of migrating while working decoders still exist",
+     "Discarding the original file immediately after migration rather than validating the new copy first",
+     "Failing to carry embedded and external metadata across the transcode, breaking provenance"
+    ],
+    "scenario_contexts": [
+     "Transcoding a legacy collection stored in an outdated proprietary codec to linear PCM WAV before decoder support disappears",
+     "Scheduling periodic reviews of format viability as part of a preservation policy",
+     "Migrating perceptually coded access copies while keeping the uncompressed preservation masters untouched"
+    ]
+   },
+   "sources": [
+    "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, Key Digital Principles and Digital Preservation Planning",
+    "Digital Preservation Coalition, Digital Preservation Handbook — Preservation issues and migration"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3d247d63-244f-4a67-ab9e-58a150c8f991",
+   "term": "Cold archive",
+   "fields": {
+    "definition": "A cold archive is a storage tier for digital objects that are accessed very rarely, held on low-cost, high-latency media such as offline data tape or a deep cloud storage class, where retrieval is slower and may incur delay or cost in exchange for low ongoing storage cost and, for offline media, isolation from live systems.",
+    "plain_english": "A cold archive is where files that are almost never opened are kept. They sit on cheap, slow storage such as offline tape, so getting a file back takes longer, but it costs very little and stays safe.",
+    "purpose_function": "It lets archives retain large volumes of infrequently used content affordably for the long term, and—when the media is kept offline—adds a safety barrier so that errors, ransomware, or accidental deletions on live systems cannot reach the stored copy.",
+    "practical_application": "A technician places seldom-requested preservation copies onto tape or a cold cloud tier, keeps faster online copies for daily access, and builds retrieval lead time into any workflow that needs to pull material back from the cold tier.",
+    "category": "Archival storage",
+    "related_terms": [
+     "Deep archive",
+     "Dark archive",
+     "Offline storage",
+     "Data tape",
+     "Digital preservation policy",
+     "Checksum audit"
+    ],
+    "common_mistakes": [
+     "Confusing cold storage (about how fast and cheap access is) with a dark archive (about who is allowed access)",
+     "Expecting instant retrieval and not budgeting the delay or cost of pulling files from cold media",
+     "Keeping only a cold copy and no verified second copy, leaving no recovery option if the media fails",
+     "Skipping fixity checks on cold media because it is assumed 'safe', allowing undetected bit rot"
+    ],
+    "scenario_contexts": [
+     "Storing rarely requested digitized recordings on offline tape to cut storage costs",
+     "Moving completed projects out of expensive online storage into a cold cloud tier",
+     "Retrieving a decades-old master from cold storage for a reissue, allowing for retrieval lead time"
+    ]
+   },
+   "sources": [
+    "Digital Preservation Coalition, Digital Preservation Handbook — Storage (online/offline storage tiers)",
+    "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, Digital Repository and storage"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2f774a38-5a75-43e0-b83d-7ca1b8e70918",
+   "term": "Dark archive",
+   "fields": {
+    "definition": "A dark archive is a repository whose holdings are stored and actively preserved but are not openly accessible—available only to its custodian (and sometimes designated depositors)—typically maintained as a secure preservation or fail-safe copy that is 'opened' and made accessible only under defined trigger conditions.",
+    "plain_english": "A dark archive is a collection that is kept safe but is not open to the public. Only the people who look after it can reach the files, which are held as a backup that is opened only if something goes wrong.",
+    "purpose_function": "It exists to guarantee long-term survival and disaster recovery of important content without providing routine public access, so a trusted preservation copy remains available even if the primary, publicly accessible ('light') copy is lost.",
+    "practical_application": "Publishers, libraries, and studios deposit content into a dark archive—such as a CLOCKSS-style repository or an internal preservation vault—that stays closed until a trigger event, like a provider ceasing operations, makes designated content accessible.",
+    "category": "Archival storage",
+    "related_terms": [
+     "Light archive",
+     "Cold archive",
+     "Deep archive",
+     "Digital preservation policy",
+     "Disaster-recovery exercise",
+     "Checksum audit"
+    ],
+    "common_mistakes": [
+     "Confusing 'dark' (an access policy — closed to the public) with 'cold' or 'deep' (about storage speed and cost)",
+     "Assuming a dark archive is merely a backup, when it is a fully preserved, actively managed and integrity-checked copy",
+     "Believing content stays dark forever; once it is released under a trigger it is no longer considered dark"
+    ],
+    "scenario_contexts": [
+     "Depositing e-journal or catalog content into a dark archive that is released only if the publisher fails",
+     "Keeping a closed preservation master of sensitive session recordings that is not available for routine access",
+     "Holding a fail-safe copy of a public collection so it can be restored after data loss"
+    ]
+   },
+   "sources": [
+    "Society of American Archivists, Dictionary of Archives Terminology — 'dark archives'",
+    "CLOCKSS, The Role of Dark Archives in Ensuring Document Preservation and Disaster Recovery"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "97e3f6fb-f082-4034-9541-c2fc32271e01",
+   "term": "Deep archive",
+   "fields": {
+    "definition": "A deep archive is the most dormant, long-retention tier of preservation storage—typically offline data tape held for low cost and high safety—storing preservation copies that are expected to be retained indefinitely and retrieved only rarely, with the longest access latency of any storage tier.",
+    "plain_english": "A deep archive is the deepest, most out-of-the-way place an archive keeps its files. The copies here, often on offline tape, are meant to be held for the very long term and are hardly ever taken out.",
+    "purpose_function": "It provides a low-cost, highly durable resting place for preservation copies that must survive for the long term, keeping a protected master safely separated from the online systems used for everyday access.",
+    "practical_application": "An archive writes a preservation master to tape held in a deep archive as one of several geographically separated copies, expecting to touch it only for migration, audits, or recovery rather than daily use.",
+    "category": "Archival storage",
+    "related_terms": [
+     "Cold archive",
+     "Dark archive",
+     "Offline storage",
+     "Data tape",
+     "Preservation master",
+     "Digital preservation policy"
+    ],
+    "common_mistakes": [
+     "Treating a deep-archive copy as a live backup for quick restores, when its retrieval is deliberately slow",
+     "Confusing deep archive (storage latency and cost) with dark archive (who may access it)",
+     "Relying on a single deep-archive copy without additional geographically separated copies",
+     "Skipping periodic fixity checks and tape migration, letting media silently degrade"
+    ],
+    "scenario_contexts": [
+     "Writing preservation masters to LTO tape held offline as the deepest copy in a multi-copy strategy",
+     "Storing content that must be kept indefinitely but is almost never requested",
+     "Pulling a file from the deep archive during a scheduled media-migration cycle"
+    ]
+   },
+   "sources": [
+    "Digital Preservation Coalition, Digital Preservation Handbook — Storage (data tape in deep archive)",
+    "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, storage systems and multiple copies"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "635b55ed-cea1-45ec-bbfa-0a3f470517da",
+   "term": "Descriptive metadata",
+   "fields": {
+    "definition": "Descriptive metadata is metadata that describes the intellectual content of a resource—such as title, creator or performer, date, subject, and description—to support its discovery, identification, and retrieval. It is one of the standard metadata categories, alongside administrative, structural, technical, and preservation metadata, and is commonly expressed in schemes such as Dublin Core, MODS, or MARC.",
+    "plain_english": "Descriptive metadata is the information that tells you what a recording is, such as its title, who made it, and when. It works like a library catalog card that helps people find the right file.",
+    "purpose_function": "It enables users and systems to search, browse, identify, and select the correct resource from a collection, providing the intellectual access layer that raw files and technical data alone cannot.",
+    "practical_application": "When cataloging a digitized recording, an archivist records fields such as title, artist, date, and subject in a schema like Dublin Core or MODS so the item can be found and correctly identified later.",
+    "category": "Metadata",
+    "related_terms": [
+     "Administrative metadata",
+     "Structural metadata",
+     "Technical metadata",
+     "Preservation metadata",
+     "Dublin Core",
+     "PREMIS"
+    ],
+    "common_mistakes": [
+     "Confusing descriptive metadata (what the content is) with technical or preservation metadata (file format, checksums, actions taken)",
+     "Entering data inconsistently instead of following a controlled schema and vocabulary, which breaks searching",
+     "Assuming embedded file tags are enough and not maintaining catalog-level descriptive records"
+    ],
+    "scenario_contexts": [
+     "Cataloging an oral-history recording with title, interviewee, date, and subject terms",
+     "Populating a digital asset management system so users can search a music archive",
+     "Mapping fields from an old catalog into Dublin Core during a metadata migration"
+    ]
+   },
+   "sources": [
+    "A. Dappert and M. Enders, Digital Preservation Metadata Standards, Information Standards Quarterly (NISO), Library of Congress / PREMIS",
+    "Digital Curation Centre (DCC), What Are Metadata Standards — descriptive, administrative and structural metadata"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f80e6ea8-d9fa-41da-bd41-80a52ecf8a5d",
+   "term": "Digital fingerprinting",
+   "fields": {
+    "definition": "Digital (acoustic) fingerprinting is the computation of a compact, content-based signature derived from the perceptual features of an audio signal, so that a recording can be identified or matched by its actual sound regardless of file format, encoding, or minor distortion. Unlike a cryptographic checksum, which changes if any single bit changes, a fingerprint is designed to remain stable across format conversion and moderate processing while still discriminating between different recordings.",
+    "plain_english": "A digital fingerprint is a small summary made from what a recording sounds like. It lets a computer spot the same song even after the file has been changed or saved in a new format. A checksum cannot do this, because it breaks if even one bit changes.",
+    "purpose_function": "It allows content-based identification and matching of audio when metadata is missing or wrong, supporting deduplication, catalog matching, rights and broadcast monitoring, and linking unlabeled or format-converted files to a known recording.",
+    "practical_application": "An archivist or automated system runs unlabeled or duplicate-suspect files through a fingerprinting service to identify the recording, detect duplicates across formats, or match a transfer against a reference database, without relying on filenames or tags.",
+    "category": "Content identification",
+    "related_terms": [
+     "Checksum",
+     "Descriptive metadata",
+     "Deduplication",
+     "Watermarking",
+     "Digital preservation policy",
+     "Checksum audit"
+    ],
+    "common_mistakes": [
+     "Confusing a fingerprint (identifies content by its sound, tolerant of format changes) with a checksum (verifies exact bits and breaks on any change)",
+     "Expecting a fingerprint to prove a file is bit-for-bit intact—it confirms identity, not integrity",
+     "Assuming a fingerprint match guarantees identical audio quality, when it only means the recordings are the same content"
+    ],
+    "scenario_contexts": [
+     "Identifying untitled recordings in a backlog by matching them against a reference database",
+     "Finding duplicate copies of the same performance stored in different formats",
+     "Matching a digitized transfer to a known commercial release for cataloging"
+    ]
+   },
+   "sources": [
+    "P. Cano, E. Batlle, T. Kalker, J. Haitsma, A Review of Audio Fingerprinting, Journal of VLSI Signal Processing Systems, 2005",
+    "ISO/IEC 15938-4 (MPEG-7 Audio), AudioSignature descriptor for content-based audio identification"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "739fc707-87a0-491d-85e7-545bffa161ff",
+   "term": "Digital preservation policy",
+   "fields": {
+    "definition": "A digital preservation policy is a high-level institutional document that sets an organization's goals, principles, scope, and responsibilities for keeping digital materials authentic, usable, and accessible over the long term. It states objectives and commitments rather than specific technologies, and provides the foundation on which preservation strategies and day-to-day procedures are built.",
+    "plain_english": "A digital preservation policy is an official document. It says how a group will keep its digital files safe and usable for a long time. It sets the goals and rules, and the detailed plans follow from it.",
+    "purpose_function": "It gives digital preservation formal authority and direction—defining what will be preserved, why, and who is responsible—so that preservation is managed consistently, can be funded and audited, and does not depend on individual effort or memory.",
+    "practical_application": "Staff refer to the policy to decide what content is in scope, what standards and how many copies apply, and who owns each responsibility, and it is reviewed and re-approved on a regular schedule.",
+    "category": "Preservation planning",
+    "related_terms": [
+     "Preservation strategy",
+     "Codec migration strategy",
+     "Checksum audit",
+     "Disaster-recovery exercise",
+     "Descriptive metadata",
+     "Dark archive"
+    ],
+    "common_mistakes": [
+     "Writing the policy around specific products or file formats, so it goes out of date instead of stating durable principles",
+     "Treating the policy as a one-off document and never reviewing or re-approving it",
+     "Confusing the high-level policy with the detailed strategy and procedures that implement it"
+    ],
+    "scenario_contexts": [
+     "Drafting an institution's first preservation policy to secure funding and management buy-in",
+     "Referring to the policy to decide whether a new collection falls within preservation scope",
+     "Reviewing and re-approving the policy on its scheduled cycle"
+    ]
+   },
+   "sources": [
+    "Digital Preservation Coalition, Digital Preservation Handbook — Institutional policies and strategies",
+    "Digital Preservation Coalition, Digital Preservation Policy Toolkit"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "aae89b36-54bf-4417-856a-c11210557197",
+   "term": "Disaster-recovery exercise",
+   "fields": {
+    "definition": "A disaster-recovery exercise is a planned, periodic test of an organization's disaster-recovery or contingency plan, in which staff simulate a disruptive event and rehearse the procedures for restoring systems and data—verifying that backups are usable, that recovery steps work, and that personnel can meet recovery objectives. Forms range from discussion-based tabletop exercises to functional exercises that actually restore from backup media.",
+    "plain_english": "A disaster-recovery exercise is a practice run for a big failure, like a fire or a dead server. The team acts as if it has really happened. They try to restore the files to check the backups work and everyone knows what to do.",
+    "purpose_function": "It exists to prove—before a real emergency—that recovery plans, backups, and staff actually work together, exposing gaps, out-of-date steps, or unusable backups while there is still time to fix them.",
+    "practical_application": "An archive schedules regular exercises—perhaps a tabletop walkthrough one year and a functional test that restores files from backup media the next—then documents what failed and updates the recovery plan accordingly.",
+    "category": "Business continuity",
+    "related_terms": [
+     "Digital preservation policy",
+     "Dark archive",
+     "Cold archive",
+     "Deep archive",
+     "Checksum audit",
+     "Preservation strategy"
+    ],
+    "common_mistakes": [
+     "Assuming backups are good without ever testing a restore, and discovering they are unusable only during a real disaster",
+     "Running the exercise once and never repeating it as systems and staff change",
+     "Never updating the recovery plan after an exercise reveals problems",
+     "UNSAFE: testing recovery procedures directly on the only live production copy, risking loss of the original data"
+    ],
+    "scenario_contexts": [
+     "Holding a tabletop exercise to walk through the response to a storage-system failure",
+     "Performing a functional test that restores a sample collection from offline tape to confirm backups work",
+     "Revising the disaster-recovery plan after an exercise uncovers a broken step"
+    ]
+   },
+   "sources": [
+    "NIST SP 800-34 Rev. 1, Contingency Planning Guide for Federal Information Systems — Testing, Training, and Exercises",
+    "NIST SP 800-84, Guide to Test, Training, and Exercise Programs for IT Plans and Capabilities"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

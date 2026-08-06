@@ -1,0 +1,159 @@
+{
+ "batch": 334,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "66a4b73d-fdb4-41d9-9c6f-4b1e681bfa28",
+   "term": "Long decay",
+   "fields": {
+    "definition": "In sound-envelope analysis, decay is the portion of a sound in which its level falls after the initial attack; a long decay describes a note or event whose energy dies away slowly, ringing audibly for an extended time before fading to silence. It is typical of resonant instruments such as cymbals, gongs and sustained piano, and of reverberant spaces and long-release effects.",
+    "plain_english": "Decay is how a sound fades after it first hits. A long decay means the sound rings out for a while instead of stopping fast, like a cymbal that keeps shimmering after you strike it.",
+    "purpose_function": "Judging decay length tells a technician how an instrument, room or effect sustains energy over time, which shapes clarity and note separation in a recording or mix.",
+    "practical_application": "When miking cymbals or a live room, an engineer identifies long decay and may add damping, shorten reverb or gate the tail to keep the low end and rhythm tight.",
+    "category": "Decay characteristic",
+    "related_terms": ["Attack transient", "Decay", "Sustain", "Resonance", "Reverberation time", "Ring-out"],
+    "common_mistakes": ["Confusing an instrument's own long decay with reverb added by the room or a plug-in", "Assuming a long decay always needs shortening, when it is often musically wanted", "Gating too hard and cutting the natural tail, leaving an unnatural abrupt stop"],
+    "scenario_contexts": ["Miking a ride cymbal that rings long after each hit", "Recording piano with the sustain pedal held down", "Tracking in a live room with a long natural reverberation tail"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Fletcher & Rossing, The Physics of Musical Instruments", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1d5f4a11-0550-4404-b22f-df30046da3eb",
+   "term": "Loose hardware rattle",
+   "fields": {
+    "definition": "An unwanted buzzing or rattling artifact produced when loose mechanical hardware — drum lugs, cymbal-stand fittings, snare wires, screws or rack and console parts — vibrates sympathetically with a sound source, adding non-musical noise to a recording or live signal.",
+    "plain_english": "This is the buzzing you get when a loose screw or fitting shakes along with the music. Like a rattling car door when the bass hits, it adds noise that should not be there.",
+    "purpose_function": "Recognizing this artifact lets a technician trace and fix a mechanical noise at its source instead of blaming the mic, preamp or signal chain.",
+    "practical_application": "When a drum kit buzzes on certain notes, an engineer hunts down and tightens the loose lug, stand or rattling object rather than reaching for an EQ.",
+    "category": "Mechanical artifact",
+    "related_terms": ["Mechanical noise", "Sympathetic resonance", "Buzz", "Snare buzz", "Rattle"],
+    "common_mistakes": ["Trying to EQ or gate out a rattle instead of finding and tightening the loose part", "Blaming the microphone or cable for a noise that is mechanical", "Missing that the rattle only appears at frequencies that excite the loose part"],
+    "scenario_contexts": ["A cymbal-stand fitting buzzing during loud passages", "Snare wires rattling when the floor tom is hit", "A loose screw in a guitar or lighting rig vibrating on stage"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "061cd758-29e4-4493-a881-7238a26a3b45",
+   "term": "Low-end bloom",
+   "fields": {
+    "definition": "A swelling or buildup of low-frequency energy that develops just after the initial attack, caused by room resonances (modes), close-mic proximity effect or resonant sustain in the source; a moderate amount reads as warmth and fullness, while excess reads as muddiness or boom.",
+    "plain_english": "This is when the bass swells up and fills out just after a note is played. A little makes music sound warm and full, but too much makes it boomy and muddy, like standing in a corner where the bass piles up.",
+    "purpose_function": "Naming this behavior helps a technician judge whether the low frequencies are blooming pleasantly or building into muddiness that needs control.",
+    "practical_application": "Hearing too much low-end bloom, an engineer may move a mic off a boundary, engage a high-pass filter or treat room modes to tighten the bass.",
+    "category": "Resonance characteristic",
+    "related_terms": ["Proximity effect", "Room modes", "Boominess", "Resonance", "Low-frequency buildup", "Sustain"],
+    "common_mistakes": ["Confusing room-mode buildup with the instrument's own low end", "Cutting all low frequencies to fix bloom and leaving the sound thin", "Ignoring mic placement, which often causes bloom through proximity effect or boundaries"],
+    "scenario_contexts": ["Close-miking a kick drum where the low end swells from proximity effect", "A bass guitar booming up in a small untreated room", "Vocals recorded near a wall picking up low-frequency buildup"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques", "McCarthy, Sound Systems: Design and Optimization"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ab75983a-84d5-471d-8c8d-69bd6243cee9",
+   "term": "Mallet rebound",
+   "fields": {
+    "definition": "The rapid bounce of a mallet, beater or stick off the surface of a struck instrument (drumhead, keyboard-percussion bar, timpani) immediately after impact; it shapes the attack transient and can add a brief secondary contact sound or alter note articulation.",
+    "plain_english": "When a mallet hits a drum or bar, it bounces right back off instead of staying pressed down. This quick bounce shapes how the note starts and can add a small extra tap sound.",
+    "purpose_function": "Understanding rebound helps a technician recognize how the striking action shapes the attack and any short secondary contact noise in a percussion recording.",
+    "practical_application": "Close-miking marimba or timpani, an engineer listens for how mallet rebound affects the attack and chooses mic placement or mallet hardness to get the wanted articulation.",
+    "category": "Attack characteristic",
+    "related_terms": ["Mallet strike", "Attack transient", "Articulation", "Transient", "Percussion"],
+    "common_mistakes": ["Confusing the rebound contact sound with a recording glitch or click", "Overlooking that mallet hardness changes both attack and rebound character", "Blaming mic placement for articulation that comes from playing technique"],
+    "scenario_contexts": ["Recording marimba where mallet rebound shapes each note's attack", "Timpani rolls where fast rebounds build a sustained texture", "Choosing mallet hardness to control attack on vibraphone"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers", "Adler, The Study of Orchestration"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "53d11053-c796-45e7-977c-6c11b90aac3c",
+   "term": "Mallet strike",
+   "fields": {
+    "definition": "The impact of a mallet or beater against a percussion instrument, generating the initial attack transient and exciting the instrument into vibration; the strike's speed, hardness and location set the tone's brightness, loudness and harmonic content.",
+    "plain_english": "This is the moment a mallet hits a drum or bar and makes it sound. How hard, how fast and where you hit change how bright and loud the note is, like tapping a glass gently versus hitting it hard.",
+    "purpose_function": "The strike defines the attack and initial tone of a percussion note, so identifying it helps a technician capture the transient cleanly and at the right level.",
+    "practical_application": "An engineer sets mic distance and level headroom to handle the sharp transient of a mallet strike without clipping while keeping its punch.",
+    "category": "Attack characteristic",
+    "related_terms": ["Mallet rebound", "Attack transient", "Transient", "Percussion", "Articulation"],
+    "common_mistakes": ["Setting levels for the sustain and then clipping on the sharp strike transient", "Miking too close and exaggerating the strike over the instrument's body tone", "Confusing strike-location changes with EQ problems"],
+    "scenario_contexts": ["Recording xylophone where each mallet strike is a fast transient", "Setting gain to avoid clipping on hard timpani strikes", "Placing mics to balance strike attack against bar resonance on marimba"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5f5e1514-c2e4-4140-8166-978205d52a72",
+   "term": "Mechanical action noise",
+   "fields": {
+    "definition": "Non-musical sound produced by the moving mechanical parts of an instrument as it is played — piano hammer and damper action, organ key and tracker action, or wind-instrument key pads and levers — which close microphones can capture alongside the intended tone.",
+    "plain_english": "This is the sound of an instrument's moving parts, not the notes themselves, like the soft thump of piano keys or the click of a flute's keys. Close mics can pick it up along with the music.",
+    "purpose_function": "Identifying action noise helps a technician decide whether it is natural character to keep or a distraction to reduce through mic choice and placement.",
+    "practical_application": "When close-miking piano or woodwinds, an engineer repositions mics or adjusts distance to control how much key and hammer action noise is recorded.",
+    "category": "Mechanical artifact",
+    "related_terms": ["Mechanical noise", "Mechanical click", "Key noise", "Hammer noise", "Transient"],
+    "common_mistakes": ["Trying to remove natural action noise entirely and losing the instrument's realism", "Placing mics right over the action and capturing excess mechanical noise", "Confusing action noise with an electrical or signal-chain fault"],
+    "scenario_contexts": ["Close-miking a grand piano and hearing hammer and damper action", "Recording flute or clarinet where key pads click", "Tracking a pipe organ with audible tracker action"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Fletcher & Rossing, The Physics of Musical Instruments", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a02aceb1-1acc-4d44-87b1-00f6b70b0f3a",
+   "term": "Mechanical click",
+   "fields": {
+    "definition": "A brief, sharp transient noise of mechanical origin — such as a key, valve, pedal or switch contact — that appears as a short click in the audio, distinct from electronic clicks caused by digital or clocking faults.",
+    "plain_english": "This is a short, sharp tapping sound made by a moving part, like a key or pedal snapping into place. It is a physical click, not a glitch from the electronics.",
+    "purpose_function": "Telling a mechanical click apart from a digital one lets a technician fix the right thing — the instrument or hardware, not the signal chain.",
+    "practical_application": "Hearing clicks on a track, an engineer checks whether they line up with a player's key or pedal movements before suspecting a digital dropout.",
+    "category": "Mechanical artifact",
+    "related_terms": ["Mechanical action noise", "Mechanical noise", "Key noise", "Digital click", "Transient"],
+    "common_mistakes": ["Assuming every click is a digital dropout when it is really a physical mechanical click", "Missing that the click times with a player's key or pedal movement", "Editing out mechanical clicks that are part of the instrument's natural character"],
+    "scenario_contexts": ["A pedal or key click captured on a close vocal or instrument mic", "Distinguishing a mechanical relay click from a digital error", "Woodwind key clicks appearing between notes"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques", "Fletcher & Rossing, The Physics of Musical Instruments"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "528d2a45-3fdf-4d45-b1dd-dd904217d92d",
+   "term": "Mechanical clunk",
+   "fields": {
+    "definition": "A dull, low-pitched thud or knock of mechanical origin, produced by heavier moving parts or contact — a pedal hitting its stop, a stand or boom moving, or hardware impact — heard as a brief low-frequency transient in the signal.",
+    "plain_english": "This is a dull, heavy thud from a moving part, deeper than a light click. Think of a pedal hitting the floor or a stand knock, a low bump that lands in the recording.",
+    "purpose_function": "Recognizing a clunk as mechanical helps a technician trace it to a physical part rather than an electronic fault.",
+    "practical_application": "When a low thud shows up on a track, an engineer looks for a pedal, stand or hardware knock and isolates or dampens the source.",
+    "category": "Mechanical artifact",
+    "related_terms": ["Mechanical noise", "Mechanical click", "Rumble", "Thump", "Transient"],
+    "common_mistakes": ["Confusing a mechanical clunk with a low-frequency electronic pop", "Overlooking floor or stand vibration that carries the clunk into a mic", "Trying to EQ out a clunk instead of stopping the physical knock"],
+    "scenario_contexts": ["A sustain pedal clunking against its stop during a piano take", "A mic stand or boom knocked on stage", "A heavy switch or fader creating a low thud"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e53a5a90-0370-408e-8859-67134dfa8d0a",
+   "term": "Mechanical noise",
+   "fields": {
+    "definition": "Any unwanted sound arising from the physical motion, vibration or contact of mechanical parts — instrument mechanisms, hardware, stands, fans or tape transports — as opposed to electrical, acoustic or musically intended sound; it enters the signal when picked up by microphones or transmitted structurally.",
+    "plain_english": "This is any unwanted noise made by moving or vibrating parts, like keys, stands or a cooling fan, rather than by the electronics or the music itself. Mics can catch it, or it can travel through the floor into the gear.",
+    "purpose_function": "Grouping these noises as mechanical helps a technician separate physical-source problems from electrical ones and fix them at the source.",
+    "practical_application": "Troubleshooting stray noise, an engineer checks mechanical sources — loose hardware, stands, fans, HVAC — and isolates, tightens or dampens them before touching the signal chain.",
+    "category": "Mechanical artifact",
+    "related_terms": ["Loose hardware rattle", "Mechanical action noise", "Mechanical click", "Mechanical clunk", "Structure-borne noise"],
+    "common_mistakes": ["Assuming noise is electrical when it is mechanical in origin", "Trying to fix mechanical noise with EQ or gates instead of at the source", "Ignoring structure-borne paths, such as vibration through floors and stands"],
+    "scenario_contexts": ["A computer or amplifier fan bleeding into a quiet vocal take", "Loose kit hardware buzzing during loud drumming", "HVAC or foot noise transmitted through the floor into stands"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

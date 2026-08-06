@@ -1,0 +1,312 @@
+{
+ "batch": 198,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "dc04b8d3-a0b8-4b8c-b2af-7a05effdd4f2",
+   "term": "Live television music mix",
+   "fields": {
+    "definition": "The real-time balancing of a musical performance's audio for a live television broadcast, combining stage, vocal, and ambience sources into a program mix delivered to the transmission/air chain while meeting broadcast loudness targets.",
+    "plain_english": "It is mixing music live for a TV show while it airs. The engineer blends the band, singers, and crowd into one balanced sound that goes out right away.",
+    "purpose_function": "Gives viewers a polished, consistent music mix in real time and keeps program loudness within broadcast limits.",
+    "practical_application": "A broadcast mixer builds this on a console during live events such as awards shows or concerts, riding faders and effects as the show happens.",
+    "category": "Broadcast Mixing",
+    "related_terms": [
+     "Live-stream audio mix",
+     "Master control room",
+     "Mobile recording truck",
+     "Off-air monitor",
+     "On-air studio"
+    ],
+    "common_mistakes": [
+     "Ignoring broadcast loudness targets so the mix is too loud or too quiet next to other programming",
+     "Burying dialogue or vocals under music and crowd sound",
+     "Not building a backup or safety mix in case a key source fails"
+    ],
+    "scenario_contexts": [
+     "Mixing a live awards-show music performance for network TV",
+     "Balancing a house band and audience mics during a late-night talk show",
+     "Sending a music mix from an OB truck to master control"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "ATSC A/85 (Techniques for Establishing and Maintaining Audio Loudness for Digital Television)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d56ae00a-df1f-406a-a5fd-e330c939f864",
+   "term": "Live-stream audio mix",
+   "fields": {
+    "definition": "The audio mix prepared specifically for an internet live stream, blending program sources into a stereo or immersive feed sent to the streaming encoder, typically metered to the platform's loudness target and kept separate from the PA or broadcast mix.",
+    "plain_english": "It is the sound mix made just for a live internet stream. It blends the sources into one feed for the stream, which is often different from what the room speakers or a TV feed get.",
+    "purpose_function": "Gives online viewers a clear, balanced sound and holds stream loudness steady, independent of the venue's live PA mix.",
+    "practical_application": "A streaming engineer sets this up on a console send or a separate mixer, feeding the encoder while checking level on headphones and meters.",
+    "category": "Broadcast Mixing",
+    "related_terms": [
+     "Live television music mix",
+     "Off-air monitor",
+     "Master control room",
+     "On-air studio",
+     "Mobile recording truck"
+    ],
+    "common_mistakes": [
+     "Sending the raw PA mix to the stream, which often sounds unbalanced to online listeners",
+     "Letting loudness drift so the stream is much louder or quieter than other content",
+     "Not checking mono compatibility for phone listeners"
+    ],
+    "scenario_contexts": [
+     "Streaming a church service or concert to an online platform",
+     "Mixing a webcast panel on a separate bus from the room PA",
+     "Feeding a dedicated stream mix to an encoder in an OB truck"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "EBU R128 / ITU-R BS.1770 (loudness normalisation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ac777c9c-f529-457f-910c-4593fa6269ee",
+   "term": "Manual assist mode",
+   "fields": {
+    "definition": "A broadcast-automation operating mode in which a live operator manually starts each on-air element while the automation system loads, cues, and logs the playlist; a middle ground between fully automated playout and fully manual live operation.",
+    "plain_english": "It is a radio mode where the computer lines up the songs and clips, but a person presses start for each one. The machine does the prep work while the operator controls the timing live.",
+    "purpose_function": "Lets a live host keep hands-on control of pacing and talk-ups while the automation handles queuing, logging, and file playback.",
+    "practical_application": "A board operator uses this during live shows, hitting play or a segue button as the system stands ready with the next scheduled items.",
+    "category": "Broadcast Automation",
+    "related_terms": [
+     "On-air studio",
+     "Master control room",
+     "News insert",
+     "Live assist system",
+     "Broadcast automation"
+    ],
+    "common_mistakes": [
+     "Assuming the system will auto-segue and missing a manual start, which causes dead air",
+     "Not watching the queue, so wrong or out-of-order elements play",
+     "Forgetting to reconcile the as-run log after manual changes"
+    ],
+    "scenario_contexts": [
+     "A morning-show host driving the board in assist mode during a music sweep",
+     "Manually firing news and weather inserts between automated songs",
+     "Taking manual control to extend a live interview past its scheduled slot"
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook",
+    "Alten, Audio in Media"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9401b94e-c327-4428-bae6-576b5878d8ec",
+   "term": "Master control room",
+   "fields": {
+    "definition": "The central technical hub of a broadcast facility where program signals from studios, networks, and remote sources are routed, monitored, switched, and readied for transmission to the transmitter or distribution network; the final quality-control point of the air chain.",
+    "plain_english": "It is the control hub of a TV or radio station. Every program signal passes through here to be checked and switched before it goes out to the audience.",
+    "purpose_function": "Acts as the final gatekeeper of the air chain, making sure the correct program, at the right level and quality, reaches the transmitter or network.",
+    "practical_application": "A master control operator watches monitors and meters here, switches sources, inserts commercials and station IDs, and responds to alarms or signal faults.",
+    "category": "Broadcast Facilities",
+    "related_terms": [
+     "On-air studio",
+     "Off-air monitor",
+     "News insert",
+     "Manual assist mode",
+     "Mobile recording truck"
+    ],
+    "common_mistakes": [
+     "Confusing master control with a production control room; master control handles transmission, not show production",
+     "Missing a loudness or level problem before it reaches air",
+     "UNSAFE: Assuming transmitter or power gear is de-energized; work on such equipment requires lockout/tagout and station safety procedures"
+    ],
+    "scenario_contexts": [
+     "Switching from a network feed to local news at the top of the hour",
+     "Rolling a scheduled commercial break and station ID",
+     "Responding to a loss-of-signal alarm on the air chain"
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7f89c198-80d6-4866-aa83-466ec7d6023f",
+   "term": "Mobile recording truck",
+   "fields": {
+    "definition": "A vehicle outfitted as a self-contained mobile control room for recording or broadcasting events at remote locations, housing mixing consoles, routing, monitoring, communications, and often transmission or recording equipment; also called an outside-broadcast (OB) truck or remote production unit.",
+    "plain_english": "It is a truck built as a rolling control room. Crews drive it to concerts or games and mix, record, or broadcast the event from inside it.",
+    "purpose_function": "Brings a full production and control facility to venues that have no fixed studio, so remote events can be recorded or aired.",
+    "practical_application": "An audio engineer works from the truck's console, taking splits from stage mics and sending finished mixes back to the network or a recorder.",
+    "category": "Broadcast Facilities",
+    "related_terms": [
+     "Master control room",
+     "Live television music mix",
+     "Live-stream audio mix",
+     "On-air studio",
+     "Off-air monitor"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Powering the truck from site mains without proper grounding and bonding and a verified safe connection",
+     "Underestimating the cable runs and mic splits needed between stage and truck",
+     "Not coordinating comms and tie-lines with the venue and network early"
+    ],
+    "scenario_contexts": [
+     "Broadcasting a live sports game from a stadium compound",
+     "Recording a multitrack concert for later release",
+     "Providing a mobile mix for a remote awards ceremony"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "NAB Engineering Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "36a35d3c-4340-435c-a416-c572a9d40780",
+   "term": "News booth",
+   "fields": {
+    "definition": "A small, acoustically treated studio space used to record or broadcast spoken news segments, voice-overs, and updates, typically equipped with a microphone, headphones, a small mixer or interface, and a talkback link to the control room.",
+    "plain_english": "It is a small, quiet room for reading the news on air. It has a mic and headphones and keeps outside noise out so the voice sounds clean.",
+    "purpose_function": "Gives news readers an isolated, quiet space so recorded or live voice reports sound clear and free of background noise.",
+    "practical_application": "A reporter or anchor uses the booth to voice bulletins and inserts, cueing off the control room and monitoring their own level in headphones.",
+    "category": "Broadcast Facilities",
+    "related_terms": [
+     "News insert",
+     "On-air studio",
+     "Master control room",
+     "Off-air monitor",
+     "Manual assist mode"
+    ],
+    "common_mistakes": [
+     "Working too close to the mic without a pop filter, causing plosives and distortion",
+     "Ignoring room noise such as HVAC that the treatment does not fully block",
+     "Setting the level too hot and clipping the interface"
+    ],
+    "scenario_contexts": [
+     "Voicing an hourly radio news update",
+     "Recording a news insert to drop into a later bulletin",
+     "Doing a live two-way with the main studio from the booth"
+    ]
+   },
+   "sources": [
+    "Alten, Audio in Media",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3ddc78b8-bfd6-4bdc-8e3b-8b4dbfff906c",
+   "term": "News insert",
+   "fields": {
+    "definition": "A pre-recorded or remotely originated news segment, such as a reporter's package, actuality, or bulletin, played into a live program or newscast at a scheduled point in the running order.",
+    "plain_english": "It is a ready-made news clip dropped into a show. The clip, like a reporter's report, plays at a set spot in the running order.",
+    "purpose_function": "Lets stations add prepared or field-sourced news content into live programming without interrupting the studio flow.",
+    "practical_application": "An operator or presenter fires the insert on cue from the playout system or console, then returns to the live studio.",
+    "category": "Broadcast Production",
+    "related_terms": [
+     "News booth",
+     "On-air studio",
+     "Manual assist mode",
+     "Master control room",
+     "Off-air monitor"
+    ],
+    "common_mistakes": [
+     "Firing the insert at the wrong time or over live speech",
+     "Not checking the insert's level and loudness against the program",
+     "Forgetting to update the running order so the insert is skipped or doubled"
+    ],
+    "scenario_contexts": [
+     "Playing a reporter's package during the evening newscast",
+     "Dropping a recorded news bulletin between automated music tracks",
+     "Rolling an actuality clip during a live interview"
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook",
+    "Alten, Audio in Media"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "66e59ba4-05fd-4d3d-a170-c58131fc7cfd",
+   "term": "Off-air monitor",
+   "fields": {
+    "definition": "A monitoring device or feed that receives and demodulates the station's actual transmitted (off-air) signal, letting operators confirm what is genuinely being broadcast rather than only the console or pre-transmission output; used for confidence and compliance checking.",
+    "plain_english": "It is a receiver that listens to what the station is really putting out on air. It lets staff check the true broadcast, not just the signal before it leaves the building.",
+    "purpose_function": "Confirms the transmitted signal is present and correct, catching faults that occur after the console but before or at the transmitter.",
+    "practical_application": "An operator checks the off-air monitor to verify audio is actually going out, comparing it against the studio feed for delay, dropout, or quality problems.",
+    "category": "Broadcast Monitoring",
+    "related_terms": [
+     "Master control room",
+     "On-air studio",
+     "News insert",
+     "Live-stream audio mix",
+     "Manual assist mode"
+    ],
+    "common_mistakes": [
+     "Trusting only the console meter and missing a fault that appears after transmission",
+     "Confusing the delayed off-air return with the live studio feed while talking on air",
+     "Not accounting for the transmission delay when comparing feeds"
+    ],
+    "scenario_contexts": [
+     "Verifying the transmitter is passing audio during a live show",
+     "Catching a silent transmitter while the console still shows signal",
+     "Comparing off-air quality after a processing or antenna change"
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5f68c421-408f-4024-b5fa-64791ee9a673",
+   "term": "On-air studio",
+   "fields": {
+    "definition": "The broadcast studio currently originating live programming and feeding the air chain, equipped with the on-air console, microphones, playout, and monitoring from which presenters host and control the live output.",
+    "plain_english": "It is the studio that is live on air right now. The host sits here and controls the show that listeners or viewers are getting.",
+    "purpose_function": "Serves as the origination point for live programming, giving the presenter the console and tools to control what goes to air.",
+    "practical_application": "A presenter or board operator runs the show from here, opening mics, playing elements, and segueing while monitoring the output.",
+    "category": "Broadcast Facilities",
+    "related_terms": [
+     "Master control room",
+     "News booth",
+     "Off-air monitor",
+     "Manual assist mode",
+     "News insert"
+    ],
+    "common_mistakes": [
+     "Leaving a mic open when it should be closed, putting unwanted audio on air",
+     "Not confirming this studio is actually the one switched to air before speaking",
+     "UNSAFE: Ignoring high headphone or monitor levels that risk hearing damage over long shifts"
+    ],
+    "scenario_contexts": [
+     "Hosting a live morning radio show",
+     "Anchoring a live TV news segment",
+     "Switching air origination from one studio to another between programs"
+    ]
+   },
+   "sources": [
+    "Alten, Audio in Media",
+    "NAB Engineering Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

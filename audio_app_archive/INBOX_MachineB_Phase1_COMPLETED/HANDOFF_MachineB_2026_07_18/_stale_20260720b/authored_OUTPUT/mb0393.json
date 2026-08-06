@@ -1,0 +1,114 @@
+{
+  "batch": 393,
+  "topic": "Themed Entertainment / Haunt Audio",
+  "authored": [
+    {
+      "id": "5dc2dece-28f1-4afe-906f-d8b7bc60a724",
+      "term": "Misdirection Audio",
+      "fields": {
+        "definition": "A sound cue or source deliberately timed, placed, or localized in a themed or haunted attraction to draw guests' attention toward one location—or away from another—so a scare, reveal, or effect can be sprung where they are not looking. It applies the theatrical principle of misdirection to the audio channel, exploiting sound localization to steer the guest's focus.",
+        "plain_english": "A sound used to pull your eyes and ears one way, so a scare can hit from another. It works like a magician who gets you to watch one hand while the trick happens in the other.",
+        "purpose_function": "It exists to control where guests look and listen so a scare, reveal, or effect can be sprung from an unexpected direction, making the payoff land harder. Steering attention with sound also helps guide groups along the intended path through a walkthrough.",
+        "practical_application": "A technician aims or triggers a localized sound—via a placed loudspeaker or a show-control cue—to pull a group's focus one way, then fires the real scare or gag from the opposite side a beat later.",
+        "category": "Scare Technique",
+        "related_terms": [
+          "Decoy Sound",
+          "Jump-Scare Audio",
+          "Ambient-to-Scare Contrast",
+          "Distant Scream",
+          "Sound Localization",
+          "Show Control"
+        ],
+        "common_mistakes": [
+          "Making the misdirection cue so loud or obvious that guests realize they are being steered, which kills the surprise.",
+          "Placing the decoy sound and the real scare on the same side, so attention is never actually pulled away.",
+          "Ignoring the timing gap between the misdirection cue and the payoff, so the two events overlap and neither reads clearly."
+        ],
+        "scenario_contexts": [
+          "A growl triggers from a speaker on the left of a haunted hallway so the group turns that way, and an actor emerges from an opening on the right.",
+          "In a dark maze, a distant scream pulls guests toward one doorway while a pneumatic prop fires behind them.",
+          "A show-control cue plays a phone ringing in an empty room to draw a small group inside before a startle effect activates."
+        ]
+      },
+      "sources": [
+        "John Huntington, Show Networks and Control Systems (Zircon Designs Press)",
+        "Bob McCarthy, Sound Systems: Design and Optimization (Focal Press)",
+        "Glen Ballou (ed.), Handbook for Sound Engineers (Focal Press)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "909d7e13-04f7-4bff-a232-a8d032166f08",
+      "term": "Preshow Audio",
+      "fields": {
+        "definition": "The audio program presented in the pre-show—the space or segment guests experience immediately before the main attraction—typically combining narration, music, ambience, and any safety or instructional content. It is usually delivered through a fixed, zoned playback system under show control to set the story and pace groups before they enter.",
+        "plain_english": "The sound played in the room or space guests pass through just before the main ride or show. It sets the mood and often tells the story or gives safety notes before they go in.",
+        "purpose_function": "It sets the story, mood, and any safety or instructional information before guests enter the main attraction, and it helps batch and pace groups to match the ride or show's load cycle. This primes guests emotionally so the main experience lands as intended.",
+        "practical_application": "A technician loads and triggers the preshow program through show control, balancing narration against music and ambience so the story and safety cues are clearly heard throughout the space.",
+        "category": "Attraction Zone Audio",
+        "related_terms": [
+          "Queue-Line Audio",
+          "Backstory Audio",
+          "Show Control",
+          "Distributed Sound System",
+          "Character Voice Track",
+          "Ambient Audio"
+        ],
+        "common_mistakes": [
+          "Treating the preshow as background filler instead of pacing it to batch and hold guests for the main attraction's load cycle.",
+          "Mixing narration so low it is buried under music and ambience, so guests miss the story or safety information.",
+          "UNSAFE: running preshow playback at high continuous levels in a small enclosed room, exposing guests and nearby staff to noise doses that can exceed OSHA permissible exposure limits over a shift."
+        ],
+        "scenario_contexts": [
+          "A themed briefing room plays recorded character narration and a safety spiel while the previous group finishes the ride.",
+          "A pre-show video's synchronized audio sets up the backstory before doors open into the main attraction.",
+          "Atmospheric sound and low music hold and pace a waiting group in an antechamber before they are batched into the show."
+        ]
+      },
+      "sources": [
+        "John Huntington, Show Networks and Control Systems (Zircon Designs Press)",
+        "Bob McCarthy, Sound Systems: Design and Optimization (Focal Press)",
+        "Glen Ballou (ed.), Handbook for Sound Engineers (Focal Press)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "23a6430d-7172-482b-9164-d7c4b11fe9ec",
+      "term": "Queue-Line Audio",
+      "fields": {
+        "definition": "The atmospheric and thematic audio program played in an attraction's queue (waiting line) area, delivered through distributed loudspeakers to theme the wait, build anticipation, and mask ambient crowd and mechanical noise. It is commonly zoned and looped so content stays coherent as guests move along the line.",
+        "plain_english": "The background sound played in the waiting line for a ride or show. It themes the wait, builds excitement, and helps cover the noise of the crowd.",
+        "purpose_function": "It extends the attraction's themed world into the waiting line to build anticipation, mask crowd and mechanical noise, and make the wait feel shorter and part of the story. Zoning the content keeps it fresh as guests move along the queue.",
+        "practical_application": "A technician designs and tunes zoned, looping playback along the queue through distributed loudspeakers, setting levels per section so the theming reads without becoming fatiguing over a long wait.",
+        "category": "Attraction Zone Audio",
+        "related_terms": [
+          "Preshow Audio",
+          "Ambient Audio",
+          "Backstory Audio",
+          "Distributed Sound System",
+          "Show Control",
+          "Background Music"
+        ],
+        "common_mistakes": [
+          "Looping a short music or ambience clip so tightly that the repetition becomes obvious and annoying over a long wait.",
+          "Setting one level for the whole queue instead of zoning it, so some sections are too loud and others are drowned out by crowd noise.",
+          "UNSAFE: mounting queue-line loudspeakers overhead without rated hardware and a secondary safety attachment, risking a fall onto guests below."
+        ],
+        "scenario_contexts": [
+          "Themed ambience and music loop through distributed speakers along a switchback queue to theme the wait.",
+          "A haunt's outdoor line uses low, ominous soundscapes to build dread before guests reach the entrance.",
+          "Zoned queue audio shifts content as guests move from the outer line toward the loading area."
+        ]
+      },
+      "sources": [
+        "John Huntington, Show Networks and Control Systems (Zircon Designs Press)",
+        "Bob McCarthy, Sound Systems: Design and Optimization (Focal Press)",
+        "Glen Ballou (ed.), Handbook for Sound Engineers (Focal Press)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    }
+  ]
+}

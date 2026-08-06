@@ -1,0 +1,321 @@
+{
+ "batch": 137,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "53b07864-b178-4180-a9fe-b05a08169320",
+   "term": "Send automation pass",
+   "fields": {
+    "definition": "A single recorded run of automation data written to a channel's send control, capturing changes in send level (and sometimes send pan or mute) over time as the mix plays. It is made in a write, touch, or latch automation mode and can be replayed or overwritten on later passes.",
+    "plain_english": "It is one recorded take of moving a send knob while the song plays. The DAW remembers the move and plays it back the same way each time. It is like filming yourself turning a dial so it repeats exactly.",
+    "purpose_function": "It lets the amount of signal feeding an effect or aux bus change automatically at set points in a song, so the engineer does not have to ride the send by hand every playback. This keeps effect levels consistent and repeatable.",
+    "practical_application": "An engineer arms the send for automation, plays the section, and moves the send control, for example pushing more vocal into the reverb only on the last chorus, then refines the recorded moves on later passes.",
+    "category": "Automation",
+    "related_terms": [
+     "Aux send",
+     "Automation mode",
+     "Send level",
+     "Write automation",
+     "Touch automation",
+     "Volume automation"
+    ],
+    "common_mistakes": [
+     "Leaving the send in a write mode after the pass, which erases the good moves on the next playback.",
+     "Forgetting that a send is set pre-fader (post-fader is the usual default), so automating the channel fader does not change the effect level as it would with a post-fader send.",
+     "Writing jumpy, exaggerated moves that sound unnatural instead of small, smooth changes."
+    ],
+    "scenario_contexts": [
+     "Adding an extra delay throw on the last word of a vocal phrase before the chorus.",
+     "Pulling a guitar out of a heavy reverb during a busy section so the mix stays clear.",
+     "Automating a drum bus send to a parallel compressor to lift only the choruses."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (Automation)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "775f8d36-d575-444e-be61-157515f50c20",
+   "term": "Send View",
+   "fields": {
+    "definition": "The area of a DAW mixer or channel strip that displays a track's send controls, its send assignments, levels, and pre/post settings, so signal can be routed to aux buses, return tracks, or effects. In Pro Tools it is the Sends view of the Mix and Edit windows, shown as compact assignments or as expanded individual controls.",
+    "plain_english": "It is the part of the mixer that shows where each track sends a copy of its sound and how much. It is like a set of extra outputs on a channel that feed effects or headphone mixes.",
+    "purpose_function": "It gives one place to see and set how tracks feed shared effects and auxiliary mixes, which keeps routing organized and easy to check. Without it, send assignments would be hidden and hard to manage.",
+    "practical_application": "A technician opens the send view to assign several vocal tracks to a reverb bus, then sets each send level to control how wet each voice sounds.",
+    "category": "DAW Interface",
+    "related_terms": [
+     "Aux send",
+     "Return track",
+     "Bus",
+     "Send level",
+     "Pre-fader send",
+     "Post-fader send"
+    ],
+    "common_mistakes": [
+     "Confusing a send with an output, so the track's signal goes to the wrong destination.",
+     "Setting a send pre-fader by accident, so the effect stays loud even when the fader is pulled down.",
+     "Turning up a send with no return or aux set to receive it, so nothing is heard."
+    ],
+    "scenario_contexts": [
+     "Building a shared reverb by sending several tracks to one aux bus.",
+     "Creating a separate headphone monitor mix using pre-fader sends.",
+     "Checking why a track sounds dry by opening the send view to confirm its assignment."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (Mix Window Views / Sends)",
+    "Ableton Live Manual (Mixing: Sends and Returns)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "334f0a53-9697-432b-9357-fe0c035e34ee",
+   "term": "Sequence chunk",
+   "fields": {
+    "definition": "In MOTU Digital Performer, a chunk that holds one sequence, a self-contained arrangement of MIDI and audio tracks with its own timeline. It is one of the chunk types, alongside songs and V-Racks, that can be stored and managed together in a single project's Chunks window.",
+    "plain_english": "In the program Digital Performer, it is one saved song section that has its own tracks and timeline. Think of it as one document you can keep next to others in the same project file.",
+    "purpose_function": "It lets a composer keep many separate arrangements, such as film cues, song versions, or set-list items, inside one project and switch between them quickly. This organizes related material without opening many files.",
+    "practical_application": "A film composer creates a sequence chunk for each cue in a project, then jumps between them from the Chunks window while scoring to picture.",
+    "category": "DAW Workflow",
+    "related_terms": [
+     "Chunk",
+     "Sequence window",
+     "V-Rack",
+     "Song chunk",
+     "Track",
+     "Project file"
+    ],
+    "common_mistakes": [
+     "Thinking each sequence chunk must be a separate file, when they all live in one project.",
+     "Editing the wrong chunk because the active sequence was not selected first.",
+     "Losing shared instruments by not placing them in a V-Rack that all chunks can use."
+    ],
+    "scenario_contexts": [
+     "Scoring a film with one sequence chunk per cue.",
+     "Keeping alternate arrangements of the same song as separate chunks for comparison.",
+     "Building a live set list where each song is its own sequence chunk."
+    ]
+   },
+   "sources": [
+    "MOTU Digital Performer User Guide (Chunks)",
+    "MOTU Digital Performer product documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e5c38a02-f7d6-4803-ab32-31b8d6fffbb2",
+   "term": "Sequence window",
+   "fields": {
+    "definition": "In a MIDI and audio sequencer such as Digital Performer, the main editing window that displays the tracks and recorded MIDI and audio data of the active sequence along a horizontal time ruler. It is where tracks are arranged, recorded, and edited across the sequence's timeline.",
+    "plain_english": "It is the main window that shows all the tracks of a song laid out over time, left to right. It works like a timeline where you record and rearrange the parts.",
+    "purpose_function": "It provides the overview of a whole arrangement so an engineer can record, move, copy, and trim parts in time. It is the central workspace for building a sequence.",
+    "practical_application": "An engineer records a MIDI part, then opens the sequence window to drag its region into place and line it up with the other tracks.",
+    "category": "DAW Interface",
+    "related_terms": [
+     "Sequence chunk",
+     "Track",
+     "Timeline",
+     "Arrangement",
+     "Edit window",
+     "Transport"
+    ],
+    "common_mistakes": [
+     "Confusing the sequence timeline window with a single-track editor and looking for detailed note edits in the wrong place.",
+     "Editing while the wrong sequence is active, so changes land in another arrangement.",
+     "Missing that regions snap to a grid, so parts will not line up freely."
+    ],
+    "scenario_contexts": [
+     "Arranging verses and choruses by dragging track regions along the timeline.",
+     "Recording several tracks and reviewing them together in one view.",
+     "Trimming and looping a section before bouncing the mix."
+    ]
+   },
+   "sources": [
+    "MOTU Digital Performer User Guide",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "99779d07-016b-45a0-bd24-6a2595302d2a",
+   "term": "Session Setup window",
+   "fields": {
+    "definition": "In Avid Pro Tools, the window that displays and controls a session's core timing and format settings, including sample rate, bit depth, clock source, sync and timecode settings, and session start time. It is the central place to confirm the digital clock and format before recording or playback.",
+    "plain_english": "In Pro Tools, it is the window where you check and set the session's basic settings, like sample rate and where the clock comes from. It is like the settings page you look at before you start recording.",
+    "purpose_function": "It gathers the format and sync settings that must be correct for clean recording and for locking to other gear, so faults like clicks or drift can be avoided. It gives one clear place to verify the clock source.",
+    "practical_application": "Before tracking, a technician opens the Session Setup window to confirm the sample rate matches the project and to set the clock source to the interface when syncing to other devices.",
+    "category": "DAW Interface",
+    "related_terms": [
+     "Sample rate",
+     "Bit depth",
+     "Clock source",
+     "Word clock",
+     "Timecode",
+     "Session template"
+    ],
+    "common_mistakes": [
+     "Leaving the clock source on Internal when locked to an external device, causing clicks or drift.",
+     "Setting a sample rate that does not match the recorded files, so audio plays back at the wrong pitch or speed.",
+     "Ignoring the session start time, which throws off timecode alignment with video."
+    ],
+    "scenario_contexts": [
+     "Confirming 48 kHz and an external clock before a session with an outboard converter.",
+     "Setting the session start time to match a picture edit for post work.",
+     "Troubleshooting digital clicks by checking the clock source setting."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (Session Setup)",
+    "Sound on Sound (Pro Tools coverage)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "369d3afd-9928-4f8c-b24d-14113f4c42a5",
+   "term": "Session template",
+   "fields": {
+    "definition": "A saved starting-point session that already contains a chosen set of tracks, routing, buses, plugins, and settings, used to create new projects without building them from scratch. Opening it produces a fresh session preloaded with that setup.",
+    "plain_english": "It is a ready-made session you save and reuse so every new project starts with your usual tracks and setup already in place. It is like a document template that saves you repeating the same steps.",
+    "purpose_function": "It saves setup time and keeps sessions consistent, so recurring work like a band tracking date or a podcast starts the same way every time. This reduces errors and speeds up the start of a project.",
+    "practical_application": "A studio tech builds a template with mic inputs, a drum bus, headphone sends, and a reverb aux already set, then starts each new tracking session from it.",
+    "category": "DAW Workflow",
+    "related_terms": [
+     "Session Setup window",
+     "Bus",
+     "Aux send",
+     "Signal routing",
+     "Track",
+     "Default template"
+    ],
+    "common_mistakes": [
+     "Saving audio or takes into the template, so old material carries into new projects.",
+     "Not updating the template when workflow changes, so it recreates outdated routing.",
+     "Forgetting to save as a new session, so work overwrites the template itself."
+    ],
+    "scenario_contexts": [
+     "Starting every podcast episode from a two-mic template with processing ready.",
+     "Loading a mixing template with buses and reference meters set up.",
+     "Setting up a live-band tracking template with inputs and headphone mixes."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (Templates)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0ee0816d-afe8-47e5-aa18-fc8e9bb5a605",
+   "term": "Session View",
+   "fields": {
+    "definition": "In Ableton Live, the non-linear workspace where audio and MIDI clips sit in a grid of tracks (columns) and scenes (rows) and can be launched in any order, rather than along a fixed timeline. It is used for improvising, performing, and building ideas, in contrast to the timeline-based Arrangement View.",
+    "plain_english": "In Ableton Live, it is a grid where you trigger short musical clips in any order instead of following one fixed timeline. It works like a set of buttons you press live to bring parts in and out.",
+    "purpose_function": "It supports live performance and free experimentation by letting clips be started and combined on the fly, which a straight timeline cannot do easily. This makes it central to improvising and jamming.",
+    "practical_application": "A performer loads loops into Session View, launches scenes to move through a song, and records the chosen order into the Arrangement View afterward.",
+    "category": "DAW Interface",
+    "related_terms": [
+     "Arrangement View",
+     "Clip",
+     "Scene",
+     "Return track",
+     "Send level",
+     "Clip launch"
+    ],
+    "common_mistakes": [
+     "Expecting clips to play in a fixed order, when Session View is random-access.",
+     "Forgetting that only one clip per track plays at a time, so launching a new clip stops the old one.",
+     "Not capturing a performance into Arrangement View, then losing the played order."
+    ],
+    "scenario_contexts": [
+     "Performing a live set by launching scenes in a chosen order.",
+     "Jamming with loops to test arrangement ideas before committing them.",
+     "Triggering backing parts on stage from a controller."
+    ]
+   },
+   "sources": [
+    "Ableton Live Manual (Session View)",
+    "Ableton Live Manual (Launching Clips)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8df98717-5162-4e2d-8c47-1b54ed72ad4b",
+   "term": "Set the vocal on top",
+   "fields": {
+    "definition": "A mixing goal of balancing the lead vocal so it sits clearly in front of and above the rest of the mix in perceived level and clarity, staying intelligible and present without being buried by the instruments. It is reached through level balance, EQ, compression, and effects that keep the voice forward.",
+    "plain_english": "It means making the main singing clearly the loudest, front-most thing you hear over the music. It is like making sure a speaker's voice stands out over background chatter.",
+    "purpose_function": "It ensures the listener follows the lyric and melody, which are usually the focus of a song, so the message and hook come across. A vocal that is too low leaves the song feeling unfocused.",
+    "practical_application": "An engineer rides or compresses the vocal, carves space with EQ, and sets its level so it stays clearly audible over the loudest parts of the mix.",
+    "category": "Mixing Technique",
+    "related_terms": [
+     "Lead vocal",
+     "Level balance",
+     "Compression",
+     "De-essing",
+     "Equalization",
+     "Vocal ride"
+    ],
+    "common_mistakes": [
+     "Turning the vocal up so far it disconnects from the track and sounds pasted on.",
+     "Fixing masking with volume alone instead of also using EQ to make room.",
+     "Setting the level only in a quiet section, so the vocal disappears in the loud choruses."
+    ],
+    "scenario_contexts": [
+     "Balancing a pop mix where the lead vocal must stay clearly out front.",
+     "Using compression to keep a dynamic vocal steady above a dense band.",
+     "Checking the vocal level on small speakers to be sure it still cuts through."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c201daf7-3df3-4c04-aa7d-b2568cb8a0a3",
+   "term": "Show level",
+   "fields": {
+    "definition": "The overall operating sound level at which a live performance is actually run for the audience, typically at front of house, as distinct from lower soundcheck or rehearsal levels. It reflects the mix's real loudness during the show and is bounded by venue limits and hearing-safety exposure guidelines.",
+    "plain_english": "It is how loud the mix is actually run during the real show, which is usually louder than at soundcheck. Bands and crowds push the energy up, so the level rises once the show starts.",
+    "purpose_function": "Knowing show level lets an engineer set gain structure, headroom, and system tuning for the real performance rather than the quieter soundcheck, so the mix holds together when it counts. It also guides safe, legal loudness for the audience.",
+    "practical_application": "An engineer leaves headroom at soundcheck because levels will climb at show level, then manages the mix and total loudness to stay within the venue's limits during the performance.",
+    "category": "Live Sound Levels",
+    "related_terms": [
+     "Gain structure",
+     "Headroom",
+     "Sound pressure level",
+     "Soundcheck",
+     "Front of house",
+     "System tuning"
+    ],
+    "common_mistakes": [
+     "Mixing tight at soundcheck with no headroom, then clipping when the show gets louder.",
+     "Assuming crowd noise and stage volume stay the same from soundcheck to show.",
+     "UNSAFE: Running show level so loud it exceeds safe exposure limits; follow OSHA occupational noise-exposure guidance, set SPL limits, and provide hearing protection to protect the audience and crew."
+    ],
+    "scenario_contexts": [
+     "Setting the PA and leaving headroom at soundcheck for a louder show level.",
+     "Managing front-of-house loudness to a venue's SPL limit during the performance.",
+     "Comparing quiet soundcheck balances against how the mix holds up at show level."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "OSHA 29 CFR 1910.95 (Occupational Noise Exposure)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

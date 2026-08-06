@@ -1,0 +1,223 @@
+{
+ "expert": "Learning/Cognition",
+ "group": 40,
+ "reviews": [
+  {
+   "id": "0e2c3eef-665c-46f5-a7c1-8a777e90a2f2",
+   "term": "Groove-depth control",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "plain_english",
+     "severity": "Low",
+     "issue": "The analogy for a vertical-depth concept ('going shallower to save room... like writing smaller where the page is nearly full') maps naturally onto horizontal packing, which is exactly what pitch/spacing does. Since this entry's own common_mistakes warns learners NOT to confuse depth (vertical) with pitch (horizontal), the analogy quietly reinforces the misconception it later tries to correct.",
+     "suggestion": "Recast the analogy around vertical cut effort/space, e.g. 'like carving a shallower channel where the sound is quiet so less material is removed,' and let the 'more music per side' benefit be attributed to depth working WITH pitch, rather than to a horizontal-packing image."
+    }
+   ]
+  },
+  {
+   "id": "716bca86-08c2-4788-87d1-a4c55098bdd6",
+   "term": "Groove-pitch control",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3f0564b9-0c66-4209-a415-26be3daf1b18",
+   "term": "Groove-spacing computer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e1fc5d81-5fb6-4211-a03b-e501a93de3f8",
+   "term": "Harmonic music stem",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "69b8620c-33ad-45f1-aaf9-c52555c734ff",
+   "term": "Headphone re-render",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a452bcbe-1114-4184-a03d-255c134cb382",
+   "term": "Hidden track",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7bc3e29a-961c-4453-a976-0050b1960ebf",
+   "term": "High-bias tape",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "00e861d0-1f52-46b3-ae1d-200f790480ff",
+   "term": "High-frequency music stem",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "594e1301-038d-4671-8f05-fedd4d8b7a0b",
+   "term": "High-output tape",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0140e6c1-72aa-45d0-a1e4-7915ea4eec7d",
+   "term": "HOFA IQ-Series",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "efea973e-24ca-4771-9333-a3894a47d898",
+   "term": "Immersive archive master",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8db77e0e-bbef-41ea-9cb4-8f35d0e1b650",
+   "term": "Immersive delivery quality control",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d97135c3-664f-4eee-a20c-e5a7bca2ecaf",
+   "term": "Immersive distribution master",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ad543a93-c4c3-43c5-9b1c-09dc6759b692",
+   "term": "Immersive master",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c7623b9d-0eb6-4137-afcb-ae4b0723e953",
+   "term": "Immersive mix package",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2f46027a-33a2-4b82-ace4-b6b8fa282d10",
+   "term": "Immersive stem export",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1a98f5bb-0fc4-4c17-bc99-55b63834f11c",
+   "term": "Immersive streaming master",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d67997b5-3468-4984-8ff0-1ed275209fcf",
+   "term": "Index one",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "19c79b98-d21f-43f6-84ab-e8c52772b587",
+   "term": "Index zero",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "22de5431-a312-4ad5-ad07-1ce1eeaa57ee",
+   "term": "Insight Metering",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6e060830-36e0-453b-bb44-91312f94cfab",
+   "term": "Instrumentation tape",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "45cf5ed9-8beb-44dd-be22-9e69b40d760e",
+   "term": "International music stem",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "07d62ed3-e876-4cfa-b47f-e3cabae3c5e5",
+   "term": "iZotope Ozone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0d63fa4b-79c5-43b6-b84f-21d03d917f3c",
+   "term": "Lacquer mastering session",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d2e0f213-ee31-49df-84d9-bfa421b69c51",
+   "term": "Lateral modulation control",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "58e62875-aa57-4849-b343-2b91f3727ca5",
+   "term": "Lead-in groove",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "877fdae8-0229-481e-aa1e-172e83846215",
+   "term": "Lead-out groove",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "791c96ae-d012-4319-9cb7-965e61367138",
+   "term": "Locked groove",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0be65465-c76b-4b2a-a84d-3923e28be008",
+   "term": "Long-term media stability",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c95383f0-9e92-41b9-9f2d-545fab156a79",
+   "term": "Low-end music stem",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "82f12a72-afc5-4d91-adfb-77f003abb915",
+   "term": "Low-noise tape",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "352779ce-3a07-42c7-94d5-6eaced6c5363",
+   "term": "Low-output tape",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9707cb45-a1d9-4f36-92dd-664e5f442fac",
+   "term": "Manufacturing approval",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3dc4970e-6fb7-414a-be36-25a02ac19f36",
+   "term": "Manufacturing master",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8a256640-b397-436f-9f08-13b70468b5a2",
+   "term": "Master approval",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

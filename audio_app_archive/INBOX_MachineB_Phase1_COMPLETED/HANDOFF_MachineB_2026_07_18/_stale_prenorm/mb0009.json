@@ -1,0 +1,181 @@
+{
+ "batch": 9,
+ "topic": "Instrument Recording — Strings & Guitar",
+ "authored": [
+  {
+   "id": "e23ad24b-e407-4a1b-b4db-57d29d167cc6",
+   "term": "Patch level variation",
+   "fields": {},
+   "sources": [
+    "MIDI Association, MIDI 1.0 Detailed Specification (Program/Bank Change, CC 7 Volume)",
+    "Yamaha/Roland synthesizer technical documentation (program/part level parameters)"
+   ],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "definition, plain_english, purpose_function, practical_application, category, related_terms, common_mistakes, scenario_contexts all left blank: 'Patch level variation' is not an established, single-meaning term in the MIDI 1.0 specification or in recognised synthesis references. It reads ambiguously (differences in output level BETWEEN patches, versus level change WITHIN a patch) and could not be confirmed as a defined term against >=2 acceptable sources. Flagged for review rather than authored with a guessed meaning."
+   ]
+  },
+  {
+   "id": "5b7077e3-4def-4e14-903e-9882926b33de",
+   "term": "Patch-change transient",
+   "fields": {
+    "definition": "The momentary audio artifact — a click, gap, or abrupt jump in level or timbre — that can occur at the instant a synthesizer switches to a new patch, typically triggered by a MIDI Program (or Bank) Change, when currently held notes are cut off or the incoming patch's level and envelope state differ from the outgoing one.",
+    "plain_english": "The little glitch, pop, or sudden change in loudness you sometimes hear right when a synth jumps to a new sound.",
+    "purpose_function": "Recognising this transient matters because it can intrude on a live performance or a recording; understanding what causes it guides players and sound designers in switching sounds without an audible glitch.",
+    "practical_application": "To avoid patch-change transients on stage, a keyboardist changes programs during rests, uses a synth's seamless/gapless sound-transition feature, or keeps a sustaining part on a separate layer while switching the other.",
+    "category": "MIDI/synthesis",
+    "related_terms": ["Program Change", "Patch", "MIDI", "Transient", "Envelope"],
+    "common_mistakes": ["Changing patches while notes are still held, which cuts them off audibly in the middle of a phrase", "Assuming the click is a hardware fault rather than a normal consequence of the switch and of level/envelope differences between patches", "Not enabling a synth's seamless or gapless patch-change mode when the instrument provides one"],
+    "scenario_contexts": ["A live keyboard player switching between song sections hears the held chord cut off at the program change", "Building a set list so that program changes land on rests rather than under sustained notes", "Editing a MIDI mock-up where a mid-note program change leaves an audible glitch in the render"]
+   },
+   "sources": [
+    "MIDI Association, MIDI 1.0 Detailed Specification (Program Change, Bank Select)",
+    "Roland/Korg synthesizer technical documentation (seamless/gapless sound-transition and sound-hold features)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "94e9a8cc-e174-42ea-867a-3d40ef6f0e0d",
+   "term": "Pedal division",
+   "fields": {
+    "definition": "In a pipe (or electronic) organ, the division of the instrument played from the pedalboard with the feet, having its own set of stops and ranks and typically supplying the low bass foundation of the instrument.",
+    "plain_english": "The part of an organ the player controls with the feet on a large footboard of keys; it usually plays the deep bass notes and has its own set of pipe sounds.",
+    "purpose_function": "It exists so the organist can play an independent bass line with the feet while the hands play the manuals, and it houses the large low-pitched stops that give the organ its deep foundation.",
+    "practical_application": "When recording an organ, the engineer chooses low-frequency-capable microphones and monitoring to capture the pedal division's very low fundamentals (a 16' or 32' stop can extend well below 32 Hz) while managing room modes and structural rumble.",
+    "category": "Pipe organ",
+    "related_terms": ["Manual", "Pipe rank", "Stop", "Pedalboard", "Pipe speech transient"],
+    "common_mistakes": ["Confusing the pedal division (played by the feet) with a manual (played by the hands)", "Assuming the pedal division always sounds the lowest octave, when its pitch depends on which stops (8', 16', 32') are drawn", "Specifying microphones or monitors that cannot reproduce the 16' and 32' pedal fundamentals, so the true low end is never heard"],
+    "scenario_contexts": ["Recording a large pipe organ and capturing the pedal division's sub-bass in a reverberant space", "Reinforcing an organ recital where a 32' pedal stop challenges the PA's low-frequency headroom", "Reviewing an organ mix to confirm the pedal line is present and not lost to room rumble or filtering"]
+   },
+   "sources": [
+    "Audsley, The Art of Organ Building",
+    "Grove Dictionary of Music and Musicians (organ; divisions and pedal organ)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "98de405d-24c5-4e3a-ba59-ba755b3c90cf",
+   "term": "Pedal harp",
+   "fields": {
+    "definition": "A concert harp fitted with seven pedals — one for each note name — that, through a double-action mechanism, mechanically shorten the sounding strings to raise each pitch class by a semitone (flat, natural, or sharp), enabling the diatonically strung instrument to play in all keys.",
+    "plain_english": "The large orchestral harp with seven foot pedals; each pedal retunes all the strings of one note (all the C's, all the D's, and so on) up or down a semitone so the player can play in any key.",
+    "purpose_function": "The pedal mechanism exists to give a diatonically strung harp full chromatic capability without adding strings, letting one instrument produce the sharps and flats of every key.",
+    "practical_application": "When recording a pedal harp, engineers place microphones to balance the bright attack near the soundboard against the body's resonance, and must account for audible mechanical pedal and action noise during quiet passages.",
+    "category": "String instrument",
+    "related_terms": ["Concert harp", "Glissando", "Pizzicato", "Soundboard", "Enharmonic"],
+    "common_mistakes": ["Confusing the pedal (concert) harp with the lever (folk/Celtic) harp, which changes pitch with hand-operated levers rather than pedals", "Thinking each pedal changes only one string, when a pedal changes every string of that note name across all octaves", "Failing to plan for mechanical pedal-mechanism noise, which close mics readily capture in quiet passages"],
+    "scenario_contexts": ["Miking a solo concert harp for a classical recording", "Placing the harp in an orchestral session and managing bleed from adjacent sections", "Troubleshooting audible pedal or action clicks captured during a quiet studio take"]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Adler, The Study of Orchestration",
+    "Grove Dictionary of Music and Musicians (harp)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "88574ae2-8786-467f-8c61-0388b7b2c698",
+   "term": "Pedal polarity",
+   "fields": {
+    "definition": "The electrical switching convention — normally-open or normally-closed — by which a sustain or footswitch pedal signals its pressed and released states to a keyboard or module, and the matching 'pedal polarity' setting on the instrument that ensures the pedal is interpreted the correct way round.",
+    "plain_english": "Whether a foot pedal's switch is 'open' or 'closed' when you step on it. If the keyboard's polarity setting does not match the pedal, sustain works backwards — notes hold when your foot is off and stop when you press.",
+    "purpose_function": "The setting exists because sustain pedals from different makers use opposite switching conventions; matching the polarity lets any pedal operate correctly instead of inverted.",
+    "practical_application": "When a newly connected sustain pedal behaves backwards, a technician sets the keyboard's pedal-polarity parameter, or connects the pedal before power-up so the instrument's auto-detect reads the correct rest state.",
+    "category": "MIDI control",
+    "related_terms": ["Sustain pedal", "Damper pedal", "MIDI CC 64", "Footswitch", "Continuous controller"],
+    "common_mistakes": ["Assuming a backwards-working pedal is faulty, when it is actually a polarity mismatch between pedal and keyboard", "Hot-plugging the pedal after power-on so the instrument's auto-detect latches the wrong rest state — connect the pedal before switching on when relying on auto-detect", "Confusing pedal polarity (a switch convention) with audio signal polarity or phase in cable wiring"],
+    "scenario_contexts": ["A guest keyboardist's third-party sustain pedal sustains inverted on the house synth", "Configuring a stage keyboard rig so every pedal behaves consistently before a show", "Setting the polarity parameter on a digital piano after switching to a different-brand pedal"]
+   },
+   "sources": [
+    "Roland/Yamaha keyboard owner's and technical manuals (pedal/damper polarity setting)",
+    "MIDI Association, MIDI 1.0 Detailed Specification (CC 64 Damper/Sustain)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "028634d8-843c-4413-8e4a-8ce38dd81872",
+   "term": "Piccolo brightness",
+   "fields": {
+    "definition": "The bright, brilliant, penetrating timbral quality characteristic of the piccolo — the small transverse flute pitched an octave above the concert flute — arising from its high playing register and the strong high-frequency content of its spectrum.",
+    "plain_english": "The piccolo's very high, whistle-like, cutting tone that easily rides on top of a full band or orchestra.",
+    "purpose_function": "This brightness lets the piccolo project above large ensembles and add sparkle to the top of the texture, which is why it is used to reinforce and brighten the highest melodic lines.",
+    "practical_application": "When recording or mixing piccolo, engineers manage its brightness and high output level with suitable mic placement (backed off and slightly off-axis from the embouchure) and gentle high-frequency control to avoid harsh, sibilant peaks.",
+    "category": "Woodwind timbre",
+    "related_terms": ["Piccolo", "Flute", "Timbre", "Harmonics", "Register"],
+    "common_mistakes": ["Placing a mic directly in front of the embouchure hole, capturing excessive breath noise and a harsh, over-bright tone", "Boosting high frequencies on an already-bright piccolo and pushing it into harshness", "UNSAFE: monitoring a close-mic'd piccolo at high levels without hearing protection — its high-SPL output concentrated in the ear-sensitive 2–4 kHz region can contribute to hearing damage over long sessions (OSHA 29 CFR 1910.95)"],
+    "scenario_contexts": ["Recording piccolo doublings in a wind ensemble where it must sit brightly above the flutes", "Taming a harsh piccolo in a film-score mix with de-essing and gentle EQ", "Positioning microphones in an orchestral session to balance piccolo brilliance against the rest of the woodwinds"]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Fletcher & Rossing, The Physics of Musical Instruments (flutes and the piccolo)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "af7dc31d-49e2-4e1a-929f-beff46499a3b",
+   "term": "Pipe rank",
+   "fields": {
+    "definition": "In a pipe organ, a rank is a complete set of pipes of uniform construction and tone colour, arranged one pipe per note across the compass of a keyboard; drawing a stop brings one rank — or, in the case of a mixture, several ranks — into play.",
+    "plain_english": "A rank is one full row of organ pipes that all share the same sound, with a separate pipe for every key; pulling a stop turns a rank on.",
+    "purpose_function": "Ranks organise an organ's pipes into consistent voices so that each stop selects a distinct timbre; combining ranks builds up the instrument's overall tone and volume.",
+    "practical_application": "When recording or documenting an organ, technicians identify ranks by their stop names and pitch length (for example an 8' Principal) to understand the tonal and spatial layout of the pipes being captured.",
+    "category": "Pipe organ",
+    "related_terms": ["Stop", "Manual", "Pedal division", "Mixture", "Pipe speech transient"],
+    "common_mistakes": ["Confusing a rank (a set of pipes) with a stop (the control that brings ranks into play), when one stop can draw more than one rank in a mixture", "Assuming one rank equals one pipe, when a rank has one pipe per note across the whole keyboard", "Misreading pitch designations (8', 4', 2') as pipe counts, when they describe the sounding pitch of the rank"],
+    "scenario_contexts": ["Cataloguing an organ's stop list before a recording session", "Spot-miking individual ranks or divisions on a large instrument", "Discussing with an organ builder which ranks contribute unwanted mechanical or wind noise"]
+   },
+   "sources": [
+    "Audsley, The Art of Organ Building",
+    "Grove Dictionary of Music and Musicians (organ; rank and stop)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bac846cd-e431-435f-b324-fdaa704ea6de",
+   "term": "Pipe speech transient",
+   "fields": {
+    "definition": "The brief, tonally complex onset that occurs as an organ pipe begins to sound ('speaks'), before it settles into steady tone — often including a transient 'chiff' of noise and momentarily unstable harmonics that is characteristic of the pipe's voicing.",
+    "plain_english": "The small burst of sound an organ pipe makes at the very start of a note, before it settles into its steady tone — sometimes heard as a soft 'chiff.'",
+    "purpose_function": "The speech transient is central to how a pipe's onset is heard and recognised; voicers deliberately shape it to give a rank its characteristic attack and clarity.",
+    "practical_application": "When recording an organ, engineers preserve these onset transients with fast, transient-accurate microphones and minimal limiting, since over-compression or slow-settling capture blurs the pipe's articulation.",
+    "category": "Pipe organ",
+    "related_terms": ["Pipe rank", "Transient", "Attack", "Voicing", "Pedal division"],
+    "common_mistakes": ["Treating the speech transient as noise to be removed, when it is an intrinsic and musically important part of a pipe's tone", "Confusing 'speech' (the onset of tone) with the pipe's steady-state sound", "Applying heavy limiting or slow-attack processing that smears the transient and robs the organ of articulation"],
+    "scenario_contexts": ["Choosing microphones and preamps that preserve fast onset transients when recording a tracker organ", "Evaluating a sampled organ library for realistic pipe speech and attack behaviour", "Discussing voicing and regulation of chiff with an organ builder"]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (organ pipes; attack transients)",
+    "Audsley, The Art of Organ Building (speech and voicing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7347d240-868d-4b5f-bb0f-15e6937861f7",
+   "term": "Pizzicato",
+   "fields": {
+    "definition": "A performance technique on bowed string instruments in which the player plucks the strings with a finger (or occasionally the thumb) instead of drawing the bow across them, producing a short, percussive, quickly decaying note.",
+    "plain_english": "Instead of using the bow, the player plucks the strings with a fingertip, like plucking a guitar, giving a short, punchy note that fades fast.",
+    "purpose_function": "It provides a contrasting articulation to bowed (arco) playing, offering a percussive, rhythmic, quickly decaying sound; it is one of the core expressive techniques of the string family.",
+    "practical_application": "When recording strings, an engineer captures the fast attack and short decay of pizzicato with close or spot mics, and avoids the heavy compression that would kill its natural transient and quick decay.",
+    "category": "Playing technique",
+    "related_terms": ["Arco", "Bowing", "Transient", "Spot microphone", "Double bass"],
+    "common_mistakes": ["Confusing pizzicato with staccato — pizzicato means plucking the string, while staccato is a short articulation that can be played either arco or pizzicato", "Assuming pizzicato applies to only one instrument, when it is used across the whole bowed-string family (violin, viola, cello, double bass)", "Over-compressing pizzicato in the mix, which flattens the fast attack and quick decay that define the sound"],
+    "scenario_contexts": ["Tracking a string quartet where the cellist alternates between arco and pizzicato passages", "A film-score session requiring tight, rhythmic pizzicato from the double-bass section", "Editing a sampled-string MIDI part that switches to a pizzicato articulation via a keyswitch"]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Piston, Orchestration",
+    "Grove Dictionary of Music and Musicians (pizzicato)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

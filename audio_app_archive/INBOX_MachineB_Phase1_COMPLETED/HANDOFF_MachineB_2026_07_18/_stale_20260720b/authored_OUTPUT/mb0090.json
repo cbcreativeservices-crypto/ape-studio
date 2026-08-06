@@ -1,0 +1,232 @@
+{
+ "batch": 90,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "f9ff1bbd-e847-41fa-8d04-bc8215b1180b",
+   "term": "Clap layering",
+   "fields": {
+    "definition": "The production technique of stacking two or more handclap sounds (recorded claps, sampled claps, and often added room ambience or reverb) into one combined layer, usually placed on the backbeat, to create a fuller, wider, and more powerful clap than any single sample provides.",
+    "plain_english": "Layering claps means stacking a few clap sounds so they play as one. This makes a bigger, fuller clap than a single one. It is like a crowd clapping instead of just one person.",
+    "purpose_function": "It exists to give a clap or snare backbeat more size, width, and impact than a lone sample, letting the producer shape the tone by blending different claps and adding space.",
+    "practical_application": "A producer stacks a tight electronic clap, a live-sounding acoustic clap, and a short reverb tail on beats 2 and 4, then adjusts each layer's level and timing so they hit as one solid sound.",
+    "category": "Drum Programming",
+    "related_terms": ["Clap sample", "Layering", "Backbeat", "Sample", "Reverb", "Transient"],
+    "common_mistakes": [
+     "Stacking claps that are not time-aligned, so the layers smear and the combined clap loses its sharp attack.",
+     "Layering several full-range claps without EQ, causing a muddy buildup and phase cancellation between similar samples.",
+     "Adding so much reverb to the layer that the clap loses punch and pushes the backbeat back in the mix."
+    ],
+    "scenario_contexts": [
+     "Building a pop or hip-hop backbeat by layering a clap on top of the snare on beats 2 and 4.",
+     "Widening a thin single clap sample so it sits better in a dense electronic dance mix.",
+     "Creating a custom clap by blending a dry sampled clap with a live recorded clap and a short room."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fceaa069-f077-40a9-bdce-dad39b27f7fa",
+   "term": "Clap sample",
+   "fields": {
+    "definition": "A short recorded or synthesized audio file of one or more hand claps, stored in a sampler or DAW library, that is triggered as a percussion sound within a beat or arrangement.",
+    "plain_english": "A clap sample is a recording of a hand clap saved as a sound file. You trigger it in your music software to add a clap to the beat. That way you do not have to clap live every time.",
+    "purpose_function": "It provides a ready-made clap sound a producer can drop onto the backbeat or accents, adding rhythmic emphasis and energy without recording live clapping.",
+    "practical_application": "A beatmaker loads a clap sample onto a drum pad or sampler track and triggers it on beats 2 and 4, then tunes, trims, and EQs it to fit the groove.",
+    "category": "Drum Programming",
+    "related_terms": ["Clap layering", "Sample", "One-shot", "Sampler", "Backbeat", "Snare"],
+    "common_mistakes": [
+     "Using a clap sample tuned or recorded in a way that clashes with the track, making it sound out of place.",
+     "Leaving a long clap sample's tail uncut, so it overlaps the next hit and muddies the groove.",
+     "Relying on one stock clap sample everywhere, which makes different songs sound identical."
+    ],
+    "scenario_contexts": [
+     "Adding a clap on the backbeat of a pop or hip-hop beat.",
+     "Reinforcing a snare with a clap sample for extra top-end snap.",
+     "Building a handclap rhythm in an electronic track from a single one-shot sample."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6945e685-18fc-451c-a7fa-f4793228a077",
+   "term": "Client acceptance review",
+   "fields": {
+    "definition": "The workflow stage in which the client reviews a delivered mix or master against the agreed brief and either formally approves (accepts) it or returns specific revision notes before the project is considered complete.",
+    "plain_english": "This is the step where the client listens to your finished mix and says yes or asks for changes. Nothing is final until they approve it. It is like a customer checking an order before they accept the delivery.",
+    "purpose_function": "It exists to confirm the work meets the client's expectations and contract terms, protecting both sides by getting sign-off before final delivery and payment.",
+    "practical_application": "The engineer sends a reference version of the final mix for review, logs the client's feedback, makes the agreed revisions, and secures written approval before releasing the final files.",
+    "category": "Project Delivery",
+    "related_terms": ["Client delivery package", "Revision", "Reference mix", "Recall", "Mastering", "Stems"],
+    "common_mistakes": [
+     "Treating a verbal 'sounds good' as final sign-off instead of getting written approval, leading to disputes later.",
+     "Sending full-resolution masters before approval, so the client uses them without paying or finishing review.",
+     "Not defining how many revision rounds are included, causing endless unpaid changes."
+    ],
+    "scenario_contexts": [
+     "A mix engineer sending a rough of the final mix for the artist and label to approve.",
+     "A mastering engineer confirming loudness and track order with the client before cutting final files.",
+     "A studio getting written sign-off before invoicing for a completed project."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "77cb8620-f1a0-417b-b0f8-5f8bd55da9e6",
+   "term": "Client delivery package",
+   "fields": {
+    "definition": "The complete set of finished files and documentation handed to a client at project completion, typically including the approved main mix and required alternate versions (such as instrumental, a cappella, and TV/PA mixes), any requested stems, and metadata or delivery notes.",
+    "plain_english": "This is the bundle of final files you hand over when the job is done. It usually holds the main mix plus extra versions and notes. Think of it like a delivery box packed with everything the client ordered.",
+    "purpose_function": "It exists to give the client every version and file they need for release, licensing, and future use in one organized handoff, reducing back-and-forth after the project ends.",
+    "practical_application": "After approval, the engineer exports the main mix, instrumental, and stems at the agreed format and sample rate, labels them clearly, and delivers them with a track list and technical notes.",
+    "category": "Project Delivery",
+    "related_terms": ["Client acceptance review", "Stems", "Alternate mix", "Instrumental mix", "Bounce", "File naming"],
+    "common_mistakes": [
+     "Delivering files at the wrong sample rate or bit depth, forcing re-exports and delaying release.",
+     "Forgetting required alternate versions like the instrumental or clean edit, so the client comes back for more.",
+     "Using unclear file names, making it hard for the client to tell versions apart."
+    ],
+    "scenario_contexts": [
+     "Packaging final masters, instrumentals, and stems for a label after a song is approved.",
+     "Preparing deliverables to a broadcaster's spec for a TV placement.",
+     "Handing off stems so a remixer or sync team can rework the track later."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3308f994-285a-45a4-aebc-95b3c7a97154",
+   "term": "Clip Effects",
+   "fields": {
+    "definition": "Audio effects (such as EQ, compression, or reverb) inserted directly on an individual clip or region rather than on the whole track, so the processing applies only to that clip and moves, copies, or splits along with it.",
+    "plain_english": "Clip effects are effects placed on just one clip instead of the whole track. Only that piece of audio gets processed. It is like putting a filter on one photo in an album, not every photo.",
+    "purpose_function": "They let a technician process a single section differently from the rest of the track, useful for fixing or shaping one part without adding track-wide automation or extra tracks.",
+    "practical_application": "In a DAW that supports them, an editor drops an EQ or de-esser onto a single problem clip so the fix travels with that clip and does not affect the rest of the track.",
+    "category": "DAW Editing",
+    "related_terms": ["Clip Gain Line", "Clip lane", "Insert effect", "Track effects", "Region", "Automation"],
+    "common_mistakes": [
+     "Assuming a clip effect applies to the whole track, then wondering why the other clips are unprocessed.",
+     "Forgetting that effect tails can be cut off when a clip ends, losing reverb or delay decay.",
+     "Loading heavy clip effects on many clips, spiking CPU compared with one track-wide plugin."
+    ],
+    "scenario_contexts": [
+     "Adding a notch EQ to one clip that has a resonance the rest of the track does not.",
+     "Putting a short reverb on a single vocal ad-lib clip for a one-off effect.",
+     "Cleaning up one noisy region without touching the clean takes around it."
+    ]
+   },
+   "sources": ["Cakewalk SONAR Reference Guide (Effects on Clips / Region FX)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3ec0867f-0f8a-4c4e-9cf2-fa865dd1d2a6",
+   "term": "Clip Gain Line",
+   "fields": {
+    "definition": "A horizontal gain control drawn across an audio clip's waveform that raises or lowers that clip's level non-destructively before it reaches the track inserts and fader; in Pro Tools it can be a single static value or a breakpoint line for gain changes within the clip.",
+    "plain_english": "The clip gain line is a level line drawn right on the audio clip. Drag it up or down to make just that clip louder or quieter, before the mixer fader. It is a handy way to even out loud and soft parts early.",
+    "purpose_function": "It exists to set and balance levels at the clip stage, taming loud words or hits before compression and fader moves, which keeps the signal clean and makes later mixing easier.",
+    "practical_application": "An editor drags the clip gain line down on a loud vocal breath or up on a quiet phrase, or adds breakpoints to ride level inside a single clip, all before touching track automation.",
+    "category": "DAW Editing",
+    "related_terms": ["Clipping prevention", "Clip Effects", "Gain staging", "Volume automation", "Fader", "Waveform"],
+    "common_mistakes": [
+     "Confusing clip gain with track volume automation; clip gain sits before the inserts, automation after them.",
+     "Boosting clip gain so high the clip overloads the plugins, instead of fixing the source level.",
+     "Editing clip gain but forgetting it copies with the clip, so pasted copies carry unexpected levels."
+    ],
+    "scenario_contexts": [
+     "Evening out a vocal take's loud and soft phrases before compressing it.",
+     "Pulling down a single loud drum hit that pokes out of the performance.",
+     "Setting consistent clip levels across edited dialogue before the mix."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Clip Gain)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "56b11441-3d85-4899-ac32-d02b1fec6227",
+   "term": "Clip lane",
+   "fields": {
+    "definition": "A horizontal sub-row within a track's timeline that holds audio or MIDI clips separately from the main track lane, used to stack alternate takes, overlapping material, or comping sources inside a single track.",
+    "plain_english": "A clip lane is an extra row inside one track that holds clips. It lets you stack takes or spare parts on the same track without making new tracks. Think of it like extra shelves inside one drawer.",
+    "purpose_function": "It exists to organize multiple takes or overlapping clips within one track, keeping related material together for comping and editing instead of spreading it across many tracks.",
+    "practical_application": "A technician records several vocal passes into separate clip lanes on one track, then comps the best moments up to the main lane.",
+    "category": "DAW Editing",
+    "related_terms": ["Clip View", "Comping", "Take", "Clip Effects", "Playlist", "Crossfade"],
+    "common_mistakes": [
+     "Leaving clips in lower lanes and forgetting they can still play once promoted, causing doubled audio.",
+     "Confusing clip lanes with separate tracks, so routing and effects get applied in the wrong place.",
+     "Comping across lanes without crossfades, leaving clicks at the edit points."
+    ],
+    "scenario_contexts": [
+     "Recording multiple vocal takes into lanes on one track for later comping.",
+     "Stacking alternate guitar passes to pick the best phrases.",
+     "Keeping overlapping loop variations organized within a single track."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual (Comping / Take Lanes)", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1c9b243f-4b65-496b-ad6f-e8b2399510ae",
+   "term": "Clip View",
+   "fields": {
+    "definition": "In Ableton Live, the dedicated editing panel that opens when a clip is selected or double-clicked, showing and letting the user edit that clip's properties and content, including the audio waveform or MIDI notes, warp and loop settings, envelopes, and launch behavior.",
+    "plain_english": "Clip View is the panel that shows the inside of one selected clip. There you can see its waveform or notes and change its settings, like looping and warping. It is like opening one item to edit its details.",
+    "purpose_function": "It exists to give detailed, per-clip control in one place, so a user can shape a single clip's timing, pitch, loop, and automation without affecting the rest of the arrangement.",
+    "practical_application": "A Live user double-clicks a clip to open Clip View, sets loop points and warp markers, edits MIDI notes, and draws clip envelopes for that clip.",
+    "category": "DAW Editing",
+    "related_terms": ["Clip lane", "Session View", "Warping", "Clip Effects", "MIDI editor", "Envelope"],
+    "common_mistakes": [
+     "Editing a clip in Clip View expecting it to change every copy, when unlinked copies stay unchanged.",
+     "Confusing clip-level envelopes in Clip View with track automation, which behave differently.",
+     "Changing warp settings without checking transient markers, causing timing artifacts."
+    ],
+    "scenario_contexts": [
+     "Setting loop points and warp markers on a sampled loop in Ableton Live.",
+     "Editing MIDI notes for a single clip before duplicating it.",
+     "Drawing a clip envelope to modulate a filter only within that clip."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual (Clip View)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dda94bb1-26a8-4051-8a39-bc344d7e5529",
+   "term": "Clipping prevention",
+   "fields": {
+    "definition": "The practice of keeping audio levels below the point where they exceed the maximum a converter, channel, or plugin can represent, so peaks are not flattened (clipped) into distortion; achieved through proper gain staging, headroom, and metering, sometimes with a limiter or clipper as a safeguard.",
+    "plain_english": "Clipping prevention means keeping the sound from getting too loud for the gear to handle. If a peak goes over the limit, the top gets chopped off and it distorts. Leaving headroom and watching your meters stops that.",
+    "purpose_function": "It exists to protect audio quality by avoiding harsh digital distortion and overdriven stages, keeping signals clean from input through to the final mix and master.",
+    "practical_application": "A technician sets input gain so peaks stay below 0 dBFS with headroom, watches peak meters, and lowers clip gain or adds a limiter when levels approach the ceiling.",
+    "category": "Gain Staging",
+    "related_terms": ["Clip Gain Line", "Gain staging", "Headroom", "Limiter", "0 dBFS", "Peak meter"],
+    "common_mistakes": [
+     "UNSAFE: Driving a power amplifier into hard clipping for more level; clipped waveforms carry excess high-frequency energy that can overheat and destroy loudspeaker drivers, especially tweeters.",
+     "Chasing loudness by pushing past 0 dBFS and relying on a limiter to hide clipping instead of fixing gain staging.",
+     "Watching only average or RMS meters and missing short peaks that clip between readings.",
+     "Assuming a little clipping is inaudible, when repeated inter-sample peaks can distort on playback converters."
+    ],
+    "scenario_contexts": [
+     "Setting mic preamp gain during tracking so the loudest hits stay below digital full scale.",
+     "Gain staging a mix bus so the summed peaks leave headroom before the master.",
+     "Checking a master's true-peak level before export to avoid clipping on streaming playback."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

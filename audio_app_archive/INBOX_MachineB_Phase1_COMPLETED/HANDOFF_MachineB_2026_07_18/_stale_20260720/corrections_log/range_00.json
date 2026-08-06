@@ -1,0 +1,31 @@
+{
+ "range": 0,
+ "applied": [
+  {"pkt":"mb0007","term":"Mixture stop","field":"definition","severity":"Low","summary":"Corrected mislabeling: '(mutation pitches)' had been applied to octave AND fifth ranks; octaves are not mutations. Reworded so the mutation label applies only to fifth-sounding ranks (standard organ terminology)."},
+  {"pkt":"mb0010","term":"Plunger mute","field":"definition","severity":"Low","summary":"Removed material ambiguity: 'cup-shaped brass mute' could read as made of brass, contradicting 'rubber cup'. Changed to 'cup-shaped mute for brass instruments'."},
+  {"pkt":"mb0010","term":"Pole-piece adjustment","field":"common_mistakes","severity":"Low","summary":"Fixed misplaced referent: 'the strings, whose magnetic pull' wrongly attributed the pull to the strings. Rewrote so the magnets' pull dampens string vibration."},
+  {"pkt":"mb0013","term":"Sul tasto","field":"plain_english","severity":"Low","summary":"Replaced 'A note that tells you...' (ambiguous with pitch in a string context) with 'A bowing instruction...', matching sibling Sul ponticello. FK grade 5.2."},
+  {"pkt":"mb0021","term":"Treble reeds","field":"related_terms","severity":"Low","summary":"Replaced out-of-domain 'Stereo keyboard output' (electronic) with 'Free reed' for this acoustic free-reed concept."},
+  {"pkt":"mb0021","term":"Woodwind blend","field":"related_terms","severity":"Low","summary":"Replaced out-of-domain 'Stereo keyboard output' with 'Main pair', keeping the map within the woodwind/ensemble domain."},
+  {"pkt":"mb0025","term":"Single-headed tom","field":"practical_application","severity":"Low","summary":"Fixed faulty parallelism under modal 'can': changed 'and tunes' to 'and tune'."},
+  {"pkt":"mb0034","term":"Bass DI track","field":"related_terms","severity":"Low","summary":"Removed duplicate device name: 'DI box' and 'Direct box' are the same thing. Replaced 'Direct box' with 'Ground lift'."},
+  {"pkt":"mb0034","term":"Bass harmonic enhancement","field":"plain_english","severity":"Low","summary":"Rewrote the garbled, redundant final sentence ('Then phones and laptops still show the bass') to 'So even on a phone speaker, listeners can still follow the bassline.' FK grade 4.7. Resolves both the cognition and language flags."},
+  {"pkt":"mb0036","term":"Bass polarity alignment","field":"plain_english","severity":"Low","summary":"Removed internal contradiction: plain_english said flipping a switch 'fixes this', the exact oversimplification the definition and common_mistakes warn against. Added that timing sometimes also needs a nudge. FK grade 5.3."},
+  {"pkt":"mb0005","term":"Hand cupping","field":"scenario_contexts","severity":"Low","summary":"Added missing article: 'cups mic and harp' -> 'cups the mic and harp', matching the sibling scenario."},
+  {"pkt":"mb0015","term":"Wah-wah mute","field":"definition","severity":"Low","summary":"Removed metal/brass ambiguity: 'A hollow metal brass mute' -> 'A hollow metal mute for brass instruments'."},
+  {"pkt":"mb0018","term":"Harmonica overdraw","field":"definition","severity":"Low","summary":"Fixed subject-verb agreement with the compound subject: 'breath and vocal-tract control forces' -> 'force'."}
+ ],
+ "declined": [
+  {"pkt":"mb0006","term":"Harp glissando","field":"related_terms","reason":"Pure enrichment: proposes ADDING 'Pedal harp'/'Lever harp' with no wrong or duplicate item to replace. No error in existing list."},
+  {"pkt":"mb0013","term":"Treble-string region","field":"related_terms","reason":"Cross-link enrichment: adding 'Treble-string section' fixes no error in the existing list; all current items are relevant."},
+  {"pkt":"mb0014","term":"Treble-string section","field":"related_terms","reason":"Cross-link enrichment: adding 'Treble-string region' fixes no error; existing items are all valid."},
+  {"pkt":"mb0023","term":"Drum damping","field":"related_terms","reason":"Cross-link enrichment: adding 'Drum muffling' is a nice-to-have, not a fix for a wrong/duplicate item."},
+  {"pkt":"mb0024","term":"Drum muffling","field":"related_terms","reason":"Cross-link enrichment: adding 'Drum damping' fixes no error; also proposes optional plain_english addition."},
+  {"pkt":"mb0025","term":"Rack tom","field":"related_terms","reason":"Pure add of 'Floor tom'; the kick-drum terms are within the drum-kit domain and not clearly wrong, so no offending item to replace."},
+  {"pkt":"mb0025","term":"Single-headed tom","field":"related_terms","reason":"Pure add of 'Double-headed tom'; kick-drum items are in-domain, no wrong/duplicate item to swap."},
+  {"pkt":"mb0029","term":"Bass reeds","field":"common_mistakes","reason":"Style/accessibility preference: 'shallot' is technically accurate; the item contains no error, only specialist jargon."},
+  {"pkt":"mb0030","term":"Off-axis pickup","field":"plain_english","reason":"Enrichment: proposes ADDING a clarifying clause about the two senses of 'pickup'; existing text is correct and readable."},
+  {"pkt":"mb0031","term":"Attack reinforcement","field":"related_terms","reason":"Debatable reword: 'Acoustic-guitar mixing' is weakly related but in-domain (mixing), not clearly wrong; swapping to add 'Transient shaper' is enrichment, not an error fix."},
+  {"pkt":"mb0040","term":"Choral imaging","field":"definition","reason":"Enrichment: proposes ADDING a clause to distinguish from 'Choir stereo image'; the definition itself is correct and not broken."}
+ ]
+}

@@ -1,0 +1,49 @@
+{
+ "expert": "Learning/Cognition",
+ "group": 91,
+ "reviews": [
+  {"id":"c48a4163-7236-44b9-aec4-177052b927f4","term":"Object enable","verdict":"OK","suggestions":[]},
+  {"id":"aa87ecce-80f8-43ec-9575-c53cca839c0d","term":"Object grouping","verdict":"OK","suggestions":[]},
+  {"id":"5fa29eaf-47a7-4d3f-bd84-2b44a30939bb","term":"Object linking","verdict":"OK","suggestions":[]},
+  {"id":"77693cdd-edc0-44bb-bd01-4b52dc1f1dec","term":"Object monitoring mode","verdict":"MINOR","suggestions":[
+    {"field":"plain_english","severity":"Medium","issue":"plain_english says an object can 'be left out of the headphone mix' for the Off setting, but the entry's own definition states Off/Near/Mid/Far control how much perceived distance and space is applied in the binaural render. Off means no binaural distance processing, not exclusion of the object. As written it teaches the misconception that toggling Off mutes/removes the object on headphones.","suggestion":"Reword the last clause, e.g. 'each object can be set to sound close, mid, or far, or have no distance/space processing applied (Off)' — describe Off as no binaural distance treatment rather than as being left out of the headphone mix."}
+  ]},
+  {"id":"e1713fbd-28f5-4655-8deb-97d055ce9a10","term":"Object numbering","verdict":"OK","suggestions":[]},
+  {"id":"5ca84196-cf5e-4fad-9335-e2d94194cc73","term":"Object panning","verdict":"OK","suggestions":[]},
+  {"id":"255a0a66-271a-403c-b15f-8f38e5279352","term":"Object size","verdict":"MINOR","suggestions":[
+    {"field":"related_terms","severity":"Low","issue":"This entry describes the Dolby per-object Size control, which the separate 'Object spread' entry explicitly says is the same thing ('in Dolby tools it is the Size control'). Object size neither lists nor references Object spread, so a learner meeting both entries cannot tell they describe one parameter and may treat them as two different controls.","suggestion":"Add 'Object spread' to related_terms (and/or note in the definition that this control is also described as object spread / ADM width-height-depth extent) so the knowledge map connects the two synonymous entries."}
+  ]},
+  {"id":"1ca3a65f-7e71-40b6-b92f-9ea55cbbed28","term":"Object snap","verdict":"OK","suggestions":[]},
+  {"id":"65b5770b-d3d3-4fe4-ae5f-9e5d674625ce","term":"Object spread","verdict":"OK","suggestions":[]},
+  {"id":"4c2b101f-e1f7-4a48-9ad4-1a14008554be","term":"Object trajectory","verdict":"OK","suggestions":[]},
+  {"id":"b0c55bdb-e144-4ffb-ac1f-e93f7a1af0bd","term":"Object trim","verdict":"OK","suggestions":[]},
+  {"id":"00b13fd4-d2dc-4e5b-ae96-8b1a20d8bc5a","term":"Object-based music mix","verdict":"OK","suggestions":[]},
+  {"id":"f46f7363-20eb-46d3-912d-1eaa39b14766","term":"5.1 fold-down monitoring","verdict":"OK","suggestions":[]},
+  {"id":"1a41d994-434e-4c58-80f9-697037a41f60","term":"5.1.4 monitoring","verdict":"OK","suggestions":[]},
+  {"id":"0876d09c-181a-4e46-85ac-beb47ee6fac3","term":"7.1.4 monitoring","verdict":"OK","suggestions":[]},
+  {"id":"ae761615-f23f-42d4-bc57-91ab727b7680","term":"9.1.4 monitoring","verdict":"OK","suggestions":[]},
+  {"id":"e12bde80-ce6b-43b5-b166-9b8b323af4c9","term":"Atmos monitoring layout","verdict":"OK","suggestions":[]},
+  {"id":"59baa346-3abf-467b-b3d2-16b04b7a70a7","term":"Binaural monitoring mode","verdict":"OK","suggestions":[]},
+  {"id":"d5c30083-b5b8-489c-9496-e68ec393e0c1","term":"Binaural render check","verdict":"OK","suggestions":[]},
+  {"id":"7855b64e-4301-4989-aea6-8a08cca5cbb6","term":"Center speaker","verdict":"OK","suggestions":[]},
+  {"id":"b0b22e43-3d0e-4dcb-9619-a81580145160","term":"Downmix monitoring","verdict":"OK","suggestions":[]},
+  {"id":"0b180e2e-f1c6-4b08-a422-8c08c42924c1","term":"Head-tracked monitoring","verdict":"OK","suggestions":[]},
+  {"id":"47e42201-bf17-4c60-9281-81863ad8a863","term":"Headphone-rendered monitoring","verdict":"OK","suggestions":[]},
+  {"id":"2dee66d0-e809-4015-bd13-85209b0ef926","term":"Height speaker","verdict":"OK","suggestions":[]},
+  {"id":"c5788623-18df-43c0-8ee3-5593b99413e0","term":"Immersive delay calibration","verdict":"OK","suggestions":[]},
+  {"id":"898e64a8-bdae-4d56-80ff-0b0697bd3371","term":"Immersive level calibration","verdict":"OK","suggestions":[]},
+  {"id":"d44eb525-fc4e-437b-9736-80f52c0f9b19","term":"Immersive monitor controller","verdict":"OK","suggestions":[]},
+  {"id":"6e374706-d888-4705-acbf-54f8adae7fb1","term":"Immersive monitor quality control","verdict":"OK","suggestions":[]},
+  {"id":"a9e94ee2-d197-4321-825e-66ec099dd610","term":"Immersive monitoring system","verdict":"OK","suggestions":[]},
+  {"id":"67fa5212-2c2a-4e26-ba31-272d6ef504fb","term":"Immersive routing layout","verdict":"OK","suggestions":[]},
+  {"id":"3f168b77-15f5-4737-898f-7a6a2e7cd867","term":"Low-frequency effects speaker","verdict":"OK","suggestions":[]},
+  {"id":"a052db32-b402-4082-b44a-145b9b45f6a7","term":"Multichannel monitor controller","verdict":"MINOR","suggestions":[
+    {"field":"related_terms","severity":"Low","issue":"This device is essentially the same class as the separate 'Immersive monitor controller' entry (both provide central monitor level, mute/solo, source/downmix selection and bass management feeding the speaker array), yet neither entry cross-references the other. A learner is likely to conclude they are two distinct products.","suggestion":"Add 'Immersive monitor controller' to related_terms and briefly note the relationship (general multichannel framing vs immersive/Atmos-focused framing of the same device class)."}
+  ]},
+  {"id":"abbf665d-df53-4913-a20c-42e821365bff","term":"Overhead speaker","verdict":"MINOR","suggestions":[
+    {"field":"related_terms","severity":"Low","issue":"'Overhead speaker' and the separate 'Height speaker' entry describe the same upper-layer/top loudspeaker component, but neither lists the other in related_terms. A learner may believe they are two different speaker types and try to account for both.","suggestion":"Add 'Height speaker' to related_terms and note they are the same upper-layer speaker described with ITU 'top' vs Dolby 'height/top' terminology, so the synonymous entries are linked."}
+  ]},
+  {"id":"f2c9368e-304e-4285-be1b-ad909d778f83","term":"Rear surround speaker","verdict":"OK","suggestions":[]},
+  {"id":"87c33102-7157-4e70-a5af-601cac862fbb","term":"Renderer calibration","verdict":"OK","suggestions":[]}
+ ]
+}

@@ -1,0 +1,146 @@
+{
+ "expert": "Learning / Cognition Expert",
+ "group": 7,
+ "reviews": [
+  {
+   "id": "617de673-d2be-4831-b5ae-52aa42718e6e",
+   "term": "Ground Rod",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "994622a8-9140-41b6-b793-761fcb94bf2b",
+   "term": "Outlet Tester",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a2045c4c-e658-43f6-8ad1-be03be43844c",
+   "term": "Phase Rotation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0f7540a0-4c6d-4eef-bce5-33e7a0732946",
+   "term": "Portable Generator (Genset)",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Medium",
+     "issue": "The neutral-bonding bullet is a single run-on sentence that packs two distinct configurations (cord-and-plug neutral-bonded-to-frame vs. separately derived system feeding a distro/transfer) plus two code citations into one clause. For an intermediate learner this is the hardest idea in the entry and the compression makes it hard to parse and retain; the reader has to hold both cases and the code refs at once.",
+     "suggestion": "Split into two short sentences that name each case first, then the consequence, e.g.: 'The right neutral bonding depends on how the genset is used. Feeding cord-and-plug tools, it is typically neutral-bonded to its frame. Feeding a distro or transfer switch as a separately derived system, the bonding/grounding must follow NEC 250.34/250.30 so GFCIs and breakers still trip.' Same content, lower cognitive load."
+    }
+   ]
+  },
+  {
+   "id": "16c89c85-ac8d-46f8-81b3-9105dd116d08",
+   "term": "Power Distro",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "45a34e97-0233-4289-b500-c4b4331c794f",
+   "term": "Relay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "075e14f2-8db4-4a9e-aef5-4fbe457d61ec",
+   "term": "Ambisonic Microphone",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "plain_english",
+     "severity": "Low",
+     "issue": "The intro analogy 'capsules clustered like the faces of a pyramid' can mislead: 'pyramid' commonly evokes a square-based, five-faced shape, whereas the array is a four-capsule tetrahedron (which the later fields correctly call 'tetrahedral'). A beginner-to-the-concept reader meets 'pyramid' first and 'tetrahedral' later, creating a small terminology gap.",
+     "suggestion": "Make the analogy match the later wording, e.g. 'four capsules arranged like the faces of a tetrahedron (a triangular, four-sided pyramid)'. This keeps the intuitive picture while aligning plain_english with the tetrahedral language used in purpose_function and common_mistakes."
+    }
+   ]
+  },
+  {
+   "id": "dd172c48-f7ed-4abf-b0bc-c628129cf709",
+   "term": "Crystal Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a93948dc-c4c3-4588-a1ab-48ecd3d41877",
+   "term": "Microphone Modeling",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8f0db471-6f18-48b4-8ee3-04dd65a724a4",
+   "term": "Noise-Canceling Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "96b46617-f019-4430-bcee-1329c4f0ed42",
+   "term": "Parabolic Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "91e47196-7979-455e-a29a-d8637d61e080",
+   "term": "In-Line Console",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "96d6f23f-dba2-4f93-8cce-76fce38e195c",
+   "term": "Master Section",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2b44dc52-dcfe-4945-9a97-9132bf651f3e",
+   "term": "Monitor Section",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4f81edde-f231-4021-bb60-87e4552d969a",
+   "term": "Scribble Strip",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b7d64353-ba42-4c89-bc5b-3d041f2066df",
+   "term": "Solo In Place (SIP)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "27f9a60a-f2d0-4527-b87f-585cafa8eb48",
+   "term": "Split Console",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7c21397d-697b-46d1-9e95-415d15a8dff3",
+   "term": "Feedback Delay Network (FDN)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4a2aa894-8fd7-41e9-9504-58a02483accc",
+   "term": "Oil-Can Delay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2cb58a2c-f450-41e9-92a1-d5511da87b76",
+   "term": "Schroeder Reverberator",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "126cd168-1e05-4630-a31d-7c5d2cd526a5",
+   "term": "Wow and Flutter",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 204,
+ "topic": "Broadcast Loudness & Compliance",
+ "authored": [
+  {
+   "id": "483c61d9-018b-4182-8d29-6f6bf1df9576",
+   "term": "Air-chain verification",
+   "fields": {
+    "definition": "The systematic checking of every stage in a station's air chain — the complete signal path from studio playout through the audio processor, encoder, and studio-to-transmitter link to the transmitter — to confirm each stage passes audio correctly and meets its technical, modulation, and loudness targets.",
+    "plain_english": "The air chain is the whole path a station's sound travels, from the studio to the transmitter. Air-chain verification means checking each step in that path. You make sure the sound gets through cleanly and at the right level.",
+    "purpose_function": "It exists to catch broken, muted, or off-spec stages before they cause dead air, distortion, or a loudness-compliance failure on the transmitted signal.",
+    "practical_application": "A technician sends test tone and program audio through the chain and confirms routing, levels, and processing at each point, often after equipment changes or before a major broadcast.",
+    "category": "Broadcast operations",
+    "related_terms": ["Aircheck analysis", "Broadcast audio processor", "Studio-to-transmitter link", "Broadcast logging system", "True peak", "Modulation"],
+    "common_mistakes": ["Checking only that audio is present, not that each stage meets its level and loudness targets.", "Verifying the studio output but skipping the processor and transmitter link, where faults often hide.", "Assuming a chain that worked yesterday is still correct after firmware or routing changes."],
+    "scenario_contexts": ["Commissioning a new transmitter site before going on air.", "Troubleshooting distorted or low audio reported by listeners.", "Routine pre-broadcast checks before a live sports or news event."]
+   },
+   "sources": ["NAB Engineering Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cc25d837-d12f-4723-b438-7b9dd9c58f92",
+   "term": "Aircheck analysis",
+   "fields": {
+    "definition": "The review of an aircheck — a recording of a station's actual off-air or transmitted output as received by the audience — to evaluate content, technical quality, processing, and loudness/compliance performance.",
+    "plain_english": "An aircheck is a recording of what a station actually put on the air. Aircheck analysis means listening back to that recording. You judge how it sounded and whether it met the rules.",
+    "purpose_function": "It lets engineers and programmers hear the finished, processed sound the audience received, so they can confirm quality and compliance and improve the on-air product.",
+    "practical_application": "A technician captures the off-air signal, then measures its loudness and true peak and listens for distortion, level jumps, or processing artifacts.",
+    "category": "Broadcast monitoring",
+    "related_terms": ["Air-chain verification", "Broadcast logging system", "Loudness measurement", "Broadcast audio processor", "True peak", "LKFS"],
+    "common_mistakes": ["Judging loudness by ear alone instead of measuring it against the target.", "Analyzing a studio feed instead of the true off-air signal, missing processor and transmitter effects.", "Reviewing only content and ignoring technical loudness compliance."],
+    "scenario_contexts": ["Checking a station's on-air sound after a processor adjustment.", "Investigating a listener complaint about loud commercials.", "Air talent reviewing their own show for coaching."]
+   },
+   "sources": ["NAB Engineering Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2499742e-784e-49ba-8a4e-0968ece3cd57",
+   "term": "AM processor",
+   "fields": {
+    "definition": "A broadcast audio processor designed specifically for AM (medium-wave) transmission that applies gain control, equalization, compression, and peak limiting/clipping while restricting audio bandwidth (10 kHz or less) and applying NRSC-1 preemphasis, so the signal fits the AM channel and modulates the transmitter within legal limits.",
+    "plain_english": "This is a sound processor built just for AM radio. It shapes and limits the audio and cuts off the highest tones. That keeps the signal inside the narrow space an AM station is allowed to use.",
+    "purpose_function": "It exists to maximize loudness and coverage on AM while keeping the transmitted signal within the legal channel width and modulation limits.",
+    "practical_application": "An engineer sets its bandwidth, preemphasis, and peak controls to meet the NRSC-1 standard and modulation rules, trading loudness against occupied bandwidth and interference.",
+    "category": "Broadcast processing",
+    "related_terms": ["Broadcast audio processor", "Preemphasis", "Modulation", "Broadcast clipping processor", "Occupied bandwidth", "Peak limiting"],
+    "common_mistakes": ["Setting audio bandwidth wider than 10 kHz, causing second-adjacent-channel interference.", "Copying FM processor settings onto an AM chain, ignoring AM's preemphasis and bandwidth rules.", "Over-clipping to chase loudness, producing distortion and splatter."],
+    "scenario_contexts": ["Setting up processing for a talk-format AM station.", "Reducing interference complaints from a neighboring station.", "Meeting NRSC-1 bandwidth requirements after an FCC inspection."]
+   },
+   "sources": ["NRSC-1-C AM Preemphasis/Deemphasis and Broadcast Audio Transmission Bandwidth Specification", "Orban OPTIMOD-AM technical documentation", "NAB Engineering Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8b75e14a-cdd9-484f-bd3a-33372fe371ab",
+   "term": "Broadcast audio processor",
+   "fields": {
+    "definition": "A dedicated device or software placed at the end of the air chain that automatically controls a station's audio dynamics and spectrum — typically wideband AGC, multiband compression, limiting, and peak clipping, plus preemphasis where required — to deliver consistent loudness, prevent overmodulation or overload, and shape the station's on-air sound.",
+    "plain_english": "This is the box that automatically controls a station's sound before it goes on air. It keeps the volume steady and stops peaks from getting too high. It also gives the station its signature sound.",
+    "purpose_function": "It exists to keep loudness consistent and within limits and to prevent overmodulation or digital overload, while giving a station a competitive, consistent on-air sound.",
+    "practical_application": "An engineer picks a preset and fine-tunes AGC, band gains, and limiting to hit the loudness target while avoiding audible pumping or distortion.",
+    "category": "Broadcast processing",
+    "related_terms": ["Multiband compression", "Peak limiting", "Broadcast clipping processor", "Broadcast limiter chain", "Loudness normalization", "Modulation"],
+    "common_mistakes": ["Pushing processing too hard for loudness, causing listener fatigue and distortion.", "Placing the processor in the wrong spot so downstream gain undoes its peak control.", "Ignoring the loudness target and judging only by how loud it seems."],
+    "scenario_contexts": ["Dialing in a new FM station's on-air sound.", "Meeting a loudness target for a digital or streaming feed.", "Reducing complaints about inconsistent volume between songs and ads."]
+   },
+   "sources": ["Orban OPTIMOD technical documentation", "NAB Engineering Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d56e37f8-8124-49b3-9d00-816457304141",
+   "term": "Broadcast clipping processor",
+   "fields": {
+    "definition": "The final peak-control stage in a broadcast processing chain that hard- or soft-clips the audio waveform to hold peaks at a fixed ceiling, allowing higher average modulation and loudness than limiting alone at the cost of added harmonic distortion, usually followed by band-limiting to control the resulting spectral spread.",
+    "plain_english": "A clipper chops the very top off the loudest peaks of the sound. This lets a station run louder overall. But if you cut too much, it adds a harsh, distorted edge.",
+    "purpose_function": "It exists to squeeze more average loudness and modulation out of the signal by removing brief peaks that would otherwise force the whole level down.",
+    "practical_application": "An engineer sets clip drive to gain loudness, then checks for audible distortion and, on FM and AM, for splatter or bandwidth violations caused by the clipping.",
+    "category": "Broadcast processing",
+    "related_terms": ["Broadcast audio processor", "Peak limiting", "Broadcast limiter chain", "Modulation", "Occupied bandwidth", "True peak"],
+    "common_mistakes": ["Driving the clipper too hard, trading a small loudness gain for obvious distortion.", "Forgetting that clipping creates harmonics that can widen occupied bandwidth and cause interference.", "Relying on the clipper alone for overmodulation control instead of a proper peak limiter."],
+    "scenario_contexts": ["Tuning an FM chain for competitive loudness without audible grit.", "Diagnosing distortion traced to excessive clip drive.", "Balancing loudness against occupied-bandwidth limits on AM."]
+   },
+   "sources": ["Orban OPTIMOD technical documentation", "NAB Engineering Handbook", "NRSC-1-C AM Preemphasis/Deemphasis and Broadcast Audio Transmission Bandwidth Specification"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "db8fe4c1-3372-4e8b-8f9a-519e5cafb607",
+   "term": "Broadcast engineering report",
+   "fields": {
+    "definition": "A formal technical document prepared by a station's engineering staff that records the measured status, performance, faults, and corrective actions of broadcast facilities — such as transmitter parameters, audio and modulation measurements, and compliance results — for management review and regulatory record-keeping.",
+    "plain_english": "This is a written report from the engineers about how the station's gear is running. It lists measurements, any problems found, and what was fixed. That gives the station and the regulators a record.",
+    "purpose_function": "It exists to document technical performance and compliance over time, support maintenance decisions, and provide evidence during inspections or audits.",
+    "practical_application": "An engineer logs values like transmitter power, modulation, and loudness, notes any faults and repairs, and files the report on a routine schedule.",
+    "category": "Broadcast operations",
+    "related_terms": ["Broadcast logging system", "Air-chain verification", "Modulation", "Loudness measurement", "Transmitter", "Aircheck analysis"],
+    "common_mistakes": ["Recording only that equipment 'works' without the actual measured values.", "Filing reports inconsistently, leaving gaps that fail an audit.", "Omitting the corrective action taken for a logged fault."],
+    "scenario_contexts": ["Monthly transmitter and modulation performance review.", "Documenting a fault and repair for the station file.", "Preparing evidence for a regulatory inspection."]
+   },
+   "sources": ["NAB Engineering Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "174595fb-1922-4879-81b3-f21beca1c1b2",
+   "term": "Broadcast headroom policy",
+   "fields": {
+    "definition": "A station's defined operating practice for how much level margin (headroom) to keep below digital full scale and below maximum modulation across the air chain — for example, aligning program to a loudness target such as -24 LKFS (ATSC A/85) or -23 LUFS (EBU R128) while holding true peaks a set margin below 0 dBTP — so the signal never clips or overmodulates.",
+    "plain_english": "Headroom is the safety gap between your normal sound level and the highest level allowed. A headroom policy is the station's rule for how big that gap should be. It keeps loud moments from clipping or overloading.",
+    "purpose_function": "It exists to prevent clipping, overload, and overmodulation while keeping loudness consistent with the required target.",
+    "practical_application": "An engineer sets gain staging and processor limits so program peaks stay a defined margin below full scale and modulation limits, matching the loudness standard in force.",
+    "category": "Loudness compliance",
+    "related_terms": ["True peak", "LKFS", "Loudness normalization", "Broadcast audio processor", "Modulation", "Peak limiting"],
+    "common_mistakes": ["Confusing the loudness target with the peak ceiling and letting true peaks exceed 0 dBTP.", "Leaving so much headroom that the signal is too quiet against the target.", "Applying the policy at one stage but ignoring gain changes downstream."],
+    "scenario_contexts": ["Setting gain structure for a new digital playout system.", "Aligning a feed to ATSC A/85 or EBU R128.", "Preventing inter-sample peak clipping on a streaming encoder."]
+   },
+   "sources": ["ATSC A/85 Recommended Practice", "ITU-R BS.1770", "EBU R128"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4d5fef52-53df-4f69-8cd0-8a3eb99f4572",
+   "term": "Broadcast limiter chain",
+   "fields": {
+    "definition": "The ordered series of limiting stages within a broadcast audio processor — typically a slower wideband/AGC stage, multiband limiters, and a fast final peak limiter or clipper — that together control dynamics and hold the signal below modulation and full-scale limits.",
+    "plain_english": "This is the set of volume-control stages inside a broadcast processor, working one after another. Each stage handles a different job. Together they stop the sound from ever getting too loud for the transmitter.",
+    "purpose_function": "It exists to progressively tame dynamics so the final signal is loud and consistent yet never overmodulates or overloads.",
+    "practical_application": "An engineer sets the thresholds and speeds of each stage so they share the work, avoiding a single stage doing too much and causing pumping or distortion.",
+    "category": "Broadcast processing",
+    "related_terms": ["Broadcast audio processor", "Peak limiting", "Multiband compression", "Broadcast clipping processor", "Modulation", "AGC"],
+    "common_mistakes": ["Making one stage do all the limiting, causing pumping or distortion.", "Setting later stages so hard that earlier gain control is wasted.", "Ignoring how the attack and release times of the stages interact."],
+    "scenario_contexts": ["Tuning an FM processor for clean, loud output.", "Reducing audible pumping on speech.", "Matching a station's loudness to competitors without distortion."]
+   },
+   "sources": ["Orban OPTIMOD technical documentation", "NAB Engineering Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9af64f26-73f1-4754-96f0-4052af1fa578",
+   "term": "Broadcast logging system",
+   "fields": {
+    "definition": "A system that continuously records a station's on-air or off-air output, often with related metadata, for later review — providing a verifiable record of what was transmitted and supporting compliance, loudness, and quality monitoring; retention periods are set by regulation.",
+    "plain_english": "This is a system that keeps a running recording of everything a station broadcasts. If someone questions what went out, or the rules require proof, the station can play back the log.",
+    "purpose_function": "It exists to give a verifiable record of transmitted content for compliance, dispute resolution, and quality and loudness review.",
+    "practical_application": "An engineer checks that the logger is capturing all channels reliably, then retrieves segments to prove compliance or investigate a complaint.",
+    "category": "Broadcast monitoring",
+    "related_terms": ["Aircheck analysis", "Broadcast engineering report", "Air-chain verification", "Loudness measurement", "Off-air monitoring", "Compliance"],
+    "common_mistakes": ["Assuming the logger is running without checking it actually captures audio.", "Keeping recordings for less time than regulations require.", "Logging a pre-processed feed instead of the true transmitted output."],
+    "scenario_contexts": ["Retrieving proof of broadcast for a legal or regulatory query.", "Investigating a loudness or content complaint.", "Confirming an emergency alert was aired correctly."]
+   },
+   "sources": ["NAB Engineering Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

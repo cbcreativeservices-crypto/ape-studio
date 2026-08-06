@@ -1,0 +1,109 @@
+gs,topic,current_terms,gap_to_90,recommended_action,merge_or_fold_target,#certs,#programs,member_certs,member_programs,note
+140,"Batteries, Backup & Touring Power",0,90,MERGE,"130 Power Fundamentals, Distribution & Quality",1,1,Power Systems,Audio Networking & Infrastructure,touring/backup power folds into Power
+870,Audio Technician (commercial card),0,90,RETIRE,(no members; generic placeholder),0,0,,,orphan commercial-card stub
+920,"Bench Test, Measurement & Repair",0,90,AUTHOR,(or fold 980 Repair),2,1,Equipment Service; Manufacturing,"Audio Electronics, Service and Repair",distinct bench-test skill; member of Equipment Service
+1430,Hearing Disorders & Health,0,90,MERGE,1410 Hearing Anatomy & Function,1,0,Hearing & Audio Health,,thin hearing cluster -> consolidate
+1450,Spatial Hearing & Localization,0,90,MERGE,1440 Psychoacoustics,1,2,Psychoacoustics & Listening,Audio Acoustics and System Optimization; Immersive Audio,spatial hearing is psychoacoustics
+1460,Speech Intelligibility,0,90,AUTHOR,(4 programs depend on it),0,4,,"Commercial Audio and AV Systems; Audio Acoustics and System Optimization; Broadcast, Podcast and Streaming Audio; Worship Audio",keep distinct; author ~90
+1470,Loudness & Listening Environments,0,90,MERGE,1440 Psychoacoustics,1,1,Psychoacoustics & Listening,Audio Acoustics and System Optimization,loudness perception -> psychoacoustics
+1480,Music Perception,0,90,MERGE,1440 Psychoacoustics,0,0,,,music perception -> psychoacoustics (unless research prog)
+1950,Live Sound — Load-In / Setup / Strike / Load-Out,0,90,AUTHOR,(or fold 640 Deployment / 700 Road Crew),2,1,Live Sound Crew Operations; Road Crew Operations,Live Sound Production,live workflow; member of 2 certs
+360,"Storage, Backup & Archival",1,89,GROW,,1,1,Recording Systems,"Sound for Film, Television and Interactive Media",author 89 more terms
+1520,Listening Slang & Sound Identification,4,86,GROW,,0,0,,,author 86 more terms
+1940,Live Sound — Production Documents & Advancing,4,86,GROW,,2,1,Live Sound Crew Operations; Festival Audio Production,Live Sound Production,author 86 more terms
+1420,Hearing Protection & Occupational Health,7,83,GROW,,1,0,Hearing & Audio Health,,author 83 more terms
+350,Recording Transport & Controls,8,82,GROW,,0,0,,,author 82 more terms
+400,Power & Signal Distribution Hardware,9,81,GROW,,2,2,Infrastructure; Power Systems,Commercial Audio and AV Systems; Audio Networking & Infrastructure,author 81 more terms
+600,Patch & Routing Diagnostics,9,81,GROW,,1,1,Troubleshooting,Audio Networking & Infrastructure,author 81 more terms
+680,DJ Equipment & Software,9,81,GROW,,1,0,DJ Audio,,author 81 more terms
+2030,Live Sound — Troubleshooting & Emergency,9,81,GROW,,1,3,Live Sound System Engineering,"Live Sound Production; Theater, Venue and Entertainment Audio; Worship Audio",author 81 more terms
+1070,Vocal & Overdub Production,10,80,GROW,,2,3,Advanced Recording Production; Vocal Mixing & Production,"Studio Recording; Music Production; Broadcast, Podcast and Streaming Audio",author 80 more terms
+1210,Streaming & Distribution,10,80,GROW,,2,1,Broadcast & Streaming Audio; Podcast Production,"Broadcast, Podcast and Streaming Audio",author 80 more terms
+380,Studio/Stage Furniture & Mounting,12,78,GROW,,0,1,,Audio Networking & Infrastructure,author 78 more terms
+860,Architectural Audio (commercial card),12,78,GROW,,1,1,Architectural Audio,Audio Acoustics and System Optimization,author 78 more terms
+1840,Cloud & Emerging Production,12,78,GROW,,1,1,Software & DSP Development,AI Audio and Emerging Production,author 78 more terms
+390,Physical Controls & Hardware,13,77,GROW,,0,1,,Audio Networking & Infrastructure,author 77 more terms
+1530,Monitoring & Audio Evaluation,13,77,GROW,,1,5,Critical Listening,"Mixing and Mastering; Audio Acoustics and System Optimization; Broadcast, Podcast and Streaming Audio; Immersive Audio; Worship Audio",author 77 more terms
+1920,"AI Audio Ethics, Rights & Provenance",15,75,GROW,,4,1,AI Audio Foundations; AI Music & Sound Creation; AI Audio Production; AI Voice & Speech,AI Audio and Emerging Production,author 75 more terms
+1180,Delivery Formats & Metadata,17,73,GROW,,1,5,Mastering,"Mixing and Mastering; Music Production; Broadcast, Podcast and Streaming Audio; Sound for Film, Television and Interactive Media; Immersive Audio",author 73 more terms
+1890,Neural Amp Modeling & Neural Synthesis,18,72,GROW,,1,1,AI Music & Sound Creation,AI Audio and Emerging Production,author 72 more terms
+1900,Music Information Retrieval,18,72,GROW,,2,1,AI Audio Foundations; AI Voice & Speech,AI Audio and Emerging Production,author 72 more terms
+730,House & Audience Areas,19,71,GROW,,0,1,,"Theater, Venue and Entertainment Audio",author 71 more terms
+1050,"Guitar, Bass & Amp Recording",19,71,GROW,,0,1,,Studio Recording,author 71 more terms
+1850,AI Music Generation & Composition,19,71,GROW,,1,1,AI Music & Sound Creation,AI Audio and Emerging Production,author 71 more terms
+1880,AI Mixing/Mastering & Adaptive Processing,19,71,GROW,,1,1,AI Audio Production,AI Audio and Emerging Production,author 71 more terms
+1022,Instrument Recording — Drums & Percussion,20,70,GROW,,1,1,Instrument Recording,Studio Recording,author 70 more terms
+320,Digital Console Workflow & Recall,21,69,GROW,,0,1,,Worship Audio,author 69 more terms
+1030,Studio Recording Craft — Advanced,21,69,GROW,,1,1,Advanced Recording Production,Studio Recording,author 69 more terms
+230,Specialized & Application Microphones,22,68,GROW,,1,0,Wireless Audio Systems,,author 68 more terms
+1960,Live Sound — Stage Patch & Signal Distribution,23,67,GROW,,1,2,Live Sound Mixing,"Live Sound Production; Theater, Venue and Entertainment Audio",author 67 more terms
+250,Enclosures & Crossovers,24,66,GROW,,0,2,,Commercial Audio and AV Systems; Audio Acoustics and System Optimization,author 66 more terms
+750,Fly Systems & Overhead Access,25,65,GROW,,1,1,Entertainment Rigging Fundamentals,"Theater, Venue and Entertainment Audio",author 65 more terms
+2020,Live Sound — Communication & Show Calls,25,65,GROW,,1,3,Festival Audio Production,"Live Sound Production; Theater, Venue and Entertainment Audio; Worship Audio",author 65 more terms
+520,Diffusion & Materials,27,63,GROW,,1,1,Room Treatment,Audio Acoustics and System Optimization,author 63 more terms
+260,Loudspeaker Specs & Behavior,30,60,GROW,,0,3,,Commercial Audio and AV Systems; Audio Acoustics and System Optimization; Worship Audio,author 60 more terms
+1860,AI Voice & Speech,31,59,GROW,,1,1,AI Voice & Speech,AI Audio and Emerging Production,author 59 more terms
+1310,DAW: Studio One,32,58,GROW,,1,2,Studio One Production,Music Production; Electronic Music & Synthesis,author 58 more terms
+1500,Ear Training,33,57,GROW,,1,1,Critical Listening,Mixing and Mastering,author 57 more terms
+310,"Buses, Routing & Matrix",34,56,GROW,,1,3,Consoles,Live Sound Production; Mixing and Mastering; Worship Audio,author 56 more terms
+300,Channel Strip & Processing,35,55,GROW,,1,3,Consoles,Live Sound Production; Mixing and Mastering; Worship Audio,author 55 more terms
+840,Distributed Audio Systems,35,55,GROW,,2,2,Commercial Audio Systems; Residential & Consumer Audio,Commercial Audio and AV Systems; Audio Networking & Infrastructure,author 55 more terms
+910,"PCB, Assembly & Soldering",35,55,GROW,,1,1,Manufacturing,"Audio Electronics, Service and Repair",author 55 more terms
+1660,Object & Bed Panning / Authoring,36,54,GROW,,1,2,Immersive Audio Production,"Sound for Film, Television and Interactive Media; Immersive Audio",author 54 more terms
+1680,Immersive Music Production & Delivery,36,54,GROW,,1,1,Immersive Music Production,Immersive Audio,author 54 more terms
+950,Home Theater & Residential AV,37,53,GROW,,1,0,Residential & Consumer Audio,,author 53 more terms
+1320,DAW: Digital Performer/Reason,37,53,GROW,,1,2,Digital Performer/Reason Production,Music Production; Electronic Music & Synthesis,author 53 more terms
+1410,Hearing Anatomy & Function,37,53,GROW,,1,0,Hearing & Audio Health,,author 53 more terms
+180,I/O Connections,38,52,GROW,,0,2,,Commercial Audio and AV Systems; Audio Networking & Infrastructure,author 52 more terms
+650,System Tuning & Alignment,39,51,GROW,,1,3,Live Sound Systems,Live Sound Production; Audio Acoustics and System Optimization; Worship Audio,author 51 more terms
+430,"Dante Devices, Modules & Certification",41,49,GROW,,1,1,Networking,Audio Networking & Infrastructure,author 49 more terms
+490,Delay & Time-Based Effects,41,49,GROW,,0,2,,Mixing and Mastering; Music Production,author 49 more terms
+1770,Studio Acoustics & Design,43,47,GROW,,0,1,,Audio Acoustics and System Optimization,author 47 more terms
+1130,Mix Automation & Recall,44,46,GROW,,1,4,Music Mixing,Mixing and Mastering; Music Production; Immersive Audio; Electronic Music & Synthesis,author 46 more terms
+1260,In-the-Box Mixing & Automation,45,45,GROW,,1,3,DAW Production,"Music Production; Broadcast, Podcast and Streaming Audio; Electronic Music & Synthesis",author 45 more terms
+1610,Portfolio Development,45,45,GROW,,1,0,Career Development,,author 45 more terms
+1830,Audio Plugin & DSP Development,45,45,GROW,,1,1,Software & DSP Development,AI Audio and Emerging Production,author 45 more terms
+1024,"Instrument Recording — Keys, Winds & Brass",47,43,GROW,,1,1,Instrument Recording,Studio Recording,author 43 more terms
+1140,"Mix Bus, Loudness & Translation",47,43,GROW,,1,4,Music Mixing,Mixing and Mastering; Music Production; Immersive Audio; Electronic Music & Synthesis,author 43 more terms
+1250,Editing & Comping,47,43,GROW,,5,6,DAW Production; Logic Production; Cubase/Nuendo Production; REAPER Production; Studio One Production,"Studio Recording; Music Production; Broadcast, Podcast and Streaming Audio; Sound for Film, Television and Interactive Media; AI Audio and Emerging Production; Electronic Music & Synthesis",author 43 more terms
+2010,Live Sound — Festival Changeovers & Guest-Engineer,47,43,GROW,,1,0,Festival Audio Production,,author 43 more terms
+1232,Production Sound & Field Recording,49,41,GROW,,2,1,Production Sound; Foley & Sound Effects,"Sound for Film, Television and Interactive Media",author 41 more terms
+610,System Maintenance,50,40,GROW,,1,3,Troubleshooting,"Commercial Audio and AV Systems; Audio Electronics, Service and Repair; Audio Networking & Infrastructure",author 40 more terms
+1040,Drum-Kit Recording,50,40,GROW,,0,1,,Studio Recording,author 40 more terms
+1400,"Synthesis Types, Modular & CV",50,40,GROW,,1,1,Synthesis & Sound Design,Electronic Music & Synthesis,author 40 more terms
+990,Recording Fundamentals & Signal Chain,54,36,GROW,,1,3,Studio Recording,"Studio Recording; Music Production; Broadcast, Podcast and Streaming Audio",author 36 more terms
+670,DJ Performance & Turntablism,56,34,GROW,,1,0,DJ Audio,,author 34 more terms
+220,"Mic Controls, Power & Mounting",57,33,GROW,,1,1,Wireless Audio Systems,Studio Recording,author 33 more terms
+1370,Drum Programming & Beat-Making,57,33,GROW,,1,2,Electronic Music Production,Music Production; Electronic Music & Synthesis,author 33 more terms
+1590,Workplace Skills,57,33,GROW,,0,0,,,author 33 more terms
+850,Assisted Listening Systems,59,31,GROW,,1,1,Corporate AV Audio,Commercial Audio and AV Systems,author 31 more terms
+1000,Microphone Technique for Recording,60,30,GROW,,2,3,Studio Recording; Microphone Techniques,"Studio Recording; Music Production; Broadcast, Podcast and Streaming Audio",author 30 more terms
+1490,Voice & Vocal Perception,60,30,GROW,,1,1,Vocal Mixing & Production,"Broadcast, Podcast and Streaming Audio",author 30 more terms
+1990,Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck,60,30,GROW,,1,2,Live Sound System Engineering,Live Sound Production; Worship Audio,author 30 more terms
+1280,DAW: Cubase/Nuendo,61,29,GROW,,1,2,Cubase/Nuendo Production,Music Production; Electronic Music & Synthesis,author 29 more terms
+1360,Sample Editing & Manipulation,63,27,GROW,,0,3,,Music Production; AI Audio and Emerging Production; Electronic Music & Synthesis,author 27 more terms
+1670,Immersive Monitoring & Calibration,63,27,GROW,,2,2,Immersive Audio Production; Immersive Music Production,"Sound for Film, Television and Interactive Media; Immersive Audio",author 27 more terms
+1750,Themed Entertainment / Haunt Audio,63,27,GROW,,1,1,Game & Themed-Entertainment Audio,"Theater, Venue and Entertainment Audio",author 27 more terms
+2000,Live Sound — PA Deployment & System Engineering,65,25,GROW,,1,1,Live Sound System Engineering,Live Sound Production,author 25 more terms
+1220,Broadcast Loudness & Compliance,68,22,GROW,,1,1,Broadcast & Streaming Audio,"Broadcast, Podcast and Streaming Audio",author 22 more terms
+190,Microphone Types & Transducers,69,21,GROW,,1,4,"Microphones, Amplifiers & Loudspeakers","Live Sound Production; Studio Recording; Music Production; Broadcast, Podcast and Streaming Audio",author 21 more terms
+930,Manufacturing & Production,70,20,GROW,,1,1,Manufacturing,"Audio Electronics, Service and Repair",author 20 more terms
+1640,Industry Foundations,70,20,GROW,,1,0,Career Development,,author 20 more terms
+720,Stage Geography & Backstage,71,19,GROW,,1,1,Stagecraft & Venue Operations,"Theater, Venue and Entertainment Audio",author 19 more terms
+200,Microphone Specs & Characteristics,72,18,GROW,,0,2,,"Studio Recording; Broadcast, Podcast and Streaming Audio",author 18 more terms
+340,Audio File Formats & Media,72,18,GROW,,2,2,Recording Systems; Production Sound,"Studio Recording; Sound for Film, Television and Interactive Media",author 18 more terms
+1290,DAW: REAPER,72,18,GROW,,1,2,REAPER Production,Music Production; Electronic Music & Synthesis,author 18 more terms
+740,"Stage Platforms, Scenery & Soft Goods",73,17,GROW,,1,1,Stagecraft & Venue Operations,"Theater, Venue and Entertainment Audio",author 17 more terms
+1620,"Copyright, Publishing & Licensing",74,16,GROW,,1,2,Music Business & Entrepreneurship,"Broadcast, Podcast and Streaming Audio; AI Audio and Emerging Production",author 16 more terms
+830,Commercial 70/100V Systems,76,14,GROW,,1,1,Commercial Audio Systems,Commercial Audio and AV Systems,author 14 more terms
+960,Vehicle Audio,78,12,GROW,,1,0,Vehicle Audio,,author 12 more terms
+1090,Instrument Mixing — Drums & Percussion,78,12,GROW,,1,1,Instrument Mixing,Mixing and Mastering,author 12 more terms
+1790,Vinyl / Disc Mastering,78,12,GROW,,0,0,,,author 12 more terms
+1390,"Filters, Envelopes & Modulation",79,11,GROW,,1,1,Synthesis & Sound Design,Electronic Music & Synthesis,author 11 more terms
+1570,"Winds, Brass & Organ",79,11,GROW,,1,0,Instrument Sound Identification,,author 11 more terms
+130,"Power Fundamentals, Distribution & Quality",80,10,GROW,,1,3,Power Systems,"Commercial Audio and AV Systems; Audio Electronics, Service and Repair; Audio Networking & Infrastructure",author 10 more terms
+510,Absorption & Bass Trapping,80,10,GROW,,1,1,Room Treatment,Audio Acoustics and System Optimization,author 10 more terms
+1170,"Loudness, Dynamics & QC",81,9,GROW,,1,1,Mastering,Mixing and Mastering,author 9 more terms
+2040,Live Sound — Concert-Audio Slang,82,8,GROW,,0,0,,,author 8 more terms
+440,"Clocking, Redundancy & Network Management",87,3,GROW,,1,2,Networking,Commercial Audio and AV Systems; Audio Networking & Infrastructure,author 3 more terms
+480,Reverb,89,1,GROW,,1,2,Signal Processing,Mixing and Mastering; Music Production,author 1 more terms

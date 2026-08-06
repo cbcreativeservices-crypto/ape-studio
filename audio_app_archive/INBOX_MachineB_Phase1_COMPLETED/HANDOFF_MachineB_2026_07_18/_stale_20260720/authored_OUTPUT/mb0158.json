@@ -1,0 +1,233 @@
+{
+ "batch": 158,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "9e867aec-8e90-458c-9fa7-382470249509",
+   "term": "C1 error rate",
+   "fields": {
+    "definition": "The rate of first-stage (C1) errors in a CD's CIRC error correction, counted as the number of blocks per second containing errors at the input of the C1 decoder (BLER, block error rate). Under the Red Book (IEC 60908) the averaged BLER must not exceed 220 per second over any ten-second window.",
+    "plain_english": "This counts how many small read errors a CD player finds and fixes at the first stage each second. A good disc keeps this number low, so the music plays cleanly. If it climbs too high, the disc is close to failing.",
+    "purpose_function": "It measures how readable a pressed or burned CD is, because a low C1 rate shows the data can be recovered with the first layer of error correction to spare. It is the main go/no-go quality metric for CD manufacturing.",
+    "practical_application": "A QC or mastering engineer scans a finished disc on an analyzer and checks that peak and average BLER stay within Red Book limits before approving a glass master or a pressing run.",
+    "category": "Disc Quality Control",
+    "related_terms": ["C2 error rate", "BLER", "CIRC", "Red Book", "Compact Disc master", "CD mastering"],
+    "common_mistakes": [
+     "Confusing C1 errors with real failures: C1 errors are normal and fully corrected, whereas uncorrectable (E32/CU) errors are the actual problem.",
+     "Assuming a low C1 rate alone guarantees good audio, when burst errors and downstream C2/E32 counts also matter.",
+     "Reading BLER as a fixed lifetime spec rather than a snapshot that can worsen as a disc ages or is mishandled."
+    ],
+    "scenario_contexts": [
+     "Quality-checking a glass master before a replication run",
+     "Comparing burn quality across CD-R brands and write speeds",
+     "Diagnosing playback dropouts on returned or archived discs"
+    ]
+   },
+   "sources": ["IEC 60908 (Compact Disc Digital Audio, 'Red Book')", "Ballou, Handbook for Sound Engineers", "NIST/Library of Congress, Care and Handling of CDs and DVDs"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ec5ce2aa-c818-425b-82a3-f96a1019b87f",
+   "term": "C2 error rate",
+   "fields": {
+    "definition": "The rate of second-stage (C2) errors in a CD's CIRC error correction, counting blocks the first (C1) stage could not fix that are passed to the C2 decoder. C2 errors that remain uncorrectable (E32) force interpolation or muting and indicate serious data loss.",
+    "plain_english": "This counts the read errors that slip past the first fix stage and need a deeper repair. Many of these mean a disc is in poor shape. If even the second stage cannot fix them, the player has to guess or mute the sound.",
+    "purpose_function": "It flags discs whose errors are severe enough to threaten the audio, because C2 activity, especially uncorrectable E32 errors, is where real, audible data loss begins. It is a stricter health check than C1 alone.",
+    "practical_application": "During disc QC an engineer confirms corrected C2 (E22) errors are rare and that there are zero uncorrectable E32 errors before signing off, since any E32 means the master or pressing is rejected.",
+    "category": "Disc Quality Control",
+    "related_terms": ["C1 error rate", "BLER", "CIRC", "Red Book", "Compact Disc master"],
+    "common_mistakes": [
+     "Treating every C2 error as fatal: corrected E22 errors may be within tolerance, but uncorrectable E32 errors are not.",
+     "Relying on whether a disc 'plays fine' on one drive instead of measuring C2 and E32 on an analyzer.",
+     "Confusing the C2 error rate with C1 (BLER); C2 sits downstream and reflects more serious damage."
+    ],
+    "scenario_contexts": [
+     "Rejecting a glass master that shows uncorrectable E32 errors",
+     "Grading the long-term readability of archival CD-R media",
+     "Investigating audible clicks or dropouts traced to disc errors"
+    ]
+   },
+   "sources": ["IEC 60908 (Compact Disc Digital Audio, 'Red Book')", "Ballou, Handbook for Sound Engineers", "NIST/Library of Congress, Care and Handling of CDs and DVDs"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1b25b56d-c05a-418c-9eed-6d08fa8ed5c1",
+   "term": "CD mastering",
+   "fields": {
+    "definition": "The final preparation of finished stereo mixes into a Red Book (IEC 60908) compliant CD master, covering level and tonal balance, track sequencing, gaps and fades, PQ/subcode coding, ISRC and UPC embedding, and delivery as a DDP fileset, PMCD, or verified disc.",
+    "plain_english": "This is the last step that turns finished songs into the exact disc a factory will copy. The engineer sets a matching volume and tone across the tracks and puts them in order. The result is a master that meets the CD standard.",
+    "purpose_function": "It makes an album sound consistent and translate well across playback systems while meeting the technical rules a plant needs to press error-free discs. It is the bridge between mixing and manufacturing.",
+    "practical_application": "A mastering engineer loads mixes into an editor such as WaveLab, Sequoia, SADiE, or Pyramix, applies EQ, compression and limiting, builds the PQ sheet, and exports a DDP image for replication.",
+    "category": "CD Mastering",
+    "related_terms": ["Compact Disc master", "Red Book", "DDP", "PQ coding", "ISRC", "CD-Text authoring"],
+    "common_mistakes": [
+     "Setting inter-track gaps or track start IDs wrongly so songs run together or start clipped on the pressed disc.",
+     "Exceeding 0 dBFS or creating inter-sample peaks that distort on consumer players.",
+     "Skipping ISRC, UPC, or CD-Text entry and then having to re-cut the master.",
+     "Delivering audio that is not exactly 16-bit / 44.1 kHz, which is out of Red Book spec."
+    ],
+    "scenario_contexts": [
+     "Preparing an album for CD replication",
+     "Creating a reference disc for an artist to approve",
+     "Assembling and sequencing a compilation from multiple sessions"
+    ]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science", "Owsinski, The Mastering Engineer's Handbook", "IEC 60908 (Compact Disc Digital Audio, 'Red Book')"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c7bf691e-3369-47b6-ab04-794072dd6edb",
+   "term": "CD-Text authoring",
+   "fields": {
+    "definition": "The process of entering and encoding disc and track metadata, such as album title, track titles, performer, songwriter, composer, and arranger, into the R-W subcode channels of a Red Book CD so compatible players can display it. It is added during premastering and written into the DDP or disc master.",
+    "plain_english": "This is adding the album name, song titles, and artist so a CD player can show them on screen. The text rides along in a spare data lane on the disc. The engineer types it in while building the master.",
+    "purpose_function": "It lets standard CD players show readable title and artist information with no internet lookup, since the text travels on the disc itself. This improves the listener experience.",
+    "practical_application": "In mastering software the engineer fills in the CD-Text fields for the disc and each track, then confirms it is included in the exported DDP fileset sent to the plant.",
+    "category": "Disc Authoring",
+    "related_terms": ["CD mastering", "Compact Disc master", "Red Book", "ISRC", "PQ coding", "DDP"],
+    "common_mistakes": [
+     "Confusing CD-Text (stored on the disc) with CDDB/Gracenote lookup (fetched online); they are different systems.",
+     "Exceeding the CD-Text character limits so titles are truncated on players.",
+     "Using characters outside the supported set, causing garbled display.",
+     "Forgetting to embed CD-Text in the final DDP, so it is missing from pressed discs."
+    ],
+    "scenario_contexts": [
+     "Adding album and track titles to a commercial CD master",
+     "Preparing a promo disc that displays artist and track names",
+     "Matching CD-Text to the printed booklet and PQ log"
+    ]
+   },
+   "sources": ["IEC 60908 (Compact Disc Digital Audio, 'Red Book')", "Ballou, Handbook for Sound Engineers", "Owsinski, The Mastering Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9aec6885-66e7-4aa0-9eb8-cc6fa848473b",
+   "term": "Channel-based re-render",
+   "fields": {
+    "definition": "A deliverable made by rendering an object- and bed-based immersive mix, such as Dolby Atmos, down to a fixed channel layout like 5.1, 7.1.4, stereo, or binaural. The renderer resolves object positions and bed channels into the target speaker feeds for monitoring or delivery.",
+    "plain_english": "An immersive mix places sounds as movable objects in a 3D space. A channel-based re-render turns that mix into a normal set of fixed speaker feeds, like 5.1 surround or plain stereo. It lets people without an immersive setup hear a matching version.",
+    "purpose_function": "It produces the flat, speaker-specific versions that distributors and older systems need from a single immersive master, so one mix can serve many formats while staying consistent with the original.",
+    "practical_application": "In the Dolby Atmos Renderer or a DAW's built-in renderer, the engineer prints re-renders such as 2.0, 5.1, 7.1.4, and binaural from the master, checking levels and downmix balance on each.",
+    "category": "Immersive Delivery",
+    "related_terms": ["Dolby Atmos", "ADM BWF", "Binaural rendering", "Downmix", "Bed", "Object-based audio"],
+    "common_mistakes": [
+     "Assuming a re-render is a simple downmix, when object positions and renderer settings change the result.",
+     "Not checking loudness and clipping on each re-render, since folding channels together can raise levels.",
+     "Forgetting that binaural re-renders depend on per-object distance settings that must be set in the mix."
+    ],
+    "scenario_contexts": [
+     "Delivering 5.1 and stereo versions alongside a Dolby Atmos master",
+     "Creating a binaural headphone version for streaming",
+     "Providing a stereo re-render for broadcast from an immersive session"
+    ]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)", "Dolby Professional, Dolby Atmos Renderer product technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "12250777-c613-4b93-ab4a-396c766b3cca",
+   "term": "Choir stem",
+   "fields": {
+    "definition": "A stem consisting of the mixed and processed choir (vocal ensemble) tracks bounced together as one submix, kept separate from other instrument groups. It carries the full choir at its final balance for use in mastering, re-mixing, or delivery.",
+    "plain_english": "A stem is one track that holds a whole group of related sounds mixed together. A choir stem is that single track for just the choir voices. Keeping it separate lets someone change the choir later without touching the rest.",
+    "purpose_function": "It lets a mastering engineer, film mixer, or remixer control the choir's level and tone on its own after the mix is done, without returning to every individual voice track. It also supports stem delivery and archiving.",
+    "practical_application": "An engineer receiving a set of stems can raise or gently EQ the choir stem during stem mastering, or supply it to a film re-recording mixer who needs the choir on its own fader.",
+    "category": "Stems & Sources",
+    "related_terms": ["Stem", "Stem mastering", "Submix", "Bus", "Vocal stem"],
+    "common_mistakes": [
+     "Bouncing the choir stem with different plugins or timing than the full mix, so the stems no longer sum to the original.",
+     "Not matching sample rate, bit depth, and start time across stems, causing sync or level problems.",
+     "Treating a stem as a finished solo mix rather than a component that must recombine with the others."
+    ],
+    "scenario_contexts": [
+     "Delivering stems for stem mastering",
+     "Supplying a choir stem to a film or TV re-recording mixer",
+     "Creating an instrumental or a cappella version by muting or soloing stems"
+    ]
+   },
+   "sources": ["Owsinski, The Mastering Engineer's Handbook", "Katz, Mastering Audio: The Art and the Science", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d5c1d3f2-6151-4bdc-8df4-e47a66f56ae1",
+   "term": "Chromium dioxide coating",
+   "fields": {
+    "definition": "A magnetic recording layer made of chromium dioxide (CrO2) used on Type II ('chrome'/high-bias) cassette and some open-reel tapes. Its higher coercivity and needle-shaped particles give better high-frequency response and lower noise than standard ferric-oxide tape, and it uses the 70 microsecond replay equalization time constant.",
+    "plain_english": "This is a special coating on some cassette tapes made from a chromium compound. It holds magnetic signals more firmly than common brown tape, so it captures crisp high notes with less hiss. Decks have a 'chrome' or 'high bias' setting made to match it.",
+    "purpose_function": "It exists to raise cassette recording quality, giving cleaner treble and a better signal-to-noise ratio than Type I ferric tape. Matching the recorder's bias and equalization to it is what unlocks that improvement.",
+    "practical_application": "When dubbing to a Type II chrome cassette, an engineer selects the deck's high-bias / 70 microsecond setting, or relies on the shell's auto-detect notch, so the recording is correctly biased and equalized.",
+    "category": "Magnetic Media",
+    "related_terms": ["Tape bias", "Ferric oxide tape", "Type II cassette", "Tape equalization", "Noise reduction"],
+    "common_mistakes": [
+     "Recording chrome tape on a Type I (normal bias) setting, giving a dull or mistracked result.",
+     "Assuming high-bias tape is always better, when the deck must actually support and be aligned for it.",
+     "Confusing the 70 microsecond playback EQ of Type II with the 120 microsecond used for Type I."
+    ],
+    "scenario_contexts": [
+     "Dubbing a master to high-bias cassette for distribution",
+     "Aligning a cassette deck's bias and EQ for chrome tape",
+     "Archiving or transferring vintage Type II recordings"
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (magnetic recording)", "IEC 60094 (Magnetic tape sound recording and reproducing systems)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a5100053-7fc9-45fa-92ed-106b178b1cc7",
+   "term": "Client attended mastering",
+   "fields": {
+    "definition": "A mastering session in which the client (artist, producer, or label representative) is physically present in the mastering room, listening on the studio monitoring and giving feedback in real time as decisions are made, as opposed to an unattended session delivered remotely.",
+    "plain_english": "This is a mastering session where the artist or producer sits in the room while the engineer works. They hear each change on the studio speakers and give feedback right away. It is the opposite of sending files and waiting for the result.",
+    "purpose_function": "It lets creative decisions be approved on the spot on trusted monitoring, cutting revision rounds and giving the client confidence in the final sound. It also books the room and engineer's time exclusively.",
+    "practical_application": "A studio schedules attended time at a higher rate; the engineer prepares the session beforehand, then makes tonal and level moves live while the client approves each track.",
+    "category": "Session Workflow",
+    "related_terms": ["Unattended mastering", "Mastering", "Reference monitor", "Revision", "CD mastering"],
+    "common_mistakes": [
+     "Expecting a client's laptop or headphones to match the mastering room, then chasing changes that only 'fix' unfamiliar monitoring.",
+     "Letting a room full of opinions push level or brightness too far from a translatable master.",
+     "Not preparing and gain-staging the session beforehand, wasting paid attended time."
+    ],
+    "scenario_contexts": [
+     "An artist attending to approve final tonal balance and sequencing",
+     "A label rep signing off on a single before release",
+     "Comparing masters against references in the room with the client present"
+    ]
+   },
+   "sources": ["Owsinski, The Mastering Engineer's Handbook", "Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "87f9231d-793d-42ee-b039-940a0c92fc22",
+   "term": "Compact Disc master",
+   "fields": {
+    "definition": "The final, Red Book (IEC 60908) compliant master from which CDs are replicated, delivered as a DDP fileset, a PMCD (Pre-Master CD), or an approved verified disc, containing the audio plus PQ subcode, ISRC/UPC, and any CD-Text. It defines exactly what the pressing plant reproduces.",
+    "plain_english": "This is the finished, approved version of a disc that a factory copies exactly. It holds the audio plus hidden data like track marks, gaps, and codes. Whatever is on this master ends up on every pressed CD.",
+    "purpose_function": "It is the single authoritative source for CD manufacturing, so every pressed copy matches the approved audio and metadata. Delivering it in a checked format keeps errors out of the run.",
+    "practical_application": "After mastering, the engineer exports a DDP image with a checksum, or cuts and verifies a PMCD, and sends it to the replicator as the reference for the glass master.",
+    "category": "Master Formats",
+    "related_terms": ["DDP", "PMCD", "Glass master", "Red Book", "CD mastering", "PQ coding"],
+    "common_mistakes": [
+     "Sending a plain burned audio CD-R with no checksum as a 'master', risking undetected read errors on the copy.",
+     "Assuming a plain data copy preserves PQ, ISRC, and CD-Text; only proper master formats (DDP/PMCD) do.",
+     "Not verifying the master's checksum, so a corrupted transfer is pressed unnoticed."
+    ],
+    "scenario_contexts": [
+     "Delivering a DDP fileset to a replication plant",
+     "Cutting and verifying a PMCD for a small run",
+     "Archiving the approved master for future repressings"
+    ]
+   },
+   "sources": ["IEC 60908 (Compact Disc Digital Audio, 'Red Book')", "Owsinski, The Mastering Engineer's Handbook", "Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

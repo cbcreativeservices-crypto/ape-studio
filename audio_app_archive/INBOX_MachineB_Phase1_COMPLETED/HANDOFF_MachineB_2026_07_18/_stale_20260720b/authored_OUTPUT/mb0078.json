@@ -1,0 +1,142 @@
+{
+ "batch": 78,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "e0823ff4-282b-49d8-8eb6-f3ad59ea6ebc",
+   "term": "Vocal width control",
+   "fields": {
+    "definition": "The practice of setting how wide a vocal part sits across the stereo field, using panning of doubles and layers, stereo effects, or mid/side processing to control the perceived spread between the left and right speakers.",
+    "plain_english": "It means setting how far a voice spreads out between the left and right speakers. A lead vocal is usually kept in the middle, while copies and harmonies are spread out wide to sound big.",
+    "purpose_function": "It lets an engineer keep the lead vocal firmly in the center while spreading supporting layers outward, shaping focus, size, and how the vocal fits around the other instruments.",
+    "practical_application": "An engineer pans doubles and harmony stacks left and right, or uses a stereo widener, then checks the result in mono to make sure the vocal still holds together.",
+    "category": "Vocal production",
+    "related_terms": ["Wide doubling", "Vocal-stack arrangement", "Vocal-stack blend", "Panning", "Stereo image"],
+    "common_mistakes": ["Panning the lead vocal wide, which pulls it off center and weakens its focus.", "Widening so much that the vocal loses power or thins out when the mix is summed to mono.", "Confusing stereo width with reverb depth; width is left-to-right, not front-to-back."],
+    "scenario_contexts": ["Spreading doubled backing vocals hard left and right to make a chorus feel big.", "Keeping a lead vocal centered while widening its harmony stack in a pop mix.", "Checking a widened vocal in mono to confirm it still translates on a phone speaker."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound, panning double-tracked vocals"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c2c20b3a-ca73-4838-8698-aaeda016802b",
+   "term": "Vocal word replacement",
+   "fields": {
+    "definition": "A vocal editing technique in which a single word, syllable, or short phrase in a chosen take is swapped for the same word taken from another take, to fix a flubbed lyric, poor tuning, or weak delivery without re-recording the whole part.",
+    "plain_english": "It is fixing one bad word in a vocal take by dropping in the same word from another take. It saves the singer from redoing a whole line just to fix one slip.",
+    "purpose_function": "It lets an engineer repair small problems in an otherwise great performance, keeping the best overall take while patching only the weak moment.",
+    "practical_application": "During comping, the engineer finds a matching word from an alternate take, places it at a zero-crossing or quiet gap, and crossfades the joins so the swap is inaudible.",
+    "category": "Vocal editing",
+    "related_terms": ["Comping", "Crossfade", "Punch-in", "Zero-crossing", "Vocal-stack arrangement"],
+    "common_mistakes": ["Splicing in a word with a different pitch or tone, so the edit sticks out.", "Cutting on a loud part of the waveform instead of a zero-crossing, which causes a click.", "Forgetting to match the room sound or breath, so the replaced word feels pasted in."],
+    "scenario_contexts": ["Replacing a mispronounced word in the second verse using the same word from another take.", "Swapping a flat-sounding syllable for a better one before tuning the vocal.", "Patching a single word after the singer has already left the session."]
+   },
+   "sources": ["Owsinski, The Recording Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4497d5a1-2cd2-4654-a381-7680eb2b23c2",
+   "term": "Vocal-stack arrangement",
+   "fields": {
+    "definition": "The way multiple recorded vocal layers, such as leads, doubles, octaves, and harmonies, are chosen, assigned, and organized within each song section to build a fuller, more produced vocal part.",
+    "plain_english": "It is the plan for how many vocal layers you record and where each one sits in a song. Think of it like stacking voices in a choir so the chorus sounds big while the verse stays simple.",
+    "purpose_function": "It shapes the size and energy of each section, letting quieter verses stay intimate while choruses open up with added doubles and harmonies.",
+    "practical_application": "A producer maps out which parts get single leads versus stacked doubles and harmonies, then tracks each layer cleanly so they can be balanced later.",
+    "category": "Vocal arrangement",
+    "related_terms": ["Vocal-stack blend", "Vocal-stack density", "Wide doubling", "Harmony", "Double tracking"],
+    "common_mistakes": ["Stacking every section the same way, so the chorus no longer feels like a lift.", "Recording harmonies out of tune with each other, which muddies the whole stack.", "Adding so many layers that the lead vocal gets buried."],
+    "scenario_contexts": ["Planning a big stacked chorus and a bare single-vocal verse for a pop song.", "Adding octave-up harmonies only in the final chorus for extra lift.", "Deciding which backing lines to double for a fuller sound."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ba9f8479-b1d9-408b-b85a-885fe44ebdd4",
+   "term": "Vocal-stack blend",
+   "fields": {
+    "definition": "The balance and tonal matching of the individual layers within a stacked vocal so they fuse into one cohesive part rather than a set of separate voices, achieved through relative levels, EQ, panning, timing, and dynamics.",
+    "plain_english": "It is getting all the stacked voices to melt together into one smooth sound. Like a choir where no single singer sticks out, the layers should feel like one big voice.",
+    "purpose_function": "A good blend makes many recorded layers read as a single, rich vocal, so the stack supports the song instead of sounding cluttered.",
+    "practical_application": "The engineer sets relative fader levels, matches EQ and timing across layers, and often buses them together with light compression so they move as one.",
+    "category": "Vocal production",
+    "related_terms": ["Vocal-stack arrangement", "Vocal-stack density", "Vocal width control", "Bus compression", "EQ"],
+    "common_mistakes": ["Leaving one layer much louder than the rest, which breaks the single-voice illusion.", "Skipping timing edits, so loose layers smear the words.", "Over-compressing the stack until it sounds flat and lifeless."],
+    "scenario_contexts": ["Balancing a lead, two doubles, and harmonies into one smooth chorus vocal.", "Bussing a harmony stack and gluing it with gentle compression.", "Matching EQ across layers recorded on different days."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f1d2d389-b7c3-457a-b3cf-39eb14333765",
+   "term": "Vocal-stack density",
+   "fields": {
+    "definition": "The number and thickness of vocal layers sounding at a given point in a stack, describing how many doubles, octaves, and harmonies play together to create a thin or thick vocal texture.",
+    "plain_english": "It is how many voices are stacked up at once, making the sound thin or thick. A few layers feel light, while many layers feel huge and wall-like.",
+    "purpose_function": "Varying density across a song controls contrast and energy, letting sections grow or shrink in size to serve the arrangement.",
+    "practical_application": "An engineer adds or mutes layers section by section, building density into choruses and thinning it in verses to keep the song dynamic.",
+    "category": "Vocal arrangement",
+    "related_terms": ["Vocal-stack arrangement", "Vocal-stack blend", "Vocal-stack depth", "Wide doubling", "Double tracking"],
+    "common_mistakes": ["Keeping density high the whole way through, so the chorus stops feeling bigger.", "Piling on layers that fight for the same frequencies and turn muddy.", "Confusing more layers with more volume; density is about texture, not just level."],
+    "scenario_contexts": ["Thinning vocal layers in a verse to leave room for the lead.", "Stacking many harmonies in a final chorus for maximum size.", "Building density gradually across a pre-chorus into the drop."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "09988a8f-9b24-418d-b8a7-b8440a3f35ca",
+   "term": "Vocal-stack depth",
+   "fields": {
+    "definition": "The sense of front-to-back space among vocal layers in a stack, created with reverb, delay, level, and EQ so some layers sit forward and close while others sit farther back behind the lead.",
+    "plain_english": "It is how near or far each stacked voice sounds. The lead sits up close, while backing layers are pushed back with echo and reverb so they feel behind it.",
+    "purpose_function": "Depth keeps the lead vocal up front and clear while placing supporting layers behind it, giving the stack a three-dimensional feel instead of a flat wall.",
+    "practical_application": "The engineer uses reverb and delay sends, small level cuts, and gentle high-frequency rolloff on backing layers to set them back behind a dry, present lead.",
+    "category": "Vocal production",
+    "related_terms": ["Vocal-stack blend", "Vocal-stack density", "Reverb", "Delay", "Vocal width control"],
+    "common_mistakes": ["Drowning the lead in reverb, which pushes it back with the backing layers.", "Using the same reverb on every layer, so nothing sits in front.", "Confusing depth, which is front-to-back, with width, which is left-to-right."],
+    "scenario_contexts": ["Pushing harmony layers back with reverb while keeping the lead dry and close.", "Using a longer reverb on distant backing vocals in a ballad.", "Layering a soft, far-back vocal behind a present lead for atmosphere."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0d8fdeae-a644-4ab9-ad22-29f5acfbcfb3",
+   "term": "Vocal-stack ducking",
+   "fields": {
+    "definition": "The use of automatic gain reduction so a backing vocal stack drops in level whenever the lead vocal is present, keyed from the lead, so the layers make room for the lead and rise back up in the gaps between phrases.",
+    "plain_english": "It means the backing voices automatically dip down whenever the lead sings, then come back up in the gaps. Like backup singers stepping back so you always hear the main voice.",
+    "purpose_function": "It keeps the lead vocal clear and out front even under a thick stack, without the engineer having to ride the backing levels by hand through the whole song.",
+    "practical_application": "The engineer puts a sidechain compressor or volume automation on the backing bus, keyed from the lead vocal, and sets threshold and release so the stack dips only while the lead sings.",
+    "category": "Vocal production",
+    "related_terms": ["Sidechain compression", "Vocal-stack blend", "Ducking", "Automation", "Bus compression"],
+    "common_mistakes": ["Setting too much gain reduction, so the backing vocals pump noticeably.", "Using too fast a release, which causes an audible surge between words.", "Ducking the whole mix instead of just the backing bus."],
+    "scenario_contexts": ["Dipping a harmony stack under the lead in a dense chorus.", "Sidechaining backing vocals so they lift in the gaps between lead lines.", "Keeping a rap ad-lib stack from covering the main vocal."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "35207e1c-2df0-41c8-95cb-569ef4b00a61",
+   "term": "Wide doubling",
+   "fields": {
+    "definition": "A production technique in which a vocal or instrument part is performed twice and the two takes are panned toward opposite sides of the stereo field, so the small differences between them create a wider, thicker sound.",
+    "plain_english": "It means recording the same part twice and sending one take to the left and one to the right. The small differences between the two takes make the sound feel wide and full.",
+    "purpose_function": "It broadens and thickens a part across the stereo image, adding size to choruses and backing vocals without simply raising the level of a single centered track.",
+    "practical_application": "The singer performs the line a second time, and the engineer pans the two takes hard left and right at matched levels, then checks the result in mono.",
+    "category": "Vocal production",
+    "related_terms": ["Double tracking", "Vocal width control", "Vocal-stack arrangement", "Panning", "Stereo image"],
+    "common_mistakes": ["Copying one take instead of performing a real second take, which gives no true width.", "Setting the two sides at different levels, which pulls the image to one side.", "Not checking mono, where hard-panned doubles can partly cancel or change tone."],
+    "scenario_contexts": ["Panning two chorus vocal takes hard left and right for a big, wide sound.", "Widening a doubled rhythm guitar in a rock mix.", "Spreading backing vocals across the stereo field behind a centered lead."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Sound on Sound, panning double-tracked vocals"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

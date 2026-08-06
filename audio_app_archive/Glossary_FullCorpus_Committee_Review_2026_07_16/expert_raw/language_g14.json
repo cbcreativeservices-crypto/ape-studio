@@ -1,0 +1,223 @@
+{
+ "expert": "language",
+ "group": 14,
+ "reviews": [
+  {
+   "id": "773e2501-2b21-4a28-86c4-6011a5c94ad1",
+   "term": "Decay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "94c981ef-f157-44cc-824f-d47563d37f32",
+   "term": "Decay Time",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6f8b7d5f-e7fe-4610-8b81-6da79ee2cbaf",
+   "term": "Decibel (dB)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "746c9187-cca1-49bb-9886-511ec011aa84",
+   "term": "Decibel reference levels",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6a5cdf3b-748e-42c1-99b2-ad732f9c8975",
+   "term": "Dedicated Circuit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "24c2c1b2-9449-4a58-b825-551f3c296a38",
+   "term": "delay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fbb7be92-bf0d-4d01-b37a-bf3ab0241216",
+   "term": "Delay alignment",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d4e75c5a-61a0-4a0e-bd88-c86389afbbb2",
+   "term": "Delay compensation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "42e5826b-f632-4659-a860-08795ae8fdf6",
+   "term": "Delay field",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a5700753-dedb-4002-b5ca-5faec88606c8",
+   "term": "Delay finder",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d465c8cb-11d0-48c7-a8fa-75e2a84244e2",
+   "term": "Delay Locator",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5f102201-373b-4102-9417-8e0110f460b5",
+   "term": "Delay Time",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "196ccd06-9b09-4aba-8151-595320c8d5d9",
+   "term": "Delay Tower",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2ec4db98-6cb7-46d2-ac19-3b6362f1ffce",
+   "term": "Deliverables",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "03293f77-7b20-4f18-9762-11c241187fe6",
+   "term": "Delta Configuration",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fc1849bb-48c9-41dd-9df2-1a30b760bd76",
+   "term": "delta-sigma modulation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1f7c1300-8bee-4ac1-98a9-ba89c4a7b924",
+   "term": "Density",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c8c27099-aff1-4914-966c-d5d4b861a361",
+   "term": "Destructive Interference",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ba95cabb-2a77-481e-848b-aad55f646dfd",
+   "term": "Deviation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e1c144be-c358-4100-af02-eebb96fbbff1",
+   "term": "Device Checkout",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "44808680-76c4-449c-aa8e-7487b1fef620",
+   "term": "Device options",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "plain_english",
+     "severity": "Low",
+     "issue": "Subject-verb number mismatch: 'Device options is the part...' pairs the plural noun 'options' with the singular verb 'is', which reads awkwardly (elsewhere the corpus treats such labels as plural, e.g. 'Deliverables are').",
+     "suggestion": "Reword to 'Device options are the settings in the measurement software where you set up your audio hardware before measuring.' (preserves meaning; agrees in number)."
+    }
+   ]
+  },
+  {
+   "id": "00aafb7b-2a42-4217-bb50-aa569635e9f1",
+   "term": "DI box (direct injection)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8a7cf575-58eb-4d45-86f0-4f8fdde293f8",
+   "term": "Diagnostic measurement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a26ba931-610f-4ffb-8038-44a2eddc0294",
+   "term": "Dialogue",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c746fa10-d49e-4571-8ef7-832ddfcf27e3",
+   "term": "Diaphragm",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "43d1ad9b-904f-4d30-b6bc-716322e1a9de",
+   "term": "Diaphragm tension",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4fbccfcb-a5c9-4336-b7cf-87febd19ae2e",
+   "term": "Dielectric",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bdf47097-7388-404d-a7b8-0dadaada9f52",
+   "term": "Differential Signal",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ff52a698-1f96-4887-9b2c-f6bb3da7afda",
+   "term": "Diffraction",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7c2c8f00-e016-43e7-acbd-046ef1e430b1",
+   "term": "Diffuse Field",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "96326534-1f72-43df-97ef-c2e0a00ca29d",
+   "term": "Diffuser",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "74e6fb12-d6d8-4987-a75a-c0b09671d697",
+   "term": "Diffusion",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2cd8ac26-70c1-4af1-9439-24222ea4b8e9",
+   "term": "Digital Assistive System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e9071a60-cd10-4b1c-a41f-3f033ce9c421",
+   "term": "Digital Audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c2250ac1-d51f-4f03-b43e-d0d255e81bf8",
+   "term": "digital audio data compression",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

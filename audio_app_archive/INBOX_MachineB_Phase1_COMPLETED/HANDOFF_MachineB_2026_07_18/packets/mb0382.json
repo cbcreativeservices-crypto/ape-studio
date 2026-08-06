@@ -1,0 +1,131 @@
+{
+ "batch": 382,
+ "topic": "Object & Bed Panning / Authoring",
+ "terms": [
+  {
+   "id": "1ca3a65f-7e71-40b6-b92f-9ea55cbbed28",
+   "term": "Object snap",
+   "topic": "Object & Bed Panning / Authoring",
+   "seq": 1660,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "65b5770b-d3d3-4fe4-ae5f-9e5d674625ce",
+   "term": "Object spread",
+   "topic": "Object & Bed Panning / Authoring",
+   "seq": 1660,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "4c2b101f-e1f7-4a48-9ad4-1a14008554be",
+   "term": "Object trajectory",
+   "topic": "Object & Bed Panning / Authoring",
+   "seq": 1660,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "b0c55bdb-e144-4ffb-ac1f-e93f7a1af0bd",
+   "term": "Object trim",
+   "topic": "Object & Bed Panning / Authoring",
+   "seq": 1660,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "00b13fd4-d2dc-4e5b-ae96-8b1a20d8bc5a",
+   "term": "Object-based music mix",
+   "topic": "Object & Bed Panning / Authoring",
+   "seq": 1660,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

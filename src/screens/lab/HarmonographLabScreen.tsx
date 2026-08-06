@@ -28,12 +28,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import Svg, { Circle, Defs, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
+import Svg, { Circle, Defs, G, Line, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import Animated, {
   Easing,
   cancelAnimation,
   useAnimatedProps,
   useSharedValue,
+  withRepeat,
   withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
@@ -46,6 +47,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
+import { DragSlider } from './foundations/bits';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -67,7 +69,7 @@ const DAMPINGS = [
   { key: 'heavy', label: 'HEAVY', endAmp: 0.06 },
 ] as const;
 const DETUNES = [
-  { key: 0, label: 'LOCKED' },
+  { key: 0, label: 'LOCKED RATIO' },
   { key: 0.01, label: '+1%' },
   { key: 0.03, label: '+3%' },
 ] as const;
@@ -91,7 +93,10 @@ export function HarmonographLabScreen() {
   // to the mono additive mixture.
   const stereoReady = engineReady && ApeDsp.engineVersion() >= 5;
 
-  const [ratioIdx, setRatioIdx] = useState(2); // 3:2 — the fifth
+  // Each oscillator's frequency as a harmonic number of BASE_F0 (owner
+  // 2026-08-05): the sliders drive these directly; the ratio chips are presets.
+  const [n1, setN1] = useState(3); // 3:2 — the fifth
+  const [n2, setN2] = useState(2);
   const [phase, setPhase] = useState<(typeof PHASES)[number]>(90);
   const [dampKey, setDampKey] = useState<(typeof DAMPINGS)[number]['key']>('medium');
   const [rotary, setRotary] = useState(false);
@@ -106,7 +111,21 @@ export function HarmonographLabScreen() {
     setLessonOpen(true);
   }, []);
 
-  const ratio = RATIOS[ratioIdx];
+  // Oscillator frequencies sweep CONTINUOUSLY (owner 2026-08-05); the integers
+  // 1..8 are the "sweet spots" where the figure closes and the additive audio
+  // is an exact harmonic. Between them the figure precesses like the detune
+  // lesson.
+  const nearInt = (x: number) => Math.abs(x - Math.round(x)) < 0.03;
+  const isExact = nearInt(n1) && nearInt(n2) && detune === 0;
+  const fmtN = (x: number) => (nearInt(x) ? String(Math.round(x)) : x.toFixed(2));
+  // Match a named interval when BOTH oscillators sit on (near) its integers.
+  const matched = RATIOS.find((r) => Math.abs(n1 - r.n1) < 0.03 && Math.abs(n2 - r.n2) < 0.03);
+  const ratio = {
+    n1,
+    n2,
+    label: matched?.label ?? `${fmtN(n1)}:${fmtN(n2)}`,
+    interval: matched?.interval ?? 'CUSTOM RATIO',
+  };
   const damping = DAMPINGS.find((d) => d.key === dampKey)!;
 
   // -- Interval audio (v3 additive; locked ratios only) ----------------------
@@ -115,8 +134,13 @@ export function HarmonographLabScreen() {
   /** [f0, a1..a12, p1..p12] with amps at the two ratio harmonics. */
   const intervalPayload = useCallback((n1: number, n2: number): number[] => {
     const amps = new Array(12).fill(0);
-    amps[n1 - 1] = 1;
-    amps[n2 - 1] = 1; // unison (n1===n2) just sets the one harmonic
+    // The additive engine renders EXACT integer harmonics, so round each
+    // oscillator to its nearest harmonic for the mono path (the FIGURE still
+    // uses the continuous value; the stereo path plays the exact frequencies).
+    const i1 = Math.min(12, Math.max(1, Math.round(n1)));
+    const i2 = Math.min(12, Math.max(1, Math.round(n2)));
+    amps[i1 - 1] = 1;
+    amps[i2 - 1] = 1; // unison (i1===i2) just sets the one harmonic
     return [BASE_F0, ...amps, ...new Array(12).fill(0)];
   }, []);
 
@@ -170,9 +194,21 @@ export function HarmonographLabScreen() {
 
   // Ratio switch while sounding retunes in place; detune silences (visual-only).
   const pickRatio = (i: number) => {
-    setRatioIdx(i);
+    setN1(RATIOS[i].n1);
+    setN2(RATIOS[i].n2);
     if (running) {
       ApeDsp.genSet(intervalGenParams(RATIOS[i].n1, RATIOS[i].n2));
+      noteAudioActivity();
+    }
+  };
+  // Slider-driven oscillator frequency (harmonic number 1..8) — retunes live.
+  const setOsc = (which: 1 | 2, nn: number) => {
+    const a = which === 1 ? nn : n1;
+    const b = which === 2 ? nn : n2;
+    if (which === 1) setN1(nn);
+    else setN2(nn);
+    if (running) {
+      ApeDsp.genSet(intervalGenParams(a, b));
       noteAudioActivity();
     }
   };
@@ -204,12 +240,14 @@ export function HarmonographLabScreen() {
 
       <CollapsibleSection title="READOUTS">
         <Text style={styles.readMain}>
-          {ratio.label} — {ratio.interval} · {hz1} Hz : {hz2} Hz
+          {ratio.label} — {ratio.interval} · {Math.round(hz1)} Hz : {Math.round(hz2)} Hz
         </Text>
         <Text style={styles.caption}>
-          {detune === 0
-            ? `Harmonics ${ratio.n1} and ${ratio.n2} of ${BASE_F0} Hz — an exact ${ratio.label} ratio; the figure closes.`
-            : `Detuned +${detune * 100}% — the near-miss never closes; the slow precession IS beating.`}
+          {isExact
+            ? `Harmonics ${Math.round(n1)} and ${Math.round(n2)} of ${BASE_F0} Hz — an exact ${ratio.label} ratio; the figure closes.`
+            : detune !== 0
+              ? `Detuned +${detune * 100}% — the near-miss never closes; the slow precession IS beating.`
+              : `Between exact ratios (${ratio.label}) — the figure precesses and never quite closes, just like a slight detune.`}
         </Text>
       </CollapsibleSection>
 
@@ -232,6 +270,8 @@ export function HarmonographLabScreen() {
             <HarmonographFigure
               n1={ratio.n1}
               n2={ratio.n2}
+              hz1={hz1}
+              hz2={hz2}
               phaseDeg={phase}
               endAmp={damping.endAmp}
               rotary={rotary}
@@ -239,23 +279,47 @@ export function HarmonographLabScreen() {
             />
           </Pressable>
           <Text style={styles.caption}>
-            {detune === 0
+            {isExact
               ? `${ratio.label} (${ratio.interval.toLowerCase()}) — a simple integer ratio closes into a stable figure.`
-              : `${ratio.label} detuned ${detune * 100}% — the near-miss never closes; the slow precession you see IS beating.`}
+              : detune !== 0
+                ? `${ratio.label} detuned ${detune * 100}% — the near-miss never closes; the slow precession you see IS beating.`
+                : `${ratio.label} — between exact harmonics, so the figure slowly precesses instead of closing.`}
           </Text>
           <DisplayGuideButton onPress={() => openLesson('display')} />
         </View>
       </CollapsibleSection>
 
       <CollapsibleSection title="CONTROLS">
+        {/* Sliders first (owner 2026-08-05 wave-style order): dial each
+            oscillator's frequency and watch the figure emerge. */}
+        <Text style={styles.sectionHead}>OSCILLATOR FREQUENCIES</Text>
+        <Text style={styles.caption}>
+          Integers 1–8 are the sweet spots — the figure closes and the tone is an exact harmonic.
+          Sweep between them and the figure precesses, just like a slight detune.
+        </Text>
+        <DragSlider
+          value={(n1 - 1) / 7}
+          onChange={(v) => setOsc(1, 1 + v * 7)}
+          label="OSC 1 · X ARM FREQUENCY"
+          readout={`${Math.round(hz1)} Hz · ×${fmtN(n1)}${nearInt(n1) ? '' : ' (between)'}`}
+          onHelp={() => openLesson('ratio_lock')}
+        />
+        <DragSlider
+          value={(n2 - 1) / 7}
+          onChange={(v) => setOsc(2, 1 + v * 7)}
+          label="OSC 2 · Y ARM FREQUENCY"
+          readout={`${Math.round(hz2)} Hz · ×${fmtN(n2)}${nearInt(n2) ? '' : ' (between)'}`}
+          onHelp={() => openLesson('ratio_lock')}
+        />
+
         <Text style={styles.sectionHead}>RATIO — INTERVAL</Text>
         <View style={styles.chipRow}>
-          {RATIOS.map((r, i) => (
+          {RATIOS.map((r) => (
             <LabChip
               key={r.label}
               label={`${r.label} ${r.interval}`}
-              selected={ratioIdx === i}
-              onPress={() => pickRatio(i)}
+              selected={Math.abs(n1 - r.n1) < 0.03 && Math.abs(n2 - r.n2) < 0.03}
+              onPress={() => pickRatio(RATIOS.indexOf(r))}
               onLongPress={() => openLesson('ratio_lock')}
             />
           ))}
@@ -363,10 +427,20 @@ const TRACE_STEPS = [
   { color: '#9c5e1e', coreO: 0.36, glowO: 0.05 },
 ] as const;
 
-/** How long the pen takes to walk the full trace on a selection change. */
-const DRAW_MS = 3000;
+/** How long the pen takes to walk the full trace on a selection change. Slowed
+ *  (owner 2026-08-05) so the figure EMERGES rather than snapping in. */
+const DRAW_MS = 11000;
+/** Rotary-table spin period (one full paper rotation). */
+const TABLE_MS = 9000;
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
+const AnimatedLine = Animated.createAnimatedComponent(Line);
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+const AnimatedText = Animated.createAnimatedComponent(SvgText);
+const AnimatedG = Animated.createAnimatedComponent(G);
+
+const ARM_X = '#4fd0e0'; // X oscillator arm (cyan)
+const ARM_Y = '#b48bff'; // Y oscillator arm (violet)
 
 /** One phosphor pass (glow or core) of one trace segment, revealed by the
  *  shared draw progress: segment i becomes visible across the progress window
@@ -420,6 +494,8 @@ function TracePass({
 function HarmonographFigure({
   n1,
   n2,
+  hz1,
+  hz2,
   phaseDeg,
   endAmp,
   rotary,
@@ -427,13 +503,16 @@ function HarmonographFigure({
 }: {
   n1: number;
   n2: number;
+  hz1: number;
+  hz2: number;
   phaseDeg: number;
   endAmp: number;
   rotary: boolean;
   detune: number;
 }) {
   const SIZE = 320;
-  const segs = useMemo(() => {
+  const M = 160; // downsampled pen path for the animated drive arms
+  const { segs, penX, penY } = useMemo(() => {
     const C = 24; // base cycles drawn
     const N = 3000;
     const thetaMax = 2 * Math.PI * C;
@@ -465,7 +544,7 @@ function HarmonographFigure({
     // point so the polyline stays continuous. Each segment also carries its
     // arc length for the dashoffset reveal.
     const per = Math.floor(N / TRACE_STEPS.length);
-    return TRACE_STEPS.map((_, sIdx) => {
+    const segList = TRACE_STEPS.map((_, sIdx) => {
       const a = sIdx * per;
       const b = sIdx === TRACE_STEPS.length - 1 ? N : (sIdx + 1) * per;
       let d = `M${pts[a]}`;
@@ -476,6 +555,16 @@ function HarmonographFigure({
       }
       return { d, len: Math.max(len, 1) };
     });
+    // Downsampled pen path — the drive arms + pen tip ride this at the reveal
+    // progress, so the arms are literally drawing the trace.
+    const penX = new Array<number>(M);
+    const penY = new Array<number>(M);
+    for (let j = 0; j < M; j++) {
+      const i = Math.round((j / (M - 1)) * N);
+      penX[j] = xs[i];
+      penY[j] = ys[i];
+    }
+    return { segs: segList, penX, penY };
   }, [n1, n2, phaseDeg, endAmp, rotary, detune]);
 
   // The pen: 0 → 1 walks the whole trace, restarted whenever the figure
@@ -484,11 +573,48 @@ function HarmonographFigure({
   useEffect(() => {
     cancelAnimation(progress);
     progress.value = 0;
-    progress.value = withTiming(1, { duration: DRAW_MS, easing: Easing.inOut(Easing.sin) });
+    progress.value = withTiming(1, { duration: DRAW_MS, easing: Easing.linear });
     return () => cancelAnimation(progress);
   }, [segs, progress]);
 
+  // Rotary paper/table spin — a real harmonograph turns the paper in rotary
+  // mode; the table rotates under the trace to show it shaping the figure.
+  const spin = useSharedValue(0);
+  useEffect(() => {
+    cancelAnimation(spin);
+    spin.value = 0;
+    if (rotary) {
+      spin.value = withRepeat(withTiming(360, { duration: TABLE_MS, easing: Easing.linear }), -1, false);
+    }
+    return () => cancelAnimation(spin);
+  }, [rotary, spin]);
+
   const c = SIZE / 2;
+  const lastIdx = M - 1;
+  // The two perpendicular drive arms + the pen tip + each arm's live Hz label,
+  // all riding the reveal progress along the downsampled pen path.
+  const armHProps = useAnimatedProps(() => {
+    const j = Math.round(progress.value * lastIdx);
+    return { x1: 8, y1: penY[j], x2: penX[j], y2: penY[j] };
+  });
+  const armVProps = useAnimatedProps(() => {
+    const j = Math.round(progress.value * lastIdx);
+    return { x1: penX[j], y1: 8, x2: penX[j], y2: penY[j] };
+  });
+  const penProps = useAnimatedProps(() => {
+    const j = Math.round(progress.value * lastIdx);
+    return { cx: penX[j], cy: penY[j] };
+  });
+  const labXProps = useAnimatedProps(() => {
+    const j = Math.round(progress.value * lastIdx);
+    return { y: penY[j] - 5 };
+  });
+  const labYProps = useAnimatedProps(() => {
+    const j = Math.round(progress.value * lastIdx);
+    return { x: penX[j] + 7 };
+  });
+  const tableProps = useAnimatedProps(() => ({ rotation: spin.value }));
+
   return (
     <Svg width="100%" height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
       <Defs>
@@ -501,6 +627,30 @@ function HarmonographFigure({
       <Rect x={0} y={0} width={SIZE} height={SIZE} rx={10} fill="#0c0c0f" />
       {/* Radial-fade disc — the figure floats on a faint warm pool of light. */}
       <Circle cx={c} cy={c} r={c - 4} fill="url(#hgDisc)" />
+      {/* Rotary paper/table: spins under the trace so you see the figure being
+          drawn ON a turning surface (rotary mode only). */}
+      {rotary ? (
+        <AnimatedG originX={c} originY={c} animatedProps={tableProps}>
+          <Circle cx={c} cy={c} r={c - 18} fill="none" stroke="#2a2412" strokeWidth={1} />
+          <Circle cx={c} cy={c} r={c - 42} fill="none" stroke="#231e11" strokeWidth={1} />
+          {Array.from({ length: 24 }).map((_, i) => {
+            const a = (i / 24) * 2 * Math.PI;
+            const r0 = c - 18;
+            const r1 = c - 11;
+            return (
+              <Line
+                key={i}
+                x1={c + Math.cos(a) * r0}
+                y1={c + Math.sin(a) * r0}
+                x2={c + Math.cos(a) * r1}
+                y2={c + Math.sin(a) * r1}
+                stroke="#3a3118"
+                strokeWidth={1}
+              />
+            );
+          })}
+        </AnimatedG>
+      ) : null}
       {/* Axis + center hint: the pen's rest point and the swing axes. */}
       <Line x1={c} y1={14} x2={c} y2={SIZE - 14} stroke="#282213" strokeWidth={1} />
       <Line x1={14} y1={c} x2={SIZE - 14} y2={c} stroke="#282213" strokeWidth={1} />
@@ -534,6 +684,17 @@ function HarmonographFigure({
           opacity={TRACE_STEPS[i].coreO}
         />
       ))}
+      {/* The two drive arms meeting the pen at 90°, the pen tip, and each arm's
+          live Hz readout (owner 2026-08-05). */}
+      <AnimatedLine animatedProps={armHProps} stroke={ARM_X} strokeWidth={1.6} strokeOpacity={0.85} strokeLinecap="round" />
+      <AnimatedLine animatedProps={armVProps} stroke={ARM_Y} strokeWidth={1.6} strokeOpacity={0.85} strokeLinecap="round" />
+      <AnimatedCircle animatedProps={penProps} r={3.2} fill="#fff6dc" />
+      <AnimatedText x={10} animatedProps={labXProps} fill={ARM_X} fontSize={10} fontFamily={fonts.oswaldSemiBold}>
+        {`${Math.round(hz1)} Hz`}
+      </AnimatedText>
+      <AnimatedText y={13} animatedProps={labYProps} textAnchor="middle" fill={ARM_Y} fontSize={10} fontFamily={fonts.oswaldSemiBold}>
+        {`${Math.round(hz2)} Hz`}
+      </AnimatedText>
     </Svg>
   );
 }

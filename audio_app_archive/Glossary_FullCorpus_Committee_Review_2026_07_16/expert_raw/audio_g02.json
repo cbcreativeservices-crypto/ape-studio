@@ -1,0 +1,216 @@
+{
+ "expert": "audio",
+ "group": 2,
+ "reviews": [
+  {
+   "id": "99045bc5-40d6-43a4-9e18-39c923785deb",
+   "term": "Active Crossover",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "41cb4f5d-14b8-4d50-bd94-984f3fe503ff",
+   "term": "Active Noise Cancellation (ANC)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6b2debfe-c0a7-43e7-b4b4-a1551ed97c4d",
+   "term": "Active ribbon microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b59cae05-4559-44b3-854b-a42cf9dfc7e8",
+   "term": "Active Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "00db768a-4ffa-4619-aab8-f4b3e8cfb1e1",
+   "term": "Active trace",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c60412bd-579f-49fd-9ac7-3188fe3746e7",
+   "term": "Actor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "45c09098-c4f6-4307-b731-376c1c448280",
+   "term": "ADA Compliance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3e6b4494-39f5-441a-a8d7-825732bee277",
+   "term": "Adapter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c4b4210c-1726-4f74-9a1c-427a8461e925",
+   "term": "ADAT (Lightpipe)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a605a4fc-f33f-46e7-ad00-130d7ee99eaf",
+   "term": "ADC / DAC (Analog-to-Digital / Digital-to-Analog Converter)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "07aaf28a-653b-435d-8aa1-d367ca3f45e2",
+   "term": "Additive EQ",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3b3f9af6-4db1-446d-9877-40ccc5a2dd5d",
+   "term": "ADSR (Attack, Decay, Sustain, Release)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5c2387ac-de2c-4ef2-a02b-a0f2c1a38882",
+   "term": "AES sync error",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "851ec18c-5c97-46f8-a42d-5739423339fb",
+   "term": "AES-256 Encryption",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "38721adf-090b-4c3d-b92d-ad02ae32270c",
+   "term": "AES3 / AES-EBU",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "62d8b83e-66f0-4a69-8ac6-3b17485c7a88",
+   "term": "AES50",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6451e19f-17f0-4e6d-b3b0-7c35039fab12",
+   "term": "AES67",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4e2d0e01-3fc3-47a0-9f43-d1f485b700af",
+   "term": "AFL & PFL (monitor bus modes)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "27407912-b5a0-4e15-8353-259b17d34070",
+   "term": "AFL (After-Fade Listen)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5787cde3-0ae6-42b4-99ca-8151b0a01089",
+   "term": "Aftermarket Stereo",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e90dc4f9-58ad-4a3d-8a4e-efb3d63e333a",
+   "term": "Airborne sound",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1f8a72c6-2819-4745-975d-771e7ae2aeff",
+   "term": "AirPlay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0579e1e9-0cde-4326-8b48-e340a0123b50",
+   "term": "Alarm threshold",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8ce25ab9-7a6a-4bfc-b8fa-23bb62092bbe",
+   "term": "Algorithm",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "89b4ab6c-3013-45a0-8ef9-4e26e1c12167",
+   "term": "Algorithmic Reverb",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c9e93408-0d98-4af5-a62d-bdddcf716982",
+   "term": "Aliasing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ddb36e1c-9cdb-4701-a69f-986a0a24422b",
+   "term": "Alignment Level",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "af238e6f-497d-4f61-98f9-d49a8435aa9c",
+   "term": "Alignment window",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ce4cea5f-89d4-4373-b5db-6b285de6c69d",
+   "term": "all-pass filter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "37fc85b4-f7e3-452e-9e30-3e4489c739ca",
+   "term": "Alnico Magnet",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "916491e9-109f-470f-8fbc-7b68bf4e6d05",
+   "term": "Alternator Whine",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e4b8127e-7b0e-4069-8fe6-43970334cfed",
+   "term": "Ambience",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "63177ef0-4a2d-43c0-b777-2739944cb80e",
+   "term": "Ambient noise",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4fe68566-652e-479c-a375-7199f1e8ce7a",
+   "term": "Ambient Noise Sensor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c63271b6-a19b-48df-91c0-dd041e3e1477",
+   "term": "Ambient Reinforcement",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

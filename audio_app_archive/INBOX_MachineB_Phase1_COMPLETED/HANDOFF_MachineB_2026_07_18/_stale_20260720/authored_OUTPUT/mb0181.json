@@ -1,0 +1,57 @@
+{
+ "batch": 181,
+ "topic": "Loudness, Dynamics & QC",
+ "authored": [
+  {
+   "id": "6b8faa64-a21b-439f-b54f-1e1c303469de",
+   "term": "Flux Pure Limiter",
+   "fields": {
+    "definition": "Flux Pure Limiter (Pure Limiter) is a mastering-grade brickwall peak limiter plug-in from FLUX::. It combines look-ahead detection with a proprietary adaptive release-envelope algorithm to raise average loudness while holding the output below a set ceiling with minimal audible artifacts. It offers automatic, manual and advanced release modes plus a difference-monitoring (Diff) feature for checking transparency.",
+    "plain_english": "Flux Pure Limiter is a plug-in that acts like a ceiling for your sound. It stops the loudest peaks from going past a level you set. That lets you turn the whole track up and make it louder without harsh clipping. It tries to do this so cleanly that the change is hard to hear.",
+    "purpose_function": "It exists to maximize perceived loudness at the final stage of a mix or master while guaranteeing the signal never exceeds a chosen output ceiling, protecting against clipping and overs in the delivered file.",
+    "practical_application": "A mastering or mix engineer places it as the last processor in the chain, sets the output ceiling (for example -1 dB), and drives the input until the track reaches its target loudness while watching gain reduction to avoid pumping or distortion.",
+    "category": "Limiter Plugin",
+    "related_terms": ["Brickwall Limiter", "True Peak", "LUFS", "Look-Ahead", "Makeup Gain", "Sonnox Limiter"],
+    "common_mistakes": ["Pushing the input too hard for extreme loudness, which flattens dynamics and adds distortion or pumping.", "Setting the output ceiling to 0 dBFS, which can still leave inter-sample (true-peak) overs after conversion to lossy formats.", "Placing it before other dynamics or EQ instead of as the final stage of the chain.", "Assuming 'transparent' limiting means it can be pushed indefinitely with no audible loss."],
+    "scenario_contexts": ["Final-stage loudness maximization on a master before export.", "Catching stray peaks on a stereo mix bus so the overall level can be raised safely.", "Meeting a streaming or broadcast loudness target while keeping peaks under the ceiling."]
+   },
+   "sources": ["FLUX:: Pure Limiter User Manual (doc.flux.audio)", "Ballou, Handbook for Sound Engineers (dynamics processors / limiting)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "57fbf4e2-81d6-47ca-853b-0d3cfb58023d",
+   "term": "Sonnox Limiter",
+   "fields": {
+    "definition": "Sonnox Limiter (the Oxford Limiter) is a mastering peak limiter plug-in that uses logarithmic side-chain processing and look-ahead detection to control peak levels, plus a distinctive Enhance function that raises perceived loudness by adding controlled harmonics while preserving transient detail. It includes an ITU-R BS.1770 true-peak (Recon) meter with auto compensation, and TPDF dither with selectable noise-shaping for 16- or 24-bit output.",
+    "plain_english": "The Sonnox Limiter is a plug-in that keeps your loudest sounds from going over a set level. It also has an 'Enhance' control that makes a track feel louder and fuller. It warns you about hidden peaks that show up after audio is saved as an MP3. Engineers use it as one of the last steps when finishing a song.",
+    "purpose_function": "It exists to raise a master's loudness and prevent overs, using the Enhance stage to gain apparent level without the dulled transients typical of hard limiting, while its true-peak tools keep the file within legal delivery levels.",
+    "practical_application": "An engineer sets the threshold and input gain to reach target loudness, dials in Enhance for extra perceived level, then uses the true-peak meter and auto compensation to keep the render below the required true-peak ceiling before dithering to the delivery bit depth.",
+    "category": "Limiter Plugin",
+    "related_terms": ["Brickwall Limiter", "True Peak", "Dither", "Noise Shaping", "Flux Pure Limiter", "LUFS"],
+    "common_mistakes": ["Overusing the Enhance function so the master becomes harsh, fatiguing or distorted.", "Ignoring the true-peak (Recon) meter and delivering files with inter-sample overs.", "Forgetting to enable dither when reducing bit depth for the final export.", "Treating it as a general track compressor rather than a final-stage limiter."],
+    "scenario_contexts": ["Loudness maximization on a master using the Enhance function for perceived level.", "Correcting inter-sample true-peak overs before delivery to streaming or broadcast.", "Dithering a 24-bit master down to 16-bit for CD or download."]
+   },
+   "sources": ["Sonnox Oxford Limiter User Guide / Operation Manual", "ITU-R BS.1770 (true-peak metering)", "Ballou, Handbook for Sound Engineers (dynamics processors / limiting)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "46aa40c8-8ecb-4f8d-90be-eff126927e1d",
+   "term": "Youlean Loudness Meter",
+   "fields": {
+    "definition": "Youlean Loudness Meter is a loudness-metering plug-in that measures program loudness in LUFS to the ITU-R BS.1770 standard, displaying integrated, short-term and momentary loudness plus loudness range (LRA) and true-peak (dBTP) levels. It provides a scrolling loudness history graph and built-in presets for broadcast (EBU R128, ATSC A/85) and streaming targets (Spotify, YouTube, Apple, Tidal and others); it is offered as a free version alongside a paid PRO version.",
+    "plain_english": "Youlean Loudness Meter is a plug-in that tells you how loud your track really sounds to a listener, not just how high the peaks are. It shows a number in LUFS and a graph over time. That lets you match the loudness that Spotify or YouTube expects. It comes in a free version, which makes it very popular.",
+    "purpose_function": "It exists to let engineers verify that a mix or master meets a specific loudness target and stays under a true-peak ceiling before delivery, replacing guesswork with a standards-based measurement.",
+    "practical_application": "An engineer places it on the master bus, plays the whole track to read the integrated LUFS and maximum true peak, then adjusts level or limiting so the numbers match the chosen streaming or broadcast preset.",
+    "category": "Loudness Meter",
+    "related_terms": ["LUFS", "True Peak", "Loudness Range", "EBU R128", "ITU-R BS.1770", "Integrated Loudness"],
+    "common_mistakes": ["Reading momentary or short-term loudness instead of the integrated value when checking a delivery target.", "Measuring only part of the track, so the integrated LUFS reading is not representative.", "Confusing loudness (LUFS) with peak level (dBFS) and ignoring the true-peak reading.", "Trying to hit a loudness number by ear alone rather than measuring the full program."],
+    "scenario_contexts": ["Checking a master's integrated LUFS against a streaming target such as -14 LUFS.", "Verifying a broadcast mix meets EBU R128 or ATSC A/85 requirements.", "Confirming true peak stays at or below -1 dBTP before exporting a final file."]
+   },
+   "sources": ["Youlean Loudness Meter 2 User Manual (youlean.co)", "ITU-R BS.1770 (loudness and true-peak measurement)", "EBU R128 (loudness normalisation)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

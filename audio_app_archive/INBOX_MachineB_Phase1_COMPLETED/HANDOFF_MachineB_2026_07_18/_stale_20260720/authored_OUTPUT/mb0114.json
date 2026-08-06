@@ -1,0 +1,231 @@
+{
+ "batch": 114,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "10b68ba3-41c6-455c-a191-de3bd533c175",
+   "term": "Marker Memory Location",
+   "fields": {
+    "definition": "In Pro Tools, a Memory Location configured as a Marker: a saved reference point tied to a timeline position that names and flags a spot in the session, appearing in the Markers ruler and the Memory Locations window for instant recall.",
+    "plain_english": "It is a saved bookmark on the timeline. You give it a name and a spot, then jump straight to it later instead of scrolling around to find it.",
+    "purpose_function": "It lets an engineer label and instantly recall key spots such as verse, chorus, or an edit point, so navigation and communication during editing and mixing stay fast and consistent.",
+    "practical_application": "A technician drops markers at each song section, then presses the marker's number on the numeric keypad to jump the playhead there while editing or mixing.",
+    "category": "Session Navigation",
+    "related_terms": ["Marker track (Logic)", "Marquee selection", "Playhead", "Timeline", "Loop points"],
+    "common_mistakes": [
+     "Confusing a Marker Memory Location with a Selection Memory Location, which recalls a highlighted range rather than a single point.",
+     "Assuming markers always move with edits; when tied to absolute time, inserting or deleting audio can misalign them unless they are tied to bars and beats.",
+     "Leaving markers unnamed, which makes the Memory Locations list hard to read and defeats the purpose."
+    ],
+    "scenario_contexts": [
+     "Marking song sections before a mix so the team can jump between verse and chorus quickly.",
+     "Flagging a spot that needs a fix during a tracking session for later attention.",
+     "Setting recall points to speed up punch-in recording."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Avid Knowledge Base (Memory Locations)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c28a5bb6-9ae7-4f50-a595-7f061fffb249",
+   "term": "Marker track (Logic)",
+   "fields": {
+    "definition": "In Logic Pro, the Marker track is a global track that displays markers along the timeline; markers are named positional reference points used to label sections of a project and to navigate or select between them.",
+    "plain_english": "It is a strip above your song that holds named bookmarks. You can see each part, like intro or chorus, and click to jump to it.",
+    "purpose_function": "It provides a visual map of a project's structure with quick navigation, so an arrangement's sections are easy to find, name, and move between.",
+    "practical_application": "An engineer opens the global tracks, adds markers on the Marker track at each section, then uses them to navigate or to set a cycle range while editing.",
+    "category": "Session Navigation",
+    "related_terms": ["Marker Memory Location", "Global tracks", "Arrangement markers", "Cycle range", "Playhead"],
+    "common_mistakes": [
+     "Confusing the Marker track (section labels) with Arrangement markers, which actually reorder sections of the project.",
+     "Hiding the global tracks and assuming the markers were deleted.",
+     "Leaving markers unnamed, which loses the navigation benefit."
+    ],
+    "scenario_contexts": [
+     "Labeling intro, verse, and chorus before editing a song in Logic.",
+     "Jumping the playhead to a marked section during a mix revision.",
+     "Setting a cycle range around a marked section for looped playback."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide (Markers / Global tracks)", "Apple Logic Pro Instruments and effects documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ae190748-c18d-4168-8e9e-268b9e027cac",
+   "term": "Marquee selection",
+   "fields": {
+    "definition": "A time-and-track selection made by dragging a rectangle (marquee) across a portion of one or more tracks, as with Logic Pro's Marquee tool, highlighting a range independent of region boundaries for editing, cutting, or processing.",
+    "plain_english": "You drag a box over part of your audio to highlight just that piece. It is like using a highlighter to pick out one section, even across several tracks.",
+    "purpose_function": "It lets you select and act on any span of material regardless of where regions start or end, so precise edits, splits, and deletions do not require cutting regions first.",
+    "practical_application": "An editor drags a marquee over a bad breath or a section across multiple tracks, then deletes, fades, or replaces just that range in one action.",
+    "category": "Editing",
+    "related_terms": ["Marquee tool", "Region", "Playhead", "Marker track (Logic)", "Crossfade"],
+    "common_mistakes": [
+     "Thinking a marquee selection permanently splits regions; it only defines a range until you act on it.",
+     "Forgetting that a marquee spanning several tracks edits all of them at once.",
+     "Confusing the marquee (a time range) with selecting a whole region."
+    ],
+    "scenario_contexts": [
+     "Deleting a cough across all tracks of a live recording.",
+     "Selecting a two-bar range to apply a fade or gain change.",
+     "Setting the playback start point by clicking within a marquee selection."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide (Marquee tool)", "Apple Logic Pro editing documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d5dc96ac-67f2-456f-9314-b93b94122339",
+   "term": "Master approval checklist",
+   "fields": {
+    "definition": "A structured list of verification items completed before a final master is approved for delivery, typically covering integrated loudness, true-peak level, format and sample-rate compliance, metadata, fades and spacing, and quality checks, confirming the master meets delivery specifications.",
+    "plain_english": "It is a to-do list you check off before calling a master finished. It makes sure the loudness, levels, and file details are all correct before you send it out.",
+    "purpose_function": "It exists to catch errors before release, making sure a master meets loudness, peak, format, and metadata requirements consistently rather than relying on memory.",
+    "practical_application": "Before sending a master to a client or distributor, an engineer runs down the checklist, confirming integrated loudness, true-peak ceiling, sample rate, fades, and metadata, and only then signs off.",
+    "category": "Quality Control",
+    "related_terms": ["Master readiness", "Integrated loudness", "True-peak", "Metadata", "Dither"],
+    "common_mistakes": [
+     "Checking only sample-peak level and ignoring integrated loudness or true-peak, which can trigger platform normalization or inter-sample clipping.",
+     "Skipping format and sample-rate checks and delivering the wrong file specification.",
+     "Approving without a reference check on more than one playback system."
+    ],
+    "scenario_contexts": [
+     "Final sign-off before uploading a master to a streaming distributor.",
+     "Preparing deliverables for a client with specific loudness and format specs.",
+     "A quality-control pass before a mastering session is archived."
+    ]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science", "EBU R128 / EBU Tech 3343 (loudness practice)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e412bec3-ceda-4639-9184-6fc9c9fbe96f",
+   "term": "Master Assistant",
+   "fields": {
+    "definition": "In iZotope Ozone, Master Assistant is an assistive feature that analyzes an input track and generates a custom starting mastering chain, setting module parameters toward a chosen target or reference loudness and tonal profile as a first-draft master the engineer then refines.",
+    "plain_english": "It is a smart helper in mastering software that listens to your song and builds a rough first master for you. You then tweak it, instead of starting from nothing.",
+    "purpose_function": "It speeds up mastering setup by suggesting EQ, dynamics, and loudness settings matched to the material or a reference, giving a useful starting point rather than a blank slate.",
+    "practical_application": "An engineer plays the loudest section through Ozone's Master Assistant, picks a target or reference, and gets an initial chain that they audition and adjust before finalizing.",
+    "category": "Mastering Workflow",
+    "related_terms": ["Master-bus compression", "Reference track", "Integrated loudness", "Master readiness", "Master approval checklist"],
+    "common_mistakes": [
+     "Treating the Assistant's output as a finished master rather than a starting point to refine.",
+     "Feeding it a quiet or unrepresentative section so it mis-targets loudness and tone.",
+     "Ignoring the target or reference choice, which drives all of its decisions."
+    ],
+    "scenario_contexts": [
+     "Getting a quick first-pass master to audition against a reference track.",
+     "Setting a loudness target for a streaming release.",
+     "Giving a beginner a plausible starting mastering chain to learn from."
+    ]
+   },
+   "sources": ["iZotope Ozone Help documentation (Master Assistant)", "iZotope Learn technical guides (Ozone)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5883227f-0b57-49c4-9069-3d7cf8c09c22",
+   "term": "Master FX",
+   "fields": {
+    "definition": "Effects processing inserted on the master (main) output bus so it acts on the entire summed mix, for example EQ, compression, limiting, or saturation applied to the stereo output rather than to an individual channel.",
+    "plain_english": "These are effects placed on the final output where all tracks meet. Whatever you add here changes the whole song at once, not just one instrument.",
+    "purpose_function": "It exists to glue, shape, and control the overall mix, balancing tone, controlling dynamics, and setting final level, because these processes act on the combined signal.",
+    "practical_application": "A mixer adds gentle bus compression, a corrective EQ, and a limiter to the master FX chain to tighten and level the full mix before bouncing.",
+    "category": "Mix Bus Processing",
+    "related_terms": ["Master-bus compression", "Master track (Live)", "Limiter", "Mix bus", "Master readiness"],
+    "common_mistakes": [
+     "Over-processing the master bus so individual balance problems get masked instead of fixed within the mix.",
+     "Leaving heavy master FX active while still mixing, which skews level and tone decisions.",
+     "Bouncing with a monitoring-only limiter that was never meant to be part of the final file."
+    ],
+    "scenario_contexts": [
+     "Adding mix-bus glue compression across a full song.",
+     "Placing a limiter on the main output to hit a rough loudness for a demo.",
+     "Applying corrective EQ to the whole mix before it goes to mastering."
+    ]
+   },
+   "sources": ["Izhaki, Mixing Audio: Concepts, Practices, and Tools", "Ableton Live Reference Manual (Master track devices)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8d712277-6a79-438e-9d8a-1716d126a612",
+   "term": "Master readiness",
+   "fields": {
+    "definition": "The condition of a mix or master meeting the technical and creative criteria needed to advance to the next stage, such as a mix with adequate headroom, no clipping, and balanced tonality ready for mastering, or a master meeting loudness, peak, and format specs ready for delivery.",
+    "plain_english": "It means a mix or master is truly finished and safe to hand off. The levels, headroom, and file details are all in good shape for the next step.",
+    "purpose_function": "The idea exists to define a clear go/no-go point, preventing unfinished or technically flawed audio from moving on to mastering or release.",
+    "practical_application": "Before exporting a mix for mastering, a technician confirms readiness by leaving headroom, removing any master limiter, and checking for clipping, so the mastering engineer receives a clean file.",
+    "category": "Quality Control",
+    "related_terms": ["Master approval checklist", "Headroom", "Master-bus compression", "Integrated loudness", "Bounce"],
+    "common_mistakes": [
+     "Exporting a mix for mastering with a limiter or heavy bus processing crushing the peaks, leaving no room to work.",
+     "Assuming loud equals ready and ignoring headroom and clipping.",
+     "Delivering without checking sample rate, bit depth, and true-peak level."
+    ],
+    "scenario_contexts": [
+     "Deciding a mix is ready to send to a mastering engineer.",
+     "Confirming a master meets a distributor's loudness and format specs before release.",
+     "Signing off a stem delivery for a client."
+    ]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bc4ee777-58f5-4164-9326-e71a3e6fe45c",
+   "term": "Master track (Live)",
+   "fields": {
+    "definition": "In Ableton Live, the Master track (renamed the Main track in Live 11) is the fixed output track through which all other tracks are summed; it hosts the final level control, panning, and any master-bus devices before the signal reaches the audio output.",
+    "plain_english": "In Ableton Live, it is the single track where every other track flows together. It sets the final volume and holds effects that shape the whole song.",
+    "purpose_function": "It exists as the common summing point and final output stage, giving one place to control overall level and apply mix-bus processing to the entire mix.",
+    "practical_application": "A producer sets the Master track fader for final level, adds a limiter or EQ there, and watches its meter to avoid clipping the output.",
+    "category": "Signal Routing",
+    "related_terms": ["Master FX", "Master-bus compression", "Mix bus", "Return track", "Limiter"],
+    "common_mistakes": [
+     "Confusing the Master track with a Return track; the Master is the final sum, not an aux send destination.",
+     "Pushing the Master fader to fix balance instead of adjusting the individual tracks.",
+     "Clipping the Master output because too many tracks sum too hot."
+    ],
+    "scenario_contexts": [
+     "Setting final output level and metering in an Ableton Live set.",
+     "Placing a master limiter before exporting.",
+     "Routing the sum of all tracks for mix-bus processing."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual (Master/Main track, Mixing)", "Ableton Live Reference Manual (Routing and I/O)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1ced54d9-73eb-4f73-9b1b-b8ff126a53ff",
+   "term": "Master-bus compression",
+   "fields": {
+    "definition": "Dynamic-range compression applied to the master (mix) bus, the summed stereo output, typically at low ratios and small amounts of gain reduction to control overall dynamics and glue the mix's elements into a cohesive whole.",
+    "plain_english": "It is gentle compression on the final mix, where all tracks meet. It smooths the loud and soft parts a little and helps everything sound like one blended track.",
+    "purpose_function": "It reduces overall dynamic swings and improves cohesion between elements, and can add subtle loudness and punch, because it acts on the combined mix rather than a single channel.",
+    "practical_application": "A mixer inserts a compressor on the mix bus, sets a low ratio around 1.5:1 to 2:1 with roughly 1 to 3 dB of gain reduction, and times the attack and release to breathe with the tempo.",
+    "category": "Mix Bus Processing",
+    "related_terms": ["Master FX", "Master track (Live)", "Mix bus", "Makeup gain", "Limiter"],
+    "common_mistakes": [
+     "Applying too much gain reduction, which squashes transients and flattens the mix.",
+     "Setting the attack too fast so it kills punch, or the release wrong so it pumps unintentionally.",
+     "Adding it late and re-balancing everything, instead of mixing into it from early in the session."
+    ],
+    "scenario_contexts": [
+     "Gluing a full band mix with 1 to 2 dB of gain reduction.",
+     "Adding cohesion and subtle level to a mix before it goes to mastering.",
+     "Mixing into a bus compressor from the start of a session."
+    ]
+   },
+   "sources": ["Izhaki, Mixing Audio: Concepts, Practices, and Tools", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

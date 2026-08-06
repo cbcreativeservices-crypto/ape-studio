@@ -1,0 +1,159 @@
+{
+ "batch": 253,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "8615abfd-3192-45a1-8760-b56a9a8d3bf7",
+   "term": "Speed parameter",
+   "fields": {
+    "definition": "In audio post and DAW work, the speed parameter is the control that sets the playback rate of recorded audio. Operated in a linked, tape-style (varispeed) mode it also raises or lowers pitch in proportion to the rate change, so a faster speed sounds higher; it is used for varispeed effects and for film-to-video frame-rate pull-up/pull-down conversions.",
+    "plain_english": "It is the control that decides how fast a recording plays back. In its basic mode, speeding it up also makes the sound higher, like playing a record at the wrong speed.",
+    "purpose_function": "It lets an editor stretch or compress the timing of audio to match picture or a new frame rate, and gives a quick way to shift pitch when speed and pitch are linked.",
+    "practical_application": "A post editor nudges the speed parameter to conform a 24 fps mix to a 25 fps PAL deliverable, or to slow a sound effect for a slow-motion shot.",
+    "category": "Time & Pitch",
+    "related_terms": ["Varispeed", "Stretch processing", "Pull-up/pull-down", "Sample rate conversion", "Pitch shifting", "Frame rate"],
+    "common_mistakes": ["Assuming the speed parameter changes only timing; in linked varispeed mode it also shifts pitch.", "Confusing varispeed (speed and pitch linked) with time-stretch (timing changed, pitch preserved).", "Applying a speed change and forgetting it moves sync against picture."],
+    "scenario_contexts": ["Converting a 24 fps mix to 25 fps for a PAL deliverable using a 4% pull-up.", "Slowing a recorded effect to match a slow-motion visual.", "Creating a classic tape-style varispeed effect on a vocal or effect."]
+   },
+   "sources": ["Sound on Sound, \"Vari Well, Then\" (varispeed technique)", "Apple Logic Pro User Guide, Varispeed documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "51b5d6e0-0d0b-4558-88c2-5217bb7da55d",
+   "term": "Spotting script",
+   "fields": {
+    "definition": "A spotting script is the working document produced during a spotting session that lists every place in a film or program where music or sound is to start and stop, each identified by timecode and annotated with notes on its purpose and character.",
+    "plain_english": "It is a list made while watching the film that marks where each piece of music or sound should begin and end. Think of it as a map of the soundtrack, with timecodes as the street signs.",
+    "purpose_function": "It captures the director's and editor's decisions in one reference so composers and sound editors know exactly what to create and where it belongs.",
+    "practical_application": "After a spotting session, a music editor writes up the spotting script and hands timecoded cue starts and stops to the composer and the recording team.",
+    "category": "Spotting & Prep",
+    "related_terms": ["Spotting session", "Cue sheet", "Timecode", "Music editor", "Streamer", "Sound design"],
+    "common_mistakes": ["Confusing a spotting script with the final cue sheet used for music licensing and royalties.", "Leaving out precise timecodes, so cues cannot be placed accurately.", "Treating early spotting notes as final when directors often revise cue decisions."],
+    "scenario_contexts": ["A composer and director spot a drama and produce a script marking each music cue.", "A supervising sound editor spots reels to log where key effects and backgrounds are needed.", "A music editor updates the spotting script after a picture re-edit changes cue timings."]
+   },
+   "sources": ["Karlin & Wright, \"On the Track: A Guide to Contemporary Film Scoring\"", "Yewdall, \"Practical Art of Motion Picture Sound\""],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2df2838f-6cf2-4dfc-8638-93bc4fecf830",
+   "term": "State-driven audio",
+   "fields": {
+    "definition": "State-driven audio is interactive game audio whose playback and mix are controlled by the game's current state, such as level, health, or combat status. It is typically implemented as global \"States\" in audio middleware that switch or blend sounds and mix settings as the state changes.",
+    "plain_english": "It is game sound that changes with what is happening in the game. When you enter combat or your health drops, the music and effects shift to match, like a mood that follows the action.",
+    "purpose_function": "It lets a game's soundtrack and mix react to broad situations automatically, keeping the audio in step with gameplay without hand-triggering every change.",
+    "practical_application": "A game sound designer sets States like \"Exploring\" and \"Combat\" in Wwise or FMOD so the score and ambience cross-fade when the player is detected by enemies.",
+    "category": "Interactive Audio",
+    "related_terms": ["Audio middleware", "Switch", "RTPC", "Adaptive music", "Game state", "Interactive mix"],
+    "common_mistakes": ["Confusing States (broad, global situations) with Switches (per-object variations like surface type).", "Forgetting to set transition times, causing abrupt jumps when the state changes.", "Assuming state logic lives in the audio files rather than in the middleware and game code."],
+    "scenario_contexts": ["Music shifts from calm to tense when the player enters a combat state.", "Ambience changes as the player moves from an indoor to an outdoor state.", "The whole mix ducks and filters when a paused or underwater state is active."]
+   },
+   "sources": ["Audiokinetic Wwise documentation, States and State Groups", "\"The Game Music Handbook\" (Oxford University Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "92d7219b-7809-47d9-8c0f-0233da7bb640",
+   "term": "Sting ending",
+   "fields": {
+    "definition": "A sting ending is the technique of closing a scene, cue, or program segment with a sting, a short and sharp musical or sound accent that punctuates the moment, rather than fading or resolving gradually.",
+    "plain_english": "It is finishing a scene or piece of music with a quick, punchy hit instead of a slow fade. It is the sharp \"ta-da\" that snaps a moment shut.",
+    "purpose_function": "It gives a firm, attention-grabbing button to a segment, marking the end clearly for the audience and setting up a cut, reveal, or transition.",
+    "practical_application": "A music editor places a sting ending on the last frame of a title card or dramatic reveal so the cue lands exactly on the hit point.",
+    "category": "Music Editing",
+    "related_terms": ["Sting", "Stinger", "Hit point", "Button", "Cue", "Streamer"],
+    "common_mistakes": ["Confusing a sting ending (short punctuating accent) with a full musical cadence or fade-out.", "Missing the exact hit frame so the sting lands early or late against picture.", "Overusing stings until they lose their impact."],
+    "scenario_contexts": ["Ending a TV drama act on a sharp musical sting before a commercial break.", "Punctuating a comedic beat with a quick sting.", "Landing a sting on a logo reveal at the end of a trailer."]
+   },
+   "sources": ["Karlin & Wright, \"On the Track: A Guide to Contemporary Film Scoring\" (stingers)", "Sonnenschein, \"Sound Design: The Expressive Power of Music, Voice, and Sound Effects in Cinema\""],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0c62361c-e69d-4974-aae4-1b909818fe1b",
+   "term": "Streamer",
+   "fields": {
+    "definition": "In ADR and music scoring, a streamer is a visual cue consisting of a vertical line that travels across the screen from left to right over a set number of frames, reaching the right edge at the exact sync point to signal a performer when to begin.",
+    "plain_english": "It is a moving line that sweeps across the screen to warn a performer that their cue is coming. When it reaches the far side, that is the moment to start, like a countdown you can see.",
+    "purpose_function": "It gives actors during ADR, or musicians recording to picture, a clear visual warning and precise start point so their performance lands in sync with the image.",
+    "practical_application": "In an ADR session the mixer sets a three-second streamer before each line so the actor knows exactly when to speak in time with their lips on screen.",
+    "category": "ADR Cueing",
+    "related_terms": ["Punch", "Streamer-and-punch system", "ADR", "Three-beep", "Sync point", "Timecode"],
+    "common_mistakes": ["Confusing the streamer (the moving warning line) with the punch (the flash at the hit point).", "Setting the streamer too short, giving the performer no time to prepare.", "Assuming the sync point is when the streamer starts rather than when it reaches the screen edge."],
+    "scenario_contexts": ["Cueing an actor's ADR line with a streamer running up to the sync point.", "Guiding a musician to hit a downbeat in sync with a film action.", "Traditional film work where streamers were physically scribed onto the release print."]
+   },
+   "sources": ["Purcell, \"Dialogue Editing for Motion Pictures\"", "Yewdall, \"Practical Art of Motion Picture Sound\""],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "07bcc8db-8621-4256-a887-a78804b07a16",
+   "term": "Streamer-and-punch system",
+   "fields": {
+    "definition": "The streamer-and-punch system is a visual cueing method for ADR and scoring to picture that combines a streamer, a line sweeping across the screen, with one or more punches, brief flashes on a single frame. The streamer provides the run-up while the final punch marks the precise hit point where the performer or conductor must land.",
+    "plain_english": "It is a two-part visual countdown for performers working to picture. A line slides across the screen to warn them, then a flash marks the exact instant to hit, so their timing lands on the right frame.",
+    "purpose_function": "It lets actors and musicians achieve frame-accurate timing to picture without hearing a click, by giving both an advance warning and a precise trigger point.",
+    "practical_application": "A recordist enables streamer-and-punch cues in ADR software so each take gives the actor a moving line followed by a flash on the exact frame the line should reach.",
+    "category": "ADR Cueing",
+    "related_terms": ["Streamer", "Punch", "ADR", "Click track", "Sync point", "Music editor"],
+    "common_mistakes": ["Thinking the system replaces good rehearsal; performers still need the warning to prepare.", "Confusing streamers (moving lines) with punches (single-frame flashes).", "Relying only on punches with no streamer, leaving performers no advance warning."],
+    "scenario_contexts": ["Cueing ADR takes in Pro Tools with software streamers and punches.", "Recording an orchestra to picture using punches and streamers instead of a click.", "Restoring traditional grease-pencil streamer-and-punch cues for a scoring session."]
+   },
+   "sources": ["Karlin & Wright, \"On the Track: A Guide to Contemporary Film Scoring\"", "Yewdall, \"Practical Art of Motion Picture Sound\""],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "839ed4d3-a517-4fa3-9b8d-5079b358d053",
+   "term": "Stretch processing",
+   "fields": {
+    "definition": "Stretch processing, or time-stretching, is digital audio processing that changes the duration of a recording without altering its pitch, or that changes pitch independently of duration, by re-synthesizing the signal rather than simply changing its playback speed.",
+    "plain_english": "It is a way to make a recording longer or shorter without making it sound higher or lower. Unlike speeding up a record, the pitch stays the same while the timing changes.",
+    "purpose_function": "It lets editors fit audio to a new length, matching music to a scene or lining up dialogue, while keeping the pitch and tone natural.",
+    "practical_application": "An editor uses stretch processing to fit a 28-second music cue into a 30-second gap, or to tighten a sound effect, without the pitch shifting.",
+    "category": "Time & Pitch",
+    "related_terms": ["Time stretching", "Pitch shifting", "Speed parameter", "Elastic Audio", "Warp", "Varispeed"],
+    "common_mistakes": ["Confusing stretch processing (pitch preserved) with varispeed (speed and pitch move together).", "Stretching audio too far, which adds smearing or artifacts.", "Using the wrong algorithm for the material, such as a monophonic mode on a full mix."],
+    "scenario_contexts": ["Fitting a music cue to an exact scene length without changing its key.", "Slowing a dialogue line slightly to match a new picture edit.", "Time-aligning a sound effect to on-screen action."]
+   },
+   "sources": ["Sound on Sound, time-stretching technique articles", "Ableton Live Reference Manual, Warp / time-stretch documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4deb4d2d-c1f0-4837-9c2c-b13e269f14c3",
+   "term": "Subdivision click",
+   "fields": {
+    "definition": "A subdivision click is a click track that sounds not only the main beats but also their smaller divisions, such as eighth or sixteenth notes, giving performers a finer grid to lock to when recording music to picture.",
+    "plain_english": "It is a metronome click that ticks between the main beats, not just on them. The extra ticks give players a tighter guide, like small lines drawn between the big marks on a ruler.",
+    "purpose_function": "It helps musicians and conductors stay precisely in time, especially at slow tempos or on syncopated parts, by filling in the gaps between main beats.",
+    "practical_application": "A composer adds a subdivision click on the eighths for a slow cue so the players can hit synchronised points accurately.",
+    "category": "Click Tracks",
+    "related_terms": ["Click track", "Tempo map", "Streamer-and-punch system", "Downbeat", "Metronome", "Sync point"],
+    "common_mistakes": ["Setting subdivisions so dense that the click becomes distracting.", "Confusing a subdivision click with a tempo change; the tempo is the same, only the click grid is finer.", "Forgetting to lower or mute the click so it does not bleed into microphones."],
+    "scenario_contexts": ["Recording a slow film cue where players need eighth-note clicks to stay together.", "Locking a percussive hit to picture using a sixteenth-note subdivision.", "Guiding a conductor through a slow passage with a subdivided click."]
+   },
+   "sources": ["Karlin & Wright, \"On the Track: A Guide to Contemporary Film Scoring\" (click tracks)", "Rona, \"The Reel World: Scoring for Pictures\""],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "25230ae9-816c-485e-8d59-542420b8c280",
+   "term": "Subharmonic enhancement",
+   "fields": {
+    "definition": "Subharmonic enhancement is a processing technique that synthesizes and adds new low-frequency content one octave below existing bass frequencies in a signal, reinforcing the perceived low end rather than simply boosting the original bass with EQ.",
+    "plain_english": "It is a way to make the low end sound deeper by creating brand-new bass notes an octave below what is already there. Instead of just turning up the bass, it adds lower tones that were not in the original.",
+    "purpose_function": "It adds weight and impact to the low end for effects, music, or a full mix, giving fuller bass on large systems while staying more controlled than a broad EQ boost.",
+    "practical_application": "A re-recording mixer uses subharmonic enhancement to add sub-bass thump to an explosion or impact for the LFE channel in a theatrical mix.",
+    "category": "Signal Processing",
+    "related_terms": ["LFE", "Low-pass filter", "Equalization", "Bass management", "Harmonic distortion", "Sub-bass"],
+    "common_mistakes": ["Adding too much subharmonic content, which muddies the mix and overloads subwoofers.", "Confusing generated subharmonics with a simple EQ bass boost of existing frequencies.", "UNSAFE: Driving subwoofers and amplifiers with excessive sub-bass energy and no high-pass protection, risking driver and amplifier damage."],
+    "scenario_contexts": ["Reinforcing the LFE channel under an explosion in a film mix.", "Adding depth to a kick drum or bass synth in a music mix.", "Extending low end on program material for a cinema or club playback system."]
+   },
+   "sources": ["dbx Professional Audio technical documentation, Subharmonic Synthesis (120A / 510)", "Ballou, \"Handbook for Sound Engineers\""],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

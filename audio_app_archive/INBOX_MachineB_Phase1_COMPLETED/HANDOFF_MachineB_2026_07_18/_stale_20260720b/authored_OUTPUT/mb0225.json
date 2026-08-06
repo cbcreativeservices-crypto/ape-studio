@@ -1,0 +1,283 @@
+{
+ "batch": 225,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "1aeae003-1e78-4ae3-8496-e05cbe33ebf1",
+   "term": "Exploration-state parameter",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No established meaning in sound-for-picture, post workflow, or audio engineering. The phrase reads as a machine-learning / reinforcement-learning construct ('exploration vs exploitation state'), not an audio term, and is not a transparent combination of any established audio technique with a source/section. After searching the professional literature (film-sound and audio-DSP references), no >=2 acceptable sources define it. All fields left blank pending clarification of intended sense."
+   ]
+  },
+  {
+   "id": "d7419a6c-d49e-4eec-9c7c-9547bcde5b45",
+   "term": "Extreme time stretching",
+   "fields": {
+    "definition": "A form of time-scale modification in which an audio signal's duration is expanded by a very large factor (often several hundred to several thousand percent) without a proportional change in pitch, producing sustained, smeared textures from short source material. It is typically achieved with phase-vocoder or granular resynthesis processing.",
+    "plain_english": "It means slowing a sound down by a huge amount so it lasts much longer. The pitch stays the same, so it does not sound lower. A one-second clip can become a long, hazy drone, like a rubber band stretched far past its normal size.",
+    "purpose_function": "It lets sound editors turn brief recordings into long evolving beds, drones, and transitions, giving scenes atmosphere and tension without needing new source material.",
+    "practical_application": "A technician loads a short clip into a phase-vocoder or granular tool (such as a time-stretch plug-in or Paulstretch), sets a large stretch ratio, and layers the result under a scene as an ambient wash or riser.",
+    "category": "Time Processing",
+    "related_terms": [
+     "Time stretching",
+     "Phase vocoder",
+     "Granular synthesis",
+     "Pitch shifting",
+     "Sound design",
+     "Ambience"
+    ],
+    "common_mistakes": [
+     "Expecting clean results at extreme ratios; very large stretch factors add phasing, smearing, and metallic artifacts",
+     "Confusing time stretching with pitch shifting, when extreme stretch changes length, not pitch",
+     "Stretching a low-resolution or heavily compressed source, which exaggerates artifacts",
+     "Forgetting that huge stretches raise processing time and file length dramatically"
+    ],
+    "scenario_contexts": [
+     "Creating a long ambient drone from a two-second vocal or metal hit for a tense scene",
+     "Building a slow riser or transition into a scene change",
+     "Turning a short field recording into an evolving background texture for a deliverable stem"
+    ]
+   },
+   "sources": [
+    "Zolzer (ed.), DAFX: Digital Audio Effects (time-scale modification / phase vocoder)",
+    "Ballou, Handbook for Sound Engineers (digital signal processing)",
+    "AES papers on time-scale modification and phase-vocoder processing"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fb19f94a-4216-4fd5-9c60-bf6f115e2534",
+   "term": "Falloff distance",
+   "fields": {
+    "definition": "In spatial and object-based audio, the distance parameter that governs how a sound source's level attenuates as its virtual position moves away from the listener, typically following an inverse-square (about 6 dB per doubling of distance) or a defined minimum/maximum distance curve.",
+    "plain_english": "It is the setting that controls how fast a sound gets quieter as it moves farther from the listener. Like a friend's voice fading as they walk down the street, the sound drops off over the distance you set.",
+    "purpose_function": "It supplies distance cues in a mix so objects placed far from the listener sound faint and near objects sound loud, making a spatial or immersive scene feel believable.",
+    "practical_application": "When placing an audio object in an immersive panner or a game or VR engine, a technician sets the minimum and maximum distance and the falloff curve so the element attenuates correctly as it or the listener moves.",
+    "category": "Spatial Audio",
+    "related_terms": [
+     "Distance attenuation",
+     "Inverse-square law",
+     "Object-based audio",
+     "Panning",
+     "Far-field spatialization",
+     "Reverb"
+    ],
+    "common_mistakes": [
+     "Relying on level change alone, when distant sources also lose high frequencies and gain reverb",
+     "Setting the falloff curve too steep, so objects vanish abruptly instead of fading",
+     "Confusing falloff distance with panning position; one sets loudness over distance, the other sets direction",
+     "Ignoring that different renderers use different default distance models"
+    ],
+    "scenario_contexts": [
+     "Placing a passing vehicle object in an immersive mix so it fades as it moves away",
+     "Setting distance attenuation for a sound source in a game or VR audio engine",
+     "Tuning how quickly off-screen crowd noise drops as the camera pushes in"
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook (inverse-square law / level vs distance)",
+    "Ballou, Handbook for Sound Engineers (acoustics; sound level and distance)",
+    "AES papers on object-based / immersive audio distance modeling"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "71e22437-5378-4cb1-8e23-e3e909295680",
+   "term": "Far-field spatialization",
+   "fields": {
+    "definition": "The positioning of sound sources in the region far enough from the listener (generally beyond about one metre and many wavelengths) that wavefronts arrive as effectively plane waves, so localization relies on far-field HRTF cues, level, and reverberation rather than the strong distance-dependent cues present very close to the head.",
+    "plain_english": "It means placing sounds so they seem to come from far away, not right next to your ear. When something is far off, the main clues are how loud it is and its echo. Those clues replace the closeness you feel when a sound is inches from your head.",
+    "purpose_function": "It creates a natural sense of depth and surrounding space in immersive and binaural mixes, keeping distant elements from sounding unnaturally close or stuck inside the listener's head.",
+    "practical_application": "A technician uses far-field HRTFs and adds distance cues (lower level, less high frequency, more reverb) when placing ambience, off-screen action, or background elements away from the listener in a binaural or object-based mix.",
+    "category": "Spatial Audio",
+    "related_terms": [
+     "Near-field spatialization",
+     "HRTF",
+     "Binaural audio",
+     "Distance attenuation",
+     "Falloff distance",
+     "Reverb"
+    ],
+    "common_mistakes": [
+     "Using near-field HRTFs for distant sources, which makes them feel too close",
+     "Thinking direction is enough, when far-field placement also needs distance cues like reverb and level",
+     "Confusing far-field placement with simply turning a sound down",
+     "Ignoring room reflections, which are a key far-field distance cue"
+    ],
+    "scenario_contexts": [
+     "Placing distant ambience and off-screen events in a binaural mix for headphones",
+     "Building depth in an object-based film mix so backgrounds sit behind the on-screen action",
+     "Positioning a far-off vehicle or crowd so it reads as distant rather than nearby"
+    ]
+   },
+   "sources": [
+    "AES papers on binaural audio and near-field vs far-field HRTF",
+    "Acoustical Society of America (ASA) publications on near-field / far-field acoustics",
+    "Ballou, Handbook for Sound Engineers (psychoacoustics; spatial hearing)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b78da41e-1a94-405b-bafa-3fbe53e8c29e",
+   "term": "Film music editing",
+   "fields": {
+    "definition": "The post-production discipline of preparing, cutting, and synchronizing music to picture, including spotting, building temp tracks, conforming cues to editorial changes, and delivering edited music elements for the final re-recording mix.",
+    "plain_english": "It is the job of fitting music to a film. The goal is for every piece of music to start, change, and end at the right moment on screen. The music editor trims and lines up the music like puzzle pieces so it matches the story.",
+    "purpose_function": "It ensures music supports the picture precisely and stays in sync through editorial changes, giving the re-recording mixer clean, correctly placed music to balance in the final mix.",
+    "practical_application": "A music editor spots scenes with the director and composer, lays in temp music, conforms cues when the picture is re-cut, and prepares the music stems and cue sheets for the dub stage.",
+    "category": "Music Editorial",
+    "related_terms": [
+     "Temp track",
+     "Spotting session",
+     "Cue",
+     "Conform",
+     "Final music edit",
+     "Stem"
+    ],
+    "common_mistakes": [
+     "Treating temp music as final and forgetting it must be cleared, licensed, or replaced",
+     "Not reconforming music after a picture change, causing cues to drift out of sync",
+     "Overlooking accurate cue sheets, which are needed for rights and delivery",
+     "Confusing the music editor's role with that of the composer or the re-recording mixer"
+    ],
+    "scenario_contexts": [
+     "Building a temp music track for an early cut screening",
+     "Conforming score cues after the picture editor changes a scene's length",
+     "Preparing music stems and cue sheets for the final dubbing stage"
+    ]
+   },
+   "sources": [
+    "Karlin & Wright, On the Track: A Guide to Contemporary Film Scoring (music editing, spotting, conform)",
+    "Holman, Sound for Film and Television (post-production music workflow)",
+    "Grove Dictionary of Music (film music)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e445f326-07f8-45e4-86c2-471f72726b49",
+   "term": "Final music edit",
+   "fields": {
+    "definition": "The locked, fully conformed version of a film or program's edited music, cut and synchronized to the final picture and delivered as the music elements or stems used in the final re-recording mix.",
+    "plain_english": "It is the finished, locked version of all the music, lined up exactly to the final cut of the picture. Nothing more changes; these are the music tracks that go into the last mix.",
+    "purpose_function": "It gives the re-recording mixer a stable, picture-accurate set of music elements to balance against dialogue and effects, so the music in the finished program is correctly timed and placed.",
+    "practical_application": "After picture lock, the music editor makes the final conform of every cue, cleans edits and crossfades, and hands off the final music stems and session for the dub.",
+    "category": "Music Editorial",
+    "related_terms": [
+     "Film music editing",
+     "Picture lock",
+     "Conform",
+     "Stem",
+     "Final mix",
+     "Cue"
+    ],
+    "common_mistakes": [
+     "Finalizing music before picture lock, forcing costly re-conforms",
+     "Delivering music stems that do not match the agreed deliverable spec or layout",
+     "Leaving audible edit clicks or bad crossfades in the final cues",
+     "Assuming temp music can stand as the final edit without clearance or replacement"
+    ],
+    "scenario_contexts": [
+     "Delivering conformed music stems to the dub stage after picture lock",
+     "Preparing the final music elements for a broadcast or streaming deliverable",
+     "Handing the re-recording mixer the locked music for the final mix"
+    ]
+   },
+   "sources": [
+    "Karlin & Wright, On the Track: A Guide to Contemporary Film Scoring",
+    "Holman, Sound for Film and Television (final music elements / deliverables)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5f144024-9020-446d-a810-29960e244cf8",
+   "term": "Finger tap",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No single established meaning as a term in sound-for-picture or post workflow, and not a transparent combination of an established technique with a source. Candidate readings are genuinely ambiguous (a performed Foley sound of a finger tapping; a touchscreen/UI gesture; a MIDI tap-tempo input). After searching the professional film-sound and audio literature, no >=2 acceptable sources define 'finger tap' as a distinct term. Left blank pending clarification of intended sense."
+   ]
+  },
+  {
+   "id": "cfcdc5b3-bb5e-4323-9db5-33c460c26d61",
+   "term": "Fly-by effect",
+   "fields": {
+    "definition": "A sound-design effect that simulates a fast object passing the listener by combining a Doppler pitch glide (higher than the true pitch while approaching, crossing through the true pitch at the point of closest approach, then dropping below it as the object recedes), a level swell and fade, and a directional pan across the sound field to convey approach, pass, and recede.",
+    "plain_english": "It is the whoosh of something fast rushing past you, like a race car or a jet flying by. The sound rises in pitch and loudness as it comes toward you, then drops as it speeds away.",
+    "purpose_function": "It gives moving objects a convincing sense of speed and direction on screen, selling the moment a car, plane, projectile, or creature streaks past the point of view.",
+    "practical_application": "A sound editor takes a pass-by or steady recording, applies a Doppler pitch move, automates level and pan to follow the on-screen path, and often layers whoosh or air elements to sharpen the pass.",
+    "category": "Sound Design",
+    "related_terms": [
+     "Doppler effect",
+     "Panning",
+     "Automation",
+     "Pitch shifting",
+     "Whoosh",
+     "Sound design"
+    ],
+    "common_mistakes": [
+     "Panning across without any Doppler pitch change, which sounds flat and fake",
+     "Making the pitch shift too large, turning a fly-by into a cartoon slide",
+     "Mismatching the pan and level move to the object's on-screen path and speed",
+     "Forgetting that the closest point is the loudest, but is where the pitch crosses through the object's true frequency, not where it is highest; the pitch is highest earlier, while the object is still approaching"
+    ],
+    "scenario_contexts": [
+     "Creating a race car passing the camera in a chase scene",
+     "Designing a jet or missile streaking past the frame",
+     "Adding a fast creature or arrow that whips past the point of view"
+    ]
+   },
+   "sources": [
+    "Yewdall, Practical Art of Motion Picture Sound (sound-effects design; Doppler pass-bys)",
+    "Acoustical Society of America (ASA) publications on the Doppler effect",
+    "AES papers on Doppler-based audio effects"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9b2472e2-b2de-43b3-b1b3-dbd132448751",
+   "term": "Foley asset",
+   "fields": {
+    "definition": "A discrete recorded Foley sound, such as footsteps, cloth movement, or prop handling performed in sync to picture, stored and catalogued as an individual media element in a post-production session or asset library for use and delivery.",
+    "plain_english": "It is a single Foley sound saved as its own file, like one recording of footsteps or a door handle. Editors keep these clips organized so they can drop the right everyday sound onto the picture.",
+    "purpose_function": "It provides a managed, reusable unit of performed everyday sound that editors place against picture and deliver as part of the sound package, keeping projects organized and trackable.",
+    "practical_application": "After a Foley session, a technician edits and names each recorded pass, files it in the session or library with metadata, and places or delivers it as part of a Foley stem.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Footsteps",
+     "Prop",
+     "Stem",
+     "Sound library",
+     "Sync"
+    ],
+    "common_mistakes": [
+     "Poor naming or metadata, making assets impossible to find later",
+     "Assuming Foley assets replace all ambience and hard effects, when they cover performed, everyday sounds",
+     "Recording out of sync with picture, so the asset needs heavy editing",
+     "Confusing Foley assets with library sound effects, which are pre-recorded rather than performed to picture"
+    ],
+    "scenario_contexts": [
+     "Filing each footstep and cloth pass after a Foley session",
+     "Delivering a Foley stem as part of the final sound package",
+     "Reusing a catalogued prop-handling asset in a later scene"
+    ]
+   },
+   "sources": [
+    "Yewdall, Practical Art of Motion Picture Sound (Foley)",
+    "Holman, Sound for Film and Television (Foley and post asset workflow)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

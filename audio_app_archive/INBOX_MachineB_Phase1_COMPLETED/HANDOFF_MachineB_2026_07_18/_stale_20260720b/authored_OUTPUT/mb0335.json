@@ -1,0 +1,159 @@
+{
+ "batch": 335,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "0b1aa628-51b0-4880-93d2-ad62046cb569",
+   "term": "Mouthpiece pop",
+   "fields": {
+    "definition": "A short, percussive pop produced at a brass or wind instrument's mouthpiece, created either deliberately as an extended technique (slapping the palm over the mouthpiece rim or a hard tongue-stop release) or incidentally at a note's onset; its rough pitch is set by the air volume of the mouthpiece and instrument, including any valves depressed.",
+    "plain_english": "A quick pop sound made right at a horn player's mouthpiece. A player can make it on purpose as an effect, or it can slip in by accident at the start of a note. It sounds a bit like tapping the top of an empty bottle.",
+    "purpose_function": "As an effect it gives brass and winds a drum-like percussive sound without a normal tone; as an artifact, spotting it flags an over-hard attack that a microphone can capture as a click or thump.",
+    "practical_application": "An engineer learns to recognize it so a wanted pop in a contemporary piece is preserved, while an unwanted one is tamed with mic placement, distance, or gentle transient control rather than harsh gating.",
+    "category": "Attack artifact",
+    "related_terms": ["Mute insertion noise", "Slap tongue", "Transient", "Attack transient", "Plosive"],
+    "common_mistakes": ["Confusing a mouthpiece pop with a breath plosive hitting the microphone.", "Assuming every pop is a fault to remove, when it may be a scored effect.", "Gating the pop out and cutting the note's real attack along with it."],
+    "scenario_contexts": ["Recording a contemporary brass piece that scores mouthpiece slaps as percussion.", "Spotting a percussive click at note onsets while editing a trumpet track.", "Live-miking a trombone where hard attacks pop in the PA."]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3555ad41-7f9c-480e-b1cd-9a9a4f7e0697",
+   "term": "Mute insertion noise",
+   "fields": {
+    "definition": "The brief mechanical scrape, bump, or squeak captured when a player pushes a mute into a brass instrument's bell, heard as a short non-tonal noise just before a muted passage begins.",
+    "plain_english": "The little scrape or bump you hear when a player pushes a mute into the bell of a trumpet or trombone. It is like the sound of sliding a cork into a bottle. A close mic can pick it up by accident.",
+    "purpose_function": "It is an incidental artifact rather than a musical sound; recognizing it tells an engineer that a mute change happened and helps them decide whether to keep or clean it.",
+    "practical_application": "On close-miked brass an engineer edits or crossfades over insertion noise, or arranges enough rest so the player can mute quietly and off-axis between phrases.",
+    "category": "Mechanical noise",
+    "related_terms": ["Mute removal noise", "Mouthpiece pop", "Handling noise", "Transient"],
+    "common_mistakes": ["Mistaking mute insertion noise for a digital dropout or edit click.", "Editing it out so tightly that the following note's attack is clipped.", "Not leaving enough rest in the arrangement for a quiet mute change."],
+    "scenario_contexts": ["Editing a jazz trumpet solo where the player switches to a Harmon mute.", "Close-miking a muted trombone section in the studio.", "Cleaning stray noises from an orchestral brass recording."]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "66668e41-ac49-4312-82fe-2db3301f863f",
+   "term": "Mute removal noise",
+   "fields": {
+    "definition": "The short mechanical noise captured when a player pulls a mute out of a brass instrument's bell, often a soft pop, scrape, or rattle heard as a muted passage ends and open tone returns.",
+    "plain_english": "The small pop or scrape you hear when a player pulls the mute back out of the bell. It is like tugging a cork free. A close mic can catch it as the muted part ends.",
+    "purpose_function": "Like insertion noise, it is an incidental artifact and not a tone; recognizing it lets an engineer judge whether to keep the natural sound or remove it.",
+    "practical_application": "Engineers clean or crossfade removal noise on close-miked brass, or coach players to withdraw the mute slowly and away from the microphone axis.",
+    "category": "Mechanical noise",
+    "related_terms": ["Mute insertion noise", "Mouthpiece pop", "Handling noise", "Decay"],
+    "common_mistakes": ["Confusing mute removal noise with a note's natural release.", "Cutting too aggressively and removing the tail of the muted note.", "Assuming it is microphone self-noise rather than the player."],
+    "scenario_contexts": ["End of a muted brass phrase returning to open tone.", "Editing a big-band chart with frequent mute changes.", "Live sound where a soloist removes a mute near a sensitive mic."]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "acab400f-c5d9-444c-b3ce-6574f88f40ea",
+   "term": "Muted decay",
+   "fields": {
+    "definition": "The rapid, shortened decay of a note whose vibration is deliberately damped, such as a palm-muted guitar string, a hand-stopped horn, or a felt-muted piano string, giving a clipped tail instead of the full natural ring.",
+    "plain_english": "How fast a note dies away when the player deadens it. Resting a hand on a guitar string is one way to do this. Instead of ringing out, the sound stops short and feels tight.",
+    "purpose_function": "Muting controls sustain and note length to tighten rhythm and cut wash; recognizing muted decay helps an engineer read how a part was played and how long its tail really is.",
+    "practical_application": "An engineer hears muted decay and sets gate release, reverb time, and compression to match the short tail rather than fighting it or adding unnatural sustain.",
+    "category": "Decay characteristic",
+    "related_terms": ["Natural decay", "Palm mute", "Damping", "Sustain", "Release"],
+    "common_mistakes": ["Trying to add sustain with heavy compression, which mostly lifts noise between notes.", "Setting a slow gate release that lets the choked tail ring unnaturally.", "Confusing intentional muting with a dead string or a failing pickup."],
+    "scenario_contexts": ["Palm-muted electric guitar chugs in a rock mix.", "A hand-stopped french horn passage.", "Choosing reverb tail length for a staccato, muted part."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "07c4c46e-0460-4867-9c3a-847e3505373a",
+   "term": "Nail attack",
+   "fields": {
+    "definition": "The bright, percussive onset produced when a plucked-string player strikes the string with the fingernail, as on classical guitar or harp, giving a sharper, higher-transient attack than playing with the flesh of the fingertip alone.",
+    "plain_english": "The sharp, bright start of a note when a player plucks with a nail instead of just skin. The nail gives a crisp ping, much like a pick would. It makes the note stand out more.",
+    "purpose_function": "The nail shapes tone color and attack sharpness; a player uses more nail for brightness and projection and more flesh for a rounder, softer onset.",
+    "practical_application": "An engineer recognizes a nail-heavy attack and may soften harsh transients through microphone choice, angle, and distance, or gentle high-frequency control, rather than assuming an EQ fault.",
+    "category": "Attack characteristic",
+    "related_terms": ["Nail click", "Pick attack", "Transient", "Attack", "Natural harmonic"],
+    "common_mistakes": ["Assuming a bright attack is harsh EQ when it is really the player's nail.", "Over-brightening a track that already has a strong nail attack.", "Confusing a musical nail attack with an unwanted nail click."],
+    "scenario_contexts": ["Close-miking a classical guitar for a solo album.", "Recording a fingerstyle acoustic part.", "Balancing brightness on a harp track."]
+   },
+   "sources": ["Tennant, Pumping Nylon", "Grove Dictionary of Music"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d3875aa7-2262-4090-bd80-c14cfe68f272",
+   "term": "Nail click",
+   "fields": {
+    "definition": "An unwanted clicking or ticking artifact caused by a fingernail contacting a string, or a nail catching a wound string, heard as a short non-tonal tick separate from the intended note.",
+    "plain_english": "A small unwanted tick when a player's nail catches a string. It is a tiny clatter that sits on top of the note. Most of the time it was not meant to be there.",
+    "purpose_function": "It is an artifact, not a technique; spotting it lets an engineer or player decide whether to fix it at the source or edit it out.",
+    "practical_application": "Engineers reduce nail click by adjusting mic position, coaching nail length and angle, or editing isolated ticks, since EQ alone rarely removes them cleanly.",
+    "category": "Performance artifact",
+    "related_terms": ["Nail attack", "String noise", "Finger squeak", "Nut buzz", "Fret buzz"],
+    "common_mistakes": ["Trying to EQ out a click, which shares frequencies with the wanted note.", "Blaming the instrument when the cause is nail length or angle.", "Confusing nail click with fret buzz or nut buzz."],
+    "scenario_contexts": ["Fingerstyle guitar recording with audible ticks on position shifts.", "Classical guitar close-mic capturing nail noise.", "Cleaning stray ticks in a solo guitar edit."]
+   },
+   "sources": ["Tennant, Pumping Nylon", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c95432e4-5597-4956-bcb5-63efb62fe126",
+   "term": "Natural decay",
+   "fields": {
+    "definition": "The natural, uninterrupted fading of a sound after its initial excitation, as the vibrating source loses energy to internal damping and radiation; the note rings out and quiets on its own rather than being cut or damped short.",
+    "plain_english": "How a sound fades away on its own after it is played. A struck bell slowly going quiet is a good example. Nothing stops it early; it just loses energy and dies out.",
+    "purpose_function": "Natural decay defines a sound's tail and its sense of space; recognizing it guides how much reverb, sustain, or gating a part needs.",
+    "practical_application": "An engineer sets gate and reverb times to respect a note's natural decay so tails are not chopped off or buried under added effects.",
+    "category": "Decay characteristic",
+    "related_terms": ["Muted decay", "Sustain", "Release", "Reverberation", "Resonance"],
+    "common_mistakes": ["Setting a fast gate that clips the natural tail.", "Mistaking room reverb for the instrument's own decay.", "Adding reverb that masks the natural decay instead of extending it."],
+    "scenario_contexts": ["Choosing gate release on tom or piano tracks.", "Judging a cymbal's ring-out before an edit cut.", "Matching a reverb tail to an acoustic guitar's decay."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5cce0762-8496-477c-8a73-d3365908a0d8",
+   "term": "Natural harmonic",
+   "fields": {
+    "definition": "A flute-like harmonic sounded on an open string by lightly touching it at a node point (for example over the 12th, 7th, or 5th fret on guitar) so that only a higher mode of the harmonic series speaks while the fundamental is suppressed.",
+    "plain_english": "A clear, bell-like note made by resting a finger very lightly on an open string. You do not press it down to a fret. Touching the right spot lets a higher, pure tone ring out instead of the normal note.",
+    "purpose_function": "Natural harmonics extend an instrument's range with a distinctive chime-like timbre and give pure overtone pitches; their node positions also serve as reference points for tuning and intonation.",
+    "practical_application": "A player uses them for chiming effects and harmonic tuning, while an engineer notes their low level and pure tone and may need extra gain or careful mic placement to capture them cleanly.",
+    "category": "Harmonic",
+    "related_terms": ["Artificial harmonic", "Node", "Overtone", "Fundamental", "Resonance"],
+    "common_mistakes": ["Pressing the string down instead of touching it lightly, which kills the harmonic.", "Touching between nodes so the harmonic does not speak.", "Confusing a natural open-string harmonic with an artificial fretted one."],
+    "scenario_contexts": ["A guitarist chiming 12th-fret harmonics to tune.", "Recording harmonics that need extra gain to sit in a mix.", "Identifying bell-like overtones in a string part."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Grove Dictionary of Music"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ddb08598-7b1d-4f4b-aff7-d3100103ca5c",
+   "term": "Nut buzz",
+   "fields": {
+    "definition": "A buzzing or rattling artifact originating at the nut of a fretted string instrument, usually caused by a nut slot cut or worn too low so an open string vibrates against the slot or the first fret; it affects open strings and disappears once the string is fretted.",
+    "plain_english": "A rattly buzz from an open string near the top of the neck, at the small slotted part called the nut. It usually means a string slot is worn too low. The buzz goes away once you press the string down on a fret.",
+    "purpose_function": "It is a fault symptom, not a feature; recognizing nut buzz tells a technician that the nut slot is too low or worn and needs shimming, filling, or replacement.",
+    "practical_application": "A technician confirms nut buzz by checking that it occurs only on open strings, then raises the slot with a shim or filler or fits a new nut, since it cannot be fixed with EQ.",
+    "category": "Buzz artifact",
+    "related_terms": ["Fret buzz", "String buzz", "Action", "Setup", "Nail click"],
+    "common_mistakes": ["Confusing nut buzz with fret buzz, though nut buzz stops when the string is fretted.", "Filing a slot even deeper, which makes the buzz worse.", "Blaming the strings or pickup for a mechanical nut problem."],
+    "scenario_contexts": ["Open strings buzz on a guitar while fretted notes stay clean.", "Setting up a guitar after fitting a new nut.", "Diagnosing a rattle on an acoustic before recording."]
+   },
+   "sources": ["Erlewine, Guitar Player Repair Guide", "Fender guitar setup guide (technical documentation)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

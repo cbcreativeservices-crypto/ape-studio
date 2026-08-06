@@ -1,0 +1,312 @@
+{
+ "batch": 322,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "0d035d58-8ca4-4a83-96a4-bd1b35d920af",
+   "term": "tubby",
+   "fields": {
+    "definition": "A tonal descriptor for a boomy, boxy sound caused by excessive resonance in the low-mid range, roughly 150 to 400 Hz, giving a hollow, enclosed quality as if the sound were made inside a small box or tub.",
+    "plain_english": "A tubby sound is boomy and boxy, with too much low-middle tone. It sounds a bit like talking inside an empty cardboard box.",
+    "purpose_function": "It flags a build-up of unwanted low-mid resonance so an engineer knows to cut those frequencies for a clearer, more open tone.",
+    "practical_application": "An engineer hearing a tubby kick, tom, or vocal will sweep an EQ to find and cut the offending low-mid frequencies, often around 200 to 400 Hz.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "boxy",
+     "boomy",
+     "muddy",
+     "woolly",
+     "low-mids"
+    ],
+    "common_mistakes": [
+     "Confusing tubby with warm; warmth is pleasant fullness, while tubby is an unwanted boxy resonance.",
+     "Boosting low-mids for body and pushing a source into tubbiness.",
+     "Cutting far too wide a band to fix tubbiness and thinning out the whole tone."
+    ],
+    "scenario_contexts": [
+     "A kick drum recorded in a small untreated room sounding boxy and tubby.",
+     "A vocal on a cheap microphone with a boomy low-mid build-up.",
+     "Taming a tom that rings with a hollow, tubby resonance."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound technique articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2e58d074-864e-48f0-9aad-e2f6842a9230",
+   "term": "veiled",
+   "fields": {
+    "definition": "A tonal descriptor for a sound that lacks high-frequency clarity and detail, as if a thin cover were placed over it, making it dull, distant, and slightly muffled.",
+    "plain_english": "A veiled sound is missing its clear, detailed highs. It sounds like music playing behind a thin curtain, a little dull and far away.",
+    "purpose_function": "It describes a loss of top-end openness and detail so an engineer can judge whether a source needs high-frequency lift or a cleaner signal path.",
+    "practical_application": "An engineer may call a dull microphone or a covered vocal veiled, then add gentle high-shelf EQ or change mic position to restore clarity.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "dark",
+     "dull",
+     "muffled",
+     "airy",
+     "presence"
+    ],
+    "common_mistakes": [
+     "Confusing veiled with warm; warm is pleasant, while veiled means a loss of wanted detail.",
+     "Boosting highs harshly to lift a veiled sound and adding harshness instead of clarity.",
+     "Blaming the source when a dirty pop filter, foam, or off-axis mic is veiling the sound."
+    ],
+    "scenario_contexts": [
+     "A vocal that sounds dull and covered through a worn or cheap microphone.",
+     "Comparing a clear reference monitor with a veiled one that hides detail.",
+     "A guitar tone that loses air and detail after heavy low-pass filtering."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound technique articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b3fc1c3b-a593-4c9f-adfe-50401dadd3e7",
+   "term": "vibey",
+   "fields": {
+    "definition": "A subjective descriptor for a sound or recording with a strong, appealing mood or atmosphere, often coming from characterful gear, room sound, or slight imperfections rather than clinical accuracy.",
+    "plain_english": "A vibey sound has a strong mood or feel that pulls you in. It is not perfectly clean, but it has character, like an old photo with a warm, moody look.",
+    "purpose_function": "It describes emotional character and atmosphere so an engineer can aim for feel and mood, not just technical cleanness.",
+    "practical_application": "An engineer chasing a vibey take may use vintage gear, room mics, tape, or a looser performance instead of a polished, sterile sound.",
+    "category": "Timbre Descriptor",
+    "related_terms": [
+     "vintage",
+     "warm",
+     "character",
+     "coloration",
+     "lo-fi"
+    ],
+    "common_mistakes": [
+     "Treating vibey as a fixed EQ setting instead of an overall mood created by many choices.",
+     "Adding noise or effects to fake a vibe and burying the actual performance.",
+     "Assuming vibey means low quality, when a vibey sound is a deliberate creative choice."
+    ],
+    "scenario_contexts": [
+     "Using room mics and tape to give a live band recording a vibey feel.",
+     "Choosing an old characterful microphone for a moody vocal.",
+     "Keeping a slightly imperfect take because it feels more vibey than a clean one."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound technique articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2dff1460-6968-4268-98e0-9c6e3cea78f8",
+   "term": "vintage",
+   "fields": {
+    "definition": "A subjective descriptor for a sound with the character of older analog equipment, marked by tube warmth, tape saturation, gentle harmonic coloration, and a slightly reduced, smoothed frequency range.",
+    "plain_english": "A vintage sound copies the warm, colored tone of old analog gear. It is smooth and a little soft on the edges, like a classic record from decades ago.",
+    "purpose_function": "It describes desirable old-school coloration so an engineer can recreate the warmth and character of classic analog recordings.",
+    "practical_application": "An engineer wanting a vintage tone may use tube gear, tape emulation, or classic-style plug-ins to add warmth, saturation, and gentle high-end roll-off.",
+    "category": "Timbre Descriptor",
+    "related_terms": [
+     "warm",
+     "saturation",
+     "tube",
+     "tape",
+     "coloration"
+    ],
+    "common_mistakes": [
+     "Assuming vintage always sounds better, when old-style coloration can hurt clarity in a modern mix.",
+     "Confusing vintage with simply dark; vintage adds harmonic character, not only reduced highs.",
+     "Stacking many vintage emulations and muddying the mix with too much coloration."
+    ],
+    "scenario_contexts": [
+     "Using a tape emulation to give a modern drum bus a vintage feel.",
+     "Choosing a classic-style tube compressor for a vintage vocal sound.",
+     "Recreating a 1960s tone with reduced bandwidth and gentle saturation."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound technique articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "516a17ff-4ea8-4dbb-ab73-8234a355ba4d",
+   "term": "Warm",
+   "fields": {
+    "definition": "A tonal descriptor for a full, pleasant sound with strong low-mids and fundamentals and a gentle, unforced top end, standing as the opposite of thin or harsh.",
+    "plain_english": "A warm sound is full and gentle, strong in the low-middle tones with no harsh highs. It feels cozy and easy on the ears.",
+    "purpose_function": "It describes pleasing low-mid fullness and smooth highs so an engineer can judge whether a source feels full and comfortable or thin and edgy.",
+    "practical_application": "An engineer may add warmth by boosting low-mids, rolling off harsh highs, or using tube or tape coloration on a thin, brittle source.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "full",
+     "round",
+     "rich",
+     "thin",
+     "harsh"
+    ],
+    "common_mistakes": [
+     "Confusing warm with muddy; warmth is controlled fullness, while mud is uncontrolled low-mid build-up.",
+     "Boosting too much low-mid chasing warmth and losing clarity.",
+     "Assuming warm means dull, when a warm sound can still have clear, open highs."
+    ],
+    "scenario_contexts": [
+     "Adding low-mid body to a thin vocal to make it warmer.",
+     "Choosing a ribbon microphone for a warm horn or guitar tone.",
+     "Softening harsh digital highs to give a mix a warmer feel."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0f58b737-caec-43ae-b6c0-d05dc25f6620",
+   "term": "Wet",
+   "fields": {
+    "definition": "A descriptor for a signal that contains audible effect processing, especially reverb or delay, as opposed to a dry, unprocessed signal; a fully wet signal is all effect and none of the original sound.",
+    "plain_english": "A wet sound has effects like reverb or echo added to it, while a dry sound has none. Wet is like the echo you hear in a big empty hall.",
+    "purpose_function": "It describes how much effect is in a signal so an engineer can set the balance between the processed and the clean sound.",
+    "practical_application": "An engineer sets a wet/dry mix control or a reverb send level to decide how much effect sits on a vocal or instrument.",
+    "category": "Effects Descriptor",
+    "related_terms": [
+     "dry",
+     "reverb",
+     "delay",
+     "wet/dry mix",
+     "send"
+    ],
+    "common_mistakes": [
+     "Confusing wet with loud; wet is the amount of effect, not the level of the channel.",
+     "Making a mix too wet so vocals sound distant and lose clarity.",
+     "Forgetting that a fully wet effect return should carry only the effect, not the dry signal."
+    ],
+    "scenario_contexts": [
+     "Setting the reverb send to make a snare sound wetter.",
+     "Balancing wet and dry on a vocal delay so the words stay clear.",
+     "Using a fully wet reverb return on an aux channel."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d6e765fa-85cc-4c1b-9418-2fbd89685fb2",
+   "term": "Woody",
+   "fields": {
+    "definition": "A tonal descriptor for a warm, resonant, slightly hollow midrange character like that of a hollow wooden instrument, giving body without a metallic edge.",
+    "plain_english": "A woody sound is warm and a little hollow in the middle tones, like tapping on a hollow piece of wood. It has body but no metal-like ring.",
+    "purpose_function": "It describes a natural wooden resonance so an engineer can judge or aim for the organic tone of instruments like clarinet, marimba, or upright bass.",
+    "practical_application": "An engineer may call a well-recorded clarinet or kick drum woody, or shape the mids to bring out the natural woody body of an acoustic instrument.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "warm",
+     "hollow",
+     "body",
+     "resonant",
+     "boxy"
+    ],
+    "common_mistakes": [
+     "Confusing woody with boxy; woody is a pleasant natural resonance, while boxy is an unwanted one.",
+     "Cutting mids too hard and removing the natural woody character of an acoustic instrument.",
+     "Assuming woody means dull, when it still carries clear midrange detail."
+    ],
+    "scenario_contexts": [
+     "Describing the warm, hollow tone of a well-recorded clarinet or marimba.",
+     "Capturing the woody thud of an upright bass.",
+     "Shaping a kick drum for a natural, woody attack instead of a clicky one."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound technique articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dcf95717-bdf0-4ce4-be3b-dc5422734c03",
+   "term": "woof / woofy",
+   "fields": {
+    "definition": "A tonal descriptor for excessive, loose, boomy low-frequency energy that is often undamped and lacking definition, producing a dull thump rather than tight, controlled bass.",
+    "plain_english": "A woofy sound has too much loose, boomy bass with no tightness. It thumps in a dull way, like a big speaker with the bass turned up too high.",
+    "purpose_function": "It flags an overblown, poorly controlled low end so an engineer knows to tighten or cut the boomy bass frequencies.",
+    "practical_application": "An engineer hearing a woofy kick or bass will cut the boomy low frequencies and tighten the low end with EQ or damping.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "boomy",
+     "muddy",
+     "tubby",
+     "tight",
+     "low-end"
+    ],
+    "common_mistakes": [
+     "Confusing woofy with powerful; woofy bass is loose and dull, not tight and strong.",
+     "Boosting sub or bass too much and making a source woofy.",
+     "Leaving a woofy low end unchecked, which can overdrive and damage small woofers or subs."
+    ],
+    "scenario_contexts": [
+     "A bass guitar with loose, boomy notes that lack definition.",
+     "A kick drum that thumps woofily in an untreated room.",
+     "Tightening a woofy low end on a club system to protect the subs and improve clarity."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "287c3bed-063b-4805-b0fe-ab56dcdfdcb2",
+   "term": "woolly",
+   "fields": {
+    "definition": "A tonal descriptor for a low end or low-mid range that is loose, thick, and poorly defined, sounding muffled and unclear rather than tight and articulate.",
+    "plain_english": "A woolly sound has thick, loose low tones with no clear edges. It sounds soft and fuzzy, like listening through a thick wool sweater.",
+    "purpose_function": "It describes a lack of low-end clarity and definition so an engineer can tighten and clean up a muddy, undefined bottom.",
+    "practical_application": "An engineer may call a muddy bass or vocal woolly, then cut the low-mid build-up and tighten the low end for clearer definition.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "muddy",
+     "boomy",
+     "tubby",
+     "undefined",
+     "tight"
+    ],
+    "common_mistakes": [
+     "Confusing woolly with warm; warmth is controlled, while woolly is loose and unclear.",
+     "Layering too much low-mid and making a mix woolly and muddy.",
+     "Trying to fix woolliness with only a level cut instead of targeted EQ and cleanup."
+    ],
+    "scenario_contexts": [
+     "A bass guitar that sounds thick and undefined in a busy mix.",
+     "Cleaning up a woolly low-mid build-up on an acoustic guitar.",
+     "Tightening a woolly kick and bass so they sit clearly together."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound technique articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

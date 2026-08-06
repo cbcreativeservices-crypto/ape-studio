@@ -1,0 +1,159 @@
+{
+ "batch": 251,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "f39e8124-843a-468e-82ee-b4a6fd1f2c05",
+   "term": "Sound morphing",
+   "fields": {
+    "definition": "A sound-design technique in which one sound is gradually transformed into another so that intermediate stages carry features of both, typically by interpolating spectral, pitch, and amplitude characteristics over time.",
+    "plain_english": "This is when one sound slowly changes into a totally different sound. It works like a photo that melts from a cat into a dog, but with sound instead of pictures.",
+    "purpose_function": "It lets a sound designer create smooth, unnatural transitions or hybrid textures that a single recording cannot capture, which is useful for transformation effects seen on screen.",
+    "practical_application": "A designer might morph a human voice into an animal growl to score a creature changing shape, using a morphing plug-in or a spectral editor.",
+    "category": "Sound Design",
+    "related_terms": ["Source manipulation", "Sound-design session", "Pitch shifting", "Spectral editing", "Layering"],
+    "common_mistakes": ["Confusing morphing with a simple crossfade, which only overlaps two sounds instead of blending their inner features.", "Expecting a convincing morph from sounds with very different spectral content without matching pitch and formants first.", "Over-processing until the result sounds artificial and loses both source identities."],
+    "scenario_contexts": ["Scoring an on-screen creature transformation in a fantasy film.", "Building a hybrid vehicle that shifts from a mechanical to an electric engine.", "Designing a magical transition whoosh for a title sequence."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "237b9e5c-9d8c-4e18-a0e4-720fe8e822bb",
+   "term": "Sound variation",
+   "fields": {
+    "definition": "An alternate rendition of a sound effect that differs slightly in timing, pitch, level, or timbre, used to avoid audible repetition when the same action recurs on screen.",
+    "plain_english": "This is another version of the same sound, changed a little so it does not sound the same each time. Footsteps use many small variations so they do not sound fake.",
+    "purpose_function": "Variations keep repeated events such as footsteps, gunshots, or punches sounding natural rather than obviously looped.",
+    "practical_application": "An editor lays down several footstep variations across a walking shot so that no two steps sound identical.",
+    "category": "Sound Design",
+    "related_terms": ["Sound-effects editing", "Source library", "Sound-effect stem", "Foley", "Layering"],
+    "common_mistakes": ["Reusing one identical file for every repeat, which produces the obvious 'machine-gun' effect.", "Making variations so different that they no longer feel like the same source.", "Varying only the file but forgetting to vary level and pitch as well."],
+    "scenario_contexts": ["Cutting footsteps for a long walking scene.", "Editing repeated gunfire in an action sequence.", "Building a crowd from many single-voice variations."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ffb6294a-187b-4432-9163-14fd47da3e65",
+   "term": "Sound-design session",
+   "fields": {
+    "definition": "The DAW project and its associated media in which a sound designer builds, processes, and arranges custom effects, kept separate from the editorial and mix sessions.",
+    "plain_english": "This is the computer project where a sound designer builds new sounds. It holds all the clips, edits, and effects for that work in one place.",
+    "purpose_function": "It gives the designer a dedicated workspace to experiment and render finished effects without disturbing the main edit or the mix.",
+    "practical_application": "A designer opens a sound-design session to layer and process a custom explosion, then exports the finished effect into the editorial session.",
+    "category": "Sound Design",
+    "related_terms": ["Sound-design suite", "Source manipulation", "Sound-effects editing", "Sound morphing", "Bounce"],
+    "common_mistakes": ["Working directly in the mix session and cluttering it with design experiments.", "Not consolidating or backing up media, so rendered effects break when files move.", "Failing to label and organize tracks, making the session hard to revisit later."],
+    "scenario_contexts": ["Building a signature weapon sound for a film or game.", "Designing a sci-fi user-interface sound palette.", "Prepping custom effects before handing them to the effects editor."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6709d952-f861-4d98-97a9-97b98ee2b5ef",
+   "term": "Sound-design suite",
+   "fields": {
+    "definition": "A room and its equipment configured for sound-design work, typically a DAW, monitoring, and processing tools in an acoustically treated space separate from the mix stage.",
+    "plain_english": "This is the room set up for making and shaping sounds. It has speakers, a computer, and tools in a quiet, treated space.",
+    "purpose_function": "It provides a controlled listening environment and toolset so a designer can create and check effects accurately before they reach the final mix.",
+    "practical_application": "A designer books time in the sound-design suite to build effects on calibrated monitors before delivering them to the dub stage.",
+    "category": "Post Facility",
+    "related_terms": ["Sound-design session", "Dub stage", "Monitoring", "Room calibration", "Source manipulation"],
+    "common_mistakes": ["Assuming any office room works and ignoring acoustic treatment and monitor calibration.", "Confusing the design suite with the mix stage, which is set up for final mixing at a reference level.", "Mixing final deliverables in a suite that is not calibrated to delivery standards."],
+    "scenario_contexts": ["A designer creating effects ahead of a feature mix.", "A facility renting rooms for sound-design work.", "A game studio's dedicated audio design room."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ab93d484-1243-453b-bf8f-ee1ed49a0149",
+   "term": "Sound-effect stem",
+   "fields": {
+    "definition": "A submix deliverable containing only the sound-effects elements of a mix, printed as a discrete stem so effects can be re-balanced, replaced, or re-versioned independently of dialogue and music.",
+    "plain_english": "This is a mix that holds just the sound effects, kept apart from voices and music. Keeping it separate lets people change the effects later without redoing the whole mix.",
+    "purpose_function": "Separate effects stems support re-mixing, foreign-language versions, trailers, and archiving by letting each element be adjusted on its own.",
+    "practical_application": "For delivery, the re-recording mixer prints dialogue, music, and effects stems so the studio can build an M&E or a trailer later.",
+    "category": "Deliverables",
+    "related_terms": ["Sound-effects premix", "M&E", "Dialogue stem", "Music stem", "Final mix"],
+    "common_mistakes": ["Confusing a stem with a single track; a stem is a full submix of many effects tracks.", "Printing stems that do not sum back to the approved final mix.", "Leaving Foley or backgrounds out of the effects stem when the delivery spec requires them."],
+    "scenario_contexts": ["Delivering split stems to a distributor.", "Building an M&E for foreign-language dubbing.", "Re-versioning effects for a shorter trailer cut."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3790c53d-8b33-4077-ab6e-4d4aef765fff",
+   "term": "Sound-effects editing",
+   "fields": {
+    "definition": "The editorial process of selecting, cutting, syncing, and organizing hard effects, backgrounds, and designed sounds to picture, preparing them for the premix and final mix.",
+    "plain_english": "This is the job of picking sound effects and lining them up with the picture. The editor cuts each sound to hit the right moment on screen.",
+    "purpose_function": "It builds the effects side of a soundtrack and gives the mixer clean, synced, well-organized material to balance.",
+    "practical_application": "An effects editor cuts door slams, car passes, and ambiences to the locked picture, then hands off organized tracks for the premix.",
+    "category": "Editorial",
+    "related_terms": ["Sound-effects premix", "Sound-effect stem", "Source library", "Foley", "Backgrounds"],
+    "common_mistakes": ["Placing effects a frame or two off sync so they feel disconnected from the action.", "Delivering messy, unlabeled tracks that slow the mix.", "Ignoring perspective and room tone, so effects do not match the shot."],
+    "scenario_contexts": ["Cutting hard effects for an action scene.", "Laying in backgrounds for a quiet dialogue scene.", "Prepping effects tracks before a mix session."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "89d44675-a8ac-4903-a85e-45c164da19d3",
+   "term": "Sound-effects premix",
+   "fields": {
+    "definition": "An intermediate mix pass in which the many sound-effects tracks are balanced, processed, and combined into a smaller, manageable set of subgroups before the final mix.",
+    "plain_english": "This is a first mix of just the sound effects. It blends many effects tracks down to a few, so the final mix is easier to handle.",
+    "purpose_function": "Premixing lowers the track count and sets internal balances so the final mix can focus on blending effects with dialogue and music.",
+    "practical_application": "A mixer premixes dozens of backgrounds and hard-effects tracks into a handful of subgroups before the final dub.",
+    "category": "Mixing",
+    "related_terms": ["Sound-effects editing", "Sound-effect stem", "Final mix", "Dub stage", "Subgroup"],
+    "common_mistakes": ["Baking in heavy processing that cannot be undone if the final mix needs changes.", "Premixing at the wrong level so the final balance is hard to reach.", "Grouping too aggressively and losing needed separation between effects."],
+    "scenario_contexts": ["Reducing a large effects session before the final mix.", "Preparing effects subgroups for a dub stage.", "Balancing dense action effects ahead of the final pass."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8786545d-4d7a-474d-8431-1626284fc7c3",
+   "term": "Source library",
+   "fields": {
+    "definition": "An organized collection of raw recordings and sound-effects files, commercial or self-recorded, from which a designer or editor draws material to build a soundtrack.",
+    "plain_english": "This is a big, sorted collection of sound recordings to pick from. It works like a stock-photo site, but for sounds instead of pictures.",
+    "purpose_function": "It gives editors fast access to a wide range of sounds so they can find or build effects without recording everything from scratch.",
+    "practical_application": "An editor searches the source library by keyword to pull a matching car-by before deciding whether to record a custom one.",
+    "category": "Assets",
+    "related_terms": ["Source manipulation", "Sound-effects editing", "Sound variation", "Metadata", "Field recording"],
+    "common_mistakes": ["Using library files without checking their license for the project.", "Grabbing the first search hit instead of auditioning options for the best fit.", "Poor metadata or naming, which makes the library hard to search later."],
+    "scenario_contexts": ["Pulling ambiences for a location the crew could not record.", "Finding a rare vehicle or animal sound.", "Building a personal library from field recordings."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "88601211-99ee-4beb-92e4-3bb2f4b84f8b",
+   "term": "Source manipulation",
+   "fields": {
+    "definition": "The processing and transformation of a recorded source sound, through pitch, time, spectral, and other treatments, to create a new sound whose origin is no longer obvious.",
+    "plain_english": "This is changing a recorded sound to make something new. A slowed, deepened lion roar can become the base of a monster, so you cannot tell where it started.",
+    "purpose_function": "It lets designers build original, believable effects from real recordings, giving screen elements that have no natural sound a convincing voice.",
+    "practical_application": "A designer pitches down and stretches an animal recording to build a creature vocal, hiding the original source.",
+    "category": "Sound Design",
+    "related_terms": ["Sound morphing", "Source library", "Sound-design session", "Pitch shifting", "Layering"],
+    "common_mistakes": ["Over-processing until the sound becomes thin or full of artifacts.", "Starting from a low-quality recording that falls apart when stretched or pitched.", "Relying on one process instead of layering several treated sources."],
+    "scenario_contexts": ["Turning animal recordings into a creature voice.", "Building a sci-fi engine from a processed real motor.", "Designing a weapon sound from manipulated household recordings."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

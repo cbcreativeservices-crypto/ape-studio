@@ -1,0 +1,304 @@
+{
+ "batch": 86,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "1a86dd6f-0b4b-496b-8cd0-f85f000d4a25",
+   "term": "Basic Folder",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: 'Basic Folder' could not be confirmed as an established, named feature or concept in any DAW, plug-in, or professional audio reference. DAWs use 'folder track' (Cubase/Studio One/Nuendo), 'track folder/group', or a browser 'User Library', but no authoritative source documents a distinct 'Basic Folder'. Possible mis-transcription or a specific product's factory-content folder name; confirm intended term before authoring."
+   ]
+  },
+  {
+   "id": "ffa8021c-bdf2-4141-8e57-6ccb355cd965",
+   "term": "Beat Detection Engine",
+   "fields": {
+    "definition": "The component of an audio program that analyzes a recording to find where beats and transients occur, generating timing points the software can use for tempo mapping, quantizing, warping, or slicing. It works by detecting sudden rises in level or energy that mark rhythmic hits.",
+    "plain_english": "The part of music software that listens to a track and works out where each beat lands. It is like tapping your foot to a song, except the computer marks every hit so it can line things up.",
+    "purpose_function": "It removes the need to find beats by hand, so the software can sync audio to a tempo grid, match loops, or fix timing quickly and consistently.",
+    "practical_application": "An engineer drops a drum loop into a session, lets the beat detection engine mark each hit, then uses those points to lock the loop to the project tempo.",
+    "category": "Tempo & Timing",
+    "related_terms": [
+     "Transient",
+     "Tempo map",
+     "Warp marker",
+     "Quantize",
+     "Grid",
+     "BPM"
+    ],
+    "common_mistakes": [
+     "Assuming detection is perfect and not checking for missed or false beats",
+     "Running detection on a busy, reverb-heavy mix where transients are unclear",
+     "Confusing beat detection with pitch detection",
+     "Leaving stray markers in place before warping, which smears the audio"
+    ],
+    "scenario_contexts": [
+     "Matching an imported drum loop to the session tempo",
+     "Building a tempo map from a freely played recording",
+     "Slicing a drum break into hits for a sampler"
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual (Hitpoints and transient detection)",
+    "Cakewalk SONAR Reference Guide (AudioSnap)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2ad575d4-bf30-43b5-bd0a-016e268adaf7",
+   "term": "Beat Mapping track",
+   "fields": {
+    "definition": "In a DAW, the track or lane used for beat mapping: matching the software's bar and beat grid to audio that was recorded without a click, by marking where each beat or bar falls so the tempo map follows the performance rather than forcing it onto a fixed grid.",
+    "plain_english": "A special track where you show the software where the beats of a song are. It is used when a song was played without a click, so the computer follows the real timing instead of a steady grid.",
+    "purpose_function": "It makes the DAW's grid follow a human performance, so you can add loops, edits, or MIDI parts that stay in time even when the tempo drifts.",
+    "practical_application": "A producer imports a live band recording, then uses the beat mapping track to mark where each bar lands so added samples snap to the real groove.",
+    "category": "Tempo & Timing",
+    "related_terms": [
+     "Tempo map",
+     "Beat marker",
+     "Grid",
+     "Warp marker",
+     "Metronome",
+     "BPM"
+    ],
+    "common_mistakes": [
+     "Confusing beat mapping, where the grid follows the audio, with warping, where the audio follows the grid",
+     "Placing bar lines on the wrong beat and shifting the whole map",
+     "Skipping tempo changes, so the grid slips against a drifting performance",
+     "Mapping to a weak or missed transient"
+    ],
+    "scenario_contexts": [
+     "Adding programmed parts to a live, click-free recording",
+     "Making a loose, rubato performance editable on the grid",
+     "Building a tempo map before quantizing overdubs"
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual (Tempo track and Time Warp)",
+    "Cakewalk SONAR Reference Guide (AudioSnap and tempo)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e9d55eae-9263-4b91-8fa8-9160d79934a6",
+   "term": "Beat marker",
+   "fields": {
+    "definition": "A marker placed at a beat or transient point on an audio clip, showing the software where a rhythmic hit occurs so the audio can be warped, quantized, sliced, or tempo-mapped to that point.",
+    "plain_english": "A small tag placed on a sound to show exactly where a beat hits. It works like a sticky note on a drum hit, so the software knows where to line things up.",
+    "purpose_function": "It gives the DAW fixed reference points on the audio, so timing edits, stretching, and grid alignment all happen at the right spots.",
+    "practical_application": "An engineer nudges a beat marker onto a snare that landed early, then quantizes so the marker snaps to the grid and tightens the groove.",
+    "category": "Tempo & Timing",
+    "related_terms": [
+     "Transient",
+     "Warp marker",
+     "Quantize",
+     "Beat Mapping track",
+     "Grid",
+     "Tempo map"
+    ],
+    "common_mistakes": [
+     "Leaving false markers on non-beat sounds like bleed or reverb tails",
+     "Moving a marker so far that it stretches the audio into artifacts",
+     "Confusing beat markers with arrangement or cue markers",
+     "Deleting needed markers and losing the timing reference"
+    ],
+    "scenario_contexts": [
+     "Tightening a loose drum take to the grid",
+     "Slicing a loop at each hit for re-triggering",
+     "Setting reference points before tempo mapping"
+    ]
+   },
+   "sources": [
+    "Ableton Live Reference Manual (Warp Markers)",
+    "Cakewalk SONAR Reference Guide (AudioSnap)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8a915222-84ce-470c-b19b-707aa4ed4b44",
+   "term": "Beat programming",
+   "fields": {
+    "definition": "The practice of creating a rhythm or drum part by entering notes or steps into a sequencer or drum machine rather than recording a live performance, building the pattern hit by hit on a grid with control over timing, velocity, and sound choice.",
+    "plain_english": "Making a drum beat by placing each hit into the software by hand, instead of playing drums live. It is like building a rhythm out of blocks on a grid, one hit at a time.",
+    "purpose_function": "It lets a producer craft precise, repeatable rhythms with full control, even without drumming skills or a live kit.",
+    "practical_application": "A producer opens a step sequencer and clicks in a kick, snare, and hi-hat pattern, then adjusts swing and velocity to make it groove.",
+    "category": "Rhythm & Sequencing",
+    "related_terms": [
+     "Step sequencer",
+     "Drum machine",
+     "Quantize",
+     "Groove",
+     "MIDI",
+     "Velocity"
+    ],
+    "common_mistakes": [
+     "Leaving every hit at the same velocity, so the beat sounds robotic",
+     "Over-quantizing until the groove feels stiff and lifeless",
+     "Ignoring how a real kit cannot play two conflicting hits at once",
+     "Programming parts that feel unnatural for the chosen sounds"
+    ],
+    "scenario_contexts": [
+     "Building a drum track for an electronic song",
+     "Sketching a rhythm before tracking a live drummer",
+     "Creating a guide groove for a session"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques (MIDI sequencing and drum programming)",
+    "Sound on Sound (programming drums)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9f546013-02c8-4498-b7a1-3e3c1ff5e8cd",
+   "term": "Beat rearrangement",
+   "fields": {
+    "definition": "The process of reordering or restructuring the rhythmic events or sections of a track by cutting, copying, and moving beats or bars, changing the arrangement or groove while keeping the underlying recorded material.",
+    "plain_english": "Changing the order of the beats or sections in a track by cutting and moving pieces around. It is like rearranging blocks you already built into a new pattern.",
+    "purpose_function": "It lets an editor reshape a groove or song structure, fix timing, or create fills and variations without recording anything new.",
+    "practical_application": "An editor chops a drum loop into single hits, then reorders them to build a fill or a fresh variation for the chorus.",
+    "category": "Editing",
+    "related_terms": [
+     "Beat marker",
+     "Quantize",
+     "Groove",
+     "Arrangement",
+     "Crossfade",
+     "Slice"
+    ],
+    "common_mistakes": [
+     "Cutting on the wrong point so edits click or lose the groove",
+     "Forgetting crossfades, leaving audible pops at each join",
+     "Rearranging so heavily that the part loses its natural feel",
+     "Not matching levels between moved pieces"
+    ],
+    "scenario_contexts": [
+     "Turning a plain loop into a varied drum track",
+     "Building fills from existing hits",
+     "Reshaping a performance during editing"
+    ]
+   },
+   "sources": [
+    "Cakewalk SONAR Reference Guide (AudioSnap and clip editing)",
+    "Sound on Sound (audio editing techniques)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "69ac4bf0-8576-4e39-94d8-2df2721bfe62",
+   "term": "Beat-aligned transition",
+   "fields": {
+    "definition": "A change from one section, clip, or song to another that is timed to land on a beat of the music, so the switch feels rhythmically smooth rather than abrupt or off-time.",
+    "plain_english": "A change between two parts of the music that happens right on a beat. It is like switching songs at the exact moment the drum hits, so it feels smooth instead of clumsy.",
+    "purpose_function": "It keeps energy and flow intact across a transition, which matters in DJ sets, edits, and arrangements where an off-beat change would feel jarring.",
+    "practical_application": "A DJ lines up the grids of two tracks and starts the crossfade on the downbeat, so the switch stays locked to the groove.",
+    "category": "Editing",
+    "related_terms": [
+     "Crossfade",
+     "Grid",
+     "Beat marker",
+     "Quantize",
+     "BPM",
+     "Arrangement"
+    ],
+    "common_mistakes": [
+     "Starting the transition off the beat, causing a stumble in the groove",
+     "Ignoring that the two parts run at different tempos",
+     "Cutting mid-phrase so the change feels unfinished",
+     "Forgetting to match keys or levels across the change"
+    ],
+    "scenario_contexts": [
+     "Mixing two songs together in a DJ set",
+     "Cutting between sections in an arrangement",
+     "Editing a live recording into a seamless montage"
+    ]
+   },
+   "sources": [
+    "Sound on Sound (DJ mixing and beatmatching)",
+    "Ableton Live Reference Manual (warping and the grid)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "11c29756-19b6-4974-9723-0d5780732f0c",
+   "term": "Between-song mute",
+   "fields": {
+    "definition": "The practice of muting a channel, group, or the main output during the gap between songs in a live performance, silencing handling noise, tuning, chatter, and potential feedback until the next song begins.",
+    "plain_english": "Turning off the sound between songs at a show, so the crowd does not hear tuning, bumps, or hum. It is like hitting mute during a break so only the music comes through.",
+    "purpose_function": "It keeps the pauses between songs clean and controlled, preventing unwanted noise and reducing the risk of feedback while the band resets.",
+    "practical_application": "A live engineer mutes the vocal and instrument channels between songs, then unmutes on cue as the next song starts.",
+    "category": "Live Sound",
+    "related_terms": [
+     "Mute",
+     "Mute group",
+     "Feedback",
+     "Fader",
+     "Channel strip",
+     "Gain staging"
+    ],
+    "common_mistakes": [
+     "Forgetting to unmute before the next song starts",
+     "UNSAFE: leaving an open mic hot between songs so handling or a feedback squeal blasts the PA and risks hearing",
+     "Muting the wrong channel or mute group",
+     "Muting so late that the noise still reaches the audience"
+    ],
+    "scenario_contexts": [
+     "Silencing tuning and chatter between songs at a concert",
+     "Preventing feedback while performers move or swap instruments",
+     "Keeping a live recording or broadcast clean during song gaps"
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ac448793-5737-4c05-a499-ebc3e7945ab7",
+   "term": "Block mode",
+   "fields": {
+    "definition": "In Reason Studios' Reason, a sequencer view where an engineer records and edits reusable multi-track sections called Blocks, which can then be placed and repeated along the timeline in Song view to build an arrangement.",
+    "plain_english": "A way of working in Reason where you build short, reusable song sections called blocks. It is like making a few pieces once, then snapping copies together to build the whole song.",
+    "purpose_function": "It speeds up arranging by letting you create a verse, chorus, or drum section once and reuse it, instead of copying clips over and over.",
+    "practical_application": "A producer builds an 8-bar chorus Block in Block mode, then drops it wherever the chorus repeats in Song view and tweaks a few clips for variation.",
+    "category": "Arrangement",
+    "related_terms": [
+     "Arrangement",
+     "Clip",
+     "Sequencer",
+     "Loop",
+     "Pattern",
+     "Song view"
+    ],
+    "common_mistakes": [
+     "Confusing Block view edits with Song view, since each keeps its own clips",
+     "Expecting a Block change to update copies that were separately altered",
+     "Overusing repeated Blocks so the song feels static",
+     "Forgetting to switch back to Song view to arrange the Blocks"
+    ],
+    "scenario_contexts": [
+     "Building reusable verse and chorus sections in Reason",
+     "Sketching a song structure quickly from repeated parts",
+     "Combining Blocks with linear clips for variation"
+    ]
+   },
+   "sources": [
+    "Reason Studios documentation (Working with Blocks in the Sequencer)",
+    "Sound on Sound (Reason: Block)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

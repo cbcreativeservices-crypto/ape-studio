@@ -1,0 +1,309 @@
+{
+ "batch": 337,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "9375ec33-f5b8-4781-9594-214f41dcb382",
+   "term": "Pick attack",
+   "fields": {
+    "definition": "The transient onset of a plucked or strummed string note produced as a plectrum releases the string; it is the brief, bright, high-energy leading edge of the sound that carries the percussive contact and the fastest-rising portion of the amplitude envelope.",
+    "plain_english": "The sharp, bright start of a note when a guitar pick hits the string. It is the quick snap you hear just before the note rings out.",
+    "purpose_function": "Names the initial transient that gives a picked note its clarity, articulation, and rhythmic definition, so it can be identified and shaped deliberately.",
+    "practical_application": "A technician listens to or meters the pick attack when setting a compressor's attack and release, or when EQing a guitar DI, to decide how much of that transient to keep for punch versus smooth over.",
+    "category": "Attack Transient",
+    "related_terms": [
+     "Pluck",
+     "Pick click",
+     "Pick noise",
+     "Transient",
+     "Attack"
+    ],
+    "common_mistakes": [
+     "Setting a compressor attack so fast that it clamps the pick attack and the guitar loses its punch and definition.",
+     "Confusing pick attack (the whole bright onset) with pick click (just the percussive contact tick).",
+     "EQing away all of the attack's high end, leaving notes that sound dull and poorly defined."
+    ],
+    "scenario_contexts": [
+     "Dialing a compressor's attack time on a recorded electric guitar DI to keep the picked notes punchy.",
+     "EQing an acoustic guitar so picked notes stay clear in a dense mix.",
+     "Judging note definition when comping fast picked passages."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ac0c7ef3-5ce1-4ca2-bc6d-796fb6bdff9a",
+   "term": "Pick click",
+   "fields": {
+    "definition": "A short, high-frequency percussive click imprinted on a note's onset by the hard plectrum tapping the string before it begins to vibrate tonally; it is the sharpest component of pick attack, most audible with stiff picks, bright strings, and close miking or direct recording.",
+    "plain_english": "The tiny tick sound a stiff pick makes as it taps the string, heard right at the start of each note. Hard picks and bright strings make it louder.",
+    "purpose_function": "Isolates the percussive contact component of pick attack so it can be recognized and controlled; a little adds articulation and cut, while too much sounds clicky and unmusical.",
+    "practical_application": "An engineer hearing excessive pick click on a bass DI or acoustic guitar reduces it with a softer pick, a narrow high-frequency EQ cut, or transient shaping.",
+    "category": "Picking Noise",
+    "related_terms": [
+     "Pick attack",
+     "Pick noise",
+     "Pick drag",
+     "Transient"
+    ],
+    "common_mistakes": [
+     "Trying to remove pick click with heavy broadband EQ, which dulls the whole tone instead of notching the narrow click band.",
+     "Assuming the click is a fault in the pickup or interface when it is really a stiff pick on bright strings.",
+     "Adding an aggressive transient shaper that exaggerates the click until the part sounds unmusical."
+    ],
+    "scenario_contexts": [
+     "Reducing a clicky onset on a close-miked acoustic guitar in a quiet ballad.",
+     "Taming pick click on a bright bass DI so it does not distract in the mix.",
+     "Choosing a softer pick to cut click during a clean recording session."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bfdab217-b29b-4951-bf22-dbc3eef508b5",
+   "term": "Pick drag",
+   "fields": {
+    "definition": "The scratchy frictional sound produced as a plectrum slides across the ridged windings of wound strings during a stroke or a position change; it is a broadband, noise-like artifact concentrated in the upper midrange and treble, separate from the tonal note.",
+    "plain_english": "The scratchy sound of the pick rubbing across the rough wound strings as your hand moves. It is a bit like running a fingernail over a rope.",
+    "purpose_function": "Identifies incidental friction noise from the pick on wound strings so it can be judged and managed, separating it from the musical note and from equipment faults.",
+    "practical_application": "A technician who hears drag on a take addresses it with lighter picking, smoother or coated picks, flatwound or coated strings, or targeted upper-mid EQ and cleanup.",
+    "category": "Picking Noise",
+    "related_terms": [
+     "Pick noise",
+     "Pick scrape",
+     "Pick click",
+     "Pick attack"
+    ],
+    "common_mistakes": [
+     "Mistaking pick drag for a cable or grounding fault when it is just friction on the wound strings.",
+     "Trying to fix drag only with EQ instead of a lighter touch, a smoother pick, or coated strings.",
+     "Editing out drag so aggressively that natural playing detail and realism are lost."
+    ],
+    "scenario_contexts": [
+     "Hearing scratchy friction as a player shifts position on wound strings during a take.",
+     "Deciding whether to edit out or keep drag noise on a solo acoustic recording.",
+     "Switching to coated or flatwound strings to reduce drag on a session guitar."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fd45b0c8-a932-4e9b-b1c7-790de48520aa",
+   "term": "Pick noise",
+   "fields": {
+    "definition": "Any unwanted, non-tonal sound generated by the plectrum's contact with the strings, including clicks, scrapes, and frictional scratch, captured alongside the intended note; it is most prominent on bright acoustic and clean electric sources that are close-miked or recorded direct.",
+    "plain_english": "Extra scratchy or clicky sounds made by the pick itself, not the musical note. It is the noise you do not want, picked up along with the playing.",
+    "purpose_function": "Serves as an umbrella term that lets engineers flag and treat plectrum-generated noise as distinct from the intended tone and from equipment problems.",
+    "practical_application": "During tracking or mixing, a technician controls pick noise through mic choice and placement, technique coaching, string choice, EQ, and gentle de-noising.",
+    "category": "Picking Noise",
+    "related_terms": [
+     "Pick click",
+     "Pick drag",
+     "Pick scrape",
+     "Pick attack"
+    ],
+    "common_mistakes": [
+     "Treating all pick noise as a defect and gating it out, which can chop the start of real notes.",
+     "Blaming the microphone or preamp for noise that is actually the player's pick technique.",
+     "Boosting presence or air EQ that makes pick noise worse while chasing clarity."
+    ],
+    "scenario_contexts": [
+     "Cleaning up a close-miked acoustic guitar track full of clicks and scrapes.",
+     "Coaching a guitarist to lighten pick pressure to lower noise during recording.",
+     "Setting EQ and light de-noising on a clean electric part to control pick noise."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d3c022d6-ab63-4335-afca-a4b963dae156",
+   "term": "Pick recovery",
+   "fields": {
+    "definition": "The return, or reset, phase of a pickstroke in which the plectrum lifts away from the string and repositions after the initial attack, before the next stroke. On close-miked or high-gain guitar it can add a faint secondary contact noise as the pick clears or grazes the string, distinct from the louder pick attack.",
+    "plain_english": "It is the moment the pick pulls back off the string after a note and gets ready for the next one. Sometimes the mic catches a small extra scratch as the pick lifts away.",
+    "purpose_function": "Naming the recovery phase separates the pick's return motion and its faint noise from the main pick attack. That helps a technician identify and manage stray picking sounds in a take.",
+    "practical_application": "On a close-miked clean guitar, an engineer who hears pick-recovery noise may adjust mic placement, ask for a lighter touch, or edit the faint contact sounds out of exposed sections.",
+    "category": "Picking Noise",
+    "related_terms": [
+     "Pick attack",
+     "Pick noise",
+     "Pick click",
+     "Pick scrape",
+     "Transient"
+    ],
+    "common_mistakes": [
+     "Confusing the faint pick-recovery noise with the main pick attack when editing.",
+     "Trying to remove every recovery sound and making the playing feel unnatural.",
+     "Blaming pick-recovery noise on a faulty cable or pickup rather than the picking hand."
+    ],
+    "scenario_contexts": [
+     "Hearing faint pick reset noises on a close-miked clean electric guitar.",
+     "Cleaning up stray picking sounds in an exposed acoustic guitar take.",
+     "Coaching a player toward a lighter touch to reduce picking-hand noise."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "133adc72-f049-469e-8f08-fc57b333d099",
+   "term": "Pick scrape",
+   "fields": {
+    "definition": "A guitar effect produced by dragging the edge of a plectrum lengthwise along the windings of a wound string, generating a sustained scratching or screeching glissando; it is commonly used with distortion as an accent or transition in rock and metal.",
+    "plain_english": "A screechy sliding sound made by dragging the pick along the length of a thick wound string. Rock and metal players use it as an effect, often with distortion.",
+    "purpose_function": "Names a deliberate friction effect so it is treated as intended content rather than noise, and can be recognized and reproduced on demand.",
+    "practical_application": "A guitarist performs a pick scrape as a transition or accent, and the engineer preserves it through editing and de-noising rather than gating it out.",
+    "category": "Playing Technique",
+    "related_terms": [
+     "Pick noise",
+     "Pick drag",
+     "Pinch harmonic",
+     "Pick attack"
+    ],
+    "common_mistakes": [
+     "Confusing an intentional pick scrape with an accidental pick drag or string squeak.",
+     "Expecting a strong scrape on plain unwound strings, which have no windings to catch the pick.",
+     "Gating or de-noising a track and accidentally removing a deliberate pick-scrape effect."
+    ],
+    "scenario_contexts": [
+     "Recording a rock guitarist's deliberate pick slide before a chorus hit.",
+     "Adding a distorted pick scrape as a transition effect in a metal track.",
+     "Checking that a de-noiser does not erase an intentional scrape."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound On Sound"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "62ec2ea0-0a19-4f32-8130-6b72f366c9f3",
+   "term": "Pinch harmonic",
+   "fields": {
+    "definition": "An artificial harmonic technique in which the pick strikes the string while the edge of the thumb lightly grazes it at the same instant, damping the fundamental and forcing a higher overtone to sound; it produces the characteristic high-pitched squeal, especially with distortion and a bridge pickup.",
+    "plain_english": "A squealing high note made by letting your thumb lightly touch the string at the same moment the pick hits it. Rock players use it to make notes squeal, usually with distortion.",
+    "purpose_function": "Lets a player sound a chosen upper harmonic instead of the normal note, adding expressive high squeals; the thumb touch acts as a node that selects which overtone rings.",
+    "practical_application": "A guitarist positions the pick and thumb over a harmonic node, usually between the pickups, to nail a pinch harmonic, while the engineer keeps bridge-pickup brightness and sustain so the overtone reads in the mix.",
+    "category": "Harmonic Technique",
+    "related_terms": [
+     "Harmonic",
+     "Overtone",
+     "Node",
+     "Pick attack",
+     "Sustain"
+    ],
+    "common_mistakes": [
+     "Pressing the thumb too hard so it fully mutes the string and no harmonic sounds.",
+     "Picking over an antinode instead of near a node, so the overtone is weak or absent.",
+     "Assuming distortion is required; it helps the squeal cut through, but the harmonic exists on a clean tone too."
+    ],
+    "scenario_contexts": [
+     "A metal guitarist adding squealing pinch harmonics over a riff.",
+     "An engineer keeping bridge-pickup brightness and sustain so pinch harmonics read in the mix.",
+     "Troubleshooting why a player's pinch harmonics will not sound, such as thumb muting or the wrong pick spot."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Sound On Sound"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cb3d202d-2e06-4bd7-b8f5-9a8de8f1d69f",
+   "term": "Ping",
+   "fields": {
+    "definition": "A short, bright, pitched resonant ring excited by a sharp transient, such as the metallic overtone that lingers after a drum is struck or the brief tone produced when a narrow, high-Q resonant filter is hit with an impulse; it is a decaying tonal artifact riding on top of the main sound.",
+    "plain_english": "A quick, bright, bell-like ring that follows a sharp hit, like the ting a drum or metal object makes. It is a short ringing tone sitting on top of the main sound.",
+    "purpose_function": "Names a narrow, ringing resonance so it can be identified and judged, since it is sometimes wanted as character and sometimes an unwanted artifact to tune out or notch.",
+    "practical_application": "An engineer who hears an annoying ping on a snare finds its frequency with a narrow EQ sweep and notches it or dampens the drum; when pinging a reverb, they feed a click into a high-Q filter to make it ring.",
+    "category": "Resonant Artifact",
+    "related_terms": [
+     "Resonance",
+     "Decay",
+     "Transient",
+     "Overtone",
+     "Sustain"
+    ],
+    "common_mistakes": [
+     "Notching out a wanted resonant ping and leaving the drum sounding lifeless.",
+     "Sweeping a wide EQ band instead of a narrow high-Q band, removing good tone along with the ping.",
+     "Mistaking a resonant ping for feedback or an oscillation fault in the signal chain."
+    ],
+    "scenario_contexts": [
+     "Notching a resonant metallic ring out of a snare drum during mixing.",
+     "Pinging a high-Q filter or plate to create a tuned resonant reverb effect.",
+     "Identifying an unwanted ringing overtone on a tom before tuning or damping it."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1444980a-1346-4192-b11c-7a94f77ec16a",
+   "term": "Pluck",
+   "fields": {
+    "definition": "The excitation of a string by displacing it with a finger or plectrum and releasing it, setting it into free, decaying vibration; the resulting note has a sharp attack transient followed by a harmonically rich, exponentially decaying tail. The term also names a synth patch shaped to imitate this short, percussive-attack, quick-decay envelope.",
+    "plain_english": "Pulling a string and letting it go so it rings, like snapping a rubber band. The note starts with a sharp pop and then fades away.",
+    "purpose_function": "Describes the basic way plucked-string instruments make sound, giving a note its punchy start and natural fade; the term also names synth sounds shaped to copy that quick attack and decay.",
+    "practical_application": "A technician recognizes a pluck envelope when setting gate or compressor timing on bass, or when programming a synth pluck with a fast attack and short decay.",
+    "category": "Attack Transient",
+    "related_terms": [
+     "Pick attack",
+     "Attack",
+     "Decay",
+     "Transient",
+     "Sustain"
+    ],
+    "common_mistakes": [
+     "Setting a gate release so short that it cuts off the natural decay tail of a plucked note.",
+     "Confusing the sharp pluck attack transient with unwanted click or distortion.",
+     "Programming a synth pluck with a slow attack, which removes the percussive character."
+    ],
+    "scenario_contexts": [
+     "Setting attack and decay when programming a synth pluck patch.",
+     "Recognizing the pluck envelope to time a compressor or gate on bass.",
+     "Comparing pluck attack and decay when identifying a plucked versus bowed source."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

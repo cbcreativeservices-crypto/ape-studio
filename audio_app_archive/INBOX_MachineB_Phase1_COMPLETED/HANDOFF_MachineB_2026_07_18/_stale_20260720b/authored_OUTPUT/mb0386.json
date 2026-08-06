@@ -1,0 +1,142 @@
+{
+ "batch": 386,
+ "topic": "Immersive Monitoring & Calibration",
+ "authored": [
+  {
+   "id": "105a6d0d-ec53-4ddd-9495-ac6c4e7c1fd4",
+   "term": "Speaker identification signal",
+   "fields": {
+    "definition": "A test signal, typically a tone or band-limited pink noise, routed to one loudspeaker output at a time during system setup so the installer can confirm which physical speaker corresponds to which channel and that its wiring, polarity, and routing are correct.",
+    "plain_english": "A test sound sent to one speaker at a time. It lets you hear which speaker is which and check that each one is wired to the right channel.",
+    "purpose_function": "It verifies channel-to-speaker mapping and correct wiring before calibration, preventing swapped or miswired speakers in a multichannel immersive layout.",
+    "practical_application": "During commissioning a technician sends the signal to each output in turn, walking the room to confirm the correct speaker plays and is in phase before running level and distance calibration.",
+    "category": "Calibration & Setup",
+    "related_terms": ["Speaker remapping", "Speaker-trim calibration", "Speaker-distance compensation", "Speaker-rendered monitoring", "Pink noise"],
+    "common_mistakes": ["Assuming the physical speaker order matches the amplifier or interface output order without testing each one.", "Ignoring polarity, so a reversed speaker passes the identification check by sound alone.", "UNSAFE: Setting a very high signal level to hear a distant speaker, risking hearing damage and driver damage when the tone plays close by."],
+    "scenario_contexts": ["Commissioning a 7.1.4 monitor room and confirming each ceiling speaker plays on its assigned channel.", "Troubleshooting a swapped surround pair reported by a mixer.", "Verifying wiring after re-patching an immersive amplifier rack."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories, technical documentation)", "Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories, technical documentation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0c2d7803-bdf8-4477-9068-95f326ebc129",
+   "term": "Speaker remapping",
+   "fields": {
+    "definition": "The reassignment of rendered output channels to different physical loudspeaker outputs, or the re-rendering of an immersive mix to a different loudspeaker layout, so program material plays on the intended speakers of the target system.",
+    "plain_english": "Sending each audio channel to a different speaker output, or reshaping the mix for a different set of speakers. It makes sure sounds come out of the right speakers.",
+    "purpose_function": "It matches the renderer's output to the actual hardware wiring or to an alternate playback layout, allowing one mix to be monitored on different speaker configurations.",
+    "practical_application": "A technician remaps outputs when the interface patch differs from the default order, or re-renders a 7.1.4 master to a 5.1.4 room for monitoring.",
+    "category": "Signal Routing",
+    "related_terms": ["Speaker identification signal", "Speaker-rendered monitoring", "Speaker-relative placement", "Top speaker", "Wide speaker"],
+    "common_mistakes": ["Confusing remapping outputs with changing the creative mix; remapping only reroutes or re-renders playback.", "Forgetting to update the map after changing the audio interface's output patch, sending channels to the wrong speakers.", "Assuming a re-render to a smaller layout preserves every overhead cue exactly."],
+    "scenario_contexts": ["Matching renderer outputs to a non-standard interface output order.", "Re-rendering a 9.1.6 master down to a 7.1.4 monitor room.", "Adapting a mix for a room whose speakers are wired in a different sequence."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories, technical documentation)", "Steinberg Nuendo Operation Manual, External Dolby Atmos Renderer setup and object/channel mapping (Steinberg technical documentation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "912134de-0928-4c2f-af6c-52ee6dc87821",
+   "term": "Speaker-distance compensation",
+   "fields": {
+    "definition": "The application of a per-loudspeaker time delay based on each speaker's distance to the reference listening position, so signals from all speakers arrive at the listener simultaneously despite unequal path lengths.",
+    "plain_english": "Adding a tiny delay to closer speakers so sound from every speaker reaches your ears at the same time. Think of a staggered start in a race so all runners finish together.",
+    "purpose_function": "It time-aligns the array at the listening position, preserving accurate imaging, phantom images, and object localization that unequal distances would otherwise smear.",
+    "practical_application": "A technician measures each speaker's distance to the mix position and enters it, or runs auto-calibration, so the renderer or processor delays nearer speakers accordingly.",
+    "category": "Calibration & Setup",
+    "related_terms": ["Speaker-trim calibration", "Speaker identification signal", "Speaker-rendered monitoring", "Top speaker", "Wide speaker"],
+    "common_mistakes": ["Measuring to the speaker cabinet face but forgetting the extra path for in-ceiling overheads.", "Setting one global delay instead of a correct per-speaker distance.", "Confusing distance/time compensation with level trim, which correct different problems."],
+    "scenario_contexts": ["Aligning near-field fronts with more distant surround and ceiling speakers.", "Compensating for overhead speakers mounted well above the listener.", "Restoring imaging after moving the mix position in a room."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories, technical documentation)", "Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories, technical documentation)", "Recommendation ITU-R BS.2051-2, Advanced sound system for programme production (loudspeaker time alignment at the central listening position)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "89d1c1ec-b577-423f-86ad-d51ea0942645",
+   "term": "Speaker-relative placement",
+   "fields": {
+    "definition": "A positioning approach in which an audio signal's location is defined with reference to actual loudspeaker positions, each signal tied to a specific speaker or interpolated between named speakers, rather than to absolute room coordinates or a listener-centred angular grid.",
+    "plain_english": "Placing sound by pointing it at the actual speakers, instead of at a spot in the room. Each channel is tied to a real speaker.",
+    "purpose_function": "It ties reproduction directly to the physical layout, which keeps channel-based material predictable but locks the result to that exact speaker arrangement.",
+    "practical_application": "A technician relies on speaker-relative routing when feeding fixed bed channels or test signals straight to named outputs, as opposed to object audio placed in room coordinates.",
+    "category": "Spatial Rendering",
+    "related_terms": ["Speaker remapping", "Speaker-rendered monitoring", "Speaker identification signal", "Top speaker", "Wide speaker"],
+    "common_mistakes": ["Assuming speaker-relative channels translate perfectly to a layout with different speaker angles.", "Confusing speaker-relative (channel-anchored) placement with room-based object placement.", "Expecting a phantom image between two speakers to hold for listeners well off the sweet spot."],
+    "scenario_contexts": ["Routing a 7.1.4 bed where each channel maps to one speaker.", "Comparing channel-based beds against object-based, room-positioned sources.", "Explaining why a hard-panned channel moves with the speaker layout, not the room."]
+   },
+   "sources": ["Recommendation ITU-R BS.2051-2, Advanced sound system for programme production (channel-based loudspeaker definitions)", "Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories, technical documentation; positions referenced to the front/center-front layout)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d68e0b74-accf-4b21-af8a-ae7c486214ad",
+   "term": "Speaker-rendered monitoring",
+   "fields": {
+    "definition": "Monitoring an immersive mix by rendering its bed channels and audio objects to a physical multichannel loudspeaker array in the room, as opposed to binaural rendering over headphones.",
+    "plain_english": "Listening to an immersive mix through real speakers all around the room, not through headphones. The renderer decides how much of each sound goes to each speaker.",
+    "purpose_function": "It reproduces the mix over the actual speaker layout so the engineer hears true spatial imaging, level, and timing at the listening position.",
+    "practical_application": "An engineer uses speaker-rendered monitoring on a calibrated 7.1.4 system to make spatial and tonal decisions, switching to binaural only to check the headphone experience.",
+    "category": "Monitoring",
+    "related_terms": ["Speaker-trim calibration", "Speaker-distance compensation", "Speaker remapping", "Speaker-relative placement", "Top speaker", "Room-rendered monitoring"],
+    "common_mistakes": ["Trusting spatial decisions on an uncalibrated array where levels and distances are wrong.", "Assuming speaker-rendered and binaural monitoring sound the same.", "Judging overhead content on a system missing or misplaced top speakers."],
+    "scenario_contexts": ["Mixing Dolby Atmos on a calibrated in-room speaker array.", "Checking object movement across the surround and ceiling speakers.", "Comparing the loudspeaker render with a binaural headphone render."]
+   },
+   "sources": ["Dolby Atmos Renderer Guide (Dolby Laboratories, technical documentation; rendered speaker output vs binaural)", "Recommendation ITU-R BS.2127-1, Audio Definition Model renderer for advanced sound systems (rendering to ITU-R BS.2051 loudspeaker layouts)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d0e33f33-174a-419d-89e2-e0526089b3f5",
+   "term": "Speaker-trim calibration",
+   "fields": {
+    "definition": "The process of adjusting each loudspeaker's playback gain (trim) so every speaker produces a matched sound-pressure level at the reference listening position, referenced to a defined target; for example, driving each channel with -20 dBFS RMS pink noise to reach roughly 79-82 dB SPL(C) in a Dolby Atmos near-field room.",
+    "plain_english": "Setting each speaker volume so they all sound equally loud at the mixing spot. You play a steady test noise through one speaker at a time and adjust it to hit the target level.",
+    "purpose_function": "It equalizes per-speaker level so the balance heard at the mix position is accurate and repeatable, which is essential for consistent immersive mixes across rooms.",
+    "practical_application": "Using an SPL meter at the listening position, a technician sends reference pink noise to each speaker and trims its gain until all channels read the same target level.",
+    "category": "Calibration & Setup",
+    "related_terms": ["Speaker-distance compensation", "Speaker identification signal", "Speaker-rendered monitoring", "Pink noise", "Top speaker"],
+    "common_mistakes": ["Level-matching by ear instead of a calibrated SPL meter and defined pink-noise reference.", "Using a different pink-noise level or meter weighting than the target specifies, so trims come out wrong.", "UNSAFE: Calibrating to full theatrical reference in a small room, producing sustained levels that can exceed safe hearing-exposure limits (OSHA 29 CFR 1910.95)."],
+    "scenario_contexts": ["Calibrating a new immersive monitor room to a house reference level.", "Re-trimming a speaker after replacing its amplifier or driver.", "Matching two rooms so mixes translate between them."]
+   },
+   "sources": ["Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories, technical documentation; -20 dBFS RMS pink noise, ~79-82 dB SPL(C) target)", "Dolby Atmos Renderer Guide (Dolby Laboratories, technical documentation; per-speaker level adjustment)", "OSHA 29 CFR 1910.95, Occupational noise exposure (hearing exposure limits)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "62067e15-1139-4fe1-90e1-e978b448bd0d",
+   "term": "Top speaker",
+   "fields": {
+    "definition": "A loudspeaker in the upper (height) layer of an immersive layout, mounted above the listening plane, typically overhead at an elevation of about +30 to +45 degrees, used to reproduce height channels and elevated audio objects.",
+    "plain_english": "A speaker mounted above you, usually on or near the ceiling. It plays sounds that should seem to come from overhead, like rain or a passing plane.",
+    "purpose_function": "It adds the vertical dimension that distinguishes immersive audio from surround, letting sounds be placed and moved overhead.",
+    "practical_application": "A technician installs top speakers, such as top front and top rear pairs in 7.1.4, at the specified elevation and includes them in distance and trim calibration.",
+    "category": "Speaker Layout",
+    "related_terms": ["Wide speaker", "Speaker-distance compensation", "Speaker-trim calibration", "Speaker-rendered monitoring", "Speaker-relative placement"],
+    "common_mistakes": ["Mounting top speakers too shallow so overhead sounds seem to come from the front wall.", "Forgetting the extra ceiling-to-listener path when setting overhead distance.", "Spacing or aiming overhead pairs inconsistently between left and right."],
+    "scenario_contexts": ["Installing the four overhead speakers of a 7.1.4 monitor room.", "Setting overhead elevation to about 45 degrees per the layout spec.", "Checking that an object panned upward images correctly overhead."]
+   },
+   "sources": ["Recommendation ITU-R BS.2051-2, Advanced sound system for programme production (top/upper-layer loudspeaker positions and elevations)", "Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories, technical documentation; overhead speaker elevation ~45 degrees, adjustable 30-55)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "785b5663-b20e-4c3f-a048-ca1eb16f3fb5",
+   "term": "Wide speaker",
+   "fields": {
+    "definition": "A front loudspeaker positioned at a wider azimuth than the main front left/right speakers, between the fronts and the side/surround speakers, used in extended immersive layouts (such as 9.1.x) to fill the frontal gap and broaden the front sound stage.",
+    "plain_english": "An extra front speaker placed out to the side of the main left and right speakers. It widens the sound across the front so there is no gap between the front and side speakers.",
+    "purpose_function": "It smooths panning and imaging between the front and surround speakers, widening the frontal image in layouts that go beyond the standard front trio.",
+    "practical_application": "A technician adds left/right wide speakers between the fronts and sides in a 9.1.x room, then includes them in identification, distance, and trim calibration.",
+    "category": "Speaker Layout",
+    "related_terms": ["Top speaker", "Speaker-relative placement", "Speaker-distance compensation", "Speaker-trim calibration", "Speaker-rendered monitoring"],
+    "common_mistakes": ["Placing wide speakers too close to the front left/right, so they add little width.", "Assuming every immersive layout includes wide speakers; many, like 7.1.4, do not.", "Confusing front wide speakers with side surround speakers."],
+    "scenario_contexts": ["Expanding a 7.1.4 room to a 9.1.4 layout with front wides.", "Filling the imaging gap between front and side speakers.", "Calibrating the added wide pair into an existing immersive system."]
+   },
+   "sources": ["Dolby Atmos Home Theater Installation Guidelines (Dolby Laboratories, technical documentation; left wide/right wide speaker pair)", "Recommendation ITU-R BS.2051-2, Advanced sound system for programme production (front loudspeaker azimuth ranges)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

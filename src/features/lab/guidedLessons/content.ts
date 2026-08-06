@@ -1049,7 +1049,6 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'jitter', name: 'Clock & jitter', definition: 'Jitter is timing deviation of the sampling instants — not value rounding. Its audibility depends on magnitude, spectrum, signal content and converter design; buffered/reclocked playback can remove it entirely. Beware sweeping cable-audiophile claims.' },
       { key: 'data_rate', name: 'Data rate & storage', definition: 'Rate = sample rate × bit depth × channels. 48 kHz × 24-bit × 2 = 2.304 Mbit/s ≈ 17.3 MB/min. The full calculator (with storage planning) lives in the Calculator Laboratory.' },
       { key: 'myths', name: 'Myth vs reality', definition: 'The permanent misconception panel: stair steps, "more samples = smoother", bit depth vs frequency, 144 dB from 24 bits, float un-clipping recordings, hot-to-0 dBFS recording. Each myth paired with what is actually true.' },
-      { key: 'listening', name: 'Listening tests', definition: 'Level-matched A/Bs (bit depths, dither on/off, truncation vs rounding, SRC quality, clipping types) — arriving with the native audio release. One is live today: the aliasing demo really plays the input tone and its predicted alias.' },
     ],
     commonMistakes: [
       'Believing DAC output is a staircase — sample values describe a band-limited signal; the reconstruction filter outputs a continuous waveform.',

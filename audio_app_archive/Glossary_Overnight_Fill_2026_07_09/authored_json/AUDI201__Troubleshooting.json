@@ -1,0 +1,174 @@
+{
+  "course": "AUDI201",
+  "topic": "Troubleshooting",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "8738f7ef-5026-485a-afe4-9e9afff38b3c",
+      "term": "Bathtub Curve",
+      "fields": {
+        "plain_english": "A graph shaped like a bathtub: gear fails a lot when brand new, rarely during its middle life, then more and more as it wears out with age.",
+        "purpose_function": "It models how failure rate changes over a product's lifetime so teams can plan burn-in of new units and proactive replacement of aging ones instead of waiting for random breakdowns.",
+        "practical_application": "A shop uses it to justify burning-in or road-testing new amplifiers and wireless packs before deploying them, and to retire capacitors, fans, and lamps once gear enters its wear-out years rather than trusting old stock on a critical show.",
+        "category": "Fault Diagnosis",
+        "related_terms": ["Failure Mode", "Latent Defect", "Mean Time Between Failures (MTBF)", "Burn-In", "Preventive Maintenance", "Thermal Drift"],
+        "common_mistakes": [
+          "Assuming a low failure rate during the 'useful life' region means no maintenance is ever needed, ignoring that random failures still occur.",
+          "Treating brand-new equipment as automatically reliable, forgetting that infant-mortality failures are highest right out of the box.",
+          "Applying the curve to a single unit as if it were a schedule, when it actually describes failure rates across a population of components."
+        ],
+        "scenario_contexts": [
+          "Deciding to burn in a batch of new in-ear monitor packs for several hours before a tour to weed out early (infant-mortality) failures.",
+          "Scheduling replacement of electrolytic capacitors and cooling fans in aging power amplifiers as they enter the wear-out phase.",
+          "Explaining to a client why a fleet of loudspeakers that ran flawlessly for years is now failing more often as components age."
+        ]
+      },
+      "sources": [
+        "Wikipedia, 'Bathtub curve' (reliability engineering) — https://en.wikipedia.org/wiki/Bathtub_curve",
+        "ScienceDirect Topics, 'Bathtub Curve' overview — https://www.sciencedirect.com/topics/engineering/bathtub-curve",
+        "Accendo Reliability, 'The Bathtub Curve Explained' — https://accendoreliability.com/the-bath-tub-curve-explained/"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "3b8cb6e1-8398-4ace-b6d5-026158ba2c04",
+      "term": "Chopstick Test",
+      "fields": {
+        "plain_english": "Gently poking or tapping parts, wires, and solder joints with a wooden stick while the gear is running, so you can find the loose or cracked connection that makes the sound cut out.",
+        "purpose_function": "It provides a safe, non-conductive way to physically disturb suspect points one at a time so an intermittent fault can be provoked and pinpointed while the equipment is powered and the symptom is present.",
+        "practical_application": "When a channel or amp crackles or drops out only sometimes, a tech powers it up and lightly taps around connectors, tube sockets, and solder joints with a chopstick until the noise responds, revealing the failing joint or component.",
+        "category": "Fault Diagnosis",
+        "related_terms": ["Intermittent Fault", "Cold Solder Joint", "Latent Defect", "Thermal Drift", "Failure Mode", "Signal Flow"],
+        "common_mistakes": [
+          "UNSAFE: Using a metal tool or bare fingers instead of a non-conductive stick to probe a live chassis, risking shorts and, in tube/valve or mains gear, lethal shock or burns.",
+          "UNSAFE: Reaching into equipment that stores high voltage (tube amps, power supplies with large capacitors) without knowing those points remain dangerous even after power-off unless properly discharged.",
+          "Tapping too hard and creating new intermittent faults or cracking solder joints rather than gently revealing the existing one.",
+          "Stopping at the first reactive point instead of confirming it, so a nearby joint or a thermal issue gets misdiagnosed."
+        ],
+        "scenario_contexts": [
+          "Locating a crackling, intermittent tube-amp fault by lightly tapping tubes and their sockets while the amp is on.",
+          "Finding a cold or cracked solder joint on a mixing console channel strip that only drops out when the chassis is bumped.",
+          "Diagnosing a mic input that cuts in and out by gently flexing connectors and cable strain reliefs while monitoring the signal."
+        ]
+      },
+      "sources": [
+        "Tubes and Transistors, 'Using the Chopstick Test to Diagnose Tube Amp Issues' — https://www.tubesandtransistors.com/chopstick-test/",
+        "Jim Roal, 'Electrical and Electronic Intermittent Troubleshooting Strategy' — http://jimroal.com/ts.htm"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "bcabae72-88aa-46b5-9495-0024ba149a95",
+      "term": "Failure Mode",
+      "fields": {
+        "plain_english": "The specific way a part breaks — not just 'it died,' but exactly how it died, like a capacitor drying out, a jack going intermittent, or a driver's voice coil burning open.",
+        "purpose_function": "Naming the specific mode of failure lets technicians target the real cause and lets designers anticipate and prevent recurring problems, which is the basis of Failure Mode and Effects Analysis (FMEA).",
+        "practical_application": "A tech logs how each unit failed (open voice coil, leaky filter cap, corroded connector) so recurring modes can be spotted, spares stocked, and root causes fixed rather than just swapping parts blindly.",
+        "category": "Fault Diagnosis",
+        "related_terms": ["Bathtub Curve", "Latent Defect", "Root Cause Analysis", "Shotgunning", "Thermal Drift", "Preventive Maintenance"],
+        "common_mistakes": [
+          "Confusing the failure mode (how it failed) with the root cause (why it failed) and stopping the investigation too early.",
+          "Recording only that a unit 'stopped working' without noting the specific mode, losing the pattern data that prevents repeats.",
+          "Assuming one symptom always maps to one mode, when the same symptom can come from several different failure modes."
+        ],
+        "scenario_contexts": [
+          "Cataloging that several loudspeakers failed by open voice coil after being overdriven, pointing to a limiter/gain-structure problem upstream.",
+          "Running an FMEA on a new stage-monitor design to identify likely failure modes before it ships.",
+          "Distinguishing whether a dead amp channel failed by blown output transistors versus a tripped protection relay before ordering parts."
+        ]
+      },
+      "sources": [
+        "Quality-One, 'FMEA | Failure Mode and Effects Analysis' — https://quality-one.com/fmea/",
+        "PTC, 'What is Failure Mode and Effects Analysis?' — https://www.ptc.com/en/technologies/plm/failure-mode-effects-analysis",
+        "ScienceDirect Topics, 'Failure Modes and Effects Analysis' overview — https://www.sciencedirect.com/topics/engineering/failure-modes-and-effects-analysis"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "82d74ea5-f50c-4b90-ba2f-fcb188fbc993",
+      "term": "Latent Defect",
+      "fields": {
+        "plain_english": "A hidden flaw that passes every test when new but weakens the part so it fails later, often after heat, vibration, or time have taken their toll.",
+        "purpose_function": "The concept explains why gear that tested perfectly can still fail in the field, driving practices like ESD control, burn-in, and stress testing that surface or prevent these hidden weaknesses.",
+        "practical_application": "A tech treats a device that passed bench tests but died in service as a possible latent defect (for example, prior ESD damage or a marginal solder joint), and enforces anti-static handling and burn-in to catch such units before a show.",
+        "category": "Fault Diagnosis",
+        "related_terms": ["Bathtub Curve", "Failure Mode", "Intermittent Fault", "Thermal Drift", "Burn-In", "Root Cause Analysis"],
+        "common_mistakes": [
+          "Assuming that passing a functional test proves a unit is sound, when latent damage (e.g. ESD) can outnumber immediate failures roughly ten to one.",
+          "UNSAFE: Handling ICs, wireless packs, and circuit boards without ESD grounding, since a low-voltage discharge you never feel can create a latent defect.",
+          "Blaming the last person to touch the gear when the true cause was a weakness introduced weeks or months earlier."
+        ],
+        "scenario_contexts": [
+          "A wireless receiver that passed rental-return testing fails mid-show weeks later due to earlier, unnoticed ESD damage.",
+          "Burning in and heat-soaking new amplifiers to force marginal, latent-defective components to fail on the bench rather than on stage.",
+          "Investigating a run of premature loudspeaker driver failures traced to a manufacturing flaw not detectable at initial inspection."
+        ]
+      },
+      "sources": [
+        "EOS/ESD Association, 'ESD Fundamentals Part 1' — https://www.esda.org/esd-overview/esd-fundamentals/part-1-an-introduction-to-esd/",
+        "DESCO, 'Types of ESD Device Damage' — https://desco.blog/2017/01/13/types-of-esd-device-damage/",
+        "Bondline, 'What Is Latent ESD Damage? Hidden Electronics Failures Explained' — https://bondline.co.uk/blog/latent-esd-damage"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "86195a26-68fa-406f-bda8-cd1b784f65f7",
+      "term": "Shotgunning",
+      "fields": {
+        "plain_english": "Swapping out a bunch of suspected parts all at once hoping one of them fixes the problem, instead of tracking down which part is actually bad.",
+        "purpose_function": "It exists as a quick, brute-force tactic that can restore service fast, but it is discouraged because it wastes money, discards good parts, and never teaches you what actually failed.",
+        "practical_application": "Under show-time pressure a tech might swap a whole signal chain (cable, DI, and channel) at once to get audio back, then diagnose properly afterward to learn the true fault rather than making shotgunning the standard method.",
+        "category": "Fault Diagnosis",
+        "related_terms": ["Failure Mode", "Root Cause Analysis", "Signal Flow", "Half-Split Method", "Substitution Test", "Intermittent Fault"],
+        "common_mistakes": [
+          "Treating shotgunning as normal practice, which drives up parts cost and destroys the diagnostic knowledge that prevents repeat faults.",
+          "Changing several things at once and losing track of which change fixed the problem, so the root cause stays unknown.",
+          "Installing 'known-good' spares that are actually faulty, adding new problems on top of the original one."
+        ],
+        "scenario_contexts": [
+          "During a live show a tech swaps cable, DI box, and console channel together to restore a dead input fast, then diagnoses properly after the set.",
+          "A maintenance team replacing every board in a rack unit instead of isolating the failed stage, inflating repair costs.",
+          "A contrast used in training to teach systematic, half-split troubleshooting instead of firing the 'parts cannon.'"
+        ]
+      },
+      "sources": [
+        "Steve Litt, Troubleshooting Professional Magazine, 'Shotgunning' — https://www.troubleshooters.com/tpromag/200510/200510.htm",
+        "Dorman Shop Press, 'Fire the parts cannon! Is shotgun diag ever acceptable?' — https://shoppress.dormanproducts.com/shotgun-diagnostics/"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "20deef56-8512-4bf6-885d-5abb3f5fcc11",
+      "term": "Thermal Drift",
+      "fields": {
+        "plain_english": "As gear heats up during use, its parts change slightly, so a fault can appear only when it's warm — or clear up once it cools down.",
+        "purpose_function": "Understanding thermal drift explains temperature-dependent faults and guides warm-up periods, heat-soak testing, and adequate cooling so equipment stays within spec during a full performance.",
+        "practical_application": "When a device works fine cold but fails after an hour under lights, a tech heat-soaks it (or uses a heat gun / freeze spray on suspect parts) to reproduce the fault and identify the drifting or failing component.",
+        "category": "Fault Diagnosis",
+        "related_terms": ["Intermittent Fault", "Chopstick Test", "Latent Defect", "Failure Mode", "Cold Solder Joint", "Bathtub Curve"],
+        "common_mistakes": [
+          "Declaring a unit fixed after a quick cold bench test, when the fault only appears once the equipment reaches operating temperature.",
+          "Ignoring ventilation and letting amps or racks overheat, which pushes components out of spec and creates avoidable temperature-related faults.",
+          "Confusing a genuine thermal-drift fault with a mechanical intermittent, when freeze spray and heat testing would tell them apart."
+        ],
+        "scenario_contexts": [
+          "An amplifier channel that plays clean when cold but distorts or cuts out after an hour under hot stage lighting.",
+          "Using freeze spray to cool a suspect component and momentarily restore normal operation, confirming a heat-sensitive part.",
+          "Allowing analog outboard gear or a tube preamp to warm up before soundcheck so its parameters settle before the show."
+        ]
+      },
+      "sources": [
+        "GIAI Photonics, 'What is temperature drift and what effects does it have?' — https://www.giaiphotonics.com/what-is-temperature-drift-and-what-effects-does-it-have/",
+        "INCB Technologies, 'How they Work – Thermal Drift (ART287E)' — https://www.incbtech.com/articles/16-how-they-work/1909-how-they-work-thermal-drift-art287e.html",
+        "MEAN WELL Direct glossary, 'What is Warm-Up Drift?' — https://www.meanwelldirect.co.uk/glossary/what-is-warm-up-drift/"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

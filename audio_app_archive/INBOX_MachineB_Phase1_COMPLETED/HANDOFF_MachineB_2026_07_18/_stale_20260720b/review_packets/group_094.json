@@ -1,0 +1,1019 @@
+{
+ "group": 94,
+ "terms": [
+  {
+   "id": "eee31cdd-a252-4031-adee-d2d7916cf027",
+   "term": "Provenance documentation",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The recorded history of a digital object's origin, chain of custody, and every change to its content or format over time, including how and by whom it was created and processed. In OAIS it is the Provenance Information within the Preservation Description Information, and it underpins the object's authenticity.",
+   "plain_english": "It is the written history of where a recording came from and everything that has happened to it since. It is like an object's family tree and ownership record combined.",
+   "purpose_function": "It lets staff and users trust that a file is authentic and understand how its current form relates to the original. Without a clear history, a preserved file's reliability cannot be judged.",
+   "practical_application": "An archivist records the source item, who transferred it, the equipment and settings used, and every later edit or migration, keeping this history with the object.",
+   "category": "Preservation Metadata",
+   "related_terms": [
+    "Preservation metadata",
+    "Preservation audit trail",
+    "Structural metadata",
+    "Permanent preservation copy",
+    "Preservation verification"
+   ],
+   "common_mistakes": [
+    "Documenting only the current file and losing the record of the original source and how it was made.",
+    "Confusing provenance, which is origin and history, with descriptive metadata such as title and performer.",
+    "Failing to record the transfer chain, so later staff cannot judge the object's authenticity."
+   ],
+   "scenario_contexts": [
+    "Recording the make and model of the tape machine and the settings used to digitize a reel.",
+    "Noting a recording's chain of custody as it passes between collections or institutions.",
+    "Tracing a preserved file back to its analog original during an authenticity review."
+   ]
+  },
+  {
+   "id": "ef20f14a-c6d4-4db8-962e-da4dbab197ff",
+   "term": "Structural metadata",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "Metadata that describes how the separate components of a digital object relate to and are ordered within the whole, such as the sequence of tracks, sides, or files that make up a complete recording. In standards such as METS it is expressed as a structural map that links the parts into a navigable hierarchy.",
+   "plain_english": "It is the information that says how the pieces of a recording fit together and in what order. It works like a table of contents that keeps the parts of an album or a multi-part tape in the right sequence.",
+   "purpose_function": "It lets a system reassemble and navigate a multi-part object correctly so listeners hear the parts in the intended order. Without it, separate files are just a pile with no defined relationship.",
+   "practical_application": "When digitizing a two-sided tape or a multi-movement work, an archivist records the order and relationship of the resulting files as structural metadata.",
+   "category": "Preservation Metadata",
+   "related_terms": [
+    "Preservation metadata",
+    "Provenance documentation",
+    "Preservation package",
+    "Preservation audit trail",
+    "Preservation verification"
+   ],
+   "common_mistakes": [
+    "Confusing structural metadata, which is how parts relate, with descriptive metadata, which is what the content is.",
+    "Digitizing multi-part items without recording their correct order, so playback sequence is lost.",
+    "Relying on file names alone to imply order instead of explicit structural metadata."
+   ],
+   "scenario_contexts": [
+    "Recording the side and track order of a multi-reel recording so it can be played back in sequence.",
+    "Linking the separate movements of a symphony into one navigable object.",
+    "Encoding the play order of a multi-file digitized album in a structural map."
+   ]
+  },
+  {
+   "id": "8f70dee9-51de-4a33-9e1f-f5055060d441",
+   "term": "Submission information package",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "In the OAIS reference model (ISO 14721), a Submission Information Package (SIP) is an Information Package delivered by a Producer to an archive for use in constructing or updating one or more Archival Information Packages (AIPs) and their associated Descriptive Information. Its form and content are typically defined by a submission agreement negotiated between the Producer and the archive.",
+   "plain_english": "A SIP is the package of files and notes that a creator hands to an archive. The archive takes it in and turns it into the copy it will keep for the long term.",
+   "purpose_function": "It is the standard hand-off unit in the OAIS model, packaging content together with the metadata an archive needs so material can be ingested and transformed into preservation-ready AIPs in a consistent, documented way.",
+   "practical_application": "An audio archivist receives a SIP containing the preservation WAV files, checksums, and the technical and descriptive metadata agreed in the submission agreement, then validates it during ingest before building the AIP.",
+   "category": "Digital Preservation",
+   "related_terms": [
+    "Archival information package",
+    "Dissemination information package",
+    "OAIS reference model",
+    "Ingest",
+    "Submission agreement",
+    "Technical metadata"
+   ],
+   "common_mistakes": [
+    "Confusing the SIP with the AIP: the SIP is the delivered submission, while the AIP is the version the archive stores and preserves.",
+    "Assuming a SIP is only audio files, when a valid SIP must also carry the metadata and integrity information, such as checksums, required by the submission agreement.",
+    "Treating SIP structure as fixed for every archive, when its form and content are negotiated per submission agreement."
+   ],
+   "scenario_contexts": [
+    "A record label transfers digitized session masters to a national sound archive as SIPs for long-term preservation.",
+    "During ingest, an archivist runs fixity and format checks on an incoming SIP before generating the AIP.",
+    "A broadcaster negotiates a submission agreement specifying the SIP layout, file formats, and metadata for depositing program archives."
+   ]
+  },
+  {
+   "id": "3260cadd-793d-4277-8beb-47abaab3d3fa",
+   "term": "Technical metadata",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "Technical metadata is structured information describing the technical characteristics of a digital audio object and its source, such as file format, sample rate, bit depth, channel count, byte order, encoding, duration, checksums, and details of the capture chain and physical carrier. In audio preservation it is standardized by schemes such as AES57 (audio object structures for preservation and restoration) and is captured as part of administrative and preservation metadata.",
+   "plain_english": "Technical metadata is the set of facts about how an audio file was made and stored. It records things like the sample rate, bit depth, file type, and a checksum so people can play it and check it later.",
+   "purpose_function": "It documents the exact technical makeup of a file so an archive can verify integrity, choose the right playback and migration tools, and keep the audio usable as formats and hardware change.",
+   "practical_application": "When digitizing a tape, a technician records sample rate, bit depth, encoding, checksum, and source details as technical metadata, often stored in an AES57 or PREMIS-based record embedded in or held alongside the audio file.",
+   "category": "Metadata",
+   "related_terms": [
+    "Descriptive metadata",
+    "Preservation metadata",
+    "PREMIS",
+    "Checksum",
+    "Sample rate",
+    "Bit depth"
+   ],
+   "common_mistakes": [
+    "Confusing technical metadata with descriptive metadata: technical metadata records a file's technical properties, not its intellectual content such as title or performer.",
+    "Relying on the file extension alone to identify a format instead of recording and validating format details as technical metadata.",
+    "Omitting checksums and fixity information, which are part of technical and preservation metadata needed to prove a file has not changed."
+   ],
+   "scenario_contexts": [
+    "An engineer embeds technical metadata such as sample rate, bit depth, and coding history in the BWF or WAV header during an archival transfer.",
+    "An archive validates incoming files against their technical metadata to confirm format and integrity before ingest.",
+    "During format migration, staff consult technical metadata to select correct conversion settings and preserve the original specifications."
+   ]
+  },
+  {
+   "id": "1a080d27-519a-447d-9fb8-ea30e95b4190",
+   "term": "Trusted digital repository",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A trusted digital repository (TDR) is a repository whose mission is to provide reliable, long-term access to managed digital resources for its designated community, now and into the future. It is expected to conform to the OAIS reference model and to demonstrate trustworthiness across organizational, financial, technological, and security criteria, which can be formally audited and certified under ISO 16363.",
+   "plain_english": "A trusted digital repository is an archive that can prove it will keep files safe for many years. It follows set rules and passes outside checks to show people can trust it.",
+   "purpose_function": "It exists to give creators and users confidence that deposited digital content will stay authentic, intact, and accessible over the long term, backed by documented policies, funding, infrastructure, and external audit.",
+   "practical_application": "An institution seeking TDR status maps its workflows to the OAIS model and undergoes audit against a standard such as ISO 16363, evidencing succession planning, fixity checking, and secure storage to earn certification.",
+   "category": "Digital Preservation",
+   "related_terms": [
+    "OAIS reference model",
+    "Archival information package",
+    "Submission information package",
+    "Digital preservation",
+    "Fixity",
+    "Designated community"
+   ],
+   "common_mistakes": [
+    "Assuming any backed-up storage system is a trusted digital repository, when trust also requires documented policies, funding, and external audit, not just copies of files.",
+    "Believing certification is one-time, when trustworthiness requires ongoing monitoring and a regular cycle of audit and certification.",
+    "Equating OAIS compliance alone with being a TDR, when organizational viability, financial sustainability, and security must also be demonstrated."
+   ],
+   "scenario_contexts": [
+    "A national library pursues ISO 16363 certification to be recognized as a trusted digital repository.",
+    "A grant funder requires that master audio files be deposited only in a trusted digital repository.",
+    "An archive undergoes an external audit of its storage, security, and succession planning to demonstrate TDR status."
+   ]
+  },
+  {
+   "id": "d7e70410-7134-437a-b3a2-0fa9821cd70b",
+   "term": "Analog-to-digital converter stage",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The section of an audio signal chain that samples a continuous analog voltage and quantizes it into a stream of digital audio words, typically built around an oversampling delta-sigma modulator followed by a digital decimation and low-pass filter. Preceded by an anti-alias filter and referenced to a sample clock, it sets the boundary where analog audio becomes digital data at a chosen sample rate and bit depth.",
+   "plain_english": "This is the part that turns a real analog sound signal into digital numbers a computer can store. It takes fast snapshots of the voltage and writes each one down as a value.",
+   "purpose_function": "It exists to change analog audio into digital form so it can be recorded, processed, and moved without further loss, defining the system's sample rate, bit depth, and digital noise floor.",
+   "practical_application": "A technician feeds a preamp's line-level output into the ADC stage of an interface or console, then sets gain so peaks land safely below full scale.",
+   "category": "A/D conversion",
+   "related_terms": [
+    "Anti-aliasing filter",
+    "Sample rate",
+    "Bit depth",
+    "Quantization",
+    "Converter clock input",
+    "Conversion accuracy"
+   ],
+   "common_mistakes": [
+    "Confusing the stage's bit depth with real dynamic range; more bits raise the theoretical floor, but analog noise also limits real performance.",
+    "Setting input gain so peaks reach full scale, leaving no headroom and clipping the converter.",
+    "Thinking a higher sample rate always sounds better, when it mainly extends bandwidth and raises the data rate."
+   ],
+   "scenario_contexts": [
+    "Tracking a vocal through an interface while watching the ADC meters stay below full scale.",
+    "Choosing 48 kHz, 24-bit at the ADC stage for a video post session.",
+    "Diagnosing digital clipping traced to the input of the ADC stage."
+   ]
+  },
+  {
+   "id": "1bc92f8a-2807-48a0-a78b-4049ea8209c8",
+   "term": "Anti-imaging filter",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A low-pass filter, usually the analog reconstruction filter placed after a DAC, that removes the spectral images produced by sampling, namely copies of the baseband signal centered at multiples of the sample rate. In oversampling converters a digital interpolation filter suppresses the near images, so only a gentle analog anti-imaging filter is needed to reject energy above the Nyquist frequency.",
+   "plain_english": "When digital audio is turned back into sound, it also makes extra unwanted copies of the signal up high. This filter cleans those copies out so only the real audio is left.",
+   "purpose_function": "It exists to strip the image frequencies left by digital-to-analog conversion, keeping those high-frequency copies from causing distortion or overheating downstream amplifiers and tweeters.",
+   "practical_application": "A technician relies on the DAC's built-in anti-imaging filter and, when a converter offers filter modes, picks a response that trades ringing against image rejection.",
+   "category": "Reconstruction filtering",
+   "related_terms": [
+    "Anti-aliasing filter",
+    "Reconstruction filter",
+    "Nyquist frequency",
+    "Interpolation filter",
+    "Sample rate",
+    "Analog-to-digital converter stage"
+   ],
+   "common_mistakes": [
+    "Confusing the anti-imaging filter, which sits after the DAC, with the anti-aliasing filter, which sits before the ADC.",
+    "Assuming oversampling removes the need for any analog output filter, when a gentle one is still required.",
+    "Blaming the anti-imaging filter for all high-frequency roll-off while ignoring the digital interpolation filter's role."
+   ],
+   "scenario_contexts": [
+    "Selecting a converter's reconstruction filter type to balance pre-ringing against steepness.",
+    "Troubleshooting ultrasonic images that overheat a tweeter fed from a poorly filtered DAC.",
+    "Comparing sharp and slow filter modes on a modern DAC."
+   ]
+  },
+  {
+   "id": "6629e855-e28c-45ed-aa6c-59c7b23cd2df",
+   "term": "Clock recovery circuit",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A circuit, typically a phase-locked loop, that extracts a stable sample clock from a self-clocking digital audio stream such as AES3 or S/PDIF, locking to the transitions of the biphase-mark-coded data to regenerate a master clock. It also attenuates incoming jitter so the recovered clock can safely drive a converter.",
+   "plain_english": "A digital audio cable carries both the sound data and its timing mixed together. This circuit reads the timing back out of that stream and rebuilds a clean, steady clock from it.",
+   "purpose_function": "It exists so a receiver can derive an accurate clock from an incoming digital stream without a separate cable, while filtering out jitter that would otherwise degrade conversion.",
+   "practical_application": "A technician relies on it when slaving a device to an S/PDIF or AES3 feed, and checks its lock and unlock status when a stream drops or the sample rate changes.",
+   "category": "Clocking",
+   "related_terms": [
+    "Phase-locked loop",
+    "Jitter",
+    "Word clock",
+    "Converter clock input",
+    "Sample rate",
+    "Converter diagnostics"
+   ],
+   "common_mistakes": [
+    "Assuming a locked clock is automatically a low-jitter clock; lock only means the loop is tracking.",
+    "Chaining recovered clocks so jitter accumulates, instead of distributing one clean master reference.",
+    "Ignoring unlock and error status bits and blaming audio dropouts on the cable alone."
+   ],
+   "scenario_contexts": [
+    "Feeding an S/PDIF output from a player into a converter that recovers the clock from the stream.",
+    "Diagnosing clicks that appear when the loop loses lock on a marginal AES3 cable.",
+    "Choosing to slave to word clock rather than the recovered clock for lower jitter."
+   ]
+  },
+  {
+   "id": "a3d06238-5209-4fce-8ab3-5e39c5f7b79f",
+   "term": "Conversion accuracy",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "How faithfully a converter reproduces the original signal, characterized by measured parameters such as THD+N, dynamic range, signal-to-noise ratio, frequency-response flatness, and static linearity errors including integral and differential nonlinearity. For audio converters these are measured under the standardized conditions defined by AES17.",
+   "plain_english": "This is how closely a converter's output matches what went in, adding as little noise or distortion as it can. Think of it as how honestly the converter copies the sound.",
+   "purpose_function": "It exists as a way to specify and compare how truthfully a converter handles a signal, so engineers can judge whether a unit is transparent enough for the task.",
+   "practical_application": "A technician reads a converter's THD+N and dynamic-range figures, then verifies them on an analyzer using AES17 methods before trusting a unit for critical work.",
+   "category": "Performance metric",
+   "related_terms": [
+    "THD+N",
+    "Dynamic range",
+    "Signal-to-noise ratio",
+    "Integral nonlinearity",
+    "Bit depth",
+    "Converter calibration routine"
+   ],
+   "common_mistakes": [
+    "Treating bit depth as accuracy; a 24-bit converter rarely resolves a true 24 bits of real performance.",
+    "Comparing specs measured under different bandwidths or weighting curves as if they were equivalent.",
+    "Assuming a higher sample rate improves accuracy, when linearity and noise usually matter more."
+   ],
+   "scenario_contexts": [
+    "Comparing datasheet THD+N figures when selecting a converter for a mastering chain.",
+    "Verifying a converter's dynamic range on an analyzer using AES17 procedures.",
+    "Rejecting a unit whose measured accuracy falls short of its published specs."
+   ]
+  },
+  {
+   "id": "333f8dff-c103-44d3-9a0a-e1b32ceb351d",
+   "term": "Conversion delay",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The processing latency a converter adds to the signal, dominated by the group delay of the ADC's digital decimation filter and the DAC's interpolation filter. It is roughly constant in time for a given filter but varies with sample rate; typical audio codec figures are on the order of tens of samples, for example a few hundred microseconds per direction at 48 kHz.",
+   "plain_english": "Turning sound into digital and back is not instant; the math filters inside take a little time. That small, steady delay is what this term measures.",
+   "purpose_function": "It exists as a spec so engineers can account for the fixed time audio takes to pass through conversion, which matters for monitoring, sync, and combining signals.",
+   "practical_application": "A technician adds converter delay to interface and plug-in latency when estimating round-trip monitoring delay, and uses delay compensation to keep tracks aligned.",
+   "category": "Signal timing",
+   "related_terms": [
+    "Latency",
+    "Decimation filter",
+    "Interpolation filter",
+    "Group delay",
+    "Delay compensation",
+    "Sample rate"
+   ],
+   "common_mistakes": [
+    "Ignoring converter delay and blaming all monitoring latency on the DAW buffer.",
+    "Assuming linear-phase filters add no delay; they add a fixed, often larger, group delay.",
+    "Forgetting that both the A/D and D/A paths each contribute delay on a round trip."
+   ],
+   "scenario_contexts": [
+    "Estimating round-trip latency for a musician monitoring through the interface.",
+    "Aligning an analog-summed mix printed back through converters against the session.",
+    "Choosing a low-latency filter mode on a converter for live use."
+   ]
+  },
+  {
+   "id": "3cff42fd-b2a7-4a02-bb84-5d3565e449b1",
+   "term": "Converter calibration routine",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A procedure that measures and corrects a converter's offset and gain errors, and sometimes its linearity, by referencing known inputs such as a zero (shorted) input and a full-scale reference, then storing correction coefficients. Precision converters often provide internal self-calibration or system-calibration commands invoked at power-up or on demand.",
+   "plain_english": "Over time and heat a converter can drift a little, reading slightly high, low, or off from zero. A calibration routine checks it against known values and corrects those small errors.",
+   "purpose_function": "It exists to remove offset and gain drift so a converter's readings stay accurate across temperature and part-to-part variation.",
+   "practical_application": "A technician runs a converter's self-calibration after warm-up or a large temperature change, or performs a system calibration against a reference level during setup.",
+   "category": "Calibration",
+   "related_terms": [
+    "Offset error",
+    "Gain error",
+    "Conversion accuracy",
+    "Reference voltage",
+    "Converter diagnostics",
+    "Integral nonlinearity"
+   ],
+   "common_mistakes": [
+    "Calibrating before the unit has warmed up, so the results drift once it reaches operating temperature.",
+    "Confusing internal self-calibration with a system calibration that also includes external circuitry.",
+    "Assuming calibration fixes nonlinearity; it mainly corrects offset and gain."
+   ],
+   "scenario_contexts": [
+    "Running self-calibration on a precision converter after power-up.",
+    "Performing a system calibration against a known reference level before measurements.",
+    "Recalibrating after a large ambient temperature change on location."
+   ]
+  },
+  {
+   "id": "1e04d3f4-b84d-4da7-8547-93c61fef0612",
+   "term": "Converter clock input",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The input that accepts an external sample clock or reference, such as word clock, an AES3 digital audio reference signal, or a master clock, used to synchronize a converter to a house or system reference rather than its internal oscillator. Synchronization practice for such references is defined by AES11, and the clock's quality directly affects converter jitter.",
+   "plain_english": "This is where a converter takes in an outside timing signal so it stays in step with the rest of the rig. It is like a band following one drummer instead of each player counting alone.",
+   "purpose_function": "It exists so multiple digital devices can share one timing reference, keeping their samples aligned and preventing clicks or drift when their signals are combined.",
+   "practical_application": "A technician patches word clock from a master to each converter's clock input and sets the device to external or slave so the whole system locks to one reference.",
+   "category": "Clocking",
+   "related_terms": [
+    "Word clock",
+    "Clock recovery circuit",
+    "Jitter",
+    "Sample rate",
+    "Converter diagnostics",
+    "Analog-to-digital converter stage"
+   ],
+   "common_mistakes": [
+    "Leaving a device on internal clock while feeding it digital audio, causing dropouts.",
+    "Forgetting to terminate a word clock line at 75 ohms, which degrades the reference.",
+    "Assuming any external clock improves the sound; a noisy external clock can be worse than a good internal one."
+   ],
+   "scenario_contexts": [
+    "Locking every converter in a studio to a single master word clock.",
+    "Setting an interface to slave to an incoming AES3 reference.",
+    "Terminating the last converter's word clock input to keep the signal clean."
+   ]
+  },
+  {
+   "id": "bdf75fd5-390b-4f41-bc1b-ec1a4da0db76",
+   "term": "Converter diagnostics",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The status-monitoring and test functions that report a converter's operating health, such as clock lock and unlock, sample-rate detection, parity or biphase errors, over-range or clip flags, and self-test results, usually read through status registers or a control port. They let a system detect and localize conversion faults.",
+   "plain_english": "These are the built-in checks and warning flags that tell you whether a converter is working right. They flag things like a lost clock, a clipped input, or a data error.",
+   "purpose_function": "It exists so a technician or host system can spot converter faults quickly and tell a clocking problem apart from a level or data problem.",
+   "practical_application": "A technician reads lock and error status on a converter or in its software, using clip and unlock flags to trace whether dropouts come from clocking, cabling, or overload.",
+   "category": "Diagnostics",
+   "related_terms": [
+    "Clock recovery circuit",
+    "Converter clock input",
+    "Jitter",
+    "Converter calibration routine",
+    "Signal-to-noise ratio",
+    "Converter firmware update"
+   ],
+   "common_mistakes": [
+    "Ignoring sticky error flags, which stay set until read and can reveal a past dropout.",
+    "Assuming a green lock light rules out jitter or level problems.",
+    "Not checking over-range flags before blaming distortion on the analog stage."
+   ],
+   "scenario_contexts": [
+    "Reading a converter's unlock flag to diagnose intermittent digital dropouts.",
+    "Checking over-range indicators while setting input gain.",
+    "Using a manufacturer's status page to confirm sample-rate lock across a network."
+   ]
+  },
+  {
+   "id": "0b6a3151-5d1f-4c7a-ac72-34187ad45c34",
+   "term": "Converter firmware update",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The process of installing updated embedded software, or FPGA and DSP code, on a converter or audio interface to fix bugs, add features, improve clocking or filter behavior, or support new sample rates and network protocols. It is performed with the manufacturer's utility and must not be interrupted, because a failed update can leave the device unusable.",
+   "plain_english": "A converter runs its own small built-in program. A firmware update swaps that program for a newer version to fix problems or add features, much like updating an app on a phone.",
+   "purpose_function": "It exists to correct faults and extend a converter's capabilities after it ships, keeping it compatible and reliable over its service life.",
+   "practical_application": "A technician backs up settings, connects the unit, and runs the vendor's updater on stable power, avoiding disconnection until the tool confirms success.",
+   "category": "Maintenance",
+   "related_terms": [
+    "Converter diagnostics",
+    "Sample rate",
+    "Audio network",
+    "Converter calibration routine",
+    "Latency",
+    "Converter clock input"
+   ],
+   "common_mistakes": [
+    "Interrupting or disconnecting the device mid-update, which can corrupt the firmware and leave it unusable.",
+    "Updating without reading the release notes, then losing a setting or feature that was relied on.",
+    "Skipping a required intermediate version and jumping straight to the newest.",
+    "Assuming a firmware update will fix what is actually a hardware fault."
+   ],
+   "scenario_contexts": [
+    "Updating an interface's firmware to add support for a higher sample rate.",
+    "Applying a fix that resolves a clocking bug reported in the release notes.",
+    "Backing up settings before flashing new firmware to a networked converter."
+   ]
+  },
+  {
+   "id": "cca33c89-54a0-4b03-b071-5c877aa218d2",
+   "term": "Converter front end",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The analog input circuitry of an analog-to-digital converter that conditions the signal before quantization: an input buffer or line driver, level scaling to the converter's full-scale reference, and anti-alias filtering, which in oversampling delta-sigma designs is handled mostly by oversampling plus the digital decimation filter with only a gentle analog filter ahead of the modulator.",
+   "plain_english": "It is the input stage that prepares an analog signal before the converter turns it into digital. Think of it as a doorway that shapes and sizes the sound so the converter can measure it cleanly.",
+   "purpose_function": "It matches the source signal to the converter's input range and impedance and blocks out-of-band energy, so the quantizer receives a clean, correctly scaled signal and the digital result is accurate.",
+   "practical_application": "Technicians deal with the front end when matching a preamp or DI output to a converter input, setting levels for full-scale without overloading the input buffer, and choosing balanced or unbalanced connections.",
+   "category": "Converter architecture",
+   "related_terms": [
+    "Anti-aliasing filter",
+    "Delta-sigma modulator",
+    "Full-scale (dBFS)",
+    "Converter reference voltage",
+    "Input buffer",
+    "Sample rate"
+   ],
+   "common_mistakes": [
+    "Assuming the analog anti-alias filter does all the work; in delta-sigma converters most alias rejection comes from oversampling and the digital decimation filter",
+    "Driving the front end past its input range and clipping the buffer before the quantizer even reaches full-scale",
+    "Ignoring source impedance and cable loading, which can degrade the front end's noise and frequency response"
+   ],
+   "scenario_contexts": [
+    "Interfacing a mic preamp output to an audio interface's line input at the right level",
+    "Choosing between a converter's mic, line and instrument input paths on a recording",
+    "Troubleshooting distortion that turns out to be front-end overload rather than quantizer clipping"
+   ]
+  },
+  {
+   "id": "2064c2b6-7a8a-44ea-b5ce-5596b9a1c9e7",
+   "term": "Converter health monitoring",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The practice of continuously observing a converter's status indicators and telemetry, such as clock or PLL lock, sample-rate detection, sync-error flags, over/clip indicators and, where available, temperature or supply status, to confirm it is operating within specification and to catch faults such as loss of clock lock.",
+   "plain_english": "It means watching the converter status lights and readouts to make sure it is still working right. It is like checking the warning lights on a car dashboard while you drive.",
+   "purpose_function": "It exists so operators catch clocking, sync or overload problems early, before they cause clicks, dropouts or a silently degraded recording.",
+   "practical_application": "On the job a technician watches lock and sync indicators, meters and interface software status pages during setup and tracking, treating a flashing lock light or a sync error as a stop-and-fix warning.",
+   "category": "Diagnostics & monitoring",
+   "related_terms": [
+    "Converter synchronization input",
+    "Word clock",
+    "Clock lock",
+    "Sample rate",
+    "Converter verification",
+    "Jitter"
+   ],
+   "common_mistakes": [
+    "Ignoring a blinking clock-lock or sync-error indicator and recording anyway, which risks clicks and dropouts",
+    "Assuming a moving signal meter means the clock is locked; level and sync are separate things",
+    "Only checking status at power-up and never watching it during a long session"
+   ],
+   "scenario_contexts": [
+    "Confirming every converter shows clock lock before rolling a multitrack session",
+    "Diagnosing intermittent clicks by watching for momentary sync-error flags",
+    "Monitoring interface status pages during a long live-to-digital broadcast"
+   ]
+  },
+  {
+   "id": "a4813242-611a-4720-b202-b2d81e0804fd",
+   "term": "Converter latency",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The processing delay a signal accrues passing through a converter, dominated in oversampling delta-sigma designs by the group delay of the digital decimation (ADC) or interpolation (DAC) FIR filters; it is fixed for a given mode and specified in samples (for example about 12/Fs at single speed) or the equivalent time.",
+   "plain_english": "It is the small, fixed delay a converter adds when it changes sound between analog and digital. Most of it comes from the digital filter inside. It is a bit like the short pause before a translator speaks.",
+   "purpose_function": "Knowing it lets engineers account for the fixed delay each conversion adds, which matters for round-trip monitoring latency and for keeping multiple signal paths time-aligned.",
+   "practical_application": "Technicians add ADC plus DAC group delay, plus any buffering, when estimating monitoring latency, and use converters with matched latency or delay compensation to keep phase-coherent sources aligned.",
+   "category": "Timing & latency",
+   "related_terms": [
+    "Group delay",
+    "Decimation filter",
+    "Interpolation filter",
+    "Delta-sigma modulator",
+    "Round-trip latency",
+    "Sample rate"
+   ],
+   "common_mistakes": [
+    "Confusing converter latency with buffer or driver latency; the converter's group delay is fixed and separate from the DAW buffer setting",
+    "Assuming a linear-phase decimation filter is instantaneous when it adds a real, constant group delay",
+    "Forgetting that ADC and DAC delays add in a round trip and that they can differ between converters"
+   ],
+   "scenario_contexts": [
+    "Estimating monitoring latency for a singer tracking through an interface",
+    "Time-aligning a digital mic feed with an analog path in a hybrid rig",
+    "Choosing a low-latency converter mode for live in-ear monitoring"
+   ]
+  },
+  {
+   "id": "d5cfb00c-00be-4af1-9015-6cad8da82af1",
+   "term": "Converter linearity",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The degree to which a converter's output tracks a straight-line proportional relationship to its input across the code range; deviations are characterized as integral nonlinearity (INL) and differential nonlinearity (DNL) and, in audio terms, as amplitude linearity, and they directly raise distortion and low-level noise.",
+   "plain_english": "It is how faithfully a converter keeps output exactly in step with input, quiet or loud. If it is not linear, soft and loud parts come out the wrong size and add distortion.",
+   "purpose_function": "Good linearity keeps the digital numbers a true scaled copy of the analog signal, which is what preserves low distortion and accurate low-level detail.",
+   "practical_application": "Technicians assess linearity from a converter's INL/DNL and THD-versus-level specs, and verify it in the field with a low-level amplitude-linearity sweep, such as the AES17 method, when qualifying gear.",
+   "category": "Converter performance",
+   "related_terms": [
+    "INL/DNL",
+    "THD+N",
+    "Amplitude linearity",
+    "Dynamic range",
+    "Converter verification",
+    "Monotonicity"
+   ],
+   "common_mistakes": [
+    "Judging a converter by SNR alone and ignoring low-level amplitude linearity, where audible errors often hide",
+    "Confusing linearity with frequency response; one is about level proportionality, the other about level versus frequency",
+    "Assuming more bits automatically means better linearity when real INL/DNL and analog design set the limit"
+   ],
+   "scenario_contexts": [
+    "Qualifying a new converter by running an amplitude-linearity sweep",
+    "Comparing two interfaces where THD rises differently at low levels",
+    "Investigating why quiet reverb tails sound grainy on a suspect converter"
+   ]
+  },
+  {
+   "id": "ba5953c3-95f6-4b3f-8fc8-2869d820661b",
+   "term": "Converter operating mode",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A user- or system-selectable configuration that sets how a converter runs, commonly its sample-rate range (single, double or quad speed), its clock role (master versus slave/synchronized), its data format and channel mapping (such as I2S or TDM), and filter or power options, with each mode changing behavior such as supported rates and group delay.",
+   "plain_english": "It is the setting that tells a converter how to run, like its sample-rate range or whether it makes or follows the clock. It is like picking a mode on a camera before you shoot.",
+   "purpose_function": "Operating modes let one converter fit different jobs and systems, so the same part can run at high sample rates, follow an external clock, or use a low-latency filter as needed.",
+   "practical_application": "A technician sets the operating mode when configuring an interface, choosing the sample-rate/speed mode, master or slave clocking, and the data format so it matches the rest of the digital system.",
+   "category": "Configuration",
+   "related_terms": [
+    "Sample rate",
+    "Master/slave clock",
+    "Converter synchronization input",
+    "Word clock",
+    "Converter latency",
+    "TDM"
+   ],
+   "common_mistakes": [
+    "Leaving two devices both set to master or internal clock instead of making one a slave, causing sync errors",
+    "Mismatching single/double/quad-speed mode to the session sample rate",
+    "Forgetting that some low-latency or high-speed modes change the converter's group delay and available features"
+   ],
+   "scenario_contexts": [
+    "Setting an interface to slave to house word clock in a facility",
+    "Switching a converter to double-speed mode for an 88.2 or 96 kHz session",
+    "Selecting TDM mode to carry many channels on one data line"
+   ]
+  },
+  {
+   "id": "1ecae2b5-e9f1-41ec-b85d-3319403cc81f",
+   "term": "Converter reference voltage",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The precise, stable voltage a converter uses as its full-scale yardstick: the analog full-scale input (ADC) or output (DAC) range is set ratiometrically by this reference, so a digital full-scale code corresponds to the reference-defined voltage, and the reference's accuracy, noise and drift map directly onto gain accuracy, THD and SNR.",
+   "plain_english": "It is the fixed voltage a converter measures everything against, like the marks on a ruler. If that ruler is wrong or wobbles, every measurement the converter makes is off.",
+   "purpose_function": "It sets the converter's full-scale level and anchors its accuracy, so a clean, stable reference is essential for correct gain, low distortion and a good noise floor.",
+   "practical_application": "Engineers rarely adjust it directly but respect it through proper decoupling of the reference or filter pins and clean power, and they trace level-accuracy or added-noise problems back to a noisy or drifting reference.",
+   "category": "Converter architecture",
+   "related_terms": [
+    "Full-scale (dBFS)",
+    "Converter front end",
+    "THD+N",
+    "Dynamic range",
+    "Voltage reference",
+    "Power supply rejection"
+   ],
+   "common_mistakes": [
+    "Omitting or undersizing the reference or filter-pin decoupling capacitors, which raises the noise floor and distortion",
+    "Assuming digital full-scale equals a fixed voltage across all converters when it scales with the reference and analog design",
+    "Blaming the quantizer for gain-accuracy or level errors that actually come from a drifting or noisy reference"
+   ],
+   "scenario_contexts": [
+    "Following a datasheet's reference-pin decoupling layout when building or repairing a converter board",
+    "Diagnosing a channel that reads a consistent level error versus its neighbors",
+    "Understanding why two converters at the same dBFS deliver slightly different analog output voltages"
+   ]
+  },
+  {
+   "id": "2e1b1850-42bb-47d9-b4bc-3ace9b8cb315",
+   "term": "Converter synchronization input",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The clock-reference input by which a converter slaves its internal sample clock to an external timing source, typically a dedicated word clock input or an AES11 Digital Audio Reference Signal (DARS) or embedded AES3 clock, so its sampling instants align with the rest of a digital system.",
+   "plain_english": "It is the input where a converter takes in a timing signal so it runs in step with other gear. It is like a band all following one drummer.",
+   "purpose_function": "It lets many digital devices share one master clock, which prevents sample slips, clicks and dropouts when audio passes between them.",
+   "practical_application": "A technician patches house word clock or a DARS feed into each device's sync input, sets those devices to external or slave clock, and confirms each shows lock before recording.",
+   "category": "Clocking & sync",
+   "related_terms": [
+    "Word clock",
+    "Converter synchronization output",
+    "AES11 / DARS",
+    "Jitter",
+    "Converter operating mode",
+    "Sample rate"
+   ],
+   "common_mistakes": [
+    "Feeding a sync input a clock at a different sample rate than the audio and expecting it to work",
+    "Leaving a device on internal clock while cabling its sync input, so it never actually slaves",
+    "Forgetting to terminate a word clock input at 75 ohms, causing reflections and added jitter"
+   ],
+   "scenario_contexts": [
+    "Slaving a group of converters to a studio's master word clock",
+    "Locking an interface to embedded clock from an incoming AES3 or ADAT stream",
+    "Adding 75-ohm termination on the last device in a word-clock chain"
+   ]
+  },
+  {
+   "id": "05912570-a9ca-4fa2-b9e2-d56e32dbbc9d",
+   "term": "Converter synchronization output",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The clock-reference output a converter provides so it can act as timing master for other devices, typically a word clock output or an AES11 DARS/AES3 output carrying the sample clock, letting downstream equipment slave to its sample rate.",
+   "plain_english": "It is the output a converter uses to send out its timing so other gear can follow it. It is like a drummer whose beat keeps the whole band in time.",
+   "purpose_function": "It designates one device as the clock master and distributes its timing, so a whole system samples in lockstep from a single reference.",
+   "practical_application": "A technician takes word clock or DARS from the chosen master's sync output, distributes it, often through a dedicated clock distributor, and slaves the other devices to it.",
+   "category": "Clocking & sync",
+   "related_terms": [
+    "Word clock",
+    "Converter synchronization input",
+    "AES11 / DARS",
+    "Clock distribution",
+    "Master/slave clock",
+    "Jitter"
+   ],
+   "common_mistakes": [
+    "Running two masters at once by leaving more than one device driving its sync output onto the same line",
+    "Splitting a word-clock output with passive T-connectors instead of a proper distribution amp, causing level and reflection problems",
+    "Assuming any device makes an equally good master when clock jitter quality varies between converters"
+   ],
+   "scenario_contexts": [
+    "Designating a master clock and feeding a word-clock distribution amp from its output",
+    "Using a converter's DARS output to sync an outboard digital effects unit",
+    "Choosing the lowest-jitter converter in a rig to serve as the system master"
+   ]
+  },
+  {
+   "id": "e0d65ee8-bb82-463e-87ee-dd572fc6c62a",
+   "term": "Converter verification",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The process of confirming a converter meets its published specifications by measuring key parameters such as THD+N, SNR or dynamic range, frequency response, amplitude linearity and level calibration, typically using standardized methods (AES17) and precision test equipment, either at commissioning or as periodic maintenance.",
+   "plain_english": "It is testing a converter to prove it still performs the way the maker claims. It is like checking a measuring tool against a known standard before you trust it.",
+   "purpose_function": "It gives objective proof that a converter is healthy and accurate, so problems are caught before they spoil recordings and so gear can be trusted and calibrated.",
+   "practical_application": "A technician runs an AES17-based test set or an audio analyzer to measure THD+N, dynamic range and linearity, compares the results to the datasheet, and logs level calibration.",
+   "category": "Diagnostics & monitoring",
+   "related_terms": [
+    "AES17",
+    "THD+N",
+    "Dynamic range",
+    "Converter linearity",
+    "Converter health monitoring",
+    "Calibration"
+   ],
+   "common_mistakes": [
+    "Measuring THD+N or dynamic range without the standard bandwidth limit and AES17 filtering, which gives misleading numbers",
+    "Skipping level calibration so measurements are not referenced to a known full-scale",
+    "Trusting a quick listening test in place of measurement when qualifying or accepting gear"
+   ],
+   "scenario_contexts": [
+    "Commissioning new converters by verifying THD+N and dynamic range against the datasheet",
+    "Periodically checking a facility's converters as part of maintenance",
+    "Accepting rental or repaired gear by confirming it meets spec before a session"
+   ]
+  },
+  {
+   "id": "0031e280-d4c9-4b12-9801-9c76488111eb",
+   "term": "Decimation filter",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "In an oversampling (delta-sigma) analog-to-digital converter, the digital filter that low-pass filters the high-rate, coarsely quantized modulator output to remove out-of-band quantization noise and then reduces the sample rate (downsamples) to the target output rate, yielding full-resolution multi-bit PCM. By combining band-limiting with rate reduction it prevents aliasing on downsampling and largely sets the converter's passband flatness and stopband rejection.",
+   "plain_english": "A delta-sigma converter first runs at a very fast rate with rough numbers. This filter cleans out the extra noise and then slows the data down to the normal rate you use.",
+   "purpose_function": "It exists to turn the fast, noisy, low-resolution modulator output into clean, full-resolution audio at the wanted sample rate, rejecting energy above the new Nyquist frequency so downsampling does not cause aliasing.",
+   "practical_application": "A technician meets it as the fixed digital filtering inside an ADC, and on converters that offer filter choices it appears as selectable sharp or slow decimation responses that trade steepness against ringing.",
+   "category": "Digital filtering",
+   "related_terms": [
+    "Delta-sigma converter",
+    "Oversampling",
+    "Analog-to-digital converter stage",
+    "Anti-aliasing filter",
+    "Nyquist frequency",
+    "Quantization noise"
+   ],
+   "common_mistakes": [
+    "Confusing the decimation filter, which follows the modulator inside an ADC, with the reconstruction or anti-imaging filter that follows a DAC.",
+    "Assuming decimation just discards samples, when it must low-pass filter first or downsampling will alias noise back into the audio band.",
+    "Thinking the filter choice has no audible effect, when sharp and slow modes change pre-ringing and passband ripple."
+   ],
+   "scenario_contexts": [
+    "Choosing a converter's sharp or slow filter mode for a mastering transfer.",
+    "Explaining why a 48 kHz ADC still runs its modulator at several megahertz internally.",
+    "Troubleshooting high-frequency roll-off traced to the decimation filter's passband edge."
+   ]
+  },
+  {
+   "id": "ee06b629-182d-4e54-bf2a-389df48e51d0",
+   "term": "Delta-sigma converter",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A converter (ADC or DAC) that uses a delta-sigma (sigma-delta) modulator to trade amplitude resolution for speed: it heavily oversamples the signal and drives a coarse, often one-bit or low-bit quantizer inside a feedback loop that noise-shapes the quantization error, pushing most of it above the audio band. A digital decimation filter (ADC) or an interpolation filter plus analog reconstruction filter (DAC) then removes that shaped noise, giving high effective resolution and dynamic range from simple, highly linear circuitry, which is why it dominates modern audio conversion.",
+   "plain_english": "This converter takes samples much faster than needed and uses rough steps. A feedback trick pushes most of the noise up high where a filter can throw it away, leaving clean audio.",
+   "purpose_function": "It exists to reach high resolution and dynamic range without needing extremely precise analog parts, using oversampling and noise shaping so the demanding work is handled in stable, low-cost digital filtering.",
+   "practical_application": "Nearly every audio interface, console, and outboard converter a technician uses today is delta-sigma, which is why these converters need a stable sample clock and why low-jitter clocking matters.",
+   "category": "Converter architecture",
+   "related_terms": [
+    "Decimation filter",
+    "Oversampling",
+    "Noise shaping",
+    "Analog-to-digital converter stage",
+    "Digital-to-analog converter stage",
+    "Effective number of bits"
+   ],
+   "common_mistakes": [
+    "Believing a one-bit modulator means only one bit of resolution, when noise shaping and decimation yield many effective bits.",
+    "Ignoring clock jitter, which directly degrades a delta-sigma converter's performance.",
+    "Confusing the internal oversampling ratio with the converter's output sample rate."
+   ],
+   "scenario_contexts": [
+    "Adding an external low-jitter clock to get the best from an interface's delta-sigma converters.",
+    "Explaining to a student why a one-bit converter can still sound clean.",
+    "Comparing modern delta-sigma ADCs against older successive-approximation designs."
+   ]
+  },
+  {
+   "id": "48f3a5cb-b361-430b-a6e4-d2bdfb28a5fa",
+   "term": "Differential nonlinearity",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A static converter error spec giving the deviation of each code step from its ideal one-LSB size, expressed in LSB. In an ADC, DNL more negative than -1 LSB produces missing codes; in a DAC, DNL of -1 LSB or worse makes the transfer function non-monotonic.",
+   "plain_english": "A converter should move in equal little steps. DNL measures how uneven those steps are. If one step shrinks too much, some values get skipped, like a ruler with a missing mark.",
+   "purpose_function": "It exists to quantify the evenness of individual code steps, warning of missing codes, added noise, and distortion caused by irregular step sizes.",
+   "practical_application": "A technician reads DNL in LSB on a converter datasheet to judge low-level linearity and sees its effects as extra noise or distortion on quiet passages.",
+   "category": "Performance metric",
+   "related_terms": [
+    "Integral nonlinearity",
+    "Least significant bit",
+    "Monotonicity",
+    "Quantization",
+    "Effective number of bits",
+    "Analog-to-digital converter stage"
+   ],
+   "common_mistakes": [
+    "Confusing DNL, a step-to-step error, with INL, the overall bow of the transfer curve.",
+    "Assuming small DNL guarantees good INL, when many small step errors can accumulate into a large INL.",
+    "Thinking DNL has no audible effect, when large DNL raises the noise floor and adds distortion."
+   ],
+   "scenario_contexts": [
+    "Comparing two converters' DNL specs when choosing an interface.",
+    "Explaining missing codes found during bench testing of a converter.",
+    "Relating measured low-level distortion back to a converter's DNL."
+   ]
+  },
+  {
+   "id": "921a25bf-8c45-44dd-a25c-9e5651364647",
+   "term": "Digital-to-analog converter stage",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "The section of a signal chain that converts a stream of digital audio words back into a continuous analog voltage, typically an oversampling delta-sigma DAC built from a digital interpolation filter, a noise-shaped modulator, and an analog reconstruction (anti-imaging) filter, referenced to a sample clock. It is the boundary where digital data becomes analog audio at a given sample rate and bit depth, setting output level and noise floor and feeding downstream analog gain stages and outputs.",
+   "plain_english": "This is the part that turns digital audio numbers back into a real analog signal you can hear. It reads each value and builds a smooth voltage for your amps and speakers.",
+   "purpose_function": "It exists to convert stored or streamed digital audio into analog form for monitoring, mixing, and playback, defining the output level, noise floor, and analog interface to the rest of the system.",
+   "practical_application": "A technician feeds the DAC stage's line output into monitor controllers, amplifiers, or consoles and sets levels so the analog output stays below clipping in the following gear.",
+   "category": "D/A conversion",
+   "related_terms": [
+    "Analog-to-digital converter stage",
+    "Anti-imaging filter",
+    "Reconstruction filter",
+    "Delta-sigma converter",
+    "Sample rate",
+    "Converter reference voltage"
+   ],
+   "common_mistakes": [
+    "Confusing the DAC stage, which is digital-to-analog at the output, with the ADC stage, which is analog-to-digital at the input.",
+    "Assuming more bits or a higher sample rate always improves the audible output, when analog stages and jitter often set the real limit.",
+    "UNSAFE: patching or power-cycling with DAC outputs unmuted and monitors live, since power-up and clock-loss transients can send full-scale thumps into amplifiers and speakers, risking hearing and equipment damage."
+   ],
+   "scenario_contexts": [
+    "Connecting an interface's DAC output to powered monitors and setting a safe level.",
+    "Diagnosing distorted playback traced to a clipped DAC output stage.",
+    "Choosing a converter's reconstruction filter mode for critical monitoring."
+   ]
+  },
+  {
+   "id": "cf7f8bca-c89c-4f4a-aba5-b2d80c9c3852",
+   "term": "Dynamic range specification",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A converter or audio-device spec stating, in dB, the ratio between the maximum full-scale signal level and the residual noise floor, defining the span between the loudest undistorted signal and the quietest resolvable one. Per the AES17 method it is measured with a low-level (typically -60 dBFS) signal present and referenced back to full scale, usually A-weighted, so it reflects usable range better than idle-channel noise alone.",
+   "plain_english": "This number tells you the gap between the loudest sound a converter can pass cleanly and the soft hiss underneath it. A bigger number means you hear quiet details without noise getting in the way.",
+   "purpose_function": "It exists to describe how much usable level range a converter has, helping technicians compare gear and set gain so both loud peaks and quiet detail survive.",
+   "practical_application": "A technician compares dynamic range figures (commonly about 110 to 123 dB A-weighted for good audio converters) when choosing interfaces and uses the concept to set gain staging that keeps signals well above the noise floor.",
+   "category": "Performance metric",
+   "related_terms": [
+    "Signal-to-noise ratio",
+    "Effective number of bits",
+    "Noise floor",
+    "Full scale",
+    "Bit depth",
+    "THD+N"
+   ],
+   "common_mistakes": [
+    "Confusing dynamic range with signal-to-noise ratio, which uses different reference conditions even when the numbers look similar.",
+    "Assuming a 24-bit converter delivers its theoretical 144 dB, when analog noise limits real converters to roughly 120 dB.",
+    "Comparing dynamic range specs measured with different weightings, such as A-weighted versus unweighted, as if they were equal."
+   ],
+   "scenario_contexts": [
+    "Comparing two interfaces' dynamic range specs before a purchase.",
+    "Explaining why a 24-bit converter does not deliver its theoretical 144 dB.",
+    "Setting gain staging so a quiet source stays above the converter's noise floor."
+   ]
+  },
+  {
+   "id": "d5f85d2e-e265-4694-8203-dda3b08a9dce",
+   "term": "Effective number of bits",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A figure of merit expressing a converter's real, measured resolution as an equivalent ideal bit count, derived from its measured signal-to-noise-and-distortion ratio (SINAD) as ENOB = (SINAD in dB - 1.76) / 6.02. Because it folds in both noise and distortion, ENOB is always lower than the nominal nameplate bit depth.",
+   "plain_english": "A converter may say it is 24-bit, but noise and distortion waste some of those bits. ENOB tells you how many bits really carry clean audio, like counting only the ruler marks you can trust.",
+   "purpose_function": "It exists to give a single honest measure of real converter performance, letting technicians compare devices by usable resolution rather than by marketing bit counts.",
+   "practical_application": "A technician uses ENOB, often around 18 to 21 bits for good audio converters, to judge true performance and to understand why a 24-bit converter never delivers 24 clean bits.",
+   "category": "Performance metric",
+   "related_terms": [
+    "Signal-to-noise ratio",
+    "Dynamic range specification",
+    "THD+N",
+    "Bit depth",
+    "Quantization noise",
+    "Delta-sigma converter"
+   ],
+   "common_mistakes": [
+    "Treating nominal bit depth as if it were real resolution, ignoring that ENOB is always lower.",
+    "Computing ENOB from SNR alone, when the formula uses SINAD, which also includes distortion.",
+    "Comparing ENOB values taken at different input frequencies or amplitudes as if they were equivalent."
+   ],
+   "scenario_contexts": [
+    "Reading a converter datasheet's ENOB to compare true resolution.",
+    "Explaining why 24-bit gear delivers around 20 effective bits.",
+    "Evaluating test-and-measurement digitizers by ENOB at a specified input frequency."
+   ]
+  },
+  {
+   "id": "b26cfeb6-278f-4048-9215-e2131fc742bb",
+   "term": "High-pass filter switch (mic)",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A switch on a microphone or microphone preamp that inserts a high-pass (low-cut) filter into the signal path, attenuating frequencies below a set corner (commonly around 75 to 120 Hz) at a fixed slope (typically 6, 12, or 18 dB per octave) while passing higher frequencies. It reduces low-frequency rumble, handling and stage noise, wind, plosive energy, and the bass boost caused by proximity effect.",
+   "plain_english": "This switch cuts the deep low tones out of a mic signal. It helps remove rumble, thumps, and the extra boom you get when someone sings very close to the mic.",
+   "purpose_function": "It exists to remove unwanted low-frequency energy at the source, protecting headroom and reducing rumble and proximity buildup before the signal travels down the chain.",
+   "practical_application": "A technician switches the mic or preamp high-pass filter in for speech, vocals, and close-miked sources to tame rumble and plosives, and leaves it out for kick drum, bass, and other sources that need full low end.",
+   "category": "Preamp control",
+   "related_terms": [
+    "Proximity effect",
+    "Microphone preamplifier",
+    "Pad switch",
+    "Cutoff frequency",
+    "Phantom power",
+    "Roll-off"
+   ],
+   "common_mistakes": [
+    "Setting the filter corner too high, thinning out vocals or instruments that need low end.",
+    "Engaging it on sources like kick and bass, weakening their fundamental.",
+    "Assuming a mic's built-in high-pass and a console's low-cut are identical, when their corner frequency and slope often differ."
+   ],
+   "scenario_contexts": [
+    "Switching in a mic's low-cut for a lectern speech to reduce HVAC rumble.",
+    "Using the preamp high-pass on a close-miked vocal to control proximity boom and plosives.",
+    "Leaving the filter out when close-miking a kick drum for full low end."
+   ]
+  },
+  {
+   "id": "db10570e-e076-45c2-a4f2-1303b1f30198",
+   "term": "High-quality conversion mode",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A selectable converter operating mode that prioritizes conversion fidelity over power consumption or latency, typically by raising the oversampling ratio, using a sharper or more computationally intensive digital filter, and choosing lower-noise settings to maximize dynamic range and minimize distortion. It contrasts with low-power or low-latency modes that relax these parameters.",
+   "plain_english": "This is a setting that tells a converter to work its hardest for the best sound. It usually costs more power or a little more delay in trade for cleaner audio.",
+   "purpose_function": "It exists to let a device trade power use or latency for the best achievable audio quality when fidelity matters most, such as during critical recording or mastering.",
+   "practical_application": "A technician selects a high-quality or high-performance mode in an interface's control panel or a device menu when tracking or mixing, accepting slightly higher latency or power draw for better measured performance.",
+   "category": "Configuration",
+   "related_terms": [
+    "Converter operating mode",
+    "Oversampling",
+    "Decimation filter",
+    "Latency",
+    "Dynamic range specification",
+    "Delta-sigma converter"
+   ],
+   "common_mistakes": [
+    "Assuming the high-quality mode is always best, when its added latency can hurt live monitoring.",
+    "Thinking the mode name guarantees a specific spec, since implementations differ by manufacturer.",
+    "Leaving a battery-powered device in high-quality mode when low-power mode is needed for runtime."
+   ],
+   "scenario_contexts": [
+    "Enabling a high-quality mode on an interface for a mastering transfer.",
+    "Choosing a low-latency mode instead during live overdub monitoring.",
+    "Comparing measured dynamic range between a converter's high-quality and low-power modes."
+   ]
+  },
+  {
+   "id": "5cf28543-e9e1-4893-95d2-48eb5b2b5e4e",
+   "term": "Integral nonlinearity",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A static converter error spec giving the maximum deviation of the actual transfer function from an ideal straight line, expressed in LSB or as a percentage of full scale, after gain and offset errors are removed. It is referenced to either an end-point line (through zero and full scale) or a best-fit straight line, and it equals the accumulated sum of the converter's DNL errors, so it predicts harmonic distortion.",
+   "plain_english": "A converter output should climb in a straight line as the input rises. INL measures how far the real line bends away from straight. A big bend means more distortion.",
+   "purpose_function": "It exists to quantify a converter's overall linearity, predicting the harmonic distortion caused by a curved rather than straight transfer characteristic.",
+   "practical_application": "A technician reads INL in LSB on a datasheet to gauge a converter's accuracy and distortion, keeping in mind that end-point and best-fit methods give different numbers.",
+   "category": "Performance metric",
+   "related_terms": [
+    "Differential nonlinearity",
+    "Least significant bit",
+    "Monotonicity",
+    "THD+N",
+    "Quantization",
+    "Analog-to-digital converter stage"
+   ],
+   "common_mistakes": [
+    "Confusing INL, the overall curve bow, with DNL, the step-to-step error.",
+    "Comparing INL specs without checking whether the end-point or best-fit method was used, since best-fit reads lower.",
+    "Ignoring that INL is specified after gain and offset errors have been removed."
+   ],
+   "scenario_contexts": [
+    "Comparing converter datasheets' INL when accuracy matters.",
+    "Relating measured harmonic distortion back to a converter's INL.",
+    "Explaining why best-fit INL looks better than end-point INL on the same part."
+   ]
+  },
+  {
+   "id": "8700736a-b1c8-4c59-bdd6-169ac52858ca",
+   "term": "Interpolation filter",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A digital filter in the playback (DAC) path that raises the sample rate of a signal by inserting zero-valued samples between the input samples (zero-stuffing) and low-pass filtering to compute the new intermediate samples; this removes the spectral images created by upsampling and lets the delta-sigma modulator and analog reconstruction filter run at the higher oversampled rate. It is the DAC-side counterpart of the ADC's decimation filter.",
+   "plain_english": "It is a digital filter that fills in extra samples. This lets a converter play sound back at a much higher rate. It also pushes unwanted copies of the signal far away, so only a gentle analog filter is needed.",
+   "purpose_function": "It exists so an oversampling DAC can move the spectral images of the audio band up to very high frequencies, which lets the analog reconstruction filter be simple and gentle while keeping the audio band clean.",
+   "practical_application": "Technicians encounter it as the oversampling stage inside a DAC or interface; it sets part of the converter's fixed group delay and is why modern DACs need only a mild analog output filter.",
+   "category": "Digital filtering",
+   "related_terms": [
+    "Decimation filter",
+    "Oversampling converter",
+    "Delta-sigma modulator",
+    "Reconstruction filter",
+    "Group delay",
+    "Sample rate"
+   ],
+   "common_mistakes": [
+    "Confusing the interpolation filter with the analog reconstruction filter; the interpolation filter is digital and does most of the image rejection",
+    "Thinking zero-stuffing alone raises the sample rate, when without the low-pass filtering the images remain and the signal is wrong",
+    "Assuming it adds no delay, when its linear-phase FIR response contributes a real, fixed group delay"
+   ],
+   "scenario_contexts": [
+    "Understanding why an oversampling DAC needs only a gentle analog output filter",
+    "Accounting for a DAC's fixed group delay when time-aligning against an analog path",
+    "Comparing linear-phase and minimum-phase interpolation filter options in a converter's settings"
+   ]
+  },
+  {
+   "id": "c14fcbfc-8544-4943-a8b9-c95b0f14f938",
+   "term": "Jitter attenuation circuit",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A clock-conditioning circuit, typically a phase-locked loop (PLL) with a very low loop bandwidth or an asynchronous sample-rate converter, that recovers a clock from a jittery reference and regenerates a cleaner, lower-jitter clock; the narrow loop acts as a low-pass filter on phase noise, tracking slow frequency changes while strongly attenuating higher-frequency jitter above its corner.",
+   "plain_english": "It is a circuit that takes a shaky timing signal and cleans it up into a steadier one. It works like a heavy flywheel that smooths out small speed wobbles so the clock stays even.",
+   "purpose_function": "It exists to stop timing errors on an incoming digital clock from reaching the converter, because clock jitter adds noise and distortion to the converted audio.",
+   "practical_application": "Technicians rely on it inside AES3 and S/PDIF receivers, sample-rate converters and reclocking word-clock devices to isolate converters from cable- and source-induced jitter, which is why a good reclocker can clean up a jittery digital feed.",
+   "category": "Clocking & sync",
+   "related_terms": [
+    "Jitter",
+    "Phase-locked loop",
+    "Word clock",
+    "Sample rate converter",
+    "Phase-noise performance",
+    "Clock recovery"
+   ],
+   "common_mistakes": [
+    "Assuming any PLL removes jitter, when a wide-bandwidth PLL tracks and passes much of the incoming jitter instead of filtering it",
+    "Believing a jitter attenuator fixes data errors, when it only cleans the clock timing and not the audio data",
+    "Thinking the source clock quality no longer matters once a reclocker is used, when very low-frequency jitter still passes through"
+   ],
+   "scenario_contexts": [
+    "Reclocking a jittery S/PDIF or AES3 feed before it reaches a DAC",
+    "Using an asynchronous sample-rate converter to isolate a converter from source jitter",
+    "Choosing a low-jitter master clock or reclocker to improve a digital signal chain"
+   ]
+  },
+  {
+   "id": "24258b31-5ac7-47fa-b662-32506b2b6a92",
+   "term": "Low-latency conversion mode",
+   "topic": "Preamp & Converter Engineering",
+   "difficulty": null,
+   "definition": "A converter operating mode that minimizes the group delay of the digital decimation or interpolation filter, usually by selecting a shorter or minimum-phase (\"short-delay\") FIR filter instead of a long linear-phase filter; it trades some filter steepness, stopband rejection or passband flatness for reduced through-latency.",
+   "plain_english": "It is a converter setting that shortens the small delay when sound is turned between analog and digital. You trade a little filter sharpness to get the sound through faster. This helps when players monitor themselves live.",
+   "purpose_function": "It exists so performers can monitor through a digital system with minimal delay, since the digital filter's group delay is the main fixed latency a converter adds.",
+   "practical_application": "A technician selects a low-latency or \"short delay\" filter mode when musicians monitor through an interface or digital console, accepting slightly relaxed filter performance for a tighter monitoring feel.",
+   "category": "Timing & latency",
+   "related_terms": [
+    "Converter latency",
+    "Group delay",
+    "Decimation filter",
+    "Interpolation filter",
+    "Linear-phase filter",
+    "Round-trip latency"
+   ],
+   "common_mistakes": [
+    "Confusing converter low-latency mode with the DAW buffer setting; they are separate contributors to total latency",
+    "Assuming low-latency filters are always better, when they can worsen stopband rejection or add passband ripple",
+    "Forgetting that even the lowest-latency converter mode still adds a real, fixed group delay"
+   ],
+   "scenario_contexts": [
+    "Setting a short-delay filter for a vocalist monitoring through an interface",
+    "Reducing round-trip latency for live in-ear monitoring on a digital console",
+    "Weighing filter sharpness against latency when choosing a converter mode"
+   ]
+  }
+ ]
+}

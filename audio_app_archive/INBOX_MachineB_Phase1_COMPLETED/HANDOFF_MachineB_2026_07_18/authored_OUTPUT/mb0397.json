@@ -1,0 +1,312 @@
+{
+ "batch": 397,
+ "topic": "Audio Restoration & Archival",
+ "authored": [
+  {
+   "id": "7e7cbc41-2b46-41de-be21-1bcf5cf3ce04",
+   "term": "Permanent preservation copy",
+   "fields": {
+    "definition": "The highest-quality, unaltered copy of a recording that an archive retains indefinitely for long-term preservation, produced to full archival specification and never used for routine access. Access and working copies are derived from it, so it is the authoritative source that must survive intact.",
+    "plain_english": "It is the best, untouched copy of a recording that an archive keeps for good. The copies people listen to are made from it, so it stays safe and is never used up.",
+    "purpose_function": "It preserves the most faithful version of a recording so the original content is not lost, and it gives every future access copy a trusted source to come from.",
+    "practical_application": "An archivist transfers a tape at full resolution to make this copy, stores it on protected storage, and only ever draws working or listening copies from it.",
+    "category": "Preservation Storage",
+    "related_terms": [
+     "Preservation package",
+     "Preservation metadata",
+     "Preservation verification",
+     "Provenance documentation",
+     "Preservation workflow"
+    ],
+    "common_mistakes": [
+     "Editing, noise-reducing, or normalizing the preservation copy instead of keeping it exactly as captured and doing restoration on a separate derivative.",
+     "Treating a compressed access copy such as an MP3 as the preservation copy, which loses quality that can never be recovered.",
+     "Keeping only one copy in one location instead of protected, checked storage with backups."
+    ],
+    "scenario_contexts": [
+     "Making the full-resolution master file after transferring an aging reel-to-reel tape.",
+     "Storing the archival master on managed storage while sending a listening copy to a researcher.",
+     "Rebuilding a damaged access file by generating a fresh derivative from the preservation copy."
+    ]
+   },
+   "sources": [
+    "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects",
+    "OAIS Reference Model (ISO 14721)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "213eeb10-a307-426f-9bd9-3c1d4cf8f027",
+   "term": "Preservation audit trail",
+   "fields": {
+    "definition": "A complete, chronological record of every action and event performed on a digital object during its life in an archive, such as ingest, format migration, fixity checks, and repairs, each with its date, responsible agent, and outcome. In OAIS and PREMIS it is captured as preservation events and supports provenance and accountability.",
+    "plain_english": "It is a dated logbook of everything ever done to a file in the archive. It shows who did what and when, so the file's whole history can be traced.",
+    "purpose_function": "It proves what has happened to a file over time so staff can trust it is authentic and unaltered, and it makes preservation actions accountable and repeatable.",
+    "practical_application": "When an archivist migrates a file to a new format or runs a checksum check, the system writes an event entry, and later anyone can read the trail to see the object's full history.",
+    "category": "Preservation Metadata",
+    "related_terms": [
+     "Preservation metadata",
+     "Provenance documentation",
+     "Preservation verification",
+     "Checksum",
+     "Preservation workflow"
+    ],
+    "common_mistakes": [
+     "Logging actions in a person's private notes instead of structured metadata stored with the object.",
+     "Recording that something was done but leaving out the date, the agent, or the outcome.",
+     "Assuming the trail updates itself, when many manual steps must be logged deliberately."
+    ],
+    "scenario_contexts": [
+     "Reviewing every fixity check and migration a file has had before certifying it for long-term storage.",
+     "Recording an ingest event automatically as a new transfer enters the repository.",
+     "Proving a recording was never quietly altered during a legal or rights dispute."
+    ]
+   },
+   "sources": [
+    "PREMIS Data Dictionary for Preservation Metadata (Library of Congress)",
+    "OAIS Reference Model (ISO 14721)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e312a72d-7cde-47cf-8c6c-5e3d9a27b2ee",
+   "term": "Preservation metadata",
+   "fields": {
+    "definition": "The structured information a repository records and maintains to support the long-term preservation and continued usability of a digital object, including its technical characteristics, provenance, fixity, rights, and the events performed on it. PREMIS is the widely used data model for it.",
+    "plain_english": "It is the background information an archive keeps about a file so it can care for it far into the future. It covers what the file is, where it came from, and everything done to keep it safe.",
+    "purpose_function": "It gives future staff and systems the facts they need to keep a file readable and trustworthy as formats and technology change. Without it, a stored file can become an unusable mystery.",
+    "practical_application": "During ingest an archivist captures format details, checksums, and origin information as preservation metadata, then adds event records each time the file is checked or migrated.",
+    "category": "Preservation Metadata",
+    "related_terms": [
+     "Structural metadata",
+     "Provenance documentation",
+     "Preservation audit trail",
+     "Preservation verification",
+     "Preservation package"
+    ],
+    "common_mistakes": [
+     "Confusing preservation metadata with descriptive catalog data such as title and artist, which serve discovery rather than preservation.",
+     "Capturing it once at ingest and never updating it as events and migrations occur.",
+     "Storing it apart from the object with no reliable link, so the two drift apart."
+    ],
+    "scenario_contexts": [
+     "Recording sample rate, bit depth, format, and checksum for each transferred audio master.",
+     "Adding event records after every fixity check or format migration.",
+     "Documenting the hardware and software chain used to digitize an analog recording."
+    ]
+   },
+   "sources": [
+    "PREMIS Data Dictionary for Preservation Metadata (Library of Congress)",
+    "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "12e1e1ad-ad83-496f-b4e2-9e427db5f3b6",
+   "term": "Preservation package",
+   "fields": {
+    "definition": "A self-contained unit that bundles a digital object together with all the metadata needed to preserve and understand it over the long term. In the OAIS reference model this is the Archival Information Package (AIP): the Content Information plus its Preservation Description Information, which covers provenance, fixity, context, and reference.",
+    "plain_english": "It is a file bundle that keeps a recording together with all the information needed to look after it. Think of a labeled box holding both the item and its full paperwork.",
+    "purpose_function": "It keeps the content and its supporting information together as one managed unit so nothing important is lost or separated in long-term storage. This is how an archive stores and preserves an object.",
+    "practical_application": "At ingest an archivist assembles the audio master, its checksums, and its technical and provenance metadata into an AIP, which the repository then stores and maintains.",
+    "category": "Archival Packaging",
+    "related_terms": [
+     "Preservation metadata",
+     "Structural metadata",
+     "Provenance documentation",
+     "Preservation workflow",
+     "Permanent preservation copy"
+    ],
+    "common_mistakes": [
+     "Storing the audio file in one place and its metadata in another instead of packaging them together.",
+     "Confusing the submission package delivered for ingest with the stored archival package that the repository keeps.",
+     "Leaving out fixity or provenance information, so the package cannot prove the object is authentic."
+    ],
+    "scenario_contexts": [
+     "Building an archival package for a digitized concert tape before committing it to the repository.",
+     "Exporting a dissemination copy for a user from the stored preservation package.",
+     "Migrating packages to new storage while keeping content and metadata bound together."
+    ]
+   },
+   "sources": [
+    "OAIS Reference Model (ISO 14721)",
+    "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ef16c0c5-4339-4e38-a22d-c73aa4959056",
+   "term": "Preservation planning",
+   "fields": {
+    "definition": "The ongoing archival function that monitors technology, formats, and risks and defines the strategies and actions needed to keep digital objects accessible and usable over the long term. In OAIS it is one of the six functional entities, responsible for setting and revising the repository's preservation strategy.",
+    "plain_english": "It is the ongoing work of planning ahead so recordings stay in reach as gear and software change. It spots risks early, like a file type going out of date, and acts before files can no longer be opened.",
+    "purpose_function": "It keeps an archive from being caught out by aging formats, failing media, or obsolete software by planning migrations and updates in advance. It turns preservation from reacting to crises into a managed strategy.",
+    "practical_application": "A preservation manager tracks which file formats are at risk, schedules migrations, and updates policies and target formats as standards and technology evolve.",
+    "category": "Preservation Management",
+    "related_terms": [
+     "Preservation workflow",
+     "Preservation package",
+     "Preservation metadata",
+     "Preservation verification",
+     "Provenance documentation"
+    ],
+    "common_mistakes": [
+     "Treating preservation as a one-time digitizing project rather than a continuing, planned activity.",
+     "Ignoring format obsolescence until files can no longer be opened.",
+     "Planning storage but not the staff, budget, and policies needed to keep it going."
+    ],
+    "scenario_contexts": [
+     "Deciding to migrate an obsolete audio format to a current archival target before playback tools disappear.",
+     "Setting the archive's standard file format, sample rate, and bit depth for future transfers.",
+     "Scheduling regular media refresh and fixity checking across the whole collection."
+    ]
+   },
+   "sources": [
+    "OAIS Reference Model (ISO 14721)",
+    "DPC Technology Watch Report, The Open Archival Information System (OAIS) Reference Model"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7eff0566-0d5a-4d31-a6dd-71653410e216",
+   "term": "Preservation verification",
+   "fields": {
+    "definition": "The process of confirming that a preserved digital object is complete, unaltered, and still usable, most commonly by comparing a newly computed checksum, or fixity value, against a stored one. It detects corruption, loss, or undocumented change so a problem can be corrected from a good copy.",
+    "plain_english": "It is the routine check that a stored file is still whole and unchanged. The system compares a fresh digital fingerprint of the file to the one saved earlier, and if they differ, something is wrong.",
+    "purpose_function": "It catches silent data corruption, media failure, or tampering early so a bad file can be restored from a good copy before the loss spreads. This is what lets an archive trust its stored files over decades.",
+    "practical_application": "On a schedule the repository recomputes checksums for stored files, compares them to the recorded values, logs the result, and flags any mismatch for repair from a backup.",
+    "category": "Integrity Verification",
+    "related_terms": [
+     "Checksum",
+     "Preservation audit trail",
+     "Preservation metadata",
+     "Preservation workflow",
+     "Permanent preservation copy"
+    ],
+    "common_mistakes": [
+     "Assuming files are safe just because they sit on storage, without ever re-checking their fixity.",
+     "Overwriting the only stored checksum, leaving nothing trustworthy to verify against.",
+     "Confirming the checksum matches but never testing that the file still actually plays."
+    ],
+    "scenario_contexts": [
+     "Running a scheduled fixity check across an archive and comparing results to stored checksums.",
+     "Verifying a file's checksum immediately after copying it to new storage.",
+     "Detecting bit rot on an aging drive and restoring the affected file from a verified backup."
+    ]
+   },
+   "sources": [
+    "OAIS Reference Model (ISO 14721)",
+    "PREMIS Data Dictionary for Preservation Metadata (Library of Congress)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7b7b25e9-40fc-4425-aa2f-7e70e1036d8f",
+   "term": "Preservation workflow",
+   "fields": {
+    "definition": "The defined, repeatable sequence of steps an archive follows to move a recording from source through transfer, packaging, metadata capture, quality control, and into managed long-term storage. It standardizes how objects are handled so preservation is consistent and each step is documented.",
+    "plain_english": "It is the set order of steps an archive follows to turn a recording into a safely stored file. Like a recipe, it keeps every job done the same careful way.",
+    "purpose_function": "It makes preservation consistent, repeatable, and traceable across many objects and staff, cutting errors and making sure no step is skipped. A clear workflow is what lets an archive handle large collections reliably.",
+    "practical_application": "A technician follows the workflow to clean and transfer a tape, run quality control, capture metadata and checksums, build the package, and commit it to storage, logging each stage.",
+    "category": "Preservation Management",
+    "related_terms": [
+     "Preservation planning",
+     "Preservation package",
+     "Preservation metadata",
+     "Preservation verification",
+     "Preservation audit trail"
+    ],
+    "common_mistakes": [
+     "Skipping quality control or metadata capture to save time, which creates gaps that are costly to fix later.",
+     "Relying on one person's memory instead of a written, followed procedure.",
+     "Not logging each step, so the resulting audit trail is incomplete."
+    ],
+    "scenario_contexts": [
+     "Setting a standard transfer, quality-control, and ingest procedure for a large tape digitization project.",
+     "Training new staff to follow the same steps so results are consistent.",
+     "Adjusting the workflow when a new file format or storage system is adopted."
+    ]
+   },
+   "sources": [
+    "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects",
+    "OAIS Reference Model (ISO 14721)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "eee31cdd-a252-4031-adee-d2d7916cf027",
+   "term": "Provenance documentation",
+   "fields": {
+    "definition": "The recorded history of a digital object's origin, chain of custody, and every change to its content or format over time, including how and by whom it was created and processed. In OAIS it is the Provenance Information within the Preservation Description Information, and it underpins the object's authenticity.",
+    "plain_english": "It is the written history of where a recording came from and everything that has happened to it since. It is like an object's family tree and ownership record combined.",
+    "purpose_function": "It lets staff and users trust that a file is authentic and understand how its current form relates to the original. Without a clear history, a preserved file's reliability cannot be judged.",
+    "practical_application": "An archivist records the source item, who transferred it, the equipment and settings used, and every later edit or migration, keeping this history with the object.",
+    "category": "Preservation Metadata",
+    "related_terms": [
+     "Preservation metadata",
+     "Preservation audit trail",
+     "Structural metadata",
+     "Permanent preservation copy",
+     "Preservation verification"
+    ],
+    "common_mistakes": [
+     "Documenting only the current file and losing the record of the original source and how it was made.",
+     "Confusing provenance, which is origin and history, with descriptive metadata such as title and performer.",
+     "Failing to record the transfer chain, so later staff cannot judge the object's authenticity."
+    ],
+    "scenario_contexts": [
+     "Recording the make and model of the tape machine and the settings used to digitize a reel.",
+     "Noting a recording's chain of custody as it passes between collections or institutions.",
+     "Tracing a preserved file back to its analog original during an authenticity review."
+    ]
+   },
+   "sources": [
+    "OAIS Reference Model (ISO 14721)",
+    "PREMIS Data Dictionary for Preservation Metadata (Library of Congress)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ef20f14a-c6d4-4db8-962e-da4dbab197ff",
+   "term": "Structural metadata",
+   "fields": {
+    "definition": "Metadata that describes how the separate components of a digital object relate to and are ordered within the whole, such as the sequence of tracks, sides, or files that make up a complete recording. In standards such as METS it is expressed as a structural map that links the parts into a navigable hierarchy.",
+    "plain_english": "It is the information that says how the pieces of a recording fit together and in what order. It works like a table of contents that keeps the parts of an album or a multi-part tape in the right sequence.",
+    "purpose_function": "It lets a system reassemble and navigate a multi-part object correctly so listeners hear the parts in the intended order. Without it, separate files are just a pile with no defined relationship.",
+    "practical_application": "When digitizing a two-sided tape or a multi-movement work, an archivist records the order and relationship of the resulting files as structural metadata.",
+    "category": "Preservation Metadata",
+    "related_terms": [
+     "Preservation metadata",
+     "Provenance documentation",
+     "Preservation package",
+     "Preservation audit trail",
+     "Preservation verification"
+    ],
+    "common_mistakes": [
+     "Confusing structural metadata, which is how parts relate, with descriptive metadata, which is what the content is.",
+     "Digitizing multi-part items without recording their correct order, so playback sequence is lost.",
+     "Relying on file names alone to imply order instead of explicit structural metadata."
+    ],
+    "scenario_contexts": [
+     "Recording the side and track order of a multi-reel recording so it can be played back in sequence.",
+     "Linking the separate movements of a symphony into one navigable object.",
+     "Encoding the play order of a multi-file digitized album in a structural map."
+    ]
+   },
+   "sources": [
+    "METS (Metadata Encoding and Transmission Standard), Library of Congress",
+    "PREMIS Data Dictionary for Preservation Metadata (Library of Congress)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

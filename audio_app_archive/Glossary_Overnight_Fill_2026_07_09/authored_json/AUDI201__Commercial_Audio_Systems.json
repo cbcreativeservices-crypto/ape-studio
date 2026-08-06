@@ -1,0 +1,193 @@
+{
+ "course": "AUDI201",
+ "topic": "Commercial Audio Systems",
+ "safety_critical": false,
+ "authored": [
+  {
+   "id": "4fe68566-652e-479c-a375-7199f1e8ce7a",
+   "term": "Ambient Noise Sensor",
+   "fields": {
+    "plain_english": "A microphone that listens to how loud a room is and lets the system automatically turn paging and music up when the space gets noisy and back down when it quiets, so announcements stay audible without blasting during slow periods.",
+    "purpose_function": "Feeds a continuous measurement of background noise to the system's DSP so output level tracks changing conditions, keeping pages and background music intelligible over crowd and HVAC noise. It exists because a fixed volume is either too quiet when a space is busy or too loud when it is empty.",
+    "practical_application": "An integrator mounts sensing mics in noisy zones and configures the ambient-compensation processor (for example Biamp Vocia ANC-1 or the QSC Q-SYS ambient compensator) with minimum and maximum gain limits and a response ratio so pages ride above measured noise, then verifies the loop does not run away or feed back.",
+    "category": "Commercial Audio Systems",
+    "related_terms": [
+     "Background Music (BGM)",
+     "Paging System",
+     "DSP",
+     "Automatic Gain Control",
+     "Signal-to-Noise Ratio",
+     "Zone Paging"
+    ],
+    "common_mistakes": [
+     "Placing the sensing mic where it picks up the loudspeakers it controls, creating a runaway loop where the system keeps raising its own level.",
+     "Setting no maximum-gain limit, so a passing truck or night-time HVAC drives the system to full output.",
+     "Confusing ambient noise compensation with feedback suppression or input AGC, which solve different problems.",
+     "Setting the averaging/response time too fast, causing audible level pumping."
+    ],
+    "scenario_contexts": [
+     "A shopping mall paging system that raises page and music level during busy hours and lowers it after closing.",
+     "An airport concourse where announcements must stay intelligible over fluctuating crowd noise.",
+     "A restaurant or bar where background music tracks changing patron noise through the evening.",
+     "A factory floor PA where machinery cycling on and off changes the noise floor."
+    ]
+   },
+   "sources": [
+    "Biamp Vocia ANC-1 Ambient Noise Compensation Device data sheet and setup guide (biamp.com)",
+    "QSC Q-SYS Continuous Ambient Compensator, Q-SYS Help and QuickStarts (qsc.com)",
+    "Biamp Cornerstone design library, Retail paging with BGM and ambient noise compensation (support.biamp.com)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8a3312ea-9567-4357-a424-7bb318e0f299",
+   "term": "End-of-Line Resistor",
+   "fields": {
+    "plain_english": "A resistor placed at the very end of a speaker or alarm wiring run so the panel can push a tiny test current all the way down the wire and back; if a wire breaks or shorts, that current changes and the panel reports a trouble before a real alarm ever needs the line.",
+    "purpose_function": "It terminates a supervised (Class B) circuit with a known resistance so the panel's supervisory current sits in a normal window; any open or short moves the current out of that window and lets the panel annunciate a wiring fault. It exists so faults are caught during normal standby rather than discovered when the system fails to sound.",
+    "practical_application": "The installer lands the correct-value resistor across the last device on the run, not at the panel, matching the panel manufacturer's listed specification; a missing, wrong-value, or mislocated resistor produces a supervisory trouble that the technician must resolve during commissioning and periodic testing.",
+    "category": "Commercial Audio Systems",
+    "related_terms": [
+     "Mass Notification System",
+     "Notification Appliance Circuit (NAC)",
+     "Class A / Class B Wiring",
+     "Circuit Supervision",
+     "70V/100V Line",
+     "Fire Alarm Control Panel"
+    ],
+    "common_mistakes": [
+     "Installing the resistor at the panel instead of the far end of the last device, which defeats supervision of the entire run.",
+     "Using the wrong resistor value or wattage for the panel, causing false troubles or masking real faults.",
+     "UNSAFE: Removing or jumpering out an end-of-line resistor to clear a nuisance trouble, which disables fault supervision on a life-safety circuit and can hide a broken wire that leaves occupants unwarned.",
+     "Assuming any resistor will do; value and wattage must match the panel manufacturer's listed specification."
+    ],
+    "scenario_contexts": [
+     "A fire alarm notification appliance circuit feeding horn/strobes where the panel must detect a cut wire.",
+     "A voice evacuation or mass notification speaker circuit supervised for continuity.",
+     "Commissioning where deliberately opening the loop must produce a trouble signal to prove supervision works.",
+     "Troubleshooting a persistent NAC open trouble traced to a missing or failed end-of-line resistor."
+    ]
+   },
+   "sources": [
+    "NFPA 72 National Fire Alarm and Signaling Code, circuits and pathways / Class B supervision (National Training Center summary of NFPA 72)",
+    "Digitize Inc., EOLRs Are Needed for Fire Alarm System Reliability and Compliance (digitize-inc.com)",
+    "NFPA 72 circuits and pathways overview, Safe & Secure magazine (issuu.com)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2ee58f33-b85a-4ae4-b543-61db9da94b2e",
+   "term": "Mass Notification System",
+   "fields": {
+    "plain_english": "A building- or campus-wide system that broadcasts clear spoken instructions, plus visual messages, during emergencies such as fire, an active threat, severe weather, or a chemical release, so people know what to do instead of only knowing that something is wrong.",
+    "purpose_function": "It delivers prioritized, intelligible live or pre-recorded voice messages together with visible notification across a facility to direct occupant response for both fire and non-fire emergencies, as covered by NFPA 72 Chapter 24. It exists because a simple alarm tone tells people to leave but not which hazard applies or what action to take.",
+    "practical_application": "Integrators lay out speakers and tune DSP for intelligibility (an STI target near 0.50 (≈0.70 CIS)), install a UL 2572-listed control unit with backup power and supervised circuits, and set message priority so emergency notification overrides paging and background music; commissioning includes intelligibility (STI/CIS) verification at occupant locations.",
+    "category": "Commercial Audio Systems",
+    "related_terms": [
+     "End-of-Line Resistor",
+     "Speech Intelligibility (STI)",
+     "Autonomous Control Unit (ACU)",
+     "Notification Appliance Circuit (NAC)",
+     "Voice Evacuation",
+     "Paging System"
+    ],
+    "common_mistakes": [
+     "Designing for loudness (SPL) instead of intelligibility (STI/CIS), so messages are loud but not understandable.",
+     "Assuming a standard paging or background-music system qualifies; a code-compliant MNS requires a UL 2572-listed control unit, circuit supervision, and backup power.",
+     "UNSAFE: Wiring emergency notification without message priority, so a page or music source can override or block a life-safety announcement.",
+     "Overlooking visible notification for high-noise areas and hearing-impaired occupants."
+    ],
+    "scenario_contexts": [
+     "A university campus broadcasting shelter-in-place instructions during an active-threat event.",
+     "An office tower directing phased evacuation for a fire on a specific floor.",
+     "A stadium delivering severe-weather instructions to crowds.",
+     "An industrial plant announcing a chemical-release response over the PA."
+    ]
+   },
+   "sources": [
+    "NFPA 72 National Fire Alarm and Signaling Code, Chapter 24 Emergency Communications Systems (up.codes viewer; IFMA Central Ohio Chapter 24 summary)",
+    "UL 2572 Standard for Mass Notification Systems, as referenced by NFPA 72 for control unit listing (Accu-Tech, Basics of MNS, NFPA, UL and Code Compliance)",
+    "Alertus Technologies, NFPA 72 Mass Notification Requirements Guide (alertus.com)",
+    "Honeywell/Notifier white paper, Chapter 24 Emergency Communication Systems of NFPA 72"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "35dfd660-c03a-4064-a49f-6c58b50b71ce",
+   "term": "Music-on-Hold (MOH)",
+   "fields": {
+    "plain_english": "The music or message a caller hears while waiting on hold; the phone system plays it from a stored file or an audio feed so callers know they are still connected instead of sitting in silence.",
+    "purpose_function": "It supplies audio to callers placed on hold through the phone system's MOH input, reassuring them that the call is still active and reducing hang-ups, and it can also deliver marketing or informational content. It exists to fill hold silence with reassuring, licensed audio.",
+    "practical_application": "A technician connects a licensed audio source (an on-hold player, a DSP output, or an uploaded file) to the PBX or VoIP system's MOH port, or uploads a properly formatted file (commonly 8 kHz mono WAV or mu-law), and must use royalty-free or properly licensed audio rather than a broadcast radio feed.",
+    "category": "Commercial Audio Systems",
+    "related_terms": [
+     "Background Music (BGM)",
+     "Paging System",
+     "PBX",
+     "Audio Distribution",
+     "Zone Paging",
+     "DSP"
+    ],
+    "common_mistakes": [
+     "Feeding a broadcast radio station into the MOH input; re-broadcasting copyrighted radio as hold music is a licensing violation.",
+     "Using a full-bandwidth hi-fi source without accounting for the phone system's narrowband path (roughly 300 Hz to 3.4 kHz, 8 kHz sample rate), so audio sounds harsh or distorted.",
+     "Mismatched levels that make the hold audio far louder or quieter than the agents' voices.",
+     "Assuming royalty-free and free are the same; copyrighted tracks still need proper licensing (sync plus master, or a covering license)."
+    ],
+    "scenario_contexts": [
+     "A call center feeding branded messages and licensed music to queued callers.",
+     "A small office sharing its background-music feed into the PBX MOH input.",
+     "A VoIP system where an uploaded WAV file plays to held callers.",
+     "Replacing an unlicensed radio-fed hold source with a compliant on-hold player during an install."
+    ]
+   },
+   "sources": [
+    "Easy on Hold Knowledgebase, On-Premise PBX MOH Hold Music (learn.easyonhold.com)",
+    "Nextiva VoIP Features, Hold Music (nextiva.com)",
+    "TunePocket, On Hold Music: How To Choose, License, And Format Audio (tunepocket.com)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "318a74c5-0562-4dc1-a1ec-6b4c9579ba87",
+   "term": "Speech Privacy",
+   "fields": {
+    "plain_english": "The idea that you protect a conversation not by making it silent but by making it hard to make out the words, usually by adding a steady background sound so someone nearby cannot understand what is being said.",
+    "purpose_function": "It is the design goal of a sound-masking system: raise the background noise floor with speech-shaped sound so nearby talk drops below intelligibility, protecting confidentiality without silencing the space. It exists because open-plan and adjacent spaces leak understandable speech that masking renders unintelligible.",
+    "practical_application": "An integrator tunes ceiling masking emitters to a target spectrum and level (commonly around 42 to 48 dBA) and verifies performance with a privacy metric such as the Articulation Index per ASTM E1130, so overheard speech falls into the confidential or normal privacy range.",
+    "category": "Commercial Audio Systems",
+    "related_terms": [
+     "Sound Masking",
+     "Articulation Index",
+     "Signal-to-Noise Ratio",
+     "Ambient Noise Sensor",
+     "Speech Intelligibility (STI)",
+     "Background Music (BGM)"
+    ],
+    "common_mistakes": [
+     "Confusing masking with noise cancellation; masking adds engineered sound, it does not remove or cancel sound.",
+     "Setting the masking level too high (above roughly 48 dBA), which becomes annoying and can undermine the comfort it is meant to provide.",
+     "Expecting masking to make speech inaudible rather than unintelligible; the goal is loss of intelligibility, not silence.",
+     "Uneven emitter tuning or coverage that leaves hot spots where speech is still intelligible."
+    ],
+    "scenario_contexts": [
+     "An open-plan office keeping adjacent-workstation conversations from being understood.",
+     "A medical clinic meeting confidentiality goals at reception and exam rooms.",
+     "A bank or HR office protecting private financial and personnel discussions.",
+     "A secure facility requiring confidential speech-privacy levels."
+    ]
+   },
+   "sources": [
+    "ASTM E1130, Standard Test Method for Objective Measurement of Speech Privacy in Open Plan Spaces Using Articulation Index (referenced via Lone Star Acoustics Sound Masking Reference Guide)",
+    "Lencore, What is Speech Privacy and Why is it Important? (lencore.com)",
+    "Cambridge Sound Management, Sound Masking Studies and References (cambridgesound.com)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

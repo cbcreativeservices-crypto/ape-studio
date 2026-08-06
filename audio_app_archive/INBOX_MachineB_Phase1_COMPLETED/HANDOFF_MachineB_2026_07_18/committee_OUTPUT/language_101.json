@@ -1,0 +1,16 @@
+{
+ "expert": "Language/Communications",
+ "group": 101,
+ "reviews": [
+  {"id": "d3aa758e-1bea-44db-b216-80c00e03e260", "term": "Building a mix", "verdict": "OK", "suggestions": []},
+  {"id": "1411d066-1fa4-43d2-8e70-28730720de77", "term": "Click distribution", "verdict": "OK", "suggestions": []},
+  {"id": "ae03a732-78a5-45af-a2e4-ae0e21a2a01d", "term": "Cue-to-cue", "verdict": "OK", "suggestions": []},
+  {"id": "59bd9da7-bbdf-41ba-95df-ac22c0f29a84", "term": "Festival mix", "verdict": "OK", "suggestions": []},
+  {"id": "3e122f36-9707-4c3d-a627-70adbbe92e48", "term": "House EQ", "verdict": "OK", "suggestions": []},
+  {"id": "4d2b975c-28c3-4915-9ce8-24bf323a1115", "term": "One-mix (festival one-off)", "verdict": "OK", "suggestions": []},
+  {"id": "4c57082f-a67c-4a30-b59c-d430855b26b3", "term": "Ringing out the monitors", "verdict": "OK", "suggestions": []},
+  {"id": "a88e9231-bd39-4b78-b6e3-e78047efdd22", "term": "Ringing out the room", "verdict": "OK", "suggestions": []},
+  {"id": "d29b20db-374a-47a4-a7f3-f325e30e062c", "term": "System tuning (PA tuning)", "verdict": "OK", "suggestions": []},
+  {"id": "5f2dd7e1-71e0-4ed2-9e28-e96ca046c512", "term": "Top of show", "verdict": "OK", "suggestions": []}
+ ]
+}

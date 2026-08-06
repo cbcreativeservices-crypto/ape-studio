@@ -1,0 +1,56 @@
+{
+ "batch": 303,
+ "topic": "Hearing Anatomy & Function",
+ "terms": [
+  {
+   "id": "512aa3b4-5e40-4bf8-bdfa-3f347c70a86e",
+   "term": "Spatial hearing research",
+   "topic": "Hearing Anatomy & Function",
+   "seq": 1410,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "19481162-a1e6-4b63-86e8-14d4a00e9cdd",
+   "term": "Temporal masking analysis",
+   "topic": "Hearing Anatomy & Function",
+   "seq": 1410,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

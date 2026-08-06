@@ -1,0 +1,159 @@
+{
+ "batch": 374,
+ "topic": "Winds, Brass & Organ",
+ "authored": [
+  {
+   "id": "6c7957f7-014b-4cb6-a552-7eb6e8fc47c5",
+   "term": "Organ blower noise",
+   "fields": {
+    "definition": "Low-frequency mechanical and aerodynamic sound produced by the electric blower (a rotary or centrifugal fan) that supplies pressurized wind to a pipe organ. It typically appears as a steady rumble, hum, or whir that can transmit through the wind system and building structure into the listening or recording space.",
+    "plain_english": "The steady hum or rumble made by the fan that pushes air into a pipe organ. It sounds like the low whir of a furnace blower running in another room.",
+    "purpose_function": "The blower exists to feed steady wind to the pipes, so its noise is an unwanted by-product that organ builders and recordists work to keep out of the music.",
+    "practical_application": "When recording an organ, a technician locates the blower (often in a separate chamber or basement), checks whether its rumble reaches the mics, and uses distance, isolation, or high-pass filtering to reduce it.",
+    "category": "Organ noise",
+    "related_terms": ["Organ wind noise", "Pipe hiss", "Wind supply", "Windchest", "Low-frequency rumble", "High-pass filter"],
+    "common_mistakes": ["Assuming all low rumble on an organ track is room noise rather than the blower itself.", "Placing mics near the blower chamber or wind trunk, capturing its rumble along with the pipes.", "Cutting blower rumble with a high-pass filter set so high it also thins out the pedal (low bass) pipes."],
+    "scenario_contexts": ["Recording a church pipe organ where basement blower rumble leaks up into the room.", "A quiet solo passage where the blower whir becomes audible between phrases.", "Tracing a low hum on an organ stem to the blower rather than to electrical hum."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (Springer) - pipe organ wind supply", "Audsley, The Art of Organ-Building - blower and wind system", "Sound on Sound, recording the pipe organ"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4b7f75b2-0894-4224-96f6-a339ae8d3d55",
+   "term": "Organ chiff",
+   "fields": {
+    "definition": "A brief, noisy transient of higher partials heard at the onset (speech) of a flue organ pipe before its steady tone establishes, giving a percussive \"ch\" or spitting attack. Its strength depends on voicing and is prominent on lightly nicked or unnicked pipes and in many flute and principal stops.",
+    "plain_english": "A short, breathy \"ch\" burst at the very start of an organ note before the clear tone settles in. It is like the little puff of air you hear when a flute player first tongues a note.",
+    "purpose_function": "Chiff marks the attack of a pipe's speech and lends articulation and clarity to each note, so voicers deliberately keep, reduce, or add it to control how crisply a stop speaks.",
+    "practical_application": "A voicer judges chiff by ear on note onset and adjusts nicking, windway, and languid position to tame excess chiff, while a recordist places mics to capture a natural rather than exaggerated attack.",
+    "category": "Organ articulation",
+    "related_terms": ["Flue pipe", "Pipe speech", "Nicking", "Attack transient", "Voicing", "Languid"],
+    "common_mistakes": ["Confusing intentional voiced chiff with a speech fault or pipe defect.", "Close-miking flue pipes so tightly that the chiff is exaggerated and sounds unnatural.", "Assuming chiff is always a flaw when it is often a deliberate articulation of the stop."],
+    "scenario_contexts": ["Recording a Baroque-style organ whose flute stops chiff strongly on each note.", "A voicer adjusting nicking to reduce harsh chiff on a newly made rank.", "Editing an organ track where prominent chiff makes fast passages sound articulate."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (Springer) - organ flue-pipe attack transients", "Audsley, The Art of Organ-Building - voicing, nicking and pipe speech", "Grove Dictionary of Music, 'Organ' (pipe speech and voicing)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fb081138-8e33-4e0d-8e63-f0cbd0e6b45e",
+   "term": "Organ wind noise",
+   "fields": {
+    "definition": "Broadband rushing or hissing sound produced by air moving through an organ's wind system - trunks, windchests, pallets, and pipe feet - as distinct from the intended pipe tone. It can arise from leaks, high wind pressure, restricted passages, or the air jet at a flue pipe's mouth.",
+    "plain_english": "The rushing, airy sound of wind moving through an organ's pipes and air paths, separate from the musical note. It is like the \"whoosh\" you hear when you blow across a bottle before a clear tone forms.",
+    "purpose_function": "Some air noise is an unavoidable side effect of blowing pipes with wind, so knowing what is normal lets builders and recordists tell healthy speech from a leak or excess turbulence.",
+    "practical_application": "A technician listens for wind noise rising above normal, which can signal a leak or a regulation problem, and positions mics to keep captured hiss low on quiet passages.",
+    "category": "Organ noise",
+    "related_terms": ["Organ blower noise", "Pipe hiss", "Windchest", "Wind pressure", "Flue pipe", "Pallet"],
+    "common_mistakes": ["Treating all wind noise as a fault when a small amount is natural to pipe speech.", "Ignoring a rise in wind noise that actually signals an air leak in a chest or trunk.", "Boosting high frequencies in the mix and exaggerating the organ's wind hiss."],
+    "scenario_contexts": ["A leaking pallet or gasket adding audible hiss under sustained chords.", "Recording a soft registration where wind noise competes with the quiet pipes.", "Servicing an organ and tracing excess wind noise to over-high wind pressure."]
+   },
+   "sources": ["Audsley, The Art of Organ-Building - wind system, leaks and regulation", "Fletcher & Rossing, The Physics of Musical Instruments (Springer) - air jet and edge-tone noise", "Grove Dictionary of Music, 'Organ' (wind supply)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "069613e9-69a7-4942-b92e-35fd4ea01d9d",
+   "term": "Overblow/overdraw (harmonica)",
+   "fields": {
+    "definition": "Extended diatonic-harmonica techniques in which precise embouchure and breath make the normally silent \"opening\" reed of a cell sound in place of the closing reed, producing a pitch roughly a semitone above that reed's normal note. Overblow uses the blow reed on the exhale; overdraw uses the draw reed on the inhale, together filling in notes missing from the standard diatonic layout.",
+    "plain_english": "Special tricks for playing a blues (diatonic) harmonica. You use your breath and mouth shape to make a hidden higher note sound. They let a player reach notes the harmonica does not normally give.",
+    "purpose_function": "Overblows and overdraws exist to complete the chromatic scale on a ten-hole diatonic harmonica, letting players hit notes that would otherwise need a chromatic harmonica or a different key.",
+    "practical_application": "A player chokes the normal reed and coaxes the opposite reed to sound, usually on a harmonica whose reed gaps are set up for it, then bends the initially flat pitch up to true.",
+    "category": "Extended technique",
+    "related_terms": ["Bending", "Free reed", "Diatonic harmonica", "Reed plate", "Embouchure", "Chromatic scale"],
+    "common_mistakes": ["Confusing overblowing with note bending; they use different reeds and a different mechanism.", "Expecting overblows to speak cleanly on a stock harmonica without adjusting the reed gaps.", "UNSAFE: Blowing very hard to force an overblow, which can overstress and break reeds."],
+    "scenario_contexts": ["A blues player using overblows to play a full chromatic melody on one diatonic harp.", "Setting reed gaps on a harmonica so overblows and overdraws speak reliably.", "A studio session where a harmonica part needs a note reachable only by overdraw."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (Springer) - free reeds, opening vs closing reed behavior", "Cottingham, acoustics of free-reed instruments (Acoustical Society of America)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9ad92a1c-e5a7-4c35-9561-130a7a91aba7",
+   "term": "Overtone/throat singing",
+   "fields": {
+    "definition": "A family of vocal techniques in which a singer sustains a low fundamental drone and shapes the vocal tract to strengthen one upper harmonic sharply enough that it is heard as a separate whistling melody note. Tuvan khoomei and related styles do this by tuning the tract resonances (formants) to isolate successive partials of the voice.",
+    "plain_english": "A way of singing that makes two notes at once: a low steady tone and a clear high whistle above it. The singer shapes the mouth and throat to pick out one high note from the voice's natural overtones.",
+    "purpose_function": "The technique turns the voice's natural harmonics into an audible melody, a core musical practice in Central Asian and other traditions and a subject of voice-acoustics research.",
+    "practical_application": "A recordist captures both the drone and the fragile overtone by choosing a mic and placement that preserve high-frequency detail, since the melody sits in a narrow, easily masked upper band.",
+    "category": "Vocal technique",
+    "related_terms": ["Formant", "Harmonic series", "Fundamental frequency", "Vocal tract", "Drone", "Partial"],
+    "common_mistakes": ["Thinking the singer makes two separate pitches at the vocal cords rather than reinforcing one existing harmonic.", "Rolling off the highs in the mix and burying the whistling overtone melody.", "Assuming any mic captures the overtone equally; a dull or distant mic can lose it."],
+    "scenario_contexts": ["Recording a Tuvan khoomei performance where the overtone melody must stay clearly audible.", "A voice-acoustics study measuring formant tuning during overtone singing.", "Mixing a world-music track so the reinforced harmonic sits above the drone."]
+   },
+   "sources": ["Bloothooft et al., 'Acoustics and perception of overtone singing', Journal of the Acoustical Society of America (1992)", "Fletcher & Rossing, The Physics of Musical Instruments (Springer) - voice, formants", "Grove Dictionary of Music, 'Khoomii / overtone singing'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "517d44f7-4d89-445f-a21a-755a703df952",
+   "term": "Pad noise",
+   "fields": {
+    "definition": "The mechanical clicking, thumping, or slapping sound made by a woodwind instrument's key pads seating on or lifting off their tone holes, independent of the musical tone. It is most audible in close-miked recordings of flutes, clarinets, saxophones, and similar keyed instruments.",
+    "plain_english": "The soft clicks and thumps a wind instrument's keys make as they open and close over the holes. It is like hearing the keys of a flute clack while the note plays.",
+    "purpose_function": "Pad noise is a by-product of the key mechanism sealing tone holes, and recognizing it helps a technician decide when it is natural detail and when it distracts from the tone.",
+    "practical_application": "A recordist reduces distracting pad noise by moving the mic off the key work (toward the bell or a little farther away) and may edit or gently reduce clicks in quiet passages.",
+    "category": "Mechanical noise",
+    "related_terms": ["Tone hole", "Key pad", "Close miking", "Woodwind", "Transient", "Spot mic"],
+    "common_mistakes": ["Placing a spot mic right over the keys and capturing loud pad clicks.", "Trying to remove every click and stripping away natural, expected instrument detail.", "Blaming pad noise on the mic when a worn or loose pad is the real cause."],
+    "scenario_contexts": ["Close-miking a flute where finger and pad clicks stand out in soft passages.", "A saxophone overdub where key noise sits too high against the tone.", "Servicing a clarinet whose worn pads slap loudly on closing."]
+   },
+   "sources": ["Baines, Woodwind Instruments and Their History - key and pad mechanism, tone holes", "Fletcher & Rossing, The Physics of Musical Instruments (Springer) - woodwind tone holes and keys", "Sound on Sound, recording woodwind instruments (key noise)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "451840a7-9d8a-488f-b80d-ad983d602a2a",
+   "term": "Pan-flute chiff",
+   "fields": {
+    "definition": "The breathy attack transient heard at the onset of a pan-flute (panpipe) note: a brief burst of air-jet noise as the edge tone starts, before the pipe's tone stabilizes. It comes from the player's breath striking the pipe's rim, and its strength varies with blowing angle and articulation.",
+    "plain_english": "The airy \"puff\" you hear at the start of a pan-flute note before the clear tone comes in. It is the sound of breath hitting the pipe's edge as the note begins.",
+    "purpose_function": "The chiff is a natural part of how an edge-blown pipe starts to speak, so players and recordists treat it as expressive attack rather than a fault.",
+    "practical_application": "A recordist positions the mic to catch a natural amount of breath attack without exaggerating it, since a very close mic lets the chiff and breath noise dominate.",
+    "category": "Attack transient",
+    "related_terms": ["Edge tone", "Attack transient", "Breath noise", "Panpipe", "Air jet", "Organ chiff"],
+    "common_mistakes": ["Miking the pan flute so closely that breath chiff overwhelms the tone.", "Treating the natural breath attack as a defect to be fully removed.", "Confusing player breath noise with mechanical or wind-system noise."],
+    "scenario_contexts": ["Close-recording a panpipe solo where each note starts with an airy chiff.", "Balancing breath attack against tone in a folk-ensemble mix.", "A player adjusting blowing angle to control how much chiff each note has."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (Springer) - air-jet/edge-tone instruments, attack transients", "Baines, Woodwind Instruments and Their History - flutes and edge-blown pipes"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7d9d74a5-9318-4ac8-b2c1-522a727b6cdc",
+   "term": "Partial popping",
+   "fields": {
+    "definition": "On a brass (lip-reed) instrument, the unintended sounding of a neighboring partial of the harmonic series - the note momentarily \"pops\" to the harmonic above or below the intended one because the lips lock onto the wrong resonance. It produces a cracked or split note, most common in the upper register where partials sit close together.",
+    "plain_english": "When a trumpet or horn player accidentally hits the wrong note in the natural series, so the note jumps or cracks. It happens because the nearby notes are easy to slip onto, especially up high.",
+    "purpose_function": "Understanding partial popping helps players and techs know why brass notes crack and how lip tension and air support keep the intended harmonic locked in.",
+    "practical_application": "A technician or player traces cracked notes to lip setup, air support, or mouthpiece and tuning issues rather than assuming the instrument is faulty.",
+    "category": "Brass technique",
+    "related_terms": ["Harmonic series", "Partial", "Embouchure", "Lip reed", "Cracked note", "Register"],
+    "common_mistakes": ["Blaming the instrument for popped partials that come from embouchure or air support.", "Expecting clean upper-register notes without enough breath support.", "Confusing a popped partial with a valve or slide error."],
+    "scenario_contexts": ["A trumpet player cracking a high note as it pops to the next partial.", "A horn section where closely spaced partials make entrances risky.", "Reviewing a brass take and hearing a note split to a neighboring harmonic."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (Springer) - brass instruments, playing the harmonic series and partials", "Baines, Brass Instruments: Their History and Development"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ed37c62f-f77e-4595-9a33-35799e8b830a",
+   "term": "Pipe hiss",
+   "fields": {
+    "definition": "A steady, broadband high-frequency hiss radiated by an organ flue pipe, produced by turbulent air where the wind jet crosses the pipe's mouth and upper lip, accompanying its tone. Excess hiss can indicate over-high wind pressure, a maladjusted jet, or voicing that emphasizes air noise over harmonic tone.",
+    "plain_english": "The airy, hissing sound that comes from an organ pipe along with its note, made by wind rushing across the pipe's mouth. It is like the breathy hiss you hear when blowing hard across a bottle top.",
+    "purpose_function": "A little jet hiss is built into how a flue pipe makes sound, so judging it helps voicers and recordists tell healthy speech from noisy, poorly regulated pipes.",
+    "practical_application": "A voicer adjusts wind pressure and the pipe's mouth (cut-up and jet) to balance tone against hiss, while a recordist places mics so as not to over-emphasize pipe hiss on soft stops.",
+    "category": "Organ noise",
+    "related_terms": ["Flue pipe", "Organ wind noise", "Air jet", "Cut-up", "Wind pressure", "Voicing"],
+    "common_mistakes": ["Treating all pipe hiss as a fault when some jet noise is natural to flue speech.", "Raising wind pressure for more volume and adding harsh hiss.", "Boosting treble in the mix and exaggerating pipe hiss on quiet passages."],
+    "scenario_contexts": ["A softly voiced flute stop whose jet hiss is audible up close.", "A voicer reducing hiss by refining the cut-up and wind pressure.", "Recording a quiet registration where pipe hiss competes with the tone."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (Springer) - flue-pipe air jet, edge tone and mouth", "Audsley, The Art of Organ-Building - voicing, cut-up and wind pressure", "Grove Dictionary of Music, 'Organ' (flue-pipe voicing)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

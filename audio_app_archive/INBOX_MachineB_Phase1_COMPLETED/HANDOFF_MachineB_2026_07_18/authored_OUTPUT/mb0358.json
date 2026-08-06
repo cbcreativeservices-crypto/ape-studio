@@ -1,0 +1,321 @@
+{
+  "batch": 358,
+  "topic": "Drums & Percussion",
+  "authored": [
+    {
+      "id": "9dde47a2-4644-4722-bef4-c19260e205eb",
+      "term": "Cabasa rasp",
+      "fields": {
+        "definition": "The dry, continuous rasping tone produced by the modern cabasa (afuché-cabasa), a shaker idiophone in which loops of steel ball-chain are wrapped around a ridged metal or wooden cylinder fitted with a handle. Holding the beads in one hand and twisting the cylinder with the other drags the chain over the ridges, generating the instrument's characteristic sustained, sizzling rasp.",
+        "plain_english": "A cabasa is a hand percussion instrument with metal beads wrapped around a ridged cylinder. The rasp is the dry, scratchy rattle you hear when you twist those beads against the metal. It sounds a bit like shaking gravel in a can.",
+        "purpose_function": "The rasp gives the cabasa its signature sizzling, high-frequency texture, adding sustained rhythmic motion that fills the space between accents in a groove.",
+        "practical_application": "A percussionist produces the rasp by rotating the beaded cylinder back and forth; an engineer captures it with a small-diaphragm condenser and often high-passes the low end, since most of its energy sits in the high frequencies.",
+        "category": "Percussion technique",
+        "related_terms": [
+          "Cabasa scrape",
+          "Shaker",
+          "Idiophone",
+          "Güiro",
+          "Afoxé",
+          "Sizzle"
+        ],
+        "common_mistakes": [
+          "Twisting the cylinder too aggressively, which strains the wrist and can loosen or wear out the beaded chain.",
+          "Confusing the modern cabasa with the traditional gourd afoxé; the cabasa uses a steel ball-chain on a metal or wood cylinder, not beads strung over a gourd.",
+          "Gripping the beads too loosely, so the rasp turns weak and uneven instead of a full, even sizzle."
+        ],
+        "scenario_contexts": [
+          "Adding a steady sixteenth-note rasp over a Latin or pop groove.",
+          "Recording a cabasa rasp with a condenser mic for a percussion overdub.",
+          "Layering the rasp under a chorus to add rhythmic energy without adding pitch."
+        ]
+      },
+      "sources": [
+        "Grove/New Grove Dictionary of Musical Instruments (Oxford) — cabasa / afoxé",
+        "James Blades, Percussion Instruments and Their History (Faber)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "403f69c1-6c7c-4ac2-8ebf-18a32478575a",
+      "term": "Cabasa scrape",
+      "fields": {
+        "definition": "A stroke on the cabasa in which the steel ball-chain is dragged in a single sweeping direction across the ridged cylinder, rather than twisted back and forth, producing a short scraping articulation. It is used as an accent or transition within the cabasa's continuous rasping patterns.",
+        "plain_english": "This is the sound made by dragging the cabasa's metal beads across its ridged cylinder. You get a short, scratchy sweep, like running a stick along a fence. Players use it to add a swishy accent to a groove.",
+        "purpose_function": "The scrape provides a distinct swept accent or fill that contrasts with the cabasa's steady rasp, marking transitions or adding expression to a percussion part.",
+        "practical_application": "A player executes a scrape by pulling the beads along the cylinder in one direction on a chosen beat; in a mix it is treated like the rasp, sitting in the high frequencies and often panned for width.",
+        "category": "Percussion technique",
+        "related_terms": [
+          "Cabasa rasp",
+          "Güiro scrape",
+          "Shaker",
+          "Idiophone",
+          "Accent",
+          "Afoxé"
+        ],
+        "common_mistakes": [
+          "Scraping so hard the chain skips or the handle twists, giving an uneven, noisy sweep.",
+          "Using the scrape continuously so it blurs into the steady rasp and loses its value as an accent.",
+          "Assuming the scrape is a separate instrument; it is simply a different way of moving the same cabasa beads."
+        ],
+        "scenario_contexts": [
+          "Marking the end of a phrase with a single cabasa scrape.",
+          "Adding swept accents to a busy percussion arrangement.",
+          "Overdubbing occasional scrapes to break up a steady cabasa rasp."
+        ]
+      },
+      "sources": [
+        "Grove/New Grove Dictionary of Musical Instruments (Oxford) — cabasa / afoxé",
+        "James Blades, Percussion Instruments and Their History (Faber)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "9aacb631-6057-4eda-b5d5-75fab5f1a011",
+      "term": "Cajón bass",
+      "fields": {
+        "definition": "The low-pitched, resonant tone of a cajón, produced by striking the centre of the front playing plate (tapa) with the flat of the hand. This central region flexes most freely and drives the enclosed air of the box, giving a deep note analogous to a bass or kick drum.",
+        "plain_english": "A cajón is a wooden box drum you sit on and hit with your hands. The bass is the deep, low boom you get by hitting the middle of the front face. It works like the kick drum of the box.",
+        "purpose_function": "The bass tone supplies the low-end foundation of a cajón groove, working like the kick drum of a kit so a single player can imply a full rhythm section.",
+        "practical_application": "A player strikes the tapa's centre for bass notes and the top edges for higher tones; when miking, an engineer often places a mic at the rear sound hole or inside the box to reinforce the low bass.",
+        "category": "Percussion tone",
+        "related_terms": [
+          "Cajón front plate",
+          "Cajón snare",
+          "Tapa",
+          "Kick drum",
+          "Sound hole",
+          "Bass tone"
+        ],
+        "common_mistakes": [
+          "Hitting the centre with fingertips instead of the flat palm, which thins the bass and adds unwanted slap.",
+          "Striking too high on the plate for bass notes, so the tone loses depth.",
+          "Over-tightening the internal snares, which masks the pure bass tone with buzz."
+        ],
+        "scenario_contexts": [
+          "Playing the down-beat bass tone in an acoustic singer-songwriter set.",
+          "Miking a cajón's rear port to capture more bass for a live show.",
+          "Layering cajón bass with a bass guitar in a stripped-back arrangement."
+        ]
+      },
+      "sources": [
+        "Grove/New Grove Dictionary of Musical Instruments (Oxford) — cajón",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — percussion recording"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "2e499604-095f-4f57-97a0-78ba6bb1ac99",
+      "term": "Cajón front plate",
+      "fields": {
+        "definition": "The thin, resonant wooden sheet forming the front face of a cajón, also called the tapa, which the player strikes with the hands. Usually thin plywood, it is commonly screwed firmly at the top while the lower corners are left free to flex, giving brighter, snappier tones near the edges and deeper bass toward the centre.",
+        "plain_english": "The front plate is the thin wooden sheet on the face of a cajón that you strike. It is often called the tapa. Where and how hard you hit it changes the sound from a deep boom to a sharp snap.",
+        "purpose_function": "The front plate is the cajón's playing surface and main sound source; its flexibility and where it is struck set the whole range of bass and slap tones the instrument can make.",
+        "practical_application": "A player tunes response by adjusting the top screws, tightening for a crisper attack or loosening the corners for more slap; a technician replacing a cracked tapa matches wood type and thickness to preserve the tone.",
+        "category": "Instrument part",
+        "related_terms": [
+          "Cajón bass",
+          "Cajón snare",
+          "Tapa",
+          "Soundboard",
+          "Resonance",
+          "Plywood"
+        ],
+        "common_mistakes": [
+          "Over-tightening every screw on the tapa, which kills the corner slap and flattens the tone.",
+          "Confusing the front plate (tapa) with the whole box; only the front face is the struck playing surface.",
+          "Replacing a broken tapa with thick, stiff wood that dulls the bass and slap response."
+        ],
+        "scenario_contexts": [
+          "Adjusting the top screws of the tapa to fine-tune slap response before a gig.",
+          "Replacing a cracked cajón front plate on the workbench.",
+          "Explaining to a student why hitting different spots on the tapa changes the tone."
+        ]
+      },
+      "sources": [
+        "Grove/New Grove Dictionary of Musical Instruments (Oxford) — cajón",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — percussion instruments"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "09bed24b-3ebe-4bf4-9f65-bba9d25ad868",
+      "term": "Cajón snare",
+      "fields": {
+        "definition": "The buzzing, snare-like effect built into most modern flamenco-style cajóns, created by snare wires or tensioned guitar strings mounted against the inside of the front plate. When the tapa is struck, especially near the top edge, the wires or strings vibrate against it, adding a bright buzz reminiscent of a snare drum.",
+        "plain_english": "This is the buzzy, rattly sound built into many cajóns. Snare wires or guitar strings sit just behind the front plate and rattle when you hit it. It makes the box sound a bit like a real snare drum.",
+        "purpose_function": "The internal snare lets a single cajón imitate both the kick and snare of a drum kit, giving the crisp backbeat crack that defines the flamenco cajón's sound.",
+        "practical_application": "Many cajóns include a lever or adjustable strings to raise or lower the snare buzz; a player dials in more buzz for pop or less for a cleaner box tone, and can partly mute the strings for a drier sound.",
+        "category": "Percussion tone",
+        "related_terms": [
+          "Cajón bass",
+          "Cajón front plate",
+          "Snare wires",
+          "Tapa",
+          "Buzz",
+          "Snare drum"
+        ],
+        "common_mistakes": [
+          "Blaming a rattling cajón on a fault when the buzz is the intended snare effect.",
+          "Leaving snare strings so loose they rattle on every bass note and muddy the low tones.",
+          "Assuming all cajóns have snares; traditional Peruvian cajóns have no internal wires or strings."
+        ],
+        "scenario_contexts": [
+          "Adjusting the snare strings for a tighter backbeat crack in a pop set.",
+          "Choosing between a snare cajón and a plain Peruvian cajón for a recording.",
+          "Muting the internal snares for a drier, more traditional cajón tone."
+        ]
+      },
+      "sources": [
+        "Grove/New Grove Dictionary of Musical Instruments (Oxford) — cajón",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — percussion recording"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "a38d1c6d-2907-4973-b543-d5a5c869d6e7",
+      "term": "Chapu (mridangam)",
+      "fields": {
+        "definition": "A slap stroke on the mridangam, the double-headed South Indian barrel drum, played with the hand on the right (valanthalai) treble head. Common forms include the ara chapu, a full open slap of the palm and fingers, and the muru (maru) chapu, which damps the head with the little finger to bring out a ringing harmonic; the stroke is represented in Carnatic drum syllables (solkattu) such as \"cha\".",
+        "plain_english": "The mridangam is a two-headed drum from South India. A chapu is a slapping stroke played with the hand on the higher-pitched right head. It gives a sharp, ringing slap that helps drive the rhythm.",
+        "purpose_function": "The chapu adds a sharp, accented slap to a mridangam phrase, giving rhythmic drive and a bright ringing accent that contrasts with the drum's clear tuned tones.",
+        "practical_application": "A mridangam player uses chapu strokes as accents within rhythmic phrases and cadences; a recording engineer close-mics the treble head to capture the crisp attack and ring of these slaps.",
+        "category": "Drum stroke",
+        "related_terms": [
+          "Mridangam",
+          "Valanthalai",
+          "Solkattu",
+          "Konnakol",
+          "Slap stroke",
+          "Tabla bol"
+        ],
+        "common_mistakes": [
+          "Thinking chapu is played on the left bass head (thoppi); the slap is struck on the right treble head.",
+          "Playing it with a stiff, flat hand that chokes the head and loses the ringing harmonic.",
+          "Confusing the different chapu forms; the open ara chapu and the damped muru chapu produce distinct tones."
+        ],
+        "scenario_contexts": [
+          "Accenting a Carnatic rhythmic phrase with sharp chapu slaps.",
+          "Learning the solkattu syllables that correspond to chapu strokes.",
+          "Close-miking the treble head of a mridangam to record its slap strokes."
+        ]
+      },
+      "sources": [
+        "Grove/New Grove Dictionary of Musical Instruments (Oxford) — mridangam (D. Nelson)",
+        "David P. Nelson, Solkattu Manual (Wesleyan University Press)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "772afcf9-0a95-46e9-9622-d020052bb99b",
+      "term": "Chime resonance",
+      "fields": {
+        "definition": "The sustained ringing vibration of chimes, such as orchestral tubular bells, bar chimes (mark tree), or tuned wind chimes, that continues after the instrument is struck. The long decay arises from the low internal damping of the metal tubes or bars, which vibrate in a set of partials that give chimes their shimmering, bell-like sustain.",
+        "plain_english": "Chimes are metal tubes or bars that ring when you tap them. Chime resonance is that long, shimmering ring that keeps sounding after the hit. It is like the way a bell keeps humming once you strike it.",
+        "purpose_function": "This long resonance gives chimes their shimmering, sustaining character, letting a single strike ring out as a wash of tone used for colour, accents, and transitions.",
+        "practical_application": "A percussionist damps tubular bells with a foot pedal or hand to control how long they ring, while an engineer captures the full decay with condenser mics and watches for the long sustain overlapping other parts.",
+        "category": "Acoustic property",
+        "related_terms": [
+          "Tubular bells",
+          "Mark tree",
+          "Sustain",
+          "Decay",
+          "Partials",
+          "Idiophone"
+        ],
+        "common_mistakes": [
+          "Assuming chimes ring at one clean pitch; their many inharmonic partials give a complex, bell-like tone rather than a single note.",
+          "Cutting off the natural decay too early with heavy damping and losing the shimmering tail.",
+          "Miking chimes too close, so the strike is loud but the blooming resonance is under-captured."
+        ],
+        "scenario_contexts": [
+          "Letting orchestral tubular bells ring to add a bright accent in a film score.",
+          "Recording a mark tree sweep and preserving its long shimmering decay.",
+          "Damping chimes with a pedal so the resonance does not clash with the next chord."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — tubular bells / chimes",
+        "James Blades, Percussion Instruments and Their History (Faber)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "2aa7e728-5984-4bfd-8459-8a7e93d875e4",
+      "term": "Choked tom",
+      "fields": {
+        "definition": "A tom-tom that is muted immediately after it is struck, typically by pressing a hand or fingers onto the drumhead, so its natural resonance is cut short and it produces a brief, staccato dead note. The term can also describe a tom heavily over-damped with muffling so that it lacks sustain.",
+        "plain_english": "A tom is one of the round drums on a drum kit. A choked tom is one you mute right after hitting it, so the sound stops fast. Instead of ringing out, it gives a short, dead thud.",
+        "purpose_function": "Choking a tom shortens its ring for rhythmic, staccato effects or to keep a resonant drum from clashing with the rest of the kit, giving the player control over sustain.",
+        "practical_application": "A drummer chokes a tom by striking it and quickly laying a hand on the head; in the studio an engineer may add muffling or gating to get a similarly short, controlled tom sound.",
+        "category": "Percussion technique",
+        "related_terms": [
+          "Tom-tom",
+          "Damping",
+          "Muffling",
+          "Choke (cymbal)",
+          "Sustain",
+          "Noise gate"
+        ],
+        "common_mistakes": [
+          "Confusing choking (muting after the hit) with tuning the tom lower; choking shortens sustain, it does not change pitch.",
+          "Over-muffling a tom permanently when only an occasional choked note was wanted.",
+          "Applying a heavy noise gate to fake a choke and accidentally chopping off the note's attack."
+        ],
+        "scenario_contexts": [
+          "Choking a floor tom by hand for a short, punchy accent.",
+          "Adding tape or a muffling ring to get a controlled, choked tom tone.",
+          "Gating toms in a mix to tighten an overly long sustain."
+        ]
+      },
+      "sources": [
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — drums / percussion",
+        "Huber & Runstein, Modern Recording Techniques (Focal Press) — miking drums"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "95959cd5-a731-4be7-bfa9-a0650cb80322",
+      "term": "Clave attack",
+      "fields": {
+        "definition": "The sharp, bright transient produced at the instant two claves, short thick hardwood dowels, are struck together. The hard, dense wood combined with a cupped resonating hand gives the strike a fast rise time and a penetrating, high-pitched click that cuts through dense ensembles.",
+        "plain_english": "Claves are two short wooden sticks you strike together. The attack is the sharp, bright click you hear the instant they meet. That crisp tock cuts through even a loud band.",
+        "purpose_function": "The strong, clean attack makes the clave's timeline pattern audible over a full band, letting it act as the rhythmic reference that other parts lock to.",
+        "practical_application": "A player forms a resonating cup with one hand and strikes it with the other clave for maximum tone; an engineer captures the sharp attack with a condenser mic and avoids heavy compression that would dull the transient.",
+        "category": "Percussion tone",
+        "related_terms": [
+          "Claves",
+          "Clave (rhythm)",
+          "Transient",
+          "Attack",
+          "Idiophone",
+          "Woodblock"
+        ],
+        "common_mistakes": [
+          "Holding both claves tightly in solid fists, which damps the resonance and gives a dull, weak attack.",
+          "Confusing the clave attack (the sound's sharp onset) with clave the rhythmic pattern.",
+          "Compressing the claves so hard in a mix that the crisp attack is squashed and lost."
+        ],
+        "scenario_contexts": [
+          "Cutting through a loud salsa band with a bright clave attack.",
+          "Recording claves with a condenser mic to keep the sharp transient.",
+          "Teaching a student to cup one hand so the clave rings instead of clicking dully."
+        ]
+      },
+      "sources": [
+        "Grove/New Grove Dictionary of Musical Instruments (Oxford) — claves",
+        "James Blades, Percussion Instruments and Their History (Faber)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    }
+  ]
+}

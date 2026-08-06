@@ -1,0 +1,159 @@
+{
+ "batch": 362,
+ "topic": "Drums & Percussion",
+ "authored": [
+  {
+   "id": "a31941e0-3a9e-4081-a32c-df843e0b7bbc",
+   "term": "Gong swell",
+   "fields": {
+    "definition": "A dynamic effect in which a tam-tam or gong is rolled with two mallets, building smoothly from near silence to a loud peak and often back down. The player begins with a soft priming stroke so the metal is already vibrating, then increases stroke frequency and force so successive tones merge into one continuously growing sound.",
+    "plain_english": "A gong sound that grows slowly from very soft to very loud. The player taps the gong so it is already humming, then hits it faster and harder so the sound swells like a rising wave.",
+    "purpose_function": "It lets a single indefinite-pitch instrument add a long, dramatic rise or fall in loudness, shaping tension and release without a sharp initial attack.",
+    "practical_application": "A percussionist primes the tam-tam with light strokes, then rolls with soft mallets to grow the swell on cue; live engineers ride the fader and anticipate the peak because a full gong swell is extremely loud.",
+    "category": "Playing Technique",
+    "related_terms": ["Tam-tam", "Roll", "Crescendo", "Soft mallet", "Suspended cymbal roll", "Mallet"],
+    "common_mistakes": ["Striking too hard or in one spot, which chokes the bloom instead of letting the tones merge", "Starting the roll too fast so individual strikes are heard instead of a smooth swell", "UNSAFE: Standing close to a large tam-tam at full swell without hearing protection; peak levels can reach hearing-damaging SPLs"],
+    "scenario_contexts": ["Orchestral or film-score climax where a slow gong crescendo underlines a dramatic moment", "Live sound reinforcement where the engineer must capture and control a wide dynamic swell", "Studio recording of a tam-tam swell for a cinematic riser or transition effect"]
+   },
+   "sources": ["Samuel Adler, The Study of Orchestration (percussion / tam-tam)", "James Blades, Percussion Instruments and Their History", "Vienna Symphonic Library Academy — Tam-tam (technical playing documentation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8f33ea2f-1b50-4881-92ba-5ad2cf84465f",
+   "term": "Gourd buzz (mirliton)",
+   "fields": {
+    "definition": "The buzzing timbre produced by a mirliton — a thin membrane stretched over a small hole in a gourd resonator on instruments such as African xylophones (balafon) and gourd-resonated lamellophones (mbira). When a bar or lamella sounds, the membrane vibrates sympathetically and adds a characteristic rasp or buzz to the tone.",
+    "plain_english": "A raspy buzz added to a note by a thin skin stretched over a hole in a gourd. When the instrument plays, the skin shivers and gives the sound a fuzzy edge, a bit like a kazoo.",
+    "purpose_function": "The mirliton enriches an otherwise plain wooden or metallic tone with extra buzzing overtones, giving the instrument its traditional voice and helping it carry and sustain.",
+    "practical_application": "A player or maker tunes the buzz by choosing the membrane material and hole size; when recording these instruments, engineers place mics to capture the buzz without letting it turn harsh.",
+    "category": "Timbre Effect",
+    "related_terms": ["Mirliton", "Balafon", "Mbira", "Gourd resonator", "Marimba", "Sympathetic resonance"],
+    "common_mistakes": ["Assuming the buzz is a defect to be silenced, when it is a deliberate, traditional feature of the instrument", "Confusing a mirliton buzz with snare buzz or a rattling part that actually needs repair", "Over-tightening or over-damping the membrane so the characteristic buzz is lost"],
+    "scenario_contexts": ["Recording a West African balafon and deciding how much membrane buzz to keep", "Building or restoring a gourd-resonated marimba or mbira and fitting new mirliton membranes", "Live miking of a traditional percussion ensemble where the buzz is part of the intended sound"]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments (mirliton; gourd-resonated xylophones)", "James Blades, Percussion Instruments and Their History", "Curt Sachs, The History of Musical Instruments (mirliton / membrane resonators)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2f59170c-c414-4c05-8d74-c6a69f744e1c",
+   "term": "Gu bass (handpan)",
+   "fields": {
+    "definition": "The low bass tone of a handpan (Hang) associated with the Gu — the circular opening in the bottom shell. The enclosed air cavity behaves as a Helmholtz resonator, so striking near or modulating the Gu port produces a deep bass note below the tuned tone fields on the top shell.",
+    "plain_english": "The deep low note of a handpan that comes from the hole in the bottom. The air inside the shell acts like the air in a bottle you blow across, so the player can shape the bass by covering the hole with a hand.",
+    "purpose_function": "The Gu adds a low foundation and resonant body to the handpan's tuned notes, so one player can sound both bass and melody at the same time.",
+    "practical_application": "Players strike near the bottom port or pulse a hand over it (like an udu) to bring out or bend the bass; recording engineers often add a mic under the Gu to capture this low end.",
+    "category": "Instrument Feature",
+    "related_terms": ["Hang drum", "Handpan", "Helmholtz resonator", "Ding", "Tone field", "Steelpan"],
+    "common_mistakes": ["Thinking the Gu is just a sound hole with no pitch, when it forms a tuned Helmholtz bass resonance", "Blocking the bottom port while holding the instrument, which muffles the bass and shortens sustain", "Striking the thin bottom shell hard with mallets, which can dent or detune the instrument"],
+    "scenario_contexts": ["A solo handpan player using Gu bass pulses to underpin a melody", "Close-miking a handpan top and bottom to capture both the tone field and the Gu bass", "Explaining to a student why cupping the bottom port changes the low-end resonance"]
+   },
+   "sources": ["A. Morrison & T. D. Rossing, 'The extraordinary sound of the Hang', Physics Today 62(3), 2009 (Helmholtz resonance of the bottom cavity)", "The New Grove Dictionary of Musical Instruments (Hang / handpan)", "PANArt Hangbau — technical description of the Hang (Ding, tone circle, Gu)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "59110bae-4738-4ffd-92cd-b0f999571a4c",
+   "term": "Guiro scrape",
+   "fields": {
+    "definition": "The primary playing technique of the guiro: dragging a stick or scraper (pua) across the parallel notches cut into the hollow gourd (or wood/fiberglass) body, producing a rasping, ratchet-like sound. Long strokes give sustained rasps and short strokes give clipped articulations, and the notches may also be tapped for shorter accents.",
+    "plain_english": "The main way to play a guiro: sliding a stick across the ridges cut into a hollow gourd to make a raspy, scratchy sound. Long slides make long rasps and short slides make short clicks, a bit like running a stick along a fence.",
+    "purpose_function": "The scrape gives Latin and orchestral music a dry, rhythmic rasp that marks the beat and adds texture without a definite pitch.",
+    "practical_application": "A percussionist holds the guiro loosely and works long and short scrapes to lock into a clave or dance pattern; engineers mic it close and watch for harsh high-frequency spikes.",
+    "category": "Playing Technique",
+    "related_terms": ["Guiro", "Pua (scraper)", "Idiophone", "Clave", "Cabasa", "Ratchet"],
+    "common_mistakes": ["Scraping every stroke at the same length and force, losing the long/short contrast that shapes the pattern", "Muting the sound holes with the holding hand and choking the instrument's resonance", "Treating the guiro as struck-only and missing the sustained rasp that defines it"],
+    "scenario_contexts": ["Playing a guiro scrape pattern in a salsa or cumbia arrangement", "Orchestral or film percussion needing a Latin-flavored scraping texture", "Overdubbing guiro in the studio and matching the scrape rhythm to the clave"]
+   },
+   "sources": ["Samuel Adler, The Study of Orchestration (Latin percussion / scrapers)", "James Blades, Percussion Instruments and Their History (guiro, scrapers)", "The New Grove Dictionary of Musical Instruments (guiro)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4c40a7fc-c160-41b6-a983-fc271a45a1a2",
+   "term": "Güiro scrape",
+   "fields": {
+    "definition": "The primary playing technique of the güiro: dragging a stick or scraper (pua) across the parallel notches cut into the hollow gourd (or wood/fiberglass) body, producing a rasping, ratchet-like sound. Long strokes give sustained rasps and short strokes give clipped articulations, and the notches may also be tapped for shorter accents.",
+    "plain_english": "The main way to play a güiro: sliding a stick across the ridges cut into a hollow gourd to make a raspy, scratchy sound. Long slides make long rasps and short slides make short clicks, a bit like running a stick along a fence.",
+    "purpose_function": "The scrape gives Latin and orchestral music a dry, rhythmic rasp that marks the beat and adds texture without a definite pitch.",
+    "practical_application": "A percussionist holds the güiro loosely and works long and short scrapes to lock into a clave or dance pattern; engineers mic it close and watch for harsh high-frequency spikes.",
+    "category": "Playing Technique",
+    "related_terms": ["Güiro", "Pua (scraper)", "Idiophone", "Clave", "Cabasa", "Ratchet"],
+    "common_mistakes": ["Scraping every stroke at the same length and force, losing the long/short contrast that shapes the pattern", "Muting the sound holes with the holding hand and choking the instrument's resonance", "Treating the güiro as struck-only and missing the sustained rasp that defines it"],
+    "scenario_contexts": ["Playing a güiro scrape pattern in a salsa or cumbia arrangement", "Orchestral or film percussion needing a Latin-flavored scraping texture", "Overdubbing güiro in the studio and matching the scrape rhythm to the clave"]
+   },
+   "sources": ["Samuel Adler, The Study of Orchestration (Latin percussion / scrapers)", "James Blades, Percussion Instruments and Their History (güiro, scrapers)", "The New Grove Dictionary of Musical Instruments (güiro)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1418b038-3eb8-49e1-a6c7-264283ffe8a5",
+   "term": "Hand-damping (palm mute)",
+   "fields": {
+    "definition": "Muting a drum or other percussion instrument by resting a hand or palm on the vibrating surface to shorten its sustain and tame overtones. On hand drums it produces the muffled or 'mute' stroke; on the drum kit or timpani a hand laid on the head damps the ring and can raise the apparent pitch.",
+    "plain_english": "Quieting a drum by laying a hand or palm on the head so it stops ringing. It works like pressing your hand on a struck bell to cut the sound short and make it drier.",
+    "purpose_function": "Hand-damping controls how long a note rings, so the player can make tight, dry sounds, stop unwanted ring, and add rhythmic shape between open hits.",
+    "practical_application": "A conga or drum-kit player rests fingers or palm on the head to mute individual notes for a tighter groove; engineers rely on this when they want players to control sustain live rather than adding tape.",
+    "category": "Playing Technique",
+    "related_terms": ["Muffling", "Open tone", "Mute stroke", "Sustain", "Palm mute", "Timpani"],
+    "common_mistakes": ["Confusing hand-damping, which is played live and variable, with permanent muffling using tape, gel, or cloth", "Pressing too hard and choking the note completely instead of shaping its decay", "Forgetting that a hand on the head raises apparent pitch, which can throw off tuned drums"],
+    "scenario_contexts": ["A conguero muting strokes to create the muffled tone in a tumbao pattern", "A kit drummer palm-muting the snare or toms for a dry, controlled sound", "A timpanist damping heads by hand to stop the ring between notes"]
+   },
+   "sources": ["James Blades, Percussion Instruments and Their History (damping / muffling)", "Samuel Adler, The Study of Orchestration (percussion damping techniques)", "David Miles Huber & Robert Runstein, Modern Recording Techniques (drum damping / sustain control)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6ff1aae0-94aa-454c-b068-20a704c232b1",
+   "term": "Hang drum",
+   "fields": {
+    "definition": "A handpan — a convex, gong-like steel percussion instrument played with the hands, first made in 2000 by Felix Rohner and Sabina Schärer of PANArt in Bern, Switzerland. It has a central bass note (Ding) surrounded by a ring of tuned tone fields on the top shell and a bottom port (Gu); 'Hang' is PANArt's trademark, while 'handpan' is the generic term for the wider family.",
+    "plain_english": "A steel instrument shaped like two joined woks that you play with your hands. It has a low center note ringed by tuned dents and gives soft, bell-like tones. Hang drum is a common nickname, but the makers say it is not really a drum.",
+    "purpose_function": "It puts melody, harmony, and bass under one player's hands with a warm, sustaining tone, so a single musician can play complete, meditative pieces.",
+    "practical_application": "Players rest it on their lap and strike the tuned fields with fingers and thumbs; engineers close-mic the top and often the Gu and use gentle compression to even out its wide dynamics.",
+    "category": "Instrument",
+    "related_terms": ["Handpan", "Gu bass (handpan)", "Ding", "Steelpan", "Tone field", "Idiophone"],
+    "common_mistakes": ["Calling every handpan a 'Hang'; 'Hang' is one maker's (PANArt) trademarked instrument, while 'handpan' is the general term", "Playing it with drumsticks or hard mallets, which dents and detunes the soft steel", "Storing it in a hot car or damp bag, which can rust or detune the instrument"],
+    "scenario_contexts": ["Recording a solo handpan piece for ambient or meditation music", "Miking a handpan for a live acoustic set", "Advising a student on the difference between a PANArt Hang and a generic handpan"]
+   },
+   "sources": ["A. Morrison & T. D. Rossing, 'The extraordinary sound of the Hang', Physics Today 62(3), 2009", "The New Grove Dictionary of Musical Instruments (Hang / handpan)", "PANArt Hangbau — technical documentation of the Hang (invention date, structure, nomenclature)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1530bda2-3a00-4f6e-8e6f-8263dc5ab6d8",
+   "term": "Hard mallet",
+   "fields": {
+    "definition": "A mallet with a hard head — typically wood, plastic/acrylic, phenolic, or hard rubber — that emphasizes the attack and upper partials, producing a bright, sharp, articulate tone. Hard mallets are used on high, bright instruments such as the xylophone, glockenspiel, and bells, and wherever clear articulation is wanted on marimba or vibraphone.",
+    "plain_english": "A beater with a hard tip that makes a bright, clicky sound. Because the tip does not give, it brings out the attack and the high overtones, like tapping glass instead of a pillow.",
+    "purpose_function": "Hard mallets bring out clarity and cut, so fast, high, or exposed passages speak clearly and project through an ensemble.",
+    "practical_application": "A percussionist matches mallet hardness to the instrument and passage, choosing hard mallets on xylophone or glockenspiel for bright articulation and softer ones when a warmer, rounder tone is needed.",
+    "category": "Mallet / Beater",
+    "related_terms": ["Soft mallet", "Yarn mallet", "Xylophone", "Glockenspiel", "Marimba", "Vibraphone"],
+    "common_mistakes": ["Using hard mallets too forcefully on glockenspiel or bells, which can chip or damage the bars and produce a harsh clang", "Assuming one mallet suits every instrument instead of matching hardness to the instrument and passage", "Confusing 'hard' with 'loud'; mallet hardness changes tone color and attack, not just volume"],
+    "scenario_contexts": ["Choosing hard mallets for a bright xylophone solo that must cut through the band", "Selecting glockenspiel mallets in the studio to control brightness and attack", "A student learning why the same marimba sounds different with hard versus soft mallets"]
+   },
+   "sources": ["Samuel Adler, The Study of Orchestration (mallet selection and hardness)", "James Blades, Percussion Instruments and Their History (keyboard percussion and beaters)", "Vic Firth — technical mallet selection guides (mallet hardness vs. tone / instrument)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4330cbcb-8994-48c4-b523-5d4755349d09",
+   "term": "Heel-toe (manoteo)",
+   "fields": {
+    "definition": "A conga (and bongo) hand technique in which the hand rocks back and forth between the heel (the base of the palm) and the toe (the fingertips), producing a soft, steady stream of low, muffled sounds. It fills the spaces between the louder open and slap tones to maintain a continuous underlying pulse.",
+    "plain_english": "A hand-drum move where you rock your hand like a seesaw, tapping first the base of your palm, then your fingertips. It makes a quiet, steady pulse that fills the gaps between the louder hits and keeps time under the beat.",
+    "purpose_function": "The heel-toe motion keeps a constant flow of soft strokes so the player holds a steady groove and time while saving the loud open tones and slaps for accents.",
+    "practical_application": "A conguero uses the heel-toe rock to fill the subdivisions of a tumbao or marcha; it is felt more than heard, giving the pattern its drive without adding loud notes.",
+    "category": "Playing Technique",
+    "related_terms": ["Conga", "Open tone", "Slap", "Bass tone", "Tumbao", "Bongo"],
+    "common_mistakes": ["Playing the heel and toe too loudly so they compete with the accented open tones instead of sitting underneath them", "Stiffening the wrist instead of letting the hand rock freely, which breaks the smooth flow", "Treating the heel-toe as decoration rather than the timekeeping backbone of the pattern"],
+    "scenario_contexts": ["Holding a tumbao groove on congas in a salsa band", "Teaching a beginner to keep time between open tones and slaps", "Recording congas where the soft heel-toe pulse must be captured without excess low-end rumble"]
+   },
+   "sources": ["Michael Spiro, The Conga Drummer's Guidebook (heel-toe / marcha technique)", "James Blades, Percussion Instruments and Their History (conga hand technique)", "Latin Percussion (LP) — conga technique / instructional technical materials"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 177,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "d2bb0a40-748e-47a7-b263-2d7366ceaf88",
+   "term": "Tape noise floor",
+   "fields": {
+    "definition": "The constant low-level background noise, heard as hiss, produced by an analog magnetic tape recording system when no program signal is present. It arises mainly from the random size and distribution of magnetic particles in the tape coating, plus electronic noise in the record and playback circuitry, and it sets the bottom of the system's usable dynamic range.",
+    "plain_english": "This is the faint hiss you hear from a blank part of a tape, even with no music playing. It comes from tiny magnetic bits in the tape and from the machine's own circuits. Any sound quieter than this hiss gets lost in it.",
+    "purpose_function": "It defines the lowest level a signal can occupy before hiss masks it, so it sets the tape format's dynamic range and how much noise reduction or level optimization a project needs.",
+    "practical_application": "Engineers record as hot as headroom allows and often use noise reduction such as Dolby A, SR, or C to keep quiet passages well above the tape's hiss.",
+    "category": "Analog Tape",
+    "related_terms": ["Tape saturation level", "Tape operating level", "Signal-to-noise ratio", "Dynamic range", "Noise reduction", "Tape bias"],
+    "common_mistakes": ["Confusing the tape noise floor with the noise floor of the console or converters, when the tape's hiss is usually the dominant source in an analog chain", "Assuming a higher operating level always improves signal-to-noise, ignoring the added distortion and lost headroom", "Believing noise reduction removes hiss for free, when a misaligned machine can cause audible mistracking artifacts"],
+    "scenario_contexts": ["Setting record levels on a 2-inch multitrack so quiet instruments sit above the tape hiss", "Deciding whether to engage Dolby SR on a mastering deck for a wide-dynamic-range recording", "Comparing hiss between a new tape stock and an older, worn reel during a transfer"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "944326c1-9e2e-4b27-aeb6-14b2475a934d",
+   "term": "Tape operating level",
+   "fields": {
+    "definition": "The reference magnetic flux level (fluxivity, expressed in nanowebers per metre of track width) to which a tape machine and tape stock are aligned so that a standard reference tone reads 0 VU. Common values such as 185, 250, 320, 355, or 510 nWb/m set how hard the tape is driven and therefore the balance between headroom and noise.",
+    "plain_english": "This is the standard 'zero' loudness a tape machine is set up to record and play back. It is measured against a reference tape so different studios can match each other. A higher setting drives the tape harder, giving less hiss but less room before distortion.",
+    "purpose_function": "It provides a common reference so a recording made on one aligned machine plays back at the correct level on another, and it fixes where the working level sits between the noise floor and tape saturation.",
+    "practical_application": "During alignment a technician plays a calibration tape and adjusts playback and record gains so the reference fluxivity reads 0 VU, choosing an operating level to suit the tape stock and program material.",
+    "category": "Analog Tape",
+    "related_terms": ["Tape saturation level", "Tape noise floor", "Calibration tape", "Fluxivity", "VU meter", "Tape bias"],
+    "common_mistakes": ["Confusing operating level in nWb/m with the electrical +4 dBu line level, which references something different", "Running a high operating level on a tape stock not designed for it, increasing distortion and print-through", "Failing to note the operating level used, making later transfers or alignment inconsistent"],
+    "scenario_contexts": ["Aligning a multitrack recorder to a 250 nWb/m calibration tape before a session", "Choosing an elevated operating level for a modern high-output tape to lower hiss", "Documenting the operating level on the tape box for the mastering engineer"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "AES standards on magnetic tape recording (calibration and reference fluxivity)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bf72a85d-184e-42c6-8599-911c05c3deff",
+   "term": "Tape preservation strategy",
+   "fields": {
+    "definition": "A planned, ongoing approach to protecting magnetic tape recordings and their content, combining controlled storage conditions, careful handling, periodic condition inspection, and timely transfer (migration) of the audio to stable formats before the physical carrier degrades.",
+    "plain_english": "This is a plan for keeping old tapes and their sound safe for the long term. It covers how you store them, how you handle them, and when you copy them to a newer format. The goal is to save the music before the tape wears out.",
+    "purpose_function": "It exists because magnetic tape decays over time, so the strategy aims to slow that decay and to move the content onto fresh media while the original is still playable.",
+    "practical_application": "An archivist sets storage targets, schedules inspections, prioritizes at-risk tapes such as those with sticky-shed, and plans digitization so the audio survives even after the original tape becomes unplayable.",
+    "category": "Tape Preservation",
+    "related_terms": ["Tape shedding inspection", "Tape storage temperature", "Tape storage humidity", "Sticky-shed syndrome", "Tape baking", "Digitization"],
+    "common_mistakes": ["Treating a single digital copy as a finished job instead of keeping checksummed backups and ongoing migration", "Delaying transfer of degrading tapes until they are already unplayable", "Storing tapes in uncontrolled attics or basements where heat and humidity swing widely"],
+    "scenario_contexts": ["Building a plan to digitize a radio station's reel-to-reel archive", "Prioritizing which master tapes to bake and transfer first", "Setting handling and storage rules for a studio's tape library"]
+   },
+   "sources": ["IASA-TC 05, Handling and Storage of Audio and Video Carriers", "ARSC Guide to Audio Preservation (CLIR/Library of Congress)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5c71baf7-9b9b-4e5d-b20e-36d61d5e9f77",
+   "term": "Tape remanence",
+   "fields": {
+    "definition": "The residual magnetic flux density that remains in a tape's magnetic coating after the applied recording (magnetizing) field is removed; it is the retained magnetization that actually stores the recorded signal. The maximum value the coating can retain is its retentivity, a defining property of the magnetic material's hysteresis loop.",
+    "plain_english": "This is the magnetism that stays behind in the tape after it passes the record head. That leftover magnetism is what holds the recorded sound. Without it, the tape could not remember anything once the head's field is gone.",
+    "purpose_function": "Remanence is the physical mechanism by which tape stores audio, and its strength helps set how high a signal, and how good a signal-to-noise ratio, a given tape can hold.",
+    "practical_application": "Engineers rely on remanence when they set bias and level, since higher-output tapes with greater retentivity allow hotter recordings and lower hiss.",
+    "category": "Analog Tape",
+    "related_terms": ["Tape saturation level", "Tape operating level", "Tape bias", "Coercivity", "Fluxivity", "Print-through"],
+    "common_mistakes": ["Confusing remanence with coercivity, when remanence is retained flux and coercivity is the field needed to erase it", "Assuming remanence is unlimited, ignoring that the coating saturates", "Overlooking that print-through is unwanted remanence transferring between adjacent tape layers"],
+    "scenario_contexts": ["Explaining why a recording survives after the record field is removed", "Selecting a high-retentivity tape for a low-noise master", "Diagnosing print-through echo on a tightly wound archival reel"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Camras, Magnetic Recording Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e6be4935-118f-454b-8f9c-106376ea0aed",
+   "term": "Tape rotation schedule",
+   "fields": {
+    "definition": "A planned timetable within a tape preservation program for periodically acting on stored tapes, historically by re-tensioning them with a controlled wind or by cycling working and backup copies, so that pack tension stays even and problems are caught early. Current archival guidance favors minimal handling, so routine rewinding is now applied selectively rather than automatically.",
+    "plain_english": "This is a set schedule for regularly checking and, when needed, re-winding tapes that sit in storage. The idea is to keep the wound reel evenly tensioned and to spot trouble early. Modern advice is to handle tapes as little as possible, so this is done carefully, not just out of habit.",
+    "purpose_function": "It aims to keep stored tapes in even, stable condition and to ensure at-risk reels are inspected on a regular cycle rather than forgotten, while balancing the risk that extra handling itself causes wear.",
+    "practical_application": "An archive logs each reel and sets review intervals; staff inspect or re-tension selected tapes on schedule and cycle backup copies, recording every action so handling stays deliberate and minimal.",
+    "category": "Tape Preservation",
+    "related_terms": ["Tape preservation strategy", "Tape storage temperature", "Tape storage humidity", "Tape shedding inspection", "Print-through", "Library wind"],
+    "common_mistakes": ["Rewinding every tape on a fixed cycle regardless of need, adding handling wear against current guidance", "Leaving tapes stored on an uneven or tails-out pack when a stable wind was intended", "Never inspecting stored tapes at all, so degradation goes unnoticed until playback fails"],
+    "scenario_contexts": ["Planning periodic condition checks for a large master-tape library", "Deciding whether to retension reels that have sat unplayed for decades", "Cycling backup safety copies of critical masters on a set interval"]
+   },
+   "sources": ["IASA-TC 05, Handling and Storage of Audio and Video Carriers", "ARSC Guide to Audio Preservation (CLIR/Library of Congress)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5a9ce781-1613-45ea-a10e-77a03d3d223a",
+   "term": "Tape saturation level",
+   "fields": {
+    "definition": "The recording level at which a tape's magnetic coating approaches magnetic saturation, so that further increases in input produce progressively less increase in remanent flux. Beyond this point the tape compresses transients and adds harmonic distortion, producing the characteristic warmth and soft limiting associated with tape saturation.",
+    "plain_english": "This is the point where the tape can't get much louder no matter how hard you push it. Past this point, peaks get squashed and the sound takes on a warm, slightly gritty edge. Many engineers reach for this effect on purpose.",
+    "purpose_function": "It marks the top of the tape's usable level range, and because saturation is gradual it also provides natural compression and harmonic color that engineers use for tone, not just as a headroom limit.",
+    "practical_application": "An engineer pushes levels toward saturation to add warmth and glue on a mix or drum bus, backing off when the distortion or dulling of high frequencies becomes too strong.",
+    "category": "Analog Tape",
+    "related_terms": ["Tape operating level", "Tape noise floor", "Tape remanence", "Harmonic distortion", "Headroom", "Compression"],
+    "common_mistakes": ["Believing tape saturation has a single hard clipping point rather than a gradual onset", "Overdriving the tape so that high-frequency detail and transients are lost", "Confusing tape saturation with digital clipping, which sounds harsh rather than smooth"],
+    "scenario_contexts": ["Driving a drum bus to tape for punch and glue", "Choosing tape speed and level to control how early saturation sets in", "Emulating tape saturation with a plug-in during in-the-box mastering"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ff1ecd57-9850-4280-a773-5ecb1c87f3d1",
+   "term": "Tape shedding inspection",
+   "fields": {
+    "definition": "The visual and tactile examination of a magnetic tape for signs of binder deterioration, especially oxide and binder shedding caused by hydrolysis (sticky-shed syndrome), carried out before playback to avoid contaminating the transport or damaging an irreplaceable tape.",
+    "plain_english": "This is checking an old tape for crumbling or sticky coating before you play it. A bad tape sheds a gummy powder that can clog the machine or ruin the tape. Spotting this first lets you treat the tape, often by baking it, before transfer.",
+    "purpose_function": "It protects both the tape and the machine by catching degradation such as sticky-shed before a reel is threaded, and it flags tapes that need remediation like baking before they can be safely played.",
+    "practical_application": "Before transferring an archival reel, a technician inspects the tape pack and leader, feels for stickiness, looks for shed residue, and decides whether baking or cleaning is needed first.",
+    "category": "Tape Preservation",
+    "related_terms": ["Sticky-shed syndrome", "Tape baking", "Tape preservation strategy", "Tape storage humidity", "Binder hydrolysis", "Digitization"],
+    "common_mistakes": ["UNSAFE: Playing a shedding tape without inspection, which can jam the transport and permanently destroy a unique master", "Assuming every shedding tape can be baked, when acetate-base and some formulations behave differently", "Mistaking normal residue for shedding, or dismissing early squeal as a minor issue"],
+    "scenario_contexts": ["Assessing a 1980s reel that squeals and leaves residue on the heads", "Screening a batch of archive tapes to decide which need baking", "Cleaning the transport after a shedding reel to protect the next tape"]
+   },
+   "sources": ["IASA-TC 05, Handling and Storage of Audio and Video Carriers", "ARSC Guide to Audio Preservation (CLIR/Library of Congress)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fa1b7255-08e0-45d6-ab5f-7cf530793eb6",
+   "term": "Tape storage humidity",
+   "fields": {
+    "definition": "The relative humidity maintained where magnetic tapes are stored, a key preservation parameter because high humidity accelerates binder hydrolysis (sticky-shed) and mold growth while very low humidity increases friction and static. Preservation guidance calls for moderate, stable relative humidity, commonly in the region of 25-45% for magnetic audio tape.",
+    "plain_english": "This is how damp or dry the air is where tapes are kept. Too damp and the tape's glue breaks down or mold grows; too dry and the tape drags and builds up static. The aim is a middle, steady level, roughly 25 to 45 percent, without big swings.",
+    "purpose_function": "Controlling storage humidity slows the chemical decay of the tape binder and prevents mold, extending the life of the recording and the reliability of later playback.",
+    "practical_application": "An archivist uses a logging hygrometer and a conditioned store or HVAC to hold relative humidity within the recommended band, and lets tapes acclimatize before playing them.",
+    "category": "Tape Preservation",
+    "related_terms": ["Tape storage temperature", "Tape preservation strategy", "Sticky-shed syndrome", "Tape shedding inspection", "Binder hydrolysis", "Acclimatization"],
+    "common_mistakes": ["Controlling temperature but ignoring humidity, which is the bigger driver of hydrolysis", "Allowing large humidity swings, which stress the tape more than a steady moderate level", "Playing a cold or damp tape without letting it acclimatize to the room first"],
+    "scenario_contexts": ["Setting HVAC targets for a tape vault", "Investigating mold on reels stored in a humid basement", "Logging relative humidity in a store over a year to catch seasonal swings"]
+   },
+   "sources": ["ISO 18923, Imaging materials - Polyester-base magnetic tape - Storage practices", "IASA-TC 05, Handling and Storage of Audio and Video Carriers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d121d4f3-e117-4e25-9bd1-217205f0c003",
+   "term": "Tape storage temperature",
+   "fields": {
+    "definition": "The temperature maintained where magnetic tapes are stored; cooler, stable conditions slow the chemical decay of the tape binder and reduce print-through. Preservation guidance recommends cool, stable storage, commonly around 18-21 degrees C (about 65-70 degrees F) for access collections, with colder dedicated storage for long-term preservation.",
+    "plain_english": "This is how warm or cool the room is where tapes are kept. Cooler, steady temperatures make tapes last longer and cut down faint echo between layers. Rooms used every day sit around 18 to 21 degrees Celsius, while long-term storage is kept colder.",
+    "purpose_function": "Lower, stable temperatures slow the reactions that break down the tape binder and reduce print-through, so controlling temperature extends how long tapes stay playable.",
+    "practical_application": "An archivist keeps the store cool and steady, avoids heat sources and swings, and acclimatizes tapes to room temperature before playing them to prevent condensation.",
+    "category": "Tape Preservation",
+    "related_terms": ["Tape storage humidity", "Tape preservation strategy", "Print-through", "Tape shedding inspection", "Acclimatization", "Binder hydrolysis"],
+    "common_mistakes": ["Storing tapes near heaters, lights, or in hot attics that speed decay", "Moving a cold tape straight onto a warm machine, risking condensation", "Assuming everyday room temperature is fine for permanent archival storage"],
+    "scenario_contexts": ["Specifying a climate-controlled vault for master tapes", "Acclimatizing tapes brought in from cold storage before a transfer", "Reviewing why tapes stored in a warm room show heavy print-through"]
+   },
+   "sources": ["ISO 18923, Imaging materials - Polyester-base magnetic tape - Storage practices", "IASA-TC 05, Handling and Storage of Audio and Video Carriers"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

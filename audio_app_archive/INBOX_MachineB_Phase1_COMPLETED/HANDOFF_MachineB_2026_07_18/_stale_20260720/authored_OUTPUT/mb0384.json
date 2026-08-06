@@ -1,0 +1,159 @@
+{
+ "batch": 384,
+ "topic": "Immersive Monitoring & Calibration",
+ "authored": [
+  {
+   "id": "0b180e2e-f1c6-4b08-a422-8c08c42924c1",
+   "term": "Head-tracked monitoring",
+   "fields": {
+    "definition": "A binaural (headphone) monitoring method in which head-position sensors continuously update the head-related transfer function (HRTF) processing so the rendered immersive sound field stays anchored to the screen or device instead of rotating with the listener's head. It lets an engineer preview how spatial-audio playback behaves on head-tracked consumer devices.",
+    "plain_english": "This is headphone listening that follows your head. When you turn your head, the sound stays fixed in place, like real speakers in a room, instead of moving with your ears.",
+    "purpose_function": "It exists so engineers can check how an immersive mix will behave on consumer head-tracked playback, where sensors keep sources locked to the visual scene as the head moves.",
+    "practical_application": "A technician enables head tracking on a binaural monitor path to confirm that objects stay stable and correctly placed as the listener's head moves before approving a spatial-audio deliverable.",
+    "category": "Immersive Monitoring",
+    "related_terms": ["Headphone-rendered monitoring", "Binaural rendering", "HRTF", "Immersive monitoring system", "Object-based audio"],
+    "common_mistakes": ["Assuming a head-tracked binaural render sounds identical to the loudspeaker mix", "Making tonal or level decisions on head-tracked headphones instead of a calibrated speaker array", "Forgetting that head tracking is referenced to a device or screen origin, not to the headphones themselves"],
+    "scenario_contexts": ["Previewing a spatial-audio release on earbuds with dynamic head tracking", "Checking object stability during head movement before final QC", "Demonstrating immersive playback to a client on headphones"]
+   },
+   "sources": ["Apple, Control Spatial Audio and head tracking (Apple technical support documentation)", "Dolby Atmos Renderer Guide, software v3.0 (Dolby Laboratories) — binaural render mode"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "47e42201-bf17-4c60-9281-81863ad8a863",
+   "term": "Headphone-rendered monitoring",
+   "fields": {
+    "definition": "Monitoring an immersive channel- and object-based mix over headphones by folding the multichannel/object signal into a two-channel binaural signal using HRTF-based processing, so overhead and surround positions are simulated for two ears. In the Dolby Atmos Renderer this is set per object with Off/Near/Mid/Far distance modes.",
+    "plain_english": "This is checking a surround-sound mix using normal headphones. Special processing fakes the sound of speakers all around you and above you, using just the two earcups.",
+    "purpose_function": "It lets engineers audition and approve an immersive mix without a full speaker array, and shows how the mix will translate to the headphone listeners who make up much of the audience.",
+    "practical_application": "A technician switches the renderer to binaural, sets per-object near/mid/far distances to judge depth, and checks the fold-down before delivering the binaural version.",
+    "category": "Immersive Monitoring",
+    "related_terms": ["Head-tracked monitoring", "Binaural rendering", "HRTF", "Downmix", "Immersive monitoring system", "Object-based audio"],
+    "common_mistakes": ["Making final tonal or panning decisions only on binaural headphones instead of a calibrated loudspeaker array", "Assuming every listener hears the same binaural result, when HRTFs vary between people", "Ignoring the per-object distance (near/mid/far) setting when judging depth"],
+    "scenario_contexts": ["Mixing an immersive project in a room without overhead speakers", "Auditioning the binaural deliverable that ships to streaming services", "Spot-checking a mix on headphones while away from the studio"]
+   },
+   "sources": ["Dolby Atmos Renderer Guide, software v3.0 (Dolby Laboratories) — binaural render mode and downmix", "ITU-R BS.2051-2, Advanced sound system for programme production — headphone (System Z) reproduction"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2dee66d0-e809-4015-bd13-85209b0ef926",
+   "term": "Height speaker",
+   "fields": {
+    "definition": "A loudspeaker in the upper layer of an immersive array, mounted above the listener's ear-height (horizontal) plane to reproduce overhead and elevated content. In ITU-R BS.2051 these are the upper-layer (\"U\") loudspeakers; in Dolby Atmos home layouts they are the \"top\" surround speakers (the \".4\" or \".6\" in 7.1.4 or 9.1.6), which Dolby specifies at a minimum height of 2.4 m at the mix position with defined elevation angles.",
+    "plain_english": "This is a speaker placed up high, near the ceiling. It plays sounds that should come from above you, like rain or a helicopter, that normal ear-level speakers cannot.",
+    "purpose_function": "Height speakers add the vertical dimension that separates immersive audio from flat surround, letting sounds be placed and moved overhead.",
+    "practical_application": "A technician mounts and aligns the top/height speakers at the specified elevation, then sets their level and delay during calibration so overhead pans track smoothly.",
+    "category": "Immersive Playback",
+    "related_terms": ["Immersive monitoring system", "Immersive delay calibration", "Immersive level calibration", "Bed", "Surround speaker", "Object-based audio"],
+    "common_mistakes": ["Confusing height/top speakers with ordinary surround speakers on the ear-level plane", "Mounting height speakers too low or at the wrong elevation angle, collapsing the overhead image", "UNSAFE: Rigging or flying overhead speakers without rated mounting hardware, a secondary safety attachment, and the manufacturer's specified suspension practice"],
+    "scenario_contexts": ["Installing a 7.1.4 room where four top speakers form the height layer", "Calibrating overhead pans in an immersive mix", "Troubleshooting a collapsed vertical image caused by misplaced height speakers"]
+   },
+   "sources": ["ITU-R BS.2051-2, Advanced sound system for programme production — upper-layer loudspeakers and elevation", "Dolby Atmos Home Entertainment Studio Certification Guide (Dolby Laboratories) — top surround placement and 7.1.4/9.1.6 layouts"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c5788623-18df-43c0-8ee3-5593b99413e0",
+   "term": "Immersive delay calibration",
+   "fields": {
+    "definition": "The alignment step that sets a time delay (and matching level trim) for each loudspeaker in an immersive array so signals from speakers at unequal distances arrive at the mix position together. Dolby applies delay and amplitude compensation for distance differences up to a maximum of 10 ms, and the Dolby Atmos Renderer provides global and per-speaker delay controls.",
+    "plain_english": "This lines up the timing of every speaker. Closer speakers get a tiny delay added so sound from near and far speakers reaches your seat at the same moment.",
+    "purpose_function": "It preserves accurate imaging and object localization by removing arrival-time errors between speakers set at different distances from the listener.",
+    "practical_application": "A technician measures each speaker's distance to the mix position and enters the delay (or lets the processor compute it) so pans and phantom images stay stable and centered.",
+    "category": "Immersive Calibration",
+    "related_terms": ["Immersive level calibration", "Immersive monitoring system", "Height speaker", "Mix position", "Bass management", "Reference level"],
+    "common_mistakes": ["Calibrating levels but skipping delay, leaving overhead and surround images smeared", "Measuring distances from the wrong reference point instead of the defined mix position", "Placing speakers at very unequal distances so the required compensation exceeds the system limit"],
+    "scenario_contexts": ["Aligning a 7.1.4 room where the surrounds sit closer than the fronts", "Setting per-speaker delay in the Dolby Atmos Renderer", "Re-checking alignment after moving a speaker"]
+   },
+   "sources": ["Dolby Atmos Home Entertainment Studio Certification Guide (Dolby Laboratories) — delay and amplitude compensation to a maximum of 10 ms", "Dolby Atmos Renderer Guide, software v3.0 (Dolby Laboratories) — global and per-speaker audio delay"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "898e64a8-bdae-4d56-80ff-0b0697bd3371",
+   "term": "Immersive level calibration",
+   "fields": {
+    "definition": "Setting each loudspeaker in an immersive array to a defined sound-pressure level so the reproduced field matches a reference. Band-limited pink noise is measured on the SPL meter's slow setting and all full-range channels are aligned to the same level (Dolby near-field/home reference is 79-85 dBC), with the LFE/subwoofer set 10 dB higher in-band per Dolby/SMPTE practice.",
+    "plain_english": "This makes every speaker equally loud from your seat. You play a steady test noise and adjust each speaker to hit the same meter reading, with the sub set a bit louder.",
+    "purpose_function": "Equal, referenced levels let pans move smoothly around the room and help the mix translate to other calibrated rooms and consumer systems.",
+    "practical_application": "A technician routes pink noise to one speaker at a time and trims each to the target SPL with a calibrated meter, then adds the LFE offset.",
+    "category": "Immersive Calibration",
+    "related_terms": ["Immersive delay calibration", "Reference level", "Pink noise", "LFE", "Bass management", "Immersive monitoring system"],
+    "common_mistakes": ["Using an uncalibrated or phone SPL meter, or the wrong weighting or time setting", "Forgetting the +10 dB in-band offset for the LFE/subwoofer", "UNSAFE: Running loud calibration tones or mixing at high SPL for long periods without attention to occupational noise-exposure limits and hearing protection"],
+    "scenario_contexts": ["Aligning all channels of a 7.1.4 room to reference level", "Trimming a replaced speaker back to match the array", "Verifying reference level before a mastering session"]
+   },
+   "sources": ["Dolby Atmos Home Entertainment Studio Certification Guide (Dolby Laboratories) — 79-85 dBC pink-noise alignment, LFE +10 dB", "Dolby Atmos Renderer Guide, software v3.0 (Dolby Laboratories) — per-speaker level adjustment"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d44eb525-fc4e-437b-9736-80f52c0f9b19",
+   "term": "Immersive monitor controller",
+   "fields": {
+    "definition": "A hardware or software device in the immersive monitoring chain that takes the many rendered speaker feeds and provides central control of monitor level, mute/solo, speaker and downmix selection, bass management, and often room correction, feeding the loudspeaker array from the renderer or DAW. In Dolby-certified rooms it sits between the rendering/mastering workstation and the speakers, providing overall level control and a separate 5.1/7.1 bypass path.",
+    "plain_english": "This is the master volume and switching box for a room full of speakers. It sets one level for all of them at once and lets you mute, solo, or switch between speaker setups.",
+    "purpose_function": "It gives one trusted point of gain and routing control over a large speaker count, so the engineer can change monitor level and configuration without touching the mix.",
+    "practical_application": "A technician uses the monitor controller to dim, solo a single height speaker, or switch to a 5.1 fold-down while checking an immersive mix.",
+    "category": "Monitor Control",
+    "related_terms": ["Immersive monitoring system", "Immersive routing layout", "Bass management", "Immersive level calibration", "Downmix", "Reference level"],
+    "common_mistakes": ["Confusing a monitor controller with an audio interface — it controls monitoring, not conversion of the mix", "Forgetting that room correction or bass management applied in the controller is active during critical listening", "Leaving trims or offsets in the controller that break the calibrated reference level"],
+    "scenario_contexts": ["Switching between 7.1.4 and stereo to check translation", "Soloing individual speakers during calibration", "Setting a repeatable reference monitoring level for a session"]
+   },
+   "sources": ["Dolby Atmos Home Entertainment Studio Certification Guide (Dolby Laboratories) — immersive monitoring controller and bypass path in the signal chain", "Dolby Atmos Renderer Guide, software v3.0 (Dolby Laboratories) — monitoring section, level control and custom monitoring layout"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6e374706-d888-4705-acbf-54f8adae7fb1",
+   "term": "Immersive monitor quality control",
+   "fields": {
+    "definition": "The structured checking of an immersive mix or deliverable by auditioning it on a calibrated monitoring system: verifying speaker assignments and routing, levels and loudness, object placement and overhead content, the downmix and binaural fold-downs, and the metadata against the target specification before delivery.",
+    "plain_english": "This is the final listening check of a surround mix. You play it back on trusted, calibrated speakers to catch wrong routing, bad levels, or missing overhead sounds before you send it out.",
+    "purpose_function": "It catches routing, level, metadata, and fold-down errors that would otherwise reach the listener, protecting the integrity of the immersive deliverable.",
+    "practical_application": "A technician plays the finished mix and its downmixes on the calibrated array, confirms every channel maps to the right speaker and levels match reference, and logs any faults for correction.",
+    "category": "Quality Control",
+    "related_terms": ["Immersive monitoring system", "Immersive routing layout", "Downmix", "Immersive level calibration", "Reference level", "Binaural rendering"],
+    "common_mistakes": ["Doing QC only in binaural or on headphones and missing loudspeaker-only problems", "Checking the immersive mix but never auditioning the stereo and 5.1 fold-downs", "Skipping verification that channels are routed to the correct physical speakers"],
+    "scenario_contexts": ["Final QC of an immersive music master before upload", "Verifying a broadcast immersive deliverable against a spec", "Confirming fold-downs and metadata after a re-render"]
+   },
+   "sources": ["Dolby Atmos Home Entertainment Studio Certification Guide (Dolby Laboratories) — calibrated reference monitoring and separate monitor path", "Dolby Atmos Renderer Guide, software v3.0 (Dolby Laboratories) — monitoring outputs, re-renders and downmixes"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a9e94ee2-d197-4321-825e-66ec099dd610",
+   "term": "Immersive monitoring system",
+   "fields": {
+    "definition": "The complete calibrated playback rig used to audition immersive audio, comprising the loudspeaker array in the horizontal and upper (height) layers plus subwoofer(s), the renderer/monitor controller and amplification, and the room, set up and calibrated to a defined layout such as 7.1.4 or 9.1.6 per Dolby and ITU-R BS.2051 practice.",
+    "plain_english": "This is the whole speaker setup used to listen to surround-with-height mixes. It includes the speakers around and above you, the sub, and the gear and room that make them play back right.",
+    "purpose_function": "It provides a trustworthy, reference reproduction of channel- and object-based audio so mix and calibration decisions translate to other rooms and to consumer systems.",
+    "practical_application": "A technician installs, aligns, and calibrates the array and controller so the room meets a standard layout and reference level before any mixing begins.",
+    "category": "Immersive Monitoring",
+    "related_terms": ["Height speaker", "Immersive monitor controller", "Immersive level calibration", "Immersive delay calibration", "Immersive routing layout", "Bass management"],
+    "common_mistakes": ["Adding height speakers but never calibrating level and delay for the full array", "Using mismatched speaker models around the array, causing timbre shifts as objects pan", "Treating the room and its acoustics as unimportant to an immersive system"],
+    "scenario_contexts": ["Commissioning a new 7.1.4 mix room", "Comparing a mix across two certified immersive rooms", "Upgrading a 5.1 room to immersive by adding a height layer"]
+   },
+   "sources": ["ITU-R BS.2051-2, Advanced sound system for programme production — loudspeaker layouts and upper/middle/bottom layers", "Dolby Atmos Home Entertainment Studio Certification Guide (Dolby Laboratories) — 7.1.4/9.1.6 monitoring setup and calibration"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "67fa5212-2c2a-4e26-ba31-272d6ef504fb",
+   "term": "Immersive routing layout",
+   "fields": {
+    "definition": "The defined mapping of an immersive program's channels and rendered outputs to physical loudspeaker feeds (and DAW/renderer output buses) for a given layout, so each bed channel and object render lands on the correct speaker — for example, assigning the twelve feeds of a 7.1.4 layout to their outputs in the specified channel order.",
+    "plain_english": "This is the plan for which output goes to which speaker. It makes sure the left-height signal reaches the left-height speaker and nothing gets crossed.",
+    "purpose_function": "A correct routing layout guarantees that the renderer's speaker feeds arrive at their intended physical positions, without which imaging, calibration, and QC are meaningless.",
+    "practical_application": "A technician patches the renderer/DAW outputs to interface and amplifier channels following the layout's channel order, then verifies each with a test signal.",
+    "category": "Signal Routing",
+    "related_terms": ["Immersive monitoring system", "Immersive monitor controller", "Height speaker", "Bed", "Immersive monitor quality control", "Object-based audio"],
+    "common_mistakes": ["Swapping surround and height feeds because the channel order was assumed instead of checked", "Confusing the Dolby channel order or label with the DAW or interface output numbering", "Not verifying each output with a test tone after patching"],
+    "scenario_contexts": ["Patching a 7.1.4 renderer to an audio interface and amplifiers", "Reconfiguring routing when moving from 7.1.4 to 9.1.6", "Diagnosing a mix where overhead content plays from the wrong speaker"]
+   },
+   "sources": ["Dolby Atmos Renderer Guide, software v3.0 (Dolby Laboratories) — output channels, speaker setup and custom monitoring layout", "Dolby Atmos Home Entertainment Studio Certification Guide (Dolby Laboratories) — speaker feeds, x.y.z layout notation and routing"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

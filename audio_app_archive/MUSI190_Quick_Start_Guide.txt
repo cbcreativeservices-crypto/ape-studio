@@ -1,0 +1,190 @@
+================================================================================
+MUSI 190 GLOSSARY REVIEW TOOL v2.0
+Quick Start Guide for Instructors
+================================================================================
+
+WHAT YOU'LL SEE
+===============
+
+Each term card displays:
+
+  □ [Checkbox]  TERM NAME                           ⚠️ FLAGGED (appears when flagged)
+     Category: Audio Technology | Level: Foundational
+
+     Concise Definition
+     → Short, direct definition
+
+     Plain-English Explanation
+     → Longer, detailed explanation
+
+     [When flagged, this appears below:]
+     🚩 Issue/Feedback:
+     [Text box for your comments about the issue]
+     [Saved ✓]  [Clear]
+
+
+WORKFLOW (3 Steps)
+==================
+
+STEP 1: REVIEW
+   • Open the HTML file in your browser
+   • You see all 239 terms with BOTH definitions
+   • Read the Concise Definition (short)
+   • Read the Plain-English Explanation (detailed)
+   • Skim the Category and Difficulty Level
+
+STEP 2: FLAG & COMMENT
+   • If you find an issue, CHECK the checkbox
+   • Orange border appears around the term
+   • Comment box opens below
+   • Type your feedback (e.g., "Definition is unclear", "Missing important detail")
+   • Comment auto-saves—you'll see "Saved ✓"
+   • Continue to next term
+
+STEP 3: EXPORT
+   • Click "📥 Export Flagged" button (top right)
+   • File downloads: MUSI190_FlaggedTerms_YYYY-MM-DD.json
+   • Send JSON file to course coordinator
+   • Done!
+
+
+WHAT TO LOOK FOR
+================
+
+✓ Definition is unclear or confusing
+✓ Definition is incomplete or missing key info
+✓ Short definition doesn't match longer explanation
+✓ Category or difficulty level seems wrong
+✓ Definition uses jargon without explaining it
+✓ Missing examples or context
+✓ Term name is unclear or misspelled
+✓ Definition doesn't align with actual usage
+✓ Overlaps or conflicts with related terms
+
+
+TOP FEATURES
+============
+
+FLAG CHECKBOX
+   • Click to mark a term as having an issue
+   • Checkbox toggles the flag on/off
+   • Flagged terms get orange border + "⚠️ FLAGGED" badge
+
+COMMENT BOX
+   • Only appears when term is flagged
+   • Type your feedback about the issue
+   • Auto-saves every keystroke
+   • Shows "Saved ✓" for 1.5 seconds after saving
+
+SEARCH BOX (Top Left)
+   • Type any keyword
+   • Searches term names AND definitions
+   • Results update instantly
+   • Clear box to see all terms again
+
+STATISTICS (Top Left)
+   • "Total: 239" = All terms in glossary
+   • "Flagged: X" = How many you've marked with issues
+   • Track your progress in real-time
+
+EXPORT BUTTON (Top Right)
+   • Downloads only FLAGGED terms as JSON
+   • Includes all definitions + your comments
+   • Filename: MUSI190_FlaggedTerms_YYYY-MM-DD.json
+
+CLEAR ALL BUTTON (Top Right)
+   • Removes all flags and comments
+   • Warning appears before clearing
+   • Use only if needed
+
+
+KEYBOARD SHORTCUTS
+==================
+
+TAB          → Move to next field
+SHIFT + TAB  → Move to previous field
+SPACE        → Check/uncheck checkbox
+ENTER        → Click buttons
+
+
+TROUBLESHOOTING
+===============
+
+Q: Comments disappear after I close the browser
+A: They should persist. Try opening the file in the same browser.
+   If lost, you can re-enter them (they auto-save as you type).
+
+Q: Can't find a term I'm looking for
+A: Use the Search box at top left.
+   Search works on both term names AND definitions.
+
+Q: Export didn't download
+A: Check browser's download settings.
+   Try a different browser if needed.
+   Make sure pop-ups aren't blocked.
+
+Q: Comment box won't show
+A: Make sure checkbox is checked.
+   Refresh page if needed (comments are saved).
+
+Q: Accidentally cleared everything
+A: Use browser's Undo (Ctrl+Z / Cmd+Z) if still in current session.
+   Otherwise, you may need to re-enter flags.
+
+
+WHAT GETS EXPORTED
+==================
+
+When you click "Export Flagged", you get a JSON file with:
+
+{
+  "term": "A-weighting",
+  "conciseDefinition": "A-weighting: a key audio production term...",
+  "plainEnglishExplanation": "A-weighting is an important concept...",
+  "category": "Audio Technology",
+  "difficultyLevel": "Foundational",
+  "instructorIssue": "Definition is too vague, needs clarification",
+  "timestamp": "2026-05-14T10:30:00Z"
+}
+
+• One entry for each flagged term
+• Includes BOTH definitions
+• Includes YOUR comments
+• Includes when you flagged it
+
+
+TIPS FOR EFFICIENT REVIEW
+=========================
+
+1. Go through all 239 terms once (just reading)
+2. Second pass: Flag only the terms with issues
+3. Save frequently by exporting (in case of problems)
+4. Search for related terms to check consistency
+5. Be specific in comments ("Definition is vague" vs "Add example of...")
+6. Note dependencies (term B needs understanding of term A)
+
+
+BROWSER COMPATIBILITY
+====================
+
+Works best on:
+   ✓ Chrome/Chromium
+   ✓ Firefox
+   ✓ Safari
+   ✓ Edge
+   ✓ Mobile browsers
+
+
+SUPPORT
+=======
+
+Issues? Questions?
+   1. Try refreshing the page (Ctrl+F5 / Cmd+Shift+R)
+   2. Test in a different browser
+   3. Make sure JavaScript is enabled
+   4. Contact your course coordinator
+
+
+================================================================================
+                    YOU'RE ALL SET! HAPPY REVIEWING! 🎵
+================================================================================

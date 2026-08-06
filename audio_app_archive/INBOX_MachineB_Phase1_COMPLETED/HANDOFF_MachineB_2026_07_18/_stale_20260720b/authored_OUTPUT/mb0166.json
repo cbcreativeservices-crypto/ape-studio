@@ -1,0 +1,159 @@
+{
+ "batch": 166,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "07d62ed3-e876-4cfa-b47f-e3cabae3c5e5",
+   "term": "iZotope Ozone",
+   "fields": {
+    "definition": "A software plug-in suite for audio mastering developed by iZotope that combines mastering-chain modules such as an equalizer, multiband dynamics, stereo imager, harmonic exciter, and a peak-limiting maximizer, together with metering and assistant/analysis tools, in a single instance. It is used on a stereo mix bus or standalone to apply the final tonal, dynamic, and loudness processing of a master.",
+    "plain_english": "Ozone is a software toolbox for the last step of making a track, called mastering. It puts tools like an equalizer, a compressor, and a loudness limiter in one window so you can polish a whole song at once.",
+    "purpose_function": "It gathers the common mastering processors into one controllable signal chain so an engineer can shape overall tone, dynamics, stereo width, and final loudness on a finished mix. Its metering and assistant features exist to help judge and hit modern delivery and loudness targets.",
+    "practical_application": "A technician loads Ozone on the master output, arranges modules in a chosen order, and uses its EQ, dynamics, and maximizer while watching LUFS and true-peak meters to prepare a master for streaming, CD, or file delivery. The Master Assistant can suggest a starting chain that the engineer then refines by ear.",
+    "category": "Mastering software",
+    "related_terms": ["Maximizer", "Multiband compression", "True-peak limiting", "LUFS", "Mastering chain", "Stereo imaging"],
+    "common_mistakes": ["Accepting a Master Assistant preset as finished without critical listening and manual adjustment", "Pushing the maximizer for maximum loudness until the master clips or distorts", "Treating it as a mixing fix and using it to rescue balance problems that belong in the mix"],
+    "scenario_contexts": ["Applying the final tonal balance and loudness pass to a finished stereo mix", "Metering a master to a target integrated loudness and true-peak ceiling for streaming delivery", "Using multiband dynamics and imaging to tighten and widen a master before export"]
+   },
+   "sources": ["iZotope Ozone technical documentation and help reference", "Bob Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0d63fa4b-79c5-43b6-b84f-21d03d917f3c",
+   "term": "Lacquer mastering session",
+   "fields": {
+    "definition": "A disc-cutting session in which mastered program audio is transferred to a lacquer master disc on a cutting lathe, where a heated stylus cuts the modulated groove into the nitrocellulose-coated aluminum blank. The resulting lacquer is the source from which metal stampers are electroformed to press vinyl records.",
+    "plain_english": "This is the studio session where a finished song is cut into a soft, coated disc called a lacquer. That disc is the first step used to make the metal parts that press vinyl records.",
+    "purpose_function": "It converts a final digital or analog master into a physical cut groove that a record plant can plate and press, bridging the mastering stage and vinyl manufacturing. The session exists because vinyl production requires a mechanically cut master rather than a file.",
+    "practical_application": "A cutting engineer plays the master into the lathe, applies RIAA pre-emphasis and any low-frequency mono and de-essing needed to keep grooves cuttable, and sets level and groove pitch so the program fits the side with clean playback. The finished lacquer is shipped quickly to a plating plant before its soft surface degrades.",
+    "category": "Disc cutting",
+    "related_terms": ["Cutting lathe", "Lead-in groove", "Lead-out groove", "Lateral modulation control", "RIAA equalization", "Stamper"],
+    "common_mistakes": ["Confusing the soft lacquer master with the finished vinyl record", "Assuming any mix can be cut without controlling low-frequency and out-of-phase energy that widens or destabilizes grooves", "Not accounting for lacquers being fragile and time-sensitive, so plating must happen soon after cutting"],
+    "scenario_contexts": ["Cutting a lacquer master for a vinyl release from a supplied master file", "Preparing program with mono bass and de-essing so the lathe can cut it cleanly", "Sending finished lacquers to a plating plant to make stampers"]
+   },
+   "sources": ["Glen Ballou (ed.), Handbook for Sound Engineers, disc recording chapter", "AES publications on disc recording and reproduction"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d2e0f213-ee31-49df-84d9-bfa421b69c51",
+   "term": "Lateral modulation control",
+   "fields": {
+    "definition": "On a disc-cutting lathe, the management of the side-to-side (lateral) movement of the cutting stylus that encodes audio into the groove walls; in the standard 45/45 stereo system lateral modulation carries the in-phase sum (mono) component. Controlling its amplitude keeps groove excursions within spacing and geometry limits so adjacent grooves do not overcut.",
+    "plain_english": "A record groove wiggles side to side to hold the sound. This control sets how far the cutter swings sideways, so the grooves stay small enough not to crash into each other.",
+    "purpose_function": "It limits the horizontal swing of the cut groove so loud, low, and in-phase content does not create excursions wider than the available groove pitch. This exists to protect playability and prevent grooves from cutting into one another on the disc.",
+    "practical_application": "A cutting engineer manages lateral modulation by controlling program level, keeping low frequencies mono, and letting variable groove pitch widen spacing during loud lateral passages. This lets a loud, bass-heavy program still fit the side and track without skipping.",
+    "category": "Disc cutting",
+    "related_terms": ["Vertical modulation", "Variable groove pitch", "Cutting lathe", "Lacquer mastering session", "Mono bass", "Elliptical equalization"],
+    "common_mistakes": ["Confusing lateral (side-to-side, mono) modulation with vertical (up-and-down, difference) modulation", "Assuming heavy low-frequency mono energy is always safe, when excessive lateral bass swings widen grooves and cause skipping", "Ignoring groove pitch and level trade-offs that lateral modulation forces on long, loud sides"],
+    "scenario_contexts": ["Setting cutting level and pitch so loud lateral passages fit the disc side", "Applying mono bass to keep low-frequency lateral excursions controlled", "Diagnosing groove overcut or skipping traced to excessive lateral modulation"]
+   },
+   "sources": ["Glen Ballou (ed.), Handbook for Sound Engineers, disc recording chapter", "AES publications on the 45/45 stereophonic disc recording system"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "58e62875-aa57-4849-b343-2b91f3727ca5",
+   "term": "Lead-in groove",
+   "fields": {
+    "definition": "The smooth, unmodulated spiral groove cut at the outer edge of a record that guides the playback stylus from the disc edge inward to the first modulated groove of the program. It carries no audio and provides a quiet run into the start of the recording.",
+    "plain_english": "This is the smooth groove at the outer edge of a record. It has no sound and just guides the needle inward until the music starts.",
+    "purpose_function": "It gives the stylus a stable, silent path from the dropped-needle point to the beginning of the program, so playback starts cleanly at the right place. It exists to absorb needle-drop position error and settle the stylus before audio begins.",
+    "practical_application": "A cutting engineer sets the lead-in width and length on the lathe so the tonearm lands reliably and reaches the first note quickly without excess silence. Listeners hear it as the short, quiet moment after the needle drops before the track plays.",
+    "category": "Disc cutting",
+    "related_terms": ["Lead-out groove", "Locked groove", "Lacquer mastering session", "Cutting lathe", "Variable groove pitch", "Spiral"],
+    "common_mistakes": ["Confusing the lead-in at the outer edge with the lead-out and run-out near the label", "Thinking the lead-in groove carries recorded audio", "Assuming its length does not matter, when a mis-sized lead-in causes late starts or unreliable needle landing"],
+    "scenario_contexts": ["Setting the lead-in when cutting a lacquer so the stylus lands and reaches the first track cleanly", "Explaining the quiet gap heard right after the needle drops", "Troubleshooting a stylus that lands unreliably at the start of a side"]
+   },
+   "sources": ["Glen Ballou (ed.), Handbook for Sound Engineers, disc recording chapter", "AES publications on disc recording and reproduction"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "877fdae8-0229-481e-aa1e-172e83846215",
+   "term": "Lead-out groove",
+   "fields": {
+    "definition": "The smooth, unmodulated spiral groove cut after the last program material on a record side that carries the stylus inward toward the label. It typically ends in a locked (endless) groove or run-out area and provides a quiet exit that can trigger a turntable's auto-lift or return mechanism.",
+    "plain_english": "This is the smooth groove after the music ends. It carries the needle toward the middle so the song does not just stop in place.",
+    "purpose_function": "It gives the stylus a silent path away from the last note toward the label and to a stopping point, so the side ends cleanly. It exists to hold the stylus quietly and to work with tonearm auto-stop or lift systems.",
+    "practical_application": "A cutting engineer cuts the lead-out after the final track and usually ends it in a locked groove so the stylus does not ride into the label. On playback it is the quiet moment after the last song before the arm lifts or the record loops.",
+    "category": "Disc cutting",
+    "related_terms": ["Lead-in groove", "Locked groove", "Run-out groove", "Lacquer mastering session", "Cutting lathe", "Tonearm"],
+    "common_mistakes": ["Confusing the lead-out with the lead-in groove at the outer edge", "Assuming the lead-out carries audio", "Forgetting to terminate it in a locked groove, so the stylus drifts into the label area"],
+    "scenario_contexts": ["Cutting the quiet exit after the last track on a side", "Ending a side in a locked groove so the stylus stops safely", "Explaining the silent passage before a turntable auto-lifts the arm"]
+   },
+   "sources": ["Glen Ballou (ed.), Handbook for Sound Engineers, disc recording chapter", "AES publications on disc recording and reproduction"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "791c96ae-d012-4319-9cb7-965e61367138",
+   "term": "Locked groove",
+   "fields": {
+    "definition": "A concentric, closed groove cut at the end of a record's spiral in which the stylus circulates on a single endless circle instead of moving inward. The record then repeats the same short segment, or silence, indefinitely until the stylus is lifted.",
+    "plain_english": "This is a closed loop groove at the very end of a record. The needle keeps going around the same tiny circle forever until you lift it off.",
+    "purpose_function": "It stops the stylus from drifting into the label by trapping it in an endless circle, and it can be used deliberately to loop a short sound. It exists both as a safe end-of-side stop and as a creative repeating effect.",
+    "practical_application": "A cutting engineer ends most sides with a silent locked groove so the stylus parks instead of riding into the label, and can cut a short audio loop into a locked groove for a repeating end effect. On playback a locked groove either sits quietly or loops the same fraction of a second until lifted.",
+    "category": "Disc cutting",
+    "related_terms": ["Lead-out groove", "Lead-in groove", "Run-out groove", "Lacquer mastering session", "Cutting lathe", "Groove pitch"],
+    "common_mistakes": ["Confusing a locked groove with the lead-out or run-out spiral, which still moves inward", "Assuming a stuck or skipping worn groove is the same as a deliberately cut locked groove", "Cutting a locked-groove loop without matching its length to one exact revolution, so the loop clicks or drifts"],
+    "scenario_contexts": ["Ending a record side so the stylus parks instead of hitting the label", "Cutting a short repeating sound loop as an end-of-side effect", "Identifying whether an endlessly repeating passage is a designed locked groove or a defect"]
+   },
+   "sources": ["Glen Ballou (ed.), Handbook for Sound Engineers, disc recording chapter", "AES publications on disc recording and reproduction"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0be65465-c76b-4b2a-a84d-3923e28be008",
+   "term": "Long-term media stability",
+   "fields": {
+    "definition": "The degree to which a recording medium retains its stored audio and physical integrity over long time spans without degradation such as binder breakdown, oxide shedding, magnetic decay, print-through, dye fade, or delamination. It determines a medium's archival life and the preservation strategy needed to keep content accessible.",
+    "plain_english": "This is how well a tape, disc, or drive holds onto its sound over many years. Media that breaks down or fades has low stability, so archives must copy it before it dies.",
+    "purpose_function": "It tells an engineer or archivist how soon a recording must be transferred or migrated to remain playable, guiding storage conditions and backup schedules. The concept exists because every physical medium ages and eventually fails, threatening the recordings on it.",
+    "practical_application": "A technician stores masters in controlled temperature and humidity, monitors known failure modes for each format, and migrates content to fresh media before degradation makes transfer impossible. For example, older tapes may be baked before a one-time safe transfer to a stable digital archive.",
+    "category": "Archiving and preservation",
+    "related_terms": ["Sticky-shed syndrome", "Print-through", "Baking (tape restoration)", "Archival migration", "Low-noise tape", "Optical disc rot"],
+    "common_mistakes": ["Assuming digital files are permanent and skipping redundant backups and periodic migration", "Storing tape or disc masters in heat and humidity that speed up decay", "Waiting until a medium already fails before attempting transfer, when early migration is far safer"],
+    "scenario_contexts": ["Planning storage conditions and migration schedules for a tape or disc archive", "Deciding to transfer aging masters to a stable digital format before they degrade", "Assessing which formats in a collection are most at risk of loss"]
+   },
+   "sources": ["AES standards and technical documents on storage and handling of magnetic tape and optical media", "Glen Ballou (ed.), Handbook for Sound Engineers, recording media and archiving material"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c95383f0-9e92-41b9-9f2d-545fab156a79",
+   "term": "Low-end music stem",
+   "fields": {
+    "definition": "A stem, meaning a submixed group bounced as its own audio file, that contains the low-frequency musical elements of a mix, typically bass instruments and the low content of the kick drum. It lets the low end be handled, checked, or re-balanced separately from the rest of the mix in mastering or re-mixing.",
+    "plain_english": "A stem is one part of a mix saved as its own file. A low-end stem holds just the deep, low sounds like bass, so they can be worked on or fixed on their own later.",
+    "purpose_function": "It isolates the low-frequency musical content so an engineer can adjust its level, tone, or mono compatibility without disturbing vocals and other elements. It exists to give mastering and re-mix stages targeted control over the often-troublesome bass region.",
+    "practical_application": "A mixing engineer delivers a low-end stem alongside other stems so the mastering engineer can nudge bass level, tighten it, or sum it to mono for vinyl without a full remix. It is common in stem mastering and in preparing masters for formats sensitive to low-frequency energy.",
+    "category": "Stems and delivery",
+    "related_terms": ["Stem", "Stem mastering", "Mono bass", "Bass management", "Multiband compression", "Mixdown"],
+    "common_mistakes": ["Confusing a stem with a single instrument track, when a stem is a submixed group", "Letting low-end stems overlap the same bass content in other stems, so summing them changes the balance", "Exporting stems at inconsistent levels or without matching processing, which breaks the intended mix when recombined"],
+    "scenario_contexts": ["Delivering a low-end stem for stem mastering so bass can be balanced separately", "Summing the low-end stem to mono when preparing a vinyl cut", "Re-balancing bass level for a remix without returning to the full session"]
+   },
+   "sources": ["David Miles Huber and Robert Runstein, Modern Recording Techniques", "Bob Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "82f12a72-afc5-4d91-adfb-77f003abb915",
+   "term": "Low-noise tape",
+   "fields": {
+    "definition": "Magnetic recording tape formulated with finer, more uniform magnetic particles and improved coatings to produce a lower inherent noise floor (tape hiss) and higher signal-to-noise ratio than standard tape at a given output level. It reduces audible background noise without relying on an external noise-reduction system.",
+    "plain_english": "This is recording tape made to be quieter than normal tape. It has less of the soft background hiss you hear on many older recordings.",
+    "purpose_function": "It lowers the constant hiss inherent to magnetic tape so quiet passages and low-level detail stay cleaner, widening the usable dynamic range. It exists to improve recording quality at the media level rather than through processing.",
+    "practical_application": "An engineer chooses low-noise tape stock, sets bias and level correctly for that formulation, and can further improve the noise floor by adding a companding noise-reduction system. Choosing and aligning to the right tape formulation is part of preparing a machine before tracking or mastering.",
+    "category": "Recording media",
+    "related_terms": ["Tape hiss", "Bias", "Signal-to-noise ratio", "Noise reduction", "Print-through", "Long-term media stability"],
+    "common_mistakes": ["Confusing low-noise tape with an electronic noise-reduction system such as a companding encoder", "Assuming low-noise tape removes hiss entirely rather than lowering it", "Running low-noise stock without aligning bias and level to that formulation, which loses its noise and headroom benefit"],
+    "scenario_contexts": ["Selecting tape stock to get the cleanest possible noise floor for a session", "Aligning a tape machine's bias and level to a chosen low-noise formulation", "Combining low-noise tape with a noise-reduction system to maximize dynamic range"]
+   },
+   "sources": ["Glen Ballou (ed.), Handbook for Sound Engineers, magnetic recording chapter", "AES publications on magnetic tape recording and noise performance"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

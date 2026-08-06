@@ -1,0 +1,317 @@
+{
+ "batch": 79,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "e7d40156-960e-41ba-8d7a-1f6bce5335a0",
+   "term": "A-side assignment",
+   "fields": {
+    "definition": "The designation of a particular song or mix as the A-side, the featured and promoted primary track of a single release, as opposed to the secondary B-side. The term originates from the two sides of a vinyl single, the A-side being the side intended for airplay and promotion.",
+    "plain_english": "Picking which song is the main track of a single release, the one meant for radio and promotion. It comes from old records, where the A-side was the hit side.",
+    "purpose_function": "Assigning the A-side sets which track gets priority in mastering, marketing, and delivery, guiding how time and polish are spent.",
+    "practical_application": "When delivering a single, the team confirms the A-side assignment so the lead track is mastered, labeled, and submitted to platforms as the primary release.",
+    "category": "Release workflow",
+    "related_terms": [
+     "Approval master",
+     "Action List",
+     "Anchor the mix",
+     "Active take"
+    ],
+    "common_mistakes": [
+     "Thinking the A-side must be the first song recorded rather than the chosen lead track",
+     "Assuming only the A-side needs careful mastering, when the B-side should also meet spec",
+     "Confusing A-side/B-side (release role) with the A/B of monitor or mix comparison"
+    ],
+    "scenario_contexts": [
+     "Deciding which single from a session is promoted as the lead A-side",
+     "Labeling and delivering master files with the correct A-side and B-side",
+     "Planning a vinyl single's sides for a release"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (disc recording/mastering)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6f4f82ad-c2da-49f5-8d14-76974f9a2a77",
+   "term": "Ableton Live Set",
+   "fields": {
+    "definition": "In Ableton Live, a Live Set is the document that holds a single piece of music: all of its tracks, clips, MIDI and audio, devices, mixer settings and arrangement. It is saved as an .als file inside a Project folder, which also stores the samples and presets the Set references.",
+    "plain_english": "A Live Set is Ableton Live's name for one song file. It keeps all of your tracks, loops, and effect settings together in one place, like a document that saves your whole project so you can open it again later.",
+    "purpose_function": "It gathers every part of a song, such as audio, MIDI, instruments, effects and mix settings, into one saved document so the work can be reopened, edited and shared as a single unit.",
+    "practical_application": "An engineer names and saves the .als Live Set at the start of a session and uses Save As to keep versioned copies inside the Project folder as the mix develops.",
+    "category": "Project File",
+    "related_terms": [
+     "Project folder",
+     "Clip",
+     "Arrangement View",
+     "Session View",
+     "Track",
+     "Template"
+    ],
+    "common_mistakes": [
+     "Moving or renaming the .als file out of its Project folder, which can break links to samples so files show as missing when the Set is reopened.",
+     "Assuming that saving the Set also copies in external samples; samples stay referenced in place unless the Set is saved or collected into the Project.",
+     "Confusing a Live Set (a song document) with the Live Library or a Live Pack (collections of content, not a song)."
+    ],
+    "scenario_contexts": [
+     "Starting a new song by saving a fresh Live Set into a dated Project folder.",
+     "Reopening a Live Set on another computer after using 'Collect All and Save' so all samples travel with it.",
+     "Exporting the final stereo mix from the finished Live Set."
+    ]
+   },
+   "sources": [
+    "Ableton Reference Manual, Version 12 (Managing Files and Sets)",
+    "Ableton Live specific file types (Ableton technical help documentation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3de5168e-c3d4-4f24-8461-63dc660b4aef",
+   "term": "Absolute automation",
+   "fields": {
+    "definition": "An automation write behaviour in which fader or control moves are recorded as absolute values that replace any existing automation for that parameter over the duration of the pass, as opposed to Trim (relative) mode, which offsets existing automation by a delta amount.",
+    "plain_english": "With absolute automation, the moves you record become the new values. They wipe out whatever was there before. It works like typing over old text, not nudging each word up or down a bit.",
+    "purpose_function": "It lets an engineer set precise, fixed level or parameter values over time so that playback repeats those exact moves on every pass.",
+    "practical_application": "In Write mode the engineer rides a fader and the DAW stores those exact positions across the whole pass, overwriting any existing moves; Touch and Latch also write absolute values but only while the control is actively moved, so they leave untouched sections intact. To lift an already automated section without erasing its moves, they switch to Trim instead.",
+    "category": "Automation",
+    "related_terms": [
+     "Trim automation",
+     "Write mode",
+     "Touch mode",
+     "Latch mode",
+     "Automation pass",
+     "Fader ride"
+    ],
+    "common_mistakes": [
+     "Leaving a track in Write mode and erasing good automation on the next playback pass.",
+     "Confusing Absolute with Trim, then overwriting existing moves instead of offsetting them.",
+     "Forgetting to switch out of Write into Touch or Read after the first pass."
+    ],
+    "scenario_contexts": [
+     "Writing a fixed vocal level ride across a chorus.",
+     "Automating a plugin bypass or send level to exact points in a song.",
+     "Redoing a botched move by punching a new absolute pass over it."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (Automation modes: Write/Touch/Latch vs Trim)",
+    "Sound on Sound, Automation Facilities in Pro Tools"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "deb5f716-0039-4891-88b4-71f8408a33e2",
+   "term": "Accent programming",
+   "fields": {
+    "definition": "The practice of assigning emphasis (an accent) to selected steps or notes in a sequenced pattern, typically as a boost in velocity or level and sometimes in filter or envelope depth, to create dynamic stress and groove; many drum machines and step sequencers provide a dedicated accent function for this.",
+    "plain_english": "Accent programming means telling certain drum hits or notes in a pattern to play stronger than the rest. It is how a stiff, robotic beat gets its groove, a bit like stressing certain syllables when you speak.",
+    "purpose_function": "It adds rhythmic emphasis and dynamic variation to programmed parts so they feel musical and human rather than flat and mechanical.",
+    "practical_application": "A producer sets accent flags, or higher velocity values, on backbeats or key notes in a step sequencer or drum machine so those hits punch through the pattern.",
+    "category": "Sequencing",
+    "related_terms": [
+     "Velocity",
+     "Step sequencer",
+     "Quantization",
+     "Swing",
+     "Drum programming",
+     "Dynamics"
+    ],
+    "common_mistakes": [
+     "Accenting too many steps, which flattens the contrast so nothing stands out.",
+     "Confusing an accent (emphasis on chosen hits) with simply raising the whole pattern's level.",
+     "Using a single fixed velocity for every note, which produces a lifeless, machine-like feel."
+    ],
+    "scenario_contexts": [
+     "Programming a drum-machine pattern and flagging the snare backbeats as accented.",
+     "Adding accents to a bassline on a step sequencer to shape its groove.",
+     "Humanising a programmed hi-hat part by accenting the off-beats."
+    ]
+   },
+   "sources": [
+    "Roland TR-808/TR-909 Owner's/Service documentation (Accent step function)",
+    "Sound on Sound (drum programming and step-sequencer technique)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dc0302f9-2edc-4c1b-853f-69c1bd3cbf22",
+   "term": "Acoustic contribution",
+   "fields": {
+    "definition": "The share of a recorded or monitored sound that arises from real acoustic (airborne) sound, the natural tone of an instrument and its room, as distinct from a direct or electronic signal such as a DI feed. It describes how much of the result comes from air-moving sound versus a captured electrical signal.",
+    "plain_english": "The part of a sound that comes from real air moving in a room, like a mic on an instrument, rather than a direct plugged-in signal. It is the natural, in-the-room part of the sound.",
+    "purpose_function": "Separating the acoustic contribution from direct signal lets an engineer blend natural room tone and direct clarity, and control how live or dry a track feels.",
+    "practical_application": "When recording an electric bass or an acoustic-electric guitar, an engineer blends the DI with a mic to dial in the right amount of acoustic contribution.",
+    "category": "Signal sources",
+    "related_terms": [
+     "Direct guitar track",
+     "Re-amping",
+     "Anchor the mix",
+     "Off-axis pickup"
+    ],
+    "common_mistakes": [
+     "Ignoring the room's acoustic contribution and wondering why a DI-only track sounds lifeless",
+     "Blending mic and DI without checking polarity, so the acoustic contribution partly cancels",
+     "Assuming a close mic captures no room, when it always adds some acoustic contribution"
+    ],
+    "scenario_contexts": [
+     "Blending a bass DI with a mic'd cabinet to add acoustic contribution",
+     "Deciding how much room mic to fold into a drum mix",
+     "Recording an acoustic-electric guitar and balancing pickup with a mic"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a79b2894-d564-4918-9bf4-8c2e77ef626b",
+   "term": "Action List",
+   "fields": {
+    "definition": "In REAPER, the Action List is the searchable window that lists every available command (action) in the program; from it, actions can be run directly, bound to keyboard, MIDI or OSC shortcuts, or combined into custom actions and macros.",
+    "plain_english": "The Action List is REAPER's master menu of every command the program can run. You open it to find a command, run it, or give it a shortcut key. Think of a giant index of every button in the app.",
+    "purpose_function": "It gives one place to find, trigger and assign shortcuts to any function, and to build custom actions or macros, so users can tailor and speed up their workflow.",
+    "practical_application": "An engineer opens the Action List from the Actions menu, searches for a command, assigns it a key or controller button, or chains several actions into one macro for a repetitive editing task.",
+    "category": "Workflow",
+    "related_terms": [
+     "Custom action",
+     "Macro",
+     "Keyboard shortcut",
+     "ReaScript",
+     "Key binding",
+     "Command"
+    ],
+    "common_mistakes": [
+     "Assigning a shortcut that collides with an existing binding without noticing the conflict.",
+     "Confusing the Action List with the track or media context menus.",
+     "Building a long macro without saving it as a named custom action, then being unable to reuse it."
+    ],
+    "scenario_contexts": [
+     "Binding a rarely used command to a key during a fast editing session.",
+     "Creating a macro that splits, trims and fades a clip in one keystroke.",
+     "Searching the Action List to find a feature whose menu location is unknown."
+    ]
+   },
+   "sources": [
+    "REAPER User Guide (Cockos Incorporated) - Actions and the Action List",
+    "REAPER Quick Start Guide (Cockos Incorporated)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "37fca017-9851-4b64-aefa-0ffb2a21ed3b",
+   "term": "Active take",
+   "fields": {
+    "definition": "In DAW comping, the active take is the single recorded pass currently selected to play back from a take folder (or playlist) that holds several passes; only the active take sounds, and comping assembles a composite performance by choosing which take is active across different sections.",
+    "plain_english": "When you record something several times, all the tries are stored together. The active take is the one you have picked to actually play right now, while the others stay muted underneath.",
+    "purpose_function": "It lets an engineer audition and switch between multiple recorded passes and assemble the best parts into one composite performance without deleting any takes.",
+    "practical_application": "While comping vocals, the engineer clicks to make a chosen take active for each phrase, and the selected segments join into the final comp.",
+    "category": "Comping",
+    "related_terms": [
+     "Take folder",
+     "Comp",
+     "Playlist",
+     "Punch-in",
+     "Quick Swipe Comping",
+     "Take"
+    ],
+    "common_mistakes": [
+     "Flattening or deleting the take folder too early and losing the alternate takes.",
+     "Assuming muted takes are gone; they are still there, just inactive.",
+     "Editing the composite before confirming the right take is active for each section."
+    ],
+    "scenario_contexts": [
+     "Comping a lead vocal from ten recorded passes.",
+     "Switching the active guitar-solo take to compare two performances.",
+     "Choosing the active take for each line before flattening a comp."
+    ]
+   },
+   "sources": [
+    "Apple Logic Pro User Guide (Takes and comps in take folders)",
+    "Avid Pro Tools Reference Guide (Playlists and comping)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ec26cce4-25c0-4860-b128-8bbee241ed87",
+   "term": "Adapt Project Tempo",
+   "fields": {
+    "definition": "A Logic Pro Smart Tempo project-tempo mode (Adapt) in which the project tempo follows the performance: Logic analyses recorded or imported audio or MIDI, leaves the timing of the material intact, and generates a tempo map that matches the material's actual tempo.",
+    "plain_english": "Adapt Project Tempo tells Logic to follow your playing instead of forcing you onto a fixed click. It listens to your recording and bends the song's tempo grid to match how you actually played.",
+    "purpose_function": "It preserves the natural feel and tempo changes of a free performance while still giving the project a matching tempo map, so grids, loops and quantised parts can line up with the real timing.",
+    "practical_application": "A producer records a freely played piano take with Smart Tempo set to Adapt so Logic builds a tempo map from the performance, then adds quantised drums that follow that map.",
+    "category": "Tempo & Sync",
+    "related_terms": [
+     "Smart Tempo",
+     "Tempo map",
+     "Keep mode",
+     "Flex Time",
+     "Beat mapping",
+     "Quantization"
+    ],
+    "common_mistakes": [
+     "Leaving Adapt on when you actually want the take conformed to a fixed tempo, which is Keep mode instead.",
+     "Recording against a poor reference and getting a jumpy, wrong tempo map.",
+     "Confusing Adapt (the project follows the performance) with Keep (the performance follows the project)."
+    ],
+    "scenario_contexts": [
+     "Capturing a freely played piano intro and building a tempo map from it.",
+     "Importing a live recording made without a click and having the project tempo follow it.",
+     "Preserving natural tempo drift in a singer-songwriter demo."
+    ]
+   },
+   "sources": [
+    "Apple Logic Pro User Guide (Choose the Project Tempo mode; Smart Tempo)",
+    "Sound on Sound, Logic Pro: Using Smart Tempo"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "19ea5180-a0d2-4bb1-9c82-8e695a443782",
+   "term": "Adaptive DSP",
+   "fields": {
+    "definition": "Digital signal processing whose algorithm parameters adjust themselves in real time from the incoming signal or environment, typically using adaptive filters (for example LMS or RLS) that continuously update their coefficients to minimise an error signal; in audio it underlies tasks such as adaptive feedback suppression, echo and noise cancellation, and room correction.",
+    "plain_english": "Adaptive DSP is processing that changes its own settings to match the sound coming in. It does not use fixed settings; it keeps adjusting itself. Think of cruise control that keeps tweaking the gas to hold one speed.",
+    "purpose_function": "It automatically tracks changing signals or acoustics so the processor stays effective without manual retuning, for example hunting and notching feedback as a room's response shifts.",
+    "practical_application": "A technician relies on a processor's adaptive feedback suppression to detect and notch ringing frequencies during a live event as mic positions and room conditions change.",
+    "category": "Signal Processing",
+    "related_terms": [
+     "Adaptive filter",
+     "Feedback suppression",
+     "Echo cancellation",
+     "Noise gate",
+     "DSP",
+     "Room correction"
+    ],
+    "common_mistakes": [
+     "Trusting adaptive feedback suppression to rescue a badly gain-staged or poorly positioned system instead of setting it up properly first.",
+     "Assuming 'adaptive' means no setup is needed; it still needs sensible input levels and limits.",
+     "Letting aggressive adaptive filtering audibly dull or thin the program material."
+    ],
+    "scenario_contexts": [
+     "Adaptive feedback suppression on a lectern mic in a reverberant room.",
+     "Acoustic echo cancellation in a conferencing DSP matrix.",
+     "An adaptive room-tuning process tracking changing audience absorption during a show."
+    ]
+   },
+   "sources": [
+    "Rane Technical Note 158, Understanding Acoustic Feedback and Suppressors",
+    "IEEE / adaptive-filtering signal-processing literature (adaptive filters, LMS/RLS)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,323 @@
+{
+ "batch": 424,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "b3b3dbf1-b93a-4f76-89ea-866380e52af8",
+   "term": "Polyphase resampler",
+   "fields": {
+    "definition": "A polyphase resampler is a sample-rate converter that changes a signal's sampling rate by an integer or rational L/M factor while implementing its anti-aliasing and interpolation filter as a polyphase structure, that is, decomposed into several parallel sub-filters called phases. This organization computes only the output samples that are actually retained, avoiding the wasted multiplications of computing and then discarding samples, so upsampling, downsampling, and fractional rate conversion run efficiently.",
+    "plain_english": "A polyphase resampler changes a sound's sample rate, such as going from 48 to 44.1 thousand samples a second. It splits its filter into small parts so it only does the math for samples it keeps, which saves a lot of work.",
+    "purpose_function": "It exists to convert between sample rates accurately and efficiently, using the polyphase decomposition so that only the needed output samples are computed and the filtering is done at the lowest workable rate.",
+    "practical_application": "A technician meets polyphase resampling inside the sample-rate converters in DAWs, audio interfaces, and DSP that must reconcile devices running at different clocks, for example bringing 48 kHz video audio into a 44.1 kHz session.",
+    "category": "Multirate DSP",
+    "related_terms": [
+     "Sample rate conversion",
+     "Decimation",
+     "Interpolation",
+     "Anti-aliasing filter",
+     "Finite impulse response filter",
+     "Nyquist frequency"
+    ],
+    "common_mistakes": [
+     "Assuming resampling is lossless; converting between unrelated rates such as 44.1 and 48 kHz always involves filtering and adds some error",
+     "Confusing the polyphase structure with a different filter; it computes the same result as the direct filter, just far more efficiently",
+     "Ignoring filter quality; a cheap resampler can alias or dull high frequencies, so the anti-alias and anti-image filter design matters",
+     "Thinking a higher output rate adds detail; upsampling cannot create information above the original signal's bandwidth"
+    ],
+    "scenario_contexts": [
+     "Importing 48 kHz location audio into a 44.1 kHz music session",
+     "Matching an interface or network-audio clock to a session running at a different sample rate",
+     "Building a sample-rate converter block inside an audio DSP signal chain"
+    ]
+   },
+   "sources": [
+    "Crochiere & Rabiner, Multirate Digital Signal Processing",
+    "Vaidyanathan, Multirate Systems and Filter Banks"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4ed43b81-d626-4d0a-a6f3-a1244ec5364e",
+   "term": "Pretraining",
+   "fields": {
+    "definition": "Pretraining is the initial training phase in which a model learns general-purpose parameters from a large, often unlabeled or weakly labeled dataset, before it is adapted to a specific downstream task by fine-tuning. The pretrained model captures broadly useful features or representations, giving a strong starting point that improves performance and reduces the labeled data and compute needed for the target task.",
+    "plain_english": "Pretraining is a first round of learning on a huge pile of general data, before a model is tuned for one job. It is like a student getting a broad education first and then specializing later.",
+    "purpose_function": "It exists to build reusable, general knowledge in a model from abundant data, so that later fine-tuning on a smaller labeled set is faster, cheaper, and more accurate than training from scratch.",
+    "practical_application": "A technician encounters it when using audio models built on pretrained backbones, such as speech or music models pretrained on large audio corpora and then fine-tuned for tasks like transcription, tagging, or source separation.",
+    "category": "Model training",
+    "related_terms": [
+     "Fine-tuning",
+     "Transfer learning",
+     "Self-supervised learning",
+     "Representation learning",
+     "Foundation model",
+     "Inference"
+    ],
+    "common_mistakes": [
+     "Confusing pretraining with fine-tuning; pretraining builds general features, while fine-tuning adapts them to a specific task",
+     "Assuming a pretrained model works out of the box on any domain; a mismatch between the pretraining data and the target audio can hurt results",
+     "Thinking pretraining always needs labels; much pretraining is self-supervised on unlabeled data"
+    ],
+    "scenario_contexts": [
+     "Fine-tuning a speech model that was pretrained on thousands of hours of audio",
+     "Choosing an audio backbone pretrained on general sound before adapting it to a niche task",
+     "Explaining why a model needed little labeled data because it was already pretrained"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning",
+    "Erhan et al., Why Does Unsupervised Pre-training Help Deep Learning?, Journal of Machine Learning Research 2010"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "029f041f-3efc-46b8-9ded-875f65b4a971",
+   "term": "Principal component analysis",
+   "fields": {
+    "definition": "Principal component analysis (PCA) is an unsupervised linear technique that transforms a set of possibly correlated variables into a new set of uncorrelated variables called principal components, ordered so that each successive component captures the maximum remaining variance while being orthogonal to the others. It is computed from the eigenvectors of the data's covariance matrix, or equivalently via the singular value decomposition, and is widely used for dimensionality reduction, decorrelation, and visualization.",
+    "plain_english": "PCA finds the directions in which data varies the most and describes each point using those few directions instead of many. It is like describing a cloud of points by its longest and widest directions of spread.",
+    "purpose_function": "It exists to reduce the number of dimensions in data while keeping as much of its variation as possible, which removes redundancy, speeds later processing, and can reveal structure by projecting data onto its most informative axes.",
+    "practical_application": "A technician meets PCA when compressing or decorrelating audio feature sets, such as reducing large spectral or MFCC feature vectors before classification, or when visualizing high-dimensional audio data.",
+    "category": "Dimensionality reduction",
+    "related_terms": [
+     "Dimensionality reduction",
+     "Feature extraction",
+     "Representation learning",
+     "Singular value decomposition",
+     "Covariance matrix",
+     "Whitening"
+    ],
+    "common_mistakes": [
+     "Forgetting to center and usually scale the data first; PCA on unstandardized features is dominated by the largest-magnitude ones",
+     "Assuming principal components are meaningful physical features; they are abstract variance directions and are not necessarily interpretable",
+     "Using PCA on strongly nonlinear data; it captures only linear structure, so nonlinear methods may be needed"
+    ],
+    "scenario_contexts": [
+     "Reducing a large MFCC or spectral feature set before feeding a classifier",
+     "Visualizing high-dimensional audio embeddings in two or three dimensions",
+     "Decorrelating features to speed up or stabilize model training"
+    ]
+   },
+   "sources": [
+    "Bishop, Pattern Recognition and Machine Learning",
+    "Jolliffe, Principal Component Analysis"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "84a271a5-7ee5-4c0b-9cb1-b072f823fa03",
+   "term": "Prompt / text conditioning",
+   "fields": {
+    "definition": "Prompt or text conditioning is the technique of guiding a generative model's output with a natural-language text input so that the generated audio or other media matches the described content. The text is encoded into embeddings by a text encoder and injected into the generative model, commonly through cross-attention or by concatenation, so that it steers sampling toward outputs consistent with the prompt.",
+    "plain_english": "Text conditioning lets you steer an AI by typing a description, such as soft rain on a tin roof, and getting sound that matches. The words are turned into numbers the model can follow, like giving it a written order.",
+    "purpose_function": "It exists to give users control over what a generative model produces by turning a natural-language description into a signal the model can follow, aligning the output with the requested content or style.",
+    "practical_application": "A technician encounters it in text-to-audio, text-to-music, and text-to-speech tools, where typing a prompt drives sound-effect, music, or voice generation, and the exact wording strongly affects the result.",
+    "category": "Generative modeling",
+    "related_terms": [
+     "Generative model",
+     "Embedding",
+     "Cross-attention",
+     "Text encoder",
+     "Diffusion model",
+     "Text-to-audio"
+    ],
+    "common_mistakes": [
+     "Expecting exact, repeatable output from a prompt; generation is probabilistic, so the same prompt can give different results",
+     "Assuming more words always help; vague or overloaded prompts can confuse the model and blur the output",
+     "Confusing text conditioning with search; the model generates new audio, it does not retrieve an existing recording that matches the words"
+    ],
+    "scenario_contexts": [
+     "Typing a description to generate a sound effect in a text-to-audio tool",
+     "Prompting a text-to-music model for a backing track in a given style",
+     "Steering a text-to-speech voice with a written style or emotion cue"
+    ]
+   },
+   "sources": [
+    "Radford et al., Learning Transferable Visual Models From Natural Language Supervision (CLIP), ICML 2021",
+    "Copet et al., Simple and Controllable Music Generation (MusicGen), NeurIPS 2023"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "91d0fea9-211a-4fef-acd2-091e468b3f6d",
+   "term": "Quantization",
+   "fields": {
+    "definition": "Quantization is the process of mapping values from a large or continuous range onto a smaller, finite set of discrete levels, which necessarily discards information and introduces quantization error. In digital audio it is the amplitude-rounding step of analog-to-digital conversion, in which each sample is rounded to the nearest level allowed by the bit depth; in machine learning it also refers to reducing the numerical precision of a model's weights and activations to shrink the model and speed up computation.",
+    "plain_english": "Quantization means rounding values to a fixed set of steps, so a little detail is lost each time. When you record, each sample is rounded to the nearest step, a bit like rounding money to the nearest cent.",
+    "purpose_function": "It exists because digital systems can store only a finite set of values, so continuous signals or high-precision numbers must be rounded to discrete levels; the number of levels sets the trade-off between size or speed and accuracy.",
+    "practical_application": "A technician meets quantization when choosing bit depth for recording and adding dither to mask its error, and, in AI audio tools, when a model is quantized to lower precision so it runs faster on limited hardware.",
+    "category": "Digital audio",
+    "related_terms": [
+     "Bit depth",
+     "Analog-to-digital conversion",
+     "Dither",
+     "Quantization error",
+     "Sampling",
+     "Signal-to-noise ratio"
+    ],
+    "common_mistakes": [
+     "Confusing quantization, which rounds amplitude, with sampling, which discretizes time; they are two separate steps in digitizing a signal",
+     "Truncating to a lower bit depth without dither; this turns low-level quantization error into signal-correlated (harmonic) distortion, most audible on quiet passages and fade-outs, instead of the benign random noise that dither restores",
+     "Thinking more bits always audibly improve a mix; beyond a point the quantization noise already sits below other noise and adds no audible benefit",
+     "Assuming model quantization is free; reducing a neural network's precision can lower its accuracy if done carelessly"
+    ],
+    "scenario_contexts": [
+     "Choosing 24-bit recording to keep quantization noise low while tracking",
+     "Applying dither when exporting a 24-bit mix down to 16-bit for CD",
+     "Quantizing a neural-network audio model to 8-bit integers so it runs on an embedded device"
+    ]
+   },
+   "sources": [
+    "Oppenheim & Schafer, Discrete-Time Signal Processing",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b1d80cb2-fa5e-461d-b673-c969a3fd29cd",
+   "term": "Real-time inference",
+   "fields": {
+    "definition": "Real-time inference is the running of a trained model on incoming data under a strict latency budget, so that each input is processed and its output delivered fast enough to keep pace with a live stream. In audio this means the model must return its result within the available buffer time, typically a few to a few tens of milliseconds, so processing stays in step with the audio without dropouts.",
+    "plain_english": "Real-time inference means a trained model has to answer fast enough to keep up with live sound, not whenever it happens to finish. It is like a translator who must speak as the person talks, without falling behind.",
+    "purpose_function": "It exists to let learned models be used in live settings, imposing a hard time limit so the model's output arrives in step with the audio, which in turn shapes model size, hardware, and buffer choices.",
+    "practical_application": "A technician meets it when running AI plugins live, such as real-time noise suppression, de-reverb, or source separation, where latency and buffer size must be set so the model keeps up without glitches.",
+    "category": "Machine learning concept",
+    "related_terms": [
+     "Inference",
+     "Latency",
+     "Buffer size",
+     "Real-time processing",
+     "Quantization",
+     "Keyword spotting"
+    ],
+    "common_mistakes": [
+     "Confusing throughput with latency; a model can process many files quickly overall yet still be too slow to answer within one live buffer",
+     "Ignoring worst-case timing; occasional slow inferences cause dropouts even when the average speed is fine",
+     "Assuming a model that runs offline will run live; real-time use often forces a smaller or quantized model to meet the latency budget"
+    ],
+    "scenario_contexts": [
+     "Running a real-time noise-suppression model on a live broadcast microphone",
+     "Applying AI de-reverb during a live performance within the buffer time",
+     "Deploying a wake-word detector that must respond continuously with low latency"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning",
+    "Bishop, Pattern Recognition and Machine Learning"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6fba68fe-7c4a-49a3-8591-fe19226eaf0d",
+   "term": "Recurrent neural network (RNN)",
+   "fields": {
+    "definition": "A recurrent neural network (RNN) is a class of neural network for sequential data in which connections form cycles, so the network maintains a hidden state that is updated at each time step and carries information from previous inputs forward. This recurrence lets it model temporal dependencies in sequences of variable length and it is trained by backpropagation through time; gated variants such as LSTM and GRU were developed to reduce the vanishing-gradient problem that limits learning of long-range dependencies.",
+    "plain_english": "An RNN is a neural network that reads data in order and remembers what came before through a running memory. It is like reading a sentence word by word while keeping the earlier words in mind.",
+    "purpose_function": "It exists to process sequences such as audio or text by keeping a memory of past inputs, so its output at each step can depend on context rather than treating each input in isolation.",
+    "practical_application": "A technician encounters RNNs, often the LSTM or GRU variants, in older or lightweight speech recognition, music modeling, and some real-time audio effects, though Transformers have replaced them for many large-scale tasks.",
+    "category": "Neural network architecture",
+    "related_terms": [
+     "Neural network",
+     "Long short-term memory",
+     "Backpropagation through time",
+     "Transformer",
+     "Sequence modeling",
+     "Vanishing gradient"
+    ],
+    "common_mistakes": [
+     "Assuming a plain RNN captures long-range context well; without gating it suffers vanishing gradients and forgets distant inputs",
+     "Confusing the hidden state with stored training data; it is a running summary of the sequence, not a memory of past examples",
+     "Treating RNNs and Transformers as interchangeable; an RNN processes step by step, while a Transformer attends to a whole sequence in parallel"
+    ],
+    "scenario_contexts": [
+     "Modeling audio or MIDI sequences frame by frame",
+     "Running a lightweight LSTM-based speech or keyword model on limited hardware",
+     "Emulating a nonlinear audio effect with a small recurrent network"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning",
+    "Hochreiter & Schmidhuber, Long Short-Term Memory, Neural Computation 1997"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "33a688b8-3d95-4570-ba7a-774990ebcd6e",
+   "term": "Recursive least squares filter",
+   "fields": {
+    "definition": "The recursive least squares (RLS) filter is an adaptive filter that updates its coefficients every sample to minimize a weighted sum of past squared errors, using a recursive update of the inverse input-correlation matrix so it need not re-solve the whole least-squares problem from scratch. Compared with the LMS algorithm it converges much faster and is nearly independent of the input signal's eigenvalue spread, at the cost of higher computational complexity and greater numerical sensitivity.",
+    "plain_english": "An RLS filter adjusts itself on the fly to best match a target, updating its settings with every new sample. It uses all the data so far, so it learns fast, like a marksman correcting aim after each shot.",
+    "purpose_function": "It exists to solve the least-squares filtering problem adaptively in real time, converging quickly to the best coefficients so it can track and cancel signals whose statistics are unknown or slowly changing.",
+    "practical_application": "A technician meets RLS in adaptive tasks such as echo and noise cancellation, feedback suppression, and system identification, where its fast convergence is worth the extra computation over LMS.",
+    "category": "Adaptive filtering",
+    "related_terms": [
+     "Adaptive filter",
+     "Least mean squares filter",
+     "Echo cancellation",
+     "System identification",
+     "Kalman filter",
+     "Wiener filter"
+    ],
+    "common_mistakes": [
+     "Assuming RLS is always better than LMS; it converges faster but costs far more computation and can be numerically unstable",
+     "Ignoring the forgetting factor; setting it wrong makes the filter either too sluggish or too jumpy on changing signals",
+     "Overlooking numerical issues; finite-precision updates of the inverse correlation matrix can drift or blow up without safeguards"
+    ],
+    "scenario_contexts": [
+     "Adaptive echo cancellation on a hands-free or conferencing audio path",
+     "Suppressing acoustic feedback that changes as a room or microphone moves",
+     "Identifying an unknown system response for equalization or modeling"
+    ]
+   },
+   "sources": [
+    "Haykin, Adaptive Filter Theory",
+    "Sayed, Fundamentals of Adaptive Filtering"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4df37f3d-1b80-48dc-8c86-2541a4083e79",
+   "term": "Representation learning",
+   "fields": {
+    "definition": "Representation learning is a set of machine-learning methods that automatically discover useful features or representations of raw data directly from the data, rather than relying on hand-engineered features. Good learned representations make the underlying factors of variation explicit and transferable, so that downstream tasks such as classification or separation become easier; deep neural networks perform representation learning by building a hierarchy of increasingly abstract features across their layers.",
+    "plain_english": "Representation learning is when a model finds useful features in raw data by itself. People do not have to design the features by hand. It is like the model learning what to notice on its own.",
+    "purpose_function": "It exists to replace manual feature engineering with features learned from data, producing representations that capture the important structure of a signal and transfer well to many downstream tasks.",
+    "practical_application": "A technician meets it in modern audio systems that learn embeddings straight from waveforms or spectrograms, feeding those learned features into tasks such as classification, tagging, source separation, or similarity search.",
+    "category": "Machine learning concept",
+    "related_terms": [
+     "Feature extraction",
+     "Embedding",
+     "Deep neural network",
+     "Self-supervised learning",
+     "Principal component analysis",
+     "Pretraining"
+    ],
+    "common_mistakes": [
+     "Assuming learned features are interpretable; they often are not directly meaningful to a human even when they work well",
+     "Confusing representation learning with hand-crafted feature extraction; here the features are learned from data, not designed by an engineer",
+     "Expecting learned representations to transfer everywhere; features learned on one domain can fail on very different audio"
+    ],
+    "scenario_contexts": [
+     "Learning audio embeddings from spectrograms for a tagging or search system",
+     "Using a self-supervised model's learned features as input to a small classifier",
+     "Comparing learned features with traditional MFCCs for a recognition task"
+    ]
+   },
+   "sources": [
+    "Bengio, Courville & Vincent, Representation Learning: A Review and New Perspectives, IEEE TPAMI 2013",
+    "Goodfellow, Bengio & Courville, Deep Learning"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

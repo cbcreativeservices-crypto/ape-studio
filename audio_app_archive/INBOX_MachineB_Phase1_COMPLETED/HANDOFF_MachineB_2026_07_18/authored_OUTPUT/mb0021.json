@@ -1,0 +1,287 @@
+{
+ "batch": 21,
+ "topic": "Instrument Recording — Keys, Winds & Brass",
+ "authored": [
+  {
+   "id": "24efb917-f138-483c-90de-c8f7db86c1da",
+   "term": "Single reed",
+   "fields": {
+    "definition": "A single-reed system uses one flat cane or synthetic reed clamped against a mouthpiece; air pressure makes the reed vibrate against the mouthpiece opening and drive the instrument's air column. Clarinets and saxophones are the main single-reed woodwinds, as distinct from double-reed instruments such as the oboe and bassoon.",
+    "plain_english": "It is a mouthpiece with one thin strip of cane. Your breath makes that strip flap fast, and the buzz starts the note. Clarinets and saxes work this way.",
+    "purpose_function": "The single reed acts as a pressure-controlled valve that turns steady breath into a vibrating sound source, setting the air column inside the instrument into oscillation to make pitched tones.",
+    "practical_application": "When recording clarinet or saxophone, engineers treat the reed as the sound's starting point and place mics toward the tone holes and body, not only the bell, because sound leaves the whole instrument.",
+    "category": "Woodwind instruments",
+    "related_terms": [
+     "Double reed",
+     "Woodwind blend",
+     "Woodwind projection",
+     "Mouthpiece",
+     "Embouchure"
+    ],
+    "common_mistakes": [
+     "Thinking the reed sets the pitch, when the tube length and open tone holes set pitch while the reed drives the vibration.",
+     "Assuming single and double reeds sound alike, when reed type strongly shapes tone and technique.",
+     "Miking only the bell, which misses much of a single-reed instrument's true sound."
+    ],
+    "scenario_contexts": [
+     "Recording a jazz saxophone solo in a studio.",
+     "Setting up a clarinet mic for a chamber-music session.",
+     "Explaining why a clarinet and an oboe are grouped in different reed families."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Baines, Woodwind Instruments and Their History",
+    "The New Grove Dictionary of Music and Musicians (Reed)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "575acec9-2a22-49b7-982f-525853a095db",
+   "term": "Stage piano",
+   "fields": {
+    "definition": "A stage piano is a purpose-built electronic keyboard optimized for live performance, pairing high-quality piano and core keyboard sounds with a weighted, hammer-action keybed. It stresses gigging features such as line or balanced outputs, fast sound selection, and rugged build rather than the deep sound libraries of a workstation.",
+    "plain_english": "It is an electronic piano made for playing shows. The keys feel heavy like a real piano. It is built tough and simple so it holds up on stage.",
+    "purpose_function": "It exists to give players a portable, robust instrument with realistic piano feel and sound for live use, without the weight and fragility of an acoustic piano.",
+    "practical_application": "On a gig, a technician takes the stage piano's stereo line or balanced outputs into DI boxes or the console and may split a feed to the player's monitor.",
+    "category": "Keyboard instruments",
+    "related_terms": [
+     "Stereo keyboard output",
+     "Tonewheel organ",
+     "DI box",
+     "Weighted action",
+     "Workstation keyboard"
+    ],
+    "common_mistakes": [
+     "Confusing a stage piano with a full workstation, when stage pianos focus on piano and core sounds, not deep production tools.",
+     "Plugging a line-level output into a mic input, which overloads the preamp and distorts.",
+     "Assuming it has speakers, when most stage pianos have none and need a PA or monitor."
+    ],
+    "scenario_contexts": [
+     "A keyboardist gigging with a band at a club.",
+     "A worship team running a stage piano through the house PA.",
+     "A studio session where a stage piano is DI'd for a clean piano track."
+    ]
+   },
+   "sources": [
+    "Yamaha CP88/CP73 Owner's Manual",
+    "Nord Piano Owner's Manual (Clavia)",
+    "Roland RD-2000 Owner's Manual"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d4b2ebce-4af1-446a-a79c-072768a73e77",
+   "term": "Stereo keyboard output",
+   "fields": {
+    "definition": "Stereo keyboard output is the pair of left and right audio signals produced by an electronic keyboard whose sound engine, samples, and effects are spread across a stereo field. Capturing both channels preserves the intended width, movement, and stereo effects such as chorus or reverb.",
+    "plain_english": "Many keyboards send out two signals, a left and a right. Together they make the sound wide, like it is spread across two speakers. You capture both to keep that width.",
+    "purpose_function": "It lets an instrument deliver its built-in stereo width and effects to a mixer or recorder, so listeners hear the sound as designed instead of collapsed to one point.",
+    "practical_application": "Engineers take both the left and right jacks into two DI boxes or two console channels, pan them hard left and right, and check that a mono fold-down still sounds right.",
+    "category": "Keyboard recording",
+    "related_terms": [
+     "Stage piano",
+     "Tonewheel organ",
+     "DI box",
+     "Line level",
+     "Mono compatibility"
+    ],
+    "common_mistakes": [
+     "Recording only the left output, which can drop half the sound or key effects.",
+     "Skipping a mono check, so the mix thins out on mono systems.",
+     "Panning both channels to center, which throws away the stereo image."
+    ],
+    "scenario_contexts": [
+     "DI'ing a synth's left and right outputs for a stereo pad.",
+     "Setting up a keyboard rig with two console channels for stereo.",
+     "Checking mono compatibility of a stereo patch before a broadcast."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers",
+    "Roland/Yamaha keyboard owner's manuals (L/Mono and R output specifications)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2e092648-2683-4e19-83fa-728b8610080f",
+   "term": "Tonewheel organ",
+   "fields": {
+    "definition": "A tonewheel organ is an electromechanical organ, exemplified by the Hammond, that generates each pitch with a spinning toothed metal wheel (tonewheel) next to a magnetic pickup, inducing an alternating voltage. Nine drawbars mix near-sine harmonics by additive synthesis to build the timbre.",
+    "plain_english": "It is an old-style electric organ. Spinning metal wheels sit next to magnets and make the sound. Sliders called drawbars mix these tones to shape the voice.",
+    "purpose_function": "The tonewheel system produces stable, continuously sustained tones and lets the player build custom timbres with drawbars, giving the instrument its signature jazz, gospel, and rock sound.",
+    "practical_application": "In the studio or on stage, its sound is usually taken from a rotating-speaker cabinet, close-miked on the treble horn and bass rotor, rather than from a direct output.",
+    "category": "Keyboard instruments",
+    "related_terms": [
+     "Drawbar",
+     "Rotary speaker",
+     "Stage piano",
+     "Additive synthesis",
+     "Stereo keyboard output"
+    ],
+    "common_mistakes": [
+     "Thinking it is a synthesizer, when the tones come from spinning wheels, not oscillators.",
+     "DI'ing the organ and skipping the rotary speaker, which is central to the sound.",
+     "UNSAFE: Servicing a vintage tube amplifier or rotary cabinet without discharging the capacitors first, since they can hold a lethal charge even when unplugged."
+    ],
+    "scenario_contexts": [
+     "Miking a rotary-speaker cabinet for a gospel session.",
+     "Recording a Hammond B-3 for a rock track.",
+     "Setting drawbars to dial in a jazz organ tone."
+    ]
+   },
+   "sources": [
+    "Sound on Sound, Synthesizing Tonewheel Organs",
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Hammond Organ Service Manual",
+    "NFPA 70E (safe capacitor discharge before servicing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "14c9b4c0-7800-4635-8add-fc8071a19fad",
+   "term": "Treble reeds",
+   "fields": {
+    "definition": "Treble reeds are the free reeds on the treble (right-hand) side of an accordion or harmonium, which sound the melody and higher pitches. They are grouped in reed banks at different octave footings that register switches combine, as distinct from the instrument's bass reeds.",
+    "plain_english": "These are the reeds that make the higher, tune-playing notes on an accordion. They sit on the right-hand side. The left-hand side has separate bass reeds.",
+    "purpose_function": "They provide the melodic voice of a free-reed keyboard instrument, and their multiple banks let the player thicken or brighten the tone with register switches.",
+    "practical_application": "When miking an accordion, engineers place a mic near the treble grille to capture the melody reeds, often adding a second mic on the bass side for balance.",
+    "category": "Free-reed instruments",
+    "related_terms": [
+     "Tremolo harmonica",
+     "Single reed",
+     "Register switch",
+     "Woodwind blend",
+     "Free reed"
+    ],
+    "common_mistakes": [
+     "Confusing treble reeds with a single reed like a clarinet's, when free reeds vibrate freely in a slot and are not blown against a mouthpiece.",
+     "Miking only one side of an accordion and missing the treble melody.",
+     "Assuming one reed sounds per key, when several banks can sound at once."
+    ],
+    "scenario_contexts": [
+     "Miking an accordion's treble side for a folk recording.",
+     "Choosing register switches to brighten the melody voice.",
+     "Explaining why accordion tone changes with different reed banks."
+    ]
+   },
+   "sources": [
+    "The New Grove Dictionary of Music and Musicians (Accordion)",
+    "Baines, European and American Musical Instruments",
+    "Fletcher & Rossing, The Physics of Musical Instruments (free-reed instruments)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a5d238d5-5be6-456b-88ce-9edb542bd834",
+   "term": "Tremolo harmonica",
+   "fields": {
+    "definition": "A tremolo harmonica has two reeds for each note, mounted in paired upper and lower holes and tuned slightly apart. The small pitch difference makes the two tones beat against each other, producing its characteristic wavering, shimmering tremolo sound.",
+    "plain_english": "This harmonica has two reeds for every note. One is tuned a tiny bit higher than the other. The two notes clash gently, giving a wavy, trembling sound.",
+    "purpose_function": "The paired detuned reeds create a built-in tremolo effect, giving the instrument a rich, folk-style voice with no electronics.",
+    "practical_application": "Engineers record it with a single close mic and expect the natural beating; heavy pitch correction or processing fights the intended wavering tone.",
+    "category": "Free-reed instruments",
+    "related_terms": [
+     "Treble reeds",
+     "Single reed",
+     "Beating",
+     "Detuning",
+     "Woodwind blend"
+    ],
+    "common_mistakes": [
+     "Thinking the wavering is a fault, when the detuned reed pair is intentional.",
+     "Trying to pitch-correct it, which destroys the tremolo character.",
+     "Confusing it with a chromatic harmonica, which uses a slide instead of paired reeds."
+    ],
+    "scenario_contexts": [
+     "Recording a folk tremolo harmonica part.",
+     "Explaining why the instrument sounds wet or shimmering.",
+     "Choosing a tremolo versus a diatonic harmonica for a session."
+    ]
+   },
+   "sources": [
+    "The New Grove Dictionary of Music and Musicians (Harmonica)",
+    "Baines, European and American Musical Instruments",
+    "Fletcher & Rossing, The Physics of Musical Instruments (free-reed instruments)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "14087efb-cf4f-4b5d-8939-4e32d73ad17c",
+   "term": "Woodwind blend",
+   "fields": {
+    "definition": "Woodwind blend is the degree to which the timbres of woodwind instruments fuse into a single, unified section sound rather than being heard as separate voices. It depends on matched dynamics, tuning, and articulation, and in recording on microphone choice and placement.",
+    "plain_english": "Blend is how well woodwinds melt into one smooth sound together. When it works, you hear the group, not each player. Good tuning and matching help it happen.",
+    "purpose_function": "Blend gives a woodwind section a cohesive, even color, which composers and engineers use to create smooth pads and unified lines.",
+    "practical_application": "Engineers often record a woodwind section with a shared main mic pair for natural blend, adding spot mics only when a line needs support.",
+    "category": "Woodwind recording",
+    "related_terms": [
+     "Woodwind projection",
+     "Single reed",
+     "Spot mic",
+     "Room mic",
+     "Main pair"
+    ],
+    "common_mistakes": [
+     "Close-miking every player, which separates the sound and hurts blend.",
+     "Ignoring tuning and dynamic differences that break the unified color.",
+     "Assuming more mics always sound better, when a main pair often blends best."
+    ],
+    "scenario_contexts": [
+     "Recording a woodwind quintet for a film score.",
+     "Balancing flutes and clarinets so they fuse in a mix.",
+     "Choosing a main-pair setup for a natural section sound."
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Piston, Orchestration",
+    "Huber & Runstein, Modern Recording Techniques (ensemble recording)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dc8cb628-bd8c-404e-ab70-16b6ff537be9",
+   "term": "Woodwind projection",
+   "fields": {
+    "definition": "Woodwind projection is how effectively a woodwind instrument radiates sound outward into a space, set by its acoustic power output and directivity. Because sound leaves from the open tone holes and the bell, projection changes with register, dynamics, and direction, which affects how the instrument carries and how it is miked.",
+    "plain_english": "Projection is how well a woodwind pushes its sound out into a room. Some notes carry far, others stay close. Where the sound comes out changes where you point a mic.",
+    "purpose_function": "Understanding projection helps players fill a hall and helps engineers place mics where the instrument radiates most of its sound.",
+    "practical_application": "Because low notes and soft passages radiate mainly from the open tone holes rather than the bell, engineers aim mics at the body and keys, not just the end of the instrument.",
+    "category": "Woodwind recording",
+    "related_terms": [
+     "Woodwind blend",
+     "Single reed",
+     "Directivity",
+     "Spot mic",
+     "Tone holes"
+    ],
+    "common_mistakes": [
+     "Miking the bell like a trumpet, when most woodwind sound comes from the tone holes.",
+     "Ignoring that projection changes with register, so mic balance shifts across the range.",
+     "Assuming louder always means better projection, when direction and tone also matter."
+    ],
+    "scenario_contexts": [
+     "Placing a flute mic for even level across its range.",
+     "Deciding mic distance for a clarinet in a live room.",
+     "Explaining why a bassoon needs mics near its body, not just the bell."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (sound radiation and directivity)",
+    "Adler, The Study of Orchestration",
+    "Ballou, Handbook for Sound Engineers (microphone placement)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 45,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "09482683-7f97-4496-b1c0-149028aca0f6",
+   "term": "Drum-bus glue",
+   "fields": {
+    "definition": "The use of light bus compression across the summed drum subgroup, typically at a low ratio with a slow attack and only a few dB of gain reduction, so the individual kit elements move together and cohere as a single instrument.",
+    "plain_english": "It is a gentle squeeze put on all the drum tracks at once so they sound like one tight kit instead of separate parts. Think of it like a rubber band that pulls the drums together into a single group.",
+    "purpose_function": "It exists to make separately miked drum elements behave as one cohesive kit, tightening the ensemble and adding consistency and perceived loudness to the group.",
+    "practical_application": "On the drum subgroup a mixer inserts a bus compressor set for roughly one to three dB of gain reduction with a slow attack, listening for the kit to sound tighter and more unified.",
+    "category": "Drum Bus Processing",
+    "related_terms": ["Drum-bus processing", "Bus compression", "Subgroup", "Parallel compression", "Transient shaping"],
+    "common_mistakes": ["Using too high a ratio or too much gain reduction, which squashes the drums and kills their dynamics.", "Setting a fast attack that clamps the transients and makes the kit sound dull.", "Confusing gentle glue compression with heavy parallel compression, which uses far more gain reduction."],
+    "scenario_contexts": ["Mixing a rock band where the kick, snare and overheads need to feel like one kit.", "Tightening a multi-mic drum recording before placing it in a dense band mix."]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e84d41e0-5d79-4537-bc42-1fc79bd0f379",
+   "term": "Drum-bus parallel blend",
+   "fields": {
+    "definition": "A parallel-processing technique in which a duplicate of the drum subgroup is heavily processed, usually with aggressive compression, and blended underneath the unprocessed drum bus, adding density and sustain while preserving the transients of the dry signal.",
+    "plain_english": "You make a copy of the whole drum mix, squash it hard, then mix a little of it back under the real drums. This adds power without losing the punch of the first hits.",
+    "purpose_function": "It lets an engineer add weight, sustain and aggression to the kit without crushing its natural dynamics, because the untouched dry bus keeps the punch while the squashed copy fills in body.",
+    "practical_application": "An engineer routes the drum bus to an aux with a hard-hitting compressor, then rides that aux fader up under the main drums until the kit gains weight without losing snap.",
+    "category": "Drum Bus Processing",
+    "related_terms": ["Parallel compression", "Drum-bus processing", "New York compression", "Aux send", "Drum-bus glue"],
+    "common_mistakes": ["Phase or timing problems when the parallel path adds latency and smears the transients.", "Blending in so much of the squashed copy that the kit loses its natural punch.", "Forgetting that the dry bus should stay the main sound, with the parallel path only supporting it."],
+    "scenario_contexts": ["Adding weight to a thin drum recording for a modern pop or rock track.", "Giving a drummer's soft verse groove more body without changing the arrangement."]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e529c55d-170a-43d0-9499-ab4ff15237cb",
+   "term": "Drum-bus processing",
+   "fields": {
+    "definition": "Any signal processing, such as EQ, compression, saturation or transient shaping, applied to the summed drum subgroup as a whole rather than to individual kit channels, shaping the overall tone and dynamics of the kit.",
+    "plain_english": "This is any effect, like EQ, squeeze, or grit, added to all the drum tracks together on one channel. It lets you shape the whole kit with a single set of controls.",
+    "purpose_function": "It provides a single point to shape the tone, balance and dynamics of the whole kit, saving time and creating cohesion versus treating every drum channel separately.",
+    "practical_application": "A mixer sums kick, snare, toms and overheads to one drum bus and inserts EQ, compression or saturation there to treat the whole kit at once.",
+    "category": "Drum Bus Processing",
+    "related_terms": ["Drum bus", "Subgroup", "Bus compression", "Drum-bus glue", "Saturation"],
+    "common_mistakes": ["Over-processing the whole bus instead of fixing a single problem drum on its own channel.", "Stacking many plugins on the bus and losing the kit's natural balance.", "Applying bus processing before the individual drums are balanced."],
+    "scenario_contexts": ["Shaping a full drum kit's tone with one EQ and compressor on the subgroup.", "Setting up a drum bus at the start of a band mix session."]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "afcbc3a0-9f80-44a5-b368-e57b644ca7ad",
+   "term": "Drum-bus punch",
+   "fields": {
+    "definition": "The perceived transient impact and forward energy of the drum kit, enhanced on the drum subgroup, typically by setting a compressor's attack slow enough to let the initial transients through while the release restores level between hits, or by using a transient shaper.",
+    "plain_english": "This is making the drums hit harder and jump out of the mix. Engineers set the squeeze so the front of each hit stays sharp and strong.",
+    "purpose_function": "It exists to make the drums cut through a dense band mix and feel powerful, giving the rhythm section its sense of impact and drive.",
+    "practical_application": "To add punch a technician sets the drum-bus compressor's attack slow and release faster, or uses a transient shaper, so the initial hit of the kick and snare stays sharp.",
+    "category": "Drum Bus Processing",
+    "related_terms": ["Transient shaping", "Bus compression", "Attack time", "Drum-bus glue", "Drum-bus processing"],
+    "common_mistakes": ["Setting the compressor attack too fast, which removes the transient and kills the punch it was meant to add.", "Relying only on volume rather than transient shaping to create impact.", "Chasing punch on the bus while ignoring poor drum tuning or performance underneath."],
+    "scenario_contexts": ["Making the drums cut through electric guitars in a loud rock chorus.", "Adding impact to a programmed or lightly played drum part."]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "35f907aa-3b0d-4024-b843-7212b9900b28",
+   "term": "Drum-room automation",
+   "fields": {
+    "definition": "The use of mix automation to vary the level, or other parameters, of the room-microphone channel or bus across an arrangement, raising ambience in bigger sections and reducing it elsewhere.",
+    "plain_english": "This means turning the room mic sound up or down at different parts of the song. You might push it louder in a big chorus to make the drums feel huge.",
+    "purpose_function": "It lets the ambience track the energy of the song, so the drums breathe and grow in choruses or big sections without adding clutter in quiet verses.",
+    "practical_application": "During a mix the engineer writes fader automation on the room bus, pulling it down in verses and pushing it up in the chorus to lift the drums.",
+    "category": "Room Mic Processing",
+    "related_terms": ["Room microphone", "Mix automation", "Ambience", "Drum-room compression", "Fader ride"],
+    "common_mistakes": ["Leaving the room mics at one static level so the drums feel flat through the song.", "Automating so aggressively that the ambience jumps and distracts the listener.", "Forgetting to check room-mic phase before automating their level."],
+    "scenario_contexts": ["Pushing the room mics up in a big chorus and pulling them down in a quiet verse.", "Building energy across the sections of a live-tracked band song."]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "22c5ef0a-6e49-45d6-9f0c-0d6cc0b911af",
+   "term": "Drum-room compression",
+   "fields": {
+    "definition": "Compression applied to the room, or ambient, microphones of a drum kit, which raises the level of the decay and ambience relative to the transients, making the kit sound larger and more aggressive.",
+    "plain_english": "This squeezes the sound from the mics placed far from the drums. It makes the room feel bigger and the drums sound more alive and aggressive.",
+    "purpose_function": "It exists to exaggerate the natural ambience and decay of the recording space, turning distant mics into a tool for size, sustain and aggression.",
+    "practical_application": "A mixer inserts a compressor on the room-mic bus and drives it with a fast attack and low threshold, blending the squashed ambience under the close mics for size.",
+    "category": "Room Mic Processing",
+    "related_terms": ["Room microphone", "Parallel compression", "Ambience", "Drum-room gating", "Bus compression"],
+    "common_mistakes": ["Over-compressing the room mics so cymbal wash and noise become louder than the drums.", "Ignoring phase between the room and close mics, which thins the kick and snare.", "Expecting room compression to fix a poor-sounding room."],
+    "scenario_contexts": ["Creating a huge ambient drum sound for a rock or alternative record.", "Adding sustain and aggression to close-miked drums using distant mics."]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b4bd7699-c7df-43c7-89f4-90255009b979",
+   "term": "Drum-room distortion",
+   "fields": {
+    "definition": "Deliberate harmonic distortion or saturation applied to the room-microphone signal of a drum kit to add harmonics, grit and perceived loudness, commonly used for aggressive rock and alternative styles.",
+    "plain_english": "This adds grit or fuzz to the far room mics. It makes the drums sound raw and powerful, like a loud rock record.",
+    "purpose_function": "It adds harmonic energy and perceived loudness to the ambience, giving drums an aggressive, larger-than-life character that a clean signal cannot provide.",
+    "practical_application": "An engineer adds a saturation or distortion plugin, or overdrives a preamp, on the room-mic channel and blends it in for grit on an aggressive rock track.",
+    "category": "Room Mic Processing",
+    "related_terms": ["Saturation", "Harmonic distortion", "Room microphone", "Drum-room compression", "Ambience"],
+    "common_mistakes": ["Adding so much distortion that the drums turn to harsh noise and lose definition.", "Distorting the room without checking phase against the close mics.", "Using distortion to mask a weak drum performance instead of improving the source."],
+    "scenario_contexts": ["Getting a raw, aggressive drum tone for a punk or hard-rock track.", "Adding grit to overly clean room mics in a modern band mix."]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1eef34c1-9318-4c25-8638-83d69ba7f809",
+   "term": "Drum-room expansion",
+   "fields": {
+    "definition": "Dynamic expansion applied to the room microphones, usually downward expansion that reduces level below a threshold, tightening the ambient decay and reducing bleed while keeping the louder room sound on the hits.",
+    "plain_english": "This tool makes quiet room sound even quieter between hits. It cleans up the drums by cutting the leftover noise and bleed in the room mics.",
+    "purpose_function": "It exists to control unwanted ambient bleed and tail length in the room mics, keeping the kit tight while still allowing a big room sound on the loudest hits.",
+    "practical_application": "A technician places an expander on the room mics to shorten the ambient tail and reduce bleed while keeping the loud hits open and full.",
+    "category": "Room Mic Processing",
+    "related_terms": ["Downward expansion", "Noise gate", "Room microphone", "Drum-room gating", "Bleed"],
+    "common_mistakes": ["Setting the expander threshold too high so it chops off the natural room tail.", "Confusing expansion with compression; expansion makes quiet parts quieter, not louder.", "Over-tightening the room mics until the kit loses its sense of space."],
+    "scenario_contexts": ["Tightening a boomy live room so only the loud hits carry ambience.", "Reducing cymbal and bleed noise in the room mics between drum hits."]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "47cc7b39-0559-42ac-b34e-9f41759fd396",
+   "term": "Drum-room gating",
+   "fields": {
+    "definition": "The use of a noise gate on the room, or ambient, microphones so the channel passes signal only when the drums exceed a threshold, controlling the length of the ambience and removing low-level bleed and noise between hits.",
+    "plain_english": "A gate shuts off the room mics when the drums are quiet and opens them when the drums are hit. This stops unwanted background sound from washing over the mix.",
+    "purpose_function": "It exists to control how much room ambience and bleed reaches the mix, letting the engineer dial the perceived room size and remove noise between hits.",
+    "practical_application": "During mixdown the engineer inserts a noise gate on the room mics, setting threshold and hold so the ambience opens on hits and closes to cut bleed and noise.",
+    "category": "Room Mic Processing",
+    "related_terms": ["Noise gate", "Threshold", "Room microphone", "Drum-room expansion", "Bleed"],
+    "common_mistakes": ["Setting the threshold so high the gate chatters and cuts off wanted ambience.", "Ignoring hold and release times, causing an unnatural chopped decay.", "Gating the room so hard the drums sound dry and lifeless."],
+    "scenario_contexts": ["Controlling a long, washy room decay on a fast rock song.", "Removing hum and bleed from room mics during quiet passages."]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

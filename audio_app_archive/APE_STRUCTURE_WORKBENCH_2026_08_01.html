@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AP&E Structure Workbench — Topics / Certificates / Programs</title>
+<style>
+:root{
+  --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c; --line2:#3a4553;
+  --txt:#e7edf3; --mut:#9aa7b4; --mut2:#6f7d8c;
+  --accent:#4aa3ff; --accent2:#2b6cb0;
+  --green:#39b57a; --amber:#e0a63c; --red:#e5665f; --purple:#a97be0; --teal:#3cb6c0;
+  --chip:#232a33;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:1240px;margin:0 auto;padding:12px 14px 80px}
+header{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,#12161c,#12161cf2);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 14px}
+.hrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;max-width:1240px;margin:0 auto}
+h1{font-size:16px;margin:0;font-weight:650;letter-spacing:.2px}
+.sub{color:var(--mut);font-size:12px}
+.badge{display:inline-flex;align-items:center;gap:5px;background:var(--chip);border:1px solid var(--line);border-radius:20px;padding:3px 9px;font-size:12px;color:var(--mut)}
+.badge b{color:var(--txt);font-weight:650}
+.spacer{flex:1}
+.btn{background:var(--panel2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:7px 11px;font-size:13px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent2);border-color:var(--accent2)}
+.btn.primary:hover{background:var(--accent)}
+.btn.sm{padding:4px 8px;font-size:12px;border-radius:7px}
+.btn.ghost{background:transparent}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-top:10px;max-width:1240px;margin-left:auto;margin-right:auto}
+.tab{background:transparent;border:1px solid transparent;color:var(--mut);padding:7px 12px;border-radius:8px;font-size:13px}
+.tab.active{background:var(--panel);border-color:var(--line2);color:var(--txt)}
+.tab .cnt{color:var(--mut2);font-size:11px;margin-left:4px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}
+input[type=text],select{background:var(--panel2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:7px 10px;font-size:13px}
+input[type=text]{min-width:200px;flex:1}
+.chipfilter{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{background:var(--chip);border:1px solid var(--line);color:var(--mut);border-radius:20px;padding:5px 11px;font-size:12px}
+.fchip.active{border-color:var(--accent);color:var(--txt);background:#1b2735}
+.fchip .n{opacity:.7;margin-left:3px}
+/* topic table */
+.ttable{width:100%;border-collapse:collapse;font-size:13px}
+.ttable th{position:sticky;top:0;text-align:left;color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;padding:8px 8px;border-bottom:1px solid var(--line2);background:var(--bg);cursor:pointer;white-space:nowrap}
+.ttable td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.ttable tr:hover td{background:#141922}
+.gs{color:var(--mut2);font-variant-numeric:tabular-nums;font-size:12px}
+.tname{font-weight:600}
+.tname .edited{color:var(--amber)}
+.bar{height:6px;border-radius:4px;background:#243040;margin-top:4px;overflow:hidden;max-width:150px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#2b6cb0,#4aa3ff)}
+.bar.big>i{background:linear-gradient(90deg,#8a5cc7,#a97be0)}
+.tc{font-variant-numeric:tabular-nums;font-weight:600}
+.cov{display:inline-flex;gap:4px}
+.pill{border-radius:20px;padding:2px 8px;font-size:11px;border:1px solid var(--line2);color:var(--mut);white-space:nowrap;cursor:pointer}
+.pill:hover{border-color:var(--accent);color:var(--txt)}
+.pill.zero{color:var(--red);border-color:#5a2f2d}
+.recs{display:flex;gap:4px;flex-wrap:wrap}
+.rec{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;border-radius:5px;padding:2px 6px;font-weight:700}
+.rec.oversized{background:#3a2340;color:#d9a7f0;border:1px solid #6a3d78}
+.rec.large{background:#33294a;color:#c3b4ef;border:1px solid #4c3d70}
+.rec.empty{background:#3a2422;color:#f0a49e;border:1px solid #6a3a36}
+.rec.tiny{background:#33302a;color:#e6cf9c;border:1px solid #5a5138}
+.rec.orphan{background:#232f3a;color:#8fd0e6;border:1px solid #35576a}
+.rec.sub90{background:#2a2320;color:#f0b48a;border:1px solid #6a4a36}
+/* outline certificates */
+.outline{margin-top:8px}
+.ol-track{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin:18px 0 6px;border-bottom:1px solid var(--line2);padding-bottom:4px}
+.ol-cert{margin:0 0 10px 2px}
+.ol-cert-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ol-seq{color:var(--mut2);font-variant-numeric:tabular-nums;font-size:11px;width:22px}
+.ol-cert-h b{font-size:14px}
+.ol-meta{color:var(--mut2);font-size:11px}
+.ol-list{list-style:none;margin:4px 0 4px 30px;padding:0;border-left:1px solid var(--line)}
+.ol-list li{padding:3px 0 3px 12px;font-size:13px;display:flex;align-items:center;gap:7px}
+.ol-list li:hover{background:#141922}
+.ol-list li.low{color:#f0b48a}
+.ol-gs{color:var(--mut2);font-variant-numeric:tabular-nums;font-size:11px;min-width:34px}
+.ol-tc{color:var(--mut2);font-variant-numeric:tabular-nums;font-size:11px}
+.ol-list li .x{margin-left:auto;color:var(--mut2);cursor:pointer;font-weight:700;opacity:0}
+.ol-list li:hover .x{opacity:1}
+.ol-list li .x:hover{color:var(--red)}
+.disp{display:flex;gap:3px;flex-wrap:wrap}
+.dbtn{background:transparent;border:1px solid var(--line2);color:var(--mut);border-radius:6px;padding:3px 7px;font-size:11px}
+.dbtn:hover{border-color:var(--accent);color:var(--txt)}
+.dbtn.on.keep{background:#1c3a2c;border-color:var(--green);color:#a7e6c6}
+.dbtn.on.split{background:#3a2340;border-color:var(--purple);color:#d9a7f0}
+.dbtn.on.merge{background:#233a3c;border-color:var(--teal);color:#9fe1e6}
+.dbtn.on.del{background:#3a2422;border-color:var(--red);color:#f0a49e}
+.dbtn.on.flag{background:#33302a;border-color:var(--amber);color:#e6cf9c}
+.note{margin-top:5px;width:100%;background:#121821;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:4px 7px;font-size:12px;display:none}
+.note.show{display:block}
+/* cert/program cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.trackhdr{grid-column:1/-1;color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin:8px 0 -2px;font-weight:700}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.card.warn{border-color:#6a3a36}
+.card h3{margin:0 0 3px;font-size:14px}
+.card .meta{color:var(--mut2);font-size:11px;margin-bottom:8px}
+.mchips{display:flex;flex-wrap:wrap;gap:5px}
+.mchip{display:inline-flex;align-items:center;gap:5px;background:var(--chip);border:1px solid var(--line2);border-radius:7px;padding:3px 7px;font-size:12px}
+.mchip .x{color:var(--mut2);cursor:pointer;font-weight:700}
+.mchip .x:hover{color:var(--red)}
+.mchip .qc{color:var(--mut2);font-variant-numeric:tabular-nums;font-size:10.5px}
+.mchip.elec{border-style:dashed}
+.mchip.added{border-color:var(--green)}
+.subhead{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.4px;margin:9px 0 5px}
+.addbtn{margin-top:8px}
+/* modal */
+.overlay{position:fixed;inset:0;background:#000a;z-index:60;display:none;align-items:flex-start;justify-content:center;padding:40px 14px;overflow:auto}
+.overlay.show{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:14px;max-width:640px;width:100%;padding:16px}
+.modal h2{margin:0 0 4px;font-size:16px}
+.modal .mut{color:var(--mut);font-size:12px;margin-bottom:12px}
+.picklist{max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.pick{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer}
+.pick:hover{background:#141922}
+.pick:last-child{border-bottom:none}
+.pick .cb{width:18px;height:18px;border:1.5px solid var(--line2);border-radius:5px;flex:none;display:flex;align-items:center;justify-content:center;font-size:12px}
+.pick.on .cb{background:var(--accent2);border-color:var(--accent2)}
+.pick .tk{flex:1}
+.pick .tk small{color:var(--mut2)}
+.modrow{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.close{cursor:pointer;color:var(--mut2);font-size:20px;line-height:1}
+/* review */
+.chgrp{margin-bottom:16px}
+.chgrp h3{font-size:13px;margin:0 0 6px;color:var(--txt)}
+.chitem{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:13px;display:flex;gap:8px;align-items:flex-start}
+.chitem .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;padding:2px 6px;border-radius:5px;font-weight:700;flex:none}
+.k.cert{background:#1b2735;color:#8fd0e6}
+.k.prog{background:#26203a;color:#c3b4ef}
+.k.rename{background:#33302a;color:#e6cf9c}
+.k.decision{background:#233a3c;color:#9fe1e6}
+.chitem .body{flex:1}
+.add{color:var(--green)} .rem{color:var(--red)}
+pre{background:#0b0f14;border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;font-size:12px;color:#cfe3f5;max-height:46vh}
+.empty-state{color:var(--mut);text-align:center;padding:40px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;color:var(--mut2);font-size:11px;margin-top:6px}
+.warnbar{background:#2a1f1c;border:1px solid #6a3a36;color:#f0c4bf;border-radius:8px;padding:8px 11px;font-size:12px;margin:10px 0}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1c2a1f;border:1px solid var(--green);color:#c6f0d8;padding:9px 16px;border-radius:24px;font-size:13px;z-index:80;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+@media(max-width:640px){
+  .ttable thead{display:none}
+  .ttable,.ttable tbody,.ttable tr,.ttable td{display:block;width:100%}
+  .ttable tr{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;padding:6px;background:var(--panel)}
+  .ttable td{border:none;padding:5px 6px}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <div>
+      <h1>AP&amp;E Structure Workbench</h1>
+      <div class="sub">Draft v2 matrix · snapshot <span id="snapts"></span> · live-DB read-only · edits export as SQL</div>
+    </div>
+    <div class="spacer"></div>
+    <span class="badge"><b id="stTopics">0</b> topics</span>
+    <span class="badge"><b id="stCerts">0</b> certs</span>
+    <span class="badge"><b id="stProgs">0</b> programs</span>
+    <span class="badge" style="border-color:#35576a"><b id="stOrphan">0</b> orphans</span>
+    <span class="badge" style="border-color:#6a3d78"><b id="stOver">0</b> oversized</span>
+    <button class="btn" id="btnReview">Review &amp; Export <b id="chgCount" style="color:var(--amber)">0</b></button>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-view="topics">Topics <span class="cnt" id="tcTopics"></span></button>
+    <button class="tab" data-view="certs">Certificates <span class="cnt">68</span></button>
+    <button class="tab" data-view="programs">Programs <span class="cnt">20</span></button>
+    <button class="tab" data-view="review">Review &amp; Export</button>
+  </div>
+</header>
+
+<div class="wrap" id="app"></div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = {"snapshot_ts": "2026-08-01", "project_id": "yjgolswjggmlpeowvtxr", "draft_cv": "51c1d5db-1d05-4d43-8853-5fa1503fb751", "topics": [{"id": "e5451add-87f8-47f0-ba06-9a53d70bebe9", "gs": 100, "name": "Professional Audio Safety", "term_count": 143, "is_prerequisite": false, "always_free": false}, {"id": "cf8ef23a-a16a-4291-82ce-756e9ae1bd36", "gs": 110, "name": "Sound & Acoustics", "term_count": 229, "is_prerequisite": false, "always_free": false}, {"id": "041c8d66-5280-40b9-abdc-7b18202b684a", "gs": 120, "name": "Grounding & Electrical", "term_count": 112, "is_prerequisite": false, "always_free": false}, {"id": "ebd39152-c958-4d49-a57a-95195838b9e7", "gs": 130, "name": "Power Fundamentals, Distribution & Quality", "term_count": 80, "is_prerequisite": false, "always_free": false}, {"id": "544770a6-1d5b-4777-8772-ac562c0d3539", "gs": 150, "name": "Signal Path & Levels", "term_count": 119, "is_prerequisite": false, "always_free": false}, {"id": "7600990b-2532-4e38-a488-1dbfd0350539", "gs": 160, "name": "Connectors & Plugs", "term_count": 193, "is_prerequisite": false, "always_free": false}, {"id": "ef28a563-8bba-446a-b463-74d723c83e3e", "gs": 170, "name": "Cables & Wiring", "term_count": 96, "is_prerequisite": false, "always_free": false}, {"id": "03431577-6b35-4262-8cef-251d99a5042c", "gs": 180, "name": "I/O Connections", "term_count": 38, "is_prerequisite": false, "always_free": false}, {"id": "79ec1aac-5b74-44bb-9dc8-deab2d1fdd04", "gs": 190, "name": "Microphone Types & Transducers", "term_count": 69, "is_prerequisite": false, "always_free": false}, {"id": "a346019b-4c00-4d2a-ad8c-3d3a75b8a2cd", "gs": 200, "name": "Microphone Specs & Characteristics", "term_count": 72, "is_prerequisite": false, "always_free": false}, {"id": "92eda6e7-32ec-432c-9bd3-18bfe726233f", "gs": 210, "name": "Stereo & Ensemble Miking Techniques", "term_count": 366, "is_prerequisite": false, "always_free": false}, {"id": "c1bd3df7-1ba9-416e-8ebd-538a91ac2517", "gs": 212, "name": "Instrument & Close Miking Techniques", "term_count": 361, "is_prerequisite": false, "always_free": false}, {"id": "04a53eda-7ee1-4024-931f-fc323be5dc7f", "gs": 220, "name": "Mic Controls, Power & Mounting", "term_count": 57, "is_prerequisite": false, "always_free": false}, {"id": "2b03a35d-d7ce-4598-accf-7ccedcee0dcb", "gs": 230, "name": "Specialized & Application Microphones", "term_count": 22, "is_prerequisite": false, "always_free": false}, {"id": "5133f8bd-e4cc-4be3-8133-ccccd41e05e2", "gs": 240, "name": "Loudspeaker Types & Drivers", "term_count": 118, "is_prerequisite": false, "always_free": false}, {"id": "38994916-c599-44f4-9d58-7f6fc778c66a", "gs": 250, "name": "Enclosures & Crossovers", "term_count": 24, "is_prerequisite": false, "always_free": false}, {"id": "94c09638-5f08-4267-8d5d-ce4f70594ca0", "gs": 260, "name": "Loudspeaker Specs & Behavior", "term_count": 30, "is_prerequisite": false, "always_free": false}, {"id": "eb10acd3-609a-47a9-9d4e-43d05db56d63", "gs": 270, "name": "Amplifiers", "term_count": 165, "is_prerequisite": false, "always_free": false}, {"id": "3283d1e2-3e1b-4d00-9f52-5df84039ca7f", "gs": 280, "name": "Vacuum Tubes", "term_count": 95, "is_prerequisite": false, "always_free": false}, {"id": "b62d9de2-a107-4fa9-aad0-07a9955b49c4", "gs": 290, "name": "Console Architecture & Signal Flow", "term_count": 567, "is_prerequisite": false, "always_free": false}, {"id": "ab512e46-18cf-43d5-b8d7-98fd7cd8cf49", "gs": 300, "name": "Channel Strip & Processing", "term_count": 35, "is_prerequisite": false, "always_free": false}, {"id": "dfbd0621-99ac-421f-b292-64ec22679dc6", "gs": 310, "name": "Buses, Routing & Matrix", "term_count": 34, "is_prerequisite": false, "always_free": false}, {"id": "a565a332-8fad-4c76-af03-6bcc7f88141b", "gs": 320, "name": "Digital Console Workflow & Recall", "term_count": 21, "is_prerequisite": false, "always_free": false}, {"id": "d5efa324-3745-436d-8550-6b3d4114ea83", "gs": 330, "name": "Recorder Types & Formats", "term_count": 103, "is_prerequisite": false, "always_free": false}, {"id": "ab5f6383-b4af-499d-937d-c8cd9cab317f", "gs": 340, "name": "Audio File Formats & Media", "term_count": 72, "is_prerequisite": false, "always_free": false}, {"id": "a53801d3-cd8e-4a73-861e-91d6666afe25", "gs": 350, "name": "Recording Transport & Controls", "term_count": 8, "is_prerequisite": false, "always_free": false}, {"id": "61b0e3e1-e6ed-4692-9281-7583b5188f58", "gs": 360, "name": "Storage, Backup & Archival", "term_count": 1, "is_prerequisite": false, "always_free": false}, {"id": "644dbff0-8a74-4d9d-8036-90de01d26937", "gs": 370, "name": "Racks, Patchbays & Wiring Infrastructure", "term_count": 196, "is_prerequisite": false, "always_free": false}, {"id": "c757dd83-5951-461e-a201-2f8eaddc1d7f", "gs": 380, "name": "Studio/Stage Furniture & Mounting", "term_count": 12, "is_prerequisite": false, "always_free": false}, {"id": "e14211bb-e05c-44c1-990e-3260feb1d6a5", "gs": 390, "name": "Physical Controls & Hardware", "term_count": 13, "is_prerequisite": false, "always_free": false}, {"id": "fadde245-f31c-434a-829b-822de549c7df", "gs": 400, "name": "Power & Signal Distribution Hardware", "term_count": 9, "is_prerequisite": false, "always_free": false}, {"id": "ff5f3513-2fb7-4c13-9d2b-18e4374169a6", "gs": 410, "name": "Documentation & Diagrams", "term_count": 166, "is_prerequisite": false, "always_free": false}, {"id": "b2f53fba-e0e6-4c61-9ec7-bc1394bad3cd", "gs": 420, "name": "Dante Fundamentals & Routing", "term_count": 237, "is_prerequisite": false, "always_free": false}, {"id": "34f5dfdd-e07f-463f-be76-227281826c42", "gs": 430, "name": "Dante Devices, Modules & Certification", "term_count": 41, "is_prerequisite": false, "always_free": false}, {"id": "979cbad6-bdb7-4504-a978-245950a62fed", "gs": 440, "name": "Clocking, Redundancy & Network Management", "term_count": 87, "is_prerequisite": false, "always_free": false}, {"id": "285a21d4-9d43-4c4a-a93b-64bce7ca7d7d", "gs": 450, "name": "Control Surfaces & Machine Control", "term_count": 109, "is_prerequisite": false, "always_free": false}, {"id": "07df90cd-38fa-4737-8b35-b63864c78de1", "gs": 460, "name": "Equalization (EQ)", "term_count": 248, "is_prerequisite": false, "always_free": false}, {"id": "d42dcf1d-a730-488c-9633-28e1218563a4", "gs": 470, "name": "Dynamics Processing", "term_count": 402, "is_prerequisite": false, "always_free": false}, {"id": "5f1bca1a-7220-4575-8b4c-eeeec82fec7d", "gs": 480, "name": "Reverb", "term_count": 89, "is_prerequisite": false, "always_free": false}, {"id": "b4f8fecf-b672-4f21-bc36-0371fafe8b47", "gs": 490, "name": "Delay & Time-Based Effects", "term_count": 41, "is_prerequisite": false, "always_free": false}, {"id": "01e593be-e5ac-4f41-b22b-a546319f81d8", "gs": 500, "name": "Acoustic Principles & Room Behavior", "term_count": 281, "is_prerequisite": false, "always_free": false}, {"id": "63df7198-1117-47b1-b5db-6051955bed64", "gs": 510, "name": "Absorption & Bass Trapping", "term_count": 80, "is_prerequisite": false, "always_free": false}, {"id": "ccd8922b-a47f-4a7b-a239-c6a734e3401f", "gs": 520, "name": "Diffusion & Materials", "term_count": 27, "is_prerequisite": false, "always_free": false}, {"id": "3e325b6f-373b-4d5d-9971-eeb1646acdab", "gs": 530, "name": "Room Treatment Layout & Application", "term_count": 170, "is_prerequisite": false, "always_free": false}, {"id": "525bdc16-2acc-4b5b-aaa6-781ddb284216", "gs": 540, "name": "Measurement Fundamentals & Metering", "term_count": 365, "is_prerequisite": false, "always_free": false}, {"id": "772b32f6-4f2e-44c6-b1a4-afad316a1449", "gs": 550, "name": "Acoustic & Room Measurement", "term_count": 142, "is_prerequisite": false, "always_free": false}, {"id": "a75e00b4-4648-4780-8913-cc672bc0ffb3", "gs": 560, "name": "Signal Analysis & Test Equipment", "term_count": 249, "is_prerequisite": false, "always_free": false}, {"id": "ca9f6e4a-5b8c-42c4-88b9-d6c7b2f0ad87", "gs": 570, "name": "System Optimization", "term_count": 162, "is_prerequisite": false, "always_free": false}, {"id": "84c7957f-59b7-4a2b-999d-3e248151df18", "gs": 580, "name": "Signal & Connection Troubleshooting", "term_count": 123, "is_prerequisite": false, "always_free": false}, {"id": "0af837f8-90d5-4901-90a9-233a7d00d7f0", "gs": 590, "name": "System & Live Troubleshooting Method", "term_count": 171, "is_prerequisite": false, "always_free": false}, {"id": "f95264eb-254f-4cfc-b54d-0bbb842ae4bf", "gs": 600, "name": "Patch & Routing Diagnostics", "term_count": 9, "is_prerequisite": false, "always_free": false}, {"id": "e2979cc0-a917-44e7-8fea-c223a9eb30e9", "gs": 610, "name": "System Maintenance", "term_count": 50, "is_prerequisite": false, "always_free": false}, {"id": "fa3fa679-cafb-4478-9175-6beb06f9cb61", "gs": 620, "name": "Analog Live Sound", "term_count": 107, "is_prerequisite": false, "always_free": false}, {"id": "8db281ce-61c5-4c0f-b9e2-c83fa779792b", "gs": 630, "name": "Digital Live Sound", "term_count": 103, "is_prerequisite": false, "always_free": false}, {"id": "5421e7cb-19f6-4f77-b1d5-6013b61e7ab2", "gs": 640, "name": "System Deployment & Rigging", "term_count": 256, "is_prerequisite": false, "always_free": false}, {"id": "6325bee7-e2a3-4978-916e-f717d95cbe8a", "gs": 650, "name": "System Tuning & Alignment", "term_count": 39, "is_prerequisite": false, "always_free": false}, {"id": "173a5d7e-a84d-4b90-9038-81d5ad73f08a", "gs": 660, "name": "RF Wireless Systems", "term_count": 259, "is_prerequisite": false, "always_free": false}, {"id": "31b0d3dd-e6f6-4fb6-99f2-6398cefe5b55", "gs": 670, "name": "DJ Performance & Turntablism", "term_count": 56, "is_prerequisite": false, "always_free": false}, {"id": "45f279eb-2685-4210-ad7a-90ca51aee447", "gs": 680, "name": "DJ Equipment & Software", "term_count": 9, "is_prerequisite": false, "always_free": false}, {"id": "c2135258-38a6-4e64-8468-11ccbc67ac32", "gs": 690, "name": "Beatmatching, Mixing & FX", "term_count": 215, "is_prerequisite": false, "always_free": false}, {"id": "a5667bee-dfc5-43e1-b1ea-7d5e7c1e2cc3", "gs": 700, "name": "Road Crew", "term_count": 378, "is_prerequisite": false, "always_free": false}, {"id": "085912d3-e6d2-4537-a92c-840edaa6650e", "gs": 710, "name": "Venue Architecture & Spaces", "term_count": 133, "is_prerequisite": false, "always_free": false}, {"id": "d7634efe-78e4-4de7-ae1f-13087489bfaf", "gs": 720, "name": "Stage Geography & Backstage", "term_count": 71, "is_prerequisite": false, "always_free": false}, {"id": "c28931b8-e633-4d0f-8899-74a9df00c270", "gs": 730, "name": "House & Audience Areas", "term_count": 19, "is_prerequisite": false, "always_free": false}, {"id": "6191a847-aea6-4587-b33d-371ad791f821", "gs": 740, "name": "Stage Platforms, Scenery & Soft Goods", "term_count": 73, "is_prerequisite": false, "always_free": false}, {"id": "17d05dd8-bbad-480a-b970-d7c829ed7afd", "gs": 750, "name": "Fly Systems & Overhead Access", "term_count": 25, "is_prerequisite": false, "always_free": false}, {"id": "70a31ac7-4bca-42c7-961d-ec8c1803c10a", "gs": 760, "name": "Rigging Hardware, Loads & Motorized Flying", "term_count": 95, "is_prerequisite": false, "always_free": false}, {"id": "45d64025-3d16-4a2b-95d1-1a19b4a21076", "gs": 770, "name": "Orchestra Pit & Ensemble Layout", "term_count": 92, "is_prerequisite": false, "always_free": false}, {"id": "09d4d415-9eb9-414f-a587-9c3e88bea6d6", "gs": 780, "name": "Show Control, Cueing & Communications", "term_count": 199, "is_prerequisite": false, "always_free": false}, {"id": "41edff0f-b7f2-46a5-9f86-b029c9dfa3d1", "gs": 790, "name": "Theatrical Sound (commercial card)", "term_count": 163, "is_prerequisite": false, "always_free": false}, {"id": "432a42e0-9be2-4603-9405-49dbcc43bf11", "gs": 800, "name": "Worship Sound (commercial card)", "term_count": 90, "is_prerequisite": false, "always_free": false}, {"id": "7294afe5-9178-4413-be55-e74aa9f84942", "gs": 810, "name": "Audio System Design", "term_count": 390, "is_prerequisite": false, "always_free": false}, {"id": "7d098dac-6bc4-4eb6-8942-e45c9e834150", "gs": 820, "name": "Corporate AV", "term_count": 119, "is_prerequisite": false, "always_free": false}, {"id": "a2a064a0-fbd3-4dd8-8cd3-7f0b819b9d3c", "gs": 830, "name": "Commercial 70/100V Systems", "term_count": 76, "is_prerequisite": false, "always_free": false}, {"id": "873348dd-c90c-4525-aeb8-81c51488044c", "gs": 840, "name": "Distributed Audio Systems", "term_count": 35, "is_prerequisite": false, "always_free": false}, {"id": "75ed360a-ffcf-4288-9a00-49f7d283503c", "gs": 850, "name": "Assisted Listening Systems", "term_count": 59, "is_prerequisite": false, "always_free": false}, {"id": "e9c07d36-a6d7-4e73-af80-195e3fb35c4d", "gs": 860, "name": "Architectural Audio (commercial card)", "term_count": 12, "is_prerequisite": false, "always_free": false}, {"id": "341d896e-b572-43e0-afe6-f65eabbf07e1", "gs": 880, "name": "Passive Components", "term_count": 300, "is_prerequisite": false, "always_free": false}, {"id": "8de51428-570b-4f7a-8054-073bf59d0721", "gs": 882, "name": "Electromechanical Parts & Hardware", "term_count": 152, "is_prerequisite": false, "always_free": false}, {"id": "38aac102-77a1-469c-9f79-03cc88283981", "gs": 890, "name": "Active Devices & Semiconductors", "term_count": 98, "is_prerequisite": false, "always_free": false}, {"id": "52bf9944-db6d-4d98-9155-cbf456c60de8", "gs": 900, "name": "Circuits & Topologies", "term_count": 235, "is_prerequisite": false, "always_free": false}, {"id": "e7a5c8d9-4cf7-473b-9157-6debb533c8ef", "gs": 910, "name": "PCB, Assembly & Soldering", "term_count": 35, "is_prerequisite": false, "always_free": false}, {"id": "e582c35e-3fd4-4d22-a2cd-a5e18311d96b", "gs": 930, "name": "Manufacturing & Production", "term_count": 70, "is_prerequisite": false, "always_free": false}, {"id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1", "gs": 940, "name": "HiFi Consumer Audio", "term_count": 156, "is_prerequisite": false, "always_free": false}, {"id": "8e64f666-6caa-4db7-be98-340aeb6c7a78", "gs": 950, "name": "Home Theater & Residential AV", "term_count": 37, "is_prerequisite": false, "always_free": false}, {"id": "f7a42023-78ba-476f-93ad-9a87d4e42ff4", "gs": 960, "name": "Vehicle Audio", "term_count": 78, "is_prerequisite": false, "always_free": false}, {"id": "8b9db80b-88a2-4765-bdde-452b59847ced", "gs": 970, "name": "Soldering", "term_count": 112, "is_prerequisite": false, "always_free": false}, {"id": "95cef4dc-4811-49dd-bb38-f3b51c2ae011", "gs": 980, "name": "Repair", "term_count": 338, "is_prerequisite": false, "always_free": false}, {"id": "ec5a6d30-b4a8-4c8d-b47d-2d8df69ac188", "gs": 990, "name": "Recording Fundamentals & Signal Chain", "term_count": 54, "is_prerequisite": false, "always_free": false}, {"id": "0f0d2631-da45-49ce-bff0-3964f2514f1e", "gs": 1000, "name": "Microphone Technique for Recording", "term_count": 60, "is_prerequisite": false, "always_free": false}, {"id": "1ae1cbc0-9d81-4f69-92d6-88b2de677ed2", "gs": 1010, "name": "Session Setup & Signal Flow", "term_count": 967, "is_prerequisite": false, "always_free": false}, {"id": "9f49124a-d8e5-4b09-bc17-ecbc4145a0a3", "gs": 1012, "name": "Session Workflow, Takes & Documentation", "term_count": 227, "is_prerequisite": false, "always_free": false}, {"id": "6cc8fbab-4cff-4e6e-976c-f201e88cb111", "gs": 1020, "name": "Instrument Recording — Strings & Guitar", "term_count": 136, "is_prerequisite": false, "always_free": false}, {"id": "fb969e10-dbe9-4f7e-9c8a-89d1a490feec", "gs": 1022, "name": "Instrument Recording — Drums & Percussion", "term_count": 20, "is_prerequisite": false, "always_free": false}, {"id": "8276b531-879c-43f2-8abb-faab4d1f33f9", "gs": 1024, "name": "Instrument Recording — Keys, Winds & Brass", "term_count": 47, "is_prerequisite": false, "always_free": false}, {"id": "8ee15d87-5681-4661-be68-f87d1e947763", "gs": 1030, "name": "Studio Recording Craft — Advanced", "term_count": 21, "is_prerequisite": false, "always_free": false}, {"id": "41b31991-752d-45d3-a974-d8521698046b", "gs": 1040, "name": "Drum-Kit Recording", "term_count": 50, "is_prerequisite": false, "always_free": false}, {"id": "32b6b674-8922-4eeb-a238-1e77ffca109c", "gs": 1050, "name": "Guitar, Bass & Amp Recording", "term_count": 19, "is_prerequisite": false, "always_free": false}, {"id": "2f59e095-3fdb-4f3b-a273-163ff550faf6", "gs": 1060, "name": "Band Tracking Workflow & Arrangement", "term_count": 652, "is_prerequisite": false, "always_free": false}, {"id": "53f1ce89-32bd-48af-872f-4ae984c26950", "gs": 1070, "name": "Vocal & Overdub Production", "term_count": 10, "is_prerequisite": false, "always_free": false}, {"id": "4e4249cd-e91d-464b-ad0d-1b83b211bbeb", "gs": 1080, "name": "Mix Fundamentals & Workflow", "term_count": 710, "is_prerequisite": false, "always_free": false}, {"id": "8b7eeb78-3ddf-4cac-b31e-18d2007d17ab", "gs": 1090, "name": "Instrument Mixing — Drums & Percussion", "term_count": 78, "is_prerequisite": false, "always_free": false}, {"id": "0322258c-2dd9-4935-bcad-9651204a0dac", "gs": 1100, "name": "Instrument Mixing — Guitars, Bass & Keys", "term_count": 97, "is_prerequisite": false, "always_free": false}, {"id": "061b261b-507c-4a05-a33e-9f5ece5721c6", "gs": 1110, "name": "Vocal Mixing", "term_count": 120, "is_prerequisite": false, "always_free": false}, {"id": "c18521ec-cf35-4be6-8913-ca4b3141a5d3", "gs": 1120, "name": "Orchestral, Choir & Acoustic-Ensemble Mixing", "term_count": 115, "is_prerequisite": false, "always_free": false}, {"id": "fd008675-c891-4fe3-9917-a760eae2345d", "gs": 1130, "name": "Mix Automation & Recall", "term_count": 44, "is_prerequisite": false, "always_free": false}, {"id": "3946d806-dc26-4b5e-b27d-09c63aed6318", "gs": 1140, "name": "Mix Bus, Loudness & Translation", "term_count": 47, "is_prerequisite": false, "always_free": false}, {"id": "646f6b48-1257-4dad-a655-a43e80023de0", "gs": 1150, "name": "Creative & Advanced Mix Processing", "term_count": 183, "is_prerequisite": false, "always_free": false}, {"id": "59ad0dd1-d2da-4067-ba31-93c84eaf69db", "gs": 1160, "name": "Mastering Fundamentals & Chain", "term_count": 458, "is_prerequisite": false, "always_free": false}, {"id": "477dcca2-e9e1-4962-b820-d9d80c2fdcf7", "gs": 1170, "name": "Loudness, Dynamics & QC", "term_count": 81, "is_prerequisite": false, "always_free": false}, {"id": "02f9c473-18c0-4b14-a6cb-6569403af22b", "gs": 1180, "name": "Delivery Formats & Metadata", "term_count": 17, "is_prerequisite": false, "always_free": false}, {"id": "5b84cfb3-af63-48d3-ab8f-441b60b918a5", "gs": 1190, "name": "Podcast Production", "term_count": 252, "is_prerequisite": false, "always_free": false}, {"id": "f0ff4116-be0e-4add-81c8-7d6459988527", "gs": 1200, "name": "Broadcast / Radio Production & Air Chain", "term_count": 245, "is_prerequisite": false, "always_free": false}, {"id": "863dce65-a3a2-405e-ae72-599967d76a8c", "gs": 1210, "name": "Streaming & Distribution", "term_count": 10, "is_prerequisite": false, "always_free": false}, {"id": "e6248e00-52b1-4f93-994d-57305e66e9af", "gs": 1220, "name": "Broadcast Loudness & Compliance", "term_count": 68, "is_prerequisite": false, "always_free": false}, {"id": "9c9ab954-ce21-4610-9207-b7ce6016f36e", "gs": 1230, "name": "Sound for Picture — Post Workflow & Deliverables", "term_count": 942, "is_prerequisite": false, "always_free": false}, {"id": "e20e5886-3aec-4c4b-8821-34c2b5f8cff5", "gs": 1232, "name": "Production Sound & Field Recording", "term_count": 49, "is_prerequisite": false, "always_free": false}, {"id": "739bdba4-0fac-4455-9ee2-1a56096cab92", "gs": 1234, "name": "Re-Recording & Final Mix", "term_count": 149, "is_prerequisite": false, "always_free": false}, {"id": "a4311985-4458-4715-a888-8c89de417012", "gs": 1240, "name": "DAW Fundamentals & Session Management", "term_count": 414, "is_prerequisite": false, "always_free": false}, {"id": "c4c84488-663b-4677-b167-fdc4651110e8", "gs": 1250, "name": "Editing & Comping", "term_count": 47, "is_prerequisite": false, "always_free": false}, {"id": "c646e032-5e49-4ca8-b5de-f3cbc689f23e", "gs": 1260, "name": "In-the-Box Mixing & Automation", "term_count": 45, "is_prerequisite": false, "always_free": false}, {"id": "09e6242e-714c-468f-a176-9d8271ba40f0", "gs": 1270, "name": "DAW: Logic", "term_count": 140, "is_prerequisite": false, "always_free": false}, {"id": "48445f56-8922-4189-a1a2-f8a6698e243f", "gs": 1280, "name": "DAW: Cubase/Nuendo", "term_count": 61, "is_prerequisite": false, "always_free": false}, {"id": "41ad5312-db8f-47ba-a491-83f0c66642ff", "gs": 1290, "name": "DAW: REAPER", "term_count": 72, "is_prerequisite": false, "always_free": false}, {"id": "38c2d27b-ab2f-4f66-865d-762cf92c8f83", "gs": 1300, "name": "DAW: Ableton Live", "term_count": 138, "is_prerequisite": false, "always_free": false}, {"id": "0ba9eff6-cb1e-44d7-b796-6648854ae484", "gs": 1310, "name": "DAW: Studio One", "term_count": 32, "is_prerequisite": false, "always_free": false}, {"id": "5f576bd0-37b3-42fc-9d66-572019e7f1c7", "gs": 1320, "name": "DAW: Digital Performer/Reason", "term_count": 37, "is_prerequisite": false, "always_free": false}, {"id": "575d5f16-29f9-49fe-bd09-20d7a7253e5c", "gs": 1330, "name": "MIDI", "term_count": 259, "is_prerequisite": false, "always_free": false}, {"id": "13e902c2-dcd5-4a12-84f7-0ee8873df936", "gs": 1340, "name": "Plugins & Virtual Instruments", "term_count": 319, "is_prerequisite": false, "always_free": false}, {"id": "6df6e438-0938-4872-ba01-97bb78269ffa", "gs": 1350, "name": "Sampling Fundamentals & Instruments", "term_count": 254, "is_prerequisite": false, "always_free": false}, {"id": "f6b196bf-40a9-4900-a720-d15ac248a9e9", "gs": 1360, "name": "Sample Editing & Manipulation", "term_count": 63, "is_prerequisite": false, "always_free": false}, {"id": "47a400d4-cb74-4ee6-af41-73f36e0002db", "gs": 1370, "name": "Drum Programming & Beat-Making", "term_count": 57, "is_prerequisite": false, "always_free": false}, {"id": "3bd78547-4b1a-417a-82bc-5f94c681bb97", "gs": 1380, "name": "Synthesis Fundamentals & Oscillators", "term_count": 298, "is_prerequisite": false, "always_free": false}, {"id": "9e4a9259-8daa-4469-90f6-047aafc121ff", "gs": 1390, "name": "Filters, Envelopes & Modulation", "term_count": 79, "is_prerequisite": false, "always_free": false}, {"id": "b6a1349a-24f2-46b3-b95a-963bb5f55136", "gs": 1400, "name": "Synthesis Types, Modular & CV", "term_count": 50, "is_prerequisite": false, "always_free": false}, {"id": "c2b80b9b-e361-4527-bc18-171b46c895ff", "gs": 1410, "name": "Hearing Anatomy & Function", "term_count": 37, "is_prerequisite": false, "always_free": false}, {"id": "5e52c39b-96a1-4113-af13-27af2eec26e0", "gs": 1420, "name": "Hearing Protection & Occupational Health", "term_count": 7, "is_prerequisite": false, "always_free": false}, {"id": "edaffd7e-8ca6-429e-9607-5183e7efb32c", "gs": 1430, "name": "Hearing Disorders & Health", "term_count": 0, "is_prerequisite": false, "always_free": false}, {"id": "363e91ea-a50c-4692-a95c-cc8e52bfb0ca", "gs": 1440, "name": "Psychoacoustics", "term_count": 110, "is_prerequisite": false, "always_free": false}, {"id": "f85186b4-00cc-48a2-a44f-663c9a958ce2", "gs": 1450, "name": "Spatial Hearing & Localization", "term_count": 0, "is_prerequisite": false, "always_free": false}, {"id": "9044d340-37f0-45a3-8b6e-960da039a428", "gs": 1460, "name": "Speech Intelligibility", "term_count": 0, "is_prerequisite": false, "always_free": false}, {"id": "c3f4065c-1e67-4020-80fe-782d823c24b0", "gs": 1470, "name": "Loudness & Listening Environments", "term_count": 0, "is_prerequisite": false, "always_free": false}, {"id": "d5322270-4ffa-47e9-8e52-89de555a78dc", "gs": 1490, "name": "Voice & Vocal Perception", "term_count": 60, "is_prerequisite": false, "always_free": false}, {"id": "eba54a3f-0ecc-4acf-a18d-2df0353a50f9", "gs": 1500, "name": "Ear Training", "term_count": 33, "is_prerequisite": false, "always_free": false}, {"id": "287576c9-daa8-4528-8291-0c86a371c2df", "gs": 1510, "name": "Tonal & Timbre Descriptors", "term_count": 206, "is_prerequisite": false, "always_free": false}, {"id": "b31026ce-ab8a-43e2-bc30-6e2b0fa1bcbd", "gs": 1520, "name": "Listening Slang & Sound Identification", "term_count": 4, "is_prerequisite": false, "always_free": false}, {"id": "239a613a-3e9a-4f5d-a01c-f3ceebfdd507", "gs": 1530, "name": "Monitoring & Audio Evaluation", "term_count": 13, "is_prerequisite": false, "always_free": false}, {"id": "8ec88f54-f153-41b5-837f-d51ec218e005", "gs": 1540, "name": "Attack, Decay, Resonance & Artifact Identification", "term_count": 214, "is_prerequisite": false, "always_free": false}, {"id": "451dba6e-aa60-49f2-9f8c-d0622ad0866e", "gs": 1550, "name": "Strings, Guitar & Keys", "term_count": 104, "is_prerequisite": false, "always_free": false}, {"id": "b418df53-5690-408b-bab4-89b593e80f53", "gs": 1560, "name": "Drums & Percussion", "term_count": 103, "is_prerequisite": false, "always_free": false}, {"id": "3e44e014-8cf5-4e64-b988-2c560fc36828", "gs": 1570, "name": "Winds, Brass & Organ", "term_count": 79, "is_prerequisite": false, "always_free": false}, {"id": "7106239e-6942-4d98-b7f9-847d6c533d08", "gs": 1580, "name": "Project Management", "term_count": 297, "is_prerequisite": false, "always_free": false}, {"id": "89bd470d-e7fb-464b-874c-753f1d1db912", "gs": 1590, "name": "Workplace Skills", "term_count": 57, "is_prerequisite": false, "always_free": false}, {"id": "f482144c-0f68-43c2-b62d-63c945a431bb", "gs": 1600, "name": "Audio Career Exploration", "term_count": 170, "is_prerequisite": false, "always_free": false}, {"id": "130626bc-c5e5-46c6-8d12-d32a73bd55f8", "gs": 1610, "name": "Portfolio Development", "term_count": 45, "is_prerequisite": false, "always_free": false}, {"id": "cd81ec36-a20d-42a1-9e2d-fc6a8ff6a551", "gs": 1620, "name": "Copyright, Publishing & Licensing", "term_count": 74, "is_prerequisite": false, "always_free": false}, {"id": "ecf9ca06-dd0c-4417-b8b3-4b0015839729", "gs": 1630, "name": "Music Entrepreneurship", "term_count": 155, "is_prerequisite": false, "always_free": false}, {"id": "681cb58c-4a8b-470d-b37c-f9d1ca124c01", "gs": 1640, "name": "Industry Foundations", "term_count": 70, "is_prerequisite": false, "always_free": false}, {"id": "cad1c4e5-d4fb-4543-85f6-3fe985dcec45", "gs": 1650, "name": "Immersive Formats & Delivery", "term_count": 92, "is_prerequisite": false, "always_free": false}, {"id": "0a89a8f9-1650-47bf-8e46-1c6817171579", "gs": 1660, "name": "Object & Bed Panning / Authoring", "term_count": 36, "is_prerequisite": false, "always_free": false}, {"id": "d1d8da5d-3520-4dbc-8889-e524a536d00b", "gs": 1670, "name": "Immersive Monitoring & Calibration", "term_count": 63, "is_prerequisite": false, "always_free": false}, {"id": "2c759d4a-309c-4d07-87b3-b00d899292d4", "gs": 1680, "name": "Immersive Music Production & Delivery", "term_count": 36, "is_prerequisite": false, "always_free": false}, {"id": "5a9583b4-3e21-4c4a-a304-3497a4d54ff0", "gs": 1690, "name": "Film Scoring", "term_count": 331, "is_prerequisite": false, "always_free": false}, {"id": "47e2b509-c540-4a23-839c-c7190b673899", "gs": 1700, "name": "Dialogue Editing", "term_count": 212, "is_prerequisite": false, "always_free": false}, {"id": "f3b91616-66f6-414b-a35a-23a86671f275", "gs": 1710, "name": "ADR & Looping", "term_count": 109, "is_prerequisite": false, "always_free": false}, {"id": "a1c98209-bbc4-4049-baa6-a2a7c9ee0c66", "gs": 1720, "name": "Dubbing & Localization", "term_count": 237, "is_prerequisite": false, "always_free": false}, {"id": "db4fc472-b0d1-4232-aa64-cbd05b1cee60", "gs": 1730, "name": "Foley Performance & Recording", "term_count": 112, "is_prerequisite": false, "always_free": false}, {"id": "7e283b91-5771-4393-b5f4-0c4d2084f2c1", "gs": 1732, "name": "SFX Editorial & Sound Design", "term_count": 115, "is_prerequisite": false, "always_free": false}, {"id": "9b417590-179b-4566-9a3e-3b1cbd5d596d", "gs": 1740, "name": "Game Audio", "term_count": 167, "is_prerequisite": false, "always_free": false}, {"id": "2b29827b-a852-41a9-a8ea-efaf1a7c3812", "gs": 1750, "name": "Themed Entertainment / Haunt Audio", "term_count": 63, "is_prerequisite": false, "always_free": false}, {"id": "142884bc-6a5f-4c0d-a056-4d808ca84b20", "gs": 1760, "name": "Studio & Facility Design", "term_count": 96, "is_prerequisite": false, "always_free": false}, {"id": "5a5aeaf3-c24e-4ea8-9fc2-d9d37272762c", "gs": 1770, "name": "Studio Acoustics & Design", "term_count": 43, "is_prerequisite": false, "always_free": false}, {"id": "e9c64f09-41cc-480b-affc-4e0919253e5c", "gs": 1780, "name": "Analog Tape / Tape Machines", "term_count": 281, "is_prerequisite": false, "always_free": false}, {"id": "196f5c7e-a768-4277-8083-3ab25e352999", "gs": 1790, "name": "Vinyl / Disc Mastering", "term_count": 78, "is_prerequisite": false, "always_free": false}, {"id": "ab73f3b5-426f-4585-8a7c-f829e2a03138", "gs": 1800, "name": "Audio Restoration & Archival", "term_count": 213, "is_prerequisite": false, "always_free": false}, {"id": "79ef147c-15ec-458b-9a53-f4f0cd7aa6e9", "gs": 1810, "name": "Preamp & Converter Engineering", "term_count": 128, "is_prerequisite": false, "always_free": false}, {"id": "f4e5d4af-4eb4-4124-91d5-6e4c1bb64a37", "gs": 1820, "name": "Loudspeaker / Transducer Engineering", "term_count": 208, "is_prerequisite": false, "always_free": false}, {"id": "a6c4aaa4-f851-4987-a100-97c84ed4e808", "gs": 1830, "name": "Audio Plugin & DSP Development", "term_count": 45, "is_prerequisite": false, "always_free": false}, {"id": "7572b7fc-e1da-4613-9e4b-2e8bfed27fdc", "gs": 1840, "name": "Cloud & Emerging Production", "term_count": 12, "is_prerequisite": false, "always_free": false}, {"id": "ee54b10a-eca1-42ed-8165-5b35330bebec", "gs": 1850, "name": "AI Music Generation & Composition", "term_count": 19, "is_prerequisite": false, "always_free": false}, {"id": "f61b4bc2-66a1-4b5d-9b8f-3654aca6a12e", "gs": 1860, "name": "AI Voice & Speech", "term_count": 31, "is_prerequisite": false, "always_free": false}, {"id": "7f5eb5b7-9d5a-4290-9ecb-c9f2233b225c", "gs": 1870, "name": "AI Source Separation & Restoration", "term_count": 129, "is_prerequisite": false, "always_free": false}, {"id": "3af7a3be-8fb3-486d-bd55-0253b0fcbfa5", "gs": 1880, "name": "AI Mixing/Mastering & Adaptive Processing", "term_count": 19, "is_prerequisite": false, "always_free": false}, {"id": "6a03122c-4b5f-42d6-8fc8-d6e5740346f1", "gs": 1890, "name": "Neural Amp Modeling & Neural Synthesis", "term_count": 18, "is_prerequisite": false, "always_free": false}, {"id": "f179d8df-ed09-4542-abb2-1bd74580d163", "gs": 1900, "name": "Music Information Retrieval", "term_count": 18, "is_prerequisite": false, "always_free": false}, {"id": "793c614c-4b88-475c-ad09-4111507c1f89", "gs": 1910, "name": "AI/ML Foundations for Audio", "term_count": 239, "is_prerequisite": false, "always_free": false}, {"id": "8d0ba0fa-612a-4e8e-893a-dc55684bc7c3", "gs": 1920, "name": "AI Audio Ethics, Rights & Provenance", "term_count": 15, "is_prerequisite": false, "always_free": false}, {"id": "612bf295-2671-4c5e-bab9-1db315db3239", "gs": 1930, "name": "Live Sound — Crew Roles & Departments", "term_count": 606, "is_prerequisite": false, "always_free": false}, {"id": "80d9859f-4042-4ec3-8387-e3db879a2712", "gs": 1940, "name": "Live Sound — Production Documents & Advancing", "term_count": 4, "is_prerequisite": false, "always_free": false}, {"id": "de34b009-7dbb-41ee-bdf3-2218436ceb79", "gs": 1960, "name": "Live Sound — Stage Patch & Signal Distribution", "term_count": 23, "is_prerequisite": false, "always_free": false}, {"id": "102f3c40-ed0a-4712-9c96-9fbaac465a03", "gs": 1970, "name": "Live Sound — FOH Mixing Workflow", "term_count": 96, "is_prerequisite": false, "always_free": false}, {"id": "dd0a3205-2240-40a8-9c0a-5ab65a91a5a5", "gs": 1980, "name": "Live Sound — Monitor Engineering", "term_count": 118, "is_prerequisite": false, "always_free": false}, {"id": "9f90ceca-57ec-42ef-8c12-229a352d7fcd", "gs": 1990, "name": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck", "term_count": 60, "is_prerequisite": false, "always_free": false}, {"id": "429bc6c0-3214-4648-b065-cbb834580699", "gs": 2000, "name": "Live Sound — PA Deployment & System Engineering", "term_count": 65, "is_prerequisite": false, "always_free": false}, {"id": "9b91ed97-30e0-4d04-afa1-b697769a4cc0", "gs": 2010, "name": "Live Sound — Festival Changeovers & Guest-Engineer", "term_count": 47, "is_prerequisite": false, "always_free": false}, {"id": "7f0a5648-118c-4a55-aa9c-0d49f9b4a211", "gs": 2020, "name": "Live Sound — Communication & Show Calls", "term_count": 25, "is_prerequisite": false, "always_free": false}, {"id": "d9a612e2-f761-45c9-8f43-cace13fc5305", "gs": 2030, "name": "Live Sound — Troubleshooting & Emergency", "term_count": 9, "is_prerequisite": false, "always_free": false}, {"id": "01eb1bf2-7c3d-4ae9-a101-48761896091d", "gs": 2040, "name": "Live Sound — Concert-Audio Slang", "term_count": 82, "is_prerequisite": false, "always_free": false}, {"id": "be9c2311-f9c7-4657-b34e-a2eee81eaf9e", "gs": 2041, "name": "Magnetic Tape Preservation & Conservation", "term_count": 161, "is_prerequisite": false, "always_free": false}, {"id": "f2442389-2379-4010-8b5a-6835773b85c7", "gs": 2042, "name": "Archival Preservation & Obsolete Media", "term_count": 127, "is_prerequisite": false, "always_free": false}, {"id": "39203cec-660c-4a27-972c-21f7a63623b9", "gs": 2043, "name": "Dubbing — Adaptation, Sync & Deliverables", "term_count": 121, "is_prerequisite": false, "always_free": false}], "certs": [{"id": "5d6c7ae8-26a2-40a4-98be-74cfbbb2685e", "slug": "cert-microphones-amplifiers-and-loudspeakers", "name": "Microphones, Amplifiers & Loudspeakers", "level": "L1", "track": "Mics, Amps, & Speakers", "sequence": 1, "member_topic_gs": [190, 240, 270], "corequisite_gs": [100, 120, 1590]}, {"id": "d95bcf4c-5700-4304-bf80-72d4d5f275f1", "slug": "cert-cables-and-connectivity", "name": "Cables & Connectivity", "level": "L1", "track": "Cables & Connectivity", "sequence": 2, "member_topic_gs": [150, 160, 170], "corequisite_gs": [100, 120, 1590]}, {"id": "1040f195-9dbf-427e-8c8c-9ade05f86e71", "slug": "cert-consoles", "name": "Consoles", "level": "L1", "track": "Consoles", "sequence": 3, "member_topic_gs": [290, 300, 310], "corequisite_gs": [100, 120, 1590]}, {"id": "a998f4b2-7fa5-4333-ac6a-5508eceec89e", "slug": "cert-recording-systems", "name": "Recording Systems", "level": "L1", "track": "Recorders", "sequence": 4, "member_topic_gs": [330, 340, 360], "corequisite_gs": [100, 120, 1590]}, {"id": "5c594d63-5268-4fea-a77e-946ccc81db82", "slug": "cert-infrastructure", "name": "Infrastructure", "level": "L1", "track": "Racks  & Infrastructure", "sequence": 5, "member_topic_gs": [370, 400, 410], "corequisite_gs": [100, 120, 1590]}, {"id": "830f41e3-7369-4a68-9600-03d513426de1", "slug": "cert-networking", "name": "Networking", "level": "L1", "track": "Racks  & Infrastructure", "sequence": 6, "member_topic_gs": [420, 430, 440], "corequisite_gs": [100, 120, 1590]}, {"id": "f417cf51-3f51-4314-8ff7-b74d9f77be5e", "slug": "cert-power-systems", "name": "Power Systems", "level": "L1", "track": "Racks  & Infrastructure", "sequence": 7, "member_topic_gs": [130, 400, 370], "corequisite_gs": [100, 120, 1590]}, {"id": "4e5edab4-0a06-4697-be0f-92434a8bdae2", "slug": "cert-signal-processing", "name": "Signal Processing", "level": "L1", "track": "Signal Processing", "sequence": 8, "member_topic_gs": [460, 470, 480], "corequisite_gs": [100, 120, 1590]}, {"id": "4462f96d-7c0a-4a65-a122-d8765d5b3d6c", "slug": "cert-acoustics-and-measurement", "name": "Acoustics & Measurement", "level": "L1", "track": "Acoustics & Measurement", "sequence": 9, "member_topic_gs": [500, 540, 550], "corequisite_gs": [100, 120, 1590]}, {"id": "fb644d9f-9430-45bd-8777-28fd175c4000", "slug": "cert-room-treatment", "name": "Room Treatment", "level": "L1", "track": "Acoustics & Measurement", "sequence": 10, "member_topic_gs": [510, 520, 530], "corequisite_gs": [100, 120, 1590]}, {"id": "593f5606-12b9-438a-8629-beb69f9f3912", "slug": "cert-troubleshooting", "name": "Troubleshooting", "level": "L1", "track": "Troubleshooting", "sequence": 11, "member_topic_gs": [580, 600, 610], "corequisite_gs": [100, 120, 1590]}, {"id": "30794e04-5c32-4066-bd6a-105836e2bf42", "slug": "cert-live-sound-systems", "name": "Live Sound Systems", "level": "L1", "track": "Live Sound & Deployment", "sequence": 12, "member_topic_gs": [620, 630, 650], "corequisite_gs": [100, 120, 1590]}, {"id": "046ae239-4fc9-4e96-be7b-c6c0fbbeb0d0", "slug": "cert-wireless-audio-systems", "name": "Wireless Audio Systems", "level": "L1", "track": "Live Sound & Deployment", "sequence": 13, "member_topic_gs": [660, 220, 230], "corequisite_gs": [100, 120, 1590]}, {"id": "33d4a49a-008b-4c2c-b2d1-3d1616377015", "slug": "cert-dj-audio", "name": "DJ Audio", "level": "L1", "track": "DJ Audio", "sequence": 14, "member_topic_gs": [670, 680, 690], "corequisite_gs": [100, 120, 1590]}, {"id": "81a43dc5-4912-4c06-9f4b-09e946ec84f3", "slug": "cert-stagecraft-and-venue-operations", "name": "Stagecraft & Venue Operations", "level": "L1", "track": "Venue, Stagecraft & Rigging Terminology", "sequence": 15, "member_topic_gs": [710, 720, 740], "corequisite_gs": [100, 120, 1590]}, {"id": "094a5416-83a9-4672-aee0-75995aeebdcc", "slug": "cert-entertainment-rigging-fundamentals", "name": "Entertainment Rigging Fundamentals", "level": "L1", "track": "Live Sound & Deployment", "sequence": 16, "member_topic_gs": [640, 750, 760], "corequisite_gs": [100, 120, 1590]}, {"id": "83201676-34d0-43b7-b5fc-552f8cdd0ce8", "slug": "cert-theatrical-audio", "name": "Theatrical Audio", "level": "L1", "track": "Venue, Stagecraft & Rigging Terminology", "sequence": 17, "member_topic_gs": [780, 790, 770], "corequisite_gs": [100, 120, 1590]}, {"id": "59375db9-98e8-4d6a-9cd6-2b6c967d2a01", "slug": "cert-worship-audio", "name": "Worship Audio", "level": "L1", "track": "Venue, Stagecraft & Rigging Terminology", "sequence": 18, "member_topic_gs": [800, 630, 1980], "corequisite_gs": [100, 120, 1590]}, {"id": "da1b452b-2b67-4a70-9e0e-227861d10b39", "slug": "cert-commercial-audio-systems", "name": "Commercial Audio Systems", "level": "L1", "track": "Install, Commercial, & AV", "sequence": 19, "member_topic_gs": [810, 830, 840], "corequisite_gs": [100, 120, 1590]}, {"id": "c7b70134-358c-42c9-a11f-d8e025c35943", "slug": "cert-architectural-audio", "name": "Architectural Audio", "level": "L1", "track": "Install, Commercial, & AV", "sequence": 20, "member_topic_gs": [810, 860, 570], "corequisite_gs": [100, 120, 1590]}, {"id": "30547a1b-0e60-41e3-b824-250af846ddea", "slug": "cert-corporate-av-audio", "name": "Corporate AV Audio", "level": "L1", "track": "Install, Commercial, & AV", "sequence": 21, "member_topic_gs": [820, 810, 850], "corequisite_gs": [100, 120, 1590]}, {"id": "1ee07ac7-2f1a-427b-a746-73f5afe68869", "slug": "cert-residential-and-consumer-audio", "name": "Residential & Consumer Audio", "level": "L1", "track": "Consumer, Home & Vehicle", "sequence": 22, "member_topic_gs": [940, 950, 840], "corequisite_gs": [100, 120, 1590]}, {"id": "b0ddd8a5-1b76-4f1d-9132-1d4690ef5272", "slug": "cert-vehicle-audio", "name": "Vehicle Audio", "level": "L1", "track": "Consumer, Home & Vehicle", "sequence": 23, "member_topic_gs": [960, 170, 270], "corequisite_gs": [100, 120, 1590]}, {"id": "670d27c2-42a5-4237-93dc-41781b9b247e", "slug": "cert-electronic-music-production", "name": "Electronic Music Production", "level": "L1", "track": "Electronic Music", "sequence": 24, "member_topic_gs": [1380, 1350, 1370], "corequisite_gs": [100, 120, 1590]}, {"id": "7c7ba618-48d3-4ed0-807c-de5a380f69a3", "slug": "cert-synthesis-and-sound-design", "name": "Synthesis & Sound Design", "level": "L1", "track": "Electronic Music", "sequence": 25, "member_topic_gs": [1400, 1390, 1380], "corequisite_gs": [100, 120, 1590]}, {"id": "4194f94b-5ecf-474f-9edf-54f605f59800", "slug": "cert-studio-recording", "name": "Studio Recording", "level": "L1", "track": "Studio Recording", "sequence": 26, "member_topic_gs": [990, 1000, 1010], "corequisite_gs": [100, 120, 1590]}, {"id": "9711a7de-9272-4372-9211-d0fcee560bc4", "slug": "cert-instrument-recording", "name": "Instrument Recording", "level": "L1", "track": "Studio Recording", "sequence": 27, "member_topic_gs": [1020, 1022, 1024], "corequisite_gs": [100, 120, 1590]}, {"id": "53a538bc-eeba-411a-aabb-d6256ba09b0f", "slug": "cert-advanced-recording-production", "name": "Advanced Recording Production", "level": "L1", "track": "Studio Recording", "sequence": 28, "member_topic_gs": [1030, 1060, 1070], "corequisite_gs": [100, 120, 1590]}, {"id": "0ee620e9-29ed-4e42-b7dc-912da657119e", "slug": "cert-microphone-techniques", "name": "Microphone Techniques", "level": "L1", "track": "Studio Recording", "sequence": 29, "member_topic_gs": [1000, 212, 210], "corequisite_gs": [100, 120, 1590]}, {"id": "488f4404-fb9b-47a1-8aa8-51209eea9f74", "slug": "cert-music-mixing", "name": "Music Mixing", "level": "L1", "track": "Mastering", "sequence": 30, "member_topic_gs": [1080, 1130, 1140], "corequisite_gs": [100, 120, 1590]}, {"id": "2a7c093f-414f-4581-990d-5ccfb6c9ff7e", "slug": "cert-instrument-mixing", "name": "Instrument Mixing", "level": "L1", "track": "Studio: Mixing", "sequence": 31, "member_topic_gs": [1090, 1100, 1120], "corequisite_gs": [100, 120, 1590]}, {"id": "b541c4f8-a954-4bcb-a8ad-009a3e0ca7b4", "slug": "cert-vocal-mixing-and-production", "name": "Vocal Mixing & Production", "level": "L1", "track": "Studio Recording", "sequence": 32, "member_topic_gs": [1070, 1110, 1490], "corequisite_gs": [100, 120, 1590]}, {"id": "08ab4637-c13d-4db3-9d14-8273af2d2bdc", "slug": "cert-mastering", "name": "Mastering", "level": "L1", "track": "Mastering", "sequence": 33, "member_topic_gs": [1160, 1170, 1180], "corequisite_gs": [100, 120, 1590]}, {"id": "865c141b-2ce2-469a-90b4-f19953ad14cd", "slug": "cert-broadcast-and-streaming-audio", "name": "Broadcast & Streaming Audio", "level": "L1", "track": "Mastering", "sequence": 34, "member_topic_gs": [1200, 1210, 1220], "corequisite_gs": [100, 120, 1590]}, {"id": "9030d965-3f5f-41b3-ba4f-9c6209a83469", "slug": "cert-podcast-production", "name": "Podcast Production", "level": "L1", "track": "Studio: Mixing", "sequence": 35, "member_topic_gs": [1190, 1110, 1210], "corequisite_gs": [100, 120, 1590]}, {"id": "d99d7539-5bec-43ee-a4c4-e9cc35f4781d", "slug": "cert-production-sound", "name": "Production Sound", "level": "L1", "track": "Mastering", "sequence": 36, "member_topic_gs": [1232, 340, 410], "corequisite_gs": [100, 120, 1590]}, {"id": "7e1bd5b1-b48f-42b8-b1fa-8ee074bb151d", "slug": "cert-daw-production", "name": "DAW Production", "level": "L1", "track": "Computer & Electronic Music", "sequence": 37, "member_topic_gs": [1240, 1250, 1260], "corequisite_gs": [100, 120, 1590]}, {"id": "f417a123-6b30-4c6d-87a3-a398af074373", "slug": "cert-logic-production", "name": "Logic Production", "level": "L1", "track": "Computer & Electronic Music", "sequence": 38, "member_topic_gs": [1240, 1250, 1270], "corequisite_gs": [100, 120, 1590]}, {"id": "a516dbcc-6437-4d6d-8e55-efb0989807be", "slug": "cert-cubase-nuendo-production", "name": "Cubase/Nuendo Production", "level": "L1", "track": "Computer & Electronic Music", "sequence": 39, "member_topic_gs": [1240, 1250, 1280], "corequisite_gs": [100, 120, 1590]}, {"id": "e1c2e133-606b-49ba-95fb-c51edd78ad49", "slug": "cert-reaper-production", "name": "REAPER Production", "level": "L1", "track": "Computer & Electronic Music", "sequence": 40, "member_topic_gs": [1240, 1250, 1290], "corequisite_gs": [100, 120, 1590]}, {"id": "7ebfe64c-d9fd-482b-807b-7eb71f6108fb", "slug": "cert-ableton-live-production", "name": "Ableton Live Production", "level": "L1", "track": "Computer & Electronic Music", "sequence": 41, "member_topic_gs": [1240, 1330, 1300], "corequisite_gs": [100, 120, 1590]}, {"id": "12756405-a7aa-435e-8afc-49072d9f759d", "slug": "cert-studio-one-production", "name": "Studio One Production", "level": "L1", "track": "Computer & Electronic Music", "sequence": 42, "member_topic_gs": [1240, 1250, 1310], "corequisite_gs": [100, 120, 1590]}, {"id": "ee013167-1043-4318-b688-46bfb608be8e", "slug": "cert-digital-performer-reason-production", "name": "Digital Performer/Reason Production", "level": "L1", "track": "Computer & Electronic Music", "sequence": 43, "member_topic_gs": [1240, 1330, 1320], "corequisite_gs": [100, 120, 1590]}, {"id": "fa439ce2-64d3-4923-90c3-87cc7b766286", "slug": "cert-hearing-and-audio-health", "name": "Hearing & Audio Health", "level": "L1", "track": "Hearing, Perception & Listening", "sequence": 44, "member_topic_gs": [1410, 1420, 1430], "corequisite_gs": [100, 120, 1590]}, {"id": "209fbfab-be4a-49be-a15d-1c3a2006e0a7", "slug": "cert-psychoacoustics-and-listening", "name": "Psychoacoustics & Listening", "level": "L1", "track": "Hearing, Perception & Listening", "sequence": 45, "member_topic_gs": [1440, 1450, 1470], "corequisite_gs": [100, 120, 1590]}, {"id": "fdd5bcae-7146-4795-bf30-477f34eba6d1", "slug": "cert-critical-listening", "name": "Critical Listening", "level": "L1", "track": "Hearing, Perception & Listening", "sequence": 46, "member_topic_gs": [1500, 1510, 1530], "corequisite_gs": [100, 120, 1590]}, {"id": "64562a87-2cc4-4397-9fc6-d53253787fa0", "slug": "cert-instrument-sound-identification", "name": "Instrument Sound Identification", "level": "L1", "track": "Studio: Ear Training & Instrument Sound ID", "sequence": 47, "member_topic_gs": [1550, 1560, 1570], "corequisite_gs": [100, 120, 1590]}, {"id": "1c654a3c-8e11-4676-867c-6ab8dd90e3c5", "slug": "cert-career-development", "name": "Career Development", "level": "L1", "track": "Career, Business & Industry", "sequence": 48, "member_topic_gs": [1600, 1610, 1640], "corequisite_gs": [100, 120, 1590]}, {"id": "abe6438c-77bd-40d6-8ac1-2d8ae18c0e94", "slug": "cert-music-business-and-entrepreneurship", "name": "Music Business & Entrepreneurship", "level": "L1", "track": "Career, Business & Industry", "sequence": 49, "member_topic_gs": [1620, 1630, 1580], "corequisite_gs": [100, 120, 1590]}, {"id": "9fce5efb-7ec4-4f69-9629-5df781eee338", "slug": "cert-immersive-audio-production", "name": "Immersive Audio Production", "level": "L1", "track": "Immersive & Screen Sound", "sequence": 50, "member_topic_gs": [1650, 1660, 1670], "corequisite_gs": [100, 120, 1590]}, {"id": "dc77f6ce-8388-46ca-9c9e-897b2b27a67c", "slug": "cert-immersive-music-production", "name": "Immersive Music Production", "level": "L1", "track": "Immersive & Screen Sound", "sequence": 51, "member_topic_gs": [1650, 1670, 1680], "corequisite_gs": [100, 120, 1590]}, {"id": "2ad61493-661a-47ff-bac5-5881dcf19dc3", "slug": "cert-dialogue-and-localization", "name": "Dialogue & Localization", "level": "L1", "track": "Immersive & Screen Sound", "sequence": 52, "member_topic_gs": [1700, 1710, 1720], "corequisite_gs": [100, 120, 1590]}, {"id": "131581c7-d9bb-46b7-a6b7-ca264fc96b8e", "slug": "cert-foley-and-sound-effects", "name": "Foley & Sound Effects", "level": "L1", "track": "Immersive & Screen Sound", "sequence": 53, "member_topic_gs": [1730, 1732, 1232], "corequisite_gs": [100, 120, 1590]}, {"id": "4ccedba1-61fe-47f4-ae76-dade8195eaaf", "slug": "cert-game-and-themed-entertainment-audio", "name": "Game & Themed-Entertainment Audio", "level": "L1", "track": "Immersive & Screen Sound", "sequence": 54, "member_topic_gs": [1740, 1750, 1732], "corequisite_gs": [100, 120, 1590]}, {"id": "1102abd9-a854-4790-a60e-4511c0749085", "slug": "cert-electronics", "name": "Electronics", "level": "L1", "track": "Audio Engineering & Development", "sequence": 55, "member_topic_gs": [880, 890, 900], "corequisite_gs": [100, 120, 1590]}, {"id": "30034050-8e8b-4edc-98c1-cbd36cbacba2", "slug": "cert-equipment-service", "name": "Equipment Service", "level": "L1", "track": "Audio Engineering & Development", "sequence": 56, "member_topic_gs": [970, 980, 610], "corequisite_gs": [100, 120, 1590]}, {"id": "ad87cc20-9ee5-4af2-9d31-3137e5659151", "slug": "cert-manufacturing", "name": "Manufacturing", "level": "L1", "track": "Audio Engineering & Development", "sequence": 57, "member_topic_gs": [910, 930, 882], "corequisite_gs": [100, 120, 1590]}, {"id": "d591f99f-09d1-4e7e-a730-e9ea310da699", "slug": "cert-hardware-engineering", "name": "Hardware Engineering", "level": "L1", "track": "Audio Engineering & Development", "sequence": 58, "member_topic_gs": [1810, 1820, 900], "corequisite_gs": [100, 120, 1590]}, {"id": "4242d6ba-193b-4374-85fc-8318ffd10f8c", "slug": "cert-software-and-dsp-development", "name": "Software & DSP Development", "level": "L1", "track": "Audio Engineering & Development", "sequence": 59, "member_topic_gs": [1830, 1840, 1910], "corequisite_gs": [100, 120, 1590]}, {"id": "0a6cc801-0a58-4b86-bd53-231a3b84c275", "slug": "cert-ai-audio-foundations", "name": "AI Audio Foundations", "level": "L1", "track": "AI Audio", "sequence": 60, "member_topic_gs": [1910, 1900, 1920], "corequisite_gs": [100, 120, 1590]}, {"id": "f49ceba4-fa4b-4ed2-9abb-f3d6f836a85c", "slug": "cert-ai-music-and-sound-creation", "name": "AI Music & Sound Creation", "level": "L1", "track": "AI Audio", "sequence": 61, "member_topic_gs": [1850, 1890, 1920], "corequisite_gs": [100, 120, 1590]}, {"id": "9b794c98-c431-46e9-b914-94d238adfe20", "slug": "cert-ai-audio-production", "name": "AI Audio Production", "level": "L1", "track": "AI Audio", "sequence": 62, "member_topic_gs": [1870, 1880, 1920], "corequisite_gs": [100, 120, 1590]}, {"id": "0b70b4f7-4205-4a06-a31d-237081a92a9c", "slug": "cert-ai-voice-and-speech", "name": "AI Voice & Speech", "level": "L1", "track": "AI Audio", "sequence": 63, "member_topic_gs": [1860, 1900, 1920], "corequisite_gs": [100, 120, 1590]}, {"id": "dc34300a-5eca-45ef-a974-8d7cb91b3b67", "slug": "cert-live-sound-crew-operations", "name": "Live Sound Crew Operations", "level": "L1", "track": "Live Sound Production", "sequence": 64, "member_topic_gs": [1930, 1940, 2020], "corequisite_gs": [100, 120, 1590]}, {"id": "fc0d2104-9607-49f2-a087-e1ba9cf58810", "slug": "cert-live-sound-mixing", "name": "Live Sound Mixing", "level": "L1", "track": "Live Sound Production", "sequence": 65, "member_topic_gs": [1960, 1970, 1980], "corequisite_gs": [100, 120, 1590]}, {"id": "c0c2365e-9d88-40a3-b8d2-a52754f7cba0", "slug": "cert-live-sound-system-engineering", "name": "Live Sound System Engineering", "level": "L1", "track": "Live Sound Production", "sequence": 66, "member_topic_gs": [1990, 2000, 2030], "corequisite_gs": [100, 120, 1590]}, {"id": "e7d532b6-5787-43bb-a415-e300b1172b58", "slug": "cert-festival-audio-production", "name": "Festival Audio Production", "level": "L1", "track": "Live Sound Production", "sequence": 67, "member_topic_gs": [1940, 2010, 2020], "corequisite_gs": [100, 120, 1590]}, {"id": "197fc577-5d52-45e0-b267-b446ac31ab55", "slug": "cert-road-crew-operations", "name": "Road Crew Operations", "level": "L1", "track": "Live Sound Production", "sequence": 68, "member_topic_gs": [700, 1930, 640], "corequisite_gs": [100, 120, 1590]}], "programs": [{"id": "706451ce-d8d4-469c-9d02-e9a95bdc1cdc", "slug": "prog-live-sound-production", "name": "Live Sound Production", "tier": "L2", "sequence": 1, "member_topic_gs": [150, 160, 170, 190, 240, 270, 290, 300, 310, 630, 640, 650, 660, 1930, 1940, 1960, 1970, 1980, 1990, 2000, 2020, 2030], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "43079cbd-dc5b-4fab-af0b-8c1833d003d5", "slug": "prog-studio-recording", "name": "Studio Recording", "tier": "L2", "sequence": 2, "member_topic_gs": [150, 160, 190, 200, 220, 290, 330, 340, 990, 1000, 1010, 1012, 1020, 1022, 1024, 1030, 1040, 1050, 1060, 1070, 212, 210, 1240, 1250], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "bdd50721-a929-4d2f-871d-c8c9a3d5ee4e", "slug": "prog-mixing-and-mastering", "name": "Mixing and Mastering", "tier": "L2", "sequence": 3, "member_topic_gs": [150, 290, 300, 310, 460, 470, 480, 490, 1080, 1090, 1100, 1110, 1120, 1130, 1140, 1150, 1160, 1170, 1180, 1500, 1510, 1530], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "625faca0-aaf8-4fd1-8b32-0d0f93a64469", "slug": "prog-music-production", "name": "Music Production", "tier": "L2", "sequence": 4, "member_topic_gs": [150, 190, 460, 470, 480, 490, 1240, 1250, 1260, 1330, 1340, 1350, 1360, 1370, 1380, 990, 1000, 1070, 1080, 1130, 1140, 1180], "elective_gs": [1270, 1280, 1290, 1300, 1310, 1320], "corequisite_gs": [100, 120, 1590]}, {"id": "6b767df4-01d6-44a9-90c3-fc03d78e9dc2", "slug": "prog-commercial-audio-and-av-systems", "name": "Commercial Audio and AV Systems", "tier": "L2", "sequence": 5, "member_topic_gs": [130, 150, 160, 170, 180, 240, 250, 260, 270, 370, 400, 410, 420, 440, 810, 820, 830, 840, 850, 1460, 580, 610], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "2a65c9af-680e-48d2-b097-64425e86764b", "slug": "prog-audio-acoustics-and-system-optimization", "name": "Audio Acoustics and System Optimization", "tier": "L2", "sequence": 6, "member_topic_gs": [110, 500, 510, 520, 530, 540, 550, 560, 570, 240, 250, 260, 650, 860, 1760, 1770, 1440, 1450, 1460, 1470, 1530], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "41715a41-6402-44a8-88cd-16f707762c87", "slug": "prog-theater-venue-and-entertainment-audio", "name": "Theater, Venue and Entertainment Audio", "tier": "L2", "sequence": 7, "member_topic_gs": [710, 720, 730, 740, 750, 760, 770, 780, 790, 630, 640, 660, 1960, 1980, 2020, 2030, 1700, 1710, 1730, 1732, 1750], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "df94609c-0123-4749-a6f0-042272ce9393", "slug": "prog-broadcast-podcast-and-streaming-audio", "name": "Broadcast, Podcast and Streaming Audio", "tier": "L2", "sequence": 8, "member_topic_gs": [190, 200, 990, 1000, 1070, 1110, 1190, 1200, 1210, 1220, 1180, 1240, 1250, 1260, 1460, 1490, 1530, 1620], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "e30366e7-7bbb-411f-8aa5-a9f944f69f48", "slug": "prog-sound-for-film-television-and-interactive-media", "name": "Sound for Film, Television and Interactive Media", "tier": "L2", "sequence": 9, "member_topic_gs": [1230, 1232, 1234, 1690, 1700, 1710, 1720, 1730, 1732, 1740, 1650, 1660, 1670, 340, 360, 1240, 1250, 1180], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "27ca750e-f503-42b4-aaf8-6ab878f50b71", "slug": "prog-audio-electronics-service-and-repair", "name": "Audio Electronics, Service and Repair", "tier": "L2", "sequence": 10, "member_topic_gs": [130, 170, 270, 280, 880, 882, 890, 900, 910, 970, 980, 560, 580, 610, 1810, 1820, 930], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "60c2dd40-813a-4b5a-9406-0894cb515678", "slug": "prog-immersive-audio", "name": "Immersive Audio", "tier": "L2", "sequence": 11, "member_topic_gs": [1650, 1660, 1670, 1680, 500, 540, 550, 570, 1440, 1450, 1530, 1080, 1130, 1140, 1180, 1234], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "cd7ab906-c7a5-4bbd-a97a-b701c31350c3", "slug": "prog-ai-audio-and-emerging-production", "name": "AI Audio and Emerging Production", "tier": "L2", "sequence": 12, "member_topic_gs": [1850, 1860, 1870, 1880, 1890, 1900, 1910, 1920, 1240, 1250, 1340, 1360, 1830, 1840, 1620], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "ddcbd2d0-e256-4d38-baf1-fdff003b1a87", "slug": "prog-electronic-music-and-synthesis", "name": "Electronic Music & Synthesis", "tier": "L2", "sequence": 13, "member_topic_gs": [1380, 1390, 1400, 1350, 1360, 1370, 1340, 1330, 1240, 1250, 1260, 1080, 1130, 1140], "elective_gs": [1270, 1280, 1290, 1300, 1310, 1320], "corequisite_gs": [100, 120, 1590]}, {"id": "266d2171-6b44-4743-8678-b29e7e766c8c", "slug": "prog-audio-networking-and-infrastructure", "name": "Audio Networking & Infrastructure", "tier": "L2", "sequence": 14, "member_topic_gs": [150, 160, 170, 180, 370, 380, 390, 400, 410, 420, 430, 440, 450, 130, 580, 600, 610, 810, 840], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "170dddab-3593-45cc-9869-600780eedd61", "slug": "prog-worship-audio", "name": "Worship Audio", "tier": "L2", "sequence": 15, "member_topic_gs": [800, 620, 630, 650, 660, 290, 300, 310, 320, 1460, 1530, 1930, 1970, 1980, 1990, 2020, 2030, 240, 260, 270], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "d7e4d141-624f-46b5-9c0e-e53d8aebadc5", "slug": "prog-audio-preservation-restoration-archival", "name": "Audio Preservation, Restoration & Archival Science", "tier": "L2", "sequence": 16, "member_topic_gs": [1780, 1790, 1800, 2041, 2042, 1870, 330, 340, 360], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "a23dab06-a5c0-4011-8fc6-197edc3792a6", "slug": "prog-acoustics-and-psychoacoustics-research", "name": "Acoustics & Psychoacoustics Research", "tier": "L2", "sequence": 17, "member_topic_gs": [110, 500, 540, 550, 560, 570, 1440, 1490, 1760, 1770], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "194c38fa-a755-47a1-93c7-9f6d7435f03a", "slug": "prog-hearing-science-and-audiology", "name": "Hearing Science & Audiology", "tier": "L2", "sequence": 18, "member_topic_gs": [1410, 1420, 1430, 1440, 1450, 1460, 850], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "fa225e6b-211e-4f0d-b398-1f2eda161443", "slug": "prog-audio-dsp-ai-and-machine-learning", "name": "Audio DSP, AI & Machine Learning", "tier": "L2", "sequence": 19, "member_topic_gs": [1910, 1830, 1870, 1880, 1890, 1900, 1920, 900, 560], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}, {"id": "2a5f5603-9df8-4fad-92be-12cf629534be", "slug": "prog-transducer-and-audio-hardware-engineering", "name": "Transducer & Audio Hardware Engineering", "tier": "L2", "sequence": 20, "member_topic_gs": [880, 882, 890, 900, 1810, 1820, 240, 270, 280, 930], "elective_gs": [], "corequisite_gs": [100, 120, 1590]}], "legacy": [{"gs": 0, "name": "Professional Audio Safety", "tc": 0, "is_active": true}, {"gs": 1, "name": "Sound & Acoustics", "tc": 0, "is_active": true}, {"gs": 2, "name": "Grounding & Electrical", "tc": 0, "is_active": true}, {"gs": 3, "name": "Connectors & I/O Connections", "tc": 213, "is_active": true}, {"gs": 4, "name": "Signal Path & Levels", "tc": 0, "is_active": true}, {"gs": 5, "name": "Microphones", "tc": 135, "is_active": true}, {"gs": 6, "name": "Amps & Loudspeakers", "tc": 151, "is_active": true}, {"gs": 7, "name": "Mixers & Recorders", "tc": 113, "is_active": true}, {"gs": 8, "name": "Equalization (EQ)", "tc": 0, "is_active": true}, {"gs": 9, "name": "Dynamics Processing", "tc": 0, "is_active": true}, {"gs": 10, "name": "Reverb & Delay", "tc": 188, "is_active": true}, {"gs": 11, "name": "Troubleshooting", "tc": 163, "is_active": true}, {"gs": 12, "name": "Amplifiers", "tc": 0, "is_active": true}, {"gs": 13, "name": "Loudspeaker System Deployment", "tc": 65, "is_active": true}, {"gs": 14, "name": "Analog Live Sound", "tc": 0, "is_active": true}, {"gs": 15, "name": "Digital Live Sound", "tc": 0, "is_active": true}, {"gs": 16, "name": "RF Wireless Systems", "tc": 0, "is_active": true}, {"gs": 17, "name": "Assisted Listening Systems", "tc": 0, "is_active": true}, {"gs": 18, "name": "Consumer Audio Systems", "tc": 78, "is_active": true}, {"gs": 19, "name": "Corporate AV", "tc": 0, "is_active": true}, {"gs": 20, "name": "Commercial Audio Systems", "tc": 69, "is_active": true}, {"gs": 21, "name": "Distributed Audio Systems", "tc": 0, "is_active": true}, {"gs": 22, "name": "Vehicle Audio", "tc": 0, "is_active": true}, {"gs": 23, "name": "Audio Measurement & Optimization", "tc": 251, "is_active": true}, {"gs": 24, "name": "Recording Arts", "tc": 186, "is_active": false}, {"gs": 25, "name": "Mixing", "tc": 66, "is_active": false}, {"gs": 26, "name": "Mastering", "tc": 58, "is_active": false}, {"gs": 27, "name": "Ear Training", "tc": 0, "is_active": false}, {"gs": 28, "name": "Audio Equipment & Infrastructure", "tc": 75, "is_active": false}, {"gs": 29, "name": "Room Acoustics", "tc": 103, "is_active": false}, {"gs": 30, "name": "Audio System Design", "tc": 0, "is_active": false}, {"gs": 31, "name": "Dante Networking", "tc": 53, "is_active": false}, {"gs": 32, "name": "Documentation & Diagrams", "tc": 0, "is_active": false}, {"gs": 33, "name": "Soldering & Repair", "tc": 194, "is_active": false}, {"gs": 34, "name": "System Maintenance", "tc": 0, "is_active": false}, {"gs": 35, "name": "Vacuum Tubes", "tc": 0, "is_active": false}, {"gs": 36, "name": "DAW Skills", "tc": 152, "is_active": false}, {"gs": 37, "name": "MIDI", "tc": 0, "is_active": false}, {"gs": 38, "name": "Plugins & Virtual Instruments", "tc": 0, "is_active": false}, {"gs": 39, "name": "Sampling", "tc": 60, "is_active": false}, {"gs": 40, "name": "Synthesis", "tc": 73, "is_active": false}, {"gs": 41, "name": "Project Management", "tc": 0, "is_active": false}, {"gs": 42, "name": "Podcasting & Broadcast Audio", "tc": 87, "is_active": false}, {"gs": 43, "name": "Band Recording and Production", "tc": 118, "is_active": false}, {"gs": 44, "name": "Film & Game Audio", "tc": 111, "is_active": false}, {"gs": 45, "name": "Portfolio Development", "tc": 0, "is_active": false}, {"gs": 46, "name": "Audio Career Exploration", "tc": 0, "is_active": false}, {"gs": 47, "name": "Workplace Skills", "tc": 0, "is_active": false}, {"gs": 48, "name": "Copyright, Publishing & Licensing", "tc": 0, "is_active": false}, {"gs": 49, "name": "Music Entrepreneurship", "tc": 0, "is_active": false}, {"gs": 50, "name": "Industry Foundations", "tc": 0, "is_active": false}, {"gs": 51, "name": "Foundations of Sound", "tc": 0, "is_active": false}]};
+const LS_KEY = "ape_workbench_" + DATA.snapshot_ts;
+
+// ---------- working model ----------
+const topicByGs = {};
+DATA.topics.forEach(t=>topicByGs[t.gs]=t);
+const legacyByGs = {}; DATA.legacy.forEach(t=>legacyByGs[t.gs]=t);
+
+// universal corequisite gs set (covered even if not a member)
+const coreqSet = new Set();
+DATA.certs.forEach(c=>(c.corequisite_gs||[]).forEach(g=>coreqSet.add(g)));
+DATA.programs.forEach(p=>(p.corequisite_gs||[]).forEach(g=>coreqSet.add(g)));
+
+// mutable state, persisted to localStorage
+let W = loadState();
+function freshState(){
+  return {
+    certM: Object.fromEntries(DATA.certs.map(c=>[c.id,[...c.member_topic_gs]])),
+    progM: Object.fromEntries(DATA.programs.map(p=>[p.id,[...p.member_topic_gs]])),
+    progE: Object.fromEntries(DATA.programs.map(p=>[p.id,[...(p.elective_gs||[])]])),
+    certName: {}, progName: {},
+    topicName: {},           // gs -> new name
+    disp: {},                // gs -> {type, note, target}
+  };
+}
+function loadState(){
+  try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s && s.certM) return s; }catch(e){}
+  return freshState();
+}
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(W)); refreshCounts(); }
+function resetAll(){ if(confirm("Discard ALL unsaved changes and reload the original snapshot?")){ W=freshState(); save(); render(); toast("Reset to snapshot"); } }
+
+// ---------- derived ----------
+function certsWith(gs){ return DATA.certs.filter(c=> W.certM[c.id].includes(gs)); }
+function progsWith(gs){ return DATA.programs.filter(p=> W.progM[p.id].includes(gs) || W.progE[p.id].includes(gs)); }
+function tname(gs){ return W.topicName[gs] || (topicByGs[gs]?topicByGs[gs].name:("gs"+gs)); }
+function certName(c){ return W.certName[c.id] || c.name; }
+function progName(p){ return W.progName[p.id] || p.name; }
+
+function recFlags(t){
+  const f=[]; const tc=t.term_count;
+  if(tc===0) f.push('empty'); else if(tc<10) f.push('tiny');
+  if(tc<90) f.push('sub90');
+  if(tc>=400) f.push('oversized'); else if(tc>=250) f.push('large');
+  const cov = certsWith(t.gs).length, pc = progsWith(t.gs).length;
+  if(cov===0 && pc===0 && !coreqSet.has(t.gs)) f.push('orphan');
+  return f;
+}
+
+// ---------- view routing ----------
+let view = "topics";
+let filter = "all", sortKey="gs", sortDir=1, search="";
+document.getElementById("tabs").addEventListener("click",e=>{
+  const b=e.target.closest(".tab"); if(!b)return;
+  view=b.dataset.view; [...document.querySelectorAll(".tab")].forEach(t=>t.classList.toggle("active",t===b));
+  render();
+});
+document.getElementById("btnReview").onclick=()=>{ view="review"; [...document.querySelectorAll(".tab")].forEach(t=>t.classList.toggle("active",t.dataset.view==="review")); render(); };
+
+function refreshCounts(){
+  document.getElementById("snapts").textContent=DATA.snapshot_ts;
+  document.getElementById("stTopics").textContent=DATA.topics.length;
+  document.getElementById("stCerts").textContent=DATA.certs.length;
+  document.getElementById("stProgs").textContent=DATA.programs.length;
+  document.getElementById("tcTopics").textContent=DATA.topics.length;
+  let orphan=0,over=0;
+  DATA.topics.forEach(t=>{const f=recFlags(t); if(f.includes('orphan'))orphan++; if(f.includes('oversized'))over++;});
+  document.getElementById("stOrphan").textContent=orphan;
+  document.getElementById("stOver").textContent=over;
+  document.getElementById("chgCount").textContent=changeList().length;
+}
+
+// ---------- TOPICS VIEW ----------
+function topicsView(){
+  const counts={all:DATA.topics.length,sub90:0,orphan:0,oversized:0,large:0,empty:0,tiny:0,decided:0};
+  DATA.topics.forEach(t=>{const f=recFlags(t); f.forEach(x=>{if(counts[x]!=null)counts[x]++;}); if(W.disp[t.gs])counts.decided++;});
+  const fchips=[["all","All"],["sub90","<90 terms"],["orphan","Orphans"],["oversized","Oversized ≥400"],["large","Large 250–399"],["empty","Empty"],["tiny","Tiny 1–9"],["decided","Has decision"]]
+    .map(([k,l])=>`<button class="fchip ${filter===k?'active':''}" data-f="${k}">${l}<span class="n">${counts[k]!=null?counts[k]:''}</span></button>`).join("");
+
+  let rows = DATA.topics.slice();
+  if(search){const q=search.toLowerCase(); rows=rows.filter(t=>tname(t.gs).toLowerCase().includes(q)||(""+t.gs).includes(q));}
+  if(filter!=="all"){ rows=rows.filter(t=> filter==="decided" ? W.disp[t.gs] : recFlags(t).includes(filter)); }
+  rows.sort((a,b)=>{
+    let av,bv;
+    if(sortKey==="gs"){av=a.gs;bv=b.gs;}
+    else if(sortKey==="tc"){av=a.term_count;bv=b.term_count;}
+    else if(sortKey==="cov"){av=certsWith(a.gs).length;bv=certsWith(b.gs).length;}
+    else if(sortKey==="name"){av=tname(a.gs).toLowerCase();bv=tname(b.gs).toLowerCase();}
+    return av<bv?-1*sortDir:av>bv?1*sortDir:0;
+  });
+
+  const maxTc=967;
+  const body = rows.map(t=>{
+    const cov=certsWith(t.gs), pc=progsWith(t.gs);
+    const flags=recFlags(t);
+    const recs=flags.map(f=>`<span class="rec ${f}">${f}</span>`).join("");
+    const big=t.term_count>=400?'big':'';
+    const d=W.disp[t.gs];
+    const dbtn=(k,lbl,cls)=>`<button class="dbtn ${cls} ${d&&d.type===k?'on '+cls:''}" data-disp="${k}" data-gs="${t.gs}">${lbl}</button>`;
+    const renamed=W.topicName[t.gs]?'<span class="edited" title="renamed"> ✎</span>':'';
+    const noteVal=d&&d.note?d.note:'';
+    return `<tr data-gs="${t.gs}">
+      <td class="gs">${t.gs}</td>
+      <td><span class="tname">${esc(tname(t.gs))}${renamed}</span>
+          <button class="btn sm ghost" data-rename="${t.gs}" title="Rename topic">✎</button>
+          <div class="recs">${recs}</div>
+          <textarea class="note ${noteVal?'show':''}" data-note="${t.gs}" placeholder="note / rationale…">${esc(noteVal)}</textarea>
+      </td>
+      <td><span class="tc">${t.term_count}</span><div class="bar ${big}"><i style="width:${Math.max(2,Math.round(t.term_count/maxTc*100))}%"></i></div></td>
+      <td><span class="pill ${cov.length===0?'zero':''}" data-editcerts="${t.gs}">${cov.length} cert${cov.length===1?'':'s'}</span></td>
+      <td><span class="pill" data-editprogs="${t.gs}">${pc.length} prog${pc.length===1?'':'s'}</span></td>
+      <td><div class="disp">
+        ${dbtn('keep','Keep','keep')}${dbtn('split','Split','split')}${dbtn('merge','Merge→','merge')}${dbtn('delete','Delete','del')}${dbtn('flag','Flag','flag')}
+      </div></td>
+    </tr>`;
+  }).join("");
+
+  const th=(k,l)=>`<th data-sort="${k}">${l}${sortKey===k?(sortDir>0?' ▲':' ▼'):''}</th>`;
+  return `
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search topic name or gs…" value="${esc(search)}">
+    <div class="chipfilter">${fchips}</div>
+  </div>
+  <div class="legend">
+    <span>Click a <b>cert/prog</b> pill to edit which certificates or programs include a topic.</span>
+    <span>Decisions (Split/Merge/Delete/Flag) are captured as proposals for review — they don't auto-change membership.</span>
+  </div>
+  <table class="ttable"><thead><tr>
+    ${th('gs','gs')}${th('name','Topic')}${th('tc','Terms')}${th('cov','Certs')}<th>Progs</th><th>Decision</th>
+  </tr></thead><tbody>${body||'<tr><td colspan=6 class=empty-state>No topics match.</td></tr>'}</tbody></table>`;
+}
+
+// ---------- CERTS / PROGRAMS VIEW ----------
+function certsView(){
+  const byTrack={};
+  DATA.certs.forEach(c=>{(byTrack[c.track]=byTrack[c.track]||[]).push(c);});
+  let html='<div class="warnbar">Outline view. Add/remove topics to edit certificate membership; exports SQL updating both <code>certificates.member_topic_gs</code> and the <code>certificate_topics</code> link table. Topics under 90 terms are marked ⚠ in amber.</div>';
+  html+='<div class="outline">';
+  Object.keys(byTrack).forEach(tr=>{
+    html+=`<div class="ol-track">${esc(tr)}</div>`;
+    byTrack[tr].forEach(c=>{
+      const m=W.certM[c.id];
+      const terms=m.reduce((s,g)=>s+(topicByGs[g]?topicByGs[g].term_count:0),0);
+      let li='';
+      m.forEach(g=>{
+        const t=topicByGs[g]; const tcv=t?t.term_count:'?'; const low=t&&t.term_count<90;
+        li+=`<li class="${low?'low':''}"><span class="ol-gs">${g}</span><span>${esc(tname(g))}</span><span class="ol-tc">· ${tcv} terms${low?' ⚠':''}</span><span class="x" data-rmcert="${c.id}" data-gs="${g}">✕</span></li>`;
+      });
+      html+=`<div class="ol-cert">
+        <div class="ol-cert-h"><span class="ol-seq">${c.sequence}</span><b>${esc(certName(c))}</b>
+          <button class="btn sm ghost" data-rencert="${c.id}">✎</button>
+          <span class="ol-meta">${c.level} · ${esc(c.track)} · ${m.length} topics · ${terms} terms</span></div>
+        <ul class="ol-list">${li||'<li class=sub>no topics</li>'}</ul>
+        <button class="btn sm" data-addcert="${c.id}" style="margin-left:30px">+ Add topic</button>
+      </div>`;
+    });
+  });
+  return html+'</div>';
+}
+function programsView(){
+  let html='<div class="warnbar">Editing here changes program membership/electives. Exports update <code>programs.member_topic_gs</code>, <code>elective_gs</code>, and the <code>program_topics</code> link table.</div><div class="grid">';
+  DATA.programs.forEach(p=>{
+    const m=W.progM[p.id], e=W.progE[p.id];
+    const terms=m.reduce((s,g)=>s+(topicByGs[g]?topicByGs[g].term_count:0),0);
+    const chips=arr=>arr.map(g=>{
+      const isE=arr===e;
+      const orig=isE?(p.elective_gs||[]):p.member_topic_gs;
+      const added=!orig.includes(g);
+      return `<span class="mchip ${isE?'elec':''} ${added?'added':''}"><span>${esc(tname(g))}</span><span class="qc">${topicByGs[g]?topicByGs[g].term_count:'?'}</span><span class="x" data-rmprog="${p.id}" data-kind="${isE?'e':'m'}" data-gs="${g}">✕</span></span>`;
+    }).join("");
+    html+=`<div class="card">
+      <h3>${esc(progName(p))} <button class="btn sm ghost" data-renprog="${p.id}">✎</button></h3>
+      <div class="meta">${p.tier} · ${m.length} core + ${e.length} elective · ${terms} core terms · seq ${p.sequence}</div>
+      <div class="subhead">Core topics</div><div class="mchips">${chips(m)||'<span class=sub>none</span>'}</div>
+      <button class="btn sm addbtn" data-addprog="${p.id}" data-kind="m">+ Add core topic</button>
+      <div class="subhead">Electives</div><div class="mchips">${chips(e)||'<span class=sub>none</span>'}</div>
+      <button class="btn sm addbtn" data-addprog="${p.id}" data-kind="e">+ Add elective</button>
+    </div>`;
+  });
+  return html+'</div>';
+}
+function legacyView(){
+  const rows=DATA.legacy.map(t=>`<tr><td class=gs>${t.gs}</td><td>${esc(t.name)}</td><td class=tc>${t.tc}</td><td class=sub>${t.is_active?'is_active=true':'—'}</td></tr>`).join("");
+  return `<div class="warnbar">Read-only reference. These 52 legacy-curriculum topics (gs 0–51) are the old course map. Certificates and programs do <b>not</b> reference them. Editing them would desync nothing here, so they are locked.</div>
+  <table class="ttable"><thead><tr><th>gs</th><th>Topic (legacy)</th><th>Terms</th><th>Flag</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ---------- CHANGE DIFF ----------
+function arrEq(a,b){ if(a.length!==b.length)return false; const s=new Set(b); return a.every(x=>s.has(x)); }
+function changeList(){
+  const out=[];
+  DATA.certs.forEach(c=>{
+    const cur=W.certM[c.id], orig=c.member_topic_gs;
+    const added=cur.filter(g=>!orig.includes(g)), removed=orig.filter(g=>!cur.includes(g));
+    if(W.certName[c.id]&&W.certName[c.id]!==c.name) out.push({kind:'rename',t:'cert',id:c.id,from:c.name,to:W.certName[c.id]});
+    if(added.length||removed.length) out.push({kind:'cert',id:c.id,name:certName(c),added,removed,cur:[...cur]});
+  });
+  DATA.programs.forEach(p=>{
+    const cm=W.progM[p.id], ce=W.progE[p.id];
+    const am=cm.filter(g=>!p.member_topic_gs.includes(g)), rm=p.member_topic_gs.filter(g=>!cm.includes(g));
+    const ae=ce.filter(g=>!(p.elective_gs||[]).includes(g)), re=(p.elective_gs||[]).filter(g=>!ce.includes(g));
+    if(W.progName[p.id]&&W.progName[p.id]!==p.name) out.push({kind:'rename',t:'prog',id:p.id,from:p.name,to:W.progName[p.id]});
+    if(am.length||rm.length||ae.length||re.length) out.push({kind:'prog',id:p.id,name:progName(p),am,rm,ae,re,cm:[...cm],ce:[...ce]});
+  });
+  Object.keys(W.topicName).forEach(gs=>{ if(topicByGs[gs]&&W.topicName[gs]&&W.topicName[gs]!==topicByGs[gs].name) out.push({kind:'rename',t:'topic',gs:+gs,from:topicByGs[gs].name,to:W.topicName[gs]}); });
+  Object.keys(W.disp).forEach(gs=>{ const d=W.disp[gs]; if(d&&d.type&&d.type!=='keep') out.push({kind:'decision',gs:+gs,type:d.type,note:d.note||'',target:d.target||null}); });
+  return out;
+}
+
+function reviewView(){
+  const cl=changeList();
+  if(!cl.length) return '<div class="empty-state">No changes yet. Reassign topics, rename, or flag decisions — they will collect here and export as SQL + JSON.</div>';
+  const g={cert:[],prog:[],rename:[],decision:[]};
+  cl.forEach(c=> g[c.kind].push(c));
+  let h='<div class="controls"><button class="btn primary" id="copySql">Copy SQL</button><button class="btn" id="dlSql">Download SQL</button><button class="btn" id="dlJson">Download JSON changelog</button><button class="btn ghost" id="resetAll" style="margin-left:auto;border-color:#6a3a36;color:#f0a49e">Reset all</button></div>';
+  if(g.cert.length){ h+='<div class="chgrp"><h3>Certificate membership</h3>'; g.cert.forEach(c=>{
+    h+=`<div class="chitem"><span class="k cert">CERT</span><div class="body"><b>${esc(c.name)}</b><br>${c.added.map(x=>`<span class=add>+ ${esc(tname(x))}</span>`).join(" ")} ${c.removed.map(x=>`<span class=rem>− ${esc(tname(x))}</span>`).join(" ")}</div></div>`;
+  }); h+='</div>'; }
+  if(g.prog.length){ h+='<div class="chgrp"><h3>Program membership</h3>'; g.prog.forEach(c=>{
+    const parts=[]; c.am.forEach(x=>parts.push(`<span class=add>+ ${esc(tname(x))}</span>`)); c.rm.forEach(x=>parts.push(`<span class=rem>− ${esc(tname(x))}</span>`));
+    c.ae.forEach(x=>parts.push(`<span class=add>+elec ${esc(tname(x))}</span>`)); c.re.forEach(x=>parts.push(`<span class=rem>−elec ${esc(tname(x))}</span>`));
+    h+=`<div class="chitem"><span class="k prog">PROG</span><div class="body"><b>${esc(c.name)}</b><br>${parts.join(" ")}</div></div>`;
+  }); h+='</div>'; }
+  if(g.rename.length){ h+='<div class="chgrp"><h3>Renames</h3>'; g.rename.forEach(c=>{
+    h+=`<div class="chitem"><span class="k rename">${c.t.toUpperCase()}</span><div class="body">${esc(c.from)} → <b>${esc(c.to)}</b></div></div>`;
+  }); h+='</div>'; }
+  if(g.decision.length){ h+='<div class="chgrp"><h3>Structural decisions (proposals — reviewed &amp; applied by Machine A)</h3>'; g.decision.forEach(c=>{
+    h+=`<div class="chitem"><span class="k decision">${c.type.toUpperCase()}</span><div class="body"><b>${esc(tname(c.gs))}</b> <span class=gs>(gs ${c.gs})</span>${c.target?(' → '+esc(tname(c.target))):''}${c.note?('<br><span class=sub>'+esc(c.note)+'</span>'):''}</div></div>`;
+  }); h+='</div>'; }
+  h+='<div class="subhead">SQL preview</div><pre id="sqlPre">'+esc(genSql())+'</pre>';
+  return h;
+}
+
+// ---------- SQL GEN ----------
+function gsArr(a){ return "'{"+a.join(",")+"}'"; }
+function q(s){ return "'"+String(s).replace(/'/g,"''")+"'"; }
+function genSql(){
+  const cl=changeList(); if(!cl.length) return "-- no changes";
+  let s="-- AP&E Structure Workbench export\n-- snapshot "+DATA.snapshot_ts+" · project "+DATA.project_id+" · draft cv "+DATA.draft_cv+"\n-- Apply as Machine A (sole DB writer). Review before running.\nBEGIN;\n";
+  // certs
+  cl.filter(c=>c.kind==='cert').forEach(c=>{
+    s+="\n-- CERT "+c.name+"\n";
+    s+="UPDATE certificates SET member_topic_gs="+gsArr(c.cur)+" WHERE id='"+c.id+"';\n";
+    s+="DELETE FROM certificate_topics WHERE certificate_id='"+c.id+"';\n";
+    c.cur.forEach((g,i)=>{ const t=topicByGs[g]; s+="INSERT INTO certificate_topics(certificate_id,achievement_id,gs,seq,is_required) VALUES('"+c.id+"',"+(t?("'"+t.id+"'"):"NULL")+","+g+","+(i+1)+",true);\n"; });
+  });
+  cl.filter(c=>c.kind==='prog').forEach(c=>{
+    s+="\n-- PROGRAM "+c.name+"\n";
+    s+="UPDATE programs SET member_topic_gs="+gsArr(c.cm)+", elective_gs="+gsArr(c.ce)+" WHERE id='"+c.id+"';\n";
+    s+="DELETE FROM program_topics WHERE program_id='"+c.id+"';\n";
+    let seq=0;
+    c.cm.forEach(g=>{ const t=topicByGs[g]; seq++; s+="INSERT INTO program_topics(program_id,achievement_id,gs,seq,is_elective) VALUES('"+c.id+"',"+(t?("'"+t.id+"'"):"NULL")+","+g+","+seq+",false);\n"; });
+    c.ce.forEach(g=>{ const t=topicByGs[g]; seq++; s+="INSERT INTO program_topics(program_id,achievement_id,gs,seq,is_elective) VALUES('"+c.id+"',"+(t?("'"+t.id+"'"):"NULL")+","+g+","+seq+",true);\n"; });
+  });
+  cl.filter(c=>c.kind==='rename').forEach(c=>{
+    if(c.t==='cert') s+="\nUPDATE certificates SET name="+q(c.to)+" WHERE id='"+c.id+"';\n";
+    else if(c.t==='prog') s+="\nUPDATE programs SET name="+q(c.to)+" WHERE id='"+c.id+"';\n";
+    else { const t=topicByGs[c.gs]; s+="\nUPDATE achievements SET name="+q(c.to)+" WHERE id='"+t.id+"';  -- gs "+c.gs+" (draft cv only)\n"; }
+  });
+  const dec=cl.filter(c=>c.kind==='decision');
+  if(dec.length){
+    s+="\n-- ============================================================\n-- STRUCTURAL DECISIONS — REVIEW REQUIRED (NOT auto-executed)\n-- Split/Merge/Delete touch terms (glossary_topics) & cert/program joins.\n-- Machine A to turn each into a reviewed migration.\n-- ============================================================\n";
+    dec.forEach(c=>{ const t=topicByGs[c.gs];
+      s+="-- "+c.type.toUpperCase()+": "+t.name+" (gs "+c.gs+", achievement_id "+t.id+", "+t.term_count+" terms)"+(c.target?(" -> "+tname(c.target)+" (gs "+c.target+")"):"")+(c.note?("  // "+c.note.replace(/\n/g,' ')):"")+"\n";
+      if(c.type==='merge'&&c.target&&topicByGs[c.target]) s+="--   e.g. UPDATE glossary_topics SET achievement_id='"+topicByGs[c.target].id+"' WHERE achievement_id='"+t.id+"';  -- then retire gs "+c.gs+"\n";
+    });
+  }
+  s+="\nCOMMIT;\n";
+  return s;
+}
+
+// ---------- render ----------
+function render(){
+  const app=document.getElementById("app");
+  if(view==="topics") app.innerHTML=topicsView();
+  else if(view==="certs") app.innerHTML=certsView();
+  else if(view==="programs") app.innerHTML=programsView();
+  else if(view==="review") app.innerHTML=reviewView();
+  refreshCounts();
+}
+
+// ---------- events (delegated) ----------
+document.getElementById("app").addEventListener("click",e=>{
+  const t=e.target;
+  const sort=t.closest("[data-sort]"); if(sort){ const k=sort.dataset.sort; if(sortKey===k)sortDir*=-1; else {sortKey=k;sortDir=k==='tc'?-1:1;} render(); return; }
+  const f=t.closest("[data-f]"); if(f){ filter=f.dataset.f; render(); return; }
+  const disp=t.closest("[data-disp]"); if(disp){ toggleDisp(+disp.dataset.gs, disp.dataset.disp); return; }
+  const ren=t.closest("[data-rename]"); if(ren){ renameTopic(+ren.dataset.rename); return; }
+  const ec=t.closest("[data-editcerts]"); if(ec){ editMembership('cert',+ec.dataset.editcerts); return; }
+  const ep=t.closest("[data-editprogs]"); if(ep){ editMembership('prog',+ep.dataset.editprogs); return; }
+  const rmc=t.closest("[data-rmcert]"); if(rmc){ removeGs('cert',rmc.dataset.rmcert,+rmc.dataset.gs); return; }
+  const rmp=t.closest("[data-rmprog]"); if(rmp){ removeProgGs(rmp.dataset.rmprog,rmp.dataset.kind,+rmp.dataset.gs); return; }
+  const ac=t.closest("[data-addcert]"); if(ac){ addTopicPicker('cert',ac.dataset.addcert); return; }
+  const ap=t.closest("[data-addprog]"); if(ap){ addTopicPicker('prog',ap.dataset.addprog,ap.dataset.kind); return; }
+  const rc=t.closest("[data-rencert]"); if(rc){ renameEntity('cert',rc.dataset.rencert); return; }
+  const rp=t.closest("[data-renprog]"); if(rp){ renameEntity('prog',rp.dataset.renprog); return; }
+  if(t.id==='copySql'){ navigator.clipboard.writeText(genSql()).then(()=>toast("SQL copied")); return; }
+  if(t.id==='dlSql'){ download("APE_structure_changes_"+DATA.snapshot_ts+".sql", genSql()); return; }
+  if(t.id==='dlJson'){ download("APE_structure_changelog_"+DATA.snapshot_ts+".json", JSON.stringify({snapshot:DATA.snapshot_ts,project:DATA.project_id,changes:changeList()},null,2)); return; }
+  if(t.id==='resetAll'){ resetAll(); return; }
+});
+document.getElementById("app").addEventListener("input",e=>{
+  if(e.target.id==='search'){ search=e.target.value; clearTimeout(window._st); window._st=setTimeout(render,160); }
+  const n=e.target.closest("[data-note]"); if(n){ const gs=+n.dataset.note; W.disp[gs]=W.disp[gs]||{type:'flag'}; W.disp[gs].note=n.value; save(); }
+});
+
+function toggleDisp(gs,type){
+  const cur=W.disp[gs];
+  if(cur&&cur.type===type){ delete W.disp[gs]; save(); render(); return; }
+  if(type==='merge'){ mergePicker(gs); return; }
+  W.disp[gs]={type, note:cur?cur.note:''}; save(); render();
+}
+function renameTopic(gs){ const cur=tname(gs); const v=prompt("Rename topic (gs "+gs+"):",cur); if(v==null)return; if(v.trim()&&v!==topicByGs[gs].name)W.topicName[gs]=v.trim(); else delete W.topicName[gs]; save(); render(); }
+function renameEntity(kind,id){
+  const obj=(kind==='cert'?DATA.certs:DATA.programs).find(x=>x.id===id);
+  const cur=kind==='cert'?certName(obj):progName(obj);
+  const v=prompt("Rename "+kind+":",cur); if(v==null)return;
+  const store=kind==='cert'?W.certName:W.progName;
+  if(v.trim()&&v!==obj.name)store[id]=v.trim(); else delete store[id];
+  save(); render();
+}
+function removeGs(kind,id,gs){ const arr=W.certM[id]; const i=arr.indexOf(gs); if(i>=0)arr.splice(i,1); save(); render(); }
+function removeProgGs(id,kind,gs){ const arr=kind==='e'?W.progE[id]:W.progM[id]; const i=arr.indexOf(gs); if(i>=0)arr.splice(i,1); save(); render(); }
+
+// ---------- modals ----------
+const overlay=document.getElementById("overlay"), modal=document.getElementById("modal");
+function openModal(html){ modal.innerHTML=html; overlay.classList.add("show"); }
+function closeModal(){ overlay.classList.remove("show"); }
+overlay.addEventListener("click",e=>{ if(e.target===overlay)closeModal(); });
+
+// topic-centric: which certs/programs include this topic
+function editMembership(kind,gs){
+  const list=(kind==='cert'?DATA.certs:DATA.programs);
+  const has=id=> kind==='cert'? W.certM[id].includes(gs) : (W.progM[id].includes(gs)||W.progE[id].includes(gs));
+  const rows=list.map(o=>`<div class="pick ${has(o.id)?'on':''}" data-toggle="${o.id}"><span class="cb">${has(o.id)?'✓':''}</span><span class="tk">${esc(kind==='cert'?certName(o):progName(o))} <small>${kind==='cert'?esc(o.track):o.tier}</small></span></div>`).join("");
+  openModal(`<div style="display:flex;justify-content:space-between"><h2>${kind==='cert'?'Certificates':'Programs'} containing</h2><span class="close" id="mc">✕</span></div>
+    <div class="mut">${esc(tname(gs))} · gs ${gs} · ${topicByGs[gs].term_count} terms — tap to add/remove</div>
+    <div class="picklist">${rows}</div><div class="modrow"><button class="btn primary" id="mdone">Done</button></div>`);
+  document.getElementById("mc").onclick=closeModal;
+  document.getElementById("mdone").onclick=()=>{closeModal();render();};
+  modal.querySelectorAll("[data-toggle]").forEach(el=>el.onclick=()=>{
+    const id=el.dataset.toggle;
+    if(kind==='cert'){ const a=W.certM[id]; const i=a.indexOf(gs); if(i>=0)a.splice(i,1); else a.push(gs); }
+    else { const a=W.progM[id]; const i=a.indexOf(gs); if(i>=0)a.splice(i,1); else { const e=W.progE[id]; const j=e.indexOf(gs); if(j>=0)e.splice(j,1); else a.push(gs);} }
+    el.classList.toggle("on"); el.querySelector(".cb").textContent=el.classList.contains("on")?'✓':''; save();
+  });
+}
+// entity-centric: pick a topic to add to a cert/program
+function addTopicPicker(kind,id,pk){
+  let q="";
+  const render2=()=>{
+    let rows=DATA.topics.slice();
+    const cur = kind==='cert'? W.certM[id] : (pk==='e'?W.progE[id]:W.progM[id]);
+    if(q){const s=q.toLowerCase(); rows=rows.filter(t=>tname(t.gs).toLowerCase().includes(s)||(""+t.gs).includes(s));}
+    rows=rows.slice(0,400);
+    return rows.map(t=>`<div class="pick ${cur.includes(t.gs)?'on':''}" data-add="${t.gs}"><span class="cb">${cur.includes(t.gs)?'✓':''}</span><span class="tk">${esc(tname(t.gs))} <small>gs ${t.gs} · ${t.term_count} terms</small></span></div>`).join("");
+  };
+  openModal(`<div style="display:flex;justify-content:space-between"><h2>Add topic</h2><span class="close" id="mc">✕</span></div>
+    <div class="mut">to ${esc(kind==='cert'?certName(DATA.certs.find(c=>c.id===id)):progName(DATA.programs.find(p=>p.id===id)))}${pk==='e'?' (elective)':''}</div>
+    <input type="text" id="tp" placeholder="Search topics…" style="width:100%;margin-bottom:8px">
+    <div class="picklist" id="pl">${render2()}</div><div class="modrow"><button class="btn primary" id="mdone">Done</button></div>`);
+  document.getElementById("mc").onclick=closeModal;
+  document.getElementById("mdone").onclick=()=>{closeModal();render();};
+  const pl=document.getElementById("pl");
+  document.getElementById("tp").oninput=e=>{q=e.target.value; pl.innerHTML=render2(); bind();};
+  function bind(){ pl.querySelectorAll("[data-add]").forEach(el=>el.onclick=()=>{
+    const gs=+el.dataset.add;
+    const arr = kind==='cert'? W.certM[id] : (pk==='e'?W.progE[id]:W.progM[id]);
+    const i=arr.indexOf(gs); if(i>=0)arr.splice(i,1); else arr.push(gs);
+    el.classList.toggle("on"); el.querySelector(".cb").textContent=el.classList.contains("on")?'✓':''; save();
+  }); }
+  bind();
+}
+// merge target picker
+function mergePicker(gs){
+  let q="";
+  const render2=()=>{ let rows=DATA.topics.filter(t=>t.gs!==gs); if(q){const s=q.toLowerCase();rows=rows.filter(t=>tname(t.gs).toLowerCase().includes(s)||(""+t.gs).includes(s));} return rows.slice(0,400).map(t=>`<div class="pick" data-tgt="${t.gs}"><span class="cb"></span><span class="tk">${esc(tname(t.gs))} <small>gs ${t.gs} · ${t.term_count} terms</small></span></div>`).join(""); };
+  openModal(`<div style="display:flex;justify-content:space-between"><h2>Merge into…</h2><span class="close" id="mc">✕</span></div>
+    <div class="mut">Merge <b>${esc(tname(gs))}</b> (gs ${gs}) into which topic? Its ${topicByGs[gs].term_count} terms would move there.</div>
+    <input type="text" id="tp" placeholder="Search target topic…" style="width:100%;margin-bottom:8px">
+    <div class="picklist" id="pl">${render2()}</div>`);
+  document.getElementById("mc").onclick=closeModal;
+  const pl=document.getElementById("pl");
+  document.getElementById("tp").oninput=e=>{q=e.target.value; pl.innerHTML=render2(); bind();};
+  function bind(){ pl.querySelectorAll("[data-tgt]").forEach(el=>el.onclick=()=>{ const tgt=+el.dataset.tgt; W.disp[gs]={type:'merge',target:tgt,note:(W.disp[gs]&&W.disp[gs].note)||''}; save(); closeModal(); render(); toast("Merge proposal recorded"); }); }
+  bind();
+}
+
+// ---------- util ----------
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function download(name,txt){ const b=new Blob([txt],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; a.click(); }
+let _tt; function toast(m){ const el=document.getElementById("toast"); el.textContent=m; el.classList.add("show"); clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove("show"),1600); }
+
+render();
+</script>
+</body>
+</html>

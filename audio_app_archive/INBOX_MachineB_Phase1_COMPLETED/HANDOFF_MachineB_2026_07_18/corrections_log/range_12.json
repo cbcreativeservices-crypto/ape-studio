@@ -1,0 +1,28 @@
+{
+ "range": 12,
+ "span": "HAND (High + NEEDS_REVISION, web-verified)",
+ "applied": [
+  {
+   "pkt": "mb0424",
+   "term": "Quantization",
+   "field": "common_mistakes",
+   "severity": "High",
+   "summary": "Committee (audio, web-verified): original claimed undithered truncation causes \"sudden full-scale artifacts that risk hearing and speaker damage\" — inaccurate. Undithered truncation produces signal-correlated (harmonic) quantization distortion, not full-scale/safety artifacts. Rewritten to the correct effect; removed the erroneous UNSAFE hazard claim. Confirmed vs quantization/dither literature (Quantization and Dither: A Theoretical Survey; AllAboutCircuits dithering articles)."
+  },
+  {
+   "pkt": "mb0353",
+   "term": "Risha/mizrab attack",
+   "field": "definition+plain_english",
+   "severity": "Medium/NEEDS_REVISION",
+   "summary": "Committee (audio, web-verified): original conflated sitar and sarod plectra. Corrected: sitar uses the wire mizrab worn on the finger; the sarod is played with a hand-held java (jawa) plectrum. Confirmed vs India Instruments encyclopedia, Chandraveena, and sarod pedagogy sources. plain_english FK=6.1."
+  }
+ ],
+ "declined": [
+  {
+   "pkt": "mb0425",
+   "term": "RipX DeepMix",
+   "field": "(all)",
+   "reason": "DECLINED — two committee experts assumed \"RipX DeepMix\" is a real Hit'n'Mix product and asked to author the full entry. Web-verified against the manufacturer (hitnmix.com) and Sound on Sound / MusicTech reviews: RipX editions are DeepAudio, DeepRemix, DeepCreate (+ RipX DAW / DAW PRO). No \"DeepMix\" exists. Authoring it would require inventing a nonexistent product, violating FLAG-DON'T-GUESS. Entry remains FLAG-FOR-REVIEW for Booth to confirm the intended term (likely RipX DeepRemix or RipX DAW)."
+  }
+ ]
+}

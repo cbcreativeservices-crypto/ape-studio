@@ -1,0 +1,159 @@
+{
+ "batch": 277,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "de3ae1ee-dce5-4d3a-8e8d-e3c13959fb28",
+   "term": "Legato sample",
+   "fields": {
+    "definition": "A legato sample is a recording that captures the smooth, connected transition between two notes and is played back by a sampled instrument when notes overlap, so a melodic line sounds slurred rather than freshly re-attacked. In scripted sample libraries it is triggered by monophonic legato playing to reproduce the natural bend or crossfade from one pitch to the next.",
+    "plain_english": "A legato sample is a recording of one note sliding smoothly into the next. Sample makers add it so a run of notes sounds joined up, like a singer gliding between words instead of stopping after each one.",
+    "purpose_function": "It exists to reproduce the connected phrasing of a real player, where one note flows into the next without a new attack, which fixed single-note samples cannot convey. This makes sampled melodic lines sound expressive and human.",
+    "practical_application": "A composer plays overlapping notes in a legato patch so the library engine swaps in transition samples, giving realistic slurred string or wind lines in a mockup.",
+    "category": "Articulation",
+    "related_terms": ["Marcato sample", "Monophonic mode", "Multi-sampled instrument", "Velocity layer", "Round robin"],
+    "common_mistakes": ["Expecting legato transitions to sound when notes are played fully separated instead of overlapping them", "Confusing a legato patch with simple synth portamento or glide", "Assuming any sustain sample will slur between notes without dedicated transition recordings"],
+    "scenario_contexts": ["Programming a realistic solo violin melody in an orchestral mockup", "Building expressive lead lines with a sampled woodwind library", "Playing a flowing sampled-string line that must sound connected"]
+   },
+   "sources": ["Native Instruments Kontakt reference and creator documentation", "Sound on Sound (sampling and orchestral articulation articles)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "72b0e103-1290-4b76-ac29-7f64fbf86eda",
+   "term": "Linear frequency modulation",
+   "fields": {
+    "definition": "Linear frequency modulation is a form of frequency modulation in which the carrier's frequency deviation is directly proportional, in hertz, to the instantaneous amplitude of the modulating signal. Because the deviation is added linearly, the carrier-to-modulator frequency ratio and the resulting spectrum stay constant across the keyboard, giving consistent timbre at every pitch.",
+    "plain_english": "Linear frequency modulation is a way one sound wave bends the pitch of another to build new tones. The amount of bend is a fixed step, so the sound keeps the same character all the way up and down the keyboard.",
+    "purpose_function": "It lets one oscillator vary another's frequency to generate rich harmonic and inharmonic spectra from simple waveforms, which is the basis of FM synthesis. Keeping the modulation linear preserves the same timbre as notes move up or down the keyboard.",
+    "practical_application": "A sound designer patches a modulator oscillator to a carrier's linear FM input on an FM or modular synth to create bell, electric-piano, or metallic tones that track evenly across the keys.",
+    "category": "Synthesis",
+    "related_terms": ["Frequency modulation", "Carrier", "Modulator", "Operator", "Exponential frequency modulation"],
+    "common_mistakes": ["Confusing linear FM with exponential FM, which shifts the perceived pitch of a note as modulation is applied", "Assuming FM synthesis can only make harsh or metallic sounds rather than warm or bell-like tones", "Forgetting that the carrier-to-modulator ratio, not just the modulation amount, sets the harmonic character"],
+    "scenario_contexts": ["Designing an electric-piano or bell patch on a DX-style FM synth", "Cross-modulating two oscillators on a modular synth for metallic timbres", "Building evolving inharmonic textures that hold their tone across the keyboard"]
+   },
+   "sources": ["Chowning, 'The Synthesis of Complex Audio Spectra by Means of Frequency Modulation' (Journal of the Audio Engineering Society)", "Sound on Sound (Synth Secrets FM synthesis series)", "Yamaha DX7 technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c1bbd839-981a-4fc3-b2a6-eec472f7c23e",
+   "term": "Live sampling",
+   "fields": {
+    "definition": "Live sampling is the practice of recording audio into a sampler or looper in real time during a performance or session and immediately making it available for playback, triggering, or manipulation. The captured audio can be replayed from pads or keys, looped, or processed on the fly rather than being prepared in advance.",
+    "plain_english": "Live sampling means grabbing a sound as it happens and playing it back right away. A musician might record a drum hit on stage, then trigger it again from a keyboard moments later.",
+    "purpose_function": "It exists to let performers capture and reuse sounds spontaneously, turning a live source into an instrument within the same performance. This supports improvisation, looping, and remixing without any pre-recorded material.",
+    "practical_application": "A musician records a vocal phrase or guitar riff into a hardware looper or software sampler mid-set, then re-triggers and layers it to build an arrangement live.",
+    "category": "Sampling technique",
+    "related_terms": ["Sampler", "Looper", "Loop marker", "One-shot", "Overdub"],
+    "common_mistakes": ["Not setting input levels before capture, so the live sample clips or is too quiet to use", "Failing to arm or monitor the correct input and recording silence or the wrong source", "Ignoring latency, so re-triggered samples fall out of time with the performance"],
+    "scenario_contexts": ["Building a looped arrangement live from a vocal or guitar on stage", "Capturing a drummer's groove into a sampler to reuse during a set", "Grabbing ambient or found sounds during a session to sample instantly"]
+   },
+   "sources": ["Ableton Live reference manual", "Sound on Sound (live looping and sampling articles)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6c42b005-61be-47b8-9af0-3df7f9292dc3",
+   "term": "Loop marker",
+   "fields": {
+    "definition": "A loop marker is a point placed within a sample that defines where a repeated region begins or ends; a loop start marker and a loop end marker together set the segment that plays over and over to sustain the sound. When playback reaches the loop end it jumps back to the loop start and continues for as long as the note is held.",
+    "plain_english": "A loop marker sets the start and end of a small chunk of sound that repeats. It lets a short recording hold a note for as long as you press the key.",
+    "purpose_function": "Loop markers let a short recording sustain indefinitely by repeating a steady portion of it, saving memory and allowing held notes longer than the original recording. They define exactly which part of the sample cycles.",
+    "practical_application": "An instrument builder drags the loop start and end markers into the steady sustain portion of a sampled note so held keys ring on smoothly without running out of audio.",
+    "category": "Looping",
+    "related_terms": ["Loop optimization", "Loop smoothing", "Sustain loop", "Zero crossing", "Sample editor"],
+    "common_mistakes": ["Placing loop markers in the attack or decay, so the loop pumps or changes tone as it repeats", "Setting a marker off a zero crossing, causing an audible click at the loop point", "Making the loop too short, giving an unnatural buzzy or static sustain"],
+    "scenario_contexts": ["Creating a sustaining organ or string patch from a short recorded note", "Editing a sampled pad so it holds indefinitely under a held key", "Fixing a looped instrument that clicks each time it repeats"]
+   },
+   "sources": ["Native Instruments Kontakt reference manual (loop editor)", "Sound on Sound (sample looping tutorials)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "33510e3b-a9b9-40db-9f03-77514be0ae6b",
+   "term": "Loop optimization",
+   "fields": {
+    "definition": "Loop optimization is the process of selecting and fine-tuning loop start and end points so a looped region repeats as seamlessly as possible, without clicks, level jumps, or timbral and pitch drift. It typically involves aligning the loop points to matching zero crossings and to waveform phase and amplitude that agree at the join.",
+    "plain_english": "Loop optimization means picking the best spots to start and end a loop. Good spots make the repeat sound smooth, with no click or jump each time it comes around.",
+    "purpose_function": "It exists to make a sustaining loop sound continuous and natural, hiding the fact that a short recording is being repeated. Careful optimization prevents the pops and pulsing that give a loop away.",
+    "practical_application": "A sound designer nudges the loop points and searches for matching zero crossings in a sample editor until a held note loops with no audible seam.",
+    "category": "Looping",
+    "related_terms": ["Loop marker", "Loop smoothing", "Zero crossing", "Crossfade loop", "Sustain loop"],
+    "common_mistakes": ["Choosing loop points by eye alone instead of listening for clicks and pulsing", "Ignoring slow amplitude or brightness changes, so the loop swells or dulls as it repeats", "Setting loop points where the waveform level or phase does not match, causing a click"],
+    "scenario_contexts": ["Refining loop points on a sampled string note for a smooth sustain", "Preparing a memory-efficient loop for a sample-based instrument", "Troubleshooting a patch that thumps or pulses on held notes"]
+   },
+   "sources": ["Native Instruments Kontakt reference manual (loop editor)", "Sound on Sound (sample looping tutorials)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ab270b1a-8021-4c26-b3ae-48ded6459da2",
+   "term": "Loop smoothing",
+   "fields": {
+    "definition": "Loop smoothing is a technique that blends the audio around a loop's join to remove audible clicks or discontinuities, most commonly by crossfading the end of the loop into its start so the transition is inaudible. It is applied when loop points alone cannot be made to match perfectly.",
+    "plain_english": "Loop smoothing blends the two ends of a loop so the join is not heard. It works like fading one part into the other to hide the seam.",
+    "purpose_function": "It exists to disguise the seam of a repeated loop, producing a smooth, continuous sustain even from material that does not loop cleanly on its own. Crossfading averages out the mismatches at the join.",
+    "practical_application": "In a sampler's loop editor, a technician applies a crossfade of a set length across the loop point to erase a click that could not be removed by moving the markers.",
+    "category": "Looping",
+    "related_terms": ["Crossfade loop", "Loop optimization", "Loop marker", "Zero crossing", "Sustain loop"],
+    "common_mistakes": ["Using too long a crossfade, which blurs transients and dulls the looped tone", "Relying on smoothing to fix badly chosen loop points instead of first optimizing them", "Applying a crossfade that creates a phasey or flanged sound when the two ends are out of phase"],
+    "scenario_contexts": ["Crossfading a loop on a sustained pad that would otherwise click", "Smoothing a looped ambient texture with slowly changing content", "Salvaging a loop in busy material where clean loop points are impossible"]
+   },
+   "sources": ["Native Instruments Kontakt reference manual (crossfade looping)", "Sound on Sound (sample looping tutorials)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "985f84b6-130c-4d84-812b-b36bf917f754",
+   "term": "Marcato sample",
+   "fields": {
+    "definition": "A marcato sample is a recording of a note performed with marcato articulation, meaning marked, strongly accented and somewhat detached, captured as a distinct articulation within a sampled instrument. It supplies the emphatic, sharply attacked version of a note alongside other articulations such as sustain, staccato, and legato.",
+    "plain_english": "A marcato sample is a recording of a note played with a hard, punchy accent. Libraries include it so players can pick a strong, marked attack when the music needs it.",
+    "purpose_function": "It exists so a sampled instrument can render forcefully accented notes, which have a harder attack and fuller body than plain or short notes. Including it lets orchestral mockups deliver marked, emphatic passages authentically.",
+    "practical_application": "A composer switches to the marcato articulation via a keyswitch to give a brass or string line a strong, accented punch on stressed beats.",
+    "category": "Articulation",
+    "related_terms": ["Legato sample", "Multi-sampled instrument", "Keyswitch", "Velocity layer", "Staccato"],
+    "common_mistakes": ["Using sustain samples with added volume instead of true marcato recordings for accented notes", "Confusing marcato with staccato, which is short and detached rather than marked and weighty", "Overusing marcato so every note is accented, which loses its emphasis"],
+    "scenario_contexts": ["Writing an emphatic brass fanfare in an orchestral template", "Accenting strong beats in a string ostinato with marked attacks", "Programming a bold, accented film-score hit"]
+   },
+   "sources": ["Adler, 'The Study of Orchestration' (marcato articulation)", "Sound on Sound (orchestral sample library articulation articles)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cd08db3d-38eb-4bdb-8ccf-0546395cc926",
+   "term": "Monophonic mode",
+   "fields": {
+    "definition": "Monophonic mode is a playback setting in which an instrument sounds only one note at a time; pressing a new key steals the single available voice from the note currently sounding. It is used to emulate single-voice instruments and to enable legato and glide behavior between successive notes.",
+    "plain_english": "Monophonic mode lets an instrument play only one note at a time. Press a new key and it cuts off the old note, just like you can only whistle one pitch at once.",
+    "purpose_function": "It exists to reproduce instruments that sound only one note at once, such as a solo wind or a classic mono synth bass, and to make note-to-note effects like portamento and legato possible. Limiting to one voice also keeps basslines and leads tight and predictable.",
+    "practical_application": "A player selects mono mode on a synth or sample patch so overlapping notes glide or slur into each other for a smooth lead or bass line.",
+    "category": "Playback mode",
+    "related_terms": ["Legato sample", "Polyphony", "Portamento", "Voice", "Note priority"],
+    "common_mistakes": ["Expecting chords to sound in mono mode, when only the last or highest-priority note plays", "Confusing monophonic mode with a single-oscillator sound; mono refers to voice count, not tone", "Not setting note priority, so held notes retrigger unexpectedly"],
+    "scenario_contexts": ["Playing a gliding synth bassline that must not overlap", "Emulating a solo wind instrument that sounds one note at a time", "Setting up legato lead patches for expressive slurred playing"]
+   },
+   "sources": ["Sound on Sound (Synth Secrets: keyboard control, mono and note priority)", "Moog and Sequential synthesizer operation manuals"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fd6685af-7a16-451e-879e-84c2213bde19",
+   "term": "Multi-sampled instrument",
+   "fields": {
+    "definition": "A multi-sampled instrument is a sampled or virtual instrument built from many individual recordings of a source instrument taken at different pitches and often different dynamic levels, mapped across the keyboard and velocity range. Using many samples rather than stretching one avoids the unnatural timbre and pitch artifacts of transposing a single recording too far.",
+    "plain_english": "A multi-sampled instrument is built from many separate recordings of a real instrument. It uses a different clip for each note and each volume. That makes it sound far more real than stretching one recording.",
+    "purpose_function": "It exists to reproduce a real instrument convincingly by covering its range with closely spaced recordings, so each note and dynamic sounds like the actual source rather than a pitch-shifted copy. More samples mean more realistic timbre across pitch and loudness.",
+    "practical_application": "A producer loads a multi-sampled piano whose keys trigger recordings captured at several velocities, giving realistic tone and dynamics from soft to loud.",
+    "category": "Sampling",
+    "related_terms": ["Multisample", "Velocity layer", "Key mapping", "Round robin", "Sample zone"],
+    "common_mistakes": ["Assuming one recording stretched across the keyboard sounds as real as a proper multisample", "Stretching sample zones too wide, producing a chipmunk or detuned sound at the edges", "Ignoring velocity layers, so soft and loud playing sound identical"],
+    "scenario_contexts": ["Loading a realistic multi-sampled piano or strings for a production", "Building a sampled instrument by mapping recordings across the keys", "Choosing a detailed library with many velocity layers for expressive parts"]
+   },
+   "sources": ["Huber & Runstein, 'Modern Recording Techniques' (sampling)", "Sound on Sound (multisampling and sampler instrument-building articles)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

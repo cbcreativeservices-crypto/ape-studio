@@ -1,0 +1,186 @@
+{
+ "batch": 296,
+ "topic": "Synthesis Fundamentals & Oscillators",
+ "authored": [
+  {
+   "id": "f912816b-33ea-44c6-aa63-7183e3f967f0",
+   "term": "Oscillator click",
+   "fields": {
+    "definition": "An audible transient produced when a synthesizer oscillator's waveform makes a sudden step discontinuity, most often when its phase is reset to a fixed start point at note-on or at each hard-sync retrigger. The abrupt jump in the signal carries broadband energy that is heard as a click.",
+    "plain_english": "A small click you hear when a synth's wave suddenly jumps instead of starting smoothly. It is like the pop you hear if you yank a rope tight all at once instead of pulling it gently.",
+    "purpose_function": "It is usually an unwanted artifact rather than a feature, so knowing its cause lets a technician choose free-running phase, zero-crossing starts, or anti-click smoothing to keep note attacks clean. A subtle click is sometimes kept on purpose to sharpen a percussive attack.",
+    "practical_application": "When a bass patch clicks on every note, a technician turns off the oscillator's phase reset (free-run) or enables the synth's click-removal option to clean up the attack.",
+    "category": "Oscillator behavior",
+    "related_terms": ["Oscillator sync", "Waveform", "Phase", "Envelope", "Sample and hold"],
+    "common_mistakes": [
+     "Assuming the click means broken gear when it is a normal phase-reset artifact.",
+     "Confusing an oscillator click with digital aliasing or a DC-offset thump.",
+     "Turning on phase reset for tighter attacks without realizing it can add clicks."
+    ],
+    "scenario_contexts": [
+     "A plucky bass patch clicks on every note because the oscillator resets its phase at each note-on.",
+     "A hard-synced lead shows small clicks at high sync ratios from the abrupt waveform resets.",
+     "Switching an oscillator from reset to free-run to remove clicks from held chords."
+    ]
+   },
+   "sources": [
+    "Sound on Sound - Synth Secrets series (oscillator waveforms and discontinuities)",
+    "Ballou, Handbook for Sound Engineers (synthesis and oscillators)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "24ff81db-b626-4380-81f6-8731d606c6c9",
+   "term": "Oscillator sync",
+   "fields": {
+    "definition": "A synthesis technique in which one oscillator (the slave) has its waveform cycle forcibly restarted by another oscillator (the master). In hard sync the slave's phase is reset every master cycle, locking its perceived pitch to the master while the slave's own tuning reshapes the waveform into bright, harmonically rich tones; soft sync resets the slave only under certain conditions for a subtler effect.",
+    "plain_english": "One oscillator forces a second one to restart its wave in step with it. Then you sweep the second one's tuning to get that screaming, tearing lead sound.",
+    "purpose_function": "It exists to create complex, animated harmonics that a single oscillator cannot make, especially the classic aggressive sync-lead sound when the slave's pitch is swept.",
+    "practical_application": "A technician sets oscillator 1 as master and oscillator 2 as slave, then modulates oscillator 2's pitch with an envelope to get the tearing sync-lead timbre.",
+    "category": "Oscillator behavior",
+    "related_terms": ["Oscillator click", "Waveform", "Phase", "Frequency modulation", "Envelope"],
+    "common_mistakes": [
+     "Thinking hard sync raises the pitch; the master sets the pitch and the slave's tuning shapes the tone.",
+     "Not modulating the slave oscillator's tuning and then wondering why sync sounds static.",
+     "Confusing hard sync with FM; both add harmonics but by different mechanisms."
+    ],
+    "scenario_contexts": [
+     "Programming an aggressive sync-lead by sweeping the slave oscillator with an envelope.",
+     "Using soft sync to loosely lock two oscillators for a thicker unison.",
+     "Recreating classic 1980s sync tones on a hardware or software synth."
+    ]
+   },
+   "sources": [
+    "Sound on Sound - Synth Secrets, Part 43 (Oscillator Sync)",
+    "Ballou, Handbook for Sound Engineers (synthesis and oscillators)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d7c957f3-6943-49b4-bd95-88a1c40cfdc0",
+   "term": "Prompt-based sound design",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: 'prompt-based sound design' is an emerging practice of generating audio from text prompts using generative AI. Its defining element (text-to-audio generative models) is documented only in arXiv preprints, vendor product pages, blogs, and general-web content, none of which meet the strict acceptable-source standard (AES/IEEE/standards bodies, recognised professional audio texts, or manufacturer technical documentation). No >=2 acceptable sources define the term, so it is flagged rather than authored."
+   ]
+  },
+  {
+   "id": "3e81bc60-2efe-4d3d-a3e9-466362f6c632",
+   "term": "RAVE",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: RAVE (Realtime Audio Variational autoEncoder) is a neural audio synthesis model from IRCAM's ACIDS group. Its documentation exists only as an arXiv preprint (2111.05011) and GitHub/project pages, which are not acceptable source types under the strict standard (no AES/IEEE/professional-text/manufacturer-technical coverage found). Could not cross-confirm against >=2 acceptable sources, so flagged."
+   ]
+  },
+  {
+   "id": "83df01ba-f6ee-4d30-b699-b58f0e954801",
+   "term": "Residual vector quantization (RVQ)",
+   "fields": {
+    "definition": "A quantization method that encodes a vector with a cascade of vector quantizers, where each stage stores the residual (the leftover error) from the previous stage using its own codebook; summing the selected code vectors from all stages reconstructs the input, giving high accuracy at a low bit rate. It is a core component of neural audio codecs such as SoundStream and EnCodec.",
+    "plain_english": "A way to shrink audio into very little data by rounding it off in a few passes. Each pass fixes the small error left by the one before. It is like guessing a price in rounds: first the tens, then the ones, then the cents.",
+    "purpose_function": "It exists to represent audio or other signals with very few bits while keeping quality high, by splitting the job across several small codebooks instead of one huge one.",
+    "practical_application": "An engineer working with modern AI audio or low-bitrate speech tools meets RVQ as the layer that turns audio into the compact tokens those systems store and transmit.",
+    "category": "Audio coding",
+    "related_terms": ["Quantization", "Bit depth", "Codec", "Sample rate", "Compression"],
+    "common_mistakes": [
+     "Confusing this with dynamic-range compression; it is data quantization, not audio level control.",
+     "Assuming one big codebook is used, when RVQ deliberately chains several small ones.",
+     "Thinking each stage re-encodes the whole signal, rather than only the leftover error from the stage before."
+    ],
+    "scenario_contexts": [
+     "Understanding how a neural audio codec turns sound into discrete tokens.",
+     "Trading bit rate against audio quality by choosing the number of quantizer stages.",
+     "Reading the technical docs of an AI music or speech model that lists an RVQ bottleneck."
+    ]
+   },
+   "sources": [
+    "Zeghidour et al., SoundStream: An End-to-End Neural Audio Codec, IEEE/ACM Transactions on Audio, Speech and Language Processing (2021), DOI 10.1109/TASLP.2021.3129994",
+    "Gray, Vector Quantization, IEEE ASSP Magazine (1984)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0d9dd182-b069-4e03-8dc0-b4c44209b3ed",
+   "term": "Riffusion",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: Riffusion is a specific generative music model/product that adapts Stable Diffusion to produce spectrogram images that are converted to audio. Its documentation exists only on GitHub, Hugging Face, Wikipedia, vendor pages, and blogs, none of which are acceptable source types under the strict standard. No >=2 acceptable sources define it, so flagged."
+   ]
+  },
+  {
+   "id": "15432b00-c7e8-448c-804f-27778ca7070f",
+   "term": "rubbery",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: 'rubbery' is an informal, subjective timbre descriptor with no standardized definition in acceptable professional literature (AES, recognised audio texts, or manufacturer technical documentation). It is not a transparent compound descriptor combining an established technique with a source; it is a lone slang adjective whose meaning is unattested in acceptable sources, so it is flagged per the coined/non-standard-descriptor rule."
+   ]
+  },
+  {
+   "id": "e741be41-4575-4fe8-8ca7-bc6f5a2d3937",
+   "term": "Sample and hold",
+   "fields": {
+    "definition": "A circuit or module that captures (samples) the instantaneous value of an input signal at moments set by a clock or trigger and holds that value steady at its output until the next sample. In synthesizers it is most often fed with noise to generate stepped random voltages for modulation; in data conversion it is the front-end stage that freezes an analog value while an ADC digitizes it.",
+    "plain_english": "It grabs the level of a signal at a chosen moment and keeps it steady until the next grab. Feeding it noise gives those classic random, stepping computer bleeps in synth music.",
+    "purpose_function": "It exists to turn a smoothly changing signal into a series of held steps, either to create rhythmic random modulation in synths or to hold a steady voltage so a converter can measure it accurately.",
+    "practical_application": "A technician patches noise into a sample-and-hold clocked by the LFO to modulate filter cutoff, adding stepped random movement to a patch.",
+    "category": "Modulation source",
+    "related_terms": ["LFO", "White noise", "Clock", "Modulation", "Analog-to-digital converter"],
+    "common_mistakes": [
+     "Forgetting sample-and-hold needs a clock or trigger; with no clock it just holds one value.",
+     "Assuming its output is smooth, when it is stepped and changes only at each sample.",
+     "Thinking it always makes random values, when the output depends entirely on the signal you feed it."
+    ],
+    "scenario_contexts": [
+     "Creating stepped random filter modulation by feeding noise into a clocked sample-and-hold.",
+     "Understanding the sample-and-hold stage at the input of an ADC in a digital audio interface.",
+     "Clocking sample-and-hold to tempo for rhythmic random pitch or timbre changes."
+    ]
+   },
+   "sources": [
+    "Sound on Sound - Synth Secrets series (LFOs, noise and modulation)",
+    "Ballou, Handbook for Sound Engineers (sample-and-hold and A/D conversion)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0fc26e08-88c9-4f70-a42d-649563d79fa4",
+   "term": "Sequencer",
+   "fields": {
+    "definition": "A device or software that stores and plays back a timed sequence of musical events - pitches, gates or triggers, and control values - driving synthesizers or other instruments to perform them automatically. Hardware step sequencers advance through a fixed number of steps, while MIDI and DAW sequencers record and edit note and controller data on a timeline.",
+    "plain_english": "A tool that remembers a pattern of notes and plays it back for you, over and over, in time. It is like a player-piano roll that tells the synth which notes to hit and when.",
+    "purpose_function": "It exists to automate performance so the musician does not have to play every note live, letting patterns loop, layer, and stay perfectly in time.",
+    "practical_application": "A technician programs a bassline into a step sequencer, sets the tempo, and clocks it so it locks with the rest of the rig.",
+    "category": "Control device",
+    "related_terms": ["MIDI", "Clock", "Gate", "Arpeggiator", "Tempo"],
+    "common_mistakes": [
+     "Confusing a sequencer, which stores note events, with a synthesizer, which makes the sound.",
+     "Forgetting to match clock or tempo, so the sequence drifts out of time with other gear.",
+     "Mixing up a step sequencer's steps with musical bars, leading to wrong pattern lengths."
+    ],
+    "scenario_contexts": [
+     "Programming a repeating bassline or drum pattern on a hardware step sequencer.",
+     "Recording and editing MIDI notes on a DAW's piano-roll sequencer.",
+     "Slaving an external sequencer to the studio's master clock so everything stays in sync."
+    ]
+   },
+   "sources": [
+    "MIDI Association - MIDI 1.0 specification (note and clock messages)",
+    "Huber & Runstein, Modern Recording Techniques (MIDI sequencing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

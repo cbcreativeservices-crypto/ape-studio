@@ -1,0 +1,216 @@
+{
+ "batch": 107,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "9c7b2c5e-c14e-4423-bbb6-964acbfe1a99",
+   "term": "Group Suspension",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank. 'Group Suspension' has no established meaning in mixing, console operation, or DAW workflow. Repeated searches of professional literature and manufacturer documentation for the phrase (including console/DCA/VCA/subgroup contexts and DAW group-track contexts) returned no attested definition. It is not a transparent compound of a recognised technique (unlike 'group mute' or 'group bypass'); 'suspension' is not an established mix operation. No >=2 acceptable sources define it, so it cannot be authored to standard."
+   ]
+  },
+  {
+   "id": "48faaade-fb19-4636-837a-8fc5ee91cdca",
+   "term": "Grouping matrix",
+   "fields": {
+    "definition": "A grid-style routing scheme on a mixing console or DAW in which input channels are assigned to shared group or subgroup buses, and those buses can in turn be fed to multiple mix or matrix outputs. It defines which sources feed which group, and which group feeds each destination, so related channels can be combined and controlled together.",
+    "plain_english": "A grid on a mixer that lets you send many channels into shared groups. Once channels share a group, you control them all with one fader, like putting many files into one folder.",
+    "purpose_function": "It organises a large channel count into a few manageable groups, so the engineer can adjust, process, or mute related sources together instead of one channel at a time.",
+    "practical_application": "On a big show a tech routes all the drum channels into a drum group and all vocals into a vocal group, then rides those group faders to balance the mix quickly.",
+    "category": "Signal Routing",
+    "related_terms": ["Subgroup", "VCA group", "Matrix output", "Bus routing", "Mute group"],
+    "common_mistakes": [
+     "Confusing a group, which carries audio through a bus, with a VCA/DCA, which only links fader levels.",
+     "Assigning a channel to a group but forgetting to route the group on to the main mix, so it is never heard.",
+     "Double-routing a channel to both a group and the main bus, so it is summed twice and sounds too loud."
+    ],
+    "scenario_contexts": [
+     "Grouping all drum mics to one subgroup for combined level and compression during a live set.",
+     "Sending backing vocals to a group so one fader controls the whole stack in a mix.",
+     "Using a console's matrix to send different group blends to the main PA, monitors, and a recording feed."
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5ddb5d68-bd9b-4cb3-9cd5-713883bb8047",
+   "term": "Hand Tool",
+   "fields": {
+    "definition": "An editing-window tool in a DAW or audio editor, shown as a hand icon, that lets the user click and drag to scroll or pan the view of the timeline rather than select or move audio. It changes which part of the project is visible without altering any clips or data.",
+    "plain_english": "A hand-shaped cursor in music software that lets you grab the screen and slide it around to see other parts of your song. It moves your view, not the sounds, like dragging a map on your phone.",
+    "purpose_function": "It gives a quick way to move around a large project view without using scroll bars, keeping navigation fast during editing.",
+    "practical_application": "An engineer switches to the hand tool to drag along a long timeline and reach a later section, then switches back to the selector tool to edit.",
+    "category": "Editing Tools",
+    "related_terms": ["Zoom tool", "Selector tool", "Grabber tool", "Timeline", "Playhead"],
+    "common_mistakes": [
+     "Expecting the hand tool to move or edit clips, when it only scrolls the view.",
+     "Forgetting to switch back to an edit tool afterward and then being unable to make a selection.",
+     "Confusing it with the grabber or move tool that actually relocates audio regions."
+    ],
+    "scenario_contexts": [
+     "Scrolling through a long arrangement to find a chorus far down the timeline.",
+     "Panning the view horizontally while zoomed in on a detailed edit.",
+     "Navigating a wide session when the scroll bars are awkward to use."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "Ableton Live Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3262e305-a75a-4027-84f2-10f03e3ce0c8",
+   "term": "Hands-on-faders",
+   "fields": {
+    "definition": "A manual mixing approach in which the engineer actively rides physical faders in real time to balance levels, rather than relying on stored automation or static settings. It describes hands-on, moment-to-moment level control, most common in live sound.",
+    "plain_english": "Mixing by keeping your hands on the sliders and moving them live as the music plays, instead of letting the computer do it. It is like steering a car yourself the whole way instead of using cruise control.",
+    "purpose_function": "It lets an engineer react instantly to a performance, pushing up a solo or pulling back a loud part as it happens, which stored automation cannot always predict.",
+    "practical_application": "A front-of-house engineer keeps a hand on the vocal and solo faders through a show, riding them up and down so every lead sits right in the mix.",
+    "category": "Mix Workflow",
+    "related_terms": ["Fader riding", "Automation", "VCA group", "Front of house", "Gain riding"],
+    "common_mistakes": [
+     "Riding faders so much that the overall balance becomes inconsistent between songs.",
+     "Focusing on one fader and neglecting other channels that also need attention.",
+     "Assuming automation fully replaces hands-on riding when a live show changes unpredictably."
+    ],
+    "scenario_contexts": [
+     "Riding the lead vocal fader during a live concert to keep it above the band.",
+     "Manually pushing up an instrumental solo the moment it starts.",
+     "Mixing a fast-changing live broadcast where preset recall alone is not enough."
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "04fd1826-6be9-455e-96cb-7c2dc56f17a9",
+   "term": "Hardware output",
+   "fields": {
+    "definition": "A physical output connection on an audio interface or console, together with the DAW output path that maps a mix or bus to it. Tracks and buses are routed to a hardware output so the signal leaves the system to monitors, recorders, or outboard gear.",
+    "plain_english": "A real, physical socket that sends audio out of your interface or mixer to speakers, recorders, or other gear. In your software you pick which output a sound uses, like choosing which door it leaves by.",
+    "purpose_function": "It defines where audio physically exits the system, letting the engineer route mixes and sends to monitors, headphones, hardware processors, or recording devices.",
+    "practical_application": "A tech assigns the main mix bus to hardware outputs 1-2 feeding the studio monitors, and sends a separate bus to outputs 3-4 for a headphone amp.",
+    "category": "Signal Routing",
+    "related_terms": ["Bus", "I/O setup", "Hardware insert", "Audio interface", "Output path"],
+    "common_mistakes": [
+     "Assigning a mix to a hardware output that is not physically connected, so nothing is heard.",
+     "Confusing a hardware output, which is a physical socket, with an internal bus, which is virtual routing.",
+     "Routing two mixes to the same hardware output and getting an unexpected blend."
+    ],
+    "scenario_contexts": [
+     "Sending the main mix to interface outputs 1-2 for the control-room monitors.",
+     "Routing a stem to a spare hardware output to record it onto an external device.",
+     "Feeding a hardware output into an outboard compressor as part of a hardware insert."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Sound on Sound (I/O Setup Window in Pro Tools)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "79873158-cf15-43f4-9836-c16086580097",
+   "term": "Harmony layer",
+   "fields": {
+    "definition": "A recorded or programmed part that adds harmony notes above or below a main melody and is blended into the mix as a supporting layer. In vocal work it is a stacked harmony line sung against the lead, and the same idea applies to layered instrument harmonies.",
+    "plain_english": "An extra part that sings or plays notes that fit with the main tune, added underneath to make it fuller. Think of a choir where some voices sing a different note that still matches the lead singer.",
+    "purpose_function": "It thickens and enriches a part by adding musical harmony, giving a mix more depth and a bigger, more polished sound.",
+    "practical_application": "A producer records two or three harmony vocal takes, then blends them quietly under the lead so the chorus sounds fuller without covering the main voice.",
+    "category": "Arrangement & Layering",
+    "related_terms": ["Double tracking", "Backing vocals", "Vocal stacking", "Lead vocal", "Blend"],
+    "common_mistakes": [
+     "Mixing harmony layers as loud as the lead, so they compete instead of support it.",
+     "Stacking so many harmony layers that the mix becomes cluttered and muddy.",
+     "Not tuning or timing the harmonies tightly, which makes the stack sound smeared."
+    ],
+    "scenario_contexts": [
+     "Adding thirds and fifths above a lead vocal in a pop chorus.",
+     "Layering a harmony guitar line under a lead melody.",
+     "Building a stacked vocal harmony for a big final chorus."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ac8e05a0-9758-4715-9c20-9744522fc56b",
+   "term": "Headroom preservation",
+   "fields": {
+    "definition": "The practice of keeping enough spare level between the working signal and the maximum before clipping or overload, so peaks are not squashed or distorted. It means setting gain and fader levels conservatively at each stage to protect that safety margin through the signal chain.",
+    "plain_english": "Leaving some spare room at the top of your levels so loud peaks do not hit the ceiling and distort. It is like not filling a glass to the very brim so it does not spill when you move it.",
+    "purpose_function": "It protects audio quality by preventing clipping and overload, and it leaves room for later processing, summing, and mastering without distortion.",
+    "practical_application": "A mix engineer keeps track and bus levels so the mix bus peaks well below 0 dBFS, leaving several dB of headroom for the mastering stage.",
+    "category": "Gain Staging",
+    "related_terms": ["Headroom", "Gain staging", "Clipping", "0 dBFS", "Signal-to-noise ratio"],
+    "common_mistakes": [
+     "Pushing every fader and plugin hot so the mix bus clips with no headroom left.",
+     "Confusing loudness with quality and giving up all headroom just for level.",
+     "Forgetting that summing many channels adds level, which eats headroom on the master bus."
+    ],
+    "scenario_contexts": [
+     "Leaving 3 to 6 dB of headroom on the mix bus before sending a track to mastering.",
+     "Setting conservative input gains during tracking to avoid clipping loud transients.",
+     "Managing gain across plugins so no stage in the chain overloads."
+    ]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2018a6bf-7aac-4982-b9d8-df7dbd5463b4",
+   "term": "Hi-hat choke",
+   "fields": {
+    "definition": "In drum sampling and programming, a choke or exclusive group behavior in which triggering the closed hi-hat sample immediately cuts off a ringing open hi-hat sample, so only one hi-hat sound plays at a time. It reproduces how a real closed hi-hat silences an open one.",
+    "plain_english": "A setting that makes a closed hi-hat sound instantly stop the open hi-hat sound, so both never ring at once. It copies a real drum kit, where clamping the pedal shut cuts off the open sizzle.",
+    "purpose_function": "It makes programmed hi-hats sound realistic by stopping open and closed samples from overlapping, mirroring the physical behavior of a hi-hat pedal.",
+    "practical_application": "A producer puts the open and closed hi-hat samples in the same choke group in a drum sampler, so each closed hit cleanly stops any open hat still ringing.",
+    "category": "Drum Programming",
+    "related_terms": ["Choke group", "Open hi-hat", "Closed hi-hat", "Sample trigger", "Drum sampler"],
+    "common_mistakes": [
+     "Forgetting to assign the open and closed hats to the same choke group, so they ring over each other.",
+     "Setting the group's voice count above one, which stops the choke from working.",
+     "Applying choke to samples that should overlap, cutting off sustain you wanted to keep."
+    ],
+    "scenario_contexts": [
+     "Programming a realistic hi-hat pattern with alternating open and closed hits.",
+     "Setting up a Battery or drum-rack kit so closed hats choke open hats.",
+     "Cleaning up an overlapping hi-hat groove that sounds muddy."
+    ]
+   },
+   "sources": ["Native Instruments Battery 4 User Manual", "Ableton Live Reference Manual (Drum Rack Choke)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "778298cd-c0e4-4e86-8adf-c2029ed30d71",
+   "term": "Hi-hat sample",
+   "fields": {
+    "definition": "A recorded audio sample of a hi-hat cymbal, used in samplers, drum machines, and DAW drum kits to trigger the sound. Kits typically include separate closed, open, and pedal hi-hat samples mapped to different notes or pads.",
+    "plain_english": "A short recording of a hi-hat cymbal that music software plays back when triggered. Instead of miking a real cymbal, you press a pad or key and the saved hi-hat sound plays.",
+    "purpose_function": "It lets producers add hi-hat sounds to programmed beats without recording a live drummer, giving consistent and easily edited percussion.",
+    "practical_application": "A beatmaker loads closed and open hi-hat samples onto pads and programs a groove, tweaking each hit's timing and level.",
+    "category": "Drum Programming",
+    "related_terms": ["Closed hi-hat", "Open hi-hat", "Drum sampler", "One-shot", "Hi-hat choke"],
+    "common_mistakes": [
+     "Using the same hi-hat sample on every hit, which sounds robotic without velocity or round-robin variation.",
+     "Layering open and closed hat samples without a choke group, causing unrealistic overlap.",
+     "Ignoring sample tuning and level so the hats sit poorly in the mix."
+    ],
+    "scenario_contexts": [
+     "Building a hip-hop beat from closed and open hi-hat one-shots.",
+     "Layering a sampled hi-hat over a live kit to add crispness.",
+     "Programming rapid hi-hat rolls in a trap groove using a single sample."
+    ]
+   },
+   "sources": ["Native Instruments Battery 4 User Manual", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

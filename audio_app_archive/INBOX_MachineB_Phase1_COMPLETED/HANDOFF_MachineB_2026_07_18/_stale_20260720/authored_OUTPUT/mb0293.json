@@ -1,0 +1,150 @@
+{
+ "batch": 293,
+ "topic": "Synthesis Fundamentals & Oscillators",
+ "authored": [
+  {
+   "id": "ea57d82c-92c2-4c25-b611-f03ef3a20bce",
+   "term": "AI arrangement",
+   "fields": {
+    "definition": "The use of artificial-intelligence models to generate or reshape a musical arrangement — deciding how instruments, parts, harmonies, and sections are combined and ordered — from an input such as a melody, chord chart, or text prompt.",
+    "plain_english": "AI arrangement means letting a computer program decide how a song's parts fit together. You give it a tune or some chords, and it adds instruments, harmony, and structure. It is like a helper that turns a plain idea into a fuller song.",
+    "purpose_function": "It speeds up the arranging stage of production, letting a user turn a basic musical idea into a fuller, multi-part piece without scoring every part by hand.",
+    "practical_application": "A producer feeds a melody line into an AI arrangement tool to get backing chords, bass, and drums as a starting sketch, then edits the result in a DAW.",
+    "category": "AI music generation",
+    "related_terms": ["AI-assisted composition", "AI beat-making", "AI sound effects generator", "MIDI", "DAW"],
+    "common_mistakes": ["Treating the AI output as a finished, release-ready track instead of a rough draft to edit", "Assuming the arrangement is automatically original or free of copyright concerns", "Confusing arrangement (organising existing parts) with composing new material from nothing"],
+    "scenario_contexts": ["Turning a hummed melody into a backing track for a demo", "Generating a fuller arrangement of a simple piano sketch", "Creating quick variations of a song section for a client to choose from"]
+   },
+   "sources": ["Briot, Hadjeres & Pachet, Deep Learning Techniques for Music Generation (Springer, 2020)", "Agostinelli et al., MusicLM: Generating Music From Text (2023)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "22cbdef1-f048-4a8a-b2de-4d46c5ba2fad",
+   "term": "AI beat-making",
+   "fields": {
+    "definition": "The generation of rhythmic drum and percussion patterns using AI models, which produce or suggest grooves, drum-hit sequences, and rhythmic variations from a prompt, style tag, or seed pattern.",
+    "plain_english": "AI beat-making is using a smart program to create drum patterns for you. You pick a style, and it lays down a groove with kicks, snares, and hats. Think of it as a drum machine that comes up with the pattern on its own.",
+    "purpose_function": "It exists to quickly produce rhythm tracks and groove ideas, giving producers a fast starting point instead of programming every drum hit manually.",
+    "practical_application": "A beat-maker asks the tool for a hip-hop groove at a set tempo, then swaps sounds and tweaks the pattern in their DAW or drum sampler.",
+    "category": "AI music generation",
+    "related_terms": ["AI arrangement", "AI-assisted composition", "MIDI", "Sequencer", "DAW"],
+    "common_mistakes": ["Assuming the generated groove needs no editing to fit the song", "Believing AI-made beats are always cleared for commercial release", "Confusing pattern generation with full song production"],
+    "scenario_contexts": ["Sketching a drum groove for a new track", "Generating rhythm variations to fill out a song section", "Making a quick beat under a vocal idea before a session"]
+   },
+   "sources": ["Briot, Hadjeres & Pachet, Deep Learning Techniques for Music Generation (Springer, 2020)", "Agostinelli et al., MusicLM: Generating Music From Text (2023)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0216d237-698e-40d0-a0b5-831958fd9596",
+   "term": "AI sound effects generator",
+   "fields": {
+    "definition": "A system that uses AI — often a text-to-audio model — to synthesize sound effects such as footsteps, explosions, or ambience from a text description or other conditioning input, rather than recording or sampling them.",
+    "plain_english": "An AI sound effects generator makes sound effects from a text prompt. You type something like \"heavy rain on a tin roof,\" and it creates that sound. It is like an artist who can draw any picture you describe, but for sound.",
+    "purpose_function": "It lets creators get a needed sound from a text idea, saving time over searching sample libraries or recording the effect in the field.",
+    "practical_application": "A game or video sound designer types a description to draft an effect, then cleans or layers it before dropping it into the project.",
+    "category": "AI music generation",
+    "related_terms": ["AudioLDM", "Audio-domain generation", "AI arrangement", "Sound design", "Sample library"],
+    "common_mistakes": ["Expecting broadcast- or film-master quality straight from the prompt", "Assuming generated effects always sync perfectly to picture without editing", "Overlooking licensing or usage terms of the generation tool"],
+    "scenario_contexts": ["Drafting a whoosh or impact for a video edit", "Generating room ambience for a scene", "Prototyping creature or machine sounds from a text idea"]
+   },
+   "sources": ["Liu et al., AudioLDM: Text-to-Audio Generation with Latent Diffusion Models (ICML, 2023)", "Briot, Hadjeres & Pachet, Deep Learning Techniques for Music Generation (Springer, 2020)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7c716815-e615-48ee-a448-8257ce72458b",
+   "term": "AI-assisted composition",
+   "fields": {
+    "definition": "The practice of composing music with the aid of AI tools that suggest, generate, or complete musical material — melodies, harmonies, or full pieces — while a human keeps creative direction and makes the final decisions.",
+    "plain_english": "AI-assisted composition means writing music with help from a smart program. The AI offers melodies or chords, and you pick and shape them. The computer is like a co-writer, not the boss.",
+    "purpose_function": "It exists to help composers work faster and get past creative blocks by offering musical ideas the human can accept, reject, or refine.",
+    "practical_application": "A composer generates a few melody or chord options for a cue, then chooses one and finishes the piece by hand in a notation editor or DAW.",
+    "category": "AI music generation",
+    "related_terms": ["AI arrangement", "AI beat-making", "AI sound effects generator", "MIDI", "DAW"],
+    "common_mistakes": ["Assuming the AI does all the creative work with no human input needed", "Treating raw suggestions as finished music", "Ignoring authorship and copyright questions around AI-generated ideas"],
+    "scenario_contexts": ["Generating melody options for a film cue", "Getting chord ideas to break a writing block", "Sketching a song idea before a co-writing session"]
+   },
+   "sources": ["Briot, Hadjeres & Pachet, Deep Learning Techniques for Music Generation (Springer, 2020)", "Agostinelli et al., MusicLM: Generating Music From Text (2023)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b2e69598-c087-49b7-bdbc-eb402b397c48",
+   "term": "AIVA",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["All fields left blank: AIVA is a proprietary commercial AI-composition product with no coverage in standards bodies, manufacturer technical documentation, or recognised professional texts. Only vendor marketing and encyclopedia entries are available, which are not acceptable sources, so the product's facts cannot be confirmed to the required standard."]
+  },
+  {
+   "id": "d28bfa24-4851-4de0-b361-8acb5844eaa9",
+   "term": "Audio tokenization",
+   "fields": {
+    "definition": "The process of converting a continuous audio waveform into a sequence of discrete symbols (tokens), typically using a neural audio codec, so that audio can be modeled and generated by token-based, language-model-style systems.",
+    "plain_english": "Audio tokenization turns sound into a list of small code numbers. Each number stands for a tiny chunk of the audio. This lets AI handle sound the same way it handles words in a sentence.",
+    "purpose_function": "It compresses audio into a compact, discrete form so that sequence models built for tokens can learn from and generate audio efficiently.",
+    "practical_application": "A technician meets audio tokens when using neural codecs like EnCodec or SoundStream to feed audio into models such as AudioLM or a text-to-music system.",
+    "category": "Generative audio models",
+    "related_terms": ["Autoregressive model", "Audio-domain generation", "AudioLDM", "Quantization", "Sample rate"],
+    "common_mistakes": ["Confusing audio tokens with MIDI notes — tokens are learned codec codes, not musical notes", "Assuming tokenization is perfectly lossless", "Thinking one token equals one audio sample"],
+    "scenario_contexts": ["Preparing audio to train an audio language model", "Compressing sound through a neural codec", "Building a text-to-music generation pipeline"]
+   },
+   "sources": ["Zeghidour et al., SoundStream: An End-to-End Neural Audio Codec (IEEE/ACM Trans. Audio, Speech, and Language Processing, 2021)", "Borsos et al., AudioLM: A Language Modeling Approach to Audio Generation (IEEE/ACM Trans. Audio, Speech, and Language Processing, 2023)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c3dc20ab-ee65-4b5f-a2f0-74fc03a664af",
+   "term": "Audio-domain generation",
+   "fields": {
+    "definition": "Generative approaches that produce sound directly as an audio waveform, or a spectral or latent audio representation of it, as opposed to symbolic-domain generation that outputs notation such as MIDI or a score.",
+    "plain_english": "Audio-domain generation means the AI makes the actual sound itself, wave and all. It does not just write notes for a player to perform. Think of it as painting the finished photo instead of writing sheet music.",
+    "purpose_function": "It exists to produce ready-to-hear audio that includes timbre and performance detail, capturing sounds that written notation cannot fully describe.",
+    "practical_application": "A technician picks audio-domain tools like WaveNet or AudioLDM when they need finished sound, and symbolic tools when they need editable MIDI instead.",
+    "category": "Generative audio models",
+    "related_terms": ["AudioLDM", "Autoregressive model", "Audio tokenization", "MIDI", "Waveform"],
+    "common_mistakes": ["Confusing audio-domain output with editable MIDI — a waveform is not note data", "Expecting note-by-note editing of generated audio", "Assuming it always sounds better than symbolic methods"],
+    "scenario_contexts": ["Generating a realistic sound effect from text", "Producing sung vocals rather than a written score", "Creating background ambience as finished audio"]
+   },
+   "sources": ["van den Oord et al., WaveNet: A Generative Model for Raw Audio (2016)", "Liu et al., AudioLDM: Text-to-Audio Generation with Latent Diffusion Models (ICML, 2023)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "eb8e9571-1647-451e-a86c-f0abf551682d",
+   "term": "AudioLDM",
+   "fields": {
+    "definition": "A text-to-audio generation model introduced by Liu et al. (2023) that produces audio — sound effects, ambience, and music — from text prompts using a latent diffusion model that operates on a compressed audio latent space guided by CLAP text-audio embeddings.",
+    "plain_english": "AudioLDM is an AI model that makes sounds from text. You type a description, and it builds the audio step by step out of noise. It works a bit like image AI, but the thing it makes is a sound.",
+    "purpose_function": "It exists to generate varied audio from text efficiently by working in a small compressed latent space instead of on raw waveform samples.",
+    "practical_application": "A sound designer uses AudioLDM to draft sound effects or ambience from a written prompt rather than digging through sample libraries.",
+    "category": "Generative audio models",
+    "related_terms": ["Audio-domain generation", "AI sound effects generator", "Audio tokenization", "Autoregressive model", "Latent space"],
+    "common_mistakes": ["Confusing AudioLDM, which is diffusion-based, with autoregressive token models", "Expecting polished studio-master quality from every prompt", "Thinking it only makes music — it also makes general sounds and ambience"],
+    "scenario_contexts": ["Prototyping sound effects for a game", "Generating background ambience for a video", "Exploring sound ideas quickly from a text description"]
+   },
+   "sources": ["Liu et al., AudioLDM: Text-to-Audio Generation with Latent Diffusion Models (ICML, 2023; arXiv:2301.12503)", "Liu et al., AudioLDM 2: Learning Holistic Audio Generation with Self-Supervised Pretraining (2023)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3533fa68-6228-46e1-a950-9dba8f1b7cf0",
+   "term": "Autoregressive model",
+   "fields": {
+    "definition": "A model that generates a sequence one step at a time, predicting each new value — such as an audio sample or token — conditioned on the previously generated values; in audio, WaveNet is a classic example, predicting each waveform sample from the samples before it.",
+    "plain_english": "An autoregressive model builds a signal one piece at a time. Each new piece is guessed from all the pieces that came before it. It is like writing a sentence word by word, where each word depends on the ones already written.",
+    "purpose_function": "It captures how each moment of a signal depends on its history, which allows coherent step-by-step generation of audio or tokens.",
+    "practical_application": "Technicians meet autoregressive models in neural vocoders and token-based music generators, where audio is produced sample by sample or token by token.",
+    "category": "Generative audio models",
+    "related_terms": ["Audio tokenization", "Audio-domain generation", "AudioLDM", "Waveform", "Sample rate"],
+    "common_mistakes": ["Assuming autoregressive generation is fast — predicting one step at a time is often slow", "Confusing autoregressive models with parallel diffusion models", "Believing the model plans the whole output in advance rather than one step at a time"],
+    "scenario_contexts": ["Neural vocoding of speech sample by sample", "Token-by-token music or audio generation", "Comparing real-time versus offline generation speed"]
+   },
+   "sources": ["van den Oord et al., WaveNet: A Generative Model for Raw Audio (2016)", "Borsos et al., AudioLM: A Language Modeling Approach to Audio Generation (IEEE/ACM Trans. Audio, Speech, and Language Processing, 2023)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

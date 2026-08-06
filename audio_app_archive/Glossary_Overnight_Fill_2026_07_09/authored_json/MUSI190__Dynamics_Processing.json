@@ -1,0 +1,103 @@
+{
+  "course": "MUSI190",
+  "topic": "Dynamics Processing",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "8fb63147-108e-45e2-8b7f-c9bffdc6b46d",
+      "term": "Dual-Mono Processing",
+      "fields": {
+        "plain_english": "Each side of a stereo signal gets its own compressor that reacts on its own, so the left and right can be squeezed by different amounts.",
+        "purpose_function": "It exists to give maximum independent control over each channel and can add perceived stereo width, at the cost of allowing the stereo image to wander when the two sides are compressed unequally.",
+        "practical_application": "A mix engineer might run drum overheads or a stereo pair in dual-mono to widen the image, while avoiding it on tightly centered material where image shift would be distracting.",
+        "category": "Dynamics Processing",
+        "related_terms": ["Stereo Link", "Compression", "Sidechain", "Gain Reduction", "Threshold"],
+        "common_mistakes": ["Assuming dual-mono always sounds 'wider and better' without noticing the center image drifting when a loud transient hits only one side", "Using dual-mono on a mix bus where a strong one-sided event pulls center-panned vocals or kick off-center", "Confusing dual-mono processing with mid/side processing, which are different splits of the signal"],
+        "scenario_contexts": ["Widening a stereo drum overhead pair by letting each side breathe independently", "Mastering a stereo file where independent per-channel control is wanted despite image risk", "Processing a stereo synth pad to emphasize left/right movement"]
+      },
+      "sources": ["Sound on Sound - Compressor and stereo processing articles", "Nail The Mix - How To Unlink Compressor Channels For Wider Mixes", "LedgerNote - How Do Analog Stereo Compressors Work"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "573a9efc-fc19-4ea8-b089-a9c3f732752d",
+      "term": "Feed-Forward Detection",
+      "fields": {
+        "plain_english": "The compressor listens to the signal coming in, before it does any squeezing, so its controls behave predictably no matter how hard it is working.",
+        "purpose_function": "By reading the uncompressed input, the detector can act quickly and consistently, giving punchy, accurate control where a set attack time means what it says regardless of how much gain reduction is applied.",
+        "practical_application": "A tech reaches for a feed-forward compressor like an SSL bus compressor when they want tight, predictable transient control on drums or a mix bus.",
+        "category": "Dynamics Processing",
+        "related_terms": ["Feedback Detection", "VCA", "Attack Time", "Detector", "Compression"],
+        "common_mistakes": ["Assuming feed-forward is simply 'better' than feedback, rather than a different, more precise character", "Not realizing that feed-forward designs need separate threshold, attack, and release circuitry to shape the response", "Expecting the smooth, self-limiting feel of a vintage feedback unit from a fast feed-forward VCA compressor"],
+        "scenario_contexts": ["Choosing a modern VCA compressor for punchy drum-bus control", "Setting a precise attack time on a feed-forward limiter and trusting it holds across gain-reduction amounts", "Comparing an SSL-style bus compressor against a vintage feedback design"]
+      },
+      "sources": ["Sound on Sound - Compressor Topology", "MyNewMicrophone - Feedback Vs Feed-Forward Dynamic Range Compressors", "SonicScoop - Feedback Vs Feed-Forward Compression"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "52635130-0fbe-49ee-b90c-ad4fd1891f09",
+      "term": "Feedback Detection",
+      "fields": {
+        "plain_english": "The compressor listens to its own output after squeezing, which makes it correct itself gently and sound smooth and forgiving.",
+        "purpose_function": "Reading the already-compressed output makes the detector react to a signal that has mostly settled, producing self-smoothing, 'musical' gain reduction that resists over-compression, a hallmark of many vintage designs.",
+        "practical_application": "An engineer chooses a feedback-style compressor like an 1176 or LA-2A when they want smooth, glue-like leveling on vocals or a bus rather than surgical transient control.",
+        "category": "Dynamics Processing",
+        "related_terms": ["Feed-Forward Detection", "Detector", "Compression", "Program-Dependent Release", "Attack Time"],
+        "common_mistakes": ["Expecting a set attack time to stay constant, when in a feedback design the effective attack slows as gain reduction increases because the detector reads a quieter signal", "Assuming vintage 'feedback' units are inaccurate rather than intentionally smooth", "Trying to use a feedback compressor for precise brickwall peak control it isn't designed for"],
+        "scenario_contexts": ["Smoothing a lead vocal with a vintage-style feedback compressor", "Applying gentle glue to a mix bus with a forgiving, self-smoothing unit", "Comparing the reaction character of a classic opto/FET unit against a modern VCA design"]
+      },
+      "sources": ["Sound on Sound - Compressor Topology", "MyNewMicrophone - Feedback Vs Feed-Forward Dynamic Range Compressors", "SonicScoop - Feedback Vs Feed-Forward Compression"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "d54cf03c-b245-4990-bc23-343535ae7d09",
+      "term": "Overshoot",
+      "fields": {
+        "plain_english": "A quick blip of level that sneaks past the limiter's ceiling because the limiter can't clamp down truly instantly.",
+        "purpose_function": "Overshoot describes the unavoidable brief excursion above the set ceiling that occurs before gain reduction fully engages, which is why look-ahead, oversampling, and true-peak detection exist to minimize it.",
+        "practical_application": "A mastering engineer lowers the ceiling and enables look-ahead and true-peak limiting to keep fast transients from overshooting and causing inter-sample clipping on the final file.",
+        "category": "Dynamics Processing",
+        "related_terms": ["Limiter", "Attack Time", "True Peak", "Ceiling", "Look-Ahead"],
+        "common_mistakes": ["Assuming a limiter set to 0 dBFS guarantees nothing exceeds it, ignoring overshoot and inter-sample peaks", "Setting attack too slow (or lookahead too short) and letting transients punch past the ceiling", "Forgetting that D/A conversion can reveal inter-sample peaks even when sample values look under the ceiling"],
+        "scenario_contexts": ["Catching stray transient overs on a mastered track before delivery", "Setting a -1.0 dBFS ceiling with true-peak limiting to prevent inter-sample overshoot", "Diagnosing distortion after export caused by peaks that overshot the limiter"]
+      },
+      "sources": ["iZotope - An Introduction to Limiters", "FabFilter Pro-L 2 Help - Advanced Settings", "Sage Audio - Limiter Masterclass"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b1183522-34d2-441d-9f04-284f55a0284a",
+      "term": "Program-Dependent Release",
+      "fields": {
+        "plain_english": "The compressor automatically changes how fast it lets go depending on the music, releasing quickly after short peaks and slowly after sustained loud passages.",
+        "purpose_function": "By adapting the release time to the signal's level and content, it blends fast and slow recovery to reduce artifacts like pumping and distortion while keeping the leveling natural.",
+        "practical_application": "An engineer relies on program-dependent (auto) release on complex material like a full mix or dynamic vocal so the compressor tracks the performance without manual release tweaking.",
+        "category": "Dynamics Processing",
+        "related_terms": ["Release Time", "Compression", "Feedback Detection", "Pumping", "Time Constant"],
+        "common_mistakes": ["Assuming auto/program-dependent release removes the need to understand release entirely, when it still has a characteristic range", "Expecting identical behavior across units, since implementations use different time-constant blends", "Blaming a program-dependent compressor for pumping that actually comes from another stage in the chain"],
+        "scenario_contexts": ["Compressing a full mix bus where signal content varies moment to moment", "Leveling a dynamic vocal without chasing manual release settings", "Using a classic unit like an LA-2A whose opto cell gives inherent program-dependent recovery"]
+      },
+      "sources": ["Sweetwater InSync - Program-dependent Release", "Sound on Sound - What does a compressor's auto-release control do", "Korneff Audio - Understanding Compressor Release Time"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "697660b2-4a60-41bb-a3b2-476354ae20cc",
+      "term": "Stereo Link",
+      "fields": {
+        "plain_english": "The compressor squeezes the left and right channels by the exact same amount at the same time, so the stereo picture stays put instead of sliding side to side.",
+        "purpose_function": "It exists to preserve the stereo image by driving both channels from one common detector, usually the louder channel or the sum, so a loud event on one side doesn't pull the image off-center.",
+        "practical_application": "An engineer engages stereo link (or 'couples' two mono units) on a stereo bus or mastering compressor so gain reduction stays balanced and the center image is stable.",
+        "category": "Dynamics Processing",
+        "related_terms": ["Dual-Mono Processing", "Compression", "Sidechain", "Gain Reduction", "Stereo Bus"],
+        "common_mistakes": ["Leaving a stereo compressor unlinked (dual-mono) on the mix bus and letting center-panned elements wander", "Assuming stereo link never affects width, when it deliberately trades some width for a stable image", "Not high-pass filtering the link/sidechain, so heavy low end on one side clamps both channels too hard"],
+        "scenario_contexts": ["Compressing the stereo master bus while keeping the image locked", "Coupling two mono compressors for stereo program material", "Using a variable link percentage (e.g., API 2500) to balance width against image stability"]
+      },
+      "sources": ["Nail The Mix - How To Unlink Compressor Channels For Wider Mixes", "LedgerNote - How Do Analog Stereo Compressors Work", "Sound on Sound - Compression and stereo linking articles"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+ "range": 4,
+ "applied": [
+  {"pkt": "mb0175", "term": "Subcode verification", "field": "definition", "severity": "Medium", "summary": "Fixed technical error: the Q channel (not P and Q jointly) carries track/index numbers, timing/offsets, ISRCs, UPC/EAN, and pre-emphasis/copy flags; P is only a track-start/pause flag. Confirmed against Red Book / IEC 60908."},
+  {"pkt": "mb0163", "term": "Groove-depth control", "field": "plain_english", "severity": "Low", "summary": "Replaced the horizontal-packing analogy ('writing smaller where the page is nearly full') with a vertical-depth image ('scooping a shallower channel'), so plain_english no longer reinforces the depth-vs-pitch confusion the entry's own common_mistakes warns against. FK 6.7."},
+  {"pkt": "mb0184", "term": "Griffin-Lim", "field": "plain_english", "severity": "Low", "summary": "Changed 'a picture of an audio's frequencies' to 'a sound's frequencies'; 'audio' used as a countable noun is nonstandard. FK 6.3."},
+  {"pkt": "mb0187", "term": "Voice activity detection", "field": "related_terms", "severity": "Low", "summary": "Replaced duplicate disambiguation item 'TTS' (both 'Text-to-speech (TTS)' and 'TTS' were listed for one concept) with 'Automatic speech recognition (ASR)', VAD's real downstream partner."},
+  {"pkt": "mb0198", "term": "Manual assist mode", "field": "related_terms", "severity": "Medium", "summary": "Replaced two weakly relevant facility links ('Off-air monitor', 'News booth') with automation-family concepts ('Live assist system', 'Broadcast automation') so this automation operating mode maps to its actual concept cluster."},
+  {"pkt": "mb0183", "term": "AI transcription", "field": "related_terms", "severity": "Low", "summary": "Replaced duplicate item 'ASR' (already present as 'Automatic speech recognition (ASR)') with 'Text-based editing', a distinct relevant neighbor."},
+  {"pkt": "mb0197", "term": "Guest microphone", "field": "plain_english", "severity": "Low", "summary": "Changed 'a spare mic' to 'a separate mic'; 'spare' wrongly connotes a backup/unused mic, contradicting the dedicated separately-channeled meaning. FK 4.8."},
+  {"pkt": "mb0197", "term": "Isolated recording feed", "field": "definition", "severity": "Low", "summary": "Added missing determiner: 'so that individual element can be reviewed' -> 'so that the individual element can be reviewed'."}
+ ],
+ "declined": [
+  {"pkt": "mb0161", "term": "Downmix metadata", "field": "related_terms", "reason": "Pure enrichment: adds a cross-link ('Fold-down metadata') rather than replacing a wrong item; list items are all relevant and already include 'Downmix'. The requested one-line synonym note would require editing another field."},
+  {"pkt": "mb0162", "term": "Fold-down metadata", "field": "related_terms", "reason": "Pure enrichment: adds a cross-link ('Downmix metadata'); list is already relevant and already includes 'Downmix (fold-down)', which references the same concept."},
+  {"pkt": "mb0169", "term": "Object divergence metadata", "field": "common_mistakes", "reason": "Enrichment: 'add a mistake' distinguishing divergence from object size; the three existing common_mistakes are all correct and none is wrong or duplicated."},
+  {"pkt": "mb0170", "term": "Object size metadata", "field": "common_mistakes", "reason": "Enrichment: 'add a mistake' distinguishing size from divergence; existing common_mistakes are all correct with no wrong or duplicated item."},
+  {"pkt": "mb0175", "term": "Stereo re-render", "field": "definition", "reason": "Enrichment/disambiguation: definition is accurate with no error; adding a clause contrasting it with 'Speaker re-render' (which is not even in this packet) is optional gloss, not a fix."},
+  {"pkt": "mb0176", "term": "Tape hiss characteristic", "field": "related_terms", "reason": "Enrichment: 'add Tape noise floor' plus a note in another field; existing related_terms are all relevant with no wrong item to replace."},
+  {"pkt": "mb0184", "term": "Griffin-Lim", "field": "difficulty", "reason": "The 'difficulty' field is not present in the authored output (fields cannot be added), and the beginner/intermediate tag is a subjective, debatable classification, not a factual error."},
+  {"pkt": "mb0191", "term": "Broadcast dirty feed", "field": "plain_english", "reason": "Enrichment: 'add a concrete example' of the extra parts; the plain_english is accurate, and the definition field already lists concrete examples (contributor's own audio, TV graphics and local inserts)."},
+  {"pkt": "mb0176", "term": "Tape bias requirement", "field": "definition", "reason": "Debatable stylistic reword: 'optimal sensitivity, distortion, and frequency response' reads acceptably as the optimal overall operating point; it fixes no factual or grammatical error."}
+ ]
+}

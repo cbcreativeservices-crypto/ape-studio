@@ -1,0 +1,56 @@
+{
+ "batch": 208,
+ "topic": "Broadcast Loudness & Compliance",
+ "terms": [
+  {
+   "id": "a3a88b6c-4323-4552-be9d-a5550d381b4b",
+   "term": "Transmission processor",
+   "topic": "Broadcast Loudness & Compliance",
+   "seq": 1220,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "706d0a18-9df8-4df6-8def-83df91ac0b26",
+   "term": "Transmission-quality report",
+   "topic": "Broadcast Loudness & Compliance",
+   "seq": 1220,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,148 @@
+{
+ "batch": 382,
+ "topic": "Object & Bed Panning / Authoring",
+ "authored": [
+  {
+   "id": "1ca3a65f-7e71-40b6-b92f-9ea55cbbed28",
+   "term": "Object snap",
+   "fields": {
+    "definition": "A per-object panning setting in object-based audio (e.g. Dolby Atmos) that routes an object's signal to the single nearest active loudspeaker at its position rather than rendering a phantom image across several speakers. Enabling snap forces discrete, speaker-locked reproduction and typically disables the object's spread/size control.",
+    "plain_english": "Snap sends a sound straight to the one closest speaker instead of spreading it between several. It is like clipping a note onto a grid line so it lands right on a speaker.",
+    "purpose_function": "It gives an object a tight, discrete point of origin that stays locked to real speakers, avoiding the level and timbre shifts that phantom imaging between speakers can introduce.",
+    "practical_application": "A mixer enables snap on a spot effect or cue that must come cleanly from one location so it reproduces consistently regardless of how many speakers a playback room has.",
+    "category": "Object panning",
+    "related_terms": ["Audio object", "Object spread", "Object trajectory", "Bed", "Phantom image"],
+    "common_mistakes": [
+     "Assuming snap always improves localization; on a moving object it can cause abrupt jumps between speakers instead of smooth panning.",
+     "Enabling snap and then trying to adjust the object's spread/size, which is deactivated while snap is active.",
+     "Confusing snap with divergence: snap locks energy to one speaker, while divergence deliberately spreads it across several."
+    ],
+    "scenario_contexts": [
+     "Locking a doorbell or phone-ring effect to a specific surround speaker in a film mix.",
+     "Placing a discrete percussion hit in a Dolby Atmos music mix so it always fires from one speaker.",
+     "Anchoring a narration or dialog object to the screen-center loudspeaker."
+    ]
+   },
+   "sources": [
+    "Steinberg, Nuendo 'Mixing for Dolby Atmos' guide (VST MultiPanner Speaker Snap)",
+    "Avid, Pro Tools Control Guide v19.5 (panner snap to speaker)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "65b5770b-d3d3-4fe4-ae5f-9e5d674625ce",
+   "term": "Object spread",
+   "fields": {
+    "definition": "An object panning parameter that increases the perceived spatial size of an audio object by distributing its energy across multiple loudspeakers around its position, ranging from a compact point source to a wide, diffuse source. In the ITU-R BS.2076 Audio Definition Model it corresponds to width, height and depth extent; in Dolby tools it is the Size control.",
+    "plain_english": "Spread makes a sound feel big and wide by sharing it across many speakers instead of one spot. Think of a spotlight you can widen from a tiny dot to a broad wash of light.",
+    "purpose_function": "It lets an engineer set how large or enveloping an object sounds, so sources like pads, ambience or crowd noise can fill the room while spot sounds stay small and precise.",
+    "practical_application": "A mixer raises spread/size on reverb returns or synth pads to wrap them around the audience, and lowers it to keep lead vocals or effects tight and localized.",
+    "category": "Object panning",
+    "related_terms": ["Audio object", "Object snap", "Divergence", "Object trajectory", "Bed"],
+    "common_mistakes": [
+     "Thinking spread simply raises level; it changes how many speakers reproduce the object, not its gain.",
+     "Maxing out spread on every object, which smears imaging and removes contrast between wide and pinpoint sources.",
+     "Expecting spread to work while Speaker Snap is enabled, which deactivates the spread control."
+    ],
+    "scenario_contexts": [
+     "Widening an ambient synth pad so it envelops the listener in a Dolby Atmos music mix.",
+     "Spreading room and crowd ambience across the surround field in a live-concert immersive mix.",
+     "Keeping a lead vocal narrow while pads are wide to build front-to-surround depth contrast."
+    ]
+   },
+   "sources": [
+    "Steinberg, Nuendo 'Mixing for Dolby Atmos' guide (Spread parameter)",
+    "ITU-R BS.2076-2 Audio Definition Model (width/height/depth extent, objectDivergence)",
+    "Dolby, 'Using the Dolby Atmos Music Panner' (Size parameter)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4c2b101f-e1f7-4a48-9ad4-1a14008554be",
+   "term": "Object trajectory",
+   "fields": {
+    "definition": "The time-varying path an audio object follows through three-dimensional space, defined by its position metadata (azimuth/elevation/distance or X/Y/Z) changing over time via panning automation. Renderers interpolate between successive positions to produce continuous movement on any speaker layout.",
+    "plain_english": "A trajectory is the route a sound travels through the room over time, like the flight path of a plane moving overhead. The system draws smooth motion by joining the sound positions from moment to moment.",
+    "purpose_function": "It makes sounds move convincingly in a scene (flying, circling or passing by) by storing position changes as metadata the renderer plays back correctly on whatever speakers are present.",
+    "practical_application": "An engineer draws or automates an object's path, for example a helicopter circling the audience, so the movement renders correctly on a large cinema array, a soundbar or headphones.",
+    "category": "Object panning",
+    "related_terms": ["Audio object", "Panning automation", "Object snap", "Object spread", "Interpolation"],
+    "common_mistakes": [
+     "Automating position too abruptly, causing audible steps when the renderer interpolates or snaps between points.",
+     "Confusing a trajectory (movement over time) with a single static object position.",
+     "Forgetting that trajectory metadata is layout-independent, so a path tuned by ear in one room may translate differently elsewhere."
+    ],
+    "scenario_contexts": [
+     "Sending a sound effect flying from the front of the room to the rear during a film scene.",
+     "Circling a synth line around the listener in a Dolby Atmos music mix.",
+     "Automating a passing vehicle across the sound field for a game or VR scene."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.2076-2 Audio Definition Model (audioBlockFormat time-varying position, interpolation/jumpPosition)",
+    "Dolby, 'Using the Dolby Atmos Music Panner' (sequencer path/trajectory drawing)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b0c55bdb-e144-4ffb-ac1f-e93f7a1af0bd",
+   "term": "Object trim",
+   "fields": {
+    "definition": "A level (gain) adjustment applied to an individual audio object in an object-based mix, offsetting the object's contribution up or down without changing its position or spatial metadata. It corresponds to the per-object gain parameter carried in the object's metadata; it is distinct from a renderer's Trim controls, which attenuate whole surround and height groups during automatic downmix.",
+    "plain_english": "An object trim is a small volume tweak for one sound in the mix. It is like nudging a single fader up or down so that one part sits right, without moving where the sound comes from.",
+    "purpose_function": "It lets an engineer balance the loudness of each object relative to the rest of the mix while the object's position and movement stay untouched.",
+    "practical_application": "A mixer trims an object's level to bring a vocal or effect forward or back in an immersive mix, or to match its loudness across different sections of a piece.",
+    "category": "Object authoring",
+    "related_terms": ["Audio object", "Bed", "Object spread", "Object-based music mix", "Re-render"],
+    "common_mistakes": [
+     "Confusing an object trim (a per-object level offset) with the renderer's Trim controls, which lower surround and height groups during downmix.",
+     "Assuming trimming an object changes its position or spread; it only changes level.",
+     "Leaning on large trims late in the mix instead of setting proper gain structure earlier, causing rebalancing headaches."
+    ],
+    "scenario_contexts": [
+     "Nudging a lead-vocal object up a decibel so it sits above the bed in a Dolby Atmos music mix.",
+     "Trimming an effect object down so it does not overpower dialogue in a film scene.",
+     "Matching object levels between verse and chorus sections of an immersive song."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.2076-2 Audio Definition Model (per-object gain metadata)",
+    "Dolby Atmos Renderer Guide v3.0 (audio objects; Trim controls distinct, mix-level)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "00b13fd4-d2dc-4e5b-ae96-8b1a20d8bc5a",
+   "term": "Object-based music mix",
+   "fields": {
+    "definition": "A music mix authored as audio objects (individual sound elements each carrying positional and level metadata) rather than as fixed channels, so a renderer places each object in three-dimensional space for whatever playback layout is present, usually alongside a channel-based bed. Dolby Atmos Music, delivered as an ADM master, is a common form.",
+    "plain_english": "It is a song mixed as separate sounds that each know where they belong in the room, instead of being locked to set speakers. The playback system then places each sound to fit whatever speakers or headphones you have.",
+    "purpose_function": "It delivers immersive, layout-independent music that adapts from cinema arrays to soundbars to headphones while preserving the mixer's spatial intent.",
+    "practical_application": "An engineer assigns instruments and vocals to objects (and a bed for ambience), positions and moves them in a renderer, and exports an ADM master for immersive streaming services.",
+    "category": "Immersive mixing",
+    "related_terms": ["Audio object", "Bed", "Object trajectory", "Object spread", "Dolby Atmos"],
+    "common_mistakes": [
+     "Thinking object-based mixing is just spreading a stereo mix wider; it requires assigning discrete elements to objects with intentional placement.",
+     "Putting everything into objects and neglecting the bed, wasting object count and complicating the mix.",
+     "Ignoring the binaural/headphone and downmix renders, so the mix translates poorly outside a full speaker array."
+    ],
+    "scenario_contexts": [
+     "Producing a Dolby Atmos Music version of a song for an immersive streaming service.",
+     "Placing backing vocals and effects around the listener while keeping drums and bass in the bed.",
+     "Delivering an ADM BWF master alongside a stereo mix for a new album release."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.2076-2 Audio Definition Model (object-based audio: essence plus positional/gain metadata)",
+    "Dolby Atmos Renderer Guide v3.0 (beds and objects)",
+    "Dolby, 'Using the Dolby Atmos Music Panner' (object vs bed in music mixing)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

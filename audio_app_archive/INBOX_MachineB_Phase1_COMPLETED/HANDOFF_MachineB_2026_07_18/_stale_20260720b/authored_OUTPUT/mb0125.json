@@ -1,0 +1,201 @@
+{
+ "batch": 125,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "8ea4df99-e305-4900-b0d7-415a087407ff",
+   "term": "Platform optimization",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No single established canonical sense. 'Platform optimization' is a generic phrase with at least two distinct, unreconciled technical readings in audio workflow: (a) optimizing a computer platform/OS/hardware for DAW performance (buffer/latency, background processes) per manufacturer setup guides, and (b) optimizing a master/mix for a specific delivery platform's loudness-normalization and codec targets (streaming). No acceptable source defines it as one named term. All fields left blank pending clarification of intended sense."
+   ]
+  },
+  {
+   "id": "2e4a6796-2ede-4f76-bed1-8d12c3023871",
+   "term": "Playback Cursor",
+   "fields": {
+    "definition": "In a DAW, the Playback Cursor is the moving on-screen line that shows the exact point in the timeline currently being played, advancing in real time as audio plays. It is distinct from the stationary Edit Cursor (insertion point) that marks where editing and the next playback will begin.",
+    "plain_english": "It is the line that moves across the screen while your song plays. It shows the exact spot you are hearing right now. It is like a bouncing ball that follows the words in a sing-along.",
+    "purpose_function": "It gives the engineer constant visual feedback of the current playback position, so events, edits, and punch points can be matched to exactly what is being heard.",
+    "practical_application": "An engineer watches the Playback Cursor to confirm where a click, breath, or downbeat falls, and uses its position to judge timing before setting loop or record points.",
+    "category": "DAW Interface",
+    "related_terms": ["Edit Cursor", "Timeline", "Transport controls", "Playhead", "Insertion point"],
+    "common_mistakes": [
+     "Confusing the moving Playback Cursor with the stationary Edit Cursor (insertion point), which is where playback and edits actually start",
+     "Assuming the Playback Cursor sets the location for an edit, when it only reports position and does not place the insertion point",
+     "Thinking playback will resume from where the moving cursor stopped, when the Edit insertion point usually governs that"
+    ],
+    "scenario_contexts": [
+     "Following the Playback Cursor to find the exact spot where a vocal breath should be edited out",
+     "Watching the cursor cross a section boundary to confirm a transition lands on the downbeat",
+     "Using the cursor's position during playback to decide where to set a loop for a repeating section"
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "84b849f8-1c35-4ea8-914f-6cad19e54bd2",
+   "term": "Playback translation",
+   "fields": {
+    "definition": "Playback translation is how well a finished mix keeps its intended tonal balance, clarity, and level relationships when heard on playback systems other than the one it was mixed on, such as car speakers, earbuds, phone speakers, or club systems.",
+    "plain_english": "This means how good your mix still sounds on other speakers, not just the ones you mixed on. A great mix holds up on a phone, in a car, and on cheap earbuds too. It is like a recipe that still tastes good in any kitchen.",
+    "purpose_function": "It measures whether mix decisions hold up in the real world, since listeners use many different and often low-quality devices rather than studio monitors.",
+    "practical_application": "Engineers check translation by auditioning a mix on several systems, such as nearfield monitors, headphones, a phone, and a car, then adjust balances so it works everywhere.",
+    "category": "Mixing Concept",
+    "related_terms": ["Mix translation", "Reference monitor", "Nearfield monitor", "Reference track", "Mono compatibility", "Frequency balance"],
+    "common_mistakes": [
+     "Judging a mix only on one expensive pair of monitors and assuming it will sound the same everywhere",
+     "Blaming poor translation entirely on the mix when an untreated room can be misleading the engineer",
+     "Boosting extreme lows or highs that sound good on large monitors but disappear or distort on small speakers"
+    ],
+    "scenario_contexts": [
+     "Bouncing a rough mix and playing it in the car to check translation before ending a session",
+     "Comparing a mix on earbuds and a phone speaker to make sure the vocal stays audible",
+     "A mix that sounds full on studio monitors but thin on laptop speakers, revealing a translation problem"
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "61a1acb9-5b3c-484b-bb7c-1cc0d72ab117",
+   "term": "Playlist View",
+   "fields": {
+    "definition": "In a DAW (notably Pro Tools), Playlist View is a track display mode that shows a track's alternate edit playlists as separate stacked lanes, letting the engineer compare and comp together the best parts of multiple takes.",
+    "plain_english": "It is a view that stacks all the takes of a part in separate lanes. You can then pick the best bits from each take and join them into one. It is like choosing the best photo from a burst of shots.",
+    "purpose_function": "It exists to make comping easy, organizing multiple recorded takes of the same part so an engineer can audition, rate, and combine them into a single composite performance.",
+    "practical_application": "After recording several vocal takes, an engineer switches the track to Playlist View and drags the strongest phrase from each lane up into the main playlist.",
+    "category": "DAW Interface",
+    "related_terms": ["Comping", "Take", "Playlist", "Track lanes", "Loop recording", "Composite take"],
+    "common_mistakes": [
+     "Confusing edit playlists (alternate takes on one track) with a playback queue or a streaming playlist",
+     "Deleting an alternate playlist thinking it only clears the view, permanently losing that take",
+     "Comping from lanes but forgetting to check crossfades at the edit points, causing clicks"
+    ],
+    "scenario_contexts": [
+     "Comping a lead vocal from ten loop-recorded takes shown as separate lanes",
+     "Keeping alternate guitar solos on separate playlists to A/B later",
+     "Building a composite drum take by choosing the best fill from several passes"
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e6bca3d8-1d22-45c8-8313-0e81eafc19df",
+   "term": "Plug-in automation pass",
+   "fields": {
+    "definition": "A plug-in automation pass is a single run through a section during which an engineer records real-time changes to one or more of a plug-in's parameters (such as a filter cutoff or reverb mix) as automation data, so those moves replay automatically on later passes.",
+    "plain_english": "It is one recorded run where you move a plug-in's controls while the song plays. The software remembers every move and replays it for you next time. It is like recording yourself turning a dial so it turns itself later.",
+    "purpose_function": "It lets parameter changes be captured performance-style and repeated exactly on every playback, freeing the engineer from riding controls by hand each time.",
+    "practical_application": "An engineer enables a plug-in parameter for automation, plays the section, and sweeps a filter or rides a reverb send in one pass; the DAW writes it as an automation curve to refine afterward.",
+    "category": "Automation",
+    "related_terms": ["Automation mode", "Write automation", "Touch automation", "Automation curve", "Parameter", "Automation lane"],
+    "common_mistakes": [
+     "Leaving the track in Write mode after the pass, so a later playback overwrites the automation you just recorded",
+     "Automating the wrong control because the plug-in parameter was not correctly enabled for automation",
+     "Trying to capture too many parameters in one pass instead of building it up over several focused passes"
+    ],
+    "scenario_contexts": [
+     "Recording a filter sweep on a synth in one automation pass during a build-up",
+     "Riding a delay throw's feedback on a single vocal word in one pass",
+     "Automating a plug-in's wet/dry mix to swell reverb into a chorus"
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "85944355-027d-4f00-adde-da771c21d11b",
+   "term": "Plug-in View",
+   "fields": {
+    "definition": "Plug-in View refers to the on-screen window or panel that displays a plug-in's graphical interface and controls, opened from an insert slot so the engineer can see and adjust that processor's parameters and metering.",
+    "plain_english": "It is the window that shows a plug-in's knobs, sliders, and meters. Opening it lets you see and change how that effect is set. It is like lifting the lid of a gadget to reach its dials.",
+    "purpose_function": "It gives visual access to a plug-in's controls and metering so settings can be seen and edited, rather than staying hidden inside an insert slot.",
+    "practical_application": "An engineer clicks an insert to open the Plug-in View, then dials in EQ curves or compressor settings while watching the plug-in's meters.",
+    "category": "DAW Interface",
+    "related_terms": ["Insert", "Plug-in", "Insert slot", "Signal chain", "Mix window", "Parameter"],
+    "common_mistakes": [
+     "Opening many Plug-in View windows at once and losing track of which insert each belongs to",
+     "Assuming closing the Plug-in View bypasses or removes the plug-in, when it only hides the window",
+     "Confusing a single Plug-in View window with the channel's Inserts view that lists all slots"
+    ],
+    "scenario_contexts": [
+     "Opening the Plug-in View of an EQ to sculpt a vocal's high end",
+     "Watching a compressor's gain-reduction meter in its Plug-in View while setting the threshold",
+     "Recalling a saved preset from within a plug-in's view window"
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2ee11954-c88f-49b1-9633-8e4cf228f9be",
+   "term": "Polar window",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No established canonical meaning found in acceptable sources. 'Polar window' is not a standard named term in mixing, DAW workflow, microphone specification, or acoustic measurement literature (which use 'polar pattern/plot' and, separately, time-domain 'windowing/gating' but not 'polar window'). Meaning is ambiguous even as a transparent compound. All fields left blank pending clarification."
+   ]
+  },
+  {
+   "id": "c7f6f60d-780a-47b3-bf60-03297b297f80",
+   "term": "Polarity validation",
+   "fields": {
+    "definition": "Polarity validation is the process of confirming that a signal path preserves correct absolute polarity, so that a positive-going input produces a positive-going output and is not inverted, across cables, connectors, microphone channels, and loudspeaker drivers.",
+    "plain_english": "This is checking that a signal is not accidentally flipped upside down by gear or cables. A flip can make sounds cancel and get weaker when they mix together. It is like two people pushing a swing in opposite directions instead of together.",
+    "purpose_function": "It exists to prevent polarity inversions that cause cancellation and weak, hollow sound when signals are combined, such as summed microphone pairs or a mono fold-down.",
+    "practical_application": "A technician uses a polarity tester (a paired send and receive unit) or a scope to check mic cables, DI boxes, and loudspeaker wiring, confirming the fuller result when polarity is correct.",
+    "category": "Signal Integrity",
+    "related_terms": ["Absolute polarity", "Phase", "Polarity inversion", "Comb filtering", "Mono compatibility", "Polarity switch"],
+    "common_mistakes": [
+     "Confusing polarity (a fixed 180-degree flip) with phase (a frequency- and time-dependent shift), and using the terms interchangeably",
+     "Assuming a working cable is wired correctly for polarity without ever testing it",
+     "Flipping polarity on one mic and forgetting to recheck the summed result, trading one cancellation for another"
+    ],
+    "scenario_contexts": [
+     "Checking a snare top and bottom mic pair for polarity before deciding whether to invert one",
+     "Validating a batch of XLR cables with a polarity tester before a show",
+     "Confirming loudspeaker wiring polarity so cabinets in an array push together rather than against each other"
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3e2f6e7f-b332-4248-9bfd-536a06f4727a",
+   "term": "Polymetric sequence",
+   "fields": {
+    "definition": "A polymetric sequence is a musical or programmed passage in which two or more parts run in different meters, or repeat over different bar or step lengths, at the same time, so the parts realign only after a longer combined cycle.",
+    "plain_english": "It is when two rhythms of different lengths loop at the same time. Because they are not equal, they drift apart and only line up again later. Think of two runners on laps of different lengths who meet at the start only now and then.",
+    "purpose_function": "It creates evolving, non-repeating rhythmic patterns and tension by layering cycles of unequal length that phase against each other before resetting.",
+    "practical_application": "In a DAW or step sequencer, an engineer sets loops or clips to different lengths, such as a 7-step pattern against a 4-step pattern, so they combine into a long, shifting groove.",
+    "category": "Rhythm & Timing",
+    "related_terms": ["Polyrhythm", "Meter", "Time signature", "Step sequencer", "Loop length", "Odd meter"],
+    "common_mistakes": [
+     "Confusing polymeter (different meters or lengths running together) with polyrhythm (different subdivisions over the same span)",
+     "Setting all patterns to the same length and then expecting a polymetric effect",
+     "Forgetting the long combined cycle length and cutting the loop too short, so the interplay never resolves"
+    ],
+    "scenario_contexts": [
+     "Programming a 5-step hi-hat loop against a 4-step kick pattern for a shifting groove",
+     "Layering a 7/8 synth line under a 4/4 drum beat in an electronic track",
+     "Using clips of unequal length in a session to build an evolving background texture"
+    ]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians", "Ableton Live Reference Manual"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

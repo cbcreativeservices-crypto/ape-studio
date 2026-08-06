@@ -1,0 +1,81 @@
+{
+ "batch": 393,
+ "topic": "Themed Entertainment / Haunt Audio",
+ "terms": [
+  {
+   "id": "5dc2dece-28f1-4afe-906f-d8b7bc60a724",
+   "term": "Misdirection Audio",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "seq": 1750,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "909d7e13-04f7-4bff-a232-a8d032166f08",
+   "term": "Preshow Audio",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "seq": 1750,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "23a6430d-7172-482b-9164-d7c4b11fe9ec",
+   "term": "Queue-Line Audio",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "seq": 1750,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

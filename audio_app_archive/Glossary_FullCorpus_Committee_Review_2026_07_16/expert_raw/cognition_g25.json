@@ -1,0 +1,230 @@
+{
+ "expert": "Learning / Cognition Expert",
+ "group": 25,
+ "reviews": [
+  {
+   "id": "5b87fde0-fbbf-4ec8-9474-133afe107068",
+   "term": "Intermittent fault diagnosis",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2f3bb693-1ae9-49e5-b0fb-477bdf68515e",
+   "term": "Intermittent output",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fcf41b18-02bd-4fa5-903b-dbadec8540f6",
+   "term": "Intermodulation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fcbd42e6-43b0-44c6-bda3-f5c49b3cc9e6",
+   "term": "Intermodulation distortion",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1be38c20-f67d-4d06-8efc-f81840947e95",
+   "term": "Internal acoustic foam",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3821b3a4-0199-4e2b-9b13-c04c0d4ebd7a",
+   "term": "Internal suspension",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6d459625-c8ff-40e7-9eb0-a3e515c52c7d",
+   "term": "Inventory Management",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "plain_english",
+     "severity": "Low",
+     "issue": "The entry is scoped entirely to assistive-listening devices (ADA receiver counts), but the plain_english opens with a bare 'all the receivers and accessories' with no antecedent. A learner meeting the generic title 'Inventory Management' is left asking 'receivers of what?' before the hearing-aid hint arrives.",
+     "suggestion": "Open by naming the domain, e.g. 'Inventory management here means keeping count of a venue's assistive-listening receivers and accessories...' so the context is set before the details."
+    }
+   ]
+  },
+  {
+   "id": "ace761d6-0632-46f9-b831-1fee0d9686af",
+   "term": "Inverse Square Law",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "difficulty",
+     "severity": "Low",
+     "issue": "The difficulty field holds two contradictory values, 'advanced, intermediate'; every sibling entry carries a single tag, so the learner-facing difficulty is ambiguous.",
+     "suggestion": "Resolve to a single tag. The plain_english (6 dB per doubling, with brief room/array caveats) is pitched at intermediate level, so set difficulty to 'intermediate'."
+    }
+   ]
+  },
+  {
+   "id": "4c033a63-4f33-4912-bc05-563d946b9735",
+   "term": "IR ETC view",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7fd93f83-4b6d-4711-84d4-7415a404d82a",
+   "term": "IR Histogram",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1a5180d2-dcf2-46b9-82c2-0e61d5ca2af1",
+   "term": "IR Linear view",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "739c31cd-22a5-4073-842f-6d34a8c9462a",
+   "term": "IR Log view",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "29938d77-155d-45e0-9b1c-9747dfb711ad",
+   "term": "IR Repeater",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2dabfabd-9399-4332-b00f-4562050af093",
+   "term": "IR Spectrograph",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "70897e05-b0e5-42fd-9846-904f14b0da9b",
+   "term": "IR Sync",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "faaee258-0b43-4231-859c-dfb0f992fb5b",
+   "term": "Iso Track",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ea49fc9c-9592-4ca9-8b15-17844a6f7e4f",
+   "term": "Isobaric Loading",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4ba4bb8f-1a84-42a2-a7bc-d9021b23447b",
+   "term": "isochronous",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ef50ae59-4558-432c-a9cc-9562dbb17a66",
+   "term": "Isolation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "54455278-fde0-44a6-a2bd-bd8d6365dd21",
+   "term": "Isolation Transformer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2923fb70-3afa-4c7f-bfe8-03ded328f7ef",
+   "term": "Jack Connector (1/4-inch Connector)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "59f5ade1-1d37-4f51-8250-715aa52cf573",
+   "term": "JFET",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f8bcdbf9-d58a-4d4f-be6b-198b6844c9e7",
+   "term": "jitter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5522b8d5-bf31-4b30-a18a-8c293608836c",
+   "term": "Johnson (thermal) noise",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b93d7af7-a740-4486-8640-c742f6ab22c1",
+   "term": "K-weighted (LUFS)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "79f7cb3e-2d7e-4f86-bf90-dc521f742406",
+   "term": "Keystone Jack",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8a4e94a0-56c4-46ad-9e16-4eb9381425a0",
+   "term": "kHz (Kilohertz)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4e91296c-84c4-4848-bdb6-e4401cc641d0",
+   "term": "Kick Panel",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fe9af0ef-5bee-4496-9309-2f790a937f87",
+   "term": "Kill EQ",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fbf7040d-4943-419d-986b-754f82b83162",
+   "term": "Kill Switch",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "decad9cd-c2e6-470c-93ec-dd7fffcc089a",
+   "term": "Knee",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9e218e81-8895-411f-8ef3-bc887d4b56a5",
+   "term": "Knockout",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0489132e-c3c9-4d6f-972f-a501e04b8ebe",
+   "term": "Known-good reference system",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "43d6eb3c-6c8b-42cc-9a1e-6e72cec7c0ec",
+   "term": "Known-good substitution",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a2fab22c-bb06-4cc9-8114-81e288436a9f",
+   "term": "L10",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

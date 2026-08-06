@@ -1,0 +1,159 @@
+{
+ "batch": 170,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "5792b0db-69e8-427a-bff4-7556b53ef742",
+   "term": "Object metadata package",
+   "fields": {
+    "definition": "In object-based immersive audio (e.g., Dolby Atmos, or ADM per ITU-R BS.2076), the complete set of descriptive metadata carried with a single audio object - its position, size, gain, and related parameters - that travels alongside the object's audio essence and tells the renderer how to reproduce it.",
+    "plain_english": "An audio object is one sound, like a single voice, that can move around the room. The metadata package is the set of instructions that rides along with it. It tells the player where to put the sound, how big it is, and how loud. Think of it like a shipping label stuck to a box.",
+    "purpose_function": "It lets one master play back correctly on any speaker layout, because the renderer reads each object's metadata and places the sound live instead of relying on fixed channels.",
+    "practical_application": "A mastering engineer checks that every object's metadata package is complete and valid before exporting the ADM BWF master, since missing or wrong values change how the mix renders.",
+    "category": "Immersive Audio Metadata",
+    "related_terms": ["Object position metadata", "Object size metadata", "Object mute metadata", "Object-based re-render", "Off binaural setting"],
+    "common_mistakes": ["Confusing the metadata package with the audio itself - the metadata describes the object, but the sound lives in a separate audio track.", "Assuming metadata carries over when bouncing to a channel-based file - a flat stereo or 5.1 render discards the object metadata.", "Editing object levels only in the DAW while ignoring gain stored in the object metadata."],
+    "scenario_contexts": ["Preparing a Dolby Atmos music master and validating each object's metadata before delivery.", "Troubleshooting an object that plays in the wrong location because its position metadata was set incorrectly.", "Handing off an ADM BWF file so a streaming platform's renderer can rebuild the mix for the listener's device."]
+   },
+   "sources": ["ITU-R BS.2076 (Audio Definition Model)", "Dolby Atmos Renderer - Dolby technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3ca059b9-64fd-444a-b057-1efdf3f37de3",
+   "term": "Object mute metadata",
+   "fields": {
+    "definition": "A metadata parameter attached to an audio object that flags it as muted, instructing the renderer to silence that object during playback while its audio essence and other metadata remain intact; in ADM (ITU-R BS.2076) this is a mute flag on the audioObject element.",
+    "plain_english": "This is a simple on/off switch stored with a sound object that says keep this one silent. The sound is still in the file, but the player is told not to play it. It is like leaving a track in a project but pressing its mute button. Nothing is deleted; it just stays quiet.",
+    "purpose_function": "It lets an object be silenced without deleting it, so alternate versions or checks can be made non-destructively and the object can be un-muted later.",
+    "practical_application": "An engineer uses mute metadata to audition a mix with a specific object removed, or to deliver a version where an element is silenced without re-editing the audio.",
+    "category": "Immersive Audio Metadata",
+    "related_terms": ["Object metadata package", "Object position metadata", "Object size metadata", "Object-based re-render", "Off binaural setting"],
+    "common_mistakes": ["Thinking muting an object deletes it - the audio and metadata remain, only playback is silenced.", "Leaving an object muted by accident in the exported master, so an element goes missing on playback.", "Confusing object mute with pulling gain to minus infinity; mute is a distinct flag."],
+    "scenario_contexts": ["Delivering an instrumental version by muting the vocal object rather than removing it.", "Checking a mix by temporarily muting a single object during quality control."]
+   },
+   "sources": ["ITU-R BS.2076 (Audio Definition Model)", "Dolby Atmos Renderer - Dolby technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f41965a4-fd83-4ace-8922-50ef797f4436",
+   "term": "Object position metadata",
+   "fields": {
+    "definition": "The metadata that specifies where an audio object sits in three-dimensional space, expressed as azimuth/elevation/distance (polar) or X/Y/Z (Cartesian) coordinates per ADM (ITU-R BS.2076); the renderer uses it to place the sound across the available speakers.",
+    "plain_english": "This is the set of coordinates that tells the system where a sound should appear in the room. It can point left or right, high or low, near or far. The player reads those numbers and steers the sound to the right spot. It works like GPS coordinates for a sound.",
+    "purpose_function": "It frees a sound from fixed channels, letting the renderer place or move it accurately on any speaker layout, which is the core idea of object-based audio.",
+    "practical_application": "Engineers automate position metadata to pan objects through a scene and verify the coordinates so sounds land where intended on every playback system.",
+    "category": "Immersive Audio Metadata",
+    "related_terms": ["Object metadata package", "Object size metadata", "Object mute metadata", "Object-based re-render", "Off binaural setting"],
+    "common_mistakes": ["Assuming position is fixed - it is automated over time, and stale keyframes can misplace a sound.", "Mixing up coordinate systems (polar vs. Cartesian) and entering values in the wrong one.", "Judging position only on your own speaker setup, forgetting the renderer remaps it for other layouts."],
+    "scenario_contexts": ["Automating a helicopter object to fly overhead in a Dolby Atmos mix.", "Correcting an object that appears in the wrong spot by editing its position coordinates."]
+   },
+   "sources": ["ITU-R BS.2076 (Audio Definition Model)", "Dolby Atmos Renderer - Dolby technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0d09e77a-6529-44e5-8f30-c00a1fc7f71c",
+   "term": "Object size metadata",
+   "fields": {
+    "definition": "The metadata that defines an object's spatial extent - how large or diffuse it appears - via width, height, and depth parameters (ADM, ITU-R BS.2076) or the renderer's size control; larger values spread the object across more speakers rather than as a point source.",
+    "plain_english": "This tells the system how big a sound should feel. A small value makes a tight point, like one speaker. A big value spreads it wide, like a wash of sound all around you. It is the difference between a single dripping tap and steady rain everywhere. The player uses it to decide how many speakers share the sound.",
+    "purpose_function": "It lets a sound be a pinpoint or a broad, enveloping source, giving the mix a sense of scale and space beyond simple position.",
+    "practical_application": "Engineers increase object size to make pads, ambiences, or reverbs feel wide and immersive, and reduce it to keep effects tight and localized.",
+    "category": "Immersive Audio Metadata",
+    "related_terms": ["Object metadata package", "Object position metadata", "Object mute metadata", "Object-based re-render", "Off binaural setting"],
+    "common_mistakes": ["Confusing size with loudness - size changes spread and localization, not level.", "Setting size very large on everything, which smears the image and loses clarity.", "Expecting the same spread on all systems; small speaker layouts render size differently."],
+    "scenario_contexts": ["Widening a synth pad by increasing its object size so it surrounds the listener.", "Keeping a lead vocal tight by using a small object size for precise placement."]
+   },
+   "sources": ["ITU-R BS.2076 (Audio Definition Model)", "Dolby Atmos Renderer - Dolby technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1f348546-d9ee-4700-88b3-81ceed0e2e34",
+   "term": "Object-based re-render",
+   "fields": {
+    "definition": "The process by which a renderer takes an object-based master (e.g., Dolby Atmos) and produces a channel-based output - such as 7.1, 5.1, stereo, or binaural - by rendering each object's metadata to that specific speaker layout; the resulting fixed-channel file is called a re-render.",
+    "plain_english": "This turns a flexible object mix into a normal fixed-speaker version. The system reads where every sound should go and bakes it into set channels, like 5.1 or stereo. Think of it like flattening the layers in a photo into one image. You get a ready-to-play file for a specific setup.",
+    "purpose_function": "It creates deliverables for systems that cannot decode objects, ensuring the immersive mix translates to standard stereo and surround formats.",
+    "practical_application": "From one Atmos master an engineer generates re-renders - stereo, 5.1, 7.1, binaural - as delivery files or reference bounces for clients and platforms.",
+    "category": "Object-Based Audio",
+    "related_terms": ["Object metadata package", "Object position metadata", "Object size metadata", "Object mute metadata", "Off binaural setting"],
+    "common_mistakes": ["Treating a re-render as reversible - a channel-based re-render loses the object metadata and cannot be turned back into objects.", "Not checking loudness and balance on each re-render; a good Atmos mix can fold down poorly.", "Forgetting the renderer's limit on how many re-renders can be created at once."],
+    "scenario_contexts": ["Bouncing a stereo re-render from an Atmos master for a client reference.", "Generating 5.1 and 7.1 re-renders as broadcast deliverables from one immersive master."]
+   },
+   "sources": ["Dolby Atmos Renderer - Dolby technical documentation", "ITU-R BS.2076 (Audio Definition Model)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "859e636e-c592-48dd-9c24-9f20cf1a7a38",
+   "term": "Off binaural setting",
+   "fields": {
+    "definition": "In the Dolby Atmos Renderer's binaural (headphone) monitoring path, a per-bed or per-object setting of Off that applies no spatial distance processing to that element, so it is rendered without the near/mid/far head-related cues used to push a sound away from and outside the listener's head; Near, Mid, and Far apply progressively greater simulated distance.",
+    "plain_english": "When mixing Atmos for headphones, each sound can be pushed to feel near, middle, or far away. Setting it to Off turns that distance effect off for that one sound. The sound then stays plain and close, without being pushed back. You use it to keep things like a lead vocal clear and up front.",
+    "purpose_function": "It gives the engineer per-element control over headphone depth, letting some sounds stay dry and forward while others are pushed back for a sense of space.",
+    "practical_application": "An engineer sets a lead vocal or kick to Off so it stays punchy and present in the binaural render, while reverbs or ambience are set to Far.",
+    "category": "Immersive Monitoring",
+    "related_terms": ["Object metadata package", "Object position metadata", "Object-based re-render", "Object size metadata", "Object mute metadata"],
+    "common_mistakes": ["Assuming Off disables binaural entirely - it only removes distance processing for that one element, not the whole mix.", "Leaving everything on Off, which makes the headphone mix sound flat and stuck inside the head.", "Forgetting binaural settings only affect the binaural/headphone render, not the speaker output."],
+    "scenario_contexts": ["Keeping a vocal forward by setting its binaural mode to Off while ambiences are set to Far.", "Fixing a headphone mix that feels distant by switching key elements to Off."]
+   },
+   "sources": ["Dolby Atmos Renderer - Binaural Render Mode (Dolby technical documentation)", "Apple Logic Pro User Guide - Binaural render modes"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3b5c3dc7-9a47-4401-a999-556e454ed69b",
+   "term": "Optical archive master",
+   "fields": {
+    "definition": "A master copy of a finished program stored on optical media (such as CD-R, DVD, Blu-ray, or archival-grade disc) for long-term preservation, kept separate from working copies so the definitive version can be retrieved unchanged.",
+    "plain_english": "This is the keeper copy of a finished project, burned onto a disc for safe storage. It is not the copy you work from day to day. It sits safely so the original can be found later exactly as it was. Think of it like a photo negative you lock in a drawer.",
+    "purpose_function": "It preserves the definitive final version on stable media so the work can be recovered years later if working files are lost or corrupted.",
+    "practical_application": "After a master is approved, an engineer burns and labels an optical archive master, stores it safely, and often keeps a second copy in another location.",
+    "category": "Archival & Delivery",
+    "related_terms": ["Optical verification", "Object metadata package", "Object-based re-render", "Orchestra stem preparation"],
+    "common_mistakes": ["Relying on a single disc - optical media can degrade, so keep multiple copies and verify them.", "Treating a burned disc as permanent; discs should be checked periodically and migrated over time.", "Skipping clear labeling, so the archive master cannot be identified later."],
+    "scenario_contexts": ["Burning an archive master to disc after a mastering session is signed off.", "Retrieving an old optical archive master to make a new deliverable years later."]
+   },
+   "sources": ["AES - Archiving, Restoration and Digital Libraries (technical resources)", "Bob Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8de58af9-a058-48bc-8287-ef362d145336",
+   "term": "Optical verification",
+   "fields": {
+    "definition": "A quality-control step in which data written to an optical disc is read back and compared against the source (by checksum or bit-for-bit comparison) to confirm the burn is accurate and error-free before the disc is trusted as a master or deliverable.",
+    "plain_english": "After burning a disc, you read it back to make sure every bit copied correctly. The system compares the disc to the original to catch any errors. It is like proofreading a printout against the file it came from. If they match, the disc can be trusted.",
+    "purpose_function": "It catches burn errors and bad media before a faulty disc is delivered or archived, protecting the integrity of the master.",
+    "practical_application": "An engineer runs verification after burning a master or DDP disc, and re-burns if the comparison reports mismatches or read errors.",
+    "category": "Archival & Delivery",
+    "related_terms": ["Optical archive master", "Object metadata package", "Object-based re-render", "Orchestra stem preparation"],
+    "common_mistakes": ["Skipping verification and assuming a burn is good because no error popped up while writing.", "Verifying only on the same drive that burned the disc, without testing read-back on another drive.", "Ignoring rising read errors that warn a disc or drive is failing."],
+    "scenario_contexts": ["Verifying a DDP master disc before shipping it to a replication plant.", "Reading back an archive disc to confirm it is still error-free."]
+   },
+   "sources": ["AES - Compact Disc (CD) Mastering, An Industrial Process (AES conference paper)", "Bob Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1db92a4d-0399-4f7a-a669-3aacadb65c73",
+   "term": "Orchestra stem preparation",
+   "fields": {
+    "definition": "The task of grouping a large orchestral mix into a set of stems - submixes such as strings, brass, woodwinds, and percussion - bounced as separate, time-aligned files so the material can be balanced, mixed, or re-used later without returning to the full session.",
+    "plain_english": "An orchestra has many players and tracks. Stem preparation means bundling them into a few grouped mixes, like one for strings and one for brass. These bounced files line up in time and are easy to rebalance later. It is like sorting laundry into a few labeled baskets instead of one huge pile.",
+    "purpose_function": "Stems let a mixer or mastering engineer adjust sections independently and reuse the music (for trailers, edits, or foreign versions) without the original multitrack session.",
+    "practical_application": "A scoring or mastering engineer bounces orchestral stems by section, keeping levels and start times consistent so they sum back to the approved full mix.",
+    "category": "Stem Preparation",
+    "related_terms": ["Object-based re-render", "Optical archive master", "Object metadata package", "Optical verification"],
+    "common_mistakes": ["Bouncing stems that do not sum back to the full mix because of processing left on the master bus.", "Misaligned start times, so stems drift out of sync when combined.", "Inconsistent levels or naming, making the stems hard to recombine."],
+    "scenario_contexts": ["Delivering orchestral stems (strings, brass, woodwinds, percussion) to a film re-recording mixer.", "Preparing section stems so a trailer editor can rebalance the music."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

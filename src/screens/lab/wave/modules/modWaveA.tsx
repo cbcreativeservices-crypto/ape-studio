@@ -24,6 +24,7 @@ import { ResponseCurveGraph, type ResponseCurve } from '../../../../features/lab
 import { LabChip } from '../../LabShell';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
+import { WaveLayout } from './waveLayout';
 import {
   MATERIALS,
   alphaAt,
@@ -291,71 +292,75 @@ export function ReflectionModule(p: WaveModuleProps) {
   ];
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → drag hint
-            → wall materials → frequency → readouts. */}
-        <DisplayGuideButton onPress={() => p.help('layers')} />
-        <LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />
-        {viz ? (
-          <RoomView
-            viz={viz}
-            width={p.width}
-            focused={p.focused}
-            scene={scene}
-            freq={freq}
-            layers={layers}
-            onDragSource={onDragSource}
-            onDragListener={onDragListener}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={HONESTY} />
-        <Text style={dstyles.caption}>
-          Drag the source and the listener — the rays and arrival numbers re-solve instantly.
-        </Text>
-        <View style={dstyles.chipRow}>
-          {REFLECTION_MATS.map((m) => (
-            <LabChip
-              key={m}
-              label={MATERIALS[m].label.toUpperCase()}
-              selected={mat === m}
-              onPress={() => setMat(m)}
-              onLongPress={() => p.help('materials')}
+    <WaveLayout
+      explain={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>ANGLE FROM THE NORMAL</Text>
+          <Text style={dstyles.body}>
+            Angle in equals angle out — measured from the NORMAL, the line perpendicular to the wall,
+            never from the surface itself. A ray grazing along a wall has a large angle of incidence,
+            not a small one. And no bounce is free: the wall keeps a share of the energy (α), so every
+            reflection arrives late AND weakened — the REFLECTION LOSS readout is that per-bounce toll.
+          </Text>
+          <Text style={dstyles.eyebrow}>THE IMAGE SOURCE — A CONSTRUCT, NOT A SOURCE</Text>
+          <Text style={dstyles.body}>
+            The RAYS layer builds each reflection by mirroring the source across the wall and drawing a
+            straight line from that IMAGE. It is a modeling device that predicts path length, delay and
+            level in one move — nothing behind the wall is making sound. The PATH DIFFERENCE it predicts
+            is the exact time offset that carves comb filters in Module 7.
+          </Text>
+        </PanelCard>
+      }
+      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="reflection" />}
+      layers={<LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />}
+      display={
+        <>
+          {viz ? (
+            <RoomView
+              viz={viz}
+              width={p.width}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              onDragSource={onDragSource}
+              onDragListener={onDragListener}
             />
-          ))}
-        </View>
-        <DragSlider
-          value={logFrac(freq, 63, 8000)}
-          onChange={(v) => setFreq(fracLog(v, 63, 8000))}
-          label="REFLECTED FREQUENCY"
-          readout={fmtHz(freq)}
-          onHelp={() => p.help('reflection')}
-        />
-        <ReadoutGrid items={readouts} help={p.help} helpKey="reflection" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>ANGLE FROM THE NORMAL</Text>
-        <Text style={dstyles.body}>
-          Angle in equals angle out — measured from the NORMAL, the line perpendicular to the wall,
-          never from the surface itself. A ray grazing along a wall has a large angle of incidence,
-          not a small one. And no bounce is free: the wall keeps a share of the energy (α), so every
-          reflection arrives late AND weakened — the REFLECTION LOSS readout is that per-bounce toll.
-        </Text>
-        <Text style={dstyles.eyebrow}>THE IMAGE SOURCE — A CONSTRUCT, NOT A SOURCE</Text>
-        <Text style={dstyles.body}>
-          The RAYS layer builds each reflection by mirroring the source across the wall and drawing a
-          straight line from that IMAGE. It is a modeling device that predicts path length, delay and
-          level in one move — nothing behind the wall is making sound. The PATH DIFFERENCE it predicts
-          is the exact time offset that carves comb filters in Module 7.
-        </Text>
-      </PanelCard>
-
-      <MistakesCard items={REFLECTION_MISTAKES} />
-      <CheckQuestion spec={REFLECTION_CHECK} />
-    </View>
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={HONESTY} />
+          <Text style={dstyles.caption}>
+            Drag the source and the listener — the rays and arrival numbers re-solve instantly.
+          </Text>
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('layers')} />}
+      controls={
+        <>
+          <DragSlider
+            value={logFrac(freq, 63, 8000)}
+            onChange={(v) => setFreq(fracLog(v, 63, 8000))}
+            label="REFLECTED FREQUENCY"
+            readout={fmtHz(freq)}
+            onHelp={() => p.help('reflection')}
+          />
+          <View style={dstyles.chipRow}>
+            {REFLECTION_MATS.map((m) => (
+              <LabChip
+                key={m}
+                label={MATERIALS[m].label.toUpperCase()}
+                selected={mat === m}
+                onPress={() => setMat(m)}
+                onLongPress={() => p.help('materials')}
+              />
+            ))}
+          </View>
+        </>
+      }
+      mistakes={<MistakesCard items={REFLECTION_MISTAKES} />}
+      check={<CheckQuestion spec={REFLECTION_CHECK} />}
+    />
   );
 }
 
@@ -418,71 +423,79 @@ export function AbsorptionModule(p: WaveModuleProps) {
   ];
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint →
-            materials → sliders → readouts (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('layers')} />
-        <LayerChips layers={layers} onChange={setLayers} help={p.help} />
-        {viz ? (
-          <RoomView
-            viz={viz}
-            width={p.width}
-            focused={p.focused}
-            scene={scene}
-            freq={freq}
-            layers={layers}
-            onDragSource={onDragSource}
-            onDragListener={onDragListener}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={HONESTY} />
-        <Text style={dstyles.caption}>Treat the walls — every boundary takes the material you pick.</Text>
-        <View style={dstyles.chipRow}>
-          {ABSORB_MATS.map((m) => (
-            <LabChip
-              key={m}
-              label={MATERIALS[m].label.toUpperCase()}
-              selected={mat === m}
-              onPress={() => setMat(m)}
-              onLongPress={() => p.help('materials')}
+    <WaveLayout
+      explain={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>WHY BASS SURVIVES</Text>
+          <Text style={dstyles.body}>
+            Slide the frequency down with a porous material selected (foam, fiberglass, curtains,
+            carpet) and watch α collapse: those materials absorb by friction where air particle
+            VELOCITY is high — about a quarter wavelength off the wall. At 4 kHz that is ~2 cm; at
+            125 Hz it is ~69 cm. Thin panels simply sit in still air at low frequencies. That is why
+            the RT60 table stays long at 125 Hz while the mids and highs die — and why real bass
+            control means thickness, air gaps, or tuned membrane/Helmholtz traps.
+          </Text>
+          <Text style={dstyles.eyebrow}>ABSORPTION ≠ SOUNDPROOFING</Text>
+          <Text style={dstyles.body}>
+            α describes what happens to reflections INSIDE the room. Stopping sound from crossing the
+            wall is isolation — mass, decoupling and sealing — a different job entirely. A foam-lined
+            room can sound dead inside and still leak like a sieve.
+          </Text>
+        </PanelCard>
+      }
+      readouts={
+        <>
+          <ReadoutGrid items={readouts} help={p.help} helpKey="absorption" />
+          <Badge text="SABINE RT TREATS THE 2-D ROOM AS 3 m TALL — TEXTBOOK TEACHING α VALUES, NOT ISO 354 PRODUCT DATA" />
+        </>
+      }
+      layers={<LayerChips layers={layers} onChange={setLayers} help={p.help} />}
+      display={
+        <>
+          {viz ? (
+            <RoomView
+              viz={viz}
+              width={p.width}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              onDragSource={onDragSource}
+              onDragListener={onDragListener}
             />
-          ))}
-        </View>
-        <DragSlider
-          value={logFrac(freq, 63, 8000)}
-          onChange={(v) => setFreq(fracLog(v, 63, 8000))}
-          label="ABSORPTION FREQUENCY"
-          readout={fmtHz(freq)}
-          onHelp={() => p.help('absorption')}
-        />
-        <ReadoutGrid items={readouts} help={p.help} helpKey="absorption" />
-        <Badge text="SABINE RT TREATS THE 2-D ROOM AS 3 m TALL — TEXTBOOK TEACHING α VALUES, NOT ISO 354 PRODUCT DATA" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>WHY BASS SURVIVES</Text>
-        <Text style={dstyles.body}>
-          Slide the frequency down with a porous material selected (foam, fiberglass, curtains,
-          carpet) and watch α collapse: those materials absorb by friction where air particle
-          VELOCITY is high — about a quarter wavelength off the wall. At 4 kHz that is ~2 cm; at
-          125 Hz it is ~69 cm. Thin panels simply sit in still air at low frequencies. That is why
-          the RT60 table stays long at 125 Hz while the mids and highs die — and why real bass
-          control means thickness, air gaps, or tuned membrane/Helmholtz traps.
-        </Text>
-        <Text style={dstyles.eyebrow}>ABSORPTION ≠ SOUNDPROOFING</Text>
-        <Text style={dstyles.body}>
-          α describes what happens to reflections INSIDE the room. Stopping sound from crossing the
-          wall is isolation — mass, decoupling and sealing — a different job entirely. A foam-lined
-          room can sound dead inside and still leak like a sieve.
-        </Text>
-      </PanelCard>
-
-      <MistakesCard items={ABSORB_MISTAKES} />
-      <CheckQuestion spec={ABSORB_CHECK} />
-    </View>
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={HONESTY} />
+          <Text style={dstyles.caption}>Treat the walls — every boundary takes the material you pick.</Text>
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('layers')} />}
+      controls={
+        <>
+          <DragSlider
+            value={logFrac(freq, 63, 8000)}
+            onChange={(v) => setFreq(fracLog(v, 63, 8000))}
+            label="ABSORPTION FREQUENCY"
+            readout={fmtHz(freq)}
+            onHelp={() => p.help('absorption')}
+          />
+          <View style={dstyles.chipRow}>
+            {ABSORB_MATS.map((m) => (
+              <LabChip
+                key={m}
+                label={MATERIALS[m].label.toUpperCase()}
+                selected={mat === m}
+                onPress={() => setMat(m)}
+                onLongPress={() => p.help('materials')}
+              />
+            ))}
+          </View>
+        </>
+      }
+      mistakes={<MistakesCard items={ABSORB_MISTAKES} />}
+      check={<CheckQuestion spec={ABSORB_CHECK} />}
+    />
   );
 }
 
@@ -544,75 +557,79 @@ export function DiffusionModule(p: WaveModuleProps) {
   ];
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint/
-            settings below (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('diffusion')} />
-        <LayerChips layers={layers} onChange={setLayers} help={p.help} />
-        {viz ? (
-          <RoomView
-            viz={viz}
-            width={p.width}
-            focused={p.focused}
-            scene={scene}
-            freq={freq}
-            layers={layers}
-            onDragSource={onDragSource}
-            onDragListener={onDragListener}
+    <WaveLayout
+      explain={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>SCATTER ≠ REMOVE</Text>
+          <Text style={dstyles.body}>
+            A flat hard wall returns one strong mirror-image (SPECULAR) reflection. A diffuser breaks
+            that single ray into many weaker ones fanning from the bounce point, smeared slightly in
+            time — the ENERGY RETURNED readout proves nothing was absorbed. That is the whole point:
+            keep the room alive while killing the harsh discrete slap. If you want energy GONE, that
+            is absorption (Module 2) — a different tool for a different problem.
+          </Text>
+          <Text style={dstyles.eyebrow}>DEPTH SETS THE LOW LIMIT — AND DISTANCE MATTERS</Text>
+          <Text style={dstyles.body}>
+            A diffuser only scatters waves short enough to feel its wells: the lowest scattered
+            frequency is roughly c / (2 × depth). Slide the depth and watch the limit move — below it
+            the surface acts like a plain flat wall. And give the scattered field room to form: seated
+            against the diffuser you hear the wells individually, not a diffuse blend. Keep roughly a
+            wavelength or more of distance.
+          </Text>
+        </PanelCard>
+      }
+      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="diffusion" />}
+      layers={<LayerChips layers={layers} onChange={setLayers} help={p.help} />}
+      display={
+        <>
+          {viz ? (
+            <RoomView
+              viz={viz}
+              width={p.width}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              onDragSource={onDragSource}
+              onDragListener={onDragListener}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={HONESTY} />
+          <Badge text="THE ENGINE DRAWS THE SPECULAR RAY — A DIFFUSER FANS THAT SAME ENERGY INTO MANY DIM RAYS FROM THE BOUNCE POINT: SPREAD, NOT REMOVED" />
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('diffusion')} />}
+      controls={
+        <>
+          <DragSlider
+            value={(depth - 0.05) / 0.55}
+            onChange={(v) => setDepth(clampSnap(0.05 + v * 0.55, 0.05, 0.6))}
+            label="DIFFUSER DEPTH"
+            readout={fmtM(depth)}
+            onHelp={() => p.help('diffusion_depth')}
           />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={HONESTY} />
-        <Badge text="THE ENGINE DRAWS THE SPECULAR RAY — A DIFFUSER FANS THAT SAME ENERGY INTO MANY DIM RAYS FROM THE BOUNCE POINT: SPREAD, NOT REMOVED" />
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label={diffuser ? 'DIFFUSER ON (TOP WALL)' : 'DIFFUSER OFF'}
-            selected={diffuser}
-            onPress={() => setDiffuser(!diffuser)}
-            onLongPress={() => p.help('diffusion')}
+          <DragSlider
+            value={logFrac(freq, 125, 8000)}
+            onChange={(v) => setFreq(fracLog(v, 125, 8000))}
+            label="FREQUENCY"
+            readout={fmtHz(freq)}
+            onHelp={() => p.help('diffusion')}
           />
-        </View>
-        <DragSlider
-          value={(depth - 0.05) / 0.55}
-          onChange={(v) => setDepth(clampSnap(0.05 + v * 0.55, 0.05, 0.6))}
-          label="DIFFUSER DEPTH"
-          readout={fmtM(depth)}
-          onHelp={() => p.help('diffusion_depth')}
-        />
-        <DragSlider
-          value={logFrac(freq, 125, 8000)}
-          onChange={(v) => setFreq(fracLog(v, 125, 8000))}
-          label="FREQUENCY"
-          readout={fmtHz(freq)}
-          onHelp={() => p.help('diffusion')}
-        />
-        <ReadoutGrid items={readouts} help={p.help} helpKey="diffusion" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>SCATTER ≠ REMOVE</Text>
-        <Text style={dstyles.body}>
-          A flat hard wall returns one strong mirror-image (SPECULAR) reflection. A diffuser breaks
-          that single ray into many weaker ones fanning from the bounce point, smeared slightly in
-          time — the ENERGY RETURNED readout proves nothing was absorbed. That is the whole point:
-          keep the room alive while killing the harsh discrete slap. If you want energy GONE, that
-          is absorption (Module 2) — a different tool for a different problem.
-        </Text>
-        <Text style={dstyles.eyebrow}>DEPTH SETS THE LOW LIMIT — AND DISTANCE MATTERS</Text>
-        <Text style={dstyles.body}>
-          A diffuser only scatters waves short enough to feel its wells: the lowest scattered
-          frequency is roughly c / (2 × depth). Slide the depth and watch the limit move — below it
-          the surface acts like a plain flat wall. And give the scattered field room to form: seated
-          against the diffuser you hear the wells individually, not a diffuse blend. Keep roughly a
-          wavelength or more of distance.
-        </Text>
-      </PanelCard>
-
-      <MistakesCard items={DIFFUSION_MISTAKES} />
-      <CheckQuestion spec={DIFFUSION_CHECK} />
-    </View>
+          <View style={dstyles.chipRow}>
+            <LabChip
+              label={diffuser ? 'DIFFUSER ON (TOP WALL)' : 'DIFFUSER OFF'}
+              selected={diffuser}
+              onPress={() => setDiffuser(!diffuser)}
+              onLongPress={() => p.help('diffusion')}
+            />
+          </View>
+        </>
+      }
+      mistakes={<MistakesCard items={DIFFUSION_MISTAKES} />}
+      check={<CheckQuestion spec={DIFFUSION_CHECK} />}
+    />
   );
 }
 
@@ -661,56 +678,62 @@ export function RefractionModule(p: WaveModuleProps) {
   ];
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {viz ? (
-          <GradientView viz={viz} width={p.width} focused={p.focused} gradient01={grad} wind01={wind} />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={HONESTY} />
-        <Badge text="LINEAR-GRADIENT RAY MODEL — ALOFT ≈ ±8 °C AT HEIGHT (DISCLOSED TEACHING SCALE)" />
-        <DisplayGuideButton onPress={() => p.help('refraction')} />
-        <DragSlider
-          value={(grad + 1) / 2}
-          onChange={(v) => setGrad(clampSnap(v * 2 - 1, -1, 1))}
-          label="GRADIENT — LAPSE ↔ INVERSION"
-          readout={grad > 0.1 ? 'INVERSION (warm aloft)' : grad < -0.1 ? 'LAPSE (cool aloft)' : 'NEUTRAL'}
-          onHelp={() => p.help('refraction')}
-        />
-        <DragSlider
-          value={wind}
-          onChange={(v) => setWind(clampSnap(v, 0, 1))}
-          label="WIND SHEAR"
-          readout={wind < 0.05 ? 'CALM' : `${(wind * 12).toFixed(0)} m/s aloft`}
-          onHelp={() => p.help('refraction')}
-        />
-        <ReadoutGrid items={readouts} help={p.help} helpKey="refraction" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>WHY SOUND CARRIES AT NIGHT AND OVER WATER</Text>
-        <Text style={dstyles.body}>
-          Sound runs faster in warm air. Daytime (LAPSE — warm ground, cool aloft) the upper part of
-          each wavefront lags, tilting rays UP and away: the show gets quiet two fields over. At
-          night, and especially over water, the surface air cools under a warm layer (INVERSION):
-          now the wavefront tops run faster, rays curve back DOWN, and sound that should have
-          escaped overhead lands at ear level far away. Same source, same level — the atmosphere is
-          the lens.
-        </Text>
-        <Text style={dstyles.eyebrow}>WIND DOES NOT BLOW SOUND — GRADIENTS BEND IT</Text>
-        <Text style={dstyles.body}>
-          Wind moves at a few m/s; sound at ~343 m/s — the breeze cannot carry it anywhere. What
-          matters is wind SHEAR: wind is faster aloft, so downwind the effective sound speed grows
-          with height (bends rays down — louder) while upwind it shrinks with height (bends rays up
-          — quieter). The upwind/downwind asymmetry at every outdoor show is refraction, not
-          transport.
-        </Text>
-      </PanelCard>
-
-      <MistakesCard items={REFRACTION_MISTAKES} />
-      <CheckQuestion spec={REFRACTION_CHECK} />
-    </View>
+    <WaveLayout
+      explain={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>WHY SOUND CARRIES AT NIGHT AND OVER WATER</Text>
+          <Text style={dstyles.body}>
+            Sound runs faster in warm air. Daytime (LAPSE — warm ground, cool aloft) the upper part of
+            each wavefront lags, tilting rays UP and away: the show gets quiet two fields over. At
+            night, and especially over water, the surface air cools under a warm layer (INVERSION):
+            now the wavefront tops run faster, rays curve back DOWN, and sound that should have
+            escaped overhead lands at ear level far away. Same source, same level — the atmosphere is
+            the lens.
+          </Text>
+          <Text style={dstyles.eyebrow}>WIND DOES NOT BLOW SOUND — GRADIENTS BEND IT</Text>
+          <Text style={dstyles.body}>
+            Wind moves at a few m/s; sound at ~343 m/s — the breeze cannot carry it anywhere. What
+            matters is wind SHEAR: wind is faster aloft, so downwind the effective sound speed grows
+            with height (bends rays down — louder) while upwind it shrinks with height (bends rays up
+            — quieter). The upwind/downwind asymmetry at every outdoor show is refraction, not
+            transport.
+          </Text>
+        </PanelCard>
+      }
+      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="refraction" />}
+      display={
+        <>
+          {viz ? (
+            <GradientView viz={viz} width={p.width} focused={p.focused} gradient01={grad} wind01={wind} />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={HONESTY} />
+          <Badge text="LINEAR-GRADIENT RAY MODEL — ALOFT ≈ ±8 °C AT HEIGHT (DISCLOSED TEACHING SCALE)" />
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('refraction')} />}
+      controls={
+        <>
+          <DragSlider
+            value={(grad + 1) / 2}
+            onChange={(v) => setGrad(clampSnap(v * 2 - 1, -1, 1))}
+            label="GRADIENT — LAPSE ↔ INVERSION"
+            readout={grad > 0.1 ? 'INVERSION (warm aloft)' : grad < -0.1 ? 'LAPSE (cool aloft)' : 'NEUTRAL'}
+            onHelp={() => p.help('refraction')}
+          />
+          <DragSlider
+            value={wind}
+            onChange={(v) => setWind(clampSnap(v, 0, 1))}
+            label="WIND SHEAR"
+            readout={wind < 0.05 ? 'CALM' : `${(wind * 12).toFixed(0)} m/s aloft`}
+            onHelp={() => p.help('refraction')}
+          />
+        </>
+      }
+      mistakes={<MistakesCard items={REFRACTION_MISTAKES} />}
+      check={<CheckQuestion spec={REFRACTION_CHECK} />}
+    />
   );
 }
 
@@ -764,60 +787,66 @@ export function DiffractionModule(p: WaveModuleProps) {
   ];
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {viz ? (
-          <BarrierView
-            viz={viz}
-            width={p.width}
-            focused={p.focused}
-            freq={freq}
-            barrierH01={(barrierH - 2) / 6}
+    <WaveLayout
+      explain={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>LOWS WRAP, HIGHS SHADOW</Text>
+          <Text style={dstyles.body}>
+            Waves bend around anything comparable to or smaller than their own wavelength. Slide the
+            frequency: at 80 Hz (λ ≈ 4.3 m) the wave barely notices a 4 m wall — the detour over the
+            top is a tiny fraction of a wavelength, so the loss stays small. At 8 kHz (λ ≈ 4 cm) the
+            same detour is hundreds of wavelengths and the shadow gets deep. One barrier, one
+            geometry — the wavelength alone decides who gets through.
+          </Text>
+          <Text style={dstyles.eyebrow}>A SHADOW ZONE IS NOT SILENCE</Text>
+          <Text style={dstyles.body}>
+            Even at its best, the barrier ATTENUATES — the Maekawa numbers top out around 20-something
+            dB, and mostly on the highs. Behind any wall you keep the rumble and lose the sparkle.
+            That is also why a pillar in front of the PA punches a hole in the highs for the seats
+            behind it while the bass sails around as if it weren’t there.
+          </Text>
+        </PanelCard>
+      }
+      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="diffraction" />}
+      display={
+        <>
+          {viz ? (
+            <BarrierView
+              viz={viz}
+              width={p.width}
+              focused={p.focused}
+              freq={freq}
+              barrierH01={(barrierH - 2) / 6}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={HONESTY} />
+          <Badge text="MAEKAWA KNIFE-EDGE · FIXED GEOMETRY: SOURCE 10 m BEFORE THE BARRIER, LISTENER 10 m BEYOND, BOTH AT 1.5 m" />
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('diffraction')} />}
+      controls={
+        <>
+          <DragSlider
+            value={(barrierH - 2) / 6}
+            onChange={(v) => setBarrierH(clampSnap(2 + v * 6, 2, 8))}
+            label="BARRIER HEIGHT"
+            readout={fmtM(barrierH)}
+            onHelp={() => p.help('diffraction')}
           />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={HONESTY} />
-        <Badge text="MAEKAWA KNIFE-EDGE · FIXED GEOMETRY: SOURCE 10 m BEFORE THE BARRIER, LISTENER 10 m BEYOND, BOTH AT 1.5 m" />
-        <DisplayGuideButton onPress={() => p.help('diffraction')} />
-        <DragSlider
-          value={(barrierH - 2) / 6}
-          onChange={(v) => setBarrierH(clampSnap(2 + v * 6, 2, 8))}
-          label="BARRIER HEIGHT"
-          readout={fmtM(barrierH)}
-          onHelp={() => p.help('diffraction')}
-        />
-        <DragSlider
-          value={logFrac(freq, 63, 8000)}
-          onChange={(v) => setFreq(fracLog(v, 63, 8000))}
-          label="FREQUENCY"
-          readout={fmtHz(freq)}
-          onHelp={() => p.help('diffraction')}
-        />
-        <ReadoutGrid items={readouts} help={p.help} helpKey="diffraction" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>LOWS WRAP, HIGHS SHADOW</Text>
-        <Text style={dstyles.body}>
-          Waves bend around anything comparable to or smaller than their own wavelength. Slide the
-          frequency: at 80 Hz (λ ≈ 4.3 m) the wave barely notices a 4 m wall — the detour over the
-          top is a tiny fraction of a wavelength, so the loss stays small. At 8 kHz (λ ≈ 4 cm) the
-          same detour is hundreds of wavelengths and the shadow gets deep. One barrier, one
-          geometry — the wavelength alone decides who gets through.
-        </Text>
-        <Text style={dstyles.eyebrow}>A SHADOW ZONE IS NOT SILENCE</Text>
-        <Text style={dstyles.body}>
-          Even at its best, the barrier ATTENUATES — the Maekawa numbers top out around 20-something
-          dB, and mostly on the highs. Behind any wall you keep the rumble and lose the sparkle.
-          That is also why a pillar in front of the PA punches a hole in the highs for the seats
-          behind it while the bass sails around as if it weren’t there.
-        </Text>
-      </PanelCard>
-
-      <MistakesCard items={DIFFRACTION_MISTAKES} />
-      <CheckQuestion spec={DIFFRACTION_CHECK} />
-    </View>
+          <DragSlider
+            value={logFrac(freq, 63, 8000)}
+            onChange={(v) => setFreq(fracLog(v, 63, 8000))}
+            label="FREQUENCY"
+            readout={fmtHz(freq)}
+            onHelp={() => p.help('diffraction')}
+          />
+        </>
+      }
+      mistakes={<MistakesCard items={DIFFRACTION_MISTAKES} />}
+      check={<CheckQuestion spec={DIFFRACTION_CHECK} />}
+    />
   );
 }
 
@@ -901,76 +930,80 @@ export function InterferenceModule(p: WaveModuleProps) {
   ];
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint/
-            settings below (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('layers')} />
-        <LayerChips layers={layers} onChange={setLayers} help={p.help} />
-        {viz ? (
-          <RoomView
-            viz={viz}
-            width={p.width}
-            focused={p.focused}
-            scene={scene}
-            freq={freq}
-            layers={layers}
-            onDragSource={onDragSource}
-            onDragListener={onDragListener}
+    <WaveLayout
+      explain={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>NULLS ARE APPOINTMENTS — A PLACE AND A FREQUENCY</Text>
+          <Text style={dstyles.body}>
+            Where the two paths differ by whole wavelengths the waves arrive in step and ADD — up to
+            +6 dB over one source. Where they differ by an odd half-wavelength they arrive opposed and
+            CANCEL. Neither is a property of the room or the speakers alone: change the frequency, the
+            delay, the polarity, or simply where you stand, and the whole HEAT map redraws. A null is
+            not "the sound is quiet" — it is "these two arrivals disagree HERE, at THIS frequency."
+          </Text>
+          <Text style={dstyles.eyebrow}>+6 dB IS EARNED, NOT AUTOMATIC</Text>
+          <Text style={dstyles.body}>
+            Two sources only sum fully where they arrive in phase. Every other spot gets something
+            between +6 dB and a dead null — which is exactly why system techs walk the venue instead
+            of trusting one measurement position.
+          </Text>
+        </PanelCard>
+      }
+      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="interference" />}
+      layers={<LayerChips layers={layers} onChange={setLayers} help={p.help} />}
+      display={
+        <>
+          {viz ? (
+            <RoomView
+              viz={viz}
+              width={p.width}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              onDragSource={onDragSource}
+              onDragListener={onDragListener}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={HONESTY} />
+          <Badge text="BOUNDARIES SET TO OPENINGS (FREE FIELD) — ONLY THE TWO DIRECT WAVES INTERFERE · LEVEL IS dB RE ONE SOURCE AT 1 m" />
+          <Text style={dstyles.caption}>
+            Drag BOTH sources and the listener. Source 2 carries the delay and polarity controls.
+          </Text>
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('layers')} />}
+      controls={
+        <>
+          <DragSlider
+            value={s2.delayMs / 10}
+            onChange={(v) => setDelay(Math.round(v * 100) / 10)}
+            label="DELAY — S2"
+            readout={`${s2.delayMs.toFixed(1)} ms`}
+            onHelp={() => p.help('interference')}
           />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={HONESTY} />
-        <Badge text="BOUNDARIES SET TO OPENINGS (FREE FIELD) — ONLY THE TWO DIRECT WAVES INTERFERE · LEVEL IS dB RE ONE SOURCE AT 1 m" />
-        <Text style={dstyles.caption}>
-          Drag BOTH sources and the listener. Source 2 carries the delay and polarity controls.
-        </Text>
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="POLARITY Ø — S2"
-            selected={s2.polarity === -1}
-            onPress={flipPolarity}
-            onLongPress={() => p.help('interference')}
+          <DragSlider
+            value={logFrac(freq, 63, 2000)}
+            onChange={(v) => setFreq(Math.max(63, Math.round(fracLog(v, 63, 2000) / 5) * 5))}
+            label="OUTPUT FREQUENCY — BOTH SOURCES"
+            readout={fmtHz(freq)}
+            onHelp={() => p.help('interference')}
           />
-        </View>
-        <DragSlider
-          value={s2.delayMs / 10}
-          onChange={(v) => setDelay(Math.round(v * 100) / 10)}
-          label="DELAY — S2"
-          readout={`${s2.delayMs.toFixed(1)} ms`}
-          onHelp={() => p.help('interference')}
-        />
-        <DragSlider
-          value={logFrac(freq, 63, 2000)}
-          onChange={(v) => setFreq(Math.max(63, Math.round(fracLog(v, 63, 2000) / 5) * 5))}
-          label="OUTPUT FREQUENCY — BOTH SOURCES"
-          readout={fmtHz(freq)}
-          onHelp={() => p.help('interference')}
-        />
-        <ReadoutGrid items={readouts} help={p.help} helpKey="interference" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>NULLS ARE APPOINTMENTS — A PLACE AND A FREQUENCY</Text>
-        <Text style={dstyles.body}>
-          Where the two paths differ by whole wavelengths the waves arrive in step and ADD — up to
-          +6 dB over one source. Where they differ by an odd half-wavelength they arrive opposed and
-          CANCEL. Neither is a property of the room or the speakers alone: change the frequency, the
-          delay, the polarity, or simply where you stand, and the whole HEAT map redraws. A null is
-          not "the sound is quiet" — it is "these two arrivals disagree HERE, at THIS frequency."
-        </Text>
-        <Text style={dstyles.eyebrow}>+6 dB IS EARNED, NOT AUTOMATIC</Text>
-        <Text style={dstyles.body}>
-          Two sources only sum fully where they arrive in phase. Every other spot gets something
-          between +6 dB and a dead null — which is exactly why system techs walk the venue instead
-          of trusting one measurement position.
-        </Text>
-      </PanelCard>
-
-      <MistakesCard items={INTERFERENCE_MISTAKES} />
-      <CheckQuestion spec={INTERFERENCE_CHECK} />
-    </View>
+          <View style={dstyles.chipRow}>
+            <LabChip
+              label="POLARITY Ø — S2"
+              selected={s2.polarity === -1}
+              onPress={flipPolarity}
+              onLongPress={() => p.help('interference')}
+            />
+          </View>
+        </>
+      }
+      mistakes={<MistakesCard items={INTERFERENCE_MISTAKES} />}
+      check={<CheckQuestion spec={INTERFERENCE_CHECK} />}
+    />
   );
 }
 
@@ -1052,64 +1085,72 @@ export function CombModule(p: WaveModuleProps) {
   ];
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → settings
-            below (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('comb')} />
-        <LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />
-        {viz ? (
-          <RoomView
-            viz={viz}
-            width={p.width}
-            focused={p.focused}
-            scene={scene}
-            freq={freq}
-            layers={layers}
-            onDragListener={onDragListener}
+    <WaveLayout
+      explain={
+        <PanelCard>
+          <Text style={dstyles.body}>
+            The direct sound and its one reflection sum at every frequency — in phase they add, an odd
+            half-cycle apart they cancel. The result is a comb: the first notch sits at 1/(2Δt) and
+            its brothers repeat every 1/Δt above it. Move the wall and the whole comb stretches; press
+            MOVE MIC — six inches, 0.15 m — and every notch jumps to a new frequency. That is the
+            payoff line of this module: you cannot EQ a comb away, but you can MOVE it away.
+          </Text>
+          <Text style={dstyles.eyebrow}>WHERE YOU WILL MEET IT</Text>
+          <Text style={dstyles.body}>
+            A mic near a music stand, a podium mic over a hard desk, two open mics on one source (keep
+            the second mic at least 3× the source distance away — the 3:1 rule), a speaker against a
+            bare wall. Comb filtering is delay-plus-sum, not resonance: the room stores nothing here —
+            unlike the standing waves of Module 8.
+          </Text>
+        </PanelCard>
+      }
+      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="comb" />}
+      layers={<LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />}
+      display={
+        <>
+          {viz ? (
+            <RoomView
+              viz={viz}
+              width={p.width}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              onDragListener={onDragListener}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={HONESTY} />
+          <Badge text="ONE SOURCE + ONE REFLECTIVE WALL (RIGHT) — THE OTHER BOUNDARIES ARE OPENINGS" />
+        </>
+      }
+      secondary={
+        <>
+          <Text style={dstyles.eyebrow}>RESPONSE AT THE LISTENER — 100 Hz TO 8 kHz AND BEYOND</Text>
+          <ResponseCurveGraph curves={curves} dbRange={18} height={150} />
+          <Badge text="COMPUTED FROM THE SCENE’S DIRECT + REFLECTED ARRIVALS (responseAt) · 0 dB = DIRECT SOUND ALONE" />
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('comb')} />}
+      controls={
+        <>
+          <DragSlider
+            value={(scene.w - 3) / 7}
+            onChange={(v) => setRoomW(clampSnap(3 + v * 7, 3, 10))}
+            label="MOVE THE WALL — ROOM WIDTH"
+            readout={fmtM(scene.w)}
+            onHelp={() => p.help('comb')}
           />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={HONESTY} />
-        <Badge text="ONE SOURCE + ONE REFLECTIVE WALL (RIGHT) — THE OTHER BOUNDARIES ARE OPENINGS" />
-        <DragSlider
-          value={(scene.w - 3) / 7}
-          onChange={(v) => setRoomW(clampSnap(3 + v * 7, 3, 10))}
-          label="MOVE THE WALL — ROOM WIDTH"
-          readout={fmtM(scene.w)}
-          onHelp={() => p.help('comb')}
-        />
-        <View style={dstyles.chipRow}>
-          <LabChip label="MOVE MIC ← 0.15 m" selected={false} onPress={() => nudgeMic(-0.15)} onLongPress={() => p.help('comb')} />
-          <LabChip label="MOVE MIC → 0.15 m" selected={false} onPress={() => nudgeMic(0.15)} onLongPress={() => p.help('comb')} />
-        </View>
-        <ReadoutGrid items={readouts} help={p.help} helpKey="comb" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>RESPONSE AT THE LISTENER — 100 Hz TO 8 kHz AND BEYOND</Text>
-        <ResponseCurveGraph curves={curves} dbRange={18} height={150} />
-        <Badge text="COMPUTED FROM THE SCENE’S DIRECT + REFLECTED ARRIVALS (responseAt) · 0 dB = DIRECT SOUND ALONE" />
-        <Text style={dstyles.body}>
-          The direct sound and its one reflection sum at every frequency — in phase they add, an odd
-          half-cycle apart they cancel. The result is this comb: the first notch sits at 1/(2Δt) and
-          its brothers repeat every 1/Δt above it. Move the wall and the whole comb stretches; press
-          MOVE MIC — six inches, 0.15 m — and every notch jumps to a new frequency. That is the
-          payoff line of this module: you cannot EQ a comb away, but you can MOVE it away.
-        </Text>
-        <Text style={dstyles.eyebrow}>WHERE YOU WILL MEET IT</Text>
-        <Text style={dstyles.body}>
-          A mic near a music stand, a podium mic over a hard desk, two open mics on one source (keep
-          the second mic at least 3× the source distance away — the 3:1 rule), a speaker against a
-          bare wall. Comb filtering is delay-plus-sum, not resonance: the room stores nothing here —
-          unlike the standing waves of Module 8.
-        </Text>
-      </PanelCard>
-
-      <MistakesCard items={COMB_MISTAKES} />
-      <CheckQuestion spec={COMB_CHECK} />
-    </View>
+          <View style={dstyles.chipRow}>
+            <LabChip label="MOVE MIC ← 0.15 m" selected={false} onPress={() => nudgeMic(-0.15)} onLongPress={() => p.help('comb')} />
+            <LabChip label="MOVE MIC → 0.15 m" selected={false} onPress={() => nudgeMic(0.15)} onLongPress={() => p.help('comb')} />
+          </View>
+        </>
+      }
+      mistakes={<MistakesCard items={COMB_MISTAKES} />}
+      check={<CheckQuestion spec={COMB_CHECK} />}
+    />
   );
 }
 
@@ -1180,12 +1221,31 @@ export function StandingWaveModule(p: WaveModuleProps) {
   ];
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → mode buttons → display → settings
-            below (reflection-visualizer treatment; the mode chips ARE this
-            module's layer row). */}
-        <DisplayGuideButton onPress={() => p.help('standing_wave')} />
+    <WaveLayout
+      explain={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>NODES vs ANTINODES — POSITION IS EVERYTHING</Text>
+          <Text style={dstyles.body}>
+            At a mode frequency the room’s reflections stack into a STATIONARY pressure pattern:
+            maxima at the walls and corners (antinodes), near-silence along the null lines (nodes).
+            Drag the listener across the map and watch the readout swing from MAXIMUM to QUIET without
+            the source changing at all. A mic at a node simply misses that frequency; a listening
+            chair at an antinode drowns in it. Resize the room and every mode frequency moves —
+            modes are made of DIMENSIONS, not materials.
+          </Text>
+          <Text style={dstyles.eyebrow}>TRAPS DAMP · SCHROEDER BOUNDS</Text>
+          <Text style={dstyles.body}>
+            Bass traps do not delete a mode — they absorb energy each cycle so it rings down faster
+            and its peaks flatten: DAMPED, never eliminated. The geometry (and thus the frequency)
+            stays. And modes are a LOW-frequency story: above the Schroeder frequency (estimated in
+            the readouts from this room’s RT and volume) the mode density is so high that discrete
+            patterns blur into a statistical reverberant field — nobody chases the (47, 12) mode at
+            5 kHz.
+          </Text>
+        </PanelCard>
+      }
+      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="standing_wave" />}
+      layers={
         <View style={dstyles.chipRow}>
           {MODE_LIST.map((m, i) => (
             <LabChip
@@ -1197,63 +1257,49 @@ export function StandingWaveModule(p: WaveModuleProps) {
             />
           ))}
         </View>
-        {viz ? (
-          <RoomView
-            viz={viz}
-            width={p.width}
-            focused={p.focused}
-            scene={scene}
-            freq={freq}
-            layers={layers}
-            mode="modal"
-            modal={{ nx, ny }}
-            onDragListener={onDragListener}
+      }
+      display={
+        <>
+          {viz ? (
+            <RoomView
+              viz={viz}
+              width={p.width}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              mode="modal"
+              modal={{ nx, ny }}
+              onDragListener={onDragListener}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={HONESTY} />
+          <Badge text="MODAL PRESSURE MAP — BRIGHT = ANTINODE (PRESSURE MAX), DARK = NODE (PRESSURE MIN) · DRAG THE LISTENER THROUGH IT" />
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('standing_wave')} />}
+      controls={
+        <>
+          <DragSlider
+            value={(scene.w - 2) / 8}
+            onChange={(v) => setW(clampSnap(2 + v * 8, 2, 10))}
+            label="ROOM WIDTH"
+            readout={fmtM(scene.w)}
+            onHelp={() => p.help('room_builder')}
           />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={HONESTY} />
-        <Badge text="MODAL PRESSURE MAP — BRIGHT = ANTINODE (PRESSURE MAX), DARK = NODE (PRESSURE MIN) · DRAG THE LISTENER THROUGH IT" />
-        <DragSlider
-          value={(scene.w - 2) / 8}
-          onChange={(v) => setW(clampSnap(2 + v * 8, 2, 10))}
-          label="ROOM WIDTH"
-          readout={fmtM(scene.w)}
-          onHelp={() => p.help('room_builder')}
-        />
-        <DragSlider
-          value={(scene.h - 2) / 8}
-          onChange={(v) => setH(clampSnap(2 + v * 8, 2, 10))}
-          label="ROOM DEPTH"
-          readout={fmtM(scene.h)}
-          onHelp={() => p.help('room_builder')}
-        />
-        <ReadoutGrid items={readouts} help={p.help} helpKey="standing_wave" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>NODES vs ANTINODES — POSITION IS EVERYTHING</Text>
-        <Text style={dstyles.body}>
-          At a mode frequency the room’s reflections stack into a STATIONARY pressure pattern:
-          maxima at the walls and corners (antinodes), near-silence along the null lines (nodes).
-          Drag the listener across the map and watch the readout swing from MAXIMUM to QUIET without
-          the source changing at all. A mic at a node simply misses that frequency; a listening
-          chair at an antinode drowns in it. Resize the room and every mode frequency moves —
-          modes are made of DIMENSIONS, not materials.
-        </Text>
-        <Text style={dstyles.eyebrow}>TRAPS DAMP · SCHROEDER BOUNDS</Text>
-        <Text style={dstyles.body}>
-          Bass traps do not delete a mode — they absorb energy each cycle so it rings down faster
-          and its peaks flatten: DAMPED, never eliminated. The geometry (and thus the frequency)
-          stays. And modes are a LOW-frequency story: above the Schroeder frequency (estimated in
-          the readouts from this room’s RT and volume) the mode density is so high that discrete
-          patterns blur into a statistical reverberant field — nobody chases the (47, 12) mode at
-          5 kHz.
-        </Text>
-      </PanelCard>
-
-      <MistakesCard items={STANDING_MISTAKES} />
-      <CheckQuestion spec={STANDING_CHECK} />
-    </View>
+          <DragSlider
+            value={(scene.h - 2) / 8}
+            onChange={(v) => setH(clampSnap(2 + v * 8, 2, 10))}
+            label="ROOM DEPTH"
+            readout={fmtM(scene.h)}
+            onHelp={() => p.help('room_builder')}
+          />
+        </>
+      }
+      mistakes={<MistakesCard items={STANDING_MISTAKES} />}
+      check={<CheckQuestion spec={STANDING_CHECK} />}
+    />
   );
 }

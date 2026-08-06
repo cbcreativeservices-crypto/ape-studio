@@ -1,0 +1,4 @@
+-- Run APPLY_00 then APPLY_01..3. Expect glossary +1341 (minus pre-existing skips).
+SELECT (SELECT count(*) FROM glossary) AS glossary_total;
+SELECT a.name, count(*) terms FROM glossary_topics gt JOIN achievements a ON a.id=gt.achievement_id WHERE gt.is_primary AND a.id IN ('01e593be-e5ac-4f41-b22b-a546319f81d8','4c9b890d-65de-45f0-805a-f38f9efbcd80','5529bc9d-4222-4e26-a10a-ccbe7a741d76','89abe24e-a92c-4041-a9dd-4ea4a1e3c6a6','aa98040e-7646-4a7c-a922-37a36646ba4b','bb5e290a-c651-4b6e-b139-4e54a2f32944','cf8ef23a-a16a-4291-82ce-756e9ae1bd36','d289abb3-d751-4a49-8df7-ea686bcc1986','dcb43055-f0ff-4cda-a20f-72e893b14041','f9526f78-48bb-4873-8c05-4910bd24cfbd') GROUP BY a.name ORDER BY terms DESC;
+SELECT count(*) multi_primary FROM (SELECT glossary_id FROM glossary_topics WHERE is_primary GROUP BY glossary_id HAVING count(*)>1) x;

@@ -1,0 +1,106 @@
+{
+ "batch": 429,
+ "topic": "Live Sound — Crew Roles & Departments",
+ "terms": [
+  {
+   "id": "ba26d07e-6059-45b5-9d27-2b50961b7a67",
+   "term": "Crew chief",
+   "topic": "Live Sound — Crew Roles & Departments",
+   "seq": 1930,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "61652e70-ccb9-42a1-93c0-2d2d4cf67f81",
+   "term": "Guest engineer",
+   "topic": "Live Sound — Crew Roles & Departments",
+   "seq": 1930,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "ddb0d8fc-a69a-4d88-afc3-e175121e95dc",
+   "term": "House engineer",
+   "topic": "Live Sound — Crew Roles & Departments",
+   "seq": 1930,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "8455d1e4-157b-49a0-8fb0-6eac38aae170",
+   "term": "Stage tech",
+   "topic": "Live Sound — Crew Roles & Departments",
+   "seq": 1930,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

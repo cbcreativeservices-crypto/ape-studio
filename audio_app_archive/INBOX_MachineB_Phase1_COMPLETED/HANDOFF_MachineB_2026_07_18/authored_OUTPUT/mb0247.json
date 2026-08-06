@@ -1,0 +1,159 @@
+{
+ "batch": 247,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "6ae9edbe-5896-43a8-b2e0-130321f52627",
+   "term": "Resynthesis",
+   "fields": {
+    "definition": "The process of analyzing an existing sound to extract its underlying parameters — such as the frequencies, amplitudes and time-envelopes of its partials — and then regenerating the sound synthetically from that analysis, so those parameters can be edited independently.",
+    "plain_english": "Resynthesis means a computer listens to a sound and works out what it is made of. Then it builds the sound again from scratch. Because it now knows the parts, you can change the pitch or tone without wrecking the rest.",
+    "purpose_function": "It separates a recorded sound into editable building blocks, letting an engineer reshape pitch, timbre, and timing that would be impossible to touch in the raw waveform.",
+    "practical_application": "A sound editor loads a recording into a spectral or additive tool such as Melodyne or a resynthesis synth, then retunes notes, stretches time, or morphs the timbre for a design or repair task.",
+    "category": "Synthesis",
+    "related_terms": ["Additive synthesis", "Spectral processing", "Vocoder", "Time-stretching", "Granular synthesis", "Pitch correction"],
+    "common_mistakes": ["Confusing resynthesis with simple sample playback; resynthesis rebuilds the sound from analysis data rather than replaying the original file", "Assuming resynthesis is always transparent, when heavy edits can add smearing or metallic artifacts", "Thinking it only means turning audio into MIDI notes, ignoring spectral and additive approaches"],
+    "scenario_contexts": ["Retuning and time-aligning dialogue or a vocal without audible artifacts", "Creating an evolving sound-design texture by morphing the analyzed partials of a real recording", "Cleaning or reshaping a problem sound effect that ordinary EQ cannot fix"]
+   },
+   "sources": ["Curtis Roads, The Computer Music Tutorial (MIT Press)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ba5cb220-3c4b-41d5-b2d4-4f10ae31effc",
+   "term": "Reverb zone",
+   "fields": {
+    "definition": "A defined spatial region within a virtual environment or game world that applies a specific reverberation profile to sounds when the listener enters it, so a scene's acoustics change automatically with the listener's position.",
+    "plain_english": "A reverb zone is an area inside a video game world. When your character walks into it, sounds pick up the echo of that space. It is like moving from a small hallway into a big stone church and hearing the room change.",
+    "purpose_function": "It makes interactive audio feel real by matching the echo of each space to where the player is, without an engineer mixing every location by hand.",
+    "practical_application": "A game or interactive audio designer places reverb zones in an engine such as Unity or through middleware, setting each zone's decay and size so footsteps and voices react to caves, rooms, and open areas.",
+    "category": "Game Audio",
+    "related_terms": ["Convolution reverb", "Impulse response", "Ambience", "Spatial audio", "Send effect", "Audio middleware"],
+    "common_mistakes": ["Overlapping zones with clashing settings, causing sudden jumps in reverb as the player crosses a boundary", "Setting decay times far too long for the space, which muddies dialogue and effects", "Treating a reverb zone as a fixed global reverb instead of a position-based one"],
+    "scenario_contexts": ["Adding cave, corridor, and open-field acoustics to a game level", "Blending between two rooms so reverb transitions smoothly at a doorway", "Matching the reverb of an interactive scene to its on-screen environment"]
+   },
+   "sources": ["Unity Technical Documentation, Audio Reverb Zone reference", "Audiokinetic Wwise technical documentation (rooms and reverb)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "10e23563-ea94-495d-990c-b5db2bc27724",
+   "term": "Reverse cymbal",
+   "fields": {
+    "definition": "A production effect made by reversing a recorded cymbal crash so its natural decay plays backward, producing a swelling 'whoosh' that rises from silence and cuts off, typically leading into a downbeat or new section.",
+    "plain_english": "This is a cymbal crash played backwards. Instead of a sharp hit that fades away, you hear a soft sound that grows louder and then stops dead. Producers use it to lead the listener into a new part of a song or scene.",
+    "purpose_function": "It gives a build-up and sense of anticipation, smoothing the join between sections or cueing an entrance.",
+    "practical_application": "An editor reverses a cymbal sample, trims its swell so the peak lands exactly on the target beat, and uses it as a transition before a chorus, cut, or reveal.",
+    "category": "Production Effect",
+    "related_terms": ["Reverse playback", "Reverse reverb", "Reverse swell", "Transition effect", "Riser"],
+    "common_mistakes": ["Not aligning the swell's peak to the downbeat, so the effect lands early or late", "Leaving the reversed crash too loud, which buries the following section's onset", "Forgetting that a reversed cymbal has no natural attack, so it needs the following hit to feel resolved"],
+    "scenario_contexts": ["Building tension before a chorus or drop", "Smoothing a hard scene change in a film or trailer cut", "Adding lift into a musical fill or transition"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technique reference, reverse effects)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "34bbf6c4-8bdd-4250-8949-43f068c55c4f",
+   "term": "Reverse piano",
+   "fields": {
+    "definition": "A production effect in which a recorded piano note or chord is played backward, so the natural decay becomes a rising swell that ends abruptly where the original strike began, giving an unnatural, atmospheric character.",
+    "plain_english": "This is a piano note recorded and then played backwards. The sound swells up from nothing and then cuts off, instead of starting with a clear strike. It gives a dreamy, floating feeling.",
+    "purpose_function": "It turns a familiar instrument into an atmospheric or transitional texture, useful where a normal piano attack would feel too plain.",
+    "practical_application": "A sound designer reverses a piano chord and lines its swell up to a cue point, using it as an intro flourish, a mood bed, or a lead-in under picture.",
+    "category": "Production Effect",
+    "related_terms": ["Reverse playback", "Reverse swell", "Reverse reverb", "Sound design", "Transition effect"],
+    "common_mistakes": ["Expecting the reversed note to keep a clear pitch attack, which it loses because the strike is now at the end", "Not trimming the swell to a musical or visual cue, so timing feels loose", "Over-processing until the source is unrecognizable when a subtle effect was wanted"],
+    "scenario_contexts": ["Creating a dreamy intro before a song or scene", "Under-scoring a flashback or transition in picture", "Adding an atmospheric swell into a downbeat"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technique reference, reverse effects)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9d3d4102-7a77-4a21-845c-0fc2024ca39f",
+   "term": "Reverse playback",
+   "fields": {
+    "definition": "Playing back a recorded audio segment in reverse, so its samples run from end to start; the sound's natural decay becomes a rising onset and its attack becomes the ending.",
+    "plain_english": "Reverse playback means playing a recording backwards. It is like running a video in rewind, but for sound. A note that normally fades out now grows louder and then stops.",
+    "purpose_function": "It is the basic operation behind reverse effects, letting an editor turn familiar sounds into swells, whooshes, and unusual textures.",
+    "practical_application": "In a DAW the editor selects a clip and applies a reverse function, then uses the result as a transition, a special effect, or the first step of a reverse-processing chain.",
+    "category": "Editing Technique",
+    "related_terms": ["Reverse cymbal", "Reverse vocal", "Reverse processing", "Reverse reverb", "Sample manipulation"],
+    "common_mistakes": ["UNSAFE: cranking monitor level to hear a quiet reversed tail, then being caught by a sudden loud transient — set a safe level first to protect hearing and speakers", "Reversing a clip with a hard edit at the start or end, which creates an audible click", "Forgetting that reversing also flips fades, so a fade-out becomes a fade-in"],
+    "scenario_contexts": ["Turning a crash or chord into a build-up swell", "Creating backward vocals or effects for a dream or eerie moment", "First step before applying reverse reverb or reverse delay"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technique reference, reverse effects)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e137395e-6bac-415a-8220-9d6149104181",
+   "term": "Reverse processing",
+   "fields": {
+    "definition": "A technique in which an audio segment is reversed, an effect such as reverb or delay is printed onto it, and the result is reversed again, so the effect tail now builds up before the original sound instead of trailing after it.",
+    "plain_english": "Here you flip a sound backwards, add an effect like echo or reverb, then flip it back the right way round. The trick makes the effect build up before the sound instead of after it. That is how the 'sucking-in' reverse-reverb sound is made.",
+    "purpose_function": "It creates pre-swelling effects that draw the listener toward a word, hit, or image, which a normal forward effect cannot do.",
+    "practical_application": "An engineer reverses a vocal or hit, records reverb onto it, reverses that back, then places the swelling tail so it leads into the original sound on the target cue.",
+    "category": "Production Effect",
+    "related_terms": ["Reverse reverb", "Reverse playback", "Reverse swell", "Send effect", "Automation"],
+    "common_mistakes": ["Skipping the final reverse, which leaves the effect trailing normally instead of building up first", "Not printing a long enough tail, so the pre-swell is too short to be heard", "Losing sync between the swell and the source after the second reverse"],
+    "scenario_contexts": ["Making a reverse-reverb swell that pulls into a vocal line", "Building a lead-in effect before a hard cut or reveal in picture", "Designing anticipation before a musical or sound-effect accent"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technique reference, reverse reverb)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d17458dd-7699-4709-bb14-32e7661f6837",
+   "term": "Reverse swell",
+   "fields": {
+    "definition": "A rising crescendo effect produced by reversing audio so a sound's natural decay is heard as a gradual build from quiet to loud that ends abruptly, commonly used as a lead-in to a beat, cut, or image.",
+    "plain_english": "A reverse swell is a sound that grows from quiet to loud and then suddenly stops. It is made by playing audio backwards, so the fade-out turns into a build-up. It pulls your ear toward whatever comes next.",
+    "purpose_function": "It builds anticipation and glues sections together by creating a smooth rise into a target point.",
+    "practical_application": "An editor reverses a sustained sound or reverb tail, shapes its rise, and times the peak to land on the downbeat or picture cut it is meant to introduce.",
+    "category": "Production Effect",
+    "related_terms": ["Reverse cymbal", "Reverse reverb", "Reverse processing", "Crescendo", "Transition effect"],
+    "common_mistakes": ["Misaligning the peak so the swell resolves before or after the target moment", "Making the swell too long, which dilutes the sense of build", "Confusing a reverse swell with a simple volume fade-in, which lacks the reversed tail's character"],
+    "scenario_contexts": ["Leading into a chorus, drop, or new scene", "Under-scoring a rising reveal in picture", "Smoothing the join between two contrasting sections"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technique reference, reverse effects)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dc27d66e-f02c-4f82-8de6-3e07576cc74b",
+   "term": "Reverse vocal",
+   "fields": {
+    "definition": "A vocal recording played in reverse, so words and phrasing run backward; used as a special effect, transition, or atmospheric texture rather than for intelligible lyrics.",
+    "plain_english": "This is singing or speech played backwards. It sounds strange and dreamy because the words come out in reverse. Producers use it as a special effect or to lead into a new part.",
+    "purpose_function": "It adds an unnatural, ear-catching texture and can act as a transition or mood element where a normal vocal would feel too clear.",
+    "practical_application": "An editor reverses a vocal phrase or a copy of a lead line, then layers it low in the mix, uses it as a lead-in swell, or scores an eerie or dream moment in picture.",
+    "category": "Production Effect",
+    "related_terms": ["Reverse playback", "Reverse processing", "Reverse reverb", "Backmasking", "Transition effect"],
+    "common_mistakes": ["Expecting reversed lyrics to stay intelligible, when the point is the texture, not the words", "Placing a reversed vocal too loud so it distracts from the lead", "Reversing a clip with clicks at the edits instead of cleaning the boundaries first"],
+    "scenario_contexts": ["Creating an eerie or dream-like moment in a film scene", "Adding a lead-in swell before a vocal entrance", "Layering backward texture under a chorus or breakdown"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technique reference, reverse effects)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "618228b2-1afa-4e50-a5ad-e3549e023587",
+   "term": "Review room",
+   "fields": {
+    "definition": "A calibrated listening and viewing space in post-production where mixes and picture are played back for review and client approval; it is monitored to reference standards but is typically smaller than a full dubbing stage or scoring stage.",
+    "plain_english": "A review room is a small, carefully tuned room where the team watches and listens to a film mix. It uses the same sound and picture standards as the main mixing stage. They use it to check the work and get the client's sign-off before it is finished.",
+    "purpose_function": "It provides a trusted, standards-referenced environment for approving a mix so decisions made there translate correctly to cinemas and other playback systems.",
+    "practical_application": "A supervising editor or re-recording mixer screens a near-final mix in the review room with the director or client, taking notes on changes before returning to the stage for revisions.",
+    "category": "Post Facility",
+    "related_terms": ["Dubbing stage", "Reference level", "Monitoring calibration", "Final mix", "Deliverables", "Screening room"],
+    "common_mistakes": ["Approving a mix in a room that is not calibrated to reference level, so loudness and balance shift on the real stage or in cinemas", "Assuming a small review room reproduces low-frequency and surround detail identically to a large stage", "Confusing a review room with a mixing/dubbing stage where the mix is actually built"],
+    "scenario_contexts": ["Screening a near-final mix for director and client sign-off", "Checking picture-and-sound sync before a deliverable is exported", "Reviewing revisions between mixing sessions on the dubbing stage"]
+   },
+   "sources": ["SMPTE recommended practice for review/screening room alignment", "Dolby technical documentation on theatrical mixing and monitoring calibration"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

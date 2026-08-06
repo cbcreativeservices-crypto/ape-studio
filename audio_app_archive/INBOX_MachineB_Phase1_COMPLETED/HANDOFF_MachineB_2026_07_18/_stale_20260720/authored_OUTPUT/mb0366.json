@@ -1,0 +1,159 @@
+{
+ "batch": 366,
+ "topic": "Drums & Percussion",
+ "authored": [
+  {
+   "id": "fead459c-31c2-4b79-9e3e-903dcad644d1",
+   "term": "Steel tongue drum",
+   "fields": {
+    "definition": "A steel tongue drum is a struck idiophone made from a hollow steel shell (often two welded domes) with a set of radial slots cut into one face to form tongues of differing length. Each tongue is tuned to a specific pitch and sounds when struck with fingers or soft mallets. It descends from the slit drum and hand-built 'tank' drums.",
+    "plain_english": "A steel tongue drum is a rounded metal instrument with slots cut into its top. Each cut piece of metal, called a tongue, rings a different note when you tap it. It sounds soft and bell-like, a bit like a music box you play with your hands.",
+    "purpose_function": "It produces a set of clear, sustained, tuned pitches from a single portable resonating body, letting one player sound melodies and simple chords without separate bars or drumheads.",
+    "practical_application": "A technician close-mics or records one to capture its long ringing sustain, managing the strong fundamental and slow decay so the instrument sits in a mix without dominating it.",
+    "category": "Percussion instrument",
+    "related_terms": ["Idiophone", "Slit drum", "Handpan", "Overtone", "Sustain"],
+    "common_mistakes": ["Confusing a steel tongue drum with a steel pan (steelpan), which is played on concave note areas hammered into a drum, not on cut tongues", "Assuming any striking point works, when the sweet spot near a tongue's tip gives the cleanest pitch", "Over-damping the shell when miking, which kills the instrument's defining long sustain"],
+    "scenario_contexts": ["Recording an ambient or meditation track that needs a soft bell-like melodic layer", "Adding a tuned percussion texture to a live acoustic set", "Teaching beginners simple melodies, since the tuned tongues make wrong notes hard to play"]
+   },
+   "sources": ["Grove Dictionary of Music (idiophone and slit-drum classification)", "Fletcher & Rossing, The Physics of Musical Instruments (acoustics of struck idiophones and bars)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f531f21c-250f-4be8-86f0-1d5866506ebc",
+   "term": "Sur/meend (tabla)",
+   "fields": {
+    "definition": "On the tabla, sur is the tuning of the drums, principally setting the dayan (treble drum) to the tonic (sa) of the raga, while meend is a continuous glide in pitch. Meend is produced on the bayan (bass drum) by pressing and sliding the heel of the hand across the head to change skin tension during or after a stroke.",
+    "plain_english": "On the tabla, sur means tuning the drum to the right note. Meend is a slide in pitch. The player presses and drags the heel of the hand on the big bass drum to bend the tone up or down, like a singer sliding between notes.",
+    "purpose_function": "Sur locks the drums to the piece's key so the tabla blends with the melody, and meend lets the bass drum bend its pitch expressively to echo the vocal or instrumental line.",
+    "practical_application": "A player tunes the dayan to the soloist's sa before performing and uses heel-pressure meend on strokes like 'ghe' to sweep the bass pitch, an effect an engineer should preserve rather than gate away.",
+    "category": "Hand-drum technique",
+    "related_terms": ["Tabla", "Bayan", "Dayan", "Syahi", "Pitch bend", "Raga"],
+    "common_mistakes": ["Thinking the bass drum has one fixed pitch, when heel pressure deliberately changes it", "Confusing sur (the tuning) with meend (the glide itself)", "Tuning the dayan by ear to the wrong octave of sa"],
+    "scenario_contexts": ["Tuning the dayan to a singer's tonic before a Hindustani concert", "Performing a 'ghe' stroke with a rising heel-pressure glide", "Close-miking the bayan and hearing the pitch sweep on sustained strokes"]
+   },
+   "sources": ["Grove Dictionary of Music (Tabla)", "Fletcher & Rossing, The Physics of Musical Instruments (Indian drums / tabla)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bf7dda00-e10e-451e-94bc-a3f87a8a4a24",
+   "term": "Surdo open vs muffled",
+   "fields": {
+    "definition": "On the surdo, the large Brazilian samba bass drum, an open stroke lets the head ring freely for a full, sustained boom, while a muffled (stopped) stroke damps the head, typically by pressing the free hand or the beater onto the skin, cutting the ring into a short, dead thud. Alternating the two shapes the samba's low pulse.",
+    "plain_english": "The surdo is a big Brazilian bass drum. An open hit is left to ring out and boom. A muffled hit is stopped short by pressing a hand or the beater onto the head, so the note is short and dead. Players mix the two to make the beat bounce.",
+    "purpose_function": "The contrast between ringing open notes and choked muffled notes gives the surdo its swing and marks the strong and weak beats that anchor a samba bateria.",
+    "practical_application": "A player damps with the non-striking hand on the offbeat and releases for the accented open hit, while an engineer captures both with a dynamic mic and watches for the long open-note decay.",
+    "category": "Drum stroke",
+    "related_terms": ["Surdo", "Samba", "Bateria", "Muffling", "Bass drum", "Damping"],
+    "common_mistakes": ["Muffling with the striking hand instead of the free hand, which breaks the groove", "Leaving every note open, so the pattern loses its accent and swing", "UNSAFE: hanging a heavy surdo from a worn or poorly adjusted shoulder strap, which can slip and drop the drum onto the player or bystanders"],
+    "scenario_contexts": ["Playing a first-surdo part with alternating open and muffled beats", "Damping the head to tighten an overly boomy drum in a live samba set", "Miking a surdo section and balancing sustain against the mix"]
+   },
+   "sources": ["Grove Dictionary of Music (Surdo; Samba)", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "69a047a5-d4f2-4e43-830c-ad380f64e399",
+   "term": "Sympathetic snare buzz",
+   "fields": {
+    "definition": "Sympathetic snare buzz is the unwanted rattle of a snare drum's snare wires when they vibrate in sympathy with sound from another source, such as a tom, a bass note, a vocal, or stage sound, rather than from a direct strike. It occurs when that excitation carries energy near the resonant frequency of the snare-side head.",
+    "plain_english": "A snare drum has metal wires under its bottom head. These wires can rattle on their own when a nearby loud note hits the right pitch, even if no one touches the drum. It is like how a glass can hum when you sing the right tone near it. This stray buzz can sneak into recordings.",
+    "purpose_function": "It is a natural coupling effect that shows how freely the snares respond; recognizing it lets a technician control unwanted noise while keeping the snare's intended sensitivity and sound.",
+    "practical_application": "When recording or mixing, an engineer reduces sympathetic buzz by tuning the resonant head, adjusting snare tension, gating the snare track, or repositioning drums and monitors.",
+    "category": "Drum acoustics",
+    "related_terms": ["Snare wires", "Resonant head", "Sympathetic resonance", "Noise gate", "Crosstalk", "Sustain"],
+    "common_mistakes": ["Blaming a rattling snare on broken wires when the real cause is sympathetic vibration", "Cranking snare tension extremely tight to stop buzz, which chokes the drum's tone", "Ignoring the buzz while tracking and only noticing it in the final mix"],
+    "scenario_contexts": ["Hearing the snare rattle every time the bass guitar hits a certain note", "Buzz bleeding into tom or vocal mics during a quiet passage", "Setting a noise gate on the snare channel to tame stray buzz"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (snare drum)", "Huber & Runstein, Modern Recording Techniques (drum recording)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bcc732d4-36d1-4e92-9f5f-96f51b95e030",
+   "term": "Taiko don",
+   "fields": {
+    "definition": "In taiko (Japanese drum) playing, 'don' is the vocable and stroke for a full, resonant hit struck near the center of the drumhead, producing the instrument's deep, open fundamental tone. It is one of the core sounds in kuchi shoga, the spoken drum-syllable system used to teach and remember patterns.",
+    "plain_english": "Don is the deep, ringing hit in the middle of a taiko drum. Players say the word out loud to learn the beat, like singing boom for a big hit. It gives the drum its full, open sound.",
+    "purpose_function": "Don provides the drum's loudest, most sustaining note and usually falls on strong beats, giving a taiko piece its weight and drive; as a spoken syllable it also lets players learn rhythms by voice.",
+    "practical_application": "A player aims for the head's center to get a clean 'don', and an engineer mics the batter side and often the shell to capture both the attack and the long low resonance.",
+    "category": "Drum stroke",
+    "related_terms": ["Taiko", "Kuchi shoga", "Ka (katsu)", "Fundamental", "Bachi"],
+    "common_mistakes": ["Striking off-center and getting a weaker, less resonant tone than a true 'don'", "Treating kuchi shoga syllables as exact pitches rather than sound-and-stroke cues", "Gripping the bachi too tightly, which deadens the open ring"],
+    "scenario_contexts": ["Learning a new pattern by chanting 'don' and 'ka' before playing it", "Placing accented center hits on the downbeats of an ensemble piece", "Miking a large nagado-daiko to capture the deep 'don' resonance"]
+   },
+   "sources": ["Grove Dictionary of Music (Taiko / Wadaiko)", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bc943e2c-4bd9-4674-91a0-2ebf3b154e5c",
+   "term": "Taiko ka (katsu)",
+   "fields": {
+    "definition": "In taiko, 'ka' (also 'katsu') is the vocable and stroke for a light, dry hit on the wooden rim or edge of the drum, giving a high, clicking sound that contrasts the deep center 'don'. It is a core syllable in kuchi shoga and is often used to keep time and fill the space between accents.",
+    "plain_english": "Ka is a light, clicky hit on the wooden rim of a taiko drum. It sounds dry and high next to the deep center hit. Players use it to keep time and fill the small gaps in a rhythm.",
+    "purpose_function": "Ka supplies a soft, sharp timekeeping sound that marks subdivisions and rests between the loud 'don' hits, letting a player hold the pulse and the ensemble stay together.",
+    "practical_application": "A player taps the fuchi (rim) for 'ka' to hold the tempo quietly, and an engineer keeps the rim detail audible without letting the higher click overpower the low drum tone.",
+    "category": "Drum stroke",
+    "related_terms": ["Taiko", "Kuchi shoga", "Don", "Fuchi", "Bachi"],
+    "common_mistakes": ["Hitting the rim too hard so 'ka' overpowers the musical 'don' accents", "Confusing 'ka' (a rim stroke) with a center-head stroke", "Losing the steady 'ka' timekeeping and drifting off tempo"],
+    "scenario_contexts": ["Keeping a quiet rim pulse under a soloist's phrases", "Chanting 'don ka' patterns to teach a rhythm by voice", "Balancing rim clicks and center booms when miking a taiko"]
+   },
+   "sources": ["Grove Dictionary of Music (Taiko / Wadaiko)", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "de68c985-d9cf-4685-8181-5980b76812ba",
+   "term": "Tambora slap+open",
+   "fields": {
+    "definition": "On the tambora, the two-headed drum of Dominican merengue, one hand plays a stick that strikes the head and the wooden shell or rim while the other bare hand works the opposite head, slapping it for a muted, sharp tone or leaving it open to ring. Combining slapped (muffled) and open strokes creates the drum's characteristic driving pattern.",
+    "plain_english": "The tambora is a two-headed drum used in merengue music. One hand holds a stick that taps the head and the wood side. The other hand slaps the head to mute it or lets it ring open. Switching between these gives the fast, swinging groove.",
+    "purpose_function": "The interplay of muted slaps, open tones, and stick rim strokes gives merengue its fast, syncopated bass-and-accent groove and drives the dance rhythm.",
+    "practical_application": "The player rests the drum across the lap and works the stick and hand in tandem, while an engineer mics both heads or the shell to catch the stick clicks, slaps, and open tones.",
+    "category": "Drum stroke",
+    "related_terms": ["Tambora", "Merengue", "Open tone", "Slap", "Muffling"],
+    "common_mistakes": ["Playing every stroke open, which muddies the fast merengue pattern", "Using two sticks or two bare hands instead of the stick-and-hand combination", "Damping the ringing head when an open tone is wanted"],
+    "scenario_contexts": ["Laying down a merengue groove with stick rim clicks and hand slaps", "Alternating slapped and open tones to accent the beat", "Miking both heads of a tambora in a tipico ensemble"]
+   },
+   "sources": ["Grove Dictionary of Music (Tambora; Merengue)", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "73a0536c-2ecd-44df-8cad-6d9f2c3765ac",
+   "term": "Tambourine jingles",
+   "fields": {
+    "definition": "Tambourine jingles (also called zils or platinelas) are the small, thin metal discs mounted in pairs within slots around a tambourine's frame. When the instrument is shaken, struck, or thumbed, the loosely fitted pairs clash and ring against each other to produce the tambourine's bright, sustained jingling sound.",
+    "plain_english": "Jingles are the little metal discs set into the frame of a tambourine. They come in pairs that clash together and ring when you shake or tap the drum. They give the tambourine its bright, shiny sound.",
+    "purpose_function": "The jingles turn the player's shakes and hits into a shimmering metallic sustain, which is the tambourine's defining voice and its role as a high-frequency rhythmic accent.",
+    "practical_application": "A player controls jingle sound through shake, thumb roll, or strike, and an engineer captures the bright transient with a small-diaphragm condenser while guarding against harsh high-frequency peaks.",
+    "category": "Instrument component",
+    "related_terms": ["Tambourine", "Zils", "Frame drum", "Idiophone", "Thumb roll"],
+    "common_mistakes": ["Calling the whole tambourine a 'jingle', when the jingles are only the metal discs", "Mounting jingles too tightly so they cannot ring freely", "Recording jingles too close and too hot, producing harsh, spiky highs"],
+    "scenario_contexts": ["Overdubbing a tambourine backbeat with bright jingle accents", "Performing a thumb roll to sustain the jingles across a phrase", "EQing harsh jingle peaks out of a percussion track"]
+   },
+   "sources": ["Grove Dictionary of Music (Tambourine)", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ed89f559-ade3-440d-a91d-e8472889ce01",
+   "term": "Tek",
+   "fields": {
+    "definition": "Tek is a stroke on goblet drums such as the darbuka/doumbek: a sharp, high-pitched sound made by striking the edge of the drumhead near the rim with the fingers, usually of the dominant hand. It contrasts with 'dum', the deep bass stroke played in the center, and the two form the backbone of Middle Eastern drum rhythms.",
+    "plain_english": "Tek is a sharp, high tap on the edge of a hand drum like the darbuka. You make it with your fingertips near the rim. It answers the deep center hit called dum, so the two trade off to build a rhythm.",
+    "purpose_function": "Tek supplies the crisp, high accents that answer the low 'dum' hits, so alternating them builds the rhythmic patterns, such as maqsum or baladi, that define darbuka playing.",
+    "practical_application": "A player uses the fingertips at the rim for a ringing tek, often with a matching 'ka' from the other hand, while an engineer captures the sharp edge transient without losing the drum's low body.",
+    "category": "Hand-drum stroke",
+    "related_terms": ["Darbuka", "Dum", "Ka", "Goblet drum", "Slap"],
+    "common_mistakes": ["Striking too far toward the center, turning a crisp tek into a dull thud", "Using flat fingers instead of the fingertips at the rim", "Confusing 'tek' (the dominant-hand edge stroke) with 'ka' (the other-hand edge stroke)"],
+    "scenario_contexts": ["Playing a maqsum pattern of dum and tek strokes", "Adding tek accents on the offbeats of a baladi rhythm", "Close-miking a darbuka to capture bright tek transients"]
+   },
+   "sources": ["Grove Dictionary of Music (Darabukka / goblet drum)", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

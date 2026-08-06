@@ -1,0 +1,324 @@
+{
+ "batch": 423,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "8302208a-8e02-4942-98c9-92d75b4bcafc",
+   "term": "Noise-suppression model",
+   "fields": {
+    "definition": "A noise-suppression model is a machine-learning system, typically a neural network, trained to attenuate unwanted background noise in an audio signal while preserving the target sound, most often speech. It commonly operates on a time-frequency representation, predicting a suppression mask or an enhanced spectrum, and may combine learned components with classical signal-processing stages.",
+    "plain_english": "A noise-suppression model is an AI trained to remove background noise, like fans or traffic, while keeping the voice clear. It works like a smart filter that learns which sounds to keep and which to mute.",
+    "purpose_function": "It exists to raise the clarity and intelligibility of a target signal in noisy conditions, cleaning audio for calls, recordings, or later processing without the harsh artifacts of older fixed noise-reduction rules.",
+    "practical_application": "A technician uses one in conferencing tools, broadcast chains, and plugins to strip room noise, hum, or crowd bleed from a mic feed, checking that the voice is not made dull or watery.",
+    "category": "Speech processing",
+    "related_terms": [
+     "Inference",
+     "Spectrogram",
+     "Neural network",
+     "Voice activity detection",
+     "Real-time processing",
+     "Source separation"
+    ],
+    "common_mistakes": [
+     "Assuming more suppression is always better; aggressive settings remove noise but also dull the voice and add watery or musical artifacts",
+     "Expecting it to handle any noise; a model works on the noise types it was trained on and can fail on unfamiliar sounds",
+     "Confusing noise suppression with source separation; it attenuates noise around a target rather than splitting a mix into full instrument tracks",
+     "Judging it on quiet-room tests only, when real deployments face varied noise, distance, and reverberation"
+    ],
+    "scenario_contexts": [
+     "Cleaning background noise from a remote guest's microphone on a live stream",
+     "Reducing HVAC and room rumble on a spoken-word recording",
+     "Running real-time suppression on a conferencing or intercom feed"
+    ]
+   },
+   "sources": [
+    "Valin, A Hybrid DSP/Deep Learning Approach to Real-Time Full-Band Speech Enhancement, IEEE MMSP 2018 (RNNoise)",
+    "Loizou, Speech Enhancement: Theory and Practice"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "87632faf-a7d8-42d5-a3b3-1b293d35b222",
+   "term": "NPU acceleration",
+   "fields": {
+    "definition": "NPU acceleration is the use of a Neural Processing Unit, a specialized hardware accelerator designed for the matrix and vector operations of neural networks, to run model inference faster and at lower power than a general-purpose CPU. NPUs use many parallel multiply-accumulate units and dedicated on-chip memory paths optimized for the low-precision arithmetic common in deep learning.",
+    "plain_english": "An NPU is a chip built just for AI math. Using it lets models run faster and use less power. It is like adding a small engine so the main processor does not do the hard work.",
+    "purpose_function": "It exists to make neural-network inference practical on phones, laptops, and embedded gear by offloading heavy tensor math to hardware tuned for it, saving battery and freeing the CPU for other work.",
+    "practical_application": "A technician meets NPU acceleration when an audio tool runs its model on a device's built-in AI engine, choosing that backend for real-time tasks like noise suppression so latency and power stay low.",
+    "category": "Hardware acceleration",
+    "related_terms": [
+     "Inference",
+     "On-device / edge inference",
+     "Neural network",
+     "Real-time processing",
+     "Latency",
+     "Noise-suppression model"
+    ],
+    "common_mistakes": [
+     "Assuming any model runs on an NPU unchanged; it usually must be converted and quantized to a supported format and operator set first",
+     "Expecting an NPU to speed up every workload; it accelerates supported neural operations, not general code, which still runs on the CPU",
+     "Confusing an NPU with a GPU; both are accelerators, but an NPU is specialized for neural inference at very low power"
+    ],
+    "scenario_contexts": [
+     "Running a real-time noise-suppression model on a laptop's built-in AI engine",
+     "Deploying a wake-word detector on an embedded chip with an NPU to save power",
+     "Choosing an NPU backend so an audio plugin's inference does not overload the CPU"
+    ]
+   },
+   "sources": [
+    "Sze, Chen, Yang & Emer, Efficient Processing of Deep Neural Networks: A Tutorial and Survey, Proceedings of the IEEE, 2017",
+    "Google AI Edge / LiteRT hardware acceleration technical documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "144f2102-9bca-4a8d-9551-c392550b9f08",
+   "term": "Offline inference",
+   "fields": {
+    "definition": "Offline inference is the mode of running a trained model on data that has already been captured, without real-time constraints, so the entire input is available and results need not be produced as the signal arrives. Freed from strict latency limits, it can use larger models, look-ahead or bidirectional context, and batch processing to reach higher quality.",
+    "plain_english": "Offline inference means running an AI model on a file you already recorded, not on live sound. Because there is no rush, the model can take its time and look at the whole clip to do a better job.",
+    "purpose_function": "It exists to get the best possible quality when latency does not matter, using the full recording and heavier models to process audio after capture rather than moment to moment.",
+    "practical_application": "A technician uses offline inference to batch-process recorded files through tasks like source separation, transcription, or restoration, running them overnight or in a render pass rather than live.",
+    "category": "Machine learning concept",
+    "related_terms": [
+     "Inference",
+     "On-device / edge inference",
+     "Real-time processing",
+     "Latency",
+     "Source separation",
+     "Automatic speech recognition"
+    ],
+    "common_mistakes": [
+     "Confusing offline with on-device; offline refers to timing (non-real-time), not to whether the model runs locally or in the cloud",
+     "Assuming offline results transfer to live use; a model tuned with look-ahead or large context may not run in real time",
+     "Ignoring that batch offline runs still need enough memory and time to handle large files"
+    ],
+    "scenario_contexts": [
+     "Batch-separating stems from a folder of finished mixes overnight",
+     "Transcribing a recorded interview after the session, not during it",
+     "Running a heavy restoration pass on an archived recording"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning",
+    "Bishop, Pattern Recognition and Machine Learning"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a5fd1c4a-6009-45db-b5ce-ea58862ff3a0",
+   "term": "On-device / edge inference",
+   "fields": {
+    "definition": "On-device or edge inference is the practice of running a trained model's inference locally on the end device or a nearby edge processor, rather than sending data to a remote server or the cloud. Keeping computation local reduces latency and dependence on network connectivity and keeps input data on the device, at the cost of the device's limited compute, memory, and power.",
+    "plain_english": "On-device inference means the AI model runs right on your phone or laptop, not on a faraway server. It is faster and more private because your audio never leaves the device.",
+    "purpose_function": "It exists to deliver low, predictable latency, work without a network connection, and keep user data local, which matters for real-time and privacy-sensitive audio tasks.",
+    "practical_application": "A technician meets it when a noise-suppression, wake-word, or effects model runs inside a device or plugin, and must fit the model to the available CPU, NPU, memory, and power budget.",
+    "category": "Machine learning concept",
+    "related_terms": [
+     "Inference",
+     "Offline inference",
+     "NPU acceleration",
+     "Latency",
+     "Real-time processing",
+     "Keyword spotting"
+    ],
+    "common_mistakes": [
+     "Confusing edge inference with offline inference; edge is about where it runs (locally), offline is about timing (non-real-time)",
+     "Assuming a cloud-sized model fits on device; edge models usually must be compressed, quantized, or pruned first",
+     "Ignoring thermal and battery limits, so a model that benchmarks fast throttles or drains power in real use"
+    ],
+    "scenario_contexts": [
+     "Running wake-word detection on a smart speaker with no cloud call",
+     "Processing microphone noise suppression locally for privacy on a laptop",
+     "Deploying a real-time effect model inside a standalone hardware unit"
+    ]
+   },
+   "sources": [
+    "Google AI Edge / LiteRT (TensorFlow Lite) on-device machine learning technical documentation",
+    "Sze, Chen, Yang & Emer, Efficient Processing of Deep Neural Networks: A Tutorial and Survey, Proceedings of the IEEE, 2017"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c4f13dd5-829c-41c4-9e76-97dd2d160e66",
+   "term": "Overfitting",
+   "fields": {
+    "definition": "Overfitting is the condition in which a machine-learning model fits its training data too closely, capturing noise and idiosyncrasies rather than the underlying pattern, so it generalizes poorly to new, unseen data. It typically shows as low training error together with substantially higher validation or test error, and is countered with regularization, more or more varied data, or reduced model capacity.",
+    "plain_english": "Overfitting is when a model memorizes its practice data instead of the real pattern. It is like a student who learns the answer key by heart but fails a new test.",
+    "purpose_function": "It is a core concept for judging whether a model has truly learned; recognizing it tells an engineer when to add data or regularization so the model performs on real inputs, not just the training set.",
+    "practical_application": "A technician watches for overfitting by comparing training and validation scores, and treats it with more diverse training audio, regularization, early stopping, or a smaller model when an audio model works on its own data but fails on real recordings.",
+    "category": "Machine learning concept",
+    "related_terms": [
+     "Training",
+     "Generalization",
+     "Regularization",
+     "Underfitting",
+     "Neural network",
+     "Inference"
+    ],
+    "common_mistakes": [
+     "Judging a model only by training accuracy; strong training scores can hide poor generalization",
+     "Confusing overfitting with underfitting; overfitting is too complex a fit, underfitting is too simple to capture the pattern",
+     "Adding model capacity to cut errors without more or better data, which often makes overfitting worse",
+     "Tuning repeatedly against the test set, which leaks it into training and hides overfitting"
+    ],
+    "scenario_contexts": [
+     "A classifier that labels its training clips perfectly but fails on new recordings",
+     "A separation model tuned to one studio's material that degrades on other sources",
+     "Deciding to stop training early once validation error starts rising"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning",
+    "Bishop, Pattern Recognition and Machine Learning"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9755c202-78e9-47a6-a219-fd973cb18989",
+   "term": "Partitioned convolution",
+   "fields": {
+    "definition": "Partitioned convolution is a fast-convolution technique that splits a long impulse response into smaller blocks, or partitions, each convolved with the input using FFT-based block processing and then summed, giving efficient linear convolution without the large input-output delay of a single full-length FFT. Non-uniform schemes use short partitions for the start of the impulse response to keep latency low and longer partitions later for efficiency.",
+    "plain_english": "Partitioned convolution cuts a long reverb sample into small chunks. The computer can then process the chunks fast and with little delay. It lets heavy convolution reverb run in real time.",
+    "purpose_function": "It exists to make FFT-based convolution both efficient and low-latency, so long impulse responses such as reverb tails can be applied live instead of forcing a long processing delay.",
+    "practical_application": "A technician relies on it inside convolution-reverb and speaker- or cabinet-emulation plugins, where a captured impulse response must be applied in real time with low latency.",
+    "category": "Convolution",
+    "related_terms": [
+     "Convolution",
+     "Impulse response",
+     "Fast Fourier transform",
+     "Overlap-add",
+     "Convolution reverb",
+     "Latency"
+    ],
+    "common_mistakes": [
+     "Assuming a single large FFT is best; one full-length transform is efficient but adds a long block delay unsuitable for live use",
+     "Ignoring the latency-versus-cost trade-off; uniformly small partitions cut latency but raise CPU load",
+     "Confusing partitioned convolution with an algorithmic reverb; it convolves a measured impulse response rather than modeling reflections with delays and filters"
+    ],
+    "scenario_contexts": [
+     "Running a long hall impulse response in a convolution reverb during tracking",
+     "Applying a guitar cabinet impulse response live with low latency",
+     "Auralizing a measured room response in real time"
+    ]
+   },
+   "sources": [
+    "Gardner, Efficient Convolution without Input-Output Delay, Journal of the Audio Engineering Society, 1995",
+    "Oppenheim & Schafer, Discrete-Time Signal Processing (block convolution, overlap-add and overlap-save)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "29a4c78d-cf14-4dbd-b35f-428adc791161",
+   "term": "Phoneme recognition",
+   "fields": {
+    "definition": "Phoneme recognition is the speech-processing task of identifying the sequence of phonemes, the smallest distinctive sound units of a language, present in a spoken audio signal. It is typically performed by an acoustic model, historically HMM-based and now usually a deep neural network, that maps short frames of audio features to phoneme classes, and it often serves as a sub-component of full speech recognition.",
+    "plain_english": "Phoneme recognition means getting a computer to spot the basic speech sounds, like the \"b\" or \"sh\" sounds, inside spoken audio. These sounds are the building blocks that make up words.",
+    "purpose_function": "It exists to turn raw speech into a sequence of basic sound units, giving a compact, language-based intermediate step for speech recognition, pronunciation scoring, and alignment tasks.",
+    "practical_application": "A technician encounters it inside speech-recognition and forced-alignment tools, for example lining up a transcript with audio for captions or lip-sync, or scoring learner pronunciation.",
+    "category": "Speech processing",
+    "related_terms": [
+     "Automatic speech recognition",
+     "Acoustic model",
+     "Hidden Markov model",
+     "Deep neural network",
+     "Feature extraction",
+     "Forced alignment"
+    ],
+    "common_mistakes": [
+     "Confusing phonemes with letters; phonemes are sounds, and spelling does not map one-to-one to them",
+     "Assuming clean-speech accuracy holds in noise; background noise, accents, and coarticulation lower phoneme accuracy",
+     "Treating phoneme recognition as full transcription; it labels sounds, and turning them into correct words needs a language model or lexicon"
+    ],
+    "scenario_contexts": [
+     "Force-aligning a script to audio to generate time-accurate captions",
+     "Building the acoustic front-end of a speech-recognition system",
+     "Scoring learner pronunciation in a language-training app"
+    ]
+   },
+   "sources": [
+    "Rabiner & Juang, Fundamentals of Speech Recognition",
+    "Rabiner, A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition, Proceedings of the IEEE, 1989"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bfba7714-ae2c-4b1f-be36-1e26e4872e14",
+   "term": "Pitch-tracking algorithm",
+   "fields": {
+    "definition": "A pitch-tracking algorithm estimates the fundamental frequency (F0) of a signal as it changes over time, producing a pitch contour together with a voiced/unvoiced or confidence indication. Methods include time-domain autocorrelation and difference-function approaches such as YIN, frequency-domain and cepstral methods, and modern data-driven models.",
+    "plain_english": "A pitch-tracking algorithm follows the musical pitch of a sound moment by moment, telling you how high or low it is over time. It is how a tuner or auto-tune tool knows which note is being sung or played.",
+    "purpose_function": "It exists to extract a note's fundamental frequency over time so systems can tune, correct, analyze, or transcribe pitch, separating the perceived note from the sound's timbre.",
+    "practical_application": "A technician meets it in tuners, pitch-correction and auto-tune tools, melody transcription, and MIDI conversion, and must watch for octave errors and tracking glitches on noisy or polyphonic material.",
+    "category": "Pitch detection",
+    "related_terms": [
+     "Fundamental frequency",
+     "Autocorrelation",
+     "Pitch correction",
+     "Cepstrum",
+     "Automatic music transcription",
+     "Kalman filter"
+    ],
+    "common_mistakes": [
+     "Assuming pitch equals the loudest partial; the fundamental can be weak or missing, which causes octave errors",
+     "Applying a monophonic tracker to chords; most F0 trackers assume one note at a time and fail on polyphonic audio",
+     "Ignoring the voiced/unvoiced decision, so the tracker reports a pitch during noise, breaths, or silence",
+     "Confusing pitch with frequency in general; pitch tracking targets the perceived fundamental, not every spectral component"
+    ],
+    "scenario_contexts": [
+     "Driving a real-time tuner display for a guitar or voice",
+     "Feeding pitch correction or auto-tune on a vocal take",
+     "Transcribing a sung melody to notes or MIDI"
+    ]
+   },
+   "sources": [
+    "de Cheveigne & Kawahara, YIN, a fundamental frequency estimator for speech and music, Journal of the Acoustical Society of America, 2002",
+    "Mueller, Fundamentals of Music Processing"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b5fa589c-d05b-40fd-bd71-8db9bd8494ac",
+   "term": "Polyphase filter",
+   "fields": {
+    "definition": "A polyphase filter is an efficient implementation of a filter based on polyphase decomposition, in which the filter's impulse response is split into several sub-sequences, or phases, that run in parallel at a lower rate. In multirate systems it lets decimators compute only the output samples that are kept and lets interpolators skip multiplications by inserted zeros, greatly reducing computation in sample-rate conversion and filter banks.",
+    "plain_english": "A polyphase filter is a smart way to change a signal's sample rate without wasting effort. It splits the work into parallel parts. That way the computer skips math that would be thrown away.",
+    "purpose_function": "It exists to make multirate operations like decimation, interpolation, and sample-rate conversion efficient, by reorganizing the filter so no work is spent on samples that are discarded or on zero-valued inputs.",
+    "practical_application": "A technician encounters polyphase structures inside sample-rate converters, oversampling converters and codecs, and filter banks, wherever audio must change rate efficiently and with good quality.",
+    "category": "Multirate processing",
+    "related_terms": [
+     "Sample rate conversion",
+     "Decimation",
+     "Interpolation",
+     "Finite impulse response filter",
+     "Filter bank",
+     "Anti-aliasing filter"
+    ],
+    "common_mistakes": [
+     "Thinking polyphase changes the filter's response; it is an efficiency restructuring that gives the same output as the direct filter",
+     "Skipping the anti-aliasing or anti-imaging filtering; polyphase makes it efficient but does not remove the need for it",
+     "Confusing the number of phases with filter quality; the phase count follows the rate-change factor, not the stopband performance"
+    ],
+    "scenario_contexts": [
+     "Converting audio between 44.1 kHz and 48 kHz efficiently",
+     "Building the decimation stage of an oversampling analog-to-digital converter",
+     "Implementing an analysis filter bank for a codec or effect"
+    ]
+   },
+   "sources": [
+    "Vaidyanathan, Multirate Systems and Filter Banks",
+    "Crochiere & Rabiner, Multirate Digital Signal Processing"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

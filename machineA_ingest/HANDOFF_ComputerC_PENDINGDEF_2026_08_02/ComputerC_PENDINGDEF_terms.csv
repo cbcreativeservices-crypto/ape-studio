@@ -1,0 +1,1531 @@
+id,term,primary_topic,difficulty,source_batch,authored_fields
+e8e42bfb-94a5-4cd6-9927-30b9685c4dd4,ADC,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+716b1bf6-32ff-4794-bf3d-0b7052204f9f,Audio op amp,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+b3ed9a8a-555c-4e9b-ba49-354677c85d47,Bias transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+dfb9647f-9901-46df-9808-9d457d850db4,Bipolar junction transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+3a36bea0-402e-4487-aa8c-dd4547b65e65,Bipolar-input op amp,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+d15f8351-c62b-42c2-ac3f-50d68da44403,BJT,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+f77bd91f-ecbb-453c-995d-94e260ef2922,Cascode stage,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+4fa41e9e-2848-4698-bf8b-3d88b722b079,Class-A stage,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+8f35441f-7d76-4175-bbd7-88d9186ac5fa,Class-AB stage,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+c0ac2fa6-3af3-4aaf-a235-add1d7a27c93,Class-B stage,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+0dbd0bec-3050-4e76-910d-f530a7879dcf,Collector,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+9cb75232-4855-4f0d-9a47-57ddc5a83dce,Common-base stage,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+7b91870b-b39f-4a09-a5db-9385bd0dbfa3,Common-emitter stage,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+065b1790-ef49-4fbe-80b5-33197545a021,Common-source stage,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+d107990b-1d85-41df-b177-7cfb3e3bbf5b,Comparator,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+203d593e-1428-430b-8d20-74db326c782b,Complementary pair,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+3d4773a8-613f-481b-a819-d16f4836ac1f,Constant-current source,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+01725dba-ba61-49e0-861e-e4b815918064,Current mirror,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+a0d9716a-dc2f-47b9-b697-8ddc199e547f,DAC,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+da341b5c-94ae-42e8-9041-dd976756f966,Darlington pair,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+508b6b48-cdc1-4c26-a856-bbe8be84b841,Demultiplexer,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+80177ab6-5654-4490-85ef-590af22d83d1,Difference amplifier,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+0d3c2168-a215-4b72-a7ac-184115b0e001,Differential amplifier,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+9ab6312e-e5b7-4ef4-a5c3-12c9962e2aa4,Differential pair,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+ba1d7a03-83c6-4c31-b6c6-2ea9bc2ce631,Digital audio receiver,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+398d0c57-8ce8-41f1-8360-b840812abe2f,Digital audio transmitter,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+f3d9de40-fca6-44aa-9c07-8fb451154507,Drain,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+58b55782-cd1c-45a9-886f-f771566255df,Driver transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+6e6838a2-5a8f-4ac0-bc31-3cd50cc87151,Dual op amp,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+b7697b1a-8aaf-49af-bee0-934a2faac163,Dual transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+158347d4-05ba-4255-89f8-d0625b003cf3,Dual-gate FET,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+b43b7c19-db37-457e-aa8d-c41a1b73d5ef,EEPROM,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+4e9e4422-b155-4b8d-bf33-dc6f8c9fd9ec,Emitter follower,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+28c01d3e-3055-4fc2-8e89-8fde005cc778,Ethernet controller,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+e599b31f-2616-42b4-9ee4-f2ed4d1ed09b,FET-input op amp,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+af847e3b-e64c-40e4-9fc8-ff69893856cb,Field-effect transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+95055b93-1251-40ae-a4d0-3bd5e6bd2c9a,Flash memory,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+15bf31b7-a70e-4284-a214-c74e420931cb,Flip-flop,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+638a3fb8-e880-49a2-956f-774194b26f03,Gain rank,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+c722a679-506f-4265-ad1f-73ac0b7260c1,Instrumentation amplifier,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+6b0f6df3-fa99-4c90-b32c-bbbfbd30f2ee,Integrated circuit,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+58c07e57-d14d-4a6c-83b5-214299d1ecbd,Inverting amplifier,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+0b91d03f-58ae-4acf-942d-c91ce1be0a59,Junction FET,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+760d1109-ecf8-40b1-a961-5b380175a45a,Latch,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+10f2d2e4-ff5d-4492-a970-dbcd28c7c462,Lateral MOSFET,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+370df13d-b39c-429a-9351-dc7f5b533ffb,Log amplifier,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+5c785137-580e-49b6-b260-107eddbf5c59,Logic IC,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+ef0661f4-f719-4fbf-85a0-e49a80534a3a,Long-tailed pair,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+7ff33c81-ace6-4e09-b3f6-b32425086789,Low-distortion op amp,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+68cbf7ba-4954-4e42-a566-3a79c10144a7,Low-noise op amp,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+27bae05a-b11a-4766-9ec0-bc8b7447fe49,Low-noise transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+3e7b720f-dd4f-48e4-8ad9-41d7af8666b2,Matched transistor pair,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+97d5f9fa-7594-40a1-bc16-400d9a6542c0,Microcontroller,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+f69a034c-37b9-4172-bfcb-805261988cbf,MOSFET,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+921e413f-9d11-4f48-9b2a-537f54321528,Multiplexer,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+0d272ed5-aeb4-405d-b41d-3f0dafdd1d56,N-channel MOSFET,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+f23f7e19-d43b-44a0-a38b-5a3ca6a13bc8,Non-inverting amplifier,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+fc4e15ae-83dd-444c-9c0b-9fa0b76cab02,NPN transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+8ea3f733-42ac-4ec9-8af6-b7da01ca812f,Operational amplifier,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+7bea54aa-a952-49b6-b4df-7f13ba78e341,Operational transconductance amplifier,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+ac3f06cb-fc0c-4198-80f5-8ccc00a1b65e,OTA,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+625ca561-26cc-4a7d-ac51-a3b61b4c92ed,Output transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+86b2c3bb-12e0-4697-830e-def925bd8a5d,P-channel MOSFET,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+be5c3842-4cbc-4af3-8954-d6af9f271037,PNP transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+45194d02-8067-44d3-b28f-0a050b8d691e,Power MOSFET,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+257ce66f-84e3-4eee-bc49-f822832e9ba4,Power transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+d90b6959-4818-4b90-bd5d-9628e38635b8,Pre-driver transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+47636f5a-e65d-424c-9585-7a69952b2f6c,Push-pull stage,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+90fc9df6-f7c3-43b7-83db-a6c34ceae5d7,PWM controller,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+98ae85b2-e806-44da-9949-db53157d602b,Quad op amp,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+e979fe76-9f8e-40c0-8605-409ed5a58846,Rail-to-rail op amp,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+57a4d568-1a2e-4852-b017-fa8f0a873b9f,Safe operating area,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+b678ba2c-4ed1-49ee-a371-8dac0e85848d,Sample rate converter,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+c0132350-801b-4eb6-9323-96f44425d477,Schmitt trigger,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+48e3309f-be41-4146-a79d-a89cf9126771,Secondary breakdown,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+534d0516-0208-4609-9f1a-66ecdb007d90,Shift register,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+d0849f83-926d-47cf-9a22-2dba27fa5fdb,Single op amp,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+e415a9f5-7723-46aa-bd89-17ea159b8492,Single-ended stage,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+7065742d-5636-419a-841e-bdd3698da1ec,Small-signal transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+fe881f85-c7bf-4cc4-a6bd-103e2958144b,SOA,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+23b05211-7396-4b74-ac89-eaf9e4e89acb,Source,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+cd5c156f-683e-4cf8-9588-9b5adb789aeb,Summing amplifier,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+4394fe57-5d4f-4b1e-bfe6-eb66a9c59a08,Thermal tracking transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+9e2d242a-1f76-4609-8100-e93ab70b9294,Transconductance amplifier,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+371f9b03-af0f-45cb-8adf-426fb7595988,Transistor,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+f4e768c1-d545-42b1-95d5-03930ae3689a,Transistor junction,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+827baec9-0287-4cfc-9335-adc4060edffe,Transistor substitution,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+5576a65b-e630-4fea-8bc8-b5e0f1e7fb49,Tube equalizer,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+0ea1fc01-fbf6-495f-98e9-ee9c456e39a5,Tube limiter,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+037e4164-5e1a-49d7-a59b-5f39670b244c,USB audio controller,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+a9ca936a-bfb1-45f0-a09a-f9f027137b02,VAS,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+5c75abc1-defe-4bb9-bd9f-c3509c830f9d,VBE multiplier,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+48d7ddee-1ede-4c2b-b39b-c0e507c0be65,Voltage follower,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+e3a32ea3-0cd8-4978-b603-600e4ed8b6dd,Voltage-amplifier stage,Active Devices & Semiconductors,,PENDINGDEF_2026_08_02,definition
+ad2bc716-2609-4940-afb6-d94f66e0afea,Adobe Enhance Speech,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+c1f55b78-f760-40f9-ad46-fe9cec31f176,Artifact suppression,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+66ca77c6-1ee1-453c-a7fc-28e2ed5f0b53,Audio super-resolution,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+d92a038c-a54b-415b-a04c-289bc1e1d72e,Audio upsampling (ML),AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+6ea5d9a8-a670-4d4a-89ce-6ee04bb06c70,Bandwidth extension,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+01aac910-dd0a-463e-a093-315e7214fbca,Bass extraction,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+ed351ec9-e09b-4e6e-b710-1d1debf8059d,Before-and-after analysis,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+c04f23a6-11e4-4720-8164-b3320ec9ee95,Broadband denoising,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+39c6450f-e57b-41b9-bbde-3b1fdd7a6bff,Clarity Vx DeReverb,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+f084295a-7e47-454f-bac9-1b68815fec36,Clip restoration,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+77dac7cd-6899-4d0e-b554-58aa9bb66aab,Clipped-waveform reconstruction,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+d0f6afa6-a5c7-48d1-bf3c-6c4c05b7a83a,De-click,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+8c41d595-79d1-4c07-88f1-9752697bf7a7,De-hum,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+bea17624-4a61-457f-b34b-ef890d8765b7,De-reverb,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+5ad597d4-e17a-40c1-8339-b5012802ee3a,Deep Noise Suppression,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+70bb3b38-75fa-452b-8ae1-2e68b880c6f3,Deep-learning speech denoising,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+592ed3d3-7d93-4ffb-880f-1d89caf4dd5a,Dereverberation,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+5e711da4-5a94-49e2-808c-306d692dc616,Dialogue isolation,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+d999370b-69c5-4df6-8c65-6ce4831f297d,Distortion repair,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+2e88d94f-30da-49db-a70c-c2260e2783d9,Drum extraction,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+0f6614ef-f569-43cd-bfdb-152a456cf4b3,Flutter correction,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+30c3c769-7740-4cbd-8de2-2835bd7696d5,Frequency repair,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+bceafe07-eab8-4643-b506-d2615d6ce94f,Instrument extraction,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+b8620719-bef9-4c5d-808f-f0ed4cbd2472,Manual spectral editing,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+ef450d44-08ac-41c8-a7fe-42e8fb8e5942,Multi-resolution processing,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+cc2f3ff0-1f14-4d33-8c92-01414e423b67,Music isolation,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+d078ac76-3265-4bd8-8827-1d9d4124210e,Musical-noise suppression,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+82c9834c-37d8-4561-ac01-c7d6f7244fbd,Noise cancellation (AI),AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+2964305a-fc20-4d20-92f3-3264da922e0d,Noise suppression,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+8f083dc8-5405-4f8f-8175-f7e83df9b124,Piano extraction,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+e4ff00e7-385a-4e41-8abe-d7a38fbdfd33,Pitch stabilization,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+a0a99e49-f57b-49c4-9c9e-6fde1acdd84b,Spectral de-noise (ML),AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+503d44c6-f9ea-43de-85c5-fb6310c4b200,Spectral healing,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+3f0fbca0-32c3-47ec-af85-92d1104c933c,Spectral repair,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+de26c3d5-382f-4339-ae41-382c6b031c42,Speech enhancement,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+b7dde34c-33d4-4c69-8eab-b06ac8437ea3,Speed correction,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+22dbd27e-c20a-4a47-81fa-5f5646d163c1,Time-domain repair,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+caedf131-d438-435e-a055-3dc1bc761f0f,Vocal extraction,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+2ec5c6c3-28c0-48cb-9d27-a66496ede06c,Vocal isolation,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+8460c7a9-c467-4210-a721-334a382ed81e,Wow correction,AI Source Separation & Restoration,,PENDINGDEF_2026_08_02,definition
+fdacb737-0a2f-403c-bb8f-043566aec68c,AudioSR,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+9abd83a6-b660-4500-89df-e893ebcfa761,Auphonic,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+f83b4437-13b4-44d8-b64b-696811daf46b,Dialogue De-reverb,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+e998accb-07d3-44d1-842e-dbe7b22a23f6,Dialogue Isolate,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+98c2db8d-87e6-4902-b62c-7dc0fe20ef40,ERA (Accusonus),AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+814c8a98-2370-426f-b38d-3447ade7a567,Kemper Profiler,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+3b10a6ba-ffa9-4976-81c0-f01d8e5c1515,Music Rebalance,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+7c39f90e-37cd-4e90-abf3-64d8c16615f9,Neural Capture,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+4b961009-0e7d-4dbd-9124-190047c4fb02,NVIDIA Broadcast,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+0b9c3c88-ae93-4a7b-8b30-49934e2ae52c,Quad Cortex,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+050c5b48-78b7-4891-adf2-0f1bd052cd7b,Repair Assistant,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+92d132e6-6372-405c-9045-b8d5cb7d6087,RNNoise,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+6391dae2-e2d9-4dea-bd1f-107ee428e1ea,RTX Voice,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+e67efe41-10bc-4a47-b94a-beeae5ad6b1e,Spectral Recovery,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+120948ef-345a-400c-8321-1254cc7b19db,Voice De-noise,AI/ML Foundations for Audio,,PENDINGDEF_2026_08_02,definition
+9f05f6c0-afb5-4e07-8579-b9644d046bba,Acetate disc,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+bcdea3bf-4570-4d6f-9ca7-69863c25df0b,Acoustic recording,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+37f76cde-0561-4515-9615-c3f22e307d47,Cassette mastering,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+91f33fef-6dad-43f6-b9e8-b882c71a3481,Compact Disc mastering,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+c1972817-9cac-489d-8a1d-cfedead98289,Cutter amplifier,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+2808a061-d554-4c3c-ac5f-a5b35ab6417e,Cutting stylus,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+832e5cb6-a676-4b1b-9193-8553117f4b87,Diamond stylus,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+affe5a28-192b-434d-9d99-dd51efc0a4dc,Digital Audio Tape mastering,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+8858971b-1316-4fd3-a969-61559c34f8f2,Digital recording era,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+c86e06a7-8cbd-4b6a-91fe-2b2dc4b634a5,Direct Stream Digital recording,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+f747aa4e-949c-4754-8260-aea581491c62,Direct-to-disc recording,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+fcbe0ef8-5235-400e-baea-c4a83d3528eb,Disc cutter head,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+dde0792a-5fb0-4a55-9d27-88312724ee29,Electrical recording,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+7c94d0c1-6568-47d5-a7e5-df6a3ed4e622,Groove cutting,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+8ce3c60f-2724-4cf6-a907-98a5dd2f5c6b,Groove geometry,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+d55f3dcc-0f90-48c0-a32f-f8f4690913a7,Hard-disk recording,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+b90e48e3-e231-425c-83c9-9a069821877c,Lacquer disc,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+618d0b92-59e5-4c4c-ab6a-89dba9b7b1e1,Lacquer mastering,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+af7752e7-6600-4017-8111-ad50eb627d76,Magnetic recording era,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+8886d910-d379-4fbc-8acd-a638266f64fc,Magneto-optical recording,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+244283cc-494e-4b47-bd10-4171939c4b9d,Master lacquer,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+35fb127e-a375-4ce4-9e27-3190e2264f63,MiniDisc recording,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+837a6e23-f658-43aa-912a-cc549e283697,Optical soundtrack recording,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+198cb418-177d-4c56-a815-3f4f8018c356,Pulse-code modulation recording,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+ad411885-5a27-472c-acc9-e74f679b7351,Recording horn,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+6e710a6f-a679-46a6-974d-15bd2cc2a070,Sapphire stylus,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+9b0415a4-26ed-4064-8bfe-5a8f3c0db323,Tube recording era,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+bda55214-f27d-48e6-a69c-7411e407382a,Variable-area soundtrack,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+dcc7995b-e87f-49fc-bee9-3720924de1e8,Variable-depth groove,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+b96e1a65-d3e9-4c6d-93b0-69939f9f9198,Variable-pitch groove,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+e1172f1c-1f12-4ca3-9423-e9adaddc7ffa,Wire recording,Analog Tape / Tape Machines,,PENDINGDEF_2026_08_02,definition
+65a05a37-a81c-46a4-9c84-0374ab9b7a3e,Accessible mixing position,Assisted Listening Systems,,PENDINGDEF_2026_08_02,definition
+6ef1e05b-0edf-46a4-8b19-3f393526c9e4,Accessible route,Assisted Listening Systems,,PENDINGDEF_2026_08_02,definition
+5b945cf4-7652-477d-ab30-1008926e2bb7,Hearing-loop system,Assisted Listening Systems,,PENDINGDEF_2026_08_02,definition
+46afa7d7-5356-4731-b76a-7046a5078c02,Infrared assistive listening,Assisted Listening Systems,,PENDINGDEF_2026_08_02,definition
+0d313cd5-f404-41dd-b9f5-14fc2521805e,RF assistive listening,Assisted Listening Systems,,PENDINGDEF_2026_08_02,definition
+3bb567ec-d732-4bf7-90c0-19fb4ea420cc,Audio archival restoration,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+caaac413-b196-4ddb-88a4-a2d3e45532a5,Audio preservation,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+6c6a2750-6722-4e68-9d44-608e10058b97,Azimuth alignment,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+dedbe9dd-0217-46a7-bda7-97a80692d286,Broadcast archive restoration,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+b5682a8c-d90e-4e44-9624-01f98361a22d,Capture chain,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+184fcfba-54cc-40da-9a1e-fcc6c38fc6d7,Crackle removal,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+ccf9d532-c6ee-4614-bfde-11aebd14a2ad,De-rustle processing,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+a480e19a-20cb-4b22-9b34-301c7b8df99b,Harmonic reconstruction,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+453f76a1-2064-49d9-a810-6873ac5edbec,Master-tape restoration,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+772a5c49-620a-410e-9ac0-231210bcf245,Mouth-click removal,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+ae96a241-203c-41bd-8c19-1e4d21867025,Tape oxide loss,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+748b4a61-f7b3-427f-9648-1bd717c1b33d,Tape restoration,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+d862f8fd-53b5-4063-8231-66d8edef4959,Vinyl restoration,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+f574ade0-2ed5-4ede-b4cc-197d561acd98,Wax-cylinder restoration,Audio Restoration & Archival,,PENDINGDEF_2026_08_02,definition
+6901b91f-884a-40a5-9d32-45b7463edfdb,Re-drum,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+3b37411b-27df-43ca-b565-ba042e1cb76c,Ride the groove,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+9659205d-2f0d-4adb-ac82-edbc228824a0,Riding the mix,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+7ee0464f-6ebe-4234-a244-5a72a5b5d00e,Rip,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+d845a6d7-b5ea-42bd-b19c-e7b159ea7dc8,Safety track (DJ),"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+d2653ebc-6e4a-4321-a632-0c1a2068d739,Save the floor,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+68c4faa9-93bf-479e-a7aa-2366f332ca46,Silent disco,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+63a5516d-c682-4000-858c-0c289c3883a7,Slam it in,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+70b544f1-f595-4bac-a75b-1ed5a54defd4,Smash cut,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+2289ade8-040d-4023-944b-fbabcc5d3ff8,Tease the drop,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+4b84f392-f55b-4482-a668-f354d14a368e,Throwback,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+e9dc27b3-29be-47df-a14e-8c26d5dd0cbd,Trainwreck,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+3d62038e-7720-495d-9ec3-37b17a2ea8d7,Unreleased,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+a92b0942-9be5-4d88-85a9-556fb04f3d93,VIP mix,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+c52d4c63-ab38-4d3e-b551-c301cf6fef6a,Weapon,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+c9b85305-11fe-4dc6-9ffa-0678c5bc8559,Wedding set,"Beatmatching, Mixing & FX",,PENDINGDEF_2026_08_02,definition
+81dff517-dc50-48ee-abff-ad2733756fdf,Station imaging voice,Broadcast / Radio Production & Air Chain,,PENDINGDEF_2026_08_02,definition
+fbc21245-fb8e-418e-9f81-920cec9334e9,AC coupling,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+0de0502f-3047-4a06-8d79-86c2bd99edd6,Analog multiplexer,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+f5b7eac5-b0b7-4cfa-91ff-739276bf87b0,Analog signal path,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+66585b6a-6c59-4344-b5a2-6aaba1097720,Analog switch IC,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+71c53710-a398-437c-9361-8e064b1f4e83,Audio circuit,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+1f967128-e3f5-4a32-9440-f3e45e291ae3,Audio preamplifier IC,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+fb5358f3-c538-4226-b64d-ec83666d399a,Audio signal path,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+b32863d7-8d35-4c6d-8a3d-92774582e8f6,Audio stage,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+252542bb-79ef-4f96-922c-cec012cdca92,Balanced line receiver,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+1e0732cb-105a-4735-9352-5a84692d285b,Balanced modulator,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+b62975dc-c6ae-4dcb-911c-bd06e8be7480,BBD,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+da451497-8514-4464-a1d1-7db66a079d1a,Bias point,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+8183c099-75b7-4692-bd22-085a0c55ab5e,Bucket-brigade device,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+84bf9e06-605a-4600-96fd-9f67f35bef88,Buffer stage,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+70140f00-46dc-4356-aa26-c70cccb8c5ab,Calibration oscillator,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+7be04380-845c-4b99-96d5-8a7ed3bc9f7a,Closed-loop gain,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+2a1704f5-2c13-474f-b2b8-c97e625b1074,CMRR,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+2ff346c9-f34b-45ca-8057-cd7549b32f01,Compensation capacitor,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+9acf8311-7ba3-4c6f-8256-324a312ebc43,Coupling,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+744fd45c-7f75-4c4b-8edd-b94bac1bae04,Cross-coupled output driver,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+9a4c3df3-f532-4a5f-a7b6-4b023aad0090,DC coupling,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+860b781d-36f8-452b-9530-3dc3807df0f4,DC servo,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+bde1d09e-ddb3-4f53-b985-aabaf68d7dca,Digital potentiometer,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+a7b349af-4fbd-4be6-ad4b-56e456d49c2f,Digital signal path,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+ebc11950-6470-4024-9575-6bb911534add,Driver stage,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+9d887894-2909-4002-b452-d64d17bb3a90,Electronic volume-control IC,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+378e1a60-3b1d-44dd-b575-e48405f57854,Envelope generator IC,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+6095940c-ed1c-4527-b3e1-f85a62c310f8,Feedback loop,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+4b1d024b-ec32-405a-9a97-2f3806289946,Gain stage,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+bcdc95df-c59c-4687-b17f-861b32c4aad3,Gain-bandwidth product,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+a2cd98bc-926a-42e5-a85e-788b1e8a4206,Headphone amplifier IC,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+ad861e8d-5c87-4068-a40d-a5b68e03cdc4,Impedance-balanced output,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+1fe4586e-6341-4126-ad75-9a02900e200e,Input bias current,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+4dbba03a-723b-453a-ae27-d8a60598f620,Input common-mode range,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+b9d17eae-517b-47fa-b2db-11a2444fdc0d,Input offset voltage,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+deea9ede-550b-4705-8978-4a6404da26a6,Input stage,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+1bcc58f1-19c7-4894-9390-30435c0528e4,Input-referred noise,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+4ac8af37-ad31-4fbc-a64f-db73e8d7b200,Interstage coupling,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+ea9903c7-730c-468c-a710-e027688b17f2,Inverting stage,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+2561cb37-d0c3-49f7-b630-18127e75e869,Line driver IC,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+e0eb84ee-b467-475c-bd53-655cb0c35dd9,Line receiver IC,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+2322ee59-a936-4937-bbca-1b73401f249f,Mic preamp IC,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+d55aff64-22fd-4948-8dcb-79914137e798,Mixed-signal circuit,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+9178f585-9237-49ed-8e5f-a87f049dbd83,Non-inverting stage,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+dbcaa83f-e82f-4264-978a-fdae4fcd52c8,Offset trim,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+6141b400-9674-4248-8791-d47dd10799c0,Open-loop gain,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+f28d7981-8edb-4b85-b30d-e9e664a70a7f,Output stage,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+255055d2-4ac0-4541-9140-a6b668927b98,Output swing,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+b3d6d429-2f57-45e7-a938-c03232bf312a,Output-current capability,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+0b435af2-3bcf-4a46-9022-435329b7c1a5,Parasitic oscillation,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+53ef8b29-82ba-488d-9e87-c6f016d2224f,PGA,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+1965aa4f-c89a-4a59-b813-a40a1a3a9804,Phase margin,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+ab8e7f14-e23a-4ad7-a510-bdcc0dd924b6,Positive feedback,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+461e560c-d829-49b3-9de0-3ff5daefcb3a,Power amplifier IC,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+124330e2-bad5-42a8-af5b-d609455eed7d,Power-supply rejection ratio,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+33a3187b-4017-4756-a08d-297d6bb08349,Programmable-gain amplifier,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+19f7138a-f19e-4be2-a62e-9002ebd92101,PSRR,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+5c33a018-51f4-4bda-88b4-fcacbc41bbc3,Quiescent point,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+e4ef9a0a-b50a-445b-ade7-2a5e0ee2f5f9,Reference oscillator,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+6552ea51-ba06-40cb-a4a6-6db3c9bd410f,Residual noise,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+08e42e4c-8965-4ad3-8ef0-204b1328bace,Ring modulator,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+7a6ed68f-e0f7-4300-97bd-7b25e0f898de,Sample-and-hold IC,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+1117175c-4b1e-4ccb-9af0-6be8bafd3cd7,Servo-balanced output,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+837f9b11-ec99-4ec4-85c6-d28628ae691d,Signal conditioning,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+b82fe43c-520a-4023-b18d-7276b9ec6407,Signal inversion,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+e5d3a296-fcf5-49cf-846a-ad1f00d1f8b2,Slew-rate limiting,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+0eff6a58-233c-4367-bbc0-b780c4ba60ed,Studio oscillator,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+39361ce0-0604-45c3-a9e7-329923cb6d47,Summing node,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+3ceb751e-7e0c-4663-9e5a-98dcc8e1e0bb,Thermal distortion,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+f9c8da1a-0a67-4c54-b709-017dcc0caf74,Transient distortion,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+ef2022b1-a211-446e-9154-e1eb300a5312,Unity-gain stable,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+aa9698fb-8334-4f76-b077-c512a9949832,Variable-gain amplifier,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+226aa570-b8d8-4a0d-9856-cd737da82a10,VGA,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+4f37399f-53bb-4387-b04c-aa528f431df7,Vintage microphone preamplifier,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+ad580f88-6281-4e1a-8549-fa69d236b748,Virtual ground,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+e5883b70-f791-4275-b6b8-6da1c7843baf,Voltage reference IC,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+e9a95f33-92dd-4b42-a189-615f73ce5a08,Voltage-controlled amplifier,Circuits & Topologies,,PENDINGDEF_2026_08_02,definition
+6ddab021-6777-4c87-81b0-1fa5cf4badcf,Bridge section,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+5b155890-38ea-427f-9e24-da1fefa5007e,Build-up section,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+e8d0d27c-0fce-47db-858a-404266d7872f,Cold ending,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+3fa57fc8-b46d-4aa2-9785-13932b7b0690,Fade ending,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+d2cff328-73ae-4e0c-b470-6d3b17700daa,Interlude,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+e56a19d6-7e39-494b-9e9f-96902af1bac3,Intro section,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+a4b48c93-a0dc-4554-b50d-e994c11627e7,Musical arrangement,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+1420ec38-1c13-49a7-a0da-270311206495,Outro section,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+4da2ce72-185f-4bac-bc3c-bab4ec181998,Post-chorus section,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+60310347-a938-42f5-ab99-1b2939793cff,Pre-chorus section,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+9e80873a-da7d-49af-86db-bbfdff39d305,Refrain,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+83ff8014-a457-482c-a824-07929b256c97,Register change,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+9d14e275-46bf-4a07-99a8-2c2e69139b00,Solo section,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+55946938-d183-45c8-8b32-315f04e7a56d,Song form,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+e80c1154-73a7-4c93-aa4d-87cc97a1f577,Verse section,Creative & Advanced Mix Processing,,PENDINGDEF_2026_08_02,definition
+738fd8ed-0a3f-4dd5-9ea4-b77c50e1d683,Archive migration,DAW Fundamentals & Session Management,,PENDINGDEF_2026_08_02,definition
+cf4d643a-b2f8-4370-b30f-ef803a3ea50b,Archive server,DAW Fundamentals & Session Management,,PENDINGDEF_2026_08_02,definition
+1bebff36-ec19-434b-a33e-c4ca5818fc10,Central storage,DAW Fundamentals & Session Management,,PENDINGDEF_2026_08_02,definition
+15e87264-2ba0-44d6-a435-a6e4d93e8f89,Checksum validation,DAW Fundamentals & Session Management,,PENDINGDEF_2026_08_02,definition
+6e9a49bb-d16d-4180-b2b3-c4cfdbc5e570,Data integrity,DAW Fundamentals & Session Management,,PENDINGDEF_2026_08_02,definition
+910b8fdd-6b89-43a9-8ed3-a6484921e5d0,File hashing,DAW Fundamentals & Session Management,,PENDINGDEF_2026_08_02,definition
+9ac039e5-5661-4cfb-9449-c5468e1eaf52,Long-term preservation,DAW Fundamentals & Session Management,,PENDINGDEF_2026_08_02,definition
+3de5b54e-c6bb-4955-a633-c6ead4985cca,Network storage,DAW Fundamentals & Session Management,,PENDINGDEF_2026_08_02,definition
+b5a84ea2-0333-409c-b30a-220d8a4ac116,Proxy media,DAW Fundamentals & Session Management,,PENDINGDEF_2026_08_02,definition
+56af8506-9e06-4181-bfd9-9570e463318f,Shared storage,DAW Fundamentals & Session Management,,PENDINGDEF_2026_08_02,definition
+e4111914-f77d-4646-87bd-5071bd2d101b,Arrangement loop,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+707dcd22-159c-4fed-953d-93ea2f835075,Arrangement overdub,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+6a5dbfd6-37d8-449c-817f-3caa6abaa7dc,Arrangement recording,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+94f70674-8096-4a84-8def-808c35cf7c9a,Back to Arrangement,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+e125b815-37c1-4bc9-8f38-57dacb689431,Beats warp mode,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+d84b3f44-c0f2-427a-bc34-9dddfc032b0e,Capture MIDI,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+244b2400-af80-468e-b5d5-50739d93f9ab,Clip detune,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+af1f41db-38c6-406c-895e-bd6da36310e9,Clip end marker,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+d706cc46-beaf-47b4-957d-fb3463a80f0b,Clip envelope,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+51972bcb-ca8f-4b5f-85a6-e9e60f202058,Clip launch,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+a834938e-4cde-4549-9e31-aee01c978744,Clip launch quantization,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+ef109dbe-7ad6-4c89-87ae-58c80cafa160,Clip loop,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+0451926a-7ea4-4648-921a-dfde48132205,Clip loop end,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+d5ca3e26-f6a8-4d73-96bb-b21ade682694,Clip loop start,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+4fb96dd0-46f5-4e10-90c7-5abbadfd72a4,Clip start marker,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+c6104316-2a87-4630-ac0d-658341b06170,Clip transpose,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+17d29e02-4d2c-4945-b4e7-3ba06fec8468,Complex Pro warp mode,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+751e8a5d-f720-4346-a917-a107d19837fc,Complex warp mode,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+8ccb1819-ba3a-40d9-9aee-0a347a6e50fe,Global quantization,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+68d4758f-cb27-4f6f-9dbe-083a06f1bddd,Preserve transients,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+55acbe25-9199-442a-a834-65f097720c3d,Punch-in point (Live),DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+8a6ab786-3e0d-4930-a100-64a4c7bbba95,Punch-out point (Live),DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+13b927ca-f837-448d-b7e9-5f859d57a835,Re-Pitch warp mode,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+01bfa0bb-23fb-460d-a85a-7a21ebc00340,Record quantization,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+59c62e84-4505-44da-a3d3-d112e06425cb,Scene launch,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+13220074-78ef-4e05-bc9a-ae0b98f40c20,Session overdub,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+0e47c025-cb08-458c-821f-87eb67320a64,Texture warp mode,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+e4b2010c-81d3-406e-8573-fbe88eeea37f,Tones warp mode,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+b5e1268b-fc69-43fc-9727-6baf72641853,Track delay,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+7a7a2750-f315-467f-a2f0-f6a8235fa8fd,Warp mode,DAW: Ableton Live,,PENDINGDEF_2026_08_02,definition
+8465c571-b063-4e45-a761-7754ef0a6ae4,ASIO Guard,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+71d6c6cc-8355-44aa-a3c2-ae6c48bd39d1,Audio Pre-Record,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+c96b0ed6-537e-4d29-9dcd-b61efe7a241a,AudioWarp,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+041cc66f-b5b2-4ac6-8cdd-05f78900b447,Bounce Selection (Cubase),DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+eb3abaa9-eb68-49c5-a9b3-825feb2b710d,Comp tool (Cubase),DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+32cea144-df0c-4bde-9777-aaf6c74e503d,Create Slices,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+4aeb51a7-82f8-4dd7-ac70-ebf8d5fa18c2,Cycle Record Mode,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+59ba29b9-f53b-413a-8618-e6ddd537c401,Export Audio Mixdown,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+02c93b4f-ce28-47dc-825e-56f7b5349be4,Free Warp,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+e1675ecd-153f-4147-84ef-97e61d7f9fa8,Glue tool (Cubase),DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+3380c9b9-ed53-48b4-be5d-08774da5411f,Group Editing,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+f6b4d4fa-8ffd-41eb-8c24-0fc7024be905,Hitpoint detection,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+43c511d7-ab9a-46f8-bb15-390156121513,Hitpoint threshold,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+3960b8fd-9dc0-4199-856a-568fdac6bbf8,Monitor Enable,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+7ebcce9e-284f-4d4e-bed1-477eb6a4bc09,Musical Mode,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+49cf568a-5b85-4a69-972e-9b78077f1c60,Mute tool (Cubase),DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+b9d14cca-6f34-4b27-ae22-59636fb18b48,Object Selection tool,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+13e8c45a-3bf1-4f57-82c6-123449d772b8,Phase-Coherent AudioWarp,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+e8d099ce-0e1a-4ffe-8421-9ce28d453897,Range Selection tool,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+7c76016b-8f78-41c3-8ee4-d912db9a1e20,Record Modes,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+2d390bda-bef6-46dd-a5fc-6532057db166,Retrospective Record,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+ad1d1b06-4741-4a8a-add5-312df1da1514,Time Stretch tool,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+6825379b-d562-45e8-a25c-b9dbd8e773ed,Time Warp tool,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+dd77db98-3720-455c-93aa-ec4c311016b7,VariAudio,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+1b1c7c46-f9f7-4b45-824b-2c92d9bb82f4,VariAudio formant shift,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+9dd637a8-e1a6-4804-9754-c50fde1025b4,VariAudio pitch segment,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+5896244a-fb02-41ec-b3b0-c5c1fd05d4d3,VariAudio straighten pitch,DAW: Cubase/Nuendo,,PENDINGDEF_2026_08_02,definition
+074ba0eb-50c2-4b6d-a596-fd142a2848b9,Autopunch mode,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+e8d6f6ce-42da-4b08-aef4-1a9ae447baad,Auxiliary channel strip (Logic),DAW: Logic,,PENDINGDEF_2026_08_02,definition
+63999b10-a0ab-4121-b8a6-0fe2587ca12a,Bus send slot,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+34482d64-a81c-4481-aa75-861e40debec7,Capture Recording,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+4121f0ec-27d6-4506-8750-a58cdc32caf3,Consolidate regions,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+911e8205-e6ac-48df-b9fa-e8e7aa0a70bc,Count-in setting,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+080bb64e-c36d-414f-86e6-5221cc20efbf,Cycle recording mode,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+498ea9d2-f2d9-43d4-876b-e794b64014b9,Export All Tracks as Audio Files,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+4b852bfb-b7d9-40ff-8595-de4f996fbc2f,Export Region as Audio File,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+e7a3a415-5655-4fac-9d67-e345be62f7c3,Flatten and Merge,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+c419bcfc-ae55-4d04-9f0d-95e2d443bd55,Input channel strip,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+2242888e-c3dc-4639-9411-ae4511a2a946,Input Monitoring button,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+0a8100f1-37e7-4f9f-93b5-358be77c6076,Join Regions,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+eeb96fb5-32f0-4de9-8d17-191c1e081071,Left input channel (Logic),DAW: Logic,,PENDINGDEF_2026_08_02,definition
+b37acdd1-7dd6-417c-975e-b803a18ac1d4,Low Latency Mode,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+3736d6aa-c1b3-4db4-8d74-6b772b26b04d,Master channel strip (Logic),DAW: Logic,,PENDINGDEF_2026_08_02,definition
+550b81ff-bf23-4712-8d61-60215010b465,Mono input format,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+98a62ac9-0c98-43cb-91d8-b2eefc6ec67b,Output channel strip,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+da0b3e7d-b887-4d8e-93f9-4d36c99e3a7d,Post-fader send option,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+d16d5175-caf2-4128-bfe5-c488b6dd07b3,Post-pan send option,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+e90077eb-b181-4942-9b56-c966a010a1a6,Pre-fader send option,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+a1381747-1ce6-43bd-8250-75f7478e41ea,Project bounce,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+832ef238-3fc6-4d61-a617-3f19fe4189a0,Punch on the fly,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+2296c603-fd5e-43c5-ad9c-60535fac795c,Record Enable button,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+2d98b8cf-0c3f-4919-b722-f466b19aad30,Replace recording mode,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+dbd8f77d-587a-4811-b21f-bcd2461e2838,Send level knob (Logic),DAW: Logic,,PENDINGDEF_2026_08_02,definition
+061efc1a-8946-463b-8205-e8b9e4b27f98,Stereo input format,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+18bc8ff2-96d4-4a27-9434-9ceda939aa9b,Stereo Out channel,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+97f44e13-6948-4d67-bb84-fa492d4f4eed,Take folder (Logic),DAW: Logic,,PENDINGDEF_2026_08_02,definition
+b10a35d9-866d-4a12-8059-e25e725afbbc,Take folder flattening,DAW: Logic,,PENDINGDEF_2026_08_02,definition
+9360c0fb-8b69-4392-879f-b57620e5bc0c,Automatic record arm,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+2ddb1c4f-517e-46fd-b7df-1ee66e464f26,Consolidate tracks,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+bd49236e-abf5-41ac-af67-765c1d583d93,Freeze tracks (REAPER),DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+d871fe7a-a9b2-45da-82af-3d62209fd596,Glue items,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+88400b44-940b-4529-90bf-923c2ce46dbb,Item fade shape,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+28502b34-e2eb-4957-8716-5b336379dd53,Item grouping,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+adad8807-e8d8-4ac8-90ef-52f80effad92,Item playback rate,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+7259d334-5701-49ad-a200-e3837f22ac09,Item timebase,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+c273f31b-2754-4b68-a266-d19a5d9d6412,Item volume adjustment,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+66d41daa-3c26-43de-9f5a-2b2bdfbeb3a9,Project timebase,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+a1694db8-0031-47ea-b0b5-022277386788,Record input,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+c4563926-d9c4-44c9-86d8-91bccad45cd1,Record latency compensation,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+0bbc3abd-396c-4b19-be77-63d35e3b4026,Record MIDI overdub,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+e9ae6989-f2da-4a82-8d32-45452efd40af,Record MIDI replace,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+270fce49-98cc-4732-a5ba-6248d4d4aa95,Record MIDI touch-replace,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+f5df8955-1936-4ab9-abc7-d5b61da96571,Record monitoring,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+825e712d-4d4a-4343-ae38-f7d5d82448da,Record monitoring off,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+bf46b13e-af18-451b-97a5-c3b11e36c773,Record monitoring on,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+4c8f3913-3a0b-41b5-b4f1-e3290ca40a4a,Render queue,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+26f99fb7-6f94-4a90-9480-2997e278a93c,Stretch marker,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+7c59ec77-1ffe-414c-a876-64f8e35713eb,Take comping (REAPER),DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+c1be450e-5504-471d-b0d2-22bc8e9840bb,Take pitch envelope,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+07df054d-ddb2-4ee3-a159-f2e91f0a9f84,Take volume envelope,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+ec874279-0517-4f00-a003-cc6988788fc7,Tape-style auto monitoring,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+93e5e09f-41a0-481f-97d3-5fbe2239f8f8,Transient detection threshold,DAW: REAPER,,PENDINGDEF_2026_08_02,definition
+638bab40-e303-4ec7-b11e-a3ba00de67c4,Audio Bend,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+3adc3359-f3db-4881-a347-ccadfb1d9d05,Bend marker,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+db4bc4bd-cf94-4566-afa1-13bd1cc2365a,Bend threshold,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+a79ad5d1-3a1b-488b-8201-9e72dee2d4c4,Bend tool,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+a813e906-7e21-4376-a1f3-2b0d66727874,Comping layer,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+45502fbe-d742-491f-a662-914bfff89b9b,Event gain,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+a9cd7e82-30ba-4fed-9cf9-c8351bf283f5,Export Stems,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+0eb2fee5-8804-4995-b6d1-3af4ce92ca84,Input Quantize,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+19dbc7ac-518a-4dda-846c-7124b2303197,Melodyne integration,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+3431b147-82ea-4bf5-ae97-30bf300ddde9,Replace recording (Studio One),DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+adf78765-f932-4686-b6d0-f9544e108b27,Scratch Pad arrangement,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+6a1ef875-e8dd-49ae-8b90-dd4b667175eb,Timestretch mode,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+401d4bba-f1f0-4a36-b90d-ffd554a0a097,Track Transform,DAW: Studio One,,PENDINGDEF_2026_08_02,definition
+88f4c7b8-5988-4b4d-bab0-1ca7c147b66a,Audio transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+d105e1d8-10be-4512-860c-ade9b4909ce0,Audio-taper potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+d53220e9-bf21-4268-b9f8-632730dfaa5d,Balancing transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+6aa9f62f-7ba8-45e1-b8d7-2166731d1f24,Bridge rectifier,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+3fdd3d38-af3d-4a0f-a34b-6d98d59be99b,Broadcast attenuator,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+5496b4d5-3583-4777-8ab3-299bdf59363d,Broadcast equalizer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+1cd743ed-700d-49f4-8041-c6ab68fb87ec,Broadcast limiter,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+49748c1f-d21f-4eb6-99a9-17a3f86354a2,Capacitance tolerance,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+4a1ea2e9-cc96-4c0e-9c75-88a65012177b,Carbon-track potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+33981998-35ef-4e88-a0e0-0497c95564de,Center-tapped winding,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+13fc13f2-d75a-40b9-ac2d-ad70bd3e9dd8,Choke,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+77f8a980-8f0e-4b8e-9e01-59e0d6ec5792,Coil former,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+34485867-fb6e-48fb-9c43-6cc29b869ba1,Common-mode choke,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+79ee0208-a56e-4f6a-820f-0e63b7fc18d9,Concentric potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+830e0d56-4f25-475f-b22f-1ee215bdb27a,Conductive-plastic fader,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+3bc64762-6a75-43b6-be93-04bc45788876,Conductive-plastic potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+f1149749-3f63-4e16-b201-5acc9391b5c3,Core loss,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+caa3a60a-4ab4-4525-80e9-874b5b012b3b,DIP switch,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+6a88c932-ca66-4e67-8859-b6492b64bca7,Direct-injection transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+c7af9276-99bf-4431-b431-a46b0d6b6dd1,Discrete equalizer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+01edd582-469c-4223-97b8-54cc7d5863f1,Dual-gang potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+181c5046-3825-4148-80aa-ca02afd4e41a,Echo chamber,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+2b72dc48-31b0-4859-bdd0-f190073f5e41,EI-core transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+a9e81b3e-b4cd-4024-94ce-2e85a7bbbeca,Electrostatic shield,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+92378672-9423-4fb1-a8af-63f434a2fab3,Encoder,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+db106065-6acd-44c0-8d87-5ae01417b2dc,Encoder knob,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+9d363d14-d9ef-449a-a957-952743699077,Equivalent series resistance,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+8f7a17f9-69bf-4b5e-bf04-b6f71839622b,ESR,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+50db80ad-bb46-4df0-8d95-a15a3dbb86fe,Filter choke,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+d7fa4d1f-9169-4297-a1ec-de021b45ab57,Footswitch,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+fde7c0dd-6e24-4cb5-9ae2-c625a7dabd72,Full-wave rectifier,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+306c4970-626d-4d20-b77a-a188811444cd,H-pad,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+9ef1b85b-0ed2-4354-8c60-c3a8b6859f87,Half-wave rectifier,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+115315f0-88eb-4e71-8932-943bcc45fa68,Hum-bucking winding,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+0e053bac-5b2b-4ec3-b86e-7bdf4bc0fc77,Illuminated switch,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+c8ce218d-d7a3-4e27-beb2-646823ee4db4,Infrared LED,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+ee4d2402-67b4-4fcd-8421-ed06b4113ee4,Input transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+d9342f17-4ae7-493e-99ff-cbb256aaeb44,Interstage transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+1af1cae4-811f-4a52-a940-912a2e213a28,Interwinding capacitance,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+7b811822-07f1-4a2d-abee-d5e341a61c18,Knob,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+21a82b31-7172-44d7-9dac-df004e19bdf2,L-pad,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+8be00408-c20f-43b5-9f18-d5fefbebda42,LCD module,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+ae43041f-eec9-4e05-a192-c53d3bac5f0a,Leakage inductance,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+786e2304-798c-4e4b-9cd5-244f34cf8e96,LED bargraph,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+4ee40126-f043-4fb9-a9be-774c816297b5,Limit switch,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+b8f664ce-d565-4705-ac0b-5386fd4ba625,Linear-taper potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+21599ea1-af21-4192-9d79-3c622deba47c,Live echo chamber,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+b0c31971-d7f6-423d-803f-d9595f089912,Mains transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+badaa2bd-aeab-45eb-b8a7-7d9fac48c4c1,Mechanical reverberation,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+670a7188-90a7-4b1f-871e-72d59fd1007f,Mechanical VU meter,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+1a14583c-ffbc-4ed1-81b4-abce83b26c57,Microphone transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+abaff110-f6c3-42a1-a721-f8b4427c7ec1,Moving-coil meter,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+78c8d03b-320c-4024-b3c7-eff84ab7f387,Multi-gang potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+acd0ab72-20be-4deb-9ef3-bb03bc09e8c5,Multiturn trimmer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+17ae0a4a-5cdf-4c59-b9c9-fec9a37806f1,OLED display,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+b6a1c262-d002-437c-99a7-4f65e0236fca,Optocoupler,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+44f3ea36-ea3b-4cdc-b485-def33f5effb7,Peak detector,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+6d6c1d91-eb63-48f3-9847-0bbc05756a8d,Peak LED,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+d73fa9cc-f704-44e1-b939-c1beb7adbe3b,Peak-reading meter,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+68476760-2b8c-4674-be00-33f1f2841660,Penny & Giles fader,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+c6532489-248e-4405-97d2-13ed260e054b,Phantom power transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+94348055-a4f6-4048-aea1-a8991d2931cc,Plate reverberator,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+769acdcb-6896-4122-a59b-ee31e326465b,Potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+637e4783-95a7-479c-ae60-e23a7c288296,Power choke,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+6de53894-f2f2-42a9-a4d2-4b5c9ea83ca0,Power relay,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+ffaf2049-40b8-4715-bfab-297310bc14e1,Power transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+e7d899cc-e6c8-4a04-b617-f6f4dc5fd064,Preset potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+9914a6a4-0bba-4522-b04e-11fd0e3e3241,Primary winding,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+bc837fe7-4218-4413-92c1-52779af04565,Program limiter,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+9513d7a9-f07f-4a48-8adb-e741e868f4cb,Push encoder,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+fbc9be76-d4fe-4ada-b0eb-2be0fd7c8290,Pushbutton switch,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+fa6985ae-421a-48fe-b33e-85f192f5f655,R-core transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+c6ce5c84-21a2-409d-8fad-a138711e944d,Rectifier stack,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+6f459c9c-7b1a-4b23-8464-afcb5432bc78,Reed relay,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+4644622f-d0e2-44cf-91db-59bfcbcf336a,Reed switch,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+3784f83f-51c3-4f45-ad2f-34e928c48d26,Reverse-log potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+419b79b8-942c-4946-9cf7-14947998f7e1,Rheostat,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+b074e4d4-eb46-4d77-af2e-505b3eacdc17,Ripple-current rating,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+c697e590-2f91-4e6a-a961-1b75f17fb0e5,Rocker switch,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+b2daf2e7-7440-4b55-a0b4-bacf4bfd0366,Rotary attenuator,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+91104c45-a19c-490e-928d-1dc2e7c18851,Rotary encoder,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+f8c0ea15-4c7e-4e90-b170-c801d6ed0fea,Rotary potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+e58688b9-d53b-4588-92a3-f4053971619d,Rotary selector,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+749b4375-9d55-4923-bfcf-ecc94f46f2a5,Rotary switch,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+896e7c34-4e99-4062-aee6-72dcd93e1d0d,Secondary winding,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+e83fc0aa-f7ee-4aa9-a959-8be64f15ea44,Seven-segment display,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+71f7dd98-f059-4941-bda8-bb6f0e5e7b5e,Signal LED,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+66279d2f-0b08-4890-aa66-d72d631be047,Signal relay,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+4e8c8f75-3f9e-4e8f-87d9-5194d146c1a0,Slide potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+0d997282-a44c-47d8-a842-17d7f3f2bd56,Slide switch,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+525f6b78-9388-4a7c-8f51-fe89ec9193ea,Spring reverberator,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+45b7252b-1dc3-43bc-9abf-248c8fb882f2,Status LED,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+c5098c29-2d43-4226-8f3f-91338e37f4eb,Step-down transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+aa0d2874-3087-4222-b55c-2357c848304b,Step-up transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+02f06eaa-8171-4e98-8f89-d2bc8b3ef6aa,Stepped attenuator,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+e34f99e9-a1b9-4ace-951d-b320514b5da5,T-pad,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+80f1d4f5-ce77-47f5-a871-5063acb60c54,Tactile switch,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+aaad73fb-49c1-4897-8dcf-e3adf7546a74,Tape echo,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+0ecba05e-867b-4674-a59f-e5773ed62cfb,Tapped transformer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+9f83fe86-5a0d-4f68-a930-0f8e9155e5ee,Toggle switch,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+49a50505-849f-4aff-9ec6-4e98b9049047,Trimmer potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+2bd9ca56-ae3e-4026-b888-3cf1eda63aaf,Turns ratio,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+e15a3218-2cc4-4e0d-a27e-2a3ed0a35d3b,Vactrol,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+20bd4b0f-ad16-4068-8454-83924c372daf,Variable-mu limiter,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+3f6a84d6-32df-4933-a747-7ffaef9dc000,VFD display,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+491f3e0c-7d9b-4a23-9dc0-4093d9f80312,Vintage compressor,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+79f3cd61-6740-460e-856f-fb1aa06b5f97,Vintage equalizer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+ca077c09-8f93-4eb3-829d-8d4da13a1b7e,Vintage limiter,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+2e04410b-27c7-49ea-8379-35d2a7dc6e8d,Vintage monitor controller,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+ac5b80a3-05ff-484b-b1c3-cc86de7faca2,Vintage recording console,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+19838edb-bff0-4f1c-b466-356170d207b4,Vintage recording equipment,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+b263324e-469d-4c78-b0c9-484a599dd78a,Vintage studio monitor,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+58a18500-4587-4cd1-878c-8e739d3bec3e,Vintage tape machine,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+6891359f-372a-4970-868c-8056553451bb,Wirewound potentiometer,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+8a842182-8e7a-44c6-b3cd-bdd2bf18db35,Working voltage,Electromechanical Parts & Hardware,,PENDINGDEF_2026_08_02,definition
+44e3d28b-67e0-4045-8974-f9bf008b91b4,Click-track preparation,Film Scoring,,PENDINGDEF_2026_08_02,definition
+688f48e0-0bfc-4978-a4a3-f25c158b76a1,Film orchestra,Film Scoring,,PENDINGDEF_2026_08_02,definition
+b90d9ee0-a3ad-4a0a-8816-a25d15315868,Film-scoring studio,Film Scoring,,PENDINGDEF_2026_08_02,definition
+65cc2095-69a2-4b84-93e5-789a34b64546,Orchestra recording session,Film Scoring,,PENDINGDEF_2026_08_02,definition
+cc3eba2f-9b10-4cc4-a2be-189a1f209006,Pickup bar,Film Scoring,,PENDINGDEF_2026_08_02,definition
+658dd649-4d88-43a4-aebc-0dc343433bac,Pickup measure,Film Scoring,,PENDINGDEF_2026_08_02,definition
+dab4abc7-3f0c-4d18-8338-81af3f65721b,Score preparation,Film Scoring,,PENDINGDEF_2026_08_02,definition
+aefd89eb-8d7d-4640-833f-c7df9e8e1c26,Scoring cue,Film Scoring,,PENDINGDEF_2026_08_02,definition
+ff380b7d-6318-48a6-9a08-340cfd4eda0a,Scoring orchestra,Film Scoring,,PENDINGDEF_2026_08_02,definition
+7a84559e-86e2-4f85-a25b-ccc1258c27d4,Scoring session,Film Scoring,,PENDINGDEF_2026_08_02,definition
+f73af10b-1ad8-45ef-a56f-03bd1482a962,Scoring take,Film Scoring,,PENDINGDEF_2026_08_02,definition
+9c7c1837-73b6-4374-ba8b-24286e85185b,Scoring-stage control room,Film Scoring,,PENDINGDEF_2026_08_02,definition
+09837a5e-2a95-480b-8b25-2b8892bb56de,Scoring-stage floor,Film Scoring,,PENDINGDEF_2026_08_02,definition
+67389700-35ac-483c-9af0-e00d583369cc,Scoring-stage isolation booth,Film Scoring,,PENDINGDEF_2026_08_02,definition
+0f27f83b-5f34-4f68-a5ec-799e653bba68,Studio orchestra,Film Scoring,,PENDINGDEF_2026_08_02,definition
+643bba2f-5621-4623-9bde-a5d76cf6a247,Tempo-map preparation,Film Scoring,,PENDINGDEF_2026_08_02,definition
+ecea8f51-dead-4af4-90fa-080f574271c1,Foley Cue Sheet,Foley Performance & Recording,,PENDINGDEF_2026_08_02,definition
+6ad45865-e099-4e82-8a30-1ed1424a47e2,Foley Cueing,Foley Performance & Recording,,PENDINGDEF_2026_08_02,definition
+623306ab-96bd-4a78-8d84-887ff9d0c002,Foley Editor,Foley Performance & Recording,,PENDINGDEF_2026_08_02,definition
+4bf99459-1760-4f55-be53-0441ebd1a45b,Foley Editorial,Foley Performance & Recording,,PENDINGDEF_2026_08_02,definition
+a8822bf7-9f2a-40e2-8e3f-9d53769537a8,Foley Floor,Foley Performance & Recording,,PENDINGDEF_2026_08_02,definition
+019c5a5e-d128-4a88-8ab4-fd6a54ccb305,Foley Moves,Foley Performance & Recording,,PENDINGDEF_2026_08_02,definition
+7491a46c-6bd0-43e7-ba3e-ab7d3c8fa424,Foley Pass,Foley Performance & Recording,,PENDINGDEF_2026_08_02,definition
+03c5ae3f-14ef-42a5-ad12-b767bfb88c6f,Foley Performance,Foley Performance & Recording,,PENDINGDEF_2026_08_02,definition
+d5d86e37-2851-474b-9055-e57f900250e2,Back it off,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+7631bb90-9ff6-4fa6-9422-b87bb7879d03,Bad seat,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+d53ea530-6319-44f0-9b66-d791cb45711c,Button it up,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+4471b174-f6e6-43e7-83a3-cc9ac3a72a2d,Cook (overdrive),Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+97265a1d-99cf-4bbc-8df0-81480c08bf51,Doghouse loom,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+2ca16e69-ff56-49ea-a9e6-30c1ffc6792d,Ear break,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+aa3d2d03-34df-475b-9e50-ab34e86d0be4,Festival ears,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+5989b1b3-2329-42ac-a9a3-155a69b3604e,Fifty-eight,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+e6ceb8ea-6be6-40d7-ad05-6c48c4d4da63,Fifty-seven,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+1e45798a-63e8-46fb-8bca-70728cc0d69f,Fireman,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+638ffc6f-ef5f-4538-8f13-edea358dd050,Good hang,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+387d364f-72a2-4be5-a99e-3ea1d6258508,Hot seat,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+de1b1678-34c5-47c2-88b8-5ed78f51c9a8,Lean on the limiter,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+ac731d02-6d53-4f90-9fff-d4c9bfa8c2bf,Limp mode,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+47d50644-6c8d-4b87-8802-18ebb57c2aac,Living in the red,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+1f378078-af2f-4208-ac18-276994f1e28d,Mains,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+a85bb9f3-78b1-48dc-8f26-743500a7577b,Make it loud,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+f61d8b4f-217e-40d4-9ae0-1a9bd93e20ee,Mixing in a hole,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+7d000041-c2e1-4889-bdd0-9e8b893b2e8b,Mouse hole,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+8a13873f-f0ec-4ce0-9828-ef76cc612ceb,Not enough rig for the gig,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+18b361a4-ce4e-4451-a4be-7311f2431c93,Pack,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+f1c8f14f-b40d-4769-ba5b-8f4ccaab9e88,Rat hole,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+ba69ba14-8e27-46e5-8060-60f6badf839e,Reset your ears,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+c9f697dc-818f-41e6-a74b-1de12561e12f,Rock-and-roll ready,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+fd1142c1-400e-43e2-a95d-af2f13e12ef5,Sanity check,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+c6101a15-1cb9-4d6c-9526-6a393964d788,Secret sauce,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+8615d32f-aef2-4f09-b142-53e87e77b915,Show saver,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+9029b45c-d85f-4d14-8adc-40f8f858a1d5,Spare world,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+6808b2bf-eb6d-4e1e-8492-f3f1b1bb8557,That does not play,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+9d82e74f-ca0b-4aaa-95c7-b1b527b7fbb2,That plays,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+3fe634b2-5d66-4058-afbd-1c533c1b50a7,The drive,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+fb07654c-7669-409d-8dd8-46775c1d96fa,The show must go on,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+5c3e2e6e-d5b8-4a68-b38e-8b7680f74784,Voodoo,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+2720148e-6a4b-4a49-8f13-86dc7b56daeb,We are dead in the water,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+cf4659e0-70ce-4a29-994c-9947d689947c,White glove,Live Sound — Concert-Audio Slang,,PENDINGDEF_2026_08_02,definition
+6c8b5bef-57f6-48a3-96c9-b4a7246fa4ff,Amplifier world,Live Sound — Crew Roles & Departments,,PENDINGDEF_2026_08_02,definition
+4a8a7ddd-f73f-498c-bdd3-5599744d83e7,Boneyard,Live Sound — Crew Roles & Departments,,PENDINGDEF_2026_08_02,definition
+73e1a900-3e2b-48cb-b859-63cb34934e5e,System world,Live Sound — Crew Roles & Departments,,PENDINGDEF_2026_08_02,definition
+c1f461ae-6b05-470d-8501-db88390b5fb8,Desk du jour,Live Sound — Festival Changeovers & Guest-Engineer,,PENDINGDEF_2026_08_02,definition
+2681954e-9c7f-4d29-8a27-527596d0ae39,Acoustic damping network,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+d2688b50-11b2-40a7-a8d0-74f4de6d76a3,Active-noise-cancellation system,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+4d507002-4cad-4e72-9670-4f4f24e4d554,Air-leak test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+d2a412c5-4ea4-4861-aae1-a3e61ad1a382,Air-motion transformer engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+4121b66c-c125-4446-b23d-1e5bf5b02bf6,Ambient-monitor mode,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+b0512fd2-0768-457d-b4bb-e2f208a07e76,Back-plate design,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+d4a9bd9e-7403-4464-96f8-bc3fd024b5af,Balanced-armature driver,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+03e583e4-08c0-4e42-8b8b-7a7541af633d,Balanced-armature earphone,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+dbaee126-9e6a-42bf-b36d-64a87572b4e1,Basket resonance,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+423475eb-6a82-47fa-be3b-f3c4a4b3d7ed,Burst-power test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+e21bf70f-5fbb-42f0-9e1a-3129a2e1af59,Cabinet diffraction,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+862d4f8d-1f36-48a2-a64b-8e3832b626b7,Cabinet integrity test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+123b6c81-8c8a-4e17-9ffa-57f8cce85908,Cabinet resonance analysis,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+3f8c6036-b89b-4d8a-a871-7e20f54a3a36,Circumaural headphone design,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+6038d0a5-8f96-4cfa-ba52-fe7d2d26d3cf,Clamp-force measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+7d36050e-659f-4ad8-9fee-cf3f009a079b,Closed-back headphone design,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+c2097c51-e696-4f01-bd66-0bff3b1fb03e,Coaxial-driver engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+3ca9dcce-3195-4f8c-b362-8ff40ca7770a,Comfort evaluation,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+5cc78e9d-b4e2-4d25-9332-f5c59d1f38b6,Compliance measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+64fb8e57-9b68-4a64-98a6-cc7c769feeb0,Compression test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+2aad9874-e869-4485-9a19-59124e097cac,Compression-driver engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+be1b0447-1f15-413a-85dc-3b34edba3348,Concentric-driver engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+53b58f5b-6d8c-46f4-9155-d8915a1c3de2,Cone breakup analysis,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+96c0e228-dbc7-40a3-b304-45c8aac4bb88,Cone geometry,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+f361df4f-c0ef-446b-a50d-ba291e215d60,Cone profile,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+f06dcc9b-439b-4206-9f37-80c7cc118b99,Continuous-power test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+823b89fe-aca9-41a6-846b-f5e64b9d7a03,Diffuse-field target,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+05505711-fc9c-47cd-bedd-2d18bdba7b54,Directivity engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+e5351ceb-6039-45d8-9738-f342500632af,Driver crossover network,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+942468dc-2480-4e76-9fc3-b8d50020d9a3,Driver engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+73b217f9-29d6-4668-abc1-898ae7ca8ff8,Driver matching,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+127417a4-53e1-4e73-8eaf-1a362befc4a8,Driver matching tolerance,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+d410a7c6-68ed-426e-b0a0-f2f8a7d6bec0,Dynamic headphone driver,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+d628b979-4d61-4811-b1df-89faeb3329d7,Ear-pad compliance,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+df95345d-d6cf-4618-9a1f-38e2a8bedaa9,Electrical quality factor measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+817d6034-4e9c-455a-a358-09aa72283f07,Electroacoustic transducer design,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+06eb56c2-a8b6-4782-8b48-5304f5427ed1,Electrostatic driver,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+bd3fe888-708b-401c-9fd7-c63aa107706a,Electrostatic headphone,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+9f8af5b7-8f3c-4e91-8028-a9ebfe1d596e,Enclosure resonance test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+233392ee-e1fe-4e4a-9e0e-67cd55477d71,End-of-line loudspeaker test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+9ab5f61e-7049-4ad1-bbe2-0c0f5f661f59,Environmental stress screening,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+f83420a7-6a45-46c5-88db-b0e22ff7aed0,Equalization profile,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+90033cd7-c984-4bcd-a5a4-7d90b0d2bb6e,Equivalent compliance volume measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+cfe0a295-a375-4c68-91db-4ae84c738371,Factory acceptance report,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+2fd05f87-3406-4617-a250-6a128840f5ee,Feedback noise cancellation,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+5a16ef42-6367-45eb-a8d6-550187498735,Feedforward noise cancellation,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+572ccb50-6a35-4e5d-b35e-6d294a0590bb,Flux density,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+3c86251c-4a75-4db0-9b79-af59c2b2925c,Force-factor measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+cfa41279-0db4-4258-9b6f-54bff5074bb9,Free-air resonance measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+6c816cf6-da75-48e1-b2a3-4c9829bb6e08,Harman target response,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+9f7388ea-1625-4199-8f21-ebdd36c45a8e,Headphone certification,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+cbda5efb-bb21-400d-97a3-6779b896101f,Headphone engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+3f2261ac-880f-4bd5-8c26-750303a0efa5,Headphone target response,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+94cc43e6-4f1d-458a-bd14-10941c61b8cd,Horn loading analysis,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+9618bfda-b895-48d0-a27b-cd2e7d54a061,Impedance sweep,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+8bc0e805-2325-4e32-8fdc-9eadeafa90e3,In-ear monitor engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+073cd2a9-663c-4070-8018-48846f8ed759,Internal standing-wave control,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+d55a7c0e-3ac8-4e11-9f49-231daa61be6a,Isolation measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+24482617-559d-416e-bf2a-f047de478f4b,Leakage measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+24c3c8d4-6298-4f0d-b986-12a30b02fecd,Left-right matching,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+b5a5c2b3-f915-4895-af3c-c34dc427fcb8,Long-duration power test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+ddad4879-0c1d-4540-ad2a-544e79461b49,Loudspeaker engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+23e4a323-b032-4905-8fd0-540efab80c00,Loudspeaker voicing,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+98601d46-9c0e-40ba-91f5-31a1cdb9551b,Magnetic gap,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+e53aea19-32a4-44f9-b3b1-312bb7e6278c,Manufacturing tolerance verification,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+64fe6349-06d1-4b92-abc1-c6b606018b8d,Mechanical quality factor measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+f920e29a-5804-48aa-a6f0-acdbffdca441,Mechanical-drop testing,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+7dfd42f7-24d9-462b-857c-838fe9846664,Midrange-driver engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+aaf1af60-4cd9-4aff-b64a-2c3e89553728,Moisture resistance testing,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+2f2a51ca-d471-4d33-a419-3a83f71e349d,Moving-mass measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+38505b89-6792-434c-b908-bbcc3f8a3f9d,Open-back headphone design,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+e977fd33-b4bb-4708-a80a-34583739b240,Packaging validation,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+7ebfb425-0e79-447c-9c18-f1af26aab3e5,Passive-noise isolation,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+a0f4548d-a0dd-449f-aa53-fef932d7cf7b,Passive-radiator tuning,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+ed932f75-d584-4e9b-a323-4ddfed0e9e61,Peak-power test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+daf64cee-c616-4cac-9285-67a6ffa6f250,Personalized equalization,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+5c574750-8723-49f7-a38c-a16d63d5b2d5,Planar-magnetic headphone,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+bf9ac621-e77c-4c29-8bd4-12a58cce8d79,Pole-piece geometry,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+34f921d8-4a5d-4b90-8c06-7f46ca2e2b5f,Port tuning optimization,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+6d96e34e-9b0d-4e19-b586-f2c7500e69ce,Power-compression test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+92203bf3-4847-4747-9db2-5c9ee3312a37,Production acceptance testing,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+ee157320-7f3c-4275-87c8-e508d89ebd1d,Production loudspeaker test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+a4ac42f3-3d45-4576-a133-36543202f700,Quality-control sampling,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+2d6db404-b59d-4b52-bda6-67cbe845a12d,Reliability cycling,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+a91caaf6-2518-46b0-80e0-c7d97fe9d7cd,Ribbon-driver engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+05f2057e-52e1-44e2-9921-6f3f49791546,Rub-and-buzz test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+e4ae59cf-3c03-4891-a8c8-4147ec1b0113,Salt-fog testing,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+0fe36076-730c-4fba-bb29-ca6449e926a1,Semi-open headphone design,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+f8379788-0f29-4a53-aec9-68e72c4047e6,Sensitivity matching,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+0aec552d-79e5-4951-bc1e-067f61e4b9a5,Shipping simulation,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+f3a5038e-1516-4731-831e-52e5c1010e42,Shorting ring,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+18b562c4-3cfe-44cb-8515-e668afd1cbc0,Spider compliance,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+21eddc42-baee-4bff-b875-631cc6e5aad3,Statistical process control,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+424dc9b6-e19a-44b6-b4c6-3d2c77ddd012,Supra-aural headphone design,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+8292f95d-50ea-4b05-a5b0-69654f17c3bf,Surround compliance,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+a78d7236-6d8b-4ec3-b4f8-af48e87a4b3a,Suspension compliance,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+a3ca6a57-8ead-4b32-97d2-0598e9c878e6,Thermal-compression test,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+3152f7aa-2e90-447e-895e-151fbebb1512,Thiele-Small parameter measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+9d793be6-71b8-4c8b-b49a-ff760a579a85,Total quality factor measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+581d7216-61c4-4719-9d45-58b6d5c34f70,Transparency mode,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+777e6cbe-4f3e-4340-8392-ea60c78d7048,Tweeter engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+796f15fc-0091-4c11-9a99-10cd8309ffd9,UV exposure testing,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+76c177fc-4096-4f5a-88af-e4cafb1c08a5,Voice-coil former,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+f99b1094-0556-4114-8a39-846cdcdd3608,Voice-coil resistance measurement,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+4b88e429-e67f-4f04-b5a4-39e007ec9c1c,Voice-coil winding,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+2176e206-9bae-4787-9b45-49ed8c82f94f,Waveguide optimization,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+43b03b17-0bf0-45b7-b743-6e62df820571,Woofer engineering,Loudspeaker / Transducer Engineering,,PENDINGDEF_2026_08_02,definition
+073f2659-2ae8-4119-8cb3-1335518d10df,Assembly drawing,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+432b415b-3bdf-4453-b5d9-4db95cdb0239,BOM,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+ae4148fa-e0de-47ae-aa5e-5d9273502bda,Component tolerance,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+94374795-7eb4-4ae8-9585-029cc8f9c90e,Component value,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+1a6a2d02-a64b-47de-8659-bf88dff1044d,Datasheet,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+12a5e1a3-9c72-46b3-9169-811c5888a768,Date code,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+b8154198-c7bc-4597-8f35-8d93ffa5ee11,Designator,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+5cbf1d56-a589-438b-8de9-9b794e668ec6,Gerber file,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+f8d98dfe-d32f-4ac6-a82d-6a948fbe00f5,Lot code,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+95aaa235-11e3-4589-adc0-cab31f2c30d8,Manufacturer part number,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+b74b0142-0658-4da4-83c6-93aff74972c4,MPN,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+4cde7826-471a-470a-81e5-1d59e11e3e85,PCB revision,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+5a68b079-d1b4-4ba9-bda8-bc04fc9d0cb8,Pick-and-place file,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+bb3c1825-96fc-4dff-9e24-826f7da6b182,Reference designator,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+9f8d5ef2-5c69-4fd9-814c-d6a4e77a9e48,Revision number,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+8c1a0156-c00a-4a4a-85a8-53d684b06499,Schematic symbol,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+c91eb89c-27fd-48e9-8151-28faf56e19f5,Temperature rating,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+7f890e79-ed8b-4335-bede-e8ae51c9331f,Voltage rating,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+6a9cdaee-f5b5-40fa-957d-b04b692bbe9d,Wattage rating,Manufacturing & Production,,PENDINGDEF_2026_08_02,definition
+f1cb3d04-1fb5-4f89-a725-ad6019555279,Bass summing,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+260414e4-2d85-43ea-aee8-042933dbc38a,Bypass comparison,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+2d98d9c7-4fd0-4636-9696-ec29cd0038f2,Elliptical filter,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+9f8c9813-ec7f-4194-827d-1463ecad1ca6,File validation,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+b0d0a0dd-8318-4f79-b418-ff6d53e58f7a,Groove depth,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+e924b56a-405e-4f6c-89ba-29c48c780db4,Groove pitch,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+a25140bf-c067-44e2-81f9-a9ea8e0ff6ae,Groove spacing,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+5e884de5-54a6-42f6-8678-881983815e27,Horizontal modulation,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+91d18123-5675-4603-95cc-b4ead512bc63,Lacquer cut,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+b537d3a5-f969-497c-9b4b-44275e0bc48e,Preview head,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+cb7f3bba-dfd8-4901-8709-545b653abbb3,Side timing,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+8d8ad8e4-54ff-486d-a03a-83c8b5bb66bf,Vertical modulation,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+b8a74c28-af8f-45fe-9b38-0bd11fd85b88,Vinyl pre-master,Mastering Fundamentals & Chain,,PENDINGDEF_2026_08_02,definition
+68ee5e3b-3703-49da-b49c-b954baceb8bf,Guide instrument,Music Entrepreneurship,,PENDINGDEF_2026_08_02,definition
+090337d3-b8ca-44f3-91d9-ca4227be086a,Guide performance,Music Entrepreneurship,,PENDINGDEF_2026_08_02,definition
+68a1c3b8-ae1e-4968-ba2c-05b8217456aa,Guide vocal,Music Entrepreneurship,,PENDINGDEF_2026_08_02,definition
+9f33094e-df98-4fde-9d3e-b2e0dd73811a,Master approval process,Music Entrepreneurship,,PENDINGDEF_2026_08_02,definition
+11c098af-856f-4555-bfd1-f87b61818df4,Music production,Music Entrepreneurship,,PENDINGDEF_2026_08_02,definition
+b9732b40-f7a0-43a9-8722-e50f7a3addc6,Scratch guitar,Music Entrepreneurship,,PENDINGDEF_2026_08_02,definition
+516e614d-a633-4e35-bb8e-63137b90782d,Song arrangement,Music Entrepreneurship,,PENDINGDEF_2026_08_02,definition
+8e0a1d06-06f7-4793-a63a-669143132aab,Amp modeling,Neural Amp Modeling & Neural Synthesis,,PENDINGDEF_2026_08_02,definition
+b79e66df-be04-45c2-8ad4-d81c25efd841,Amp sim,Neural Amp Modeling & Neural Synthesis,,PENDINGDEF_2026_08_02,definition
+a276fe20-d1f9-4e64-91d0-aa2030e2456e,Cabinet modeling,Neural Amp Modeling & Neural Synthesis,,PENDINGDEF_2026_08_02,definition
+174423fa-8bdb-4b77-8e2f-bd647e6944a7,Neural Amp Modeler,Neural Amp Modeling & Neural Synthesis,,PENDINGDEF_2026_08_02,definition
+469b0109-4a51-41bd-a1a4-aee6e2862206,Neural amp modeling (NAM),Neural Amp Modeling & Neural Synthesis,,PENDINGDEF_2026_08_02,definition
+330de2e3-b18b-43ae-be79-b3114e19bc72,Profiling,Neural Amp Modeling & Neural Synthesis,,PENDINGDEF_2026_08_02,definition
+6456fd31-fe03-4d86-a1ba-598abdaa9f97,Brass-section mixing,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+8564d779-178f-469f-90c0-5ea2905f987a,Decca Tree balance,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+99e11ff7-635a-4e78-8cb2-989e7918a1aa,Main-array balance,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+e34f1304-74b8-4b31-8089-3d686b34f2c4,Main-array equalization,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+771ca217-9c94-4d8f-b866-34a01b3897fa,Natural orchestral balance,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+3307b987-354a-4efa-81df-ffb22ef5bfae,Orchestral depth,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+b2ae20dc-f459-418c-9430-a8b28fd432e4,Orchestral width,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+01b6b579-b289-4ef8-befe-c7fdef2900b7,Reverberant-field control,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+83f98f0d-a24d-4c96-a119-be4fda5e6700,Stereo localization,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+91717f39-f8ec-42c5-988c-49802f01d698,String-section mixing,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+e7ccddba-5a9f-4761-86a7-30d5732507fa,Symphonic mixing,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+8dfbf8a3-e143-4f57-a768-ef067df7a029,Woodwind-section mixing,"Orchestral, Choir & Acoustic-Ensemble Mixing",,PENDINGDEF_2026_08_02,definition
+f1de53a0-ac15-41b0-9726-266325916bc1,Air-core inductor,Passive Components,,PENDINGDEF_2026_08_02,definition
+c5e92f86-5a09-4108-89b5-c8ffb6993fec,Aluminum electrolytic capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+63a4876f-7c12-4e01-a9b9-320b2f8bef93,Audio-frequency inductor,Passive Components,,PENDINGDEF_2026_08_02,definition
+11dc55ea-42c5-4d65-aef8-44da972509f7,Avalanche diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+5116f8dc-3eec-49cf-9b53-e4e41864e478,Base-stopper resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+d1372c8f-9ce8-4c14-9a83-b80e635b1804,Bipolar electrolytic capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+2ceae6b2-7e8a-4df2-bbba-dcba7571cad1,Bulging capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+cbbb8e57-361b-42da-8dde-d4d6f6f40fca,Bulk filter capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+f76f1ec4-ee8e-4ed2-99c7-f3d1c08542ad,Bypass capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+07eba159-8943-4dd9-bb6b-7c8b3dd4afb1,C0G/NP0 capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+dda4becc-a472-4431-80a3-cf6760a3f50e,Capacitor leakage,Passive Components,,PENDINGDEF_2026_08_02,definition
+c0e28bfe-c1b1-4408-b695-d537415bfe50,Capacitor polarity,Passive Components,,PENDINGDEF_2026_08_02,definition
+8de75ecb-eacf-4a64-9fd6-e2c1a5e3277b,Capacitor reforming,Passive Components,,PENDINGDEF_2026_08_02,definition
+c29a7f94-92dd-4cc9-af02-9a9ef16ef027,Carbon-composition resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+548cb821-252f-4c32-a866-a863d937d87a,Carbon-film resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+f59e0337-6ba2-48b2-a4d2-a8a9472fc4f0,Ceramic capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+99d81290-cba7-43b8-9da6-c04940f6b367,Clamp diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+1955aa64-f510-4d5d-a4d2-8331c111d74a,Class 2 ceramic capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+4d55866c-3018-4ce6-beff-32dd278baf85,Collector resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+a5d2208b-e8a1-465b-a78c-6202eb36aebb,Crossover capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+5d260c82-d018-48ef-8511-902503b96379,Crossover inductor,Passive Components,,PENDINGDEF_2026_08_02,definition
+3bf7347a-c7f2-42c9-861e-08b140af85b3,Current-sense resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+fe592958-7e8b-4fff-9679-6e86eee34704,Decoupling capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+d1688b02-698e-4a4c-b7d5-4bc487f8a848,Diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+8f9c7cb7-10a5-4963-b548-61630f30095f,Diode detector,Passive Components,,PENDINGDEF_2026_08_02,definition
+6b5557ce-ce10-449a-b1b4-38352c1f853b,Diode ring,Passive Components,,PENDINGDEF_2026_08_02,definition
+f5ba3b0b-32b1-4b78-ab73-35e296580b7a,Dried-out capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+136fed4f-b2d6-45f6-aeb7-7c018ebdf98b,Emitter bypass capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+7bc977bc-13e3-4e5a-84af-a3472542b196,Emitter resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+be82e795-2271-42e5-8a95-7efa13bae3c6,Feedback resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+7aa1af32-ac61-4b49-b69a-dd45065f5818,Feedthrough capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+a988c78c-8559-4372-a1ac-633fca236311,Ferrite-core inductor,Passive Components,,PENDINGDEF_2026_08_02,definition
+4767e78d-1443-4a70-a824-b1eb3633b6a1,Film capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+8d4752ee-2eca-447d-8dfd-36d4f1101563,Fixed resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+c6bceb86-8ab9-459c-a4f2-e24cc0204eec,Flameproof resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+ab9096d3-3c73-454b-b60b-7b1bc3c5544c,Flyback diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+cb53d785-fdcb-4d28-bfae-0b11cbb9143f,Fusible resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+d636d780-3921-40bf-a634-cb918c922250,Gain-setting resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+2656b2da-8e0a-4ee4-9ae5-a6e88d529d44,Gate-stopper resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+29020de6-4da6-4f5c-b88d-6bdc53ae6a2f,Germanium diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+1de37158-76c8-40a5-be7b-8b6457430b36,Impedance ratio,Passive Components,,PENDINGDEF_2026_08_02,definition
+33ae9c91-6363-4305-80e5-b9d54da57d4f,Inductor,Passive Components,,PENDINGDEF_2026_08_02,definition
+ce8f908f-2bd2-407d-b9c8-c6693873759e,Inductor equalizer,Passive Components,,PENDINGDEF_2026_08_02,definition
+85ebee30-fa84-49ff-abab-31573176611b,Input coupling capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+ee2b765c-17e8-49b1-bcab-110b6053fd7f,Input resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+9ce3c90f-c63d-4098-9182-c82e2bcec558,Iron-core inductor,Passive Components,,PENDINGDEF_2026_08_02,definition
+bec04fb3-9035-4cb6-997d-137c78e5110b,Leaking capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+7a57b60b-1243-4005-9488-cf08e96ed461,LED clipping diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+5c04d371-bab6-4bf4-9326-9d8d5c737752,Light-dependent resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+7ef728df-5a4b-4a2a-95d7-b99e263c8dda,Light-emitting diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+2ea3a059-31f1-42fd-b760-fc647c2ac55a,Load resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+e2aa4694-7a1f-4b72-9245-82d90eda7aa7,Matched resistor pair,Passive Components,,PENDINGDEF_2026_08_02,definition
+9725d22e-cc22-4f7b-adea-206c4cb00e5e,Metal-film resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+2dd14e9a-dbb6-4fee-a7b1-4c9d7bdd86ec,Metal-oxide resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+4427953c-b356-42b7-ad23-0ec0d67cc37c,Motor-run capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+7636fd07-c299-42f9-a4ca-7d4119ee572b,Non-polar capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+1a6ee028-e65f-43a8-86c6-0dcbbac3ccd4,NTC thermistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+f3d63f70-1fb5-4e05-b959-c0db0e3bc756,Paper capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+aa068955-e53b-409e-b0fd-8a43f6c59139,Photodiode,Passive Components,,PENDINGDEF_2026_08_02,definition
+8e5b733e-1128-4636-a4a5-21a4e0063437,Photoresistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+05685ae0-6ddd-422c-a957-eddbcb986e4a,Polycarbonate capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+117589ee-2f1a-42d1-b0cb-ce5cf078da25,Polyester capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+32db475d-7d52-4eb9-92cb-49c631d11ac5,Polypropylene capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+da02aeb2-e6d8-498d-ba05-e4d1e82fa027,Polystyrene capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+5e22aa2d-8036-4ea2-a59b-b45e8eba6805,Power resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+7b6a71f9-f340-487a-ae39-c85a96574aa4,Precision resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+5a1738e6-304a-4567-9f09-1dd66e61a59a,Protection diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+a724b3a7-e661-4d31-8762-b06f10bb5196,PTC thermistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+ae987913-86d6-4cba-9d64-a7263260bbb6,Pull-down resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+48744aaf-8ca2-4c16-9323-be718c9dfd94,Pull-up resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+99d8830a-a78b-40d2-9f64-b3277d5e3470,Rectifier diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+d355403a-7210-429d-a6f0-ab2c5a0c0964,Reservoir capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+8396610a-aed5-4f09-b2ea-9ddbf01257bc,Resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+4fa4bd75-da50-42f4-bc13-e0238ac124fa,Resistor ladder,Passive Components,,PENDINGDEF_2026_08_02,definition
+ed6cbc7c-c829-4282-afc7-92785d3d7ff6,Resistor network,Passive Components,,PENDINGDEF_2026_08_02,definition
+606da64a-0c92-41d9-9029-73343e04dbe8,Safety capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+e57685ed-4454-43db-96dc-c2b58c9e56c3,Sample-and-hold capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+ef0e3561-8ef7-4cfd-bb77-45ea0911590d,Schottky diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+c27c73cc-733f-41f1-81e1-853f3b15b22d,Signal diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+a7ffc902-ea18-4727-9283-1a10df8d4abd,Silicon diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+f297fe23-62b5-48d4-a44b-52ec3c407af0,Silver-mica capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+ed0c4695-18c1-4c38-b7b5-3d2db260c0af,SIP resistor network,Passive Components,,PENDINGDEF_2026_08_02,definition
+1709c14e-6e4d-461b-9360-a56b3efde315,Smoothing capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+012d7b35-e709-439a-aad6-b84fd91ccca4,Snubber capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+9cf021d3-f55b-4417-a2a9-a4ad1385beef,Source resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+3842a15d-45d6-4369-9fcc-c1d36eeda6d4,Steering diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+5cc7be12-95b2-4b5c-852c-061ebbb12d83,Supply bypass capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+66e3eab3-7a3a-4d73-a0aa-c1a741ec7b67,Switching diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+77c97ecb-6920-45d6-bfd3-0a6985af8476,Tantalum capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+8657dcc0-4383-4a31-b7b7-22dbd3942078,Termination resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+41536af5-59ee-42da-9908-3263392dee31,Thermistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+760154d4-5308-4e55-a269-d90537aafb45,Thick-film resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+160c8f3e-7e20-4927-a7d8-e3a343553cb7,Thin-film resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+c4ac3bad-c9df-4b22-aac9-11150ec7c362,Timing capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+9b6ac783-c966-4e82-b84e-0d88b70a766c,Tone capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+96ead89d-6da7-4f10-9525-0b1ce53fd4b2,Toroidal inductor,Passive Components,,PENDINGDEF_2026_08_02,definition
+e397f77d-2e5d-4dd6-ac2d-12f5d8beb5c9,Transient-voltage suppressor diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+df310d00-5bae-4349-a9e6-b9d761bb5118,Trimmer capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+660a5209-ec99-4557-b836-7cfc3a4d94d4,TVS diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+a6fb8439-4939-4d1f-97f0-743b63b4f7c2,Variable capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+19e0ae7c-c93c-4481-82c4-19f2ef3f3fc1,Vented capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+2469e7ce-ed11-430a-93da-5637db1a193f,Wirewound resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+4948455e-88a6-4d4c-869d-db9613363be9,X capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+1fac29cc-268a-4c27-90e4-aa7d78e85b43,Y capacitor,Passive Components,,PENDINGDEF_2026_08_02,definition
+d423445a-9678-4f12-9c67-6220a1888618,Zener diode,Passive Components,,PENDINGDEF_2026_08_02,definition
+c0ece9ed-607b-47f2-9355-7dbaad6e1b6d,Zero-ohm resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+417738c4-3b73-4bbb-830e-b187d77edda4,Zobel resistor,Passive Components,,PENDINGDEF_2026_08_02,definition
+ade1dc4a-f610-4a0f-b585-b2c7c0adec79,Axial package,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+00b88193-6524-423c-9f37-954f138e3cb6,BGA,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+5567443a-e95d-48b9-850d-c6915c3bab89,DIP,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+1ef82625-8b75-4c0b-8648-8bfd60540c80,DO-214,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+0dd071e6-81eb-4dcd-a029-12b239e63164,DO-41,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+036fa002-fa80-4988-8ffa-9665f1ad210b,LQFP,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+f13ee69f-4041-4254-bb7f-d0d76c480dd2,QFN,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+659c049e-25f4-4838-a59d-2c50324b6010,QFP,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+a5620570-78a7-4f3e-9d17-760c41fcedb8,Radial package,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+ca987eef-a60d-453f-a614-969b12ff1d2e,SIP,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+19881d6a-9565-4013-9b95-578f6f977896,SMD,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+005842c2-e667-47ad-bdf2-cd8bc44512ca,SOIC,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+be36c833-aaec-40db-8797-b08f50f05b31,SOT-223,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+ca24962b-9e00-4367-8224-b3860e4e41ea,SOT-23,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+90ab4858-8194-4196-ad28-b4c9fbee8257,SSOP,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+81275f9e-b0a8-44ab-bb9f-34aa3a75d9ad,Surface mount device,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+abfb0975-5b1f-4cef-a22e-e552d1219079,Through-hole package,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+a5849bb3-e064-4fef-b022-d6dd74d2c7ea,TO-220,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+228cc81f-1295-4c50-aed8-dbf2043ba429,TO-247,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+32025981-e76b-4c8e-ac44-dff22b371d35,TO-3,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+25b4f7d9-b22c-446b-8a9a-7fa93512106f,TO-92,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+c4162307-644b-4893-a762-be5b5bd019f2,TSSOP,"PCB, Assembly & Soldering",,PENDINGDEF_2026_08_02,definition
+285f0fb7-eac6-49cd-9602-f0e801d52201,Cold read,Podcast Production,,PENDINGDEF_2026_08_02,definition
+812ab6de-fd8a-4b60-954d-5d4df2fee1a3,Commercial voice-over,Podcast Production,,PENDINGDEF_2026_08_02,definition
+775be098-4228-4838-97c3-0a72103a15ba,Dynamic advertisement insertion,Podcast Production,,PENDINGDEF_2026_08_02,definition
+420efcdb-e978-447c-88b0-466c11336245,Episode artwork,Podcast Production,,PENDINGDEF_2026_08_02,definition
+7221acce-e1ea-4825-9ea3-32dcd12d7a14,Lip-smack editing,Podcast Production,,PENDINGDEF_2026_08_02,definition
+d03844a8-c33c-459a-9659-6ec92afac342,Narration comping,Podcast Production,,PENDINGDEF_2026_08_02,definition
+e5adfc8d-f122-4e85-bdb0-a5df5ff36524,Narrator,Podcast Production,,PENDINGDEF_2026_08_02,definition
+36506720-e7da-4111-8b5d-cecf9e49c2f4,Podcast bed music,Podcast Production,,PENDINGDEF_2026_08_02,definition
+8efa13b0-4af2-4d3e-a82e-a59a1710bf6a,Podcast booth,Podcast Production,,PENDINGDEF_2026_08_02,definition
+4f1cdc96-2e1c-490e-9cd6-70b829160e0b,Podcast bumper,Podcast Production,,PENDINGDEF_2026_08_02,definition
+1611a235-d737-4f79-a195-9f4681782192,Podcast co-host,Podcast Production,,PENDINGDEF_2026_08_02,definition
+06d120f3-79c4-43c6-8f37-689131db4123,Podcast editor,Podcast Production,,PENDINGDEF_2026_08_02,definition
+1e954c10-2ffc-417e-8bd5-030ca06fb879,Podcast engineer,Podcast Production,,PENDINGDEF_2026_08_02,definition
+e2cdc5a1-091a-4b7e-9daa-80b6fff8c267,Podcast intro,Podcast Production,,PENDINGDEF_2026_08_02,definition
+49bfda34-86a3-4092-b8df-fdc904bd48f0,Podcast loudness target,Podcast Production,,PENDINGDEF_2026_08_02,definition
+4522bac6-d58a-4d9a-a29d-c4613a9147a8,Podcast mastering,Podcast Production,,PENDINGDEF_2026_08_02,definition
+e9490463-77a7-4d9e-9a60-b54c275843ce,Podcast metadata,Podcast Production,,PENDINGDEF_2026_08_02,definition
+ed62a5bb-948a-4516-ac8e-bb2086064185,Podcast outro,Podcast Production,,PENDINGDEF_2026_08_02,definition
+f7a9e4fa-27e8-475b-bc72-1a12a31b4e44,Podcast publishing,Podcast Production,,PENDINGDEF_2026_08_02,definition
+27367df5-e297-489f-8631-93b49ff7298f,Podcast quality control,Podcast Production,,PENDINGDEF_2026_08_02,definition
+f8046b10-5e78-4426-84ec-51046b48e355,Podcast recording,Podcast Production,,PENDINGDEF_2026_08_02,definition
+7203eba4-6983-4ec6-a013-4cc65dad34ad,Podcast segment,Podcast Production,,PENDINGDEF_2026_08_02,definition
+1490a42f-9ba8-43c6-9b13-d5527420caa2,Podcast stinger,Podcast Production,,PENDINGDEF_2026_08_02,definition
+90afa9a2-2257-466b-9ca1-1d286eec011e,Podcast teaser,Podcast Production,,PENDINGDEF_2026_08_02,definition
+7c1a62ce-bbce-44d5-8f9c-34d5df567a22,Podcast theme music,Podcast Production,,PENDINGDEF_2026_08_02,definition
+fd280b6a-a2e0-4630-bc5d-ac991bcec0ae,Podcast trailer,Podcast Production,,PENDINGDEF_2026_08_02,definition
+0226a543-cbd0-4b6d-8e4c-da05c2b5a250,Podcast transition,Podcast Production,,PENDINGDEF_2026_08_02,definition
+2d44b299-b346-4073-8ae1-07d179eb77a6,Podcast voice processing,Podcast Production,,PENDINGDEF_2026_08_02,definition
+2e8c46cb-472b-4283-9184-65a0d0d3026a,Remote podcast recording,Podcast Production,,PENDINGDEF_2026_08_02,definition
+b2d92893-4013-49c8-8663-ed26e2eb8dde,Voice actor,Podcast Production,,PENDINGDEF_2026_08_02,definition
+ef41f619-f64d-4a1e-aa4a-13462e23b284,Voice director,Podcast Production,,PENDINGDEF_2026_08_02,definition
+2049bb21-36ad-4ab1-9ec0-60dd890f2f44,Voice emphasis,Podcast Production,,PENDINGDEF_2026_08_02,definition
+aa0a25d0-9691-40d0-89b3-ac077e8dba16,Voice inflection,Podcast Production,,PENDINGDEF_2026_08_02,definition
+e501b903-0db4-4a7c-b4e0-e65079467806,Voice pacing,Podcast Production,,PENDINGDEF_2026_08_02,definition
+2cb06dab-ada8-4cd1-81c6-5eea47fd65c6,Voice talent,Podcast Production,,PENDINGDEF_2026_08_02,definition
+c6bf9260-5e0b-417e-b081-9bb2b4d0cf8e,Voice timing,Podcast Production,,PENDINGDEF_2026_08_02,definition
+355f0343-1d42-4ea2-9d4c-45faa8d73d03,Voice-over master,Podcast Production,,PENDINGDEF_2026_08_02,definition
+7eb90342-d96c-450b-b719-ba83fcbcd405,Voice-over stem,Podcast Production,,PENDINGDEF_2026_08_02,definition
+124d89e7-b194-4f60-a2e8-c991083df289,Voice-over studio,Podcast Production,,PENDINGDEF_2026_08_02,definition
+9b300cba-9b36-4049-9cc7-deecd3e3349f,Balanced line output,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+4374d85e-c594-4c3f-b90a-e43212de815e,Bridging input impedance,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+7a925b49-765c-4674-a23d-61e17d748941,Class A microphone preamplifier,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+5040905e-70ba-4195-8c43-0c0bf957d552,Class AB microphone preamplifier,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+0405ddb2-2d3e-420c-854a-78638e35d9d7,Coarse gain control,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+b11cad34-6b71-4639-962f-8549adf8cd83,Common-mode rejection ratio,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+a4e3a596-29df-409a-a669-6db51eda612f,Continuous gain control,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+96423154-2031-49f6-add2-0cac0f257dc5,Differential input stage,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+2ff1ca7e-6ed0-40b9-b46e-d6e0dffc5c22,Discrete microphone preamplifier,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+c1ad989f-f6ae-4011-a0f6-3a8de922ee91,Equivalent input noise,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+6cfdd6a7-4e87-48da-9702-44b6985b00ca,Fine gain control,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+78d9f266-e95e-4c07-aaa7-9f74b7c71bc4,Gain trim stage,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+1a5c1857-d16f-4284-8761-02427e4d1ff8,Gain-before-clipping,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+9754d7bd-963e-424e-94fb-58934957f37e,High-impedance input,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+e2b84b14-ea5a-4382-b045-cb4d863eedf8,Input loading,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+c1cd0f18-e598-4b35-b5fa-d0b0347f4f49,Insert return point,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+e5372047-e181-4530-8f8c-fa9833704b3e,Insert send point,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+ad2cd528-5cc3-468c-8787-022a690930b5,Instrument direct input,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+687cde87-ba15-420b-b4ec-20520c591579,Instrument input stage,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+26a89858-a1d6-4c17-b9b4-6eabb33b4cae,Integrated-circuit preamplifier,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+dbf02ecd-86d2-47b3-af93-3d6e49ed79bd,Line input stage,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+c606fdbb-ae09-43e1-92c6-c8d3d140c6e0,Low-impedance input,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+c25f629f-fe05-47b4-9a6b-c1bc11139247,Microphone loading,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+a9279308-c6f0-410b-8f2a-21a5bd921088,Microphone preamplifier topology,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+8aec2725-4f9b-472a-ae04-f9aeeddaa9be,Output attenuation,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+e48489db-b73d-4ed4-8398-7f7d8e10ac90,Output driver stage,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+0168b003-f256-4146-9677-92cc821bd1c3,Output headroom,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+2e134a65-c5f3-485d-8baf-a450cb31ce30,Overload Indicator,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+c53af521-dc83-49a3-84d3-42920eeff002,Pad switching relay,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+ef907bc1-a6f1-47dd-b24b-e7a7a63f9ff3,Phantom-power switching,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+51224276-9241-4f9a-a0ec-e86f57f3cdf3,Phase reverse switch,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+011f1c54-334d-4881-a317-160b67814cfa,Preamplifier calibration,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+5114da27-8df8-4cc1-b1f2-d0689b0306a9,Solid-state microphone preamplifier,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+d851cff5-fb5d-4012-aecd-f951eda30523,Stepped gain switch,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+5ccb76a3-a6ba-445b-943e-8ee4b31d424e,Transformer output stage,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+3dc3ff11-4a87-4902-9920-66ff4eb5b93c,Transformer-coupled preamplifier,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+ceba4653-e889-42a1-a43f-8ef1bf25fa4b,Transformerless preamplifier,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+4725a90c-3ba7-49bc-a1fe-dfa68905638d,Tube microphone preamplifier,Preamp & Converter Engineering,,PENDINGDEF_2026_08_02,definition
+ef66406d-e097-489a-8220-3b1d20e76a55,Analog headroom optimization,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+bb474268-79a0-4986-ba96-fb93a575e7d5,Calibration operating level,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+cf175746-a844-4528-b01a-2a1b5562f378,Clock redundancy,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+6940900d-4606-4317-822f-ba9ccf81e132,Converter operating level,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+6ec4116c-c053-41c1-a42a-caaccea375b3,Digital headroom optimization,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+79be6a97-e619-4785-b7a5-7767b57bd8b1,Gain-structure optimization,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+13394474-10fe-4211-b86a-8bf9080b4739,Monitoring architecture,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+33843132-58cb-43cc-8052-6e5a6f2dd01b,Network redundancy plan,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+d3af4582-c48f-4335-b384-e32fcdc20f63,Power redundancy,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+f3f756c4-86d2-4181-97a7-e0050de61831,Processing architecture,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+daa64d1a-ba46-42f0-8f4d-8c7a7462ced1,Recording architecture,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+706e784e-232d-4fe6-a526-19b0acb265a8,Recording redundancy,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+b690ea39-b934-4363-9567-3dfc9599d349,Recording signal integrity,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+ab9dd3f9-028f-4461-bc86-c89eea4da64f,Reference operating level,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+019a0479-64dd-423c-8dbc-9784a4ad1b21,Routing architecture,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+e7624ec0-a04b-4efb-a219-e0efc3d881c2,Session redundancy,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+c9059c1f-ab42-4af7-9342-5b880683b38d,Session signal map,Recording Fundamentals & Signal Chain,,PENDINGDEF_2026_08_02,definition
+36010d90-710f-428b-9e52-5f657be48abc,Audio analyzer testing,Repair,,PENDINGDEF_2026_08_02,definition
+c60a9049-201d-482f-916e-46da7444076c,Bench test,Repair,,PENDINGDEF_2026_08_02,definition
+5e6807cc-391a-4a7d-a33a-06102d50b48f,Bench testing,Repair,,PENDINGDEF_2026_08_02,definition
+004410c7-e4fb-44e2-993a-4bd605273a13,Bias-current adjustment,Repair,,PENDINGDEF_2026_08_02,definition
+2528da86-76f8-4243-99ff-c298a2e85a63,Burn mark,Repair,,PENDINGDEF_2026_08_02,definition
+dccff55c-3616-42e3-9582-fd82e67ee652,Burn-in test,Repair,,PENDINGDEF_2026_08_02,definition
+c82ce752-e846-45fc-b54e-1ebd213e2f45,Burn-in testing,Repair,,PENDINGDEF_2026_08_02,definition
+d3ca711d-52c7-4350-8c9f-ff273f0921db,Capacitance measurement,Repair,,PENDINGDEF_2026_08_02,definition
+d4dc1643-953f-4265-85a9-580411f7e112,Charred component,Repair,,PENDINGDEF_2026_08_02,definition
+8813bbfe-d042-4a16-b1f2-50d508c2ebda,Component tracing,Repair,,PENDINGDEF_2026_08_02,definition
+4136b233-b2be-464f-9a92-ed672f7a2174,Connector replacement,Repair,,PENDINGDEF_2026_08_02,definition
+2ae5e318-3991-4356-9e95-3af3a99588a4,Continuity verification,Repair,,PENDINGDEF_2026_08_02,definition
+139e5684-791b-4d08-b42e-4b6c5935263c,Deoxit treatment,Repair,,PENDINGDEF_2026_08_02,definition
+ef0fea82-5c12-4621-9a69-225f1d41689d,Electrolytic-capacitor replacement,Repair,,PENDINGDEF_2026_08_02,definition
+aacf6e80-098b-4842-800a-437630305fc2,ESR measurement,Repair,,PENDINGDEF_2026_08_02,definition
+52a7fcf7-9fbf-4963-b54d-b9cd8fe66e9e,Fault isolation,Repair,,PENDINGDEF_2026_08_02,definition
+f0019f9e-d898-44a9-b953-2979c0ffc4b7,Function generator testing,Repair,,PENDINGDEF_2026_08_02,definition
+f3610955-bb69-413d-b862-15411352fd84,Fuse verification,Repair,,PENDINGDEF_2026_08_02,definition
+434b0ae4-19bf-41d4-87a6-251529ca1917,Inductance measurement,Repair,,PENDINGDEF_2026_08_02,definition
+ccbedaa7-2cb1-41b6-9eea-762b28a12f84,Intermittent fault,Repair,,PENDINGDEF_2026_08_02,definition
+4cdf13ca-8644-4ec6-a32a-b3d247428074,Logic probe,Repair,,PENDINGDEF_2026_08_02,definition
+aa006193-807c-42c8-b62b-117e6ab5925f,Long-duration reliability testing,Repair,,PENDINGDEF_2026_08_02,definition
+c1a0e625-d96c-4753-a411-7057b27aa616,Offset-voltage adjustment,Repair,,PENDINGDEF_2026_08_02,definition
+04c18734-41af-48e3-b7a7-a98bdb3c9468,Oscilloscope probing,Repair,,PENDINGDEF_2026_08_02,definition
+1215a0bf-9e1d-451d-883e-f4344289f84c,Power-rail measurement,Repair,,PENDINGDEF_2026_08_02,definition
+ebffe036-bb49-4428-89e9-9aea003e0e7d,Power-supply rebuild,Repair,,PENDINGDEF_2026_08_02,definition
+f84b1393-0818-4130-9603-af152549bc33,Probe amplifier,Repair,,PENDINGDEF_2026_08_02,definition
+f9c63ca9-93c2-42d8-96e4-7403fad8314a,Regulator replacement,Repair,,PENDINGDEF_2026_08_02,definition
+9bf72e22-89d9-4574-9ed9-730e27fdcd55,Relay testing,Repair,,PENDINGDEF_2026_08_02,definition
+43ed5370-97a1-409d-9fb9-ac009d700ac7,Repair verification,Repair,,PENDINGDEF_2026_08_02,definition
+23dbf266-8fbd-4482-97d7-2496e5a98cb2,Resistance measurement,Repair,,PENDINGDEF_2026_08_02,definition
+c8263d7d-0f3e-4024-a838-f6ce09534373,Ribbon-cable replacement,Repair,,PENDINGDEF_2026_08_02,definition
+87ce6140-aab5-4257-a17d-b54f96d89865,Semiconductor tester,Repair,,PENDINGDEF_2026_08_02,definition
+859f6c40-c59d-4d90-b13b-c4c740743bb5,Service documentation,Repair,,PENDINGDEF_2026_08_02,definition
+7bde1ab6-a843-49f9-b43c-7f72d01bfdbb,Signal injection testing,Repair,,PENDINGDEF_2026_08_02,definition
+6f373a5d-e0ce-4e39-81c4-101faa4e811f,Signal tracing amplifier,Repair,,PENDINGDEF_2026_08_02,definition
+cb2ee8b1-a933-4f75-8118-6954d453f18d,Switch testing,Repair,,PENDINGDEF_2026_08_02,definition
+56bff464-0eaf-44ed-918e-6fc48d4b0f4b,Thermal imaging inspection,Repair,,PENDINGDEF_2026_08_02,definition
+09f2b284-4b34-4538-b435-03db6989875c,Transistor matching,Repair,,PENDINGDEF_2026_08_02,definition
+e72839b1-24d0-4417-856e-58eb02c0c23c,Variac startup,Repair,,PENDINGDEF_2026_08_02,definition
+4ad660a2-87b3-4ba2-9b2d-4f98ae77b94c,High steel,"Rigging Hardware, Loads & Motorized Flying",,PENDINGDEF_2026_08_02,definition
+78faf184-e532-495f-ad6e-093785ea8726,House steel,"Rigging Hardware, Loads & Motorized Flying",,PENDINGDEF_2026_08_02,definition
+d6ea7ae8-f506-4dc6-8b65-9987643e37ae,House truss,"Rigging Hardware, Loads & Motorized Flying",,PENDINGDEF_2026_08_02,definition
+1256731f-710a-47fe-8287-4db6e3b9f22f,Roof access,"Rigging Hardware, Loads & Motorized Flying",,PENDINGDEF_2026_08_02,definition
+254c083b-1fe0-439c-8a20-7f9a616a04d4,Roof hatch,"Rigging Hardware, Loads & Motorized Flying",,PENDINGDEF_2026_08_02,definition
+a9f4959d-34a3-419d-b2ea-519658503a31,Roof steel,"Rigging Hardware, Loads & Motorized Flying",,PENDINGDEF_2026_08_02,definition
+31715f9b-10c1-4918-b8c0-256858d8290e,Take out,"Rigging Hardware, Loads & Motorized Flying",,PENDINGDEF_2026_08_02,definition
+87693a84-309c-432e-8960-9143ba602438,Take weight,"Rigging Hardware, Loads & Motorized Flying",,PENDINGDEF_2026_08_02,definition
+b3720aaa-49b1-49c5-a3a6-4af7a4cbc47a,Technical ceiling,"Rigging Hardware, Loads & Motorized Flying",,PENDINGDEF_2026_08_02,definition
+7d80c457-bf76-446f-acbb-f0611769a541,10-4,Road Crew,,PENDINGDEF_2026_08_02,definition
+35ca5e67-508c-4bb3-b6a0-6abf3870f3a9,Bring it up,Road Crew,,PENDINGDEF_2026_08_02,definition
+275e81e8-2b3c-40a9-8a1e-27e338ef7cb6,Cable coffin,Road Crew,,PENDINGDEF_2026_08_02,definition
+aeec2f2d-7c7f-42a7-8f2f-70a5b8e33815,Check one two,Road Crew,,PENDINGDEF_2026_08_02,definition
+8b8a3e5d-b904-44d5-bf73-ab0808a9ce84,Coffin,Road Crew,,PENDINGDEF_2026_08_02,definition
+cb6e90da-9148-4739-8816-a708d6c94285,Coming in,Road Crew,,PENDINGDEF_2026_08_02,definition
+b12c1477-c6a1-4e9d-8b8e-58ceafd61d05,Coming out,Road Crew,,PENDINGDEF_2026_08_02,definition
+d4750d81-cbe0-4bf5-9be0-9453fa0c3627,Copy that,Road Crew,,PENDINGDEF_2026_08_02,definition
+20f3b92a-00e0-4ca0-9589-9bcd892787bb,Dead,Road Crew,,PENDINGDEF_2026_08_02,definition
+0826ab2b-c6b4-4850-9a6f-3d8044fcbd26,Dead case,Road Crew,,PENDINGDEF_2026_08_02,definition
+ec13591d-53f0-4f67-abdb-747496bcfb39,Doghouse,Road Crew,,PENDINGDEF_2026_08_02,definition
+60ee4cbf-b3d8-450c-ae6d-95bb6adc6032,Get it off the truck,Road Crew,,PENDINGDEF_2026_08_02,definition
+ad2dfb2d-520f-4984-ae21-02efc4736035,Last mile,Road Crew,,PENDINGDEF_2026_08_02,definition
+9a38d4af-a648-4fec-8f83-bef05d5faab0,Lid,Road Crew,,PENDINGDEF_2026_08_02,definition
+9fb1d10a-50ec-475d-a3e3-63abe0cd2495,Line system,Road Crew,,PENDINGDEF_2026_08_02,definition
+ab154d29-067c-4204-b300-a237daa35861,Mark it,Road Crew,,PENDINGDEF_2026_08_02,definition
+f0256236-7e28-4c11-800a-e518e5cf87e5,Mix producer,Road Crew,,PENDINGDEF_2026_08_02,definition
+86b9b384-dbe3-4ba9-b415-320bacebe4c4,Push,Road Crew,,PENDINGDEF_2026_08_02,definition
+a0c24f7c-67bc-487f-983b-35c5b18fce88,Push cases,Road Crew,,PENDINGDEF_2026_08_02,definition
+23f8f079-6673-4f30-af53-78275740fe32,Roll on,Road Crew,,PENDINGDEF_2026_08_02,definition
+d1527598-9c1f-4923-88ba-c03e3da8d057,Send it home,Road Crew,,PENDINGDEF_2026_08_02,definition
+ad65b98c-1d17-4dd2-b130-1a103691282b,Show box,Road Crew,,PENDINGDEF_2026_08_02,definition
+b9f37864-56eb-41d5-9989-cdb4ebd3a2b7,Take it out,Road Crew,,PENDINGDEF_2026_08_02,definition
+44b08ce9-0bc5-4374-9c40-a7eedd689f86,Tip the case,Road Crew,,PENDINGDEF_2026_08_02,definition
+b73b7839-04f4-49cc-a6be-81adfd6f1116,Wheels up,Road Crew,,PENDINGDEF_2026_08_02,definition
+566a407d-8530-4aae-ab13-054218948863,Wrap,Road Crew,,PENDINGDEF_2026_08_02,definition
+d03780f8-dec3-422b-bc00-aa4e30d381c1,Yellow jacket,Road Crew,,PENDINGDEF_2026_08_02,definition
+f8974161-d27b-4a14-9322-a438918d9564,Input patch list,Session Setup & Signal Flow,,PENDINGDEF_2026_08_02,definition
+e348f344-a458-43ac-9fc0-8dbb8ad2a7dc,Outdoor recording setup,Session Setup & Signal Flow,,PENDINGDEF_2026_08_02,definition
+e60af68e-a749-4d08-a4c3-b52d89e4053b,Output patch list,Session Setup & Signal Flow,,PENDINGDEF_2026_08_02,definition
+73b2c49d-8d44-4837-a5d5-bba07abd2900,Technical line check,Session Setup & Signal Flow,,PENDINGDEF_2026_08_02,definition
+4aaf7be1-68d9-4af1-83f7-5e903657863f,Airport ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+9ecee30c-f367-4c43-a76f-0f6a767f37fc,Album continuity check,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+a86417ba-b107-4bc0-87a4-9e27976bee18,Alternate take request,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+597ec5e2-7e29-4934-ae76-db733d71d29f,Ambience stem,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+c4e208de-78da-4fe7-a609-0948a5b13e16,Ambient sound recording,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+f47867be-7536-437d-9e81-90570815d2b6,Approval history,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+c7f69680-95ad-4cdb-8537-aedf67dc3d38,Archive handoff,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+5fd37454-b50b-4d07-819f-834226af0251,Artist notes,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+2b541761-0aeb-4567-8ef8-f2283b518d2a,Artist playback,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+d1c7574b-02d7-42fe-b6f1-d1e226ab4bf0,Atmos recording,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+2a8a62ff-88b7-4ffb-9a8b-37a203a40e75,Atmosphere recording,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+d7d14586-f4da-48b9-9a37-b830a1e87d20,Audiophile listening room,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+2c1ca5d5-3ba5-4d7f-9de3-90be51ad8cb7,Background ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+61761d3e-2f5e-4da2-9060-e3359921624c,Backup recorder verification,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+cb9ee529-9656-4a6e-b00e-78fcf7d929ea,Basement studio,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+daed2164-3eec-4a9f-8289-d507ed344443,Bedroom studio,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+0a5e23f4-3154-4dfe-8386-218f2760ecdb,Broadcast flypack,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+686bc7a9-32e7-4cbe-9f95-44d47af253d7,Channel assignment sheet,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+82b308e5-57b4-43ce-b81b-7e259ea38b45,Church ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+4da73e8d-1806-4891-8a7b-d5e6ffc1618e,City ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+9a84421c-1d84-4f48-ad74-bc86676255c0,Client approval workflow,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+02d3843f-507c-4cc6-801a-89040fa8a77a,Client lounge,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+1ca80200-b382-4157-8afb-7edcf9c7859f,Client playback,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+f9a26b5f-f1aa-4aa3-a5fd-c9c446b59380,Client playback session,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+7959f72d-e025-4577-a6cb-354637779a8b,Client review area,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+61d9776f-a5d8-4c23-ac91-bd187f362dd5,Cloud session backup,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+3ded7ebd-9387-481a-b7d8-8c2e1d0300b1,Collaboration platform,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+46cd472b-972a-4599-b0ad-57d5a663d3e9,Color-coding convention,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+259911cc-a2b5-41f1-a2a4-247ea7c7639a,Comment timeline,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+e8d06048-69d6-4820-bd18-414cde0b47e9,Comp candidate,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+47016c35-29c9-4149-9a10-2636a3c7d421,Console recall documentation,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+fa91add8-fae6-44bc-8127-5815558bef21,Console recall sheet,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+d11eccb8-a51a-4673-b2dd-93b519377578,Control-room communication,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+8e35b952-27b1-4c47-bd87-81000f05a987,Control-room playback,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+6bdd60e1-d290-4e48-9e37-42ddaf9d6e4c,Critical-listening room,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+07f1bb5b-2785-4105-8aa9-848da9ff4ea7,Crowd ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+ed6da753-e1dc-46e5-818f-097f89169c54,Cue sheet review,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+28d0c477-0ae1-48d4-9fc5-f6ccf8a0f7af,Daily production report,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+7ea95980-9659-4cff-98f6-c771470f733e,Day ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+da7af69d-d4f1-421b-a08e-410b0e7d5381,Deliverable management,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+5d7a747f-1a75-4534-86c0-a5b23aa2bd2a,Deliverable verification pass,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+64c8f064-9040-40f8-a75b-63c9ff3c924e,Delivery sign-off,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+86658f60-3c7a-4679-8a05-c52bbf0f01e9,Desert ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+06707f71-2f3a-4397-8563-8d0bb7483617,Distributor delivery package,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+688ad45c-f24e-4d26-9d32-a5d1ce39927c,Drum room,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+f916118f-6e64-47ea-ab9d-78c81512cf79,Electronic-music studio,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+e0852ba4-66ea-42fa-aabd-a5830271fce8,Ensemble room,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+31035cf2-25a3-47ac-9afc-a2ede6f8cb9b,Environmental bed,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+5605e582-bde8-4baa-9fd2-aa08caedaa79,Environmental recording,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+1da0073f-8b27-43f2-8a44-6b00a919e72f,Equipment recall photographs,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+e962d56d-4481-419a-8e89-bb15bf85ba20,Exterior ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+a9765e42-6b20-41cb-a938-50f5a7744e8f,Factory ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+c164e983-cdd3-4fd1-b9d3-db5a3a7a1887,Fiber stagebox,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+2d8099b9-a742-48f4-94fa-18924aeca1eb,Folder organization,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+e7913a04-cb2b-44f3-9404-1df33c81e857,Forest ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+cd32ea37-ca7e-4d46-bde5-016207f2b584,Gap timing verification,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+4e220809-076b-4dc4-b52c-fe32b77e54ff,Garage studio,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+c5fe5b55-3292-4d98-932d-f238f6e35ef6,Generator-powered recording system,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+5e9a09f1-c6bb-48d0-a3fe-ee9ec637888d,Hi-fi listening room,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+8ee6981a-300c-4c8a-b7e0-8925b9d516d7,Home studio,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+11669f3f-7ec2-419f-a38a-c01bd94731da,Incremental session save,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+06aa063e-0b5e-4461-956c-5cad8acafca2,Interior ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+5c6ffe33-cb71-47bb-8471-ae33580670fe,ISRC verification,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+f19f90a0-c36b-48d2-ac30-60eff3713e15,Label delivery package,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+0c572c56-ac2a-447e-8cbe-9b9505d26ba4,Listening room,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+632e3b22-22f5-468d-ace3-7918966ea93e,Live-room communication,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+d781ce6d-e339-4ea9-af2d-0ad116f48f72,Load-in schedule,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+101b578d-cdf8-4f47-bccc-ad1569d16cf3,Long-term session preservation,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+981f8b4d-5121-41c5-8419-b871b536f0cb,Master handoff,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+01c17ff4-f540-4507-9d74-48302b4bc3e2,Mastering notes,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+0b10a42d-0b68-4c0d-8ad4-07ee1e2919be,Mastering room,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+3ee7e2d3-5a29-4d06-8c37-34952feed723,Metadata verification,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+ef26f5a6-1f7f-47e3-a03a-9ef981298442,Microphone polarity verification,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+5e5794ec-a4f0-4670-a03d-33b17f4acfda,Mix handoff,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+15dad724-93c7-42d4-97ab-4b71994e451b,Mixing room,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+4db9c112-2dbb-409b-aeee-1f7e6095e56f,Mobile data backup,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+276a320f-d16d-4b99-9cb9-81c58400dd59,Mobile production workflow,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+c3d461b7-f1f7-4854-9e71-b7499ab58d9b,Mobile recording rack,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+0c38dd4b-3ced-4c75-82d7-46943522076c,Musician call time,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+f887d266-45f6-4ee1-9b92-f96e68c7d613,Natural ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+5a4bbc69-9faf-41c1-b094-aae18d42d395,Network stagebox,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+3eff911d-d326-44ec-a8bc-469be95d82c4,Night ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+ea6f3652-ef11-4942-bee8-c3d48ba0e2f4,Ocean ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+d2a72594-9b35-476c-896d-198c82be9cc6,Office ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+4491f348-c8b0-4113-9c7a-4d7d6561d2e3,Outboard recall documentation,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+c03db13b-7340-44d2-baba-d4cbe6f28878,Outboard recall sheet,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+8e275941-a17a-49b5-a9e1-acce1764b684,Overdub room,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+49aa3b40-006a-44c0-a679-7a12c5cd62f4,Park ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+62b41ef0-2198-4259-ac9b-9f8ba376f3a4,Pickup request,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+5fd8cf07-f802-4d7b-9ede-e922dea10c3d,Plug-in recall documentation,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+0a7d26ce-b2b0-455a-8b8a-ad620b302f66,Plug-in recall sheet,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+11aa5be0-fc2d-4cf3-852b-1a7d0275016e,Portable clock generator,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+fa1b7fcb-6fe6-4803-80f3-8fb556f0b963,Portable multitrack recorder,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+1ff8df56-35d2-47f9-887c-532edc04d6f7,Portable rackmount recorder,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+bf46428f-dab6-485f-94f5-c9e0914e8527,Portable recording workstation,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+bd0221c8-3ecf-44eb-ab0c-2155732c611e,Portable stagebox,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+b193e0f8-21f4-4d6a-87fe-82ea142a72f1,Project archival package,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+f5971e4b-4f8a-4849-8c5b-0affa8fb5800,Project closeout,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+43475820-461a-43a3-b344-2428da4caa81,Project studio,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+83568ed1-7750-44d0-8f2d-6aa74b17c337,Publisher delivery package,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+6a96e5d5-bfa5-4975-8f72-3ebdc40cfdc2,Rain ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+46a9be2e-9eef-4ab6-8ffb-f4dfa82066d3,Recording brief,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+a822b23d-4cc0-4de7-a5f6-1c0fe06086f1,Recording log update,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+061a92b4-1f07-4060-b954-b7509dbc4f4e,Recording pass log,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+ab4b72ac-4622-4ac5-a416-cc82cd74d23d,Recording readiness review,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+b1bef826-12ba-448d-9833-3de130aa39b0,Redundant recording strategy,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+83907ce4-f80e-424c-ae2b-ba5f876c738d,Redundant recording verification,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+39dfabc5-306d-4949-bfe1-5785159245d0,Redundant remote recorder,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+ba8588af-b4f1-43d9-9849-efc7d22e7890,Reference listening room,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+55011180-ca84-45a9-bb5c-c9cb7001ced1,Remote backup verification,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+a27942a4-3db9-41bf-8723-0f77a0298a2f,Remote mix position,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+0330e87f-8cb3-4865-b787-733a72948433,Remote recording engineer,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+2c000fee-73db-4b7e-8d87-3b9b70438bff,Remote recording rig,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+13bf63f2-841e-4546-aa30-047e569a9fe8,Remote recording workflow,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+b097daca-1a2c-494c-8a35-9a1a3b05edf4,Remote signal verification,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+f4c552ef-0685-4f61-9f35-fb5443c3382f,Remote synchronization check,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+eb0e5a2b-47d4-443a-8ecf-3234f07fe3cf,Remote systems technician,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+021578b2-a1d6-4801-bc0b-0565155934c8,Restaurant ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+8501bb23-e1d4-4f95-a480-88a664cb6b12,Retake request,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+026f85eb-9d3d-4258-a921-edf091dc906c,Review playback,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+eb26537a-2659-4f4a-a95f-f0012a0bc741,Revision management,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+043316af-9662-4206-b53d-63799c5cee60,River ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+f9618e58-ba23-4c26-a713-7f48f9ab90ad,Room ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+340c1391-2f11-4640-97fa-a23e4ccde3d4,Ruggedized recording system,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+a8f630d7-feb1-4240-aec4-4bf7deae5f68,Rural ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+8147997e-17e3-4676-88cb-6a14ba719d48,School ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+30be5539-f64a-421c-ae2f-20a40ea01865,Scoring stage,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+7737e61d-9bcb-4639-93d6-a2c8e8043e8f,Session archive verification,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+411e2e85-e611-42ff-a5e3-2e85b8724dc5,Session backup strategy,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+ef30e498-f2a7-4af7-ac5f-faa189814cd6,Session briefing,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+1fb0c301-0375-4480-8440-49bb3564fc28,Session continuity,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+7b25d992-a9dd-4e9c-b769-3e846b7f8d85,Session debrief,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+48b5ffce-b822-4a24-b3af-79150730028b,Session handoff,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+eaaec9de-da32-4ab9-83b1-027d1e929758,Session milestone save,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+196afafe-240c-4a96-b507-380f86f98ece,Session recall package,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+cb6e46e1-98eb-47be-8f7d-ff16fd855711,Session wrap report,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+cedf43e7-9fe4-49ff-94b9-2513d5baf415,Shift change,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+63a30712-8b96-400f-aa75-712ce0515caf,Storm ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+3aea1d9b-a1f6-4344-a1d7-cae6829a5fc7,Studio call time,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+5aeb7a75-4df0-4628-992b-7a6056469276,Studio documentation package,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+044e2dc2-733f-4067-9ee3-a297525dbf35,Studio lockout,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+bd155b4c-2a05-479c-b57c-daf7e70622a5,Studio lounge,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+7920cb00-3cc4-4fb6-81e2-79282cbb08e1,Subway ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+0c459c47-1e5e-4061-923a-ed4b13912542,Tone bed,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+e0118afa-d29e-40b5-b9f9-2613152f1c6d,Track naming convention,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+d392c515-f0c8-4e94-a883-d8bb429c1ee0,Track sequencing verification,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+eb055b05-c66b-47af-a637-ecfc6017142f,Traffic ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+b27b6b04-fe2f-4e33-8d3a-d22583dc8c5f,Train ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+f38eb28c-b316-4997-8a21-369a861aad5b,UPS-backed recording system,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+2c2bb922-adb3-4d94-ad51-b4acebcbcb69,Urban ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+e7faa675-273b-4ba8-b1c4-9edad1e8fe57,Versioned backup,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+d7f628bb-6820-4b62-abc3-de1720a7ccc5,Weatherproof recording rig,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+592c5cbb-1b37-47ef-aacc-c8e55128ebe1,Wild ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+b7382436-69d4-464f-8855-d6c37cf21d62,Wilderness ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+bfd92ea0-7d2d-4034-88fd-5958e863e9d6,Wind ambience,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+3538abda-79f8-4dea-b38e-62bae4300b0c,Writing room,"Session Workflow, Takes & Documentation",,PENDINGDEF_2026_08_02,definition
+f0bd015f-6553-4180-ba54-6d928c248cce,Voice of God,"Show Control, Cueing & Communications",,PENDINGDEF_2026_08_02,definition
+79c39de1-2b06-47af-8d3b-14c38cfbd0c2,Blind via,Soldering,,PENDINGDEF_2026_08_02,definition
+6ba3149e-8eca-414a-bd42-39d4c77df790,Buried via,Soldering,,PENDINGDEF_2026_08_02,definition
+5803a084-9c56-4425-b38d-1f26d441d913,Component outline,Soldering,,PENDINGDEF_2026_08_02,definition
+b281751e-f979-4985-aafb-216e83384b11,Copper pour,Soldering,,PENDINGDEF_2026_08_02,definition
+9ed12cbe-439b-4b32-ace7-f0ecf008dc01,Double-sided PCB,Soldering,,PENDINGDEF_2026_08_02,definition
+fbea8e8d-3615-4991-8b46-4d5d5f4e8496,Fiducial,Soldering,,PENDINGDEF_2026_08_02,definition
+e9d839fc-9f03-4b76-9be8-5846a3a50b31,Fillet,Soldering,,PENDINGDEF_2026_08_02,definition
+85ff48be-2d7d-4da2-b25c-aeb0de78728b,Hand soldering,Soldering,,PENDINGDEF_2026_08_02,definition
+f01d63e2-e199-47ec-a818-7c0dd51b37e0,Land pattern,Soldering,,PENDINGDEF_2026_08_02,definition
+92cd44dc-a4a4-4384-9571-018b9db0fc28,Multilayer PCB,Soldering,,PENDINGDEF_2026_08_02,definition
+d31c6100-0668-48a8-bf80-597f822da882,PCB,Soldering,,PENDINGDEF_2026_08_02,definition
+f54cf793-d660-4e46-998c-9d27ca211d26,PCB footprint,Soldering,,PENDINGDEF_2026_08_02,definition
+3c856d69-7ea1-4c4a-85bb-a44c7f563001,PCB repair,Soldering,,PENDINGDEF_2026_08_02,definition
+1f202116-0bd7-41be-91ec-d667613febc4,Rework,Soldering,,PENDINGDEF_2026_08_02,definition
+aafbbb4f-35d9-4679-8520-e766b6492866,Single-sided PCB,Soldering,,PENDINGDEF_2026_08_02,definition
+0718f723-a09c-46b9-9160-1a9db144c7ce,Test point,Soldering,,PENDINGDEF_2026_08_02,definition
+a563d5e7-4c68-48d1-99c1-869722a8640a,Through-hole via,Soldering,,PENDINGDEF_2026_08_02,definition
+7445f7b4-e348-4a23-8c42-c1eb1c674588,Effects Editorial,Sound for Picture — Post Workflow & Deliverables,,PENDINGDEF_2026_08_02,definition
+5fd159cc-50ee-452b-bb03-e1f343301be8,Effects Tracklay,Sound for Picture — Post Workflow & Deliverables,,PENDINGDEF_2026_08_02,definition
+f093774d-bfce-46e9-9d36-b71023924c59,Hard Effect,Sound for Picture — Post Workflow & Deliverables,,PENDINGDEF_2026_08_02,definition
+5d9e7851-c436-4352-a21d-0b1b77387054,Prelap Effect,Sound for Picture — Post Workflow & Deliverables,,PENDINGDEF_2026_08_02,definition
+d1f9b179-ac3d-47bb-a606-34ca5775077f,Scale Illusion,Sound for Picture — Post Workflow & Deliverables,,PENDINGDEF_2026_08_02,definition
+d747c35c-b792-4218-9b71-b467564dcdf2,Sound-Effects Spotting,Sound for Picture — Post Workflow & Deliverables,,PENDINGDEF_2026_08_02,definition
+629db8b7-d711-483d-9ef9-b58552403cfa,Track Laying,Sound for Picture — Post Workflow & Deliverables,,PENDINGDEF_2026_08_02,definition
+67344034-bbd9-4f3e-9b64-dc5437f5c562,Wild Effect,Sound for Picture — Post Workflow & Deliverables,,PENDINGDEF_2026_08_02,definition
+fad5f050-1073-41af-b313-40f99dce5d04,Wild Track,Sound for Picture — Post Workflow & Deliverables,,PENDINGDEF_2026_08_02,definition
+eb601c5a-766d-4c53-a52f-8f35202eeef1,AC-coupled audio interface,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+2cedd1f9-662f-47d3-8ae9-72dfb758b56f,Clock divider,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+75bcac10-41f7-4ac7-ab02-ca4c5b36f9ca,Clock multiplier,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+8f22cc69-2e32-4c0d-b1da-2c3b402d069c,Clock pulse,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+5816db14-2613-4f3c-b497-df8813fd99f8,Control-voltage attenuation,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+0f8692a3-59bc-4382-a584-f1cf9092fcfe,Control-voltage automation,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+afc8b5b4-34b4-4d47-a5c6-76128d524c20,Control-voltage inversion,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+eee71326-a5ae-44e6-8eec-7ca134050c65,Control-voltage offset,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+8da5894a-8e5e-4e17-b582-e5aa5371962c,Control-voltage scaling,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+12babf15-115e-4576-9844-3b0af1d2c867,Control-voltage summing,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+d31fb8fe-8294-4571-b545-94304d033aa7,Control-voltage-to-MIDI interface,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+637a36db-424c-4381-86ab-af63bb60dc05,DC-coupled audio interface,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+8d8cb243-ec75-4ae3-8aac-e6cd08acd077,Envelope control voltage,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+f1f72ba8-b93a-4474-8f1e-8a39baef485a,Envelope follower output,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+927eb827-3c8b-437f-8eda-ea24369fe5f8,Eurorack audio level,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+7e41e985-4555-4c54-889d-8e899ba4becd,Gate polarity,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+b6a8ddb3-b522-40e7-b744-24e5b5c000a5,Gate signal,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+f568ae61-6d98-4479-809d-1ff7210ac051,Hertz-per-volt control,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+99a6159e-c4b5-4420-aa9c-a3534a88dc2b,Line-to-modular level conversion,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+5af6871c-cb9e-4891-966f-531d0d45a8cf,MIDI-to-control-voltage interface,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+be7c8ce2-2eec-4c52-92d6-94d68a436301,Modular patch cable,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+a995a5c2-3edd-4624-b4c9-246e217e069e,Modular signal router,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+d3f93be4-64f8-46d4-a780-4493647265da,Modular-to-line level conversion,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+3315fc1b-494e-4b00-95d3-7f161d4f72ab,Modulation control voltage,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+e26cf81e-17c2-488f-b798-b4687bcbfb14,Pitch control voltage,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+2377b205-0221-4a2f-be8b-fcd14295b9d5,Pitch-to-voltage conversion,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+e09ce7a2-de68-45d7-a010-c79a6a05834c,Portamento voltage,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+aecf9224-507e-4fde-a21b-3c5d05317f82,Positive gate,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+33c89077-0871-40b1-9231-ffb0ccbbef66,Reset pulse,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+d138be76-d98e-443a-ba99-7ca98be49a42,Sample-and-hold voltage,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+451a30c1-8c6d-49ea-9d4a-4d6ee35b43d4,Slew limiter,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+e44ea7f5-66a9-4862-9628-70a986d1cce5,Start-stop signal,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+768e4c0b-ad11-4d7d-b9ab-cdcbf154c56e,Trigger sequencer,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+6f52446d-877f-40d0-bb4f-e708ff6acea6,Trigger signal,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+cdd5796e-bee4-405e-915e-b0a9c4e523ab,Volts-per-octave control,"Synthesis Types, Modular & CV",,PENDINGDEF_2026_08_02,definition
+7bc673c1-bb55-4c21-b9ee-471d2e2d91e9,Actor compression,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d72a946f-4b56-4825-860f-0811a952e68d,Actor de-essing,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+ceef8f39-3e2f-4e2f-a7d7-b0fa1e746ec0,Actor delay alignment,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+137495d4-705a-42e4-bc85-e711bb971f7f,Actor effects send,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+65acf12d-302d-40fd-91b8-ff5b7d6bb99e,Actor equalization,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c1d259e8-7941-494a-a061-68bddb17b016,Actor foldback,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+7cca4846-db51-4262-b5ab-820158cca070,Actor gain trim,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+5d48ec9a-1bc1-427a-ad43-3c4cf9bf8727,Actor high-pass filtering,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+94fad14b-5717-427f-a6be-3d2e2ce65e88,Actor input channel,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+02c1b43c-fbc0-41ce-bc6a-e497c4894f4a,Actor level automation,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+2361aa06-44a7-4b71-a60f-cfdeaa1b0ad1,Actor microphone,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+9caa99b1-cac5-40d1-897d-938ff1ed217e,Actor mute automation,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+296113fa-5067-439e-8178-b659ae78bd3a,Actor reverb send,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+38ec5834-b3d5-4ede-a011-17b5318eebf3,Actor tracking,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+e6572f49-206c-4a1f-8394-062918732568,Associate sound designer,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+23570728-d317-45d1-b065-6710c4602ab9,Audio cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+cd8d72bd-2457-411f-a0f0-f2398567cc71,Audio playback engine,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+991889b2-52d7-4399-a132-e9b3bff75734,Audio-triggered lighting cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+a44445ab-7f97-4408-8b5b-913ad659c685,Autocontinue cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+e8114273-2e85-4658-879d-e2f12345860d,Automatic backup takeover,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+5f551807-f08a-4ca7-aa08-2ef69d330843,Backstage feed,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+1cba444c-33ed-4fed-9d98-552e5ac26f43,Backup playback computer,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+553d34da-c51f-4d1b-a74d-ccf602ead732,Band subgroup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+6f16f6b9-58d3-42a7-9f5a-8a8b1856c1e6,Bodypack assignment,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+4305e406-c6b7-45ed-841e-70ebcc879f0b,Bodypack handoff,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+5f47ea05-5a48-4605-a4e7-01dcdabe83ee,Broadcast feed,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+64c7fa93-0820-48cd-b14a-d255b4f14db6,Cart cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+1729fea1-fd8f-47e0-9e08-e0eca0913674,Channel recall,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+80b8d9a6-5683-4fbb-8fb6-58f05dc756d1,Channel safe,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+24f8c5f6-217d-431e-ae19-674ace8f7003,Character channel,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+6bf44f0f-99ea-4bc3-83df-b12809e18337,Character profile recall,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+3805dcf0-8438-4b68-9ffc-0c6b488856ef,Character tracking,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+f8bd8b7c-0393-497f-9584-178650b08138,Click-track playback,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+6fcc6a90-a7d7-4e24-8262-575e7cf8a2fc,Conductor camera feed,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+b285f08b-98c1-4218-8b8a-444b222ce255,Conductor feed,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+2fe6e69c-0a40-471e-b573-d8ecc93e0e08,Contact-closure trigger,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+620c8a09-536e-4b77-af0b-a447d850ec06,Cue audition,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+5dda6637-8d6d-4f5e-9900-0077296dbfaa,Cue buffering,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+f7b30320-b902-44cd-9e83-97e697891195,Cue delay time,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+2f0b33c5-2066-43f3-ad97-13c7085b0632,Cue edit mode,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+89d22320-3e0f-4934-8fac-bccc2228933c,Cue fade time,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+a8542571-4ee7-4707-8ac9-dc8a58858a11,Cue level control,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+b2e37d6c-42dd-4d85-8f52-7c8c6602e37a,Cue lockout,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d5c07a99-5c68-43aa-86d2-349691c51237,Cue loop point,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+0a70ba58-f768-44aa-8e01-91c7b009be3e,Cue output assignment,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+8cf22412-3a83-4b7d-9c8f-4303f0485169,Cue pan control,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+fff22ea1-6be0-425d-a082-54ae3705e189,Cue playback engine,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+b5f8c7e8-5b59-49bb-9e0b-22347765cfe1,Cue preloading,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+480e97f7-d2cf-41f8-94f9-beb69971707b,Cue recall,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+0079e831-a80d-46ea-ab0e-362111728bef,Cue rehearsal mode,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+93923679-51b4-4542-9e0b-2055d3f939ae,Cue safe mode,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+6430a0f0-2597-4b77-a90d-a1208031aac9,Cue speaker feed,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+918d2220-a995-4dcc-9173-218b5a6dddcf,Cue start point,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d6e62869-d7b5-4697-864a-5066db883682,Cue stop point,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+74d8fc30-ec81-4091-a55f-834b9a4e83b6,Cue synchronization,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+3b90c24a-2cd8-40e0-a9d3-47227d31a52b,Cue-based mix,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c258af16-cd01-40d5-97e6-3611c2a6f8ce,Dialogue pickup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d1672fbb-c1ab-472b-8b21-abbf883bef62,Double-cast tracking,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+ff92926e-d3de-4f7f-91ad-3e4e3c5ef404,Dressing-room feed,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+9f55bccd-7aee-4756-b384-74a9c027286a,Effects subgroup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+eba1ea55-e1ab-440c-8634-476e4aa8cbf6,Effects-return channel,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+495126b5-36e0-4c62-b385-94b3b2d9362f,Electronic percussion rig,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+ffac0140-3d14-4306-8525-151dec000190,Ensemble input channel,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+a8e2e620-6acc-42e2-8ce1-3318d57a0461,Ensemble microphone,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+15922124-6a0b-436b-a9b1-a36fb2a6f591,Ensemble subgroup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+7df1737c-a899-4822-be2b-9e482c51fbe9,Entrance pickup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+0f60d537-c455-4c09-bf0b-982478df90ea,Exit mute,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+7f230a49-0f4c-4fbe-a417-bb17d279326c,Fade cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+1861da6d-81eb-4d94-a31c-54aa0fc6e90a,Foldback feed,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+a2ad1677-eb44-4c5f-8940-a1012bde136e,Follow cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+fff78d73-b82d-4bbb-b1ce-b45b5763538c,General-purpose-interface trigger,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+cfa44897-5f31-459f-aad2-5e1589ffb1cd,Hearing-assistance feed,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+eb630f17-7256-4e07-8cf3-d267f2ac0991,Keyboard playback rig,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d4a9135e-17ba-448c-9513-5b8829483ebb,Keyboard programming rig,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+a1314d9f-cba2-45a6-93e3-247a25f2a4a1,Lighting-triggered audio cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+180b40c9-b22a-4b11-b1e3-0ff3052da9ff,Line-by-line automation,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+5ba716b8-22ce-41fd-b297-f4a338417376,Lobby feed,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+7476366b-fcec-4309-a612-514af9f4b06e,Loop cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+beda79c4-865e-4dd5-a138-f2ca61e927f5,Main playback computer,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+1e92d049-7801-4d46-8962-be6a093c63e2,Manual backup takeover,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+f35ac155-8cdd-4ecb-ab95-8af57800051f,Matrix playback,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c615d425-a4ff-47d6-a172-5bbe9efd5952,Microphone assignment chart,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d7a51fa9-27f4-49d8-961d-48faf99bdf30,Microphone handoff,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+b4d2b1b9-aaa0-437b-a7ea-01476494cc32,MIDI cue trigger,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+f72f0ae0-9fbf-46c4-a545-ef948b526f70,Mixer operator,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d738b9a0-3562-4ecf-99b8-f9d99043a21a,Multichannel playback,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+60f9c73e-aeee-4106-aa61-635676a68ff1,Musical-director foldback,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+a69e14a1-7956-4d8e-8049-b05b5554ba32,Musical-number recall,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+944f35d1-6980-42f3-b1f7-c1fd72474fa0,Musical-theater vocal mix,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+8941e47f-470f-438b-b7f1-0083959330ab,Network trigger,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+e6638a2c-b256-4b3a-afee-2d74088f1171,Offstage vocal pickup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+0f6d7026-df8c-4598-b591-1fbf952ec337,Onstage vocal pickup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d04a259b-719a-433c-89ed-092d2b8de62f,Open Sound Control trigger,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+317bb87c-110f-44a5-b0db-cc9b128ba029,Orchestra cue system,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+e33340d3-90c9-47ca-b256-5ed81f80138b,Orchestra foldback,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+76bb16f6-72d7-4779-8e59-a079f6f8ac9d,Orchestra input channel,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+1f1475f6-1b87-4862-a654-d9c1c4ec7580,Orchestra stem playback,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+824fa70f-30b2-4acd-9c1d-bb0eae755e4a,Orchestra subgroup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+41113d18-a192-4310-970f-22865fe8bf91,Orchestra-pit automation,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+59560241-b802-44f6-b4d9-2916b882d60e,Orchestra-pit mix,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+4e2334fe-c555-4468-9383-4a6853ac693b,Orchestra-pit monitoring,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+28ea16d7-78bd-4948-b9e2-439f45999aee,Parameter recall,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+3722f094-bf16-4bbd-8a0f-b4127b1d85e1,Parameter safe,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+1c24db0a-984a-47bf-9be3-48f26e3ddfbb,Performance mix,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+66479485-522b-473c-94b5-48cbccc9b68b,Pit ambience microphone,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+f2a2f6e5-bc58-41d9-97c8-e584647bce9c,Pit conductor monitor,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+84fa2716-b7ea-4d8b-849e-c065af972076,Pit input list,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c165419f-b69d-4c29-a4be-534a16dffead,Pit isolation booth,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+a7d42eab-41b4-49df-b2a9-a446d7494167,Pit microphone setup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+7667b1bf-adcc-4fd9-a1e5-87df2d4639ff,Pit orchestra,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+2e3603b5-73c8-464a-b92b-97404dddabdb,Pit orchestra subgroup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+0681a3be-027b-4a91-ab23-d2400673580e,Pit patch list,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+cbf0faed-a826-4e24-a221-528925b10407,Playback failover,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+59d88d0b-3d0f-43db-a537-bfabe45719ac,Playback input channel,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+7c0ba793-decb-4744-b39d-c57e8b155568,Playback output patch,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+68fb078a-953f-4023-b7ec-06b8bd3e839d,Playback routing,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+8c9e76fe-7163-46f1-95d5-bee79c913935,Playback subgroup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+77408815-84c4-4e5e-858b-0c3d0d3fbc87,Preset cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+53169767-645f-46b9-9a1b-3220fb72eb5e,Principal microphone,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+2fedd942-6f11-4ba5-a14d-6086381ff127,Production mix,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+0fcb83f8-2042-4aa2-9d0c-4d75ba5a94ef,Production sound engineer,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+cdadb8ba-9d3f-4ba3-823d-3942b70b207c,Recall safe,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+fbc9b9cd-2c63-478e-a61c-23381bcf0d14,Recall scope,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+35407689-8faf-4fbc-9e27-424db78a706c,Scene crossfade,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c15bbefe-8454-4c04-b0df-eb0553c8732e,Scene transition time,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+0367c3ce-504d-48c0-803a-9df2782e0b46,Scene-based mix,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d30b08e8-def8-4fd6-adb2-f7a9ca6235ae,Scripted fader move,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+1a9a30f2-58a4-47ad-9dae-1432627c96f4,Scripted mute,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+1a308a00-28e5-483c-b88c-67ef6541e200,Show cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c44124c5-c274-4abc-b833-9328d8231d89,Show mix,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d2dfd58c-9620-4d7e-bef7-e8845e0686ed,Show playback system,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+cf97133b-3e43-45df-beda-a466fa8efa33,Show-control system,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+2d99c174-1b96-4a22-bf3e-edf93f0caadf,Show-file archive,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+db20a3a4-000e-4de0-8dbd-4e03a7d81f32,Show-file backup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+1101b8d5-5d59-4d2b-acee-4f2f38b0e9cb,Snapshot transition,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+58704a8a-c362-4631-a3f0-66f48277e657,Sound operator,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+788dd37b-ebf5-41b1-b621-41e9705b9d58,Sound programmer,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+771de826-5381-4d5d-8dce-012c5921cae6,Sound-effect cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+164df393-f9e0-4a53-b953-aa42e3416452,Stage-monitor feed,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+89ae624c-d850-481f-b0e1-df45727db127,Stop cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+0109b21a-83d3-4d2c-b734-402ff0573679,Sweetener track,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+27fd746b-b655-4ef6-9028-68008fef15fa,Swing performer microphone,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c68aaef5-be9c-49ee-bad8-13d88784126d,Synchronized redundant playback,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+f2be4523-5a69-4a9e-8002-8a48c1c1b86b,Technical rehearsal mix,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+e1aff01b-8c98-4644-9538-d70d0a54fb96,Theater mixing console,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+53738933-bd25-4965-b074-39270c7ad868,Theater sound engineer,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+2d11b850-9fad-4ef8-b1f9-eae93d9c99cb,Theatrical sound mix,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+b7a155e6-ff20-4343-9f7e-55bfaaf05c33,Timecode chase,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+3026a955-64c9-4153-b1b6-33527817e9dc,Timecode cue trigger,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+517eb97a-a84e-482c-a5bc-7a4b70011b3f,Underscore cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+4d072bd3-0e10-4cf7-b6b2-5c1343e70f24,Understudy microphone,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+2d1003f6-5564-404a-be4c-4de81a458de1,Understudy substitution,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c8df9307-e8cb-4251-ad02-b3cbc3969b51,Vocal scene recall,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+18d851c1-a509-4bc7-af6b-0af23200d7e0,Vocal subgroup,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+2fe35da2-376a-4960-828b-3885568da9c0,Wait cue,Theatrical Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+18336c90-788a-42dd-b4ed-5aec16f76909,Inner groove distortion,Vinyl / Disc Mastering,,PENDINGDEF_2026_08_02,definition
+b30003c8-3647-499a-83f1-09befbd01367,Vinyl sequencing,Vinyl / Disc Mastering,,PENDINGDEF_2026_08_02,definition
+935c4132-32e4-471d-8397-093b94af6524,Acoustic Piano Miking,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+87c455e1-91a5-402f-accc-d947341b073b,Altar Area,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+14981b5a-6b7a-429d-8b56-a79421774df2,Altar Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+dd0cf76a-d732-46ed-9710-7a66dc3ad778,Ambient Microphone Pair,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+6d0ef08c-8b9e-4498-b352-2dd6b2640548,Ambon Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+8e26ced5-e372-485d-bcbf-a2cab0920095,Amplifier Isolation Cabinet,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+9d1885ce-3e10-425e-8ee0-20f3d0ac8801,Audience Ambience Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+a3df46b0-d3b6-4a65-887f-0c43f801680c,Automatic Microphone Mixing,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+61bd60b1-b5ce-4f06-b326-4cf01257f319,Backline Isolation,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+4b3d58c8-d7ef-46ae-9476-c92c226ba626,Beam-Steering Column Array,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+af8fd4c9-cd7b-4725-b37d-95684f384f5a,Broadcast Control Room,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+981cd013-9e28-4718-9693-c1d46b4a050d,Celebrant Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+3b5d84ad-145e-4d92-a31e-f949d528c28d,Choir Area Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+ae68e50c-6cc4-4131-ab5b-23bc41ca5fc1,Choir Balance,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+277a73c4-97ae-4005-bf1a-6b0441b6c537,Choir Foldback,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+2f44f9a7-1c84-49d6-9e00-a28210b10f34,Choir Gain Before Feedback,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+2e50fa99-0487-40c2-81ab-27b1d3b43e2f,Choir Image,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+ec6dd4d4-47fb-486a-bd1e-d55fb4afe490,Choir Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c3522ed5-d97c-41bc-882e-a1154b7d212f,Choir Reinforcement,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+41b9e6d4-2b24-4969-b85f-84a579e48186,Choir Section Miking,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+564521ba-bcfe-4158-be9b-12ae50953c4c,Choir Spot Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+30daf391-cacd-4e5a-809b-1d9850db3083,Choir-Monitor Interaction,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+cfe3436a-448a-438d-b8fc-c4e4eab11fa7,Clothing Noise,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+a0d0fa67-3f1d-4f6c-8344-e03ee9165d30,Congregation Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+6a2af25b-82e7-40d3-8763-bfdc188f9341,Congregational Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+014fa292-efe5-4f26-a103-88db8f1c1d78,Congregational Reinforcement,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+0607e03b-c0f3-45ce-b19e-e780250f15f9,Congregational Singing Pickup,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+fb000e11-ee33-4b99-b2b8-216549b9c2e5,Direct Instrument Input,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+8515f880-c84a-4f19-8d99-e407cd938bb7,Drum Enclosure,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c01dea6b-32df-4156-9f66-e5741bc67613,Drum Isolation Booth,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+b33fb375-a07c-4348-9e67-da3dbeb00343,Earset Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+6b50574d-a807-4599-b62b-1d7ff24a1f8f,Electronic Drum Kit,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+919f88d5-7cc7-48b0-afb5-435df237d754,Electronic Organ,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+8958bd20-b954-4d6f-a258-52c01d4ea983,Handheld Vocal Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+4dc7f43e-41bd-43d6-8bfd-6ef540965377,Hanging Choir Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+bad79473-4faf-4f14-8636-9e3914e0d87d,Headworn Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+bc4ad556-58a2-465e-b943-b245c249eaa6,Lectern Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+391f8a94-c766-4f42-9651-17c8e302f042,Leslie-Type Rotary Speaker,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c40384a6-f3a8-460d-bb73-35fbea272fd9,Liturgical Garment Miking,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+e20aac31-d54c-456a-8c5d-8057986ddd64,Liturgical Preset,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+e6f9b07c-6ec2-4645-9934-6199b996f7a6,Microphone Proximity,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+e00559b9-07c7-4870-b99e-6144b7b7a3ca,Microphone Sightline,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c112a6f5-7180-42f2-965a-24ad20829ba1,Microphone Visibility Constraint,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+4d3a480c-bc5b-4042-ad63-d336d2c66749,Multiple-Talker Position,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+ebaa562a-67f6-4138-a22b-b3933a33871d,Natural Choir Support,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+fe939629-0a62-4516-9f3b-e8485fb1c490,Nave,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+002dd0ad-7b8b-4f8a-ab11-80308e63b51e,Number of Open Microphones,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+a19e1771-a8dc-4129-9ad1-071d0bc22dde,Organ Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d60cf860-9684-421f-a7ce-85df81b3ff87,Organ Reinforcement,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+a9d29642-b5c4-4097-8c23-5788c03c2a64,Passive Column Array,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+39408d73-7e12-430a-923c-7f841c812188,Pastor Foldback,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+62981ab2-72ed-439a-9f10-b470835922ea,Pastor Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+4d1bf28c-d530-421b-ba8c-343d73e524d9,Pipe Organ,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+07bf4205-2405-417e-ae95-19ef6e6ac859,Platform,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+5006ec84-7cd6-4c05-9432-5a46a26bf1ca,Platform Monitor,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+7e495ad2-4fa6-42c4-95d1-0ef7220f9610,Praise Team,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+bc5c38eb-e327-400e-9b6d-5db9249a7fa0,Pulpit,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+86386a6c-def1-44dc-85a0-ee082c36b0a3,Pulpit Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+cb668f94-36bd-4ea4-8b66-19b61c75cde4,Sanctuary,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+68093c0a-8fb2-4fff-82b2-870adf0bc048,Stem Playback,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+da664dbc-18ca-480a-a15c-265063132b38,Three-to-One Rule,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+21332a80-51a9-41de-8a70-7ff574ced451,Transept,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+c36711e6-630d-4a4e-b83a-bbf1fee9de87,Vocal Team,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+04ca25d3-ad0d-4d33-a0ad-7dede847c2d5,Wireless Handheld Pass Microphone,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+757a7c7d-e972-4706-be9b-3debf09f6690,Worship Band,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+49d3904e-35e2-4569-90fb-793076916396,Worship Center,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition
+d1a48d4b-4c74-4b75-bd33-38eb731abab0,Worship Leader,Worship Sound (commercial card),,PENDINGDEF_2026_08_02,definition

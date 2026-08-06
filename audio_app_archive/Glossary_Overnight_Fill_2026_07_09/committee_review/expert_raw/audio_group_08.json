@@ -1,0 +1,115 @@
+{
+ "expert": "AUDIO TECHNICAL EXPERT",
+ "group": 8,
+ "reviews": [
+  {
+   "id": "433e7be0-ef3b-4725-9cb9-35b3dee41e0f",
+   "term": "Consumer Level (−10 dBV)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "53c65e81-e982-442d-baa5-00d4e2acfca0",
+   "term": "Impedance Bridging",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c34018ee-64a4-4d56-9d05-b20b365b79bc",
+   "term": "Line Driver",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e89c36ae-1bcf-48fe-9a47-426adf47e7df",
+   "term": "Meter Ballistics",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e53f1402-952e-4d52-ba70-a695a0ce258b",
+   "term": "Peak Hold",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d6a6964e-0a66-4bb2-a176-4d235dcf526a",
+   "term": "Signal Present Indicator",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "purpose_function",
+     "severity": "Low",
+     "issue": "\"signal above a low threshold (commonly around −20 dB)\" states a dB figure with no reference, so it is technically ambiguous (−20 dBu? dBFS? relative to nominal?). Actual factory thresholds also vary widely by manufacturer.",
+     "suggestion": "Specify the reference and note the variability, e.g. \"typically ~20 dB below nominal operating level (often around −20 dBu on analog consoles), though the exact threshold varies by manufacturer.\""
+    }
+   ]
+  },
+  {
+   "id": "8d35a94d-e330-4da1-9640-577e0943f994",
+   "term": "Antinode",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f4b9db47-cab2-4995-b280-c2a3b8073047",
+   "term": "Cocktail Party Effect",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2be28697-a5cf-42e2-9e72-14d4be212846",
+   "term": "Concert Pitch (A440)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fb84ea48-9be6-4bce-8be9-fa393167a49f",
+   "term": "Interaural Level Difference (ILD)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2bcaa48b-e606-41a5-b994-59a76cb00db7",
+   "term": "Interaural Time Difference (ITD)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "442baa71-f739-4c50-9b9f-863a1743a2d0",
+   "term": "Missing Fundamental",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0d41b240-d37f-47d3-8577-98915df4ff04",
+   "term": "Plane Wave",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "963d12c2-7824-477c-8819-d9cc81d57bf6",
+   "term": "Sound Localization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "80bf397c-14e1-4b42-948a-3e37ff88bc84",
+   "term": "Superposition",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2fdcd186-cd26-42d5-8539-202acb6157fb",
+   "term": "Transverse Wave",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3ad2d190-c941-4a3e-b219-f0a3213bed14",
+   "term": "Wavefront",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

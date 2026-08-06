@@ -1,0 +1,159 @@
+{
+ "batch": 159,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "5060e207-faeb-479b-acf7-6172109302f1",
+   "term": "Cross-interleaved Reed-Solomon coding",
+   "fields": {
+    "definition": "Cross-interleaved Reed-Solomon coding (CIRC) is the two-stage error-correction scheme used on audio Compact Discs, defined in the Red Book standard (IEC 60908). It pairs two Reed-Solomon codes (called C1 and C2) with an interleave that spreads each block of audio across many code words, so burst errors from scratches or dust are broken up and can be corrected or, failing that, concealed.",
+    "plain_english": "CIRC is the safety net a CD uses to fix reading errors. It spreads each bit of the music across the disc. So a scratch harms many tiny pieces, not one whole chunk, and the damage is easy to repair. It works like copying your notes in a few places so one spill never wipes out a full page.",
+    "purpose_function": "It exists to make optical-disc playback robust: because CDs get handled, scratched, and dusty, CIRC lets the player recover the original samples exactly, or briefly hide the loss, so the listener still hears clean audio.",
+    "practical_application": "A mastering or QC engineer leans on CIRC when checking a disc's error rates; low C1/C2 counts show that a glass master or replicated disc will play reliably.",
+    "category": "Optical Disc Coding",
+    "related_terms": ["CU error rate", "Block error rate (BLER)", "Red Book standard", "Interleaving", "Error concealment", "Glass master"],
+    "common_mistakes": ["Thinking CIRC makes CDs error-proof; it only corrects or conceals errors up to a limit, after which audible dropouts or muting occur.", "Confusing correction with concealment: CIRC first tries to rebuild the data exactly, and only interpolates (conceals) when correction fails.", "Assuming a disc that plays fine has low error rates; playback can succeed while error correction is working hard, hiding a disc that is near failure."],
+    "scenario_contexts": ["Verifying error rates on a CD glass master before authorizing replication.", "Diagnosing why a burned CD-R plays with dropouts on some players.", "Explaining why a scratch running across the disc is worse than a single radial scratch."]
+   },
+   "sources": ["IEC 60908 (Compact Disc Digital Audio standard)", "Ballou, Handbook for Sound Engineers (digital audio / disc systems)", "IASA TC-04 Guidelines on the Production and Preservation of Digital Audio Objects"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "732e9606-1a83-457b-8345-e0d91e94cfd9",
+   "term": "CU error rate",
+   "fields": {
+    "definition": "The CU (uncorrectable) error rate is a Compact Disc quality measurement counting the errors that the disc's C2 (second Reed-Solomon) decoder cannot correct, per unit of time. A nonzero CU rate means the CIRC system had to conceal (interpolate) or mute samples rather than recover them exactly, so by professional standards the disc is defective.",
+    "plain_english": "The CU error rate counts the reading mistakes a CD's built-in repair system cannot fix. When it is above zero, the player has to guess or mute part of the sound instead of reading it correctly. For a finished disc this number should be zero, the way a printed book should have no missing letters.",
+    "purpose_function": "It is a pass/fail health check: a good disc has zero uncorrectable errors, so measuring the CU rate tells an engineer whether a master or replicated disc meets the standard before it is duplicated or shipped.",
+    "practical_application": "In QC, a technician runs a disc analyzer, watches the error report, and rejects any master or batch showing CU (uncorrectable) errors, since these cause audible clicks or muting.",
+    "category": "Optical Disc Testing",
+    "related_terms": ["Cross-interleaved Reed-Solomon coding", "Block error rate (BLER)", "C1/C2 errors", "Error concealment", "Glass master", "Disc replication"],
+    "common_mistakes": ["Treating a low but nonzero CU rate as acceptable; for a finished CD the target is zero uncorrectable errors.", "Confusing CU (uncorrectable, C2) errors with ordinary C1 errors, which are common and fully corrected.", "Judging a disc only by whether it plays; a player can mute over CU errors so briefly that the listener misses it."],
+    "scenario_contexts": ["Final QC of a glass master before mass replication.", "Screening burned CD-Rs used as reference or production masters.", "Investigating intermittent clicks reported on a duplicated disc run."]
+   },
+   "sources": ["IEC 60908 (Compact Disc Digital Audio standard)", "IASA TC-04 Guidelines on the Production and Preservation of Digital Audio Objects", "Ballou, Handbook for Sound Engineers (digital audio / disc systems)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b6afa3f8-562e-4702-9752-0548193b6b5f",
+   "term": "Cue-by-cue export",
+   "fields": {
+    "definition": "Cue-by-cue export is the practice of bouncing a film or television score to disk as one separate audio file (or set of stems) per musical cue, rather than as a single continuous file. Each cue is exported at its scene's timecode so it drops into the re-recording (dub) session in sync.",
+    "plain_english": "In film music, a 'cue' is one short piece of score written for a scene. Cue-by-cue export means saving each of those pieces as its own audio file instead of one long track. That way the mixing team can place, move, and balance each piece of music on its own. It is like handing over a stack of labeled clips instead of one giant recording.",
+    "purpose_function": "It exists so the mixer and music editor can position, level, and edit each piece of score independently against picture, and so a change to one scene does not require re-delivering the whole score.",
+    "practical_application": "A composer or score mixer bounces each cue to timecode-stamped files (often as stems), names them by cue number, and hands them to the music editor for the dub stage.",
+    "category": "Score Delivery",
+    "related_terms": ["Delay-only score stem", "Stems", "Timecode", "Music editor", "Bounce/export", "Re-recording mix"],
+    "common_mistakes": ["Exporting one continuous file instead of separate cues, which makes it hard for the dub stage to place and revise individual cues.", "Not aligning or embedding timecode, so the exported cues do not drop into the mix in sync.", "Inconsistent naming or missing cue numbers, causing cues to be misfiled at the dub stage."],
+    "scenario_contexts": ["Delivering a completed score to the re-recording mixer for a film's final dub.", "Sending revised music for a single scene without re-exporting the entire score.", "Preparing score stems for a TV episode's music-and-effects (M&E) delivery."]
+   },
+   "sources": ["Sound on Sound (film/TV scoring and stem delivery)", "Huber & Runstein, Modern Recording Techniques (bouncing, stems, delivery)", "SMPTE ST 12 (time and control code)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "add17eb2-1c78-430d-b910-dbdcfc48b8fc",
+   "term": "Cutter-head cooling",
+   "fields": {
+    "definition": "Cutter-head cooling refers to the methods used to remove heat from the electromagnetic drive coils of a disc-cutting head, which dissipate significant power when cutting loud or high-frequency material. On lathes such as the Neumann SX-74, helium gas is fed around the coils to conduct heat away, and protection circuits mute the head if coil current or temperature exceeds safe limits.",
+    "plain_english": "The cutting head that carves a record's groove has coils that get very hot. Loud, bright music makes them hotter still. Cutter-head cooling stops those coils from burning out. It usually feeds helium gas around them to carry the heat away. It works like the fan that keeps a computer chip from cooking itself.",
+    "purpose_function": "It exists to protect an expensive, hard-to-replace cutter head from heat damage, letting the engineer cut loud programs without burning out the drive coils.",
+    "practical_application": "A cutting engineer keeps the helium supply flowing and watches the head's temperature and protection meters, easing off level or high frequencies if the coils approach their limit.",
+    "category": "Disc Cutting",
+    "related_terms": ["Cutter-head heating", "Cutting level optimization", "Disc-cutting lathe", "Cutting stylus", "Cutter-head protection", "Variable pitch"],
+    "common_mistakes": ["UNSAFE: Cutting very loud, high-frequency material without adequate cooling or heed of the protection meters, which can burn out the costly drive coils.", "Forgetting to turn on or refill the helium supply before a cutting session.", "Assuming cooling lets you ignore level limits; it raises the safe ceiling but does not remove it."],
+    "scenario_contexts": ["Cutting a loud, bright master where coil heating is a real risk.", "Pre-session checks on a Neumann lathe's helium cooling supply.", "Troubleshooting a cutter head that keeps tripping its thermal protection."]
+   },
+   "sources": ["Neumann disc-cutting system technical documentation (SX-74 cutter head)", "Ballou, Handbook for Sound Engineers (disc recording)", "AES publications on disc mastering"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "210217b7-8c06-4363-812a-d84ce504f4e7",
+   "term": "Cutter-head heating",
+   "fields": {
+    "definition": "Cutter-head heating (the 'hot stylus' technique) is the deliberate warming of the cutting stylus by a small heater coil during disc cutting. Heating softens the lacquer at the point of cut, which reduces cutting friction and surface (groove) noise and improves high-frequency detail and groove-wall finish. It is distinct from unwanted overheating of the drive coils, which the cooling system prevents.",
+    "plain_english": "A record groove is carved by a sharp stylus cutting into a soft lacquer disc. Heating the stylus with a tiny built-in heater makes it slice more cleanly, which lowers background hiss and sharpens the high notes. It is like warming a knife before cutting so it glides through smoothly instead of tearing.",
+    "purpose_function": "It exists to lower groove-surface noise and clean up high-frequency cutting, giving a quieter, more detailed record.",
+    "practical_application": "The cutting engineer adjusts the stylus heat while listening to a test cut, dialing it for the lowest surface noise without over-heating, which would distort or scorch the lacquer.",
+    "category": "Disc Cutting",
+    "related_terms": ["Cutter-head cooling", "Cutting stylus", "Lacquer", "Surface noise", "Disc-cutting lathe", "Cutting level optimization"],
+    "common_mistakes": ["Using too much stylus heat, which distorts the groove and can raise noise or damage the stylus.", "Using too little heat, leaving audible surface noise and dull high frequencies.", "Confusing deliberate stylus heating with coil overheating; the first is a wanted adjustment, the second is a fault the cooling system guards against."],
+    "scenario_contexts": ["Dialing in stylus heat at the start of a lacquer cutting session for lowest surface noise.", "Cutting a quiet, delicate passage where groove noise would be exposed.", "Diagnosing excess surface noise traced to an incorrectly set stylus heater."]
+   },
+   "sources": ["Neumann disc-cutting system technical documentation (cutting stylus / stylus heat)", "Ballou, Handbook for Sound Engineers (disc recording)", "AES publications on disc mastering"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3d813cfa-df16-4eb4-9bfd-3c99e5ac502f",
+   "term": "Cutting level optimization",
+   "fields": {
+    "definition": "Cutting level optimization is the process of setting the level fed to a disc-cutting lathe as high as the medium allows while still fitting the required playing time and cutting a groove that plays back cleanly. It trades a hotter level (better signal-to-noise and impact) against groove width, side length, and safe tracking on consumer turntables.",
+    "plain_english": "When making a vinyl record, louder grooves sound better but take up more space, so each side holds less music. Cutting level optimization is finding the highest level that still fits the whole side and plays back without skipping. It is like choosing the biggest, clearest handwriting that still fits your whole essay on one page.",
+    "purpose_function": "It exists to get the best loudness and signal-to-noise from vinyl's limited space without overrunning a side or cutting grooves too wide or deep to track reliably.",
+    "practical_application": "The cutting engineer sets overall level, often with variable pitch and depth driven by a preview signal, to fit the side length while keeping grooves loud but trackable, watching bass level and sibilance.",
+    "category": "Disc Cutting",
+    "related_terms": ["Cutting preview system", "Variable pitch", "Cutter-head cooling", "Groove spacing", "Playing time", "Cutting stylus"],
+    "common_mistakes": ["Cutting too hot for a long side, so the grooves overrun the space and run into the label.", "Ignoring heavy or out-of-phase bass, which forces very wide grooves and can make the stylus jump.", "Assuming louder is always better; over-cut grooves mistrack on many consumer turntables."],
+    "scenario_contexts": ["Deciding cutting level for a long (20+ minute) LP side.", "Balancing loudness against surface noise on a quiet classical record.", "Setting level and pitch for a bass-heavy dance record so it still tracks."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (disc recording)", "AES publications on disc mastering", "Neumann disc-cutting system technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c68d67fb-696e-4f96-912e-04394ce6872e",
+   "term": "Cutting preview system",
+   "fields": {
+    "definition": "The cutting preview system feeds the disc-cutting lathe's automatic groove-spacing (variable pitch and depth) control with the program audio a fixed time ahead, typically one disc revolution, of the audio being cut. Originally a second 'preview' head on a tape machine (or a matched delay on the program signal), it lets the pitch computer widen groove spacing just before loud passages and tighten it during quiet ones.",
+    "plain_english": "A record lathe needs to know what is coming so it can space the grooves correctly: wide for loud parts, tight for quiet parts. The preview system feeds it the sound slightly early, one turn of the disc ahead, using a special tape head or a delay. It is like a driver seeing the road ahead so they steer before the curve, not during it.",
+    "purpose_function": "It exists to make automatic variable pitch and depth possible: by hearing each passage in advance, the lathe packs the most music onto a side while leaving room for loud grooves so they never cut into their neighbors.",
+    "practical_application": "When cutting from tape, the engineer uses a preview head set ahead of the program head (or a matching delay on a digital source) so the lathe's pitch computer gets the advance signal that drives groove spacing.",
+    "category": "Disc Cutting",
+    "related_terms": ["Variable pitch", "Cutting level optimization", "Disc-cutting lathe", "Preview head", "Groove spacing", "Cutter-head cooling"],
+    "common_mistakes": ["Setting the preview time wrong, so groove spacing changes too early or too late and grooves overrun or waste space.", "Forgetting the preview delay when cutting from a digital source, so variable pitch cannot work.", "Confusing the preview (advance) signal with the actual program feed to the cutter head."],
+    "scenario_contexts": ["Cutting a dynamic master from a preview-head tape machine.", "Configuring the delay offset when cutting from a digital file source.", "Troubleshooting grooves that run together on loud passages due to a mis-set preview."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (disc recording)", "AES publications on disc mastering", "Neumann VMS/SX cutting-system technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fa366925-a4ed-484d-84aa-d04813f5f5eb",
+   "term": "Dead wax area",
+   "fields": {
+    "definition": "The dead wax is the smooth, essentially ungrooved area on a vinyl record between the end of the recorded (modulated) grooves and the label. It carries the run-out groove and any etched matrix, catalogue and stamper identifiers, and it is where the tonearm lifts or parks at the end of a side.",
+    "plain_english": "The dead wax is the shiny blank ring near the middle of a record, just past where the music stops and before the paper label. No sound is cut there, but you can often find scratched-in codes that identify the master and pressing. It is like the blank margin and printer's marks at the edge of a printed page.",
+    "purpose_function": "It provides a safe run-out for the stylus at the end of a side and a place to inscribe the matrix, stamper and mastering marks used to trace and match parts through pressing.",
+    "practical_application": "Engineers and QC staff read the dead-wax matrix numbers to confirm the correct master or stamper was used and to identify a pressing; the mastering engineer's initials or stamp may also appear there.",
+    "category": "Vinyl Record",
+    "related_terms": ["Matrix number", "Run-out groove", "Lacquer", "Stamper", "Disc-cutting lathe", "Lead-out groove"],
+    "common_mistakes": ["Thinking the dead wax is a defect or empty waste; it is a deliberate, standard part of the record used for run-out and identification.", "Misreading or ignoring matrix and stamper codes when matching parts, leading to a wrong or mismatched pressing.", "Confusing the lead-out (run-out) groove with the locked concentric groove that finally stops the stylus."],
+    "scenario_contexts": ["Reading matrix numbers in the dead wax to verify the correct stamper.", "Identifying a pressing or cut from etched dead-wax codes.", "Explaining where a mastering engineer stamps or signs a lacquer."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (disc recording)", "AES publications on disc mastering / disc recording anthology"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "81596854-a3e8-4f69-94a2-ebc2f5af23f4",
+   "term": "Delay-only score stem",
+   "fields": {
+    "definition": "A delay-only score stem is a score delivery stem that contains only the output of the delay (echo) effects, that is, the delayed 'wet' repeats with the dry source removed. Delivered alongside the dry stems, it lets the re-recording mixer adjust or remove the score's delay effect independently during the final mix.",
+    "plain_english": "In film music, a stem is one part of the mix delivered on its own. A delay-only stem holds just the echoes from the music, with the original notes taken out. Handing it over separately lets the mixing team turn the echo up, down, or off without touching the rest of the music. It is like getting the shadow of a picture on its own clear sheet.",
+    "purpose_function": "It exists to give the final mixer control over time-based effects: keeping the delay on its own stem means the echo can be balanced against dialogue and effects, or removed, without re-rendering the score.",
+    "practical_application": "The score mixer routes the delay returns to a separate bus and bounces them as their own stem, labeled and time-aligned with the dry cue, for delivery to the dub stage.",
+    "category": "Score Delivery",
+    "related_terms": ["Cue-by-cue export", "Stems", "Wet/dry signal", "Reverb return", "Re-recording mix", "Bus"],
+    "common_mistakes": ["Baking the delay into the main (dry) stem, so the dub mixer cannot reduce or remove it if it clashes with dialogue.", "Failing to time-align the delay stem with its dry cue, causing timing or phase problems when they are recombined.", "Including dry signal in the 'delay-only' stem, which defeats the purpose of an isolated effect stem."],
+    "scenario_contexts": ["Delivering score stems for a dub where the mixer may need to pull echo out from under dialogue.", "Providing separate wet (delay/reverb) stems for a Dolby Atmos score mix.", "Re-balancing a delay effect on the score during the final re-recording mix."]
+   },
+   "sources": ["Sound on Sound (score stems and effect delivery)", "Huber & Runstein, Modern Recording Techniques (stems, effect returns, wet/dry)", "Ballou, Handbook for Sound Engineers (mixing and signal routing)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

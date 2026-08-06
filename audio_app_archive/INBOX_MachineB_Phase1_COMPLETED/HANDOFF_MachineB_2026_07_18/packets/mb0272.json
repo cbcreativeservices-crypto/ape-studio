@@ -1,0 +1,31 @@
+{
+ "batch": 272,
+ "topic": "DAW Fundamentals & Session Management",
+ "terms": [
+  {
+   "id": "0e1abf8b-9c96-4629-9e3c-a00b53f8af67",
+   "term": "Velocity scaling",
+   "topic": "DAW Fundamentals & Session Management",
+   "seq": 1240,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

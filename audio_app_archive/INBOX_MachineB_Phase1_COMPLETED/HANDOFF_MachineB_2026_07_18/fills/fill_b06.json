@@ -1,0 +1,128 @@
+{
+ "batch": 6,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "e44fa56e-af46-408a-beac-07c1a9f76b4c",
+   "term": "Accent supervision",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["'Accent supervision' is not an established term in professional sound-for-picture, dubbing/localization, or audio-engineering literature. No standards body, manufacturer technical document, or recognized professional text (Yewdall, Holman, Rose; AVT/localization references) defines a role, process, or deliverable by this name. Its sense is ambiguous (dialect/accent coaching vs. localization QA vs. reading a musical accent) and it is not a transparent compound of a defined audio technique plus a source/section, so it cannot be authored to a professional standard. All fields left blank pending clarification of intended sense."]
+  },
+  {
+   "id": "5af15700-19ce-47fd-8ba4-80ffafb15b99",
+   "term": "Age matching",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No attested, canonical meaning for 'Age matching' in sound-for-picture post workflow or deliverables. The voice-casting practice of matching a dub actor's vocal age to a character exists but is not defined under this name in acceptable sources (Yewdall 'The Practical Art of Motion Picture Sound', Holman 'Sound for Film and Television', Rose 'Producing Great Sound for Film and Video'; SMPTE/EBU delivery standards; manufacturer technical docs), and it is not a transparent audio-technique compound. All fields left blank pending clarification of intended sense."]
+  },
+  {
+   "id": "a07b4512-392f-42a8-9163-fa4df2bbe34f",
+   "term": "Audio behavior",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["'Audio behavior' is an abstract phrase, not a defined term in sound-for-picture or game-audio literature, and not a transparent compound of an established technique plus a source/section. No acceptable source (post-production texts such as Yewdall/Holman/Rose, SMPTE/EBU delivery standards, or audio-middleware technical documentation) defines it as a distinct term. All fields left blank pending clarification of intended sense."]
+  },
+  {
+   "id": "46e3c0c9-2f63-4705-9ada-c83e60740272",
+   "term": "Braam",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["'Braam' (also 'braaam'/'brami') is a real modern trailer and cinematic sound-design device — a massive, distorted, brass-like low-end impact popularized after Inception (2010) — but it is attested only in trade press, blogs, Wikipedia, and vendor sample-library listings, none of which are acceptable corroborating sources. No standards body, manufacturer technical document, or recognized professional post-production/sound-design text (Yewdall, Holman, Sonnenschein, Viers, Ament) defines it, and as a coined onomatopoeic name it is not a transparent technique-plus-source compound. All fields left blank pending an acceptable source."]
+  },
+  {
+   "id": "14a5770f-33d0-42a9-9115-8c2c87935929",
+   "term": "Conducting offset",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No canonical, standardized definition found for 'Conducting offset'. The sense is genuinely ambiguous between several plausible readings (a click/streamer timing offset given to the conductor, a video-sync offset applied to the conductor's monitor, or a scoring-cue lead time), and no single meaning could be confirmed against >=2 acceptable sources. All fields left blank pending clarification of intended sense."]
+  },
+  {
+   "id": "ced5b08b-055a-44dd-bd05-8cb2df985ec8",
+   "term": "Cone attenuation",
+   "fields": {
+    "definition": "In 3D and game audio, the reduction in a directional sound source's gain applied as the listener moves off the source's projection axis: full gain applies within the inner cone angle, gain is interpolated across the transition zone between the inner and outer cone angles, and the source drops to a set outer-cone gain factor beyond the outer cone angle.",
+    "plain_english": "A way to make a sound quieter when you are off to the side of what makes it. A sound source can aim like a flashlight beam. You hear it at full volume in the beam, and it fades as you step out of it.",
+    "purpose_function": "It models the directivity of real sources such as a speaking mouth, a horn, or a TV, so a 3D sound softens when the listener is off-axis, adding realism and useful spatial cues to an interactive scene.",
+    "practical_application": "A game-audio designer sets a source's inner cone angle, outer cone angle, and outer-cone gain in middleware or a game engine (Wwise, FMOD, Unreal, or OpenAL) so a directional emitter quiets down as the player moves out of its cone.",
+    "category": "Spatial Audio",
+    "related_terms": ["Falloff distance", "Emitter position", "Attenuation curve", "Far-field spatialization", "Audio middleware", "Doppler effect simulation"],
+    "common_mistakes": [
+     "Confusing cone attenuation with distance falloff; the cone sets level by the listener's angle to the source, while falloff sets level by distance.",
+     "Leaving the outer-cone gain at zero by accident, so the source goes fully silent the instant the listener steps outside the cone.",
+     "Setting the inner and outer cone angles equal, which removes the smooth transition zone and causes an abrupt level jump off-axis."
+    ],
+    "scenario_contexts": [
+     "Making an NPC's voice quieter when the player walks around behind them.",
+     "Aiming a loudspeaker or television emitter in a level so it projects sound forward.",
+     "Tuning a directional machine or vent so it only reads loud when faced head-on."
+    ]
+   },
+   "sources": ["OpenAL 1.1 Specification and Reference (AL_CONE_INNER_ANGLE, AL_CONE_OUTER_ANGLE, AL_CONE_OUTER_GAIN)", "Epic Games, Unreal Engine documentation: Sound Attenuation (Cone attenuation shape)", "FMOD Engine documentation: 3D Sounds white paper"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bd68b7e8-9d5a-4eb7-a490-d25ca8028d3e",
+   "term": "Downer effect",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["'Downer effect' (a descending transitional sound-design element, the counterpart of a riser) is attested only in vendor sample-library listings, blogs, and forums. No standards body, manufacturer technical document, or recognized professional text defines it, and as a coined term it is not a transparent technique-plus-source compound, so it cannot be confirmed to the required source standard. All fields left blank."]
+  },
+  {
+   "id": "284d8827-1adf-4c82-b114-1c11c31767f4",
+   "term": "Emotional performance",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["'Emotional performance' is a general descriptive phrase for an actor's or musician's emotive delivery, not a defined post-production or deliverables term, and not a transparent compound of an established audio technique with a source/section. No acceptable professional source (post-production texts, SMPTE/EBU standards, manufacturer docs) defines it as a distinct term, so it cannot be authored to a professional standard. All fields left blank pending clarification of intended sense."]
+  },
+  {
+   "id": "1aeae003-1e78-4ae3-8496-e05cbe33ebf1",
+   "term": "Exploration-state parameter",
+   "fields": {
+    "definition": "In interactive game audio, a game-sync value (a Wwise State, a switch, or an engine parameter) that flags the player as being in an exploration, non-combat context, used by the audio system to select or blend the ambience and adaptive-music layers appropriate to that state.",
+    "plain_english": "A setting that tells the game you are just exploring, not fighting. The game reads it and plays calmer background music. When the state changes, the music changes to match what you do.",
+    "purpose_function": "It lets the soundtrack respond to gameplay by tying a named game state to the right music and ambience, so the mood shifts automatically as the player moves between exploring and other situations such as combat.",
+    "practical_application": "A game-audio designer maps the game's exploration state to a State or parameter in middleware such as Wwise or FMOD, then routes it to a music switch container so exploration music plays and transitions out when combat begins.",
+    "category": "Game Audio",
+    "related_terms": ["Combat-state parameter", "Event-driven audio", "Conditional playback", "Game audio", "Audio middleware", "Adaptive music"],
+    "common_mistakes": [
+     "Thinking the parameter itself makes sound; it only reports the game state, and the audio system must be set up to react to it.",
+     "Forgetting to define musical transitions, so the switch from exploration to combat music cuts abruptly instead of blending.",
+     "Confusing a discrete state (a game context like exploration) with a continuous parameter such as distance or intensity."
+    ],
+    "scenario_contexts": [
+     "Playing calm exploration music that swells into combat music when enemies appear.",
+     "Switching ambient beds as the player leaves a safe town and enters open wilderness.",
+     "Debugging why exploration music keeps playing after a fight has already started."
+    ]
+   },
+   "sources": ["Audiokinetic, Wwise documentation: Game Syncs (Switches and States) and Music Switch Container", "FMOD Studio documentation: Parameters", "Stevens & Raybould, The Game Audio Tutorial"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5f144024-9020-446d-a810-29960e244cf8",
+   "term": "Finger tap",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No single established meaning as a term in sound-for-picture or post workflow. Candidate senses are genuinely ambiguous (a performed Foley sound of a finger tapping, a touchscreen/UI gesture sound, or a MIDI tap-tempo input). After searching the professional film-sound and audio literature, no >=2 acceptable sources define 'finger tap' as a distinct term, and it is not a transparent technique-plus-source compound. All fields left blank pending clarification of intended sense."]
+  },
+  {
+   "id": "a9b0695c-acf1-48ff-9949-df21c4edf13e",
+   "term": "Found Prop",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No acceptable professional audio source attests a distinct, canonical 'found prop' term. The meaning is genuinely ambiguous between the art-department sense (an existing real-world object used as a prop rather than fabricated or purchased) and a Foley sense (a found object pressed into service to create a sound effect). All fields left blank pending clarification of the intended sense."]
+  }
+ ]
+}

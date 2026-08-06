@@ -1,0 +1,159 @@
+{
+ "batch": 163,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "62062160-f5d7-4665-b95a-1170315f0d22",
+   "term": "Groove excursion",
+   "fields": {
+    "definition": "In disc (vinyl) cutting, the lateral and/or vertical displacement of the modulated groove away from its unmodulated centerline; the peak excursion determines how far the groove swings and thus how much lacquer space each groove turn needs.",
+    "plain_english": "When a record is cut, the audio makes the groove wiggle from side to side. Groove excursion is how far that wiggle swings out from the middle. Louder, deeper sounds swing it wider, so they take up more room.",
+    "purpose_function": "It measures the physical size of the cut modulation, which decides whether adjacent grooves stay clear of each other and how loud a side can be cut.",
+    "practical_application": "A cutting engineer watches groove excursion through the microscope, meters, and the pitch computer to stop adjacent grooves from overlapping and to keep bass and level within cuttable limits.",
+    "category": "Disc Cutting",
+    "related_terms": ["Groove modulation", "Groove velocity", "Groove-pitch control", "Groove-spacing computer", "Groove-depth control"],
+    "common_mistakes": ["Confusing groove excursion (how far the groove swings sideways) with groove depth (how deep it is cut).", "Assuming heavy low-frequency or wide stereo content can be cut at any level, when large excursions force wider spacing and shorten playing time.", "Thinking excursion only limits loudness, when excessive excursion also causes mistracking on playback."],
+    "scenario_contexts": ["Cutting a bass-heavy dance track where large low-frequency excursions threaten to make adjacent grooves collide.", "Setting the lathe's preview system so groove spacing widens automatically when excursion increases.", "Diagnosing why a test lacquer skips and tracing it to excessive groove excursion at high level."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (Disc Recording chapter)", "Neumann VMS disc-cutting lathe technical/operating manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "27e94fca-89b4-413f-8463-157dfa5bcffa",
+   "term": "Groove geometry optimization",
+   "fields": {
+    "definition": "The adjustment of a groove's physical shape and layout during disc cutting - its depth, pitch (spacing), width, and wall angle - to maximize playing time and playback quality while keeping the groove reliably trackable.",
+    "plain_english": "A record's groove has a shape and spacing that can be fine-tuned. Optimizing groove geometry means setting the depth and spacing so the music fits, stays loud, and plays cleanly. It is like packing a suitcase so everything fits without getting crushed.",
+    "purpose_function": "It balances competing needs - loudness, playing time, and clean tracking - by shaping and spacing grooves to suit the specific program material.",
+    "practical_application": "Engineers use variable pitch and depth control, often driven by the lathe's computer, to reshape groove geometry passage by passage across a side.",
+    "category": "Disc Cutting",
+    "related_terms": ["Groove-pitch control", "Groove-depth control", "Groove-spacing computer", "Groove excursion", "Groove modulation"],
+    "common_mistakes": ["Maximizing loudness with no regard to playing time, so grooves crowd and quality suffers.", "Believing geometry tweaks can rescue a mix with excess bass or out-of-phase low end that is simply uncuttable.", "Treating one fixed pitch and depth setting as ideal for a whole side instead of varying it with the program."],
+    "scenario_contexts": ["Fitting a long album side onto a 12-inch disc by tightening groove spacing during quiet passages.", "Cutting a loud single with wide spacing so high modulation does not cause groove collisions.", "Preparing a reference lacquer and trading a little level for more playing time by adjusting pitch and depth."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (Disc Recording chapter)", "Neumann VMS disc-cutting lathe technical/operating manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b0ac34f3-6b67-46e3-8e60-5c1d9845b942",
+   "term": "Groove guard",
+   "fields": {
+    "definition": "A raised ridge molded into a phonograph record - pioneered by RCA Victor - that lifts the outer edge and label area slightly above the grooved playing surface, so stacked or slipped discs contact each other only at the ridge and not on the grooves.",
+    "plain_english": "On many records the outer rim and the area around the label sit a little higher than the grooves. This raised ridge, called a groove guard, keeps stacked records from rubbing their grooves together. It works like a raised frame that keeps a picture off the glass.",
+    "purpose_function": "It protects the delicate grooves from scuffs and wear when records are stacked, slid, or handled, by keeping the playing surface off other surfaces.",
+    "practical_application": "Technicians and archivists recognize the groove-guard ridge when handling and storing LPs, which is why stacked discs rest on their rims rather than on their grooves.",
+    "category": "Vinyl Records",
+    "related_terms": ["Lacquer", "Pressing", "Stylus", "Groove modulation", "Warp"],
+    "common_mistakes": ["Mistaking the raised groove-guard ridge for a manufacturing defect or a warp.", "Assuming the groove guard makes stacking records safe, when stacking still risks warping and scratches.", "Confusing the molded groove-guard ridge on the disc with anti-static inner sleeves sold under similar names."],
+    "scenario_contexts": ["Inspecting an LP and noticing the outer rim and label area sit higher than the grooves.", "Explaining to a client why some pressings resist groove-to-groove contact when slipped from a sleeve.", "Archiving records and relying on the groove-guard ridge to reduce surface wear in storage."]
+   },
+   "sources": ["RCA Victor technical documentation", "Oliver Read, The Recording and Reproduction of Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fbdd7c20-42c9-4444-bd11-fdc2848a4326",
+   "term": "Groove modulation",
+   "fields": {
+    "definition": "The variation impressed on the groove walls during cutting that encodes the audio signal; in mono lateral cutting the groove swings side to side, while in 45/45 stereo each of the two groove walls carries one channel.",
+    "plain_english": "The audio is stored as tiny wiggles carved into the groove walls. That patterned wiggle is the groove modulation. On stereo records, each of the two walls carries one side of the sound.",
+    "purpose_function": "It is the mechanism that physically records sound onto a disc and reads it back - the stylus follows the modulation and turns it into an electrical signal.",
+    "practical_application": "When cutting, engineers monitor modulation level and phase to keep it trackable; on playback, the cartridge stylus traces the modulation to recover the audio.",
+    "category": "Disc Cutting",
+    "related_terms": ["Groove excursion", "Groove velocity", "Groove-pitch control", "Stylus", "Cutter head"],
+    "common_mistakes": ["Confusing groove modulation (the encoded wiggle) with groove pitch (the spacing between turns).", "Cutting heavy out-of-phase low frequency, which in stereo makes large vertical modulation that lifts the stylus and causes skipping.", "Assuming louder modulation is always better, ignoring that over-modulation causes distortion and mistracking."],
+    "scenario_contexts": ["Checking modulation level and phase on the console before committing a cut to lacquer.", "Troubleshooting a pressing that skips because of excessive vertical modulation from out-of-phase bass.", "Explaining how a cartridge stylus reads the two groove walls of a stereo record."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (Disc Recording chapter)", "IEC 60098, Analogue audio disk records and reproducing equipment"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "60e93167-c1ed-4b3e-be99-ffe74bcd01fa",
+   "term": "Groove velocity",
+   "fields": {
+    "definition": "In disc recording, the instantaneous velocity (rate of displacement) of the groove modulation - the lateral or vertical speed at which the groove wall moves the stylus; disc systems are essentially constant-velocity above the turnover frequency, so cutting levels are specified as peak velocity in cm/s.",
+    "plain_english": "A record stores sound as a moving groove wall. Groove velocity is how fast that wall pushes the stylus sideways, not just how far. It matters because the pickup reacts to the speed of the motion, so cutting levels are measured in centimeters per second.",
+    "purpose_function": "It is the quantity that magnetic pickups and the RIAA cutting and playback curve are built around, so it sets recorded level and helps define safe cutting limits.",
+    "practical_application": "Engineers reference peak groove velocity in cm/s when setting cutting levels and reading test records, since high-frequency energy at high velocity can overload the cutter head and cause mistracking.",
+    "category": "Disc Cutting",
+    "related_terms": ["Groove modulation", "Groove excursion", "RIAA equalization", "Cutter head", "Groove-pitch control"],
+    "common_mistakes": ["Confusing groove velocity (the speed of the groove modulation) with the disc's linear surface speed under the stylus.", "Ignoring that a given amplitude produces higher velocity at higher frequencies, so bright content can overload the cutter.", "Assuming inner-groove tracks sound the same as outer ones, when lower linear velocity near the center raises distortion."],
+    "scenario_contexts": ["Setting cutting level to a target peak velocity in cm/s while reading the lathe's meters.", "Checking a test record whose bands are specified at known recorded velocities.", "Deciding to place bright, high-level material earlier on a side to avoid inner-groove trouble."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (Disc Recording chapter)", "IEC 60098, Analogue audio disk records and reproducing equipment"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0e2c3eef-665c-46f5-a7c1-8a777e90a2f2",
+   "term": "Groove-depth control",
+   "fields": {
+    "definition": "On a disc-cutting lathe, control of how deeply the cutting stylus penetrates the lacquer; variable-depth systems reduce cut depth in quiet passages and increase it for louder modulation, working with pitch control to conserve space.",
+    "plain_english": "When a record is cut, the stylus can dig shallower or deeper into the blank. Groove-depth control sets that depth, going shallower in quiet parts to save room. It is like writing smaller where the page is nearly full.",
+    "purpose_function": "It keeps the groove deep enough to hold the stylus and carry modulation, while shaving unused depth in quiet parts so more program fits on a side.",
+    "practical_application": "Engineers set a safe minimum depth for reliable tracking and let the lathe increase depth automatically as modulation grows, coordinated with pitch to avoid groove collisions.",
+    "category": "Disc Cutting",
+    "related_terms": ["Groove-pitch control", "Groove-spacing computer", "Groove excursion", "Groove modulation", "Lacquer"],
+    "common_mistakes": ["Cutting too shallow to save space, so the stylus mistracks or the groove is too weak to hold it.", "Confusing depth control (the vertical cut) with pitch control (the horizontal spacing between grooves).", "Forgetting that deeper cuts remove more lacquer and place more demand on the cutting stylus."],
+    "scenario_contexts": ["Setting a minimum groove depth so a quiet classical passage still tracks reliably.", "Letting depth rise automatically during a loud chorus while spacing widens to match.", "Trimming cut depth in quiet intros to help a long side fit the disc."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (Disc Recording chapter)", "Neumann VMS disc-cutting lathe technical/operating manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "716bca86-08c2-4788-87d1-a4c55098bdd6",
+   "term": "Groove-pitch control",
+   "fields": {
+    "definition": "On a disc-cutting lathe, control of pitch - the number of groove turns per inch, i.e., the spacing between adjacent grooves; variable-pitch systems widen the spacing for loud, large-excursion passages and narrow it for quiet passages to maximize playing time.",
+    "plain_english": "A record is one long spiral groove. Groove-pitch control sets how close together the spiral turns are. Loud parts need wider spacing, while quiet parts can be packed tight to fit more music on a side.",
+    "purpose_function": "It trades playing time against modulation room, spacing grooves just far enough apart to avoid collisions while packing them tightly where the signal is small.",
+    "practical_application": "Engineers rely on variable pitch, usually driven by the preview computer, to fit long sides without adjacent grooves cutting into one another.",
+    "category": "Disc Cutting",
+    "related_terms": ["Groove-depth control", "Groove-spacing computer", "Groove excursion", "Groove modulation", "Lacquer"],
+    "common_mistakes": ["Confusing groove pitch (the spacing between grooves) with musical pitch or with groove depth.", "Setting too tight a fixed pitch for a loud program, so adjacent grooves overlap (overcutting).", "Assuming maximum playing time is free, when very tight pitch lowers achievable level and safety margin."],
+    "scenario_contexts": ["Widening pitch through a loud, bass-heavy chorus to keep grooves from colliding.", "Tightening pitch during quiet passages to squeeze a long side onto the disc.", "Setting up the lathe so pitch tracks the preview signal automatically during the cut."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (Disc Recording chapter)", "Neumann VMS disc-cutting lathe technical/operating manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3f0564b9-0c66-4209-a415-26be3daf1b18",
+   "term": "Groove-spacing computer",
+   "fields": {
+    "definition": "The preview-driven automatic pitch-and-depth control system on a disc-cutting lathe (Neumann branded it the \"computer\") that reads the program about one revolution ahead, via a tape preview head or delay, and continuously sets groove spacing and depth so grooves never collide while playing time is maximized.",
+    "plain_english": "A cutting lathe gets a sneak preview of the audio a moment early. A small computer uses that preview to decide how far apart to space each groove turn. This lets loud parts spread out and quiet parts pack tight automatically.",
+    "purpose_function": "It automates variable pitch and depth, using advance knowledge of the signal to prevent adjacent-groove collisions while fitting the longest possible program on a side.",
+    "practical_application": "The engineer feeds the lathe a preview signal from a tape preview head or digital delay and sets minimum and maximum limits, and the computer then manages groove spacing in real time during the cut.",
+    "category": "Disc Cutting",
+    "related_terms": ["Groove-pitch control", "Groove-depth control", "Groove excursion", "Groove modulation", "Cutter head"],
+    "common_mistakes": ["Cutting without the correct preview delay, so the computer spaces grooves for the wrong moment and grooves collide.", "Assuming the computer can fix an uncuttable master, when it only manages spacing and cannot remove excess bass or level.", "Confusing the pitch and depth computer with playback equalization or level automation."],
+    "scenario_contexts": ["Aligning the preview delay so the computer spaces grooves for the correct upcoming passage.", "Setting minimum and maximum pitch limits before starting an automatic cut.", "Relying on the computer to fit a long side while keeping loud sections collision-free."]
+   },
+   "sources": ["Neumann VMS disc-cutting lathe technical/operating manual", "Ballou, Handbook for Sound Engineers (Disc Recording chapter)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e1fc5d81-5fb6-4211-a03b-e501a93de3f8",
+   "term": "Harmonic music stem",
+   "fields": {
+    "definition": "In stem mastering, a stem (submix bounce) containing the harmonic or tonal instruments of a track - such as chords from keys, guitars, and pads - kept separate from vocals, bass, and drums so the mastering engineer can process it independently.",
+    "plain_english": "A song's parts can be grouped and bounced out as separate files. The harmonic music stem is the group holding the chord instruments, like keys, guitars, and pads. It lets the mastering engineer tweak those sounds without touching the vocals or drums.",
+    "purpose_function": "It gives the mastering engineer separate control over the song's harmony layer, allowing balance and tone changes that a single stereo mix would not allow.",
+    "practical_application": "When a client sends stems, the engineer loads the harmonic stem alongside the vocal, drum, and bass stems and adjusts its level and EQ to fit the master.",
+    "category": "Stem Mastering",
+    "related_terms": ["Stem mastering", "Submix", "Vocal stem", "Drum stem", "Mixdown"],
+    "common_mistakes": ["Overlapping content between stems, such as the same guitar appearing in two stems, so they no longer sum back to the intended mix.", "Adding heavy master-bus processing to individual stems before export, which limits what the mastering engineer can do.", "Confusing a harmonic stem (a group of instruments) with individual multitrack files or with a full mixdown."],
+    "scenario_contexts": ["A client delivers vocal, drum, bass, and harmonic stems for stem mastering instead of one stereo mix.", "Lowering a busy harmonic stem slightly so the vocals sit forward in the final master.", "EQing the harmonic stem to reduce midrange buildup without affecting the drum or bass stems."]
+   },
+   "sources": ["Bob Katz, Mastering Audio: The Art and the Science", "Sound on Sound (stem mixing and mastering techniques)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,43 @@
+{
+ "expert": "Learning/Cognition",
+ "group": 36,
+ "reviews": [
+  {"id": "37c7272a-da1b-4ab9-a51e-3284ccee4044", "term": "Tonal consistency", "verdict": "OK", "suggestions": []},
+  {"id": "e15c6b58-201a-4331-98ee-dd20a6ef9a65", "term": "Track alternative", "verdict": "OK", "suggestions": []},
+  {"id": "b3a194e9-d744-4d41-b2da-4e7811f1ee18", "term": "Track Archive", "verdict": "OK", "suggestions": []},
+  {"id": "93fc73c5-ad97-4805-b9b1-10ef8e841883", "term": "Track Assistant", "verdict": "OK", "suggestions": []},
+  {"id": "dbf27cfc-c372-446e-b88d-5feb207ef927", "term": "Track Color", "verdict": "OK", "suggestions": []},
+  {"id": "02b7c6dc-cc6e-4cd2-90ba-d54b8b694633", "term": "Track Commit", "verdict": "OK", "suggestions": []},
+  {"id": "a5e26d63-735b-4c5c-b316-1abccf2a2f99", "term": "Track control panel", "verdict": "OK", "suggestions": []},
+  {"id": "ac04b9f1-0a10-46f1-9d8b-690c53f2ebfc", "term": "Track Freeze", "verdict": "OK", "suggestions": []},
+  {"id": "3bbf3efd-c24d-4061-9c03-d1d8782383ec", "term": "Track FX chain", "verdict": "OK", "suggestions": []},
+  {"id": "d2ed20d5-bed5-4bfd-bc59-6ec95d5e3ac7", "term": "Track Height", "verdict": "OK", "suggestions": []},
+  {"id": "d49eec68-d1e6-4c87-9f84-0fe9e09041fb", "term": "Track manager", "verdict": "OK", "suggestions": []},
+  {"id": "05a7815b-9990-41e9-902c-f75b2157ac7b", "term": "Track preset", "verdict": "OK", "suggestions": []},
+  {"id": "e7fd5992-b205-4584-a3ea-4845a0fe3e26", "term": "Track Preset Recall", "verdict": "OK", "suggestions": []},
+  {"id": "67491d63-f991-407d-992f-ef55a112609e", "term": "Track send (REAPER)", "verdict": "OK", "suggestions": []},
+  {"id": "d49eec68-d1e6-4c87-9f84-0fe9e09041fb", "term": "Track Stack", "verdict": "OK", "suggestions": []},
+  {"id": "f0f70cfc-c94c-4556-9518-028e5476772b", "term": "Track template", "verdict": "OK", "suggestions": []},
+  {"id": "5c4634a9-96fc-4a6c-9ddf-b35c41cc8b44", "term": "Track version", "verdict": "OK", "suggestions": []},
+  {"id": "837b7a59-720e-4df0-8a88-a2d8fd34790c", "term": "Track wiring view", "verdict": "OK", "suggestions": []},
+  {"id": "a4e3cf94-be17-4bd4-b1e0-1a38ccd91cc0", "term": "Tracks area", "verdict": "OK", "suggestions": []},
+  {"id": "5aaac3db-9fa9-418f-8ffe-fc39068a2e56", "term": "Tracks Overview", "verdict": "OK", "suggestions": []},
+  {"id": "68473dc0-cb44-4221-8a27-2489a108a7a8", "term": "Trailer mix", "verdict": "OK", "suggestions": []},
+  {"id": "5ad4f000-dee8-4688-af28-0c7d734e87d8", "term": "Transform to Rendered Audio", "verdict": "OK", "suggestions": []},
+  {"id": "d365c12e-0319-45e4-8988-db3d6528a715", "term": "Transient layer", "verdict": "OK", "suggestions": []},
+  {"id": "dd41f971-54ac-4e31-bcf0-c946c190c55a", "term": "Transient marker (Logic)", "verdict": "OK", "suggestions": []},
+  {"id": "5bba5be9-639d-4986-98e1-9164feeb88bb", "term": "Transition cue", "verdict": "OK", "suggestions": []},
+  {"id": "6491fd0e-518e-4bbc-b15a-fe92460b2bdc", "term": "Transition segment", "verdict": "OK", "suggestions": []},
+  {"id": "f676e9d2-8c96-415e-b2dc-ce0fab9d747f", "term": "Translation optimization", "verdict": "OK", "suggestions": []},
+  {"id": "b2b75f84-a24b-47a5-ae6b-09764872e744", "term": "Transpose track", "verdict": "OK", "suggestions": []},
+  {"id": "31c0d7df-e56b-4bde-b886-e303cf3c8468", "term": "Transposition track", "verdict": "MINOR", "suggestions": [
+    {"field": "common_mistakes", "severity": "Low", "issue": "The first mistake is a broken sentence: 'Assuming every DAW names and behaves this feature the same way' is ungrammatical ('behaves this feature'), which momentarily trips a learner.", "suggestion": "Rewrite as 'Assuming every DAW names this feature the same way and makes it behave identically, when hosts differ.'"}
+  ]},
+  {"id": "b73be02a-9c09-4b55-a238-11140da4c40c", "term": "Trim Tool", "verdict": "OK", "suggestions": []},
+  {"id": "5715cf76-2cd6-422a-b86f-b9a20bfd9531", "term": "True-peak management", "verdict": "OK", "suggestions": []},
+  {"id": "0b65a145-3a08-4b1c-b086-a3b6980f023b", "term": "True-peak validation", "verdict": "OK", "suggestions": []},
+  {"id": "f858689b-fdfc-4acf-9750-e94c0b210158", "term": "Unity workflow", "verdict": "OK", "suggestions": []},
+  {"id": "5785088f-2f0b-4449-93a2-424eb9d4c814", "term": "Universe view", "verdict": "OK", "suggestions": []},
+  {"id": "871e41e5-8b29-48b7-92dc-76466c1dba9c", "term": "V-Rack", "verdict": "OK", "suggestions": []}
+ ]
+}

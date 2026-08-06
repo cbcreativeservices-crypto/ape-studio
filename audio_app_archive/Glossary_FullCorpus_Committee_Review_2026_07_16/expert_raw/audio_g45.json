@@ -1,0 +1,43 @@
+{
+  "expert": "audio",
+  "group": 45,
+  "reviews": [
+    {"id": "ac8c3307-8275-4b81-bc3a-e13c641682b1", "term": "Speaker Stand Safety", "verdict": "OK", "suggestions": []},
+    {"id": "2f13ea0a-95aa-4ad9-bbb1-19e167e5ce74", "term": "Speaker Surround", "verdict": "OK", "suggestions": []},
+    {"id": "543cdefe-39df-4097-8306-19d3c0bc9d77", "term": "Speaker Tap", "verdict": "OK", "suggestions": []},
+    {"id": "daa3eb48-cdd7-4a21-b08f-ec53b8432248", "term": "Speaker Timer", "verdict": "OK", "suggestions": []},
+    {"id": "a7d33681-9c09-4f71-9cc5-2ad28a85df6c", "term": "Speaker Wire", "verdict": "OK", "suggestions": []},
+    {"id": "759f51c3-12bb-4fb0-acab-5fddbef309d9", "term": "Speaker Wire Gauge (AWG)", "verdict": "OK", "suggestions": []},
+    {"id": "18c8be5d-722e-4fe5-abd7-688ccc687ed2", "term": "Speakon", "verdict": "OK", "suggestions": []},
+    {"id": "6505ef14-2e94-42c3-b5c9-2af9b169bac9", "term": "Spectral leakage", "verdict": "OK", "suggestions": []},
+    {"id": "3f9d1dbb-6b31-4ed8-9beb-0a318c2ca66e", "term": "Spectrogram", "verdict": "OK", "suggestions": []},
+    {"id": "f85f4005-d270-4af7-bb9d-08c689999c21", "term": "Spectrograph view", "verdict": "OK", "suggestions": []},
+    {"id": "887e4bc4-4f54-4f30-a385-3fc4cf220084", "term": "Spectrum", "verdict": "OK", "suggestions": []},
+    {"id": "fc1e912c-784d-438b-80f6-0355dcbaae68", "term": "Spectrum Analyzer", "verdict": "OK", "suggestions": []},
+    {"id": "e1cab54a-2004-40a2-86e9-c4d8649ffa12", "term": "Spectrum measurement", "verdict": "OK", "suggestions": []},
+    {"id": "a6329956-b881-4aaf-a76d-69375513ea9a", "term": "Specular reflection", "verdict": "OK", "suggestions": []},
+    {"id": "deb6dcda-75b9-4b39-afd4-37bcc9f5aebf", "term": "Speech intelligibility", "verdict": "OK", "suggestions": []},
+    {"id": "318a74c5-0562-4dc1-a1ec-6b4c9579ba87", "term": "Speech Privacy", "verdict": "OK", "suggestions": []},
+    {"id": "aaf03f03-4956-460b-b9ae-c8644f1faffb", "term": "Speech Reinforcement", "verdict": "OK", "suggestions": []},
+    {"id": "b44baa4b-de5b-4a72-9950-fd08b365e283", "term": "Speed of Sound", "verdict": "OK", "suggestions": []},
+    {"id": "50f64a99-aa14-4a04-a74f-56da3ebf61aa", "term": "Spike Mark", "verdict": "OK", "suggestions": []},
+    {"id": "3a73d77c-b4bf-4fc0-be70-5fa18b197d9e", "term": "Spiral Shield", "verdict": "OK", "suggestions": []},
+    {"id": "1e1e6d30-487a-4570-b36f-e0b7f0555c33", "term": "SPL (sound pressure level)", "verdict": "OK", "suggestions": []},
+    {"id": "623153f8-a0e8-4417-8f2e-00ce19bb109c", "term": "SPL Competition", "verdict": "OK", "suggestions": []},
+    {"id": "91b76744-c06f-4c0d-8ba0-c012822d1583", "term": "SPL history plot", "verdict": "OK", "suggestions": []},
+    {"id": "675d37f6-fdf8-4a8f-85e8-681c8569c0d3", "term": "SPL Meter (Sound Level Meter)", "verdict": "OK", "suggestions": []},
+    {"id": "704817a0-4c9d-49d7-baba-864d96d72309", "term": "SPL Mode", "verdict": "MINOR", "suggestions": [
+      {"field": "related_terms", "severity": "Low", "issue": "The related_terms list contains a duplicate entry: \"SPL history plot\" is listed twice.", "suggestion": "Remove the duplicate \"SPL history plot\" so the list reads [\"SPL (sound pressure level)\", \"SPL history plot\", \"Calibration\"]; optionally add a distinct related term such as \"SPL Meter (Sound Level Meter)\" in its place."}
+    ]},
+    {"id": "18b275cc-f2f3-4d8e-a8a5-bc56c82dd842", "term": "Splay Angle", "verdict": "OK", "suggestions": []},
+    {"id": "27f9a60a-f2d0-4527-b87f-585cafa8eb48", "term": "Split Console", "verdict": "OK", "suggestions": []},
+    {"id": "c407fb72-94d6-4915-933e-48c785eeecb5", "term": "Spotify Connect", "verdict": "OK", "suggestions": []},
+    {"id": "60f806d1-8065-4651-8c0c-253e55cec264", "term": "Spring Reverb", "verdict": "OK", "suggestions": []},
+    {"id": "4fcc1efd-4986-4f67-a7f8-e991dbce44e5", "term": "Squelch", "verdict": "OK", "suggestions": []},
+    {"id": "1750bfb6-bed1-4fec-ab5c-927ff443a6fc", "term": "Stage", "verdict": "OK", "suggestions": []},
+    {"id": "1e1307f6-534a-4aee-bad9-c198310fecb9", "term": "Stage Cable", "verdict": "OK", "suggestions": []},
+    {"id": "1f964f6f-123a-4138-be94-f56cade87549", "term": "Stage Edge Awareness", "verdict": "OK", "suggestions": []},
+    {"id": "7588c2bf-7cb5-40a0-bfa1-f6c397ee4327", "term": "Stage Left / Stage Right", "verdict": "OK", "suggestions": []},
+    {"id": "bd812db0-6c85-44bf-9fbd-909b5b50bca3", "term": "Stage Manager", "verdict": "OK", "suggestions": []}
+  ]
+}

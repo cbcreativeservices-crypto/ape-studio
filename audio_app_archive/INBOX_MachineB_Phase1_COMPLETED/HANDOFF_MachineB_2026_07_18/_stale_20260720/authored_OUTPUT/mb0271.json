@@ -1,0 +1,159 @@
+{
+ "batch": 271,
+ "topic": "DAW Fundamentals & Session Management",
+ "authored": [
+  {
+   "id": "7171a6fb-278e-45c2-ad2e-7a10468fd23b",
+   "term": "Software Monitoring",
+   "fields": {
+    "definition": "Software monitoring is hearing a live input by routing it through the DAW and audio interface rather than directly through hardware, so the performer hears the signal after it passes through the computer and any active plug-ins. Because the signal is converted to digital, processed, and converted back to analog, it returns with a round-trip latency delay.",
+    "plain_english": "This is when you listen to a mic or instrument through your computer's music software while recording. The sound goes into the computer and back out. That trip adds a tiny delay, like a faint echo of your own voice.",
+    "purpose_function": "It lets performers hear themselves with the DAW's effects and processing applied while they play, and it avoids the need for a separate hardware monitor mixer. It exists because engineers often want to track through plug-in reverb or amp simulation.",
+    "practical_application": "A technician lowers the buffer size to cut latency when a singer monitors through software, and switches to the interface's direct monitoring if the delay becomes distracting.",
+    "category": "Monitoring",
+    "related_terms": ["Direct Monitoring", "Latency", "Buffer Size", "Audio Interface", "Track Arm (Record-Enable)"],
+    "common_mistakes": ["Using a large buffer size while software monitoring, which adds noticeable latency that throws off the performer.", "Confusing software monitoring with direct monitoring and not understanding why a delay is heard.", "Leaving both software and hardware monitoring on at once, causing a doubled or flanged sound."],
+    "scenario_contexts": ["A vocalist wants reverb on their voice while recording, so the engineer enables software monitoring.", "A guitarist records through an amp-simulator plug-in and monitors the processed tone through the DAW.", "Latency becomes distracting during tracking, prompting a switch to the interface's direct monitoring."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Avid Pro Tools Reference Guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2c98afe2-f34f-4505-a0ec-61384609d45c",
+   "term": "Storage area network",
+   "fields": {
+    "definition": "A storage area network (SAN) is a dedicated high-speed network that gives multiple computers block-level access to a shared pool of storage devices, so the storage appears to each host as if it were a locally attached drive. In audio and video post-production it lets several workstations edit from the same media volume at once.",
+    "plain_english": "A storage area network is a fast, separate network just for hard drives. It lets many computers share one big pool of storage as if each one owned it. That way a whole team can work on the same recordings.",
+    "purpose_function": "It centralizes storage so many editors can share large media files with high speed and reliability instead of copying files between separate drives. It exists to support collaborative, high-bandwidth workflows such as multi-seat post-production.",
+    "practical_application": "In a post house, a technician connects edit suites to a SAN so several editors pull the same session media at the same time without duplicating files.",
+    "category": "Storage",
+    "related_terms": ["Storage health monitoring", "Tape archive", "Network-attached storage", "RAID", "Session backup"],
+    "common_mistakes": ["Confusing a SAN, which is block-level and appears as a local disk, with NAS, which is file-level and accessed as a shared folder.", "Assuming a SAN automatically protects data, when backups and RAID are still required.", "Underestimating the network bandwidth needed, causing dropouts when many streams play at once."],
+    "scenario_contexts": ["A film post facility runs several Pro Tools rigs off one shared SAN volume.", "An engineer troubleshoots audio dropouts traced to SAN bandwidth saturation.", "A studio expands storage by adding drives to the SAN rather than to each workstation."]
+   },
+   "sources": ["SNIA storage networking technical documentation", "Avid shared storage technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5c359bef-48f8-48e2-94b9-38c0237bbb71",
+   "term": "Storage health monitoring",
+   "fields": {
+    "definition": "Storage health monitoring is the ongoing checking of a drive's operating condition and reliability indicators, such as the S.M.A.R.T. attributes reported by ATA/SATA and NVMe devices, to detect wear, errors, and impending failure before data is lost.",
+    "plain_english": "This means keeping an eye on the condition of your hard drives and SSDs. The drive reports warning signs, like bad sectors or high heat. You can then replace it before it dies and takes your recordings with it.",
+    "purpose_function": "It warns technicians of a failing drive early, so data can be backed up and the drive swapped before an outage or data loss. It exists because drives wear out and often show measurable warning signs first.",
+    "practical_application": "A technician reviews S.M.A.R.T. reports on studio drives and replaces any disk showing a rising reallocated-sector count before it fails mid-session.",
+    "category": "Storage",
+    "related_terms": ["Storage area network", "Tape archive", "RAID", "Session backup", "Solid-state drive"],
+    "common_mistakes": ["Ignoring early S.M.A.R.T. warnings until the drive fails completely.", "Assuming a passing S.M.A.R.T. status guarantees the drive will not fail, when sudden failures still happen.", "Treating health monitoring as a substitute for real backups."],
+    "scenario_contexts": ["A studio's monitoring software flags a session drive with growing bad sectors, prompting replacement.", "An engineer checks SSD wear levels before starting a long recording project.", "A drive overheats and health alerts prompt improved cooling in the machine room."]
+   },
+   "sources": ["Serial ATA / ATA (T13) technical specification (S.M.A.R.T.)", "NVM Express (NVMe) base specification"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5059a4bf-231e-4be0-b639-dbd11ec02b52",
+   "term": "Sustain-pedal data",
+   "fields": {
+    "definition": "Sustain-pedal data is MIDI information from a keyboard's damper pedal, transmitted as Control Change 64 (Damper/Sustain). Following the standard's on/off convention, values of 64-127 signal pedal-down so notes sustain, and values of 0-63 signal pedal-up so notes release.",
+    "plain_english": "This is the on/off message a keyboard sends when you press the sustain pedal. It tells the software to hold notes ringing, just like the pedal on a real piano. When you lift your foot, the notes stop.",
+    "purpose_function": "It records and sends pedal movements separately from the notes, so held notes can be reproduced and edited later in a DAW. It exists so electronic instruments can capture expressive pedaling like an acoustic piano.",
+    "practical_application": "When editing a MIDI piano take, a technician finds that overly long notes come from a lingering CC64 pedal-down event and edits or thins the pedal data to clean up the part.",
+    "category": "MIDI",
+    "related_terms": ["Velocity compression", "Time Signature", "MIDI Control Change", "Quantization", "Piano Roll"],
+    "common_mistakes": ["Deleting notes to fix stuck sustain when the real cause is a lingering CC64 pedal-down event.", "Assuming the pedal is recorded as note length rather than as separate control-change data.", "Recording data from a half-pedal keyboard as simple on/off and losing the nuance."],
+    "scenario_contexts": ["A recorded piano part rings on too long because a pedal-up (CC64 = 0) event is missing.", "An engineer quantizes the notes but must handle the sustain-pedal data separately.", "A MIDI file plays back with the wrong sustain because CC64 was not exported."]
+   },
+   "sources": ["MIDI Association, MIDI 1.0 Detailed Specification (Control Change, Damper Pedal CC64)", "Steinberg Cubase Operation Manual (MIDI controllers)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1f3b5e3a-c78b-467f-9959-dc091201c641",
+   "term": "Tape archive",
+   "fields": {
+    "definition": "A tape archive is a long-term store of recorded material held on magnetic tape, whether analog master tapes or modern digital data tape such as LTO. It preserves finished recordings and session media offline for years, at low cost per gigabyte and with long shelf life.",
+    "plain_english": "This is a backup of recordings kept on magnetic tape for the long haul. Tape is cheap and lasts a long time when stored well. Studios use it to safely store finished projects they may not touch for years.",
+    "purpose_function": "It preserves masters and session data cheaply and reliably for the long term, offline and separate from working drives. It exists because tape offers a long shelf life and low cost per gigabyte for material that must be kept but is rarely accessed.",
+    "practical_application": "At the end of a project, a technician backs up the full session to LTO data tape and stores it off-site for long-term archival.",
+    "category": "Storage",
+    "related_terms": ["Storage area network", "Storage health monitoring", "Session backup", "Bounce/Export", "Session Management"],
+    "common_mistakes": ["Storing tapes in hot or humid conditions, which speeds decay and can cause sticky-shed on older analog tape.", "Keeping only one archive copy and never verifying that it restores.", "Assuming decades-old analog tapes will play back perfectly without baking or restoration."],
+    "scenario_contexts": ["A studio migrates completed albums to LTO tape to free up drive space.", "An archivist restores a 1970s analog master and must bake the tape before playback.", "A post facility keeps off-site tape backups of delivered projects for disaster recovery."]
+   },
+   "sources": ["AES technical guidance on magnetic tape storage and preservation", "LTO Program technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "56418beb-c6ef-43b6-a55a-f480dc964a63",
+   "term": "Time Signature",
+   "fields": {
+    "definition": "A time signature is a musical notation that defines a bar's meter: the upper number gives the number of beats per bar and the lower number gives the note value that counts as one beat (for example, 4/4 means four quarter-note beats per bar). In a DAW it sets the bars-and-beats grid that governs the metronome, quantization, and timeline.",
+    "plain_english": "A time signature tells you how beats are grouped into bars in a piece of music. In 4/4, for example, you count four beats over and over. In music software it sets up the grid of bars and beats that everything lines up to.",
+    "purpose_function": "It organizes music into regular bars so performers, notation, and the DAW share one rhythmic framework. In a session it drives the click track, the grid, and beat-based editing such as quantizing.",
+    "practical_application": "A technician sets the session's time signature to match the song so the metronome, bar ruler, and quantize grid line up with the music.",
+    "category": "Timing",
+    "related_terms": ["Tempo", "Quantization", "Click Track", "Bars and Beats", "Grid"],
+    "common_mistakes": ["Confusing time signature with tempo; one sets how beats are grouped, the other sets speed.", "Leaving the DAW at the default 4/4 when the song is in another meter, so the grid and click do not match.", "Reading the lower number as a count of beats rather than as a note value."],
+    "scenario_contexts": ["A song in 3/4 waltz time needs the session time signature changed from the default 4/4.", "A producer adds a meter change at the bridge so the grid follows the music.", "A click track sounds wrong until the time signature is corrected."]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians (metre/time signature)", "Steinberg Cubase Operation Manual (Signature Track)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "648c4397-d693-4ab4-9f0f-80041ce1ac51",
+   "term": "Track Arm (Record-Enable)",
+   "fields": {
+    "definition": "Track arming, or record-enabling, is marking a specific track to capture incoming signal when recording begins, so only armed tracks record while the others play back. Arming a track also typically routes its input to the monitor output so the performer can hear it.",
+    "plain_english": "Arming a track means switching it on to record. Only the tracks you arm will capture sound when you hit record; the rest just play back. It is like choosing which recorders to press record on.",
+    "purpose_function": "It selects which tracks capture new material, so an engineer can overdub onto specific tracks without recording over everything. It exists to give precise control over what gets recorded in a multitrack session.",
+    "practical_application": "Before an overdub, a technician arms only the vocal track, checks the input level and monitoring, then records while the rest of the session plays back.",
+    "category": "Recording",
+    "related_terms": ["Software Monitoring", "TrackPunch", "Punch In/Out", "Input Monitoring", "Overdub"],
+    "common_mistakes": ["Forgetting to record-enable the track, so nothing is captured on the take.", "Arming the wrong track and recording over a good take.", "Leaving several tracks armed by accident, capturing bleed or silence on them."],
+    "scenario_contexts": ["An engineer arms a single track to punch in a corrected guitar phrase.", "During tracking, only the drum tracks are armed while a scratch guitar plays back.", "A missed take is traced to a track that was never record-enabled."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (record enabling tracks)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "36a23a51-ab50-4e26-8904-f12059216a48",
+   "term": "TrackPunch",
+   "fields": {
+    "definition": "TrackPunch is a Pro Tools record mode that lets individual audio tracks be punched in and out of recording independently, on the fly, without stopping playback, while all TrackPunch-enabled tracks stay record-armed for the whole pass. It records non-destructively, creating new audio for each punched region.",
+    "plain_english": "TrackPunch is a Pro Tools feature that lets you drop single tracks in and out of recording while the session keeps playing. You can catch a fix on one track without stopping. It saves the new bits without erasing the old audio.",
+    "purpose_function": "It allows fast, independent punch recording across many tracks during one continuous take, which suits live and band tracking where different parts need fixing on the fly. It exists to punch tracks in and out without stopping the transport.",
+    "practical_application": "During a live band take, an engineer uses TrackPunch to drop the bass track in to fix a section while the rest of the take keeps rolling.",
+    "category": "Recording",
+    "related_terms": ["Track Arm (Record-Enable)", "Punch In/Out", "QuickPunch", "DestructivePunch", "Software Monitoring"],
+    "common_mistakes": ["Confusing TrackPunch with DestructivePunch, which overwrites the existing audio.", "Not TrackPunch-enabling a track first, so it cannot be punched during the pass.", "Assuming it punches all tracks at once like a global punch rather than per track."],
+    "scenario_contexts": ["A full band is tracked live and individual parts are punched in with TrackPunch as needed.", "An engineer fixes a single flubbed note on one track without stopping the take.", "A session uses TrackPunch to keep every take non-destructive while spot-fixing tracks."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (TrackPunch and DestructivePunch)", "Avid Knowledge Base technical documentation (punch recording modes)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "35c8368d-789e-41fc-8f1e-2a483654fa06",
+   "term": "Velocity compression",
+   "fields": {
+    "definition": "Velocity compression is a MIDI editing process that reduces the range between the highest and lowest note velocities in a performance, bringing loud and soft notes closer together in level. It scales velocity values toward a central value, narrowing the dynamic range without changing pitch or timing.",
+    "plain_english": "This evens out how hard the notes in a MIDI performance were played. It pulls the loudest and softest notes closer together, so a sampled instrument plays more evenly. It is a bit like turning down only the loud parts.",
+    "purpose_function": "It tightens the dynamic range of a MIDI part so a sampled or synth instrument sounds more even and consistent. It exists to fix uneven playing or to fit a part into a mix without re-performing it.",
+    "practical_application": "A technician applies velocity compression to an uneven MIDI piano take so the soft notes are not lost and the loud notes do not jump out.",
+    "category": "MIDI",
+    "related_terms": ["Sustain-pedal data", "Time Signature", "Note Velocity", "MIDI Editing", "Quantization"],
+    "common_mistakes": ["Confusing MIDI velocity compression with audio dynamic-range compression; velocity compression edits data, not an audio signal.", "Over-compressing velocities until the part sounds flat and lifeless.", "Assuming velocity always maps to volume, when many instruments map it to timbre or filter cutoff as well."],
+    "scenario_contexts": ["An uneven MIDI drum performance is smoothed with velocity compression so the quiet hits are audible.", "A producer narrows the velocity range on a synth line so it sits steadily in the mix.", "A programmed piano part is velocity-compressed to reduce jarring loud notes."]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (MIDI velocity / Logical Editor)", "Apple Logic Pro User Guide (MIDI transform, velocity)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

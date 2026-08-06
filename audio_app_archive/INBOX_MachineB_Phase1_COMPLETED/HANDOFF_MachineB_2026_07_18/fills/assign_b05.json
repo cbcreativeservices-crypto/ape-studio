@@ -1,0 +1,223 @@
+{
+ "bucket": 5,
+ "packets": [
+  "mb0140",
+  "mb0143",
+  "mb0145",
+  "mb0149",
+  "mb0151",
+  "mb0162",
+  "mb0168",
+  "mb0169"
+ ],
+ "terms": [
+  {
+   "pkt": "mb0140",
+   "id": "40ec5efd-47d2-40c9-bbc8-5c0d4be61950",
+   "term": "Speed mode",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0140",
+   "id": "e4d388d0-8bce-4e8f-a4f2-f41f4f10259f",
+   "term": "Stage wash",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0140",
+   "id": "c9fad748-eca7-42ed-b105-2e2e9d436714",
+   "term": "Stealth music",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0143",
+   "id": "19921ded-9e00-4d3c-9d78-d7092fd16706",
+   "term": "Suspense music",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0143",
+   "id": "c1346793-79b5-4a64-91bf-d0d491779ac1",
+   "term": "Take a lap",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0145",
+   "id": "920d744f-541a-4a3a-9b31-5ff0da3c7a65",
+   "term": "Tempophone mode",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0149",
+   "id": "fe704389-053f-487e-95a3-ab0c60ce6b9e",
+   "term": "Transition matrix",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0151",
+   "id": "cef9722a-a9a6-45a8-91a3-19115541c891",
+   "term": "Victory music",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0162",
+   "id": "116f1f52-a188-45f1-91f9-a243fe251e2b",
+   "term": "Far binaural setting",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mastering Fundamentals & Chain"
+  },
+  {
+   "pkt": "mb0162",
+   "id": "0a012a67-197e-4b04-abb0-8087d16126c8",
+   "term": "Featured-score mix",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mastering Fundamentals & Chain"
+  },
+  {
+   "pkt": "mb0162",
+   "id": "c508a9da-73fc-4ac2-8b5b-7113941ef015",
+   "term": "Full score mix",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mastering Fundamentals & Chain"
+  },
+  {
+   "pkt": "mb0168",
+   "id": "d5bde576-7fb9-4c30-9314-9616303014f0",
+   "term": "Mid binaural setting",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mastering Fundamentals & Chain"
+  },
+  {
+   "pkt": "mb0169",
+   "id": "ea44279a-5a8b-4f29-bdd0-970ca90a9860",
+   "term": "Near binaural setting",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mastering Fundamentals & Chain"
+  }
+ ]
+}

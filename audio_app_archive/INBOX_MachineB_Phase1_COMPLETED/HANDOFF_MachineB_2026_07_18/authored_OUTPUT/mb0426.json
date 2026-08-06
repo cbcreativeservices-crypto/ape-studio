@@ -1,0 +1,323 @@
+{
+ "batch": 426,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "eb2d1fdb-6a40-4594-b900-192e6794b897",
+   "term": "Sound event detection",
+   "fields": {
+    "definition": "Sound event detection (SED) is a machine listening task in which a system labels the sound events present in an audio recording and locates them in time, giving each detected event a class label together with its onset and offset times. When several overlapping events must be detected at once it is called polyphonic sound event detection, and it is typically solved with supervised neural networks trained on labeled audio.",
+    "plain_english": "Sound event detection means teaching a computer to notice sounds and say when each one starts and stops, such as a dog bark or a car horn. It is like a listener who writes down every sound and the time it happened.",
+    "purpose_function": "It exists to turn continuous audio into a timed list of what happened, so machines can monitor, index, and react to sounds without a person listening the whole time.",
+    "practical_application": "A technician meets it in acoustic monitoring, smart-device audio, and content tagging, where a model flags events like glass breaking, applause, or speech and marks when they occur.",
+    "category": "Machine listening",
+    "related_terms": [
+     "Audio classification",
+     "Acoustic scene classification",
+     "Spectrogram input",
+     "Feature extraction",
+     "Convolutional neural network",
+     "Voice activity detection"
+    ],
+    "common_mistakes": [
+     "Confusing sound event detection with audio tagging; tagging only says which sounds are present, while detection must also mark when each one starts and ends",
+     "Assuming one label per moment; real recordings are often polyphonic, with several sound events overlapping in time",
+     "Testing only on clean, isolated sounds; background noise, reverberation, and unfamiliar sources sharply reduce accuracy in the field"
+    ],
+    "scenario_contexts": [
+     "Flagging and time-stamping events like glass breaking or alarms in a security audio feed",
+     "Automatically marking applause, laughter, or music sections in a recorded broadcast",
+     "Detecting and logging specific machine or environmental sounds for condition monitoring"
+    ]
+   },
+   "sources": [
+    "Mesaros, Heittola, Virtanen & Plumbley, Sound Event Detection: A Tutorial, IEEE Signal Processing Magazine 38(5), 2021",
+    "Virtanen, Plumbley & Ellis (eds.), Computational Analysis of Sound Scenes and Events (Springer)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1e469c40-e33a-4398-861d-bd5c2671b673",
+   "term": "Speaker identification",
+   "fields": {
+    "definition": "Speaker identification is the speaker-recognition task of determining which person, out of a set of known enrolled speakers, produced a given speech sample. It is a one-to-many (1:N) comparison: the utterance is matched against every enrolled voice model and assigned to the best-matching speaker, in contrast to speaker verification, which only accepts or rejects a single claimed identity.",
+    "plain_english": "Speaker identification means figuring out who is talking by matching a voice against a group of known voices. It is like knowing a friend on the phone by the sound of their voice.",
+    "purpose_function": "It exists to attach an identity to a voice automatically, so systems can label who spoke, personalize responses, or search recordings by speaker.",
+    "practical_application": "A technician encounters it in voice-based personalization, in tagging who is speaking in meeting or broadcast recordings, and in forensic or surveillance voice matching.",
+    "category": "Speaker recognition",
+    "related_terms": [
+     "Speaker verification",
+     "Speaker diarization",
+     "Automatic speech recognition",
+     "Feature extraction",
+     "Spectrogram input",
+     "Deep neural network"
+    ],
+    "common_mistakes": [
+     "Confusing identification with verification; identification asks who among many spoke (1:N), while verification only confirms or denies one claimed identity (1:1)",
+     "Assuming closed-set results; if the true speaker was never enrolled, a closed-set system will still wrongly pick someone from the list",
+     "Trusting it as strong proof of identity; performance drops with noise, channel changes, illness, or deliberate voice disguise"
+    ],
+    "scenario_contexts": [
+     "Labeling which participant is speaking in a multi-person meeting recording",
+     "Personalizing a voice assistant's response to a recognized household member",
+     "Matching an unknown voice against a database of known speakers in a forensic investigation"
+    ]
+   },
+   "sources": [
+    "Kinnunen & Li, An overview of text-independent speaker recognition: From features to supervectors, Speech Communication 52(1), 2010",
+    "Hansen & Hasan, Speaker Recognition by Machines and Humans: A Tutorial Review, IEEE Signal Processing Magazine 32(6), 2015"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "da002620-9784-4f80-ada3-d58beb92f359",
+   "term": "Speaker verification",
+   "fields": {
+    "definition": "Speaker verification is the speaker-recognition task of deciding whether a speech sample was produced by a specific claimed identity, returning an accept or reject decision. It is a one-to-one (1:1) comparison in which the utterance is scored against that person's enrolled voice model and the score is compared with a decision threshold; it can be text-dependent (a fixed passphrase) or text-independent (any speech).",
+    "plain_english": "Speaker verification checks whether a voice really belongs to the person it claims to be, then says yes or no. It works like a spoken password that has to match your own voice.",
+    "purpose_function": "It exists to authenticate people by their voice, providing a hands-free biometric check that grants or denies access based on how well the voice matches an enrolled sample.",
+    "practical_application": "A technician meets it in voice-login and phone-banking security and in access control, where the system sets a threshold to balance false accepts against false rejects.",
+    "category": "Speaker recognition",
+    "related_terms": [
+     "Speaker identification",
+     "Speaker diarization",
+     "Equal error rate",
+     "Feature extraction",
+     "Spectrogram input",
+     "Deep neural network"
+    ],
+    "common_mistakes": [
+     "Confusing verification with identification; verification tests one claimed identity (1:1), not which of many people spoke (1:N)",
+     "Setting the decision threshold carelessly; too low lets impostors in, too high locks out the real user, so the false-accept and false-reject trade-off must be tuned",
+     "Treating voice verification alone as strong security; recordings, imitation, or synthetic speech can spoof it, so it is best combined with other authentication factors",
+     "Testing only in quiet, matched conditions; noise, different microphones, or a cold can raise error rates"
+    ],
+    "scenario_contexts": [
+     "Verifying a caller's identity by voice in a phone-banking system",
+     "Unlocking a device or account with a spoken passphrase",
+     "Confirming an enrolled user before granting access to a secure resource"
+    ]
+   },
+   "sources": [
+    "Kinnunen & Li, An overview of text-independent speaker recognition: From features to supervectors, Speech Communication 52(1), 2010",
+    "Hansen & Hasan, Speaker Recognition by Machines and Humans: A Tutorial Review, IEEE Signal Processing Magazine 32(6), 2015"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "76587d07-bc38-4e90-86b6-f4b767294c4c",
+   "term": "SpectraLayers",
+   "fields": {
+    "definition": "SpectraLayers is a spectral audio editing application from Steinberg that represents sound in the time-frequency domain and lets the user select and edit specific regions of a spectrogram rather than a waveform. It combines manual spectral editing with AI-based Unmix tools that decompose a recording into layers such as vocals, drums, bass, and other instruments, or separate speech from noise.",
+    "plain_english": "SpectraLayers is software that shows sound as a picture of its frequencies over time, so you can grab and fix one part like editing a photo. It can also use AI to split a song into separate tracks such as vocals and drums.",
+    "purpose_function": "It exists to give editors surgical, frequency-specific control of audio and to pull a finished mix apart into components, tasks that ordinary waveform editors cannot do.",
+    "practical_application": "A technician uses it to remove noises, bleed, or unwanted sounds from a recording, to isolate or rebalance stems from a mix, and to repair or restore audio for music, post, and broadcast.",
+    "category": "Audio software",
+    "related_terms": [
+     "Spectrogram",
+     "Music source separation",
+     "Stem separation",
+     "Short-time Fourier transform",
+     "Spleeter",
+     "Spectrogram input"
+    ],
+    "common_mistakes": [
+     "Assuming AI-unmixed layers are the original studio multitracks; they are estimates that can contain artifacts and bleed",
+     "Setting the FFT size without thought; too large blurs time detail and too small blurs frequency detail, hurting precise spectral edits",
+     "Expecting spectral erasing to be invisible; aggressive removal can leave audible gaps or smearing in the sound"
+    ],
+    "scenario_contexts": [
+     "Erasing a cough, click, or squeak from an otherwise good vocal take",
+     "Unmixing a stereo song into vocal and instrumental stems for a remix or karaoke",
+     "Restoring an old or noisy recording by editing directly on the spectrogram"
+    ]
+   },
+   "sources": [
+    "Steinberg, SpectraLayers Pro 10 Operation Manual (Steinberg Media Technologies)",
+    "Steinberg SpectraLayers online help, Unmixing Layers and spectral editing reference (Steinberg technical documentation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a306ba37-3e25-4f14-ab3c-5dd6b7e4f6ab",
+   "term": "Spectrogram input",
+   "fields": {
+    "definition": "Spectrogram input refers to feeding a machine-learning model a spectrogram, a two-dimensional time-frequency representation of audio, instead of the raw waveform. The spectrogram, often a log-magnitude short-time Fourier transform or a mel-spectrogram, is treated much like an image, which lets convolutional and other vision-style networks learn from the audio's frequency content over time.",
+    "plain_english": "Spectrogram input means giving an AI model a picture of the sound frequencies over time, rather than the raw audio itself. The model then reads that picture much like it would read a photo.",
+    "purpose_function": "It exists because a spectrogram exposes pitch, harmonics, and timing in a compact, image-like form, which makes patterns easier for a network to learn than a long stream of raw samples.",
+    "practical_application": "A technician meets it when preparing audio for models: choosing the STFT or mel settings and normalization that turn each clip into the spectrogram a classifier, detector, or separator expects.",
+    "category": "Feature representation",
+    "related_terms": [
+     "Spectrogram",
+     "Mel spectrogram",
+     "Short-time Fourier transform",
+     "Feature extraction",
+     "Convolutional neural network",
+     "Sound event detection"
+    ],
+    "common_mistakes": [
+     "Assuming the spectrogram keeps everything; a magnitude spectrogram discards phase, so reconstructing audio from it needs phase estimation or a vocoder",
+     "Mismatching settings between training and use; a different FFT size, hop, sample rate, or number of mel bands than the model was trained on degrades results",
+     "Forgetting to match the model's expected scaling, such as log-magnitude and normalization, and feeding raw linear values instead"
+    ],
+    "scenario_contexts": [
+     "Converting clips to mel-spectrograms to train a sound-event or instrument classifier",
+     "Feeding STFT frames into a source-separation network that outputs masks",
+     "Preprocessing microphone audio into spectrograms for a keyword-spotting model"
+    ]
+   },
+   "sources": [
+    "Purwins et al., Deep Learning for Audio Signal Processing, IEEE Journal of Selected Topics in Signal Processing 13(2), 2019",
+    "Mueller, Fundamentals of Music Processing (Springer)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9beb4f29-d599-4236-ba7c-b66e4df17711",
+   "term": "Speech/audio enhancement",
+   "fields": {
+    "definition": "Speech and audio enhancement is the processing of a degraded audio signal to improve its perceived quality and, for speech, its intelligibility, typically by reducing noise, reverberation, or other distortions while preserving the wanted signal. Modern systems often use supervised deep-learning models that estimate a clean signal or a time-frequency mask from the noisy input, alongside classical methods such as spectral subtraction and Wiener filtering.",
+    "plain_english": "Speech and audio enhancement means cleaning up a recording so the important sound is clearer and easier to hear. It is like wiping smudges off a window so you can see through it better.",
+    "purpose_function": "It exists to make degraded audio more usable, raising quality and speech intelligibility for listeners and giving cleaner input to downstream tasks like recognition or transcription.",
+    "practical_application": "A technician uses enhancement plug-ins and real-time tools to remove hiss, hum, background noise, or room reverb from dialogue, podcasts, calls, and location recordings.",
+    "category": "Audio enhancement",
+    "related_terms": [
+     "Noise reduction",
+     "Dereverberation",
+     "Source separation",
+     "Wiener filter",
+     "Spectrogram input",
+     "Voice activity detection"
+    ],
+    "common_mistakes": [
+     "Over-processing until artifacts appear; aggressive noise reduction can leave musical noise, watery artifacts, or a dull, unnatural voice",
+     "Confusing enhancement with source separation; enhancement cleans one wanted signal, while separation splits a mix into multiple sources",
+     "Assuming louder means clearer; enhancement targets quality and intelligibility, not just level, and raising gain also raises noise"
+    ],
+    "scenario_contexts": [
+     "Removing HVAC hum and hiss from recorded dialogue in post-production",
+     "Applying real-time noise suppression to a video call or live broadcast mic",
+     "Cleaning a noisy field or interview recording before transcription"
+    ]
+   },
+   "sources": [
+    "Loizou, Speech Enhancement: Theory and Practice, 2nd ed. (CRC Press)",
+    "Wang & Chen, Supervised Speech Separation Based on Deep Learning: An Overview, IEEE/ACM Transactions on Audio, Speech, and Language Processing 26(10), 2018"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4bc0e1a2-c841-4827-9f67-01fd2514c373",
+   "term": "Spleeter",
+   "fields": {
+    "definition": "Spleeter is an open-source music source-separation library released by Deezer that splits a mixed recording into separate stems using pretrained deep neural networks. Built on TensorFlow, it uses U-Net (encoder-decoder convolutional) models that estimate a soft mask for each source, and it ships pretrained 2-stem (vocals/accompaniment), 4-stem (vocals, drums, bass, other), and 5-stem (adding piano) models.",
+    "plain_english": "Spleeter is a free tool from Deezer that uses AI to pull a song apart into separate tracks, like vocals, drums, and bass. You give it a mix and it hands back the split-out parts.",
+    "purpose_function": "It exists to give developers and technicians a fast, ready-to-run way to separate stems without training their own model, running on CPU or GPU with pretrained networks.",
+    "practical_application": "A technician runs it from the command line or in a script to batch-extract vocal or instrumental stems for remixing, karaoke, sampling, or as a preprocessing step for analysis.",
+    "category": "Source separation",
+    "related_terms": [
+     "Music source separation",
+     "Stem separation",
+     "HTDemucs",
+     "LALAL.ai",
+     "Spectrogram input",
+     "Inference"
+    ],
+    "common_mistakes": [
+     "Expecting flawless stems; separated tracks are estimates and can contain bleed and artifacts, especially on dense mixes",
+     "Assuming it separates any instrument; the pretrained models output only their fixed stems (2, 4, or 5 sources)",
+     "Assuming that separating a copyrighted track grants rights to reuse the stems; separation does not provide a license",
+     "Blaming the tool for poor results caused by low-quality or heavily compressed source audio"
+    ],
+    "scenario_contexts": [
+     "Batch-separating a folder of songs into vocal and instrumental stems via the command line",
+     "Extracting a drum or bass stem to sample or re-balance in a production",
+     "Preprocessing tracks into stems for music analysis or transcription"
+    ]
+   },
+   "sources": [
+    "Hennequin, Khlif, Voituret & Moussallam, Spleeter: a fast and efficient music source separation tool with pre-trained models, Journal of Open Source Software 5(50), 2020",
+    "Deezer Spleeter technical documentation and code, github.com/deezer/spleeter"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "51a3fdbf-34e6-41db-ab8f-6ff074726a95",
+   "term": "Streaming inference",
+   "fields": {
+    "definition": "Streaming inference is running a trained model on a continuous input stream in real time, processing the audio in small successive chunks as it arrives rather than waiting for the whole file. It usually requires low-latency, causal processing that carries internal state across chunks, so the model cannot rely on future context beyond a small look-ahead.",
+    "plain_english": "Streaming inference means an AI model works on sound as it comes in, a little bit at a time, instead of waiting for the whole recording. It is like translating a speech live while someone talks, not after they finish.",
+    "purpose_function": "It exists so models can respond in real time to ongoing audio, giving immediate output for live use where waiting for a complete recording is not an option.",
+    "practical_application": "A technician meets it in live captioning, real-time noise suppression, wake-word detection, and live effects, where buffer size and model latency must be tuned to stay responsive.",
+    "category": "Model deployment",
+    "related_terms": [
+     "Inference",
+     "Latency",
+     "Real-time processing",
+     "Buffer size",
+     "Voice activity detection",
+     "Keyword spotting"
+    ],
+    "common_mistakes": [
+     "Assuming an offline model streams unchanged; models that use the whole clip or future context must be made causal or chunked to run live",
+     "Ignoring the latency budget; large chunks or look-ahead improve accuracy but can add too much delay for live use",
+     "Forgetting to carry state between chunks, which causes clicks or errors at the boundaries between processed blocks"
+    ],
+    "scenario_contexts": [
+     "Running live captions on a broadcast as the speaker talks",
+     "Applying real-time neural noise suppression to a live microphone feed",
+     "Continuously running a wake-word detector on incoming audio"
+    ]
+   },
+   "sources": [
+    "He et al., Streaming End-to-end Speech Recognition for Mobile Devices, IEEE ICASSP 2019",
+    "Goodfellow, Bengio & Courville, Deep Learning (MIT Press) — inference and sequence modeling"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7bbb4781-9886-4d61-a7ba-e07fcf0bd871",
+   "term": "Super-resolution audio model",
+   "fields": {
+    "definition": "A super-resolution audio model is a machine-learning model that increases the effective bandwidth or sampling rate of audio by predicting the missing high-frequency content of a low-resolution signal. Also called audio bandwidth extension, it is trained on pairs of low- and high-resolution audio so it can reconstruct plausible detail, such as upper harmonics, that was absent from the input.",
+    "plain_english": "A super-resolution model uses AI to add back the bright, high detail that dull audio is missing. It is like sharpening a blurry photo, but for sound.",
+    "purpose_function": "It exists to recover or invent believable high-frequency detail so that band-limited or low-sample-rate audio sounds fuller and clearer than the original input allowed.",
+    "practical_application": "A technician meets it in restoration and upsampling tools that brighten old, telephone-quality, or low-bitrate recordings, and in codecs that transmit a narrow band and rebuild the top end at the receiver.",
+    "category": "Audio enhancement",
+    "related_terms": [
+     "Speech/audio enhancement",
+     "Sample rate conversion",
+     "Spectrogram input",
+     "Generative audio synthesis",
+     "Nyquist frequency",
+     "Neural network"
+    ],
+    "common_mistakes": [
+     "Confusing it with plain upsampling; simple sample-rate conversion only interpolates existing samples and adds no new high-frequency content, while a super-resolution model predicts new detail",
+     "Treating the added detail as real; the high frequencies are model guesses and may not match what was originally recorded",
+     "Assuming it fixes all quality problems; it can add artifacts and cannot recover information that no cue in the input supports"
+    ],
+    "scenario_contexts": [
+     "Brightening an old or telephone-quality recording by rebuilding its missing high frequencies",
+     "Upsampling low-sample-rate or low-bitrate audio for playback on full-range systems",
+     "Extending bandwidth at the receiver in a speech codec that transmits only a narrow band"
+    ]
+   },
+   "sources": [
+    "Kuleshov, Enam & Ermon, Audio Super-Resolution using Neural Networks, ICLR 2017 Workshop",
+    "Larsen & Aarts, Audio Bandwidth Extension: Application of Psychoacoustics, Signal Processing and Loudspeaker Design (Wiley)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

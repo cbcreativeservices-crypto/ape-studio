@@ -1,0 +1,159 @@
+{
+ "batch": 12,
+ "topic": "Instrument Recording — Strings & Guitar",
+ "authored": [
+  {
+   "id": "18df5655-a080-438b-a47e-9b9764d78953",
+   "term": "Sound-hole cover",
+   "fields": {
+    "definition": "A removable disc or plug fitted over or into the sound hole of an acoustic (or acoustic-electric) guitar to damp the instrument's principal air (Helmholtz) resonance; it is used chiefly to suppress low-frequency acoustic feedback when the guitar is amplified.",
+    "plain_english": "A cap that seals the round hole of an acoustic guitar. Blocking the hole tames the boomy resonance that makes an amplified acoustic guitar howl with feedback.",
+    "purpose_function": "The guitar body and sound hole form a Helmholtz resonator with a strong low-frequency peak; covering the hole shifts and damps that peak so the amplified signal is far less likely to build into feedback. It exists to let acoustic guitars be played at higher stage levels without runaway feedback.",
+    "practical_application": "A technician or player fits a sound-hole cover when an acoustic-electric guitar feeds back through the PA or monitors, trading a little unplugged low-end response for much greater gain-before-feedback.",
+    "category": "Guitar accessory",
+    "related_terms": ["Soundboard", "Steel-string acoustic guitar", "Stage volume", "Acoustic feedback", "String resonance"],
+    "common_mistakes": ["Assuming a sound-hole cover cures all feedback; it mainly tames the low-frequency body/air resonance, not higher-frequency top or room-mode feedback", "Expecting no tonal change, when blocking the sound hole clearly reduces the acoustic low-end and overall unplugged loudness", "Forcing an ill-fitting cover into the hole hard enough to scratch or crack the top around the rosette"],
+    "scenario_contexts": ["An acoustic-electric guitar howls through the monitors at a loud stage volume, and fitting a sound-hole cover restores usable gain", "A guitarist DI'd into a small PA in a boomy room uses a cover to cut low-frequency feedback", "A player who gigs amplified keeps a cover in the case even though the same guitar records fine uncovered"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (guitar Helmholtz air resonance and sound hole)", "Yamaha Sound Reinforcement Handbook (acoustic feedback mechanism)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "697925db-efee-4466-97b2-38b78a44efca",
+   "term": "Soundboard",
+   "fields": {
+    "definition": "The thin, resonant plate (the top or belly) of a stringed instrument — such as a guitar top, violin belly, or piano soundboard — that receives string vibration through the bridge and radiates it efficiently as sound.",
+    "plain_english": "The large flat piece of wood the strings sit over. The strings alone are too thin to be loud, so their vibration is passed to this board, which moves a lot of air and makes the sound you hear.",
+    "purpose_function": "A vibrating string moves very little air by itself; the soundboard couples that vibration to a large radiating surface, greatly increasing acoustic output and shaping the instrument's tone. It exists to turn faint string motion into audible, timbrally rich sound.",
+    "practical_application": "When miking an acoustic guitar, piano, or violin, engineers aim at or around the soundboard because that surface, not the strings, radiates most of the sound; its bracing and wood largely set the instrument's character.",
+    "category": "Instrument acoustics",
+    "related_terms": ["Steel-string acoustic guitar", "Sound-hole cover", "String resonance", "Spider bridge", "Bridge"],
+    "common_mistakes": ["Confusing the instrument soundboard with a mixing 'soundboard' (console); they are unrelated uses of the word", "Believing the strings produce the volume, when the soundboard and body do the radiating", "Close-miking only the strings or neck and missing the main radiating surface"],
+    "scenario_contexts": ["Choosing acoustic-guitar mic placement by referencing the soundboard rather than the strings", "Explaining why a solid-top guitar is louder and more resonant than a laminate-top one", "Understanding why resting a hand on the top of an instrument reduces its output"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (top plate as primary radiator)", "The New Grove Dictionary of Music and Musicians ('Soundboard')"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "02542491-f422-4917-81b5-ec94492f02b9",
+   "term": "Spider bridge",
+   "fields": {
+    "definition": "A cast-aluminum, spider-shaped bridge used on single-cone resonator guitars, whose several legs radiate outward to rest on the rim of an inverted ('Dobro-style') resonator cone; the saddle sits at the hub, so string vibration is carried down the legs to the perimeter of the cone.",
+    "plain_english": "In a resonator (Dobro) guitar this is a metal, spider-legged piece that sits on top of the cone. The strings press on its center, and its legs pass the vibration out to the edge of the metal cone that produces the guitar's loud, ringing tone.",
+    "purpose_function": "It transfers string energy to the outer edge of an inverted resonator cone, which then radiates the characteristic bright, cutting resonator sound; the spider drives the cone at its rim rather than its center. It is the mechanical link between strings and cone in spider-type resonators.",
+    "practical_application": "A tech setting up a Dobro-style resonator adjusts action by shaping the maple saddle in the spider and seats the spider squarely on the cone for clean coupling; this contrasts with the 'biscuit' bridge used on forward-facing single cones.",
+    "category": "Resonator guitar hardware",
+    "related_terms": ["Soundboard", "Steel-string acoustic guitar", "Bridge", "Resonator cone", "Biscuit bridge"],
+    "common_mistakes": ["Confusing the spider bridge (inverted cone, driven at the rim) with the biscuit bridge (forward-facing cone, driven at the center)", "Misseating the spider so it does not sit flat on the cone, which kills volume and sustain", "Assuming any resonator cone fits, when spider cones and biscuit cones are not interchangeable"],
+    "scenario_contexts": ["Setting string action on a bluegrass Dobro by shaping the spider's wooden saddle", "Diagnosing a buzzing or dead resonator traced to a spider not seated flat on the cone", "Choosing the correct cone-and-bridge system when repairing a spider-type resonator guitar"]
+   },
+   "sources": ["National Guitars technical documentation (resonator setup / Tech FAQ, cone-and-bridge systems)", "Beard Guitars technical/parts documentation (cast-aluminum spider bridge and matching resonator cone)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "49fa7647-8a3b-4200-82f2-ce690e91790f",
+   "term": "Stage volume",
+   "fields": {
+    "definition": "The acoustic sound-pressure level present on stage — produced by instrument amplifiers (backline), drums, and stage monitors — as distinct from the level the main PA delivers to the audience.",
+    "plain_english": "How loud it really is on the stage itself. This sound comes from the amps, the drums, and the monitor speakers. It is not about how loud the speakers are for the crowd.",
+    "purpose_function": "Stage volume is what the musicians hear and what leaks into the microphones, so managing it is central to monitor mixing, gain-before-feedback, and hearing safety. It matters because excessive stage volume degrades the front-of-house mix and endangers hearing.",
+    "practical_application": "A live engineer works to keep stage volume down — asking players to turn down backline, deploying in-ear monitors, or angling amps — so open microphones pick up less bleed and the PA, not the stage, defines what the audience hears.",
+    "category": "Live sound",
+    "related_terms": ["Sound-hole cover", "Stage monitor", "In-ear monitors", "Acoustic feedback", "Microphone bleed"],
+    "common_mistakes": ["UNSAFE: Tolerating very high stage volume without hearing protection; sustained high SPL on stage risks noise-induced hearing loss and must be managed within OSHA 29 CFR 1910.95 occupational-noise limits", "Believing louder backline improves the audience mix, when it usually just adds bleed and feedback and muddies front-of-house", "Answering 'I can't hear myself' by turning up rather than fixing the monitor mix, which escalates the whole stage level"],
+    "scenario_contexts": ["A loud guitar amp causes vocal mics to feed back, so the engineer reduces stage volume", "A band switches to in-ear monitors to lower stage volume and clean up front-of-house", "Setting up in a small, hard-walled room where high stage volume overwhelms the PA"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook (monitor levels, feedback, and stage leakage)", "Ballou, Handbook for Sound Engineers (sound reinforcement and gain-before-feedback)", "OSHA 29 CFR 1910.95 (occupational noise exposure limits)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7086ab9d-a3ee-4e57-826f-473569b0eed5",
+   "term": "Steel-string acoustic guitar",
+   "fields": {
+    "definition": "An acoustic guitar strung with steel (metal) strings rather than nylon, typically built with a strengthened, X-braced top to withstand the higher string tension; it produces a brighter, louder, more sustaining tone than the nylon-string classical guitar.",
+    "plain_english": "The common folk acoustic guitar. It has bright metal strings. A classical guitar uses softer nylon strings instead. The metal strings pull harder. So the body is built stronger. The sound is louder and brighter too.",
+    "purpose_function": "Steel strings and X-bracing give the volume, brightness, and sustain suited to folk, country, rock, and pop; the reinforced top and neck exist specifically to handle the greater tension steel strings impose.",
+    "practical_application": "In the studio it is the default 'acoustic guitar,' usually recorded with a condenser near the 12th fret and soundboard; a tech fits steel-appropriate strings and sets neck relief accordingly, never fitting nylon-guitar strings.",
+    "category": "Acoustic instrument",
+    "related_terms": ["Soundboard", "Sound-hole cover", "String resonance", "Spider bridge", "Classical guitar"],
+    "common_mistakes": ["Fitting steel strings to a guitar built for nylon, whose far higher tension can bow or crack a classical guitar's lightly built top and neck", "Assuming all acoustic guitars are steel-string, when classical and flamenco guitars use nylon and are built lighter", "Treating string gauge as the only tone factor and ignoring body size, bracing, and wood"],
+    "scenario_contexts": ["Recording a singer-songwriter track with a condenser on a steel-string acoustic", "Restringing and setting neck relief on a dreadnought before a session", "Choosing between a steel-string and a nylon classical for a bright, cutting rhythm part"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (folk/steel-string vs classical guitar; X-bracing and string tension)", "The New Grove Dictionary of Music and Musicians ('Guitar')"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "41e3628f-4616-4b05-b548-4b8e8e1003a5",
+   "term": "Stop",
+   "fields": {
+    "definition": "In the pipe organ, a stop is a complete rank (set) of pipes of one tone colour together with its controlling mechanism; drawing the stop knob admits wind so that rank can sound, and pushing it in silences that rank.",
+    "plain_english": "On a pipe organ, a 'stop' is one full set of pipes that share a sound, plus the knob that turns it on or off. Pulling the knob out lets that set play; pushing it in shuts it off — the origin of 'pulling out all the stops.'",
+    "purpose_function": "Stops let the organist select and combine tone colours and pitches (registration) by choosing which sets of pipes speak. They exist to give a single keyboard access to many voices and volumes.",
+    "practical_application": "An organist or technician refers to individual stops by name and pitch (for example an 8-foot Diapason) when registering a piece or diagnosing a rank that will not sound; a stuck stop action is a common service call.",
+    "category": "Organ",
+    "related_terms": ["String stop", "Rank", "Registration", "Diapason", "Soundboard"],
+    "common_mistakes": ["Thinking a stop is a single pipe, when it is an entire rank plus its control", "Assuming 'pulling out a stop' changes the pitch of the keys, when it selects which rank or voice sounds", "Confusing an organ 'stop' with a string player 'stopping' a note; these are unrelated concepts"],
+    "scenario_contexts": ["Registering a hymn by drawing and retiring specific stops", "A technician tracing why one stop's rank fails to speak", "Explaining 'pull out all the stops' when introducing organ registration"]
+   },
+   "sources": ["Audsley, Organ-Stops and Their Artistic Registration (stops as tonal units of registration)", "The New Grove Dictionary of Music and Musicians ('Stop', 'Registration')"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "26bfd732-eb1b-4b0f-91d8-12bf1bc28823",
+   "term": "Straight mute",
+   "fields": {
+    "definition": "A hollow, cone-shaped mute — traditionally spun aluminum, also fibre or cardboard — held in the bell of a brass instrument by strips of cork; it partially closes the bell to reduce volume and produce a bright, nasal, penetrating tone rich in upper harmonics.",
+    "plain_english": "A cone you push into the bell of a trumpet or trombone, held by little cork strips. It makes the instrument quieter and gives it a thin, buzzy, edgy sound.",
+    "purpose_function": "The straight mute both lowers overall level and reshapes the timbre, emphasizing high partials for a pinched, brilliant colour used throughout orchestral and jazz writing. It exists to give brass a distinct muted voice on demand.",
+    "practical_application": "A brass player inserts a straight mute where a part is marked muted or con sordino; in recording, its brighter, more directional output often calls for adjusted mic placement or a little high-frequency taming.",
+    "category": "Brass mute",
+    "related_terms": ["Cup mute", "Harmon mute", "Bell", "Con sordino", "Stop"],
+    "common_mistakes": ["Confusing the straight mute's bright, nasal sound with the cup mute's darker, more muffled sound", "Assuming a mute only lowers volume, when it also strongly changes timbre", "Forcing the mute in too far or using damaged cork, which jams it in the bell and alters intonation"],
+    "scenario_contexts": ["A trumpet section adds straight mutes for a bright, biting fanfare", "Adjusting a mic on a muted trumpet whose tone is thinner and more directional", "Reading 'straight mute' in a score and selecting it over a cup or Harmon mute"]
+   },
+   "sources": ["Adler, The Study of Orchestration (brass mutes; straight mute timbre and use)", "Baines, Brass Instruments: Their History and Development (mute construction and acoustic effect)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c2652ee6-7674-435a-b81f-c8dc4796591f",
+   "term": "String resonance",
+   "fields": {
+    "definition": "The tendency of a string to vibrate at its natural (resonant) frequencies; in practice it most often refers to sympathetic resonance, in which an undamped string is set ringing by sound at one of its natural frequencies produced elsewhere on the same or a nearby instrument.",
+    "plain_english": "When you play one note, other strings tuned to related pitches start humming along on their own. That sympathetic ringing is string resonance.",
+    "purpose_function": "String resonance enriches and sustains an instrument's tone by adding sympathetic overtones, but uncontrolled it also creates unwanted ringing; understanding it lets players and engineers either exploit or suppress it.",
+    "practical_application": "When recording guitar or piano, engineers hear open, undamped strings ringing sympathetically and may mute them (capo, felt, or palm) to clean up a track, or leave them for a fuller, more resonant sound.",
+    "category": "Instrument acoustics",
+    "related_terms": ["Soundboard", "Steel-string acoustic guitar", "Sound-hole cover", "Sympathetic vibration", "Damping"],
+    "common_mistakes": ["Confusing sympathetic string resonance with feedback; resonance is acoustic coupling between strings and bodies, not an amplified loop", "Blaming 'ringing' on a fault when it is simply undamped open strings resonating sympathetically", "Forgetting to mute unused strings, leaving sympathetic ring in a recorded take"],
+    "scenario_contexts": ["Muting open strings on an acoustic guitar to stop sympathetic ring in a close-miked take", "Noticing that lifting piano dampers lets strings resonate sympathetically", "Deliberately allowing string resonance for a fuller, sustaining acoustic tone"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (sympathetic resonance and coupled strings)", "The New Grove Dictionary of Music and Musicians ('Resonance', 'Sympathetic strings')"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fdb3a87d-d95f-4892-ad25-6398271a4458",
+   "term": "String stop",
+   "fields": {
+    "definition": "In the pipe organ, a string stop (string-toned stop) is a flue stop of narrow ('keen') scale voiced to imitate the bright, thin, sustained tone of orchestral strings; examples include the Salicional, Viola or Gamba, and Dulciana.",
+    "plain_english": "On a pipe organ, this is a set of thin pipes. They are tuned to sound like violins or violas. The tone is thin and keen, like strings. It is not a full flute or trumpet sound.",
+    "purpose_function": "String stops add a keen, quiet, string-like colour to the organ's palette for accompaniment and orchestral effects, and several combined build up organ string tone. They exist to give the organ imitative orchestral-string voices.",
+    "practical_application": "An organist selects string stops (for example a Salicional against a Céleste) for soft, shimmering accompaniment, and a technician voices their narrow-scale pipes to obtain the characteristic keen edge.",
+    "category": "Organ",
+    "related_terms": ["Stop", "Rank", "Registration", "Diapason", "Céleste"],
+    "common_mistakes": ["Confusing string stops (thin, keen) with flute or diapason stops (fuller, rounder)", "Assuming 'string' means actual strings, when organ string stops are narrow-scale pipes imitating strings", "Expecting loud output, when most string stops are relatively quiet, accompanimental voices"],
+    "scenario_contexts": ["Registering a soft accompaniment with a Salicional string stop", "Combining a string stop with a Céleste for a shimmering effect", "Voicing a narrow-scale rank to achieve keen string tone during organ service work"]
+   },
+   "sources": ["Audsley, Organ-Stops and Their Artistic Registration (viol/string-toned stops: Salicional, Gamba)", "The New Grove Dictionary of Music and Musicians ('Salicional', string-toned stops)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

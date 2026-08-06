@@ -1,0 +1,231 @@
+{
+ "batch": 56,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "e6a544f8-3d16-4c0b-9323-b71499cf4d74",
+   "term": "Instrument subgroup",
+   "fields": {
+    "definition": "A secondary mix bus on a console or in a DAW to which several related instrument channels are routed, so the whole set can be level-balanced, processed, and muted together before reaching the main output.",
+    "plain_english": "A subgroup is one fader that controls a whole group of instruments at once. Instead of moving ten drum channels, you send them all to one drum fader and move just that. It is like putting many files into one folder so you can handle them as a set.",
+    "purpose_function": "It simplifies control of many related channels, letting an engineer set relative balance once and then adjust, process, or mute the whole section as a single unit.",
+    "practical_application": "A tracking engineer routes all drum, background-vocal, or keyboard channels to a subgroup so one fader move or one shared compressor can shape the entire section.",
+    "category": "Signal Routing",
+    "related_terms": ["Bus", "Auxiliary send", "Main mix bus", "VCA group", "Drum bus", "Gain staging"],
+    "common_mistakes": [
+     "Confusing a subgroup (audio actually flows through it) with a VCA/DCA group (which only remote-controls channel faders).",
+     "Routing channels to a subgroup but forgetting to route the subgroup itself to the main mix, so the group is silent.",
+     "Applying heavy processing on both the individual channels and the subgroup, causing unintended double processing."
+    ],
+    "scenario_contexts": [
+     "Bussing a multi-mic drum kit to one Drums fader for quick level rides.",
+     "Compressing all background vocals together on a subgroup for a glued sound.",
+     "Muting an entire keyboard section with one fader during a verse."
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers", "Avid Pro Tools Reference Guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "57ac46fa-36c0-4744-92bb-41679956f284",
+   "term": "Instrument sustain enhancement",
+   "fields": {
+    "definition": "The use of processing, typically downward compression or a dedicated sustainer, to raise and extend the decaying tail of an instrument's notes so they ring out longer and more evenly.",
+    "plain_english": "This means making an instrument's notes last longer before they fade away. A compressor turns up the quiet tail of each note so it keeps ringing. It is like slowly raising the volume as a note dies so you still hear it.",
+    "purpose_function": "It gives notes a longer, more even decay, helping sustained parts sit steadily in a mix instead of dropping away too quickly.",
+    "practical_application": "On a clean electric guitar or electric piano, an engineer sets a compressor with a low threshold and slow release to hold each note's tail during tracking or mixing.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Compression", "Release time", "Sustain", "Attack time", "Makeup gain", "Envelope"],
+    "common_mistakes": [
+     "Using very high ratios and low thresholds, which pulls up noise, hum, and hiss along with the sustain.",
+     "Setting the release too fast, which causes audible pumping instead of smooth sustain.",
+     "Confusing sustain (length of the decay) with attack (the initial hit)."
+    ],
+    "scenario_contexts": [
+     "Adding sustain to a clean electric guitar arpeggio.",
+     "Evening out the decay of a Rhodes electric piano chord.",
+     "Extending the ring of a plucked bass note."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0d2f701e-d173-4ddd-89a5-41d45f6b3eb6",
+   "term": "Instrument tonal consistency",
+   "fields": {
+    "definition": "Keeping an instrument's timbre and frequency balance uniform across takes, sections, or an entire project, achieved through consistent mic placement, gain, and instrument setup.",
+    "plain_english": "This means keeping an instrument sounding the same all the way through a song. You use the same mic spot and settings for every take so nothing suddenly changes. It is like keeping the same lighting for every photo so they all match.",
+    "purpose_function": "It ensures parts recorded at different times cut together smoothly, preventing distracting jumps in tone when takes are comped or edited.",
+    "practical_application": "When re-recording a guitar overdub the next day, the engineer restores the same mic position, amp settings, and gain to match the earlier tone.",
+    "category": "Tonal Balance",
+    "related_terms": ["Mic placement", "Gain staging", "Overdub", "Comping", "Timbre", "Recall"],
+    "common_mistakes": [
+     "Not documenting mic position and settings, making it hard to match tone in a later session.",
+     "Changing headphone or monitor levels and assuming the recorded tone changed too.",
+     "Swapping instruments or strings mid-session without noting the change in tone."
+    ],
+    "scenario_contexts": [
+     "Matching a punch-in to the surrounding performance.",
+     "Recording the same guitar part across several days.",
+     "Keeping horn-section tone even when players rotate mics."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Recording Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "033e757c-982a-4522-a813-94014973b122",
+   "term": "Instrument transient shaping",
+   "fields": {
+    "definition": "The deliberate boosting or reducing of the initial attack (transient) and sustain portions of an instrument's sound using a transient designer or fast compressor/expander, independent of overall level.",
+    "plain_english": "A transient is the quick, punchy start of a sound, like the crack of a drum hit. Transient shaping lets you make that start harder or softer. It is like sharpening or softening the first hit you hear on each note.",
+    "purpose_function": "It controls punch and impact, adding attack to make a drum cut through or softening it to sit back, without simply raising or lowering the whole track's volume.",
+    "practical_application": "An engineer uses a transient designer on a snare to add crack, or reduces attack on an acoustic guitar to tame aggressive picking.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Transient", "Attack time", "Compression", "Envelope", "Transient designer", "Punch"],
+    "common_mistakes": [
+     "Adding too much attack, which exaggerates noise and makes drums sound clicky and unnatural.",
+     "Confusing transient shaping (which is level-independent) with simple volume automation.",
+     "Boosting sustain heavily on a noisy source, which raises bleed and room ring."
+    ],
+    "scenario_contexts": [
+     "Increasing snare attack so it cuts through a dense rock mix.",
+     "Reducing pick attack on a strummed acoustic guitar.",
+     "Tightening a boomy kick by cutting its sustain."
+    ]
+   },
+   "sources": ["SPL Transient Designer technical documentation", "Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c58149e0-3cc8-4f1e-aec2-8f291496093f",
+   "term": "Instrument warmth enhancement",
+   "fields": {
+    "definition": "Processing that adds low-mid weight and gentle harmonic content, through analog-style saturation, tube or tape emulation, or EQ roughly in the 100 to 400 Hz region, to make an instrument sound fuller and less harsh.",
+    "plain_english": "Warmth means a full, smooth, pleasing lower-middle sound, not thin or harsh. Engineers add it with gentle saturation or a small boost in the lower-middle notes. It is like giving the sound a cozy, rounded feel.",
+    "purpose_function": "It makes thin or clinical recordings feel richer and more pleasing, imitating the flattering coloration of analog tube and tape gear.",
+    "practical_application": "An engineer runs a DI bass or a bright digital synth through a tape or tube saturation plugin, or boosts low mids slightly, to add perceived warmth.",
+    "category": "Tonal Shaping",
+    "related_terms": ["Saturation", "Harmonic distortion", "Equalization", "Low mids", "Tape emulation", "Timbre"],
+    "common_mistakes": [
+     "Adding so much low-mid boost that the mix becomes muddy and boxy.",
+     "Overusing saturation until it becomes obvious distortion rather than subtle warmth.",
+     "Assuming warmth is one fixed setting rather than a subjective, source-dependent balance."
+    ],
+    "scenario_contexts": [
+     "Warming up a clean DI bass with tape saturation.",
+     "Softening a harsh digital synth pad.",
+     "Adding body to a thin-sounding acoustic guitar."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "000a411a-0135-4f95-838e-e978ec262b78",
+   "term": "Instrument-body enhancement",
+   "fields": {
+    "definition": "The boosting of an instrument's fundamental and low-mid body frequencies, the region that gives fullness and resonance, to make it sound larger and more present without adding sub-bass.",
+    "plain_english": "The body of an instrument is its full, resonant middle, like the woody sound of an acoustic guitar. Body enhancement boosts that region so the instrument sounds bigger. It is like filling out a sound so it does not seem thin.",
+    "purpose_function": "It restores fullness lost to thin mic positions or bright instruments, helping a track feel solid and present in the mix.",
+    "practical_application": "An engineer boosts around 100 to 250 Hz on an acoustic guitar or snare to add body, or blends in a body mic, while watching for muddiness.",
+    "category": "Tonal Shaping",
+    "related_terms": ["Equalization", "Fundamental frequency", "Low mids", "Resonance", "Proximity effect", "Timbre"],
+    "common_mistakes": [
+     "Boosting body frequencies on every track, which stacks up into a muddy low-mid buildup.",
+     "Confusing body (low mids and fundamental) with sub-bass (very low frequencies).",
+     "Adding body with EQ when the real fix is better mic placement."
+    ],
+    "scenario_contexts": [
+     "Thickening a thin-sounding acoustic guitar.",
+     "Adding fullness to a snare that sounds papery.",
+     "Restoring warmth to a close-miked cajon."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "faf18694-8437-4d4c-9f28-ec9f05d830b6",
+   "term": "Internal muffler",
+   "fields": {
+    "definition": "A damping device built inside a drum shell, typically a felt or foam pad on an adjustable arm, that presses against the inside of the drumhead to reduce ring and shorten sustain, controlled by a knob on the outside of the shell.",
+    "plain_english": "An internal muffler is a soft pad inside a drum that touches the head to cut down ringing. You turn a knob on the shell to press it harder or softer. It is like resting your hand on a bell to stop it ringing so long.",
+    "purpose_function": "It tames unwanted overtones and long sustain from a drum, giving a shorter, more controlled note without external tape or pads.",
+    "practical_application": "When a vintage kit's tom or bass drum rings too long, a drummer or engineer turns the internal muffler knob to add damping before miking it up.",
+    "category": "Drum Damping",
+    "related_terms": ["Damping", "Overtone", "Sustain", "Drumhead", "Muffling", "Resonance"],
+    "common_mistakes": [
+     "Over-tightening the muffler, which chokes the drum and kills its tone and volume.",
+     "Relying on a loose internal muffler that itself buzzes and adds noise to the recording.",
+     "Assuming internal mufflers work as well as modern external damping; many engineers prefer external control."
+    ],
+    "scenario_contexts": [
+     "Taming a long-ringing vintage bass drum for a tight recording.",
+     "Reducing tom overtones on a 1970s kit.",
+     "Controlling snare ring without adding external tape."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers", "Ludwig Drum Company setup and tuning documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6b10c590-881f-4f5a-a61f-39c4e7705b62",
+   "term": "Key-noise control",
+   "fields": {
+    "definition": "The reduction of the mechanical clicking and clatter made by the keys and pads of woodwind instruments, and similar mechanism noise, through playing technique, instrument maintenance, mic placement, and post-recording editing.",
+    "plain_english": "Woodwind instruments like sax and flute make clicking sounds when the keys move. Key-noise control means keeping those clicks from being too loud in a recording. You do it by moving the mic and keeping the instrument in good shape.",
+    "purpose_function": "It keeps distracting mechanical noise from intruding on an otherwise clean instrument recording, especially in quiet or exposed passages.",
+    "practical_application": "When recording flute, an engineer angles the mic away from the keys and toward the tone holes, and may edit out remaining clicks, to control key noise.",
+    "category": "Noise Control",
+    "related_terms": ["Mic placement", "Noise gate", "Editing", "Woodwind", "Bleed", "Signal-to-noise ratio"],
+    "common_mistakes": [
+     "Placing the mic right over the keys, which captures the loudest mechanical clatter.",
+     "Trying to remove key noise entirely with heavy gating, which chops the natural note tails.",
+     "Ignoring worn or dry pads that make the mechanism noisier than it needs to be."
+    ],
+    "scenario_contexts": [
+     "Recording an exposed solo flute passage.",
+     "Miking a saxophone for an intimate ballad.",
+     "Editing key clicks out of a quiet clarinet take."
+    ]
+   },
+   "sources": ["DPA Microphones technical guide to miking woodwind instruments", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ec58750c-5485-4b94-9d4f-7b52194a520b",
+   "term": "Keyboard automation",
+   "fields": {
+    "definition": "The use of a DAW's automation system to record and play back changes over time, such as volume, pan, filter cutoff, or effect levels, on a keyboard or synthesizer track.",
+    "plain_english": "Automation lets the computer remember and repeat changes you make, like turning volume up in the chorus. Keyboard automation applies this to keyboard or synth parts. It is like teaching the mixer to move the knobs by itself at the right times.",
+    "purpose_function": "It creates hands-free, repeatable changes in a keyboard part's level or tone across a song, keeping the part dynamic and consistent every playback.",
+    "practical_application": "An engineer draws volume automation to lift a synth pad in the chorus and lower it under vocals, or automates a filter sweep on a synth for a build.",
+    "category": "Mix Automation",
+    "related_terms": ["Automation", "DAW", "Volume automation", "Filter cutoff", "Synthesizer", "Modulation"],
+    "common_mistakes": [
+     "Writing automation in the wrong mode (latch, touch, or write) and accidentally overwriting existing moves.",
+     "Automating the channel fader and a plugin gain at once, causing confusing level jumps.",
+     "Forgetting that a disabled automation lane still plays back its stored moves once re-enabled."
+    ],
+    "scenario_contexts": [
+     "Riding a synth pad's level under a lead vocal.",
+     "Programming a filter sweep for a build-up.",
+     "Balancing a piano part dynamically across a song."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

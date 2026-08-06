@@ -1,0 +1,74 @@
+{
+ "batch": 180,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "f16edd98-ad1b-4981-9f65-f7a488e65284",
+   "term": "Weiss EQ1",
+   "fields": {
+    "definition": "The Weiss EQ1 is a reference-grade digital mastering equalizer from Weiss Engineering, offering seven identical parametric bands that each switch between peaking, high/low shelving, and high/low cut modes. It is built in minimum-phase, linear-phase (LP), and dynamic (DYN) variants and is prized for shaping tone without audible artifacts.",
+    "plain_english": "The Weiss EQ1 is a top-quality digital equalizer used in mastering. An equalizer turns certain pitch ranges up or down. It has seven bands, so you can shape the sound in seven places at once. Engineers trust it because it changes tone cleanly, without adding noise.",
+    "purpose_function": "It exists to make precise, clean tonal adjustments to a finished mix, letting a mastering engineer correct or enhance the frequency balance without introducing audible phase or distortion artifacts.",
+    "practical_application": "A mastering engineer uses the EQ1 to make surgical or broad tonal moves, such as taming a harsh upper-midrange or adding gentle high-end air, often working in mid/side mode and choosing the linear-phase variant when phase accuracy matters most.",
+    "category": "Mastering Equalizer",
+    "related_terms": ["Parametric EQ", "Linear-phase EQ", "Mid/side processing", "Mastering chain", "Weiss MM-1", "Shelving filter"],
+    "common_mistakes": ["Assuming linear-phase mode is always better; it can cause pre-ringing on transients, so minimum-phase is often the better choice", "Making large corrective boosts at the mastering stage instead of fixing tonal problems back in the mix", "Overusing mid/side EQ and creating an unnatural balance or mono-compatibility problems", "Expecting analog-style behavior from what is a fixed-sample-rate digital processor"],
+    "scenario_contexts": ["Adding a gentle high-shelf lift to brighten a slightly dull master", "Using mid/side mode to reduce boomy bass only in the center while keeping stereo width", "Matching the tonal balance across an album's tracks for consistency"]
+   },
+   "sources": ["Weiss Engineering EQ1 product/technical documentation (weiss.ch)", "Softube Weiss EQ1 user manual (official technical documentation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6cedcf10-bcc4-482f-9f61-a164524f4b61",
+   "term": "Weiss MM-1",
+   "fields": {
+    "definition": "The Weiss MM-1 is a mastering-grade dynamics and limiting plug-in (developed by Softube from the Weiss DS1-MK3) that pairs a mastering processing stage with a brick-wall limiter. It offers preset styles (Transparent, Loud, Punch, Wide, De-ess) to control dynamics and raise loudness on a finished master.",
+    "plain_english": "The Weiss MM-1 is a mastering tool that makes a track louder and steadier. It pushes the loudest peaks down, so you can raise the overall volume without clipping. It also comes with ready-made styles, like 'Loud' or 'Punch', that set it up for you.",
+    "purpose_function": "It exists to control dynamics and maximize the perceived loudness of a finished master while its brick-wall limiter guards against digital overs at the end of the chain.",
+    "practical_application": "A mastering engineer places the MM-1 near the end of the chain, picks a style suited to the material, then dials in the Amount and Limiter Gain to reach a loudness target while watching the gain-reduction and output/true-peak meters.",
+    "category": "Mastering Limiter",
+    "related_terms": ["Brick-wall limiter", "Loudness (LUFS)", "True-peak", "Mastering chain", "Weiss EQ1", "Dither"],
+    "common_mistakes": ["Pushing the Limiter Gain too hard, which crushes dynamics and causes distortion or pumping", "Relying on the 'Loud' style by ear-count alone instead of judging how the material actually sounds", "Ignoring true-peak/output levels and delivering a master that clips on lossy-codec playback", "Treating the MM-1 as a fix for a poorly balanced mix rather than mastering an already-good mix"],
+    "scenario_contexts": ["Bringing a quiet mix up to a competitive streaming loudness target", "Adding weight and impact to a drum-heavy track with the 'Punch' style", "Setting the output trim to leave headroom (for example -1 dBFS) for lossy encoding"]
+   },
+   "sources": ["Softube Weiss MM-1 Mastering Maximizer user manual (official technical documentation)", "Weiss Engineering / Softube MM-1 product technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "99dc77c8-bdce-4bf7-9268-4766b7498511",
+   "term": "Wet score stem",
+   "fields": {
+    "definition": "A wet score stem is a stem (grouped stereo submix) of a film, TV, or game score that has been printed with its effects, typically reverb, delay, and other processing, already applied. It is the 'wet' counterpart to a dry stem, which is delivered without those effects.",
+    "plain_english": "A stem is a group of instruments mixed into one track. A 'wet' stem already has its effects, like reverb, baked in. So a wet score stem is a group of film-music parts with their echo and space added, ready to drop into the final mix.",
+    "purpose_function": "It exists to carry the composer's intended sense of space and effects into the final mix, delivering the score with its reverb and ambience already in place so the sound matches the composer's vision.",
+    "practical_application": "A composer or score mixer delivers wet stems, often alongside dry versions, so the dub-stage mixer can drop the score in with its built-in ambience, accepting that the printed effects can no longer be freely changed.",
+    "category": "Score Stems",
+    "related_terms": ["Stem", "Dry stem", "Reverb", "Submix", "Stem mastering", "Woodwinds stem"],
+    "common_mistakes": ["Confusing a stem with a single instrument track; a stem is a grouped submix, not one instrument", "Delivering only wet stems, leaving the final mixer no way to adjust the reverb or effects", "Assuming 'wet' means fully drenched; it means the effects are printed in at whatever amount the mixer chose"],
+    "scenario_contexts": ["A composer sending the dub stage a wet strings stem with concert-hall reverb already added", "Delivering both wet and dry score stems so the re-recording mixer can choose", "Dropping a wet score stem into a trailer edit to quickly hear the intended sound"]
+   },
+   "sources": ["Sound On Sound, 'Mix Rescue: Stem Mixing & Mastering' (stem/submix and printed-effects definitions)", "Sound On Sound Glossary and 'Effects: All You Need To Know' (dry vs wet signal definitions)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7782ef18-ab38-409f-a245-af306622211f",
+   "term": "Woodwinds stem",
+   "fields": {
+    "definition": "A woodwinds stem is a stem (grouped stereo submix) containing only the woodwind instruments, such as flutes, oboes, clarinets, and bassoons, of an orchestral or score arrangement, bounced to a single track for use in mixing, mastering, or the final dub.",
+    "plain_english": "A stem is a group of instruments bounced down to one track. A woodwinds stem holds just the woodwind instruments, like flutes, clarinets, and oboes, mixed together. Keeping them on one track lets the mixer change their volume without touching the rest.",
+    "purpose_function": "It exists to give the mix or mastering engineer independent control over the woodwind section's level, tone, and effects without having to reopen the full multitrack session.",
+    "practical_application": "In score delivery a composer bounces a woodwinds stem alongside the strings, brass, and percussion stems so the dub-stage or mastering engineer can balance each section against dialogue and effects.",
+    "category": "Score Stems",
+    "related_terms": ["Stem", "Wet score stem", "Submix", "Stem mastering", "Brass stem", "Strings stem"],
+    "common_mistakes": ["Confusing a stem with a single instrument track; a woodwinds stem is a whole section mixed together", "Expecting to solo one instrument, such as just the flute, from the stem; individual control is lost once it is bounced", "Letting levels or effects drift between section stems, so the reassembled mix no longer matches the original"],
+    "scenario_contexts": ["Delivering separate strings, brass, woodwinds, and percussion stems for a film's final mix", "Lowering the woodwinds stem under dialogue at the dub stage", "Stem-mastering an orchestral cue where the woodwinds need a slight tonal lift"]
+   },
+   "sources": ["Sound On Sound, 'Mix Rescue: Stem Mixing & Mastering' (stem/submix definition)", "Sound On Sound, 'Inside Track' / sampled-orchestra features (orchestral section stems in score delivery)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

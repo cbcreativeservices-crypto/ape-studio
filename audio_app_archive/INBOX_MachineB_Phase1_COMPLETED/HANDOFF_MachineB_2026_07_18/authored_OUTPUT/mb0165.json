@@ -1,0 +1,159 @@
+{
+ "batch": 165,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "ad543a93-c4c3-43c5-9b1c-09dc6759b692",
+   "term": "Immersive master",
+   "fields": {
+    "definition": "A finished master delivered in an immersive, three-dimensional audio format—channel-based (such as 7.1.4) or object-based (such as Dolby Atmos)—that positions sounds around and above the listener rather than only left-to-right as in stereo.",
+    "plain_english": "It is the final version of a song made for surround sound that wraps around you. Instead of sound coming only from the left and right, it can also seem to come from the sides, behind you, and above your head.",
+    "purpose_function": "It exists so listeners on surround or headphone systems can hear music with height and space, giving the mastering engineer a spatial deliverable beyond traditional stereo.",
+    "practical_application": "A mastering engineer prepares and checks the immersive render, confirming loudness, true-peak limits, and the binaural fold-down before delivering it to a label or streaming platform.",
+    "category": "Immersive Mastering",
+    "related_terms": ["Stereo master", "Dolby Atmos", "Binaural render", "Immersive stem export", "Immersive streaming master", "True peak"],
+    "common_mistakes": ["Assuming a good stereo master automatically translates to immersive without a dedicated immersive mix.", "Ignoring the binaural fold-down, so headphone listeners hear a poor version.", "Delivering above the platform's loudness or true-peak targets, causing rejection or clipping.", "Confusing channel-based (fixed-speaker) formats with object-based formats like Dolby Atmos."],
+    "scenario_contexts": ["Mastering a Dolby Atmos Music version of an album for Apple Music, Tidal, or Amazon Music.", "Preparing a 7.1.4 channel-based master for a film or live event.", "Checking the binaural render so headphone listeners get a usable mix.", "Delivering both a stereo and an immersive master of the same release."]
+   },
+   "sources": ["Dolby Atmos technical documentation (Dolby Atmos Renderer / Dolby Atmos Music guidelines)", "AES papers and standards on immersive/3D audio"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c7623b9d-0eb6-4137-afcb-ae4b0723e953",
+   "term": "Immersive mix package",
+   "fields": {
+    "definition": "The complete set of deliverable files for an immersive release, typically including the object-based master file (such as an ADM BWF or Dolby Atmos master file), a binaural render, any required re-renders (for example 5.1 or 7.1.4), and the associated metadata.",
+    "plain_english": "It is the full bundle of files you hand over for a surround-sound release. It holds the main immersive file plus extra versions and notes, so the label or streaming service has all it needs.",
+    "purpose_function": "It gathers every file and specification a platform or client needs, so an immersive release can be checked, stored, and distributed without missing parts.",
+    "practical_application": "A mastering engineer assembles the package to a platform's delivery spec, naming files correctly and including the ADM BWF, binaural render, and metadata before upload or handoff.",
+    "category": "Immersive Mastering",
+    "related_terms": ["Immersive master", "ADM BWF", "Binaural render", "Immersive stem export", "Delivery specification", "Metadata"],
+    "common_mistakes": ["Delivering only the master file and forgetting required re-renders or the binaural version.", "Using wrong file names or folder structure that fails the platform's automated checks.", "Leaving out or mislabeling metadata such as the title, ISRC, or loudness values.", "Assuming one package fits every platform when the specs differ."],
+    "scenario_contexts": ["Assembling a Dolby Atmos delivery package for Apple Music.", "Handing a client all immersive files and re-renders for archiving.", "Passing QC by matching a platform's exact folder and naming spec.", "Including a binaural render so headphone playback is covered."]
+   },
+   "sources": ["Dolby Atmos technical documentation (delivery and master file specifications)", "Apple Music / Apple Digital Masters technical delivery specification for Dolby Atmos"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2f46027a-33a2-4b82-ace4-b6b8fa282d10",
+   "term": "Immersive stem export",
+   "fields": {
+    "definition": "The process of rendering grouped sub-mixes (stems)—such as drums, bass, vocals, and music beds—out of an immersive session while preserving their spatial or object positioning, so they can be recombined or re-mixed later.",
+    "plain_english": "It means saving a surround-sound project as a few grouped tracks instead of one file. Each group, like drums or vocals, keeps its place in the 3D space, so someone can rebuild or tweak the mix later.",
+    "purpose_function": "It provides editable spatial building blocks for remixing, re-versioning, archiving, or handing a project to another engineer without the original session.",
+    "practical_application": "An engineer exports immersive stems to a client's or platform's spec so a track can be re-mixed, used in a trailer, or updated without opening the full immersive session.",
+    "category": "Immersive Mastering",
+    "related_terms": ["Stem", "Immersive master", "Immersive mix package", "ADM BWF", "Object-based audio", "Re-render"],
+    "common_mistakes": ["Exporting stems that no longer sum back to the reference mix because of master-bus processing.", "Losing object or height information by folding down to a flat channel layout.", "Inconsistent start times or sample rates between stems.", "Forgetting to document the speaker layout or object mapping each stem uses."],
+    "scenario_contexts": ["Delivering immersive stems for a remix or trailer edit.", "Archiving a project as spatial stems for future re-versioning.", "Handing stems to another studio that lacks the original session.", "Rebuilding an immersive mix from stems when the source project is unavailable."]
+   },
+   "sources": ["Dolby Atmos technical documentation (re-render and export workflow)", "AES papers and standards on immersive/3D audio production"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1a98f5bb-0fc4-4c17-bc99-55b63834f11c",
+   "term": "Immersive streaming master",
+   "fields": {
+    "definition": "An immersive master prepared specifically for streaming delivery, conformed to a streaming platform's technical specification—commonly an ADM BWF Dolby Atmos master meeting the service's loudness, true-peak, and metadata requirements.",
+    "plain_english": "It is a surround-sound version made to fit the exact rules of a streaming service. It follows their limits for loudness and peaks, so it plays back correctly on phones, speakers, and headphones.",
+    "purpose_function": "It ensures an immersive release meets a streaming platform's playback and loudness rules, so it is accepted and sounds consistent across devices.",
+    "practical_application": "A mastering engineer conforms the immersive master to a platform's Dolby Atmos spec—checking integrated loudness, true-peak ceiling, and metadata—before delivering the streaming version.",
+    "category": "Immersive Mastering",
+    "related_terms": ["Immersive master", "ADM BWF", "Loudness normalization", "True peak", "Binaural render", "Delivery specification"],
+    "common_mistakes": ["Exceeding the platform's loudness or true-peak targets and getting the file rejected.", "Skipping the binaural render check that headphone playback relies on.", "Mismatched or missing metadata causing failed ingestion.", "Assuming stereo streaming targets and immersive targets are the same."],
+    "scenario_contexts": ["Delivering a Dolby Atmos Music master to Apple Music, Amazon Music, or Tidal.", "Meeting a streaming service's loudness spec so the immersive version matches the catalog.", "QC checking true-peak before upload to avoid clipping on consumer devices.", "Re-delivering after a platform rejects a master for spec violations."]
+   },
+   "sources": ["Dolby Atmos Music technical documentation (streaming delivery specifications)", "Apple Music / Apple Digital Masters technical delivery specification"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d67997b5-3468-4984-8ff0-1ed275209fcf",
+   "term": "Index one",
+   "fields": {
+    "definition": "In the Compact Disc (Red Book / IEC 60908) subcode standard, INDEX 01 is the index point that marks the true start of a track's program audio; playback and track-time counting begin here, immediately after any pre-gap marked by INDEX 00.",
+    "plain_english": "On a CD, Index 01 is the spot where a song actually starts playing. It sits just after the short silent gap before the track, and it is where the timer starts counting the song.",
+    "purpose_function": "It defines the exact audio start of each track for players and for the disc's timing, separating the counted program material from the silent pre-gap.",
+    "practical_application": "During CD mastering (PQ editing), the engineer places INDEX 01 markers at each song's start so track times, spacing, and pre-gaps are correct on the final disc and DDP.",
+    "category": "CD Mastering",
+    "related_terms": ["Index zero", "Red Book", "PQ codes", "Track marker", "Pre-gap", "DDP"],
+    "common_mistakes": ["Placing INDEX 01 late so the very start of the song is cut off or delayed.", "Confusing INDEX 00 (pre-gap) with INDEX 01 (track start).", "Leaving inconsistent pre-gaps between tracks on an album.", "Assuming index points are audible edits rather than subcode timing markers."],
+    "scenario_contexts": ["Setting track starts during CD PQ editing before making a DDP.", "Adjusting a pre-gap so a live album flows without unwanted silence.", "Troubleshooting a disc where a player skips past the first moment of a song.", "Matching index points to a client's track list and timing sheet."]
+   },
+   "sources": ["IEC 60908 (Compact Disc Digital Audio, Red Book)", "Katz, Mastering Audio: The Art and the Science", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "19c79b98-d21f-43f6-84ab-e8c52772b587",
+   "term": "Index zero",
+   "fields": {
+    "definition": "In the Compact Disc (Red Book / IEC 60908) subcode standard, INDEX 00 marks a track's pre-gap—the transitional region (often silent) between the previous track and the start of program audio at INDEX 01; time within it typically counts down to the track start.",
+    "plain_english": "On a CD, Index 00 is the short gap right before a song begins. It is usually silence, and its timer counts down to the moment the song starts.",
+    "purpose_function": "It defines the pause or lead-in before each track, letting the disc hold silence or run-in audio that is separate from the counted program material.",
+    "practical_application": "In PQ editing the engineer sets INDEX 00 to control the gap before each song, choosing standard pre-gaps or hidden lead-in audio as the project needs.",
+    "category": "CD Mastering",
+    "related_terms": ["Index one", "Red Book", "PQ codes", "Pre-gap", "Track marker", "DDP"],
+    "common_mistakes": ["Confusing INDEX 00 (pre-gap) with INDEX 01 (song start).", "Setting an unwanted gap that breaks the flow between continuous tracks.", "Forgetting that pre-gap time usually counts down, not up.", "Assuming every track needs a two-second gap when live or continuous albums may not."],
+    "scenario_contexts": ["Creating gapless transitions on a live or concept album.", "Placing a standard pre-gap between separate songs.", "Hiding a lead-in or count-in inside the pre-gap region.", "Diagnosing an unexpected silence a listener hears before a track."]
+   },
+   "sources": ["IEC 60908 (Compact Disc Digital Audio, Red Book)", "Katz, Mastering Audio: The Art and the Science", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "22de5431-a312-4ad5-ad07-1ce1eeaa57ee",
+   "term": "Insight Metering",
+   "fields": {
+    "definition": "The metering and audio-analysis functionality of iZotope Insight, a software suite used in mixing, mastering, and post production that provides loudness metering to broadcast standards (ITU-R BS.1770 / EBU R128), true-peak metering, spectral analysis (spectrogram), and stereo-imaging displays.",
+    "plain_english": "It is a software tool that shows clear meters and graphs of your sound. It measures loudness, peaks, and the balance across pitches and between left and right, so you can see problems your ears might miss.",
+    "purpose_function": "It gives engineers accurate, standards-based visual feedback on loudness, peaks, spectrum, and stereo balance, so a master can be checked against delivery targets rather than judged by ear alone.",
+    "practical_application": "A mastering engineer places it on the master bus to confirm integrated loudness and true-peak against a platform's spec and to spot tonal or imaging issues while working.",
+    "category": "Metering",
+    "related_terms": ["Loudness metering", "True peak", "LUFS", "Spectrogram", "EBU R128", "Vectorscope"],
+    "common_mistakes": ["Reading momentary or short-term loudness when the platform target is integrated (program) loudness.", "Trusting sample-peak instead of true-peak, allowing inter-sample overs.", "Chasing a number on the meter while ignoring how the master actually sounds.", "Forgetting to set the meter to the correct loudness standard for the target platform."],
+    "scenario_contexts": ["Checking a master's integrated loudness and true-peak before delivery.", "Diagnosing a harsh frequency buildup on the spectrogram.", "Verifying mono compatibility and stereo width on the imaging display.", "Matching loudness to a streaming platform's normalization target."]
+   },
+   "sources": ["iZotope Insight technical documentation / user guide", "ITU-R BS.1770 (loudness and true-peak measurement)", "EBU R128 (loudness normalization)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6e060830-36e0-453b-bb44-91312f94cfab",
+   "term": "Instrumentation tape",
+   "fields": {
+    "definition": "Magnetic tape manufactured for instrumentation (data) recorders rather than audio program—used to record measurement, telemetry, and multichannel scientific or engineering signals, typically to Inter-Range Instrumentation Group (IRIG) standards with tighter tolerances on coating uniformity, dropout, and dimensional stability than consumer audio tape.",
+    "plain_english": "It is a special magnetic tape made to store data, not music. Engineers used it to record signals such as sensor readings. It had to be very steady and even from end to end.",
+    "purpose_function": "It exists to store analog or FM-encoded measurement data accurately over many channels, where dropouts or level errors could corrupt the recorded signals.",
+    "practical_application": "A technician loads instrumentation tape on a data or telemetry recorder to log test signals for later analysis; in audio work it is mainly encountered when identifying or transferring legacy reels.",
+    "category": "Recording Media",
+    "related_terms": ["Magnetic tape", "Analog tape", "Tape recorder", "Telemetry", "Dropout", "FM recording"],
+    "common_mistakes": ["Assuming instrumentation tape and audio tape are interchangeable despite different specs and formats.", "Overlooking that many instrumentation recordings use FM encoding rather than direct audio.", "Playing back at the wrong speed or on an incompatible transport and misreading the signal.", "Confusing instrumentation recording with multitrack studio recording."],
+    "scenario_contexts": ["Recording multichannel telemetry or test-bench data on a legacy instrumentation recorder.", "Transferring archived instrumentation tapes to a digital system for analysis.", "Identifying an unlabeled reel as instrumentation rather than audio tape.", "Servicing or aligning a data recorder that uses instrumentation tape."]
+   },
+   "sources": ["Camras, Magnetic Recording Handbook", "Ballou, Handbook for Sound Engineers (magnetic recording)", "IRIG telemetry standards (Range Commanders Council)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "45cf5ed9-8beb-44dd-be22-9e69b40d760e",
+   "term": "International music stem",
+   "fields": {
+    "definition": "A deliverable stem containing only the music portion of a production, supplied so a program or song can be localized for foreign markets—vocals or dialogue in the original language can be replaced while the music is retained. In broadcast and film it forms the music component of the Music and Effects (M&E) deliverables.",
+    "plain_english": "It is a version of the track that has only the music and no lead vocals. It lets a team add singing or speech in another language for foreign listeners, using the same backing music.",
+    "purpose_function": "It separates the music from the language-specific vocals or dialogue, so the same production can be re-voiced for different countries without remaking the music.",
+    "practical_application": "An engineer delivers the international music stem alongside the full mix so a client can produce foreign-language versions or use the instrumental for broadcast and sync.",
+    "category": "Deliverables",
+    "related_terms": ["Stem", "Instrumental version", "Music and effects", "TV mix", "Stem export", "A cappella"],
+    "common_mistakes": ["Leaving background vocals or ad-libs in the music stem when they should sit with the vocal.", "Delivering a music stem that does not sum back to match the main mix.", "Inconsistent length, sample rate, or level versus the other deliverables.", "Confusing an instrumental music stem with a full M&E track that also includes effects."],
+    "scenario_contexts": ["Providing an instrumental/music stem for a foreign-language cover or dub.", "Supplying the music component of M&E deliverables for a TV broadcast.", "Delivering an instrumental for a live TV performance or sync license.", "Preparing localized versions of a single for international release."]
+   },
+   "sources": ["SMPTE broadcast/deliverable practice for Music and Effects (M&E) tracks", "Huber & Runstein, Modern Recording Techniques (stems and deliverables)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+{
+ "range": 9,
+ "applied": [
+  {"pkt": "mb0344", "term": "Valve noise", "field": "plain_english", "severity": "Low", "summary": "Added missing possessive: 'a brass instrument's valves make' (grammar). FK 7.2."},
+  {"pkt": "mb0344", "term": "Valve clatter", "field": "plain_english", "severity": "Low", "summary": "Added missing possessive: 'a brass instrument's valves make' (grammar). FK 4.9."},
+  {"pkt": "mb0345", "term": "Balalaika brrr-strum", "field": "definition", "severity": "Low", "summary": "Changed 'across the courses' to 'across the strings'; web-verified the standard prima balalaika has three single strings (E4-E4-A4), not doubled courses."},
+  {"pkt": "mb0345", "term": "Balalaika brrr-strum", "field": "definition", "severity": "Low", "summary": "Removed redundant 'quickly back and forth ... and rattles' wording; tightened to 'brushes the strings in rapid up-and-down strokes, producing a continuous, tremolo-like brrr'."},
+  {"pkt": "mb0345", "term": "Balalaika brrr-strum", "field": "related_terms", "severity": "Medium", "summary": "Removed 'Course (paired strings)' (balalaika uses single strings, not courses); list now 5 items, within 3-6 spec."},
+  {"pkt": "mb0348", "term": "Guqin slide squeak (zou yin)", "field": "definition", "severity": "Low", "summary": "Aligned romanization in definition ('zou shou yin') to the term header ('zou yin'); 'zou yin' (走音) is an attested variant for the sliding/stopped tones. Term field left unchanged."},
+  {"pkt": "mb0349", "term": "Gut-string slide", "field": "plain_english", "severity": "Low", "summary": "Replaced tension-implying rubber-band analogy with a length-based trombone-slide analogy so the image reflects a positional slide, not a bend. FK 6.3."},
+  {"pkt": "mb0352", "term": "Ngoni dry pluck", "field": "scenario_contexts", "severity": "Low", "summary": "Corrected nonstandard spelling 'Micing' to 'Miking'."},
+  {"pkt": "mb0357", "term": "Bar resonance", "field": "definition", "severity": "Medium", "summary": "Changed 'octave and twelfth' to 'twelfth (xylophone) or double octave (marimba and vibraphone)'; web-verified (euphonics.org / Fletcher & Rossing) that bars are tuned to 3:1 or 4:1, never a 2:1 octave."},
+  {"pkt": "mb0364", "term": "Motor noise", "field": "definition", "severity": "Low", "summary": "Disambiguated the noise-source list: 'mechanical hum, bearing rattle, or brush-and-commutator buzz' (serial comma + hyphen) so the three sources are distinct."},
+  {"pkt": "mb0367", "term": "Temple block cluck", "field": "definition", "severity": "Low", "summary": "Split the garbled run-on 'sounded by striking the block over its slit and rounder and softer...' into two clean sentences (raised by two experts)."},
+  {"pkt": "mb0371", "term": "Fujara overtone whistle", "field": "definition", "severity": "Low", "summary": "Removed redundancy: 'overtone tones' to 'overtones'."},
+  {"pkt": "mb0374", "term": "Overblow/overdraw (harmonica)", "field": "definition", "severity": "Medium", "summary": "Corrected which reed sounds: overblow (exhale) sounds the draw reed with the blow reed choked; overdraw (inhale) sounds the blow reed with the draw reed choked. Web-verified (Wikipedia 'Overblowing'; opening/closing-reed mechanism)."},
+  {"pkt": "mb0374", "term": "Organ chiff", "field": "common_mistakes", "severity": "Low", "summary": "Replaced redundant 3rd item (duplicated item 1) with a distinct, verified voicing mistake about over-strong chiff giving a hard, exaggerated attack (Britannica 'nicking'; CB Fisk)."},
+  {"pkt": "mb0375", "term": "Pipe-organ wind noise", "field": "related_terms", "severity": "Low", "summary": "Added sibling entries 'Organ wind noise' and 'Pipe hiss' for navigation; swapped out 'Reed noise' and 'Attack transient' to keep the list at 6 (3-6 spec)."},
+  {"pkt": "mb0377", "term": "Wind-cap buzz", "field": "definition", "severity": "Low", "summary": "Fixed garbled modifiers 'the freely, uncontrolled vibrating reed' to 'the freely vibrating, uncontrolled reed'."}
+ ],
+ "declined": [
+  {"pkt": "mb0379", "term": "Listener-relative placement", "field": "common_mistakes", "reason": "Declined. 'Head-locked' is a recognized immersive-audio term a student would encounter, and the proposed gloss ('a source fixed to the screen/front that does not move even when the head turns') is ambiguous: 'does not move even when the head turns' reads naturally as world-locked, the OPPOSITE of head-locked (which stays fixed relative to the head). It also risks contradicting the entry's own definition of listener-relative. I could not confirm a precise, differentiating gloss to the required authoritative-source standard (only blogs/forums available), so adding it would risk introducing a new error, which the rules forbid."}
+ ]
+}

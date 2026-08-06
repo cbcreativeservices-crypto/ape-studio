@@ -1,0 +1,260 @@
+{
+ "batch": 39,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "8ef6df9d-d1c7-48ba-9038-7c39a2136c14",
+   "term": "Choir equalization",
+   "fields": {
+    "definition": "The application of frequency-selective gain (EQ) to a recorded or amplified choir to control tonal balance, typically removing low-frequency rumble and boominess, taming harsh upper-mids, and adding presence or air so massed voices sit clearly in a mix.",
+    "plain_english": "Using an equalizer to shape the sound of a choir. You cut or boost certain pitches so the group of singers sounds clear and not muddy.",
+    "purpose_function": "It corrects tonal problems caused by the room and the microphones, and helps the massed voices blend and stay easy to understand within an arrangement.",
+    "practical_application": "An engineer rolls off low rumble with a high-pass filter, dips a few decibels around 200-400 Hz to cut mud, then adds a gentle high shelf for air on the choir bus.",
+    "category": "Signal processing",
+    "related_terms": ["Choir mixing", "Choir hall reverb", "High-pass filter", "Equalization", "Presence", "Choir stereo image"],
+    "common_mistakes": [
+     "Cutting so aggressively that the choir sounds thin and unnatural",
+     "Boosting instead of cutting to fix mud, which just adds harshness",
+     "EQing each microphone in solo rather than in the full mix context"
+    ],
+    "scenario_contexts": [
+     "Removing low-end rumble from a choir recorded in a resonant church",
+     "Reducing boxiness before printing a choral stem",
+     "Adding gentle air so massed voices cut through a full band"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "082e93fb-00fc-4f15-95b5-8a2088b80824",
+   "term": "Choir hall reverb",
+   "fields": {
+    "definition": "A reverberation effect, natural or artificial, that places a choir in the acoustic of a large hall or church, adding the long, smooth decay and sense of space listeners associate with those rooms.",
+    "plain_english": "A reverb effect that makes a choir sound like it is singing in a big hall or church. It adds echo and a sense of open space around the voices.",
+    "purpose_function": "It gives massed voices a natural, blended sense of space and depth, matching the grand acoustic that audiences expect from choral music.",
+    "practical_application": "An engineer sends the choir bus to a hall reverb with a long decay time and blends it under the dry signal to add depth without washing out the words.",
+    "category": "Signal processing",
+    "related_terms": ["Choir pre-delay", "Choir mixing", "Choir room microphones", "Reverb", "Decay time", "Choir stereo image"],
+    "common_mistakes": [
+     "Using so much reverb that the words become hard to understand",
+     "Choosing a bright plate reverb that clashes with a natural choral sound",
+     "Adding reverb with no pre-delay, which blurs the attack of the voices"
+    ],
+    "scenario_contexts": [
+     "Recreating a cathedral ambience for a choir tracked in a dry studio",
+     "Adding depth to a gospel choir in a pop production",
+     "Matching a spot-mic-heavy recording to a natural hall sound"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3030ec0d-630c-47e3-ab2f-ffaadfd4a253",
+   "term": "Choir mixing",
+   "fields": {
+    "definition": "The process of balancing, processing, and placing the multiple microphone signals of a choir (main pair, spot, and room mics) into a coherent stereo image with appropriate level, tone, dynamics, and reverb.",
+    "plain_english": "Blending all the microphone signals from a choir into one good-sounding mix. You set the levels, tone, and space so the whole group sounds balanced.",
+    "purpose_function": "It turns separate microphone feeds into a unified, natural-sounding choir that sits correctly within a recording or live mix.",
+    "practical_application": "The engineer sets the main pair as the foundation, adds spot mics for clarity, blends room mics for depth, then applies EQ and reverb across the choir bus.",
+    "category": "Mixing",
+    "related_terms": ["Choir equalization", "Choir hall reverb", "Choir spot microphones", "Choir room microphones", "Choir stereo image", "Bus"],
+    "common_mistakes": [
+     "Pushing spot mics too loud so the natural blend of the main pair is lost",
+     "Ignoring the phase relationships between main, spot, and room mics",
+     "Adding effects before setting a solid level balance"
+    ],
+    "scenario_contexts": [
+     "Balancing a 40-piece choir recorded with main, spot, and room mics",
+     "Blending a studio choir stack behind a lead vocal",
+     "Setting up a live worship mix with choir and band"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9af63c5f-b3e6-4621-8031-9aa3ef1c1173",
+   "term": "Choir outriggers",
+   "fields": {
+    "definition": "A pair of widely spaced microphones, usually omnidirectional, placed outside the main stereo pair when recording a choir, used to widen the stereo image and capture extra hall ambience and low-frequency warmth.",
+    "plain_english": "Extra wide microphones set up to the far left and right of a choir. They make the recording sound wider and add more of the room's natural sound.",
+    "purpose_function": "They broaden the stereo width and add spaciousness that a central main pair alone cannot capture, filling out the edges of the sound stage.",
+    "practical_application": "When the main pair sounds too narrow over a wide choir, the engineer adds omni outriggers a few meters out to each side and blends them under the mains.",
+    "category": "Microphone technique",
+    "related_terms": ["Choir room microphones", "Choir stereo image", "Decca tree", "Omnidirectional microphone", "Spaced pair", "Choir mixing"],
+    "common_mistakes": [
+     "Spacing them so wide that the center of the choir sounds hollow",
+     "Forgetting to check mono compatibility, which can cause phase problems",
+     "Using directional mics instead of omnis and losing the intended warmth"
+    ],
+    "scenario_contexts": [
+     "Widening a Decca tree recording of a large choir",
+     "Filling out the sides of a wide choir in a concert hall",
+     "Adding warmth and width to an orchestral choir session"
+    ]
+   },
+   "sources": [
+    "Eargle, The Microphone Book",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a740480f-f71b-459b-87d5-4aaf2ad30ec1",
+   "term": "Choir pre-delay",
+   "fields": {
+    "definition": "The short time gap, typically about 10-60 ms, set before a choir's reverb tail begins, separating the direct sound of the voices from the onset of reverberation to preserve clarity and intelligibility.",
+    "plain_english": "A tiny pause before the echo on a choir starts. This short gap keeps the words clear before the reverb fills in around the voices.",
+    "purpose_function": "It keeps sung words easy to understand by letting the dry voices be heard first, while still adding the depth and space of reverb.",
+    "practical_application": "The engineer sets pre-delay around 20-40 ms on the choir reverb so consonants stay crisp and the choir does not sound washed out.",
+    "category": "Signal processing",
+    "related_terms": ["Choir hall reverb", "Reverb", "Decay time", "Choir mixing", "Intelligibility", "Choir equalization"],
+    "common_mistakes": [
+     "Setting pre-delay to zero, which smears the words",
+     "Using an extremely long pre-delay that sounds like a slap echo",
+     "Not matching the pre-delay to the song's tempo and phrasing"
+    ],
+    "scenario_contexts": [
+     "Keeping a large choir intelligible inside a long hall reverb",
+     "Separating voices from reverb in a dense pop production",
+     "Tuning the reverb onset to a slow ballad's tempo"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e107d573-537d-474f-b1a0-bb425c8269be",
+   "term": "Choir room microphones",
+   "fields": {
+    "definition": "Microphones placed at a distance from a choir to capture the reflected sound and reverberation of the performance space rather than the direct sound of the voices, adding natural ambience and depth.",
+    "plain_english": "Microphones placed far back from a choir to record the sound of the room. They pick up the natural echo and space instead of the close-up voices.",
+    "purpose_function": "They capture the acoustic character of the venue so a mix has real depth and a natural sense of space around the choir.",
+    "practical_application": "The engineer places a spaced pair near the back of the hall and blends them under the main and spot mics to add air and ambience.",
+    "category": "Microphone technique",
+    "related_terms": ["Choir outriggers", "Choir spot microphones", "Choir hall reverb", "Ambience", "Spaced pair", "Choir mixing"],
+    "common_mistakes": [
+     "Placing them too close, so they capture direct sound instead of ambience",
+     "Blending them too loud and washing out the clarity of the mix",
+     "Ignoring phase alignment with the main and spot mics"
+    ],
+    "scenario_contexts": [
+     "Capturing the natural ambience of a cathedral choir recording",
+     "Adding depth to a close-miked studio choir",
+     "Providing a wide ambient bed for a live album"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Eargle, The Microphone Book"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cfba6c4e-c591-4ede-8cdf-b0c6cf067a35",
+   "term": "Choir spot microphones",
+   "fields": {
+    "definition": "Close accent microphones aimed at specific sections or soloists within a choir, such as sopranos, altos, tenors, or basses, used to reinforce clarity and balance that the main pair alone does not provide.",
+    "plain_english": "Close-up microphones pointed at one part of a choir, like the sopranos or basses. They add clarity to a section that the main microphones miss.",
+    "purpose_function": "They reinforce weak or distant sections and improve intelligibility, while the main pair still provides the overall blend.",
+    "practical_application": "The engineer adds a spot mic over the tenors when they sit too far back to be heard, mixing it just under the main pair for balance.",
+    "category": "Microphone technique",
+    "related_terms": ["Choir room microphones", "Choir outriggers", "Choir mixing", "Accent microphone", "Choir stereo image", "Phase"],
+    "common_mistakes": [
+     "Mixing spot mics too loud so a section sounds unnaturally close",
+     "Ignoring the time offset (phase) between the spot and main mics",
+     "Using them as the main sound instead of as reinforcement"
+    ],
+    "scenario_contexts": [
+     "Reinforcing a distant tenor section in a large choir",
+     "Adding clarity to a soloist stepping out of the choir",
+     "Balancing a choir section that sits behind an orchestra"
+    ]
+   },
+   "sources": [
+    "Eargle, The Microphone Book",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c1960d80-ffb5-4356-ae68-e71b8ca4fc16",
+   "term": "Choir stack",
+   "fields": {
+    "definition": "A group of layered vocal recordings, with multiple takes, harmonies, and octaves overdubbed and combined, used to build the thick, massed sound of a choir, often from only a few singers.",
+    "plain_english": "Recording the same voices many times and layering them to sound like a full choir. Stacking lots of takes makes a few singers sound like a big group.",
+    "purpose_function": "It creates a large, lush choir texture in a production without hiring a full choir, adding size and richness to an arrangement.",
+    "practical_application": "A producer double-tracks a singer across several harmony parts and octaves, then pans the layers wide to build a choir stack behind the lead vocal.",
+    "category": "Vocal production",
+    "related_terms": ["Choir mixing", "Choir stereo image", "Double-tracking", "Overdub", "Harmony", "Panning"],
+    "common_mistakes": [
+     "Layering identical takes so it sounds like a chorus effect rather than many singers",
+     "Not varying pitch, timing, and vowels between layers, so it sounds fake",
+     "Stacking so many layers that the mix becomes cluttered and loses focus"
+    ],
+    "scenario_contexts": [
+     "Building a full gospel choir sound from one session singer",
+     "Thickening a chorus hook with layered harmonies",
+     "Creating a wall of backing vocals in a pop production"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4e877b26-6533-4aaf-9117-29faf858ed2f",
+   "term": "Choir stereo image",
+   "fields": {
+    "definition": "The perceived left-to-right placement, width, and depth of a choir within a stereo mix, determined by microphone technique, panning, and the balance of main, spot, and room signals.",
+    "plain_english": "How wide a choir sounds across your left and right speakers. A good stereo image spreads the singers naturally instead of bunching them in the middle.",
+    "purpose_function": "It places and spreads the choir believably across the sound stage so listeners perceive width, position, and depth.",
+    "practical_application": "The engineer relies on the main pair for the spread, pans spot mics to match each section's real position, then checks that the mix still works in mono.",
+    "category": "Stereo imaging",
+    "related_terms": ["Choir outriggers", "Choir spot microphones", "Choir mixing", "Panning", "Mono compatibility", "Spaced pair"],
+    "common_mistakes": [
+     "Panning everything to the center, which makes the choir sound narrow",
+     "Creating such a wide image that it collapses in mono",
+     "Placing spot mics that do not match the singers' real positions"
+    ],
+    "scenario_contexts": [
+     "Spreading a choir naturally across a stereo mix",
+     "Checking mono compatibility of a wide choral recording before broadcast",
+     "Positioning choir sections to match their layout on stage"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Eargle, The Microphone Book",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

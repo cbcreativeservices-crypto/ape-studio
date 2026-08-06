@@ -1,0 +1,26 @@
+{
+ "range": 10,
+ "applied": [
+  {"pkt": "mb0381", "term": "Object size", "field": "related_terms", "severity": "Low", "summary": "Added 'Object spread' (verified real glossary term in mb0382) to link the two synonymous entries for the same per-object Size/spread control."},
+  {"pkt": "mb0381", "term": "Object monitoring mode", "field": "plain_english", "severity": "Medium", "summary": "Reworded Off from 'be left out of the headphone mix' to 'have no added distance and space at all (Off)', matching the definition; Off is no binaural distance processing, not muting the object. FK 5.5."},
+  {"pkt": "mb0384", "term": "Height speaker", "field": "plain_english", "severity": "Low", "summary": "Completed the elided relative clause: '...which normal ear-level speakers cannot reproduce.' FK 7.2."},
+  {"pkt": "mb0385", "term": "Multichannel monitor controller", "field": "related_terms", "severity": "Low", "summary": "Added synonymous class term 'Immersive monitor controller' (mb0384); dropped the more tangential 'Overhead speaker' to stay within the 3-6 range."},
+  {"pkt": "mb0385", "term": "Overhead speaker", "field": "related_terms", "severity": "Low", "summary": "Added synonym 'Height speaker' (mb0384, same upper-layer speaker); dropped 'Multichannel monitor controller' (a control device) to stay within 3-6."},
+  {"pkt": "mb0385", "term": "Renderer latency", "field": "definition", "severity": "Low", "summary": "Set the DAW-feeds appositive in parentheses so the 'between X and Y' frame parses cleanly. No technical change."},
+  {"pkt": "mb0385", "term": "Renderer speaker mapping", "field": "definition", "severity": "Low", "summary": "Wrapped the speaker-list appositive in parentheses to remove the parse ambiguity between 'output channels' and 'to the physical outputs'. No technical change."},
+  {"pkt": "mb0386", "term": "Top speaker", "field": "scenario_contexts", "severity": "Medium", "summary": "Resolved internal inconsistency (def says +30 to +45; scenario said 30-55) by setting scenario to 'about 45 degrees' — Dolby's web-verified ideal overhead elevation, consistent with the definition's upper bound."},
+  {"pkt": "mb0386", "term": "Speaker-rendered monitoring", "field": "related_terms", "severity": "Low", "summary": "Added 'Room-rendered monitoring' (mb0385) to link the two synonymous in-room/loudspeaker-rendering entries. Only related_terms edited (the named field)."},
+  {"pkt": "mb0392", "term": "Decoy Sound", "field": "related_terms", "severity": "Low", "summary": "Added 'Misdirection Audio' (mb0393) to make the specific-technique/general-principle cross-reference bidirectional."},
+  {"pkt": "mb0393", "term": "Queue-Line Audio", "field": "scenario_contexts", "severity": "Low", "summary": "Reworded garden-path first item to 'Themed ambience and music loop through distributed speakers...' for a clear subject-verb reading."},
+  {"pkt": "mb0400", "term": "Converter synchronization input", "field": "related_terms", "severity": "Low", "summary": "Added near-synonym 'Converter clock input' (mb0399); dropped generic 'Sample rate' to stay within 3-6."},
+  {"pkt": "mb0400", "term": "Converter latency", "field": "related_terms", "severity": "Low", "summary": "Added synonym 'Conversion delay' (mb0399); dropped generic 'Sample rate' to stay within 3-6. Only related_terms edited (the named field)."},
+  {"pkt": "mb0402", "term": "Quantization accuracy", "field": "plain_english", "severity": "Low", "summary": "Fixed possessive: 'a converter's numbers match the real level of each sample.' FK 8.1."},
+  {"pkt": "mb0404", "term": "Delay compensation reporting", "field": "related_terms", "severity": "Medium", "summary": "Added synonymous term 'Latency reporting' (mb0405); dropped the more tangential 'CPU optimization' to stay within 3-6."},
+  {"pkt": "mb0405", "term": "Latency reporting", "field": "related_terms", "severity": "Medium", "summary": "Added synonymous term 'Delay compensation reporting' (mb0404); dropped generic 'Buffer size' to stay within 3-6."},
+  {"pkt": "mb0406", "term": "Parameter automation callback", "field": "common_mistakes", "severity": "Low", "summary": "Removed the mislabeled 'UNSAFE:' prefix; blocking the audio thread causes dropouts/glitches (a quality issue), not a physical safety hazard, so the safety label was misused per house rules."}
+ ],
+ "declined": [
+  {"pkt": "mb0395", "term": "Deep archive", "field": "common_mistakes", "reason": "Enhancement, not a defect. The definition already establishes deep archive as 'the most dormant, longest-latency tier' and cold archive's own entry defines it distinctly (speed/cost tier); the two entries also already cross-reference each other, so the distinction is present. common_mistakes is at the 4-item maximum, and inserting a 5th (or removing a valid existing mistake) is not clearly an improvement. Borderline-preference."},
+  {"pkt": "mb0409", "term": "Neural audio codec", "field": "definition", "reason": "Style/level preference, not an accuracy or clarity defect. The RVQ / adversarial-plus-reconstruction-loss detail is technically correct, and per house rules the definition field stays fully technical (the reading-level constraint applies only to plain_english). Removing accurate detail to lower perceived cognitive load is not a fix."}
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "batch": 16,
+ "topic": "Instrument Recording — Drums & Percussion",
+ "terms": [
+  {
+   "id": "94ef41d5-b5f3-4f29-b342-82926c550e9e",
+   "term": "Percussion circuit",
+   "topic": "Instrument Recording — Drums & Percussion",
+   "seq": 1022,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

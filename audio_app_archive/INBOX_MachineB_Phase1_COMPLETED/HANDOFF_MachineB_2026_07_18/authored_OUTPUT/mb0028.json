@@ -1,0 +1,44 @@
+{
+ "batch": 28,
+ "topic": "Drum-Kit Recording",
+ "authored": [
+  {
+   "id": "4728f8dd-138f-4322-b3df-52f5ec3c7da8",
+   "term": "Unported kick head",
+   "fields": {
+    "definition": "A bass drum resonant (front) head that has no hole or port cut into it, so the head stays a full, intact membrane. Because the shell is sealed, the drum sustains and resonates more, and a microphone cannot be placed inside it.",
+    "plain_english": "It is the front skin of a kick drum with no hole cut in it. A solid front skin makes the drum ring longer and boom more, and you cannot put a mic inside.",
+    "purpose_function": "Keeping the front head solid maximizes the drum's natural sustain, low-end resonance, and open tone, giving a fuller sound than a ported head. It is the standard tuned setup when the goal is the drum's full acoustic voice rather than a tight, mic-focused sound.",
+    "practical_application": "An engineer facing an unported kick must mic it from outside the resonant head or add a boundary or subkick mic, since there is no port to place a mic inside, and often applies light internal muffling to tame the extra ring.",
+    "category": "Kick Drum Tuning",
+    "related_terms": [
+     "Resonant head",
+     "Batter head",
+     "Ported kick head",
+     "Kick drum microphone",
+     "Drum muffling",
+     "Subkick microphone"
+    ],
+    "common_mistakes": [
+     "Assuming a mic can be slid inside an unported kick; with no port, the mic must sit outside the resonant head or a subkick must be used.",
+     "Over-muffling with pillows or blankets to kill the extra sustain, which chokes the low end instead of tuning the drum.",
+     "Expecting the same tight, punchy attack as a ported kick; the sealed head naturally gives more ring, boom, and sustain.",
+     "Cutting a port into the head to fix mic access when the session actually called for the fuller, sealed sound."
+    ],
+    "scenario_contexts": [
+     "Jazz or vintage-style sessions where an open, resonant, full-bodied kick tone is wanted.",
+     "Recording a kit whose drummer prefers a solid front head, forcing the engineer to mic outside or add a subkick.",
+     "Tuning a deep kick for a boomy, long-sustaining low end rather than a tight modern thud.",
+     "A live or studio setup where a sealed front head is kept for maximum low-frequency resonance."
+    ]
+   },
+   "sources": [
+    "Evans / D'Addario technical documentation — Resonant Bass/Kick Drumheads (ported vs non-ported)",
+    "Owsinski, The Recording Engineer's Handbook (kick drum front head and mic placement)",
+    "Huber & Runstein, Modern Recording Techniques (bass drum miking)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

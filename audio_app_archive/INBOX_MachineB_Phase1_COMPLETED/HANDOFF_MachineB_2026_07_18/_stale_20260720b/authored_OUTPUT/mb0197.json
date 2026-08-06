@@ -1,0 +1,330 @@
+{
+ "batch": 197,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "fd01bb7c-565f-43be-9751-5cb9803bf18e",
+   "term": "Guest microphone",
+   "fields": {
+    "definition": "A microphone provided at a broadcast or podcast position for an interviewee or guest, separate from the host's microphone and routed to its own console channel so its gain, processing, muting, and routing can be controlled independently. It lets the operator balance the guest against the host and handle each talent position on its own.",
+    "plain_english": "It is a separate mic set up for a visitor on a show. It gets its own channel on the mixer. So the operator can set its volume by itself, apart from the host's mic.",
+    "purpose_function": "It gives each guest a dedicated input so the operator can set gain, add processing, and mute the guest independently of the host, keeping every voice at a consistent, controllable level.",
+    "practical_application": "A technician patches the guest mic to its own fader, sets gain for that person's voice, checks it in the mix-minus feed, and assigns a cough or mute button so the guest can be dropped during breaks.",
+    "category": "Studio Microphones",
+    "related_terms": [
+     "Host microphone",
+     "Cough switch",
+     "Mix-minus",
+     "Talkback",
+     "Microphone preamplifier",
+     "On-air light"
+    ],
+    "common_mistakes": [
+     "Assuming the guest mic inherits the host channel's gain and processing, and leaving the guest far too quiet or too loud.",
+     "Forgetting to open (unmute) the guest fader before the interview starts, so the guest is not heard on air.",
+     "Not providing the guest a cough or mute control, so unwanted noise gets aired during the show.",
+     "Setting guest gain from the empty studio instead of during actual speech, then having to ride it constantly."
+    ],
+    "scenario_contexts": [
+     "Setting up a second mic for an in-studio interview guest with its own fader and mute.",
+     "Adding several guest mics around a round-table discussion, each on its own channel.",
+     "Providing a remote guest position mic feeding a mix-minus so the guest does not hear their own delayed voice."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f66e1609-a68b-4e63-9106-8714b688f8a4",
+   "term": "International clean feed",
+   "fields": {
+    "definition": "A program feed of an event distributed to broadcasters in other countries that carries the full effects, music, and audience atmosphere but omits the host broadcaster's local-language commentary and announcements. Receiving broadcasters add their own commentary in their own language over this clean audio.",
+    "plain_english": "This is a feed of an event's sound with the local host's talking left out. Stations in other countries take this clean sound. Then they add their own announcers in their own language.",
+    "purpose_function": "It exists so rights-holding broadcasters worldwide can present an event to their own audience by laying their own commentary over a common, complete atmosphere-and-effects mix instead of the originating broadcaster's speech.",
+    "practical_application": "At a major sports or ceremony event, a technician builds a clean international feed that carries pitch, crowd, and music but no home commentary, and routes it to visiting broadcasters' contribution codecs.",
+    "category": "Program Distribution",
+    "related_terms": [
+     "Clean feed",
+     "Mix-minus",
+     "International sound",
+     "Effects mix",
+     "Contribution feed",
+     "Commentary circuit"
+    ],
+    "common_mistakes": [
+     "Confusing the international clean feed with the domestic on-air mix and accidentally leaving home commentary in it.",
+     "Forgetting the crowd and effects bed, so foreign broadcasters receive a lifeless feed with no atmosphere.",
+     "Mislabeling feeds at the distribution point so a broadcaster records the wrong mix.",
+     "Assuming 'clean' means music-and-effects only when the event also needs public-address and announcement audio included."
+    ],
+    "scenario_contexts": [
+     "Providing crowd-and-effects audio without home commentary to overseas broadcasters at a World Cup match.",
+     "Feeding an international ceremony's clean atmosphere to rights holders who add their own hosts.",
+     "Distributing a concert's clean effects mix so foreign networks can voice their own introductions."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "EBU technical documentation (contribution and distribution)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7409f1ea-1a5c-4cb3-9fb0-17d98f3db4c2",
+   "term": "IP audio codec",
+   "fields": {
+    "definition": "A hardware or software device that encodes real-time broadcast audio for transport over IP networks and decodes it at the far end, used for studio-to-transmitter links, remote broadcasts, and studio interconnection. It applies coding schemes such as AAC, Opus, or linear PCM and manages buffering, error concealment, and connection setup over the internet or private IP links.",
+    "plain_english": "This is a box or app that squeezes audio to send it over the internet. Another one at the far end opens it back up. Stations use it to link studios and live sites without a phone line.",
+    "purpose_function": "It carries low-delay, high-quality broadcast audio across ordinary IP networks, replacing legacy circuits so stations can send program and contribution audio over the internet or managed IP links.",
+    "practical_application": "An engineer configures an IP codec at a remote venue, selects an algorithm and bit rate, sets jitter-buffer and connection settings, and dials the studio codec to send the live feed back to air.",
+    "category": "Audio Codecs",
+    "related_terms": [
+     "ISDN codec",
+     "Studio-to-transmitter link",
+     "AES67",
+     "Jitter buffer",
+     "Contribution feed",
+     "Opus"
+    ],
+    "common_mistakes": [
+     "Setting the jitter buffer too low for a lossy network, causing dropouts, or too high, adding needless delay.",
+     "Choosing a high-bit-rate algorithm the available upload bandwidth cannot support, so audio breaks up.",
+     "Ignoring network QoS and port forwarding, then failing to establish a stable connection to the studio.",
+     "Assuming both ends must be the same brand when a common standard algorithm would interoperate."
+    ],
+    "scenario_contexts": [
+     "Sending a live remote broadcast back to the studio over a venue's internet connection.",
+     "Running a studio-to-transmitter link over a managed IP circuit as a main or backup path.",
+     "Connecting two stations to share a live program feed across cities via IP."
+    ]
+   },
+   "sources": [
+    "Comrex technical documentation",
+    "EBU Tech 3326/3368 (Audio Contribution over IP)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f65fb226-202c-46e6-bfe0-d0bbeda8cdd8",
+   "term": "ISDN codec",
+   "fields": {
+    "definition": "An audio codec that establishes a real-time, low-delay program link over Integrated Services Digital Network (ISDN) telephone circuits, encoding audio with schemes such as ITU-T G.722 or MPEG Layer 2/3 for contribution and remote broadcasts. Two units dial each other over dial-up ISDN B-channels to pass studio-quality audio in both directions.",
+    "plain_english": "This is a box that sends studio-quality audio over a special phone line called ISDN. One box packs the sound, another unpacks it. Radio used it for years to link places before internet codecs took over.",
+    "purpose_function": "It provided reliable, low-latency broadcast-quality audio over switched digital phone lines for remotes, voice-over sessions, and station links before IP codecs became common, offering a dialed connection with predictable quality.",
+    "practical_application": "A technician connects the studio and remote ISDN codecs, matches the coding algorithm and sample rate on both ends, and dials the far unit's ISDN number to open the program link for a live hit or voice session.",
+    "category": "Audio Codecs",
+    "related_terms": [
+     "IP audio codec",
+     "G.722",
+     "Contribution feed",
+     "Remote broadcast",
+     "Studio-to-transmitter link",
+     "Voice-over"
+    ],
+    "common_mistakes": [
+     "Mismatching the coding algorithm or sample rate between the two codecs, so the link will not sync or sounds wrong.",
+     "Assuming ISDN service is still readily available when many carriers have retired it in favor of IP.",
+     "Forgetting that both B-channels are needed for the higher-quality modes and dialing only one.",
+     "Not agreeing on which end dials, leaving both units waiting for an incoming call."
+    ],
+    "scenario_contexts": [
+     "Linking a voice-over talent's home ISDN codec to a studio for a session.",
+     "Running a live remote broadcast back to the station over a dialed ISDN connection.",
+     "Maintaining a legacy ISDN link as a fallback while migrating to IP codecs."
+    ]
+   },
+   "sources": [
+    "Telos Systems Zephyr technical documentation",
+    "ITU-T G.722"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a1bd9edf-e4b9-404d-b056-c911aa62eab2",
+   "term": "Isolated recording feed",
+   "fields": {
+    "definition": "A recording of a single source or channel captured separately from the main program mix, commonly called an iso feed, so that the individual element can be reviewed, edited, or remixed on its own later. It is typically split off before the main mix bus so its content is independent of fader moves made for the live program.",
+    "plain_english": "This is a recording of just one source on its own, like a single mic. It is kept apart from the main mix. That way you can fix or reuse that one part later.",
+    "purpose_function": "It preserves individual sources independently of the broadcast mix so producers can re-edit, sweeten, or salvage a specific element after the fact without being locked to the live balance.",
+    "practical_application": "An engineer routes each key mic or camera source to its own recorder track as an iso feed, so a problem line reading or a single instrument can be repaired or remixed in post.",
+    "category": "Program Distribution",
+    "related_terms": [
+     "Multitrack recording",
+     "Direct output",
+     "Program mix",
+     "Mix-minus",
+     "Split feed",
+     "Post production"
+    ],
+    "common_mistakes": [
+     "Taking the iso feed post-fader by mistake, so live fader moves and mutes end up baked into the isolated recording.",
+     "Failing to confirm the iso recorder is actually armed and rolling before the event.",
+     "Not labeling iso tracks, making it hard to identify which source is which in post.",
+     "Assuming the main mix can substitute for an iso and losing the ability to fix one element later."
+    ],
+    "scenario_contexts": [
+     "Recording each interview mic to its own track so a single guest can be edited later.",
+     "Capturing an iso of a live band's vocal for sweetening before rebroadcast.",
+     "Keeping isolated feeds of every source at a panel event for archive and re-edit."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0d161fed-bf4b-44d6-8e69-af8e155f1233",
+   "term": "Legal identification",
+   "fields": {
+    "definition": "The station identification a broadcaster is required by regulation to transmit, consisting of its official call sign followed by the community of license, made at natural program breaks near the top of each clock hour. In the United States it is defined by FCC rule 47 CFR 73.1201, and it must be presented in the prescribed form and order.",
+    "plain_english": "This is the short station ID a broadcaster must give by law. In the US it is the call letters and the home city. Stations say it near the top of each hour.",
+    "purpose_function": "It exists so regulators and listeners can positively identify the licensed station on the air, confirming who is transmitting and that the licensee is meeting its identification obligation.",
+    "practical_application": "An operator schedules or reads the legal ID as call sign plus city of license at a natural break close to the top of the hour, and automation systems are programmed to insert it on time.",
+    "category": "Regulatory Compliance",
+    "related_terms": [
+     "Call sign",
+     "Community of license",
+     "Top of hour",
+     "Station identification",
+     "Automation",
+     "Program log"
+    ],
+    "common_mistakes": [
+     "Airing a slogan or nickname instead of the required call sign and community of license in the legal ID.",
+     "Missing the top-of-hour window because a long segment or song runs past the natural break.",
+     "Putting the city and call sign in the wrong order or omitting the community of license.",
+     "Assuming a promotional liner counts as the legal ID when it does not meet the regulated form."
+    ],
+    "scenario_contexts": [
+     "Programming automation to fire the legal ID at a break just before the top of each hour.",
+     "A live host reading the call sign and city of license coming out of a music set.",
+     "Reviewing the program log to confirm the legal ID aired within the required window."
+    ]
+   },
+   "sources": [
+    "FCC 47 CFR 73.1201",
+    "NAB Engineering Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "97d5ec24-4e94-473a-86f8-19b37569c432",
+   "term": "Live assist system",
+   "fields": {
+    "definition": "A broadcast automation mode in which a live operator drives the show while the automation system handles cued elements such as music, spots, and jingles at the operator's command. It blends manual, real-time presentation with computer-assisted playback, letting the jock start, stop, and reorder elements rather than running fully automated.",
+    "plain_english": "This is software that helps a live host run a radio show. The host talks live, and the system plays songs and ads at a click. It is a mix of live work and computer control.",
+    "purpose_function": "It lets one operator present live while the playout system manages timing and playback of scheduled elements, reducing workload and errors while keeping a human in control of the show's flow.",
+    "practical_application": "A jock works from the automation screen, talking live over intros and clicking to fire the next song, spot, or jingle, while the system tracks the log and timing in live-assist mode.",
+    "category": "Automation",
+    "related_terms": [
+     "Broadcast automation",
+     "Playout system",
+     "Program log",
+     "Voice tracking",
+     "Segue",
+     "Hot clock"
+    ],
+    "common_mistakes": [
+     "Confusing live assist with full automation and walking away, leaving elements unfired and dead air on the log.",
+     "Loading the wrong log or clock so scheduled spots and songs play out of order.",
+     "Not previewing the next element, then firing an unexpected or wrong cut on air.",
+     "Ignoring timing to the top of hour and running long into the legal ID window."
+    ],
+    "scenario_contexts": [
+     "A morning host running a live show while the playout system fires spots and beds on cue.",
+     "An operator covering multiple stations, taking one live in assist mode during a shift.",
+     "Switching a station from full automation to live assist when a host arrives to go live."
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2eff836f-ad9b-4a99-8a25-f85aee2a5cda",
+   "term": "Live music broadcast",
+   "fields": {
+    "definition": "The transmission of a musical performance as it happens, capturing the performance with microphones and a mix and sending it to air or online in real time. It applies live-sound and broadcast-mixing craft to deliver a balanced program mix of the performance to a remote audience with minimal delay.",
+    "plain_english": "This is airing a music performance as it happens. Mics and a mixer capture the show. The sound goes out over the air or online in real time.",
+    "purpose_function": "It brings a live performance to a remote audience in real time, requiring a broadcast-quality mix and a reliable contribution path so listeners hear a balanced program as the event unfolds.",
+    "practical_application": "An engineer builds a broadcast mix from the stage or a split of the live console, monitors levels and loudness, and sends the program over a codec or link to the station for real-time airing.",
+    "category": "Program Types",
+    "related_terms": [
+     "Remote broadcast",
+     "Contribution feed",
+     "Split feed",
+     "IP audio codec",
+     "Loudness normalization",
+     "Program mix"
+    ],
+    "common_mistakes": [
+     "Sending the front-of-house mix straight to air, which is balanced for the room, not for broadcast.",
+     "Ignoring broadcast loudness targets, so the music airs too hot or too quiet against other programming.",
+     "Relying on a single unmonitored link with no backup, risking dead air if it drops.",
+     "Forgetting to secure music rights and reporting for the broadcast."
+    ],
+    "scenario_contexts": [
+     "Broadcasting a concert live to radio from a dedicated broadcast mix off the stage split.",
+     "Streaming a live club set online in real time with a separate broadcast mix.",
+     "Airing a live studio session with a balance built for listeners rather than the room."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "380aa186-2271-4e21-94fb-e300b4db7469",
+   "term": "Live read",
+   "fields": {
+    "definition": "An advertisement, sponsor message, or announcement delivered live on air by the host or announcer rather than played from a pre-recorded spot. It is read from a script in real time, often woven into the show, so the endorsement carries the host's own voice and delivery.",
+    "plain_english": "This is an ad the host reads out loud on air, live. It is not recorded ahead of time. Listeners hear the real host say it in the moment.",
+    "purpose_function": "It lets a station air a sponsor message in the trusted voice of its own talent, adding a personal, in-the-moment endorsement that a pre-produced spot cannot match.",
+    "practical_application": "A host reads the sponsor's script live during the show at the scheduled point, and the operator logs the live read for billing and compliance instead of firing a recorded spot.",
+    "category": "On-Air Presentation",
+    "related_terms": [
+     "Spot",
+     "Program log",
+     "Sponsor",
+     "Copy",
+     "Live assist system",
+     "Legal identification"
+    ],
+    "common_mistakes": [
+     "Skipping or shortening the scheduled live read, so the sponsor does not get the paid mention.",
+     "Reading outdated or wrong copy because the script was not checked before air.",
+     "Not logging the live read, causing billing and compliance problems.",
+     "Ad-libbing off the approved copy and dropping required disclaimers or claims."
+    ],
+    "scenario_contexts": [
+     "A morning host reading a sponsor's live commercial from a script during the show.",
+     "An announcer delivering a live-read promo for a station event between songs.",
+     "Logging a completed live read for the traffic and billing department."
+    ]
+   },
+   "sources": [
+    "NAB Engineering Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

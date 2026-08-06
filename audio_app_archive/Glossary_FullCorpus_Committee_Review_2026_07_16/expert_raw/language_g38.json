@@ -1,0 +1,223 @@
+{
+ "expert": "language",
+ "group": 38,
+ "reviews": [
+  {
+   "id": "63852340-30b6-4de9-b939-5ce388bad386",
+   "term": "Program Power",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b1183522-34d2-441d-9f04-284f55a0284a",
+   "term": "Program-Dependent Release",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9fb7852b-78ad-4786-b309-4369cb2ef740",
+   "term": "propagation delay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9312bde7-424c-460f-b1d2-de8293206bc4",
+   "term": "Proportional-Q (variable-Q)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "de45aedc-991e-4761-8c53-089f3db0f145",
+   "term": "Proximity Effect",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9b69f880-d1eb-4cca-bf28-1833eeb8fac6",
+   "term": "Pseudorandom setting",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "533275f6-e303-4af8-80bf-0922ff183ca2",
+   "term": "psychoacoustics",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "practical_application",
+     "severity": "Low",
+     "issue": "The four semicolon-separated items are not parallel: three are subject-verb clauses ('Codec design uses...', 'hearing aid design applies...', 'audio specification considers...') but 'mixing decisions based on psychoacoustic understanding' is a bare noun fragment with no verb. The word 'psychoacoustic(s)' is also repeated in every item, making it read as filler.",
+     "suggestion": "Make the items parallel and trim the repetition, e.g.: 'Lossy codecs use psychoacoustic masking models to discard inaudible data; hearing-aid designs apply them to fit output to a user's perception; mixing and audio-spec decisions weigh perceived loudness and masking, not just measured levels.'"
+    }
+   ]
+  },
+  {
+   "id": "56c95f8c-c58e-4624-956b-9f5306f5c32e",
+   "term": "Public Address System (PA)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7211bfb3-240f-41ce-a48d-e290ec58408a",
+   "term": "Pultec EQ",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "54a34104-11db-48fa-9385-5cbdaf59a5e9",
+   "term": "Pumping",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "56e1e4c9-0e44-49e3-ae5c-98e8d3c6d111",
+   "term": "Pure Tone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "856a072f-24a6-4df9-8d4b-91fe353e739c",
+   "term": "Push-To-Talk Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bdcaea67-5cbe-458b-b654-540156b20c05",
+   "term": "PVC cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "12b84806-be96-4da9-a469-66ea972edf02",
+   "term": "Q Factor (Q)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ae50c9be-2bc6-44af-b7ec-e8ad17351c5e",
+   "term": "quantization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "51b60829-e3c0-4752-824c-833c6b4c13bf",
+   "term": "Quantization Noise",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3cd842ed-ebd9-4b2c-8780-5beb93cf3461",
+   "term": "Quasi-Anechoic Measurement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8f621046-f946-45e0-a8e9-2d73da089d12",
+   "term": "Quick Disconnect",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5d11e888-618b-47fc-896c-f0f703a57e70",
+   "term": "Quick Reference Tables",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a8290d76-c665-4670-9b20-1f10f006367d",
+   "term": "Quiescent Current",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e7311433-a8d0-450a-8d70-a78a3e4606d3",
+   "term": "Rack Airflow",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8c1da68e-ba0b-4252-b305-7bbc85bf6b43",
+   "term": "Rack Unit (U)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fe06ef1a-1cfe-4e05-83b6-69f0c32f7f9e",
+   "term": "Rail Voltage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "006ab8e6-7208-4eda-9710-af210e16b675",
+   "term": "Range",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0ba98c69-b169-4859-ae33-d4b20e9a706a",
+   "term": "Rarefaction",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2d039ec3-3afc-44ad-9e8d-de8f0d1795f1",
+   "term": "Ratio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "da74bad3-8c24-4c1d-be3b-f9755a22abbc",
+   "term": "Ravenna",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2f77fa95-2779-466b-b8d4-f6a5868c2056",
+   "term": "RCA",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e9b24f48-a0c6-4afc-b609-895f69916605",
+   "term": "RCA Patch Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b4a02906-dde2-4428-b374-839b0559c59e",
+   "term": "RCA-to-TRS Adapter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "09d9acfb-2aa4-49c6-b8a2-fad2e4185413",
+   "term": "RCD",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "27fef5e5-2187-45dd-9bdb-588f0679b338",
+   "term": "Real-Time Mode",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3941e4eb-0015-4f84-a071-734f9d240c98",
+   "term": "Reamp Box",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "957dbfaf-668b-48cc-a744-cf6c30bfba72",
+   "term": "Receiver",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f11806f5-aa29-4a17-832b-c8dbcaf46311",
+   "term": "Receiver (Home Audio)",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

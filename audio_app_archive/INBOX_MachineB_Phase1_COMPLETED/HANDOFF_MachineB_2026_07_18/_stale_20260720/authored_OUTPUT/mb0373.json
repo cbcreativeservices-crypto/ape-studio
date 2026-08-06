@@ -1,0 +1,231 @@
+{
+ "batch": 373,
+ "topic": "Winds, Brass & Organ",
+ "authored": [
+  {
+   "id": "b71afdcf-b32f-4141-bb1c-1c3db27ab7e9",
+   "term": "Mechanical key noise",
+   "fields": {
+    "definition": "The audible clicking, tapping, or thudding produced by a woodwind instrument's key mechanism as it is worked, such as pads seating on tone holes and keys striking their posts, felt, or cork bumpers; it is a mechanical byproduct distinct from the instrument's musical tone.",
+    "plain_english": "The clicking and tapping sound a flute, clarinet, or sax makes as its keys and pads open and close. It is a bit like the click of a keyboard as you type.",
+    "purpose_function": "It is an unavoidable byproduct of a padded key mechanism; identifying it lets players and engineers manage it so it does not distract from the musical sound of the instrument.",
+    "practical_application": "A recording engineer positions and angles the microphone away from the keywork and may service or lubricate the mechanism to reduce the amount of key clatter captured in a close-miked take.",
+    "category": "Instrument Noise",
+    "related_terms": ["Tone hole", "Pad", "Embouchure", "Spot microphone", "Transient"],
+    "common_mistakes": [
+     "Assuming key noise means the instrument is broken; some mechanism noise is normal on any padded woodwind.",
+     "Placing a microphone directly over the keywork, which exaggerates clicks and pad slap.",
+     "Trying to remove all key noise with heavy gating or EQ, which also damages the natural tone."
+    ],
+    "scenario_contexts": [
+     "Close-miking a flute or clarinet in a quiet studio, where key clicks become obvious in the recording.",
+     "A classical solo or chamber session where the producer wants minimal mechanism noise.",
+     "Live orchestral pickup where a poorly adjusted key mechanism adds distracting clatter."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (woodwind microphone technique)", "Ballou, Handbook for Sound Engineers (microphones and instrument pickup)", "Fletcher & Rossing, The Physics of Musical Instruments (woodwind mechanism and tone-hole behavior)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6fb0d3c3-7b44-41ad-b67d-f4e116d75296",
+   "term": "Melodica breath swell",
+   "fields": {
+    "definition": "A dynamic-shaping technique on the melodica in which the player varies breath pressure to raise and lower the loudness of a sustained note, producing a crescendo and decrescendo; because the melodica sounds free reeds, breath pressure mainly changes volume rather than pitch.",
+    "plain_english": "On a melodica, blowing harder makes a held note grow louder and easing off makes it fade. Doing this smoothly gives the note a rising and falling swell, like slowly turning a volume knob up and down.",
+    "purpose_function": "It gives the melodica expressive dynamic control for shape, phrasing, and emphasis, since the player's breath rather than a fixed mechanism sets each note's loudness.",
+    "practical_application": "A player uses steady, controlled breath to fade notes in and out for expressive lines, and an engineer recording it may apply gentle compression to keep the swells within a usable level range.",
+    "category": "Breath Dynamics",
+    "related_terms": ["Free reed", "Crescendo", "Breath control", "Embouchure", "Dynamics"],
+    "common_mistakes": [
+     "Blowing too hard for a swell, which can make a free reed sound harsh or bend the pitch slightly flat.",
+     "Confusing a breath swell with a pitch bend; a swell changes loudness, not the note.",
+     "Letting breath run out mid-phrase so the swell collapses unevenly."
+    ],
+    "scenario_contexts": [
+     "A studio overdub where a melodica adds a swelling, pad-like line under a song.",
+     "A live performance where the player fades a chord in for atmosphere.",
+     "Reggae or dub recordings where melodica swells are a signature texture."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (free-reed instruments; blowing pressure controls amplitude)", "Grove Dictionary of Music (melodica; free-reed aerophones)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "965531bb-9e2c-44c7-b20d-d7527c92cf2c",
+   "term": "Meri (chin-lower pitch bend)",
+   "fields": {
+    "definition": "A shakuhachi (Japanese end-blown bamboo flute) technique in which the player lowers the chin and head, decreasing the blowing angle across the mouthpiece edge and often partly shading a finger hole, to flatten the pitch and darken the tone; its opposite, raising pitch by lifting the chin, is called kari.",
+    "plain_english": "On the shakuhachi flute, the player tips the chin down to make a note go flat and sound darker. It is like aiming your breath lower across a bottle top to drop the pitch.",
+    "purpose_function": "It lets the player reach the in-between pitches and subtle tone colors the finger holes alone cannot give, which is central to the instrument's expressive, speech-like style.",
+    "practical_application": "A player rocks the head down for meri or up for kari while holding a fingering, bending pitch and shading timbre within a phrase to match the melody or another instrument.",
+    "category": "Pitch Bending",
+    "related_terms": ["Kari", "Embouchure", "Overblowing", "Muraiki (overblown air-blast)", "Pitch bend"],
+    "common_mistakes": [
+     "Thinking meri is only a fingering; it depends mainly on head angle and blowing, not just covering holes.",
+     "Dropping the chin so far the note weakens or cracks instead of bending cleanly.",
+     "Confusing meri, which lowers pitch, with kari, which raises it."
+    ],
+    "scenario_contexts": [
+     "Playing traditional honkyoku pieces that call for meri notes and sliding pitch.",
+     "Tuning a shakuhachi line to a shamisen or koto in an ensemble.",
+     "Recording where meri's darker, breathier tone needs careful microphone placement."
+    ]
+   },
+   "sources": ["Grove Dictionary of Music (shakuhachi; meri and kari techniques)", "Malm, Japanese Music and Musical Instruments (shakuhachi performance practice)", "Fletcher & Rossing, The Physics of Musical Instruments (end-blown flutes; pitch control by blowing angle)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f9d377e2-3d6a-48d8-ba68-d3581c2041d6",
+   "term": "Mixture shimmer",
+   "fields": {
+    "definition": "The bright, sparkling brilliance added to an organ's tone by a Mixture, a compound stop that sounds several high-pitched ranks per note tuned to upper octaves and fifths of the harmonic series; drawn on top of the diapason chorus, these ranks crown the sound with high-frequency reinforcement.",
+    "plain_english": "A pipe organ mixture stop adds several tiny high pipes to every note, giving the sound a bright, sparkling top. That extra sparkle on top of the main tone is the shimmer.",
+    "purpose_function": "The mixture reinforces the upper harmonics of the foundation stops, adding brightness and clarity so the full chorus sounds brilliant and carries in a large room.",
+    "practical_application": "An organist draws mixtures on top of principals to build the full plein jeu chorus for hymns and climaxes, blending them so the shimmer adds brilliance without harshness.",
+    "category": "Organ Registration",
+    "related_terms": ["Rank", "Stop", "Principal chorus", "Harmonic series", "Diapason"],
+    "common_mistakes": [
+     "Drawing a mixture by itself; it is meant to sit on top of foundation stops, not stand alone.",
+     "Assuming a mixture plays one pitch per key; each note sounds several pipes at different pitches.",
+     "Forgetting that mixtures break back down in pitch up the keyboard, so the top does not scream."
+    ],
+    "scenario_contexts": [
+     "Registering a hymn's final verse where full organ with mixtures is wanted.",
+     "Recording a large pipe organ where the bright mixture ranks can sound harsh if the mic is too close.",
+     "Balancing a Baroque plein jeu registration for clarity in counterpoint."
+    ]
+   },
+   "sources": ["Audsley, The Art of Organ Building (mixture stops and compound ranks)", "Grove Dictionary of Music (organ stops; Mixture, chorus, and breaks)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1a221b67-b344-45f7-a5e1-0d1c28c53075",
+   "term": "Multitonguing",
+   "fields": {
+    "definition": "An articulation technique on wind and brass instruments in which the player alternates a front-of-tongue stroke (such as \"tu\") with a back-of-tongue stroke (such as \"ku\") to articulate rapid passages faster than single tonguing allows; two-stroke patterns are double tonguing and three-stroke patterns are triple tonguing.",
+    "plain_english": "To play fast repeated notes, wind and brass players use two tongue actions, one at the front and one at the back of the mouth, saying something like tu-ku, tu-ku. It lets the tongue keep up when single tonguing is too slow.",
+    "purpose_function": "It lets players articulate very fast passages cleanly, since a single tongue stroke cannot repeat quickly enough for rapid runs and fanfares.",
+    "practical_application": "A trumpet or flute player uses double or triple tonguing for fast staccato runs, working to make the front and back strokes sound equally strong so every note is even.",
+    "category": "Articulation",
+    "related_terms": ["Single tonguing", "Flutter tonguing", "Staccato", "Articulation", "Embouchure"],
+    "common_mistakes": [
+     "Letting the back stroke sound weaker or duller than the front stroke, giving uneven notes.",
+     "Pushing the speed up before the tongue coordination is secure.",
+     "Using a double-tonguing pattern for triple-meter groups, which throws off the accents."
+    ],
+    "scenario_contexts": [
+     "Playing a fast trumpet fanfare or a flute's rapid staccato passage.",
+     "Orchestral excerpts that demand rapid repeated articulation.",
+     "Close-miking where uneven tonguing strokes are clearly audible."
+    ]
+   },
+   "sources": ["Grove Dictionary of Music (tonguing; double and triple tonguing)", "Baines, Woodwind Instruments and Their History (articulation and tonguing)", "Fletcher & Rossing, The Physics of Musical Instruments (tonguing and articulation in wind instruments)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "83adadd5-7617-42cf-9ba3-3b4ee45ecb27",
+   "term": "Muraiki (overblown air-blast)",
+   "fields": {
+    "definition": "A shakuhachi technique in which the player forcefully overblows to produce a loud, breath-heavy attack, an explosive burst of air noise mixed with the tone, used as an expressive percussive color rather than a clean sustained pitch.",
+    "plain_english": "On the shakuhachi, the player blows a hard, noisy blast of air so the note bursts out with a rush of breath. It sounds stormy and rough, like a strong gust of wind.",
+    "purpose_function": "It adds dramatic, breathy, noise-based color to the music, extending the flute's expressive range beyond clean sustained tones.",
+    "practical_application": "A player uses muraiki at key moments in traditional honkyoku for a stormy, forceful effect, and an engineer leaves extra headroom because the air-blast attack is much louder and noisier than normal notes.",
+    "category": "Extended Technique",
+    "related_terms": ["Overblowing", "Meri (chin-lower pitch bend)", "Ney breath tone", "Embouchure", "Transient"],
+    "common_mistakes": [
+     "Treating muraiki as an accident; it is a controlled, intentional effect, not a failed note.",
+     "Overblowing so hard the pitch jumps to the wrong overtone.",
+     "Recording with too little headroom, so the loud air-blast clips."
+    ],
+    "scenario_contexts": [
+     "Performing traditional honkyoku pieces that call for a stormy muraiki attack.",
+     "A film or game score wanting a raw, breathy shakuhachi effect.",
+     "Setting record levels so the sudden air-blast does not distort."
+    ]
+   },
+   "sources": ["Grove Dictionary of Music (shakuhachi; muraiki and breath techniques)", "Malm, Japanese Music and Musical Instruments (shakuhachi timbre and technique)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6771cccb-cee7-4c2e-b188-1a364d133982",
+   "term": "Natural bugling",
+   "fields": {
+    "definition": "Playing melodies on a valveless bugle or natural brass instrument using only the notes of its harmonic series, selecting pitches solely by changing lip tension and air, since there are no valves or slides to alter the tube length.",
+    "plain_english": "A bugle has no valves, so the player changes notes only by tightening or loosening the lips. This limits it to a handful of harmonic notes, which is why bugle calls use just a few pitches.",
+    "purpose_function": "It reflects how a natural brass instrument works: with a fixed tube length, only the harmonic (overtone) series is available, which is why traditional calls and fanfares are built from those few notes.",
+    "practical_application": "A player selects each note by adjusting embouchure and breath alone, which is the basis of military and camp bugle calls and of period natural-trumpet playing.",
+    "category": "Brass Technique",
+    "related_terms": ["Harmonic series", "Embouchure", "Natural trumpet", "Overtone", "Lip slur"],
+    "common_mistakes": [
+     "Expecting a bugle to play a full scale; only the harmonic-series notes are available without valves.",
+     "Blaming missed notes on the instrument when a secure embouchure is what selects the right harmonic.",
+     "Confusing lipping between harmonics with changing notes by valves."
+    ],
+    "scenario_contexts": [
+     "Playing standard bugle calls such as reveille or taps.",
+     "Historically informed performance on a valveless natural trumpet.",
+     "Teaching the harmonic series by demonstrating which notes a bugle can sound."
+    ]
+   },
+   "sources": ["Baines, Brass Instruments: Their History and Development (natural brass and the harmonic series)", "Fletcher & Rossing, The Physics of Musical Instruments (brass acoustics; harmonic series and lip selection)", "Grove Dictionary of Music (bugle; natural trumpet)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9522ca3d-5310-4e91-bcc2-fbc17af0273a",
+   "term": "Ney breath tone",
+   "fields": {
+    "definition": "The characteristic breathy, airy timbre of the ney, an end-blown reed flute of Middle Eastern music, in which audible breath noise blends with the pitched tone because the player directs the airstream obliquely across the open end of the tube; this breathiness is a prized expressive feature, not a flaw.",
+    "plain_english": "The ney is a reed flute you blow across the end, and its sound always carries a soft rush of breath mixed with the note. That airy, whispery quality is its signature voice.",
+    "purpose_function": "The breathy tone gives the ney its warm, human, voice-like expressiveness, which is central to its role in Middle Eastern and Sufi music.",
+    "practical_application": "A player shapes embouchure and breath to control how much air noise colors the tone, and an engineer mics it to capture that breathiness without harsh wind blasts hitting the capsule.",
+    "category": "Timbre",
+    "related_terms": ["Embouchure", "End-blown flute", "Overblowing", "Muraiki (overblown air-blast)", "Windscreen"],
+    "common_mistakes": [
+     "Treating the ney's breath noise as a defect to remove; it is an essential part of the sound.",
+     "Blowing straight instead of obliquely across the edge, which kills the tone.",
+     "Close-miking without a pop or wind screen, so breath blasts overload the microphone capsule."
+    ],
+    "scenario_contexts": [
+     "Recording a ney solo for Middle Eastern or world-music production.",
+     "Live Sufi or classical ensemble where the ney's breathy line must sit in the mix.",
+     "Sampling a ney and needing to preserve its breathy attack."
+    ]
+   },
+   "sources": ["Grove Dictionary of Music (ney; end-blown flutes of the Middle East)", "Fletcher & Rossing, The Physics of Musical Instruments (air-jet and end-blown flutes; edge-tone and breath noise)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "06e97cbe-dc0a-4f36-82ff-e99a0dc8b016",
+   "term": "Note crack/clam",
+   "fields": {
+    "definition": "A momentary missed or split note, most common on brass, in which the player's lip fails to lock cleanly onto the intended harmonic resonance at the attack, producing a wrong pitch, a brief split, or a noisy break; \"clam\" is the common musician's slang for such a flubbed note.",
+    "plain_english": "A crack or clam is when a brass player's note comes out wrong for an instant. It splits or jumps to the wrong pitch on the attack. It happens because the lips did not quite lock onto the right note.",
+    "purpose_function": "Naming it helps players and engineers identify and fix attack errors, since brass notes depend on the lips matching an exact resonance of the tube.",
+    "practical_application": "In a session, a producer flags a cracked note for a retake or a punch-in, while players reduce clams by centering the pitch and supporting the air at the attack.",
+    "category": "Performance Error",
+    "related_terms": ["Harmonic series", "Embouchure", "Attack", "Punch-in", "Lip slur"],
+    "common_mistakes": [
+     "Blaming the instrument for clams that come from an unfocused embouchure or weak air.",
+     "Punching in over a cracked note without matching tone and tuning, so the edit shows.",
+     "Trying to fix an obvious clam with pitch software when a clean retake would sound better."
+    ],
+    "scenario_contexts": [
+     "A trumpet solo take where one high entrance cracks and needs a punch-in.",
+     "Live broadcast where a prominent clam is audible and cannot be redone.",
+     "Editing a horn section where one player's split note must be replaced."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (brass mode selection and cracked notes)", "Grove Dictionary of Music (brass articulation and attack)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

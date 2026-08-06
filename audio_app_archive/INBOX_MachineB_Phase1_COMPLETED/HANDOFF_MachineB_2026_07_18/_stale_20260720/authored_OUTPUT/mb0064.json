@@ -1,0 +1,231 @@
+{
+ "batch": 64,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "3de7c438-d6ca-48ce-8108-16539652d06f",
+   "term": "Ride bow",
+   "fields": {
+    "definition": "The bow is the broad, gently sloping playing surface of a ride cymbal that lies between the raised central bell and the outer edge. Struck with the stick tip, it produces the ride's defining articulate ping with a controlled amount of sustained wash.",
+    "plain_english": "The bow is the wide, curved part of a ride cymbal between its raised center and its rim. When a drummer taps it with the stick tip, it makes a clear, steady ping.",
+    "purpose_function": "It gives the ride cymbal a clear, repeatable stick sound for keeping time, with less wash than you get near the edge and less clang than the bell. This lets a drummer hold a steady pattern that the whole band can lock to.",
+    "practical_application": "When miking a kit, a technician aims the overhead or a spot mic to capture the bow's articulate ping while keeping edge wash and bell ring under control.",
+    "category": "Cymbals",
+    "related_terms": ["Ride cymbal", "Bell", "Open hi-hat", "Overhead equalization", "Cymbal"],
+    "common_mistakes": [
+     "Confusing the bow with the bell, when the bell is the raised center that gives a louder, clangier accent.",
+     "Playing or capturing the ride too near the edge, so wash builds up and the timekeeping ping gets lost.",
+     "Boosting the highs on the overheads so much that the bow's ping turns harsh and brittle."
+    ],
+    "scenario_contexts": [
+     "Tracking a jazz kit where the drummer keeps time on the ride bow throughout a tune.",
+     "Choosing a spot mic position that favors the bow's ping over edge wash in a loud rock mix.",
+     "EQing overheads so a bright ride bow stays clear without piercing the vocal."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a3c76174-69b3-4908-8288-03695ef0d683",
+   "term": "SATB balance",
+   "fields": {
+    "definition": "The relative loudness and blend of the four standard choral voice parts, Soprano, Alto, Tenor and Bass, so that each line is heard clearly and the chords sit well together. It is judged both in a live ensemble and when capturing or mixing recorded voices.",
+    "plain_english": "It means setting the four choir parts, high to low, so no part covers the others. Like a group photo, everyone should be seen, not just the tallest person in front.",
+    "purpose_function": "It ensures the melody, harmony and bass line of a vocal arrangement are all audible and well blended, so the chords sound full and clear. Good balance keeps one section from masking another.",
+    "practical_application": "A technician adjusts section levels, mic placement or fader rides so the sopranos, altos, tenors and basses each hold their place, often lifting the part carrying the tune.",
+    "category": "Vocal Arrangement",
+    "related_terms": ["Section microphone balance", "Sectional vocal panning", "Choir", "Blend", "Voicing"],
+    "common_mistakes": [
+     "Letting the sopranos dominate because they sit highest, so the inner alto and tenor lines disappear.",
+     "Under-mixing the bass part, which removes the harmonic foundation and makes chords sound thin.",
+     "Balancing sections in isolation instead of listening to how the four parts blend together as one chord."
+    ],
+    "scenario_contexts": [
+     "Setting choir section levels in a live worship service so all four parts are heard.",
+     "Mixing a recorded vocal arrangement so the tenor line stays audible under the sopranos.",
+     "Placing mics on a choir so no single section overpowers the others."
+    ]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "The Grove Dictionary of Music and Musicians"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d6ae82cb-33c3-44b8-b674-221d619c3f7a",
+   "term": "Section automation",
+   "fields": {
+    "definition": "The use of mix automation, recorded moves of level, mute, pan or effects, applied across a whole section of related tracks such as drums, horns or backing vocals grouped on a bus. It lets an engineer shape the section's part in the arrangement over time as a single unit.",
+    "plain_english": "It means recording moves like volume or mute for a whole group of tracks at once. Instead of riding each track, you shape the whole section, like dimming a bank of lights together.",
+    "purpose_function": "It lets an engineer bring a section forward or push it back at the right moments without editing every track by hand, keeping mix moves consistent and repeatable. This shapes how the arrangement builds and breathes.",
+    "practical_application": "A technician groups the backing vocals or horns to a bus and writes automation on that bus to lift them in the chorus and duck them under the lead in the verse.",
+    "category": "Mix Automation",
+    "related_terms": ["Shell subgroup", "Section microphone balance", "Fader ride", "Bus", "Mute"],
+    "common_mistakes": [
+     "Writing automation on individual tracks when a single bus move would keep the section balanced and easier to edit.",
+     "Making moves too abrupt, so a section jumps in level instead of rising or falling smoothly.",
+     "Forgetting that bus automation stacks with track-level moves, causing unexpected jumps in loudness."
+    ],
+    "scenario_contexts": [
+     "Automating a horn section bus to swell into a chorus and drop back for the verse.",
+     "Muting a backing-vocal group between phrases with one automation lane instead of many.",
+     "Riding a whole drum submix down under a quiet breakdown section."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "90cfd531-75ae-444c-9a09-e8c44063002e",
+   "term": "Section microphone balance",
+   "fields": {
+    "definition": "The setting of relative levels among the microphones capturing a section of players or singers, such as a horn line, string section or choir, so the section blends internally and sits correctly against the rest of the mix. It covers both the internal balance between section members and the section's overall level.",
+    "plain_english": "It means setting the mics on a group of players so they blend well together and fit the mix. You want the group to sound like one unit, not a fight between loud and quiet mics.",
+    "purpose_function": "It makes a multi-mic section sound like one coherent instrument and places that section at the right level under the lead parts. This avoids one player sticking out and keeps the section supportive.",
+    "practical_application": "A technician sets each section mic's gain and fader by ear, matching players' levels and adjusting the group's total level, often with the mics grouped to a bus.",
+    "category": "Microphone Technique",
+    "related_terms": ["SATB balance", "Section automation", "Shell subgroup", "Bleed", "Blend"],
+    "common_mistakes": [
+     "Setting each mic loud on its own, so the summed section is far too prominent in the mix.",
+     "Ignoring bleed between close mics, which changes the blend once all the faders are up.",
+     "Balancing the section soloed instead of in the full mix, where its correct level is different."
+    ],
+    "scenario_contexts": [
+     "Balancing a three-piece horn section so no one player pokes out of the blend.",
+     "Setting choir section mics so the whole ensemble sits under the lead vocal.",
+     "Matching the levels of spot mics on a string section before grouping them to a bus."
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f9e57fc8-8dae-4d56-87d8-7b36cf0154ae",
+   "term": "Sectional vocal panning",
+   "fields": {
+    "definition": "The placement of grouped vocal parts across the stereo field by section, for example spreading backing vocals or choir voice parts to the left and right rather than stacking them in the center. It is used to separate sections and widen the vocal arrangement.",
+    "plain_english": "It means placing groups of voices to the left, right or center of the stereo image. Spreading the parts out lets each group be heard clearly, like seating singers across a stage.",
+    "purpose_function": "It separates vocal sections so they do not mask each other and gives the arrangement width, while usually keeping the lead vocal centered. This clears space in the middle for the main voice.",
+    "practical_application": "A technician pans doubled backing-vocal groups or choir parts out to the sides, balancing left and right, so the harmonies frame a centered lead.",
+    "category": "Panning",
+    "related_terms": ["SATB balance", "Section microphone balance", "Stereo image", "Double tracking", "Blend"],
+    "common_mistakes": [
+     "Panning sections hard so widely that a chorus collapses to nothing when heard in mono.",
+     "Leaving all vocal groups in the center, so the sections mask each other and the mix sounds cluttered.",
+     "Panning unevenly, so one side of the stereo field is heavier than the other."
+    ],
+    "scenario_contexts": [
+     "Spreading two backing-vocal doubles left and right to widen a chorus around a centered lead.",
+     "Placing choir voice parts across the stereo field so each section stays distinct.",
+     "Checking a mono fold-down so hard-panned vocal sections still hold up."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1a382e90-ecd8-4164-9044-c0246cf7287c",
+   "term": "Shell subgroup",
+   "fields": {
+    "definition": "A mix bus that groups the microphones on the drum kit's shells, the kick, snare and toms, separately from the cymbals and overheads. Routing the shells to their own subgroup lets an engineer process and control the kit's body and punch as one unit.",
+    "plain_english": "It is a group bus that brings the kick, snare and tom mics together, away from the cymbals. It lets you control the boomy, punchy part of the kit with one set of faders.",
+    "purpose_function": "It lets an engineer level, EQ or compress the drum shells together for consistent punch, and ride or automate them without affecting the cymbals. This makes shaping and controlling the kit faster and more consistent.",
+    "practical_application": "A technician routes the kick, snare and tom channels to a subgroup, then adds bus compression or a single fader move to control the whole low end of the kit at once.",
+    "category": "Mix Grouping",
+    "related_terms": ["Section automation", "Drum bus compression", "Bus", "Overhead compression", "Snare body enhancement"],
+    "common_mistakes": [
+     "Routing overheads and cymbals into the shell subgroup, which defeats the point of controlling the shells alone.",
+     "Over-compressing the shell bus so the kit pumps and loses its natural attack.",
+     "Forgetting that subgroup processing stacks on top of channel processing, causing a heavier effect than intended."
+    ],
+    "scenario_contexts": [
+     "Grouping kick, snare and toms to a bus to compress the body of the kit together.",
+     "Riding a single shell-subgroup fader to control drum level during a quiet section.",
+     "Adding EQ to the shell subgroup to tighten the kit's low end without touching the cymbals."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8decb1c7-de54-44de-b781-f0c528d252b6",
+   "term": "Sidestick",
+   "fields": {
+    "definition": "A snare-drum technique, also called rim click or cross-stick, in which the stick is laid across the drum with its tip on the head and its shaft struck against the rim, producing a short, dry, woodblock-like click instead of a full backbeat. It is notated as a distinct articulation and captured as a distinct sound in sampled kits.",
+    "plain_english": "It is a quiet snare sound made by tapping the stick against the rim while its tip rests on the head. It gives a short, dry click, like a knock on a door, instead of a loud snare hit.",
+    "purpose_function": "It provides a soft, understated backbeat for quiet or intimate passages, adding rhythm without the volume and crack of a full snare hit. Drummers use it to keep energy low in verses and ballads.",
+    "practical_application": "When tracking or programming drums, a technician captures or selects the sidestick sound for softer sections and sets its level so the dry click sits clearly under the vocal.",
+    "category": "Drum Technique",
+    "related_terms": ["Snare", "Backbeat", "Snare body enhancement", "Groove", "Open hi-hat"],
+    "common_mistakes": [
+     "Confusing a sidestick with a rimshot, when a rimshot is a loud accent hitting head and rim together.",
+     "Programming a sidestick at full snare level, so it loses its soft, intimate character.",
+     "Placing the stick tip in the wrong spot on the head, which changes the pitch and dryness of the click."
+    ],
+    "scenario_contexts": [
+     "Playing sidestick through a ballad verse and switching to full snare in the chorus.",
+     "Choosing the sidestick sample in a programmed beat for a laid-back groove.",
+     "Setting the sidestick level so its dry click supports a quiet vocal without disappearing."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fcb3ba91-7860-4a88-b306-eef44e1e0c5a",
+   "term": "Snare body enhancement",
+   "fields": {
+    "definition": "Processing that reinforces the fundamental tone and low-mid weight of a snare drum, the part that gives it fullness and thump, usually by boosting EQ in the roughly 150 to 250 Hz region or adding parallel or saturation processing. It aims to make a thin snare sound fuller without losing its crack.",
+    "plain_english": "It means adding weight and fullness to a thin snare sound. You boost the lower part of its tone so it sounds fatter, while keeping the sharp crack on top.",
+    "purpose_function": "It fills out a snare that sounds thin or papery so it has more body and power in the mix, balancing the low thump against the high crack. This helps the snare carry the backbeat.",
+    "practical_application": "A technician boosts the snare's low-mid fundamental with EQ, or blends in parallel compression or gentle saturation, until the drum sounds full without becoming boxy.",
+    "category": "Drum Processing",
+    "related_terms": ["Snare", "Equalization", "Parallel compression", "Shell subgroup", "Snare clipping"],
+    "common_mistakes": [
+     "Boosting the low-mids too far, which makes the snare sound boxy and muddy instead of full.",
+     "Adding body while forgetting the crack, so the snare loses its cut and disappears in the mix.",
+     "Enhancing the snare in isolation, where the added weight clashes with the kick once both play together."
+    ],
+    "scenario_contexts": [
+     "Fattening a thin-sounding snare take with a low-mid EQ boost during mixdown.",
+     "Blending parallel compression into a snare to add weight without killing its snap.",
+     "Adding body to a tightly tuned snare so it holds the backbeat in a dense rock mix."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "460d4f37-e795-4692-8066-be916f8fc7a6",
+   "term": "Snare clipping",
+   "fields": {
+    "definition": "The use of a clipper, or hard limiting, on a snare drum to shave off the very top of its sharp transient, letting the track sit louder and more controlled without an audible level drop. Because the snare's peak is brief, a small amount of clipping raises its effective loudness while keeping the body intact.",
+    "plain_english": "It means cutting off the very tip of the snare's loud spike so the drum can sit louder overall. The spike is so short that trimming a little of it is hard to hear.",
+    "purpose_function": "It controls the snare's short, high peak so the drum can be pushed louder and steadier in a mix without triggering unwanted gain reduction elsewhere. This gives a consistent, up-front snare.",
+    "practical_application": "A technician places a clipper on the snare channel and lowers the ceiling just enough to trim the sharpest transient peaks, checking by ear that the crack stays clean.",
+    "category": "Drum Processing",
+    "related_terms": ["Snare", "Transient", "Limiter", "Snare body enhancement", "Overhead compression"],
+    "common_mistakes": [
+     "Clipping too hard, which flattens the transient and turns the snare's crack into audible distortion.",
+     "Confusing intentional clipping with accidental converter or preamp clipping while recording, which is a fault to avoid.",
+     "Judging the clip amount soloed, when the acceptable amount is different once the full mix is playing."
+    ],
+    "scenario_contexts": [
+     "Trimming snare peaks with a clipper so the drum sits louder in a loud master.",
+     "Using light snare clipping to keep the backbeat steady before bus compression.",
+     "Controlling a sharp snare transient so it stops pulling down a bus limiter."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

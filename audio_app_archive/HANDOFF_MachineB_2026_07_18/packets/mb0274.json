@@ -1,0 +1,56 @@
+{
+ "batch": 274,
+ "topic": "In-the-Box Mixing & Automation",
+ "terms": [
+  {
+   "id": "ff29436b-28d9-450d-98f3-4448b773d263",
+   "term": "Automation Off",
+   "topic": "In-the-Box Mixing & Automation",
+   "seq": 1260,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "3835bc9b-7b83-4248-b1af-58cd6d2c133b",
+   "term": "Pre-Fader Metering",
+   "topic": "In-the-Box Mixing & Automation",
+   "seq": 1260,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

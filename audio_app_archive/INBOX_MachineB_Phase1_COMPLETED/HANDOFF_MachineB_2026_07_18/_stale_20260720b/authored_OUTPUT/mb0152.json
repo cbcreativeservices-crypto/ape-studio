@@ -1,0 +1,91 @@
+{
+ "batch": 152,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "dd2053d3-24ab-406b-a19b-5850976c2d64",
+   "term": "Workspace Catalog",
+   "fields": {
+    "definition": "In a DAW media browser (notably Avid Pro Tools' Workspace), a catalog is a saved, user-defined collection of references to volumes, folders, and media files, letting you organize and quickly recall assets without physically moving or copying them on disk.",
+    "plain_english": "A catalog is like a saved list of shortcuts to your sound files. It points to where the files live so you can find them fast, but it does not move or copy the real files.",
+    "purpose_function": "It exists to speed up finding and reusing media across drives and projects by grouping links to files in one searchable place.",
+    "practical_application": "A technician builds a catalog of go-to sound effects or loops so they can drag them into any session without hunting through folders.",
+    "category": "Session Management",
+    "related_terms": ["Workspace preset", "Session", "Import Audio", "Region", "Sample rate"],
+    "common_mistakes": ["Assuming a catalog stores the actual audio, then deleting the source files and breaking every reference.", "Confusing a catalog of saved references with importing or copying media into the session.", "Forgetting that a catalog only points to files, so moving or renaming the originals makes them go offline."],
+    "scenario_contexts": ["Building a reusable library of sound effects for a post-production suite.", "Organizing sample and loop folders across several drives for quick recall.", "Locating a specific take stored on an external volume without importing it first."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "df86d015-5a7e-481b-93e0-a585c1e6a860",
+   "term": "Workspace preset",
+   "fields": {
+    "definition": "A saved configuration of a DAW's on-screen layout, including window sizes and positions, visible panels, editors, and toolbars, that can be recalled instantly to restore a preferred working arrangement.",
+    "plain_english": "A workspace preset saves how your screen is set up. Load it and all your windows and panels jump back to where you like them.",
+    "purpose_function": "It lets you switch quickly between task-specific layouts, such as recording, editing, and mixing, and keep a consistent setup across sessions and machines.",
+    "practical_application": "An engineer keeps one preset for tracking and another for mixing, switching with a key command as the session moves between stages.",
+    "category": "Session Management",
+    "related_terms": ["Workspace Catalog", "Session", "Window configuration", "Edit window", "Mix window"],
+    "common_mistakes": ["Confusing a window-layout preset with a session template, which also stores tracks and routing.", "Expecting a preset to save audio or mix settings when it only stores the screen layout.", "Overwriting a saved preset by accident instead of creating a new one."],
+    "scenario_contexts": ["Switching from a tracking layout to a mixing layout during a session.", "Restoring a familiar window setup after opening a colleague's session.", "Setting up matching layouts on a studio rig and a laptop rig."]
+   },
+   "sources": ["Steinberg Cubase Operation Manual", "Apple Logic Pro User Guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f8c36dab-253b-4ee7-a52a-6d717d8b0875",
+   "term": "Write automation mode",
+   "fields": {
+    "definition": "An automation mode in which the DAW records (writes) new automation data for a parameter across the whole pass, overwriting any existing automation for that parameter for as long as the transport runs, whether or not the control is touched.",
+    "plain_english": "Write mode records every move of a fader or knob as the song plays. It also erases the old moves it passes over, even ones you do not touch, so use it with care.",
+    "purpose_function": "It exists to lay down an initial automation pass or to completely replace existing moves for a parameter.",
+    "practical_application": "A mixer uses Write mode to record a first volume ride, then switches to Touch or Latch so the next pass does not wipe the good moves already recorded.",
+    "category": "Automation",
+    "related_terms": ["Touch automation mode", "Latch automation mode", "Read automation mode", "Trim automation mode", "Automation lane"],
+    "common_mistakes": ["Leaving a track in Write mode during playback, which erases existing automation as the playhead passes over it.", "Confusing Write with Touch or Latch, so parameters get overwritten unintentionally.", "Not switching out of Write after the first pass, wiping good automation on the next play."],
+    "scenario_contexts": ["Recording a first volume ride on a lead vocal.", "Erasing and re-recording a pan automation pass that went wrong.", "Setting static automation levels at the start of a mix."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cff83ef9-61e4-4a2b-935a-e799b4b533d1",
+   "term": "Zoom Toggle",
+   "fields": {
+    "definition": "A Pro Tools editing command that switches between the current view and a stored, user-defined zoom state, including horizontal and vertical zoom, track height, track view, and grid settings, letting you jump instantly to a detailed edit view and back.",
+    "plain_english": "Zoom Toggle is a one-key jump between your normal view and a close-up edit view. Press it to zoom in on a spot, then press again to pop back out.",
+    "purpose_function": "It exists to give editors instant, one-key access to a preferred detailed edit view without manually re-zooming each time.",
+    "practical_application": "An editor stores a tight zoom and track height, then toggles into it to fix a click and toggles back out to the full session.",
+    "category": "Editing",
+    "related_terms": ["Zoom Tool", "Edit window", "Track height", "Grid", "Selector tool"],
+    "common_mistakes": ["Confusing Zoom Toggle with the Zoom tool; Toggle recalls a stored view, while the tool zooms manually.", "Not setting the zoom-toggle preferences, so the recalled view is not what you expected.", "Pressing it twice and losing your place because it returns to the previous zoom."],
+    "scenario_contexts": ["Jumping to a close-up view to fix a vocal edit, then back to the full arrangement.", "Toggling to a detailed grid view for tight drum edits.", "Quickly checking a crossfade up close during editing."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Avid Pro Tools Shortcuts Guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5f061147-c9e2-4f23-8c33-1959a44ac9ef",
+   "term": "Zoom Tool",
+   "fields": {
+    "definition": "A DAW edit-window tool, usually shown as a magnifying-glass cursor, used to zoom the timeline view in or out by clicking or dragging over a region to enlarge it horizontally, and sometimes vertically, for detailed editing.",
+    "plain_english": "The Zoom tool is a magnifying glass for your timeline. Click or drag over part of a track to get a closer look for fine editing.",
+    "purpose_function": "It lets you change how much of the timeline you see so you can work at the right level of detail for the task.",
+    "practical_application": "A technician grabs the Zoom tool to drag over a snare hit, enlarge it, and trim the edit precisely.",
+    "category": "Editing",
+    "related_terms": ["Zoom Toggle", "Selector tool", "Grabber tool", "Trim tool", "Edit window"],
+    "common_mistakes": ["Zooming in so far that you lose track of the wider arrangement and place edits in the wrong spot.", "Confusing the Zoom tool with Zoom Toggle or keyboard zoom commands.", "Forgetting that horizontal and vertical zoom are separate, so tracks look too short to edit."],
+    "scenario_contexts": ["Zooming in to place an edit exactly on a transient.", "Enlarging a quiet section to see the waveform for a clean cut.", "Zooming out to see the whole song arrangement."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Apple Logic Pro User Guide"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

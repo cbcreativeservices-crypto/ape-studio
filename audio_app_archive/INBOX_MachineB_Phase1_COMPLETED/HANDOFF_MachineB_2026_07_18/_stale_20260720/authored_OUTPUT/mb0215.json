@@ -1,0 +1,159 @@
+{
+ "batch": 215,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "5d5335c5-240b-4a52-adb0-36167553296a",
+   "term": "Click-free passage",
+   "fields": {
+    "definition": "A section of a film-score cue performed and recorded without a metronome click track, letting the conductor and players follow tempo freely rather than a fixed beat. Sync to picture is guided instead by visual cues such as streamers and punches, and the passage may sit between click-driven sections of the same cue.",
+    "plain_english": "A part of the music played with no ticking click track. The players follow the conductor and the film freely instead of a set beat.",
+    "purpose_function": "It gives music a natural, expressive feel where a rigid tempo would sound mechanical, while still allowing the cue to line up with the picture through visual guides. This lets a scoring session mix strict-tempo and free-tempo playing within one piece.",
+    "practical_application": "A scoring mixer or recordist notes where the click drops out so the click feed is muted for that passage, and the conductor uses streamers and punches to catch key hit points.",
+    "category": "Music Scoring",
+    "related_terms": ["Click-track cue mix", "Click-track level", "Streamers and punches", "Timecode", "Scoring stage"],
+    "common_mistakes": ["Assuming every scored cue must run to a click, when free-timing passages are common", "Leaving the click audible during a free passage so it bleeds into open microphones", "Forgetting to plan visual sync points, leaving the conductor with no way to hit picture in a click-free section"],
+    "scenario_contexts": ["An orchestral scoring session where an emotional cue is played rubato without a click", "A hybrid cue that starts on a click, drops to free timing, then returns to click", "Recording a solo instrument to picture using streamers instead of a click"]
+   },
+   "sources": ["Holman, Sound for Film and Television (Focal Press)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a334f1a7-ace3-4442-8127-b35d58b494ee",
+   "term": "Click-track cue mix",
+   "fields": {
+    "definition": "The custom headphone (foldback) monitor mix sent to scoring musicians that carries the metronome click track alongside music and reference guides, so performers can play in time with the picture. It is a monitoring feed only and is kept out of the recorded music stems.",
+    "plain_english": "The sound in the players' headphones that has the ticking click in it. It helps them stay in time with the film while they record.",
+    "purpose_function": "It gives performers a steady tempo reference plus guide material so their take locks to timecode and to on-screen hit points. Delivering it only to headphones keeps the click from contaminating the recording.",
+    "practical_application": "A scoring mixer or Pro Tools operator builds and balances this mix, setting how loud the click sits against the music in each player's headphones.",
+    "category": "Music Scoring",
+    "related_terms": ["Click-track level", "Click-track routing", "Click-free passage", "Foldback", "Timecode"],
+    "common_mistakes": ["Setting the click so loud it bleeds through headphones into open microphones", "Sending the same generic mix to everyone instead of tailoring the balance to each player", "Accidentally routing the click into the recorded stems along with the cue mix"],
+    "scenario_contexts": ["An orchestral scoring session recording to picture", "A composer overdubbing live players against a programmed mockup", "A songwriter cutting a song to a locked picture edit"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Holman, Sound for Film and Television (Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0fc4a648-6012-4b9b-80ed-ecd6f701e1f3",
+   "term": "Click-track level",
+   "fields": {
+    "definition": "The volume at which the metronome click is set within a performer's headphone cue mix — loud enough to follow reliably but low enough to avoid leaking into open microphones. It is balanced per player against the surrounding music.",
+    "plain_english": "How loud the ticking click is set in the mix. It has to be easy to hear but soft enough not to leak into the mics.",
+    "purpose_function": "A correct level keeps players locked to tempo while protecting the recording from audible click bleed. Too low and the beat is lost; too high and the click prints onto the tracks.",
+    "practical_application": "A scoring or tracking engineer trims the click fader while checking talkback with players, raising it for busy passages and lowering it once the tempo is felt.",
+    "category": "Music Scoring",
+    "related_terms": ["Click-track cue mix", "Click-track routing", "Foldback", "Microphone bleed", "Click-free passage"],
+    "common_mistakes": ["Pushing the click loud enough that it bleeds into vocal or acoustic microphones", "Setting it so low that players drift off tempo", "Using one click level for the whole session instead of adjusting per player and per cue"],
+    "scenario_contexts": ["Balancing the click in a lead vocalist's headphones during a scoring take", "Raising click level for a fast, dense passage a drummer must nail", "Reducing click level so it does not print through an open room microphone"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a14a7190-8692-43b8-9988-a36579202afb",
+   "term": "Click-track routing",
+   "fields": {
+    "definition": "The signal-path setup that sends the metronome click only to performers' headphone foldback and deliberately excludes it from the recorded music stems and the program deliverable. It isolates the click as a monitoring-only signal.",
+    "plain_english": "The path that sends the click only to the players' headphones. It keeps the click out of the final recorded sound.",
+    "purpose_function": "It ensures musicians hear the tempo reference while guaranteeing the click never appears in printed tracks or the finished mix, which must be click-free. Proper routing separates monitoring feeds from record and program buses.",
+    "practical_application": "An engineer patches or buses the click to the cue/foldback outputs only, then confirms by soloing the record path that no click is present before printing.",
+    "category": "Music Scoring",
+    "related_terms": ["Click-track cue mix", "Click-track level", "Foldback", "Bus", "Stem"],
+    "common_mistakes": ["Routing the click to the record bus so it prints into the delivered stems", "Not verifying the record path is click-free before committing a take", "Confusing the monitor/foldback bus with the main program bus when assigning the click"],
+    "scenario_contexts": ["Configuring a scoring session so the click feeds headphones but not the mix", "Checking stems before delivery to confirm no click bleed remains", "Setting up foldback sends on a console for a tracking date"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "94a97ddf-dd15-4a3c-ac4a-c4a87249faaa",
+   "term": "Cloth movement",
+   "fields": {
+    "definition": "One of the three core Foley categories (with footsteps and props), covering the subtle sounds of a performer's clothing and fabric shifting as the body moves. Foley artists perform these 'moves' by manipulating garments in sync with the picture to add physical realism.",
+    "plain_english": "The soft rustle of clothes as an actor moves. A Foley artist makes these sounds by moving fabric in time with the picture.",
+    "purpose_function": "It restores the quiet fabric sounds that are usually missing or too weak in the production dialogue track, grounding characters in a believable physical space. These moves knit footsteps and prop handling together into natural human motion.",
+    "practical_application": "A Foley artist watches the scene and moves matching clothing (a jacket, denim, or leather) at a Foley pit microphone, laying a continuous 'cloth pass' that a Foley mixer records and edits to picture.",
+    "category": "Foley",
+    "related_terms": ["Clothing rustle", "Cloth synchronization", "Footsteps", "Foley pit", "Props"],
+    "common_mistakes": ["Performing cloth so loudly it competes with dialogue instead of supporting the action", "Using the wrong fabric so the texture does not match the costume on screen", "Neglecting cloth moves, leaving characters feeling flat and lifeless"],
+    "scenario_contexts": ["Adding fabric moves under a character walking across a room", "Covering a fight scene where jackets and shirts scuff and stretch", "Laying subtle cloth under a seated actor gesturing during dialogue"]
+   },
+   "sources": ["Ament, The Foley Grail (Focal Press)", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7dcb0503-31b8-4e3a-a11c-4862b755eff3",
+   "term": "Cloth synchronization",
+   "fields": {
+    "definition": "The process of performing and aligning cloth (clothing) Foley so the fabric-movement sounds match the on-screen actor's body movements frame-accurately. It applies picture-sync discipline specifically to the cloth pass.",
+    "plain_english": "Lining up the cloth rustle sounds so they match the actor's moves on screen. The fabric sound has to hit at the same moment we see the body move.",
+    "purpose_function": "Accurate sync makes the added fabric sounds read as coming from the character rather than as unrelated noise, preserving the illusion of real motion. Misaligned cloth breaks immersion even when the recording sounds good.",
+    "practical_application": "A Foley artist and mixer perform and then nudge the cloth takes in the DAW so each rustle lands on the matching frame, checking against the picture at edit points.",
+    "category": "Foley",
+    "related_terms": ["Cloth movement", "Clothing rustle", "Footsteps", "Frame accuracy", "Timecode"],
+    "common_mistakes": ["Leaving cloth a few frames early or late so it feels detached from the action", "Syncing only the big moves and ignoring small in-between shifts", "Trusting the performance take without checking it against picture at key frames"],
+    "scenario_contexts": ["Nudging a recorded cloth pass to hit an actor's sudden turn", "Aligning jacket rustle to a character standing up", "Fixing sync on cloth that drifted during a long walking shot"]
+   },
+   "sources": ["Ament, The Foley Grail (Focal Press)", "Holman, Sound for Film and Television (Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "47e427df-ce99-4855-bc82-b5ef267646d8",
+   "term": "Clothing rustle",
+   "fields": {
+    "definition": "The frictional, swishing noise produced by fabric moving against itself or the body. In post it is recreated deliberately as cloth Foley, and in production sound it is an unwanted contaminant when a garment couples into a hidden lavalier or body microphone.",
+    "plain_english": "The swishy, scratchy sound clothes make when they rub. It can be added on purpose as Foley, or it can be unwanted noise on a hidden mic.",
+    "purpose_function": "As Foley it adds lifelike texture to a character's movement; as production noise it is a problem to prevent or clean up because it masks dialogue. Understanding both sides lets a technician add it where wanted and remove it where not.",
+    "practical_application": "A Foley artist performs it with matching fabric for realism, while a production or dialogue editor mounts lav mics carefully and uses spectral repair tools to reduce rustle on recorded dialogue.",
+    "category": "Foley",
+    "related_terms": ["Cloth movement", "Cloth synchronization", "Lavalier microphone", "Dialogue editing", "Foley pit"],
+    "common_mistakes": ["Mounting a lavalier where costume fabric rubs it, printing rustle onto the dialogue", "UNSAFE: not a safety item, but assuming heavy rustle can always be removed cleanly in post rather than preventing it at the source", "Performing Foley rustle with fabric that does not match the on-screen costume"],
+    "scenario_contexts": ["Hiding a lav under a stiff jacket and taming rustle with mounts and tape", "Adding cloth Foley to a scene shot silent or with a boom only", "Cleaning rustle from a lav track during dialogue editing"]
+   },
+   "sources": ["Ament, The Foley Grail (Focal Press)", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a132518c-9dd6-4621-8bc3-bc432051a430",
+   "term": "Coin movement",
+   "fields": {
+    "definition": "A Foley 'specifics'/prop sound: the clink, jingle, and rattle of coins being handled, counted, dropped, or carried, performed in sync with on-screen action. It is one of many prop-based Foley effects used to add small, character-driven detail.",
+    "plain_english": "The clink and jingle of coins being handled or dropped. A Foley artist shakes or drops coins in time with the action on screen.",
+    "purpose_function": "It gives weight and reality to small hand actions that the picture shows but the dialogue track did not capture, telling the audience money is present and being handled. Such prop details make scenes feel tactile.",
+    "practical_application": "A Foley artist uses real coins on a matching surface at the Foley stage, shaking a pocketful or dropping them onto a counter in sync with the actor's hands.",
+    "category": "Foley",
+    "related_terms": ["Props", "Cloth movement", "Footsteps", "Foley pit", "Spot effects"],
+    "common_mistakes": ["Using the wrong number or size of coins so the jingle does not match what is on screen", "Performing the handling off-sync with the actor's hand movements", "Recording coins too loud so they jump out of the scene's perspective"],
+    "scenario_contexts": ["Covering a character paying with change at a counter", "Adding a pocketful of coins jingling as someone runs", "Foleying coins being counted onto a table"]
+   },
+   "sources": ["Ament, The Foley Grail (Focal Press)", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fc7973d1-2b0b-4544-b994-435505b75071",
+   "term": "Collision sound",
+   "fields": {
+    "definition": "The impact sound created when two objects strike each other, built as a Foley or hard sound effect and synced to the moment of on-screen contact. It typically combines an initial transient with body and debris elements to convey mass and material.",
+    "plain_english": "The bang or crash when two things hit each other. In film this hit is added as an effect, timed to the moment they touch.",
+    "purpose_function": "It sells the force, weight, and material of an impact the picture shows, giving physical consequence to an action that would otherwise feel weightless. The right transient and body tell the audience how hard and how heavy the hit was.",
+    "practical_application": "A Foley artist or sound effects editor performs or layers impacts — matching materials and adding low-end or debris — and aligns the transient to the exact contact frame in the DAW.",
+    "category": "Sound Effects",
+    "related_terms": ["Hard effects", "Foley", "Transient", "Layering", "Frame accuracy"],
+    "common_mistakes": ["Placing the impact a frame or two off the visible contact so it feels disconnected", "Using a thin single sample that lacks the weight the object should have", "Reusing an obviously mismatched impact whose material does not fit the objects on screen"],
+    "scenario_contexts": ["Timing a car-crash impact to the frame of contact", "Building a punch or body impact in a fight scene", "Layering a heavy object falling and striking the floor"]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

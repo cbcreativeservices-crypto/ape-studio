@@ -1,0 +1,231 @@
+{
+ "batch": 283,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "7fbfcde3-57ed-49d8-9d52-60c9c459c359",
+   "term": "Slice marker",
+   "fields": {
+    "definition": "A slice marker is a point placed within a sampled audio file that marks where the sample is divided into separate, independently playable segments. Markers are typically set at transient onsets in a loop so each hit or note becomes its own slice.",
+    "plain_english": "A slice marker is a cut point you drop into a sound clip. It splits a loop into small pieces, so each drum hit can be played on its own.",
+    "purpose_function": "It defines the boundary of each slice so a sampler can chop a continuous recording into separately triggerable pieces, allowing tempo changes and rearrangement without pitch shifting.",
+    "practical_application": "A producer loads a drum loop into a slicing sampler, places slice markers on each transient, and maps the slices across MIDI notes or pads to rebuild or re-time the groove.",
+    "category": "Sampling",
+    "related_terms": ["Slice trigger", "Transient detection", "Sample slicing", "Loop point", "Warp marker"],
+    "common_mistakes": [
+     "Placing markers slightly after the transient, which clips off the attack of each hit.",
+     "Confusing slice markers with loop points; a marker divides audio while a loop point sets a repeating region.",
+     "Setting too many markers so quiet noise between hits becomes its own useless slice."
+    ],
+    "scenario_contexts": [
+     "Chopping a breakbeat into individual drum hits to reprogram a new pattern.",
+     "Slicing a vocal phrase so each word can be retriggered from a pad.",
+     "Preparing a loop for tempo-flexible playback in a live set."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual (Slicing)", "Native Instruments Kontakt Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "eb50c53c-2e12-4b2f-9070-ae9066aed6e4",
+   "term": "Slice trigger",
+   "fields": {
+    "definition": "A slice trigger is the event—usually a MIDI note or pad hit—that plays back one individual slice of a sliced sample. Each slice is assigned to its own trigger so the slices can be played in any order or rhythm.",
+    "plain_english": "A slice trigger is the note or pad that fires one piece of a chopped-up sound. Press it and that single slice plays. This lets you replay the pieces in any order you like.",
+    "purpose_function": "It lets each slice of a sliced loop play independently, so a performer can rearrange, re-time, or remix the original recording in real time.",
+    "practical_application": "After slicing a loop, a producer plays the slice triggers from a pad controller to build a new beat or to lock the loop to the project tempo.",
+    "category": "Sampling",
+    "related_terms": ["Slice marker", "Sample slicing", "MIDI note", "Pad controller", "One-shot"],
+    "common_mistakes": [
+     "Assuming slices always land on the intended pads; slices often need manual remapping after slicing.",
+     "Letting a slice ring too long so it bleeds into the next trigger.",
+     "Forgetting to set slice playback to one-shot, so held notes loop unexpectedly."
+    ],
+    "scenario_contexts": [
+     "Finger-drumming a sliced breakbeat on sampler pads.",
+     "Retriggering vocal chops during a live performance.",
+     "Programming slice triggers in a piano roll to reorder a melody."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual (Slicing)", "Native Instruments Maschine Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0c0ebfc1-9ad8-4223-9880-d4fd0094fb9b",
+   "term": "Soft synchronization",
+   "fields": {
+    "definition": "Soft synchronization (soft sync) is a form of oscillator synchronization in which a master oscillator only partially resets a slave oscillator—commonly restarting it only under certain phase conditions rather than on every master cycle—producing a gentler harmonic change than hard sync.",
+    "plain_english": "Soft sync links two sound oscillators, but only nudges the second one now and then instead of forcing a full restart each time. The result is a softer, less harsh tone than hard sync.",
+    "purpose_function": "It loosely locks two oscillators to create richer, moving harmonics while keeping a smoother, less aggressive sound than hard sync.",
+    "practical_application": "A sound designer selects soft sync on a synth's oscillator to add subtle harmonic movement to a pad or lead without the sharp bite of hard sync.",
+    "category": "Synthesis",
+    "related_terms": ["Oscillator sync", "Hard synchronization", "Oscillator", "Sub-oscillator", "Waveform"],
+    "common_mistakes": [
+     "Expecting the dramatic tearing sound of hard sync; soft sync is deliberately subtler.",
+     "Confusing oscillator soft sync with clock or tempo synchronization.",
+     "Assuming every synth implements soft sync identically; the behavior varies by instrument."
+    ],
+    "scenario_contexts": [
+     "Adding gentle harmonic motion to an analog-style pad.",
+     "Designing a lead that is warmer than a hard-sync patch.",
+     "Comparing soft and hard sync while shaping a bass sound."
+    ]
+   },
+   "sources": ["Sound on Sound, Synth Secrets (oscillator sync)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8237e1d8-c860-45e0-a294-e913bed86db9",
+   "term": "Software synthesizer",
+   "fields": {
+    "definition": "A software synthesizer (soft synth) is a synthesizer implemented entirely in software that generates or shapes sound through digital signal processing on a computer's CPU, running as a plug-in inside a DAW or as a standalone application rather than as dedicated hardware.",
+    "plain_english": "A software synthesizer is a synth that lives inside your computer as a program. It makes sounds with code instead of physical circuits. You play it with a MIDI keyboard through your music software.",
+    "purpose_function": "It provides the sound-generating power of a hardware synth in software form, giving flexible, recallable, and often lower-cost instruments that integrate directly with a DAW.",
+    "practical_application": "A producer loads a soft synth as a plug-in in their DAW, plays it from a MIDI controller, and saves every setting with the project for instant recall.",
+    "category": "Synthesis",
+    "related_terms": ["Virtual instrument", "Plug-in", "MIDI controller", "DAW", "Sampler"],
+    "common_mistakes": [
+     "Blaming the synth for latency that is actually caused by buffer or audio-interface settings.",
+     "Overloading the CPU by running many voices or instances without freezing tracks.",
+     "Assuming a soft synth needs no MIDI setup; it still requires a controller or programmed notes."
+    ],
+    "scenario_contexts": [
+     "Building a track using only in-the-box virtual instruments.",
+     "Recreating a classic hardware synth sound with an emulation plug-in.",
+     "Layering several soft synths for a bigger pad."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Steinberg HALion Operation Manual", "Native Instruments Massive Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0ca1f3a4-14d1-4262-b4a2-61541e244324",
+   "term": "Spiccato sample",
+   "fields": {
+    "definition": "A spiccato sample is a recording of a bowed string instrument played spiccato—a short, bouncing, off-the-string bow stroke—captured as a distinct articulation within a sample library so the crisp, detached attack can be reproduced by a sampler.",
+    "plain_english": "A spiccato sample is a recording of a string player using a bouncing bow stroke. Each note is short and springy. Sample libraries include it so you can play that lively bounce from a keyboard.",
+    "purpose_function": "It supplies the spiccato articulation to a virtual string instrument, letting composers write fast, light, detached passages that sound like a real bouncing bow.",
+    "practical_application": "A composer selects the spiccato articulation, often via a keyswitch, in a string library to play rapid, rhythmic detached lines in a film cue.",
+    "category": "Articulation",
+    "related_terms": ["Staccato sample", "Sustain sample", "String library", "Keyswitch", "Round-robin"],
+    "common_mistakes": [
+     "Confusing spiccato with staccato; spiccato is a bouncing bow stroke, staccato is a general short detached note.",
+     "Using spiccato for slow, sustained lines where it sounds unnatural.",
+     "Ignoring round-robin so repeated notes sound identically machine-gunned."
+    ],
+    "scenario_contexts": [
+     "Writing a fast, playful string ostinato in an action cue.",
+     "Keyswitching to spiccato for a light, bouncy passage.",
+     "Layering spiccato with pizzicato for extra rhythmic bite."
+    ]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Spitfire Audio Technical Documentation", "Native Instruments Kontakt Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4929d669-d1d2-43bb-bbe9-fbaaee96e3c0",
+   "term": "Staccato sample",
+   "fields": {
+    "definition": "A staccato sample is a recording of a single note played staccato—short and clearly detached from the notes around it—captured as a separate articulation in a sample library to reproduce crisp, punctuated playing.",
+    "plain_english": "A staccato sample is a recording of one short, clipped note. The note stops quickly instead of ringing on. Libraries include it so your parts can sound sharp and punchy.",
+    "purpose_function": "It gives a virtual instrument a short, detached articulation, letting players write rhythmic, punctuated lines that a sustained sample could not convincingly produce.",
+    "practical_application": "A composer keyswitches to the staccato articulation to play tight rhythmic chords or fast repeated notes in an orchestral mock-up.",
+    "category": "Articulation",
+    "related_terms": ["Spiccato sample", "Sustain sample", "String library", "Keyswitch", "Round-robin"],
+    "common_mistakes": [
+     "Assuming all staccato samples share one length; libraries often provide short and long staccato variants.",
+     "Overlapping staccato notes so the detached character is lost.",
+     "Forgetting round-robin, causing repeated notes to sound mechanically identical."
+    ],
+    "scenario_contexts": [
+     "Programming a punchy brass rhythm figure.",
+     "Playing fast repeated string notes in a mock-up.",
+     "Switching between sustain and staccato with keyswitches during a phrase."
+    ]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Spitfire Audio Technical Documentation", "Native Instruments Kontakt Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "527e36f9-40f8-49c9-b31d-5f434233f438",
+   "term": "String library",
+   "fields": {
+    "definition": "A string library is a sample-based virtual instrument containing recordings of orchestral string instruments—typically violins, violas, cellos, and double basses—captured across multiple articulations, dynamics, and often microphone positions for playback from a sampler.",
+    "plain_english": "A string library is a collection of recorded orchestral string sounds. It holds violins, violas, cellos, and basses. You play these real recordings from a keyboard to write string music on a computer.",
+    "purpose_function": "It lets composers produce realistic orchestral string parts without hiring live players, providing multiple articulations and dynamics that can be triggered from a MIDI keyboard.",
+    "practical_application": "A composer loads a string library into a sampler, chooses articulations with keyswitches, and shapes dynamics with a controller to build a mock-up of an orchestral cue.",
+    "category": "Sample Library",
+    "related_terms": ["Spiccato sample", "Staccato sample", "Sustain sample", "Keyswitch", "Sampler"],
+    "common_mistakes": [
+     "Leaving every section at full dynamics, producing a flat, unrealistic sound.",
+     "Ignoring articulation and legato scripting, so lines sound disconnected.",
+     "Loading all microphone positions at once and needlessly overloading RAM and CPU."
+    ],
+    "scenario_contexts": [
+     "Scoring a film cue with layered string sections.",
+     "Building a realistic legato melody for a demo.",
+     "Mixing close and hall mic positions to place the strings in a space."
+    ]
+   },
+   "sources": ["Spitfire Audio Technical Documentation", "Native Instruments Kontakt Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ab601a70-6e47-4404-b9d9-a582a81d4442",
+   "term": "Sub-oscillator",
+   "fields": {
+    "definition": "A sub-oscillator is a secondary oscillator in a synthesizer that produces a tone one or two octaves below the main oscillator's pitch, usually as a simple square or sine wave, added to reinforce the low end of a sound.",
+    "plain_english": "A sub-oscillator is an extra tone generator that plays one or two octaves lower than the main sound. It adds deep low end and weight. Think of it as a built-in bass booster for a synth patch.",
+    "purpose_function": "It thickens and deepens a sound by adding low-frequency energy beneath the main oscillator, giving basses and leads extra body and power.",
+    "practical_application": "A sound designer raises the sub-oscillator level on a bass patch to add weight for large systems, watching a meter to avoid overloading the low end.",
+    "category": "Synthesis",
+    "related_terms": ["Oscillator", "Soft synchronization", "Waveform", "Low-pass filter", "Detuning"],
+    "common_mistakes": [
+     "Adding too much sub level, muddying the mix and eating headroom.",
+     "Assuming the sub adds a new pitch; it tracks the main oscillator one or two octaves down.",
+     "Forgetting that small speakers cannot reproduce the sub, so it is only felt on larger systems."
+    ],
+    "scenario_contexts": [
+     "Reinforcing a bass patch for a dance track.",
+     "Adding weight to a lead so it carries a mix.",
+     "Filling the low end of a sound before mastering."
+    ]
+   },
+   "sources": ["Sound on Sound, Synth Secrets", "Moog Sub 37 User Manual", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "aabe1963-8ac7-4946-8c5d-a1f3241704e1",
+   "term": "Sustain sample",
+   "fields": {
+    "definition": "A sustain sample is a recording of a note held at a steady level, capturing the sustained body of an instrument's tone rather than a short attack, used in sample libraries to produce long, continuous notes.",
+    "plain_english": "A sustain sample is a recording of a note that is held out long. It captures the steady, ringing part of the sound. Libraries use it so you can play long, smooth notes.",
+    "purpose_function": "It provides the long, held articulation of a sampled instrument, letting players write pads, legato lines, and sustained chords that short samples cannot cover.",
+    "practical_application": "A composer uses the sustain articulation for long melodic lines and swells, shaping volume with an expression controller for realistic phrasing.",
+    "category": "Articulation",
+    "related_terms": ["Staccato sample", "Spiccato sample", "String library", "Keyswitch", "Loop point"],
+    "common_mistakes": [
+     "Bad loop points inside the sustained portion, causing an audible click or bump on long notes.",
+     "Leaving dynamics static, so held notes sound lifeless and synthetic.",
+     "Using a sustain sample for fast passages where a short articulation would fit better."
+    ],
+    "scenario_contexts": [
+     "Holding long string chords under a melody.",
+     "Playing a slow, expressive legato line.",
+     "Building an evolving pad from sustained notes."
+    ]
+   },
+   "sources": ["Spitfire Audio Technical Documentation", "Native Instruments Kontakt Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

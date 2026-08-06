@@ -1,0 +1,159 @@
+{
+ "batch": 214,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "68ce0155-3c98-46d3-bc23-4ee25b14bad6",
+   "term": "Center-channel dialogue",
+   "fields": {
+    "definition": "In multichannel film and television mixing, the practice of routing the principal spoken dialogue to the dedicated center loudspeaker channel of a surround format (e.g., 5.1 or 7.1), anchoring speech to the screen independently of the left/right music and effects channels.",
+    "plain_english": "In surround sound, the actors' voices are sent to the middle speaker behind the screen. This keeps the talking tied to the picture so every seat in the room hears it clearly.",
+    "purpose_function": "It anchors dialogue to the picture and keeps speech intelligible and stable across a wide seating area, separating voices from music and effects that live in the other channels.",
+    "practical_application": "A re-recording mixer routes edited dialogue and ADR to the center channel and rides its level against music and effects to hold intelligibility, then checks how it folds down to stereo.",
+    "category": "Surround Mixing",
+    "related_terms": ["5.1 surround", "Re-recording mix", "Dialogue stem", "Downmix", "ADR"],
+    "common_mistakes": ["Confusing the discrete center channel with a phantom center created by the left and right speakers", "Crowding the center with music or effects so dialogue loses clarity", "Not checking the stereo or LtRt downmix, where center-channel dialogue can shift in level"],
+    "scenario_contexts": ["Mixing a 5.1 theatrical soundtrack where all principal dialogue sits in the center", "Creating a broadcast television mix that must stay intelligible on a single center speaker", "Checking a stereo downmix to confirm dialogue level after collapsing the surround mix"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "ITU-R BS.775 (Multichannel stereophonic sound system)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "75dab70e-4f00-4a86-8bb5-511cea1fb41d",
+   "term": "Ceramic impact",
+   "fields": {
+    "definition": "A hard-effects or Foley element reproducing the sharp, bright, often brittle sounds of ceramic objects — such as plates, mugs, or tile — striking a surface or shattering, recorded or drawn from a library to match on-screen action.",
+    "plain_english": "This is the clink or crash a ceramic thing like a plate or mug makes when it hits something or breaks. Sound editors add it to match objects on screen.",
+    "purpose_function": "It supplies realistic hard-surface impact and breakage sounds so on-screen ceramic objects read as solid, heavy, and believable.",
+    "practical_application": "A sound-effects or Foley editor syncs a ceramic impact from a Foley pass or library to a mug set down hard or a plate smashing on the floor.",
+    "category": "Sound Effects",
+    "related_terms": ["Foley", "Hard effects", "Prop sound", "Impact", "Sound library"],
+    "common_mistakes": ["Using a glass or metal impact where the material should clearly read as ceramic", "Placing the impact slightly off the frame of contact so it feels disconnected from the picture", "Forgetting to add debris or settle sounds after a ceramic object shatters"],
+    "scenario_contexts": ["Syncing a plate smashing during a kitchen argument", "Adding the clink of a ceramic mug being set on a table in a dialogue scene", "Building a breakage effect for a fight where dishes are knocked to the floor"]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Ament, The Foley Grail"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9d4f9894-bddf-4fa5-9faa-43bd7a705be6",
+   "term": "Chair movement",
+   "fields": {
+    "definition": "A Foley or sound-effects element reproducing the sounds of a chair being moved, scraped, shifted, or sat in, performed or edited to match a character's interaction with the chair on screen.",
+    "plain_english": "These are the sounds of a chair being pushed, scraped, or sat in. A Foley artist makes them so the chair on screen sounds real.",
+    "purpose_function": "It adds physical realism to scenes where characters use furniture, grounding the action and supporting continuity when production sound is missing or unusable.",
+    "practical_application": "A Foley artist performs a chair scrape or sit to picture, and the editor trims it to hit the exact frame the character stands, sits, or drags the chair.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Prop sound", "Footsteps", "Cloth pass", "Sound effects editing"],
+    "common_mistakes": ["Using a chair sound that is the wrong material, such as metal legs on carpet where wood on tile is needed", "Missing the sync frame so the scrape lands before or after the visible move", "Overplaying the movement so subtle shifts sound exaggerated"],
+    "scenario_contexts": ["Foleying a character dragging a chair back from a table before sitting", "Covering an interrogation scene where a chair scrapes on a hard floor", "Replacing noisy production sound of a chair creak during a quiet dialogue moment"]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "881b1c71-73e3-4ab0-b9b2-fcaec76ecb37",
+   "term": "Character assignment",
+   "fields": {
+    "definition": "In dialogue editing and ADR workflow, the practice of grouping and labeling recorded lines by the character who speaks them, so each character's dialogue sits on its own track or is clearly identified for editing, mixing, and localization.",
+    "plain_english": "This means sorting each recorded line by the person who says it. Editors put each character's lines on their own track so they are easy to find and mix.",
+    "purpose_function": "It organizes dialogue so a mixer can process and balance each character consistently, and so lines can be tracked cleanly through ADR, dubbing, and delivery.",
+    "practical_application": "A dialogue editor splits a scene so each character occupies a separate track, letting the re-recording mixer apply steady EQ and level moves per voice.",
+    "category": "Dialogue Editing",
+    "related_terms": ["Dialogue editing", "ADR", "Track layout", "Dubbing", "Dialogue stem"],
+    "common_mistakes": ["Leaving two characters on one track, which forces conflicting EQ and level moves", "Mislabeling tracks so ADR and localization teams cue the wrong character", "Splitting inconsistently between scenes, breaking the mixer's track layout"],
+    "scenario_contexts": ["Laying out a dialogue scene so each speaking character has a dedicated track", "Preparing an ADR cue sheet organized by character for a session", "Building split tracks for a dubbing house working in another language"]
+   },
+   "sources": ["Purcell, Dialogue Editing for Motion Pictures", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fcecbec0-256a-46e6-8e7f-9d59af1906b6",
+   "term": "Character movement sound",
+   "fields": {
+    "definition": "Foley and sound-effects elements that represent the sounds a character makes while moving — footsteps, cloth rustle, and body movement — created and edited to match the actor's motion on screen.",
+    "plain_english": "These are the sounds a person makes while moving, like footsteps and clothes rustling. Foley artists make them to match the actor on screen.",
+    "purpose_function": "It gives characters physical presence and weight, filling gaps where production sound is missing and supporting continuity across cuts and angles.",
+    "practical_application": "A Foley team performs footsteps and cloth to picture, and the editor syncs the passes so a character's walk, turn, and gestures sound natural.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Footsteps", "Cloth pass", "Prop sound", "Sound effects editing"],
+    "common_mistakes": ["Matching footsteps to the wrong surface or shoe type", "Forgetting the cloth pass, so movement feels thin and unnatural", "Letting steps drift out of sync during long walking shots"],
+    "scenario_contexts": ["Foleying footsteps and cloth for a character walking down a hallway", "Covering body movement for a fight scene lacking usable production sound", "Adding subtle cloth and shifts for a character fidgeting during dialogue"]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d465c6be-4bf4-4b0c-b3fa-e9a2f8c934b4",
+   "term": "Character voice match",
+   "fields": {
+    "definition": "The process of matching a re-recorded or substitute voice — from ADR, dubbing, or a voice double — to an established character's vocal timbre, tone, and delivery so the replacement lines blend seamlessly with the original production dialogue.",
+    "plain_english": "This is making a new recorded voice sound like the character's real voice. The goal is for the new lines to blend in and not stand out.",
+    "purpose_function": "It preserves a character's consistent identity when lines must be replaced or translated, so the audience never notices the substitution.",
+    "practical_application": "An ADR editor or dubbing supervisor selects and coaches a voice, then matches mic, tone, and level so the new take sits invisibly against the production track.",
+    "category": "Dialogue Editing",
+    "related_terms": ["ADR", "Dubbing", "Dialogue editing", "Voice double", "Lip sync"],
+    "common_mistakes": ["Matching timbre but ignoring the room tone and mic character of the original", "Casting a voice whose age or accent does not fit the established character", "Letting the replacement level or brightness stand out from surrounding lines"],
+    "scenario_contexts": ["Recording ADR that must match an actor's on-set delivery", "Casting a dubbing actor to match a character's voice in another language", "Using a voice double to cover lines the original actor cannot re-record"]
+   },
+   "sources": ["Purcell, Dialogue Editing for Motion Pictures", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4decb662-da60-4f2c-97ff-ae330a401904",
+   "term": "Cinematic hit",
+   "fields": {
+    "definition": "A designed impact sound — a short, powerful, low-heavy stinger or 'hit' — used to punctuate a cut, title, reveal, or dramatic moment in film and trailer sound design.",
+    "plain_english": "A cinematic hit is a big, punchy boom used to mark a strong moment. You often hear it on a title card or a sharp cut in a trailer.",
+    "purpose_function": "It adds weight and emphasis at a key beat, directing the audience's attention and heightening dramatic impact.",
+    "practical_application": "A sound designer layers a low boom with a transient attack and tail, then syncs it to a title card, hard cut, or reveal for punch.",
+    "category": "Sound Design",
+    "related_terms": ["Sound design", "Stinger", "Impact", "Riser", "Sweetener"],
+    "common_mistakes": ["Making the hit so loud or low that it swamps dialogue or overloads the mix", "Overusing hits until they lose impact", "Mistiming the transient so the punch lands off the visual cut"],
+    "scenario_contexts": ["Punctuating a title card in a trailer with a heavy boom", "Emphasizing a dramatic reveal at a hard cut", "Layering a hit under a logo sting at the start of a film"]
+   },
+   "sources": ["Sonnenschein, Sound Design", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b364a73c-e973-4711-a6c9-1d179029fec2",
+   "term": "Cinematic transition",
+   "fields": {
+    "definition": "A designed sound element — such as a whoosh, riser, sweep, or reverse effect — used to bridge or smooth a cut or scene change, carrying the audience between shots or sequences.",
+    "plain_english": "This is a sound like a whoosh or sweep used to move between two scenes. It helps carry the viewer smoothly from one shot to the next.",
+    "purpose_function": "It links two moments so a cut feels intentional and fluid, and it can build or release tension as the picture changes.",
+    "practical_application": "A sound designer places a rising whoosh across a cut, aligning its peak with the new shot so the change feels driven by the sound.",
+    "category": "Sound Design",
+    "related_terms": ["Sound design", "Whoosh", "Riser", "Sweetener", "Scene change"],
+    "common_mistakes": ["Peaking the transition on the wrong frame so it fights the picture cut", "Reusing the same whoosh so often it becomes noticeable", "Letting the transition cover important dialogue at the scene change"],
+    "scenario_contexts": ["Bridging a flashback with a reverse sweep into the new scene", "Driving a fast montage with rising whooshes between shots", "Smoothing a hard cut between two locations in a trailer"]
+   },
+   "sources": ["Sonnenschein, Sound Design", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d6f645e2-e485-4a3d-a0e1-ca138757af98",
+   "term": "Click bleed",
+   "fields": {
+    "definition": "Unwanted leakage of a metronome or click track from performers' headphones into open microphones, appearing as a faint rhythmic ticking in the captured audio, most often on a scoring stage or in music recording.",
+    "plain_english": "Players often wear headphones with a click, a steady beat like a metronome. That tick can leak into the mics and show up as a faint ticking in the recording that you do not want.",
+    "purpose_function": "As an unwanted artifact, it signals a monitoring or isolation problem; recognizing it lets editors and mixers remove or avoid ticking that would otherwise intrude on the final mix.",
+    "practical_application": "An editor spots faint click bleed in a quiet passage and either muffs the guilty mic, lowers the headphone click, or notch-edits the ticks out during cleanup.",
+    "category": "Recording Artifact",
+    "related_terms": ["Click track", "Headphone bleed", "Scoring stage", "Isolation", "Spill"],
+    "common_mistakes": ["Assuming the click is inaudible when it surfaces during quiet or exposed passages", "Running the headphone click far louder than needed, increasing spill", "Using open-back headphones on the stage instead of closed-back", "Discovering the bleed only at the mix, after the session has wrapped"],
+    "scenario_contexts": ["Detecting a faint tick in a quiet solo passage on a scoring stage", "Reviewing tracked stems and hearing click leak from a vocalist's headphones", "Setting headphone levels before a session to keep the click from spilling into mics"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

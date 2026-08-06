@@ -1,0 +1,43 @@
+{
+ "expert": "Language/Communications",
+ "group": 99,
+ "reviews": [
+  {"id": "b9c1e6d3-c3a9-4f70-aa0a-516ba5f77812", "term": "Linear interpolation", "verdict": "OK", "suggestions": []},
+  {"id": "a9811690-f5d3-431b-8488-04844b8eb018", "term": "Linear predictive coding", "verdict": "OK", "suggestions": []},
+  {"id": "1349e617-8b42-468f-b0c5-2cc03d023471", "term": "LoRA fine-tuning", "verdict": "OK", "suggestions": []},
+  {"id": "592deea2-b049-4eab-9ccf-4b52a34a7825", "term": "Loudness prediction", "verdict": "OK", "suggestions": []},
+  {"id": "f3b14ffc-a1a2-410b-b34a-390c0e41f553", "term": "Low-latency inference", "verdict": "OK", "suggestions": []},
+  {"id": "756e9b05-d066-4378-bcc8-2373a068e95b", "term": "LSTM", "verdict": "OK", "suggestions": []},
+  {"id": "7605024b-2026-448a-bea8-5d74ffa3113b", "term": "MDX-Net", "verdict": "OK", "suggestions": []},
+  {"id": "af258cd2-7889-4634-9cda-ad07556a33ab", "term": "Mel-spectrogram", "verdict": "OK", "suggestions": []},
+  {"id": "794cabe2-f37e-427d-b818-fda6450bc21f", "term": "Melodyne", "verdict": "OK", "suggestions": []},
+  {"id": "573217a6-140b-41e4-86dc-4faf9e077e0a", "term": "MFCC (Mel-Frequency Cepstral Coefficients)", "verdict": "OK", "suggestions": []},
+  {"id": "364566ba-f170-4388-95c3-c96b0cd72b93", "term": "Model size / parameters", "verdict": "OK", "suggestions": []},
+  {"id": "407eec73-c77d-43ee-bcb5-f561508f45b2", "term": "Model weights", "verdict": "OK", "suggestions": []},
+  {"id": "786c339e-2e9c-4988-9dfd-750fda5ae309", "term": "Moises", "verdict": "OK", "suggestions": []},
+  {"id": "ee3506d6-97a0-4de4-b594-e9e1846e6653", "term": "Moorer reverberator", "verdict": "OK", "suggestions": []},
+  {"id": "e119a7e3-fc85-40a6-8cd5-50331da4f5a4", "term": "Neural network", "verdict": "OK", "suggestions": []},
+  {"id": "8302208a-8e02-4942-98c9-92d75b4bcafc", "term": "Noise-suppression model", "verdict": "OK", "suggestions": []},
+  {"id": "87632faf-a7d8-42d5-a3b3-1b293d35b222", "term": "NPU acceleration", "verdict": "OK", "suggestions": []},
+  {"id": "144f2102-9bca-4a8d-9551-c392550b9f08", "term": "Offline inference", "verdict": "OK", "suggestions": []},
+  {"id": "a5fd1c4a-6009-45db-b5ce-ea58862ff3a0", "term": "On-device / edge inference", "verdict": "OK", "suggestions": []},
+  {"id": "c4f13dd5-829c-41c4-9e76-97dd2d160e66", "term": "Overfitting", "verdict": "OK", "suggestions": []},
+  {"id": "9755c202-78e9-47a6-a219-fd973cb18989", "term": "Partitioned convolution", "verdict": "OK", "suggestions": []},
+  {"id": "29a4c78d-cf14-4dbd-b35f-428adc791161", "term": "Phoneme recognition", "verdict": "OK", "suggestions": []},
+  {"id": "bfba7714-ae2c-4b1f-be36-1e26e4872e14", "term": "Pitch-tracking algorithm", "verdict": "OK", "suggestions": []},
+  {"id": "b5fa589c-d05b-40fd-bd71-8db9bd8494ac", "term": "Polyphase filter", "verdict": "OK", "suggestions": []},
+  {"id": "b3b3dbf1-b93a-4f76-89ea-866380e52af8", "term": "Polyphase resampler", "verdict": "OK", "suggestions": []},
+  {"id": "4ed43b81-d626-4d0a-a6f3-a1244ec5364e", "term": "Pretraining", "verdict": "OK", "suggestions": []},
+  {"id": "029f041f-3efc-46b8-9ded-875f65b4a971", "term": "Principal component analysis", "verdict": "MINOR", "suggestions": [
+    {"field": "plain_english", "severity": "Low", "issue": "The closing analogy is awkwardly worded: \"It is like summing up a cloud of points by its longest and widest spread.\" The phrase \"summing up ... by its ... spread\" reads as a garbled/wrong-word construction and blurs the intended meaning (describing the cloud by its principal directions of spread).", "suggestion": "Rewrite as: \"It is like describing a cloud of points by its longest and widest directions of spread.\""}
+  ]},
+  {"id": "84a271a5-7ee5-4c0b-9cb1-b072f823fa03", "term": "Prompt / text conditioning", "verdict": "OK", "suggestions": []},
+  {"id": "91d0fea9-211a-4fef-acd2-091e468b3f6d", "term": "Quantization", "verdict": "OK", "suggestions": []},
+  {"id": "b1d80cb2-fa5e-461d-b673-c969a3fd29cd", "term": "Real-time inference", "verdict": "OK", "suggestions": []},
+  {"id": "6fba68fe-7c4a-49a3-8591-fe19226eaf0d", "term": "Recurrent neural network (RNN)", "verdict": "OK", "suggestions": []},
+  {"id": "33a688b8-3d95-4570-ba7a-774990ebcd6e", "term": "Recursive least squares filter", "verdict": "OK", "suggestions": []},
+  {"id": "4df37f3d-1b80-48dc-8c86-2541a4083e79", "term": "Representation learning", "verdict": "OK", "suggestions": []},
+  {"id": "daf926b0-0031-4d33-9bca-791928f9575f", "term": "Reverberation estimation", "verdict": "OK", "suggestions": []},
+  {"id": "c4010bf3-7c19-491a-b349-530895887564", "term": "RipX DeepMix", "verdict": "OK", "suggestions": []}
+ ]
+}

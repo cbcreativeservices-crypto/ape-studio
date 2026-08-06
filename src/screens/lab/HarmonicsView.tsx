@@ -98,7 +98,7 @@ import { isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../
 import { FeedbackAllowRow } from '../../features/audio/FeedbackAllowRow';
 import { guardToneLevelForEngine, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
-import { heatColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { heatColor, levelColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { EngineGate } from '../tools/EngineGate';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
@@ -213,6 +213,17 @@ const LIVE_STEPS = 8; // discrete live-heatmap color buckets (≤8 <Path>s)
 /** Intensity (0..1) → shared heat-map color. */
 function rampColor(t: number): string {
   return heatColor(t);
+}
+
+/** Model harmonic-band colour (owner 2026-08-05: "open up the gradient — it was
+ *  clustered red→orange"). Real harmonic levels sit in the top of the −60 dB
+ *  range, so mapping the FULL MIDI ramp over just the practical window
+ *  (BAND_COLOR_FLOOR_DB..0) spreads loud harmonics across blue→green→yellow→
+ *  orange→red instead of bunching them all in red/orange. */
+const BAND_COLOR_FLOOR_DB = -42;
+function bandColor(db: number): string {
+  const f = Math.max(0, Math.min(1, (db - BAND_COLOR_FLOOR_DB) / -BAND_COLOR_FLOOR_DB));
+  return levelColor(f);
 }
 
 /** Discrete live-step colors, sampled at each bucket's center — module-level
@@ -1260,15 +1271,16 @@ export function HarmonicsView({
                       width={specW}
                       height={BAND_H}
                       // ODD/EVEN highlight tints the groups apart (legend by
-                      // the toggle); otherwise the RX heat ramp by level.
+                      // the toggle); otherwise the MIDI ramp by level, opened up
+                      // over the practical window so loud harmonics still differ.
                       fill={
                         oddEvenHl
                           ? m.n % 2 === 1
                             ? colors.orange
                             : colors.blue
-                          : rampColor(m.frac)
+                          : bandColor(m.db)
                       }
-                      opacity={0.35 + 0.65 * m.frac}
+                      opacity={0.5 + 0.5 * m.frac}
                     />
                   ))}
                 </Svg>
@@ -1307,37 +1319,26 @@ export function HarmonicsView({
             ) : null}
           </View>
 
-          {/* RIGHT — spectrum slice rotated onto the shared frequency axis. */}
-          <View
-            style={styles.slicePanel}
-            onLayout={(e) => setSliceW(Math.round(e.nativeEvent.layout.width))}
-          >
-            {sliceW > 0 ? (
-              <Svg width={sliceW} height={TOP_H}>
-                {markerLines}
-                {view === 'model' ? (
-                  modelLevels.map((m) => (
-                    <Rect
-                      key={m.n}
-                      x={0}
-                      y={m.y - BAND_H / 2}
-                      width={Math.max(2, m.frac * (sliceW - 2))}
-                      height={BAND_H}
-                      fill={
-                        oddEvenHl
-                          ? m.n % 2 === 1
-                            ? colors.orange
-                            : colors.blue
-                          : rampColor(m.frac)
-                      }
-                    />
-                  ))
-                ) : liveSlicePath !== '' ? (
-                  <Path d={liveSlicePath} stroke={colors.greenBright} strokeWidth={1.5} fill="none" />
-                ) : null}
-              </Svg>
-            ) : null}
-          </View>
+          {/* RIGHT — spectrum slice (LIVE only). The model view no longer draws
+              horizontal level bars here: level now reads from the band/stem
+              COLOUR (MIDI ramp), so the bars were redundant and confusing
+              (owner 2026-08-05). The rotated spectrum-slice curve is a real
+              live readout, so it stays in REAL SIGNAL mode. */}
+          {view === 'live' ? (
+            <View
+              style={styles.slicePanel}
+              onLayout={(e) => setSliceW(Math.round(e.nativeEvent.layout.width))}
+            >
+              {sliceW > 0 ? (
+                <Svg width={sliceW} height={TOP_H}>
+                  {markerLines}
+                  {liveSlicePath !== '' ? (
+                    <Path d={liveSlicePath} stroke={colors.greenBright} strokeWidth={1.5} fill="none" />
+                  ) : null}
+                </Svg>
+              ) : null}
+            </View>
+          ) : null}
 
           {/* FAR RIGHT — piano-key gutter (LOG axis only; display-only). */}
           {axis === 'log' ? <View style={styles.pianoGutter}>{pianoSvg}</View> : null}
@@ -1352,9 +1353,11 @@ export function HarmonicsView({
               ? 'time → (visual sweep)'
               : `time → ~${trim(((HIST_COLS * SPEC_POLL_MS) / 1000).toFixed(1))} s`}
           </Text>
-          <Text style={[styles.axisText, styles.axisTextRight, { flex: 1 }]}>
-            {view === 'model' ? `${MODEL_FLOOR_DB} → 0 dB` : 'level →'}
-          </Text>
+          {/* Level caption belongs to the slice panel, which model mode no
+              longer shows (owner 2026-08-05). */}
+          {view === 'live' ? (
+            <Text style={[styles.axisText, styles.axisTextRight, { flex: 1 }]}>level →</Text>
+          ) : null}
           {axis === 'log' ? <View style={{ width: PIANO_W + 4 }} /> : null}
         </View>
 

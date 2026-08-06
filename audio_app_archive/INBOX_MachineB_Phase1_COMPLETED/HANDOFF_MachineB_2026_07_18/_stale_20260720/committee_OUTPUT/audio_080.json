@@ -1,0 +1,28 @@
+{
+ "expert": "Audio Technical",
+ "group": 80,
+ "reviews": [
+  {"id":"3dff5d4d-a186-4e77-91bf-5c1a0b2afd78","term":"Resonant decay","verdict":"OK","suggestions":[]},
+  {"id":"e5ab24ad-41e0-4289-bdd9-e1cb551ce9ab","term":"Ricochet bowing","verdict":"OK","suggestions":[]},
+  {"id":"c048f3d1-f372-417d-85c8-af8aff3a6c66","term":"Rim click","verdict":"OK","suggestions":[]},
+  {"id":"e5c8ed4b-edcb-4239-bfaf-1efede89a3ff","term":"Rim resonance","verdict":"OK","suggestions":[]},
+  {"id":"4ba7cba2-095a-439c-846c-6288aa46ae06","term":"Rim ring","verdict":"OK","suggestions":[]},
+  {"id":"4ff4e290-122e-44df-9033-bd70a3b7b399","term":"Rimshot","verdict":"OK","suggestions":[]},
+  {"id":"3eb431e6-3f6e-45c4-8407-3f6551cf03bf","term":"Ring","verdict":"OK","suggestions":[]},
+  {"id":"0eaeac98-07ce-442d-a424-055790e5672c","term":"ringy","verdict":"OK","suggestions":[]},
+  {"id":"7e3e6f74-c828-4dc2-9930-98a7118406dd","term":"Rosin noise","verdict":"OK","suggestions":[]},
+  {"id":"19fad014-cd51-4bf6-8390-8e8bdce106ed","term":"Rotor acceleration","verdict":"OK","suggestions":[]},
+  {"id":"c312984d-62e8-42a6-a63a-19dde503fb41","term":"Rotor deceleration","verdict":"OK","suggestions":[]},
+  {"id":"22d1fed2-d098-47f5-bb2f-43e0a9444455","term":"Rotor noise","verdict":"OK","suggestions":[]},
+  {"id":"19074d3e-ebfa-4d3f-8fd0-95b97aec9710","term":"Rustle","verdict":"OK","suggestions":[]},
+  {"id":"dbd60971-4e79-4b0f-8da6-2e366e2c6cfe","term":"Saddle buzz","verdict":"OK","suggestions":[]},
+  {"id":"18b12d1e-266b-493d-99e1-df1de035990d","term":"Scratch tone","verdict":"OK","suggestions":[]},
+  {"id":"8be75fe7-810c-4f54-a0e5-9b445dce836b","term":"Screw buzz","verdict":"OK","suggestions":[]},
+  {"id":"a86cc658-d362-42b2-b219-0f141af83265","term":"Semi-open wash","verdict":"OK","suggestions":[]},
+  {"id":"dd13752f-a602-4de4-8564-0003f0a5bd02","term":"Shake","verdict":"OK","suggestions":[]},
+  {"id":"d2ee84e1-0fc0-4e5e-a722-f194422892e9","term":"Shell hit","verdict":"MINOR","suggestions":[{"field":"related_terms","severity":"Low","issue":"The related_term \"Rimclick\" does not match the actual glossary entry, which is titled \"Rim click\" (two words, id c048f3d1). As written the cross-reference will not resolve to the existing entry.","suggestion":"Change \"Rimclick\" to \"Rim click\" to match the existing glossary entry."}]},
+  {"id":"762dd64c-5753-4d19-9ed1-91d24c5111c4","term":"Shell resonance","verdict":"OK","suggestions":[]},
+  {"id":"277389b4-6c1a-4dbd-9bd9-12600c5bf011","term":"Shell tone","verdict":"OK","suggestions":[]},
+  {"id":"191c1fec-f7f4-4434-a7f3-f09f9762bb98","term":"Shimmer","verdict":"OK","suggestions":[]}
+ ]
+}

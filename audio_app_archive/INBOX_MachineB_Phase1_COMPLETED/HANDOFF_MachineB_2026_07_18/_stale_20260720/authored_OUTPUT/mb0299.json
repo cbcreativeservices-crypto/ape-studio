@@ -1,0 +1,181 @@
+{
+ "batch": 299,
+ "topic": "Filters, Envelopes & Modulation",
+ "authored": [
+  {
+   "id": "3d7ad23b-b01e-4596-afab-eaddba173b31",
+   "term": "Envelope click",
+   "fields": {
+    "definition": "An audible click or transient artifact produced when an envelope generator changes a signal's level too abruptly, creating a step discontinuity in the waveform. It typically occurs with a near-instantaneous attack or release, or when a note is gated on or off at a non-zero point in the cycle.",
+    "plain_english": "An envelope click is a short popping sound. It happens when a note's volume jumps up or down too fast for the speaker to follow it smoothly, leaving a tiny step in the wave that you hear as a click.",
+    "purpose_function": "The term names a discontinuity created by envelope shaping so technicians can recognise it; a click signals that an attack or release stage is too fast for the signal to settle, which is fixed by adding a short fade ramp.",
+    "practical_application": "When a synth or sampler clicks on every note, a technician lengthens the attack or release by a few milliseconds, or enables the instrument's click-reduction or zero-crossing option, to smooth the transition.",
+    "category": "Envelopes",
+    "related_terms": [
+     "ADSR envelope",
+     "Attack time",
+     "Release time",
+     "Zero-crossing",
+     "Zipper noise"
+    ],
+    "common_mistakes": [
+     "Setting attack and release to zero and assuming the sound stays clean, when instant level jumps cause clicks",
+     "Blaming the oscillator, a cable, or a fault for a click that actually comes from envelope timing",
+     "Confusing an intentional percussive transient with an unwanted envelope click"
+    ],
+    "scenario_contexts": [
+     "A bass patch with instant attack clicks on every note during a live set",
+     "Gating a pad on and off in a DAW produces pops at each edit point",
+     "A sampler clicks when its loop points or note-offs land at non-zero waveform values"
+    ]
+   },
+   "sources": [
+    "Roads, The Computer Music Tutorial (MIT Press)",
+    "Sound on Sound, Synth Secrets (Gordon Reid)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "640679b1-9787-4a9b-b2b8-0cbc1ab7f1fa",
+   "term": "Filter resonance",
+   "fields": {
+    "definition": "Filter resonance is a boost in level applied to frequencies near a filter's cutoff frequency, created by feedback within the filter. Raising resonance (often labelled Q) narrows and emphasises that band, and at high settings the filter can self-oscillate into a sine-like tone.",
+    "plain_english": "Resonance makes the frequencies right around the filter's cutoff point louder, adding a sharp, ringing peak. Turn it up too far and the filter starts to whistle a tone all by itself.",
+    "purpose_function": "It lets a designer emphasise a chosen frequency band and add character or bite to a filter, especially during a sweep; it exists because feedback around the cutoff shapes the timbre far more than a plain filter slope alone.",
+    "practical_application": "A synth player raises resonance while sweeping the cutoff to create classic squelchy, vocal, or wah-like movement in a lead or bass, while watching for harsh peaks or self-oscillation that could overload a channel.",
+    "category": "Filters",
+    "related_terms": [
+     "Cutoff frequency",
+     "Q factor",
+     "Low-pass filter",
+     "Self-oscillation",
+     "Filter sweep",
+     "Modulation sweep"
+    ],
+    "common_mistakes": [
+     "Confusing the resonance (Q) control with the cutoff frequency control",
+     "UNSAFE: pushing resonance into self-oscillation at high output can produce a loud sustained tone that risks hearing damage and driver stress",
+     "Assuming more resonance always sounds better, when it can create harsh, thin, or unstable peaks",
+     "Not allowing for the level boost resonance adds near cutoff, causing clipping"
+    ],
+    "scenario_contexts": [
+     "Dialing a squelchy acid bassline by combining high resonance with a moving cutoff",
+     "Using a resonant peak to make a filter sweep more dramatic in a build-up",
+     "A resonant filter self-oscillating and used as a tunable sine source"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Roads, The Computer Music Tutorial (MIT Press)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ce79526c-e430-4eb1-8c7e-16dcd4046b84",
+   "term": "FM modulation",
+   "fields": {
+    "definition": "Frequency modulation (FM) is the varying of a carrier signal's instantaneous frequency in proportion to a modulating signal. In synthesis, when the modulator runs at audio rate it generates sidebands spaced around the carrier, producing rich, often inharmonic tones from a small number of oscillators (operators).",
+    "plain_english": "In FM, one wave keeps speeding up and slowing down another wave very fast. This adds many new tones, so you can build bright, bell-like, or metallic sounds from just a few simple waves.",
+    "purpose_function": "FM exists to generate complex, evolving spectra efficiently; a few operators can produce sounds such as bells, electric pianos, and gritty basses that would need many oscillators with other methods.",
+    "practical_application": "A sound designer programs FM by choosing operator frequency ratios and modulation depth (index) to shape the harmonics, as on Yamaha DX-series hardware or modern FM plug-ins, to build electric pianos, bells, and aggressive basses.",
+    "category": "Synthesis",
+    "related_terms": [
+     "Carrier",
+     "Modulator",
+     "Modulation index",
+     "Operator",
+     "Sidebands",
+     "LFO wobble"
+    ],
+    "common_mistakes": [
+     "Confusing audio-rate FM synthesis with slow LFO vibrato, which is also frequency modulation but stays sub-audio",
+     "Assuming operator ratios do not matter, when they set whether the result is harmonic or clangorous",
+     "Expecting FM to behave like subtractive synthesis and reaching for a filter instead of adjusting the modulation index"
+    ],
+    "scenario_contexts": [
+     "Programming a DX7-style electric piano by tuning operator ratios and envelopes",
+     "Adding a modulator at audio rate to an oscillator to create metallic bell tones",
+     "Using cross-modulation between two oscillators to make aggressive bass timbres"
+    ]
+   },
+   "sources": [
+    "Chowning, The Synthesis of Complex Audio Spectra by Means of Frequency Modulation, JAES 21(7), 1973 (AES)",
+    "Roads, The Computer Music Tutorial (MIT Press)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d24d49a0-11a0-4c1c-a915-c6cbcd03a86a",
+   "term": "LFO wobble",
+   "fields": {
+    "definition": "LFO wobble is the pulsing, undulating change in timbre or level produced when a low-frequency oscillator (LFO) modulates a parameter, most often filter cutoff, at a sub-audio rate. Syncing the LFO to tempo produces the rhythmic 'wobble bass' associated with dubstep and related styles.",
+    "plain_english": "A wobble is that pulsing, throbbing sound you hear when a slow control wave opens and closes a filter over and over. Matching its speed to the beat gives you the classic dubstep wobble bass.",
+    "purpose_function": "It turns a static tone into rhythmic, moving texture; the LFO automates repeated parameter changes so the sound pulses in time without the player moving a control by hand.",
+    "practical_application": "A producer routes a tempo-synced LFO to a low-pass filter's cutoff and adjusts the rate and depth to make a bass patch wobble in time with the track, often switching LFO rates from section to section.",
+    "category": "Modulation",
+    "related_terms": [
+     "LFO",
+     "Low-pass filter",
+     "Cutoff frequency",
+     "Modulation depth",
+     "Tempo sync",
+     "Filter resonance"
+    ],
+    "common_mistakes": [
+     "Leaving the LFO free-running so the wobble drifts out of time with the beat",
+     "Setting LFO depth so high the filter fully closes and the sound drops out",
+     "Confusing LFO wobble (sub-audio modulation) with FM, where the modulator runs at audio rate"
+    ],
+    "scenario_contexts": [
+     "Building a dubstep wobble bass with a tempo-synced LFO on filter cutoff",
+     "Adding slow LFO movement to a pad so it breathes over time",
+     "Assigning different LFO rates to a mod wheel to perform wobble changes live"
+    ]
+   },
+   "sources": [
+    "Sound on Sound, Synth Secrets (Gordon Reid)",
+    "Roads, The Computer Music Tutorial (MIT Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e41800e6-5cf3-4749-8994-a91842febc29",
+   "term": "Modulation sweep",
+   "fields": {
+    "definition": "A modulation sweep is a continuous, gradual change of a parameter over time driven by a modulation source such as an envelope, LFO, or manual control. The most common example is a filter sweep, where cutoff frequency moves smoothly across the spectrum.",
+    "plain_english": "A modulation sweep is a smooth, gliding change to a control, like slowly opening a filter from dark to bright. It is the rising or falling movement you hear in build-ups and transitions.",
+    "purpose_function": "It adds motion and tension by changing a setting gradually rather than in one step; sweeps are a core way to create build-ups, transitions, and evolving textures.",
+    "practical_application": "An engineer automates a control, or uses an envelope or LFO, to sweep filter cutoff or another parameter upward through a build, then resets it at the drop, to shape energy across a song section.",
+    "category": "Modulation",
+    "related_terms": [
+     "Filter sweep",
+     "Cutoff frequency",
+     "ADSR envelope",
+     "LFO",
+     "Automation",
+     "Filter resonance"
+    ],
+    "common_mistakes": [
+     "Sweeping too fast, so the movement sounds like a click or jump instead of a smooth glide",
+     "Forgetting that resonance greatly changes how a filter sweep sounds",
+     "Confusing a one-time envelope sweep with a repeating LFO cycle"
+    ],
+    "scenario_contexts": [
+     "Automating a filter cutoff sweep to build tension before a drop",
+     "Using an envelope to sweep pitch or cutoff at the start of each note",
+     "Sweeping a phaser or wah parameter across a guitar solo"
+    ]
+   },
+   "sources": [
+    "Sound on Sound, Synth Secrets (Gordon Reid)",
+    "Roads, The Computer Music Tutorial (MIT Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

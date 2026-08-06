@@ -1,0 +1,39 @@
+{
+  "expert": "AUDIO TECHNICAL EXPERT",
+  "group": 1,
+  "reviews": [
+    { "id": "bb121575-2887-4738-b7c0-4a7b037d6383", "term": "Class G", "verdict": "OK", "suggestions": [] },
+    {
+      "id": "cbbea526-411a-4597-b01f-0760a537a260",
+      "term": "Class H",
+      "verdict": "MINOR",
+      "suggestions": [
+        {
+          "field": "common_mistakes",
+          "severity": "Medium",
+          "issue": "The mistake 'Assuming Class H needs an SMPS; rail tracking can also be done with a multi-tap linear supply' is internally inconsistent with this entry's own definition. The entry defines Class H as CONTINUOUS rail modulation/tracking, but a multi-tap (tapped-transformer) supply produces DISCRETE stepped rails — which by this glossary's own convention is Class G, not continuous Class H tracking. As written it risks conflating the two topologies the entry is trying to distinguish. (Note the real-world terminology split: many pro-audio makers label stepped multi-rail amps 'Class H', but that contradicts the continuous-tracking definition used here.)",
+          "suggestion": "Reword to: 'Assuming Class H must use an SMPS — the rail-modulator/tracking supply can be fed from a linear supply too; the defining feature is that the rail is varied continuously, not the supply type.' Drop the 'multi-tap' phrasing, since tap switching yields discrete steps (Class G in this glossary's usage) rather than continuous tracking."
+        }
+      ]
+    },
+    { "id": "a5b4946e-ffe4-4096-bcaf-71f44ad230a3", "term": "Crossover Distortion", "verdict": "OK", "suggestions": [] },
+    { "id": "a8290d76-c665-4670-9b20-1f10f006367d", "term": "Quiescent Current", "verdict": "OK", "suggestions": [] },
+    { "id": "fe06ef1a-1cfe-4e05-83b6-69f0c32f7f9e", "term": "Rail Voltage", "verdict": "OK", "suggestions": [] },
+    { "id": "350edfe9-82d8-4201-b14f-7325fc5e9523", "term": "Switch-Mode Power Supply (SMPS)", "verdict": "OK", "suggestions": [] },
+    { "id": "76c06f85-266e-4dfd-87c5-c307b1bc879d", "term": "Toroidal Transformer", "verdict": "OK", "suggestions": [] },
+    { "id": "af3b82bf-d089-4fde-b6cb-2a7ad630897f", "term": "Backline", "verdict": "OK", "suggestions": [] },
+    { "id": "82436f8b-520a-4f97-b546-6d86a5331df2", "term": "Cable Management", "verdict": "OK", "suggestions": [] },
+    { "id": "6304386f-e7fb-454d-b746-3a77f4df8537", "term": "Downstage", "verdict": "OK", "suggestions": [] },
+    { "id": "06322674-a960-47ae-a085-2cb4b1f3a83b", "term": "Load-In", "verdict": "OK", "suggestions": [] },
+    { "id": "678d1904-9176-4211-bcd0-42a7a901bd90", "term": "Load-Out", "verdict": "OK", "suggestions": [] },
+    { "id": "a82d4d61-1298-4668-b930-ac09db089fde", "term": "Monitor World", "verdict": "OK", "suggestions": [] },
+    { "id": "218820da-38c6-41ec-adf1-aee97c8c73c3", "term": "Production Advance", "verdict": "OK", "suggestions": [] },
+    { "id": "50f64a99-aa14-4a04-a74f-56da3ebf61aa", "term": "Spike Mark", "verdict": "OK", "suggestions": [] },
+    { "id": "7588c2bf-7cb5-40a0-bfa1-f6c397ee4327", "term": "Stage Left / Stage Right", "verdict": "OK", "suggestions": [] },
+    { "id": "f702b12a-dfb8-471d-b0e1-6c66491a83b8", "term": "Strike", "verdict": "OK", "suggestions": [] },
+    { "id": "1cd1e29e-8dfd-458e-96cf-5799b8dc09d0", "term": "Tech Rider", "verdict": "OK", "suggestions": [] },
+    { "id": "f5788783-c0d6-4a24-9086-548de6e2873f", "term": "Upstage", "verdict": "OK", "suggestions": [] },
+    { "id": "0457cbbb-178c-456d-96e8-6202fb369425", "term": "Auracast", "verdict": "OK", "suggestions": [] },
+    { "id": "c9b2f81a-b99b-47d8-aec7-1c5db19ba8a9", "term": "Closed Captioning", "verdict": "OK", "suggestions": [] }
+  ]
+}

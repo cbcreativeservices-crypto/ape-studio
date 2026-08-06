@@ -1,0 +1,56 @@
+{
+ "batch": 431,
+ "topic": "Live Sound — FOH Mixing Workflow",
+ "terms": [
+  {
+   "id": "d29b20db-374a-47a4-a7f3-f325e30e062c",
+   "term": "System tuning (PA tuning)",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "seq": 1970,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "5f2dd7e1-71e0-4ed2-9e28-e96ca046c512",
+   "term": "Top of show",
+   "topic": "Live Sound — FOH Mixing Workflow",
+   "seq": 1970,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

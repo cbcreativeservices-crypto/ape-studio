@@ -1,0 +1,112 @@
+{
+ "packet": "add_04_radio_dayparts.json",
+ "group": "Radio \u2014 Dayparts",
+ "primary_topic": "Broadcast / Radio Production & Air Chain",
+ "difficulty": "beginner",
+ "terms": [
+  {
+   "id": "4bfed1dc-b151-4a70-bf0f-c180998fbfa6",
+   "term": "Drive Time",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "beginner",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "60cdf5b0-5f6f-49bf-bd77-ad81cc0a4fa0",
+   "term": "Graveyard Shift",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "beginner",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "f260c473-4485-424b-8256-1b1b1a7a6760",
+   "term": "Morning Drive",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "beginner",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "b51547d3-489c-4636-947f-e31eac39a5c8",
+   "term": "Power Hour",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "beginner",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

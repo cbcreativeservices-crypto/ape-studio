@@ -1,0 +1,81 @@
+{
+ "batch": 398,
+ "topic": "Audio Restoration & Archival",
+ "terms": [
+  {
+   "id": "8f70dee9-51de-4a33-9e1f-f5055060d441",
+   "term": "Submission information package",
+   "topic": "Audio Restoration & Archival",
+   "seq": 1800,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "3260cadd-793d-4277-8beb-47abaab3d3fa",
+   "term": "Technical metadata",
+   "topic": "Audio Restoration & Archival",
+   "seq": 1800,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "1a080d27-519a-447d-9fb8-ea30e95b4190",
+   "term": "Trusted digital repository",
+   "topic": "Audio Restoration & Archival",
+   "seq": 1800,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 193,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "ae5f1d02-4de9-4684-9877-ae6004c538c7",
+   "term": "Broadcast operations center",
+   "fields": {
+    "definition": "A centralized, staffed facility within a broadcast plant where program signals are monitored, switched, quality-checked, and routed toward transmitters or distribution links. It acts as the master control point supervising the on-air output of one or more stations or channels.",
+    "plain_english": "It is the control hub of a radio or TV station. Staff there watch every signal on its way to air and switch sources so the right show goes out cleanly and on time.",
+    "purpose_function": "It gives a facility one central point to supervise, switch, and route all on-air signals, so faults are caught early and programming reaches the transmitter reliably. It exists to protect the continuity and quality of what listeners and viewers receive.",
+    "practical_application": "A technician staffs the operations center to watch meters and off-air confidence feeds, switch between program sources, and respond to alarms or loss of signal before it affects air. During live events they coordinate feeds, backups, and hand-offs between studios and remote sites.",
+    "category": "Broadcast Facility",
+    "related_terms": ["Broadcast routing system", "Broadcast signal chain", "Broadcast playout system", "Broadcast scheduler", "Broadcast production room"],
+    "common_mistakes": ["Confusing the operations center with a single on-air studio; it is the master control and monitoring point, not the talk studio", "Assuming automation removes the need for staffing; operators must still monitor alarms and take manual action on signal loss", "Overlooking backup and failover paths, so a single fault takes the station off air"],
+    "scenario_contexts": ["An operator switches from network programming to a local break and back at scheduled times", "Staff detect a dead-air alarm on a confidence monitor and switch to a backup source", "During severe weather, the center inserts emergency alert audio and coordinates feeds across multiple stations"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f50cc3a0-c60b-4c46-a525-f2889908190c",
+   "term": "Broadcast playlist engine",
+   "fields": {
+    "definition": "The software component of a radio automation system that manages and sequences the ordered list of audio elements, such as songs, commercials, jingles, and voice tracks, for playback. It resolves the playlist into a timed sequence and passes each item to the playout system in turn.",
+    "plain_english": "This is the software brain that lines up songs, ads, and jingles in the right order. It feeds that list to the system that plays them on air, one item after another.",
+    "purpose_function": "It exists to turn a scheduled log of content into a reliable, correctly ordered stream of playback events, handling transitions, overlaps, and timing between elements. This automates continuous programming without an operator starting each item by hand.",
+    "practical_application": "An operator or programmer builds or edits the playlist, and the engine cues, times, and triggers each element into the on-air chain. Technicians troubleshoot it when items play out of order, fail to load, or overlap incorrectly.",
+    "category": "Broadcast Automation",
+    "related_terms": ["Broadcast playout system", "Broadcast scheduler", "Broadcast recording log", "Broadcast signal chain", "Broadcast operations center"],
+    "common_mistakes": ["Confusing the playlist engine with the playout hardware; the engine orders and cues content while the playout system reproduces the audio", "Assuming the engine creates the schedule itself, when it usually executes a log built by a separate scheduler", "Ignoring segue and crossfade settings, which causes gaps or clashing overlaps between elements"],
+    "scenario_contexts": ["An automated overnight music block plays songs, station IDs, and spots in sequence with no operator present", "A voice-tracked show interleaves pre-recorded host segments between songs at the right points", "An operator inserts a live break into the running playlist and the engine resumes the sequence afterward"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ea448cc0-93a0-44cb-af93-9322f55eea7b",
+   "term": "Broadcast playout system",
+   "fields": {
+    "definition": "The combined hardware and software system that reproduces scheduled audio or video content to air, typically a playout server driven by automation. It plays each logged element on cue and delivers it into the station's on-air signal chain.",
+    "plain_english": "This is the gear and software that actually plays scheduled audio on air. Think of it as an automatic DJ that starts each track and ad at the planned moment.",
+    "purpose_function": "It exists to store program material and play it out accurately and on time, so a station can run continuous, scheduled output with minimal manual operation. It bridges the content library and the transmission chain.",
+    "practical_application": "Technicians load or ingest media into the playout server, verify that scheduled items are present, and monitor that each plays at the correct time and level. When an item is missing or corrupt they replace it before it reaches air.",
+    "category": "Broadcast Automation",
+    "related_terms": ["Broadcast playlist engine", "Broadcast scheduler", "Broadcast signal chain", "Broadcast operations center", "Broadcast recording log"],
+    "common_mistakes": ["Treating playout and scheduling as the same thing; the playout system reproduces content that a scheduler and playlist engine have already ordered", "Failing to confirm that scheduled media files are actually ingested, leading to missing-file dead air", "Neglecting redundancy, so a single server failure interrupts the entire air output"],
+    "scenario_contexts": ["A radio station runs unattended for hours as the playout server airs logged music and spots", "A missing commercial audio file triggers an alarm and the operator loads a replacement", "A backup playout server automatically takes over when the primary fails during a live shift"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "EBU technical publications on playout and automation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7e54e7fc-2500-44a9-8794-0bbc0fd18294",
+   "term": "Broadcast production room",
+   "fields": {
+    "definition": "A studio room used to create and record broadcast content such as commercials, promos, imaging, and pre-recorded segments, separate from the live on-air studio. It is equipped with a console, microphones, monitors, and recording or editing tools for offline production.",
+    "plain_english": "This is a studio used to make and record station content like ads and promos. It keeps that work separate from the room that is live on air.",
+    "purpose_function": "It exists to give staff a dedicated space for producing and editing material without tying up or risking the on-air studio. This lets production continue while the station stays live from another room.",
+    "practical_application": "A producer records voiceovers, mixes commercials, and edits segments in the production room, then files the finished audio for scheduling and playout. Technicians maintain its console, mics, and monitoring to match on-air quality standards.",
+    "category": "Broadcast Facility",
+    "related_terms": ["Broadcast room microphone", "Broadcast operations center", "Broadcast recording log", "Broadcast playout system", "Broadcast signal chain"],
+    "common_mistakes": ["Confusing the production room with the on-air studio; production work is offline and does not feed the transmitter directly", "Monitoring at inconsistent levels, so produced audio sounds too loud or quiet once aired", "Failing to label and file finished audio correctly, causing the wrong version to reach the log"],
+    "scenario_contexts": ["A producer records and mixes a 30-second commercial for later scheduling", "A host tracks pre-recorded show segments while another host is live on air", "Station imaging and promos are edited and mastered before being added to the playout library"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "50a19c56-4d87-431c-9200-ce74570b28b6",
+   "term": "Broadcast recording log",
+   "fields": {
+    "definition": "A documented record of material recorded or aired by a station, listing each element with its time, source, and identifying details. It commonly serves as an as-run record used to confirm that programming and commercials aired as scheduled and to meet regulatory and billing requirements.",
+    "plain_english": "This is a record of what actually aired and when. Stations keep it to prove that ads and shows ran as planned and to meet legal rules.",
+    "purpose_function": "It exists to provide an accurate, timed account of what was broadcast or recorded, supporting verification, billing, copyright reporting, and regulatory compliance. It gives the station proof and a reference for reconciling the planned log against actual output.",
+    "practical_application": "Staff generate the log automatically from the playout system or complete it manually, then reconcile it against the planned schedule to confirm spots and programs ran. It is used to bill advertisers, report music usage, and answer regulatory or client queries.",
+    "category": "Broadcast Documentation",
+    "related_terms": ["Broadcast scheduler", "Broadcast playout system", "Broadcast playlist engine", "Broadcast operations center", "Broadcast production room"],
+    "common_mistakes": ["Confusing the planned schedule with the as-run log; the recording log documents what actually aired, not just what was intended", "Assuming automated logs never need review, when discrepancies from aborts or manual overrides must be reconciled", "Failing to retain logs for the required period, creating compliance and billing gaps"],
+    "scenario_contexts": ["Traffic staff reconcile the as-run log to confirm a paid commercial aired before invoicing the client", "A station uses logs to report music performances for royalty accounting", "An engineer reviews the log to trace when and why a program element failed to air"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ed1f2b73-3e89-4b94-b6d3-31fb845f295d",
+   "term": "Broadcast room microphone",
+   "fields": {
+    "definition": "A microphone used in a broadcast studio to capture the voice of an announcer, host, or guest for on-air or recorded use. These are typically large-diaphragm dynamic or condenser models chosen for a warm, close voice sound with good rejection of room noise and handling of plosives.",
+    "plain_english": "This is the mic a host or announcer talks into in a studio. It is built to capture a clear, close voice while ignoring room noise.",
+    "purpose_function": "It exists to reproduce speech cleanly and consistently at close range, giving the polished, intelligible vocal sound expected on air. Its directional pattern and internal shielding help reject background noise and studio reflections.",
+    "practical_application": "A technician mounts the mic on a boom arm with a shock mount and pop filter, sets gain for consistent speech level, and positions it a hand's width from the presenter. Common studio choices include cardioid dynamics such as the Shure SM7B and Electro-Voice RE20.",
+    "category": "Broadcast Equipment",
+    "related_terms": ["Broadcast production room", "Broadcast signal chain", "Broadcast operations center", "Broadcast routing system", "Broadcast recording log"],
+    "common_mistakes": ["Placing the mic too far away, which raises room noise and forces excess gain and hiss", "Skipping the pop filter or off-axis angle, so plosive blasts distort the voice", "Assuming any mic pattern works; an omnidirectional mic in a live studio picks up too much room and monitor spill"],
+    "scenario_contexts": ["A morning show host speaks into a boom-mounted dynamic mic during a live segment", "A guest is set up with a matched second mic positioned and gained to sit level with the host", "A producer records a voiceover in the production room using the same broadcast-grade mic chain"]
+   },
+   "sources": ["Shure technical documentation (SM7B)", "Electro-Voice technical documentation (RE20)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dbfcdb85-6567-4c6f-ae29-a0cef5655c49",
+   "term": "Broadcast routing system",
+   "fields": {
+    "definition": "A signal routing system, typically a router or matrix switcher, that connects any of many audio or video sources to any of many destinations within a broadcast facility. It lets operators select which source feeds each output, such as studios, recorders, monitoring, or the air chain.",
+    "plain_english": "This is the switchboard for audio and video signals in a station. It sends any source, such as a studio or a feed, to any destination, such as the air chain or a recorder.",
+    "purpose_function": "It exists to flexibly and reliably interconnect the many sources and destinations in a facility without repatching cables by hand. This lets staff reconfigure signal flow quickly for different shows, feeds, and failover situations.",
+    "practical_application": "An operator selects source-to-destination crosspoints from a control panel or software to route a studio to air, send a feed to a recorder, or reroute around a fault. Technicians configure and label the router and verify that salvo or preset routes fire correctly.",
+    "category": "Broadcast Infrastructure",
+    "related_terms": ["Broadcast operations center", "Broadcast signal chain", "Broadcast playout system", "Broadcast room microphone", "Broadcast scheduler"],
+    "common_mistakes": ["Confusing a router with a mixer; a router selects and switches whole signals while a mixer combines and blends them", "Mislabeling sources or destinations, so an operator routes the wrong feed to air", "Forgetting that a single crosspoint change can take a studio off air if made on the wrong destination"],
+    "scenario_contexts": ["An operator routes the active studio to the air chain at the start of a shift", "A network feed is switched from the router to a recorder for later playback", "During a fault, staff reroute program audio around a failed processor using a preset salvo"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "SMPTE and EBU technical publications on broadcast routing"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "509f3a72-5305-4006-b70a-60be47fec49d",
+   "term": "Broadcast scheduler",
+   "fields": {
+    "definition": "Software that plans and orders programming and content into a timed broadcast schedule or log, covering elements such as music, programs, commercials, and station imaging. It applies rules and clocks to build the sequence that the playlist engine and playout system then execute.",
+    "plain_english": "This is software that plans what airs and when. It builds the daily lineup of shows, songs, and ads that the playout system then runs.",
+    "purpose_function": "It exists to translate programming policy, format clocks, and advertising sales into a structured, rule-checked log for each broadcast day. This ensures content airs in the right order, spacing, and rotation without manual list-building.",
+    "practical_application": "A music or traffic scheduler sets rotation rules, clocks, and separation constraints, then generates the daily log and hands it to automation. Staff edit the schedule for live shows, breaking news, or last-minute spot changes.",
+    "category": "Broadcast Automation",
+    "related_terms": ["Broadcast playlist engine", "Broadcast playout system", "Broadcast recording log", "Broadcast operations center", "Broadcast signal chain"],
+    "common_mistakes": ["Confusing the scheduler with the playout system; the scheduler decides what airs and when, while playout reproduces it", "Ignoring rotation and separation rules, so the same song or advertiser repeats too closely", "Failing to reconcile the scheduled log with the as-run log after manual overrides"],
+    "scenario_contexts": ["A programmer builds the next day's music log using format clocks and rotation rules", "Traffic staff schedule sold commercial spots into available break positions", "An operator edits the day's schedule to accommodate a live sports broadcast"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1a813bc0-226a-4bb0-9171-c6f0ae6a9ba1",
+   "term": "Broadcast signal chain",
+   "fields": {
+    "definition": "The ordered path a program signal follows from its source through every processing and distribution stage to the transmitter or delivery point, often called the air chain. Typical stages include the microphone or source, console, audio processing and loudness control, studio-to-transmitter link, and transmitter.",
+    "plain_english": "This is the whole path a signal takes from the mic to the transmitter. Each stage, such as the console and processing, passes the sound to the next until it reaches listeners.",
+    "purpose_function": "It exists to carry program audio from source to air with controlled level, quality, and consistency at every stage. Understanding the chain lets engineers place processing correctly and locate faults by following the signal from end to end.",
+    "practical_application": "A technician traces the signal chain stage by stage to isolate distortion, level, or dropout problems, and sets audio processing so on-air loudness meets target standards. During installation they document each stage so gain structure and monitoring points are known.",
+    "category": "Signal Flow",
+    "related_terms": ["Broadcast routing system", "Broadcast operations center", "Broadcast playout system", "Broadcast room microphone", "Broadcast production room"],
+    "common_mistakes": ["Placing loudness or peak processing in the wrong order, which degrades on-air consistency and control", "Setting poor gain structure between stages, causing noise or clipping partway down the chain", "Troubleshooting at random instead of following the chain in order from source to transmitter"],
+    "scenario_contexts": ["An engineer follows the air chain from studio console to transmitter to find where audio is being lost", "Audio processing is inserted late in the chain to meet a loudness target before transmission", "A new studio is commissioned by documenting and level-checking every stage of its signal chain"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

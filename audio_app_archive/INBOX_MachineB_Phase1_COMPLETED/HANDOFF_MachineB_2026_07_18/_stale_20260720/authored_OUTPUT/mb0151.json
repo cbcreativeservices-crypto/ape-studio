@@ -1,0 +1,240 @@
+{
+ "batch": 151,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "64eeabd7-d42a-4552-a79a-61397affbe7f",
+   "term": "Vibrato control (Flex)",
+   "fields": {
+    "definition": "In Logic Pro's Flex Pitch, the Vibrato control is the upper-middle hotspot on a detected note that increases or reduces the depth of the note's natural pitch vibrato. Dragging it up exaggerates the wobble; dragging down flattens it toward a steady pitch, without changing the note's center pitch.",
+    "plain_english": "Flex Pitch lets you edit sung notes in Logic Pro. The Vibrato control changes how much a note wobbles up and down in pitch. Drag it up for more wobble, or down to make the note steadier.",
+    "purpose_function": "It lets an engineer shape the expressive pitch wobble of a recorded vocal or instrument note after the fact, so a take can be fixed or enhanced without re-recording it.",
+    "practical_application": "When tuning a lead vocal in Logic, you drag a note's Vibrato hotspot down to calm an over-wide wobble on a held note, or up to add life to a flat, lifeless one.",
+    "category": "Pitch Editing",
+    "related_terms": ["Flex Pitch", "Pitch correction", "Formant shift", "Fine pitch", "Vocal tuning", "Automation"],
+    "common_mistakes": [
+     "Confusing the Vibrato hotspot with overall pitch; it changes wobble depth, not the note's center pitch.",
+     "Removing all vibrato so the vocal sounds robotic and lifeless.",
+     "Editing vibrato on a note that Flex Pitch detected poorly, which creates glitches instead of a fix."
+    ],
+    "scenario_contexts": [
+     "Taming an unstable, wide vibrato on a sustained note in a pop lead vocal.",
+     "Adding gentle vibrato to a flat-sounding held vocal or synth note.",
+     "Cleaning up a take before printing a tuned vocal comp."
+    ]
+   },
+   "sources": [
+    "Apple Logic Pro User Guide - Edit pitch and timing with Flex Pitch",
+    "Sound on Sound - 'Flex Appeal' (Logic Flex Pitch techniques)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cef9722a-a9a6-45a8-91a3-19115541c891",
+   "term": "Victory music",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: 'Victory music' is a colloquial trope/genre label (a triumphant cue played on winning) with no established, precise definition in professional audio-engineering literature; only trope wikis and royalty-free-music sites use it, and it does not fit the 'Mix Fundamentals & Workflow' topic. No >=2 acceptable sources define it as a technical term."
+   ]
+  },
+  {
+   "id": "71090753-d9a2-42e5-9a69-c4f6e94ba5ed",
+   "term": "Vocal Assistant",
+   "fields": {
+    "definition": "Vocal Assistant is an assistive feature in iZotope Nectar that analyzes a solo vocal recording and automatically builds a starting processing chain, setting EQ, compression, de-essing, pitch and reverb based on the voice. Its Unmask function can also adjust other plugins to reduce frequency clashes with the vocal.",
+    "plain_english": "Vocal Assistant is a smart tool in iZotope Nectar. You play part of a vocal and it listens, then sets up a good starting mix for that voice by itself. You still fine-tune it, but you do not start from zero.",
+    "purpose_function": "It gives beginners and busy engineers a fast, sensible starting point for vocal processing instead of dialing every setting by hand.",
+    "practical_application": "A technician loads Nectar on a lead vocal, runs Vocal Assistant over a loud, sustained phrase, then tweaks the suggested EQ and compression to taste.",
+    "category": "Assistive Tools",
+    "related_terms": ["Equalization", "Compression", "De-esser", "Vocal chain", "Reverb", "Masking"],
+    "common_mistakes": [
+     "Treating the Assistant's result as finished instead of a starting point to refine.",
+     "Running it over a quiet or noisy section, which gives a poor analysis.",
+     "Using it on a bus with several instruments instead of an isolated vocal."
+    ],
+    "scenario_contexts": [
+     "Quickly setting up a vocal chain during a fast-turnaround mix.",
+     "Helping a beginner learn what settings a vocal usually needs.",
+     "Using Unmask to carve space so the vocal sits over a busy instrumental."
+    ]
+   },
+   "sources": [
+    "iZotope Nectar Help Documentation - Vocal Assistant",
+    "Sound on Sound - iZotope Nectar review"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "647f09a2-26d1-472b-9f99-b68043170ed7",
+   "term": "Voice choke",
+   "fields": {
+    "definition": "A voice choke (choke group) is a setting in a sampler or drum instrument that lets one sound instantly silence another when triggered, so only one voice in the group sounds at a time. The classic use is a closed hi-hat choking a ringing open hi-hat, mimicking a real drummer.",
+    "plain_english": "Voice choke makes one drum sound cut off another. The most common example is hi-hats: hitting the closed hat stops the open hat from ringing. It copies how a real drummer closes the cymbals with a foot.",
+    "purpose_function": "It recreates natural instrument behavior where two related sounds cannot ring at once, keeping programmed drums tight and believable.",
+    "practical_application": "In a drum rack or sampler, a producer assigns the open and closed hi-hats to the same choke group so triggering the closed hat cuts off the open one.",
+    "category": "Drum Programming",
+    "related_terms": ["Choke group", "Sampler", "Drum Rack", "Polyphony", "Monophonic", "Hi-hat"],
+    "common_mistakes": [
+     "Assuming choke just lowers volume; it fully cuts off the other voice.",
+     "Forgetting to also add the open hi-hat to the group, so it keeps ringing.",
+     "Placing sounds that should overlap, like kick and snare, in the same choke group by mistake."
+    ],
+    "scenario_contexts": [
+     "Programming realistic hi-hats from separate open and closed samples.",
+     "Setting a bass or 808 patch so a new note cuts off the previous one.",
+     "Building a kit where certain percussion hits should never overlap."
+    ]
+   },
+   "sources": [
+    "Ableton Live Reference Manual - Instrument, Drum and Effect Racks (Choke)",
+    "Native Instruments Maschine Manual - Using Choke Groups"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b4c3b4f3-0861-41ba-96bb-4e14887192b7",
+   "term": "Volume automation pass",
+   "fields": {
+    "definition": "A volume automation pass is a dedicated run through a mix in which the engineer writes or refines volume (fader) automation, recording level moves over time so each part sits at the right loudness through the song. It is usually done as a focused stage after the static balance is set.",
+    "plain_english": "A volume automation pass is when you go through the whole song and record fader moves. This makes each part louder or quieter at the right moments, like turning a quiet word up so you can hear it. You focus only on volume during this pass.",
+    "purpose_function": "It keeps every element audible and balanced from section to section, fixing spots where one fixed fader level is too loud or too soft.",
+    "practical_application": "After the rough balance, an engineer arms volume automation and rides the vocal fader up on quiet words and down on loud ones across the track.",
+    "category": "Automation",
+    "related_terms": ["Automation", "Fader", "Gain riding", "Mixing", "Breakpoint", "Volume View"],
+    "common_mistakes": [
+     "Writing detailed automation before setting a solid static balance first.",
+     "Making moves so large the mix sounds jumpy and unnatural.",
+     "Forgetting to set automation to a write or touch mode, so nothing is recorded."
+    ],
+    "scenario_contexts": [
+     "Riding a lead vocal so every word stays clear over the band.",
+     "Lifting a guitar solo in the chorus and lowering it afterward.",
+     "Smoothing level jumps between a quiet verse and a loud chorus."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein - Modern Recording Techniques (automation)",
+    "Ballou - Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "28e44e70-c537-4501-a770-295a0e1e3d3b",
+   "term": "Volume View",
+   "fields": {
+    "definition": "In Pro Tools, Volume view is a track display mode that shows a track's volume automation as an editable breakpoint line drawn over the audio, instead of the waveform. Choosing it lets you draw and edit fader-level automation directly in the Edit window.",
+    "plain_english": "Volume View is a way to look at a track in Pro Tools. Instead of the sound wave, it shows a line for the track's volume. You drag points on that line to make parts louder or quieter over time.",
+    "purpose_function": "It gives a clear, hands-on way to see and edit level changes across a track right on the clip, without opening a separate automation lane.",
+    "practical_application": "An engineer switches an audio track to Volume view, then clicks and drags breakpoints on the line to ride the level of a phrase.",
+    "category": "Track Views",
+    "related_terms": ["Waveform View", "Volume automation pass", "Automation", "Breakpoint", "Track View", "Fader"],
+    "common_mistakes": [
+     "Trying to edit the audio while in Volume view and moving automation points by accident.",
+     "Confusing the volume line with the audio waveform.",
+     "Leaving a track in Volume view and forgetting why the display looks different."
+    ],
+    "scenario_contexts": [
+     "Drawing precise volume automation on a vocal in Pro Tools.",
+     "Fixing a single loud breath by pulling down one breakpoint.",
+     "Toggling to Volume view to check existing level moves."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide - Track Views",
+    "Sound on Sound - Pro Tools track views and automation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7c1b61e7-2dde-46f1-8a27-38f8ae671338",
+   "term": "Walk the room",
+   "fields": {
+    "definition": "To walk the room is to physically move through the listening area or venue while audio plays, checking tonal balance, level and coverage at different positions rather than judging the sound only from the mix position. It is a standard check in live sound and studio work.",
+    "plain_english": "Walking the room means moving around the space while music plays. You listen from different spots, not just where the mixing desk is. This tells you if the sound is good and even for everyone, not only at your seat.",
+    "purpose_function": "It reveals how the audience actually hears the system, exposing dead spots, harsh areas or bass buildup that are not obvious at the console.",
+    "practical_application": "During soundcheck, a live engineer walks front to back and side to side, noting where the vocal gets buried or the low end piles up, then adjusts EQ or system tuning.",
+    "category": "Monitoring",
+    "related_terms": ["Coverage", "System tuning", "Soundcheck", "Front of house", "Room acoustics", "Reference monitoring"],
+    "common_mistakes": [
+     "Mixing only from the sweet spot and never checking the rest of the room.",
+     "Walking the room with no music or a poor reference track, so problems stay hidden.",
+     "Changing settings for one bad spot in a way that harms the main seating area."
+    ],
+    "scenario_contexts": [
+     "Checking coverage across a venue during soundcheck.",
+     "Finding a feedback-prone or boomy zone before doors open.",
+     "Verifying that a studio mix holds up around the control room."
+    ]
+   },
+   "sources": [
+    "McCarthy - Sound Systems: Design and Optimization",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9fac0d31-ef75-415b-b18d-09e71bb2b652",
+   "term": "Waveform View",
+   "fields": {
+    "definition": "Waveform view is a track display mode that shows recorded audio as a time-domain amplitude waveform, drawing the signal's level over time. It is the default view for audio tracks and gives the visual detail needed for accurate editing.",
+    "plain_english": "Waveform View shows a sound as a wavy shape on screen. Taller parts are louder and flatter parts are quieter. Seeing this shape helps you find beats and edit audio at the right spot.",
+    "purpose_function": "It lets an engineer see where sounds start, stop and peak, so edits like cuts, fades and alignment can be placed precisely.",
+    "practical_application": "An editor uses Waveform view to find the exact start of a drum hit before cutting or nudging the clip into time.",
+    "category": "Track Views",
+    "related_terms": ["Waveform Zoom", "Volume View", "Transient", "Editing", "Zero crossing", "Clip"],
+    "common_mistakes": [
+     "Thinking a tall waveform always means distortion; height shows level, not clipping.",
+     "Editing between beats without zooming in enough to see the transient.",
+     "Confusing the waveform display with volume automation shown in Volume view."
+    ],
+    "scenario_contexts": [
+     "Cutting a clip cleanly at a silent point.",
+     "Lining up a double-tracked vocal to the main take.",
+     "Spotting a loud pop or click to edit out."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide - Track Views",
+    "Huber & Runstein - Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3746dd04-384b-4364-ba0c-b844211198c4",
+   "term": "Waveform Zoom",
+   "fields": {
+    "definition": "Waveform Zoom is the adjustment of how magnified the waveform display appears, horizontally in time and/or vertically in amplitude. Zooming in reveals fine detail for precise edits, while zooming out shows more of the timeline at once.",
+    "plain_english": "Waveform Zoom makes the sound wave look bigger or smaller on screen. Zoom in to see tiny details, like the exact start of a note. Zoom out to see the whole song at once.",
+    "purpose_function": "It lets an engineer move between a wide overview of the arrangement and a close-up needed for sample-accurate editing.",
+    "practical_application": "Before making a tight cut, an editor zooms in horizontally to see individual waveform cycles, then zooms back out to check the edit in context.",
+    "category": "Editing",
+    "related_terms": ["Waveform View", "Zoom", "Editing", "Transient", "Nudge", "Zero crossing"],
+    "common_mistakes": [
+     "Editing while zoomed too far out, causing sloppy, off-beat cuts.",
+     "Confusing vertical zoom (a display change) with an actual gain change; it only changes how the waveform looks.",
+     "Zooming so far in that you lose track of where you are in the song."
+    ],
+    "scenario_contexts": [
+     "Zooming in to place a fade exactly at a zero crossing.",
+     "Zooming out to view the whole session for arrangement.",
+     "Getting close on a waveform to remove a single click."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide - Editing and zooming in the Edit window",
+    "Huber & Runstein - Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

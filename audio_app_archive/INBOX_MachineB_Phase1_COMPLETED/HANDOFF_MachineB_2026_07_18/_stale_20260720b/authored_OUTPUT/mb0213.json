@@ -1,0 +1,296 @@
+{
+ "batch": 213,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "949485d9-f468-4f71-8abd-6cb62f46f267",
+   "term": "Book handling",
+   "fields": {
+    "definition": "The Foley recording of the sounds a book makes when handled on screen — picking it up, setting it down, opening and closing the covers, and turning or riffling pages — performed with a matching book in sync with the picture.",
+    "plain_english": "Book handling is the Foley sound of someone using a book. A Foley artist opens, closes, and flips the pages of a real book in time with the picture. This makes the book on screen sound real.",
+    "purpose_function": "It exists to give on-screen books believable, synced sound that the camera mic often misses, adding realism and small detail to a scene.",
+    "practical_application": "A Foley artist performs page turns and cover movements with a similar book while watching the picture, and the editor syncs each sound to the actor's hands.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Sound effects",
+     "Prop handling",
+     "Sync",
+     "Cloth pass",
+     "Sound design"
+    ],
+    "common_mistakes": [
+     "Using the wrong kind of book, such as a stiff hardcover where the scene shows a soft paperback.",
+     "Turning pages too fast or too slow to match the actor's hands on screen.",
+     "Playing the handling too loud so it distracts from the dialogue."
+    ],
+    "scenario_contexts": [
+     "Adding page turns for a character reading at a desk.",
+     "Covering a book being slammed shut in a tense moment.",
+     "Filling in the sound of someone flipping through a photo album."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, 'The Foley Grail: The Art of Performing Sound for Film, Games, and Animation'",
+    "Ric Viers, 'The Sound Effects Bible'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3ac36805-9902-4697-a5bb-dab99c236170",
+   "term": "Boom-and-lavalier blend",
+   "fields": {
+    "definition": "A dialogue mixing technique in which the boom microphone and the lavalier (body) microphone recordings of the same line are combined — the boom supplying natural, open timbre and the lav supplying close, intelligible detail — and matched so the two sources read as one voice.",
+    "plain_english": "Actors are often recorded by two mics at once: a boom overhead and a tiny lav on the body. A boom-and-lav blend mixes both together. The boom sounds natural and the lav sounds clear, so you get the best of each.",
+    "purpose_function": "It exists to get dialogue that is both natural-sounding and clearly intelligible, letting the editor lean on whichever mic solves a problem in a given moment.",
+    "practical_application": "A dialogue editor lines up the boom and lav tracks, checks their timing and phase, and rides the balance between them line by line to fix noise, clothing rustle, or dull tone.",
+    "category": "Dialogue editing",
+    "related_terms": [
+     "Boom-track priority",
+     "Lavalier microphone",
+     "Dialogue editing",
+     "Production sound",
+     "Phase",
+     "ADR"
+    ],
+    "common_mistakes": [
+     "Blending the two mics without checking phase, causing hollow or thin comb-filtered sound.",
+     "Keeping both mics up at equal level when one is clearly much cleaner than the other.",
+     "Forgetting that boom and lav have different tone, so an unmatched blend sounds odd."
+    ],
+    "scenario_contexts": [
+     "Mixing a wide shot where the boom is distant but the lav sits close.",
+     "Using the lav to cover a word the boom lost under noise.",
+     "Blending mics to smooth a scene shot from several angles."
+    ]
+   },
+   "sources": [
+    "John Purcell, 'Dialogue Editing for Motion Pictures: A Guide to the Invisible Art'",
+    "Tomlinson Holman, 'Sound for Film and Television'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7c681f77-cce0-4031-b362-26ad26615dc6",
+   "term": "Boom-track priority",
+   "fields": {
+    "definition": "An editorial and mixing preference for using the boom microphone as the primary dialogue source, treating the lavalier as a backup drawn on only when the boom is unusable, because the boom generally gives the most natural sound of the room, with the truest sense of perspective.",
+    "plain_english": "In dialogue editing, the boom mic usually sounds the most natural. Boom-track priority means the editor uses the boom first by default. The lav mic is only used when the boom has a problem, like noise or a bad angle.",
+    "purpose_function": "It exists to keep dialogue sounding consistent and natural across a scene by defaulting to the mic that best matches how the room really sounds.",
+    "practical_application": "A dialogue editor builds the scene on the boom track first, then patches in lav only where the boom is blocked, noisy, or off-mic, keeping the two matched in tone.",
+    "category": "Dialogue editing",
+    "related_terms": [
+     "Boom-and-lavalier blend",
+     "Boom microphone",
+     "Lavalier microphone",
+     "Dialogue editing",
+     "Production sound",
+     "Perspective"
+    ],
+    "common_mistakes": [
+     "Cutting to the lav for a whole scene when only one line of boom is bad.",
+     "Treating the rule as absolute and ignoring lines where the lav is clearly better.",
+     "Failing to match tone when switching between the boom and the lav."
+    ],
+    "scenario_contexts": [
+     "Editing a dialogue scene where the boom captures the room well.",
+     "Choosing the boom for a two-shot with clean overhead coverage.",
+     "Reserving the lav for moments the boom cannot reach."
+    ]
+   },
+   "sources": [
+    "John Purcell, 'Dialogue Editing for Motion Pictures: A Guide to the Invisible Art'",
+    "Tomlinson Holman, 'Sound for Film and Television'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "05870dfe-88cc-4c33-9104-c4a6b523433d",
+   "term": "Boot Foley",
+   "fields": {
+    "definition": "Footstep Foley performed while wearing boots, recorded to match a character seen in boots — capturing the heavier weight, harder heel strike, and distinct leather-and-sole character that boots produce on a given surface.",
+    "plain_english": "Boot Foley is the sound of footsteps made in boots. A Foley artist wears boots and walks in time with the picture. This makes a character in boots sound heavy and solid on the floor.",
+    "purpose_function": "It exists to give booted characters believable, weighty footsteps that match their footwear and the surface they walk on.",
+    "practical_application": "A Foley artist picks the right boots, walks the step pattern in sync on a matching floor surface in the Foley pit, and the editor tightens each step to the picture.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Footsteps",
+     "Foley pit",
+     "Carpet footsteps",
+     "Surfaces",
+     "Sync"
+    ],
+    "common_mistakes": [
+     "Using boots whose heel sounds nothing like the pair on screen.",
+     "Walking on the wrong surface, such as concrete for a wooden floor.",
+     "Performing the steps out of sync with the actor's feet."
+    ],
+    "scenario_contexts": [
+     "Adding heavy footsteps for a soldier marching in boots.",
+     "Covering a cowboy walking across a wooden porch.",
+     "Building steps for a detective pacing a tiled hallway."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, 'The Foley Grail: The Art of Performing Sound for Film, Games, and Animation'",
+    "David Lewis Yewdall, 'The Practical Art of Motion Picture Sound'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c70d0b48-e22e-45fb-81f5-935af64c6175",
+   "term": "Bottle handling",
+   "fields": {
+    "definition": "The Foley recording of sounds made when bottles are handled on screen — lifting, setting down, gripping, clinking, and pouring — performed with matching bottles in sync with the picture.",
+    "plain_english": "Bottle handling is the Foley sound of someone using bottles. A Foley artist picks up, sets down, and clinks real bottles in time with the picture. This makes a bar or kitchen scene sound real.",
+    "purpose_function": "It exists to add believable, synced bottle sounds that the camera mic often misses, giving detail to bar, kitchen, and drinking scenes.",
+    "practical_application": "A Foley artist chooses glass or plastic bottles to match what is on screen, performs the pickups and set-downs in sync, and the editor places each sound to the actor's hands.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Prop handling",
+     "Book handling",
+     "Sound effects",
+     "Sync",
+     "Sound design"
+    ],
+    "common_mistakes": [
+     "Using a glass bottle where the picture clearly shows plastic, or the reverse.",
+     "Making handling clinks too loud so they pull focus from the dialogue.",
+     "Missing the exact frame where the bottle touches down."
+    ],
+    "scenario_contexts": [
+     "Adding clinks and set-downs to a bar scene.",
+     "Covering a character grabbing a water bottle mid-scene.",
+     "Filling in the sound of bottles moved on a shelf."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, 'The Foley Grail: The Art of Performing Sound for Film, Games, and Animation'",
+    "Ric Viers, 'The Sound Effects Bible'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "46e3c0c9-2f63-4705-9ada-c83e60740272",
+   "term": "Braam",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "'Braam' (also spelled 'braaam' or 'brami') is a modern trailer sound-design device — a massive, distorted, brass-like low-end impact popularised after Inception (2010) — but it has no established definition in the recognised professional post-production or sound-design literature (Yewdall, Holman, Sonnenschein, Ament, Viers), in AES/SMPTE/EBU standards, or in manufacturer technical documentation. The only available coverage is trade press, user forums, vendor sample-library listings, and Wikipedia, none of which are acceptable corroborating sources. It is an onomatopoeic coined name rather than a transparent compound of an established technique plus a source, so all fields are left blank pending an acceptable source or clarification of the intended sense."
+   ]
+  },
+  {
+   "id": "aafd8f30-bd2e-4a85-956f-334483236377",
+   "term": "Button ending",
+   "fields": {
+    "definition": "A short, emphatic, conclusive ending to a musical cue or piece — typically a final accented chord or hit that lands squarely and stops — giving a clear, definite sense of finish rather than fading or trailing off.",
+    "plain_english": "A button ending is a sharp, final chord that ends a piece of music with a bang. It lands hard and stops, so you know for sure the music is done. It is like the firm dot at the end of a sentence.",
+    "purpose_function": "It exists to close a cue cleanly and decisively, marking a strong end point that can be cut to picture or landed on a specific moment on screen.",
+    "practical_application": "A composer or music editor writes or trims a cue so it finishes on a firm final hit, often timed to land on an action, a cut, or the end of a scene.",
+    "category": "Music editing",
+    "related_terms": [
+     "Cue",
+     "Music editing",
+     "Sting",
+     "Hit point",
+     "Scoring",
+     "Sound design"
+    ],
+    "common_mistakes": [
+     "Confusing a button, which stops firmly, with a fade-out that trails away.",
+     "Placing the button so it lands off the intended picture moment.",
+     "Making the button too soft, so the ending feels unfinished."
+    ],
+    "scenario_contexts": [
+     "Ending a comedy scene on a crisp musical button.",
+     "Landing a final chord exactly on a hard cut to black.",
+     "Trimming a library cue so it stops on a firm hit."
+    ]
+   },
+   "sources": [
+    "Fred Karlin and Rayburn Wright, 'On the Track: A Guide to Contemporary Film Scoring'",
+    "Richard Davis, 'Complete Guide to Film Scoring' (Berklee Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2bf772a7-c934-4b8f-8dec-dfb59546c674",
+   "term": "Cabinet door",
+   "fields": {
+    "definition": "A Foley or hard sound-effect element covering the opening, closing, and latching of a cabinet or cupboard door — including hinge movement, the knock of the door against the frame, and the click of the catch — synced to the picture.",
+    "plain_english": "A cabinet door effect is the sound of a cupboard door opening and closing. It includes the hinge, the bump of the door, and the click of the latch. Editors add it so a kitchen or cupboard scene sounds real.",
+    "purpose_function": "It exists to give on-screen cabinets and cupboards believable, synced movement sound that the camera mic often does not capture cleanly.",
+    "practical_application": "An editor or Foley artist matches the effect to the type of door on screen and syncs the open, close, and latch to the exact frames the door moves.",
+    "category": "Sound effects",
+    "related_terms": [
+     "Foley",
+     "Sound effects",
+     "Prop handling",
+     "Hard effects",
+     "Sync",
+     "Sound design"
+    ],
+    "common_mistakes": [
+     "Using a heavy wooden-door sound for a light, thin cabinet door.",
+     "Missing the latch click, so the close sounds incomplete.",
+     "Placing the close a frame or two off from the picture."
+    ],
+    "scenario_contexts": [
+     "Adding open and close sounds to a kitchen cabinet in a scene.",
+     "Covering a character grabbing something from a cupboard.",
+     "Syncing a medicine-cabinet door in a bathroom shot."
+    ]
+   },
+   "sources": [
+    "Ric Viers, 'The Sound Effects Bible'",
+    "David Lewis Yewdall, 'The Practical Art of Motion Picture Sound'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e8bc7d5b-cb5c-4fac-9422-605c042eb5e7",
+   "term": "Carpet footsteps",
+   "fields": {
+    "definition": "Footstep Foley performed on a carpeted surface, producing the soft, muffled, low-frequency steps characteristic of walking on carpet, recorded in sync to match a character moving across a carpeted floor on screen.",
+    "plain_english": "Carpet footsteps are the soft, quiet steps you hear when someone walks on a carpet. A Foley artist walks on a piece of carpet in time with the picture. The steps sound muffled and gentle, not sharp.",
+    "purpose_function": "It exists to match a character's footsteps to a carpeted floor, giving the soft, dull step sound that surface produces instead of a hard, bright one.",
+    "practical_application": "A Foley artist walks the step pattern on a carpet section in the Foley pit while watching picture, and the editor syncs each muffled step to the actor's feet.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Footsteps",
+     "Boot Foley",
+     "Foley pit",
+     "Surfaces",
+     "Sync"
+    ],
+    "common_mistakes": [
+     "Making carpet steps too loud or too sharp, so they sound like a hard floor.",
+     "Using the wrong surface, so a hard footstep plays over carpet on screen.",
+     "Letting the steps drift out of sync with the actor's feet."
+    ],
+    "scenario_contexts": [
+     "Adding soft steps for a character crossing a carpeted living room.",
+     "Covering someone creeping over a hotel-hallway carpet.",
+     "Building quiet footsteps for a bedroom scene."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, 'The Foley Grail: The Art of Performing Sound for Film, Games, and Animation'",
+    "David Lewis Yewdall, 'The Practical Art of Motion Picture Sound'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

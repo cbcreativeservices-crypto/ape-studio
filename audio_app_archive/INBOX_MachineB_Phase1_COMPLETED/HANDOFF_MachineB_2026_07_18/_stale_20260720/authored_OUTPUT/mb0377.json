@@ -1,0 +1,125 @@
+{
+ "batch": 377,
+ "topic": "Winds, Brass & Organ",
+ "authored": [
+  {
+   "id": "78f5ae2e-4e29-4c58-9481-d16715a4ed33",
+   "term": "Suona/shawm cry",
+   "fields": {
+    "definition": "The loud, bright, penetrating and vocal (\"crying\" or \"wailing\") tone characteristic of the suona (the Chinese conical double-reed shawm) and, more broadly, of the shawm family; a small exposed double reed drives a conical bore ending in a flaring bell, giving a strident, human-voice-like sound prized for outdoor processions, weddings, and funerals.",
+    "plain_english": "The suona is a Chinese double-reed horn, and the shawm is its old European cousin. Both make a very loud, bright, wailing sound, almost like a human cry. This crying tone cuts through crowds, so they are played outdoors at weddings and funerals.",
+    "purpose_function": "The term names the signature timbre of these instruments, explaining why they project so powerfully outdoors and why their tone is often described as vocal or crying rather than smooth.",
+    "practical_application": "A recording or live-sound engineer expects a very high sound-pressure level and strong upper harmonics from a suona or shawm, so they choose a mic and gain structure that will not overload and position it slightly off-axis to tame the harsh top.",
+    "category": "Instrument timbre",
+    "related_terms": ["Double reed", "Reed", "Shawm", "Overblowing", "Conical bore"],
+    "common_mistakes": ["Treating the loud, crying tone as a fault or a reed problem when it is the instrument's intended sound.", "Miking a suona or shawm as if it were a soft oboe, then overloading the input on loud passages.", "Confusing the suona (double reed) with a valved brass instrument because of its bell and volume."],
+    "scenario_contexts": ["A folk ensemble features a suona whose piercing cry must be balanced against quieter instruments.", "An engineer records a Renaissance shawm consort outdoors and manages its strident, penetrating tone.", "A film composer wants the wailing suona sound for a funeral scene."]
+   },
+   "sources": ["Anthony Baines, Woodwind Instruments and Their History", "The New Grove Dictionary of Music and Musicians (Suona; Shawm)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5bd8f3da-977f-4c7f-a3b6-4d4d11fd49bb",
+   "term": "Tongue-block chord slap",
+   "fields": {
+    "definition": "A tongue-blocking harmonica technique in which the player, while covering several holes with the tongue to isolate a single reed, briefly lifts the tongue so a full chord sounds and then instantly re-blocks it, producing a short percussive chordal \"slap\" that accents the melody note.",
+    "plain_english": "On a harmonica you can cover some holes with your tongue to play just one note. In a chord slap you lift your tongue for a split second so a full chord sounds, then put it back to leave the single note. It works like a quick drum hit before the melody note.",
+    "purpose_function": "The technique adds rhythmic, percussive emphasis and a fuller chordal texture to single-note lines, a staple of blues and traditional harmonica phrasing.",
+    "practical_application": "A blues harmonica player punches accents with chord slaps, and an engineer recording the part hears brief chordal transients ahead of notes and sets levels or compression so the percussive attack stays clear without clipping.",
+    "category": "Playing technique",
+    "related_terms": ["Tongue blocking", "Warble (harmonica)", "Draw note", "Blow note", "Reed"],
+    "common_mistakes": ["Not fully re-blocking after the slap, so the chord keeps ringing instead of leaving a clean single note.", "Slapping with inconsistent timing so accents fall out of the groove.", "Confusing the chord slap with a warble, which is a shake between two holes rather than a percussive accent."],
+    "scenario_contexts": ["A blues harmonica player uses chord slaps to drive the rhythm of a shuffle.", "A student learns to isolate one hole while adding slaps for accent.", "An engineer compresses a harmonica track to keep the slapped chords even in level."]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians (Harmonica; Mouth organ)", "Hohner harmonica technical and instructional documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b4da2580-91d2-4cd3-a24f-d9a9da5423b3",
+   "term": "Tremulant",
+   "fields": {
+    "definition": "An organ device, controlled by its own stop or lever, that introduces a regular periodic fluctuation into the wind supply of a division, causing the sounding pipes to waver periodically in both loudness and pitch to produce a tremolo/vibrato (undulating) effect.",
+    "plain_english": "A tremulant is an organ control that makes the wind pulse in a steady beat. This makes the notes gently waver in loudness and pitch, like a singer's vibrato. It adds warmth to slow, singing stops.",
+    "purpose_function": "The tremulant adds expressive warmth and an undulating, voice-like quality to a registration, and exists to give the organ's otherwise steady tone the life of a natural vibrato.",
+    "practical_application": "An organist engages the tremulant for solo or string-toned stops in slow, lyrical passages, and an organ technician regulates its rate and depth (adjusting spring tension, weight, or valve) so the beat is even and not too fast or violent.",
+    "category": "Organ device",
+    "related_terms": ["Stop", "Windchest", "Celeste", "Vibrato", "Tremolo"],
+    "common_mistakes": ["Confusing the tremulant, which pulses the wind of a whole division, with a celeste, which beats by tuning two ranks slightly apart.", "Setting the tremulant rate too fast or too deep so the tone sounds seasick rather than warm.", "Using the tremulant on full or loud registrations where its wavering muddies the sound."],
+    "scenario_contexts": ["An organist adds the tremulant to a solo reed stop for an expressive melody.", "A technician adjusts a sluggish tremulant so its beat becomes steady and musical.", "A recording of a slow hymn shows the gentle wavering of a tremulant on the string stops."]
+   },
+   "sources": ["G. A. Audsley, The Art of Organ Building", "The New Grove Dictionary of Music and Musicians (Tremulant; Organ)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "45b8788c-6c70-42ac-b339-dcf064d049a7",
+   "term": "Warble (harmonica)",
+   "fields": {
+    "definition": "A harmonica ornament in which the player rapidly alternates between two adjacent holes—usually by shaking the instrument from side to side or moving the head—so the two notes sound in fast oscillation, creating a trill- or tremolo-like \"warbling\" effect; also called a shake or trill.",
+    "plain_english": "A warble is when you quickly rock a harmonica between two side-by-side holes. The two notes trade back and forth so fast that they blur into a shimmering, wavy sound. It is also called a shake.",
+    "purpose_function": "The warble adds a shimmering, sustained ornament and rhythmic energy to a held note, and is one of the harmonica's most recognizable expressive effects.",
+    "practical_application": "A blues or folk harmonica player uses a warble to color a long note or build intensity, and an engineer captures the fast oscillation cleanly, avoiding heavy noise gating that could chop the alternating notes.",
+    "category": "Playing technique",
+    "related_terms": ["Tongue-block chord slap", "Vibrato", "Draw note", "Reed", "Trill"],
+    "common_mistakes": ["Shaking too slowly, so the effect sounds like two separate notes rather than a smooth warble.", "Confusing a warble (a shake between two holes) with vibrato (a pulsing of a single note).", "Gating a warbled note so hard that the rapid note changes are clipped."],
+    "scenario_contexts": ["A harmonica player warbles a high draw note to end a blues phrase.", "A student practices an even shake to turn two notes into a smooth warble.", "An engineer records a warble and keeps the gate gentle so the shimmer stays intact."]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians (Harmonica; Mouth organ)", "Hohner harmonica technical and instructional documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b8566e4d-cf0c-4fb3-985b-09e35355cb4c",
+   "term": "Wind noise",
+   "fields": {
+    "definition": "The low-frequency, broadband rumble, roar, or thumping generated when moving air—outdoor wind or gusts of breath—creates turbulence at a microphone's diaphragm and grille; it is unrelated to the desired signal and is controlled with foam windscreens, furry windshields (blimps), and high-pass filtering.",
+    "plain_english": "Wind noise is the low rumble a mic makes when moving air hits it. It is not part of the real sound you want to record. A foam or furry cover over the mic blocks most of it, like a scarf over your face on a windy day.",
+    "purpose_function": "The term names a common noise problem so technicians can recognize air turbulence at the mic as the cause of low-frequency rumble and take the right steps to prevent it.",
+    "practical_application": "For outdoor or breezy work a technician fits a foam windscreen or furry windjammer, engages a high-pass filter, and positions or shields the mic so wind does not strike the diaphragm directly.",
+    "category": "Recording artifact",
+    "related_terms": ["Windscreen", "High-pass filter", "Rumble", "Proximity effect", "Plosive"],
+    "common_mistakes": ["Relying on a thin foam windscreen in strong wind when a furry windshield is needed.", "Assuming a pop filter, which is made for plosives, will stop outdoor wind noise.", "Cutting so much low end with the high-pass filter that the wanted sound is thinned out."],
+    "scenario_contexts": ["A location recordist fits a windjammer to a shotgun mic for an outdoor interview.", "A live-sound engineer hears rumble from wind on a stage mic and adds a high-pass filter.", "A boom operator shields the mic from a gust so wind noise does not ruin a take."]
+   },
+   "sources": ["Glen Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "537b7fdd-2646-4d05-952c-d4b5bf2ddb98",
+   "term": "Wind-cap buzz",
+   "fields": {
+    "definition": "The characteristic buzzing, nasal, reedy timbre of wind-cap instruments (such as the crumhorn, cornamuse, and rauschpfeife), in which a double reed is fully enclosed in a perforated cap that the player blows into rather than lipping the reed directly; the freely, uncontrolled vibrating reed gives a strong buzzy quality and a narrow dynamic range.",
+    "plain_english": "Some old reed instruments hide the reed inside a cap that you blow into, instead of putting the reed on your lips. Because you cannot control the reed, it buzzes freely and gives a strong, nasal, humming tone. That buzzy sound is normal, not a fault.",
+    "purpose_function": "The term names the signature timbre of wind-cap instruments, explaining why they sound buzzy and constant in volume and why the player cannot shape the tone with the lips.",
+    "practical_application": "A player or early-music engineer recognizes wind-cap buzz as the normal sound of these instruments, mics them to capture the reedy character, and does not expect the loud-soft dynamics or bending possible on lip-controlled reeds.",
+    "category": "Instrument timbre",
+    "related_terms": ["Double reed", "Crumhorn", "Reed", "Overblowing", "Nasal tone"],
+    "common_mistakes": ["Trying to bend, overblow, or swell the volume as on a lipped reed, which the enclosed reed cannot do.", "Mistaking the normal buzz for a cracked or faulty reed.", "Blowing harder to get louder, which just chokes or overblows the reed instead of adding volume."],
+    "scenario_contexts": ["An early-music consort records crumhorns whose steady buzz sits under the ensemble.", "A student is surprised that a wind-cap instrument has almost no loud-soft control.", "An engineer places a mic to capture the reedy buzz of a rauschpfeife without harshness."]
+   },
+   "sources": ["Anthony Baines, Woodwind Instruments and Their History", "The New Grove Dictionary of Music and Musicians (Wind-cap instruments; Crumhorn)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ffd63fa8-572e-4b28-ae82-7bb72c595ab1",
+   "term": "Xiao breath tone",
+   "fields": {
+    "definition": "The soft, airy, breath-rich timbre characteristic of the xiao (a Chinese end-blown notched bamboo flute), in which audible breath noise from the air jet striking the blowing edge blends with the fundamental to give a mellow, intimate, slightly hollow tone; it is cultivated as an expressive feature rather than treated as a flaw.",
+    "plain_english": "The xiao is a Chinese bamboo flute you blow across the top edge. Some of your breath is heard as soft, airy sound mixed in with the note. This gives it a gentle, close, breathy tone that players use on purpose.",
+    "purpose_function": "The term names an intended expressive quality of the xiao, distinguishing its deliberate breathy color from unwanted noise and describing how the instrument's intimate sound is produced.",
+    "practical_application": "An engineer close-mics a xiao to capture its delicate breath tone, choosing placement that keeps the airy character without turning it into harsh wind blasts, and avoids gating that would strip the intended breathiness.",
+    "category": "Instrument timbre",
+    "related_terms": ["Edge tone", "Air jet", "Embouchure", "Bansuri edge chiff", "Breath noise"],
+    "common_mistakes": ["Gating or de-noising away all the breath, which removes the xiao's intended character.", "Confusing the instrument's breath tone with wind noise hitting the microphone.", "Blowing too hard chasing volume, which turns the soft airy tone into a harsh, breathy blast."],
+    "scenario_contexts": ["A film composer wants an intimate solo xiao with its natural breath tone up close.", "An engineer positions the mic to keep the airy quality without wind blasts.", "A player shapes the breath tone expressively in a slow, meditative piece."]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians (Xiao)", "Fletcher & Rossing, The Physics of Musical Instruments"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

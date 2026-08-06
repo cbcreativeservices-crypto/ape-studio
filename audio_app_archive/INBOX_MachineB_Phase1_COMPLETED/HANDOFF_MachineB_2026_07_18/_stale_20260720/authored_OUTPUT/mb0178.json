@@ -1,0 +1,159 @@
+{
+ "batch": 178,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "ee694cba-806d-452d-873d-4a79b224e2c9",
+   "term": "Tape winding quality",
+   "fields": {
+    "definition": "The condition and evenness with which magnetic recording tape is spooled onto its reel or hub, including uniform pack tension, flat and aligned tape edges, and a smooth, cinch-free wind. Poor winding causes edge damage, spoking, cinching, and increased print-through, degrading the stored analog master.",
+    "plain_english": "This is how neatly and evenly a reel of recording tape is wound up. A loose or uneven wind can crease the tape or let one layer bleed faint sound into the next. It is like winding thread on a spool: neat and even keeps it safe, but sloppy winding tangles and damages it.",
+    "purpose_function": "Good winding protects both the physical tape and the audio it holds, keeping a master playable and free of mechanical damage and print-through through storage and transport.",
+    "practical_application": "Before archiving or shipping a tape master, a technician winds it smoothly at a steady play or library speed and stores it tails-out to reduce print-through.",
+    "category": "Analog Tape",
+    "related_terms": ["Print-through", "Tails-out storage", "Analog tape master", "Reel-to-reel", "Flutter"],
+    "common_mistakes": ["Storing tape wound heads-out, which makes print-through pre-echo worse", "Winding at high fast-forward speed, which builds an uneven, cinch-prone pack", "Assuming tighter is always better; over-tension can stretch or emboss the tape"],
+    "scenario_contexts": ["Archiving an analog master reel after a mastering transfer", "Preparing a tape master for shipment to a cutting or pressing facility", "Inspecting a vintage reel for spoking or edge damage before playback"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (magnetic recording / tape care)", "AES recommended practice for magnetic tape storage and handling"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4d2f4711-f7b2-4ee9-a2af-632ecd603f02",
+   "term": "Test lacquer",
+   "fields": {
+    "definition": "A lacquer disc (a nitrocellulose-coated aluminum blank) cut on a mastering lathe as a trial or reference before cutting the final production lacquers, used to check level, groove spacing, tracking, and overall sound of the cut.",
+    "plain_english": "This is a trial record cut before the real ones are made. The cutting engineer makes it to hear how the music sits in the grooves and to catch problems early. It is like printing one test page before you run the whole print job.",
+    "purpose_function": "It lets the cutting engineer and client hear and approve the actual cut on a physical disc before committing to the master lacquers used to make stampers, reducing costly mistakes.",
+    "practical_application": "A cutting engineer plays a test lacquer on a reference turntable to check for distortion, sibilance, or groove skipping, then adjusts lathe settings before cutting the final lacquer.",
+    "category": "Vinyl Cutting",
+    "related_terms": ["Lacquer master", "Acetate", "Cutting lathe", "Stamper", "Test pressing evaluation", "Reference disc"],
+    "common_mistakes": ["Treating a test lacquer as a finished record; it is a soft, one-off cut that wears quickly", "Judging the final release from the lacquer, which changes after plating and pressing", "Playing a lacquer many times, since each play wears the soft grooves"],
+    "scenario_contexts": ["Approving a vinyl cut before ordering stampers", "Checking whether a loud, bass-heavy master tracks without skipping", "Sending a reference acetate to an artist for sign-off"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (disc recording / lacquer cutting)", "Katz, Mastering Audio: The Art and the Science (vinyl mastering)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "710669c8-3bf3-4397-881a-7ebabe0de012",
+   "term": "Test pressing evaluation",
+   "fields": {
+    "definition": "The critical listening and physical inspection of test pressings, a small number of sample records pressed from the finished stampers, to verify audio quality and check for surface noise, non-fill, warps, off-center pressing, and other defects before approving the full production run.",
+    "plain_english": "This is checking a few sample records before the whole batch is made. You listen for noise, clicks, and skips, and look the disc over for damage. It is like tasting a test batch before you cook the full meal.",
+    "purpose_function": "It catches manufacturing faults and mastering issues while only a few discs exist, preventing a bad full pressing run and protecting the release quality.",
+    "practical_application": "The mastering engineer and label play test pressings all the way through on a good turntable, note any distortion, clicks, or warps, and either approve the run or ask for a re-cut or re-press.",
+    "category": "Vinyl Manufacturing",
+    "related_terms": ["Test lacquer", "Stamper", "Non-fill", "Surface noise", "Lacquer master", "Pressing plant"],
+    "common_mistakes": ["Approving from a quick spot-check instead of listening to each side in full", "Blaming all noise on the pressing when the fault is in the cut or the master", "Evaluating on a poor turntable that hides real defects or adds its own"],
+    "scenario_contexts": ["Signing off on a vinyl release before the plant runs thousands of copies", "Comparing channel balance and centering on a sample disc", "Rejecting a batch for non-fill in loud passages"]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science (vinyl / quality control)", "Ballou, Handbook for Sound Engineers (disc recording and manufacturing)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7e07dd17-9dd0-440e-988d-4b43099f496e",
+   "term": "Track index point",
+   "fields": {
+    "definition": "A subdivision within a CD track defined by the subcode Q-channel INDEX field (values 00-99) under the Red Book standard (IEC 60908); INDEX 00 marks the pre-gap or pause and INDEX 01 marks the audio start, while higher index numbers can flag points inside a single track.",
+    "plain_english": "On a CD, this is a marker that labels a spot inside a track. Index 1 is where the music starts, and index 0 is the short pause before it. Some discs use higher numbers to mark sections inside one long track, like movements in a piece.",
+    "purpose_function": "Index points let a CD flag internal locations and pre-gaps so players and authoring systems can find the true start of audio and, on some discs, cue to sections within a track.",
+    "practical_application": "In PQ editing a mastering engineer sets INDEX 01 at each track's audio start and INDEX 00 for the pause, and may add index marks within long tracks for navigation.",
+    "category": "CD Mastering",
+    "related_terms": ["PQ codes", "Track pause length", "Red Book", "Subcode", "Track start ID", "DDP"],
+    "common_mistakes": ["Confusing an index point with a track number; indexes live inside one track", "Assuming all players can seek to index numbers above 01, since many ignore them", "Placing INDEX 01 late, so the first moment of audio is cut off"],
+    "scenario_contexts": ["Setting track starts and pre-gaps during CD PQ editing", "Marking movements inside one long classical track", "Troubleshooting why a player jumps past the start of a song"]
+   },
+   "sources": ["IEC 60908, Compact Disc Digital Audio system (Red Book subcode / index)", "Katz, Mastering Audio: The Art and the Science (CD assembly / PQ)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "be45a2b9-e9fa-419a-bd6b-49c01aa57472",
+   "term": "Track pause length",
+   "fields": {
+    "definition": "The duration of the gap between the end of one CD track and the audio start of the next, encoded in the subcode as the pre-gap (INDEX 00) of the following track; the Red Book default convention is about two seconds, but it is adjustable and can be set to zero for gapless transitions.",
+    "plain_english": "This is how long the silent gap is between two songs on a CD. The usual default is about two seconds, but you can make it longer, shorter, or zero. A zero gap lets one track flow straight into the next, like on a live album.",
+    "purpose_function": "The pause sets the spacing and pacing between tracks, separating songs or removing the gap entirely for continuous, gapless playback.",
+    "practical_application": "During CD assembly the engineer trims each track's pre-gap, often setting two seconds between separate songs and zero for a continuous live or concept album.",
+    "category": "CD Mastering",
+    "related_terms": ["Track index point", "PQ codes", "Pre-gap", "Gapless playback", "Red Book", "Track start ID"],
+    "common_mistakes": ["Leaving the default two-second gap on a live album, which breaks the continuous flow", "Cutting a gap so tight that a song's reverb tail is chopped off", "Confusing the coded pause length with silence baked into the audio file"],
+    "scenario_contexts": ["Spacing tracks on a pop album for natural pacing", "Setting zero gaps for a seamless live or DJ recording", "Adjusting pauses so segues line up between songs"]
+   },
+   "sources": ["IEC 60908, Compact Disc Digital Audio system (Red Book pre-gap / P and Q subcode)", "Katz, Mastering Audio: The Art and the Science (CD assembly / spacing)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "17b06161-afb1-4923-822a-7cc707dd6c0e",
+   "term": "Track-at-once mastering",
+   "fields": {
+    "definition": "Creating a CD in Track-At-Once (TAO) mode, where the recorder writes each track as a separate operation and turns the laser off between tracks, leaving link and run-in/run-out blocks at the joins; unlike Disc-At-Once, TAO is generally unsuitable as a replication premaster.",
+    "plain_english": "This is burning a CD one track at a time, with the laser stopping between songs. Each stop leaves tiny link blocks at the joins. Because of those glitches, factories will not use this kind of disc as a master; they want a disc burned in one pass instead.",
+    "purpose_function": "TAO lets tracks be added to a disc in separate steps, but the link blocks and forced gaps make it unfit for professional replication, where Disc-At-Once premasters are required.",
+    "practical_application": "A technician preparing a master for a plant avoids TAO and instead delivers a Disc-At-Once CD-R or a DDP image so the master has no link errors and correct pre-gaps.",
+    "category": "CD Mastering",
+    "related_terms": ["Disc-at-once", "DDP", "Red Book", "Track pause length", "Premaster", "CD-R"],
+    "common_mistakes": ["Sending a Track-At-Once CD-R to a plant as a master, which can be rejected for link errors", "Assuming TAO and Disc-At-Once sound different; the issue is disc structure, not audio", "Believing TAO can give zero pre-gaps, since it forces gaps at track joins"],
+    "scenario_contexts": ["Burning a quick reference disc while avoiding TAO for the actual master", "Explaining to a client why a plant rejected their home-burned CD master", "Choosing Disc-At-Once over TAO when creating a replication premaster"]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science (premastering / DAO vs TAO)", "Ballou, Handbook for Sound Engineers (CD recording and premastering)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "77acce71-a320-4d57-87eb-75576862233c",
+   "term": "Trailer music stem",
+   "fields": {
+    "definition": "A stem, meaning a grouped submix of a larger mix, delivered as part of trailer music, the high-impact music composed for film, game, or product trailers; common stems separate elements such as drums and percussion, brass, strings, choir, synths, and impact hits so editors can rebalance the cue to picture.",
+    "plain_english": "Trailer music is the big, dramatic music you hear in movie previews. A stem is one grouped layer of that music, like all the drums or all the strings on their own. Giving editors separate stems lets them turn parts up or down to fit the trailer.",
+    "purpose_function": "Delivering trailer music as stems lets a trailer editor or mixer adjust the balance of sections and fit the music to fast, changing picture edits without needing the original session.",
+    "practical_application": "A composer or mastering engineer exports matched, full-length stems such as drums, brass, strings, and hits at a common reference level so a trailer house can remix them under dialogue and sound effects.",
+    "category": "Stems & Deliverables",
+    "related_terms": ["Stem", "Underscore mix", "Submix", "Print master", "Reference level", "Music and effects (M&E)"],
+    "common_mistakes": ["Exporting stems that do not sum back to the full mix because of solo, mute, or plugin issues", "Delivering stems with different start points so they will not line up on import", "Baking master-bus processing onto individual stems, which blocks clean rebalancing"],
+    "scenario_contexts": ["Delivering a trailer cue to a movie trailer house for re-editing", "Supplying separate percussion and impact-hit stems for a game reveal trailer", "Rebalancing music under a voiceover in a product launch trailer"]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science (stems and deliverables)", "Huber & Runstein, Modern Recording Techniques (stems / submixing and delivery)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "37f1f257-1685-4dad-a0e4-6002181c28d5",
+   "term": "Unattended mastering",
+   "fields": {
+    "definition": "A mastering session carried out without the client physically present, where the engineer works from supplied files, reference tracks, and written notes and returns masters and revisions remotely, as opposed to attended mastering where the client sits in the room.",
+    "plain_english": "This is when the mastering engineer works on your music without you in the room. You send the mixes and notes, they master it, and send it back for approval. It is like mailing photos to a lab instead of standing at the counter while they print.",
+    "purpose_function": "It lets clients anywhere use an engineer without travel, lowering cost and scheduling effort, while the engineer relies on clear notes and reference tracks in place of live feedback.",
+    "practical_application": "A client uploads mixes, reference tracks, and revision notes; the engineer masters unattended, delivers files for approval, and handles revision rounds by email.",
+    "category": "Mastering Workflow",
+    "related_terms": ["Attended mastering", "Reference track", "Revision", "Stem mastering", "Print master", "Recall"],
+    "common_mistakes": ["Sending mixes with no reference tracks or notes, leaving the engineer to guess the intended sound", "Expecting endless free revisions as if the engineer were sitting with you", "Uploading a non-final or wrong mix version, causing a master of the wrong file"],
+    "scenario_contexts": ["An independent artist getting an album mastered by an engineer in another country", "Fast online single releases handled with email revision rounds", "A label sending final mixes to a remote engineer on a deadline"]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science (attended vs unattended workflow)", "Ballou, Handbook for Sound Engineers (mastering practice)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a3ee441d-1e16-4f6a-a0cf-0fbc8f710728",
+   "term": "Underscore mix",
+   "fields": {
+    "definition": "A mix of music intended to play underneath dialogue, narration, or on-screen action in film, TV, and broadcast, balanced and often reduced in level or spectrally shaped so it supports the scene without masking speech; it is frequently delivered as a separate stem within the music-and-effects deliverables.",
+    "plain_english": "This is a music mix made to sit quietly under talking or narration. It is balanced so you can still hear every word clearly. Think of the soft background music behind a documentary voice, filling the mood without covering the speech.",
+    "purpose_function": "The underscore mix sets mood and continuity under dialogue while staying out of the way of speech, and its separate stem lets re-recording mixers and foreign-language versions adjust or replace it.",
+    "practical_application": "A re-recording or mastering engineer delivers the underscore as its own stem at a controlled level so the dialogue stays clear and the music can be dipped or swapped for the music-and-effects version.",
+    "category": "Post & Broadcast",
+    "related_terms": ["Music and effects (M&E)", "Stem", "Dialogue", "Trailer music stem", "Ducking", "Dubbing"],
+    "common_mistakes": ["Mixing the underscore too loud so it fights the dialogue", "Leaving wide-band content that masks speech instead of carving space around vocal frequencies", "Failing to deliver it as a separate stem, which blocks foreign-language re-versioning"],
+    "scenario_contexts": ["Scoring background music under a documentary narration", "Delivering an M&E stem set for foreign-language dubbing", "Dipping music under dialogue in a TV drama re-recording mix"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (film and broadcast audio / dialogue and music)", "Huber & Runstein, Modern Recording Techniques (mixing for picture / stems)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

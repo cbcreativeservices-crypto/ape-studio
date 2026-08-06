@@ -1,0 +1,145 @@
+{
+ "batch": 120,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "b87b7e4e-904a-49c1-b3f0-7608cd2fcbca",
+   "term": "Music switch",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank. As a bare term, 'Music switch' has no established canonical meaning in mixing, post-production, console operation, or DAW workflow. A real search of professional literature and manufacturer technical documentation for the phrase returned no attested standalone definition. It is not a transparent compound of a recognised technique: 'switch' is not an established mix/edit operation applied to a source (unlike 'music stem' or 'music mute'). The nearest documented concept is a distinct, more specific proprietary object with a different name (Audiokinetic Wwise's 'Music Switch Container'), which does not establish the generic phrase. With no >=2 acceptable sources defining the term as given, it cannot be authored to standard."
+   ]
+  },
+  {
+   "id": "f88649e9-2db5-4e85-9e0c-35fd8ce51c0f",
+   "term": "Music synchronization point",
+   "fields": {
+    "definition": "In film and media scoring, a specific moment in the picture where the music is composed and edited to align exactly with an on-screen event, such as a cut, an action, or an emotional beat. Composers plan a cue around these points and hit them precisely using streamers, punches, or a click track.",
+    "plain_english": "When music is written for a film, some moments must match the picture exactly. A music sync point is one of those moments, like a drum hit landing right as a door slams. The composer marks these spots so the music lines up with the action. It keeps the sound and picture feeling connected.",
+    "purpose_function": "It gives the composer and mixer fixed targets so the music emphasizes key visual moments, tightening the rhythmic and emotional link between sound and picture.",
+    "practical_application": "During spotting, a composer notes each sync point against the timecode on a cue sheet, then uses streamers, punches, or a click so the recorded or programmed cue lands on those exact frames.",
+    "category": "Film Scoring",
+    "related_terms": ["Spotting session", "Click track", "Cue", "Timecode", "Underscore", "Hit point"],
+    "common_mistakes": ["Placing the musical accent a frame or beat late so it misses the on-screen moment it should mark", "Ignoring the sync point and letting the cue drift out of step with the picture", "Confusing a sync point with the overall tempo, when it is one fixed target the cue must reach"],
+    "scenario_contexts": ["Scoring an action scene so a musical hit lands on an impact", "Spotting a film with the director to mark where the music should punctuate the picture", "Using streamers and punches to hit sync points while recording an orchestra to picture"]
+   },
+   "sources": ["Fred Karlin & Rayburn Wright, 'On the Track: A Guide to Contemporary Film Scoring'", "David Lewis Yewdall, 'Practical Art of Motion Picture Sound'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7fe17fd0-2622-4877-a611-7e67b0693502",
+   "term": "Music transition rule",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank. As a bare term, 'Music transition rule' has no single established canonical meaning; it reads as a generic phrase ('a rule for transitioning music') rather than a defined technique. 'Transition' is an established concept, but 'rule' is not a defined mix/edit operation, so this is not a transparent compound descriptor of a recognised technique. The nearest documented concept is proprietary and differently scoped (Audiokinetic Wwise interactive-music 'Transitions', configured by transition rules), which does not establish the generic phrase. With no >=2 acceptable sources defining the term as given, it cannot be authored to standard."
+   ]
+  },
+  {
+   "id": "1e7021a2-f5c0-4c70-9e2d-b2b00ba88a79",
+   "term": "Music-and-effects mix",
+   "fields": {
+    "definition": "A mix of a program that contains all of its music and sound effects, including Foley and ambience, but no dialogue, produced so that dialogue in another language can be recorded and added later. It is a standard post-production deliverable, commonly abbreviated M&E, used for foreign-language dubbing and versioning.",
+    "plain_english": "This is a version of a show's sound that keeps the music and all the sound effects but leaves out the talking. With the voices gone, a studio in another country can add speech in its own language. The background sound still fits the picture. It saves them from rebuilding the whole soundtrack.",
+    "purpose_function": "It lets a film or TV show be re-voiced in other languages without remaking the music and effects, protecting the original sound design while supporting worldwide distribution.",
+    "practical_application": "A re-recording mixer prints the full soundtrack with the dialogue stem muted, checks that no dialogue bleeds through the effects, and delivers the M&E so dubbing studios can drop in translated dialogue.",
+    "category": "Mix Deliverables",
+    "related_terms": ["Music-and-Effects Track", "Dialogue stem", "Stems", "Re-recording mixer", "Foley", "International version"],
+    "common_mistakes": ["Leaving dialogue or narration buried in the effects so it cannot be replaced in the dub", "Forgetting to cover on-camera or crowd voices with filled or optional effects, leaving gaps when dialogue is removed", "Confusing the M&E mix with a full final mix that still contains dialogue"],
+    "scenario_contexts": ["Delivering a TV series to a distributor who will dub it into several languages", "Preparing a film for international release with localized dialogue", "Supplying an M&E alongside the final mix as part of a standard deliverables package"]
+   },
+   "sources": ["Tomlinson Holman, 'Sound for Film and Television'", "David Lewis Yewdall, 'Practical Art of Motion Picture Sound'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "68a184fe-939b-4bd6-a22c-8e3cbb8de618",
+   "term": "Music-and-Effects Track",
+   "fields": {
+    "definition": "The delivered audio track, or set of tracks, that carries a program's music-and-effects mix, holding all music and sound effects with no dialogue. Supplied with the finished program, it is the tangible deliverable used for foreign-language dubbing and archival.",
+    "plain_english": "This is the actual audio track that holds a show's music and sound effects with no talking on it. It is handed over with the finished program. Dubbing studios use it to add voices in other languages. Archives also keep it in case the sound is needed again.",
+    "purpose_function": "It packages the dialogue-free soundtrack as a ready-to-use asset, so localization teams and archives always have the music and effects on hand without the original dialogue.",
+    "practical_application": "When wrapping a project, the mixer exports the M&E as a separate track or file, labels the channels clearly, and includes it in the delivery package alongside the final mix and stems.",
+    "category": "Mix Deliverables",
+    "related_terms": ["Music-and-effects mix", "Dialogue stem", "Stems", "Deliverables", "Re-recording mixer", "Print master"],
+    "common_mistakes": ["Treating the M&E track as optional and leaving it out of the delivery package", "Mislabeling channels so the dubbing house cannot tell an M&E from a full mix", "Baking in dialogue reverb or effects that reveal the missing dialogue"],
+    "scenario_contexts": ["Assembling a broadcast deliverables package that must include an M&E track", "A streaming platform requires a dialogue-free M&E for its localization pipeline", "Archiving a film so its music and effects can be reused for future versions"]
+   },
+   "sources": ["Tomlinson Holman, 'Sound for Film and Television'", "David Lewis Yewdall, 'Practical Art of Motion Picture Sound'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "254edb45-d4ad-4a9a-a667-ef790ad2d605",
+   "term": "Music-only stem",
+   "fields": {
+    "definition": "A stem containing only the music elements of a mix, bounced as a separate submix in time with the full program so it can be recombined with the other stems. It isolates music from dialogue and effects for mixing, delivery, and re-versioning.",
+    "plain_english": "A stem is a submix of just one part of the whole mix. A music-only stem holds just the music, with no voices or sound effects. Because it lines up in time with the other parts, engineers can add it back or change it on its own. That makes later changes to the music easy.",
+    "purpose_function": "It separates the music so its level or content can be changed without touching dialogue or effects, supporting mastering, trailer edits, and localized versions.",
+    "practical_application": "An engineer routes all music channels to one bus and exports it as a time-aligned stem, delivering it with the dialogue and effects stems so others can rebalance or rebuild the mix.",
+    "category": "Mix Deliverables",
+    "related_terms": ["Stems", "Dialogue stem", "Music-and-effects mix", "Submix", "Bus", "Mixdown"],
+    "common_mistakes": ["Rendering the music stem out of time so it will not line up when combined with the other stems", "Including reverb or bus processing that double-counts when the stems are summed", "Confusing a stem with a single track or with the full final mix"],
+    "scenario_contexts": ["Delivering separate music, dialogue, and effects stems for a film mix", "Providing a music-only stem so a trailer editor can feature the score", "Preparing stems that let a mastering engineer nudge the music level"]
+   },
+   "sources": ["Bobby Owsinski, 'The Mixing Engineer's Handbook'", "Tomlinson Holman, 'Sound for Film and Television'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "14815bef-4340-4be4-9246-1f7947f8bcb4",
+   "term": "Music-recording engineer",
+   "fields": {
+    "definition": "An audio engineer who specializes in capturing musical performances, handling microphone selection and placement, signal chains, the recording system, and level and take management during tracking sessions. The role centers on recording music and is distinct from mixing, mastering, or live-sound engineering, though duties often overlap.",
+    "plain_english": "This is the person who records music in a studio. They choose and place the microphones, set the levels, and run the recording gear during a session. Their job is to capture a clean, good-sounding performance. Other engineers may later mix or master what they recorded.",
+    "purpose_function": "The role exists to capture high-quality source recordings of musicians, giving the mixing and mastering stages the best possible raw material to work with.",
+    "practical_application": "In a tracking session, the music-recording engineer sets up mics on the drum kit and instruments, sets gain and headphone monitor mixes, and records each take while watching for clipping and noise.",
+    "category": "Roles & Workflow",
+    "related_terms": ["Tracking", "Mixing engineer", "Mastering engineer", "Signal chain", "Gain staging", "Microphone technique"],
+    "common_mistakes": ["Confusing the recording engineer with the mixing or mastering engineer, who work at later stages", "Setting input gain too hot and clipping the recording, or too low and raising the noise floor", "Neglecting microphone placement and expecting to fix it in the mix later"],
+    "scenario_contexts": ["Recording a band's tracking session in a studio", "Capturing an orchestra with a mic setup for a film score", "Setting up headphone mixes so musicians can hear themselves while recording"]
+   },
+   "sources": ["David Miles Huber & Robert Runstein, 'Modern Recording Techniques'", "Glen Ballou (ed.), 'Handbook for Sound Engineers'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c7d8489d-994b-447b-8783-000fbee98ea0",
+   "term": "Musical stinger",
+   "fields": {
+    "definition": "A short, sharp musical phrase or chord used to punctuate a moment, mark a transition, or cue an emotional beat in a broadcast, film, podcast, or stage production. Stingers are brief accents rather than full cues, often serving as branding or to underline an on-screen action.",
+    "plain_english": "A stinger is a very short burst of music, sometimes just one dramatic chord. It marks a moment, like the sharp sound when a big reveal happens on a TV show. It can also act like a jingle between segments. Its job is to grab attention fast.",
+    "purpose_function": "It exists to punctuate or brand a moment quickly, pulling the listener's attention to a transition, reveal, or emotional beat without the length of a full music cue.",
+    "practical_application": "A broadcast or podcast editor drops a stinger on the timeline to bridge two segments or hit a dramatic line, then trims and levels it so it lands cleanly with the picture or speech.",
+    "category": "Music Editing",
+    "related_terms": ["Cue", "Bumper", "Underscore", "Sync point", "Crossfade", "Sound effect"],
+    "common_mistakes": ["Setting the stinger too loud so it startles the listener or masks nearby dialogue", "Placing the stinger a beat late so it misses the moment it should punctuate", "Overusing stingers until they lose impact and clutter the edit"],
+    "scenario_contexts": ["Adding a dramatic chord as a reveal happens on a reality show", "Using a short musical sting between segments of a podcast", "Punctuating a scene change or punchline in a stage or radio production"]
+   },
+   "sources": ["Stanley R. Alten, 'Audio in Media'", "Glen Ballou (ed.), 'Handbook for Sound Engineers'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a7bcc453-22c6-42d4-92e0-9c4999a53aa5",
+   "term": "Mute automation pass",
+   "fields": {
+    "definition": "An automation pass in which the engineer writes mute on and off moves for one or more channels along the timeline, so sections silence or open automatically during playback. It is one dedicated stage of writing automation, focused on mutes rather than fader, pan, or plug-in moves.",
+    "plain_english": "Automation lets the DAW remember and replay your moves. A mute automation pass is when you go through the song and record where each track turns off and on. After that, the tracks mute and unmute by themselves on playback. It helps clean up parts you do not want heard.",
+    "purpose_function": "It automates the silencing of unused or noisy sections and controlled entrances, cleaning up the mix and removing bleed or noise without muting by hand on every playback.",
+    "practical_application": "An engineer arms mute automation on a track, plays the song, and clicks the mute where the part should drop out or come back in, then edits the written mute points for tightness.",
+    "category": "Automation",
+    "related_terms": ["Automation", "Fader automation", "Mute", "Automation mode", "DAW", "Crossfade"],
+    "common_mistakes": ["Writing mutes so tight they clip off note tails, reverb, or breaths", "Leaving the track in a write mode and overwriting good mute data on the next pass", "Using a hard mute where a short fade would avoid clicks at the mute point"],
+    "scenario_contexts": ["Muting a vocal track between phrases to remove headphone bleed and noise", "Automating instrument entrances and exits across an arrangement", "Cleaning up a multitrack by silencing unused sections before the final mix"]
+   },
+   "sources": ["Bobby Owsinski, 'The Mixing Engineer's Handbook'", "Roey Izhaki, 'Mixing Audio: Concepts, Practices and Tools'"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,329 @@
+{
+ "batch": 404,
+ "topic": "Audio Plugin & DSP Development",
+ "authored": [
+  {
+   "id": "321c2604-1a6c-46b3-9fc2-4559c4b6cb07",
+   "term": "Audio plugin architecture",
+   "fields": {
+    "definition": "The structural design of an audio plugin, defining how its real-time audio-processing component, its parameter and state management, and its editor or GUI are organized and how they communicate with the host through a defined plugin API; VST3, for example, separates the audio processor from the edit controller.",
+    "plain_english": "It is the way a plugin is built inside, splitting the sound-processing part from the on-screen controls. Think of it like a kitchen where the cooking and the order counter are kept apart but still work together.",
+    "purpose_function": "It keeps the time-critical audio path isolated from slower tasks like GUI updates and state handling, so the plugin runs reliably in real time and integrates cleanly with any compliant host.",
+    "practical_application": "A developer follows the chosen format's architecture when structuring a plugin, keeping DSP in the processing callback and keeping GUI, preset and parameter logic in their own components.",
+    "category": "Plugin architecture",
+    "related_terms": [
+     "Audio Units plugin",
+     "CLAP plugin",
+     "Avid Audio Extension plugin",
+     "Audio processing block",
+     "Automation parameter",
+     "Block processing routine"
+    ],
+    "common_mistakes": [
+     "Putting GUI or file-access code inside the audio processing path, which blocks the real-time thread and causes dropouts",
+     "Assuming one format's structure fits all; VST3 splits the processor and controller while other formats combine them differently",
+     "Storing plugin state only in the GUI, so preset save and recall break when the editor is closed"
+    ],
+    "scenario_contexts": [
+     "Deciding how to separate DSP from GUI when starting a new plugin project",
+     "Porting a plugin to another format and mapping its structure onto VST3's processor and controller split",
+     "Debugging a dropout traced to heavy work running on the audio thread"
+    ]
+   },
+   "sources": [
+    "Steinberg VST3 SDK documentation",
+    "JUCE AudioProcessor class documentation",
+    "Pirkle, Designing Audio Effect Plugins in C++"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "88ea859b-922c-405a-bf23-8a6fd7a9bc63",
+   "term": "Audio processing block",
+   "fields": {
+    "definition": "A block (buffer) of consecutive audio samples, per channel, that a plugin processes together in a single processing call rather than one sample at a time; its length, the block or buffer size, is chosen by the host and can vary between calls.",
+    "plain_english": "It is a small chunk of audio samples the plugin handles all at once, instead of one sample at a time. It is like washing a batch of dishes together rather than one plate at a time.",
+    "purpose_function": "Processing samples in blocks amortizes per-call overhead and enables efficient, vectorized DSP, which is why real-time audio systems hand plugins buffers of samples instead of individual samples.",
+    "practical_application": "A developer writes DSP that loops over the samples in each block the host delivers, and must handle whatever block size the host chooses, including changes at runtime.",
+    "category": "Real-time processing",
+    "related_terms": [
+     "Block processing routine",
+     "Sample rate",
+     "Buffer size",
+     "Audio plugin architecture",
+     "CPU optimization",
+     "Delay compensation reporting"
+    ],
+    "common_mistakes": [
+     "Assuming the block size is fixed; hosts can change it between calls and may send very small or zero-sample blocks",
+     "Writing DSP that only works at one block size instead of any buffer length the host sends",
+     "Confusing block size with latency or sample rate; they are separate settings"
+    ],
+    "scenario_contexts": [
+     "Handling a host that sends variable block sizes during playback",
+     "Testing a plugin at very small buffer sizes for low-latency live use",
+     "Designing an FFT-based effect that must collect enough samples across several blocks"
+    ]
+   },
+   "sources": [
+    "JUCE AudioProcessor processBlock documentation",
+    "Steinberg VST3 SDK documentation (ProcessData)",
+    "Zolzer, DAFX: Digital Audio Effects"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b54375c5-af76-4845-87ea-74f7037dce8b",
+   "term": "Audio Units plugin",
+   "fields": {
+    "definition": "Apple's native audio plugin format, part of Core Audio, used to add effects and instruments to macOS and iOS host applications; it exists as the older Component Manager-based AUv2 and the current AUv3, which packages the plugin as an App Extension built on the AUAudioUnit class.",
+    "plain_english": "It is Apple's type of audio plugin, used on Mac and iPhone apps like Logic and GarageBand. It is one of the standard shapes an effect or instrument can take so the app can load it.",
+    "purpose_function": "It provides a standardized Apple-platform interface so any compliant host, such as Logic Pro or GarageBand, can load and run third-party effects and instruments.",
+    "practical_application": "A macOS or iOS developer builds and validates an Audio Unit, for example with Apple's auval tool, so it appears in hosts like Logic Pro, and users install it to expand their DAW.",
+    "category": "Plugin formats",
+    "related_terms": [
+     "Audio plugin architecture",
+     "CLAP plugin",
+     "Avid Audio Extension plugin",
+     "Automation parameter",
+     "Delay compensation reporting",
+     "Block processing routine"
+    ],
+    "common_mistakes": [
+     "Assuming an Audio Unit will load in Pro Tools; Pro Tools uses AAX, not AU",
+     "Confusing older AUv2 (Component Manager) with AUv3 App Extensions, which have different packaging and sandboxing",
+     "Thinking Audio Units run on Windows; the format is macOS and iOS only"
+    ],
+    "scenario_contexts": [
+     "Building an AUv3 so an effect can run inside GarageBand on iPad",
+     "Validating a plugin with Apple's auval tool before release",
+     "Explaining to a Pro Tools user why an Audio Unit will not appear in their DAW"
+    ]
+   },
+   "sources": [
+    "Apple Audio Unit documentation (Audio Unit Programming Guide / AUAudioUnit)",
+    "Apple Core Audio / AudioToolbox framework documentation",
+    "Pirkle, Designing Audio Effect Plugins in C++"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ff1600a4-303a-4595-a871-1aa39ea4517e",
+   "term": "Automation parameter",
+   "fields": {
+    "definition": "A plugin parameter exposed to the host so its value can be recorded, edited and played back over time as automation; formats typically represent it as a normalized value and support sample-accurate changes so automation can move the control smoothly within a processing block.",
+    "plain_english": "It is a plugin control, like a knob, that the DAW can record and replay over time. So the sound can change on its own during a song, with no hands on the knob.",
+    "purpose_function": "It lets users and the host control a plugin's settings dynamically across a project, so effects and instrument settings can change automatically and repeatably during playback.",
+    "practical_application": "A developer declares each automatable control as a parameter the host can see, reads its per-block or sample-accurate value during processing, and adds smoothing to avoid clicks.",
+    "category": "Parameters & automation",
+    "related_terms": [
+     "Audio plugin architecture",
+     "Audio Units plugin",
+     "Parameter smoothing",
+     "Block processing routine",
+     "Delay compensation reporting",
+     "Sample rate"
+    ],
+    "common_mistakes": [
+     "Reading the parameter only once per block and ignoring sample-accurate automation points within the block",
+     "Changing a parameter value abruptly without smoothing, causing zipper noise or clicks",
+     "Exposing internal values in raw units instead of the host's normalized range where the format requires it"
+    ],
+    "scenario_contexts": [
+     "Recording a filter-cutoff sweep as automation in a DAW",
+     "Implementing sample-accurate parameter changes so fast automation sounds smooth",
+     "Adding parameter smoothing to remove clicks when a user drags a fader"
+    ]
+   },
+   "sources": [
+    "Steinberg VST3 SDK documentation (parameters and automation)",
+    "JUCE AudioProcessorParameter documentation",
+    "Apple Audio Unit documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2d2b1206-3408-4519-b229-0ff7545ab8c1",
+   "term": "Avid Audio Extension plugin",
+   "fields": {
+    "definition": "AAX (Avid Audio eXtension) is Avid's plugin format for Pro Tools, which replaced the earlier RTAS and TDM formats; it comes in AAX Native, which runs on the host computer's CPU, and AAX DSP, which runs on Pro Tools HDX DSP-accelerator cards.",
+    "plain_english": "It is the plugin format made for Avid Pro Tools, called AAX. A plugin must be in this shape for Pro Tools to load and run it.",
+    "purpose_function": "It is the format a plugin must use to run in Pro Tools, and its DSP variant lets heavy processing run on dedicated HDX hardware for low, fixed latency in large sessions.",
+    "practical_application": "A developer targeting Pro Tools builds and digitally signs an AAX plugin, choosing AAX Native, or also AAX DSP, depending on whether HDX acceleration is needed.",
+    "category": "Plugin formats",
+    "related_terms": [
+     "Audio Units plugin",
+     "CLAP plugin",
+     "Audio plugin architecture",
+     "Automation parameter",
+     "Delay compensation reporting",
+     "Block processing routine"
+    ],
+    "common_mistakes": [
+     "Confusing AAX Native, which runs on the host CPU, with AAX DSP, which runs on Pro Tools HDX cards",
+     "Assuming AAX replaced only RTAS; it replaced both RTAS and TDM",
+     "Expecting an AAX plugin to load in DAWs other than Pro Tools"
+    ],
+    "scenario_contexts": [
+     "Packaging an effect as AAX so it loads in Pro Tools",
+     "Choosing AAX DSP to offload processing to HDX hardware in a large session",
+     "Digitally signing an AAX plugin so Pro Tools will accept it"
+    ]
+   },
+   "sources": [
+    "Avid AAX SDK documentation",
+    "Pirkle, Designing Audio Effect Plugins in C++"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "54729bba-4e8a-48ac-b4e5-caaf5396e5f7",
+   "term": "Block processing routine",
+   "fields": {
+    "definition": "The plugin function or callback the host invokes repeatedly to process each incoming audio block, such as VST3's process or JUCE's processBlock; it runs on a high-priority real-time audio thread and must complete each block within the available time budget.",
+    "plain_english": "It is the part of the code that runs on each new chunk of audio and does the real work. The host calls it again and again to keep the sound flowing.",
+    "purpose_function": "It is where the plugin's actual DSP happens, called once per buffer so the plugin can transform the streaming audio in real time as the host requests each block.",
+    "practical_application": "A developer implements the processing routine to read the input buffer, apply the DSP, and write the output, keeping it real-time safe by avoiding allocation, locks and file I/O.",
+    "category": "Real-time processing",
+    "related_terms": [
+     "Audio processing block",
+     "Audio plugin architecture",
+     "CPU optimization",
+     "Sample rate",
+     "Buffer size",
+     "Automation parameter"
+    ],
+    "common_mistakes": [
+     "Allocating memory, locking a mutex, or doing file or GUI work inside the routine, which can cause audio glitches",
+     "Assuming the callback runs on the main thread; it runs on a high-priority real-time audio thread",
+     "Hard-coding a block size instead of using the sample count the host passes in each call"
+    ],
+    "scenario_contexts": [
+     "Writing the process callback that filters each incoming buffer",
+     "Moving allocation out of the callback into a prepare step to keep it real-time safe",
+     "Handling both audio and incoming MIDI inside one processing call"
+    ]
+   },
+   "sources": [
+    "JUCE AudioProcessor documentation",
+    "Steinberg VST3 SDK documentation",
+    "Pirkle, Designing Audio Effect Plugins in C++"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b8f69df4-7aab-483e-93d9-bedcd1d41aef",
+   "term": "CLAP plugin",
+   "fields": {
+    "definition": "CLAP (CLever Audio Plugin) is an open-source audio plugin standard with a plain C application binary interface, created by Bitwig and u-he and released under a permissive (MIT) license; it is extension-based, so hosts and plugins negotiate optional capabilities beyond a small core.",
+    "plain_english": "CLAP is a newer, free and open plugin format that any maker can use without a license. It gives effects and instruments another standard way to plug into music software.",
+    "purpose_function": "It offers a free, openly specified plugin format so any developer can create effects and instruments and any host can support them without licensing restrictions, with room to add features through extensions.",
+    "practical_application": "A developer adds a CLAP build alongside other formats, implementing the core plus the extensions they need, so the plugin loads in CLAP-capable hosts such as Bitwig Studio or Reaper.",
+    "category": "Plugin formats",
+    "related_terms": [
+     "Audio Units plugin",
+     "Avid Audio Extension plugin",
+     "Audio plugin architecture",
+     "Automation parameter",
+     "Delay compensation reporting",
+     "Block processing routine"
+    ],
+    "common_mistakes": [
+     "Assuming CLAP needs a paid license; it is open source under a permissive MIT license",
+     "Thinking a host must support every extension; CLAP is extension-based and hosts implement only what they need",
+     "Assuming universal support; adoption has grown, but not every DAW loads CLAP yet"
+    ],
+    "scenario_contexts": [
+     "Adding a CLAP build target alongside VST3 for a new plugin",
+     "Using a CLAP extension for per-note modulation in a supporting host",
+     "Loading a CLAP plugin in a DAW such as Bitwig Studio or Reaper that supports it"
+    ]
+   },
+   "sources": [
+    "CLAP audio plugin specification and SDK documentation (free-audio/clap, MIT license)",
+    "u-he technical documentation on the CLAP plugin format"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ca46abeb-88a8-4f38-95ec-19e79c4e962a",
+   "term": "CPU optimization",
+   "fields": {
+    "definition": "The practice of reducing an audio plugin's processor load so it meets its real-time deadline with headroom, using techniques such as efficient algorithms, block processing, SIMD vectorization, avoiding denormal numbers, and eliminating allocation and locking on the audio thread, guided by profiling.",
+    "plain_english": "It means writing plugin code so it does its job using as little computer power as it can. That lets you run more plugins at once before the audio starts to glitch.",
+    "purpose_function": "It exists so a plugin uses as little CPU as possible while still meeting each real-time deadline, letting users run more instances at once and at lower buffer sizes without dropouts.",
+    "practical_application": "A developer profiles the plugin to find hotspots, then applies targeted fixes such as vectorizing inner loops or enabling flush-to-zero for denormals, and re-measures to confirm the gain.",
+    "category": "Performance optimization",
+    "related_terms": [
+     "Block processing routine",
+     "Audio processing block",
+     "Buffer size",
+     "Sample rate",
+     "Audio plugin architecture",
+     "Delay compensation reporting"
+    ],
+    "common_mistakes": [
+     "Optimizing blindly without profiling first, so effort goes to code that is not the real bottleneck",
+     "Leaving denormal numbers unhandled, which can cause large CPU spikes on some processors",
+     "Trading audio quality for speed in ways that add aliasing or distortion the user did not ask for",
+     "Allocating or locking on the audio thread as a shortcut, which risks dropouts"
+    ],
+    "scenario_contexts": [
+     "Profiling a synth to find and speed up its heaviest processing",
+     "Adding SIMD to a filter to process several samples at once",
+     "Enabling flush-to-zero to stop denormal-related CPU spikes in a decaying reverb tail"
+    ]
+   },
+   "sources": [
+    "Pirkle, Designing Audio Effect Plugins in C++",
+    "JUCE documentation (audio performance and real-time safety)",
+    "Zolzer, DAFX: Digital Audio Effects"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "46d309cf-700b-488a-91d7-d6e38a86267f",
+   "term": "Delay compensation reporting",
+   "fields": {
+    "definition": "The mechanism by which a plugin reports the processing latency it introduces, in samples or seconds depending on the format, to the host through the format's latency interface, such as VST3's getLatencySamples or an Audio Unit's latency property, so the host can apply plugin delay compensation.",
+    "plain_english": "It is when a plugin tells the DAW how much delay it adds to the sound. The DAW then nudges the other tracks so everything still lines up in time.",
+    "purpose_function": "It lets the host know each plugin's delay so it can time-align all tracks, called plugin delay compensation, keeping processed and unprocessed signals phase-coherent and in sync.",
+    "practical_application": "A developer sets the plugin's reported latency to match delays from lookahead, FFT framing or oversampling, and updates the report if that latency changes so the host recompensates.",
+    "category": "Latency & timing",
+    "related_terms": [
+     "Audio plugin architecture",
+     "Block processing routine",
+     "Audio processing block",
+     "Buffer size",
+     "Automation parameter",
+     "CPU optimization"
+    ],
+    "common_mistakes": [
+     "Reporting a latency that does not match the plugin's real delay, which pushes tracks out of alignment",
+     "Changing latency on the fly without telling the host, so its compensation goes stale",
+     "Forgetting that not all hosts recompensate instantly, so large latency changes can cause a brief timing shift"
+    ],
+    "scenario_contexts": [
+     "Reporting an FFT effect's framing latency so the host can align tracks",
+     "Debugging why a mix sounds smeared after adding a linear-phase EQ",
+     "Updating reported latency when a plugin switches to a higher oversampling mode"
+    ]
+   },
+   "sources": [
+    "Steinberg VST3 SDK documentation (IAudioProcessor getLatencySamples)",
+    "JUCE AudioProcessor getLatencySamples documentation",
+    "Apple Audio Unit documentation (kAudioUnitProperty_Latency)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

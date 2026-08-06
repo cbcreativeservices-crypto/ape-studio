@@ -1,0 +1,159 @@
+{
+ "batch": 218,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "5eb01943-46e4-4834-b308-339a04249876",
+   "term": "Designed ambience",
+   "fields": {
+    "definition": "A background atmosphere (atmos/backgrounds) that a sound designer deliberately constructs by layering and processing multiple elements — recordings, loops, spot sounds and tonal beds — rather than using a single location recording, in order to create a specific stylized or emotional sense of place.",
+    "plain_english": "A background sound world that a sound designer builds by hand, mixing many sounds together instead of using one plain recording of a real place. It is like painting a scene's mood rather than taking a single photo of it.",
+    "purpose_function": "It gives a scene a controllable, evocative sense of environment that raw location recordings cannot, supporting mood, story and the feeling of a place.",
+    "practical_application": "The designer layers loops, textures and spot sounds in the DAW and processes them to sit under dialogue and effects, delivering the result in the backgrounds/ambience stem.",
+    "category": "Ambience & Backgrounds",
+    "related_terms": ["Room tone", "Backgrounds (BGs)", "Ambience bed", "Sound design", "Foley", "Stem"],
+    "common_mistakes": ["Assuming a single field recording is enough for a rich, story-specific atmosphere", "Building the ambience so loud or busy that it masks dialogue", "Forgetting to check the designed ambience for continuity across cuts and scene changes"],
+    "scenario_contexts": ["Building an alien jungle atmosphere for a sci-fi film from layered animal, wind and synth textures", "Creating a tense, hollow room tone for a thriller interior", "Designing a stylized city backdrop that shifts mood as the story turns"]
+   },
+   "sources": ["Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema (Sonnenschein)", "Sound for Film and Television (Holman)", "The Practical Art of Motion Picture Sound (Yewdall)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d1c7cf8b-c62a-46e6-bef3-d0576d611d53",
+   "term": "Designed sound effect",
+   "fields": {
+    "definition": "A sound effect intentionally constructed by the sound designer from layered and processed source recordings and synthesis, rather than taken as-is from a library or a single field recording, often to create sounds that do not exist naturally.",
+    "plain_english": "A sound effect that a sound designer builds from scratch by combining and shaping other sounds. It is used for things that have no real sound, like a spaceship or a magic spell.",
+    "purpose_function": "It lets the team create sounds that fit the picture and story exactly — including impossible or fantastical ones — that no single recording could provide.",
+    "practical_application": "The designer layers, pitches and processes recordings in a DAW to build the effect, then syncs it to picture on an effects track.",
+    "category": "Sound Design",
+    "related_terms": ["Sound design", "Hard effects", "Foley", "Sound library", "Layering", "Sweetener"],
+    "common_mistakes": ["Relying on a single unedited library sound and calling it a designed effect", "Layering so many elements that the sound becomes muddy or unfocused", "Not tuning the effect's pitch and length to match the on-screen action"],
+    "scenario_contexts": ["Building a spaceship engine from layered synth, animal and machine sounds", "Creating a creature roar that no real animal makes", "Designing a signature weapon sound for an action sequence"]
+   },
+   "sources": ["Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema (Sonnenschein)", "The Sound Effects Bible (Viers)", "The Practical Art of Motion Picture Sound (Yewdall)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4254d7f2-89b4-4258-901b-5626607e3874",
+   "term": "Destruction sound",
+   "fields": {
+    "definition": "A sound effect, or group of layered effects, depicting something breaking, collapsing, shattering or being demolished — impacts, cracks, debris and rubble — usually built as a designed effect for scenes of damage or destruction.",
+    "plain_english": "The sound of something being smashed, broken or knocked down, like a wall falling or a car crash. Sound designers usually build it by layering many crash and debris sounds together.",
+    "purpose_function": "It makes on-screen destruction feel powerful and believable, adding the weight, detail and impact that big damage needs.",
+    "practical_application": "The designer layers impact, crack and debris/rubble elements synced to the picture, often adding low-end for weight and using automation to shape the hit.",
+    "category": "Sound Effects",
+    "related_terms": ["Hard effects", "Impact", "Debris", "Sound design", "Layering", "Sweetener"],
+    "common_mistakes": ["Using one crash sound instead of layered impact, crack and debris elements", "Leaving out the settling debris tail so the destruction ends too abruptly", "Adding so much low-end weight that it overloads the mix or clips"],
+    "scenario_contexts": ["Building the sound of a building collapsing in a disaster film", "Creating a car crash with metal impacts and shattering glass", "Designing a wall being smashed apart in an action scene"]
+   },
+   "sources": ["The Sound Effects Bible (Viers)", "The Practical Art of Motion Picture Sound (Yewdall)", "Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema (Sonnenschein)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6b805c55-33bc-4ef3-b449-1b08c73bf7db",
+   "term": "Dialogue adaptor",
+   "fields": {
+    "definition": "In dubbing and localization, the writer who adapts a translated dialogue script so the new-language lines match the on-screen actors' lip movements, timing and performance; also called a dialogue adapter or dialogue writer.",
+    "plain_english": "In dubbing, the person who rewrites translated lines so they fit the actor's mouth movements and timing on screen. They make the new-language words look and sound natural against the picture.",
+    "purpose_function": "It lets a film or show be re-voiced in another language while keeping lip-sync, timing and meaning believable for the audience.",
+    "practical_application": "Working from a translation and the picture, the adaptor crafts lines that lip-sync, which voice actors then record in a dubbing or ADR session.",
+    "category": "Dubbing & Localization",
+    "related_terms": ["Dubbing", "ADR", "Lip-sync", "Voice-over", "Localization", "Dialogue asset"],
+    "common_mistakes": ["Confusing the adaptor's job with a literal translator, ignoring lip-sync and timing", "Writing lines that are accurate but do not fit the actor's mouth movements", "Losing the tone or intent of the original performance while chasing sync"],
+    "scenario_contexts": ["Adapting a translated film script so dubbed lines match the actors' lips", "Reworking a TV series dialogue for a foreign-language release", "Shortening or lengthening translated lines so they fit each on-screen mouth movement"]
+   },
+   "sources": ["Sound for Film and Television (Holman)", "The Practical Art of Motion Picture Sound (Yewdall)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9c871ae5-0cc6-4ba1-a4bc-56446318894e",
+   "term": "Dialogue ambience matching",
+   "fields": {
+    "definition": "The process of matching the background ambience and room tone under dialogue so that edits between takes, microphones, or ADR and production sound are seamless and the background does not audibly jump.",
+    "plain_english": "Keeping the quiet background sound behind speech even, so cuts between different takes or recordings don't jump. It is like matching paint so a patched wall blends in.",
+    "purpose_function": "It keeps dialogue edits invisible by making sure the background under every line stays consistent in level and character.",
+    "practical_application": "The dialogue editor fills gaps and smooths joins with matching room tone or ambience and small level moves so the transitions are inaudible.",
+    "category": "Dialogue Editing",
+    "related_terms": ["Room tone", "ADR", "Dialogue editing", "Backgrounds (BGs)", "Fill", "Perspective"],
+    "common_mistakes": ["Cutting between takes with different backgrounds and leaving an audible jump", "Forgetting to record or gather matching room tone on location", "Pasting fill that is the wrong level or tone for the surrounding lines"],
+    "scenario_contexts": ["Smoothing a scene cut where two takes have different air-conditioner hum", "Blending an ADR line into surrounding production dialogue", "Filling a silent gap under dialogue with matching room tone"]
+   },
+   "sources": ["Sound for Film and Television (Holman)", "The Practical Art of Motion Picture Sound (Yewdall)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "159b8b1a-4d8b-4acd-b37d-80490f3ea704",
+   "term": "Dialogue asset",
+   "fields": {
+    "definition": "An individual dialogue audio element in the post workflow — such as a production recording, an ADR line, or a dialogue file or stem — that is managed and tracked as a discrete asset for editing, mixing and delivery.",
+    "plain_english": "A single dialogue sound file used in a project, like one recorded line of speech. It is named and tracked so the team can find and use it in editing and mixing.",
+    "purpose_function": "It lets spoken-word material be organized and tracked so it can be edited, mixed and delivered reliably across a large project.",
+    "practical_application": "Editors import, label and version dialogue assets in the DAW and media management, keeping each tied to its scene, take and metadata.",
+    "category": "Dialogue",
+    "related_terms": ["Dialogue stem", "ADR", "Production sound", "Metadata", "Deliverables", "Media management"],
+    "common_mistakes": ["Naming assets inconsistently so lines cannot be found later", "Losing the link between an asset and its scene, take or metadata", "Delivering the wrong version of a dialogue asset because versions were not tracked"],
+    "scenario_contexts": ["Tracking every recorded line of a scene through editing and the final mix", "Managing ADR lines as assets tied to their original production takes", "Handing off labeled dialogue assets as part of a deliverables package"]
+   },
+   "sources": ["Sound for Film and Television (Holman)", "The Practical Art of Motion Picture Sound (Yewdall)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5e0c0b1c-0124-4028-abbf-d1d6639fd3d5",
+   "term": "Dialogue compression",
+   "fields": {
+    "definition": "The application of dynamic-range compression to dialogue, reducing the level difference between loud and soft speech so the voice stays consistently intelligible and sits steadily in the mix.",
+    "plain_english": "Using a compressor to even out speech, so loud words don't jump out and quiet words don't get lost. It keeps the voice at a steady, easy-to-hear level.",
+    "purpose_function": "It keeps dialogue clear and consistent under music and effects and helps meet loudness targets without constant manual level rides.",
+    "practical_application": "The mixer sets a modest ratio and threshold on the dialogue track or bus, usually after manual levelling, to control dynamics for intelligibility.",
+    "category": "Dialogue Processing",
+    "related_terms": ["Compression", "Dialogue levelling", "De-essing", "Intelligibility", "Loudness", "Automation"],
+    "common_mistakes": ["Over-compressing so the dialogue sounds flat, lifeless or pumping", "Using compression to fix level problems that manual levelling should handle first", "Setting the attack so fast that consonants lose their clarity and punch"],
+    "scenario_contexts": ["Evening out an actor who whispers then shouts in the same scene", "Keeping narration steady under a music bed", "Controlling dialogue dynamics to hit a broadcast loudness target"]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Rane technical notes (Dynamics Processors)", "Sound for Film and Television (Holman)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "28b5ae62-ef1a-4d0b-acfe-45bca52896df",
+   "term": "Dialogue de-essing",
+   "fields": {
+    "definition": "The use of a de-esser — a frequency-selective compressor — to reduce harsh sibilant sounds (s, sh, t) in dialogue without dulling the rest of the voice.",
+    "plain_english": "Taming the sharp 'sss' and 'shh' sounds in speech so they aren't harsh, without making the whole voice sound dull. A de-esser turns down just those hissy bits when they happen.",
+    "purpose_function": "It controls excessive sibilance that can sound harsh or tiring, especially after EQ or compression has emphasized the high frequencies.",
+    "practical_application": "The mixer inserts a de-esser on dialogue, tunes it to the sibilant band (roughly 4–10 kHz) and sets the threshold so only strong esses are reduced.",
+    "category": "Dialogue Processing",
+    "related_terms": ["De-esser", "Sibilance", "Compression", "EQ", "Dialogue editing", "Intelligibility"],
+    "common_mistakes": ["Setting the de-esser too hard so the voice develops a lisp", "Tuning the band to the wrong frequency and dulling the whole voice", "De-essing to fix a problem that a different mic or EQ choice should address"],
+    "scenario_contexts": ["Softening harsh esses on a bright, sibilant narrator", "Cleaning up sibilance added by high-frequency EQ boosts", "Controlling a close-miked actor whose s sounds spit in the mix"]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Rane technical notes (Dynamics Processors)", "Sound for Film and Television (Holman)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fe9e60b3-a5c1-49f2-8d51-5201c70c95b3",
+   "term": "Dialogue depth",
+   "fields": {
+    "definition": "The perceived front-to-back distance or spatial perspective of a voice in a scene, created through level, reverb, EQ and perspective cues so that dialogue matches the character's distance and the room shown on screen.",
+    "plain_english": "How close or far a voice sounds in a scene. Mixers use volume, echo and tone to make speech feel near the camera or far away, matching what we see.",
+    "purpose_function": "It matches dialogue perspective to the picture so voices feel like they truly belong in the on-screen space.",
+    "practical_application": "The mixer matches mic perspective and adds reverb, EQ and level so a character across a room sounds farther than one in close-up.",
+    "category": "Dialogue Mixing",
+    "related_terms": ["Perspective", "Reverb", "Room tone", "Dialogue editing", "Panning", "Ambience"],
+    "common_mistakes": ["Keeping every line close and dry regardless of how far the character is on screen", "Adding so much reverb for depth that dialogue loses clarity", "Mismatching perspective between production sound and ADR in the same scene"],
+    "scenario_contexts": ["Making a character speaking across a large hall sound distant", "Matching an ADR line to the room perspective of production dialogue", "Pulling a voice forward for a close-up and pushing it back on a wide shot"]
+   },
+   "sources": ["Sound for Film and Television (Holman)", "The Practical Art of Motion Picture Sound (Yewdall)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -47,7 +47,7 @@ const WAVE = colors.amber; //      #ffc64d — the signal / stored values accent
 const ACCENT_BLUE = '#6fa8ff'; //  energy / original samples
 const ACCENT_GREEN = '#5bff85'; // good / reconstruction
 const ACCENT_RED = '#ff6b5e'; //   problem / error
-const GRID = '#2c2c33';
+const GRID = '#3a3b46';
 const BG = '#0c0c0f';
 
 /** Worklet-safe deterministic hash (foundations idiom) — seeded, reproducible. */

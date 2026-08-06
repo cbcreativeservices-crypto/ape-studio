@@ -1,0 +1,159 @@
+{
+ "batch": 311,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "f6861a0d-eb06-419c-b943-689911e7091e",
+   "term": "Buried",
+   "fields": {
+    "definition": "A mix descriptor for an instrument or vocal that sits too low in level, or is masked by competing sounds, so it loses its intended presence and detail and is hard to pick out in the mix.",
+    "plain_english": "Buried means a sound is too quiet in the mix, so louder parts cover it up. It is like a voice you can barely hear in a noisy, crowded room.",
+    "purpose_function": "It flags a level or masking problem so the engineer knows an element needs more level, EQ carving, or arrangement space to be heard clearly.",
+    "practical_application": "When a client says the lead vocal is buried, the engineer raises its fader, cuts competing frequencies in other tracks, or thins the arrangement so the vocal comes forward.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["masking", "presence", "muddy", "mix balance", "fader"],
+    "common_mistakes": ["Assuming a buried part just needs more of its own level, when cutting masking frequencies on other tracks often works better.", "Confusing buried with quiet; an element can be loud yet still buried under competing sounds in the same frequency range.", "Solving a buried vocal by pushing it far above everything else, which unbalances the whole mix."],
+    "scenario_contexts": ["A lead vocal lost under dense guitars that the singer cannot hear back in the monitors.", "A bass line that disappears behind kick and rhythm guitar in a rock mix.", "A backing part masked by louder elements sharing the same frequency band."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "725f5ecc-f34d-48c9-8304-a0c905873eee",
+   "term": "buttery",
+   "fields": {
+    "definition": "A subjective tonal descriptor for a sound that is smooth, rich, and pleasingly warm, with no harshness in the upper mids or highs, often applied to saxophone, vocals, or well-rounded analog tone.",
+    "plain_english": "Buttery describes a smooth, rich sound with no harsh edges. It feels soft and pleasing, like the way warm butter melts smoothly.",
+    "purpose_function": "It gives engineers a shorthand for a desirable smoothness so they can aim for it through mic choice, gentle EQ, or mild saturation.",
+    "practical_application": "A player may ask for a buttery sax tone, so the engineer picks a warm-sounding mic and softens any harsh edge around 2-5 kHz.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["warmth", "smooth", "creamy", "harsh", "presence"],
+    "common_mistakes": ["Treating buttery as a measurable spec rather than a subjective quality of smoothness and warmth.", "Chasing a buttery tone by rolling off so much top end that the sound turns dull and lifeless.", "Assuming any warm source is buttery, when a harsh upper-mid peak can ruin the smoothness."],
+    "scenario_contexts": ["Describing a smooth, rich saxophone or a mellow jazz guitar tone.", "A vocal captured on a warm ribbon or tube mic that sounds silky and smooth.", "Adding gentle analog-style saturation to make a synth pad feel buttery."]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3d852803-5ba0-4a5d-9ec2-e3beac5c5468",
+   "term": "cardboardy",
+   "fields": {
+    "definition": "A negative tonal descriptor for a dull, boxy, lifeless sound with a hollow lower-midrange emphasis (roughly 300-600 Hz) and weak lows and highs, resembling the thud of tapping an empty cardboard box.",
+    "plain_english": "Cardboardy means a dull, boxy sound with no life or sparkle. It sounds a bit like knocking on an empty cardboard box.",
+    "purpose_function": "It flags an unwanted boxy midrange buildup and a lack of extension so the tone can be fixed with EQ or a better capture.",
+    "practical_application": "A close-miked tom might sound cardboardy, so the engineer cuts a few dB around 400 Hz and adds some high end to restore snap and life.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Boxy", "dull", "hollow", "muddy", "midrange"],
+    "common_mistakes": ["Confusing cardboardy with simply dull; cardboardy also carries a hollow, boxy lower-mid coloration.", "Cutting broadly across the mids and hollowing the sound further instead of notching the boxy resonance.", "Blaming the source when a small untreated room adds the boxy, cardboardy coloration."],
+    "scenario_contexts": ["A tom or snare recorded in a small room that sounds dull and boxy.", "A cheap acoustic guitar with a lifeless, cardboard-like body tone.", "A speaker or cabinet with a hollow midrange that robs the sound of life."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3bf408ec-cf20-4a5c-bf6a-ae8d3079fdda",
+   "term": "chesty",
+   "fields": {
+    "definition": "A tonal descriptor, usually for voice, for an excess of lower-midrange energy (roughly 150-400 Hz) that adds a boomy, thick chest resonance, making the sound heavy, congested, or overly full.",
+    "plain_english": "Chesty means a voice has too much low, boomy weight. It sounds heavy and thick, like a deep sound rumbling up from someone's chest.",
+    "purpose_function": "It pinpoints an over-full low-mid region so the engineer can thin it out and restore clarity to a voice or instrument.",
+    "practical_application": "A vocal recorded very close to the mic often sounds chesty from proximity effect, so the engineer cuts a few dB around 200-300 Hz or backs the singer off the mic.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["boomy", "proximity effect", "muddy", "warmth", "low mids"],
+    "common_mistakes": ["Confusing chesty with warm; warmth is pleasant body, while chesty is an excess that congests the tone.", "Fixing a chesty vocal with a broad low cut that also removes needed body and weight.", "Overlooking proximity effect from close mic technique as the cause of the boomy chest tone."],
+    "scenario_contexts": ["A close-miked vocal that booms in the lower mids from proximity effect.", "A deep speaking voice that sounds thick and congested on a large-diaphragm mic.", "A male vocal that needs a low-mid cut to sit clearly in a dense mix."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "41e0e5b3-4afb-479f-99b0-e9820aa245c0",
+   "term": "chunky",
+   "fields": {
+    "definition": "A tonal descriptor for a thick, punchy, powerful sound with strong low-mid weight and a tight, percussive character, commonly applied to distorted rhythm guitars and aggressive drum or bass tones.",
+    "plain_english": "Chunky means a thick, punchy, powerful sound with lots of weight. Think of the solid crunch of a heavy rhythm guitar riff.",
+    "purpose_function": "It describes a full, aggressive body that producers often want in rock and metal rhythm parts, guiding EQ, gain, and playing choices.",
+    "practical_application": "To make a rhythm guitar chunky, the engineer tightens the low end, supports the low mids, and pairs palm-muted playing with controlled distortion.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["punchy", "fat", "tight", "low mids", "crunch"],
+    "common_mistakes": ["Adding more gain and distortion to sound chunky, when too much gain actually loosens and blurs the tone.", "Piling on low end so the part turns muddy instead of tight and chunky.", "Confusing chunky with simply loud; it is a thick, tight spectral character, not just volume."],
+    "scenario_contexts": ["Dialing in a palm-muted metal rhythm guitar with a thick, tight crunch.", "Shaping a kick and bass pairing that feels solid and powerful.", "Comparing two amp settings where one sounds thin and the other chunky."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5f7a5319-3d68-4647-b15d-e8a1395804ab",
+   "term": "clean",
+   "fields": {
+    "definition": "A descriptor for a signal or sound that is free of distortion, noise, and unwanted artifacts and is reproduced accurately with clear detail; also used for an undistorted, non-overdriven instrument or amplifier tone.",
+    "plain_english": "Clean means a sound with no distortion, hum, or noise added. It is clear and pure, like looking through a clear window with no smudges.",
+    "purpose_function": "It sets a reference for an accurate, artifact-free signal path, and also names a guitar or amp tone that has no overdrive.",
+    "practical_application": "An engineer keeps a recording clean by setting gain to avoid clipping and noise, while a guitarist may select a clean amp channel for quiet passages.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["distortion", "noise", "headroom", "clipping", "transparent"],
+    "common_mistakes": ["UNSAFE: Pushing an amp or preamp into hard clipping to sound louder, which can overheat and damage tweeters and drivers.", "Confusing clean with sterile; a clean signal can still be warm and musical.", "Setting gain so low to stay clean that noise floor and hiss become audible."],
+    "scenario_contexts": ["Setting preamp gain to capture a clean, undistorted vocal take.", "Selecting a clean amp channel for a soft, undistorted guitar part.", "Checking a signal chain for a clean path free of hum and noise."]
+   },
+   "sources": ["Rane Pro Audio Reference", "Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a4e095e6-740c-48c8-85b4-aba31ca36cf6",
+   "term": "Clean up the low mids",
+   "fields": {
+    "definition": "A mixing instruction to reduce muddiness and buildup in the low-midrange band (roughly 200-500 Hz), usually with EQ cuts, so the mix sounds clearer, tighter, and less congested.",
+    "plain_english": "This means using EQ to cut extra mud in the low-middle frequencies. It clears out a crowded, boomy area so the whole mix sounds cleaner.",
+    "purpose_function": "Many instruments pile energy into the low mids and mask each other there, so cutting in that band restores clarity and separation.",
+    "practical_application": "An engineer might cut a few dB around 250-400 Hz on guitars, keys, and other layered parts so the mix stops sounding muddy and boxy.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["muddy", "low mids", "EQ", "masking", "Boxy"],
+    "common_mistakes": ["Cutting the low mids on every track so the mix loses warmth and body instead of just clearing masking.", "Using a wide, deep cut where a narrower notch on the worst offenders would keep more body.", "Confusing low-mid mud (around 200-500 Hz) with sub-bass boom much lower in the spectrum."],
+    "scenario_contexts": ["A dense mix where stacked guitars and keys sound muddy in the low mids.", "Carving space so kick, bass, and low instruments stop fighting each other.", "Tidying a boomy live mix by cutting low-mid buildup on several channels."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4c152b94-50bd-47d8-89a9-706a3b9b3619",
+   "term": "clicky",
+   "fields": {
+    "definition": "A tonal descriptor for a sound with a pronounced high-frequency attack transient that produces an audible click, such as the beater click of a kick drum or the pick and fret noise on a bass.",
+    "plain_english": "Clicky means a sound has a sharp, ticking snap at the very start. It is like the hard click you hear when a drum pedal hits the kick.",
+    "purpose_function": "It names an emphasized attack transient so an engineer can boost it for definition and punch, or tame it when it is too harsh.",
+    "practical_application": "For a kick to cut through a dense mix, an engineer boosts the beater click around 2-4 kHz; if the kick is too clicky, they cut in that range instead.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["attack", "transient", "punchy", "presence", "beater"],
+    "common_mistakes": ["Confusing clicky with bright; clicky is a sharp attack transient, while bright is a broad high-frequency balance.", "Boosting the click so hard the kick sounds like a typewriter with no body underneath.", "Overlooking the beater type or trigger sample as the real source of an overly clicky kick."],
+    "scenario_contexts": ["Adding attack to a kick drum so it cuts through a loud rock mix.", "Taming a bass DI that has too much pick and fret click.", "Describing an electronic kick sample with a sharp, ticking front end."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "740c7536-ed0f-467f-af40-49be75077d2f",
+   "term": "clinical",
+   "fields": {
+    "definition": "A subjective tonal descriptor for a sound that is technically accurate and highly detailed but cold, sterile, and lacking warmth, emotion, or musical character.",
+    "plain_english": "Clinical means a sound is very clean and exact but feels cold and lifeless. It is correct but has no warmth, like a bare, white hospital room.",
+    "purpose_function": "It warns that precision alone can feel emotionless, prompting an engineer to add warmth or character so the sound feels more musical.",
+    "practical_application": "A mix that sounds clinical might get gentle analog-style saturation or harmonic coloring to feel warmer and more engaging.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["sterile", "clean", "warmth", "transparent", "saturation"],
+    "common_mistakes": ["Assuming clinical means high quality; accuracy without warmth can still sound cold and unmusical.", "Confusing clinical with clean; clean simply lacks distortion, while clinical also lacks warmth and character.", "Trying to warm a clinical mix with heavy EQ alone instead of subtle harmonic saturation."],
+    "scenario_contexts": ["A very accurate digital mix that sounds cold and needs analog-style warmth.", "Comparing a sterile converter or plugin chain against a warmer analog one.", "Describing studio monitors that reveal every detail but feel emotionally flat."]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

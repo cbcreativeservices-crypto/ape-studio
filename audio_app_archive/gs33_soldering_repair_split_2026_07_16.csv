@@ -1,0 +1,195 @@
+term,proposed_topic,original_category
+Acid Flux,Soldering,(none)
+Annular Ring,Soldering,(none)
+Anti-Static Mat,Repair,(none)
+Arcing,Repair,Amplifier Faults
+B+ supply,Repair,Tube Power Supply
+Bench Power Supply,Repair,(none)
+Bench Safety,Repair,Tool & Repair Safety
+Bias Adjustment,Repair,(none)
+Bleeder resistor,Repair,Power Supply
+BNC Connector (Bayonet Neill-Concelman),Repair,Connectors
+Board-Level Repair,Repair,(none)
+Brass Sponge,Soldering,(none)
+Bullet Connector,Repair,(none)
+Burnishing,Repair,(none)
+Butt Connector,Repair,(none)
+Cable Re-termination,Repair,(none)
+Cable Repair,Repair,(none)
+Cable Tester,Repair,Troubleshooting Technique
+Capacitor,Repair,Components
+Capacitor Discharge,Repair,(none)
+Capsule contamination,Repair,Sound Reinforcement
+Capsule leakage,Repair,Sound Reinforcement
+Capsule-to-grid connection,Repair,Sound Reinforcement
+Chisel Tip,Soldering,(none)
+Cold Joint Repair,Soldering,(none)
+Cold solder joint,Soldering,Soldering & Repair
+Component Lead,Soldering,(none)
+Component Polarity,Repair,(none)
+Component Tester,Repair,Troubleshooting Technique
+Component-Level Repair,Repair,(none)
+Conformal Coating,Repair,(none)
+Conical Tip,Soldering,(none)
+Continuity (Repair Verification),Repair,(none)
+Copper Trace,Repair,(none)
+Corrosion,Repair,Troubleshooting
+Crimp,Repair,(none)
+Crimping Tool,Repair,(none)
+Desoldering,Soldering,(none)
+Desoldering Braid,Soldering,(none)
+Desoldering Pump,Soldering,(none)
+Dewetting,Soldering,(none)
+Dielectric,Repair,Components
+Dim Bulb Tester,Repair,(none)
+DIP Package,Repair,(none)
+Disturbed Joint,Soldering,(none)
+Drag Soldering,Soldering,(none)
+Drain Wire,Repair,(none)
+Dry Joint,Soldering,(none)
+Dummy Load,Repair,(none)
+Electrolytic Capacitor,Repair,(none)
+ESD Protection,Repair,Tool & Repair Safety
+ESD Wrist Strap,Repair,(none)
+ESD-Safe,Repair,(none)
+ESR Meter,Repair,(none)
+Euroblock,Repair,Audio Networking
+Eutectic Solder,Soldering,(none)
+Excess Solder,Soldering,(none)
+Eye Protection,Repair,Tool & Repair Safety
+Fader Replacement,Repair,(none)
+Ferrule,Repair,(none)
+Filter capacitor,Repair,Power Supply
+Flush Cutters,Soldering,Tool & Repair Safety
+Flux,Soldering,(none)
+Flux Pen,Soldering,(none)
+Flux Residue,Soldering,(none)
+Fume Extraction,Soldering,Tool & Repair Safety
+Fume Extractor,Soldering,(none)
+Function Generator,Repair,(none)
+Heat Gun,Repair,(none)
+Heat Resistant Surface,Soldering,Tool & Repair Safety
+Heat Shrink Tubing,Repair,(none)
+Helping Hands,Soldering,(none)
+Hot Air Rework Station,Soldering,(none)
+Hot Components,Soldering,Tool & Repair Safety
+IC Socket,Repair,(none)
+Input Jack,Repair,(none)
+Insufficient Solder,Soldering,(none)
+Intermetallic Layer,Soldering,(none)
+Intermittent Connection,Repair,Troubleshooting
+Iron Temperature,Soldering,(none)
+Isopropyl Alcohol,Soldering,(none)
+Jack Replacement,Repair,(none)
+Jumper Wire,Repair,(none)
+Kester,Soldering,(none)
+Knife Safety,Repair,Tool & Repair Safety
+Lead Forming,Soldering,(none)
+Lead-Free Solder,Soldering,(none)
+Leaded Solder,Soldering,(none)
+Lifted Pad,Soldering,(none)
+Lifted Trace,Repair,(none)
+Lockout Procedures,Repair,Installation Safety
+Magnification (Bench Loupe/Microscope),Soldering,(none)
+Moisture intrusion,Repair,Microphone Care
+Neutrik Connector,Repair,(none)
+No-Clean Flux,Soldering,(none)
+Noval base,Repair,Tube Types
+Oscilloscope,Repair,(none)
+Output Jack,Repair,(none)
+Oxidation,Repair,(none)
+Phantom power fault,Repair,Audio Equipment
+Pickup Rewind,Repair,(none)
+Pin Header,Repair,(none)
+Pin Straightening,Repair,(none)
+Pot (Potentiometer),Repair,Components
+Pot Cleaning,Repair,(none)
+Potentiometer Replacement,Repair,(none)
+Pre-Tinning,Soldering,(none)
+Printed Circuit Board (PCB),Repair,(none)
+RCA,Repair,Connectors
+Re-tip Cable,Repair,(none)
+Reballing,Soldering,(none)
+Recapping,Repair,(none)
+Recone Kit,Repair,(none)
+Reflow,Soldering,(none)
+Reflow Profile,Soldering,(none)
+Reflow Repair,Soldering,(none)
+Reflow Soldering,Soldering,(none)
+Reseat Component,Repair,(none)
+Ribbon element,Repair,Microphone Construction
+Ribbon motor,Repair,Microphone Construction
+Ribbon sag,Repair,Microphone Construction
+Ribbon transformer,Repair,Microphone Construction
+Ring Terminal,Repair,(none)
+RoHS,Soldering,(none)
+Rosin Flux,Soldering,(none)
+S/PDIF (Sony/Philips Digital Interface),Repair,Digital I/O
+Schematic,Repair,Troubleshooting Technique
+Scratchy Potentiometer,Repair,Components
+Shield Repair,Repair,(none)
+Shielding,Repair,Grounding
+Signal Injector,Repair,(none)
+Signal tracing,Repair,Troubleshooting
+Silkscreen,Repair,(none)
+SMT,Soldering,(none)
+Solder,Soldering,(none)
+Solder Bridge,Soldering,(none)
+Solder Fume,Soldering,(none)
+Solder Joint,Soldering,Soldering & Repair
+Solder Joint Inspection,Soldering,Soldering & Repair
+Solder Lug,Soldering,(none)
+Solder Mask,Soldering,(none)
+Solder Pad,Soldering,(none)
+Solder Paste,Soldering,(none)
+Solder Seal Connector,Soldering,(none)
+Solder Sucker,Soldering,(none)
+Solder Wick,Soldering,(none)
+Solder Wick Braid Size,Soldering,(none)
+Solder Wire Diameter,Soldering,(none)
+Soldering Iron,Soldering,(none)
+Soldering Iron Safety,Soldering,Tool & Repair Safety
+Soldering Station,Soldering,(none)
+Soldering Tip,Soldering,(none)
+Solid-Core Wire,Repair,(none)
+Spade Connector,Repair,(none)
+Speaker Recone,Repair,(none)
+Speaker Spider,Repair,Driver Components
+Speaker Surround,Repair,Driver Components
+Speakon,Repair,Connectors
+Strain Relief,Repair,Connectors
+Stranded Wire,Repair,(none)
+Surface-Mount (SMD),Soldering,(none)
+Switch Replacement,Repair,(none)
+Switchcraft Jack,Repair,(none)
+Tap test,Repair,Troubleshooting
+Temperature-Controlled Iron,Soldering,(none)
+Terminal Strip,Repair,(none)
+Test Probe,Repair,(none)
+Third Hand,Soldering,(none)
+Through-Hole,Soldering,(none)
+Tinned Wire,Soldering,(none)
+Tinning,Soldering,(none)
+Tip Tinner,Soldering,(none)
+Tombstoning,Soldering,(none)
+Trace Repair,Repair,(none)
+TRS Connector (Tip-Ring-Sleeve),Repair,Connectors
+TS Connector (Tip-Sleeve),Repair,Connectors
+Tube microphone calibration check,Repair,Microphone Care
+Tube microphone crackle,Repair,Microphone Care
+Tube microphone hum,Repair,Microphone Care
+Tube Socket Cleaning,Repair,(none)
+Tube socket oxidation,Repair,Tube Maintenance
+Variac,Repair,(none)
+Via,Repair,(none)
+Voice coil,Repair,Loudspeaker Design
+Wave Soldering,Soldering,(none)
+Western Union Splice,Repair,(none)
+Wetting,Soldering,(none)
+Wetting Angle,Soldering,(none)
+Wire Splice,Repair,(none)
+Wire Stripper,Repair,(none)
+Wire Strippers,Repair,Tool & Repair Safety
+Wiring Diagram,Repair,Troubleshooting Technique
+XLR Connector,Repair,Connectors
+XLR Connector Repair,Repair,(none)

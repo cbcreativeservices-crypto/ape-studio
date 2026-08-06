@@ -1,0 +1,159 @@
+{
+ "batch": 211,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "8bcc1905-775f-4ca8-9725-c13259ad1b16",
+   "term": "Audio implementer",
+   "fields": {
+    "definition": "An audio implementer is the person who integrates finished sound assets into a game or interactive project, connecting them to events, parameters, and logic in audio middleware or a game engine so they play back correctly at runtime.",
+    "plain_english": "An audio implementer is the person who puts sounds into a video game. They connect each sound to the actions that should make it play, so the right sound happens at the right time.",
+    "purpose_function": "The role exists to bridge sound design and code, making sure recorded or designed assets behave interactively by triggering, mixing, and adapting to gameplay rather than just sitting as files.",
+    "practical_application": "An implementer builds events, containers, and parameter links in tools like Wwise or FMOD, then tests them in the engine to confirm footsteps, weapons, and ambience trigger and mix correctly.",
+    "category": "Audio Roles",
+    "related_terms": ["Audio programmer", "Audio trigger", "Audio parameter", "Audio state", "Audio-editing suite"],
+    "common_mistakes": ["Confusing the implementer with the sound designer, when implementation is about integration and behavior, not creating the raw sounds", "Assuming implementation is only file placement, when it also covers mixing, parameter mapping, and runtime logic", "Skipping testing in the actual engine, so problems only surface at runtime"],
+    "scenario_contexts": ["Wiring a gunfire event in middleware so pulling the trigger plays layered shot, mechanism, and tail sounds", "Mapping engine RPM to a real-time parameter that changes a vehicle's sound", "Setting up footstep switches so the surface type selects the correct footstep sample set"]
+   },
+   "sources": ["Stevens & Raybould, Game Audio Implementation (Focal Press)", "Audiokinetic Wwise documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ab287e1a-8730-48d6-ba11-bfb535d56d90",
+   "term": "Audio listener",
+   "fields": {
+    "definition": "In spatial and interactive audio, the listener is a virtual reference point in 3D space representing the position and orientation of the receiver (the 'ears'), against which the engine calculates panning, distance attenuation, and Doppler for every sound source.",
+    "plain_english": "The listener is a virtual pair of ears placed inside a 3D scene. The game measures where each sound sits compared to those ears, so sounds seem to come from the right direction and get quieter as they move away.",
+    "purpose_function": "It gives the audio engine a single frame of reference so 3D sound sources can be positioned, attenuated, and Doppler-shifted realistically as the player or camera moves.",
+    "practical_application": "A technician usually binds the listener to the player's camera or head, and in split-screen or VR may manage more than one listener so each viewpoint hears correct spatialization.",
+    "category": "Interactive Audio",
+    "related_terms": ["Audio zone", "Audio trigger", "Audio parameter", "Audio implementer"],
+    "common_mistakes": ["Forgetting to update the listener's orientation, so left/right panning stays fixed while the camera turns", "Attaching the listener to the wrong object, such as the body instead of the camera, causing mismatched direction cues", "Assuming one listener is always correct, when split-screen needs several"],
+    "scenario_contexts": ["Binding the listener to a first-person camera so gunfire pans as the player looks around", "Managing two listeners in local split-screen multiplayer", "Positioning the listener at the camera in a third-person game to balance world audio"]
+   },
+   "sources": ["Audiokinetic Wwise documentation", "Firelight Technologies FMOD Engine documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8ee4724e-e91e-4698-8250-a1cdde6a34e4",
+   "term": "Audio parameter",
+   "fields": {
+    "definition": "An audio parameter is a named, continuously adjustable value that controls one or more audio properties, such as volume, pitch, filter cutoff, or effect send, and can be updated in real time, often driven by game or system state.",
+    "plain_english": "An audio parameter is a control knob for sound that a program can turn by itself. For example, as a car speeds up, a 'speed' parameter can smoothly raise the engine's pitch.",
+    "purpose_function": "Parameters let sound respond continuously to changing conditions, so audio can adapt smoothly instead of only switching between fixed states.",
+    "practical_application": "An implementer maps a parameter such as RPM, health, or distance to a property like pitch or filter cutoff, then tunes the response curve so the change sounds natural.",
+    "category": "Interactive Audio",
+    "related_terms": ["Audio state", "Audio trigger", "Audio implementer", "Audio listener"],
+    "common_mistakes": ["Confusing continuous parameters with discrete states, since parameters vary smoothly while states switch in steps", "Setting parameter ranges that do not match the game values feeding them, so the effect maxes out or never moves", "Using steep response curves that make changes sound abrupt or unnatural"],
+    "scenario_contexts": ["Mapping vehicle speed to engine pitch and volume", "Driving a low-pass filter from player health to muffle audio when hurt", "Using distance to control the reverb send on a sound source"]
+   },
+   "sources": ["Audiokinetic Wwise documentation", "Firelight Technologies FMOD Engine documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6a744424-87dd-4bec-9bb1-12cd0dfeaf66",
+   "term": "Audio programmer",
+   "fields": {
+    "definition": "An audio programmer is a software developer who designs and writes the code behind audio playback, including engine integration, DSP, mixing, streaming, and middleware hooks, so that sound systems run efficiently and correctly at runtime.",
+    "plain_english": "An audio programmer writes the code that makes sound work inside a game or app. They build the systems that play, mix, and process audio, and make sure it runs fast without glitches.",
+    "purpose_function": "The role exists to build and maintain the technical foundation, such as DSP, memory and CPU budgets, and engine tools, that sound designers and implementers rely on for reliable playback.",
+    "practical_application": "An audio programmer might optimize voice limits and streaming, write a custom DSP effect, or fix a bug where sounds drop out under heavy CPU load.",
+    "category": "Audio Roles",
+    "related_terms": ["Audio implementer", "Audio parameter", "Audio state", "Audio-editing suite"],
+    "common_mistakes": ["Confusing the audio programmer with the implementer, since programmers build the systems and implementers use them to place and wire sounds", "Assuming any general programmer can cover audio, when DSP and real-time timing are specialized skills", "Overlooking CPU and memory budgets, causing audio dropouts on target hardware"],
+    "scenario_contexts": ["Writing a custom reverb DSP effect for a game engine", "Optimizing voice management so too many simultaneous sounds do not overload the CPU", "Integrating middleware like Wwise or FMOD into a proprietary game engine"]
+   },
+   "sources": ["Stevens & Raybould, Game Audio Implementation (Focal Press)", "Audiokinetic Wwise documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "19ec3121-e527-4c21-858a-6cbeafe804c2",
+   "term": "Audio state",
+   "fields": {
+    "definition": "An audio state is a discrete, named global condition, one of a mutually exclusive set, that tells the audio system how to behave or mix, such as switching to a muffled 'underwater' or 'paused' state that applies across many sounds at once.",
+    "plain_english": "An audio state is a named mode for the whole soundtrack, like 'underwater' or 'paused.' When the game switches state, many sounds change together, for example all becoming muffled at once.",
+    "purpose_function": "States let a project change the overall sound in one step, keeping large groups of sounds consistent instead of adjusting each one on its own.",
+    "practical_application": "An implementer defines states such as Exploration, Combat, and Menu, then sets how volumes, effects, and music respond when the game switches between them.",
+    "category": "Interactive Audio",
+    "related_terms": ["Audio parameter", "Audio trigger", "Audio zone", "Audio implementer"],
+    "common_mistakes": ["Confusing states, which are discrete and global, with parameters, which are continuous values", "Creating overlapping states that fight each other because they are not mutually exclusive within a group", "Forgetting to set transition times, causing abrupt jumps when the state changes"],
+    "scenario_contexts": ["Switching to an 'underwater' state that low-pass filters everything when the player submerges", "Ducking ambience and effects when a 'pause menu' state is active", "Changing the music mix between 'exploration' and 'combat' states"]
+   },
+   "sources": ["Audiokinetic Wwise documentation", "Firelight Technologies FMOD Engine documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9cbef41d-0988-45db-a1b6-e06d22ef0673",
+   "term": "Audio trigger",
+   "fields": {
+    "definition": "An audio trigger is an event or condition that tells the audio system to start, stop, or change a sound, such as a gameplay action, animation marker, or timeline cue that fires a corresponding audio event.",
+    "plain_english": "An audio trigger is the thing that makes a sound play. When the player jumps or a door opens, that action acts as a trigger and fires the matching sound.",
+    "purpose_function": "Triggers connect events in the game, animation, or timeline to sound, so audio happens at exactly the right moment in response to what is occurring.",
+    "practical_application": "An implementer places triggers on animation markers, collision events, or timeline cues so footsteps, impacts, and effects fire in sync with the action.",
+    "category": "Interactive Audio",
+    "related_terms": ["Audio state", "Audio parameter", "Audio implementer", "Audio zone"],
+    "common_mistakes": ["Placing a trigger on the wrong frame, so sound and action are out of sync", "Letting rapid re-triggering stack copies of a sound, causing buildup or distortion", "Confusing a trigger, the event that starts sound, with the sound asset itself"],
+    "scenario_contexts": ["Firing a footstep sound from an animation marker at each foot plant", "Triggering an impact sound on a collision event", "Using a timeline cue to trigger a sound effect in a cutscene"]
+   },
+   "sources": ["Audiokinetic Wwise documentation", "Firelight Technologies FMOD Engine documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "920312d0-c191-48cd-9fe8-9eb3c09b319d",
+   "term": "Audio zone",
+   "fields": {
+    "definition": "An audio zone is a defined region of 3D space within which specific audio behavior applies, such as a reverb setting, ambient bed, or attenuation rule, that takes effect when the listener or a source enters or leaves the region.",
+    "plain_english": "An audio zone is an invisible area in the game world with its own sound rules. Walk into a cave zone and the game adds echo; walk out and the echo stops.",
+    "purpose_function": "Zones let audio change automatically based on location, so environments like caves, rooms, or crowds sound right without manually cueing each change.",
+    "practical_application": "An implementer draws zone volumes around spaces and assigns each a reverb, ambience, or filter that activates when the listener crosses the boundary.",
+    "category": "Interactive Audio",
+    "related_terms": ["Audio listener", "Audio state", "Audio trigger", "Audio parameter"],
+    "common_mistakes": ["Creating hard zone boundaries with no blend, so reverb or ambience pops abruptly at the edge", "Overlapping zones without priority rules, so it is unclear which one applies", "Sizing zones to the visual space instead of how sound actually travels"],
+    "scenario_contexts": ["Adding a cave reverb zone that turns on when the player enters", "Placing an ambience zone that fades in market-crowd sound near a bazaar", "Using a zone to muffle outside sounds when the player steps indoors"]
+   },
+   "sources": ["Firelight Technologies FMOD Engine documentation", "Audiokinetic Wwise documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9720f43d-a953-4b8d-b07e-596b603c42ed",
+   "term": "Audio-editing suite",
+   "fields": {
+    "definition": "An audio-editing suite is a software application or integrated set of tools for recording, editing, arranging, and processing audio, covering tasks like cutting, fading, noise reduction, effects, and mixdown, and often overlapping with a digital audio workstation (DAW).",
+    "plain_english": "An audio-editing suite is a program for working with sound on a computer. You use it to cut, clean up, add effects to, and combine recordings, like a word processor but for audio.",
+    "purpose_function": "It provides, in one place, the tools a technician needs to turn raw recordings into finished audio, from trimming and cleanup to effects and final export.",
+    "practical_application": "A technician uses a suite such as Pro Tools, Nuendo, or a wave editor to clean dialogue, tighten edits, apply processing, and export deliverables in the required format.",
+    "category": "Audio Software",
+    "related_terms": ["Audio implementer", "Audio programmer", "Audio parameter"],
+    "common_mistakes": ["Editing on the only copy of a recording instead of working non-destructively or keeping a backup", "Exporting at the wrong sample rate or bit depth for the deliverable spec", "Confusing a simple two-track editor with a full multitrack DAW when the job needs multitracking"],
+    "scenario_contexts": ["Cleaning up and trimming a dialogue recording before a mix", "Applying noise reduction and EQ to a location sound file", "Exporting a finished stereo file to the delivery format and level spec"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4494a084-f7ae-4985-8041-6aff6283cb63",
+   "term": "Avoid-repeat setting",
+   "fields": {
+    "definition": "An avoid-repeat setting is a randomization option in a sound container that prevents the same sample, or the last few samples played, from being selected again immediately, so repeated triggers draw fresh variations and avoid audible repetition.",
+    "plain_english": "An avoid-repeat setting stops a game from playing the exact same sound twice in a row. When several versions of a sound exist, it picks a different one each time so footsteps or gunshots do not sound fake.",
+    "purpose_function": "It keeps randomized sounds feeling natural by ensuring variety, preventing the obvious, robotic 'machine-gun' effect that happens when the same clip repeats back to back.",
+    "practical_application": "An implementer turns it on for a random container of footstep or weapon variations and sets how many recent samples to skip, balancing variety against the size of the sample pool.",
+    "category": "Interactive Audio",
+    "related_terms": ["Audio trigger", "Audio parameter", "Audio implementer", "Audio state"],
+    "common_mistakes": ["Setting the avoid count too high for a small sample pool, leaving too few choices or forcing a fixed order", "Assuming plain random already avoids repeats, when without this setting the same clip can repeat by chance", "Forgetting to enable it, so rapid-fire sounds reveal the loop"],
+    "scenario_contexts": ["Enabling it on a footstep container so consecutive steps use different samples", "Using it on gunfire variations to avoid a repetitive machine-gun sound", "Applying it to impact or UI-click variations for natural variety"]
+   },
+   "sources": ["Audiokinetic Wwise documentation", "Firelight Technologies FMOD Engine documentation"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

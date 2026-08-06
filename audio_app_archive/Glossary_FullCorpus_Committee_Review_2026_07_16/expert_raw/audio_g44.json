@@ -1,0 +1,223 @@
+{
+ "expert": "audio",
+ "group": 44,
+ "reviews": [
+  {
+   "id": "ae6b7f28-fc66-4c3f-a095-f1e52f30ba1a",
+   "term": "Solder Joint Inspection",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "definition",
+     "severity": "Medium",
+     "issue": "The entry teaches that a dull/grainy joint indicates a defect ('defects appear dull, grainy'; plain_english repeats it). Web-verified via I-Connect007 and Stellar Technical Products: lead-free (SAC tin/silver/copper) joints normally solidify with a matte/dull/grainy surface, and this is 'an effect, not a defect.' Since most modern manufactured audio gear uses lead-free solder, a student applying the shiny=good/dull=bad rule will wrongly condemn sound lead-free joints.",
+     "suggestion": "Qualify the appearance criterion: note that the shiny=good vs dull=defect rule applies to leaded (Sn/Pb) solder, and that lead-free (SAC) joints are normally duller/grainier by nature. Judge lead-free joints by wetting, fillet shape, and absence of cracks/voids rather than shine."
+    }
+   ]
+  },
+  {
+   "id": "782c98d0-268b-4930-926e-0956ace47a76",
+   "term": "Solder reflow",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "53590328-8b1a-41cb-9b17-8b647888b061",
+   "term": "Solo",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b7d64353-ba42-4c89-bc5b-3d041f2066df",
+   "term": "Solo In Place (SIP)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e3ed1253-8f27-4c1f-b2fe-6256f338ff36",
+   "term": "Sones",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5d01ab0e-35fd-49a0-8f8e-6263eeeeb047",
+   "term": "Sound Cue",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "272e95f6-3d9a-414d-a38c-fb3ab2dc4e9a",
+   "term": "Sound Deadening",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4fb08c1e-fc37-4cac-ac2a-d47f104cf2dc",
+   "term": "Sound Designer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "51103251-204b-4759-b99b-f55e679a276e",
+   "term": "Sound Intensity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "41e6cedb-05a9-443d-9326-66ad88b35963",
+   "term": "Sound isolation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9abbd028-92ba-49fe-9d78-00a060fdd57f",
+   "term": "Sound Level Calibrator",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5ad6c71a-5852-4916-8873-11286181cf97",
+   "term": "Sound level meter view",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "963d12c2-7824-477c-8819-d9cc81d57bf6",
+   "term": "Sound Localization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c519d3b2-d918-46ef-a4cf-4824f457174b",
+   "term": "Sound Masking",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4ec26131-4961-4555-843f-9037ab19dd59",
+   "term": "Sound Power",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "05d8c0bf-b798-4223-b06e-ef323569e412",
+   "term": "Sound System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ae191bcd-f5eb-4ec1-ae40-c4cc52e7706a",
+   "term": "Sound Wave",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4037a713-5b4a-434a-91db-56d8779e17f0",
+   "term": "Soundbar",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a0ff7d55-2a8f-44d9-94f8-28e35828b98f",
+   "term": "Soundstage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6e8bdcd2-5ae1-4c4a-83b1-c811eaedd85d",
+   "term": "Source follower",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "28d3d43f-f718-431e-a692-9d45013208dd",
+   "term": "Source interaction",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f120efec-b979-45f2-8711-dc60536f278f",
+   "term": "Source Selection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6d271f40-b18b-4c73-9d9f-427b2056bd88",
+   "term": "Spaced Pair (A/B Stereo)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "85f8bbec-d14c-4c0f-a0ce-3b01de7a51aa",
+   "term": "Spatial Audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "33396220-ecd4-473d-ba67-9521ebe9fa45",
+   "term": "Speaker Back Can",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4c621f3e-0d29-48e7-b744-3c24df99f571",
+   "term": "Speaker Baffle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ab663bdd-badc-49a0-af48-bd73b4ad4738",
+   "term": "Speaker cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f784470a-ad1a-4bc2-af2e-6a87cded0f4c",
+   "term": "Speaker Gasket",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d6b96d69-79bc-4d4a-88ad-226a9c2027c3",
+   "term": "Speaker Load Protection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2fccf9d2-9050-46a4-a305-4a7f4716540c",
+   "term": "Speaker Mounting Ring",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1cf16280-69b2-4836-8761-7030010df549",
+   "term": "Speaker Placement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5d18c15f-3a94-4c72-bafa-43334ffbc41f",
+   "term": "Speaker Selector Switch",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e4fa8b98-47f4-484f-a03d-63d789829acd",
+   "term": "Speaker Sensitivity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7c252115-da87-4823-900f-d3b21dffedb6",
+   "term": "Speaker Spider",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "91053a9c-34fd-4099-b2ed-1d22139f4b49",
+   "term": "Speaker Stack Stability",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

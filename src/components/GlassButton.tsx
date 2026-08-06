@@ -31,10 +31,11 @@ const TINTS: Record<
     pressedGlow: 'rgba(120,160,200,0.22)',
   },
   green: {
-    color: '#b9f5c4',
-    glow: 'rgba(55,224,95,0.6)',
-    pressedColor: '#578f63',
-    pressedGlow: 'rgba(55,224,95,0.22)',
+    // Normal app-green backlight (owner 2026-08-05) — was a pale mint (#b9f5c4).
+    color: '#37e05f',
+    glow: 'rgba(55,224,95,0.7)',
+    pressedColor: '#3f8a52',
+    pressedGlow: 'rgba(55,224,95,0.25)',
   },
   orange: {
     color: '#ffd0a0',

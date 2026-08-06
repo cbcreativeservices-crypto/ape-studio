@@ -1,0 +1,87 @@
+{
+  "course": "AUDI201",
+  "topic": "Audio Measurement & Optimization",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "e83682ef-f7dc-4b5c-8f32-ba8cff9fe37c",
+      "term": "Exponential Sine Sweep",
+      "fields": {
+        "plain_english": "A test tone that slides smoothly from a low pitch up to a high one; because it rises in this exact way, the math used afterward can peel a system's clean response apart from its distortion.",
+        "purpose_function": "It excites a system across the full audio band with high signal-to-noise ratio, and when the recording is deconvolved with the original sweep, the harmonic-distortion products land at separate (negative) times so the linear impulse response can be isolated from distortion.",
+        "practical_application": "It is the default stimulus in tools like REW, ARTA, and Smaart for capturing a loudspeaker or room impulse response and, in the same pass, reading off the harmonic distortion of the device under test.",
+        "category": "Acoustic Measurement",
+        "related_terms": ["Impulse Response", "Maximum Length Sequence (MLS)", "Quasi-Anechoic Measurement", "Transfer Function", "Total Harmonic Distortion", "Waterfall Plot (CSD)"],
+        "common_mistakes": ["Using too short a sweep, which starves the low frequencies of energy and degrades low-frequency SNR", "Allowing the level, mic position, or environment to change during the sweep, which corrupts the deconvolution", "Not leaving enough silent tail after the sweep, so harmonic-distortion products wrap around and contaminate the linear impulse response", "Assuming results are valid on strongly time-variant or non-linear systems (wind, moving sources, hard clipping)"],
+        "scenario_contexts": ["Measuring a loudspeaker's frequency response and harmonic distortion in a single capture", "Capturing a room impulse response to derive reverberation time and clarity metrics", "Recording an impulse response of a hall or hardware unit for convolution reverb", "Verifying DSP crossover, delay, and EQ settings on an installed system"]
+      },
+      "sources": ["Farina, A. (2000). Simultaneous Measurement of Impulse Response and Distortion With a Swept-Sine Technique, AES Convention 108", "Muller & Massarani (2001), Transfer-Function Measurement with Sweeps, JAES", "Rational Acoustics Smaart measurement documentation"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b5ec4235-2a22-4cef-b024-d47beb9e231d",
+      "term": "Ground-Plane Measurement",
+      "fields": {
+        "plain_english": "You place the loudspeaker and the microphone directly on a large, hard, flat surface so the floor bounce arrives at exactly the same instant as the direct sound and simply reinforces it, instead of arriving late and carving dips into the response.",
+        "purpose_function": "It removes the single destructive floor reflection by merging it in-phase with the direct sound, yielding a clean half-space (2-pi) far-field response without needing a tall stand, an elevated flying point, or an anechoic chamber.",
+        "practical_application": "A technician lays the microphone flat on a large reflective surface (a parking lot or gym floor) at a measured distance from a ground-mounted loudspeaker, obtaining repeatable far-field data that reads about 6 dB higher than a true free-field measurement.",
+        "category": "Acoustic Measurement",
+        "related_terms": ["Quasi-Anechoic Measurement", "Free-Field", "Comb Filtering", "Boundary Interference", "Far-Field", "Impulse Response"],
+        "common_mistakes": ["Forgetting the roughly +6 dB level gain contributed by the in-phase reflection when comparing to free-field data", "Using a soft or absorptive surface (grass, carpet) that does not fully reflect, so the reflection is not truly coincident and in-phase", "Raising the microphone capsule off the plane, which reintroduces a delayed reflection and comb filtering", "Measuring too close, which puts the microphone in the near field and gives inaccurate far-field response"],
+        "scenario_contexts": ["Outdoor far-field frequency-response and polar measurement of a subwoofer or full-range loudspeaker", "Comparing line-array or point-source systems on a large open lot before a show", "Characterizing a system when no anechoic chamber is available", "Field verification of a loudspeaker's sensitivity and response after transport"]
+      },
+      "sources": ["McCarthy, B. Sound Systems: Design and Optimization (measurement microphone placement)", "Ballou, G. Handbook for Sound Engineers (loudspeaker measurement)", "Prosoundtraining.com / Pat Brown, Ground Plane Measurements"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "3a256cd5-56fc-4c71-833c-0270cb19d74a",
+      "term": "Maximum Length Sequence (MLS)",
+      "fields": {
+        "plain_english": "A special random-sounding string of on/off pulses; because of its unique mathematical structure, comparing exactly what was sent against what the microphone heard reveals how the room or loudspeaker responds, and it holds up well even when background noise is present.",
+        "purpose_function": "It provides a deterministic, spectrally flat stimulus whose circular cross-correlation with the captured response yields the system's impulse response, giving high noise immunity and processing gain for a linear, time-invariant system.",
+        "practical_application": "It was the core stimulus of analyzers such as MLSSA and older PC measurement systems: the periodic sequence is played, the recorded output is cross-correlated with the sequence to recover the impulse response, though for most work it has been superseded by swept-sine methods that handle distortion better.",
+        "category": "Acoustic Measurement",
+        "related_terms": ["Impulse Response", "Exponential Sine Sweep", "Transfer Function", "Signal-to-Noise Ratio", "Quasi-Anechoic Measurement", "Cross-Correlation"],
+        "common_mistakes": ["Assuming distortion is rejected: any non-linearity smears as noise across the whole impulse response, unlike a swept-sine that isolates it in time", "Running MLS on a time-variant system (temperature drift, wind, moving sources), which breaks the cross-correlation and corrupts the result", "Not capturing an integer number of full periods, which introduces errors in the circular cross-correlation", "Confusing MLS with ordinary random white noise; MLS is deterministic and periodic"],
+        "scenario_contexts": ["Legacy MLSSA-based loudspeaker frequency-response and impulse-response testing", "Room impulse-response capture where high signal-to-noise ratio is needed", "Measurement in noisy environments where synchronous averaging improves SNR", "Comparing older MLS datasets against modern swept-sine measurements"]
+      },
+      "sources": ["Rife, D. & Vanderkooy, J. (1989). Transfer-Function Measurement with Maximum-Length Sequences, JAES", "Liberty Instruments (MLSSA) MLS-based measurement technical notes", "Ballou, G. Handbook for Sound Engineers"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "3cd842ed-ebd9-4b2c-8780-5beb93cf3461",
+      "term": "Quasi-Anechoic Measurement",
+      "fields": {
+        "plain_english": "You measure a loudspeaker in an ordinary room, then trim away the part of the recorded response that arrives after the first wall or floor bounce, leaving only the direct sound, effectively faking an anechoic chamber.",
+        "purpose_function": "It produces a reflection-free frequency response without a chamber by time-windowing (gating) the impulse response before the first reflection arrives, so room boundaries are excluded, with the window length setting how low in frequency the result stays valid.",
+        "practical_application": "A technician measures a loudspeaker on a stand away from boundaries, gates the impulse response at the arrival time of the first reflection, and often splices in a near-field measurement to recover the low-frequency content lost to the short window.",
+        "category": "Acoustic Measurement",
+        "related_terms": ["Impulse Response", "Ground-Plane Measurement", "Free-Field", "Near-Field Measurement", "Exponential Sine Sweep", "Comb Filtering"],
+        "common_mistakes": ["Setting the window too long, which lets reflections back in and adds ripple to the response", "Setting the window too short, which destroys low-frequency resolution (usable resolution is roughly 1 over the window length)", "Forgetting that in a normal-sized room the result is typically invalid below about 200 to 300 Hz", "Failing to splice a near-field bass measurement to extend the low-frequency response"],
+        "scenario_contexts": ["Measuring a loudspeaker's on-axis mid/high response in an ordinary untreated room", "Quality control of drivers or finished speakers without an anechoic chamber", "Verifying crossover behavior in-room during a build or repair", "Combining gated far-field with near-field data to build a full-range response curve"]
+      },
+      "sources": ["Ballou, G. Handbook for Sound Engineers (quasi-anechoic / gated measurement)", "AES E-Library: Extending Quasi-Anechoic Measurements to Low Frequencies", "Audio Precision, Loudspeaker Acoustic Measurements in Ordinary Rooms"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "4bd361bd-c81d-4ab6-b821-71d093095f87",
+      "term": "Waterfall Plot (CSD)",
+      "fields": {
+        "plain_english": "A pseudo-3D graph that shows how each frequency fades away over time after the sound stops; ridges that linger instead of dropping quickly mean the loudspeaker or room is ringing at those frequencies.",
+        "purpose_function": "It exposes stored energy, resonances, and ringing (decay behavior) that a flat frequency-response curve cannot show, by plotting a succession of spectra taken from progressively later time slices of the impulse response.",
+        "practical_application": "In tools like REW or ARTA a technician views the cumulative spectral decay to locate driver breakup, cabinet or panel resonances, and room modes, aiming for rapid and uniform decay across all frequencies.",
+        "category": "Acoustic Measurement",
+        "related_terms": ["Impulse Response", "Resonance", "Room Modes", "Reverberation Time (RT60)", "Frequency Response", "Exponential Sine Sweep"],
+        "common_mistakes": ["Reading lingering low-frequency ridges as loudspeaker resonance when they are actually room modes or windowing artifacts", "Over-interpreting the absolute decay time, which is distorted by the rising analysis window at high frequencies", "Ignoring the limited frequency resolution of the display, especially at low frequencies", "Confusing a peak in amplitude response with a resonance, which only the decay behavior reveals"],
+        "scenario_contexts": ["Diagnosing loudspeaker cabinet or panel resonances during design or repair", "Identifying ringing room modes to guide acoustic treatment placement", "Evaluating headphone or driver decay in quality-control testing", "Confirming that a resonance heard subjectively corresponds to slow decay in the data"]
+      },
+      "sources": ["Shorter, D.E.L. (BBC) cumulative spectral decay method; JAES literature on CSD", "Stereophile / John Atkinson, Measuring Loudspeakers (waterfall/CSD interpretation)", "Audio Precision APx CSD Utility documentation"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

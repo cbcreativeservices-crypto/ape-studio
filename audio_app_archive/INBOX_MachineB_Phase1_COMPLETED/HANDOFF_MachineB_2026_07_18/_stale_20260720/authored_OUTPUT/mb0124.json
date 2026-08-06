@@ -1,0 +1,240 @@
+{
+ "batch": 124,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "6dfe2674-473e-40e7-9ae4-4fc6991491a4",
+   "term": "Percussion layer",
+   "fields": {
+    "definition": "A percussion layer is a supplementary rhythmic element (such as a shaker, tambourine, or extra drum part) added to a mix on top of the core drum parts, or one of several percussion sounds stacked together to form a single fuller-sounding hit or groove.",
+    "plain_english": "It is an extra percussion sound stacked on top of the main drums to add texture and groove. Think of it like adding a shaker or tambourine over a beat to fill it out.",
+    "purpose_function": "It adds rhythmic detail, energy, and stereo width that the main kit alone cannot provide, helping a groove feel fuller and more finished.",
+    "practical_application": "When mixing, an engineer balances each percussion layer under the main drums, panning and EQing shakers, congas, or tambourines so they support the groove without cluttering it.",
+    "category": "Arrangement",
+    "related_terms": ["Percussion sample", "Layering", "Panning", "Bus", "Stereo image", "EQ"],
+    "common_mistakes": [
+     "Stacking too many percussion layers so the groove becomes cluttered and loses punch.",
+     "Leaving every layer at full level instead of balancing them beneath the main drums.",
+     "Forgetting to check that stacked layers are in phase, causing weak or hollow hits.",
+     "Not high-pass filtering thin percussion layers, letting low-end mud build up."
+    ],
+    "scenario_contexts": [
+     "Adding a tambourine and shaker layer to lift the choruses of a pop song.",
+     "Stacking a sampled clap on top of a live snare to reinforce the backbeat.",
+     "Building a percussion layer of congas and shakers to give an electronic track a live feel."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "63a5e3f0-3c0d-4478-a891-c785724253ef",
+   "term": "Percussion sample",
+   "fields": {
+    "definition": "A percussion sample is a short, pre-recorded digital audio file of a single percussion sound (such as a kick, snare, clap, or shaker) stored for playback and triggering in a sampler, drum machine, or DAW.",
+    "plain_english": "It is a short recording of one drum or percussion sound saved on a computer. You can trigger it with a pad or key to play that exact sound whenever you want.",
+    "purpose_function": "It lets producers reuse consistent, high-quality percussion hits without re-recording them, and gives precise control over each sound's timing, pitch, and level.",
+    "practical_application": "A producer loads percussion samples into a drum sampler or places them on a DAW timeline, layering and tuning them to build beats and reinforce recorded drums.",
+    "category": "Sampling",
+    "related_terms": ["Percussion layer", "Sampler", "Drum machine", "One-shot", "Trigger", "Velocity"],
+    "common_mistakes": [
+     "Using a low-quality or heavily compressed sample and expecting clean, punchy results.",
+     "Not checking the sample's tuning against the song's key.",
+     "Triggering samples at one fixed velocity so the part sounds robotic and flat.",
+     "Ignoring the sample's built-in room tone or reverb, which can clash with the mix."
+    ],
+    "scenario_contexts": [
+     "Loading a kick and snare sample into a drum machine to program a beat.",
+     "Layering a percussion sample under a weak live drum recording to add punch.",
+     "Replacing a poorly recorded tom with a matched percussion sample during editing."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ac0a9ba0-8b0e-4656-85e6-a43b2400c619",
+   "term": "Phase validation",
+   "fields": {
+    "definition": "Phase validation is the process of checking that the phase (time and polarity) relationships between related audio signals, such as multiple microphones on one source, are correct so the signals reinforce rather than cancel each other when summed.",
+    "plain_english": "It means checking that your tracks line up in time so they do not fight each other. When two mics on one drum are out of step, the sound gets thin or hollow, so you test and fix it first.",
+    "purpose_function": "It exists to catch phase cancellation early, protecting low-end power and tonal balance when multi-mic or layered signals are combined.",
+    "practical_application": "An engineer validates phase by summing tracks to mono, flipping a polarity switch, or nudging tracks, listening for the fullest, most solid sound before committing to the mix.",
+    "category": "Phase Alignment",
+    "related_terms": ["Phase-locked audio editing", "Polarity", "Phase cancellation", "Mono compatibility", "Comb filtering", "Time alignment"],
+    "common_mistakes": [
+     "Confusing polarity (a 180-degree flip) with true time-based phase differences.",
+     "Only checking in stereo and never summing to mono to reveal cancellation.",
+     "Assuming a polarity flip alone fixes phase problems caused by mic distance.",
+     "Skipping phase checks on multi-mic drum and guitar recordings."
+    ],
+    "scenario_contexts": [
+     "Checking top and bottom snare mics before mixing a drum kit.",
+     "Verifying a DI and mic'd guitar amp sum together without thinning out.",
+     "Testing a mix for mono compatibility before it plays on a club or phone speaker."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "057a8f84-5dd9-4eea-a088-83a6adf1d18b",
+   "term": "Phase-locked audio editing",
+   "fields": {
+    "definition": "Phase-locked audio editing is editing multiple related tracks (such as all the microphones on a drum kit) together as a group, so every cut, move, or time adjustment is applied identically across them, preserving their relative timing and phase relationships.",
+    "plain_english": "It means editing a group of tracks all at once so they stay lined up in time. If you move one drum mic, every other drum mic moves the exact same amount, so the sound never goes out of step.",
+    "purpose_function": "It exists to keep multi-mic recordings phase-coherent during editing, preventing the thin or hollow tone that results when tracks drift out of alignment.",
+    "practical_application": "When editing drums, an engineer uses edit groups in the DAW so quantizing, trimming, and crossfades happen on every kit track together rather than one at a time.",
+    "category": "Editing",
+    "related_terms": ["Phase validation", "Edit group", "Quantization", "Crossfade", "Comb filtering", "Beat Detective"],
+    "common_mistakes": [
+     "Editing one drum mic alone and shifting it out of phase with the others.",
+     "Forgetting to enable the edit group before quantizing multi-mic drums.",
+     "Using crossfades that are too short, causing clicks at edit points.",
+     "Not creating matching crossfades on every grouped track."
+    ],
+    "scenario_contexts": [
+     "Tightening a live drum take by quantizing all kit mics as one group.",
+     "Comping a multi-mic acoustic guitar so every mic stays aligned.",
+     "Editing a bleed-heavy band recording where isolating one track would cause phase shifts."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f30af591-deb9-4acb-800d-502ef9eadb18",
+   "term": "Phrase-aligned transition",
+   "fields": {
+    "definition": "A phrase-aligned transition is an arrangement or edit change (such as an effect sweep, drop, or section change) timed to land exactly on the boundary of a musical phrase, typically a group of bars, so the change feels musically natural.",
+    "plain_english": "It is a change in the music that lands right at the end of a musical phrase, not in the middle of one. Like finishing a sentence before starting a new one, it makes the switch between sections feel smooth.",
+    "purpose_function": "It exists to make section changes, builds, and edits feel intentional and musical by tying them to the song's natural phrasing rather than to arbitrary points.",
+    "practical_application": "An engineer places crossfades, filter sweeps, or scene changes on phrase boundaries, often every 4, 8, or 16 bars, using the DAW grid and markers to keep transitions tight.",
+    "category": "Arrangement",
+    "related_terms": ["Phrase", "Bar", "Automation", "Crossfade", "Arrangement marker", "Grid"],
+    "common_mistakes": [
+     "Dropping a transition mid-phrase so the change feels jarring.",
+     "Ignoring the song's bar count and eyeballing edits instead of using the grid.",
+     "Cutting off a vocal or melodic tail at the transition point.",
+     "Assuming every phrase is 8 bars without counting the actual arrangement."
+    ],
+    "scenario_contexts": [
+     "Timing a riser and drop to land on the first beat of a chorus.",
+     "Aligning a DJ-style crossfade between two songs to the phrase.",
+     "Placing a filter sweep so it resolves exactly at a new section."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "57969935-b5f2-47e5-8ae2-c8b6dece6083",
+   "term": "Pin the meters",
+   "fields": {
+    "definition": "\"Pin the meters\" is a colloquial term for driving a signal so hot that the level meters read at or beyond their maximum, with the indicator held (\"pinned\") against the top of its range, usually indicating overload and clipping.",
+    "plain_english": "It means pushing a sound so loud that the level meter slams to the very top and stays there. It is a warning that the signal is too hot and is starting to distort.",
+    "purpose_function": "The phrase flags that a signal has run out of headroom; spotting pinned meters tells an engineer to pull levels back before clipping or distortion ruins the recording.",
+    "practical_application": "When setting gain, a technician backs off any channel or master fader whose meters are pinned, leaving headroom so peaks stay below 0 dBFS on a digital system.",
+    "category": "Metering",
+    "related_terms": ["Headroom", "Clipping", "Gain staging", "0 dBFS", "Peak meter", "Overload"],
+    "common_mistakes": [
+     "UNSAFE: Cranking a power amp until its meters pin, risking clipped drivers and hearing damage.",
+     "Treating pinned meters as \"loud and good\" instead of a clipping warning.",
+     "Confusing a peak meter pinning briefly with sustained overload.",
+     "Chasing pinned meters instead of setting proper gain staging with headroom."
+    ],
+    "scenario_contexts": [
+     "Seeing input meters pinned during soundcheck and reducing preamp gain.",
+     "Noticing the mix bus meters pinned in the red and lowering the master.",
+     "Catching a bass DI pinning the converter and backing off its level."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a9c7881e-881c-4ccf-819c-0bed5169752d",
+   "term": "Pipeline hardware insert",
+   "fields": {
+    "definition": "A pipeline hardware insert is a DAW routing tool (an insert-style plugin) that sends a channel's signal out of a physical audio-interface output to an external hardware processor and back through an input, placing the outboard gear into the mix signal path with automatic latency compensation.",
+    "plain_english": "It is a tool that lets you plug a real piece of studio hardware into your computer mix. The software sends the sound out to the gear, then back in, and lines it up in time so nothing drifts.",
+    "purpose_function": "It exists so engineers can use the sound of physical outboard gear, like a hardware compressor or EQ, inside an otherwise in-the-box mix without manual timing errors.",
+    "practical_application": "An engineer patches an external EQ or compressor through the hardware insert, then runs a calibration ping so the DAW compensates for the round-trip delay and keeps the track in sync.",
+    "category": "Routing",
+    "related_terms": ["Insert", "Outboard gear", "Latency compensation", "Send and return", "I/O plugin", "Signal flow"],
+    "common_mistakes": [
+     "UNSAFE: Hot-patching gear without muting, sending a loud pop that can damage speakers and hearing.",
+     "Forgetting to enable delay compensation, leaving the hardware track out of time.",
+     "Creating a feedback loop by mis-routing the output back into the same input.",
+     "Mismatching operating levels (+4 dBu vs -10 dBV) and overloading the hardware input."
+    ],
+    "scenario_contexts": [
+     "Running a mix bus through an external analog compressor during mixdown.",
+     "Inserting a hardware EQ on a vocal track from inside a DAW session.",
+     "Calibrating round-trip latency before printing a track processed by outboard gear."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Apple Logic Pro User Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ccc69574-21d2-47fe-8059-eacf47832c79",
+   "term": "Pitch correction handle",
+   "fields": {
+    "definition": "A pitch correction handle is a draggable graphical control in a pitch-editing tool (such as a note \"blob\" in Melodyne or a note in Logic's Flex Pitch) that lets an engineer grab and move an individual note's pitch, and often its timing or other parameters, to correct or shape it.",
+    "plain_english": "It is the little grab point on a note in tuning software that you drag to fix its pitch. Grab it and slide the note up or down until it sits in tune, like dragging a slider for that one note.",
+    "purpose_function": "It exists to give precise, per-note control over tuning, letting an engineer nudge or fully correct individual notes without affecting the rest of the performance.",
+    "practical_application": "When tuning vocals, an engineer drags each pitch correction handle to move flat or sharp notes onto the correct pitch, keeping the movement subtle to preserve a natural sound.",
+    "category": "Pitch Editing",
+    "related_terms": ["Pitch correction", "Pitch drift (Flex)", "Melodyne", "Flex Pitch", "Quantization", "Formant"],
+    "common_mistakes": [
+     "Snapping every note perfectly to pitch, producing an unnatural, robotic vocal.",
+     "Dragging the handle and accidentally changing timing instead of pitch.",
+     "Over-correcting notes and losing their natural vibrato and slides.",
+     "Editing a note with heavy background bleed, which confuses the pitch analysis."
+    ],
+    "scenario_contexts": [
+     "Nudging a slightly flat chorus note back into tune on a lead vocal.",
+     "Correcting a bass guitar note that drifted sharp during a take.",
+     "Fixing one out-of-tune note in an otherwise strong vocal comp."
+    ]
+   },
+   "sources": ["Celemony Melodyne User Manual", "Apple Logic Pro User Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7f134c46-cf38-48b7-9edc-10229c938a22",
+   "term": "Pitch drift (Flex)",
+   "fields": {
+    "definition": "Pitch Drift is a Flex Pitch note parameter in Logic Pro, adjusted with hotspots at the upper corners of a note, that controls the amount of pitch deviation at the beginning and end of the note, reducing or increasing how much the pitch slides into and out of its sustained value.",
+    "plain_english": "In Logic Pro's tuning tool, Pitch Drift controls how much a note bends up or down at its start and end. You can flatten out a wobble or keep a natural slide, shaping how smoothly the note enters and leaves its pitch.",
+    "purpose_function": "It exists to fine-tune the natural slides at a note's edges, letting an engineer tighten sloppy transitions or preserve expressive pitch movement instead of flattening the whole note.",
+    "practical_application": "When tuning a vocal in Flex Pitch, an engineer drags the upper-left and upper-right Pitch Drift hotspots to tame an unwanted scoop or fall-off at the start or end of a note.",
+    "category": "Pitch Editing",
+    "related_terms": ["Flex Pitch", "Pitch correction handle", "Fine Pitch", "Vibrato", "Formant Shift", "Pitch correction"],
+    "common_mistakes": [
+     "Removing all pitch drift and making natural note transitions sound stiff.",
+     "Confusing Pitch Drift with the coarse Pitch parameter that moves the whole note.",
+     "Adjusting drift on notes with heavy vibrato and getting unpredictable results.",
+     "Forgetting that the two drift hotspots control the start and end separately."
+    ],
+    "scenario_contexts": [
+     "Reducing an unwanted upward scoop at the start of a sustained vocal note.",
+     "Cleaning up a note that falls flat at its tail end.",
+     "Keeping a tasteful pitch slide while still correcting the note's center pitch."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

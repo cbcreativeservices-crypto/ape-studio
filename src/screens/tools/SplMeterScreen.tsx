@@ -26,6 +26,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
 import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
+import { CollapsibleSection } from '../lab/LabShell';
 import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
@@ -68,6 +69,12 @@ const fmtElapsed = (sec: number) => {
 /** Wall-seconds one phase-clock loop represents inside the VU popup — the
  *  clock runs at 1/VU_LOOP Hz so the ballistics integrate real time. */
 const VU_LOOP = 4;
+
+/** Uncalibrated dBFS → dB-SPL estimate: 0 dBFS ≈ this many dB SPL on a typical
+ *  phone mic (they clip acoustically ~100–120 dB SPL). Single source so the
+ *  dial, zone-color EMA and readouts all agree. Only a starting point — field
+ *  calibration overrides it. */
+const NOMINAL_OFFSET = 100;
 
 /** TOP hero (mounted only while the popup is open AND the viz gate passed): the
  *  classic wide horizontal VU — the relative meter around the RANGE reference.
@@ -504,6 +511,11 @@ export function SplMeterScreen({ navigation }: Props) {
   const [rangeAuto, setRangeAuto] = useState(false);
   const [autoRangeDb, setAutoRangeDb] = useState(80);
   const splEmaRef = useRef<number | null>(null);
+  // 3-second averaged SPL that drives the gauge ZONE COLOR only (owner
+  // 2026-08-05) — the number stays live, but its color is smoothed so it does
+  // not flash when the level hovers at a color-change threshold.
+  const zoneEmaRef = useRef<number | null>(null);
+  const [zoneSpl, setZoneSpl] = useState<number | null>(null);
   // Circle-meter label mode (owner 2026-07-30): STUDIO (control-room sweet-spot)
   // vs SPL (reference sounds). The node point rides the same arc in both.
   const [dialMode, setDialMode] = useState<DialMode>('studio');
@@ -555,14 +567,23 @@ export function SplMeterScreen({ navigation }: Props) {
     // AUTO-RANGE feed: a smoothed EMA of the estimated SPL so the auto 0-VU
     // reference tracks ambient (keeps the needle on-scale and moving).
     if (Number.isFinite(lvl)) {
-      const splNow = lvl + (offsetRef.current ?? 100);
+      const splNow = lvl + (offsetRef.current ?? NOMINAL_OFFSET);
       splEmaRef.current =
         splEmaRef.current == null ? splNow : splEmaRef.current + (splNow - splEmaRef.current) * 0.15;
     }
-    // Throttle the text-driving state to ~10 Hz.
-    if (now - lastTextRef.current >= 100) {
+    // Throttle the text-driving state to ~20 Hz (owner 2026-08-05: snappier
+    // numbers — matches the native ~50 ms frame refresh, so no faster is useful).
+    if (now - lastTextRef.current >= 50) {
+      const dtText = now - lastTextRef.current;
       lastTextRef.current = now;
       setDisplayMeter(m);
+      // 3-second EMA of the estimated SPL → the gauge zone COLOR (not the number).
+      if (Number.isFinite(lvl)) {
+        const s = lvl + (offsetRef.current ?? NOMINAL_OFFSET);
+        const a = Math.min(1, dtText / 3000);
+        zoneEmaRef.current = zoneEmaRef.current == null ? s : zoneEmaRef.current + (s - zoneEmaRef.current) * a;
+        setZoneSpl(Math.round(zoneEmaRef.current));
+      }
     }
   });
   // Rest the needles when not capturing (paused / idle / blurred).
@@ -570,6 +591,8 @@ export function SplMeterScreen({ navigation }: Props) {
     if (!running) {
       liveRmsDb.value = -120;
       livePeakDb.value = -120;
+      zoneEmaRef.current = null;
+      setZoneSpl(null);
     }
   }, [running, liveRmsDb, livePeakDb]);
 
@@ -594,7 +617,7 @@ export function SplMeterScreen({ navigation }: Props) {
   // splOffset = the field-calibration offset, or a nominal 100 dB estimate when
   // uncalibrated (0 dBFS ≈ 100 dB SPL on a typical phone mic). calibrated=false
   // badges the dial ESTIMATED — never a certified SPL reading (§1.7).
-  const splOffset = offset ?? 100;
+  const splOffset = offset ?? NOMINAL_OFFSET;
   const calibrated = offset != null;
   // VU RANGE wiring (owner 2026-07-30, corrected): the RANGE value is the SPL that
   // reads 0 VU (the selected number sits AT the 0 mark); the −20 mark is 20 dB
@@ -632,11 +655,14 @@ export function SplMeterScreen({ navigation }: Props) {
   // plus its zone colour so the number turns the colour of the arc zone it's in.
   const dialSpl = meter ? Math.round(selectedLevelDb(meter, weighting, response) + splOffset) : null;
   const dialCenterText = dialSpl != null ? `${dialSpl}` : '—';
-  const dialCenterColor = dialSpl != null ? splZoneColor(dialSpl, dialMode) : undefined;
+  // COLOR from the 3-second average (owner 2026-08-05) — the number is live but
+  // its zone color is smoothed so it doesn't flash at a threshold.
+  const colorSpl = zoneSpl ?? dialSpl;
+  const dialCenterColor = colorSpl != null ? splZoneColor(colorSpl, dialMode) : undefined;
   // Control-room sweet spot (owner 2026-07-30): in STUDIO mode only, a live level
   // in the 79–85 dB monitoring band lights the glowing gold frame around the
   // gauge (matches the dial's gold sweet-spot band). Never in SPL/OPTIMAL.
-  const inSweetSpot = dialMode === 'studio' && dialSpl != null && dialSpl >= 79 && dialSpl <= 85;
+  const inSweetSpot = dialMode === 'studio' && colorSpl != null && colorSpl >= 79 && colorSpl <= 85;
 
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
@@ -947,9 +973,9 @@ export function SplMeterScreen({ navigation }: Props) {
           </Pressable>
         )}
 
-        {/* Shared phone-mic honesty copy (spec §1.4) — short footer. */}
-        <View style={styles.micLimits}>
-          <Text style={styles.sectionHead}>PHONE-MIC LIMITS</Text>
+        {/* Shared phone-mic honesty copy (spec §1.4) — collapsible footer
+            (owner 2026-08-05). */}
+        <CollapsibleSection title="PHONE-MIC LIMITS" startOpen={false}>
           <Text style={styles.bullet}>
             {'•  '}
             {MIC_LIMITS[0]}
@@ -958,7 +984,7 @@ export function SplMeterScreen({ navigation }: Props) {
             {'•  '}
             {MIC_LIMITS[4]}
           </Text>
-        </View>
+        </CollapsibleSection>
 
         {/* Amber warnings, at the very BOTTOM (owner 2026-07-30). */}
         <LiveWarnings flags={flags} />
@@ -1001,20 +1027,6 @@ export function SplMeterScreen({ navigation }: Props) {
                   onPress={startMeter}
                 />
               </>
-            )}
-
-            {/* 1 — House honesty badge line (owner 2026-07-30): moved ABOVE the VU
-                so it is the FIRST thing shown when running. The VU is a RELATIVE
-                meter around the RANGE reference (honest regardless of calibration);
-                the SPL gauge below is calibrated-approximate at best (ESTIMATED when
-                uncalibrated) and its 79/82/85 dB(C) mix band is a C-weighted
-                reference, not a guarantee. */}
-            {showMeter && (
-              <Text style={styles.vuBadge}>
-                {calibrated
-                  ? `VU: RELATIVE · ${rangeRef} dB at 0 → ${rangeRef - 20} dB at −20 (${rangeAuto ? 'AUTO' : 'RANGE'}). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
-                  : `VU: RELATIVE · ${rangeRef} dB at 0 → ${rangeRef - 20} dB at −20 (${rangeAuto ? 'AUTO · ESTIMATED' : 'RANGE · ESTIMATED'} environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
-              </Text>
             )}
 
             {showMeter && (
@@ -1327,23 +1339,41 @@ export function SplMeterScreen({ navigation }: Props) {
                   </Text>
                 </View>
 
-                {/* 9 — Compact control-room legend for the gauge's sweet-spot band
-                    (owner 2026-07-30: moved to the BOTTOM, just above STOP). */}
-                <View style={styles.roomLegend}>
-                  <HelpHead title="CONTROL-ROOM MONITORING · dB SPL (C-WEIGHTED)" onHelp={() => help('control_room')} style={styles.roomLegendHead} />
+                {/* 9 — Control-room legend, now COLLAPSIBLE (owner 2026-08-05) and
+                    updated to match the CURRENT gauge zones (STUDIO green 60–85 with
+                    the gold 79–85 sweet-spot band; SPL/OPTIMAL green to 85, yellow
+                    85–90, orange 90–96, red 96+). */}
+                <CollapsibleSection title="CONTROL-ROOM MONITORING · dB SPL (C-WEIGHTED)" startOpen={false} onHelp={() => help('control_room')}>
                   <Text style={styles.roomLegendBody}>
-                    Green band = the mixing sweet spot. 79 dB(C) suits small rooms (under ~1,500 ft³ /
-                    42 m³) and most critical balance / music mixing; 82 medium; 85 large (Holman /
-                    SMPTE-THX). Lower levels are common too — 70–75 for general editing and long
-                    sessions, 60–65 for detailed or background work — with brief 85–95 checks for
+                    In STUDIO mode the gauge stays GREEN across the whole monitoring range and lights a
+                    glowing GOLD sweet-spot band at 79–85 dB(C) — the calibrated mixing level. The
+                    room-size ticks sit at 79 (small rooms, under ~1,500 ft³ / 42 m³, and most critical
+                    balance / music mixing), 82 (medium) and 85 (large) — the Holman / SMPTE-THX
+                    references. Lower levels are common too: 70–75 for general editing and long
+                    sessions, 60–65 for detailed or background work, with brief 85–95 checks for
                     impact, punch and low-frequency energy.
+                  </Text>
+                  <Text style={styles.roomLegendBody}>
+                    In SPL / OPTIMAL mode the arc reads as a loudness scale: GREEN up to ~85, YELLOW
+                    85–90, ORANGE 90–96 and RED from 96 — the point where sustained levels get into
+                    hearing-risk territory. The center number turns the color of the zone it sits in
+                    (averaged over ~3 s so it does not flicker at a boundary).
                   </Text>
                   <Text style={styles.roomLegendBody}>
                     Calibration uses C-weighting, not A: it is flatter and represents music's
                     low-frequency energy. A-weighting is for hearing-risk, not monitoring. These
                     targets are a reference guide, not a guarantee.
                   </Text>
-                </View>
+                </CollapsibleSection>
+
+                {/* VU honesty badge — moved to the BOTTOM (owner 2026-08-05). */}
+                {showMeter && (
+                  <Text style={styles.vuBadge}>
+                    {calibrated
+                      ? `VU: RELATIVE · ${rangeRef} dB at 0 → ${rangeRef - 20} dB at −20 (${rangeAuto ? 'AUTO' : 'RANGE'}). GAUGE: dB SPL · FIELD-CALIBRATED (APPROXIMATE) — the 79/82/85 dB(C) mix band is a reference, not a guarantee`
+                      : `VU: RELATIVE · ${rangeRef} dB at 0 → ${rangeRef - 20} dB at −20 (${rangeAuto ? 'AUTO · ESTIMATED' : 'RANGE · ESTIMATED'} environment). GAUGE: ESTIMATED · UNCALIBRATED — SPL numbers are an estimate; calibrate against a real SPL meter for true readings`}
+                  </Text>
+                )}
 
                 {/* Amber warnings at the bottom — flash 5 s + haptic, then list. */}
                 <LiveWarnings flags={flags} />

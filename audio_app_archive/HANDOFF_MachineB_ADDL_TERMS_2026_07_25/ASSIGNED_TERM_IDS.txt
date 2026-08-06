@@ -1,0 +1,150 @@
+412c61c3-369e-4f18-befd-8315f2b26dc3	Actuality
+0d798f45-55e8-4cb4-920a-4d903553f34a	Back Sell
+534a38fb-bb97-46da-ad21-82b73235f481	Board Op
+d54aaa67-5fbb-45bc-a33b-9e07e658bd3f	Cart Wall
+6a9e288a-df69-4810-ad78-6eb2457c530c	Cold Open
+c6bf0c26-db59-4f24-8c69-c18f7c30b187	Cough Button
+abea6f97-8af7-4b67-b554-1f75810193a2	Dead Air Sensor
+dc1dafe4-12df-4eda-9e29-0647d9701a03	Dead Roll
+9881b61b-6ca1-49da-9873-20f11aea85d7	Donut
+79dd7f85-49cc-400f-8194-c36942fd8bcf	Dry Voice
+cf6c62ac-5da2-497e-a875-96411250d6a1	ENG Remote
+5383c452-e003-4811-ba38-433b5734bf15	Front Sell
+6d9fdbc6-dd7e-4a36-ae76-4cd6e70110dc	Hit the Post
+f080f581-c0dd-4eb7-8b7d-3057e3989b47	Legal ID
+f94b6f1e-db7e-468a-a321-36347fc37a4e	Liner
+ca8bd817-872c-4e0a-b966-b4be2576c12d	Live Shot
+a7033844-64e1-4a29-b7bf-d15e7b147a62	Outcue
+97fe14b4-3695-46ec-862d-6af51019f8b1	Ramp Talk
+66f7958c-3514-4841-ad6b-7588d18e9d0f	Reader
+8e42d43f-2b53-4b20-9046-12c675ca7eaf	Reporter Cut
+106eda47-dfc9-4020-91ae-7e04261bd57b	Rip and Read
+208647a8-178a-42ee-937d-f88c4a65108f	Stringer Audio
+880808dc-cbbe-46c3-b662-23298f766a86	Tease Line
+1327b721-b1a7-461f-84ae-25be6acd5673	Time Check
+7bd2fea3-99f7-4cbe-a3b4-bf3a0f984e30	Two-Way
+9374fec6-4db8-4232-bf3e-e72d3fe2898e	Voicer
+ec9c65b5-b916-4744-9cc1-0d4798e1804a	Wet Voice
+c7502feb-4d0b-4f02-8073-3a93c1a801b9	Imaging Package
+1e7ce563-81b6-4d82-8d35-dc4257a7569c	Imaging Voice
+1a2d415a-f14b-4b49-8bcf-ca00300cdd2d	Sonic Branding
+ecff8b1c-0579-465c-9b56-8fecdd86df84	Sonic Logo
+5a8007e2-5958-475f-9faa-dc979dc514fa	Avail
+0549c86e-5c9e-40c1-8b7c-b940abd61843	Makegood
+0ae5fb84-4a36-403d-81f2-55fc58ff3e19	Proof of Performance
+f3e295c3-61e8-4167-b39d-55a1bad235c4	ROS (Run of Schedule)
+d5455d61-cae8-49ed-b28e-15dd8eb65b25	Spot Block
+4bfed1dc-b151-4a70-bf0f-c180998fbfa6	Drive Time
+60cdf5b0-5f6f-49bf-bd77-ad81cc0a4fa0	Graveyard Shift
+f260c473-4485-424b-8256-1b1b1a7a6760	Morning Drive
+b51547d3-489c-4636-947f-e31eac39a5c8	Power Hour
+6f39759e-519e-4f04-a9eb-032056149852	Artist Separation
+148df762-a2b3-4554-b4d0-eaa5f1693992	Auditorium Test
+928d0cbd-a185-41ce-90c6-3146a4dd1ada	Auto Segue
+c60e3a28-ff64-462d-b1c5-ef29a9a3ba75	Burn Factor
+789dc0f5-3384-41ad-ade0-a697521cea7e	Callout
+d98f92f9-d5cb-4f31-b358-ba0894736300	Clockwheel
+c985c2fe-4adc-47c3-b473-c8032f48bd5b	Current Rotation
+5de60375-5183-4037-a100-84a9efdff95d	Gold Rotation
+a81fad63-6986-4547-8810-2305c881ae54	Music Hooks
+31d42a54-9928-4a1a-925d-1a2a7a83b0e9	Music Scheduler
+57f2a6e3-31ad-4773-b30e-441a81a67aaf	Power Rotation
+5afb8ac8-c941-43dd-9263-636df296c351	Recurrent Rotation
+9ec7c913-22e2-4bd9-9b63-58ae384bf50c	Title Separation
+8edb6b47-5046-4059-a1e6-a548d1fdb4db	Call Screener
+bdaa12df-539b-4f99-8032-18903c3b68ec	IFB Return
+39ebf466-f455-49e5-8d10-91a91395729a	Phone Hybrid
+0b352b19-9930-4042-80f4-59a9e446481b	Seven-Second Delay
+23d6d340-ab5c-4d46-a988-3c18929b7add	Studio Talkback
+fa998867-acc3-4277-bde2-4199f427a6c4	Composite MPX
+03c97868-197c-46ec-9316-2f97fcec5373	EAS Header
+b1c3b874-e071-4ec6-9b31-3ea82c152444	HD Radio Delay
+773c5b1a-e618-48ff-9a28-1041faba323a	Percent Modulation
+c1b9ff48-c87c-406e-ad53-3c9f63f69bab	RBDS Encoder
+3f7771bc-db51-4b89-9ea7-be2cc0d7243c	RDS Encoder
+5017aabc-1a67-486e-a980-0da8fd720230	Required Monthly Test (RMT)
+48c37a94-5da9-498f-890e-67ee3a570dec	Required Weekly Test (RWT)
+88a6990d-7e12-4fd8-b5f5-1326f2038e4b	RPU (Remote Pickup Unit)
+c3c74754-814f-4b25-94dd-bf898c1c287d	Stereo Generator
+5f4098ed-722a-4bcd-8114-c684f7d86a53	Alignment Protractor
+e07d5dd4-07db-470a-898b-1649e1de795c	Baerwald Alignment
+9d08373a-5578-43f0-826b-3ae1d05b10af	Cartridge Compliance
+a4982ff9-7d40-4cc0-bb60-442553efe246	Deadwax
+2d9478aa-a0f3-425d-b75d-4e9ecd21d9fc	Effective Mass
+1272db28-0edb-41cf-8ba0-7b3e565aa05e	First Pressing
+0b0ea4ce-59cc-4410-b4d3-0b41f54105cb	Half-Speed Master
+a9fa6542-0c1d-4182-a52a-52e32706a02e	Original Pressing
+06536367-4c26-491f-8965-92acfdb74cf5	Platter Mat
+04cb15a8-3b41-41f0-a491-03b668516e82	Record Clamp
+f8ce2372-a569-4f0f-bb23-086b8119fd7d	Record Weight
+a4031a52-be3f-4e46-bb08-1fe2e262a150	SRA (Stylus Rake Angle)
+0729327c-2125-43d3-83f3-993455447666	Stylus Wear
+527ec5fd-291e-4ee2-abbe-6b5bd3f7dd7f	Virgin Vinyl
+f9ec5afc-b963-4917-bfa9-6a0e012d398b	VTA (Vertical Tracking Angle)
+a5ff2f76-866c-45e9-919e-c0d96da67bf7	Apodizing Filter
+4d673ad3-c7ed-419f-984b-b9eb004eafe4	Bit-Perfect Playback
+11485942-78ab-4bbf-85c9-b20c55eb5587	Clock Jitter
+b78b8627-1b27-49a2-a258-87782182ba79	Delta-Sigma DAC
+8cf17050-4d62-4eb5-9ad4-7fbf901cdd24	DSD Native
+62fc5408-efc0-4580-ac71-6a17b19740f6	Femto Clock
+700a5afe-b59e-4b27-9fd5-222ba94ac703	Ladder DAC
+ba4b626e-dcef-4466-bcc5-4010e5159ee1	Minimum Phase Filter
+91611cc4-c168-4d55-8891-80015adc4772	NOS DAC (Non-Oversampling DAC)
+f97c5abc-514c-45b5-b1f0-a6fd3ba9767f	R-2R DAC
+cb12e588-0cfe-435d-a921-72cbfddda8cd	EMI Filter
+1e0d0e84-bbe6-4711-89c3-67f3defa98f0	Ground Lift Box
+b263aa2d-4e24-40f8-8694-9b68de802d1c	Litz Wire
+3ca1a9ec-dfc6-4c1e-a1c6-47fbb0b1ec50	OCC Copper
+331525a4-e27b-4129-a0af-1278d9e809a8	OFC Copper
+1ffc7261-0b48-4638-bbb6-ba71590d5b2d	Power Regenerator
+4280025d-de0e-4baa-abc4-97ed8a20c591	RF Filter
+c82ee162-1dab-477b-ab51-ac8dccb6af9e	Silver-Plated Copper
+03d93a2d-4d92-4d91-8e47-1d030bd0e3a7	Skin Effect
+ad461eaa-fbf6-4b11-9998-8ec60732fb84	Bias Drift
+319e4a29-48ed-44d2-acb7-8e5a3e86e2a0	Getter Flash
+a51243cb-b1bf-4ac1-9a4e-08c6e8bf5b80	Matched Quad
+7ba0a622-ed17-4845-bbd0-8ab779e69e14	NOS Tube
+942ee02b-47ec-432a-9e46-0366ed1f8f99	Plate Voltage
+0e11241b-9c41-4228-bc0e-fd8a6596b6a3	Tube Rush
+91d43548-7b35-4967-9dfd-b3a9b6cf2a7e	Boundary Reinforcement
+d085c22e-6aef-47da-bd80-42d9094ee584	ETC (Energy-Time Curve)
+ef58888f-471b-4871-b6e1-b2cf52e567f0	Farfield Listening
+cd57db0a-383a-4625-9e65-7980c53df4a7	Harman Curve
+cf84bcdb-b348-4d87-8468-c8f338f5f83a	Harman Target
+58f0ef32-4623-460c-a467-47882da05476	Klippel NFS
+8170f8a9-d84a-41c4-8f9a-381acf137340	Listening Triangle
+e5253f67-2422-4063-8f6e-f877486f18df	Listening Window
+5d4f0e94-109a-44e5-be2a-06418e077c07	Nearfield Listening
+8328a90a-c846-44df-a1c7-32ddd5a3a2d5	Olive Preference Score
+690a8bb1-5fc8-4f2d-b96f-20569b0b38ae	Predicted In-Room Response
+65163a91-6c30-4b8a-a966-32e90635625b	Speaker Coupling
+99a7a908-2714-44fc-95ab-ea3fa124750b	Speaker Decoupling
+1cf53c88-aaa4-466e-a8d9-86b88d85d782	Spinorama
+f03f67ef-2b89-4fad-a164-85e5e682fe30	Clamp Force
+4114544f-8fe2-4f0c-8471-7cc0ee4da4ba	Driver Flex
+44d41e0c-4c99-4db9-88b5-095d21ec62f2	Free Field Target
+ce589176-d2b2-4758-83bd-33232811c10b	Head-Fi
+5d6cf049-ffb4-43dc-8219-27e90f1d83cc	Headstage
+a2a3812f-b7a8-401d-87be-385bda9bf616	Pad Rolling
+083dee52-7862-46d2-bd60-d9998e4322ee	Analytical Sound
+97f1a42b-5730-4d49-b91e-8dad5962a3c9	Colored Sound
+a6620546-2f09-462a-92b9-1eb5ad1091cd	Cool Tilt
+fd17d051-f146-4f35-8573-6733f67693c8	Euphonic
+d5e340d3-7268-40d7-b995-4c784f14c83c	Liquid Midrange
+cad833d0-d1c9-4404-a830-80381212c352	Lush
+f8dd2199-73c4-471a-a088-cb6353e2e4d4	Microdetail
+42b3a89d-f1f7-4247-b5ad-64a58a72af3a	Musicality
+cb72a221-3270-4b1e-9ccc-325484a9af2c	Neutral Presentation
+0a3b7b91-5521-4011-82f1-28429400367a	Organic Sound
+b4ba4ee4-71b3-4cd2-ae74-6c69055a532c	PRaT (Pace, Rhythm and Timing)
+44434707-de77-4ce2-892b-8be9715ef648	Rich Midrange
+9427437b-73e5-4711-9941-a876d4ff994f	Rolled-Off Treble
+f5661b63-e61f-4dc1-a411-239a457b9efd	Sweet Treble
+6ff28d85-467b-420f-9d49-4d46d964a955	Tonal Density
+8fa5fb0d-91f3-49e9-bbd6-d43ffe658357	Transparency
+8dfb0ca8-d711-4631-b2ef-95b4747877aa	Warm Tilt
+f70f0e75-379e-4b02-ade2-e8d46d831ea7	Audiophile
+406893cf-fd2f-446f-8180-a24ce577bea7	Component Matching
+8fe23b2b-db0e-4de7-9722-198caaa9cf46	All Buttons In Mode
+dc570809-69a7-4a2f-a86c-f2fe93178824	Listen Mic Compressor
+055e7714-d98d-48a8-b5d0-38ee899395b8	Unison Technology

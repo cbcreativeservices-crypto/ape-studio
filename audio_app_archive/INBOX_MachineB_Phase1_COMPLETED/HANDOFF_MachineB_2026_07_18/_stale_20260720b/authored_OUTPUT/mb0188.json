@@ -1,0 +1,294 @@
+{
+ "batch": 188,
+ "topic": "Podcast Production",
+ "authored": [
+  {
+   "id": "258107ff-32f7-4d29-a7b2-91aa63081765",
+   "term": "wav2vec",
+   "fields": {
+    "definition": "wav2vec is a self-supervised speech representation framework from Facebook AI Research (Meta AI) that learns useful acoustic features directly from large amounts of unlabeled audio, which are then fine-tuned for tasks such as automatic speech recognition. Its successor, wav2vec 2.0, masks parts of the raw audio and learns to predict them, producing strong recognition accuracy with far less transcribed training data.",
+    "plain_english": "wav2vec is a computer model that learns the sounds of speech by listening to huge amounts of audio on its own, without needing text labels first. This is like a child learning to hear words before anyone teaches them to read. After that, it needs only a little labeled speech to turn talking into text well.",
+    "purpose_function": "It exists to learn speech features from cheap, plentiful unlabeled audio so that accurate speech-to-text can be built without needing enormous hand-transcribed datasets. This lowers the cost of building recognition for languages and accents that have little labeled data.",
+    "practical_application": "A podcast technician meets wav2vec inside transcription and captioning tools, where it powers the model that converts recorded speech into editable text, and it is also used as the alignment engine that snaps words to precise times.",
+    "category": "Speech AI Model",
+    "related_terms": [
+     "Whisper",
+     "Automatic speech recognition",
+     "Word-level timestamps",
+     "WhisperX",
+     "Transcription",
+     "Forced alignment"
+    ],
+    "common_mistakes": [
+     "Thinking wav2vec produces text by itself; the base model only learns audio features and must be fine-tuned or paired with a decoder to output words",
+     "Assuming it works equally well in noisy or musical podcast beds; recognition accuracy still drops with heavy background noise",
+     "Confusing the original wav2vec with wav2vec 2.0, which uses a different masked, transformer-based approach",
+     "Expecting perfect results on strong accents or specialist jargon without any fine-tuning"
+    ],
+    "scenario_contexts": [
+     "Generating a rough transcript of an interview episode for editing and show notes",
+     "Providing the phoneme alignment that gives a caption file accurate per-word timing",
+     "Building speech recognition for a language that has very little transcribed audio available"
+    ]
+   },
+   "sources": [
+    "Schneider et al., 'wav2vec: Unsupervised Pre-training for Speech Recognition' (Facebook AI Research, 2019)",
+    "Baevski et al., 'wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations' (Facebook AI Research, 2020)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d4d27f39-cf25-4478-bf77-f394b7ac4920",
+   "term": "WaveGlow",
+   "fields": {
+    "definition": "WaveGlow is a flow-based generative neural network from NVIDIA that synthesizes speech audio waveforms from mel-spectrograms in a single, non-autoregressive pass. By combining ideas from Glow and WaveNet, it generates high-quality audio quickly without needing sample-by-sample recursion.",
+    "plain_english": "WaveGlow is a computer model that turns a picture of sound, called a spectrogram, into an actual audio waveform you can hear. It is a vocoder, the part of a text-to-speech system that makes the final voice. Because it builds the whole sound at once instead of one tiny piece at a time, it is fast.",
+    "purpose_function": "It exists to act as a vocoder, converting the spectrogram output of a text-to-speech system into a natural-sounding waveform, and it was designed to do this fast enough for practical use. This solves the slow, one-sample-at-a-time bottleneck of earlier waveform models.",
+    "practical_application": "A podcast producer encounters WaveGlow inside text-to-speech pipelines that generate synthetic narration or voice segments, where it is paired with a spectrogram model such as Tacotron 2 to produce the finished voice audio.",
+    "category": "Speech AI Model",
+    "related_terms": [
+     "WaveNet",
+     "WaveRNN",
+     "Text-to-speech",
+     "Vocoder",
+     "Mel-spectrogram",
+     "Speech synthesis"
+    ],
+    "common_mistakes": [
+     "Thinking WaveGlow generates speech from text; it only turns a spectrogram into audio and needs a separate model to create that spectrogram first",
+     "Assuming it runs well on any computer; high-quality real-time use generally needs a capable GPU",
+     "Confusing the vocoder stage with the overall voice; the naturalness of the words and rhythm comes from the earlier acoustic model",
+     "Expecting it to clean up or improve a bad input spectrogram"
+    ],
+    "scenario_contexts": [
+     "Rendering a synthetic host or narrator voice for an automated podcast segment",
+     "Serving as the vocoder stage after a Tacotron 2 acoustic model in a text-to-speech system",
+     "Producing voiceover audio for dynamically inserted ad reads or announcements"
+    ]
+   },
+   "sources": [
+    "Prenger, Valle, Catanzaro, 'WaveGlow: A Flow-based Generative Network for Speech Synthesis' (NVIDIA, 2019)",
+    "NVIDIA WaveGlow technical repository and model documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "82467af6-4abf-4dc1-bbe5-b30f5e84cc78",
+   "term": "WaveNet",
+   "fields": {
+    "definition": "WaveNet is a deep autoregressive generative model of raw audio waveforms, introduced by DeepMind, that predicts each audio sample conditioned on all previous samples using stacked dilated causal convolutions. It set a new quality benchmark for text-to-speech and can also model music and other audio.",
+    "plain_english": "WaveNet is a computer model that creates realistic speech by building the sound one tiny slice at a time, guessing each slice from the slices before it. This is like drawing a wave dot by dot until it looks smooth and natural. It made computer voices sound much more human than older methods.",
+    "purpose_function": "It exists to generate very natural-sounding synthetic speech and audio by modeling the raw waveform directly rather than stitching together pre-recorded pieces. This produces smoother, more human voices for applications like text-to-speech assistants.",
+    "practical_application": "A podcast producer meets WaveNet-based voices in cloud text-to-speech services used to generate narration, and understands it as the technology that raised the quality bar for synthetic speech, though its original form was slow to generate.",
+    "category": "Speech AI Model",
+    "related_terms": [
+     "WaveRNN",
+     "WaveGlow",
+     "Text-to-speech",
+     "Vocoder",
+     "Speech synthesis",
+     "Autoregressive model"
+    ],
+    "common_mistakes": [
+     "Assuming the original WaveNet is fast; sample-by-sample generation made it slow, which later models were built to fix",
+     "Thinking it works from text alone; it is conditioned on features such as a spectrogram or linguistic input from another model",
+     "Confusing WaveNet the waveform model with the complete text-to-speech system it sits inside",
+     "Believing every modern synthetic voice is WaveNet; many services now use faster successor models"
+    ],
+    "scenario_contexts": [
+     "Generating natural narration through a cloud text-to-speech voice for an episode intro",
+     "Explaining why modern synthetic podcast voices sound far more natural than older ones",
+     "Serving as the vocoder that turns acoustic features into a finished speech waveform"
+    ]
+   },
+   "sources": [
+    "van den Oord et al., 'WaveNet: A Generative Model for Raw Audio' (DeepMind, 2016)",
+    "DeepMind WaveNet technical publication and accompanying documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a91d9d8d-7765-4971-accc-a00ac0143124",
+   "term": "WaveRNN",
+   "fields": {
+    "definition": "WaveRNN is an efficient neural vocoder from DeepMind that uses a compact single-layer recurrent neural network to generate audio waveforms from acoustic features. It was designed to match the quality of large autoregressive models like WaveNet while being much faster and light enough to run in real time, including on limited hardware.",
+    "plain_english": "WaveRNN is a computer model that turns sound features into a finished audio waveform, built to be small and fast. It is a vocoder, the part that makes the final voice you hear. Its whole point is to sound good while running quickly, even on modest devices.",
+    "purpose_function": "It exists to generate high-quality speech waveforms with far less computing power than earlier models, making real-time synthetic speech practical on phones and other limited hardware. This addresses the speed problem of sample-by-sample audio generation.",
+    "practical_application": "A podcast technician encounters WaveRNN as the efficient vocoder inside text-to-speech tools where speed matters, converting a spectrogram into the final spoken audio for narration or automated voice segments.",
+    "category": "Speech AI Model",
+    "related_terms": [
+     "WaveNet",
+     "WaveGlow",
+     "Text-to-speech",
+     "Vocoder",
+     "Speech synthesis",
+     "Mel-spectrogram"
+    ],
+    "common_mistakes": [
+     "Thinking WaveRNN creates speech from text; it only converts acoustic features into audio and needs an earlier model to supply them",
+     "Assuming faster means lower quality; WaveRNN was designed to keep quality high while cutting compute cost",
+     "Confusing the vocoder with the full text-to-speech pipeline it belongs to",
+     "Expecting it to fix errors in the input features rather than faithfully rendering them"
+    ],
+    "scenario_contexts": [
+     "Rendering synthetic voice audio in a tool that must run quickly or on modest hardware",
+     "Acting as the vocoder stage after an acoustic model in a text-to-speech system",
+     "Producing real-time or on-device narration for automated podcast content"
+    ]
+   },
+   "sources": [
+    "Kalchbrenner et al., 'Efficient Neural Audio Synthesis' (WaveRNN, DeepMind, 2018)",
+    "DeepMind WaveRNN technical publication and documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c08897f5-3e54-480a-9784-7e2897a3e0e5",
+   "term": "Webcast studio",
+   "fields": {
+    "definition": "A webcast studio is a room or facility equipped to produce and stream live audio or video content over the internet to an online audience. It typically combines microphones, cameras, a mixer or production switcher, lighting, and an encoder that sends the program feed to a streaming platform.",
+    "plain_english": "A webcast studio is a room set up to broadcast live over the internet. It has the microphones, cameras, mixers, and encoding gear needed to send a live show to viewers online. Think of it as a small TV or radio station built for streaming instead of the airwaves.",
+    "purpose_function": "It exists to give creators a controlled space with the right gear to deliver reliable, good-quality live streams to an online audience. Centralizing the equipment and signal flow makes live production repeatable and less prone to failure.",
+    "practical_application": "A podcast team uses a webcast studio to record or livestream episodes with guests, routing microphones and cameras through a mixer and encoder so the show reaches platforms like YouTube or a streaming service in real time.",
+    "category": "Production Facility",
+    "related_terms": [
+     "Encoder",
+     "Live streaming",
+     "Audio mixer",
+     "Podcast studio",
+     "Broadcast",
+     "Remote recording"
+    ],
+    "common_mistakes": [
+     "Under-provisioning internet upload bandwidth, causing dropped or buffering live streams",
+     "Ignoring room acoustics and treating only the picture, which leaves the audio echoey or noisy",
+     "Forgetting to monitor the actual outgoing stream, so problems go unnoticed until viewers complain",
+     "UNSAFE: Overloading power circuits or running trip-hazard cabling for lights and gear instead of following safe electrical and cable-management practice"
+    ],
+    "scenario_contexts": [
+     "Livestreaming a podcast episode with in-studio guests to an online audience",
+     "Producing a live Q&A or event broadcast that mixes several microphones and cameras",
+     "Recording a video podcast for later editing while also streaming it live"
+    ]
+   },
+   "sources": [
+    "Ballou, 'Handbook for Sound Engineers' (broadcast and live production practice)",
+    "Yamaha Sound Reinforcement Handbook (signal flow and live production fundamentals)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "00e1cdea-a5d1-4393-bd54-f587ed49345c",
+   "term": "Whisper",
+   "fields": {
+    "definition": "Whisper is an open-source automatic speech recognition model from OpenAI, trained on a very large and diverse set of multilingual audio to transcribe speech and translate it into English. Built as an encoder-decoder Transformer, it is known for robust performance across accents, background noise, and technical language.",
+    "plain_english": "Whisper is a free computer model from OpenAI that listens to speech and turns it into text. It was trained on a huge, varied mix of audio, so it handles many languages, accents, and noisy recordings well. It can also translate spoken words from other languages into English text.",
+    "purpose_function": "It exists to provide accurate, general-purpose speech-to-text and speech translation that works across many languages and difficult audio conditions without task-specific tuning. Its broad training makes it reliable on real-world, messy recordings.",
+    "practical_application": "A podcast producer runs episode audio through Whisper to auto-generate transcripts, captions, and searchable show notes, often as the first step before editing or publishing.",
+    "category": "Speech AI Model",
+    "related_terms": [
+     "WhisperX",
+     "wav2vec",
+     "Automatic speech recognition",
+     "Transcription",
+     "Word-level timestamps",
+     "Speaker diarization"
+    ],
+    "common_mistakes": [
+     "Trusting the transcript blindly; Whisper can invent plausible-sounding text, called hallucination, especially during silence or music",
+     "Expecting precise per-word timing from base Whisper, whose native timestamps are only approximate",
+     "Assuming it separates or labels who is speaking; diarization needs additional tooling",
+     "Choosing a small model for accuracy-critical work when a larger model would transcribe far better"
+    ],
+    "scenario_contexts": [
+     "Auto-transcribing a recorded interview to produce an editable script and show notes",
+     "Generating caption or subtitle text for a video version of an episode",
+     "Translating a foreign-language guest segment into English text for reference"
+    ]
+   },
+   "sources": [
+    "Radford et al., 'Robust Speech Recognition via Large-Scale Weak Supervision' (Whisper, OpenAI, 2022)",
+    "OpenAI Whisper model card and technical repository documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "26d949da-329a-4fb1-bac3-5a84ce2ab26d",
+   "term": "WhisperX",
+   "fields": {
+    "definition": "WhisperX is an open-source system that extends OpenAI's Whisper to provide fast, accurate word-level timestamps for long-form audio. It adds voice-activity detection, batched inference, and a forced-alignment step using a phoneme model to correct Whisper's imprecise timing.",
+    "plain_english": "WhisperX is a tool that improves OpenAI's Whisper by pinning down exactly when each word is spoken. Plain Whisper gives rough timing, so WhisperX lines the words up to the audio much more precisely. It also runs faster on long recordings and can help mark who is speaking.",
+    "purpose_function": "It exists to fix Whisper's weak timing and speed on long files, delivering reliable per-word timestamps needed for captions, subtitles, and precise editing. The alignment step matches each transcribed word to its true position in the audio.",
+    "practical_application": "A podcast editor uses WhisperX to get accurate word timings so captions sync tightly to speech and so text-based editing tools can cut audio at exact word boundaries.",
+    "category": "Speech AI Model",
+    "related_terms": [
+     "Whisper",
+     "wav2vec",
+     "Word-level timestamps",
+     "Forced alignment",
+     "Speaker diarization",
+     "Transcription"
+    ],
+    "common_mistakes": [
+     "Thinking WhisperX replaces Whisper; it builds on Whisper's transcript and adds alignment and timing on top",
+     "Assuming alignment fixes wrong words; it improves timing but does not correct recognition errors in the text",
+     "Expecting speaker labels automatically; diarization is a separate optional step that needs its own model",
+     "Overlooking that alignment quality still depends on clean audio and correct language selection"
+    ],
+    "scenario_contexts": [
+     "Producing tightly synced captions or subtitles for a video podcast",
+     "Enabling text-based editing where cutting a word also cuts the audio at the right point",
+     "Preparing a transcript with precise timings for interactive show-note navigation"
+    ]
+   },
+   "sources": [
+    "Bain et al., 'WhisperX: Time-Accurate Speech Transcription of Long-Form Audio' (2023)",
+    "WhisperX technical repository and documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "056431cc-7001-4f9c-8b79-5f9bafae8cf7",
+   "term": "Word-level timestamps",
+   "fields": {
+    "definition": "Word-level timestamps are metadata that pair each transcribed word with its start and end time in the source audio. They let software align text precisely to the recording, unlike coarser segment- or line-level timing.",
+    "plain_english": "Word-level timestamps tell you exactly when each single word is spoken in a recording, marking the start and end time of every word. It is like giving every word its own moment on the clock. This lets captions and editing tools line up perfectly with the audio.",
+    "purpose_function": "They exist to link written text tightly to the audio so tools can highlight, search, caption, or cut speech at the exact word. This precise timing is what makes karaoke-style captions and text-based audio editing possible.",
+    "practical_application": "A podcast editor relies on word-level timestamps so that deleting a word in the transcript removes the matching audio, and so captions highlight each word as it is spoken.",
+    "category": "Transcription Metadata",
+    "related_terms": [
+     "WhisperX",
+     "Whisper",
+     "Forced alignment",
+     "Transcription",
+     "Subtitles",
+     "Speaker diarization"
+    ],
+    "common_mistakes": [
+     "Confusing word-level timing with segment-level timing, which only marks whole phrases or lines rather than each word",
+     "Assuming every transcription tool provides accurate word timing; base models often give only approximate marks",
+     "Trusting timestamps on noisy or overlapping speech, where alignment can drift or fail",
+     "Forgetting that wrong words still get timestamps, so bad text yields precisely timed but incorrect captions"
+    ],
+    "scenario_contexts": [
+     "Creating word-by-word highlighted captions that follow the speaker in real time",
+     "Powering text-based editing so cutting text also trims the matching audio",
+     "Letting listeners jump to the exact spot where a searched word is spoken"
+    ]
+   },
+   "sources": [
+    "Bain et al., 'WhisperX: Time-Accurate Speech Transcription of Long-Form Audio' (2023)",
+    "Baevski et al., 'wav2vec 2.0' (Facebook AI Research, 2020), forced-alignment basis for word timing"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

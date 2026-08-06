@@ -1,0 +1,158 @@
+{
+  "generated": "2026-07-16T03:11:03.375997Z",
+  "bucket": "course-cards",
+  "format": "webp",
+  "note": "Optimized WebP q80, 941x1672, from coursecards_optimized/. Filenames = upload targets.",
+  "cards": [
+    {
+      "position": 1,
+      "card_id": "free:tools",
+      "name": "Tools",
+      "file": "measurement_tools_card.webp"
+    },
+    {
+      "position": 2,
+      "card_id": "free:glossary",
+      "name": "Glossary",
+      "file": "glossay_card.webp"
+    },
+    {
+      "position": 3,
+      "card_id": "free:safety",
+      "name": "Pro Audio Safety",
+      "file": "pro_audio_safety_card.webp"
+    },
+    {
+      "position": 4,
+      "card_id": "free:daw",
+      "name": "DAW",
+      "file": "musi_202_computermusic.webp"
+    },
+    {
+      "position": 5,
+      "card_id": "course:intro-to-audio",
+      "name": "Intro to Audio",
+      "file": "Card_IntroToAudio.webp"
+    },
+    {
+      "position": 6,
+      "card_id": "course:sound-reinforcement-systems",
+      "name": "Sound Reinforcement Systems",
+      "file": "sound_reinforcement_systems.webp"
+    },
+    {
+      "position": 7,
+      "card_id": "course:audio-system-design-and-maintenance",
+      "name": "Audio System Design & Maint.",
+      "file": "audi_204_card.webp"
+    },
+    {
+      "position": 8,
+      "card_id": "course:recording-arts",
+      "name": "Recording Arts",
+      "file": "musi_201_rec_arts_card.webp"
+    },
+    {
+      "position": 9,
+      "card_id": "course:music-production",
+      "name": "Music Production",
+      "file": "Card_MusicProductioin.webp"
+    },
+    {
+      "position": 10,
+      "card_id": "course:career-and-business",
+      "name": "Career & Business",
+      "file": "muii_108_business_card.webp"
+    },
+    {
+      "position": 11,
+      "card_id": "topic:podcast",
+      "name": "Podcasting & Broadcast",
+      "file": "205a_card.webp"
+    },
+    {
+      "position": 12,
+      "card_id": "topic:film",
+      "name": "Film & Game Audio",
+      "file": "205b_card.webp"
+    },
+    {
+      "position": 13,
+      "card_id": "topic:assist",
+      "name": "Assisted Listening",
+      "file": "Card_ALS.webp"
+    },
+    {
+      "position": 14,
+      "card_id": "topic:commercial",
+      "name": "Commercial Audio",
+      "file": "Card_70v.webp"
+    },
+    {
+      "position": 15,
+      "card_id": "topic:corporate",
+      "name": "Corporate AV",
+      "file": "Card_AV.webp"
+    },
+    {
+      "position": 16,
+      "card_id": "topic:dj",
+      "name": "DJ",
+      "file": "Card_DJ.webp"
+    },
+    {
+      "position": 17,
+      "card_id": "topic:architectural",
+      "name": "Architectural",
+      "file": "Card_AcousticalAudio.webp"
+    },
+    {
+      "position": 18,
+      "card_id": "topic:vehicle",
+      "name": "Vehicle Audio",
+      "file": "Card_Automotive.webp"
+    },
+    {
+      "position": 19,
+      "card_id": "topic:hifi",
+      "name": "Hi-Fi Systems",
+      "file": "Card_HomeHiFi.webp"
+    },
+    {
+      "position": 20,
+      "card_id": "topic:audio-tech",
+      "name": "Audio Technician",
+      "file": "Card_Technician.webp"
+    },
+    {
+      "position": 21,
+      "card_id": "topic:theatrical",
+      "name": "Theatrical",
+      "file": "Theatrical.webp"
+    },
+    {
+      "position": 22,
+      "card_id": "topic:audio-elect",
+      "name": "Audio Electronics",
+      "file": "Electronics.webp"
+    },
+    {
+      "position": 23,
+      "card_id": "topic:road-crew",
+      "name": "Road Crew",
+      "file": "RoadCrew.webp"
+    },
+    {
+      "position": 24,
+      "card_id": "topic:live-sound",
+      "name": "Live Sound",
+      "file": "Card_LiveSoundMusic.webp"
+    },
+    {
+      "position": 25,
+      "card_id": "topic:worship",
+      "name": "Worship",
+      "file": "Card_Worship.webp"
+    }
+  ]
+}

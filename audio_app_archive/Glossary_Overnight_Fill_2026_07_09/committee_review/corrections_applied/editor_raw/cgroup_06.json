@@ -1,0 +1,105 @@
+{
+ "group": 6,
+ "corrections": [
+  {
+   "id": "67783d6c-0250-4961-8bcd-827b0af09a75",
+   "term": "USB-B",
+   "corrected": {
+    "common_mistakes": [
+     "Confusing the taller USB 3.0 Type-B shell with the standard USB 2.0 Type-B and forcing the wrong cable.",
+     "Assuming USB-B is the computer/host (downstream) end; it is actually the device-side (upstream-facing) port that plugs into the peripheral, while the flat USB-A or USB-C end goes to the host.",
+     "Using a marginal or damaged USB-B cable and blaming the interface for intermittent audio dropouts."
+    ]
+   },
+   "notes": [
+    "common_mistakes #2: reworded to fix the misconception target. Per the USB spec the Type-B connector mates to the Upstream-Facing Port (UFP) on a peripheral, so USB-B IS the upstream (device-side) port; the real error is thinking it is the host/downstream end. Removed the ambiguous 'upstream/host-capable' pairing so 'upstream' now consistently means device-side, matching purpose_function."
+   ]
+  },
+  {
+   "id": "573a9efc-fc19-4ea8-b089-a9c3f732752d",
+   "term": "Feed-Forward Detection",
+   "corrected": {
+    "practical_application": "A tech reaches for a feed-forward compressor like the dbx 160 (or a modern VCA compressor) when they want tight, predictable transient control on drums or a mix bus."
+   },
+   "notes": [
+    "practical_application: replaced the SSL bus compressor with the dbx 160 as the feed-forward archetype. Verified: the dbx 160 uses true-RMS sidechain detection driving the VCA from the input (feed-forward), whereas the classic SSL bus compressor derives its sidechain after the gain VCA (feedback/hybrid). Left scenario_contexts unchanged since it was not flagged."
+   ]
+  },
+  {
+   "id": "697660b2-4a60-41bb-a3b2-476354ae20cc",
+   "term": "Stereo Link",
+   "corrected": {
+    "common_mistakes": [
+     "Leaving a stereo compressor unlinked (dual-mono) on the mix bus and letting center-panned elements wander",
+     "Assuming stereo link never affects width, when it deliberately trades some width for a stable image",
+     "Not high-pass filtering the link/sidechain (the detector signal the compressor listens to), so a heavy bass note on one side clamps both channels too hard"
+    ]
+   },
+   "notes": [
+    "common_mistakes #3: added an inline clause explaining that the link/sidechain is the compressor's detector signal, so the caution no longer lands as unexplained jargon for a beginner. Sidechain related_term link left intact for follow-up."
+   ]
+  },
+  {
+   "id": "ee7c98a4-dde5-44ee-aaeb-675259c9c9d1",
+   "term": "Cramped EQ (Frequency Cramping)",
+   "corrected": {
+    "plain_english": "In some digital EQs, boosts near the top of the audible range get squashed and sound harsher. This happens because the math forces the curve to unity gain at the sampling limit, so the bell can no longer stay symmetrical.",
+    "common_mistakes": [
+     "Believing all digital EQs cramp equally, when analog-matched or oversampled designs largely avoid it",
+     "Blaming the source or converters for harshness that is actually filter cramping near Nyquist",
+     "Thinking oversampling only fixes the magnitude curve, when it actually reduces both magnitude and phase cramping in the audio band (at the cost of CPU)",
+     "Thinking cramping affects low and mid bands, when it only appears as a band's center approaches Nyquist"
+    ]
+   },
+   "notes": [
+    "plain_english: split the comma-spliced sentence into two and parallelized 'get squashed and sound harsher'.",
+    "common_mistakes #3: corrected the backwards claim. Oversampling raises the internal Nyquist far above the audio band, so within the audio band it reduces BOTH magnitude and phase cramping toward the analog prototype; the 'magnitude-only' behavior belongs to analog-matched/decramped minimum-phase designs, not oversampling. Rewrote the bullet as an accurate oversampling note."
+   ]
+  },
+  {
+   "id": "7691c893-0c64-4078-9db2-a176736ef54b",
+   "term": "Ampacity",
+   "corrected": {
+    "common_mistakes": [
+     "Assuming ampacity is fixed by wire gauge alone, ignoring derating for high ambient temperature or for bundling many current-carrying conductors together.",
+     "UNSAFE: Running a cable at or near its rated load while it is tightly coiled on a reel or covered by a rug, trapping heat so insulation overheats or ignites.",
+     "Confusing a conductor's insulation temperature rating (e.g., 90°C wire) with usable ampacity, which per NEC 110.14(C) is limited by the lowest-rated termination, often 60°C or 75°C.",
+     "UNSAFE: Protecting an undersized conductor with an oversized breaker, so the wire can overheat before the device trips."
+    ]
+   },
+   "notes": [
+    "common_mistakes #3: added degree symbols (90°C, 60°C, 75°C) for standard notation. UNSAFE prefixes preserved."
+   ]
+  },
+  {
+   "id": "41837cd6-cee9-4b51-9a15-a9aafeee7566",
+   "term": "Camlock",
+   "corrected": {
+    "common_mistakes": [
+     "UNSAFE: Connecting or disconnecting camlocks under load or with the source live; make/break must be done dead, connecting ground first, then neutral, then hots, and disconnecting hots first.",
+     "UNSAFE: Intermixing connector series or brands (e.g., Series 15 with Series 16) or using worn/pitted contacts, which can arc, overheat, or separate under load.",
+     "Assuming all camlock colors are just convention; green ground and white neutral are required by NEC (250.119, 200.6), while the hot-leg colors (commonly black/red/blue for 120/208V) are an industry convention, so legs must still be verified before energizing.",
+     "UNSAFE: Leaving connected contacts partially seated or exposed where they can be touched or shorted instead of fully engaging the insulated shrouds."
+    ]
+   },
+   "notes": [
+    "common_mistakes #3: split the claim per NEC. Green equipment-grounding (250.119) and white/gray grounded-neutral (200.6) colors are code-required; only the ungrounded hot-leg colors are pure convention. Core safety point (verify legs before energizing) retained. UNSAFE prefixes preserved."
+   ]
+  },
+  {
+   "id": "d6aa5196-e69a-4fb9-9212-d8048f8dc426",
+   "term": "Fuse",
+   "corrected": {
+    "common_mistakes": [
+     "UNSAFE: Replacing a fuse with a higher-rated one or bridging it with foil or wire to stop it blowing, which removes overcurrent protection and risks fire.",
+     "Using the wrong type (fast-blow vs. slow-blow/anti-surge, or wrong voltage rating) even when the amperage matches.",
+     "UNSAFE: Changing a fuse without first unplugging the equipment from mains.",
+     "Repeatedly replacing a blowing fuse instead of finding the underlying fault."
+    ]
+   },
+   "notes": [
+    "common_mistakes #2: standardized spelling to 'fast-blow vs. slow-blow/anti-surge'. UNSAFE prefixes preserved."
+   ]
+  }
+ ]
+}

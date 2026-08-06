@@ -1,0 +1,159 @@
+{
+ "batch": 167,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "352779ce-3a07-42c7-94d5-6eaced6c5363",
+   "term": "Low-output tape",
+   "fields": {
+    "definition": "Magnetic recording tape whose formulation delivers a lower playback signal (output flux) for a given recorded level than standard or high-output stock, leaving less headroom before saturation and a poorer signal-to-noise ratio at a fixed reference fluxivity.",
+    "plain_english": "A kind of recording tape that gives back a weaker signal than newer, hotter tapes. Because the signal is weak, you must turn it up more, so you also hear more hiss and get less room before the sound distorts.",
+    "purpose_function": "Like any tape it stores recorded audio, but its lower sensitivity forces more playback gain that raises the noise floor, so recognizing it guides level, calibration, and noise-reduction choices during a transfer.",
+    "practical_application": "When transferring an older archive reel, a mastering engineer calibrates the machine to the tape's own reference level and applies extra make-up gain while watching the raised hiss floor.",
+    "category": "Analog Media",
+    "related_terms": ["Reference fluxivity", "Tape saturation", "Signal-to-noise ratio", "Noise reduction", "Calibration tone", "Tape bias"],
+    "common_mistakes": ["Assuming every reel has the same output and skipping calibration to the tape's own reference level", "Adding heavy playback gain without accounting for the noise floor it raises", "Mistaking a naturally low-output formulation for a worn or degraded tape"],
+    "scenario_contexts": ["Transferring a vintage archive reel that reads several dB below a modern reference tape", "Setting playback and calibration levels before digitizing an old master", "Deciding how much noise reduction a hissy low-output transfer needs"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (magnetic recording chapter)", "AES standards on magnetic tape reference fluxivity", "Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9707cb45-a1d9-4f36-92dd-664e5f442fac",
+   "term": "Manufacturing approval",
+   "fields": {
+    "definition": "The formal sign-off step in which a reference produced by the replication or duplication plant — such as a vinyl test pressing, a CD check disc, or a verified DDP image — is evaluated and accepted before full mass production begins.",
+    "plain_english": "The last 'yes, go ahead' check before a factory makes thousands of copies. Someone plays a sample made by the plant and confirms it sounds right before the full run starts.",
+    "purpose_function": "It catches errors the plant may add, such as clicks, wrong track order, or level faults, before the cost of a full run, protecting release quality and budget.",
+    "practical_application": "A mastering engineer or label representative auditions the plant's test pressing or check disc against the approved master, then signs off or requests a new one before the run.",
+    "category": "Manufacturing",
+    "related_terms": ["Test pressing", "Check disc", "Manufacturing master", "DDP", "Master approval", "Replication"],
+    "common_mistakes": ["Approving from the studio master instead of the plant's actual reference copy", "Skipping a full front-to-back listen and missing clicks or track-order errors", "Confusing manufacturing approval with the client's earlier master approval"],
+    "scenario_contexts": ["Auditioning a vinyl test pressing before authorizing the pressing run", "Verifying a CD check disc against the DDP before glass mastering", "Rejecting a test pressing for surface noise and requesting a recut"]
+   },
+   "sources": ["Owsinski, The Mastering Engineer's Handbook", "Philips/Sony Compact Disc (Red Book) system description", "Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3dc4970e-6fb7-414a-be36-25a02ac19f36",
+   "term": "Manufacturing master",
+   "fields": {
+    "definition": "The final, production-ready deliverable handed to a replication or duplication plant as the exact source for making copies — for CD a DDP image or PMCD, for vinyl a cut lacquer or approved digital cut file, and for digital release the encoded delivery files.",
+    "plain_english": "The finished copy of the audio that the factory uses to make every disc. It is the exact master template that all copies are stamped from.",
+    "purpose_function": "It gives the plant one authoritative, error-checked source so every manufactured copy matches the approved master exactly.",
+    "practical_application": "After mastering and approval, the engineer builds the manufacturing master, such as a DDP fileset with checksums, and delivers it to the plant for replication.",
+    "category": "Manufacturing",
+    "related_terms": ["DDP", "PMCD", "Master for duplication", "Manufacturing approval", "Red Book", "Lacquer"],
+    "common_mistakes": ["Sending a rough or unapproved bounce instead of the final approved master", "Omitting checksums so the plant cannot verify the delivered image", "Confusing the manufacturing master with a personal reference or listening copy"],
+    "scenario_contexts": ["Rendering a DDP image with checksums for a CD pressing plant", "Delivering an approved digital cut file to a vinyl cutting house", "Supplying encoded delivery files to a distributor for digital release"]
+   },
+   "sources": ["Owsinski, The Mastering Engineer's Handbook", "Philips/Sony Compact Disc (Red Book) system description; DDP specification", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8a256640-b397-436f-9f08-13b70468b5a2",
+   "term": "Master approval",
+   "fields": {
+    "definition": "The stage at which the client — artist, producer, or label — reviews the completed master and formally accepts it as final before it proceeds to manufacturing or release.",
+    "plain_english": "When the artist or label listens to the finished master and agrees it is done. Nothing goes to the factory until they give this approval.",
+    "purpose_function": "It confirms the master meets the client's creative and technical expectations and creates a clear point of agreement before any costly manufacturing steps.",
+    "practical_application": "The mastering engineer sends reference files, collects feedback, makes any revisions, and only releases the master for manufacturing once the client signs off.",
+    "category": "Mastering Workflow",
+    "related_terms": ["Mastering revision", "Manufacturing approval", "Reference file", "Manufacturing master", "Mastering session", "Master for duplication"],
+    "common_mistakes": ["Sending a master to the plant before the client has approved it", "Treating vague verbal comments as formal approval", "Confusing the client's master approval with the plant's manufacturing approval"],
+    "scenario_contexts": ["Emailing reference MP3s and awaiting the artist's sign-off before delivery", "Holding manufacturing until label approval is confirmed in writing", "Booking a revision when the client withholds approval over a level concern"]
+   },
+   "sources": ["Owsinski, The Mastering Engineer's Handbook", "Katz, Mastering Audio: The Art and the Science", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f64facb6-13b8-43b7-83bf-ca20d21c033f",
+   "term": "Master for duplication",
+   "fields": {
+    "definition": "A finished master prepared and formatted specifically to serve as the source for making copies, with the track order, spacing, metadata, and format required by the copying process in place.",
+    "plain_english": "A finished master set up so it can be copied cleanly. All the track order, gaps, and file details are ready for the copying stage.",
+    "purpose_function": "It ensures the copying stage starts from a correctly formatted, error-checked source so every copy is faithful to the approved master.",
+    "practical_application": "Before delivery, the engineer sequences the songs, sets gaps and fades, embeds metadata, and exports the master in the format the copy house requires.",
+    "category": "Manufacturing",
+    "related_terms": ["Manufacturing master", "DDP", "Master approval", "Manufacturing approval", "Red Book", "Duplication"],
+    "common_mistakes": ["Leaving track spacing, fades, or metadata unset before delivery", "Delivering in a format the copy house cannot accept", "Confusing simple duplication with pressed replication from a glass master"],
+    "scenario_contexts": ["Sequencing and gapping an album before exporting a delivery fileset", "Embedding ISRC and title metadata into a CD master", "Preparing a verified fileset for a short-run CD-R duplication order"]
+   },
+   "sources": ["Owsinski, The Mastering Engineer's Handbook", "Philips/Sony Compact Disc (Red Book) system description", "Katz, Mastering Audio: The Art and the Science"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d9e7a705-331f-4161-ae59-4de27ba5cc8e",
+   "term": "Mastering chain",
+   "fields": {
+    "definition": "The ordered series of processing stages a mix passes through during mastering — typically some combination of equalization, dynamics processing such as compression, harmonic or stereo-width processing, metering, and final peak limiting with dithering.",
+    "plain_english": "The line-up of tools the finished mix runs through in order during mastering. Each tool, such as EQ or a limiter, does one job before passing the sound to the next.",
+    "purpose_function": "It shapes tone, controls dynamics, and sets final loudness in a deliberate order so the finished master translates well across playback systems.",
+    "practical_application": "An engineer arranges processors so, for example, corrective EQ precedes compression and a limiter sits last, then tunes each stage while listening to the whole chain.",
+    "category": "Mastering Workflow",
+    "related_terms": ["Mastering signal path", "Equalization", "Compression", "Limiter", "Dither", "Gain staging"],
+    "common_mistakes": ["Placing the limiter early so later processing overshoots the ceiling", "Stacking heavy processing at every stage and crushing the dynamics", "Ignoring gain staging so levels drift between devices in the chain"],
+    "scenario_contexts": ["Ordering EQ, compression, and a limiter for an album master", "Comparing an analog outboard chain against an in-the-box plugin chain", "Adjusting one stage in the chain while auditioning the full path"]
+   },
+   "sources": ["Katz, Mastering Audio: The Art and the Science", "Owsinski, The Mastering Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "24d1733c-feee-4607-8a7c-6c9f770d627a",
+   "term": "Mastering revision",
+   "fields": {
+    "definition": "A new version of a master produced after the client requests changes, adjusting elements such as level, tone, spacing, or fades in response to feedback on a prior version.",
+    "plain_english": "An updated version of the master made after the artist or label asks for changes. The engineer tweaks things like loudness or tone and sends a fresh version.",
+    "purpose_function": "It lets the master be refined toward the client's goals through feedback while keeping earlier versions on record for comparison.",
+    "practical_application": "After a client notes a track is too bright, the engineer recalls the session, adjusts the EQ, exports a new labeled version, and sends it for review.",
+    "category": "Mastering Workflow",
+    "related_terms": ["Master approval", "Mastering session", "Reference file", "Recall", "Revision control", "Mastering chain"],
+    "common_mistakes": ["Overwriting the previous version instead of saving a new labeled one", "Making broad changes when only a small targeted tweak was requested", "Losing track of which revision was actually approved"],
+    "scenario_contexts": ["Brightening or darkening a track after client feedback", "Rebalancing the level of one song relative to the album", "Delivering a labeled version 2 master for a second round of review"]
+   },
+   "sources": ["Owsinski, The Mastering Engineer's Handbook", "Katz, Mastering Audio: The Art and the Science", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3c066c3a-a62a-4837-bda4-dbe54909c2f0",
+   "term": "Mastering session",
+   "fields": {
+    "definition": "The working session in which a mastering engineer processes, sequences, and assembles final program material, along with the saved project file that stores its settings, edits, and track layout.",
+    "plain_english": "The work session where the engineer polishes and lines up the finished songs. It is also the saved project file that remembers all the settings and edits.",
+    "purpose_function": "It holds all processing, sequencing, and edit decisions in one recallable place so work can be reviewed, revised, and reproduced later.",
+    "practical_application": "The engineer loads mixes into the session, sets processing and song order, exports the master, and saves the session so revisions can be recalled exactly.",
+    "category": "Mastering Workflow",
+    "related_terms": ["Mastering chain", "Mastering revision", "Recall", "Sequencing", "Master approval", "DDP"],
+    "common_mistakes": ["Not saving the session, so a later revision cannot be recalled", "Mislabeling versions and losing track of the approved state", "Leaving mixes at inconsistent levels before starting to process"],
+    "scenario_contexts": ["Assembling and sequencing an album in one session", "Recalling a saved session to make a requested revision", "Exporting the final master and DDP from the session"]
+   },
+   "sources": ["Owsinski, The Mastering Engineer's Handbook", "Katz, Mastering Audio: The Art and the Science", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "19bf49c5-2644-46a1-b7e3-8f28917afd93",
+   "term": "Mastering signal path",
+   "fields": {
+    "definition": "The complete route audio takes through a mastering system, from the playback source through converters, patching, and the processing devices to the capture or output stage, including the monitoring feed used to judge it.",
+    "plain_english": "The full path the sound travels through the mastering gear, from the source, through the converters and processors, to where it is captured. It also covers the feed to the speakers you judge it on.",
+    "purpose_function": "It defines every point the signal passes so the engineer can keep the path clean, correctly leveled, and free of unwanted conversion or noise.",
+    "practical_application": "An engineer traces the path from converter to processors to capture, checking gain staging and connections so nothing adds noise or overload along the way.",
+    "category": "Mastering Workflow",
+    "related_terms": ["Mastering chain", "Gain staging", "Converter", "Monitoring", "Patchbay", "Signal-to-noise ratio"],
+    "common_mistakes": ["Confusing the whole signal path with just the processing chain", "Overlooking a gain-staging error where the path crosses converters", "Leaving an unused device inline that adds noise to the path"],
+    "scenario_contexts": ["Tracing audio from the DAC through outboard gear back to capture", "Diagnosing added noise by checking each point in the path", "Verifying the monitoring feed matches the processed path being captured"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Katz, Mastering Audio: The Art and the Science", "Owsinski, The Mastering Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

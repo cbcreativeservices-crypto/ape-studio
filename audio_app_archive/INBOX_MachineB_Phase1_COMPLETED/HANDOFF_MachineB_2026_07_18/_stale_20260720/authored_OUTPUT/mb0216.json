@@ -1,0 +1,197 @@
+{
+ "batch": 216,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "e799bcab-44c8-4b5c-bcb4-26fbd5284999",
+   "term": "Color-grading theater",
+   "fields": {
+    "definition": "A darkened, calibrated screening room fitted with a reference projector or display and a color-grading control surface, in which a colorist adjusts the color, contrast and brightness of a film or program to a defined viewing standard. It is where the picture's final look (the digital intermediate) is created, mirroring the audio dubbing/mix stage on the sound side of post.",
+    "plain_english": "A dark room with a big, carefully set up screen. An artist there tweaks the colors and brightness of a movie, a bit like editing a photo, but for the whole film and on a cinema-sized screen.",
+    "purpose_function": "It gives the colorist a controlled, standards-matched space so the color choices they make look the same in real cinemas. It exists to finish the picture's look in a consistent, repeatable way.",
+    "practical_application": "Sound teams coordinate with the grading theater because the final graded picture must match the version used for the mix and share the same timecode and reel structure for conform and deliverables.",
+    "category": "Post-Production Facility",
+    "related_terms": ["Digital intermediate", "Dubbing stage", "Reference monitor", "Conform", "Timecode", "Deliverables"],
+    "common_mistakes": [
+     "Confusing the color-grading theater with the audio dubbing stage; they are separate rooms for picture and sound.",
+     "Assuming any dark room works, when grading needs calibrated displays and controlled lighting to a viewing standard.",
+     "Treating grading changes as cosmetic, when a reframe or speed change can force the sound team to re-conform."
+    ],
+    "scenario_contexts": [
+     "A colorist finalizes a feature's look in the grading theater before the graded picture goes to the mix stage.",
+     "A change made in the grading theater shifts a cut point, so the re-recording mixer updates the sound conform.",
+     "A studio checks that the grading theater and the dubbing stage reference the same picture version for deliverables."
+    ]
+   },
+   "sources": ["Van Hurkman — The Color Correction Handbook", "SMPTE digital cinema reference viewing standards (ST 431 / RP 431)", "Holman — Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c0ac50df-cde0-4fcf-bcef-1e9d26be93bf",
+   "term": "Combat-state parameter",
+   "fields": {
+    "definition": "In interactive (game) audio, a game state or control value that flags when gameplay has entered combat, read by the audio engine or middleware to switch or blend music, ambience and mix settings to suit fighting. It is typically one value in a set of mutually exclusive states such as explore, combat and victory that drive adaptive audio.",
+    "plain_english": "A signal inside a video game that says 'a fight is happening now.' The game uses it to bring in tense battle music and pull back other sounds, like a mood switch that flips when danger starts.",
+    "purpose_function": "It lets a game change its music and mix on its own as the action changes, with no person mixing live. It exists so audio can react to gameplay in real time.",
+    "practical_application": "A game-audio technician sets up the combat state in middleware such as Wwise or FMOD and maps it to music switches and mix snapshots so the score intensifies the moment combat begins.",
+    "category": "Interactive Audio",
+    "related_terms": ["Adaptive music", "Real-time parameter control (RTPC)", "Audio middleware", "Mix snapshot", "State (game audio)", "Interactive music"],
+    "common_mistakes": [
+     "Confusing a state (a discrete condition like combat) with a continuous parameter that varies over a range.",
+     "Leaving no transition or crossfade, so music snaps harshly when combat starts or ends.",
+     "Forgetting to define the exit or return state, so combat music keeps playing after the fight is over."
+    ],
+    "scenario_contexts": [
+     "A player is ambushed and the combat state triggers, swapping calm exploration music for a driving battle cue.",
+     "When the enemies are defeated, the state returns to explore and the music eases back.",
+     "A sound designer tunes the fade time on the combat state so the music shift feels smooth."
+    ]
+   },
+   "sources": ["Audiokinetic Wwise documentation (States and adaptive music)", "FMOD Studio documentation", "Stevens & Raybould — Game Audio Implementation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ac4d025f-6649-405d-accb-e40a400f2b3f",
+   "term": "Concrete footsteps",
+   "fields": {
+    "definition": "In Foley, footstep sounds performed and recorded to match a character walking or running on a concrete or hard stone surface, using suitable footwear on a matching floor or Foley pit. They form part of the footstep 'moves' layer of a film or program's sound effects.",
+    "plain_english": "The sound of shoes hitting a hard concrete floor, made and recorded on purpose to match what you see on screen. A Foley artist wears the right shoes and steps on real concrete so each step lines up with the actor.",
+    "purpose_function": "They replace or reinforce footstep sounds the location recording missed, so a character's walk sounds solid and real on a hard surface. They exist to make movement believable and to give mixers clean, separate footstep tracks.",
+    "practical_application": "A Foley artist watches the picture and walks in time with the actor on a concrete surface, choosing shoes and stepping style to match the pace, weight and mood of the shot.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Foley pit", "Footsteps", "Sound effects editing", "M&E stem", "Spotting"],
+    "common_mistakes": [
+     "Recording footsteps out of sync with the picture so they do not land with the actor's feet.",
+     "Using the wrong shoes or surface, making concrete steps sound hollow or like wood.",
+     "Forgetting that footsteps must also live in the M&E stem for foreign-language versions."
+    ],
+    "scenario_contexts": [
+     "A detective walks down a concrete alley and the Foley team performs matching footsteps.",
+     "Location dialogue is clean but has no footsteps, so Foley adds concrete steps to sell the walk.",
+     "Footsteps are recorded separately so they can be balanced and delivered in the effects stem."
+    ]
+   },
+   "sources": ["Ament — The Foley Grail", "Yewdall — Practical Art of Motion Picture Sound", "Holman — Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "16d04a9a-e5a3-43da-8169-3a313bd83d54",
+   "term": "Conditional playback",
+   "fields": {
+    "definition": "Playback of audio or media that occurs only when defined conditions or logic are satisfied — such as a game state, a user action, a sensor input or a branching rule — rather than playing linearly. It is a core behavior of interactive and installation media systems and of branching or adaptive audio.",
+    "plain_english": "Sound that plays only when certain things are true, instead of playing straight through. It is like a doorbell that rings only when someone presses the button, or game music that starts only when you enter a room.",
+    "purpose_function": "It lets a system respond to what is happening so the right sound plays at the right moment. It exists to make audio interactive and aware of context instead of fixed.",
+    "practical_application": "A technician builds conditional playback in middleware or a show-control or AV system, setting rules so cues fire only when a trigger, state or input meets the set condition.",
+    "category": "Interactive Audio",
+    "related_terms": ["Interactive audio", "Trigger", "Show control", "Adaptive music", "State (game audio)", "Cue"],
+    "common_mistakes": [
+     "Not covering every condition, leaving gaps where no sound plays when it should.",
+     "Overlapping conditions that let two cues fire at once and clash.",
+     "Testing only the expected path and missing edge cases where the trigger never resolves."
+    ],
+    "scenario_contexts": [
+     "In a museum exhibit, narration plays only when a visitor stands on a sensor pad.",
+     "In a game, a stinger plays only if the player's health drops below a set point.",
+     "A show-control system plays a backup cue only if the primary source fails."
+    ]
+   },
+   "sources": ["Audiokinetic Wwise documentation (States, Switches and triggers)", "Stevens & Raybould — Game Audio Implementation", "FMOD Studio documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "14a5770f-33d0-42a9-9115-8c2c87935929",
+   "term": "Conducting offset",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No established, standardized professional definition found for 'Conducting offset'. The meaning is ambiguous between several plausible readings (a conductor click/streamer timing offset, a video sync offset applied for the conductor, or a scoring-cue lead time), and no single canonical sense could be confirmed against >=2 acceptable sources. All fields left blank pending review."]
+  },
+  {
+   "id": "21aa63aa-893b-416e-b2b6-878f1eccab73",
+   "term": "Conductor click mix",
+   "fields": {
+    "definition": "On a scoring stage, a dedicated headphone (cue) mix sent to the conductor that combines the click track (metronome tempo reference) with a chosen balance of pre-recorded elements, playback and live orchestra needed to conduct in sync with picture. It is one of several individually tailored click/cue mixes distributed to the podium and players.",
+    "plain_english": "A special headphone mix made just for the conductor while a film score is recorded. It blends a click, like a steady metronome beep, with the music so the conductor can lead the orchestra exactly in time with the movie.",
+    "purpose_function": "It keeps the conductor locked to the film's tempo and timing so the recorded music lines up with the picture. It exists because the orchestra must play to precise sync points, not just by feel.",
+    "practical_application": "A scoring mixer or music tech builds the conductor's click mix at the console or click system, setting click level, subdivisions and count-in so the conductor hears the beat clearly over the orchestra.",
+    "category": "Music Scoring",
+    "related_terms": ["Click track", "Scoring stage", "Streamers and punches", "Conductor video monitor", "Cue (music)", "Pre-roll"],
+    "common_mistakes": [
+     "Setting the click too low so the conductor loses the beat under a loud orchestra.",
+     "Sending everyone the same mix instead of tailoring the conductor's balance.",
+     "Leaving out the count-in, so the downbeat is missed."
+    ],
+    "scenario_contexts": [
+     "A composer conducts to picture while the click mix keeps the orchestra on tempo.",
+     "During a tricky hit, the conductor relies on the click mix to land the sync point.",
+     "The mixer adds click subdivisions in the conductor's mix for a fast passage."
+    ]
+   },
+   "sources": ["Karlin & Wright — On the Track: A Guide to Contemporary Film Scoring", "Yewdall — Practical Art of Motion Picture Sound", "Holman — Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d358b835-558f-47d6-9596-8d62e0703fed",
+   "term": "Conductor video monitor",
+   "fields": {
+    "definition": "On a scoring stage, a video display placed in the conductor's sightline showing the picture being scored — typically with visual sync aids such as streamers, punches and a timecode or frame counter — so the conductor can align the performance to on-screen action. It is the conductor's picture reference at the podium.",
+    "plain_english": "A screen placed in front of the conductor while a film score is recorded. It shows the movie, often with lines and flashes that mark key moments. This lets the conductor watch the film and lead the players so the music hits the action on time.",
+    "purpose_function": "It gives the conductor a clear view of the picture and its sync cues so the music matches the film. It exists so the orchestra can be led to exact visual hit points.",
+    "practical_application": "A scoring stage technician positions and feeds the conductor's monitor with the current picture cut, timecode and streamer or punch overlays generated by the click and sync system.",
+    "category": "Music Scoring",
+    "related_terms": ["Streamers and punches", "Click track", "Conductor click mix", "Scoring stage", "Timecode", "Sync point"],
+    "common_mistakes": [
+     "Feeding an out-of-date picture cut so the conductor syncs to the wrong edit.",
+     "Placing the monitor off the conductor's sightline, breaking eye contact with the orchestra.",
+     "Missing or mis-timed streamers, making hit points hard to catch."
+    ],
+    "scenario_contexts": [
+     "The conductor watches streamers on the monitor to nail a musical hit as a door slams.",
+     "A new picture version is loaded to the conductor's monitor before the next take.",
+     "The stage tech checks that timecode on the monitor matches the recording system."
+    ]
+   },
+   "sources": ["Karlin & Wright — On the Track: A Guide to Contemporary Film Scoring", "Yewdall — Practical Art of Motion Picture Sound", "Holman — Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ced5b08b-055a-44dd-bd05-8cb2df985ec8",
+   "term": "Cone attenuation",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["No established, standardized professional term 'Cone attenuation' could be found. The meaning is ambiguous (possibly loudspeaker cone output loss, off-axis roll-off, or an unrelated acoustic attenuation) and it does not correspond to a defined loudspeaker or post-production term; no canonical sense could be confirmed against >=2 acceptable sources. All fields left blank pending review."]
+  },
+  {
+   "id": "e7f8c893-1d67-4ed6-87df-32d26a56424f",
+   "term": "Convolution processing",
+   "fields": {
+    "definition": "A digital signal process that combines an input signal with an impulse response by mathematical convolution, so the output takes on the acoustic or filtering characteristics captured in that impulse response. It is the basis of convolution reverb and of applying measured spaces, speaker or microphone responses, or filters to audio.",
+    "plain_english": "A way for a computer to make one sound take on the 'fingerprint' of a real space or device. It captures how a place echoes, then stamps that echo onto your audio, so a dry recording can sound like it was played in a cathedral.",
+    "purpose_function": "It lets engineers recreate the exact sound of real rooms, gear or speakers on any recording. It exists to add realistic reverb and tone using measured impulse responses instead of guesswork.",
+    "practical_application": "A re-recording mixer loads an impulse response of a real location into a convolution reverb so dialogue or effects sit believably in that space and match the production sound.",
+    "category": "Signal Processing",
+    "related_terms": ["Impulse response", "Convolution reverb", "Reverb", "FIR filter", "Digital signal processing", "Worldizing"],
+    "common_mistakes": [
+     "Thinking any reverb plug-in is convolution; algorithmic reverbs synthesize and do not use impulse responses.",
+     "Using a very long impulse response and overloading the CPU with latency and heavy processing.",
+     "Applying a strong space to dialogue that must stay dry and clear."
+    ],
+    "scenario_contexts": [
+     "A mixer uses a convolution reverb with a real hallway impulse to match a scene's location.",
+     "An engineer applies a measured speaker impulse to model a specific playback device.",
+     "Convolution places clean ADR into the same room as the original production dialogue."
+    ]
+   },
+   "sources": ["Ballou — Handbook for Sound Engineers", "Zölzer — DAFX: Digital Audio Effects", "AES papers on impulse-response measurement and convolution"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

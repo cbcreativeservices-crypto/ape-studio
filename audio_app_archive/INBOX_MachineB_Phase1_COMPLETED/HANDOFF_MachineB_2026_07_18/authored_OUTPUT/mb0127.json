@@ -1,0 +1,327 @@
+{
+ "batch": 127,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "aad2d145-2a1a-4316-baa8-1551994a813e",
+   "term": "Printmaster session",
+   "fields": {
+    "definition": "A digital audio workstation or dubbing-console session used to build the print master — the final, fully balanced and leveled composite mix of a film or program from which all release deliverables are made. It combines the finished dialogue, music, and effects stems into the completed soundtrack, ready for encoding and distribution.",
+    "plain_english": "This is the session where the whole soundtrack gets finished. All the talking, music, and sound effects are mixed into one final blend. That final blend is then used to make the copies people watch.",
+    "purpose_function": "It exists to assemble the separately mixed stems into a single, delivery-ready master with correct levels and format, so one approved mix can be encoded for cinema, broadcast, or streaming.",
+    "practical_application": "A re-recording mixer opens the printmaster session at the end of post-production to lay back the final mix, check it against the delivery specs, and render the deliverables the client will distribute.",
+    "category": "Post-Production",
+    "related_terms": [
+     "Stems",
+     "Final mix",
+     "Re-recording mix",
+     "Deliverables",
+     "Program loudness",
+     "Mastering"
+    ],
+    "common_mistakes": [
+     "Confusing the print master with the individual stems — the print master is the combined final mix, not the separate dialogue, music, and effects tracks.",
+     "Skipping a check of the print master against the project's delivery loudness and true-peak specs before rendering.",
+     "Assuming creative changes can still be made freely at the print master stage; edits belong upstream in the stems, not in the printmaster session."
+    ],
+    "scenario_contexts": [
+     "Finishing a feature film's soundtrack by combining approved dialogue, music, and effects stems into the final print master.",
+     "Creating multiple delivery versions (theatrical, streaming, broadcast) from one approved print master.",
+     "Verifying that the final mix meets a broadcaster's loudness and true-peak delivery requirements before sign-off."
+    ]
+   },
+   "sources": [
+    "Holman, Sound for Film and Television",
+    "Yewdall, Practical Art of Motion Picture Sound",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "df3efe72-4d9b-4fc7-95da-87d218afabf3",
+   "term": "Pro Tools project",
+   "fields": {
+    "definition": "In Avid Pro Tools, a Project is a cloud-backed document format that stores the edit, mix, and automation data online while keeping a synchronized local working copy, enabling media and version sharing across collaborators. It differs from a locally stored session by hosting project data and media through Avid's cloud service.",
+    "plain_english": "A Pro Tools project is a way to save your work in the cloud, not just on your computer. It keeps a copy on your machine and syncs it online. Then people you work with can open and share the same files.",
+    "purpose_function": "It exists to support online collaboration and backup, letting multiple users work on and sync the same material through Avid's cloud rather than handing files off manually.",
+    "practical_application": "A technician chooses the Project format when several people need cloud access to the same work, then relies on syncing to keep everyone's local copy current.",
+    "category": "Session Files",
+    "related_terms": [
+     "Pro Tools session",
+     "Cloud collaboration",
+     "Automation",
+     "Bounce",
+     "Session template",
+     "Backup"
+    ],
+    "common_mistakes": [
+     "Confusing a Project (cloud-backed) with a Session (local .ptx file) and assuming they store media the same way.",
+     "Forgetting to sync before closing, so recent changes are never uploaded for collaborators.",
+     "Treating the cloud copy as the only backup instead of also keeping a local archive."
+    ],
+    "scenario_contexts": [
+     "Sharing an in-progress mix with a remote collaborator through Avid's cloud.",
+     "Working on the same material from two different studios and syncing between them.",
+     "Keeping an online backup of ongoing work in addition to local storage."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide",
+    "Avid Knowledge Base technical documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "25a63e55-a289-4e7e-a575-19ad478a454a",
+   "term": "Pro Tools session",
+   "fields": {
+    "definition": "In Avid Pro Tools, a Session is the primary document file (with a .ptx extension) that stores all editing, mixing, routing, and automation data along with references — not the audio itself — to the media files it uses. Audio and other media are stored locally in a folder alongside the session file rather than in the cloud.",
+    "plain_english": "A Pro Tools session is the main file that holds your whole project. It does not hold the audio itself. Instead it points to the sound files saved next to it. It also remembers all your edits, levels, and settings.",
+    "purpose_function": "It exists to hold the complete state of your work in one document so the project can be saved, reopened, and shared exactly as you left it, while the large audio files stay stored separately.",
+    "practical_application": "A technician opens a session file to resume work and must keep its linked Audio Files folder together with it so the media relinks correctly.",
+    "category": "Session Files",
+    "related_terms": [
+     "Pro Tools project",
+     "Audio Files folder",
+     "Relink",
+     "Bounce",
+     "Automation",
+     "Session template"
+    ],
+    "common_mistakes": [
+     "Thinking the session file contains the audio — it only references media in its Audio Files folder, so moving the session alone breaks the links.",
+     "Emailing or copying only the .ptx file and leaving its linked audio behind.",
+     "Not saving incrementally, risking lost edits if the program crashes.",
+     "Confusing a session (local media) with a project (cloud-backed)."
+    ],
+    "scenario_contexts": [
+     "Opening a saved .ptx session to continue mixing a track.",
+     "Transferring a session to another studio by copying the session file together with its Audio Files folder.",
+     "Relinking media when a session opens with missing-file warnings."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide",
+    "Avid Knowledge Base technical documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "353f33a1-8c16-49ae-a9d5-25caa92604df",
+   "term": "Probability sequencing",
+   "fields": {
+    "definition": "A sequencing technique in which each step or note in a pattern is assigned a probability — a percentage chance of triggering on any given pass — so the sequence varies from repeat to repeat rather than playing identically every cycle. It introduces controlled randomness and evolving variation into otherwise fixed patterns.",
+    "plain_english": "This is a way to make a repeating pattern less predictable. Each note gets a chance, like 70 percent, of playing each time around. So the pattern shifts a little on every loop.",
+    "purpose_function": "It exists to add life and variation to sequenced parts, letting a programmer humanize or generate evolving rhythms and melodies without editing every repeat by hand.",
+    "practical_application": "A producer sets per-step probability on a drum or synth sequencer so hits like hi-hats or fills drop in and out naturally across a loop.",
+    "category": "Sequencing",
+    "related_terms": [
+     "Step sequencer",
+     "MIDI",
+     "Quantization",
+     "Groove",
+     "Randomization",
+     "Velocity"
+    ],
+    "common_mistakes": [
+     "Setting probabilities so low that important structural notes, like the downbeat, sometimes disappear.",
+     "Assuming a recorded pass will keep changing — once printed to audio, the chosen variation is fixed.",
+     "Confusing note probability with randomization of velocity or other parameters."
+    ],
+    "scenario_contexts": [
+     "Programming a hi-hat pattern where some steps only occasionally trigger for a natural feel.",
+     "Creating generative, evolving synth lines in a live performance set.",
+     "Adding subtle fills to a looped drum pattern without editing each bar."
+    ]
+   },
+   "sources": [
+    "Ableton Live Reference Manual",
+    "Elektron Digitakt User Manual"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e6d2574e-645a-45c1-a3df-2e32510fa597",
+   "term": "Production audit",
+   "fields": {
+    "definition": "A production audit is a systematic review of a production project, covering its session files, track organization, edits, levels, plug-in use, and deliverables, to verify technical integrity, consistency, and compliance with the project's specification before it advances to the next stage or is delivered.",
+    "plain_english": "A production audit is a careful check of a whole project before it moves on. You go through the files, edits, and levels to make sure nothing is broken or missing, like a checklist before you hand in your work.",
+    "purpose_function": "It exists to catch errors, missing files, and spec problems early, giving a documented, repeatable checkpoint that keeps quality high and reduces costly fixes later in the workflow.",
+    "practical_application": "An engineer works through a checklist, confirming file naming, sample rate, absence of clipping, correct routing, and complete deliverables, and logs any issues to fix before sign-off.",
+    "category": "Quality Control",
+    "related_terms": [
+     "Production quality assurance",
+     "Peak validation",
+     "Output validation",
+     "Deliverables",
+     "Session management",
+     "Stem"
+    ],
+    "common_mistakes": [
+     "Treating the audit as a formality and skimming instead of following a defined checklist",
+     "Auditing only the audio and ignoring file organization, naming, and metadata",
+     "Running the audit too late, after the point where problems are cheap to fix"
+    ],
+    "scenario_contexts": [
+     "Reviewing a mix session before delivering stems to mastering",
+     "Checking a post-production project against a broadcast delivery spec",
+     "Verifying an archived project is complete and can be reopened later"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "04105933-0f8c-4e60-8aae-c968653af587",
+   "term": "Production completion report",
+   "fields": {
+    "definition": "A production completion report is a document that summarizes a finished production, listing the delivered files and formats, the technical specifications met (such as sample rate, bit depth, loudness, and true peak), version history, and any notes or approvals, providing a record that the work is complete and to specification.",
+    "plain_english": "A production completion report is a short write-up that says a project is done. It lists what was delivered, the file details, and who signed off, so everyone has a clear record.",
+    "purpose_function": "It exists to close out a project with a clear, shareable record of what was delivered and to what standard, supporting hand-off, billing, archiving, and future reference.",
+    "practical_application": "At delivery, an engineer or coordinator fills out the report with file names, formats, loudness and true-peak figures, and client approval, then stores it with the project archive.",
+    "category": "Documentation",
+    "related_terms": [
+     "Production audit",
+     "Production quality assurance",
+     "Deliverables",
+     "Session management",
+     "Integrated loudness",
+     "Master"
+    ],
+    "common_mistakes": [
+     "Leaving out the exact technical specs of the deliverables, making the report hard to verify later",
+     "Writing the report from memory instead of from the actual delivered files",
+     "Failing to store the report with the project archive, so it is lost when needed"
+    ],
+    "scenario_contexts": [
+     "Documenting final masters delivered to a label with their formats and loudness values",
+     "Recording sign-off and specs at the end of a post-production job",
+     "Providing a hand-off summary when a project passes between teams"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5bd114ca-c9fc-47fe-90b1-8fefa1a6dc05",
+   "term": "Production quality assurance",
+   "fields": {
+    "definition": "Production quality assurance (QA) is the set of processes and checks applied throughout a production to ensure the final audio meets defined technical and creative standards, covering aspects such as levels, noise, edits, phase/polarity, format compliance, and translation across playback systems.",
+    "plain_english": "Production quality assurance means checking the work at every step, so the final sound meets the required standard. It is like quality control in a factory, but for audio. The goal is to catch problems before you release the work.",
+    "purpose_function": "It exists to build quality into the workflow rather than relying on a single final check, reducing errors, rework, and rejected deliverables.",
+    "practical_application": "A technician applies QA steps such as reference listening on several systems, metering for loudness and true peak, and checking for clicks, noise, and phase issues before signing off each stage.",
+    "category": "Quality Control",
+    "related_terms": [
+     "Production audit",
+     "Peak validation",
+     "Output validation",
+     "Playback translation",
+     "Loudness normalization",
+     "Deliverables"
+    ],
+    "common_mistakes": [
+     "Confusing quality assurance, which builds in checks throughout, with a single quality-control pass at the very end",
+     "Checking on one set of speakers only and missing problems that appear on other systems",
+     "Relying on meters alone without critical listening, or on listening alone without meters"
+    ],
+    "scenario_contexts": [
+     "Setting up a checklist and metering standard for a studio's deliverables",
+     "Cross-checking a mix on multiple playback systems before release",
+     "Verifying broadcast deliverables meet a loudness standard as part of routine QA"
+    ]
+   },
+   "sources": [
+    "EBU R128, Loudness normalisation and permitted maximum level of audio signals",
+    "Ballou (ed.), Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "26af1cf7-133c-4b3f-b0d0-a9f19ae5af94",
+   "term": "Program loudness",
+   "fields": {
+    "definition": "The integrated (average) loudness of an entire program measured over its full duration, expressed in LUFS (Loudness Units referenced to Full Scale) using the gated algorithm of ITU-R BS.1770. Broadcast and streaming standards such as EBU R128 set target program-loudness levels (for example −23 LUFS) so different programs play back at a consistent perceived loudness.",
+    "plain_english": "This is how loud a whole show sounds on average, from start to end. A special meter measures it and gives a number in units called LUFS. Broadcasters aim for a set target so shows and ads all feel about equally loud.",
+    "purpose_function": "It exists to give a single, standardized loudness value for a complete program, so content can be normalized to a common target and listeners are not jarred by loudness jumps between programs or channels.",
+    "practical_application": "An engineer measures integrated program loudness with a compliant meter and adjusts the mix so the final value meets the delivery target, such as −23 LUFS for EBU R128 or −24 LKFS for ATSC A/85.",
+    "category": "Loudness & Metering",
+    "related_terms": [
+     "LUFS",
+     "True peak",
+     "Loudness range",
+     "Loudness normalization",
+     "EBU R128",
+     "Dynamic range"
+    ],
+    "common_mistakes": [
+     "Confusing program loudness (integrated over the whole program) with short-term or momentary loudness readings.",
+     "Chasing peak levels instead of the loudness target, then failing the delivery spec.",
+     "Assuming a limiter alone sets loudness — integrated loudness depends on the program's level across its whole length."
+    ],
+    "scenario_contexts": [
+     "Delivering a TV program mixed to −23 LUFS to meet EBU R128.",
+     "Checking a podcast or streaming master against a platform's loudness target.",
+     "Reconciling a commercial's loudness with the surrounding program to avoid loudness jumps."
+    ]
+   },
+   "sources": [
+    "ITU-R BS.1770",
+    "EBU R128 / EBU Tech 3341",
+    "ATSC A/85"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e3f83084-40f8-4447-ad58-72deb3a93347",
+   "term": "Project alternative",
+   "fields": {
+    "definition": "An alternative saved version of a project kept alongside the main version, used to explore a different mix, arrangement, or edit decision without altering or overwriting the original. Alternatives let a team preserve and compare options and return to any retained version.",
+    "plain_english": "This is a spare copy of a project saved so you can try a new idea. You can change the mix in it without wrecking the first one. Later you can compare both and keep the one you like.",
+    "purpose_function": "It exists to preserve creative and technical options, so an engineer can test changes safely and recall or compare earlier versions instead of losing work to overwrites.",
+    "practical_application": "Before a big change, a technician saves an alternative — for example with Save As or a new version — so the current mix stays intact as a fallback.",
+    "category": "Workflow",
+    "related_terms": [
+     "Pro Tools session",
+     "Save As",
+     "Playlist",
+     "Version control",
+     "Recall",
+     "Backup"
+    ],
+    "common_mistakes": [
+     "Overwriting the only version instead of saving a separate alternative before major changes.",
+     "Losing track of which alternative is the latest or approved version because of poor naming.",
+     "Assuming an alternative updates itself — each version is a separate saved copy."
+    ],
+    "scenario_contexts": [
+     "Saving an alternative mix to try a louder master while keeping the original.",
+     "Exploring two arrangement ideas as separate versions for a client to compare.",
+     "Keeping a fallback version before applying risky edits or plug-in changes."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide",
+    "Steinberg Cubase/Nuendo Operation Manual"
+   ],
+   "confidence": "Medium",
+   "flags": [
+    "Authored as a transparent workflow compound (an alternate saved version of a project); no single vendor-standardized term named exactly 'Project alternative' exists, so the canonical save-a-variant workflow reading is given at Medium confidence."
+   ]
+  }
+ ]
+}

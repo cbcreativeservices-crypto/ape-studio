@@ -1,0 +1,159 @@
+{
+ "batch": 372,
+ "topic": "Winds, Brass & Organ",
+ "authored": [
+  {
+   "id": "2a4d6774-76d7-4c41-a670-7971442b18a1",
+   "term": "Growl (vocalized brass/reed)",
+   "fields": {
+    "definition": "A rough, gravelly tone effect on a brass or reed instrument produced when the player vocalizes (hums, sings, or growls in the throat) while blowing, so the sung pitch and the played pitch beat against each other and roughen the sound. It is common on saxophone, trumpet, and trombone in jazz, blues, and rhythm and blues, and is sometimes reinforced with flutter tonguing.",
+    "plain_english": "The player hums or growls in the throat while blowing the note. The two sounds clash and make the tone rough and dirty, like a singer adding rasp to their voice.",
+    "purpose_function": "It adds a gritty, vocal, aggressive color to a sustained note, giving brass and reed lines an expressive, human, dirty edge.",
+    "practical_application": "A saxophone or trumpet player growls on a held note for a bluesy or funky solo, and an engineer capturing it notes that the added harshness broadens the harmonic content and can peak harder than a clean note.",
+    "category": "Brass/reed technique",
+    "related_terms": ["Flutter tonguing", "Bronx cheer/raspberry", "Multiphonics", "Overblowing", "Embouchure", "Subtone"],
+    "common_mistakes": ["Thinking growl comes only from the lips or reed, when it is the vocalized throat tone beating against the played note", "Confusing growl with flutter tonguing, which rolls the tongue instead of using the voice", "Pushing so hard that pitch and intonation become unstable"],
+    "scenario_contexts": ["A tenor saxophonist growling through a blues or rhythm and blues solo", "A trumpet or trombone adding a dirty growl in a big-band shout chorus", "Recording a growled line and watching for extra peak level and harshness"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (lip-reed and reed excitation; nonlinear tone production)", "Grove Dictionary of Music ('Growl'; jazz brass and reed technique)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ad75ac0e-a510-4a53-b6d2-12c76f2094d9",
+   "term": "Guanzi glide",
+   "fields": {
+    "definition": "An expressive pitch slide (portamento) on the guanzi, a Chinese cylindrical double-reed pipe (also called bili), produced by continuously varying lip and jaw pressure on the large reed and by sliding or gradually uncovering the finger holes so the pitch bends smoothly between notes. Wide, vocal glides are a hallmark of guanzi style and can span a large interval.",
+    "plain_english": "On the guanzi, a Chinese double-reed pipe, the player slides smoothly from one note to another. They squeeze the reed with the lips and roll the fingers off the holes, bending the pitch like a voice sliding up or down.",
+    "purpose_function": "The glide gives the guanzi its crying, vocal, speech-like quality, connecting notes expressively and imitating the human voice.",
+    "practical_application": "A guanzi player uses wide glides for mournful or dramatic passages, and an engineer records the instrument close enough to catch these continuous pitch slides and its strong, reedy tone.",
+    "category": "Wind technique",
+    "related_terms": ["Double reed", "Portamento", "Kari (head-raise pitch bend)", "Embouchure", "Overblowing", "Suona"],
+    "common_mistakes": ["Assuming pitch changes only by lifting fingers, when lip and jaw pressure on the reed do much of the bending", "Treating the glide as a fast slur rather than a smooth continuous slide", "Confusing the guanzi with the suona, a conical double-reed with a brighter, louder tone"],
+    "scenario_contexts": ["A guanzi solo in Chinese traditional or folk music using wide expressive glides", "A film or world-music session wanting a crying double-reed line", "Close-miking a guanzi to capture its glides and reedy timbre"]
+   },
+   "sources": ["Grove Dictionary of Music ('Guanzi')", "Garland Encyclopedia of World Music, Vol. 7 (East Asia: China, Japan, Korea; guanzi/bili technique)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "12a6765e-7073-4e55-a053-ef91a87ced91",
+   "term": "Half-valve smear",
+   "fields": {
+    "definition": "A brass technique (trumpet, cornet, and other valved brass) in which one or more valves are pressed only partway down, partially restricting the airway so the instrument produces a stuffy, muffled, indeterminate pitch. Moving the valves and adjusting the lip while half-valved lets the player slide or smear between pitches, producing a lazy glissando or a muted, choked color.",
+    "plain_english": "The player presses a valve only halfway, which chokes the air and blurs the note. Sliding the valve and lips this way smears smoothly between pitches, a bit like a slow scoop up to a note.",
+    "purpose_function": "It lets a valved brass instrument, which normally jumps between fixed notes, slide smoothly between pitches and add a muffled, expressive effect.",
+    "practical_application": "A trumpeter uses a half-valve smear to scoop into a note or add a jazzy, choked effect, and an engineer notes that the tone is softer and less focused than a normal note.",
+    "category": "Brass technique",
+    "related_terms": ["Glissando", "Growl (vocalized brass/reed)", "Lip bend", "Embouchure", "Valve", "Portamento"],
+    "common_mistakes": ["Pressing the valve fully instead of halfway, which produces a normal clear note rather than a smear", "Expecting a loud, focused tone when the half-valve sound is deliberately stuffy and quiet", "Confusing a half-valve smear with a lip glissando that follows the harmonic series"],
+    "scenario_contexts": ["A jazz trumpeter scooping into a phrase with a half-valve smear", "A brass effect calling for a lazy, muffled glissando", "Recording a soloist whose half-valve notes sit lower in level than clean notes"]
+   },
+   "sources": ["Baines, Brass Instruments: Their History and Development (valves and valve technique)", "Grove Dictionary of Music ('Brass instruments'; valve action and glissando effects)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9dd4bce3-a429-496e-aa33-72aea0b16c6f",
+   "term": "Harmonica bend",
+   "fields": {
+    "definition": "A pitch-altering technique on the harmonica in which the player changes the shape and resonance of the mouth and throat, along with breath pressure, to lower a note's pitch (a draw bend or blow bend) or, with overblowing and overdrawing, to raise it. Bending works because the two reeds sharing a channel interact, and the vocal-tract resonance forces them to sound at a pitch between or above their natural notes.",
+    "plain_english": "The player changes the shape of the mouth and throat to slide a note down in pitch, or up with a harder trick. It works like whistling lower by changing your mouth. This lets a simple harmonica reach the blue notes between the built-in ones.",
+    "purpose_function": "Bending fills in notes missing from the harmonica's fixed layout and adds the expressive, vocal, blue inflections central to blues and folk playing.",
+    "practical_application": "A blues harmonica player bends draw notes to reach missing pitches and add feeling, and a technician recording it hears smooth pitch dips that need clean, low-noise capture.",
+    "category": "Free-reed technique",
+    "related_terms": ["Free reed", "Overblowing", "Harmonica feedback", "Embouchure", "Reed", "Portamento"],
+    "common_mistakes": ["Thinking bending comes from breathing harder, when it is the mouth and throat shape (resonance) that bends the pitch", "Biting or clamping the harmonica instead of shaping the oral cavity", "Assuming every hole bends the same amount, when the bend range differs by hole"],
+    "scenario_contexts": ["A blues player bending draw notes in second position (cross harp)", "Reaching a missing scale note by bending rather than switching harmonicas", "Recording expressive pitch dips in a folk or blues harmonica part"]
+   },
+   "sources": ["Bahnson, Antaki & Beery, 'Acoustical and physical dynamics of the diatonic harmonica,' Journal of the Acoustical Society of America (1998)", "Fletcher & Rossing, The Physics of Musical Instruments (free-reed instruments; reed interaction and bending)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a40654fd-d76c-4bbd-bf50-b3e6eeb2b76f",
+   "term": "Harmonica feedback",
+   "fields": {
+    "definition": "Acoustic feedback in amplified harmonica playing, which occurs when sound from the amplifier's loudspeaker re-enters the closely cupped microphone and the loop gain reaches unity, causing a sustained howl or squeal. Chicago-blues players deliberately court controlled feedback and mild distortion by cupping a bullet microphone tightly against a small tube amplifier, using it as part of the raw, saturated tone.",
+    "plain_english": "This is the squeal that starts when a harmonica mic picks up its own sound from the amp in a loop. Blues players learn to ride a little of it on purpose for a gritty sound. It is like standing just close enough to a speaker to make it buzz.",
+    "purpose_function": "As a fault it is unwanted howl to be controlled; as a stylistic tool it adds sustain, grit, and saturation to amplified blues harmonica tone.",
+    "practical_application": "A player cups a bullet microphone to a tube amp and manages gain and position to get grit without a runaway squeal, while the sound technician sets levels and placement to keep feedback under control.",
+    "category": "Amplified sound",
+    "related_terms": ["Acoustic feedback", "Gain before feedback", "Bullet microphone", "Harmonica bend", "Monitor wedge", "Distortion"],
+    "common_mistakes": ["UNSAFE: Driving an amp into sustained feedback at high level near the ears without hearing protection or level limits, risking noise-induced hearing loss", "Blaming the harmonica when a too-loud amp or poor microphone placement is causing the feedback loop", "Trying to cure feedback only with EQ instead of reducing gain or moving the microphone away from the speaker"],
+    "scenario_contexts": ["A Chicago-blues harp player cupping a bullet microphone into a small tube amp for grit", "A sound technician chasing runaway harmonica feedback on a loud stage", "Setting monitor and amp levels so the player gets tone without a howl"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook (acoustic feedback; gain before feedback)", "Ballou, Handbook for Sound Engineers (feedback in sound systems)", "OSHA 29 CFR 1910.95 (occupational noise exposure)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ef18157e-21a4-430e-9b39-69e93aef5fcb",
+   "term": "Harmonium drone",
+   "fields": {
+    "definition": "A sustained, unchanging tone (or pair of tones, typically tonic and fifth) held on the harmonium, a hand-pumped free-reed keyboard instrument, to provide a constant pitch reference beneath a melody. On many South Asian harmoniums it is produced by pulling drone stops or by wedging or holding specific keys while the bellows keep the reeds sounding.",
+    "plain_english": "On the harmonium, a pumped reed keyboard, the player holds one or two notes that never change under the tune. This steady background hum gives singers a fixed pitch to sing against, like a tuning note that stays on.",
+    "purpose_function": "The drone anchors the tonal center (the key note) so melody and singing stay in tune with a constant reference, which is central to Indian classical and devotional music.",
+    "practical_application": "A singer or player sets harmonium drone reeds for a raga or bhajan and pumps steadily, and an engineer records a continuous low sustain that has no natural breaks to edit at.",
+    "category": "Free-reed technique",
+    "related_terms": ["Drone", "Free reed", "Harmonium", "Tonic", "Circular-breathing drone", "Reed"],
+    "common_mistakes": ["Letting the bellows pressure sag so the drone wavers in pitch and volume", "Confusing the harmonium drone with an electronic tanpura or shruti box, which serve the same role differently", "Choosing drone notes that do not match the piece's key or mode"],
+    "scenario_contexts": ["A harmonium holding a tonic-and-fifth drone under a raga or bhajan", "Accompanying qawwali or kirtan singing with a steady pitch reference", "Recording a continuous harmonium drone with no breath gaps to edit"]
+   },
+   "sources": ["Grove Dictionary of Music ('Harmonium')", "Garland Encyclopedia of World Music, Vol. 5 (South Asia: The Indian Subcontinent; harmonium and drone)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1c7a3ce3-7c49-49b7-b410-6303ce1037fb",
+   "term": "Kari (head-raise pitch bend)",
+   "fields": {
+    "definition": "A shakuhachi (Japanese end-blown bamboo flute) technique in which the player raises the head and tilts the flute outward, moving the blowing edge away from the lips to raise a note's pitch and brighten its tone. It is the opposite of meri (head lowered, blowing edge partly covered, pitch lowered and tone darkened), and the two are used together to bend pitch and shade color expressively.",
+    "plain_english": "On the shakuhachi, a Japanese bamboo flute, the player lifts the head and tilts the flute out to push a note higher and brighter. It is the opposite of meri, where dropping the head makes the note lower and darker.",
+    "purpose_function": "Kari lets the player raise pitch and brighten tone without changing fingering, giving fine control over intonation and expressive color on a flute with few holes.",
+    "practical_application": "A shakuhachi player uses kari and meri to bend between pitches and shade tone within a phrase, and an engineer close-miking the flute captures these subtle pitch and timbre shifts and the instrument's breathy attack.",
+    "category": "Wind technique",
+    "related_terms": ["Meri", "Embouchure", "Portamento", "Overblowing", "Guanzi glide", "End-blown flute"],
+    "common_mistakes": ["Thinking pitch changes only by fingering, when head angle (kari and meri) bends it too", "Overshooting the head raise so the note breaks or the tone thins out", "Confusing kari (raise, brighter) with meri (lower, darker)"],
+    "scenario_contexts": ["A shakuhachi player using kari to raise pitch and brighten a sustained note", "Bending expressively between meri and kari within a honkyoku phrase", "Close-miking a shakuhachi to capture head-motion pitch and timbre changes"]
+   },
+   "sources": ["Grove Dictionary of Music ('Shakuhachi'; meri and kari technique)", "Garland Encyclopedia of World Music, Vol. 7 (East Asia: Japan; shakuhachi performance)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bbfdd0f3-bc6f-436e-b583-25f5faf8f27c",
+   "term": "Kaval overblow break",
+   "fields": {
+    "definition": "On the kaval, an end-blown rim flute of the Balkans and Anatolia, the point at which increasing breath pressure overblows the tube into a higher register, jumping to the next note of the harmonic series rather than rising smoothly. Around this break the tone can crack or split, and skilled players control the transition to move cleanly between the low and upper registers.",
+    "plain_english": "On the kaval, a Balkan rim-blown flute, blowing harder makes the note jump up to a higher register instead of rising smoothly. That jump point is the break, where the tone can crack if the player is not careful.",
+    "purpose_function": "Overblowing past the break extends the kaval's range across several registers from a single tube, and controlling it cleanly is a mark of skilled playing.",
+    "practical_application": "A kaval player manages breath and embouchure through the break to keep register changes clean, and an engineer records the instrument knowing upper-register notes are louder and brighter than low ones.",
+    "category": "Wind technique",
+    "related_terms": ["Overblowing", "Register break", "Embouchure", "Harmonic series", "End-blown flute", "Breath support"],
+    "common_mistakes": ["Blowing too softly or too hard at the break, causing the note to crack or split", "Thinking the register jump comes from fingering alone rather than breath pressure and embouchure", "Expecting even loudness across registers when the upper register is naturally louder and brighter"],
+    "scenario_contexts": ["A kaval player moving cleanly across the register break in a fast tune", "A beginner whose notes crack at the overblow transition", "Recording a kaval where upper-register phrases sit louder than low ones"]
+   },
+   "sources": ["Baines, Woodwind Instruments and their History (overblowing and register change on flutes)", "Grove Dictionary of Music ('Kaval')"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "51aaa45b-caee-4bdd-b8a4-97a73d3bcfc7",
+   "term": "Khaen drone chord",
+   "fields": {
+    "definition": "A sustained cluster of notes sounded together on the khaen (also khene), a free-reed bamboo mouth organ of Laos and northeastern Thailand, produced when the player holds several pipes open at once so their reeds drone continuously beneath or around the melody. Certain pipes are held with the fingers or stopped with wax to sound constantly, giving the instrument its characteristic thick, sustained harmony.",
+    "plain_english": "The khaen is a bamboo mouth organ from Laos and Thailand. The player sounds several pipes at once to make a thick, held chord. This steady bundle of notes hums under the tune, like both hands playing an accordion.",
+    "purpose_function": "The drone chord gives the khaen a full, continuous harmonic backing under the melody, so a single player can supply both tune and accompaniment.",
+    "practical_application": "A khaen player holds drone pipes open with the fingers or wax stops while playing the melody, and an engineer records a dense, sustained free-reed sound with no natural breath gaps to edit at.",
+    "category": "Free-reed technique",
+    "related_terms": ["Free reed", "Drone", "Harmonium drone", "Circular-breathing drone", "Reed", "Mouth organ"],
+    "common_mistakes": ["Assuming the khaen plays single lines, when it typically sounds drone chords under the melody", "Confusing the khaen with the Chinese sheng, a related but differently built free-reed mouth organ", "Expecting breath gaps to edit at, when the drone is held nearly continuously"],
+    "scenario_contexts": ["A khaen player backing a molam singer with a sustained drone chord", "A Lao or Isan folk performance featuring continuous free-reed harmony", "Recording a dense, sustained khaen part with few natural breaks"]
+   },
+   "sources": ["Grove Dictionary of Music ('Khaen'/'Khene')", "Garland Encyclopedia of World Music, Vol. 4 (Southeast Asia; khaen and drone)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

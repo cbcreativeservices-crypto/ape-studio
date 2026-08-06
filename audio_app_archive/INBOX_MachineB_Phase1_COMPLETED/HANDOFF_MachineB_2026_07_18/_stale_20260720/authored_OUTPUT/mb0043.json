@@ -1,0 +1,232 @@
+{
+ "batch": 43,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "671fb595-bbff-4c0d-940c-d0a4083c2a75",
+   "term": "Drum compression",
+   "fields": {
+    "definition": "The application of dynamic-range compression to drum signals—individual close mics, drum groups, or the full drum bus—to reduce the level difference between loud transients and quieter body, control peaks, and shape the perceived punch and sustain of the kit.",
+    "plain_english": "Compression makes a drum's loud hits and softer parts closer in volume. On drums it can make each hit sound more even and punchy, so the beat sits steady in a song.",
+    "purpose_function": "It evens out inconsistent drum dynamics so hits sit steadily in a mix, and it lets the engineer emphasize attack or sustain to make drums feel punchier or bigger.",
+    "practical_application": "An engineer inserts a compressor on the snare or drum bus, sets a ratio and threshold, then adjusts attack and release so the cracks come through while overall level stays controlled.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Drum crush bus", "Parallel compression", "Drum bus", "Attack time", "Release time", "Drum limiting"],
+    "common_mistakes": [
+     "Using too fast an attack, which clamps the initial transient and kills the drum's punch.",
+     "Setting release too slow so the compressor never recovers between hits and the groove pumps unnaturally.",
+     "Over-compressing until the kit sounds squashed and lifeless.",
+     "Judging settings by gain-reduction meters instead of by ear."
+    ],
+    "scenario_contexts": [
+     "Tightening an uneven snare performance during a rock mix.",
+     "Adding punch to a drum bus in a dense band arrangement.",
+     "Controlling a kick drum's level so it locks with the bass."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Rane technical note, Dynamic Processors"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3f81abeb-13e7-4165-9fb9-5251fed6b02e",
+   "term": "Drum crush bus",
+   "fields": {
+    "definition": "An auxiliary bus carrying a copy of the drum signal that is deliberately over-compressed—often with added saturation and EQ—to an extreme, then blended underneath the main drum sound to add aggression, density, and sustain; a heavily driven form of parallel drum compression.",
+    "plain_english": "A crush bus is a second copy of the drums that gets squashed really hard. You mix a little of it under the normal drums to make them sound bigger and more aggressive.",
+    "purpose_function": "It gives the engineer extra thickness and energy on demand: the crushed copy raises the low-level detail and sustain of the kit while the clean drums keep their natural attack.",
+    "practical_application": "The engineer sends the drums to an aux, inserts a compressor set to heavy gain reduction with a high ratio and often saturation, then blends it under the dry drums to taste.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Parallel compression", "Drum bus", "Drum compression", "Saturation", "Aux send", "Drum mixing"],
+    "common_mistakes": [
+     "Blending in too much crush so the drums lose their natural attack and sound flat.",
+     "Ignoring latency or phase alignment between the dry and crushed paths.",
+     "Treating the crush bus as the main drum sound rather than a support layer."
+    ],
+    "scenario_contexts": [
+     "Beefing up a thin drum kit in a heavy rock or metal mix.",
+     "Adding room-like density to close-miked drums.",
+     "Bringing out ghost notes and cymbal wash under the main drums."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio", "Sound on Sound, mix technique features"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7241c93d-c3cb-4ced-a3a5-59381072ed10",
+   "term": "Drum dynamic equalization",
+   "fields": {
+    "definition": "The use of a dynamic equalizer on drums, where the boost or cut in a chosen frequency band responds to the signal level in that band, so problem frequencies are attenuated only when they exceed a threshold rather than being altered statically.",
+    "plain_english": "Dynamic EQ only turns a frequency up or down when it gets too loud. On drums it can tame a ringing tone just when it jumps out, then leave the sound alone the rest of the time.",
+    "purpose_function": "It fixes level-dependent problems—like a boomy note or harsh ring that appears only on hard hits—without permanently changing the drum's overall tone.",
+    "practical_application": "An engineer sets a dynamic EQ band over a resonant kick or snare frequency and dials a threshold so it cuts only when that note rings out too loudly.",
+    "category": "Equalization",
+    "related_terms": ["Drum equalization", "Drum multiband compression", "Drum resonance control", "Resonant frequency", "Threshold", "Notch filter"],
+    "common_mistakes": [
+     "Confusing dynamic EQ with static EQ and leaving cuts active all the time.",
+     "Setting the threshold so low the band behaves like a normal fixed EQ cut.",
+     "Using too wide a band so nearby useful frequencies get pulled down too."
+    ],
+    "scenario_contexts": [
+     "Taming a snare ring that only appears on hard backbeats.",
+     "Controlling a kick boom that builds during loud sections.",
+     "Reducing cymbal harshness on overhead peaks without dulling quieter hits."
+    ]
+   },
+   "sources": ["Izhaki, Mixing Audio", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound, EQ technique features"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "09368231-2486-48b5-8e3e-da9faddc20c2",
+   "term": "Drum equalization",
+   "fields": {
+    "definition": "The adjustment of the frequency balance of drum signals with an equalizer—boosting or cutting specific bands—to shape tone, remove unwanted resonances, and help each drum sit clearly in a mix.",
+    "plain_english": "EQ changes how much of each pitch range you hear. On drums you use it to add thump to a kick, snap to a snare, or cut a ringing tone so each drum sounds clear.",
+    "purpose_function": "It lets the engineer sculpt each drum's tone and carve out space so kick, snare, and cymbals don't mask one another.",
+    "practical_application": "An engineer sweeps an EQ to find a boomy or harsh frequency, cuts it, then adds a gentle boost—for example low-end weight around 60-100 Hz for kick or attack around 3-5 kHz for snare.",
+    "category": "Equalization",
+    "related_terms": ["Drum dynamic equalization", "Drum resonance control", "Drum low-end control", "Parametric EQ", "High-pass filter", "Drum mixing"],
+    "common_mistakes": [
+     "Boosting instead of first cutting problem frequencies, which piles up level and mud.",
+     "Applying big EQ moves before checking mic choice and placement.",
+     "EQ'ing each drum in solo instead of in the context of the full mix."
+    ],
+    "scenario_contexts": [
+     "Adding low-end weight to a kick drum in a rock mix.",
+     "Cutting boxy build-up around 400 Hz on toms.",
+     "Brightening dull overheads to bring out cymbal detail."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e7afc30c-4381-4d01-9aac-d2d4ab8f2f6d",
+   "term": "Drum limiting",
+   "fields": {
+    "definition": "The application of a limiter to drum signals to place a firm ceiling on peak level, catching the sharpest transients so they do not exceed a set threshold while leaving the rest of the signal largely untouched.",
+    "plain_english": "A limiter is like a wall the sound can't go past. On drums it catches the loudest, sharpest hits so they don't spike too high or clip your recording.",
+    "purpose_function": "It protects against overloads and controls stray peaks—such as a hard snare crack—so overall drum level can sit higher and steadier without distortion.",
+    "practical_application": "An engineer places a limiter on a peaky drum channel or the drum bus, sets the ceiling just below clipping, and lets it shave only the few loudest transients.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Drum compression", "Drum bus", "Transient", "Peak level", "Clipping", "Drum multiband compression"],
+    "common_mistakes": [
+     "Driving the limiter too hard so transients are flattened and the drums lose punch.",
+     "Confusing limiting with gentle compression and using it for broad tone shaping.",
+     "Setting the ceiling at 0 dBFS instead of leaving safety headroom for downstream stages."
+    ],
+    "scenario_contexts": [
+     "Catching occasional snare peaks that would otherwise clip a recording.",
+     "Holding the drum bus under a fixed level in a loud mix.",
+     "Preventing hard tom hits from overloading a channel."
+    ]
+   },
+   "sources": ["Rane technical note, Dynamic Processors", "Izhaki, Mixing Audio", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fb4d04a4-4771-4277-97cb-c7cd07681691",
+   "term": "Drum low-end control",
+   "fields": {
+    "definition": "The set of techniques used to manage the low-frequency content of a drum kit—chiefly kick and toms—including high-pass filtering, EQ, and dynamics, so the bottom end is powerful and defined without becoming boomy or masking the bass.",
+    "plain_english": "This means keeping the deep, booming part of the drums under control. You trim and shape the low sounds so the kick hits hard but doesn't turn into a muddy rumble.",
+    "purpose_function": "It keeps the kit's bottom end tight and clear so the kick and bass work together instead of clashing or building up mud.",
+    "practical_application": "An engineer high-passes the non-bass drums, shapes the kick's low band with EQ, and may compress or gate to stop low-end ring, checking how it sits against the bass guitar.",
+    "category": "Mixing Technique",
+    "related_terms": ["High-pass filter", "Drum equalization", "Drum resonance control", "Drum multiband compression", "Drum mixing", "Drum compression"],
+    "common_mistakes": [
+     "Boosting kick lows to feel big while ignoring the clash with the bass guitar.",
+     "Not high-passing toms and cymbal mics, letting low rumble pile up.",
+     "Judging low end on small speakers or earbuds that cannot reproduce it."
+    ],
+    "scenario_contexts": [
+     "Making the kick and bass share the low end cleanly in a band mix.",
+     "Removing stage rumble from tom mics in live sound.",
+     "Tightening a boomy kick recorded in an untreated room."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio", "Sound on Sound, low-end mixing features"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "abfb9e06-bed1-4fdb-8f3d-7c91ad52f71e",
+   "term": "Drum mixing",
+   "fields": {
+    "definition": "The process of combining the individual drum-kit tracks—kick, snare, toms, hi-hat, overheads, and room mics—into a balanced, cohesive whole using level, panning, EQ, dynamics, and effects.",
+    "plain_english": "Drum mixing is blending all the separate drum mics into one good-sounding kit. You set volumes, positions, and tone so the drums sound like one instrument, not many.",
+    "purpose_function": "It turns many separate drum recordings into a unified kit with the right balance, width, and impact for the song.",
+    "practical_application": "An engineer sets rough levels, pans the kit to match the drummer's layout, then applies EQ, compression, and reverb before routing everything to a drum bus.",
+    "category": "Mixing Technique",
+    "related_terms": ["Drum bus", "Drum compression", "Drum equalization", "Overhead miking", "Panning", "Drum crush bus"],
+    "common_mistakes": [
+     "Building the mix from close mics first instead of starting with the overheads or room for the core kit sound.",
+     "Ignoring phase relationships between the kick, snare, and overhead mics.",
+     "Over-processing every channel before hearing them together."
+    ],
+    "scenario_contexts": [
+     "Mixing a multitrack drum recording for a rock song.",
+     "Balancing a live drum kit through a console at a gig.",
+     "Blending sampled and acoustic drums in a hybrid production."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Bartlett, Practical Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3a30ada9-edb3-4f6a-ac72-0fe83c7d06dc",
+   "term": "Drum multiband compression",
+   "fields": {
+    "definition": "The use of a multiband compressor on drums, which splits the signal into separate frequency bands and compresses each independently, so dynamics in the low, mid, and high ranges can be controlled without one band's peaks triggering compression across the whole sound.",
+    "plain_english": "This tool splits the drum sound into low, middle, and high parts and squashes each one on its own. So you can tame a boomy kick without also dulling the cymbals.",
+    "purpose_function": "It lets the engineer control problem dynamics in one frequency range—like a jumpy low end—while leaving other ranges untouched, which a full-band compressor cannot do.",
+    "practical_application": "On a drum bus, an engineer sets the low band to tame kick boom, maybe a mid band for snare body, and leaves the highs light so the cymbals stay open.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Drum compression", "Drum dynamic equalization", "Drum bus", "Crossover", "Drum low-end control", "Drum limiting"],
+    "common_mistakes": [
+     "Setting too many bands with aggressive settings, which makes the kit sound processed and unnatural.",
+     "Confusing multiband compression with EQ and using it for static tone changes.",
+     "Placing crossover points right on important frequencies, creating audible artifacts."
+    ],
+    "scenario_contexts": [
+     "Controlling a bass-heavy drum bus that pumps when the kick hits.",
+     "Evening out a drum submix that has both boomy lows and harsh highs.",
+     "Applying mastering-style control to a stereo drum stem."
+    ]
+   },
+   "sources": ["Rane technical note, Dynamic Processors", "Izhaki, Mixing Audio", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ee133fc4-872f-47cf-a305-073f57a36585",
+   "term": "Drum resonance control",
+   "fields": {
+    "definition": "Techniques for reducing unwanted resonances—ringing, boom, or sustained tonal notes—in drum signals, using narrow EQ cuts, dynamic EQ, gating, or dampening and muffling at the source, so the kit's tone stays clean and controlled.",
+    "plain_english": "This means stopping drums from ringing or booming too much. You find the ringing note and cut it, or dampen the drum itself, so each hit sounds tight.",
+    "purpose_function": "It removes distracting sustained tones so drums sound focused and don't clash with pitched instruments in the mix.",
+    "practical_application": "An engineer sweeps a narrow EQ to find a ringing frequency and cuts it, or has the drummer add muffling such as moongel before re-recording.",
+    "category": "Equalization",
+    "related_terms": ["Drum equalization", "Drum dynamic equalization", "Resonant frequency", "Notch filter", "Drum low-end control", "Drum mixing"],
+    "common_mistakes": [
+     "Cutting too wide, which kills the drum's natural tone along with the ring.",
+     "Trying to fix in the mix what should be tuned or dampened on the drum itself.",
+     "Removing all resonance so the drums sound dead and lifeless."
+    ],
+    "scenario_contexts": [
+     "Taming a ringing snare that sustains a clear pitch.",
+     "Reducing tom boom that lingers between hits.",
+     "Cleaning up sympathetic buzz from other drums during recording."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Bartlett, Practical Recording Techniques", "Sound on Sound, drum recording features"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,21 @@
+{
+ "range": 13,
+ "span": "early-terms corrections (groups 102-104)",
+ "applied": [
+  {
+   "pkt": "mb0121",
+   "term": "Nanosampler",
+   "field": "common_mistakes",
+   "severity": "Low",
+   "summary": "Glossed \"REX loop player\" in-line (sliced-loop format from ReCycle) so the beginner-tagged entry does not rely on undefined jargon. Per Learning/Cognition committee."
+  },
+  {
+   "pkt": "mb0216",
+   "term": "Cone attenuation",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Rewrote the opening verbless fragment into a full sentence with a clear referent (FK=4.7). Per Language committee."
+  }
+ ],
+ "declined": []
+}

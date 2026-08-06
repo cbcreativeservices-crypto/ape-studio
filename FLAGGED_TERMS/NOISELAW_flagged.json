@@ -1,0 +1,18 @@
+{
+  "count": 2,
+  "flags": [
+    {
+      "id": "11f1dfdf-e95f-5104-aa7d-7e8c5156d0f2",
+      "term": "Sound check limit",
+      "expert": "language",
+      "issue": "The headword is written as three words ('Sound check limit'), but every body field spells the activity as the single-word compound 'soundcheck' (definition: 'A soundcheck limit is a permit...'; plain_english: 'A soundcheck is a rehearsal...'). The mismatch between the term name and its own definition is a genuine internal-consistency issue, not a preference for one spelling over another.",
+      "recommendation": "Make the headword match the body: rename the term to 'Soundcheck limit' (or, if the headword form is authoritative, change 'soundcheck' to 'sound check' throughout the fields). Pick one spelling and use it consistently in both the term and the text."
+    },
+    {
+      "id": null,
+      "term": "Peak sound pressure level",
+      "issue": "Near-duplicate of existing glossary term 'Peak sound pressure' (likely same concept, fuller name).",
+      "recommendation": "Booth/Machine A to resolve at ingest (merge or keep both)."
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 367,
+ "topic": "Drums & Percussion",
+ "authored": [
+  {
+   "id": "53ff2b52-9eeb-439c-a220-2d2d534838c3",
+   "term": "Temple block cluck",
+   "fields": {
+    "definition": "Temple blocks are a graduated set of hollow, rounded wooden slit-idiophones (descended from the Chinese muyu/mokugyo) struck with mallets; the 'cluck' is their characteristic dry, hollow, mellow, clop-like tone, sounded by striking the block over its slit. It is rounder and softer than the sharp crack of a woodblock.",
+    "plain_english": "A temple block is a hollow, round wooden block you hit with a mallet. The 'cluck' is its soft, hollow, knocking sound, like a gentle wooden clop.",
+    "purpose_function": "The hollow slit lets the block ring with a warm, semi-pitched cluck, giving players a mellow wooden tone for melodic runs, comic effects, and rhythmic color that stands apart from metal or skin percussion.",
+    "practical_application": "A percussionist mounts a set of graduated temple blocks and plays them with medium mallets for galloping, cartoon-style figures or simple pentatonic melodies in orchestral, band, and studio work.",
+    "category": "Percussion articulation",
+    "related_terms": ["Woodblock", "Slit drum", "Idiophone", "Mallet selection", "Claves"],
+    "common_mistakes": ["Confusing temple blocks with the harder, sharper-sounding woodblock", "Using hard plastic or metal mallets that can crack or dent the wood instead of soft or medium mallets", "Striking the solid top of the block rather than over the slit, which chokes the tone"],
+    "scenario_contexts": ["Playing a galloping horse-hoof figure in a cartoon or film score", "Adding pentatonic melodic color in a percussion ensemble piece", "Layering a warm wooden tick in a studio percussion overdub"]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1a589374-15a5-4284-9792-178c16ce81cb",
+   "term": "Thom (mridangam)",
+   "fields": {
+    "definition": "Thom is the open, resonant bass stroke of the South Indian mridangam, produced by striking the center of the larger left-hand (bass) head with the flat palm and fingers and letting it ring freely, giving a deep, sustained low tone.",
+    "plain_english": "Thom is the deep, booming bass note of the mridangam drum. You hit the middle of the big left drumhead and let it ring, like a low 'boom'.",
+    "purpose_function": "Thom supplies the drum's low-frequency foundation and resonance, anchoring the rhythm and balancing the sharp treble strokes so a phrase has both weight and clarity.",
+    "practical_application": "A mridangam player uses thom for downbeats and cadences, often pairing it with a treble stroke so the low syllable marks the start or close of a rhythmic cycle in Carnatic music.",
+    "category": "Drum stroke",
+    "related_terms": ["Mridangam", "Tabla bol", "Sollukattu", "Konnakol", "Bayan"],
+    "common_mistakes": ["Damping the left head right after striking, which kills the intended open ring", "Confusing thom (open bass) with a closed, muted bass stroke", "Striking off-center and losing the deep fundamental tone"],
+    "scenario_contexts": ["Marking the first beat (sam) of a rhythmic cycle in a Carnatic performance", "Recording the low end of a mridangam for a fusion track", "Teaching konnakol, where 'thom' names the bass syllable"]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0e4f6b04-cf65-4063-b2d4-b89687d80bd1",
+   "term": "Ti (tabla)",
+   "fields": {
+    "definition": "Ti is a closed, non-resonant (damped) tabla stroke played on the right-hand drum (dayan), struck at the center of the black syahi so the fundamental is suppressed, giving a short, dry sound used mainly in rapid figures.",
+    "plain_english": "Ti is a short, dry tap on the small right tabla drum. You strike the black center so it does not ring, making a quick, muffled 'ti' click.",
+    "purpose_function": "Because it is damped and quick, Ti fills fast rhythmic subdivisions and word-like patterns (such as 'tirakita') where a ringing tone would blur the notes together.",
+    "practical_application": "A tabla player uses Ti inside rapid combination strokes and fillers, keeping the finger on the drum to mute the sound and articulate clean, even fast runs.",
+    "category": "Drum stroke",
+    "related_terms": ["Tabla bol", "Tin/Tun (tabla)", "Na (tabla)", "Bayan", "Dayan"],
+    "common_mistakes": ["Letting the finger bounce off so the stroke rings instead of staying dry", "Confusing the damped Ti with the resonant Tin", "Striking too hard and losing the light, fast feel"],
+    "scenario_contexts": ["Playing a fast 'tirakita' filler between theka strokes", "Practicing damped-stroke clarity at high tempo", "Notating a rela pattern that relies on closed strokes"]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "09ecd520-9c5d-4c44-9631-50146d16f387",
+   "term": "Tin/Tun (tabla)",
+   "fields": {
+    "definition": "Tin and Tun are open, resonant strokes on the tabla's right-hand drum (dayan): Tin rings by striking the border between the syahi and the open skin (maidan) while two fingers rest on the syahi, while Tun excites the drum's fundamental by striking the center of the syahi, giving a deeper, sustained ring.",
+    "plain_english": "Tin and Tun are ringing notes on the small right tabla drum. Tin is struck near the black patch's edge for a bright ring; Tun is struck in the middle for a deeper, longer ring.",
+    "purpose_function": "These resonant strokes give the tabla its clear pitched tones, letting the drum sing a sustained note that carries melody-like accents within a rhythmic pattern.",
+    "practical_application": "A tabla player tunes the dayan to the tonic of the melody, then uses Tin and Tun for open, ringing accents in the theka and in cadential phrases.",
+    "category": "Drum stroke",
+    "related_terms": ["Tabla bol", "Ti (tabla)", "Na (tabla)", "Dayan", "Syahi"],
+    "common_mistakes": ["Muting the head after the strike, which kills the intended ring", "Failing to tune the dayan to the melody's tonic so the resonant strokes clash", "Confusing resonant Tin/Tun with the damped Ti and Te strokes"],
+    "scenario_contexts": ["Tuning the right drum to the tonic (sur) before a performance", "Playing ringing accents in a teentaal theka", "Recording a clear pitched tabla tone for a film cue"]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "12543219-484b-438d-aafc-f54934a17373",
+   "term": "Triangle strike",
+   "fields": {
+    "definition": "A triangle strike is the act of striking a suspended steel triangle with a metal beater to produce its characteristic bright, high, sustaining shimmer of indefinite pitch; single taps, or rapid trills inside a corner, are common articulations.",
+    "plain_english": "A triangle strike is a hit on the metal triangle with a small metal rod. It makes a bright, ringing 'ting' that hangs in the air.",
+    "purpose_function": "The strike sets the metal ringing across many high overtones, adding sparkle and accent that cut through an ensemble even at low volume.",
+    "practical_application": "A percussionist hangs the triangle by its clip, strikes the base or a corner with a steel beater, and pinches the metal to damp the ring when the note should stop.",
+    "category": "Percussion articulation",
+    "related_terms": ["Idiophone", "Triangle beater", "Damping", "Sleigh bells", "Orchestral percussion"],
+    "common_mistakes": ["Gripping the metal frame so it cannot ring freely", "Forgetting to damp, so the note sustains past its written length", "Using a beater far too heavy or light for the required dynamic"],
+    "scenario_contexts": ["Playing a single bright accent in an orchestral tutti", "Executing a fast trill inside a corner for a crescendo", "Adding shimmer to a pop or film percussion track"]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2d15c907-dd02-4d64-9a80-8d2593ad2317",
+   "term": "Tubular bell resonance",
+   "fields": {
+    "definition": "Tubular bell resonance is the long, bell-like ringing decay of a struck orchestral chime, a tuned metal tube sounded at its top cap; it is marked by strong sustain and a complex, inharmonic overtone spectrum whose perceived pitch (the 'strike note') is heard against those partials, and it is held or stopped with a foot damper.",
+    "plain_english": "Tubular bells are long metal tubes you hit at the top to make a church-bell sound. Their 'resonance' is the long ringing that keeps sounding after the hit until a pedal stops it.",
+    "purpose_function": "The long resonance imitates real church or clock bells and lets single notes ring through an ensemble, so composers use the sustain for chimes, tolling effects, and grand accents.",
+    "practical_application": "A percussionist strikes the tube's top cap with a rawhide mallet and uses the foot-operated damper pedal to sustain or cut off the ring, matching the note lengths in the score.",
+    "category": "Tuned percussion",
+    "related_terms": ["Chimes", "Idiophone", "Damper pedal", "Strike note", "Glockenspiel"],
+    "common_mistakes": ["Striking the body of the tube instead of the top cap, which weakens the tone", "Ignoring the damper pedal so successive notes ring into each other", "Assuming the pitch is pure when strong inharmonic partials color the sound"],
+    "scenario_contexts": ["Playing tolling bell notes in a symphonic finale", "Sounding a clock-chime effect in a film score", "Sustaining a single chime accent with the damper pedal in a wind ensemble"]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4af17768-5faa-45ae-9e72-e467e264b6b5",
+   "term": "Udu bass (whoomp)",
+   "fields": {
+    "definition": "The udu bass, or 'whoomp', is the deep, low-pitched tone of the Nigerian (Igbo) udu clay pot drum, produced by quickly striking or slapping the palm over the side hole so the sudden change in the enclosed air excites the vessel's air-cavity (Helmholtz) resonance.",
+    "plain_english": "The udu is a clay pot drum with a hole in its side. Hitting or covering that hole with your palm makes a deep, hollow 'whoomp', a bit like blowing across a bottle but much lower.",
+    "purpose_function": "The bass whoomp gives the udu its signature low pulse, letting a single clay pot supply a bass-drum-like foundation for grooves without any drumhead or skin.",
+    "practical_application": "A percussionist seats the pot in the lap and pops the side hole with the palm on downbeats to lay a deep bass groove, nudging the pitch by how fully the hole is covered.",
+    "category": "Drum stroke",
+    "related_terms": ["Udu finger tone", "Helmholtz resonance", "Ghatam", "Idiophone", "Hand percussion"],
+    "common_mistakes": ["Striking too softly to trigger the air-cavity whoomp", "Cupping the hand loosely so air leaks and the bass note weakens", "Confusing the side-hole bass tone with lighter finger tones on the body"],
+    "scenario_contexts": ["Laying a bass pulse in a world or ambient percussion track", "Standing in for a kick drum in acoustic, unplugged settings", "Bending the bass pitch live by varying palm coverage of the hole"]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d5d9a5a4-3faa-43fd-a00c-a0b09b2c54e6",
+   "term": "Udu finger tone",
+   "fields": {
+    "definition": "Udu finger tone refers to the higher, drier percussive sounds of the udu clay pot, produced by tapping the vessel's body, neck, and the rims of its openings with the fingertips, giving light clicks and pitched taps that contrast with the deep side-hole bass.",
+    "plain_english": "Udu finger tones are the light, high taps you make by tapping the clay pot's body and rims with your fingers. They sound like quick, dry clicks and pings.",
+    "purpose_function": "These finger sounds add rhythmic detail and higher-pitched color on top of the udu's bass, letting one pot cover both the low pulse and the busy top end of a groove.",
+    "practical_application": "A player taps the pot's shoulder, neck, and hole rims with individual fingers for ghost notes and ornaments between the bass slaps, shaping a full rhythmic pattern on one instrument.",
+    "category": "Drum stroke",
+    "related_terms": ["Udu bass (whoomp)", "Ghatam", "Idiophone", "Ghost note", "Hand percussion"],
+    "common_mistakes": ["Hitting too hard and cracking the fired clay", "Playing only finger tones and neglecting the contrasting bass", "Wearing rings or long nails that click harshly or scratch the surface"],
+    "scenario_contexts": ["Adding ghost-note ornaments between bass slaps in a groove", "Playing intricate top-end patterns in a solo udu piece", "Layering dry clicks in a studio percussion overdub"]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bf5c389b-d083-4558-8689-7cf7669de3a4",
+   "term": "Vibraphone motor",
+   "fields": {
+    "definition": "The vibraphone motor is an electric motor mounted on the instrument that slowly rotates the fan-shaped discs (butterfly valves) seated in the tops of the resonator tubes; as the discs open and close the tube mouths, they periodically vary the coupling between bar and resonator, producing the vibraphone's signature pulsing vibrato (tremolo).",
+    "plain_english": "The vibraphone motor is a small electric motor that spins little fans inside the metal tubes under the bars. The fans open and close the tubes. This makes the notes throb, giving the wobbly, shimmering vibraphone sound.",
+    "purpose_function": "The motor exists to create the vibraphone's vibrato by rhythmically opening and closing the resonators; a speed control sets how fast the pulse is, and switching the motor off gives a plain, straight sustain.",
+    "practical_application": "A vibraphonist plugs in the motor, sets its speed to taste (slow shimmer to fast tremolo) or turns it off for straight tones, and uses the damper pedal alongside it to shape sustain.",
+    "category": "Instrument component",
+    "related_terms": ["Vibraphone", "Resonator", "Tremolo", "Damper pedal", "Mallet percussion"],
+    "common_mistakes": ["Thinking the motor changes pitch, when it only pulses the volume and timbre (vibrato)", "Leaving the motor running for passages meant to be played with it off", "UNSAFE: running the motor from a damaged mains cord or an ungrounded outlet instead of inspecting the cord and using a properly grounded supply"],
+    "scenario_contexts": ["Setting a slow motor speed for a ballad's shimmer", "Turning the motor off for a dry, sustained chorale passage", "Matching motor speed to the tempo for a rhythmic tremolo effect"]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments", "James Blades, Percussion Instruments and Their History"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

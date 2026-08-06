@@ -1,0 +1,80 @@
+{
+  "batch": 388,
+  "topic": "ADR & Looping",
+  "authored": [
+    {
+      "id": "2b25a96b-07c5-45d3-b715-78c5e3e5ee34",
+      "term": "ADR booth",
+      "fields": {
+        "definition": "A small, sound-isolated recording enclosure used to re-record dialogue in sync to picture during ADR (automated dialogue replacement, or looping); it is acoustically treated for a dry, low-reverberation signal and fitted with a picture monitor, microphone, and headphone cue/talkback feed so an actor can match new lines to the original performance. It is the compact counterpart to a full ADR stage, common in television, animation, games, and voice-over facilities.",
+        "plain_english": "A small, soundproof room where an actor re-records their movie lines while watching the scene on a screen. It is built to sound very dead, so the new voice is clean and can be blended into the film later.",
+        "purpose_function": "It provides an isolated, acoustically neutral space so replacement lines are captured cleanly and can later be matched or processed to fit the on-screen environment, without room reflections coloring the recording.",
+        "practical_application": "A technician sets up the booth mic, feeds the actor the original guide track and picture with sync beeps or streamers over headphones, and records take after take until the timing and lip-sync match the picture.",
+        "category": "Post-production facility",
+        "related_terms": [
+          "ADR stage",
+          "Looping",
+          "Lip sync",
+          "Guide track",
+          "Streamer",
+          "Foley stage"
+        ],
+        "common_mistakes": [
+          "Assuming any small vocal booth is ready for ADR; the space still needs a synchronized picture feed and a cueing system, not just sound isolation.",
+          "Recording ADR in a booth with audible reverb, which colors the take and makes it impossible to match to different scene environments later.",
+          "Expecting a booth to substitute for a full ADR stage when the scene needs a large, boomed, theatrical-scale performance.",
+          "UNSAFE: driving actor headphone cue levels too high across a long looping session, risking hearing damage."
+        ],
+        "scenario_contexts": [
+          "Re-recording an actor's lines for an animated series in a compact isolation booth.",
+          "Looping a single line ruined by set noise, matched to the lip movement on the monitor.",
+          "Recording video-game character dialogue to picture or timecode in a voice booth."
+        ]
+      },
+      "sources": [
+        "Yewdall, The Practical Art of Motion Picture Sound (Focal Press) — dialogue/ADR chapters",
+        "Holman, Sound for Film and Television (Focal Press)",
+        "Ballou, Handbook for Sound Engineers (Focal Press) — film/post-production audio"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "f6ac616c-ab13-4aad-bdb4-72da57f73146",
+      "term": "ADR stage",
+      "fields": {
+        "definition": "A large, acoustically controlled recording studio dedicated to automated dialogue replacement (ADR, or looping), equipped with a big projection screen or monitor, a recording microphone (often on a boom), an adjacent control room, and sync/cueing systems such as streamers, wipes, and beeps so actors can re-perform and lip-sync dialogue to picture. Its acoustics are kept neutral and low in reverberation so recorded lines can be matched or processed to any on-screen environment.",
+        "plain_english": "A big, quiet studio with a movie screen where actors re-record their lines to match the picture. The room is made to sound very dead, so the new voice can be shaped to fit any scene.",
+        "purpose_function": "It exists to give actors a theatrical-scale space with picture playback for re-performing dialogue in sync, while its neutral, dry acoustics keep the recordings clean enough to blend seamlessly with production dialogue in the final mix.",
+        "practical_application": "The recording mixer plays the scene on the large screen with cue beeps and streamers, records the actor at the boom mic through multiple takes, and the ADR editor later aligns the chosen take precisely to picture.",
+        "category": "Post-production facility",
+        "related_terms": [
+          "ADR booth",
+          "Looping",
+          "Lip sync",
+          "Streamer",
+          "Guide track",
+          "Foley stage"
+        ],
+        "common_mistakes": [
+          "Confusing an ADR stage with a dubbing/mix stage; the ADR stage is where replacement lines are recorded, while balancing and mixing happen on the dubbing stage.",
+          "Assuming a live, reverberant room is acceptable; ADR stages are kept acoustically dead so lines can be matched to any scene's environment.",
+          "Forgetting that the actor needs accurate sync cues (beeps and streamers) to hit lip-sync, not just picture playback.",
+          "UNSAFE: setting actor cue/monitor or headphone levels too high over a long session, risking hearing damage."
+        ],
+        "scenario_contexts": [
+          "Re-recording dialogue for a feature film scene whose location sound was unusable.",
+          "Bringing an actor in to change or clean up a line for a broadcast or airline edit, performed to the big screen.",
+          "Recording loop-group (walla) crowd dialogue to picture on the stage."
+        ]
+      },
+      "sources": [
+        "Yewdall, The Practical Art of Motion Picture Sound (Focal Press) — dialogue/ADR chapters",
+        "Holman, Sound for Film and Television (Focal Press)",
+        "Ballou, Handbook for Sound Engineers (Focal Press) — film/post-production audio"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+{
+ "expert": "AUDIO TECHNICAL EXPERT",
+ "group": 39,
+ "reviews": [
+  {
+   "id": "e6398ae6-8423-4c16-b44d-504cfe3aeb16",
+   "term": "Receiver Station",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bccf51f3-3613-4ccb-b2f1-6802b0e9272d",
+   "term": "Reception Audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6c599615-8a49-40d6-bf4a-8ede7eb0fd77",
+   "term": "Recording",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e700edc1-15f2-49a3-8564-d19ea270d0d5",
+   "term": "Recording Feed",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3dc9d20c-2ee7-484d-a27d-4a36abc5b1fe",
+   "term": "Redundancy",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b8d6ff48-b3f4-45fd-a9c9-06bcb4dcc6eb",
+   "term": "Reference channel",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7009b9f9-521e-420f-b258-4c1fb1942420",
+   "term": "Reference Level",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dcdbb1f8-73d7-404c-9f71-2558e839c092",
+   "term": "Reference Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1e84740b-c81d-40dc-ba72-bb06473a8e08",
+   "term": "Reference Pressure (20 \u00b5Pa)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "65d77876-e0d9-4d4d-8479-0291f4052527",
+   "term": "Reference signal",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a83cac96-a28a-4f32-b53e-64fd138584be",
+   "term": "Reflector / Reflectors",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "067928f6-ef3f-4732-8da5-38b36c05b23b",
+   "term": "Refraction",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "44beb5dd-5de7-4888-9b81-f449e8288298",
+   "term": "Regeneration",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1414e7d9-c176-4af1-8f57-b65a1ab2d8a9",
+   "term": "Rehearsal",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7f46c274-3264-47ab-943e-ea121e3a182d",
+   "term": "Reinforcement Mixing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "45a34e97-0233-4289-b500-c4b4331c794f",
+   "term": "Relay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a394e53a-68e7-427f-8d0f-1c09fb956076",
+   "term": "Release",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8a0c35f1-48af-4221-a434-56eea3c22de3",
+   "term": "Release Time",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "96c563a8-9e43-4815-a11b-d051b540cc32",
+   "term": "Remote Contributor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "447b5197-feff-4002-9188-a4ff47af7d5b",
+   "term": "Remote Head Amp",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b5ff56e2-ef8c-44f6-8b86-872189cfff2d",
+   "term": "Remote Turn-On Wire",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1e588b45-dbd9-4055-afcb-205296102f15",
+   "term": "Remote viewing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9182aa70-9c95-47b3-9a72-c89c7f663757",
+   "term": "Remote Volume Control",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "definition",
+     "severity": "Medium",
+     "issue": "Calls the passive 70V attenuator a 'L-pad attenuator'. Web-verified via AtlasIED 70-Volt Rules and Parts-Express/electronics-tutorials: passive 70V distributed-line volume controls are predominantly autotransformer (autoformer) types; a purely resistive L-pad cannot sit directly on a 70V line (it dissipates the load current as heat and overheats). 'L-pad' is the resistive low-impedance-speaker device, not the standard 70V attenuator.",
+     "suggestion": "Change to '...a passive 70V autotransformer (autoformer) attenuator or a low-voltage/digital controller...'. Reserve 'L-pad' for resistive attenuation on low-impedance speaker lines."
+    }
+   ]
+  },
+  {
+   "id": "60321fb4-6166-4f50-9b41-d6ad7f90e7fb",
+   "term": "Repeats",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5eeec7cd-cee7-4e46-99f6-a9569f670e11",
+   "term": "Report generation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "46dbbbdf-dec2-4e2a-9a3e-01b8788097e4",
+   "term": "Reseat",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2396c878-7d51-4b6c-9f4f-625023f6a2e6",
+   "term": "Resistance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6acf1d2b-a47b-4a62-a576-2797630e666b",
+   "term": "Resistance check",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "26d089cd-57bf-4fd0-a844-bc863760c74a",
+   "term": "Resonance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "54a0a15f-d878-43b2-889b-1c70c92b2ff3",
+   "term": "Resonance Suppressor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8d029e2c-8f11-4938-93c1-e3589a8643d0",
+   "term": "Resonant Frequency (Fs)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bc7da73d-b81d-494c-89cd-0b5932143f8d",
+   "term": "Reverb Send",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3b49be78-29c6-4d41-8920-e532636990e1",
+   "term": "Reverb Tail",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2a1d1af1-5cfc-45ba-84df-d259fd7b9f79",
+   "term": "Reverberant buildup",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "93dfa771-d1c6-4cbf-9704-9eae47ffeb53",
+   "term": "Reverberant field",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

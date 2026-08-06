@@ -1,0 +1,159 @@
+{
+ "batch": 187,
+ "topic": "Podcast Production",
+ "authored": [
+  {
+   "id": "f95145e5-2bde-4f7e-8ee9-fee577068e03",
+   "term": "Studio Sound",
+   "fields": {
+    "definition": "The clean, controlled, professionally polished audio quality characteristic of a purpose-built recording space: low background noise, minimal room reflections, and an even tonal balance, so a voice or instrument sounds close, clear, and free of distracting artifacts.",
+    "plain_english": "Studio sound is the clean, clear audio you get in a proper recording room. There is very little background noise or echo, so voices sound close and easy to hear. It is the opposite of a voice recorded on a phone in a kitchen.",
+    "purpose_function": "It defines the quality target a podcast producer aims for, marking a recording as low-noise, low-echo, and tonally balanced so listeners hear speech clearly and comfortably.",
+    "practical_application": "A technician reaches studio sound by treating the room, choosing a suitable microphone and placement, setting gain correctly, and keeping background noise low during the take.",
+    "category": "Sound Quality",
+    "related_terms": ["Voice-over booth", "Acoustic treatment", "Signal-to-noise ratio", "Reverberation", "Proximity effect"],
+    "common_mistakes": ["Believing an expensive microphone alone produces studio sound while ignoring room acoustics", "Recording too far from the mic, which adds room tone and echo", "Trying to fix a poor-sounding room with heavy processing instead of treating it", "Confusing loudness with clean, balanced sound"],
+    "scenario_contexts": ["Recording a podcast episode intended to sound professional", "Comparing a home recording with a treated-studio recording", "A client asking for broadcast-quality voice"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8acd7d97-466b-49a1-b141-cb33f13a4c8e",
+   "term": "Talent holding area",
+   "fields": {
+    "definition": "A dedicated waiting space, often called a green room, where hosts, guests, and other on-air talent stay before, between, and after their time on microphone or camera, kept separate from the active recording space.",
+    "plain_english": "This is a waiting room for guests and hosts before they go on. It is often called the green room. People relax there until it is their turn to record.",
+    "purpose_function": "It keeps talent comfortable, prepared, and out of the recording space so their noise and movement do not disturb an active session.",
+    "practical_application": "A producer stages the next guest in the holding area, then brings them into the studio when the previous segment wraps.",
+    "category": "Studio Facility",
+    "related_terms": ["Talk-show studio", "Video podcast studio", "Voice-over booth", "Technical operations center"],
+    "common_mistakes": ["Placing the holding area so close to the studio that talk bleeds into the recording", "Not asking talent to silence phones and devices there", "Forgetting to brief or mic-check guests while they wait"],
+    "scenario_contexts": ["A multi-guest talk show with staggered arrivals", "Back-to-back interview scheduling", "A live event with rotating guests"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "NAB Engineering Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3b48a813-3870-4d7c-9b93-4d043dacb165",
+   "term": "Talk-show studio",
+   "fields": {
+    "definition": "A studio configured for conversational, multi-participant programming, with a host and one or more guests seated together, each on a dedicated microphone, often supported by cameras, mix-minus feeds, and space for crew or a small audience.",
+    "plain_english": "This is a studio built for talk shows. A host and guests sit together, each with their own microphone. It is set up so several people can talk and still be recorded clearly.",
+    "purpose_function": "It supports interview and panel formats by giving each speaker a dedicated microphone and a layout that lets people see and hear each other while staying separate on the recording.",
+    "practical_application": "An engineer sets up a talk-show studio with individual mics on each chair, a small mixer, headphone feeds, and often return audio for remote guests.",
+    "category": "Studio Facility",
+    "related_terms": ["Video podcast studio", "Voice-over booth", "Talent holding area", "Technical operations center", "Studio Sound"],
+    "common_mistakes": ["Using one shared microphone for several people instead of one mic each", "Not providing headphones so guests can hear remote callers", "Ignoring crosstalk and bleed between open mics", "Forgetting mix-minus for phone or remote guests, causing echo"],
+    "scenario_contexts": ["Recording a panel discussion", "An interview podcast with an in-studio guest", "A live-audience talk format"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "NAB Engineering Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "22b75519-8baa-4161-9fc6-1324b2fc82be",
+   "term": "Technical operations center",
+   "fields": {
+    "definition": "A centralized room or area where technical staff monitor, route, and control the signals and infrastructure of a broadcast or production facility, including feeds, distribution, recording, and equipment health, from a single coordinated point.",
+    "plain_english": "This is the control hub of a large studio or broadcast site. Staff there watch and manage all the audio and video signals from one place. Think of it as mission control for the technical gear.",
+    "purpose_function": "It centralizes signal routing, monitoring, and fault response so many studios and feeds can be run and troubleshot from one location.",
+    "practical_application": "In a large podcast network or broadcast plant, a technician in the operations center routes studio feeds to recorders or streams and responds to alarms and signal loss.",
+    "category": "Studio Facility",
+    "related_terms": ["Talk-show studio", "Video podcast studio", "Talent holding area", "Studio Sound"],
+    "common_mistakes": ["Confusing the operations center with a single studio's control room", "Assuming a small solo podcast setup needs one", "Failing to document signal routing so faults are hard to trace"],
+    "scenario_contexts": ["A multi-studio podcast network", "A live broadcast plant", "A large event with many simultaneous feeds"]
+   },
+   "sources": ["NAB Engineering Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9c2e2dda-0841-452c-974e-046d0380ecb7",
+   "term": "Text-to-speech (TTS)",
+   "fields": {
+    "definition": "A technology that converts written text into synthesized spoken audio, using software to generate a voice that reads the text aloud.",
+    "plain_english": "Text-to-speech turns written words into a spoken voice. You type or paste text, and the computer reads it out loud. Screen readers and voice assistants use it.",
+    "purpose_function": "It lets producers create spoken audio without a live recording, which is useful for automated narration, accessibility, and placeholder voice tracks.",
+    "practical_application": "A podcaster may use text-to-speech for a machine-voice segment, an accessibility read-out, or a scratch narration used to time an edit before the real voice is recorded.",
+    "category": "Speech Technology",
+    "related_terms": ["TTS", "Voice activity detection", "Voice-over booth", "Studio Sound"],
+    "common_mistakes": ["Expecting a synthetic voice to match human timing and emotion", "Not disclosing to listeners that a voice is AI-generated", "Letting it mispronounce names or acronyms without correction"],
+    "scenario_contexts": ["Accessibility narration of written content", "Automated read-out of show notes", "A placeholder scratch track before the final voice recording"]
+   },
+   "sources": ["IEEE speech synthesis literature", "Huang, Acero & Hon, Spoken Language Processing"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "065ef9df-f5e3-4b96-8492-1c3631baad8d",
+   "term": "TTS",
+   "fields": {
+    "definition": "The common abbreviation for text-to-speech: a technology that converts written text into synthesized spoken audio using software that reads the text aloud in a generated voice.",
+    "plain_english": "TTS is short for text-to-speech. It turns typed words into a spoken voice read aloud by a computer. Voice assistants and screen readers rely on it.",
+    "purpose_function": "It lets producers create spoken audio without a live recording, which is useful for automated narration, accessibility, and placeholder voice tracks.",
+    "practical_application": "A podcaster may use TTS for a machine-voice segment, an accessibility read-out, or a scratch narration used to time an edit before the real voice is recorded.",
+    "category": "Speech Technology",
+    "related_terms": ["Text-to-speech (TTS)", "Voice activity detection", "Voice-over booth", "Studio Sound"],
+    "common_mistakes": ["Expecting a synthetic voice to match human timing and emotion", "Not disclosing to listeners that a voice is AI-generated", "Letting it mispronounce names or acronyms without correction"],
+    "scenario_contexts": ["Accessibility narration of written content", "Automated read-out of show notes", "A placeholder scratch track before the final voice recording"]
+   },
+   "sources": ["IEEE speech synthesis literature", "Huang, Acero & Hon, Spoken Language Processing"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4516286a-cd7d-42a1-9633-f44afa165a6f",
+   "term": "Video podcast studio",
+   "fields": {
+    "definition": "A studio equipped to capture synchronized high-quality audio and video for podcasts, combining broadcast-style microphones, cameras, lighting, and monitoring so an episode can be released as both an audio and a video program.",
+    "plain_english": "This is a studio set up to record a podcast with both sound and video. It has good microphones, cameras, and lighting. The result can be posted as a video and as an audio-only show.",
+    "purpose_function": "It lets creators produce audio and video versions of a show in one session, meeting demand for video podcasts while keeping broadcast-grade sound.",
+    "practical_application": "An engineer arranges cameras, lighting, per-person microphones, and a recorder or switcher, and keeps audio and video in sync for later editing.",
+    "category": "Studio Facility",
+    "related_terms": ["Talk-show studio", "Voice-over booth", "Talent holding area", "Technical operations center", "Studio Sound"],
+    "common_mistakes": ["Prioritizing the video and neglecting audio quality", "Not slating or syncing audio and video, making edits hard to line up", "Using poor lighting that undercuts an otherwise good shoot", "Forgetting a dedicated microphone for each person"],
+    "scenario_contexts": ["A video podcast released on a streaming platform", "A multi-camera interview shoot", "A live-streamed simulcast of a show"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d9e877e1-2d79-4061-9779-ca92be3db9b2",
+   "term": "Voice activity detection",
+   "fields": {
+    "definition": "A signal-processing technique that automatically determines whether human speech is present in an audio stream at a given moment, distinguishing speech from silence or background noise.",
+    "plain_english": "Voice activity detection is software that senses when someone is actually talking. It tells speech apart from silence or background noise. Apps use it to know when to start and stop.",
+    "purpose_function": "It lets systems act only when speech is present, which saves bandwidth, triggers recording or gating, and improves later processing such as transcription and noise reduction.",
+    "practical_application": "In remote recording and conferencing tools, it gates microphones, powers auto-mute, and helps editors automatically find and trim silent gaps.",
+    "category": "Speech Technology",
+    "related_terms": ["Text-to-speech (TTS)", "TTS", "Noise gate", "Studio Sound"],
+    "common_mistakes": ["Assuming detection stays accurate in a noisy room", "Confusing it with a simple noise gate", "Setting thresholds so tight that the start of words gets clipped"],
+    "scenario_contexts": ["Auto-mute on a remote interview platform", "Automatic silence trimming during editing", "Voice-triggered start and stop of recording"]
+   },
+   "sources": ["ITU-T Recommendation G.729 Annex B", "IEEE Communications Magazine (Benyassine et al., G.729 Annex B voice activity detection)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "182810fd-1048-46a5-bbe0-2094d5c52f58",
+   "term": "Voice-over booth",
+   "fields": {
+    "definition": "A small, acoustically isolated and treated enclosure designed for recording spoken voice such as voice-overs, narration, and podcast vocals, minimizing outside noise and internal reflections to capture a clean, dry voice.",
+    "plain_english": "A voice-over booth is a small, quiet room built for recording talking. Its walls block outside noise and soak up echo. That gives a clean, close voice with no room sound.",
+    "purpose_function": "It isolates the voice from outside noise and controls reflections so recordings are clean, consistent, and easy to edit or process.",
+    "practical_application": "A narrator works at a microphone inside the booth with headphones while recording, capturing minimal room tone and outside noise.",
+    "category": "Studio Facility",
+    "related_terms": ["Studio Sound", "Talk-show studio", "Acoustic treatment", "Proximity effect", "Video podcast studio"],
+    "common_mistakes": ["Over-deadening the booth so the voice sounds boxy and unnatural", "Poor ventilation that adds fan noise or makes long sessions uncomfortable", "Standing too far from the microphone and picking up room tone", "Ignoring HVAC or computer-fan noise leaking into the take"],
+    "scenario_contexts": ["Recording narration or a commercial voice-over", "A solo podcast host recording alone", "Recording dialogue pickups or re-records"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

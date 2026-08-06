@@ -1,0 +1,159 @@
+{
+ "batch": 7,
+ "topic": "Instrument Recording — Strings & Guitar",
+ "authored": [
+  {
+   "id": "d7e91412-d2ea-4fe9-b0ee-619732c1525f",
+   "term": "Lever harp",
+   "fields": {
+    "definition": "A lever harp is a diatonically strung harp fitted with a manually operated lever (a sharping or blade lever) at the top of each string; engaging a lever shortens the string's vibrating length to raise that pitch by a semitone, giving limited chromatic flexibility without the foot-pedal mechanism of a concert (pedal) harp. It is also known as the folk or Celtic harp.",
+    "plain_english": "A smaller harp whose strings are normally tuned to one key, with little flip-levers at the top of each string that sharpen a note by a half-step to change keys, instead of using foot pedals like a big concert harp.",
+    "purpose_function": "It provides a portable, mechanically simpler and cheaper harp on which the player raises pitches by hand-operated levers, giving enough chromatic flexibility for folk, Celtic, and small-ensemble music.",
+    "practical_application": "In the studio a technician mics a lever harp much like other acoustic harps but positions mics to capture the soundboard while anticipating audible mechanical clicks when the player flips levers mid-piece, and plans for its typically lower output than a concert harp.",
+    "category": "String instrument",
+    "related_terms": ["Pedal harp", "Soundboard", "Diatonic tuning", "Sharping lever", "Concert pitch", "Master tuning"],
+    "common_mistakes": ["Confusing a lever harp with a pedal (concert) harp: levers raise pitch a semitone by hand, whereas pedals do it by foot and give full chromatic control", "Assuming a lever harp is fully chromatic; it is tuned diatonically and can only reach the notes its levers provide", "Forgetting that flipping levers produces mechanical noise that a close mic will capture during a take"],
+    "scenario_contexts": ["Recording a Celtic or folk session where the harpist re-levers between tunes", "Choosing a lever harp over a pedal harp for a small or touring ensemble on budget and weight grounds", "Miking a lever harp's soundboard while managing lever-click noise"]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians, 'Harp'", "Anthony Baines, The Oxford Companion to Musical Instruments (harp)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d3f5f4f3-5527-4473-83eb-30179d4cb1d8",
+   "term": "Line output",
+   "fields": {
+    "definition": "A line output is a signal output that delivers audio at line level, a nominal operating level of about +4 dBu (professional) or -10 dBV (consumer), from a low source impedance, intended to drive the line-level input of another device such as a mixer, audio interface, or power-amplifier input. It is distinct from microphone-level and loudspeaker-level outputs.",
+    "plain_english": "The normal-strength audio output on gear, such as the jacks on a keyboard, DI, or interface, that sends a healthy signal meant to plug into another device's line input, much stronger than a microphone's output but far weaker than what drives a speaker.",
+    "purpose_function": "It presents a standardized, relatively strong, low-impedance signal so audio can pass between devices with good signal-to-noise ratio and minimal loss, matching the line inputs those devices expect.",
+    "practical_application": "A technician patches a keyboard, DI box, or interface line output into a mixer or amplifier line input, matching +4 dBu or -10 dBV settings between the two devices to avoid clipping or an overly quiet, noisy signal.",
+    "category": "Signal & I/O",
+    "related_terms": ["Line level", "Mic level", "Line input", "Instrument level", "DI box", "Balanced connection"],
+    "common_mistakes": ["Plugging a line output into a mic input without a pad: the far hotter line signal overloads the mic preamp and distorts", "Connecting an amplifier's loudspeaker output into a line input; the high speaker-level voltage can damage the line input", "Confusing line level with instrument level and expecting a guitar-level input to handle a line output cleanly", "Ignoring the +4 dBu versus -10 dBV difference, causing level mismatches that are too quiet and noisy or too hot and clipping"],
+    "scenario_contexts": ["Sending a synth's line output to a channel line input on the mixing console", "Feeding a DI or interface line output to the line input of a powered speaker or amplifier", "Setting a device's output switch to +4 dBu or -10 dBV to match the receiving equipment"]
+   },
+   "sources": ["Glen Ballou (ed.), Handbook for Sound Engineers", "Rane technical note, 'Sound System Interconnection'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "07b87eea-21c6-42db-ad47-a2da9380bf8c",
+   "term": "Local control",
+   "fields": {
+    "definition": "Local Control is a MIDI function (Control Change 122) on an instrument that has both a keyboard/controller and an internal sound engine; when Local Control is On the keyboard directly plays the internal sounds, and when Off the keyboard and sound engine are internally disconnected so the keyboard only transmits MIDI while the sound engine responds only to incoming MIDI.",
+    "plain_english": "A switch on a keyboard-synth that decides whether pressing its own keys plays its own sounds. Turning Local Control off unhooks the keys from the internal sounds so the keys just send MIDI out, commonly used with a computer to stop every note sounding twice.",
+    "purpose_function": "It exists to prevent doubled or echoed notes when the instrument is used with a DAW or sequencer that echoes MIDI back to it, by letting the physical keyboard and the tone generator be addressed independently.",
+    "practical_application": "When a synth plays each note twice while tracking into a DAW with MIDI echo enabled, the technician sets Local Control Off on the synth so the keys route through the computer and back rather than also triggering the internal sounds directly.",
+    "category": "MIDI",
+    "related_terms": ["MIDI", "Control Change", "MIDI echo", "Sequencer", "Tone generator", "MIDI channel"],
+    "common_mistakes": ["Leaving Local Control Off and then wondering why the keyboard makes no sound when played on its own", "Blaming a double-note problem on the DAW when the real fix is setting Local Control Off", "Assuming Local Control changes MIDI output; the keyboard still transmits MIDI regardless, and only the internal keyboard-to-sound link is broken"],
+    "scenario_contexts": ["Recording a MIDI performance into a DAW that echoes MIDI, where notes double until Local Control is turned Off", "Using the synth as a master controller for external modules while silencing its own voices", "Troubleshooting a keyboard that suddenly will not sound after a session left Local Control Off"]
+   },
+   "sources": ["MIDI Association, MIDI 1.0 Detailed Specification (Control Change 122, Local Control On/Off)", "Yamaha synthesizer owner's manual (MIDI / Local Control settings)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6df2ca5a-21cd-4b9a-bf05-e10856dcf647",
+   "term": "Low-B string",
+   "fields": {
+    "definition": "The low-B string is the lowest string of a five-string bass guitar, tuned to B0 (approximately 30.87 Hz), a perfect fourth below the E string of a standard four-string bass, extending the instrument's range down to B. The term is also used for the low B string of a seven-string guitar, which is tuned an octave higher at B1.",
+    "plain_english": "The extra-thick bottom string added to a 5-string bass, tuned to a low B a few notes below a normal 4-string bass, so the player can reach deeper notes without retuning.",
+    "purpose_function": "It extends a bass's range downward by five semitones without retuning, letting players reach low B, C, and D notes demanded by modern styles and by parts written for extended-range instruments.",
+    "practical_application": "When recording or reinforcing a five-string bass, a technician makes sure the signal path and monitors can reproduce roughly 31 Hz cleanly, watches for excess subsonic energy and rattle on the low B, and may high-pass or manage headroom accordingly.",
+    "category": "Strings",
+    "related_terms": ["Five-string bass", "Bass guitar", "Open string", "String gauge", "Drop tuning", "Fundamental frequency"],
+    "common_mistakes": ["Expecting the low B (around 31 Hz) to reproduce on small speakers or earbuds, whose drivers cannot output that fundamental", "Confusing the bass low B (B0) with a guitar's low B (B1), which is an octave higher", "Fitting too light a string gauge on the low B, giving a floppy, pitch-unstable, buzzy note"],
+    "scenario_contexts": ["Tracking a five-string bass and setting up monitoring or subwoofers able to reproduce roughly 31 Hz", "Managing low-frequency headroom and high-pass filtering when the player uses the low B", "Selecting a heavier string gauge to keep the low B tight and in tune"]
+   },
+   "sources": ["D'Addario bass string technical specifications / string tension guide", "Neville Fletcher & Thomas Rossing, The Physics of Musical Instruments (plucked/strung instruments)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3951811a-c281-4705-97fd-672b6602826a",
+   "term": "Mandolin chop",
+   "fields": {
+    "definition": "The mandolin chop (chop chord) is a percussive rhythm technique in which the player strikes a closed, fully fretted chord, typically on beats 2 and 4, and immediately releases left-hand finger pressure to damp the strings, producing a short, sharp, snare-like accent instead of a ringing chord. It is a defining rhythmic role of the mandolin in bluegrass.",
+    "plain_english": "A choppy, drum-like way of playing rhythm on the mandolin: you hit a muted chord on the offbeats and instantly deaden the strings, so it sounds like a quick chuck rather than a ringing chord, filling the snare-drum role in a bluegrass band.",
+    "purpose_function": "It gives a drummer-less string band its backbeat and rhythmic drive, letting the mandolin act as a percussion voice by emphasizing beats 2 and 4.",
+    "practical_application": "When recording bluegrass, an engineer treats the chop as a fast transient, percussive source, choosing and placing a mic that handles quick attacks and watching for the sharp peaks it adds on the backbeat.",
+    "category": "Playing technique",
+    "related_terms": ["Mandolin course", "Backbeat", "Muting", "Tremolo", "Closed chord", "Rhythm playing"],
+    "common_mistakes": ["Letting the chord ring instead of damping it immediately, which loses the percussive chop character", "Using an open chord shape that cannot be muted cleanly; the chop needs a closed, fully fretted shape", "Placing the chop on beats 1 and 3 rather than on the backbeat of 2 and 4"],
+    "scenario_contexts": ["A bluegrass rhythm section where the mandolin chop supplies the backbeat instead of drums", "Recording the chop as a percussive transient that needs fast-transient mic handling", "A jam where the mandolinist alternates between chop rhythm and lead tremolo"]
+   },
+   "sources": ["Marilynn Mair, The Complete Mandolinist (Mel Bay Publications)", "Recognised bluegrass mandolin method texts (rhythm/chop technique)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e4d4cd94-6b9c-4079-8e88-01dcb8c1eeec",
+   "term": "Mandolin course",
+   "fields": {
+    "definition": "A course is a group of strings, on the mandolin a pair, set close together, tuned to the same pitch (in unison), and fretted and picked together as a single voice; the mandolin has four courses (eight strings) tuned G-D-A-E, in the same intervals as a violin.",
+    "plain_english": "On a mandolin the strings come in doubled pairs, and each pair is called a course tuned to the same note, so the eight strings really act like four fat strings. That doubling gives the mandolin its shimmering tone.",
+    "purpose_function": "Pairing and tuning two strings in unison per course increases loudness and creates a natural chorus and shimmer from the slight differences between the two strings, giving the mandolin family its bright, sustaining tone.",
+    "practical_application": "A technician tuning or recording a mandolin checks that both strings of each course match, since a mistuned course produces beating or an out-of-tune chorus that a close mic will expose.",
+    "category": "Strings",
+    "related_terms": ["Mandolin chop", "Unison", "String gauge", "Twelve-string guitar", "Open string", "Master tuning"],
+    "common_mistakes": ["Treating the eight strings as eight separate pitches rather than four unison-tuned pairs (courses)", "Tuning only one string of a course, leaving the pair beating against itself", "Confusing a course (here a doubled pair) with a single string"],
+    "scenario_contexts": ["Tuning each mandolin course so both strings match to avoid beating", "Diagnosing a chorusy, out-of-tune sound traced to one string of a course", "Comparing the mandolin's doubled courses to a twelve-string guitar's paired courses"]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians, 'Course' / 'Mandolin'", "Anthony Baines, The Oxford Companion to Musical Instruments (mandolin)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2219ad69-ec83-454c-a63d-3019acc17de5",
+   "term": "Master tuning",
+   "fields": {
+    "definition": "Master tuning (master tune) is a global parameter on an electronic instrument that shifts the pitch reference of the entire instrument, all voices and parts together, usually calibrated to A4 = 440 Hz and adjustable in hertz or cents so the instrument can be matched to other instruments or an ensemble's tuning. In MIDI it corresponds to the Master Fine and Master Coarse Tuning messages.",
+    "plain_english": "One setting that nudges the whole keyboard's pitch up or down at once, for example from A = 440 Hz to A = 442 Hz, so it lines up with a piano, an orchestra, or other instruments tuned slightly differently.",
+    "purpose_function": "It lets a player match an electronic instrument's overall pitch to acoustic instruments or a house tuning standard without transposing or retuning individual notes.",
+    "practical_application": "Before a session the technician sets the synth's master tune to the reference in use, such as A = 442 Hz to match an orchestra, so all keyboards and outboard gear share one pitch center.",
+    "category": "Tuning",
+    "related_terms": ["Concert pitch", "Cent", "Transpose", "Fine tuning", "MIDI", "Musette tuning"],
+    "common_mistakes": ["Confusing master tuning, which shifts the whole instrument's pitch reference, with transpose, which shifts by whole semitones or keys", "Leaving a session-specific master tune (such as 442 Hz) engaged and then recording out of tune with everything else at 440", "Adjusting individual voice tunings when a single master-tune change was intended"],
+    "scenario_contexts": ["Matching a synth to an orchestra tuned to A = 442 Hz", "Aligning several keyboards and modules to one pitch reference before tracking", "Correcting an instrument found slightly sharp or flat by trimming master tune in cents"]
+   },
+   "sources": ["MIDI Association, MIDI 1.0 Detailed Specification (Master Fine/Coarse Tuning, Universal Real Time SysEx)", "Yamaha synthesizer owner's manual (Master Tune parameter)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1ff7db0e-6dcb-4d3a-86f7-198f5f992908",
+   "term": "Mixture stop",
+   "fields": {
+    "definition": "A mixture is a compound organ stop that sounds several ranks of pipes, commonly two to five, for each key pressed, tuned to octaves and fifths (mutation pitches) above the unison to reinforce the upper harmonics of the chorus and add brilliance. A Roman numeral (for example Mixture IV) gives the number of ranks, and the ranks 'break' back to lower pitches as the player ascends the keyboard.",
+    "plain_english": "A single organ stop that, for every key, sounds several small high-pitched pipes at once. Those extra high notes add sparkle and brightness to the organ's full sound rather than adding new melody notes.",
+    "purpose_function": "It crowns the organ's principal chorus by adding high, harmonic-reinforcing ranks, giving the ensemble clarity and brilliance that single-rank stops cannot provide.",
+    "practical_application": "When recording a pipe organ, an engineer expects mixtures to add strong high-frequency energy and to break at points across the compass, so mic placement and levels must accommodate their brightness without harshness.",
+    "category": "Organ stop",
+    "related_terms": ["Rank", "Principal chorus", "Mutation stop", "Pipe organ", "Registration", "Stop"],
+    "common_mistakes": ["Thinking a mixture plays extra melody notes; it only adds fixed higher harmonics (octaves and fifths) to whatever is played", "Assuming one stop equals one rank, when a mixture is several ranks per note", "Ignoring the break-back and expecting the high ranks to keep rising indefinitely up the keyboard"],
+    "scenario_contexts": ["Adding a mixture to brighten the full-organ (plenum) registration", "Capturing the extra high-frequency content of mixtures when recording a pipe organ", "Reading 'Mixture IV' on a stop knob and knowing it draws four ranks per key"]
+   },
+   "sources": ["George Ashdown Audsley, The Art of Organ-Building", "The New Grove Dictionary of Music and Musicians, 'Organ stop' / 'Mixture'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6311ee30-a99f-42af-86d1-95913333752a",
+   "term": "Musette tuning",
+   "fields": {
+    "definition": "Musette tuning is a tremolo, or 'wet', tuning of an accordion's middle-register (8') reeds in which two or three reeds sounding the same note are deliberately detuned from one another, one on pitch and the other(s) slightly sharp (and sometimes one slightly flat), so the beating between them produces a shimmering, vibrato-like tone. The amount of detuning, measured in cents, ranges from near-unison (dry) to a strong wet French-musette effect.",
+    "plain_english": "An accordion setup where two or three reeds meant to play the same note are tuned very slightly apart, so they beat against each other and create that warbling, shimmering cafe-accordion sound. More detuning gives a wetter, more tremolo tone.",
+    "purpose_function": "It thickens and animates the accordion's tone through controlled beating between detuned reeds, producing the characteristic chorused, tremolo sound of French musette and many folk styles.",
+    "practical_application": "A technician recording an accordion notes that a strongly wet musette registration already contains built-in beating and chorus, so added modulation effects are usually unnecessary, and checks that the paired reeds hold the intended amount of detune in cents.",
+    "category": "Tuning",
+    "related_terms": ["Reed rank", "Beating", "Cent", "Master tuning", "Tremolo", "Register"],
+    "common_mistakes": ["Assuming musette tuning is out-of-tune or a defect, when the detuning is intentional and defines the sound", "Confusing the accordion musette tuning with the pipe-organ Musette reed stop, a different use of the name", "Trying to 'correct' the beating to perfect unison, which removes the musette effect"],
+    "scenario_contexts": ["Selecting a wet musette register for a French or folk accordion track", "Setting the amount of detune in cents when an accordion's reeds are tuned or serviced", "Deciding not to add chorus in the mix because the musette reeds already provide it"]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians, 'Accordion'", "Recognised accordion reed-tuning / service reference (musette detuning in cents)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

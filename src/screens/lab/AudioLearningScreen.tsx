@@ -103,11 +103,12 @@ export function AudioLearningScreen({ navigation }: Props) {
             </View>
           </View>
           <Text style={styles.cardDesc}>{TRAIN_DESC}</Text>
-          <View style={[styles.cta, styles.ctaMember]}>
-            <Text style={[styles.ctaText, styles.ctaTextMember]}>
+          {/* Free users PREVIEW → green (they can look); Academy members OPEN → purple (matches the card). */}
+          <View style={[styles.cta, isMember ? styles.ctaMember : styles.ctaFree]}>
+            <Text style={[styles.ctaText, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>
               {isMember ? 'OPEN TRAINING LABS' : 'PREVIEW TRAINING LABS'}
             </Text>
-            <Text style={[styles.ctaChevron, styles.ctaTextMember]}>›</Text>
+            <Text style={[styles.ctaChevron, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>›</Text>
           </View>
         </Pressable>
       </ScrollView>
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   cardFree: { borderColor: 'rgba(55,224,95,.5)', backgroundColor: '#0f1712' },
-  cardMember: { borderColor: 'rgba(255,198,77,.5)', backgroundColor: '#17140c' },
+  cardMember: { borderColor: 'rgba(180,91,255,.5)', backgroundColor: '#140f1a' },
   cardPressed: { opacity: 0.85 },
 
   cardHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconBadgeFree: { borderColor: 'rgba(55,224,95,.45)', backgroundColor: 'rgba(55,224,95,.08)' },
-  iconBadgeMember: { borderColor: 'rgba(255,198,77,.45)', backgroundColor: 'rgba(255,198,77,.08)' },
+  iconBadgeMember: { borderColor: 'rgba(180,91,255,.45)', backgroundColor: 'rgba(180,91,255,.08)' },
   iconGlyph: { fontSize: 22 },
 
   cardTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, letterSpacing: 0.6, color: colors.textPrimary },
@@ -152,8 +153,8 @@ const styles = StyleSheet.create({
   badge: { alignSelf: 'flex-start', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1 },
   badgeFree: { borderColor: 'rgba(55,224,95,.5)', backgroundColor: 'rgba(55,224,95,.12)' },
   badgeFreeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: '#5bff85' },
-  badgeMember: { borderColor: 'rgba(255,198,77,.5)', backgroundColor: 'rgba(255,198,77,.12)' },
-  badgeMemberText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.amber },
+  badgeMember: { borderColor: 'rgba(180,91,255,.5)', backgroundColor: 'rgba(180,91,255,.12)' },
+  badgeMemberText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: '#c98bff' },
 
   cardDesc: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
 
@@ -167,9 +168,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   ctaFree: { borderColor: 'rgba(55,224,95,.5)', backgroundColor: 'rgba(55,224,95,.10)' },
-  ctaMember: { borderColor: 'rgba(255,198,77,.5)', backgroundColor: 'rgba(255,198,77,.10)' },
+  ctaMember: { borderColor: 'rgba(180,91,255,.5)', backgroundColor: 'rgba(180,91,255,.10)' },
   ctaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1 },
   ctaTextFree: { color: '#5bff85' },
-  ctaTextMember: { color: colors.amber },
+  ctaTextMember: { color: '#c98bff' },
   ctaChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 20 },
 });

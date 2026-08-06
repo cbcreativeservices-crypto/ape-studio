@@ -1,0 +1,159 @@
+{
+ "batch": 331,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "45f3e4ff-dde8-4146-9991-3efe509faab9",
+   "term": "growl / growly",
+   "fields": {
+    "definition": "A subjective timbral descriptor for a rough, buzzy, low-pitched and harmonically dense tone with an aggressive, gritty character. On wind and brass instruments 'growl' also names a specific technique in which the player hums or sings while blowing, producing rough beating overtones against the sounded note.",
+    "plain_english": "A growl is a rough, buzzy, low sound, like a big animal grumbling. On a sax, players make it by humming while they blow, which roughs up the note.",
+    "purpose_function": "The label lets engineers and players quickly aim for and describe a gritty, aggressive low-end character during tracking, mixing, or sound design.",
+    "practical_application": "An engineer might add saturation, mild distortion, or a resonant low-mid boost to make a bass or synth sound growly, or close-mic a saxophone's bell to capture a played growl.",
+    "category": "Timbre Descriptor",
+    "related_terms": ["Grit", "Distortion", "Saturation", "Harmonic content", "Hard attack", "Rasp"],
+    "common_mistakes": ["Confusing growl with plain distortion, when growl specifically implies a rough, low, buzzy quality rather than any harmonic clipping.", "Assuming a saxophone growl is added in the mix, when it is actually a live playing technique.", "Over-adding low-mid saturation until the tone becomes muddy rather than growly."],
+    "scenario_contexts": ["Describing a distorted bass guitar tone in a mix note.", "A saxophonist adding growl to a solo in a jazz or funk chart.", "Sound-designing an aggressive synth bass for electronic music."]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments", "Baines, Woodwind Instruments and Their History", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "678d961b-0311-4ba0-9f6e-bb841b862d3e",
+   "term": "Hammer attack",
+   "fields": {
+    "definition": "The initial percussive transient of a struck-string instrument such as a piano, produced at the moment the felt-covered hammer strikes the strings, before the note settles into its sustained, harmonically rich decay.",
+    "plain_english": "The sharp start of a piano note, made when the hammer hits the strings. It is the quick 'thock' you hear just before the note rings out.",
+    "purpose_function": "It gives a piano note its clear, percussive onset, which helps the ear place the note in time and recognize the instrument.",
+    "practical_application": "When close-miking a piano, a technician balances mic position and transient handling so the hammer attack stays crisp without sounding clicky.",
+    "category": "Attack Characteristic",
+    "related_terms": ["Transient", "Hammer strike", "Attack", "Hammer noise", "Decay", "Onset"],
+    "common_mistakes": ["Confusing the hammer attack (the musical transient) with mechanical hammer noise (unwanted action sound).", "Over-compressing the attack until the piano loses its natural percussive punch.", "Placing the mic so far back that the attack goes soft and undefined."],
+    "scenario_contexts": ["Setting a compressor's attack time so a piano's initial transient is not squashed.", "Choosing a sample library based on how realistic its hammer attack sounds.", "EQ-ing a pop piano so the attack cuts through a dense mix."]
+   },
+   "sources": ["Fletcher and Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers", "Huber and Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1ca3df87-868d-4fc1-8a18-1c342769c5fe",
+   "term": "Hammer felt noise",
+   "fields": {
+    "definition": "The soft, non-tonal component of a piano note's onset caused by the felt of the hammer compressing against the strings, heard as a cushioned thud layered under the pitched attack. Its character depends on felt hardness, wear, and voicing.",
+    "plain_english": "The soft, dull sound the fuzzy hammer felt makes as it hits the piano strings. It is the padded thump mixed into the note's start.",
+    "purpose_function": "It is a natural part of a real piano's tone, and its softness or hardness is shaped by voicing the felt to make the instrument brighter or mellower.",
+    "practical_application": "A technician may notice heavy felt noise on a close-miked piano and adjust mic placement, or a piano technician may voice or reshape worn felt to control it.",
+    "category": "Mechanical Noise",
+    "related_terms": ["Hammer noise", "Hammer attack", "Voicing", "Hammer thump", "Attack transient"],
+    "common_mistakes": ["Mistaking normal felt noise for a mechanical fault.", "Trying to remove felt noise entirely with EQ, which thins the natural attack.", "Ignoring hardened, worn felt that has made the noise harsh and clicky."],
+    "scenario_contexts": ["Recording a soft solo piano passage where felt noise becomes noticeable.", "A piano technician voicing hammers to reduce a hard, noisy felt strike.", "Editing a close-miked piano track to tame distracting attack noise."]
+   },
+   "sources": ["Fletcher and Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers", "Huber and Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5b3261e6-06ba-4426-9716-494d8bc98744",
+   "term": "Hammer noise",
+   "fields": {
+    "definition": "Non-tonal mechanical sound generated by a piano's hammer and action striking the strings, distinct from the pitched tone; it includes felt contact, wood knock, and action movement, and is heard mainly at the note's onset.",
+    "plain_english": "The mechanical clunk of the piano's moving parts as a key is played, apart from the musical note. It is the 'machine' sound of the hammer hitting.",
+    "purpose_function": "In small amounts it adds realism and presence to a piano's attack, but heavy hammer noise usually signals worn parts or poor voicing.",
+    "practical_application": "When close-miking a piano, a technician sets mic distance and levels so hammer noise stays natural rather than distractingly loud.",
+    "category": "Mechanical Noise",
+    "related_terms": ["Hammer felt noise", "Hammer attack", "Hammer strike", "Voicing", "Hammer thump"],
+    "common_mistakes": ["Assuming all hammer noise is a defect rather than a normal part of piano tone.", "Placing mics right over the hammers, which exaggerates the noise.", "Confusing hammer noise with string buzz or pedal noise."],
+    "scenario_contexts": ["Diagnosing loud mechanical noise on a close-miked grand piano.", "A technician judging whether hammer noise points to worn felt.", "Choosing mic distance to balance tone against action noise."]
+   },
+   "sources": ["Fletcher and Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers", "Huber and Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "929625cb-c918-4d49-83ca-05f291e4f8f4",
+   "term": "Hammer strike",
+   "fields": {
+    "definition": "The physical event in which a piano hammer contacts the string or strings, imparting energy that sets them vibrating; it is the excitation that begins each note.",
+    "plain_english": "The moment the piano hammer actually hits the strings and makes them ring. It is what starts every piano note.",
+    "purpose_function": "It is the mechanism that turns a key press into sound, transferring the player's energy into string vibration.",
+    "practical_application": "Understanding the hammer strike helps a technician judge attack character and diagnose issues like double-striking or uneven tone across keys.",
+    "category": "Attack Characteristic",
+    "related_terms": ["Hammer attack", "Hammer noise", "Excitation", "Transient", "String vibration"],
+    "common_mistakes": ["Confusing the hammer strike (the physical event) with the hammer attack (the resulting sound).", "Overlooking a hammer that strikes twice and causes a stuttered note.", "Assuming a harder key press changes only loudness, when it also changes strike tone."],
+    "scenario_contexts": ["Explaining why velocity changes both level and timbre in a piano sample.", "A technician regulating the action so each hammer strikes cleanly.", "Analyzing the onset of a piano note for sample editing."]
+   },
+   "sources": ["Fletcher and Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ca466777-c967-490c-9e39-afcad679959c",
+   "term": "Hammer thump",
+   "fields": {
+    "definition": "A dull, low-frequency thud in a struck-instrument onset produced by the mass of the hammer contacting the sounding element, heard as a soft low knock beneath the pitched attack.",
+    "plain_english": "A low, soft thump at the start of a note when the hammer hits. It is the deep knock you feel more than hear.",
+    "purpose_function": "It adds weight and body to the attack, but too much can muddy the low end or mask the note's pitch.",
+    "practical_application": "An engineer may use a high-pass filter or transient control to tame an excessive hammer thump on a close-miked piano or mallet instrument.",
+    "category": "Mechanical Noise",
+    "related_terms": ["Hammer attack", "Hammer noise", "Hammer felt noise", "Low-frequency transient", "High-pass filter"],
+    "common_mistakes": ["Confusing musical low-end body with unwanted hammer thump.", "High-passing so hard that the instrument loses its natural weight.", "Blaming the room for a thump that is actually mechanical."],
+    "scenario_contexts": ["Cleaning up a boomy close-miked piano recording.", "Taming low thump on a mallet percussion track.", "Setting a high-pass filter on a piano channel in a live mix."]
+   },
+   "sources": ["Fletcher and Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers", "Huber and Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0aa10839-73e4-4524-ae1d-7f54cf1067ae",
+   "term": "Hand reposition",
+   "fields": {
+    "definition": "A performance artifact consisting of the incidental sound made when a player moves or resets a hand on an instrument, such as fingers shifting on a fretboard, string bed, or keys, captured as a brief non-musical noise between or during notes.",
+    "plain_english": "The little noise a player makes when they move a hand to a new spot on an instrument. Think of fingers sliding to a new place on guitar strings.",
+    "purpose_function": "Recognizing it helps an engineer decide whether the noise is natural performance detail worth keeping or a distraction to edit out.",
+    "practical_application": "During editing, a technician may fade, mute, or lightly EQ a hand-reposition noise so it does not distract in an exposed passage.",
+    "category": "Performance Artifact",
+    "related_terms": ["Fret noise", "Finger noise", "Artifact", "Editing", "Handling noise"],
+    "common_mistakes": ["Removing every reposition noise, which can make a recording sound lifeless and unnatural.", "Missing loud reposition noises in quiet, exposed sections.", "Confusing a hand-reposition noise with a mechanical instrument fault."],
+    "scenario_contexts": ["Editing finger-slide noise on a solo acoustic guitar track.", "Cleaning up an exposed harp or piano passage.", "Deciding how much natural handling noise to keep for realism."]
+   },
+   "sources": ["Huber and Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "381d6dc0-08e3-464a-8803-a45d4bdf31fb",
+   "term": "Handpan",
+   "fields": {
+    "definition": "A convex steel percussion instrument (an idiophone) formed from two joined hemispherical shells, with a central tuned note and a surrounding ring of tuned tone fields hammered into the top surface, played with the hands and fingers. It descends from the Hang, which was developed using steelpan tuning techniques.",
+    "plain_english": "A rounded steel drum played with the hands, shaped a bit like a flying saucer. Tapping its dented spots gives soft, bell-like notes.",
+    "purpose_function": "It produces gentle, sustaining, harmonically rich tones for melodic and rhythmic playing without sticks, filling a mellow tuned-percussion role.",
+    "practical_application": "When recording a handpan, an engineer usually uses one or two condenser mics to capture its wide tuned resonance and long sustain while controlling room reflections.",
+    "category": "Instrument",
+    "related_terms": ["Steelpan", "Idiophone", "Resonance", "Sustain", "Tuned percussion", "Overtone"],
+    "common_mistakes": ["Calling every handpan a 'Hang', which is one specific maker's trademarked instrument.", "Miking too close, which loses the instrument's blended overtones and sustain.", "Expecting steel-drum brightness when the handpan is far mellower."],
+    "scenario_contexts": ["Recording a handpan for ambient or meditative music.", "Placing mics to capture its long, ringing sustain in a live set.", "Blending a handpan with soft percussion in a mix."]
+   },
+   "sources": ["Fletcher and Rossing, The Physics of Musical Instruments", "The New Grove Dictionary of Musical Instruments"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "302b2d2f-6d36-4d4f-be06-b24991dbca9b",
+   "term": "Hard attack",
+   "fields": {
+    "definition": "An onset with a fast, sharp, high-energy transient in which a note reaches full level almost immediately, giving a percussive, aggressive character. It contrasts with a soft or slow attack that fades in gradually.",
+    "plain_english": "A note that starts fast and sharp, hitting full volume right away. Think of slapping a drum instead of gently blowing a flute.",
+    "purpose_function": "A hard attack helps a sound cut through a mix and read as punchy or percussive, which aids rhythm and clarity.",
+    "practical_application": "A technician can create or keep a hard attack by setting a synth's amp envelope to a near-zero attack time, or by using a slower compressor attack that lets the transient through.",
+    "category": "Attack Characteristic",
+    "related_terms": ["Attack", "Transient", "Envelope", "Soft attack", "Hammer attack", "Compression"],
+    "common_mistakes": ["Setting a fast compressor attack that clamps the transient and softens the intended hard attack.", "Confusing a hard attack (fast onset) with high overall loudness.", "Adding a click transient so sharp it distorts or tires the listener."],
+    "scenario_contexts": ["Programming a plucky synth bass with an instant attack.", "Dialing compressor attack time to keep a snare's hard hit.", "Describing a percussive piano or mallet sound in a session note."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber and Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

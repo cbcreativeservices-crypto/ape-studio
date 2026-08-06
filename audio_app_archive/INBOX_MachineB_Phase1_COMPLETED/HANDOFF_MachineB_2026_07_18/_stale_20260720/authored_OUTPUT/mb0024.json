@@ -1,0 +1,312 @@
+{
+  "batch": 24,
+  "topic": "Drum-Kit Recording",
+  "authored": [
+    {
+      "id": "eb92bd41-cc23-408a-bd05-4415a2381726",
+      "term": "Drum muffling",
+      "fields": {
+        "definition": "Drum muffling is the deliberate damping of a drumhead or shell to shorten sustain and tame unwanted overtones, using gels, tape, felt strips, internal dampers, muffle rings, or material placed inside the drum (such as a pillow or towel in a bass drum).",
+        "plain_english": "Drum muffling means adding something like tape, a gel pad, or a folded towel to a drum so it rings less. It makes each hit sound shorter and more controlled.",
+        "purpose_function": "It exists to control the length and pitch of a drum's ring so the recorded sound is tighter and sits better in a mix, trading raw sustain and resonance for focus and punch.",
+        "practical_application": "An engineer applies a small gel or a strip of tape near the head's edge, or drops a pillow against the bass drum batter head, listening back on the mics until the ring is controlled without deadening the tone.",
+        "category": "Drum Damping",
+        "related_terms": [
+          "Drum ring",
+          "Drum shell resonance",
+          "Kick batter head",
+          "Kick boom",
+          "Floor tom"
+        ],
+        "common_mistakes": [
+          "Over-muffling a drum until it sounds dead and lifeless, removing the resonance that gives it body and pitch.",
+          "Assuming muffling can fix a badly tuned drum; tuning the heads should come first, with muffling used only for fine control.",
+          "Placing tape or gel in the center of the head instead of near the edge, which chokes the fundamental tone rather than just the overtones."
+        ],
+        "scenario_contexts": [
+          "Taming a ringy snare in a bright room by adding a small gel near the rim before tracking.",
+          "Dropping a pillow inside a bass drum through a ported front head to shorten the kick's sustain.",
+          "Recording a jazz session where the engineer removes muffling to let the toms ring more openly."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, Modern Recording Techniques (drum tuning and damping)",
+        "Owsinski, The Recording Engineer's Handbook (preparing the drum kit)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "42244eee-73d2-43f3-95e0-b94d24f5e5de",
+      "term": "Drum ring",
+      "fields": {
+        "definition": "A drum ring is the sustained, often high-pitched overtone a drum (typically a snare or tom) continues to produce after the initial attack, arising from the head's resonant modes; engineers frequently damp it to achieve a tighter, more focused sound.",
+        "plain_english": "A drum ring is the high, singing tone a drum keeps making after you hit it. Engineers often try to tame it so the drum sounds tight instead of ringy.",
+        "purpose_function": "The ring is a natural product of the head vibrating in its resonant modes; recognizing it matters because it can either add life to a drum or clash with a mix, which is why controlling it is a routine tracking decision.",
+        "practical_application": "When a snare rings too long on the recorded track, a technician adds an O-ring, a gel, or a touch of tape and re-checks the mic, keeping enough ring for character but removing what smears the sound.",
+        "category": "Drum Damping",
+        "related_terms": [
+          "Drum muffling",
+          "Drum shell resonance",
+          "Floor tom",
+          "Kick boom",
+          "Kick bleed"
+        ],
+        "common_mistakes": [
+          "Treating all ring as a problem; a controlled ring is part of a drum's natural tone and pitch.",
+          "Killing ring with heavy muffling when the real cause is uneven head tension that could be fixed by tuning.",
+          "Confusing a genuine tuning-related ring with a rattle from loose lugs or snare wires, and damping the head instead of tightening the hardware."
+        ],
+        "scenario_contexts": [
+          "Removing an annoying snare ring that only becomes obvious once the drum is close-miked.",
+          "Deciding how much tom ring to keep for a rock ballad versus a fast punk track.",
+          "Diagnosing whether a persistent ring is coming from the top head, the resonant head, or sympathetic buzz from another drum."
+        ]
+      },
+      "sources": [
+        "Owsinski, The Recording Engineer's Handbook (drum tuning and ring control)",
+        "Sound on Sound, recording and tuning technique articles (drum overtones)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "5cf0d327-1f38-4052-a8cf-4cf26e41fe2b",
+      "term": "Drum riser resonance",
+      "fields": {
+        "definition": "Drum riser resonance is the low-frequency vibration and coloration introduced when a drum kit is set on a raised platform (riser) that mechanically couples with the drums and floor, often adding rumble, boom, or a hollow low-end resonance to the recorded sound.",
+        "plain_english": "A drum riser is the raised platform a kit sits on. Riser resonance is the low rumble or boom that happens when that platform shakes along with the drums.",
+        "purpose_function": "Risers exist to raise the drummer for sightlines and staging, but a hollow or poorly built one becomes an unwanted resonator that couples to the kick and floor tom, so understanding its resonance helps a technician keep the low end clean.",
+        "practical_application": "A technician may fill or damp a hollow riser, add mass, or decouple it with rubber or foam when kick and floor-tom mics pick up excessive boom or a resonant rumble.",
+        "category": "Drum Acoustics",
+        "related_terms": [
+          "Drum shell resonance",
+          "Kick boom",
+          "Floor tom",
+          "Kick bleed",
+          "Drum muffling"
+        ],
+        "common_mistakes": [
+          "Blaming a boomy low end on room modes when a hollow riser under the kit is actually resonating.",
+          "Building or using a lightweight hollow riser that acts like a large drum, coloring the kick and floor tom.",
+          "Trying to fix riser boom only with EQ instead of decoupling or damping the platform at the source."
+        ],
+        "scenario_contexts": [
+          "Recording a band on a stage riser and hearing a resonant boom couple into the kick mic.",
+          "Filling a hollow drum riser with sandbags or damping material to reduce low-frequency rumble.",
+          "Floating a riser on foam or rubber pads to isolate it from a resonant studio floor."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (structure-borne vibration and resonance)",
+        "Sound on Sound, studio acoustics and drum recording articles (riser coupling)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "92d25124-f9b1-4c8f-92ab-893bfa81e31f",
+      "term": "Drum shell resonance",
+      "fields": {
+        "definition": "Drum shell resonance is the natural vibration of a drum's shell at its characteristic frequencies, which combines with the vibrating heads to shape the drum's fundamental pitch, sustain, and tonal color; shell material, thickness, depth, and bearing edges all influence it.",
+        "plain_english": "Every drum shell has a natural tone it likes to vibrate at. That built-in ringing is called shell resonance, and it helps shape the drum's main sound.",
+        "purpose_function": "Shell resonance is what gives a drum much of its body and character beyond the heads, so knowing how a shell resonates helps a technician choose and place drums for the desired tone.",
+        "practical_application": "When a drum sounds thin or boxy on tape, a technician may swap to a shell of different material or depth, or adjust head tuning to work with the shell's resonant pitch rather than fight it.",
+        "category": "Drum Acoustics",
+        "related_terms": [
+          "Drum ring",
+          "Drum muffling",
+          "Floor tom",
+          "Kick boom",
+          "Drum riser resonance"
+        ],
+        "common_mistakes": [
+          "Believing the drumheads alone make the sound and ignoring how much the shell contributes to tone and sustain.",
+          "Expecting every shell material to sound the same; maple, birch, and metal shells resonate quite differently.",
+          "Trying to change a drum's core character with EQ alone when the shell's resonant behavior is the real limit."
+        ],
+        "scenario_contexts": [
+          "Choosing a birch versus maple kit for a session because of their different shell resonance and tone.",
+          "Explaining to a client why a thin vintage shell rings longer and warmer than a thick modern one.",
+          "Tuning a tom so its heads reinforce, rather than fight, the shell's natural resonant pitch."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (membranophone and shell modes)",
+        "Huber & Runstein, Modern Recording Techniques (drum construction and tone)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b329b175-75ef-4bdc-b096-fe5c8715893e",
+      "term": "Floor tom",
+      "fields": {
+        "definition": "The floor tom is the largest and lowest-pitched tom-tom in a standard drum kit, typically 14 to 18 inches in diameter, that stands on its own legs on the floor (or is suspended) and provides the deep, sustained low-tom voice in fills and grooves.",
+        "plain_english": "The floor tom is the biggest, lowest tom in a kit. It stands on the floor on its own legs and gives those deep, booming tom hits.",
+        "purpose_function": "It exists to supply the low end of the tom range, adding weight and depth to drum fills and grooves that the smaller rack toms cannot reach.",
+        "practical_application": "A technician close-mics the floor tom from above near the rim and may gate or damp it, because its long low-frequency sustain can ring on and bleed into other mics.",
+        "category": "Drum Components",
+        "related_terms": [
+          "Drum shell resonance",
+          "Drum muffling",
+          "Kick bleed",
+          "Drum ring",
+          "Kick boom"
+        ],
+        "common_mistakes": [
+          "Miking a floor tom too far from the head, capturing more sustain and bleed than attack.",
+          "Over-tightening the resonant head, which robs the floor tom of the deep sustain that defines it.",
+          "Forgetting to control its long ring, so the floor tom booms under the whole kit and muddies the mix."
+        ],
+        "scenario_contexts": [
+          "Setting up a close mic on the floor tom before tracking a rock drum fill.",
+          "Damping a floor tom's long sustain so it stops booming into the overhead mics.",
+          "Choosing an 18-inch floor tom for extra low-end weight on a heavy track."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, Modern Recording Techniques (the drum kit and miking)",
+        "Owsinski, The Recording Engineer's Handbook (tom recording and placement)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b587864c-629f-49f7-ae37-117194c9f210",
+      "term": "Kick batter head",
+      "fields": {
+        "definition": "The kick batter head is the drumhead on the beater side of a bass drum, i.e. the head struck by the pedal beater; its type and tuning largely determine the attack, punch, and feel of the kick sound.",
+        "plain_english": "The batter head is the drumhead the pedal hits on a bass drum. It is the side the beater strikes to make the sound.",
+        "purpose_function": "It provides the surface the beater strikes and, together with the resonant front head, sets the kick's attack and sustain, which is why its choice and tuning are central to shaping the kick tone.",
+        "practical_application": "A technician selects a batter head (single or double ply, with or without built-in damping) and tunes it low, sometimes adding a patch where the beater strikes, to get the desired amount of attack and thud.",
+        "category": "Drum Components",
+        "related_terms": [
+          "Kick beater type",
+          "Kick boom",
+          "Kick bleed",
+          "Drum muffling",
+          "Drum shell resonance"
+        ],
+        "common_mistakes": [
+          "Confusing the batter head with the front (resonant) head; the batter is the side the beater strikes.",
+          "Tuning the batter head too tight for a modern kick, producing a boingy, ringy tone instead of a tight thud.",
+          "Skipping an impact patch, so the beater dents and wears through a bare batter head quickly."
+        ],
+        "scenario_contexts": [
+          "Fitting a pre-muffled batter head to get a tight, punchy kick without extra internal damping.",
+          "Adding a felt or plastic impact patch where the beater strikes the batter head to protect it and sharpen the attack.",
+          "Retuning the batter head lower to change a thin kick into a deeper, punchier one before tracking."
+        ]
+      },
+      "sources": [
+        "Owsinski, The Recording Engineer's Handbook (bass drum preparation and tuning)",
+        "Huber & Runstein, Modern Recording Techniques (bass drum heads and miking)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b6eb5d52-305c-44f4-bac6-4310b0b9de90",
+      "term": "Kick beater type",
+      "fields": {
+        "definition": "Kick beater type refers to the material and shape of the bass drum pedal's beater head, such as felt, wood, plastic, or rubber, which directly affects the attack, click, and tonal character of the kick sound.",
+        "plain_english": "The beater is the part of the bass drum pedal that hits the head. Its material, like felt, wood, or plastic, changes how punchy or clicky the hit sounds.",
+        "purpose_function": "The beater is the striking element of the pedal, and its hardness and mass shape the balance between low thud and high-frequency click, which is why beater choice is a quick way to change kick attack.",
+        "practical_application": "A technician swaps a soft felt beater for a hard plastic or wood one, or adds an impact patch, when a track needs more click and definition to cut through a dense mix.",
+        "category": "Drum Hardware",
+        "related_terms": [
+          "Kick batter head",
+          "Kick boom",
+          "Kick bleed",
+          "Drum muffling",
+          "Drum shell resonance"
+        ],
+        "common_mistakes": [
+          "Reaching for EQ to add click when simply switching to a harder beater would create the attack naturally.",
+          "Using a hard plastic beater on a bare, unpatched head, which speeds up wear and can dent the head.",
+          "Ignoring how beater hardness changes the beater's rebound and feel for the drummer, not just the tone."
+        ],
+        "scenario_contexts": [
+          "Switching to a hard plastic beater to get more click for a metal track's kick.",
+          "Choosing a soft felt beater for a warm, boomy jazz or soul kick sound.",
+          "Pairing a wood beater with an impact patch to sharpen attack while protecting the head."
+        ]
+      },
+      "sources": [
+        "Owsinski, The Recording Engineer's Handbook (bass drum and beater selection)",
+        "Sound on Sound, drum recording technique articles (kick attack and beaters)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "4fca6fd7-373b-40c8-9989-0d7915280825",
+      "term": "Kick bleed",
+      "fields": {
+        "definition": "Kick bleed is the leakage of the bass drum's sound into microphones intended for other sources (such as snare, tom, or overhead mics), or conversely other drums bleeding into the kick mic, caused by the mics' proximity and the kick's high sound-pressure level.",
+        "plain_english": "Kick bleed is when the loud kick drum leaks into microphones meant for other drums. It is like one voice getting picked up by someone else's microphone.",
+        "purpose_function": "Bleed is an unavoidable result of close-miking a kit in one space, and understanding it matters because it affects phase, mix control, and how cleanly each drum can be balanced or processed.",
+        "practical_application": "A technician reduces kick bleed with a directional (often cardioid or hypercardioid) mic inside a ported front head, careful placement, tunnels or blankets, and gating, while checking that the bleed still sums in phase with the other mics.",
+        "category": "Microphone Technique",
+        "related_terms": [
+          "Kick boom",
+          "Kick batter head",
+          "Floor tom",
+          "Drum muffling",
+          "Drum riser resonance"
+        ],
+        "common_mistakes": [
+          "Assuming a noise gate fully removes kick bleed; gating cleans up gaps but bleed still colors the drum's live sound.",
+          "Ignoring phase when the kick bleeds into overheads, which can thin or hollow out the low end when tracks are summed.",
+          "Cranking gain on a distant kick mic and capturing more room and snare bleed than actual kick."
+        ],
+        "scenario_contexts": [
+          "Building a kick tunnel with a blanket-covered stand to reduce bleed and room in the kick mic.",
+          "Checking that kick bleed in the overheads is in phase before committing to a mix.",
+          "Choosing a hypercardioid kick mic and placement to minimize snare and hi-hat spill."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (microphone directionality and leakage)",
+        "Huber & Runstein, Modern Recording Techniques (drum miking and leakage)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "a921bda5-7142-4fed-8619-82b53d38f159",
+      "term": "Kick boom",
+      "fields": {
+        "definition": "Kick boom is the low-frequency body and resonance of a bass drum, generally centered in the low bass region around 60 to 100 Hz, that gives the kick its weight and depth as distinct from the higher-frequency beater click.",
+        "plain_english": "Kick boom is the deep, low thump you feel from a bass drum. It is the big low-end part of the sound, not the click of the beater.",
+        "purpose_function": "The boom carries the kick's power and low-end weight in a mix, so managing it is essential to a kick that is felt without becoming muddy or overpowering the bass guitar.",
+        "practical_application": "A technician shapes kick boom with head tuning, damping, mic placement, and EQ, boosting or cutting the low bass region and carving space so the kick and bass guitar do not mask each other.",
+        "category": "Drum Acoustics",
+        "related_terms": [
+          "Kick batter head",
+          "Kick beater type",
+          "Kick bleed",
+          "Drum riser resonance",
+          "Drum muffling"
+        ],
+        "common_mistakes": [
+          "Adding too much low-frequency boost so the kick booms and masks the bass guitar in the mix.",
+          "Confusing boom (the low body) with attack (the beater click); they live in different frequency ranges and need separate control.",
+          "Blaming an uncontrolled boom on the drum when a resonant riser or room mode is exaggerating the low end."
+        ],
+        "scenario_contexts": [
+          "EQing the 60 to 100 Hz region to dial in kick weight without masking the bass guitar.",
+          "Adding internal damping to shorten a boomy, ringing low end on the bass drum.",
+          "Diagnosing whether excess boom comes from the drum, the riser, or a room mode before reaching for EQ."
+        ]
+      },
+      "sources": [
+        "Owsinski, The Recording Engineer's Handbook (bass drum tone and EQ)",
+        "Ballou, Handbook for Sound Engineers (low-frequency response and instrument spectra)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

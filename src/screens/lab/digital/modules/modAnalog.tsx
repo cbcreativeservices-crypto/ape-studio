@@ -10,7 +10,7 @@
  * or implies staircase digital audio; sample dots are MEASUREMENTS of a
  * continuous signal; higher sample rate buys bandwidth, never "smoothness".
  *
- * ALIAS AUDIO (owner-approved — the lab's one real listening demo): mirrors
+ * ALIAS AUDIO (owner-approved — the lab's one real audio demo): mirrors
  * FoundationsCourseScreen's ApeDsp plumbing exactly — engine gate via
  * EngineGate state, audio-output mute gate (requestAudioOutput), generation
  * token, keepalive interval, stop on blur/unmount via `focused`. The badge
@@ -27,7 +27,7 @@ import { guardToneLevelForEngine } from '../../../../features/audio/speakerSafet
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import { EngineGate } from '../../../tools/EngineGate';
 import type { EngineState } from '../../../../features/tools/engine/useDspEngine';
-import { LabChip } from '../../LabShell';
+import { LabChip, CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../bits';
 import { requireVizSignal, type VizSignalModule } from '../skiaGate';
@@ -161,7 +161,26 @@ export function AnalogModule(p: DigitalModuleProps) {
 
   return (
     <View style={{ gap: 12 }}>
+      {/* Description FIRST, in a reveal toggle (owner 2026-08-05). */}
+      <CollapsibleSection title="WHAT EXISTS ON THIS WIRE">
+        <Text style={dstyles.body}>
+          The microphone does not create binary information. Its diaphragm rides the arriving air
+          pressure, and the capsule turns that motion into a continuously varying VOLTAGE — an
+          analog of the pressure. Between any two instants there are infinitely many voltage
+          values; nothing is divided into steps, frames, or numbers.
+        </Text>
+        <Text style={dstyles.body}>
+          Everything in this module — the cone, the traveling pressure, the diaphragm, the trace —
+          is one physical event seen three ways, locked to the same clock. This continuous voltage
+          is what the analog-to-digital converter will measure in Module 2. Until that measurement
+          happens, digital audio does not exist.
+        </Text>
+      </CollapsibleSection>
+
       <PanelCard>
+        {/* Readouts → display → guide → controls (sliders first) — wave-style. */}
+        <ReadoutGrid items={readouts} help={p.help} helpKey="waveform_view" />
+        <Badge text="PEAK · RMS · CREST COMPUTED FROM THE ACTUAL DRAWN WAVEFORM SAMPLES" />
         {viz ? (
           <AnalogHero
             viz={viz}
@@ -178,8 +197,30 @@ export function AnalogModule(p: DigitalModuleProps) {
         ) : (
           <VizUnavailableCard />
         )}
-        <Badge text="ILLUSTRATIVE MODEL — SLOWED FOR VISIBILITY · ONE EVENT, THREE PHASE-LOCKED VIEWS: PRESSURE → DIAPHRAGM → VOLTAGE" />
+        <Badge text="ILLUSTRATIVE MODEL — SLOWED FOR VISIBILITY · ONE EVENT, THREE PHASE-LOCKED VIEWS: PRESSURE → DIAPHRAGM → VOLTAGE · AMPLITUDE COLOR = MIDI LOUDNESS RAMP (blue quiet → red full scale)" />
         <DisplayGuideButton onPress={() => p.help('waveform_view')} />
+        <DragSlider
+          value={freqV}
+          onChange={setFreqV}
+          label="FREQUENCY"
+          readout={wave === 'noise' ? 'broadband' : `${freq} Hz`}
+          onHelp={() => p.help('source')}
+        />
+        <DragSlider
+          value={ampV}
+          onChange={setAmpV}
+          label="AMPLITUDE"
+          readout={`${amp.toFixed(2)} ×FS`}
+          onHelp={() => p.help('source')}
+          levelTint
+        />
+        <DragSlider
+          value={zoomV}
+          onChange={setZoomV}
+          label="TIME ZOOM"
+          readout={`${cycles.toFixed(1)} cycles in view`}
+          onHelp={() => p.help('waveform_view')}
+        />
         <View style={dstyles.chipRow}>
           {WAVE_CHIP_LIST.map((c) => (
             <LabChip
@@ -209,45 +250,6 @@ export function AnalogModule(p: DigitalModuleProps) {
         </View>
         {distOn ? <Badge text="DISTORTION = SOFT tanh BEND ON THE DRAWN VOLTAGE — A DISCLOSED MODEL OF GENTLE ANALOG OVERDRIVE" /> : null}
         {noiseOn ? <Badge text="NOISE = SMALL BROADBAND FUZZ (±0.05 FS) ADDED TO THE DRAWN VOLTAGE" /> : null}
-        <DragSlider
-          value={freqV}
-          onChange={setFreqV}
-          label="FREQUENCY"
-          readout={wave === 'noise' ? 'broadband' : `${freq} Hz`}
-          onHelp={() => p.help('source')}
-        />
-        <DragSlider
-          value={ampV}
-          onChange={setAmpV}
-          label="AMPLITUDE"
-          readout={`${amp.toFixed(2)} ×FS`}
-          onHelp={() => p.help('source')}
-        />
-        <DragSlider
-          value={zoomV}
-          onChange={setZoomV}
-          label="TIME ZOOM"
-          readout={`${cycles.toFixed(1)} cycles in view`}
-          onHelp={() => p.help('waveform_view')}
-        />
-        <ReadoutGrid items={readouts} help={p.help} helpKey="waveform_view" />
-        <Badge text="PEAK · RMS · CREST COMPUTED FROM THE ACTUAL DRAWN WAVEFORM SAMPLES" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>WHAT EXISTS ON THIS WIRE</Text>
-        <Text style={dstyles.body}>
-          The microphone does not create binary information. Its diaphragm rides the arriving air
-          pressure, and the capsule turns that motion into a continuously varying VOLTAGE — an
-          analog of the pressure. Between any two instants there are infinitely many voltage
-          values; nothing is divided into steps, frames, or numbers.
-        </Text>
-        <Text style={dstyles.body}>
-          Everything in this module — the cone, the traveling pressure, the diaphragm, the trace —
-          is one physical event seen three ways, locked to the same clock. This continuous voltage
-          is what the analog-to-digital converter will measure in Module 2. Until that measurement
-          happens, digital audio does not exist.
-        </Text>
       </PanelCard>
 
       <MythReality

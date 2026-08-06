@@ -1,0 +1,60 @@
+{
+ "packet": "add_15_general.json",
+ "group": "General / Culture",
+ "primary_topic": "HiFi Consumer Audio",
+ "difficulty": "beginner",
+ "terms": [
+  {
+   "id": "f70f0e75-379e-4b02-ade2-e8d46d831ea7",
+   "term": "Audiophile",
+   "topic": "HiFi Consumer Audio",
+   "topic_id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+   "difficulty": "beginner",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "406893cf-fd2f-446f-8180-a24ce577bea7",
+   "term": "Component Matching",
+   "topic": "HiFi Consumer Audio",
+   "topic_id": "f1f2f3a6-5cbc-4ffc-8241-9a9ddc4ccfb1",
+   "difficulty": "beginner",
+   "cross_list_topics": [],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

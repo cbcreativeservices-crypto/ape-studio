@@ -1,0 +1,159 @@
+{
+ "batch": 239,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "0656b2f2-6bc8-4e69-9d85-206316688cdb",
+   "term": "Music transition edit",
+   "fields": {
+    "definition": "An edit that joins two music cues or sections so they flow together musically, using techniques such as tempo and key matching, downbeat alignment, edits at bar or phrase boundaries, and crossfades to avoid an audible jump between the pieces.",
+    "plain_english": "This is when an editor cuts and reshapes music so one piece flows into the next. It is like blending two songs so you barely notice where one ends and the other begins.",
+    "purpose_function": "It bridges separate pieces of music, or sections of one cue, so score changes support the picture without a jarring seam that pulls the audience out of the story.",
+    "practical_application": "A music editor conforms cues to the locked picture, then builds transitions at chosen edit points, hiding the seams under crossfades, musical hits, or scene changes.",
+    "category": "Music Editing",
+    "related_terms": ["Musical phrase edit", "Musical hit", "Music-editing suite", "Crossfade", "Music cue"],
+    "common_mistakes": ["Cutting music without regard to tempo or downbeat, so the transition lurches out of time.", "Relying only on a fast fade to mask a bad edit instead of choosing a musical edit point.", "Ignoring a key change, leaving the two cues clashing harmonically across the join."],
+    "scenario_contexts": ["Bridging two library tracks under a montage so they feel like one continuous piece.", "Smoothing the handoff from a source song to underscore as a scene shifts.", "Tightening a composer's cue to a re-cut scene without breaking the musical flow."]
+   },
+   "sources": ["Holman, \"Sound for Film and Television\"", "Huber & Runstein, \"Modern Recording Techniques\""],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "273ef552-76fd-4b5b-82ba-e72de096a61e",
+   "term": "Music-and-effects package",
+   "fields": {
+    "definition": "A deliverable mix (M&E) containing all of a program's music and sound-effects and Foley, but excluding the original-language dialogue, supplied so foreign-language dubbing can replace only the voices; a 'fully-filled' M&E adds effects and Foley to cover any sound that was tied to the removed dialogue.",
+    "plain_english": "This is a mix that has all the music and sound effects but no spoken words. Studios use it to add new voices in other languages, like Spanish or French.",
+    "purpose_function": "It exists to enable localization: distributors dub the program into other languages by laying translated dialogue over the untouched music and effects.",
+    "practical_application": "During the final mix the re-recording mixer prints the M&E stems alongside the domestic mix, and quality control checks that no dialogue leaks in and that effects fully cover the removed voices.",
+    "category": "Deliverables",
+    "related_terms": ["Stem", "Dialogue stem", "Foley", "Printmaster", "Dubbing"],
+    "common_mistakes": ["Assuming the M&E includes dialogue; it deliberately leaves the original voices out.", "Leaving production effects that were tied to dialogue missing, so the dub has silent gaps where sounds should be.", "Failing to fully fill Foley and effects, forcing the dubbing stage to recreate them from scratch."],
+    "scenario_contexts": ["Delivering a feature to a foreign broadcaster for French or Spanish dubbing.", "Meeting a streaming platform's delivery spec that requires a fully-filled M&E.", "Localizing a documentary where narration is replaced language by language."]
+   },
+   "sources": ["Holman, \"Sound for Film and Television\"", "Yewdall, \"The Practical Art of Motion Picture Sound\""],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "93090709-1f3d-4606-8c09-0846365482f4",
+   "term": "Music-editing suite",
+   "fields": {
+    "definition": "A dedicated setup for music editing in post production—either the physical editing room or the integrated system—comprising a DAW, picture sync, monitoring, control surface and music libraries used to cut, conform and lay music to picture.",
+    "plain_english": "This is a room and set of tools built for editing music for film and TV. Think of it as a workshop where the music editor shapes and syncs the score.",
+    "purpose_function": "It gives the music editor the environment and tools to prepare, edit and sync score and source music against a locked picture before the final mix.",
+    "practical_application": "A music editor works in the suite to spot cues, conform music to picture changes, build transitions, and prep organized sessions to hand to the mix stage.",
+    "category": "Facilities",
+    "related_terms": ["Music transition edit", "DAW", "Picture lock", "Spotting session", "Music cue"],
+    "common_mistakes": ["Confusing the music-editing suite with the composer's writing room; the suite is for editing to picture.", "Working without proper picture sync, so edits slowly drift against the film.", "Skipping session prep, handing the mix stage disorganized music tracks."],
+    "scenario_contexts": ["Conforming a score after the picture is re-cut.", "Preparing music stems and cues for the final mix.", "Editing source or needle-drop music to fit a scene."]
+   },
+   "sources": ["Holman, \"Sound for Film and Television\"", "Ballou, \"Handbook for Sound Engineers\""],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "aaee7245-6e63-40fa-875b-362a8b9a930d",
+   "term": "Musical hit",
+   "fields": {
+    "definition": "A point where music is composed or edited to accent a specific on-screen action or cut, landing an emphasized musical event—a chord, stinger or downbeat—precisely on that frame; also called a hit point or sync point.",
+    "plain_english": "A musical hit is a moment where the music lands hard right on an action you see on screen. Like a loud chord that hits exactly when a door slams.",
+    "purpose_function": "It ties music tightly to picture so a moment lands with dramatic or comedic emphasis, reinforcing what the audience is seeing.",
+    "practical_application": "Composers and music editors mark hit points during the spotting session, then place or nudge the music so the accent lines up to the exact frame.",
+    "category": "Music Editing",
+    "related_terms": ["Spotting session", "Sync point", "Stinger", "Music transition edit", "Click track"],
+    "common_mistakes": ["Placing the hit a frame or two late so it feels loose against the action.", "Overusing hits ('Mickey-Mousing') until the scoring feels cartoonish.", "Confusing a musical hit with a DAW transient 'hitpoint' used for tempo detection."],
+    "scenario_contexts": ["Landing a chord exactly on a punch or a door slam.", "Accenting a title card or logo reveal.", "Syncing a stinger to a jump-scare cut in a thriller."]
+   },
+   "sources": ["Karlin & Wright, \"On the Track: A Guide to Contemporary Film Scoring\"", "Holman, \"Sound for Film and Television\""],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "06bbba43-3eda-402b-9f99-4fb42df03b94",
+   "term": "Musical phrase edit",
+   "fields": {
+    "definition": "An edit made at the boundaries of a musical phrase—so the cut falls at the natural start or end of a melodic or rhythmic unit—to shorten, lengthen or rearrange a cue without breaking its musical sense.",
+    "plain_english": "This is editing music at the natural breaks between musical phrases. It is like cutting a sentence at a comma or period so it still reads right.",
+    "purpose_function": "It lets an editor change a cue's length or structure to fit picture while keeping the music's grammar and flow intact.",
+    "practical_application": "A music editor finds phrase boundaries, often at bar lines or cadences, then cuts and crossfades there to conform a cue to a new scene length.",
+    "category": "Music Editing",
+    "related_terms": ["Music transition edit", "Musical hit", "Crossfade", "Music cue", "Bar and beat"],
+    "common_mistakes": ["Cutting mid-phrase, leaving a melody or chord unresolved.", "Ignoring the tempo grid so the reassembled phrases fall out of time.", "Forgetting reverb tails, which get chopped and expose the edit."],
+    "scenario_contexts": ["Trimming a cue by a bar to match a tightened scene.", "Looping a section to extend music under a longer sequence.", "Rebuilding a song edit for a trailer from clean phrase points."]
+   },
+   "sources": ["Huber & Runstein, \"Modern Recording Techniques\"", "Holman, \"Sound for Film and Television\""],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9eed6006-78b8-4df6-8029-a14f78563491",
+   "term": "Musician click mix",
+   "fields": {
+    "definition": "A dedicated headphone or cue mix built for performers that includes a click (metronome) track—often alongside guide music, streamers and punches, or picture reference—so players record in tempo and in sync with the film.",
+    "plain_english": "This is a headphone mix that gives players a steady click to keep time. It helps musicians stay in sync with the picture and each other.",
+    "purpose_function": "It keeps live players locked to tempo and to picture during scoring or overdub sessions so their recordings edit together cleanly and sync to the film.",
+    "practical_application": "On a scoring stage the engineer sends each musician a click mix—click plus guide and pre-records—over headphones, adjusting the click's level and sound to the player's taste.",
+    "category": "Monitoring",
+    "related_terms": ["Click track", "Cue mix", "Foldback", "Scoring session", "Streamers and punches"],
+    "common_mistakes": ["Setting the click too quiet, so players drift off tempo.", "Bleeding click into live mics because the headphone level is too high.", "Giving one generic mix instead of the tailored balances players actually need."],
+    "scenario_contexts": ["Recording an orchestra to picture on a scoring stage.", "Overdubbing a soloist who must lock to the existing tempo map.", "Tracking a band to a click so their parts edit cleanly later."]
+   },
+   "sources": ["Huber & Runstein, \"Modern Recording Techniques\"", "Karlin & Wright, \"On the Track: A Guide to Contemporary Film Scoring\""],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7a6c1f31-f5de-4152-a080-47e4f7f4cdfa",
+   "term": "Narration dialogue",
+   "fields": {
+    "definition": "Spoken narration or voice-over treated as a dialogue element—an off-screen narrator addressing the audience rather than characters speaking within the scene—edited and mixed on the dialogue side of a program.",
+    "plain_english": "This is spoken narration, like a voice telling the story over the pictures. It is handled as its own kind of dialogue in the mix.",
+    "purpose_function": "It carries storytelling information straight to the audience and is treated with dialogue-level clarity and consistency in the mix.",
+    "practical_application": "A dialogue editor cuts narration onto its own tracks, cleans and levels it, and the mixer sits it clearly above music and effects so every word is intelligible.",
+    "category": "Dialogue",
+    "related_terms": ["Voice-over", "Dialogue stem", "ADR", "Production dialogue", "Dialogue editing"],
+    "common_mistakes": ["Treating narration like sync dialogue and trying to match a room tone that is not there.", "Letting music bury the narration, hurting intelligibility.", "Leaving level and tone inconsistent across sessions recorded on different days."],
+    "scenario_contexts": ["Voicing a documentary or nature film.", "Adding a character's inner-monologue voice-over to a drama.", "Recording and cutting an audio guide or corporate narration."]
+   },
+   "sources": ["Holman, \"Sound for Film and Television\"", "Yewdall, \"The Practical Art of Motion Picture Sound\""],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "371615e5-3be4-45ea-9433-efccf226fd61",
+   "term": "Near-field spatialization",
+   "fields": {
+    "definition": "Rendering a sound so it is perceived very close to the listener's head, reproducing the near-field acoustic cues—strong interaural level differences and distance parallax that grow as a source nears the ear—that distinguish nearby from distant sources in binaural or object-based 3D audio.",
+    "plain_english": "This is placing a sound so it seems very close to your head. In surround and 3D audio, it makes something feel almost near enough to touch.",
+    "purpose_function": "It creates a convincing sense that a sound is intimately close—inches from the listener—adding depth and immersion beyond simple left-right panning.",
+    "practical_application": "In immersive mixing an engineer uses a spatial renderer to place an object very near the listener, relying on near-field distance cues rather than loudness alone.",
+    "category": "Immersive Audio",
+    "related_terms": ["Object-based audio", "HRTF", "Binaural rendering", "Dolby Atmos", "Panning"],
+    "common_mistakes": ["Assuming loudness alone equals closeness; near-field cues are more than level.", "Ignoring that near-field cues are strongest at the sides and fade toward the front.", "Expecting the same effect over speakers as over headphones, where binaural near-field cues live."],
+    "scenario_contexts": ["Placing a whisper right at the listener's ear in a VR or game scene.", "Mixing an immersive music track with an intimate, close vocal.", "Designing binaural audio where an insect buzzes past close to the head."]
+   },
+   "sources": ["AES papers on near-field head-related transfer functions", "Dolby Atmos technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0d3e3c56-3af6-4c2d-9381-8a761475e04c",
+   "term": "Noise burst",
+   "fields": {
+    "definition": "A short, controlled segment of noise (typically white or pink) of brief duration, used either as a transient sound-design element or as a test and alignment signal—for example to check system output, timing and polarity, or to excite a room for a measurement.",
+    "plain_english": "A noise burst is a short blast of noise. It can be a sound effect or a signal used to test speakers and timing.",
+    "purpose_function": "Its broadband, short-duration content makes it useful both as a percussive effect and as an excitation signal for measuring or aligning a system quickly.",
+    "practical_application": "A technician plays a noise burst to check a speaker's output, listen for timing or polarity, or feed an analyzer; a sound designer layers bursts to build effects such as static, impacts, or whooshes.",
+    "category": "Test Signals",
+    "related_terms": ["Pink noise", "White noise", "Test signal", "Impulse response", "Transient"],
+    "common_mistakes": ["UNSAFE: Firing a loud full-range noise burst without lowering monitor or headphone level first, risking driver damage and hearing injury.", "Confusing an uncontrolled fault glitch with an intentional test burst.", "Assuming a single burst gives a reliable measurement instead of averaging several."],
+    "scenario_contexts": ["Checking a PA channel's output and polarity during setup.", "Exciting a room for a quick timing or delay measurement.", "Building a synthetic sound effect such as static or an impact."]
+   },
+   "sources": ["Ballou, \"Handbook for Sound Engineers\"", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

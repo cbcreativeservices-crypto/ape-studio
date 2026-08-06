@@ -1,0 +1,159 @@
+{
+ "batch": 287,
+ "topic": "Sample Editing & Manipulation",
+ "authored": [
+  {
+   "id": "c551a5bf-9d0f-49a3-ba60-d3b720b25545",
+   "term": "Asynchronous grains",
+   "fields": {
+    "definition": "Grains generated at irregular, stochastically spaced points in time rather than at a fixed periodic rate, so they scatter into a texture with no perceptible pulse.",
+    "plain_english": "These are tiny sound bits played at random, uneven moments instead of on a steady beat. They fall like scattered raindrops rather than the tick of a clock.",
+    "purpose_function": "Scattering grains randomly in time avoids the buzzy pitched tone of a steady grain rate and instead builds smooth, evolving clouds of sound.",
+    "practical_application": "A technician picks a random or asynchronous timing mode in a granular synth or effect to turn a sample into a lush, non-rhythmic pad or ambient wash.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Audio grain", "Grain cloud", "Cloud synthesis", "Grain buffer", "Buffer position"],
+    "common_mistakes": ["Assuming the grains still line up with the beat, when their timing is deliberately random and has no steady pulse.", "Confusing random timing with pitch; scattering grains in time changes the texture, not the note.", "Setting grain density too low, which leaves audible gaps instead of a smooth cloud."],
+    "scenario_contexts": ["Building an evolving ambient pad from a short vocal sample.", "Creating a wind-like texture from a field recording.", "Smoothing a time-stretched sample so no rhythmic buzz appears."]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Barry Truax, Granular Synthesis (Simon Fraser University)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5c71caa8-9154-4706-9460-15fbfe0d69ff",
+   "term": "Audio grain",
+   "fields": {
+    "definition": "A very short segment of sound, typically well under 100 ms and often 10-30 ms, shaped by a smooth amplitude envelope, used as the basic building block of granular synthesis.",
+    "plain_english": "A grain is a tiny slice of sound only a few thousandths of a second long. Granular synths stack many of these little slices to build bigger sounds, like bricks making a wall.",
+    "purpose_function": "The grain is the smallest unit a granular system works with, so combining many of them lets you rebuild, stretch, or reshape a sound from its smallest parts.",
+    "practical_application": "When granulating a sample, a technician sets each grain's length and envelope to control how smooth or choppy the resulting texture sounds.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Asynchronous grains", "Grain cloud", "Grain buffer", "Cloud synthesis", "Buffer position"],
+    "common_mistakes": ["Making grains too short, which adds clicks or a buzzy tone instead of clean sound.", "Skipping the grain envelope, so hard edges cause a click at each grain.", "Thinking a grain is a whole note when it is only a tiny fragment of sound."],
+    "scenario_contexts": ["Time-stretching a vocal without changing its pitch.", "Freezing a single moment of a sample into a sustained tone.", "Designing a granular pad from a short instrument sample."]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Barry Truax, Granular Synthesis (Simon Fraser University)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "59d5a878-c51c-49f7-9877-a77f5756699f",
+   "term": "Buffer length",
+   "fields": {
+    "definition": "The size of a memory buffer holding audio, given as a duration or a number of samples, which sets how much recorded sound is available for playback, looping, or granular processing.",
+    "plain_english": "Buffer length is how much sound the computer holds in memory to work with, measured in seconds or samples. A longer buffer stores more audio, like a bigger notepad holds more notes.",
+    "purpose_function": "It defines the window of stored audio the system can read grains or loops from, so too short limits the material while too long uses more memory.",
+    "practical_application": "A technician sets buffer length to match the sample they want to granulate or loop, making sure the whole phrase fits in memory.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain buffer", "Buffer position", "Buffer loop", "Buffer scan", "Audio grain"],
+    "common_mistakes": ["Setting the buffer too short, so the sample is cut off before it finishes.", "Confusing buffer length with grain length; one holds the source, the other is a tiny slice.", "Using a needlessly long buffer that wastes memory."],
+    "scenario_contexts": ["Loading a four-second vocal phrase into a granular sampler.", "Recording live audio into a buffer for real-time granulation.", "Sizing loop memory in a hardware sampler before capturing a phrase."]
+   },
+   "sources": ["Cycling '74 Max/MSP Documentation (Granular Synthesis tutorial)", "Curtis Roads, Microsound (MIT Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "451cda98-58c1-42aa-8e48-70fdeb35cdf3",
+   "term": "Buffer loop",
+   "fields": {
+    "definition": "Continuous, repeating playback of the audio stored in a buffer, cycling from the end back to a start point so the buffered material sounds without pause.",
+    "plain_english": "A buffer loop plays the stored sound over and over, jumping back to the start each time it reaches the end. It is like setting a song to repeat.",
+    "purpose_function": "Looping a buffer lets a short recording sustain without end, giving a steady stream of source material for pads, drones, or grains.",
+    "practical_application": "A technician loops a captured phrase in a sampler so grains or playback keep drawing from it while other controls are adjusted.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Buffer length", "Buffer position", "Buffer scan", "Grain buffer", "Cloud synthesis"],
+    "common_mistakes": ["Placing loop points away from zero crossings, which causes a click on every cycle.", "Confusing a buffer loop with a grain; the loop repeats the whole stored audio, not a tiny slice.", "Looping a phrase whose start and end do not match, leaving an audible seam."],
+    "scenario_contexts": ["Holding a sustained drone from a short recorded note.", "Keeping a live-recorded phrase cycling for real-time granulation.", "Building a rhythmic loop from a captured bar of audio."]
+   },
+   "sources": ["Cycling '74 Max/MSP Documentation (Granular Synthesis tutorial)", "Curtis Roads, Microsound (MIT Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8930d53c-84aa-4eab-b7ac-6e42dd503622",
+   "term": "Buffer position",
+   "fields": {
+    "definition": "The read location within an audio buffer from which playback or a grain is taken, usually expressed as a time offset or a normalized value between the buffer's start and end.",
+    "plain_english": "Buffer position is the exact spot in the stored sound the playhead reads from right now. Moving it is like sliding your finger to a different point on a tape.",
+    "purpose_function": "It selects which part of the stored audio you hear or granulate, letting you focus on any single moment of the sample.",
+    "practical_application": "A technician moves the buffer position to scrub to a specific vowel or transient in a sample and generate grains from that exact spot.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Buffer scan", "Buffer length", "Grain buffer", "Audio grain", "Buffer loop"],
+    "common_mistakes": ["Confusing buffer position with pitch; position picks where to read, not what note plays.", "Jumping the position abruptly, which can click if grains are not enveloped.", "Assuming position is fixed, when in granular engines it can be moved continuously."],
+    "scenario_contexts": ["Freezing on one moment of a pad by holding the position still.", "Slowly moving through a sample to reveal its inner detail.", "Targeting a single drum hit inside a longer loop."]
+   },
+   "sources": ["Cycling '74 Max/MSP Documentation (Granular Synthesis tutorial)", "Curtis Roads, Microsound (MIT Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2a0dfaca-abd6-48ef-8b95-383f1f0117d6",
+   "term": "Buffer scan",
+   "fields": {
+    "definition": "The act of moving the read position through an audio buffer over time, sweeping across the stored sound to select changing source material for playback or grains.",
+    "plain_english": "Buffer scan means slowly sliding the read point across the stored sound. It is like dragging a magnifying glass along a strip of tape to hear each part in turn.",
+    "purpose_function": "Scanning lets a technician explore or perform through a sample, turning a static recording into an evolving, playable sound source.",
+    "practical_application": "A technician automates or hand-moves the scan control to sweep grains through a sample, morphing the texture as the read point travels.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Buffer position", "Buffer length", "Grain buffer", "Buffer loop", "Grain cloud"],
+    "common_mistakes": ["Scanning too fast, which turns the smooth sweep into a pitched buzz.", "Confusing scan with playback speed; scanning moves the read point, not grain pitch.", "Forgetting grain envelopes, so a fast scan adds clicks."],
+    "scenario_contexts": ["Sweeping through a vocal to morph between vowels.", "Performing a granular pad live by scanning a loaded sample.", "Automating a slow scan across a texture for an evolving soundscape."]
+   },
+   "sources": ["Cycling '74 Max/MSP Documentation (Granular Synthesis tutorial)", "Curtis Roads, Microsound (MIT Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6e7282c6-474d-493b-bced-cec1370d125f",
+   "term": "Cloud synthesis",
+   "fields": {
+    "definition": "A granular technique that builds sound from dense masses of grains, called clouds, whose overall statistics such as density, duration, pitch spread, and position are controlled rather than each grain individually.",
+    "plain_english": "Cloud synthesis makes sound from a thick swarm of tiny grains, shaped as a group instead of one at a time. It is like sculpting a cloud of mist rather than placing each droplet.",
+    "purpose_function": "Treating grains as a cloud lets a technician sculpt rich, evolving textures by setting overall rules for how thousands of grains behave.",
+    "practical_application": "A technician dials in grain density, spread, and duration to grow a shimmering cloud from a simple sample instead of programming each grain.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain cloud", "Asynchronous grains", "Audio grain", "Grain buffer", "Buffer scan"],
+    "common_mistakes": ["Setting density too low, so the cloud thins into separate audible grains.", "Expecting note-by-note control, when cloud synthesis is shaped by statistics rather than single grains.", "Overlapping too many loud grains, which overloads and distorts the output."],
+    "scenario_contexts": ["Creating an evolving ambient wash from one recorded note.", "Turning a short sample into a dense granular texture.", "Designing an atmospheric sound bed for film or game audio."]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Barry Truax, Granular Synthesis (Simon Fraser University)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5ff2422e-c7d8-4901-8abc-c2bd66aa850b",
+   "term": "Grain buffer",
+   "fields": {
+    "definition": "The block of memory that stores the audio a granular engine reads grains from; each grain is a short excerpt copied from a position within this buffer.",
+    "plain_english": "The grain buffer is the pocket of memory that holds the sound a granular synth chops into grains. Think of it as the loaf of bread the synth keeps slicing pieces from.",
+    "purpose_function": "It supplies the source audio for granulation, holding the recorded or loaded sample so grains can be drawn from any point in it.",
+    "practical_application": "A technician loads a sample or records live audio into the grain buffer, then sets position and size to pull grains from it.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Audio grain", "Buffer position", "Buffer length", "Buffer scan", "Grain cloud"],
+    "common_mistakes": ["Confusing the grain buffer with a single grain, when the buffer holds all the source audio.", "Overwriting the buffer while grains still read from it, causing glitches.", "Loading audio at the wrong sample rate, which shifts the buffer's pitch and length."],
+    "scenario_contexts": ["Loading a vocal sample into a granular plugin before granulating.", "Recording live input into the buffer for real-time granular effects.", "Swapping the buffer's contents to change the granular sound source."]
+   },
+   "sources": ["Cycling '74 Max/MSP Documentation (Granular Synthesis tutorial)", "Curtis Roads, Microsound (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e29a6aca-e1fa-48ae-879a-c913bbffac8d",
+   "term": "Grain cloud",
+   "fields": {
+    "definition": "A dense collection of overlapping grains distributed across time and frequency, heard as a single evolving texture rather than as separate sonic particles.",
+    "plain_english": "A grain cloud is a thick swarm of tiny sound grains heard as one shifting texture. Like a cloud of gnats looks like one shape from far away, the grains blur into a single sound.",
+    "purpose_function": "Grouping grains into a cloud creates smooth, complex textures whose density and spread can be shaped as a whole.",
+    "practical_application": "A technician raises grain density and spread to grow a grain cloud from a sample, producing an atmospheric pad or wash.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Cloud synthesis", "Asynchronous grains", "Audio grain", "Grain buffer", "Buffer scan"],
+    "common_mistakes": ["Setting density too low, so the cloud breaks into audible separate grains.", "Confusing a grain cloud with a single grain, when the cloud is made of many overlapping ones.", "Piling up too many grains, which can overload the output and distort."],
+    "scenario_contexts": ["Building an ambient texture from a short recorded sound.", "Thickening a thin sample into a lush pad.", "Creating an evolving background wash for a film scene."]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Barry Truax, Granular Synthesis (Simon Fraser University)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

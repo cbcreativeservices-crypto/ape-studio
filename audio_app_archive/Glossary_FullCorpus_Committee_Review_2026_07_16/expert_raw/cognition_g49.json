@@ -1,0 +1,216 @@
+{
+ "expert": "LEARNING / COGNITION EXPERT",
+ "group": 49,
+ "reviews": [
+  {
+   "id": "e3ff31f3-c31e-405a-ba38-6df3556c479d",
+   "term": "TOSLINK (Optical)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6a73d592-c060-452e-bda3-619d95c90a53",
+   "term": "Touring Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a437a204-1db2-4750-ba0f-08ac92e354c6",
+   "term": "Tower Safety Awareness",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4a34ea17-08d7-42d4-ba37-b381c109ce46",
+   "term": "Trace averaging",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "118a9098-4302-4f2b-9941-d0d2937b3d99",
+   "term": "Trace capture",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9f37b377-7dc9-4215-8304-ea5fd68b2025",
+   "term": "Trace math",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8bede1f4-1d43-492d-9b38-cd40addf7c99",
+   "term": "Track Arming",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "53f756da-bd36-46e9-8977-976ac856b84d",
+   "term": "Tracking Force",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5c541a04-dccf-473a-a196-198db28afddf",
+   "term": "Traffic-light meter coloring",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "62f4e0d6-42af-4d71-94e5-1982a246f851",
+   "term": "Transducer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ea195817-41dd-4435-97c2-6cf86d7e80e8",
+   "term": "Transfer function",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "10bedf06-cc77-487a-80e3-60e0a7a2e729",
+   "term": "Transfer Function measurement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "adf10b49-1f60-4856-81c2-4c8dd387ea56",
+   "term": "Transient",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "741fdb4e-e3f9-44be-b6c7-98b0db50ddc2",
+   "term": "Transient response",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "edaee106-5272-498c-92e4-104e4e63538b",
+   "term": "Transient Shaper",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "792c3270-16d3-4231-8350-3fe16e81fca8",
+   "term": "Transition",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8a8aa1c8-7fa6-4e41-a678-7055a183b1e5",
+   "term": "Transition Band",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ab89ad7c-69ab-4aad-bd3c-e548fe605246",
+   "term": "Transmission Line",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "74774426-8c1e-4637-9bbd-18bf6d7eb65e",
+   "term": "Transmission loss",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f48af776-e922-459b-9aae-efe76afa42fe",
+   "term": "Transmitter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c8617906-6730-4453-9741-0e92ebfcad29",
+   "term": "Transmitter RF Power",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2fdcd186-cd26-42d5-8539-202acb6157fb",
+   "term": "Transverse Wave",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6eb465e6-f873-4112-8bad-3849618753c9",
+   "term": "Tremolo",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f1788b25-c787-46d4-9fdd-f0960498e3ab",
+   "term": "Triboelectric noise",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a07acb59-4780-4fcd-834d-b3a8b2413ecb",
+   "term": "Trim",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f8df301b-0780-4ee2-a1ad-988f5fd7066e",
+   "term": "Tripod Load Rating",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eaed454d-3749-4980-9ac9-48a02cc87b4f",
+   "term": "Tripod Stability",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5fcb98b8-b98a-4537-bccd-382bdf630033",
+   "term": "Troubleshooting",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "152751d5-8e27-464f-b266-513703ac9f04",
+   "term": "TRRS Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d664a922-6f51-47ee-9cfb-868724ed9178",
+   "term": "TRS Connector (Tip-Ring-Sleeve)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "33b96c4b-627b-488f-9b3d-7da1dfa52f82",
+   "term": "TRS-to-TS Adapter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "81f512ad-07ab-4b3b-9ab4-ff0317931f79",
+   "term": "True Diversity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "82b96f58-81a5-4d8d-ad5d-5d691efac12e",
+   "term": "True Peak",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "64376166-d144-4bc0-9496-04635975e3bd",
+   "term": "True Peak (dBTP)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ad21289c-4f34-4888-8a2f-4e50a0281778",
+   "term": "True Peak Limiter",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

@@ -1,0 +1,230 @@
+{
+ "expert": "learning/cognition",
+ "group": 41,
+ "reviews": [
+  {
+   "id": "620c3520-e8e2-4fd9-b77f-6ec18fab7490",
+   "term": "RMS Voltage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ee91fb62-5b0a-498a-9187-bcf9dd408ce0",
+   "term": "Roll-In Video",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f48c448d-f33c-4f0c-b08c-60ddaaa2a7de",
+   "term": "Roll-off",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "34fbb8bd-c4bb-4342-964b-b23054854afc",
+   "term": "Roll-Off Switch",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dae062e4-b78c-428f-b052-905d42d38222",
+   "term": "Room Correction",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5dbdb715-619c-4d52-9d7f-81150a62a142",
+   "term": "Room mode",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "865fe367-bf6e-46b6-987f-8d70161583c6",
+   "term": "Room Reverb",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e7c9ba2a-7600-403c-bef1-d24184b5edfb",
+   "term": "Room Size",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e872bac3-fc14-4047-bce7-f8641d115902",
+   "term": "Root cause analysis",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "deb97955-1ec6-4e40-b929-a5f46e4734c8",
+   "term": "Rough Mix",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a6d8cfa6-9a5b-472b-84ae-02dbd9e22b18",
+   "term": "Round Sling",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4cd673c1-141b-4e0f-b179-6376e2808dd0",
+   "term": "router (audio matrix switcher)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4ae90238-0581-4cd3-81ca-d52f28e9f582",
+   "term": "Routing Matrix",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "This entry and the separate entry 'router (audio matrix switcher)' describe essentially the same many-to-any-crosspoint architecture (one framed as a console section, one as a standalone device), yet neither links to the other. A learner meeting both will likely conflate or fail to connect them.",
+     "suggestion": "Add 'router (audio matrix switcher)' to related_terms so the learner can see the standalone-device form of the same crosspoint concept and grasp the console-section vs. dedicated-device distinction."
+    }
+   ]
+  },
+  {
+   "id": "1d0ee1e3-9180-4a36-be91-0ddc8d39453a",
+   "term": "RT band",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c1be43d0-86ea-495a-9f64-b537cbb0be73",
+   "term": "RT60",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "The related_terms list includes 'Reverberation time (RT60)', which is the same term as this entry (its definition literally opens 'Reverberation time (RT60): ...'). A self-referential related term is a dead knowledge-map link that leads a learner nowhere.",
+     "suggestion": "Remove the self-link 'Reverberation time (RT60)' and replace it with a genuine neighbor such as 'RT band' or 'Sabine equation' to point the learner toward related concepts."
+    }
+   ]
+  },
+  {
+   "id": "190e12be-9213-416f-a0a0-fb5d2a6a7cc8",
+   "term": "RTA (Real-Time Analyzer)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b6eab1b3-0097-45c6-88cd-e37b403b13fc",
+   "term": "RTA view",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "22bca3ec-6362-475e-98de-923e6ec2a39c",
+   "term": "RTP (Real-time Transport Protocol)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8ce712cb-d480-4337-96e3-70c9471deb9c",
+   "term": "Run of Show",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f95f68e4-2449-49db-ad63-b7decc52c28f",
+   "term": "RV Audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9e23cbf0-3deb-4210-afa8-cda97d58041b",
+   "term": "S/PDIF (Sony/Philips Digital Interface)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4b996ea1-dbf5-4042-bce8-9e67a4979e41",
+   "term": "Safe Cable Routing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6c7103b9-aa84-4ffa-8b52-a93471ecef5b",
+   "term": "Safe mode",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "86408340-766f-4d37-926a-c064caa45b75",
+   "term": "Safe SPL Exposure",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "832c7918-732c-4921-9d9d-509e9468bbbc",
+   "term": "Safety Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c04ebbeb-e5dc-4948-8495-2ada33846e61",
+   "term": "Safety ground",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "45357cb8-6663-48f7-8564-341ec51225f4",
+   "term": "Sample Rate",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c4fa11d8-ff3b-4ed5-ab14-f8d1443c2bcd",
+   "term": "Sample rate mismatch",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c75c50c2-7cb0-4ae7-b701-0fc4d3fff6ea",
+   "term": "Sampling (Nyquist) Theorem",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "229db15e-de53-4677-9625-d749da50ef30",
+   "term": "Sandbags",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "32dda60f-e6a5-424a-a726-901916c79f97",
+   "term": "Satellite Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9ed723c2-366a-4383-ba4e-2e466264b5d0",
+   "term": "Saturation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9bd06f61-9ccf-4390-a1cc-8aff9ec91f45",
+   "term": "SC Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2d0531f5-39e4-4890-9e05-f690982db8aa",
+   "term": "Scalability",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "836770aa-0d48-44ff-917a-4c9eaad119aa",
+   "term": "Scene Recall",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

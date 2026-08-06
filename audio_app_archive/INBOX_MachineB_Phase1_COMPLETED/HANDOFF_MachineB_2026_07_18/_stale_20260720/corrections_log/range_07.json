@@ -1,0 +1,116 @@
+{
+ "range": 7,
+ "applied": [
+  {
+   "pkt": "mb0297",
+   "term": "SoundStream",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Replaced the 'very good zip file' analogy (implies lossless) with a lossy-packer analogy; SoundStream is a lossy neural codec, matching the entry's own common_mistakes warning against expecting lossless output. FK grade 7.9."
+  },
+  {
+   "pkt": "mb0299",
+   "term": "Envelope click",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Removed the misleading 'too fast for the speaker to follow' framing that blamed hardware (the misconception common_mistakes warns against). Now locates the click in the signal as a step discontinuity carrying high-frequency energy. FK grade 4.4."
+  },
+  {
+   "pkt": "mb0313",
+   "term": "Dry",
+   "field": "definition",
+   "severity": "Low",
+   "summary": "Resolved internal contradiction with common_mistakes: scoped definition to no ADDED spatial effects while acknowledging a recording may still capture the room, instead of 'without room character'."
+  },
+  {
+   "pkt": "mb0314",
+   "term": "Full",
+   "field": "plain_english",
+   "severity": "Medium",
+   "summary": "Dropped the 'thick blanket of sound' image, which collides with the same blanket metaphor used for the opposite terms 'lifeless'/'muffled' in this group; replaced with a solid-wall-of-sound image conveying weight without implying muffling. FK grade 4.5."
+  },
+  {
+   "pkt": "mb0319",
+   "term": "recessed",
+   "field": "plain_english",
+   "severity": "Medium",
+   "summary": "Replaced the 'singer steps away from the mic' analogy (implies overall level/distance drop, the misconception common_mistakes[0] warns against) with one isolating a frequency band, so mids sit back while lows/highs stay present. FK grade 6.9."
+  },
+  {
+   "pkt": "mb0284",
+   "term": "Tape release",
+   "field": "purpose_function",
+   "severity": "Low",
+   "summary": "Subject-verb agreement fix: compound subject 'Reliable release and reset' takes plural verb, changed 'lets' to 'let'."
+  },
+  {
+   "pkt": "mb0286",
+   "term": "Zone mapping",
+   "field": "definition",
+   "severity": "Low",
+   "summary": "Fixed garbled coordination: 'plays for a given note and how hard it is struck' paired a noun with a clause under one preposition; rewrote to 'a given note and playing dynamic (how hard the key is struck).'"
+  }
+ ],
+ "declined": [
+  {
+   "pkt": "mb0282",
+   "term": "Sample replay",
+   "field": "difficulty",
+   "reason": "difficulty is packet-level metadata, not part of the authored output (not in fields/empty_fields; writing it fails verify.py). The suggestion is also a debatable pedagogical tag, not a content error."
+  },
+  {
+   "pkt": "mb0282",
+   "term": "Sample-based oscillator",
+   "field": "difficulty",
+   "reason": "difficulty is packet metadata outside authored content and uneditable within scope; the beginner-vs-intermediate call is a debatable pedagogical judgment, not a content error."
+  },
+  {
+   "pkt": "mb0283",
+   "term": "Soft synchronization",
+   "field": "difficulty",
+   "reason": "difficulty is packet metadata outside authored content and uneditable within scope; advanced-vs-intermediate tagging is a debatable pedagogical judgment, not a content error."
+  },
+  {
+   "pkt": "mb0283",
+   "term": "Sub-oscillator",
+   "field": "difficulty",
+   "reason": "difficulty is packet metadata outside authored content and uneditable within scope; a debatable pedagogical tag, not a content error."
+  },
+  {
+   "pkt": "mb0285",
+   "term": "Voice allocation",
+   "field": "scenario_contexts",
+   "reason": "Pure enrichment (add a bridging phrase). The monophonic note-priority scenario is a legitimate, conventionally-recognized case of voice allocation; no factual error or garbled item to fix."
+  },
+  {
+   "pkt": "mb0293",
+   "term": "Audio tokenization",
+   "field": "difficulty",
+   "reason": "Primary suggestion (retag difficulty) targets packet metadata outside authored scope and is a debatable judgment; the alternative plain_english gloss is 'consider adding more' enrichment."
+  },
+  {
+   "pkt": "mb0293",
+   "term": "Audio-domain generation",
+   "field": "difficulty",
+   "reason": "Primary suggestion (retag difficulty) is out-of-scope packet metadata and debatable; the alternative gloss is enrichment, not an error fix."
+  },
+  {
+   "pkt": "mb0307",
+   "term": "Phonetic posteriorgram (PPG)",
+   "field": "difficulty",
+   "reason": "difficulty is packet metadata outside authored content and uneditable within scope; beginner-vs-intermediate is a debatable pedagogical judgment, not a content error."
+  },
+  {
+   "pkt": "mb0297",
+   "term": "Style transfer",
+   "field": "common_mistakes",
+   "reason": "'behaviour' vs 'behavior' is a British/American spelling variant, i.e. house-style consistency, not a factual or grammatical error."
+  },
+  {
+   "pkt": "mb0319",
+   "term": "scooped",
+   "field": "common_mistakes",
+   "reason": "'alone in isolation' is mild redundancy; the sentence is clear and not garbled. Removing a word is stylistic polish, not an error fix."
+  }
+ ]
+}

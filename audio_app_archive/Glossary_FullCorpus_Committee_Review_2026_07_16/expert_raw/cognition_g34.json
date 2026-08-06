@@ -1,0 +1,230 @@
+{
+ "expert": "cognition",
+ "group": 34,
+ "reviews": [
+  {
+   "id": "2ab8c71c-95a9-4095-9fab-7f99b0024168",
+   "term": "Parallel Compression",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "75050eb5-a4c7-40dc-9ab8-dfab9af9bf80",
+   "term": "Parametric EQ",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fe8101f3-4aa7-4add-8dd4-a815e4f15d11",
+   "term": "Part 74 License",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0b39e167-e2f3-40f8-9881-527750a05c1b",
+   "term": "Pascal (Pa)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7aaff2e0-9efd-4048-bb21-95990c23298f",
+   "term": "Passband",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "687ec258-2380-4ca3-b426-3e0b9c6fb824",
+   "term": "Passive Antenna",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6e1ee568-3b94-4452-a98a-e9902bf0f4d1",
+   "term": "Passive Crossover",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7e04aebe-092b-4ebb-87c1-3c8bbbc636ae",
+   "term": "Passive Radiator",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c6c0a591-4950-49fb-9481-0b02e4d18971",
+   "term": "Passive ribbon microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c809eef3-bcf2-454e-8f35-ec338896ac50",
+   "term": "Passive Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ecebd487-9163-4e3b-88cd-d7c2ffb280ab",
+   "term": "Patch bay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "926991bc-d7e2-4c51-855f-6c42585afb40",
+   "term": "Patch Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cb560c7b-08b5-4bfc-8d91-b0d41cd1e429",
+   "term": "Pattern control voltage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "21216011-bebe-4f0e-a57c-d97534623b03",
+   "term": "PCM (Pulse-Code Modulation)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4aa0c1bf-76ae-47a0-944e-51650bd32727",
+   "term": "Peak Detection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e53f1402-952e-4d52-ba70-a695a0ce258b",
+   "term": "Peak Hold",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6945358a-d68e-478c-9920-cfabc0754477",
+   "term": "Peak level",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d4658741-91c4-48e6-97b6-18bb4844f262",
+   "term": "Peaking Filter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "657ca967-7ca1-4884-abd2-0913e85ba40f",
+   "term": "Pendant Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "17dbeb1f-4250-449a-8426-38ca2e1f3079",
+   "term": "Performer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f643b86e-5add-44d8-a5ca-2a306616db2d",
+   "term": "Performer Safety",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cf7e0309-e1dc-4565-9df2-8134148848fe",
+   "term": "Period",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "37ca6af1-b916-48fb-aad4-54e64fb7ee3a",
+   "term": "Period-matched noise",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "91a93f40-4987-47a2-b94b-e23fffd356f8",
+   "term": "Personal Receiver",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3c0aff90-2d96-4e52-afd4-6fcfc37ac2e0",
+   "term": "PFL (Pre-Fade Listen)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8a334787-8dcb-455c-ae0a-112d83015398",
+   "term": "Phantom Power (+48V)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ab03becc-9fac-4714-82d9-38c9fc74ce47",
+   "term": "Phantom power fault",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eb3f8cab-9bb0-43a0-96b9-c64ecfb8c009",
+   "term": "Phantom-Powered Mic",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Medium",
+     "issue": "The entire entry is about phantom power feeding a condenser and the danger to ribbon mics, yet related_terms lists only tangential items (Electret Condenser, Microphone Element, Mic Output Impedance, Polar Pattern Switch, Dual-diaphragm capsule). None of the central concepts appear, so a learner cannot navigate from this entry to the parent concept it depends on.",
+     "suggestion": "Add the core neighbors 'Phantom Power (+48V)', 'Condenser Microphone', and 'Ribbon Microphone' (the last is referenced in every common_mistake). Drop one or two of the tangential entries (e.g. Mic Output Impedance, Polar Pattern Switch) to keep the map focused."
+    }
+   ]
+  },
+  {
+   "id": "a3004045-dce0-4e6d-9a51-f1149c4584a3",
+   "term": "Phase",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8046b5b0-bd9e-40c6-8634-bc61ba65a356",
+   "term": "Phase & polarity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d669246e-b753-4cfe-aedb-f7c27159bf24",
+   "term": "Phase Angle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a2364548-deaa-4b30-8104-7bc1395fd2df",
+   "term": "Phase cancellation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "223cf26d-c8f5-4313-96e4-58a0affc7fa2",
+   "term": "Phase Checker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "57e7072e-e30a-4d77-8f8a-f490a6a4d62f",
+   "term": "Phase inverter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "61b03977-2bb8-4304-9de0-b0b8198dd62a",
+   "term": "Phase Meter",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "'Goniometer' is listed twice in related_terms (duplicate list item).",
+     "suggestion": "Remove the duplicate 'Goniometer' so the list reads Correlation Meter, Goniometer, Phase Checker, Polarity Tester."
+    }
+   ]
+  }
+ ]
+}

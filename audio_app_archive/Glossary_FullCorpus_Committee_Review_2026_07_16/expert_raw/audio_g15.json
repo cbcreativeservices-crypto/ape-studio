@@ -1,0 +1,223 @@
+{
+ "expert": "audio",
+ "group": 15,
+ "reviews": [
+  {
+   "id": "3d649615-3041-4cc9-9ead-7579ca34502a",
+   "term": "Digital Console",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "514d7050-b55d-4703-87bf-bce380e8bb90",
+   "term": "Digital Delay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f0e95a92-dac7-443f-82e0-4ef629c6936f",
+   "term": "Digital Mixer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e9bcec3a-b4f5-4265-9a28-0e91bd293cc1",
+   "term": "Digital peak meter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0db0acbc-7062-4407-9451-8764b86385c2",
+   "term": "Digital Reverb",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "78d3c31f-5b58-42f6-ba9c-9d11f74838aa",
+   "term": "Digital Snake",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e896a8ab-9b11-4305-b60f-bb126684c44b",
+   "term": "Digital Wireless System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "59477f1e-5efe-4c96-b646-fec0725696e1",
+   "term": "DIN Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "265861af-f949-48bb-9b2f-e587c7364583",
+   "term": "DIN Size",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "17dba933-8dba-412d-a275-8fc1333c15a7",
+   "term": "Diode-Bridge Compressor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d03e4ec6-f1a6-4c97-801b-5f51615b92d3",
+   "term": "Dipole Antenna",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "06dd9061-3a84-498e-b5d5-98e3242dd27f",
+   "term": "Dirac Live",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ce9405b2-2ece-417c-9d85-382e0686ea9e",
+   "term": "Direct Audio Input",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a13b42d5-2ec1-41f4-a046-c7de3db2fcd0",
+   "term": "Direct Current (DC)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b051f7fb-bfe4-4ad4-96a7-f66e587bad48",
+   "term": "Direct Drive",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5b7db26e-8a43-4da0-84ee-ecc983fca7af",
+   "term": "Direct Output",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8f48250d-e6d9-46e6-a68b-dd29de15a07e",
+   "term": "Direct sound",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "779823de-6ce6-4791-b977-14fc048bb7df",
+   "term": "Direct-Burial Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cb82c25a-cb2d-4c69-93c2-e0da0c65ed60",
+   "term": "Direct-to-Reverberant Ratio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d4e05f5a-8dbc-4d8a-82c1-db175a7a90d7",
+   "term": "Directional Antenna",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1a54b04f-9927-44db-9bc0-f2ac5e7279ed",
+   "term": "Directivity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0a19d372-533c-4d41-9209-70e70d097ca2",
+   "term": "Dispersion",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8bdc86ba-1551-4641-ad9c-1f6c6522b06a",
+   "term": "DisplayPort",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2030b4bb-3a4a-4d22-99ac-a98087abf584",
+   "term": "Dissonance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f62fc1ed-05ff-4c60-9f4c-f96ec34400e9",
+   "term": "Distortion",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6d1e0c11-f63b-4f1d-8cd3-88b596275f32",
+   "term": "Distortion Analyzer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "547f5b8c-289b-4965-a175-0bf5b5df449a",
+   "term": "Distortion measurements",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "efcf95c9-c052-4182-b9cd-9e56469b6931",
+   "term": "Distributed Audio System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "10384c91-a5f9-4b4a-b934-003c9494d131",
+   "term": "distribution amplifier",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bef0e921-defb-400e-a40c-2d661c8301e6",
+   "term": "Distribution Block",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fc17a6c2-8c35-463e-89bd-80a7a1dd526d",
+   "term": "dither",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "18a5881c-4700-47ff-ab06-aad0845fc524",
+   "term": "Diversity Receiver",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "'Frequency Coordination' is listed twice in related_terms (duplicate list item): ['Bodypack Transmitter','Wireless Microphone Management','Frequency Coordination','Frequency Coordination','Microphone Plot'].",
+     "suggestion": "Remove the duplicate. Replace one instance with a distinct relevant term such as 'Multipath' or 'Antenna Distribution' to keep five useful related terms."
+    }
+   ]
+  },
+  {
+   "id": "d1fa9617-f2a8-4f2f-a6e4-8aaa22b44c09",
+   "term": "Diversity Reception",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "126b61fc-8278-4de1-8f9c-74450a0d366d",
+   "term": "Divide and conquer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c7aab280-6001-4aa8-a309-b0e7e87a58a2",
+   "term": "DJ Controller",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

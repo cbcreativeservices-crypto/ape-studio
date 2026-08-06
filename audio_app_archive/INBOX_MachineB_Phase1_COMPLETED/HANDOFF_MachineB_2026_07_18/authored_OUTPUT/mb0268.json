@@ -1,0 +1,159 @@
+{
+ "batch": 268,
+ "topic": "DAW Fundamentals & Session Management",
+ "authored": [
+  {
+   "id": "5eecded3-7c1d-4d04-abe8-70f726d9351d",
+   "term": "MIDI sequencing",
+   "fields": {
+    "definition": "The process of recording, editing, and arranging MIDI event data (notes, controllers, and timing) on a timeline so a sequencer or DAW can play it back through instruments. It captures performance instructions rather than audio, so pitch, timing, velocity, and instrument choice can all be changed after the fact.",
+    "plain_english": "MIDI sequencing records the notes you play as data, not as sound. It is like writing down music the computer can play back on any instrument you pick, and you can fix mistakes later.",
+    "purpose_function": "It lets a player capture a performance as editable data, so timing, pitch, and sounds can be reshaped freely and replayed precisely. It exists because storing performance instructions is far more flexible than recording finished audio.",
+    "practical_application": "A technician records a keyboard part into the DAW's piano roll, quantizes its timing, then assigns a virtual instrument to play it back.",
+    "category": "MIDI",
+    "related_terms": ["MIDI transform", "MIDI transpose", "Modulation-wheel data", "Quantize", "Piano roll", "Virtual instrument"],
+    "common_mistakes": ["Confusing MIDI data with audio; MIDI carries no sound, only instructions for an instrument.", "Forgetting to load or assign an instrument, so the sequenced part plays nothing.", "Over-quantizing until the performance loses its natural feel.", "Assuming velocity and pitch cannot be edited after recording."],
+    "scenario_contexts": ["Building a drum pattern by drawing notes into the piano roll.", "Recording a synth line from a keyboard and quantizing its timing.", "Editing a captured part's velocities to shape its dynamics."]
+   },
+   "sources": ["MIDI Association, MIDI 1.0 Detailed Specification", "Steinberg Cubase Operation Manual", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "957b3922-d282-4aa8-a19d-edc164dc642c",
+   "term": "MIDI transform",
+   "fields": {
+    "definition": "An editing function in a DAW or sequencer that applies user-defined rules to select and modify MIDI events in batch, changing properties such as pitch, velocity, length, or position. Common implementations include Logic's Transform window and Cubase's Logical Editor.",
+    "plain_english": "MIDI transform changes many notes at once using rules you set. It is like find-and-replace for your notes, so you can reshape a whole part in one step.",
+    "purpose_function": "It automates repetitive or conditional edits across many events, so a technician can reshape data quickly and consistently instead of editing note by note. It exists to speed up and standardize complex MIDI edits.",
+    "practical_application": "An engineer uses a transform to add a fixed amount to the velocity of every note above a chosen pitch, or to convert one controller type into another.",
+    "category": "MIDI",
+    "related_terms": ["MIDI sequencing", "MIDI transpose", "Modulation-wheel data", "Quantize", "Velocity", "Piano roll"],
+    "common_mistakes": ["Applying the transform to the whole track when only a selection was intended.", "Not previewing the rule, so unwanted events get changed.", "Confusing a rule-based batch transform with simple manual editing.", "Forgetting the operation can be undone rather than editing destructively."],
+    "scenario_contexts": ["Scaling all note velocities up by a set amount.", "Converting modulation-wheel data to a different controller number.", "Selecting and shortening every note longer than a set length."]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (Logical Editor)", "Apple Logic Pro User Guide (Transform window)", "MIDI Association, MIDI 1.0 Detailed Specification"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "39042842-2545-4085-a545-b53a68ac56a3",
+   "term": "MIDI transpose",
+   "fields": {
+    "definition": "A MIDI edit that shifts the pitch of note events up or down by a set number of semitones or octaves, without changing their timing or other data. It can be applied in real time as a playback parameter or written destructively into the recorded events.",
+    "plain_english": "MIDI transpose moves your notes higher or lower in pitch by a set number of steps. It is like using a capo on a guitar, changing the key without replaying the part.",
+    "purpose_function": "It lets a part move to a new key or octave instantly, so material can fit a singer's range or a new arrangement. It exists because changing pitch by data is faster and cleaner than re-performing the part.",
+    "practical_application": "A technician transposes a bass MIDI part down an octave to suit a virtual instrument, or shifts a whole song up two semitones for a vocalist.",
+    "category": "MIDI",
+    "related_terms": ["MIDI sequencing", "MIDI transform", "Modulation-wheel data", "Quantize", "Velocity", "Virtual instrument"],
+    "common_mistakes": ["Transposing so far that notes fall outside an instrument's playable range.", "Confusing MIDI transpose, which changes note data, with audio pitch-shifting, which changes recorded sound.", "Leaving a real-time transpose active and forgetting it when bouncing the mix.", "Transposing by octaves when semitones were meant, or the reverse."],
+    "scenario_contexts": ["Moving a song up a semitone to match a singer's range.", "Dropping a synth bass part down an octave.", "Auditioning a melody in different keys while arranging."]
+   },
+   "sources": ["MIDI Association, MIDI 1.0 Detailed Specification", "Steinberg Cubase Operation Manual", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b2c49593-c351-4ff6-939a-abb8e7eb4bf5",
+   "term": "Mirror recording drive",
+   "fields": {
+    "definition": "A storage drive that receives a real-time duplicate copy of recorded data as it is written to the primary drive, giving redundancy against drive failure during a session. The concept follows disk mirroring (RAID 1), where identical data is written to two drives at the same time.",
+    "plain_english": "A mirror recording drive keeps a second, live copy of everything you record. It is like writing the same notes in two notebooks at once, so if one is lost you still have the other.",
+    "purpose_function": "It protects irreplaceable takes by holding an instant duplicate, so a single drive failure does not lose the recording. It exists because live and studio takes often cannot be re-performed.",
+    "practical_application": "An engineer sets a multitrack recorder or system to write each take to a main drive and a mirror drive, so a failure during a concert does not lose the show.",
+    "category": "Storage & Backup",
+    "related_terms": ["Network-attached storage", "Off-site archive", "Offline archive", "RAID", "Backup", "Session file"],
+    "common_mistakes": ["Assuming a mirror replaces backups; it copies deletions and corruption too.", "UNSAFE: Trusting one mirror as the only safeguard for irreplaceable live recordings with no separate archive.", "Using a slower drive as the mirror and causing recording dropouts.", "Thinking mirroring protects against accidental file deletion, which it does not."],
+    "scenario_contexts": ["Recording a one-off live concert with a redundant mirror drive.", "Tracking an expensive session where a lost take cannot be repeated.", "Field recording where drive reliability is uncertain."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Ballou, Handbook for Sound Engineers", "SNIA Dictionary (disk mirroring / RAID 1)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "979d9565-2514-4fa8-a4fc-534284942311",
+   "term": "Modulation-wheel data",
+   "fields": {
+    "definition": "MIDI Continuous Controller number 1 (CC1) messages generated by a keyboard's modulation wheel, carrying values from 0 to 127 that an instrument maps to a modulation effect such as vibrato or filter depth. It is a stream of controller events recorded and edited alongside note data.",
+    "plain_english": "Modulation-wheel data is the stream of values sent when you move a keyboard's mod wheel. It usually adds effects like vibrato, and the DAW records it as a line you can redraw.",
+    "purpose_function": "It lets a player add expressive, changing effects to a sound over time, and lets the DAW store and replay those moves. It exists to give MIDI performances continuous, hands-on expression beyond note on and off.",
+    "practical_application": "A technician records mod-wheel moves to add vibrato to a string patch, then redraws the CC1 line in the editor to smooth it.",
+    "category": "MIDI",
+    "related_terms": ["MIDI sequencing", "MIDI transform", "MIDI transpose", "Continuous controller", "Pitch bend", "Virtual instrument"],
+    "common_mistakes": ["Confusing modulation (CC1) with pitch-bend, which is a separate MIDI message.", "Assuming the mod wheel always does vibrato; its effect depends on how the patch maps it.", "Leaving a stray high CC1 value at a part's start, so the sound is over-modulated.", "Forgetting mod-wheel data is editable as controller data after recording."],
+    "scenario_contexts": ["Adding vibrato swells to a sustained synth pad.", "Editing recorded CC1 data to remove an abrupt jump.", "Mapping the mod wheel to filter cutoff on a lead sound."]
+   },
+   "sources": ["MIDI Association, MIDI 1.0 Detailed Specification (Control Change / CC1)", "Steinberg Cubase Operation Manual", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4d95931c-71b9-479f-baad-b04678483e44",
+   "term": "Network-attached storage",
+   "fields": {
+    "definition": "A dedicated file-storage device attached to a network that provides shared storage to multiple clients over standard protocols such as SMB or NFS. In audio work it centralizes session files and media for several workstations, though throughput and latency limits usually make it better suited to backup and file sharing than to streaming an active session drive.",
+    "plain_english": "Network-attached storage, or NAS, is a shared drive box that many computers reach over the network. Think of it as a shared filing cabinet for the studio. It is handy for backups and for moving files between rooms.",
+    "purpose_function": "It gives a team one central, shared place to store and back up sessions and media, reachable from multiple rooms. It exists to centralize storage and simplify collaboration and backup.",
+    "practical_application": "A studio keeps finished sessions and stems on a NAS so any room can pull them, while active recording still runs from a fast local drive.",
+    "category": "Storage & Backup",
+    "related_terms": ["Off-site archive", "Offline archive", "Mirror recording drive", "RAID", "Backup", "Session file"],
+    "common_mistakes": ["Recording an active, high-track-count session directly off a NAS and hitting throughput or latency problems.", "Assuming a NAS with RAID is a backup; redundancy is not a backup.", "Ignoring network bandwidth limits when several rooms access it at once.", "Leaving the only copy of a session on one NAS with no separate archive."],
+    "scenario_contexts": ["Centralizing a facility's session library for shared access.", "Backing up completed projects from several edit rooms.", "Sharing stems between a tracking room and a mix room."]
+   },
+   "sources": ["SNIA Dictionary (network-attached storage)", "Avid Pro Tools Reference Guide (storage requirements)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "68947af1-0b29-4c4f-8291-3ce35fd7d690",
+   "term": "Normal (record mode)",
+   "fields": {
+    "definition": "The default, nondestructive recording mode in a DAW (notably Pro Tools) in which each new take is written as a new audio file and clip, so existing recorded material is not overwritten or erased. It contrasts with Destructive, Loop, and QuickPunch record modes.",
+    "plain_english": "Normal record mode is the standard, safe way to record. New takes are saved as new files, so recording again does not erase what you already had.",
+    "purpose_function": "It captures takes without destroying earlier audio, so any take can be recovered from playlists or the file pool. It exists as the safe default, so an accidental re-record does not lose data.",
+    "practical_application": "A technician tracks vocals in Normal mode, records several passes as separate takes, then comps the best parts without any original audio being erased.",
+    "category": "Recording",
+    "related_terms": ["Destructive record", "Loop record", "QuickPunch", "Punch recording", "Playlist", "Take"],
+    "common_mistakes": ["Confusing Normal (nondestructive) mode with Destructive record, which overwrites the file.", "Assuming Normal mode punches or loops automatically; it does neither.", "Recording over a clip and thinking the old audio is gone, when it remains as a file.", "Not realizing accumulated takes keep filling the drive with new files."],
+    "scenario_contexts": ["Tracking multiple vocal takes to comp later.", "Standard overdubbing where earlier audio must be preserved.", "Recording a band's session where every take must be kept."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Record Modes)", "Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0a3baf37-825c-4494-8ad0-349bc766ac9c",
+   "term": "Off-site archive",
+   "fields": {
+    "definition": "A stored copy of session data kept at a physically separate location from the studio, protecting against local disasters such as fire, theft, or flood. It is a core part of a 3-2-1 backup strategy: multiple copies, on two media types, with one copy off-site.",
+    "plain_english": "An off-site archive is a copy of your work kept somewhere away from the studio. It is like leaving a spare key at a friend's house, so a fire or theft at the studio cannot destroy everything.",
+    "purpose_function": "It ensures projects survive a disaster that destroys the studio's local copies, so work is not lost with the building. It exists to guard against site-wide risks that on-site backups cannot cover.",
+    "practical_application": "A studio copies finished projects to a drive or cloud service held in another building, following a 3-2-1 backup plan.",
+    "category": "Storage & Backup",
+    "related_terms": ["Offline archive", "Network-attached storage", "Mirror recording drive", "Backup", "Cloud storage", "Session file"],
+    "common_mistakes": ["Keeping every copy in the same room, so one disaster loses them all.", "Confusing off-site (a separate location) with offline (disconnected media).", "Never testing that the off-site copy actually restores.", "Assuming a single off-site copy is enough without verifying it."],
+    "scenario_contexts": ["Storing project backups in a second building or the cloud.", "Protecting a facility's masters against fire or theft.", "Meeting a client's disaster-recovery requirement for deliverables."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Avid Pro Tools Reference Guide (backup practices)", "CISA / US-CERT 3-2-1 backup guidance"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c3bd09a1-c3c9-4c87-94ca-f4ed966a0a3a",
+   "term": "Offline archive",
+   "fields": {
+    "definition": "An archive stored on media disconnected from any computer or network (cold storage), such as LTO tape or shelved hard drives, so it cannot be altered, infected, or deleted while offline. It preserves completed projects long-term at low cost and low risk.",
+    "plain_english": "An offline archive is a copy kept on media that is unplugged and stored away. Nothing can reach it while it is disconnected. Viruses and slips of the mouse cannot delete it, like a book locked in a safe.",
+    "purpose_function": "It preserves finished work safely for the long term and shields it from ransomware, deletion, or drive wear that affects connected storage. It exists for durable, low-risk long-term retention.",
+    "practical_application": "A facility writes completed albums to LTO tape and shelves the cartridges, pulling one back online only when a project must be revisited.",
+    "category": "Storage & Backup",
+    "related_terms": ["Off-site archive", "Network-attached storage", "Mirror recording drive", "Backup", "Session file", "Cloud storage"],
+    "common_mistakes": ["Confusing offline (disconnected media) with off-site (a separate location).", "Leaving the archive drive connected, so it is not truly offline.", "Never verifying the archive can be read back.", "Assuming spinning hard drives last indefinitely without periodic checks."],
+    "scenario_contexts": ["Writing completed projects to LTO tape for cold storage.", "Shelving disconnected drives that hold finished masters.", "Long-term retention of delivered projects for later recall."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "LTO Program technical documentation", "Avid Pro Tools Reference Guide (archiving)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

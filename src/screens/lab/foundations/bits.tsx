@@ -17,6 +17,7 @@
 import { useRef, useState } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
+import { levelColor } from '../../../features/tools/levelColor';
 import { useScrollLock } from '../LabShell';
 
 export type CheckSpec = {
@@ -92,6 +93,8 @@ export function DragSlider({
   readout,
   onHelp,
   onDragActive,
+  tint,
+  levelTint,
 }: {
   value: number; // 0..1
   onChange: (v: number) => void;
@@ -102,7 +105,13 @@ export function DragSlider({
   /** Fires true on drag start, false on release/terminate — for hosts that
    *  are NOT under a LabShell/ScrollLockProvider and wire their own lock. */
   onDragActive?: (active: boolean) => void;
+  /** Accent colour for the fill / thumb / readout (defaults to amber). */
+  tint?: string;
+  /** LEVEL sliders (owner 2026-08-05): colour the moving fill/thumb by the MIDI
+   *  amplitude ramp — blue at the low end → red at max. Overrides `tint`. */
+  levelTint?: boolean;
 }) {
+  const accent = levelTint ? levelColor(value) : tint;
   const [w, setW] = useState(0);
   const wRef = useRef(0);
   wRef.current = w;
@@ -148,7 +157,7 @@ export function DragSlider({
             </Pressable>
           ) : null}
         </View>
-        {readout ? <Text style={styles.sliderReadout}>{readout}</Text> : null}
+        {readout ? <Text style={[styles.sliderReadout, accent ? { color: accent } : null]}>{readout}</Text> : null}
       </View>
       <View
         style={styles.sliderTrackWrap}
@@ -160,8 +169,14 @@ export function DragSlider({
             report thumb-local coords and snap the value toward 0. Making the
             children transparent keeps the wrap itself the touch target. */}
         <View pointerEvents="none" style={styles.sliderTrack} />
-        <View pointerEvents="none" style={[styles.sliderFill, { width: `${value * 100}%` }]} />
-        <View pointerEvents="none" style={[styles.sliderThumb, { left: Math.max(0, value * w - 9) }]} />
+        <View
+          pointerEvents="none"
+          style={[styles.sliderFill, { width: `${value * 100}%` }, accent ? { backgroundColor: accent, opacity: 0.85 } : null]}
+        />
+        <View
+          pointerEvents="none"
+          style={[styles.sliderThumb, { left: Math.max(0, value * w - 9) }, accent ? { backgroundColor: accent } : null]}
+        />
       </View>
     </View>
   );
@@ -213,16 +228,16 @@ export function ConceptBadge({ extra }: { extra?: string }) {
 }
 
 const styles = StyleSheet.create({
-  // CheckQuestion
+  // CheckQuestion — PURPLE container + eyebrow (owner 2026-08-05).
   checkCard: {
     gap: 9,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255,198,77,.4)',
-    backgroundColor: '#17140c',
+    borderColor: 'rgba(180,91,255,.5)',
+    backgroundColor: '#140f1a',
     padding: 12,
   },
-  checkEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.4, color: colors.amber },
+  checkEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.4, color: '#c98bff' },
   checkQuestion: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 20, color: colors.textPrimary },
   checkOpt: {
     borderRadius: 8,
@@ -235,9 +250,9 @@ const styles = StyleSheet.create({
   checkOptGood: { borderColor: 'rgba(55,224,95,.7)', backgroundColor: '#0e130f' },
   checkOptBad: { borderColor: 'rgba(255,80,70,.7)', backgroundColor: '#161010' },
   checkOptText: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18, color: colors.textSecondary },
-  checkOptTextGood: { color: '#5bff85' },
+  checkOptTextGood: { color: '#37e05f' },
   checkOptTextBad: { color: '#ff6b5e' },
-  checkReveal: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: '#5bff85' },
+  checkReveal: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: '#37e05f' },
   checkHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: '#ff8d7a' },
 
   // DragSlider
@@ -261,7 +276,7 @@ const styles = StyleSheet.create({
   // LevelMeterBar
   meterLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSecondary },
   meterTrack: { height: 10, borderRadius: 5, backgroundColor: '#1c1c22', overflow: 'hidden' },
-  meterFill: { height: 10, backgroundColor: '#5bff85', opacity: 0.85 },
+  meterFill: { height: 10, backgroundColor: '#37e05f', opacity: 0.85 },
 
   // VizUnavailableCard
   unavailCard: {

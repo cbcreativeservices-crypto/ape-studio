@@ -1,0 +1,159 @@
+{
+ "batch": 10,
+ "topic": "Instrument Recording — Strings & Guitar",
+ "authored": [
+  {
+   "id": "5b3bf15f-322e-4c64-8c28-a7bd98199526",
+   "term": "Pizzicato attack",
+   "fields": {
+    "definition": "The sharp, percussive onset transient of a note produced by plucking a string instrument (pizzicato) rather than bowing it; the finger releases the string impulsively, giving a very fast rise time and an initial burst rich in high-frequency content that decays quickly into the note's short sustain.",
+    "plain_english": "It is the quick, snappy 'pop' you hear at the very start of a plucked string note, like when a violinist plucks the string instead of using the bow.",
+    "purpose_function": "It defines the character, clarity and articulation of a plucked string note, so capturing it faithfully is what makes pizzicato sound present and defined in a recording rather than dull.",
+    "practical_application": "When tracking pizzicato strings, engineers leave extra headroom and set converter and limiter levels for the transient peak, which sits well above the note's sustained level, and choose mic placement that preserves the fast attack.",
+    "category": "String articulation",
+    "related_terms": ["Pluck transient", "Transient", "Attack", "Sustain", "Pizzicato"],
+    "common_mistakes": ["Setting record levels by the sustained note and then clipping the much louder attack transient", "Using heavy compression with a slow attack that dulls the pluck and makes pizzicato sound soft and lifeless", "Treating the whole note as 'the attack' — the pizzicato attack is only the first few milliseconds of onset"],
+    "scenario_contexts": ["Tracking a string quartet's pizzicato passage and needing headroom for transient peaks", "Editing a sampled string library so each pizzicato attack starts cleanly without a click", "Mixing a track where plucked strings must cut through without over-compressing the transient"]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Fletcher & Rossing, The Physics of Musical Instruments", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "866d8ede-910a-4c0a-bfbc-ff1e396fd582",
+   "term": "Pluck transient",
+   "fields": {
+    "definition": "The brief, high-amplitude burst of energy at the onset of a plucked-string note (guitar, bass, harp, harpsichord, pizzicato strings), produced when the released string snaps into vibration; it has a very fast rise time and broadband, predominantly high-frequency content that decays within milliseconds into the steady tone.",
+    "plain_english": "It is the quick, bright 'snap' at the front of every plucked note, before the note settles into its ringing tone.",
+    "purpose_function": "This transient carries much of a plucked instrument's attack, definition and perceived articulation, so preserving it keeps the instrument sounding clear and punchy rather than soft.",
+    "practical_application": "Technicians pick fast-transient mics, leave adequate headroom, and set compressor attack times deliberately so the pluck transient is captured or shaped on purpose instead of being smeared or clipped.",
+    "category": "Transient response",
+    "related_terms": ["Pizzicato attack", "Transient", "Attack", "Headroom", "Compression"],
+    "common_mistakes": ["Setting input gain by the sustained note and clipping the converter on the transient peak", "Choosing a compressor attack time carelessly, so a fast attack kills the snap or a slow attack lets the peak through then squashes the body", "Assuming the transient is unwanted noise and filtering it out, which removes attack definition and note clarity"],
+    "scenario_contexts": ["Recording fingerstyle acoustic guitar where the pick or nail attack defines the performance", "Tracking electric bass through a DI and judging headroom for slap-and-pop transients", "Setting a limiter on a harp or harpsichord take to tame peaks without dulling the attack"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7fba5240-6153-4811-b1c5-1e4e6c38a75c",
+   "term": "Plunger mute",
+   "fields": {
+    "definition": "A shallow, cup-shaped brass mute — historically the rubber cup of a plumber's/sink plunger — held by hand over the bell of a trumpet or trombone and moved toward and away from the bell to open and close the sound, producing the characteristic 'wah-wah' or vocal, talking effect.",
+    "plain_english": "It is a rubber cup, like the top of a sink plunger, that a brass player holds over the bell and waggles to make the classic 'wah-wah' talking sound.",
+    "purpose_function": "It lets a brass player continuously vary tone colour and volume by hand, creating expressive open-and-closed (wah) effects rather than one fixed muted timbre.",
+    "practical_application": "In the studio, engineers mic the bell a little further back and off-axis than usual because the hand motion changes level and directivity, and they may ride gain to even out the wah effect.",
+    "category": "Brass mute",
+    "related_terms": ["Practice mute", "Harmon mute", "Cup mute", "Straight mute", "Bell"],
+    "common_mistakes": ["Confusing the plunger with the Harmon (wah-wah) mute — the plunger is hand-held over the bell, the Harmon fits inside the bell", "Miking too close and on-axis, so the level jumps drastically as the player closes the plunger", "Marking only 'muted' and omitting the open and closed (o / +) symbols the plunger technique needs"],
+    "scenario_contexts": ["Recording a jazz or big-band trumpet or trombone 'wah' solo", "Reproducing an early-jazz 'growl' brass style in a session", "Live-miking a horn section where a player switches to plunger for a chorus"]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Baines, Brass Instruments: Their History and Development", "The New Grove Dictionary of Musical Instruments"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fbc6327e-ef36-456f-af17-359e45e33c19",
+   "term": "Pole-piece adjustment",
+   "fields": {
+    "definition": "On electric guitar and bass pickups fitted with adjustable pole pieces (individual magnetic slugs or threaded screws under each string), the act of raising or lowering each pole piece to set its magnetic sensing distance to that string, evening out string-to-string output and shaping tone.",
+    "plain_english": "It is turning or raising the little metal studs under each string on a pickup so every string comes through at a matched volume.",
+    "purpose_function": "It corrects uneven string-to-string loudness caused by string gauge, fretboard radius and pickup position, giving a balanced output across the neck.",
+    "practical_application": "A tech sets overall pickup height first, then, on pickups with adjustable poles, tweaks individual pole pieces (often roughly following the fretboard radius) while playing each string, checking that no pole sits so close it disturbs the string.",
+    "category": "Pickup setup",
+    "related_terms": ["Pickup height", "Single-coil pickup", "Humbucker", "String action", "Fretboard radius"],
+    "common_mistakes": ["Setting the pole pieces or whole pickup too close to the strings, whose magnetic pull dampens vibration and causes warbling, false overtones and intonation problems, worst on the low strings", "Adjusting pole pieces to fix a volume imbalance that is actually caused by uneven pickup height or setup", "Trying to force fixed, non-adjustable pole pieces, risking damage to the pickup"],
+    "scenario_contexts": ["Balancing string output after a guitarist switches to a different string gauge", "Evening out a Strat-style bridge single-coil that sounds thin on the high E", "Setting up a bass so the D and G strings match the E and A in level"]
+   },
+   "sources": ["Fender electric guitar setup and adjustment technical documentation", "Seymour Duncan pickup installation and height/pole-piece adjustment documentation", "Fletcher & Rossing, The Physics of Musical Instruments"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dcfb442d-31bd-4512-a20d-6c6d48b64a1a",
+   "term": "Practice mute",
+   "fields": {
+    "definition": "A heavy, sound-damping mute designed to reduce an instrument's output to a very low level for quiet practice, prioritising volume reduction over tone quality; on brass it is a dense mute that seals much of the bell, and on bowed strings it is a heavy metal or rubber-covered mute clamped onto the bridge.",
+    "plain_english": "It is a heavy mute you fit to a brass or string instrument so you can practise quietly without disturbing others, at the cost of the instrument's normal tone.",
+    "purpose_function": "It exists purely to let a player rehearse fingering, articulation and endurance quietly, such as in a hotel or apartment, where full volume is not possible.",
+    "practical_application": "Players and techs know practice mutes are not for recording or performance because they choke the tone and raise blowing or bowing resistance, and many brass practice mutes also push the pitch sharp.",
+    "category": "Instrument mute",
+    "related_terms": ["Plunger mute", "Straight mute", "Sordino", "Bridge", "Mute"],
+    "common_mistakes": ["Using a practice mute as a performance or recording mute — it deadens the tone and is not meant to be heard", "On brass, ignoring that a tight practice mute raises back-pressure and typically pushes pitch sharp", "Over-tightening a heavy metal string practice mute onto the bridge, risking bridge damage"],
+    "scenario_contexts": ["A trumpeter practising quietly in a hotel room", "A violinist warming up backstage without disturbing others", "A student doing late-night endurance and technique drills in an apartment"]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Baines, Brass Instruments: Their History and Development", "The New Grove Dictionary of Musical Instruments"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "99df89f7-2311-44ab-bcaf-1c09f95efa73",
+   "term": "Principal stop",
+   "fields": {
+    "definition": "On a pipe organ, the Principal (also called Diapason) is the foundational family of open, cylindrical flue stops that produces the organ's characteristic, distinctly 'organ-like' tone — neither flute-like nor string-like; principals of different pitches together form the 'principal chorus' that is the backbone of the organ's sound.",
+    "plain_english": "It is the classic core 'organ' sound — the main set of pipes that give an organ its signature voice, as opposed to the softer flute or thinner string sounds.",
+    "purpose_function": "The principal chorus provides the organ's tonal foundation and blend, the reference sound against which flutes, strings and reeds are balanced.",
+    "practical_application": "When recording or reinforcing an organ, engineers treat the principal chorus as the core body of the sound and place main mics to capture its blend in the room, since it carries the fundamental weight of the instrument.",
+    "category": "Organ stop",
+    "related_terms": ["Registration", "Diapason", "Flue pipe", "Rank", "Register switch"],
+    "common_mistakes": ["Confusing the Principal (diapason) with flute stops — principals have a fuller, more focused 'organ' tone", "Assuming 8' is the only principal pitch; principals exist at 16', 8', 4', 2' and within mixtures", "Treating 'principal' as one pipe rather than a whole rank spanning the keyboard"],
+    "scenario_contexts": ["Choosing the principal chorus as the foundation when registering a hymn accompaniment", "Placing main mics to capture a pipe organ's diapason chorus in a cathedral", "Balancing an organ's principals against added reeds for a full 'plenum' sound"]
+   },
+   "sources": ["Audsley, The Art of Organ Building", "The New Grove Dictionary of Music and Musicians (organ stops)", "Adler, The Study of Orchestration"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ef75a95b-6c7d-4498-882f-411a02b6af9c",
+   "term": "Register key",
+   "fields": {
+    "definition": "On a woodwind instrument, a key that opens a small vent (register or speaker hole) to help the air column overblow to a higher register; on the clarinet the register (speaker) key sounds a twelfth higher, while on oboe, bassoon and saxophone the equivalent octave key or keys sound an octave higher.",
+    "plain_english": "It is the key, usually for the left thumb, that a woodwind player presses to jump a note up into the instrument's higher register.",
+    "purpose_function": "It destabilises the fundamental so the pipe more readily sounds a higher harmonic, extending the instrument's range beyond its lowest register.",
+    "practical_application": "Players and repair techs check that the register-key vent seals when closed and opens fully when pressed, since a leaking or misadjusted register key causes squeaks, poor response and tuning problems in the upper register.",
+    "category": "Woodwind key",
+    "related_terms": ["Register switch", "Octave key", "Tone hole", "Overblowing", "Pad"],
+    "common_mistakes": ["Calling the clarinet's register key an 'octave key' — it produces a twelfth, not an octave", "Blaming squeaks solely on embouchure when a leaking register-key pad is the real cause", "Overlooking that a bent or misadjusted register vent throws the whole upper register out of tune"],
+    "scenario_contexts": ["A clarinettist crossing the 'break' from the chalumeau into the clarion register", "A repair tech regulating and re-padding a leaking register or speaker key", "A saxophonist using the automatic octave mechanism to reach the upper octave"]
+   },
+   "sources": ["Baines, Woodwind Instruments and Their History", "Adler, The Study of Orchestration", "Fletcher & Rossing, The Physics of Musical Instruments"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f6d924f4-dbec-4daf-8081-5969960e1ef6",
+   "term": "Register switch",
+   "fields": {
+    "definition": "A switch, tab, slide or coupler that selects which set(s) of reeds or pipes (registers, or ranks) sound on an instrument, changing its timbre and/or octave; it is most familiar as the register switches (couplers) on accordions and harmoniums and as the register tabs on organs, which turn ranks on and off.",
+    "plain_english": "It is a button or lever that turns different sets of reeds or pipes on and off to change an instrument's sound or octave, like the tabs on an accordion.",
+    "purpose_function": "It lets a player instantly reconfigure the instrument's voice — brighter, mellower, or shifted an octave — without changing fingering, by combining or isolating registers.",
+    "practical_application": "When miking an accordion or organ, engineers note that engaging different register switches changes both the frequency content and the level, so they re-check tone and gain as registrations change.",
+    "category": "Register control",
+    "related_terms": ["Register key", "Registration", "Principal stop", "Coupler", "Rank"],
+    "common_mistakes": ["Confusing a register switch (which selects whole ranks) with a woodwind register key (which vents a single note up)", "Assuming register switches only change octave — many change timbre by adding or removing reed or pipe ranks", "On accordion, forgetting that changing registers mid-performance shifts level and tone, affecting mic balance"],
+    "scenario_contexts": ["An accordionist switching from a single-reed 'clarinet' register to a full 'musette'", "Selecting register tabs on a combo or electronic organ for a given song", "Balancing mics on a harmonium as the player changes register stops"]
+   },
+   "sources": ["The New Grove Dictionary of Musical Instruments (accordion, harmonium)", "Audsley, The Art of Organ Building"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b112f458-a434-4505-8364-4e525413cd58",
+   "term": "Registration",
+   "fields": {
+    "definition": "In organ (and by extension harpsichord and accordion) playing, registration is the art and act of selecting and combining an instrument's stops (registers) to produce a desired tone colour, volume and pitch for a piece or passage; it also names the specific combination of stops chosen.",
+    "plain_english": "It is choosing which stops — sets of pipes or reeds — to switch on to get the sound you want from an organ for a particular piece.",
+    "purpose_function": "It gives the organist control over timbre and dynamics on an instrument that has no touch-sensitive volume, by combining ranks rather than by playing harder or softer.",
+    "practical_application": "Organists mark registration changes in the score and use preset combination pistons to switch quickly, and engineers recording an organ follow those changes because they alter the captured frequency balance and level.",
+    "category": "Organ technique",
+    "related_terms": ["Principal stop", "Register switch", "Stop", "Coupler", "Diapason"],
+    "common_mistakes": ["Confusing registration (the selection of stops) with 'register' (a pitch range of the instrument)", "Assuming louder registration just means more stops — balance and blend matter more than sheer number", "Ignoring that adding high-pitched stops such as mixtures changes brightness, not just volume"],
+    "scenario_contexts": ["An organist setting combination pistons before a recital for quick registration changes", "Choosing a soft flute registration for an accompaniment versus full organ for a final hymn verse", "A recording engineer tracking registration changes that shift the organ's spectral balance"]
+   },
+   "sources": ["Audsley, The Art of Organ Building", "The New Grove Dictionary of Music and Musicians", "Adler, The Study of Orchestration"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

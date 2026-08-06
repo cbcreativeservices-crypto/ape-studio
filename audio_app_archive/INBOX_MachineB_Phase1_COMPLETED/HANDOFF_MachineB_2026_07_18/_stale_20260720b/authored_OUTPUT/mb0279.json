@@ -1,0 +1,159 @@
+{
+ "batch": 279,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "5a7d3b4d-ab00-4023-9a5f-1e9e9bba42da",
+   "term": "Oscillator mix",
+   "fields": {
+    "definition": "The relative level balance between two or more oscillators within a single synthesizer voice, setting how much each oscillator contributes to the combined signal before it reaches the filter and amplifier stages.",
+    "plain_english": "A control that sets how loud each sound source is inside a synth. Like a tiny mixer, it blends two or more tone generators into one sound.",
+    "purpose_function": "It lets a synth blend the timbres of several oscillators, so one patch can combine different waveforms or tunings into a single richer tone.",
+    "practical_application": "A sound designer adjusts the oscillator mix to favor a bright saw over a softer sub oscillator, dialing in the body and edge of a bass or lead patch.",
+    "category": "Oscillator control",
+    "related_terms": ["Oscillator spread", "Oscillator octave", "Waveform", "Detune", "Filter"],
+    "common_mistakes": ["Assuming the mix control changes tuning or pitch rather than only the level balance", "Turning one oscillator fully off and forgetting it, then blaming the filter for a thin sound", "Confusing oscillator mix with the master output level of the whole voice"],
+    "scenario_contexts": ["Blending a saw and a square oscillator for a fuller analog-style lead", "Balancing a sub oscillator under a main oscillator for a solid bass", "Crossfading between two oscillators to morph a pad's character"]
+   },
+   "sources": ["Sound on Sound, Synth Secrets series", "Roads, The Computer Music Tutorial", "Xfer Records Serum user manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "eb912ce7-5d13-4897-b3b9-81d1922cc148",
+   "term": "Oscillator modulation matrix",
+   "fields": {
+    "definition": "A routing grid in a synthesizer that assigns modulation sources such as LFOs, envelopes, and controllers to oscillator parameters like pitch, level, phase, and waveshape, each with an adjustable modulation depth.",
+    "plain_english": "A grid that connects control signals to a synth's tone generators. You pick a source, pick what it changes on the oscillator, then set how strong the change is.",
+    "purpose_function": "It gives flexible, freely assignable control over how oscillators change through time, so one synth can create motion and expression without fixed wiring.",
+    "practical_application": "A programmer routes an envelope to oscillator pitch and an LFO to oscillator level in the matrix, building an evolving lead without touching a patch cable.",
+    "category": "Oscillator control",
+    "related_terms": ["Oscillator pitch envelope", "LFO", "Envelope", "Oscillator mix", "Modulation depth"],
+    "common_mistakes": ["Leaving a modulation depth at zero and expecting to still hear the effect", "Routing several sources to the same destination and losing track of why the pitch drifts", "Confusing the modulation source with the destination when filling in a row"],
+    "scenario_contexts": ["Assigning an LFO to oscillator pitch to add vibrato", "Routing a velocity signal to oscillator level for dynamic patches", "Stacking several oscillator modulations to build an evolving texture"]
+   },
+   "sources": ["Sound on Sound, Synth Secrets series", "Xfer Records Serum user manual", "Native Instruments Massive operation manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5d60aa2d-e6fc-49f2-aaab-a54d1dba1fdb",
+   "term": "Oscillator octave",
+   "fields": {
+    "definition": "A coarse tuning control that transposes an oscillator's pitch up or down in whole-octave steps, each step doubling or halving the frequency, without changing the note played on the keyboard.",
+    "plain_english": "A switch that moves a synth's tone up or down by whole octaves. Each step doubles or halves the pitch, so the same key sounds higher or lower.",
+    "purpose_function": "It lets oscillators be stacked at different octaves for a fuller sound, or shifts a patch into a usable range for bass or lead parts.",
+    "practical_application": "A player sets one oscillator an octave below another to thicken a lead, or drops an oscillator two octaves to build a deep bass patch.",
+    "category": "Oscillator tuning",
+    "related_terms": ["Oscillator semitone", "Detune", "Oscillator mix", "Waveform", "Unison"],
+    "common_mistakes": ["Confusing the octave control, which moves in whole octaves, with semitone or fine detune tuning", "Forgetting that an octave shift moves the whole keyboard range, not just one note", "Shifting so far that the sound leaves the useful audible range"],
+    "scenario_contexts": ["Setting oscillators an octave apart for a rich stacked lead", "Dropping an oscillator an octave for a sub-heavy bass", "Matching a synth's octave to another instrument's range"]
+   },
+   "sources": ["Sound on Sound, Synth Secrets series", "Moog Subsequent 37 manual", "Roads, The Computer Music Tutorial"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bf739f74-3cc1-4614-9e9a-e180dc146d56",
+   "term": "Oscillator phase reset",
+   "fields": {
+    "definition": "A function that forces an oscillator's waveform to restart from a fixed point in its cycle, usually at note-on, so each note begins at the same phase instead of at a free-running position.",
+    "plain_english": "A setting that makes a synth's wave start at the same spot every time you play a note. It keeps each note's beginning steady instead of random.",
+    "purpose_function": "It gives repeatable attacks and predictable phase relationships between oscillators, which matters for tight transients and consistent layering.",
+    "practical_application": "A sound designer turns on phase reset so a plucky bass has the same punchy attack on every note instead of a slightly different click each time.",
+    "category": "Oscillator control",
+    "related_terms": ["Oscillator stereo phase", "Phase modulation", "Waveform", "Oscillator mix", "Transient"],
+    "common_mistakes": ["Leaving phase reset off, then wondering why bass attacks sound inconsistent", "Assuming phase reset changes the timbre rather than only the start point", "Turning reset on for every oscillator and losing the natural width of free-running phase"],
+    "scenario_contexts": ["Getting consistent punch on a plucked bass patch", "Aligning two oscillators for a tight in-phase attack", "Recording repeated notes that must sound identical"]
+   },
+   "sources": ["Sound on Sound, Synth Secrets series", "Xfer Records Serum user manual", "u-he Diva user guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d73a075e-2b50-4ccd-8ad4-99331cfd13c0",
+   "term": "Oscillator pitch envelope",
+   "fields": {
+    "definition": "An envelope generator routed to oscillator pitch that sweeps the frequency over time through its stages, such as attack and decay, to create pitched glides, blips, or drum-like transients.",
+    "plain_english": "A control that changes a synth's pitch on its own over time. It can make a note swoop up or drop down right after you press a key.",
+    "purpose_function": "It adds pitched motion to a sound, from a subtle attack blip to a big sweep, without the player having to move a pitch control by hand.",
+    "practical_application": "A producer sets a fast, quickly decaying pitch envelope on an oscillator to create the classic snap of an electronic kick or a laser-like zap.",
+    "category": "Oscillator control",
+    "related_terms": ["Envelope", "Oscillator modulation matrix", "Oscillator semitone", "Oscillator octave", "LFO"],
+    "common_mistakes": ["Setting the envelope depth so high that notes sound out of tune", "Confusing a pitch envelope with an amplitude envelope that controls volume", "Using a slow decay when a fast one is needed for a short percussive blip"],
+    "scenario_contexts": ["Creating the pitch snap at the start of an electronic kick drum", "Adding a rising sweep to a synth lead's attack", "Designing sci-fi laser and zap sound effects"]
+   },
+   "sources": ["Sound on Sound, Synth Secrets series", "Roads, The Computer Music Tutorial", "Native Instruments Massive operation manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3e657d14-dbd0-4cfe-b9bf-b2a76b5b5440",
+   "term": "Oscillator semitone",
+   "fields": {
+    "definition": "A coarse tuning control that transposes an oscillator's pitch in semitone steps, the half-step increments of the equal-tempered scale, so stacked oscillators can be set to intervals such as a fifth or an octave.",
+    "plain_english": "A control that shifts a synth's pitch by half-steps, the smallest steps on a keyboard. It lets you tune one tone generator to a musical interval above or below another.",
+    "purpose_function": "It lets oscillators be tuned to musical intervals, so a patch can sound like a chord or a harmonized stack from a single key press.",
+    "practical_application": "A programmer tunes a second oscillator seven semitones up to add a fifth, giving a lead an instant power-chord character.",
+    "category": "Oscillator tuning",
+    "related_terms": ["Oscillator octave", "Detune", "Oscillator mix", "Unison", "Waveform"],
+    "common_mistakes": ["Confusing semitone steps with fine, cents-based detune", "Miscounting semitones and landing on a dissonant interval", "Forgetting that twelve semitones add up to one octave"],
+    "scenario_contexts": ["Tuning a second oscillator up a fifth for a power-chord lead", "Building harmonized stabs from a single key", "Setting a minor-third interval for a specific chord color"]
+   },
+   "sources": ["Sound on Sound, Synth Secrets series", "Moog Subsequent 37 manual", "Roads, The Computer Music Tutorial"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a46ea787-d874-435f-a6d3-d78e9242e5a2",
+   "term": "Oscillator spread",
+   "fields": {
+    "definition": "A control that detunes, and often pans, a set of stacked or unison oscillator voices away from a center pitch, widening the sound in both frequency and stereo image as the spread amount increases.",
+    "plain_english": "A control that slightly retunes and spreads copies of a synth's sound. It makes one note feel wide, thick, and lush, like many players at once.",
+    "purpose_function": "It builds a fat, wide unison sound from a single oscillator by layering slightly detuned copies, adding chorus-like richness and stereo width.",
+    "practical_application": "A producer raises the oscillator spread on a supersaw to turn a thin lead into a huge, wide trance chord stack.",
+    "category": "Oscillator control",
+    "related_terms": ["Unison", "Detune", "Oscillator stereo phase", "Oscillator mix", "Chorus"],
+    "common_mistakes": ["Adding so much spread that the pitch sounds out of tune", "Confusing spread with simple stereo panning of one voice", "Relying on heavy spread on a mono system, where the width collapses"],
+    "scenario_contexts": ["Making a supersaw lead wide for trance and EDM", "Thickening a pad with a gentle detune spread", "Widening a bass's upper harmonics while keeping the low end mono"]
+   },
+   "sources": ["Sound on Sound, Synth Secrets series", "Xfer Records Serum user manual", "Native Instruments Massive operation manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1aa225d3-cc6f-4eda-8fd3-a1239e748d7c",
+   "term": "Oscillator stereo phase",
+   "fields": {
+    "definition": "A parameter that offsets the starting phase of an oscillator's waveform between the left and right channels, producing a stereo width effect from what would otherwise be a mono oscillator signal.",
+    "plain_english": "A control that starts a synth's wave at slightly different points in the left and right speakers. That small difference makes one sound feel wider.",
+    "purpose_function": "It widens a single oscillator into a stereo image without adding extra voices, which is handy for spacious pads and leads.",
+    "practical_application": "A sound designer offsets an oscillator's stereo phase to spread a pad across the stereo field while keeping its pitch and level unchanged.",
+    "category": "Oscillator control",
+    "related_terms": ["Oscillator phase reset", "Oscillator spread", "Unison", "Waveform", "Oscillator mix"],
+    "common_mistakes": ["Adding heavy stereo phase, then losing the sound when the mix is summed to mono", "Confusing stereo phase width with panning", "Assuming it changes the timbre rather than only the stereo image"],
+    "scenario_contexts": ["Widening a mono pad into a stereo texture", "Adding space to a lead without extra unison voices", "Checking mono compatibility after setting stereo phase"]
+   },
+   "sources": ["Sound on Sound, Synth Secrets series", "Xfer Records Serum user manual", "u-he Diva user guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bd94f28a-ff36-4794-b01d-21f0c2e01ae0",
+   "term": "Phase modulation",
+   "fields": {
+    "definition": "A synthesis technique in which the instantaneous phase of a carrier oscillator is varied by a modulator signal, generating new harmonic sidebands; it is closely related to frequency modulation and underlies many digital FM-style synthesizers.",
+    "plain_english": "A way to make new tones by using one wave to nudge the timing of another. This creates rich, complex sounds like bells, metal tones, and electric pianos.",
+    "purpose_function": "It produces complex, harmonically rich timbres that are hard to make by filtering alone, and it is the core method behind classic digital FM synthesis.",
+    "practical_application": "A sound designer builds a bell or electric-piano patch by modulating one operator's phase with another, tuning their frequency ratio for the desired harmonic character.",
+    "category": "Synthesis technique",
+    "related_terms": ["Frequency modulation", "Oscillator modulation matrix", "Oscillator phase reset", "Waveform", "LFO"],
+    "common_mistakes": ["Confusing phase modulation with simple vibrato-style pitch modulation", "Assuming phase and frequency modulation are entirely unrelated", "Expecting rich FM sidebands from a slow, low-frequency modulator instead of an audio-rate one"],
+    "scenario_contexts": ["Programming electric-piano and bell tones on an FM-style synth", "Creating metallic and clangorous percussion timbres", "Designing evolving digital textures by tuning operator ratios"]
+   },
+   "sources": ["Roads, The Computer Music Tutorial", "Chowning, The Synthesis of Complex Audio Spectra by Means of Frequency Modulation (JAES)", "Sound on Sound, Synth Secrets series"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

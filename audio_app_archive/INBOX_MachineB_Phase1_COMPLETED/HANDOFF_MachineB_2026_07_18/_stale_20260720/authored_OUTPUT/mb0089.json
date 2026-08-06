@@ -1,0 +1,159 @@
+{
+ "batch": 89,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "fc90be23-f616-4c6d-adc4-b8221d9d474c",
+   "term": "Channel validation",
+   "fields": {
+    "definition": "The process of confirming that each mixer input channel is correctly patched, labeled, and passing clean signal at the expected level and polarity before a session or show. It verifies the whole path from source through preamp, gain staging and routing so faults are caught before they reach the mix.",
+    "plain_english": "A quick check that every input on the mixing desk is plugged in right and passing sound. You go channel by channel to make sure each mic or instrument shows up where it should before the show starts.",
+    "purpose_function": "It catches wiring, patching, phantom-power and labeling errors early, so no input ends up dead, mislabeled, or out of phase once the performance or mix begins.",
+    "practical_application": "During line check a technician listens to each channel in turn, confirming the right source lands on the right fader with clean gain before soundcheck or tracking begins.",
+    "category": "Signal Flow",
+    "related_terms": ["Line check", "Gain staging", "Signal flow", "Phantom power", "Patch list", "Soundcheck"],
+    "common_mistakes": ["Assuming a channel is fine because the meter moves, without confirming it is the correct source", "Skipping validation of spare or backup channels that are only needed later in the show", "UNSAFE: Hot-patching condenser mics with phantom power on and monitors up, which can send a loud, damaging pop through speakers and headphones", "Not checking polarity between paired mics, leaving phase cancellation baked into the mix"],
+    "scenario_contexts": ["Line-checking a 32-input band before doors open at a club", "Confirming studio inputs are patched correctly before a multitrack tracking session", "Troubleshooting a dead or swapped channel found during soundcheck"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook (Davis & Jones)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2f36acc4-5c7b-43db-84d2-150b6e5e2fc7",
+   "term": "Chase Events",
+   "fields": {
+    "definition": "A sequencer/DAW playback function that scans MIDI and related events occurring before the current start point and re-sends the relevant ones (such as program changes, controllers, pitch bend, sustain and sometimes held notes) so instruments are in the correct state when playback begins mid-project.",
+    "plain_english": "A setting that lets your music software 'catch up' on MIDI note and control messages it skipped when you press play partway through a song. It resends things like the chosen sound, the sustain pedal, and pitch settings, so the part plays right.",
+    "purpose_function": "It prevents wrong sounds, missing or stuck sustain, and off pitch-bend when you start playback partway through a track, by reconstructing the MIDI state that earlier events had set.",
+    "practical_application": "When a producer starts from bar 30 and a synth still plays the correct patch and holds the sustain set at bar 1, chase events is doing that work; engineers choose which event types get chased in the project settings.",
+    "category": "Sequencing",
+    "related_terms": ["MIDI", "Program change", "Control change", "Pitch bend", "Sustain pedal", "Sequencer"],
+    "common_mistakes": ["Thinking chase resends audio; it only reconstructs MIDI-style event states", "Chasing note events into samplers or drum loops, which can retrigger samples out of time", "Assuming every controller is chased by default when the option must often be enabled per event type", "Blaming a synth for wrong patches when program-change chasing is simply turned off"],
+    "scenario_contexts": ["Starting playback mid-song and hearing the correct synth patch instead of the default", "Sustain-pedal state carried over when auditioning a section from the middle", "Fixing a part whose controller jumps to the wrong value on mid-song starts"]
+   },
+   "sources": ["Apple Logic Pro User Guide (Chase Events / Chase settings)", "Steinberg Cubase Operation Manual (Chase)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "341108e9-47d5-475a-beac-141190d90c9b",
+   "term": "Check the back of the room",
+   "fields": {
+    "definition": "A live-sound practice of walking to the rear of the audience area, farthest from the stage and PA, to judge level, tonal balance, intelligibility and coverage there, since the back row hears the system very differently from the mix position. It confirms distant seats receive adequate, clear sound.",
+    "plain_english": "Walking to the seats at the very back of the room to hear how the show sounds there. The back is far from the speakers, so you check it is still loud enough and clear, not muddy or too quiet.",
+    "purpose_function": "It confirms the PA covers the whole audience, not just the mix position, so distant listeners get enough level and clarity despite the added distance and room reflections.",
+    "practical_application": "During soundcheck an engineer walks to the back wall to confirm vocals stay intelligible and the low end has not built up, then returns to fine-tune EQ and system level.",
+    "category": "Coverage Check",
+    "related_terms": ["Coverage", "Mix position", "Soundcheck", "SPL", "Intelligibility", "System tuning"],
+    "common_mistakes": ["Mixing only from the console position and never verifying the back rows", "UNSAFE: Pushing overall level to reach the back until front seats exceed safe SPL exposure limits", "Ignoring low-frequency buildup that collects near a rear wall", "Assuming coverage is even without actually walking the space"],
+    "scenario_contexts": ["Soundcheck in a deep club where the back wall is far from the PA", "Checking speech intelligibility for a spoken-word event", "Diagnosing why patrons at the back report a muddy mix"]
+   },
+   "sources": ["McCarthy, Sound Systems: Design and Optimization", "Yamaha Sound Reinforcement Handbook (Davis & Jones)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "df176023-1715-4416-9846-0cef385915b5",
+   "term": "Check the corners",
+   "fields": {
+    "definition": "A live-sound practice of listening in the room's corners and edges, outside the main coverage pattern, to judge how much level and tone reaches off-axis seats and where bass buildup or coverage gaps occur. It reveals problems the on-axis mix position hides.",
+    "plain_english": "Stepping into the corners of the room to hear the seats that sit off to the side. Corners often trap bass and can be too quiet or boomy, so you check the crowd there still gets good sound.",
+    "purpose_function": "It exposes off-axis coverage loss and low-frequency buildup in corners, helping the engineer decide on speaker aim, fill speakers, or EQ so edge seats are not neglected.",
+    "practical_application": "An engineer walks the room's corners during soundcheck to spot boomy bass or dropouts, then adjusts speaker angles, adds fills, or trims low EQ.",
+    "category": "Coverage Check",
+    "related_terms": ["Coverage", "Off-axis", "Fill speaker", "Room modes", "Low-frequency buildup", "System tuning"],
+    "common_mistakes": ["Judging coverage only on-axis at the mix position", "Mistaking corner bass buildup for too much bass everywhere and cutting it globally", "Forgetting that corners can sit outside the speakers' coverage pattern", "Overlooking corner seats when planning fill speakers"],
+    "scenario_contexts": ["Setting up in a rectangular hall with seating pushed into corners", "Chasing a boomy low end reported only at the room's edges", "Deciding whether fill speakers are needed for wide seating"]
+   },
+   "sources": ["McCarthy, Sound Systems: Design and Optimization", "Yamaha Sound Reinforcement Handbook (Davis & Jones)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1a051e41-d6ed-4cd7-8877-7186ed7a3e5b",
+   "term": "Check the front row",
+   "fields": {
+    "definition": "A live-sound practice of listening at the frontmost seats, closest to the stage and PA, where level is highest and tonal balance is often harsh or bass-heavy, to ensure near-field listeners are not overwhelmed. It balances the needs of close seats against the rest of the room.",
+    "plain_english": "Listening from the front seats, right up near the speakers and stage. It is the loudest, sometimes harshest spot, so you check the sound there is not painfully loud or too bright for the people sitting closest.",
+    "purpose_function": "It checks the near-field extreme of the audience so front listeners get safe, comfortable level and tone, and it shows how uneven the system is from front to back.",
+    "practical_application": "An engineer steps to the front row to gauge harshness and SPL, then may adjust speaker aim, high-frequency EQ, or level to protect close listeners while still covering the back.",
+    "category": "Coverage Check",
+    "related_terms": ["SPL", "Coverage", "Near field", "Speaker aim", "System tuning", "Hearing exposure"],
+    "common_mistakes": ["UNSAFE: Ignoring dangerously high SPL at the front row while pushing level for the back", "Assuming the front sounds like the mix position", "Over-brightening the system for the back and leaving the front harsh", "Forgetting the front row hears far more direct stage sound"],
+    "scenario_contexts": ["Checking SPL and harshness for patrons seated against the stage", "Balancing a system that is far too loud up front and weak at the back", "Aiming line-array boxes so the top covers distance without blasting the front"]
+   },
+   "sources": ["McCarthy, Sound Systems: Design and Optimization", "OSHA 29 CFR 1910.95 (Occupational Noise Exposure)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f6422af7-a524-4849-b1b8-face43fb8115",
+   "term": "Check under the balcony",
+   "fields": {
+    "definition": "A live-sound practice of listening in the seats beneath a balcony overhang, an acoustically shadowed zone where the main PA's high frequencies and direct sound are blocked, to judge coverage, clarity and the need for delay or fill speakers. It targets one of a venue's hardest areas to cover.",
+    "plain_english": "Going to the seats tucked under a balcony to hear how they sound. The balcony blocks sound from the main speakers, so these seats can be dull or unclear, and you check whether extra small speakers are needed.",
+    "purpose_function": "It reveals the high-frequency loss and reduced clarity under a balcony overhang, guiding the use of under-balcony fill or delay speakers so those seats match the rest of the room.",
+    "practical_application": "An engineer walks under the balcony to check intelligibility, then tunes under-balcony delay fills timed to the main system so speech and music stay clear.",
+    "category": "Coverage Check",
+    "related_terms": ["Delay speaker", "Fill speaker", "Coverage", "Shadow zone", "Intelligibility", "System tuning"],
+    "common_mistakes": ["Assuming the mains cover under-balcony seats when the overhang blocks them", "Adding fill speakers without time-aligning them to the mains, smearing clarity", "Checking only open seating and ignoring the shadowed area", "Judging under-balcony coverage from the open floor nearby"],
+    "scenario_contexts": ["Tuning delay fills for deep under-balcony seating in a theater", "Fixing muffled vocals reported by patrons beneath a balcony", "Designing coverage for a two-tier venue during system setup"]
+   },
+   "sources": ["McCarthy, Sound Systems: Design and Optimization", "Yamaha Sound Reinforcement Handbook (Davis & Jones)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c82b6019-b10b-47b7-badf-ab932ecfb7f3",
+   "term": "Chord track",
+   "fields": {
+    "definition": "A dedicated track in a DAW that holds a timeline of chord symbols defining a song's harmony, which the software can display, follow, and use to influence or conform the pitches of MIDI and sometimes audio tracks. It acts as a harmonic reference for the whole project.",
+    "plain_english": "A special track in music software where you lay out the song's chords in order. Other tracks can follow it, so parts you play or record can be nudged to fit the chords you set.",
+    "purpose_function": "It gives a project a single harmonic map, helping with composing, arranging, and keeping MIDI or audio parts in key without editing every note by hand.",
+    "practical_application": "A producer enters a chord progression on the chord track, then has a piano MIDI part or arpeggiator follow it, quickly auditioning reharmonizations across the arrangement.",
+    "category": "DAW Tools",
+    "related_terms": ["MIDI", "Key", "Transpose", "Arpeggiator", "Chord pads", "Harmony"],
+    "common_mistakes": ["Expecting the chord track to conform audio pitch as reliably as it conforms MIDI", "Forgetting to set tracks to follow the chord track, so nothing actually changes", "Confusing the chord track's guide role with an instrument that makes sound", "Entering chords in the wrong key or voicing and trusting the result blindly"],
+    "scenario_contexts": ["Sketching a chord progression before recording melodies", "Reharmonizing a song and hearing MIDI parts update to the new chords", "Sharing a session's harmony map with a collaborator"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (Chord Track)", "PreSonus Studio One Reference Manual (Chord Track)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "85842147-9072-4000-961d-672304056652",
+   "term": "Chromagram",
+   "fields": {
+    "definition": "A time-varying representation of audio that maps spectral energy into the twelve pitch classes (chroma) of the equal-tempered scale, collapsing all octaves so each column shows how much of each note name is present at that moment. It is widely used for chord, key, and harmonic analysis.",
+    "plain_english": "A chart that shows which of the twelve note names, like C, C sharp, and D, are sounding at each moment, ignoring which octave they are in. It is a handy way for software to 'see' the harmony in a piece of music.",
+    "purpose_function": "It reduces complex audio down to its pitch-class content, making it useful for automatic chord detection, key finding, and matching or comparing musical passages.",
+    "practical_application": "Music-analysis and DAW tools compute a chromagram to label chords or find a track's key, and engineers may view it when using harmony-aware editing or tagging software.",
+    "category": "Audio Analysis",
+    "related_terms": ["Spectrogram", "Pitch class", "Chord detection", "Key detection", "FFT", "Harmony"],
+    "common_mistakes": ["Confusing a chromagram with a spectrogram, which keeps full frequency detail and octaves", "Expecting perfect chord labels despite overtones and percussion blurring the chroma", "Assuming it shows octave or melody information, which it deliberately discards", "Trusting key detection from a chromagram on very noisy or atonal material"],
+    "scenario_contexts": ["Automatic chord recognition in a music-analysis app", "Detecting a song's key before applying pitch effects", "Aligning a cover to an original using harmonic similarity"]
+   },
+   "sources": ["Muller, Fundamentals of Music Processing (Springer, 2015)", "Muller & Ewert, Chroma Toolbox technical documentation (MPI Informatik)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "89c42e96-e620-463a-be06-51b9846c017c",
+   "term": "Chunks window",
+   "fields": {
+    "definition": "In MOTU Digital Performer, the window that lists and manages a project's Chunks (independent sequences, songs, and V-racks), letting you create, rename, reorder, duplicate, and switch between them. It is the hub for handling multiple songs or cues inside one project file.",
+    "plain_english": "In Digital Performer, a window that holds all the separate pieces of a project, called chunks. Each chunk can be its own song or section, and this window lets you name, sort, and jump between them.",
+    "purpose_function": "It lets one project file contain many independent songs, sections, or film cues and switch among them quickly, instead of opening a separate file for each.",
+    "practical_application": "A composer scoring to picture keeps each cue as a chunk and uses the Chunks window to jump between cues, duplicate a starting point, or arrange sections into a song.",
+    "category": "DAW Tools",
+    "related_terms": ["Sequence", "V-rack", "Song mode", "Digital Performer", "Project file", "Playlist"],
+    "common_mistakes": ["Thinking a chunk is just a track rather than a whole self-contained sequence", "Losing track of which chunk is playing, since only one is active at a time", "Not using V-racks, so instruments are duplicated across chunks and waste resources", "Confusing Song chunks with Sequence chunks when arranging"],
+    "scenario_contexts": ["Managing multiple film cues in one Digital Performer project", "Storing song variations as separate chunks for a client to compare", "Building a live set as chunks and switching between songs"]
+   },
+   "sources": ["MOTU Digital Performer User Guide (Chunks window / Chunks)", "Sound on Sound, Digital Performer technique columns (The Power Of Chunks)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

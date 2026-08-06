@@ -1,0 +1,159 @@
+{
+ "batch": 245,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "f6937775-08fb-45f6-bc38-4aa8a3622dde",
+   "term": "Procedural footsteps",
+   "fields": {
+    "definition": "Footstep sounds generated in real time by an algorithm that responds to a character's movement, speed, and walking surface, rather than by playing back pre-recorded Foley or fixed samples. It is used mainly in games and other interactive media so each step can vary with the action.",
+    "plain_english": "Footstep sounds a computer builds on the fly as a character walks, matching the ground and the pace. It is like a machine making each step to order instead of replaying the same clip again and again.",
+    "purpose_function": "It creates step sounds that follow gameplay moment to moment, which saves memory and avoids the obvious repetition you get from a small set of recorded samples.",
+    "practical_application": "A game sound designer builds models and rules so footsteps change with the surface, such as grass, metal, or gravel, and with walk or run speed as the player moves.",
+    "category": "Procedural Audio",
+    "related_terms": ["Foley footsteps", "Procedural weapon sound", "Sample playback", "Surface type", "Game audio middleware"],
+    "common_mistakes": ["Thinking procedural footsteps are just randomly triggered recorded samples rather than sounds built by a model", "Assuming they replace Foley in film, when film usually still uses recorded Foley footsteps", "Forgetting to map different surfaces, so every step ends up sounding the same"],
+    "scenario_contexts": ["A game character walking from a wooden floor onto gravel", "A VR scene where step sounds must react to the user's pace", "A game engine producing step sounds for many characters at once"]
+   },
+   "sources": ["Farnell, Designing Sound (MIT Press)", "Stevens & Raybould, The Game Audio Tutorial"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "75c64bae-844a-4677-b0e9-18f9b0e15269",
+   "term": "Procedural weapon sound",
+   "fields": {
+    "definition": "A weapon sound assembled in real time from layered component models and rules, such as the mechanical action, the shot, and the tail, rather than from one fixed sample, so it can vary with rate of fire, ammunition, and space. It is common in games and interactive media.",
+    "plain_english": "A gun sound the computer puts together as it fires. It mixes parts like the click, the bang, and the echo, so no two shots are quite alike. It is like building each shot from small pieces instead of replaying one clip.",
+    "purpose_function": "It lets a weapon react to how and where it is fired, which keeps rapid firing from sounding like the same clip pasted over and over.",
+    "practical_application": "A game audio designer layers component sounds and sets rules so a rifle changes with fire rate, distance, and whether the scene is indoors or outdoors.",
+    "category": "Procedural Audio",
+    "related_terms": ["Procedural footsteps", "Sound synthesis", "Sample playback", "Layering", "Game audio middleware"],
+    "common_mistakes": ["Believing one recorded shot can cover fast automatic fire without sounding repetitive", "Skipping the tail or reflections, so the shot has no sense of space", "Confusing procedural weapon sound with simply randomizing the pitch of one sample"],
+    "scenario_contexts": ["A first-person game where a rifle fires at different rates", "A gunfight that must sound different indoors and outdoors", "An interactive scene where many weapons fire at once"]
+   },
+   "sources": ["Farnell, Designing Sound (MIT Press)", "Stevens & Raybould, The Game Audio Tutorial"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4a6fd7c1-b699-4799-be53-71442d7c59f0",
+   "term": "Production-dialogue blend",
+   "fields": {
+    "definition": "The craft of matching and combining the original production dialogue recorded on set with edited pieces, alternate takes, and ADR so the finished dialogue plays as one continuous, natural performance in a consistent space.",
+    "plain_english": "Making the words recorded on set blend smoothly with any lines fixed or re-recorded later, so the audience never hears the joins. It is like patching a wall so well that you cannot find where the new piece meets the old.",
+    "purpose_function": "It keeps the dialogue track sounding believable and seamless, so edits and replaced lines do not draw attention or break the scene.",
+    "practical_application": "A dialogue editor matches level, tone, and room sound across takes and adds fill or room tone so cuts between production lines and ADR are hidden.",
+    "category": "Dialogue Editing",
+    "related_terms": ["Production dialogue", "ADR", "Room tone", "Dialogue editing", "Production-to-ADR match"],
+    "common_mistakes": ["Cutting between takes without matching room tone, leaving audible gaps or shifts", "Ignoring level and tone differences between microphones on the same scene", "Assuming ADR will blend without matching its perspective to the production sound"],
+    "scenario_contexts": ["Joining a boom take and a lav take of the same line", "Dropping an ADR line into the middle of a production performance", "Smoothing edits across a scene shot over several days"]
+   },
+   "sources": ["Purcell, Dialogue Editing for Motion Pictures", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fca2d57f-1e4e-461b-af74-a7a04a86a93a",
+   "term": "Production-to-ADR match",
+   "fields": {
+    "definition": "Editing and processing ADR, which is dialogue re-recorded in a studio, so its tone, timing, perspective, and room character match the surrounding production dialogue, making the replaced line hard to tell apart from the on-set recording.",
+    "plain_english": "Tweaking studio-recorded lines so they sound like they were really spoken on set, matching the room and the mood. It is like color-matching new paint to an old wall so you cannot spot the touch-up.",
+    "purpose_function": "It hides the fact that a line was replaced, so the audience hears one consistent performance instead of a noticeable studio insert.",
+    "practical_application": "An editor adjusts timing, equalization, reverb, and level, and adds matching room tone, so an ADR line sits in the same space as the production dialogue around it.",
+    "category": "Dialogue Editing",
+    "related_terms": ["ADR", "Production dialogue", "Room tone", "Perspective matching", "Production-dialogue blend"],
+    "common_mistakes": ["Leaving ADR too clean and close, so it sounds unlike the on-set recording", "Forgetting to match the room reverb and background of the original scene", "Slipping sync slightly, so the replaced line no longer fits the lip movement"],
+    "scenario_contexts": ["Replacing an unusable on-set line because of noise", "Cleaning up profanity or a script change with an ADR line", "Matching a studio line to dialogue recorded outdoors"]
+   },
+   "sources": ["Purcell, Dialogue Editing for Motion Pictures", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "47aa3a6c-ea1a-49fd-bd27-2561be5fa789",
+   "term": "Pronunciation supervision",
+   "fields": {
+    "definition": "Oversight during dialogue recording, ADR, or dubbing to ensure actors pronounce names, foreign words, technical terms, and localized lines correctly and consistently against an agreed reference.",
+    "plain_english": "Making sure actors say every name and tricky word correctly, and the same way each time, while recording lines. It is like an editor checking spelling, but for how words are spoken.",
+    "purpose_function": "It protects clarity and credibility by catching mispronunciations before they are locked into the final track, and keeps pronunciation consistent across scenes and episodes.",
+    "practical_application": "A dialogue or ADR supervisor keeps a reference list of correct pronunciations and coaches or flags actors during sessions, especially for foreign names and specialist jargon.",
+    "category": "Dialogue / ADR",
+    "related_terms": ["ADR", "Dubbing", "Dialogue editing", "Localization", "Loop group"],
+    "common_mistakes": ["Assuming the actor always knows the correct pronunciation of names or foreign terms", "Failing to keep pronunciation consistent across different recording days", "Confusing pronunciation supervision with accent or dialect coaching, which is a broader performance role"],
+    "scenario_contexts": ["Recording ADR for a drama full of foreign place names", "Dubbing a series and keeping character-name pronunciation consistent", "A documentary with scientific terms that must be said correctly"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Purcell, Dialogue Editing for Motion Pictures"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f20cdbf4-1bb6-4329-bf12-e46101747132",
+   "term": "Prop catch",
+   "fields": {
+    "definition": "A Foley performance of the sound made when a character catches or receives a thrown or handed object, recorded in sync with picture to sell the moment of contact.",
+    "plain_english": "The Foley sound of someone catching an object, made by an artist grabbing a matching prop in time with the picture. It is like adding the smack of a caught ball after the scene is filmed.",
+    "purpose_function": "It gives a catch on screen a believable physical sound, adding weight and impact that the original recording may not have captured.",
+    "practical_application": "A Foley artist watches the picture and catches a matching prop at the exact frame of contact, choosing an object whose sound fits the item shown.",
+    "category": "Foley",
+    "related_terms": ["Foley props", "Prop toss", "Prop synchronization", "Foley stage", "Spotting session"],
+    "common_mistakes": ["Missing the frame of contact, so the sound lands early or late", "Using a prop whose material sounds wrong for the object shown", "Overplaying the catch, so it sounds louder and heavier than the action"],
+    "scenario_contexts": ["A character catching keys tossed across a room", "A sports scene where a ball is caught", "A hand-off of a bag or tool between two people"]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e29cf8a1-443b-4fc0-aa13-05f2abdd2b4c",
+   "term": "Prop damping",
+   "fields": {
+    "definition": "Deadening or muffling a Foley prop with cloth, foam, tape, or the hand to reduce unwanted ring, rattle, or resonance so the recorded sound matches the on-screen object.",
+    "plain_english": "Muffling a Foley prop so it does not ring or rattle too much, using cloth, foam, or your hand. It is like resting your hand on a cymbal to stop it ringing.",
+    "purpose_function": "It controls a prop's natural resonance so the recorded sound stays tight and believable instead of ringing longer than the real object would.",
+    "practical_application": "A Foley artist wraps or holds part of a prop, or packs it, to kill stray rattle before performing an action such as a set-down or an impact.",
+    "category": "Foley",
+    "related_terms": ["Foley props", "Prop synchronization", "Resonance", "Foley stage", "Prop catch"],
+    "common_mistakes": ["Leaving a prop undamped, so it rings longer than the real object would", "Over-damping until the sound loses the character it needs", "Forgetting that the recording room itself can add unwanted ring"],
+    "scenario_contexts": ["Stopping a metal prop from ringing after it is set down", "Muffling a rattling box so only the needed sound remains", "Controlling a resonant object in a live-sounding Foley room"]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0a1820d1-39d0-4513-8b79-0d893a2ec080",
+   "term": "Prop synchronization",
+   "fields": {
+    "definition": "Aligning performed or recorded prop sounds precisely to the on-screen action so each handle, set-down, or impact lands exactly on the picture frame where it happens.",
+    "plain_english": "Lining up prop sounds so they hit exactly when the object moves or lands on screen. It is like making sure a clap sound matches the moment two hands meet in a video.",
+    "purpose_function": "It ties the added prop sound to the picture so the action feels real, since a sound even a frame off can look and feel wrong.",
+    "practical_application": "A Foley artist performs to picture, and an editor then nudges the recorded sound frame by frame to lock it to the on-screen movement.",
+    "category": "Foley",
+    "related_terms": ["Foley props", "Sync to picture", "Prop catch", "Prop toss", "Spotting session"],
+    "common_mistakes": ["Judging sync by feel alone instead of checking against the frame of contact", "Letting sound drift out of sync across a long take", "Assuming loose sync is fine, when even one frame off is noticeable"],
+    "scenario_contexts": ["Locking a set-down sound to the frame a cup touches the table", "Syncing many small prop handles across a busy scene", "Fixing a Foley pass that plays slightly ahead of picture"]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "99473c8c-26ed-4f95-b36e-e0d0d672f33e",
+   "term": "Prop toss",
+   "fields": {
+    "definition": "A Foley performance of the sound of throwing or tossing an object, capturing the release, movement, and any handling noise in sync with the on-screen throw.",
+    "plain_english": "The Foley sound of throwing an object, made by an artist tossing or moving a matching prop in time with the picture. It is like adding the swish and release sound when someone throws keys on screen.",
+    "purpose_function": "It gives a throw on screen a believable sound of release and motion, adding energy the original recording may not have captured.",
+    "practical_application": "A Foley artist performs the throw with a matching prop, timing the release to picture, sometimes recording it separately from the later catch.",
+    "category": "Foley",
+    "related_terms": ["Foley props", "Prop catch", "Prop synchronization", "Foley stage", "Spotting session"],
+    "common_mistakes": ["Timing the release to the wrong frame, so the throw feels off", "Choosing a prop whose weight or material sounds wrong for the object", "Playing the toss too loud, so it does not match the on-screen effort"],
+    "scenario_contexts": ["A character tossing keys onto a table", "Throwing a bag across a room", "Sports action where an object is thrown"]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "batch": 192,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "cc6d442f-5e94-4ccd-b0e1-ba0da8644974",
+   "term": "Broadcast event logger",
+   "fields": {
+    "definition": "A system that continuously captures a broadcaster's transmitted output together with a time-stamped record of on-air events, so that what actually aired can later be reviewed for regulatory compliance, quality checking, and dispute resolution. Modern loggers store low-bit-rate reference audio and video plus metadata such as as-run playlists, loudness readings, and alarm events.",
+    "plain_english": "This is a box that quietly records everything a station puts on air, along with a timed list of what played. If someone later asks what was broadcast at 9pm, the log has the answer. Think of it like a security camera aimed at the station's own output.",
+    "purpose_function": "It exists to prove what was actually transmitted and when, so a station can meet legal retention rules, settle complaints, and check technical quality after the fact.",
+    "practical_application": "A technician checks the logger to confirm an advert ran at its booked time, to pull proof of what aired during a complaint, or to review loudness and silence alarms from an overnight shift.",
+    "category": "Monitoring & Logging",
+    "related_terms": ["As-run log", "Compliance recording", "Loudness monitoring", "Playout automation", "Air chain"],
+    "common_mistakes": ["Confusing the event logger with the main program recorder, when the logger keeps a long, low-resolution reference copy rather than a broadcast-quality master", "Assuming the log proves quality, when it only proves what aired unless the logger also measures loudness and faults", "Letting log storage fill up so the required retention window is lost"],
+    "scenario_contexts": ["Pulling proof-of-transmission for an advertiser billing query", "Investigating a viewer complaint about content shown at a specific time", "Reviewing overnight silence or loudness alarms during a compliance audit"]
+   },
+   "sources": ["Broadcast Engineer's Reference Book (Tozer, ed., Focal Press)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f8141f95-d82f-4c38-a17d-828da405673a",
+   "term": "Broadcast facility",
+   "fields": {
+    "definition": "The building and technical plant from which a broadcaster produces and transmits programming, housing studios, control rooms, machine and equipment rooms, master control and the air chain, plus the supporting power, cooling, and cabling infrastructure.",
+    "plain_english": "This is the whole building where a TV or radio station is made and sent out. It holds the studios, control rooms, and racks of gear, plus the power and cooling that keep them running. It is basically the station's home base.",
+    "purpose_function": "It brings all the people, studios, and equipment needed to create and transmit programs together in one controlled, powered, and climate-managed place.",
+    "practical_application": "A technician moves through the facility's studios, rack rooms, and master control to patch signals, service equipment, and trace faults from a microphone all the way to the transmitter feed.",
+    "category": "Facilities & Spaces",
+    "related_terms": ["Master control room", "Broadcast gallery", "Air chain", "Machine room", "Broadcast ingest system"],
+    "common_mistakes": ["UNSAFE: Working in equipment and rack rooms without following the facility's electrical safety and lockout/tagout procedures around mains power and high-current supplies", "Thinking the facility is just the studios and forgetting the technical core, such as master control, machine rooms, and the transmitter link, that keeps it on air", "Ignoring environmental needs like cooling and clean power that the facility must provide"],
+    "scenario_contexts": ["Commissioning a new studio within an existing broadcast facility", "Tracing a signal path across the facility from studio to master control", "Planning power and cooling for added equipment racks"]
+   },
+   "sources": ["Broadcast Engineer's Reference Book (Tozer, ed., Focal Press)", "EBU Tech, The Dynamic Media Facility Reference Architecture (white paper)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d90dcfb0-42ae-465b-9fd9-9877757678ce",
+   "term": "Broadcast gallery",
+   "fields": {
+    "definition": "In UK and European television practice, the production control room, or \"gallery\", overlooking or adjacent to a studio, from which the director, vision mixer, and production team cut the program live; it is often divided into a production gallery, a sound gallery (sound control room), and a lighting and vision control area.",
+    "plain_english": "The gallery is the control room where a TV show is directed as it happens. The director, vision mixer, and team sit here watching monitors and choosing which camera goes to air. The sound team often works in a linked room called the sound gallery.",
+    "purpose_function": "It gives the production team a single control point to view every source, switch cameras, mix sound, and coordinate the live program in real time.",
+    "practical_application": "A broadcast technician sets up and checks the gallery's monitor wall, vision mixer, talkback, and audio console before a live studio recording or transmission.",
+    "category": "Facilities & Spaces",
+    "related_terms": ["Production control room", "Vision mixer", "Sound gallery", "Talkback", "Master control room"],
+    "common_mistakes": ["Confusing the gallery, a studio production control room, with master control, which handles station-wide playout and transmission", "Assuming a gallery is always one room, when sound and lighting often have their own linked galleries", "Forgetting talkback setup, so the director cannot cue the studio floor"],
+    "scenario_contexts": ["Directing a live studio panel show from the production gallery", "Setting up the sound gallery console and talkback before a broadcast", "Coordinating camera cuts and graphics during a live transmission"]
+   },
+   "sources": ["Broadcast Engineer's Reference Book (Tozer, ed., Focal Press)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "59c25d7d-32bb-4988-8407-d146a3b095be",
+   "term": "Broadcast ingest system",
+   "fields": {
+    "definition": "The subsystem that captures incoming media, whether live feeds, files, or tape, into a broadcast production or playout environment, encoding it to house formats, applying time-stamps and metadata, and registering it in storage or asset management for downstream editing, playout, or archive.",
+    "plain_english": "This is the front door for getting video and audio into a station's computer systems. It records or imports feeds and files, labels them, and files them so editors and playout can find them. Without ingest, nothing new gets into the system.",
+    "purpose_function": "It exists to bring outside material into the facility in the right format with correct labeling, so content can be reliably found, edited, and aired.",
+    "practical_application": "An operator schedules and monitors ingest of a live satellite feed or a batch of delivered files, checking that each clip encodes cleanly and lands with correct metadata.",
+    "category": "Media Workflow",
+    "related_terms": ["Media asset management", "Playout automation", "Encoder", "Metadata", "Broadcast facility"],
+    "common_mistakes": ["Starting ingest without confirming the correct format and metadata, which breaks searches and downstream automation", "Assuming ingest is only for tape or files and overlooking live feed capture", "Not allowing enough storage or bandwidth, so recordings drop frames or fail"],
+    "scenario_contexts": ["Capturing a live sports feed into the production server", "Batch-ingesting delivered commercials for playout", "Digitizing archive tapes into the asset management system"]
+   },
+   "sources": ["EBU Tech, The Dynamic Media Facility Reference Architecture (white paper)", "Broadcast Engineer's Reference Book (Tozer, ed., Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d47e198e-2288-4f34-9e02-7e01b7a76ccd",
+   "term": "Broadcast microphone chain",
+   "fields": {
+    "definition": "The complete signal path serving an on-air microphone, typically running from the mic through its preamplifier and dynamics and EQ processing to the console and on toward the air chain, engineered for consistent, intelligible, controlled-level speech.",
+    "plain_english": "This is everything a broadcast microphone's sound passes through on its way to air: the mic, its preamp, the processing that evens out the voice, and the mixing console. Each stage is set so the presenter always sounds clear and at a steady level. It is like an assembly line that polishes the voice step by step.",
+    "purpose_function": "It exists to turn a presenter's raw voice into a clean, consistent, correctly leveled signal ready for mixing and transmission.",
+    "practical_application": "A technician sets gain first, then processing, along the mic chain so the presenter sits at the right level with controlled peaks and no clipping before the signal reaches the console.",
+    "category": "Microphone Systems",
+    "related_terms": ["Broadcast microphone processor", "Microphone preamplifier", "Air chain", "Gain staging", "Compressor"],
+    "common_mistakes": ["Setting compression or EQ before proper gain staging, so noise and clipping get locked into the chain", "Patching phantom power into a ribbon microphone that cannot tolerate it, risking damage to the mic", "Treating each processing stage as fixed instead of tuning the chain to the specific voice and mic"],
+    "scenario_contexts": ["Setting up a presenter position in a radio studio", "Troubleshooting distortion somewhere along the on-air mic path", "Matching two presenters' voices so they sit at the same level"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Broadcast Engineer's Reference Book (Tozer, ed., Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "624722b2-8829-4320-a8f5-c0c7736cb6bf",
+   "term": "Broadcast microphone processor",
+   "fields": {
+    "definition": "A dedicated single- or multi-stage signal processor inserted in the on-air microphone path that combines mic preamplification with gating or expansion, compression, de-essing, EQ, and limiting to deliver a clean, consistent, controlled-level voice ready for broadcast.",
+    "plain_english": "This is one box that shapes a presenter's voice for air. It boosts the mic, smooths loud and soft parts, tames harsh \"s\" sounds, and stops peaks from clipping. It turns an uneven voice into a steady, polished sound.",
+    "purpose_function": "It exists to make speech sit at a consistent level and tone with peaks safely controlled, so presenters stay intelligible and loudness limits are respected.",
+    "practical_application": "A technician dials in gate, compression, EQ, and de-essing on the processor to match a presenter's voice, then sets the limiter so the output never overshoots into the console or transmitter.",
+    "category": "Microphone Systems",
+    "related_terms": ["Broadcast microphone chain", "Compressor", "De-esser", "Limiter", "Microphone preamplifier"],
+    "common_mistakes": ["Over-compressing until the voice sounds pumped and tiring, and background noise rises between words", "Skipping the gate or expander, so studio noise and headphone spill are always audible", "Setting the limiter like a normal fader instead of a safety ceiling, which causes constant distortion"],
+    "scenario_contexts": ["Setting up a new presenter's voice sound at a radio desk", "Adding a processor to a podcast or voiceover mic path", "Standardizing voice processing across several studios"]
+   },
+   "sources": ["dbx 286S Microphone Preamp Processor (manufacturer technical manual)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "17110769-9a5d-4486-9e82-81daaee7d2d3",
+   "term": "Broadcast microphone split",
+   "fields": {
+    "definition": "A passive transformer or active device that takes one microphone signal and feeds it to two or more independent destinations, for example a broadcast mix, front-of-house, and a recording rig, while maintaining isolation and, where needed, ground-lift to prevent hum loops.",
+    "plain_english": "This splits one microphone so its sound can go to several places at once, such as the broadcast mix, the venue's speakers, and a recording. Each output stays separate, so one desk cannot upset another. It is like a splitter that lets several people use the same source at the same time.",
+    "purpose_function": "It exists so a single mic can serve broadcast, live sound, and recording at the same time without those systems interfering with each other.",
+    "practical_application": "At a live event a technician patches stage mics through a splitter, sending isolated feeds to the broadcast truck, the house console, and the recording rig, lifting grounds as needed to kill hum.",
+    "category": "Microphone Systems",
+    "related_terms": ["Microphone splitter", "Ground loop", "Direct box", "Front of house", "Broadcast microphone chain"],
+    "common_mistakes": ["UNSAFE: Lifting the mains safety earth to cure hum, which defeats grounding meant to protect people; only the audio signal ground should ever be lifted", "Forgetting that phantom power can usually come from only one side of a transformer split, leaving condenser mics unpowered elsewhere", "Overloading a passive split with too many outputs, causing level loss and loading of the microphone"],
+    "scenario_contexts": ["Splitting stage mics between a broadcast truck and the house PA", "Feeding an isolated record rig from the same mics as the live mix", "Curing hum between broadcast and PA systems with transformer isolation and ground lift"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "18000394-2194-424e-b1a0-c5e3c46d5983",
+   "term": "Broadcast multitrack recorder",
+   "fields": {
+    "definition": "A recorder that captures multiple discrete audio channels simultaneously in a broadcast production, such as individual mics, submixes, and clean feeds, so a program can be remixed, corrected, or re-versioned after the event rather than only as a finished stereo mix.",
+    "plain_english": "This records many separate audio tracks at once during a broadcast, not just the final mix. Each mic or feed gets its own track. That way engineers can fix or rebalance the sound later, instead of being stuck with one mixed version.",
+    "purpose_function": "It exists to preserve separate audio elements so a show can be remixed, repaired, or re-versioned later, and to provide a safety backup of the live mix.",
+    "practical_application": "For a concert or sports broadcast a technician records each mic and submix to its own track, giving the post team clean elements to rebuild the mix for a highlights package or archive.",
+    "category": "Recording Systems",
+    "related_terms": ["Broadcast music recording", "Clean feed", "Stem", "Digital audio workstation", "Multitrack recording"],
+    "common_mistakes": ["Recording only the final mix, then having no way to fix a buried voice or bad balance later", "Not checking track record-arming and levels before the event, so key elements are lost", "Assuming timecode and sync will match later without locking the recorder to house reference"],
+    "scenario_contexts": ["Capturing a live concert broadcast for later remix and release", "Recording sports commentary, effects, and crowd on separate tracks", "Keeping a multitrack safety of a live studio session"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Broadcast Engineer's Reference Book (Tozer, ed., Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "68bfa179-918a-409d-b083-c568f79558ec",
+   "term": "Broadcast music recording",
+   "fields": {
+    "definition": "The practice of recording musical performances specifically for broadcast, in studios, concert halls, or outside-broadcast settings, capturing and mixing them to broadcast technical and loudness standards, often for live transmission or later programming.",
+    "plain_english": "This is recording music so it can be played on radio or TV. It might be a studio session, a concert, or an outdoor event, captured and mixed to meet broadcast rules for sound and loudness. The goal is music that sounds right when it goes to air.",
+    "purpose_function": "It exists to capture musical performances at broadcast quality and to the loudness and technical standards required for transmission or later programming.",
+    "practical_application": "A technician sets up mics, splits, and a multitrack for a session or concert, then mixes to broadcast loudness targets for live air or delivers tracks to post for a later program.",
+    "category": "Recording Systems",
+    "related_terms": ["Broadcast multitrack recorder", "Broadcast microphone split", "Loudness monitoring", "Outside broadcast", "Air chain"],
+    "common_mistakes": ["Mixing to studio-album loudness instead of the broadcaster's loudness target, so the audio is rejected or re-leveled", "Neglecting a multitrack safety, leaving no way to fix problems found after the performance", "Forgetting that live-to-air music has no second take, so monitoring and backups must be solid"],
+    "scenario_contexts": ["Recording a live session for a radio music show", "Capturing an orchestral concert for broadcast and archive", "Mixing a festival performance to broadcast loudness for live transmission"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "EBU R 128, Loudness normalisation and permitted maximum level of audio signals"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

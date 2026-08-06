@@ -1,0 +1,159 @@
+{
+ "batch": 269,
+ "topic": "DAW Fundamentals & Session Management",
+ "authored": [
+  {
+   "id": "bb9dcefd-f4d2-4fe7-8198-bc1ccfbe2d36",
+   "term": "Output Routing",
+   "fields": {
+    "definition": "The assignment of a track, bus, or channel's signal to a specific destination inside the DAW's mixer, such as a master fader, an auxiliary/subgroup bus, or a physical hardware output of the audio interface. Output routing determines the path each signal follows on its way to the final mix or to external gear.",
+    "plain_english": "Output routing is how you choose where a track's sound goes next, such as the main mix, a group, or a real output jack. Think of it like picking which pipe your water flows into so it ends up in the right place.",
+    "purpose_function": "It lets a signal be directed to the correct summing point or physical outlet so tracks can be grouped, processed together, or sent to headphones, speakers, or outboard gear. Without defined output routing a track has no path to the mix and produces no sound at the outputs.",
+    "practical_application": "An engineer routes several drum tracks to a shared drum bus for group processing, sends a vocal to a master fader, and assigns a monitor mix to specific interface outputs feeding the performer's headphones.",
+    "category": "Signal Routing",
+    "related_terms": ["Input Routing", "Auxiliary send", "Bus", "Master fader", "Subgroup", "Signal flow"],
+    "common_mistakes": ["Leaving a track routed to the wrong bus or to no output, then wondering why it is silent in the mix", "Confusing an output assignment with an auxiliary send, so a signal is duplicated or missing", "Routing multiple tracks into a bus and overloading it into clipping because the summed level was not checked"],
+    "scenario_contexts": ["Grouping backing vocals to one bus so a single compressor treats them together", "Sending a cue mix to interface outputs 3-4 that feed the studio headphone amp", "Routing stems to separate outputs for a live multitrack recording or broadcast feed"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (signal routing / output paths)", "Steinberg Cubase Operation Manual (audio connections and routing)", "Yamaha Sound Reinforcement Handbook (signal flow and busing)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "063c1800-80df-4ee8-8a55-0183c6210346",
+   "term": "Piano-roll editor",
+   "fields": {
+    "definition": "A graphical MIDI editing view that displays notes as horizontal bars on a grid, with pitch shown on the vertical axis (usually beside a piano keyboard) and time on the horizontal axis. Each bar's vertical position sets its pitch, its horizontal position sets its start time, and its length sets its duration.",
+    "plain_english": "The piano-roll editor shows MIDI notes as bars next to a picture of a piano keyboard. Higher bars are higher notes, and longer bars are longer notes, so you can draw and move music with the mouse.",
+    "purpose_function": "It gives a clear visual way to create, move, resize, and fine-tune MIDI notes and their timing without needing to read standard notation. It exists so programmed or recorded MIDI parts can be edited precisely for pitch, timing, and length.",
+    "practical_application": "A producer opens the piano-roll to quantize a sloppy keyboard take, drag a flat note up a semitone, shorten overlapping notes, and adjust velocities before the part triggers a virtual instrument.",
+    "category": "MIDI Editing",
+    "related_terms": ["MIDI", "Velocity", "Quantize", "Pitch-bend lane", "Virtual instrument", "Grid"],
+    "common_mistakes": ["Editing note pitch in the piano-roll but forgetting it only affects MIDI, not already-recorded audio", "Leaving notes overlapping or too long, causing unwanted legato or stuck notes on the instrument", "Assuming the visible grid equals the recorded timing and quantizing away an intended groove"],
+    "scenario_contexts": ["Cleaning up the timing of a recorded MIDI drum pattern", "Drawing a bassline note by note for a synth part", "Fixing one wrong note in an otherwise good keyboard performance"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (Key Editor / piano roll)", "Ableton Live Reference Manual (MIDI note editor)", "Avid Pro Tools Reference Guide (MIDI Editor)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "41f7e84e-4344-4c4c-8c2d-7f6d9a21e899",
+   "term": "Pitch-bend lane",
+   "fields": {
+    "definition": "A dedicated MIDI controller lane, usually shown beneath the piano-roll, used to view and edit Pitch Bend Change messages that raise or lower the pitch of played notes smoothly. Values run from the center (no bend) to a maximum up or down, with the actual pitch range set by the receiving instrument's bend-range setting.",
+    "plain_english": "The pitch-bend lane is a strip under the notes where you draw how much the pitch slides up or down. It works like the pitch wheel on a keyboard, letting a note glide smoothly instead of jumping.",
+    "purpose_function": "It lets an engineer add or edit smooth pitch slides and expressive bends on a MIDI part after recording. It exists to capture and shape the continuous pitch-wheel gesture separately from the notes themselves.",
+    "practical_application": "A technician draws a rising bend at the end of a synth lead in the pitch-bend lane, then resets stray bend data back to center so following notes play in tune.",
+    "category": "MIDI Editing",
+    "related_terms": ["Pitch bend", "MIDI", "Piano-roll editor", "Modulation", "Controller lane", "Virtual instrument"],
+    "common_mistakes": ["Leaving the bend value away from center at the end of a phrase, so later notes sound out of tune", "Expecting a wide bend when the instrument's bend range is set narrow (often only two semitones)", "Confusing pitch-bend data with note pitch, and editing the wrong one"],
+    "scenario_contexts": ["Adding a guitar-style bend to a synth lead line", "Correcting an accidental pitch-wheel nudge from a live take", "Matching a MIDI bass slide to a recorded audio part"]
+   },
+   "sources": ["MIDI Association / MIDI 1.0 Specification (Pitch Bend Change message)", "Steinberg Cubase Operation Manual (controller lanes)", "Ableton Live Reference Manual (MIDI editing / pitch bend)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f902b393-d587-47aa-883c-943db0a78ee1",
+   "term": "Pre-Roll / Post-Roll (DAW)",
+   "fields": {
+    "definition": "Playback of a set amount of time before (pre-roll) and after (post-roll) a chosen start point, end point, or punch region, so the performer and engineer hear musical context around that spot. The pre-roll and post-roll durations are set in bars or seconds and the transport plays through them without recording over the surrounding material.",
+    "plain_english": "Pre-roll plays a little music before the spot you want to work on, and post-roll plays a little after it. It is like a short run-up and follow-through so a player can get in the groove before recording the fix.",
+    "purpose_function": "It gives performers time to feel the tempo and feel before a punch-in and a natural lead-out after a punch-out, making dropped-in takes tighter. It exists to add musical context around record and edit points instead of starting cold on the beat.",
+    "practical_application": "Before punching in a single guitar phrase, the engineer sets two bars of pre-roll so the player hears the lead-in, and one bar of post-roll so the take ends cleanly.",
+    "category": "Recording",
+    "related_terms": ["Punch in/out", "QuickPunch", "Transport", "Loop recording", "Playhead", "Count-in"],
+    "common_mistakes": ["Setting pre-roll so short the performer cannot lock to the tempo before the punch", "Forgetting post-roll and cutting the take off abruptly at the punch-out", "Confusing pre-roll with a metronome count-in, which is a separate feature"],
+    "scenario_contexts": ["Punching in to fix one line of a vocal without re-singing the whole verse", "Rehearsing a difficult passage in loop mode with lead-in context", "Editing a drop-in on a bass part while keeping the surrounding groove intact"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Pre-Roll and Post-Roll)", "Steinberg Cubase Operation Manual (pre-roll / post-roll and punch)", "Sound On Sound technique articles (punch recording workflow)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9db2fae1-a42a-41bc-9027-0f7579f44bee",
+   "term": "Primary recording volume",
+   "fields": {
+    "definition": "The disk volume (drive or partition) that a DAW is configured to write new audio files to during recording, as opposed to volumes marked only for playback or transfer. It is the main storage target for a session's captured audio and must have the sustained throughput and free space to handle the track count and sample rate in use.",
+    "plain_english": "The primary recording volume is the main hard drive the DAW saves new audio onto while you record. Think of it as the notebook the program writes in, so it must be fast and have plenty of empty pages.",
+    "purpose_function": "It concentrates recorded audio on a drive fast enough to stream many tracks without dropouts and keeps that traffic off the busy system disk. Designating it exists so the DAW knows where to place new recordings and can manage storage reliably.",
+    "practical_application": "A technician sets a dedicated fast SSD or RAID array as the primary recording volume, confirms it has free space for a long multitrack session, and keeps the operating system on a separate drive.",
+    "category": "Storage",
+    "related_terms": ["RAID 1 storage", "RAID 5 storage", "RAID 10 storage", "Sample rate", "Buffer size", "Disk allocation"],
+    "common_mistakes": ["Recording to the same drive as the operating system, causing disk overload and dropouts on high track counts", "Letting the volume fill up mid-session and stopping recording without warning", "Using a slow or nearly full external drive that cannot sustain the needed data rate"],
+    "scenario_contexts": ["Assigning a session's disk allocation to a fast audio drive before a big tracking day", "Choosing a RAID array as the record target for a large film or album session", "Checking free space and drive speed before a live multitrack capture"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (disk allocation / record volumes)", "Avid Knowledge Base technical documentation (storage and drive configuration for recording)", "Steinberg Cubase Operation Manual (record file location / project drives)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e96d0972-390f-4e2e-89d8-2ec90c5dd716",
+   "term": "QuickPunch",
+   "fields": {
+    "definition": "An Avid Pro Tools record mode that continuously records audio in the background during playback, letting the engineer punch in and out instantly and repeatedly by triggering record while the transport rolls. Because it captures a continuous file, the audio right up to each manual punch point is preserved and can be recovered.",
+    "plain_english": "QuickPunch lets you drop in and out of recording on the fly just by hitting record while the song plays. It quietly records the whole time in the background, so nothing you played is lost even if you punch a moment late.",
+    "purpose_function": "It enables fast, hands-free punch recording so a performer can fix parts on the fly without stopping the transport to arm each punch. It exists to make spontaneous, repeated drop-ins reliable and to safeguard audio around the punch points.",
+    "practical_application": "During a vocal comp, the engineer enables QuickPunch and taps record to drop in on each weak line as the song plays, redoing spots instantly without stopping.",
+    "category": "Recording",
+    "related_terms": ["Punch in/out", "Pre-Roll / Post-Roll (DAW)", "Loop recording", "Transport", "Track arming", "Comping"],
+    "common_mistakes": ["Assuming QuickPunch works identically in every DAW; it is a specific Pro Tools mode and other programs name their equivalents differently", "Not track-arming the intended tracks, so punches record nothing", "Relying on it without enough disk headroom, since continuous background recording uses drive throughput"],
+    "scenario_contexts": ["Fixing several short vocal phrases in one pass during a comp session", "Dropping in on a guitar solo mistake without halting playback", "Fast overdub sessions where the artist wants to punch by feel"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (QuickPunch recording mode)", "Avid Knowledge Base technical documentation (record modes)", "Sound On Sound Pro Tools technique articles (punch recording)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ecc9318f-3c1b-42f0-b657-540575ab3e50",
+   "term": "RAID 1 storage",
+   "fields": {
+    "definition": "A storage configuration that mirrors identical data across two (or more) drives at the same time, so every drive holds a full copy. If one drive fails the data remains intact on its mirror, giving redundancy but no gain in usable capacity beyond a single drive.",
+    "plain_english": "RAID 1 keeps the exact same data on two drives at once, like writing your notes in two notebooks. If one drive dies, the other still has everything, so you do not lose your work.",
+    "purpose_function": "It protects against a single drive failure by keeping a live duplicate, so recording or editing can continue without data loss. It exists where uptime and data safety matter more than maximum storage space.",
+    "practical_application": "A studio mirrors its active project drive with RAID 1 so a failed disk does not halt a paid session, while still keeping separate off-drive backups.",
+    "category": "Storage",
+    "related_terms": ["RAID 5 storage", "RAID 10 storage", "Primary recording volume", "Backup", "Redundancy", "Data striping"],
+    "common_mistakes": ["Treating RAID 1 as a backup; it protects against drive failure but not deletion, corruption, or theft, so separate backups are still needed", "Expecting more storage space, when usable capacity equals just one drive", "Ignoring a failed mirror and running unprotected until the second drive also fails"],
+    "scenario_contexts": ["Mirroring an active session drive for a critical recording day", "Protecting a small studio server holding current project files", "Keeping an editing workstation running through a single-disk failure"]
+   },
+   "sources": ["SNIA Dictionary / Common RAID Disk Data Format specifications (RAID 1 mirroring)", "Patterson, Gibson & Katz, 'A Case for Redundant Arrays of Inexpensive Disks (RAID)', UC Berkeley (RAID levels)", "Storage vendor technical documentation (e.g. Seagate/Western Digital RAID level references)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4dc8d733-aa37-4869-8725-3551d4ec79b2",
+   "term": "RAID 10 storage",
+   "fields": {
+    "definition": "A nested storage configuration (RAID 1+0) that combines mirroring and striping: data is striped across multiple mirrored pairs, so it spreads reads and writes for speed while each pair keeps a redundant copy. It needs at least four drives and yields usable capacity equal to about half the total drives.",
+    "plain_english": "RAID 10 pairs drives up as mirrors and then spreads the data across those pairs. This gives both speed and safety, but you only get to use about half of the total drive space.",
+    "purpose_function": "It delivers fast throughput plus redundancy, making it suited to high track-count recording where both speed and drive-failure protection matter. It exists as a balance between performance and data safety at the cost of usable capacity.",
+    "practical_application": "A facility runs a four-drive RAID 10 array as its main recording volume so large sessions stream reliably and a single drive failure does not stop work.",
+    "category": "Storage",
+    "related_terms": ["RAID 1 storage", "RAID 5 storage", "Primary recording volume", "Data striping", "Redundancy", "Throughput"],
+    "common_mistakes": ["Assuming RAID 10 survives any two failures, when the losing pair losing both members still destroys the array", "Overlooking that usable capacity is only about half the raw drive total", "Treating the array as a backup rather than a redundancy layer that still needs separate backups"],
+    "scenario_contexts": ["Serving a large multitrack film or album session that needs fast, safe storage", "A post-production bay editing many simultaneous audio and video streams", "A shared studio server balancing speed and fault tolerance"]
+   },
+   "sources": ["SNIA Dictionary / Common RAID Disk Data Format specifications (nested RAID 1+0)", "Patterson, Gibson & Katz, 'A Case for Redundant Arrays of Inexpensive Disks (RAID)', UC Berkeley", "Storage vendor technical documentation (e.g. Seagate/Western Digital RAID level references)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "801effc7-c6df-4423-bf2e-8ddf5c5a2e2a",
+   "term": "RAID 5 storage",
+   "fields": {
+    "definition": "A storage configuration that stripes data across three or more drives together with distributed parity, so the array can rebuild all data if any single drive fails. Usable capacity equals the total minus one drive's worth of space, giving a mix of capacity, speed, and single-drive fault tolerance.",
+    "plain_english": "RAID 5 spreads data across several drives and adds extra check information so it can rebuild everything if one drive dies. You lose the space of one drive to that safety net, but you keep most of your storage.",
+    "purpose_function": "It offers larger usable capacity than mirroring while still surviving one drive failure, useful for storing many sessions or archives online. It exists as a capacity-efficient balance of storage size and redundancy.",
+    "practical_application": "A studio keeps its shared project and sample library on a RAID 5 array so it holds a lot of data and can rebuild after one disk fails, while still keeping off-array backups.",
+    "category": "Storage",
+    "related_terms": ["RAID 1 storage", "RAID 10 storage", "Primary recording volume", "Parity", "Data striping", "Redundancy"],
+    "common_mistakes": ["Assuming RAID 5 survives two simultaneous failures; a second failure during rebuild loses the whole array", "Using RAID 5 as the sole copy instead of keeping independent backups", "Choosing it for very high write loads where the parity overhead can slow performance"],
+    "scenario_contexts": ["A shared network drive holding many project sessions and libraries", "An archive server that needs capacity plus single-drive protection", "A facility balancing storage cost against fault tolerance"]
+   },
+   "sources": ["SNIA Dictionary / Common RAID Disk Data Format specifications (RAID 5 distributed parity)", "Patterson, Gibson & Katz, 'A Case for Redundant Arrays of Inexpensive Disks (RAID)', UC Berkeley", "Storage vendor technical documentation (e.g. Seagate/Western Digital RAID level references)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,43 @@
+{
+ "expert": "Learning/Cognition",
+ "group": 97,
+ "reviews": [
+  {"id": "e8f53125-b811-43a4-8380-8c872f6aa8ca", "term": "Unmixing", "verdict": "OK", "suggestions": []},
+  {"id": "d052f324-e9ca-43c2-926e-0996636e5845", "term": "Wave-U-Net", "verdict": "OK", "suggestions": []},
+  {"id": "5357e904-024d-4b9e-9ccc-e6da679f67e3", "term": "Key estimation", "verdict": "OK", "suggestions": []},
+  {"id": "a1a8cc58-bbb6-4777-90a2-5d777648e558", "term": "Melody extraction", "verdict": "MINOR", "suggestions": [
+    {"field": "common_mistakes", "severity": "Low", "issue": "The octave-error bullet ends with 'which raw chroma accuracy tolerates but raw pitch accuracy does not,' introducing two undefined evaluation-metric terms (chroma accuracy, raw pitch accuracy) that appear nowhere else in the entry. For an intermediate learner this clause is opaque and spikes cognitive load in what is otherwise a plainly written mistakes list.", "suggestion": "Trim the metric clause so the bullet keeps its useful point without the jargon, e.g. 'Overlooking octave errors, since an estimate can be correct in pitch class yet reported an octave too high or low.'"}
+  ]},
+  {"id": "ce7cf0ab-e049-426c-ae8a-eeebde965ff0", "term": "Acoustic scene classification", "verdict": "OK", "suggestions": []},
+  {"id": "4566d378-a47d-4662-a0f8-ea977eae7979", "term": "Adaptive beamforming", "verdict": "OK", "suggestions": []},
+  {"id": "0eed8a3b-30ea-478a-8440-02c15fa40bbd", "term": "Adaptive filter", "verdict": "OK", "suggestions": []},
+  {"id": "371226ce-739e-48ef-a655-f2e30c8e13da", "term": "All-pass filter network", "verdict": "OK", "suggestions": []},
+  {"id": "8f39f468-5fa3-4dd0-888c-46437266c93d", "term": "Apple Stem Splitter", "verdict": "OK", "suggestions": []},
+  {"id": "9f3f23eb-262a-4bd2-b4a6-8e3139a78d7c", "term": "Attention mechanism", "verdict": "OK", "suggestions": []},
+  {"id": "83c318ec-1ca8-4fca-866d-59aacf17ff5f", "term": "Audio classification", "verdict": "OK", "suggestions": []},
+  {"id": "93576500-a2fb-4d91-9866-7e4e4b60b35e", "term": "Audio embedding", "verdict": "OK", "suggestions": []},
+  {"id": "47ccc170-3d62-4f10-bf98-ad1e89248f1b", "term": "Audio foundation model", "verdict": "OK", "suggestions": []},
+  {"id": "eae26d4b-fcb1-4e69-90e5-88bf68fcabcc", "term": "Audio generation", "verdict": "OK", "suggestions": []},
+  {"id": "b22e27be-7030-48e1-9df8-68698067cc3b", "term": "Audio language model", "verdict": "OK", "suggestions": []},
+  {"id": "a2357a7d-fc8c-43ac-8565-9fb191c95c7a", "term": "Audio regression", "verdict": "OK", "suggestions": []},
+  {"id": "a63a49e5-4fa0-4f19-8914-840d4bc8c555", "term": "Audio segmentation", "verdict": "OK", "suggestions": []},
+  {"id": "9c3f15ec-6e17-49da-956b-5faef8e61f59", "term": "Audio tagging", "verdict": "OK", "suggestions": []},
+  {"id": "a6fd4134-5a12-49f2-9591-19c597486f04", "term": "Audio tokens", "verdict": "OK", "suggestions": []},
+  {"id": "8505a526-0436-4b26-9f61-657ca7955df0", "term": "Autoencoder", "verdict": "OK", "suggestions": []},
+  {"id": "f4e1322c-6639-4bb1-b268-bc76e5f67667", "term": "Bandwidth extension model", "verdict": "OK", "suggestions": []},
+  {"id": "4b615563-ec42-4bd5-9c79-4e02dc05b4d2", "term": "Bass separation model", "verdict": "OK", "suggestions": []},
+  {"id": "c7893120-e6b2-4f2a-8b91-45b327b95143", "term": "Beamforming algorithm", "verdict": "OK", "suggestions": []},
+  {"id": "1ec3d0e5-340d-44bd-8608-c380c37bc706", "term": "Biquad coefficient", "verdict": "OK", "suggestions": []},
+  {"id": "46730394-9f57-4a36-8909-615a0487f173", "term": "Blind source separation", "verdict": "OK", "suggestions": []},
+  {"id": "41cc9a02-acef-47c2-b53c-3a8abb5d13f5", "term": "Boomy", "verdict": "OK", "suggestions": []},
+  {"id": "b1ec672f-9ed2-4b2c-8946-7b6fb3b22734", "term": "Cascaded biquad filter", "verdict": "OK", "suggestions": []},
+  {"id": "e0d08562-208e-4223-8216-c8271040475a", "term": "Cepstral analysis", "verdict": "OK", "suggestions": []},
+  {"id": "515bb1fd-3313-42af-8fad-e5d7d6fa62b5", "term": "Checkpoint", "verdict": "OK", "suggestions": []},
+  {"id": "3b464589-d8ca-4673-8d7f-8c3a96946589", "term": "Codebook", "verdict": "OK", "suggestions": []},
+  {"id": "094dd776-20ea-4631-b438-f2d372c8cb74", "term": "Conditioning", "verdict": "OK", "suggestions": []},
+  {"id": "80e4d24c-59a3-434a-af7e-8b1315f99847", "term": "Convolution engine", "verdict": "OK", "suggestions": []},
+  {"id": "2add02e9-6195-4762-a032-7593f3e8fb32", "term": "Convolutional neural network (CNN)", "verdict": "OK", "suggestions": []},
+  {"id": "53974ab8-8337-4096-a91b-62682523cfdd", "term": "Cubic interpolation", "verdict": "OK", "suggestions": []},
+  {"id": "a5f4fe54-9a97-4e96-bb2b-e6f1af00885d", "term": "Dataset", "verdict": "OK", "suggestions": []}
+ ]
+}

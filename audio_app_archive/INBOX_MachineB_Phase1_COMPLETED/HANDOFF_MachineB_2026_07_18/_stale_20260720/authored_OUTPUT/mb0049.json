@@ -1,0 +1,159 @@
+{
+ "batch": 49,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "48e7ee8f-959d-40dc-878c-49d9b2168389",
+   "term": "Guitar image placement",
+   "fields": {
+    "definition": "The practice of positioning recorded guitar parts at specific points across the stereo field — using panning, and where relevant stereo capture or width tools — so each guitar occupies a distinct location and the mix stays balanced from left to right.",
+    "plain_english": "It means deciding where each guitar sits in the left-to-right stereo picture. Like seating players across a stage, you place one guitar a little left and another a little right so they do not clash.",
+    "purpose_function": "It exists to give each guitar its own space in the stereo field, which improves clarity and makes a mix feel wide and organized instead of crowded in the center.",
+    "practical_application": "A mixing engineer pans a rhythm guitar left and a doubled part right, or spreads a stereo-miked acoustic, then checks the placement in mono to confirm it still balances.",
+    "category": "Stereo Imaging",
+    "related_terms": ["Panning", "Guitar quad tracking", "Guitar layering (EF)", "Double tracking", "Mono compatibility"],
+    "common_mistakes": ["Panning both guitars to the center so they mask each other and the mix sounds narrow.", "Placing guitars hard left and right without checking mono, so they thin out or drop on mono systems.", "Copying one part and hard-panning the copy, which is not true stereo width and can cause comb filtering."],
+    "scenario_contexts": ["Mixing a rock song with two rhythm guitars that need to sit on opposite sides.", "Spreading a stereo-miked acoustic guitar in a singer-songwriter track.", "Checking a club PA in mono to confirm panned guitars still translate."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fecdbdd8-9c47-4bd9-b994-be5fe70cca90",
+   "term": "Guitar layering (EF)",
+   "fields": {
+    "definition": "The technique of recording and combining several guitar parts — such as different takes, tunings, octaves, or clean and distorted tones — into one blended composite that sounds fuller and richer than a single track.",
+    "plain_english": "Layering means stacking several guitar recordings on top of each other to make a bigger sound. It is like several people singing the same tune together instead of just one voice.",
+    "purpose_function": "It exists to add thickness, width, and richness that a single recording cannot provide, and to blend different tones into one cohesive part.",
+    "practical_application": "An engineer might record the same riff on an electric and an acoustic, then blend them so the acoustic adds attack and the electric adds body.",
+    "category": "Arrangement",
+    "related_terms": ["Double tracking", "Guitar quad tracking", "Guitar image placement", "Overdubbing", "Guitar microphone blend (EK)"],
+    "common_mistakes": ["Layering too many parts until the arrangement turns muddy and cluttered.", "Stacking identical tones that add level but no real width or interest.", "Forgetting to check the layers in mono, where phase between them can cause cancellation."],
+    "scenario_contexts": ["Building a wall of guitars for a chorus by stacking clean and distorted takes.", "Adding an octave or capo part under a main acoustic to thicken it.", "Blending a DI and a miked amp of the same performance."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Recording Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "492ffb89-a273-497c-84ad-a39435917d2f",
+   "term": "Guitar low-cut filtering",
+   "fields": {
+    "definition": "The use of a high-pass (low-cut) filter to attenuate low-frequency content below a guitar's useful range — typically rumble, handling noise, and low-end buildup — so the guitar sits cleanly without competing with bass and kick drum.",
+    "plain_english": "It means using a filter to cut the deep low sounds out of a guitar track. That clears room for the bass and kick drum, so the low end does not turn into a muddy blur.",
+    "purpose_function": "It exists to remove unwanted low rumble and free up the low end for instruments that belong there, keeping the mix tight and the guitar defined.",
+    "practical_application": "On an electric rhythm guitar a mixer might set a high-pass filter around 80 to 120 Hz, listening so the body of the tone stays while the boom and rumble go.",
+    "category": "EQ & Filtering",
+    "related_terms": ["High-pass filter", "Guitar mud reduction", "Equalization", "Low-frequency buildup", "Guitar presence enhancement"],
+    "common_mistakes": ["Setting the low-cut too high and thinning out the guitar's natural body.", "Applying the same cut frequency to every guitar regardless of its range.", "Skipping the low-cut and letting rumble and mud pile up with the bass and kick."],
+    "scenario_contexts": ["Cleaning up an acoustic guitar that captured floor rumble and proximity boom.", "Tightening two distorted rhythm guitars so they do not clash with the bass.", "Removing stage or handling noise from a live electric feed."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bca1d755-cd00-4b51-afd0-2c4b7bb1d1cf",
+   "term": "Guitar microphone blend (EK)",
+   "fields": {
+    "definition": "The technique of mixing the outputs of two or more microphones placed on a guitar or its amplifier — or a mic combined with a direct signal — to build a composite tone with more control over body, attack, and air than any single mic provides.",
+    "plain_english": "It means putting more than one microphone on a guitar and mixing them together. Each mic hears the guitar a bit differently. Blending them is like joining a few photos of the same thing into one better picture.",
+    "purpose_function": "It exists to let the engineer shape tone by balancing mics that each capture a different part of the sound, and to add depth or width beyond a single microphone.",
+    "practical_application": "A tracking engineer might blend a dynamic mic close on the speaker cone with a condenser set further back, checking phase and moving mics until the combined tone is right.",
+    "category": "Microphone Technique",
+    "related_terms": ["Phase alignment", "Close miking", "Guitar layering (EF)", "Direct injection (DI)", "Comb filtering"],
+    "common_mistakes": ["Blending mics at different distances without checking polarity, causing phase cancellation and a thin, hollow tone.", "Assuming more mics always sound better instead of choosing what each one adds.", "Ignoring the 3-to-1 distance rule so bleed between mics smears the tone."],
+    "scenario_contexts": ["Recording an electric guitar amp with a close dynamic and a room mic.", "Blending a DI and a miked cabinet for a reamped tone.", "Combining two mics on an acoustic to balance body and string detail."]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2e82965d-24c9-40d0-a044-10b35b9b286b",
+   "term": "Guitar mud reduction",
+   "fields": {
+    "definition": "The practice of attenuating excess low-midrange energy on a guitar — commonly around the 200 to 500 Hz region — where buildup from many instruments makes the mix sound thick, boxy, or muddy, so the guitar stays clear and defined.",
+    "plain_english": "It means turning down the boomy low-middle tones that make a guitar sound thick and cloudy. Clearing that range is like wiping fog off a window so you can hear the guitar clearly.",
+    "purpose_function": "It exists to remove the frequency buildup where many instruments overlap, restoring clarity and separation so the guitar and the whole mix sound cleaner.",
+    "practical_application": "An engineer sweeps an EQ band to find the boxy frequency, usually a few hundred Hz, and cuts a few dB, often carving different amounts on each guitar so they do not stack up.",
+    "category": "EQ & Filtering",
+    "related_terms": ["Equalization", "Guitar low-cut filtering", "Frequency masking", "Low-mid buildup", "Subtractive EQ"],
+    "common_mistakes": ["Cutting so much low-mid that the guitar loses warmth and body.", "Boosting highs to fix mud instead of cutting the offending low-mid range.", "Making the same cut on every track rather than targeting where the buildup actually is."],
+    "scenario_contexts": ["Cleaning up two layered rhythm guitars that sound thick together.", "Fixing a boxy acoustic recorded in a small room.", "Making space for vocals by carving low-mids out of dense guitars."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8e459b6a-0b91-41a2-90f6-3676d1f61583",
+   "term": "Guitar multiband compression",
+   "fields": {
+    "definition": "A dynamics technique that splits a guitar signal into separate frequency bands and compresses each independently, allowing control of the dynamics in one range — such as boomy lows or harsh highs — without affecting the others.",
+    "plain_english": "It means splitting the guitar sound into low, middle, and high ranges and controlling the loudness of each one on its own. It is like having a separate volume knob for each part of the tone, so you can tame just the boomy or harsh bits.",
+    "purpose_function": "It exists to even out problem frequency ranges that a normal single-band compressor would over-process, giving finer control over a guitar's balance and consistency.",
+    "practical_application": "An engineer might set a multiband compressor to tame only the low-mids of a strummed acoustic that jump out on hard hits, leaving the rest of the tone untouched.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Compression", "Guitar mud reduction", "Dynamic EQ", "Sidechain compression", "Multiband processing"],
+    "common_mistakes": ["Compressing every band hard, which squashes the life out of the guitar.", "Reaching for multiband when a simple EQ cut or single-band compressor would do the job.", "Setting the band crossovers carelessly so the tone sounds disjointed."],
+    "scenario_contexts": ["Controlling an acoustic where low strums spike but the high strings stay quiet.", "Taming harsh pick attack in one band without dulling the whole tone.", "Smoothing a bass-heavy DI guitar that fluctuates across a performance."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c19a4ec1-9488-47f4-9c4d-332feab47f1c",
+   "term": "Guitar pick definition",
+   "fields": {
+    "definition": "The clarity and prominence of the pick's attack — the sharp transient produced as the plectrum strikes the strings — in a recorded or mixed guitar sound, often enhanced through mic choice, EQ, or transient shaping.",
+    "plain_english": "It means how clearly you can hear the pick hitting the strings. Good pick definition is like hearing each footstep in a room instead of a soft blur, so the guitar sounds crisp and clear.",
+    "purpose_function": "It exists to keep a guitar sounding articulate and rhythmic, so individual notes and strums cut through the mix instead of turning into a wash.",
+    "practical_application": "To bring out pick definition an engineer may choose a brighter mic position, add a small boost in the upper mids and highs, or use a transient shaper to emphasize the attack.",
+    "category": "Tone Shaping",
+    "related_terms": ["Transient", "Guitar presence enhancement", "Transient shaping", "Attack", "Equalization"],
+    "common_mistakes": ["Boosting highs so hard the pick attack becomes clicky and harsh.", "Over-compressing, which flattens the transient and buries the pick.", "Blaming the mix when a worn pick or dull strings are the real cause of a soft attack."],
+    "scenario_contexts": ["Making a fingerpicked or flatpicked acoustic sound crisp in a busy mix.", "Bringing out palm-muted electric chugs so the rhythm stays tight.", "Restoring attack on a guitar that a heavy compressor softened."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "19c27adb-0033-4b83-8b11-12ffdc9ad5e0",
+   "term": "Guitar presence enhancement",
+   "fields": {
+    "definition": "The boosting or emphasis of a guitar's presence range — roughly 2 to 6 kHz — to increase clarity, attack, and forwardness so the instrument cuts through the mix and feels closer to the listener.",
+    "plain_english": "It means lifting the upper-middle frequencies so the guitar sounds clearer and more up-front. It is like bringing someone a step closer so their voice stands out in a crowded room.",
+    "purpose_function": "It exists to help a guitar stand out and feel present in a dense mix, improving the clarity of notes and attack without raising overall volume.",
+    "practical_application": "A mixer adds a gentle EQ boost in the presence band, listening in the full mix so the guitar comes forward without becoming harsh or brittle.",
+    "category": "EQ & Filtering",
+    "related_terms": ["Presence", "Equalization", "Guitar pick definition", "Frequency masking", "Guitar mud reduction"],
+    "common_mistakes": ["Boosting presence too much, making the guitar harsh and tiring to hear.", "Adding presence while soloing the track instead of in the full mix, so it ends up overdone.", "Pushing presence to fix a dull tone that really needs a better source or mic."],
+    "scenario_contexts": ["Helping a rhythm guitar cut through a wall of instruments in a chorus.", "Bringing a solo forward so it sits above the backing tracks.", "Adding clarity to a dark-sounding humbucker recording."]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9d343e3d-8409-45ac-9808-269557c660c1",
+   "term": "Guitar quad tracking",
+   "fields": {
+    "definition": "The technique of recording four separate performances of the same guitar part and distributing them across the stereo field — typically two panned hard left and two hard right — to create an especially wide, thick, and powerful guitar sound.",
+    "plain_english": "It means playing the same guitar part four times. You then spread the four takes across the stereo picture. Each take is a bit different, so stacking them is like four players at once. That makes the sound huge and wide.",
+    "purpose_function": "It exists to create maximum width and thickness for heavy or layered guitar sections, going beyond simple double tracking by using more independent performances.",
+    "practical_application": "For a heavy chorus a producer records four takes of a riff, pans two hard left and two hard right, and balances them so the section sounds massive but still tight.",
+    "category": "Tracking Technique",
+    "related_terms": ["Double tracking", "Guitar layering (EF)", "Guitar image placement", "Panning", "Overdubbing"],
+    "common_mistakes": ["Copying and pasting one take four times instead of playing separate performances, which gives no real width.", "Sloppy timing between takes that smears the rhythm instead of tightening it.", "Quad tracking parts that do not need it, cluttering the arrangement and eating headroom."],
+    "scenario_contexts": ["Building a massive rhythm guitar bed for a metal or rock chorus.", "Widening a riff so the lead and vocals have room in the center.", "Reinforcing a breakdown section with layered, hard-panned guitars."]
+   },
+   "sources": ["Owsinski, The Recording Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

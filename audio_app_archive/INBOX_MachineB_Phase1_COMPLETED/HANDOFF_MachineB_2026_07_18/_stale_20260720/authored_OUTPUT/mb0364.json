@@ -1,0 +1,314 @@
+{
+ "batch": 364,
+ "topic": "Drums & Percussion",
+ "authored": [
+  {
+   "id": "8864f8f0-2f55-4414-8bec-e6883e0b40bf",
+   "term": "Mbira note pluck",
+   "fields": {
+    "definition": "The plucking of a single tuned metal tongue (lamella or key) of an mbira, an African lamellophone or 'thumb piano', to sound a note; the player depresses and releases the free end of the tine with the thumb or forefinger, setting it vibrating to produce a soft, bell-like pitched tone that decays gradually, often colored by buzzing rattles attached to the instrument.",
+    "plain_english": "It is plucking one metal key of an mbira, an African thumb piano, to play a note. You press the free end of the key with your thumb and let it spring back. The key then rings out like a tiny bell.",
+    "purpose_function": "It is how sound is made on an mbira, since each pluck sets one tuned tongue vibrating, so the length and stiffness of each key fix its pitch and how long the note rings.",
+    "practical_application": "When recording an mbira, engineers close-mic it to capture the quiet pluck and its bell-like decay, add enough gain because each note is low in level, and expect buzzy overtones from the instrument's rattlers.",
+    "category": "Lamellophone technique",
+    "related_terms": [
+     "Kalimba",
+     "Lamellophone",
+     "Thumb piano",
+     "Pluck transient",
+     "Sustain"
+    ],
+    "common_mistakes": [
+     "Treating the mbira as a struck idiophone when its notes are plucked, not hit",
+     "Setting record gain too low, so the soft pluck and its bell-like tail get lost in noise",
+     "Trying to filter out the buzzing rattles, which are part of the instrument's intended sound"
+    ],
+    "scenario_contexts": [
+     "Close-miking a solo mbira for a world-music recording",
+     "Blending an mbira into a pop arrangement so its quiet plucks sit forward",
+     "Sampling individual mbira notes for a virtual instrument"
+    ]
+   },
+   "sources": [
+    "Blades, Percussion Instruments and Their History",
+    "The New Grove Dictionary of Musical Instruments (lamellophone / mbira)",
+    "Fletcher & Rossing, The Physics of Musical Instruments"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "603acfa6-1488-43fe-83d9-d76ff3c1fbb1",
+   "term": "Medium mallet",
+   "fields": {
+    "definition": "A percussion beater of medium hardness whose head — typically yarn or cord wound over a rubber or synthetic core, or a medium-density rubber or felt head — falls between soft and hard mallets, giving a balanced blend of fundamental tone and attack across an instrument's range.",
+    "plain_english": "It is a percussion beater that is neither soft nor hard, but in between. It gives a middle-of-the-road sound, with a good deal of note tone and some attack. That makes it a safe choice for many parts.",
+    "purpose_function": "It offers an all-purpose balance of warmth and clarity, so it serves as a default when a part needs neither the deep tone of a soft mallet nor the bright attack of a hard one.",
+    "practical_application": "A percussionist reaches for medium mallets as a starting point on marimba, vibraphone or timpani, then switches softer or harder if the passage needs more warmth or more articulation.",
+    "category": "Percussion mallet",
+    "related_terms": [
+     "Soft mallet",
+     "Hard mallet",
+     "Yarn mallet",
+     "Timpani mallet",
+     "Marimba"
+    ],
+    "common_mistakes": [
+     "Assuming one medium mallet suits every instrument, when the hardness that balances a marimba may be wrong for a xylophone or timpani",
+     "Choosing mallet hardness by how it looks instead of by the tone and attack the music needs",
+     "Reaching for a mallet harder than the bars can take, which can dent or crack rosewood marimba bars"
+    ],
+    "scenario_contexts": [
+     "Playing a concert-band mallet part that specifies no particular mallet",
+     "Starting a marimba passage with mediums before deciding on softer or harder sticks",
+     "Covering a range of dynamics on vibraphone where mediums balance tone and attack"
+    ]
+   },
+   "sources": [
+    "Yamaha, How to Choose the Right Mallet (educator technical guide)",
+    "Blades, Percussion Instruments and Their History",
+    "Vic Firth keyboard mallet selection guidelines"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1f692303-f2e9-4031-84b4-b28e4e339ce0",
+   "term": "Moose call (glissando)",
+   "fields": {
+    "definition": "A friction-based percussion sound effect — a small friction (string) drum in which a rosined cord passes through a resonating cup or tube; drawing rosined fingers or a cloth along the cord sets it vibrating, and varying its tension produces a continuous roaring or bellowing glissando that imitates the call of a moose or similar animal.",
+    "plain_english": "It is a noisemaker that growls and slides in pitch, like a moose call. You rub a sticky string that runs through a small drum or cup. The pitch then swoops up or down in one smooth glide.",
+    "purpose_function": "It exists to add an animal-like roaring glissando to a piece or sound cue, giving players a controllable voice that slides smoothly in pitch rather than sounding fixed notes.",
+    "practical_application": "A percussionist or foley artist makes the call by drawing rosined fingers or a cloth along the cord, controlling tension for the pitch sweep, and mics it closely because the sound is soft and detailed.",
+    "category": "Friction drum effect",
+    "related_terms": [
+     "Friction drum",
+     "Lion's roar",
+     "Cuica",
+     "Glissando",
+     "Waterphone"
+    ],
+    "common_mistakes": [
+     "Expecting fixed pitches, when the moose call is a glissando effect rather than a tuned instrument",
+     "Using too little rosin, so the cord slips and the roar will not speak",
+     "Miking too far away, so the quiet friction sound is lost"
+    ],
+    "scenario_contexts": [
+     "Adding an animal-call effect to a film or theatre score",
+     "A percussionist covering a sound-effect part in a contemporary piece",
+     "Foley work needing a controllable roaring glissando"
+    ]
+   },
+   "sources": [
+    "Blades, Percussion Instruments and Their History (friction drums)",
+    "The New Grove Dictionary of Musical Instruments (friction drum / lion's roar)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7a635427-6a90-459c-ab91-5a98543f4aa0",
+   "term": "Motor noise",
+   "fields": {
+    "definition": "Unwanted sound generated by an electric motor and captured by microphones — mechanical hum, bearing rattle or brush and commutator buzz, plus any radiated electrical interference; in percussion it most often refers to the audible noise of a vibraphone's motor, which spins the fans that create the instrument's vibrato.",
+    "plain_english": "It is the extra humming or whirring a motor makes that a mic can pick up by mistake. On a vibraphone, it is the whir of the small motor that spins the fans for the wobble effect.",
+    "purpose_function": "Naming it helps technicians spot and control it, because motor noise is a fault to be minimized, not a wanted sound, and it muddies quiet passages and reveals that a motor is running.",
+    "practical_application": "When close-miking a vibraphone, engineers aim mics away from the motor housing, may run the motor slower or switch it off for still passages, and service worn bearings that rattle.",
+    "category": "Noise source",
+    "related_terms": [
+     "Vibraphone motor",
+     "Vibrato",
+     "Signal-to-noise ratio",
+     "Mechanical noise",
+     "Hum"
+    ],
+    "common_mistakes": [
+     "Blaming electrical hum for a whir that is really the vibraphone's mechanical motor noise",
+     "Leaving the motor running during quiet passages where its noise is exposed",
+     "Placing the mic right by the motor housing instead of over the bars"
+    ],
+    "scenario_contexts": [
+     "Recording a soft solo vibraphone passage where the motor whir becomes audible",
+     "Troubleshooting a rattle traced to worn motor bearings",
+     "Deciding whether to run the vibraphone motor for a given track"
+    ]
+   },
+   "sources": [
+    "Yamaha vibraphone technical guide (motor and fans)",
+    "Blades, Percussion Instruments and Their History (vibraphone)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e38f2742-b6a3-4dd3-9947-a48379e6c4ec",
+   "term": "Na (tabla)",
+   "fields": {
+    "definition": "A tabla bol (stroke-syllable) played on the dayan, the smaller right-hand treble drum: the index finger strikes the kinar (outer rim) while another finger rests lightly on the syahi to suppress the fundamental, producing a clear, ringing, resonant tone at the drum's tuned pitch.",
+    "plain_english": "It is one of the named strokes on the tabla, the small right-hand drum. You tap the outer edge with a finger while another finger touches the black spot. The drum then rings with a clear, bell-like note.",
+    "purpose_function": "It gives the player a bright, ringing open sound at the drum's pitch, and it is a basic building block of tabla rhythmic patterns and the spoken drum language.",
+    "practical_application": "A player produces Na by striking the rim with the index finger, and an engineer mics the dayan to catch this stroke's ringing, pitched sustain while keeping finger noise low.",
+    "category": "Tabla stroke",
+    "related_terms": [
+     "Tabla",
+     "Dayan",
+     "Syahi",
+     "Bol",
+     "Bayan"
+    ],
+    "common_mistakes": [
+     "Damping the whole head, which kills the ring that defines Na",
+     "Confusing Na with the damped, non-ringing strokes such as Te or Ka",
+     "Striking the center instead of the rim, which loses the clear pitched tone"
+    ],
+    "scenario_contexts": [
+     "Learning tabla bols and reciting rhythmic compositions",
+     "Miking a tabla so the dayan's ringing strokes come through",
+     "Building a tabla sample library with correct open-stroke articulations"
+    ]
+   },
+   "sources": [
+    "The New Grove Dictionary of Musical Instruments (tabla)",
+    "Blades, Percussion Instruments and Their History (tabla)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5290fd2c-070c-4ebb-93c3-b7dea1c394b8",
+   "term": "Open tone",
+   "fields": {
+    "definition": "A fundamental hand-drum stroke on instruments such as conga, djembe and bongo in which the fingers strike the head near the edge and rebound off immediately, letting the head ring freely to produce a clear, resonant, pitched tone that is the drum's characteristic 'singing' note.",
+    "plain_english": "It is the clear, ringing note you get on a hand drum like a conga or djembe. You hit near the edge with your fingers and let your hand bounce right off. The drumhead then sings out its pitch.",
+    "purpose_function": "It provides the drum's main resonant, pitched voice, contrasting with the sharp slap and the deep bass tone, so a single drum can carry singing lines within a rhythm.",
+    "practical_application": "A player gets a good open tone by striking at the edge and lifting off cleanly, and an engineer mics a conga or djembe to capture the open tone's ring while balancing the slap and bass strokes.",
+    "category": "Hand-drum stroke",
+    "related_terms": [
+     "Slap tone",
+     "Bass tone",
+     "Conga",
+     "Djembe",
+     "Muted tone"
+    ],
+    "common_mistakes": [
+     "Leaving the hand on the head after the strike, which chokes the ring and dulls the tone",
+     "Striking too far toward the center, which gives a dead thud instead of a clear open tone",
+     "Confusing the open tone with the slap, when the slap is sharp and high and the open tone is round and pitched"
+    ],
+    "scenario_contexts": [
+     "Playing a conga tumbao where open tones carry the melodic line",
+     "Miking a djembe so open tones ring without excess low thump",
+     "Teaching the three basic hand-drum sounds: bass, open tone and slap"
+    ]
+   },
+   "sources": [
+    "Blades, Percussion Instruments and Their History",
+    "The New Grove Dictionary of Musical Instruments (conga / djembe)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "675be25f-644f-4da4-aa0d-a4baf06b9663",
+   "term": "Paila",
+   "fields": {
+    "definition": "A Spanish term (literally a metal pan or kettle) for the Cuban timbales — the pair of shallow, single-headed, metal-shelled drums, also called 'pailas criollas', played with sticks and mounted on a stand; by extension it also names the metal shell of the drum, the surface struck for the sharp 'cascara' shell pattern.",
+    "plain_english": "It is another name for timbales, the shallow metal Cuban drums played with sticks. The word means a metal pan. Players also use it for the metal side of the drum that they tap for the clicky shell pattern.",
+    "purpose_function": "The metal-shelled paila gives timbales their bright, cutting tone and lets the player switch between ringing head strokes and the sharp cascara pattern on the shell, driving Latin dance rhythms.",
+    "practical_application": "A timbalero plays both heads and shells with sticks, and an engineer mics the timbales to catch the head tone and the bright cascara on the shell, watching levels because shell strokes are sharp and loud.",
+    "category": "Latin percussion",
+    "related_terms": [
+     "Timbales",
+     "Cascara",
+     "Cowbell",
+     "Bongos",
+     "Conga"
+    ],
+    "common_mistakes": [
+     "Thinking paila is a different instrument from timbales, when it is the Cuban name for them",
+     "Miking only the heads and missing the bright cascara played on the metal shell",
+     "Setting one gain for the heads and forgetting that shell strokes peak much louder"
+    ],
+    "scenario_contexts": [
+     "Recording a salsa band's timbales section",
+     "A timbalero switching between head tones and shell (cascara) patterns",
+     "Balancing bright shell strokes against the rest of a Latin percussion mix"
+    ]
+   },
+   "sources": [
+    "The New Grove Dictionary of Musical Instruments (timbales)",
+    "Blades, Percussion Instruments and Their History"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ece2316e-2edc-4d66-b050-94804a61ec1b",
+   "term": "Pedal damping",
+   "fields": {
+    "definition": "On the vibraphone, the use of the foot pedal to operate a felt-covered damper bar running beneath the tone bars: with the pedal released a spring holds the damper against the bars so notes sound short and damped, and pressing the pedal lowers the damper away so notes ring and sustain, giving control of note length much like a piano's sustain pedal.",
+    "plain_english": "It is using a foot pedal on a vibraphone to control how long the notes ring. A soft bar presses the metal keys to stop them. Pressing the pedal lifts that bar away so the notes sustain, just like a piano's sustain pedal.",
+    "purpose_function": "It gives the vibraphonist control over note length and legato — sustaining, connecting or cutting off notes — since the metal bars would otherwise ring on for a long time by themselves.",
+    "practical_application": "A vibraphonist works the pedal together with hand and mallet dampening to phrase lines cleanly and avoid a blur of overlapping notes, and engineers place mics to keep the pedal mechanism's thump low.",
+    "category": "Damping technique",
+    "related_terms": [
+     "Vibraphone",
+     "Damper bar",
+     "Sustain pedal",
+     "Mallet dampening",
+     "Motor noise"
+    ],
+    "common_mistakes": [
+     "Leaving the pedal down constantly, so notes pile up into a muddy wash",
+     "Relying only on the pedal and neglecting hand or mallet dampening for single-note control",
+     "Lifting the damper too slowly between chords, which smears one harmony into the next"
+    ],
+    "scenario_contexts": [
+     "Playing a legato vibraphone ballad that needs pedaling for smooth phrasing",
+     "Cutting off a chord cleanly on a rhythmic figure with the pedal",
+     "Combining pedal and mallet dampening to control which notes ring"
+    ]
+   },
+   "sources": [
+    "Yamaha vibraphone technical guide (damper and pedal)",
+    "Blades, Percussion Instruments and Their History (vibraphone)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dd63fd9f-909b-4bc8-b1ad-ff1bae85999b",
+   "term": "Rainstick hiss",
+   "fields": {
+    "definition": "The soft, continuous, rushing and rattling sound produced by a rainstick — a sealed tube fitted with internal pins or thorns and filled with small beads, seeds or pebbles — when it is slowly tilted so the contents cascade down past the pins, imitating the sound of falling rain.",
+    "plain_english": "It is the gentle, rushing 'shhh' a rainstick makes, like rain falling. When you tip the tube, little beads trickle down past pins inside and hiss softly.",
+    "purpose_function": "This hiss is the rainstick's whole purpose — a soft, pitchless wash of sound used for atmosphere, texture and gentle transitions rather than a definite rhythm or pitch.",
+    "practical_application": "A player tilts the rainstick at different angles to speed up or slow down the hiss, and an engineer close-mics it, adds gain because the sound is quiet and broadband, and keeps handling noise in check.",
+    "category": "Shaken idiophone",
+    "related_terms": [
+     "Shaker",
+     "Cabasa",
+     "Ocean drum",
+     "Maraca",
+     "Idiophone"
+    ],
+    "common_mistakes": [
+     "Tilting too fast, which turns the gentle hiss into a rattly dump of beads",
+     "Under-gaining the quiet, broadband hiss so it disappears in the mix",
+     "Treating the rainstick as a rhythmic instrument rather than a sustained texture"
+    ],
+    "scenario_contexts": [
+     "Adding a rainfall-like texture to an ambient or film cue",
+     "Close-miking a rainstick for a nature-sound recording",
+     "Using the hiss as a soft transition between song sections"
+    ]
+   },
+   "sources": [
+    "Blades, Percussion Instruments and Their History",
+    "The New Grove Dictionary of Musical Instruments (shaken idiophones)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

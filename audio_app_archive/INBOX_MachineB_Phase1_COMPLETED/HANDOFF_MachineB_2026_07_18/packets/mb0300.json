@@ -1,0 +1,81 @@
+{
+ "batch": 300,
+ "topic": "Synthesis Types, Modular & CV",
+ "terms": [
+  {
+   "id": "12f718e7-37d8-4f0f-9b07-0adc65f40651",
+   "term": "5U modular",
+   "topic": "Synthesis Types, Modular & CV",
+   "seq": 1400,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "be673112-5587-436e-a265-46acc4689119",
+   "term": "Eurorack",
+   "topic": "Synthesis Types, Modular & CV",
+   "seq": 1400,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "3eaab9fa-2e5a-4d6a-a9bb-8c0b3b4f3fd4",
+   "term": "Trigger",
+   "topic": "Synthesis Types, Modular & CV",
+   "seq": 1400,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

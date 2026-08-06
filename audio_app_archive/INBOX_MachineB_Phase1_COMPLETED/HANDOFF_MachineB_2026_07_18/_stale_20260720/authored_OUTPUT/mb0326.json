@@ -1,0 +1,241 @@
+{
+ "batch": 326,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "05473c2c-ac52-4a9d-8423-88890e2f3071",
+   "term": "Bridge resonance",
+   "fields": {
+    "definition": "A mechanical resonance of an instrument's bridge, the part that transmits string vibration to the body or soundboard. On bowed and plucked string instruments the bridge has its own vibrational modes; the violin's broad 'bridge hill' near 2 to 3 kHz, for example, boosts a band of frequencies and shapes the instrument's brightness and radiated tone.",
+    "plain_english": "The bridge is the small part that carries a string's shaking into the body. It shakes most easily at a few certain notes. Those notes get a small boost. That helps set how bright the instrument sounds.",
+    "purpose_function": "It explains why the bridge is more than a passive support: its resonant modes filter and color the vibration passing from the strings to the body, strongly influencing timbre and radiated output in a certain frequency range.",
+    "practical_application": "Luthiers tune bridge mass and cutouts to place this resonance where it flatters an instrument, and engineers hear it as a brightness peak when close-miking violins, guitars, or basses.",
+    "category": "Resonance",
+    "related_terms": ["Cabinet resonance", "Sympathetic resonance", "Wolf tone", "Sustain", "Timbre"],
+    "common_mistakes": [
+     "Assuming the bridge only transfers vibration and has no tone of its own",
+     "Confusing bridge resonance with a body or air resonance of the instrument",
+     "Trying to EQ out a brightness peak that is actually a natural, desirable bridge resonance"
+    ],
+    "scenario_contexts": [
+     "Close-miking a violin and hearing a harsh 2 to 3 kHz brightness peak from the bridge hill",
+     "A luthier filing a bridge to shift its resonance and tame or brighten an instrument",
+     "Identifying why a plucked bass note has an emphasized band of overtones"
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Woodhouse, 'On the Bridge Hill of the Violin', Acta Acustica united with Acustica"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0da583a6-e51a-4675-91dd-b4dd2b01971d",
+   "term": "brown sound",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No acceptable source (standards body, manufacturer technical doc, or recognised professional text) defines 'brown sound'. It appears only as a colloquial guitar-tone term (associated with Eddie Van Halen) in forums, blogs, vendor marketing (e.g. BOSS), and fan wikis, none of which count as corroboration. All fields (definition, plain_english, purpose_function, practical_application, category, related_terms, common_mistakes, scenario_contexts) left blank pending an acceptable source."
+   ]
+  },
+  {
+   "id": "0977a261-7188-4c12-8742-7145ba6dd75a",
+   "term": "Brush sweep",
+   "fields": {
+    "definition": "A drum-brush technique in which the wire or nylon brush is dragged or swept across the drumhead, usually the snare, producing a continuous, sustained 'shhh' sound rather than a distinct attack. It creates legato texture and a soft, airy sustain used heavily in jazz and ballad playing.",
+    "plain_english": "This is when a drummer slides a wire brush across the drum skin instead of hitting it. It makes a smooth, hissing sound that keeps going. Think of it like softly sweeping a broom across the floor.",
+    "purpose_function": "It lets a drummer produce sustained sound and a smooth pulse with almost no sharp attack, filling a role a stick cannot in quiet, intimate music.",
+    "practical_application": "Engineers close-mic the snare and often add a room or overhead mic to catch the delicate high-frequency swish, and ease off heavy gating and compression so the quiet sweep is not chopped up or over-emphasized.",
+    "category": "Articulation",
+    "related_terms": ["Brush tap", "Attack", "Sustain", "Transient", "Ghost note"],
+    "common_mistakes": [
+     "Gating the snare so aggressively that the continuous sweep is chopped up or lost",
+     "Confusing the sustained sweep with the short brush-tap stroke",
+     "Over-compressing the channel so the quiet swish jumps forward unnaturally"
+    ],
+    "scenario_contexts": [
+     "Recording a jazz ballad where brushes provide a soft, sustained pulse",
+     "Choosing brushes over sticks to keep a low stage volume in an acoustic set",
+     "Miking a snare to capture the airy high-frequency swish of a sweep"
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8a4a1117-5ac9-463a-ad94-45ddcb175d7a",
+   "term": "Brush tap",
+   "fields": {
+    "definition": "A drum-brush technique in which the brush strikes the head with a short, defined stroke, giving a soft but distinct attack, a percussive tap rather than the sustained swish of a sweep. It is the brush equivalent of a stick stroke, providing rhythmic definition with a gentler transient.",
+    "plain_english": "This is a quick, light hit on the drum with a brush. It gives a soft but clear tap, not a long hiss. It is like tapping a table with your fingertips instead of your whole hand.",
+    "purpose_function": "It provides clear rhythmic accents and note definition at low volume, letting a drummer mark the beat without the loud attack of a wooden stick.",
+    "practical_application": "Drummers combine taps with sweeps to keep time, and engineers set gain and gating so the soft taps still register cleanly above the noise floor when the kit is quiet.",
+    "category": "Articulation",
+    "related_terms": ["Brush sweep", "Attack", "Transient", "Ghost note", "Accent"],
+    "common_mistakes": [
+     "Confusing the short tap with the continuous sweep stroke",
+     "Setting a gate threshold so high that quiet taps fail to open it",
+     "Expecting a brush tap to cut through a loud mix like a stick rimshot"
+    ],
+    "scenario_contexts": [
+     "Marking beats 2 and 4 with light taps during a brushed jazz groove",
+     "Playing a quiet dinner set where stick attack would be too loud",
+     "Setting mic gain so soft brush taps stay above the noise floor"
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cd48e255-4c89-4cb6-b06b-821b63a2c7aa",
+   "term": "Cabinet rattle",
+   "fields": {
+    "definition": "An unwanted mechanical buzz or rattle radiated by a loudspeaker or instrument-amplifier cabinet when a loose panel, grille, screw, port, or internal part vibrates against another surface at certain frequencies and levels. It is a defect or artifact, distinct from the intended sound of the driver.",
+    "plain_english": "This is a buzzing or rattling noise from a speaker box, not from the speaker cone itself. It happens when a loose panel, screw, or part shakes and knocks at some notes or volumes. It is like a loose window buzzing when a truck drives past.",
+    "purpose_function": "As a diagnostic term it names a specific fault so technicians can tell enclosure buzz apart from driver distortion, then locate and fix the loose part.",
+    "practical_application": "A tech isolates a rattle by sweeping a sine tone to find the offending frequency, then tightens screws, reseats the grille, or damps the panel; a persistent low-frequency rattle can also signal a damaged driver.",
+    "category": "Artifact",
+    "related_terms": ["Cabinet resonance", "Buzz", "Distortion", "Sine sweep", "Voice-coil rub"],
+    "common_mistakes": [
+     "Blaming the driver for a buzz that is actually a loose cabinet screw or grille",
+     "Assuming a rattle heard at one frequency means the speaker is blown",
+     "Not sweeping a test tone, so the exact rattle frequency is never found"
+    ],
+    "scenario_contexts": [
+     "A PA cabinet buzzes only on a specific bass note during soundcheck",
+     "A guitar amp head rattles when a tube or panel screw works loose",
+     "Sine-sweeping a monitor to trace a rattle before a show"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Colloms, High Performance Loudspeakers (Wiley)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "277ba744-93ab-4e1a-88d7-1df34760f389",
+   "term": "Cabinet resonance",
+   "fields": {
+    "definition": "The natural resonant vibration of a loudspeaker enclosure's walls, excited by the driver and internal air pressure, which radiates sound of its own and colors the reproduced signal. Panel modes typically fall in the lower midrange and add unwanted coloration or 'boxiness'.",
+    "plain_english": "Every speaker box has notes where its walls like to shake on their own. When the speaker drives those notes, the box adds its own sound on top. That extra ringing can make things sound boxy, like singing inside a cardboard box.",
+    "purpose_function": "Naming this behavior lets designers and techs account for enclosure coloration; controlling it with bracing, damping, and stiffer panels is a key goal of good cabinet design, and the payoff is a cleaner, more neutral response.",
+    "practical_application": "Designers brace and damp panels to push resonances up in frequency and lower their level, while a tech may feel a buzzing panel by hand or measure a response bump caused by wall vibration.",
+    "category": "Resonance",
+    "related_terms": ["Cabinet rattle", "Standing wave", "Damping", "Coloration", "Bridge resonance"],
+    "common_mistakes": [
+     "Confusing panel resonance (the box vibrating) with standing waves inside the enclosure's air",
+     "Thinking a heavier box is always deader, when stiffness and damping matter more than mass alone",
+     "Ignoring low-midrange coloration and blaming it entirely on the driver or the room"
+    ],
+    "scenario_contexts": [
+     "Feeling a studio monitor's side panel buzz on sustained bass notes",
+     "A designer adding internal bracing to reduce a measured response bump",
+     "Diagnosing a 'boxy' coloration in a subwoofer enclosure"
+    ]
+   },
+   "sources": [
+    "Colloms, High Performance Loudspeakers (Wiley)",
+    "Ballou, Handbook for Sound Engineers",
+    "AES literature on loudspeaker enclosure panel resonance"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a1c234f9-605f-4467-9e23-a3062b889d91",
+   "term": "Chick",
+   "fields": {
+    "definition": "The short, crisp 'chick' sound produced by closing the two hi-hat cymbals with the foot pedal, without a stick strike. It is a percussive, damped attack with almost no sustain, used to mark time, most classically on beats 2 and 4.",
+    "plain_english": "This is the tight 'chick' noise a drummer makes by pressing the hi-hat cymbals together with a foot pedal. There is no long ring, just a short, snappy sound. It is like quickly clapping two cymbals shut.",
+    "purpose_function": "It gives the drummer a steady timekeeping accent using the foot, freeing the hands and adding a crisp pulse that anchors the groove.",
+    "practical_application": "Engineers place the hi-hat mic to catch this foot chick cleanly without too much snare bleed, and program it as a separate articulation when sequencing electronic drums.",
+    "category": "Articulation",
+    "related_terms": ["Hi-hat", "Attack", "Transient", "Choked decay", "Bleed"],
+    "common_mistakes": [
+     "Confusing the foot 'chick' with a stick-struck closed hi-hat note",
+     "Positioning the hi-hat mic where snare bleed drowns out the chick",
+     "Expecting the chick to have audible sustain, when it is a damped, short sound"
+    ],
+    "scenario_contexts": [
+     "A jazz drummer marking beats 2 and 4 with foot chicks",
+     "Setting hi-hat mic angle to reduce snare bleed while keeping the chick",
+     "Sequencing a drum machine and choosing the pedal-chick sample"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Grove Dictionary of Music and Musicians (hi-hat)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6572ac61-746f-443b-93de-3a2fc816a48e",
+   "term": "chime",
+   "fields": {
+    "definition": "A clear, bell-like tone marked by a bright, ringing sustain rich in high, largely inharmonic partials and a slow decay. As an instrument, 'chimes' (tubular bells) are tuned metal tubes struck to produce such tones; as a descriptor, 'chime' names this shimmering, resonant quality in other sounds.",
+    "plain_english": "A chime is a bright, ringing, bell-like sound that hangs in the air. Its tone is clear and shimmering and fades slowly. Think of the ring of a wind chime or a struck metal tube.",
+    "purpose_function": "The term identifies a bell-like resonant character, used to name orchestral tubular bells or to describe a shimmering, ringing quality engineers hear in guitars, cymbals, or synth patches.",
+    "practical_application": "A technician might reach for the word 'chime' to describe a bright, ringing high end, and would mic tubular bells from a little distance to capture their long, resonant decay.",
+    "category": "Timbre",
+    "related_terms": ["Sustain", "Decay", "Partials", "Resonance", "Timbre"],
+    "common_mistakes": [
+     "Assuming a chime's partials are harmonic like a string, when tubular bells are strongly inharmonic",
+     "Confusing the descriptive 'chime' quality with one specific instrument",
+     "Over-brightening a mix chasing 'chime' until it becomes harsh"
+    ],
+    "scenario_contexts": [
+     "Describing the bright, ringing top end of a clean electric guitar",
+     "Miking tubular bells to capture their long, bell-like decay",
+     "Dialing a synth patch for a shimmering, chiming texture"
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Rossing, 'Acoustics of chimes', Journal of the Acoustical Society of America"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "80d428cb-3445-410b-bc42-92c9d2ad6fae",
+   "term": "Choked decay",
+   "fields": {
+    "definition": "A resonant sound whose natural decay is abruptly cut short by damping rather than allowed to ring out fully. The classic example is the cymbal 'choke', grabbing the cymbal right after striking it, but the term applies to any note or resonance whose sustain is deliberately or accidentally clamped.",
+    "plain_english": "This is when a ringing sound is stopped short instead of fading away on its own. A drummer grabbing a cymbal right after hitting it is the classic case. It is like pressing your hand on a struck bell to silence it.",
+    "purpose_function": "As an effect it creates a sharp, punctuated accent by removing sustain; as a diagnostic term it flags when a sound is being damped too soon, on purpose or by a fault.",
+    "practical_application": "Drummers choke cymbals for stabs and stops, and engineers recreate the effect with fast gating or volume automation; a tech also uses the term when a resonance is unintentionally muted by a damaged or over-damped part.",
+    "category": "Decay",
+    "related_terms": ["Decay", "Sustain", "Damping", "Gate", "Chick"],
+    "common_mistakes": [
+     "Confusing a choked (damped) decay with a naturally short decay",
+     "UNSAFE: grabbing a cracked cymbal barehanded to choke it, as the sharp edge can cut the hand",
+     "Setting too fast a gate release, so sustained notes are unintentionally choked"
+    ],
+    "scenario_contexts": [
+     "A drummer choking a crash for a sharp stop at the end of a phrase",
+     "Programming fast gating to emulate a choked cymbal in a mix",
+     "Diagnosing why a tom's sustain dies too quickly from over-damping"
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

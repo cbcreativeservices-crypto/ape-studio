@@ -19,7 +19,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import type { MeterModuleProps } from '../MeterModuleScreen';
 import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
-import { LabChip } from '../../LabShell';
+import { LabChip, CollapsibleSection } from '../../LabShell';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import { requireVizSpectral, type VizSpectralModule } from '../skiaGate';
 import {
@@ -38,7 +38,6 @@ import {
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared pure helpers (no Skia — safe on every client)
 
-const SYNTH_BADGE = 'SYNTHESIZED TEACHING PATTERN — deterministic, for pattern study';
 
 function fmtHz(f: number): string {
   return f >= 1000 ? `${(f / 1000).toFixed(f >= 10000 ? 0 : 1)} kHz` : `${Math.round(f)} Hz`;
@@ -134,10 +133,11 @@ function SpectrumViz({ viz, width, pattern, running }: { viz: VizSpectralModule;
   return <viz.SpectrumPatternView width={width} pattern={pattern} phase={phase} />;
 }
 
-function SpectrogramViz({ viz, width, pattern, running }: { viz: VizSpectralModule; width: number; pattern: SpectrogramKey; running: boolean }) {
-  // Slow scroll cursor across the filmed spectrum.
-  const phase = viz.usePhaseClock(running, 0.15);
-  return <viz.SpectrogramPatternView width={width} pattern={pattern} phase={phase} />;
+function SpectrogramViz({ viz, width, pattern, running, mode }: { viz: VizSpectralModule; width: number; pattern: SpectrogramKey; running: boolean; mode: 'scroll' | 'snapshot' }) {
+  // 0.2 Hz → an exactly 5-second loop (owner 2026-08-05): scroll mode rolls
+  // the last 5 s off to the left; snapshot shows the full 5 s at once.
+  const phase = viz.usePhaseClock(running, 0.2);
+  return <viz.SpectrogramPatternView width={width} pattern={pattern} phase={phase} mode={mode} />;
 }
 
 function WaterfallViz({ viz, width, opts, running }: { viz: VizSpectralModule; width: number; opts: WaterfallOpts; running: boolean }) {
@@ -225,7 +225,6 @@ export function SpectrumModule(p: MeterModuleProps) {
         </Text>
         {viz ? <SpectrumViz viz={viz} width={p.width} pattern={pattern} running={p.focused} /> : <VizUnavailableCard />}
         <DisplayGuideButton onPress={() => p.help('spectrum_read')} />
-        <Badge text={SYNTH_BADGE} />
         <View style={dstyles.chipRow}>
           {SPECTRUM_KEYS.map((k) => (
             <LabChip
@@ -249,8 +248,7 @@ export function SpectrumModule(p: MeterModuleProps) {
         />
       </PanelCard>
 
-      <PanelCard>
-        <SectionHead title="WHAT TO LOOK FOR" onHelp={() => p.help('spectrum_read')} />
+      <CollapsibleSection title="WHAT TO LOOK FOR" onHelp={() => p.help('spectrum_read')}>
         <Text style={dstyles.body}>Three questions decode any spectrum:</Text>
         {LOOK_FOR.map((q, i) => (
           <View key={i} style={styles.lookRow}>
@@ -258,7 +256,7 @@ export function SpectrumModule(p: MeterModuleProps) {
             <Text style={[dstyles.body, { flex: 1 }]}>{q}</Text>
           </View>
         ))}
-      </PanelCard>
+      </CollapsibleSection>
 
       <CommonMistakes items={SPECTRUM_MISTAKES} />
       <CheckQuestion spec={CHECK_SPECTRUM_ID} />
@@ -324,36 +322,58 @@ const SPECTROGRAM_MISTAKES = [
 export function SpectrogramModule(p: MeterModuleProps) {
   const viz = useState(() => requireVizSpectral())[0];
   const [pattern, setPattern] = useState<SpectrogramKey>('speech');
+  // ELAPSED TIME (scrolling — the real-world behavior) vs SNAPSHOT (the full
+  // 5 s picture at once, for comparing the complete pattern). Owner 2026-08-05.
+  const [snapshot, setSnapshot] = useState(false);
 
   return (
     <View style={styles.stack}>
       {/* AXES FIRST — before any pattern. The whole module hinges on this. */}
-      <PanelCard>
-        <SectionHead title="READ THE AXES FIRST" onHelp={() => p.help('spectrogram_axes')} />
+      <CollapsibleSection title="READ THE AXES FIRST" onHelp={() => p.help('spectrogram_axes')}>
         <Text style={dstyles.body}>
-          Time runs HORIZONTAL (left = earlier, right = later). Frequency runs VERTICAL (low at the bottom, high at the
-          top). Loudness is the COLOR — brighter = louder. The #1 error in all of metering is reading a spectrogram like a
+          Time runs HORIZONTAL — the newest moment is at the RIGHT edge and older sound scrolls off to
+          the LEFT. Frequency runs VERTICAL (low at the bottom, high at the top). Loudness is the
+          COLOR — brighter = louder. The #1 error in all of metering is reading a spectrogram like a
           waveform, where up means loud. Here, up means HIGH-PITCHED.
         </Text>
         <ReadoutGrid
           help={p.help}
           helpKey="spectrogram_axes"
           items={[
-            { k: 'TIME', v: '→ across' },
+            { k: 'TIME', v: 'new → right' },
             { k: 'FREQUENCY', v: '↑ up' },
             { k: 'LEVEL', v: '= color' },
           ]}
         />
-      </PanelCard>
+      </CollapsibleSection>
 
       <PanelCard>
         <SectionHead title="PATTERN LIBRARY" onHelp={() => p.help('spectrogram_patterns')} />
         <Text style={dstyles.body}>
           Six sounds, filmed over time. Learn how each one PAINTS and you can identify a sound from the picture alone.
         </Text>
-        {viz ? <SpectrogramViz viz={viz} width={p.width} pattern={pattern} running={p.focused} /> : <VizUnavailableCard />}
+        {viz ? (
+          <SpectrogramViz viz={viz} width={p.width} pattern={pattern} running={p.focused} mode={snapshot ? 'snapshot' : 'scroll'} />
+        ) : (
+          <VizUnavailableCard />
+        )}
         <DisplayGuideButton onPress={() => p.help('spectrogram_axes')} />
-        <Badge text={SYNTH_BADGE} />
+        {/* ELAPSED TIME = real-world scrolling (new at the right, rolls left);
+            SNAPSHOT = the full 5 s picture at once for comparison. */}
+        <View style={dstyles.chipRow}>
+          <LabChip
+            label="ELAPSED TIME"
+            selected={!snapshot}
+            onPress={() => setSnapshot(false)}
+            onLongPress={() => p.help('spectrogram_axes')}
+          />
+          <LabChip
+            label="SNAPSHOT — FULL 5 s"
+            selected={snapshot}
+            onPress={() => setSnapshot(true)}
+            onLongPress={() => p.help('spectrogram_axes')}
+          />
+        </View>
         <View style={dstyles.chipRow}>
           {SPECTROGRAM_KEYS.map((k) => (
             <LabChip
@@ -497,12 +517,13 @@ export function WaterfallModule(p: MeterModuleProps) {
   return (
     <View style={styles.stack}>
       {/* AXES FIRST — three axes, and Z is the one nobody expects. */}
-      <PanelCard>
-        <SectionHead title="THE WATERFALL — READ THE AXES FIRST" onHelp={() => p.help('waterfall_axes')} />
+      <CollapsibleSection title="THE WATERFALL — READ THE AXES FIRST" onHelp={() => p.help('waterfall_axes')}>
         <Text style={dstyles.body}>
-          X = frequency across. Y = amplitude up. Z = TIME receding into the picture: each ridge behind the front is the
-          spectrum a moment later. The mountain range collapsing IS decay — watch it once and RT60 stops being an abstract
-          number.
+          X = frequency across. Y = amplitude up. Z = TIME stepping TOWARD you: the loud start
+          (t = 0) stands tall at the BACK, and each later instant steps down toward the front —
+          the decay cascades toward the viewer, and the white floor bands mark each second going
+          by. The mountain range collapsing toward you IS decay — watch it once and RT60 stops
+          being an abstract number.
         </Text>
         <ReadoutGrid
           help={p.help}
@@ -510,16 +531,15 @@ export function WaterfallModule(p: MeterModuleProps) {
           items={[
             { k: 'X — ACROSS', v: 'frequency' },
             { k: 'Y — UP', v: 'amplitude' },
-            { k: 'Z — RECEDING', v: 'time' },
+            { k: 'Z — TOWARD YOU', v: 'time (t=0 at back)' },
           ]}
         />
-      </PanelCard>
+      </CollapsibleSection>
 
       <PanelCard>
         <SectionHead title="BUILD A SCENE — THEN WATCH IT COLLAPSE" onHelp={() => p.help('waterfall_decay')} />
         {viz ? <WaterfallViz viz={viz} width={p.width} opts={opts} running={p.focused} /> : <VizUnavailableCard />}
         <DisplayGuideButton onPress={() => p.help('waterfall_axes')} />
-        <Badge text={SYNTH_BADGE} />
 
         <Text style={styles.groupLabel}>ROOM</Text>
         <View style={dstyles.chipRow}>
@@ -587,15 +607,14 @@ export function WaterfallModule(p: MeterModuleProps) {
         </Text>
       </PanelCard>
 
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>FIELD GUIDE — WHAT TO TRY</Text>
+      <CollapsibleSection title="FIELD GUIDE — WHAT TO TRY">
         {FIELD_GUIDE.map((s) => (
           <View key={s.title} style={styles.fieldSection}>
             <SectionHead title={s.title} onHelp={() => p.help(s.helpKey)} />
             <Text style={dstyles.caption}>{s.caption}</Text>
           </View>
         ))}
-      </PanelCard>
+      </CollapsibleSection>
 
       <MythReality
         myth="EQ-cutting a ringing frequency shortens its decay."

@@ -1,0 +1,223 @@
+{
+ "expert": "audio_technical",
+ "group": 27,
+ "reviews": [
+  {
+   "id": "c1324ad6-376b-4d52-af2b-0e64ac4b3acf",
+   "term": "Linearity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "03301c5a-521d-4a41-a6e3-605086ede250",
+   "term": "Linkwitz-Riley Crossover",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1613fa47-b397-448d-8612-85fad2246b20",
+   "term": "Listening Position",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eb8dc4f4-ca30-44cc-8fb0-831064ffa73a",
+   "term": "Lithium-Ion Battery Handling",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Low",
+     "issue": "A single parenthetical clause is broken across two separate list items with an unbalanced parenthesis: item reads '...treat it as a fire (an ordinary extinguisher may not stop reignition' (open paren, no close) and the next item is 'copious water cools Li-ion, and damaged cells can reignite)' (dangling close paren). This is a formatting split, not a distinct mistake. (Content is technically correct: for lithium-ION cells water is an accepted coolant and reignition is a real risk.)",
+     "suggestion": "Merge into one item: 'UNSAFE: a venting/smoking/burning pack is an emergency - evacuate, call 911, and treat it as a fire (an ordinary extinguisher may not stop reignition; copious water cools Li-ion, and damaged cells can reignite).'"
+    }
+   ]
+  },
+  {
+   "id": "9243407d-6780-402d-8594-1755cd2c773c",
+   "term": "Live Event Direction",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ee168cdd-dc6a-4005-8be0-16db9c47369b",
+   "term": "Live IR",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c17e6ada-8bf4-4cd0-b47b-0ed9dece6993",
+   "term": "Live Performance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7f339b68-49c6-4ca5-aef1-ff48ad4a80ba",
+   "term": "Load impedance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "926b6d93-2cec-4267-a46f-f081aa0b3ee7",
+   "term": "Load test",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "06322674-a960-47ae-a085-2cb4b1f3a83b",
+   "term": "Load-In",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "678d1904-9176-4211-bcd0-42a7a901bd90",
+   "term": "Load-Out",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b399fda1-3474-4b78-bf91-9e55fcf9fc70",
+   "term": "Lobar pattern",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f3179b27-5902-477f-b54c-959524e08c9c",
+   "term": "Local feedback",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c12ce49b-6607-4335-92c1-a634c1306cb4",
+   "term": "Locked trace",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e9054893-deea-4b39-8bfe-871306b1a9f4",
+   "term": "Locking Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cf99290f-069c-4542-b22a-b22a582e8c32",
+   "term": "Lockout/Tagout Awareness",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f8028a95-acc0-41e3-872d-63fbdc5ab0a8",
+   "term": "Logarithmic frequency axis",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "14b78849-219c-4747-afc7-94f105b3a9a4",
+   "term": "Longitudinal Wave",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9be448a8-f6a3-499d-adca-0e74054a130c",
+   "term": "Look-Ahead Limiter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e407593c-36a5-4cf6-8ea3-6502f22cb3d9",
+   "term": "Lookahead",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a87b7038-00f3-491e-8ffa-8eceda242ee0",
+   "term": "Loop Driver",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "58197579-ca5b-439a-b20d-3fdaa73784eb",
+   "term": "Loopback measurement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2aabe0b7-d1cd-43f7-b28f-4d8558b43b23",
+   "term": "Loopback test",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b46d7fcd-d021-4a0e-8aec-f4cbb6f4dbdb",
+   "term": "Lossless Streaming",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4db00072-e481-4536-b536-b6a698ee1fd7",
+   "term": "Lossy Compression",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7902b2ba-4fd6-4b61-af8f-c06090a8003a",
+   "term": "loudness (perceptual)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "da31accc-3adc-4780-948e-284329252d97",
+   "term": "Loudness Control",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "95f888ae-61fd-4c66-92dc-18b7d5d34ea4",
+   "term": "loudness meter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "97992a02-3450-47a0-b246-9212db72f018",
+   "term": "Loudspeaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c710611d-d0b0-45b1-a668-e286f1ac1f4a",
+   "term": "Loudspeaker (Speaker)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b7d8c1d0-4017-4cc8-984c-c9b9c308b48d",
+   "term": "Loudspeaker processor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "28e6845a-9abf-45a9-a8bc-700f00d7be48",
+   "term": "Loudspeaker Stability",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "540a3756-d980-4bfd-8aba-f01cfdd65b0c",
+   "term": "Low output",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7f8523d8-4eae-4bcb-9c9c-488a7336d2d4",
+   "term": "Low Shelf",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cd5cb7f9-509a-4c83-b608-8b13b15992f4",
+   "term": "Low-cut filter",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

@@ -1,0 +1,342 @@
+{
+  "course": "AUDI201",
+  "topic": "Analog Live Sound",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "af3b82bf-d089-4fde-b6cb-2a7ad630897f",
+      "term": "Backline",
+      "fields": {
+        "plain_english": "All the instrument gear that sits behind the band on stage — guitar and bass amps, keyboards, and the drum kit — whether the band brought it or the venue supplied it.",
+        "purpose_function": "It provides the onstage instrument amplification and rhythm-section gear the performers actually play, and standardizing or renting it lets festivals swap acts quickly without re-hauling and re-soundchecking every band's equipment.",
+        "practical_application": "A tech reads the backline list on the tech rider, sets up the amps, keys, and drum kit at their marked positions, then mics or DIs each source into the stage box before soundcheck.",
+        "category": "Stage Setup",
+        "related_terms": ["Tech Rider", "Stage Left / Stage Right", "Monitor World", "Load-In", "Spike Mark"],
+        "common_mistakes": [
+          "Confusing backline (the instrument amplification and drums) with the PA or 'frontline' that faces the audience.",
+          "Assuming the venue-provided backline matches the rider exactly — always confirm makes, models, and condition during the advance.",
+          "Forgetting that a shared festival drum kit still needs each act's own breakables (snare, cymbals, pedals) unless the rider says otherwise."
+        ],
+        "scenario_contexts": [
+          "A touring act flies overseas and rents backline locally rather than shipping heavy amps and drums through customs.",
+          "A multi-band festival supplies a common backline so stagehands can changeover acts in minutes.",
+          "A house tech stages the rented guitar amp, bass rig, keyboard, and drum kit before the band's load-in."
+        ]
+      },
+      "sources": [
+        "Backline (stage) — Wikipedia",
+        "Sweetwater InSync — Backline",
+        "Careers in Music — Backline in Music"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "82436f8b-520a-4f97-b546-6d86a5331df2",
+      "term": "Cable Management",
+      "fields": {
+        "definition": "The practice of routing, bundling, dressing, and securing audio, power, and data cables on and around a stage so signal runs stay organized, undamaged, and free of trip and safety hazards.",
+        "plain_english": "Keeping all the cables neat and taped down so nobody trips, signals stay clean, and you can find and coil each cable fast at the end of the night.",
+        "purpose_function": "Good cable management protects gear and signal integrity, speeds teardown, and — most importantly — removes trip hazards in performer and audience pathways.",
+        "practical_application": "A tech runs cables in neat parallel or perpendicular lines along walls or stage edges, tacks and tapes them down with gaffer tape, and uses cable ramps or mats wherever a run crosses a walkway.",
+        "category": "Stage Setup",
+        "related_terms": ["Load-In", "Backline", "Stage Left / Stage Right", "Monitor World", "Spike Mark"],
+        "common_mistakes": [
+          "UNSAFE: Leaving cables loose across a walkway, doorway, or audience path — an untamed run is a fall/trip hazard; cross-traffic cables must be taped with gaffer tape or covered with a rated cable ramp or mat.",
+          "UNSAFE: Running audio cables bundled tightly alongside AC power cables, which invites hum/interference and mixes signal with mains — keep power and signal separated and cross at 90 degrees when they must meet.",
+          "Coiling cable against its natural lay (not using an over-under coil), which kinks conductors and shortens cable life.",
+          "Using duct tape instead of gaffer tape, leaving adhesive residue on cables and floors."
+        ],
+        "scenario_contexts": [
+          "A tech dresses and tapes down mic and monitor cables across the downstage edge before doors open.",
+          "A crew lays a cable ramp where the snake crosses a backstage doorway used by performers.",
+          "During load-out, neatly labeled and over-under coiled cables let the crew pack quickly and correctly."
+        ]
+      },
+      "sources": [
+        "ProSoundWeb — Wired In: Common Sense Cabling Practices For The Live Stage",
+        "Recording Arts Canada — Cable Management for Beginners",
+        "Sweetwater InSync — How to Organize Cables & Gear Onstage"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "6304386f-e7fb-454d-b746-3a77f4df8537",
+      "term": "Downstage",
+      "fields": {
+        "plain_english": "The front of the stage, closest to the audience.",
+        "purpose_function": "It gives everyone a shared, unambiguous word for the area nearest the audience so directors, techs, and performers can place gear and people without confusion.",
+        "practical_application": "A tech told to move a wedge or vocal mic 'downstage' brings it toward the front edge, closer to the crowd.",
+        "category": "Stage Directions",
+        "related_terms": ["Upstage", "Stage Left / Stage Right", "Spike Mark", "Monitor World", "Backline"],
+        "common_mistakes": [
+          "Reversing upstage and downstage — downstage is toward the audience, not the back wall.",
+          "Forgetting the term comes from raked stages that sloped down toward the audience, so 'down' means the front even on a flat modern stage.",
+          "Reading the direction from the audience's point of view rather than the performer's facing-the-audience frame."
+        ],
+        "scenario_contexts": [
+          "A monitor engineer moves a floor wedge downstage so the lead singer at the front edge can hear it.",
+          "A stage plot marks the vocal mic downstage-center for the main act.",
+          "A director asks a performer to step downstage into a tighter, closer-to-audience position."
+        ]
+      },
+      "sources": [
+        "Backstage — Understanding Theater Stage Positions",
+        "Humanities LibreTexts — Parts of the Stage"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "06322674-a960-47ae-a085-2cb4b1f3a83b",
+      "term": "Load-In",
+      "fields": {
+        "plain_english": "The start-of-day process of getting all the gear off the truck and into the venue to set up for the show.",
+        "purpose_function": "It is the scheduled window in which crews move, position, and begin assembling sound, lighting, backline, and staging so the show can be built on time.",
+        "practical_application": "A tech arrives at the load-in call time, helps roll cases from the truck to the stage, and starts placing and cabling the PA, monitors, and backline.",
+        "category": "Production Logistics",
+        "related_terms": ["Load-Out", "Strike", "Production Advance", "Tech Rider", "Backline"],
+        "common_mistakes": [
+          "Confusing load-in (moving gear in and setting up) with soundcheck, which comes after the system is built.",
+          "Ignoring the advanced load-in schedule and access details (dock, door sizes, union/house rules), causing delays.",
+          "Under-staffing the call so the large amount of work in a short window runs late."
+        ],
+        "scenario_contexts": [
+          "A crew meets the truck at the loading dock at the 8 a.m. load-in call to begin building the stage.",
+          "A house tech coordinates load-in order so the PA goes up before backline and monitors are placed.",
+          "A festival stagger the load-in of multiple acts to share limited dock and stage access."
+        ]
+      },
+      "sources": [
+        "AudioDramaProduction.com — Live Sound Engineering Glossary: Load In",
+        "SoundGirls.org — Let's Load In!",
+        "MI.edu — How to Plan a Live Concert"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "678d1904-9176-4211-bcd0-42a7a901bd90",
+      "term": "Load-Out",
+      "fields": {
+        "plain_english": "The end-of-night process of tearing down all the gear and packing it back onto the truck after the show.",
+        "purpose_function": "It is the reverse of load-in — breaking down, packing, and removing production equipment so the venue is cleared and gear is ready to travel to the next date.",
+        "practical_application": "After the show a tech coils cables over-under, cases the mics and stands, and rolls the PA and backline out to the truck in a planned pack order.",
+        "category": "Production Logistics",
+        "related_terms": ["Load-In", "Strike", "Cable Management", "Tech Rider", "Backline"],
+        "common_mistakes": [
+          "Rushing teardown before signal is muted/powered down safely, risking loud pops or damage.",
+          "Packing cables and cases out of their labeled order, slowing the next day's load-in.",
+          "Treating load-out as optional overtime — it is part of the crew call and often the most time-pressured, fatigue-prone phase."
+        ],
+        "scenario_contexts": [
+          "The crew strikes the stage and loads the truck immediately after the headliner to meet a venue curfew.",
+          "A tech labels and coils each cable during load-out so re-patching is fast at the next venue.",
+          "Extra stagehands are called for load-out to clear a shared festival stage before the next act."
+        ]
+      },
+      "sources": [
+        "Crescat — Load-In and Load-Out Crew",
+        "MI.edu — How to Plan a Live Concert: Load-Out",
+        "StageNotes — Load In / Load-Out"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "a82d4d61-1298-4668-b930-ac09db089fde",
+      "term": "Monitor World",
+      "fields": {
+        "plain_english": "The side-of-stage mixing spot where a dedicated engineer builds the sound the performers hear onstage, separate from the mix the audience hears.",
+        "purpose_function": "It is the position and console domain where the monitor engineer creates individual on-stage mixes (wedges and in-ears) so each performer can hear themselves and the band clearly.",
+        "practical_application": "A monitor engineer works from monitor world with a clear sightline to the band, taking hand cues and building a separate mix per performer during soundcheck and the show.",
+        "category": "Stage Setup",
+        "related_terms": ["Backline", "Stage Left / Stage Right", "Tech Rider", "Load-In", "Cable Management"],
+        "common_mistakes": [
+          "Assuming monitor world and front-of-house are the same job — monitors serve the performers, FOH serves the audience.",
+          "Placing the monitor console where the engineer can't see the performers, losing the visual cues monitor mixing depends on.",
+          "Treating each monitor send as identical instead of a customized mix per performer's needs."
+        ],
+        "scenario_contexts": [
+          "The monitor engineer at stage-left monitor world dials in the drummer's wedge and the singer's in-ear mix during soundcheck.",
+          "Mid-show a guitarist signals for 'more me,' and monitor world raises that channel in the player's mix.",
+          "On a larger tour, monitor world runs a separate console from FOH, fed by a split of the same stage inputs."
+        ]
+      },
+      "sources": [
+        "Stage monitor system — Wikipedia",
+        "Sound on Sound — Stage Monitoring & Monitor Mixing",
+        "SoundGirls.org — Monitor Engineer"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "218820da-38c6-41ec-adf1-aee97c8c73c3",
+      "term": "Production Advance",
+      "fields": {
+        "plain_english": "The pre-show phone calls and emails where the touring crew and the venue sort out every technical and logistical detail before the day of the show.",
+        "purpose_function": "It confirms and reconciles the tech rider against what the venue can actually provide — PA, monitors, power, backline, schedule, crew, and access — so problems are solved on paper, not at soundcheck.",
+        "practical_application": "A production or house tech 'advances the show' by reviewing the rider and stage plot with the venue days ahead, flagging gaps and locking load-in times, power, and gear.",
+        "category": "Production Logistics",
+        "related_terms": ["Tech Rider", "Load-In", "Backline", "Monitor World", "Stage Left / Stage Right"],
+        "common_mistakes": [
+          "Skipping or rushing the advance, so rider mismatches surface on show day when there's no time to fix them.",
+          "Advancing only the input list and forgetting logistics like dock access, power, curfew, and crew calls.",
+          "Assuming the venue read the rider — confirm each key item explicitly rather than presuming agreement."
+        ],
+        "scenario_contexts": [
+          "A tour manager emails the venue a week out to confirm the console, monitor count, and power distro in the rider.",
+          "During the advance, the house engineer flags that the requested line-array model isn't available and proposes an equivalent.",
+          "Load-in times, parking, and stagehand counts are locked during the advance so the show-day timeline holds."
+        ]
+      },
+      "sources": [
+        "Off Trail Studios — Guide to Tech Riders and Stage Plots",
+        "MI.edu — Show Advance, Stage Plots, and Load-Out",
+        "Improvised Music Company — What is a Technical Rider"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "50f64a99-aa14-4a04-a74f-56da3ebf61aa",
+      "term": "Spike Mark",
+      "fields": {
+        "plain_english": "A small piece of tape on the stage floor that shows exactly where a stand, instrument, monitor, or performer is supposed to go.",
+        "purpose_function": "It records the correct position of movable items so gear and performers can be reset to the same spot quickly and consistently across soundcheck, changeovers, and multiple shows.",
+        "practical_application": "A tech lays thin spike tape (often an L or cross) at a wedge, mic stand, or amp position so it can be struck for another act and put back precisely.",
+        "category": "Stage Setup",
+        "related_terms": ["Stage Left / Stage Right", "Downstage", "Backline", "Monitor World", "Strike"],
+        "common_mistakes": [
+          "Using thick duct tape instead of thin spike/gaffer tape, leaving residue and a visible, hard-to-remove mark.",
+          "Placing spikes where they're visible to the audience instead of on the upstage side of the item.",
+          "Failing to color-code or label spikes on a busy stage, so multiple acts' positions get confused."
+        ],
+        "scenario_contexts": [
+          "A monitor tech spikes each wedge position so a shared stage can be reset per act during changeovers.",
+          "Glow (phosphorescent) spike tape marks positions for safe placement during a blackout scene change.",
+          "A stage manager color-codes spikes to distinguish the positions of different bands at a festival."
+        ]
+      },
+      "sources": [
+        "Spike (stagecraft) — Wikipedia",
+        "AACT — Spike or Spike Mark",
+        "Glossaria.net — Technical Theatre: Spike"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "7588c2bf-7cb5-40a0-bfa1-f6c397ee4327",
+      "term": "Stage Left / Stage Right",
+      "fields": {
+        "plain_english": "Left and right from the performer's point of view while facing the audience — so stage right is the audience's left, and stage left is the audience's right.",
+        "purpose_function": "It fixes one shared reference frame (the performer's) so directions never flip depending on who's talking, preventing confusion between crew, performers, and directors.",
+        "practical_application": "A tech told to place the bass rig 'stage right' positions it to the performers' right, which is on the audience's left as they look at the stage.",
+        "category": "Stage Directions",
+        "related_terms": ["Upstage", "Downstage", "Spike Mark", "Monitor World", "Backline"],
+        "common_mistakes": [
+          "Giving directions from the audience's perspective, flipping left and right and causing setup errors.",
+          "Forgetting that FOH and audience see the mirror image, so 'stage right' looks like the left side from the mix position.",
+          "Mixing 'house left/right' (audience frame) and 'stage left/right' (performer frame) in the same conversation without saying which."
+        ],
+        "scenario_contexts": [
+          "A stage plot labels the drum riser stage-left and the keyboards stage-right for consistent load-in.",
+          "The monitor engineer calls 'more guitar in the stage-right wedge' and everyone knows which side.",
+          "A lighting cue references stage right, meaning the performers' right regardless of where the operator sits."
+        ]
+      },
+      "sources": [
+        "Backstage — Understanding Theater Stage Positions",
+        "StagePlotGuru — A Guide To Common Stage Positioning Terms"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "f702b12a-dfb8-471d-b0e1-6c66491a83b8",
+      "term": "Strike",
+      "fields": {
+        "plain_english": "To take something down and remove it from the stage — either a single item or the whole show after it's done.",
+        "purpose_function": "It clears the stage of set, gear, and cabling so the space is returned to a blank slate for the next act, changeover, or the end of a run.",
+        "practical_application": "A tech told to 'strike the wedge' removes that monitor; at end of night the crew strikes the entire production during load-out.",
+        "category": "Production Logistics",
+        "related_terms": ["Load-Out", "Load-In", "Spike Mark", "Cable Management", "Backline"],
+        "common_mistakes": [
+          "Thinking strike always means the whole set — it can also mean removing a single item from the stage.",
+          "Striking gear while it's still powered or live, risking pops, damage, or signal to a running PA.",
+          "Confusing 'strike' with 'load-out'; striking is the teardown, load-out is moving the struck gear out of the venue."
+        ],
+        "scenario_contexts": [
+          "Between acts the crew strikes the opener's backline to reset the stage for the headliner.",
+          "A stagehand is told to strike an unused mic stand so it's off the performance area.",
+          "After the final show of a run, the whole production is struck and packed out."
+        ]
+      },
+      "sources": [
+        "AACT — Strike",
+        "Alley Theatre — Theatre Vocab 101",
+        "Playbill — 32 Theatre Terms Everyone Should Know"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "1cd1e29e-8dfd-458e-96cf-5799b8dc09d0",
+      "term": "Tech Rider",
+      "fields": {
+        "plain_english": "The document a band gives the venue that lists everything they need technically — what to plug in, what backline and PA to provide, how many monitors, and where everyone stands.",
+        "purpose_function": "As a contractual addendum, it tells the venue exactly what equipment and technical services the act requires so the show can be built correctly and soundcheck time isn't wasted.",
+        "practical_application": "A house tech works from the tech rider's input/channel list, stage plot, and backline and monitor requirements to patch and set up the stage before the band arrives.",
+        "category": "Production Logistics",
+        "related_terms": ["Production Advance", "Backline", "Monitor World", "Load-In", "Stage Left / Stage Right"],
+        "common_mistakes": [
+          "Writing a vague rider that omits the channel list, stage plot, or monitor count, forcing guesswork at soundcheck.",
+          "Treating the rider as fixed law rather than a starting point to reconcile with the venue during the advance.",
+          "Confusing the technical rider (gear and setup) with the hospitality rider (food, greenroom, transport)."
+        ],
+        "scenario_contexts": [
+          "A venue receives a band's tech rider and pre-patches the console from its channel list before load-in.",
+          "The stage plot in the rider tells the crew where to place amps, drums, and monitors.",
+          "During the advance, the house engineer negotiates rider items the venue can't fully meet."
+        ]
+      },
+      "sources": [
+        "Improvised Music Company — What is a Technical Rider",
+        "Off Trail Studios — Guide to Tech Riders and Stage Plots",
+        "Sonicbids — 7 Elements of a Good Live Sound Tech Rider"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "f5788783-c0d6-4a24-9086-548de6e2873f",
+      "term": "Upstage",
+      "fields": {
+        "plain_english": "The back of the stage, farthest from the audience.",
+        "purpose_function": "It gives a shared, unambiguous word for the area toward the back wall so gear and performers can be positioned without confusion.",
+        "practical_application": "A tech told to move the drum riser or an amp 'upstage' positions it toward the back of the stage, away from the audience.",
+        "category": "Stage Directions",
+        "related_terms": ["Downstage", "Stage Left / Stage Right", "Spike Mark", "Backline", "Monitor World"],
+        "common_mistakes": [
+          "Reversing upstage and downstage — upstage is toward the back wall, away from the audience.",
+          "Forgetting the term comes from raked stages that sloped up toward the back, so 'up' means the rear even on a flat modern stage.",
+          "Reading the direction from the audience's view rather than the performer's facing-the-audience frame."
+        ],
+        "scenario_contexts": [
+          "The drum riser and backline amps are placed upstage so the vocalists work downstage in front.",
+          "A stage plot marks the keyboard rig upstage-right, toward the back wall.",
+          "A director asks a performer to move upstage, stepping back and away from the audience."
+        ]
+      },
+      "sources": [
+        "Backstage — Understanding Theater Stage Positions",
+        "Humanities LibreTexts — Parts of the Stage"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

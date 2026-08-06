@@ -1,0 +1,231 @@
+{
+ "batch": 146,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "9b6c8fff-3701-4159-8c68-7112bc8f34e0",
+   "term": "Timing shift",
+   "fields": {
+    "definition": "A timing shift is the deliberate movement of a recorded element earlier or later in time relative to the project grid or to other tracks, applied during editing to correct or adjust its rhythmic placement.",
+    "plain_english": "A timing shift means nudging a recorded sound a little earlier or later so it sits better with the beat. It is like sliding a sticker left or right until it lands in the right spot.",
+    "purpose_function": "It lets an engineer tighten loose performances or intentionally push or pull parts so elements lock together rhythmically or feel more relaxed.",
+    "practical_application": "An editor nudges a snare hit a few milliseconds forward to sit tighter with the kick, or slides a doubled guitar back so it aligns with the main take.",
+    "category": "Editing",
+    "related_terms": ["Quantization", "Nudge", "Groove", "Phase alignment", "Comping"],
+    "common_mistakes": [
+     "Shifting a track without watching its transients, so the move lands on the wrong beat.",
+     "Moving only one mic of a multi-mic source, causing phase problems with the other mics.",
+     "Over-tightening every element to the grid until the performance loses its natural feel."
+    ],
+    "scenario_contexts": [
+     "Aligning a late bass note to the kick drum in a pop mix.",
+     "Pushing a rhythm guitar slightly behind the beat for a laid-back feel.",
+     "Correcting a drummer's rushed fill during editing."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Avid Pro Tools Reference Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c23611c4-e376-48a8-aca9-734beeb352b7",
+   "term": "Tom sample",
+   "fields": {
+    "definition": "A tom sample is a recorded, individual tom-tom drum hit stored as an audio file for use in drum programming, layering, or drum replacement.",
+    "plain_english": "A tom sample is a recording of one hit on a tom drum, saved so you can play it back later. It is like a photo of a single drum hit that you can drop into your song when you need it.",
+    "purpose_function": "It gives producers a clean, ready-made tom sound to program beats or to reinforce or replace weak recorded toms.",
+    "practical_application": "An engineer triggers a tom sample under a dull recorded tom to add attack and body, or programs toms from samples when no live kit was recorded.",
+    "category": "Sampling",
+    "related_terms": ["Drum replacement", "Sample library", "Trigger", "Layering", "Velocity"],
+    "common_mistakes": [
+     "Using a tom sample at one fixed velocity, making programmed fills sound robotic.",
+     "Forgetting to check tuning, so the sample clashes with the rest of the kit.",
+     "Leaving the sample out of phase when layering it under the original tom track."
+    ],
+    "scenario_contexts": [
+     "Reinforcing weak recorded toms in a rock mix.",
+     "Programming a tom fill in a hip-hop beat from a sample library.",
+     "Replacing bleed-heavy tom mics with clean samples."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "37c7272a-da1b-4ab9-a51e-3284ccee4044",
+   "term": "Tonal consistency",
+   "fields": {
+    "definition": "Tonal consistency is the degree to which the timbre and frequency balance of a sound source, or of a whole mix, stays uniform across a performance, song, or album.",
+    "plain_english": "Tonal consistency means a sound keeps the same color and balance from start to finish. It is like making sure every photo in an album has the same lighting so they look like they belong together.",
+    "purpose_function": "It keeps a mix or record feeling coherent so listeners are not distracted by a voice or instrument that suddenly changes character.",
+    "practical_application": "A mixer uses matched EQ and compression across sections, or careful editing between takes, so a lead vocal keeps the same tone from verse to chorus.",
+    "category": "Mixing",
+    "related_terms": ["Tonal balance", "Equalization", "Reference track", "Gain staging", "Automation"],
+    "common_mistakes": [
+     "Editing between takes with very different tone, so the vocal jumps in character.",
+     "Judging consistency at different playback levels, which hides real tonal shifts.",
+     "Fixing tone on one section only and forgetting to match the rest of the song."
+    ],
+    "scenario_contexts": [
+     "Matching vocal tone across verses comped from several takes.",
+     "Keeping guitar tone even across an album's songs.",
+     "Ensuring a podcast host sounds the same across episodes."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Bob Katz, Mastering Audio"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e15c6b58-201a-4331-98ee-dd20a6ef9a65",
+   "term": "Track alternative",
+   "fields": {
+    "definition": "A track alternative is one of several independent content versions stored on a single track that share the same channel strip and plug-ins, letting a user switch between different arrangements or takes without duplicating the track.",
+    "plain_english": "A track alternative is a saved second version of what a track plays, using the same volume and effects. It is like keeping two drafts of a page so you can flip between them and pick the best one.",
+    "purpose_function": "It lets engineers try out different ideas, keep earlier stages, and compare edits on one track while leaving the mixer setup unchanged.",
+    "practical_application": "A producer keeps one alternative with a busy guitar part and another with a simpler part, switching between them to decide which fits the mix.",
+    "category": "Editing",
+    "related_terms": ["Comping", "Playlist", "Take", "Track Archive", "Track Commit"],
+    "common_mistakes": [
+     "Assuming each alternative has its own effects, when they actually share one channel strip.",
+     "Losing track of which alternative is active because only the active one is shown.",
+     "Confusing track alternatives with fully duplicated tracks."
+    ],
+    "scenario_contexts": [
+     "Auditioning two different vocal comps on one track.",
+     "Archiving an early arrangement before trying a new idea.",
+     "Comparing a simple and a busy bass part in the same session."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide (Track Alternatives)", "Sound On Sound, Logic Pro: Track Alternatives"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b3a194e9-d744-4d41-b2da-4e7811f1ee18",
+   "term": "Track Archive",
+   "fields": {
+    "definition": "A track archive is an exported file containing selected tracks along with their events and settings, saved so those tracks can be imported into another project. In Cubase and Nuendo it is an XML-based export used to transfer or back up tracks between sessions.",
+    "plain_english": "A track archive is a saved file that holds chosen tracks and their parts so you can drop them into another project later. It is like copying a few pages out of one document to paste into a different one.",
+    "purpose_function": "It lets engineers move or reuse specific tracks between projects and back up work without saving the whole session.",
+    "practical_application": "An engineer exports the drum tracks as a track archive and imports them into a new song to reuse the same performance.",
+    "category": "File Management",
+    "related_terms": ["Track Commit", "Track alternative", "Stem export", "Session backup", "Track Color"],
+    "common_mistakes": [
+     "Expecting a track archive to store the actual audio files when it may only reference them.",
+     "Assuming archives transfer perfectly between different DAW brands.",
+     "Forgetting to include all needed media, so imported tracks are missing audio."
+    ],
+    "scenario_contexts": [
+     "Reusing a recorded string section in another song.",
+     "Handing selected tracks to another engineer's session.",
+     "Backing up key tracks before a major edit."
+    ]
+   },
+   "sources": ["Steinberg Cubase Pro Operation Manual (Track Archives)", "Steinberg Nuendo Operation Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "93fc73c5-ad97-4805-b9b1-10ef8e841883",
+   "term": "Track Assistant",
+   "fields": {
+    "definition": "Track Assistant is a feature in iZotope Neutron that analyzes a few seconds of a track's audio, identifies the source type, and generates a custom starting preset of EQ, compression, and other processing tuned to that material.",
+    "plain_english": "Track Assistant is a tool that listens to a track for a few seconds and then sets up a first-try mix for it on its own. It is like a helper that hands you a rough draft you can then clean up yourself.",
+    "purpose_function": "It gives engineers a fast, tailored starting point for processing a track, which they can keep tweaking or discard.",
+    "practical_application": "A user plays a vocal through Neutron, runs Track Assistant, and starts from the EQ and compression settings it suggests instead of from scratch.",
+    "category": "Mixing Tools",
+    "related_terms": ["Equalization", "Compression", "Mixing", "Preset", "Spectral analysis"],
+    "common_mistakes": [
+     "Treating the suggested settings as final instead of a starting point.",
+     "Not playing a clear 4-10 seconds, so the analysis misjudges the source.",
+     "Assuming it replaces knowing how EQ and compression actually work."
+    ],
+    "scenario_contexts": [
+     "Getting a quick EQ starting point on a lead vocal.",
+     "Learning how a plugin might treat a bass track.",
+     "Speeding up rough mixes on a large session."
+    ]
+   },
+   "sources": ["iZotope Neutron Elements Help Documentation (Track Assistant)", "iZotope Neutron 2 Help Documentation (Track Assistant)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dbf27cfc-c372-446e-b88d-5feb207ef927",
+   "term": "Track Color",
+   "fields": {
+    "definition": "Track color is a user-assigned color applied to a track, and often to its regions and channel strip, in a DAW to visually distinguish and group tracks.",
+    "plain_english": "Track color is a color you give a track so it is easy to spot on screen. It is like using colored folders so you can find your papers at a glance.",
+    "purpose_function": "It speeds up navigation and organization in large sessions by letting an engineer identify related tracks by color at a glance.",
+    "practical_application": "An engineer colors all drum tracks red and all vocals blue so they can find and select groups quickly while mixing.",
+    "category": "Organization",
+    "related_terms": ["Track control panel", "Track naming", "Folder track", "Grouping", "Session template"],
+    "common_mistakes": [
+     "Using too many similar colors, so groups are hard to tell apart.",
+     "Relying on color alone instead of also naming tracks clearly.",
+     "Forgetting to save a color scheme into a template for reuse."
+    ],
+    "scenario_contexts": [
+     "Color-coding a large orchestral session by section.",
+     "Marking finished tracks a different color while mixing.",
+     "Setting up a template with a consistent color scheme."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Steinberg Cubase Pro Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "02b7c6dc-cc6e-4cd2-90ba-d54b8b694633",
+   "term": "Track Commit",
+   "fields": {
+    "definition": "Track commit is the process of rendering a track's real-time processing, such as virtual instruments and plug-ins, to a new audio track, freeing CPU resources and locking in the sound while typically keeping the original track available.",
+    "plain_english": "Track commit turns a track that uses live effects or instruments into a plain audio file. The file just plays back the sound. It is like baking a cake so you no longer need the recipe steps running.",
+    "purpose_function": "It cuts the computer's processing load and locks a sound in place, which makes big sessions run smoothly and keeps mixes easy to move.",
+    "practical_application": "An engineer commits a CPU-heavy software synth to audio so the session plays back without glitches, keeping the original for later edits.",
+    "category": "Rendering",
+    "related_terms": ["Freeze", "Bounce", "Track Archive", "Consolidation", "Latency"],
+    "common_mistakes": [
+     "Committing a track without keeping the original, losing the ability to edit it later.",
+     "Forgetting that committed audio no longer follows tempo or MIDI changes.",
+     "Committing before finishing effects that still need adjusting."
+    ],
+    "scenario_contexts": [
+     "Reducing CPU load from many virtual instruments in a large session.",
+     "Locking a synth sound before sharing a session with another studio.",
+     "Printing effects so a mix opens on a less powerful computer."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Commit)", "Sound On Sound, Pro Tools: Archiving With Commit Tracks"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a5e26d63-735b-4c5c-b316-1abccf2a2f99",
+   "term": "Track control panel",
+   "fields": {
+    "definition": "The track control panel is the area of a DAW track, usually in the track list or inspector, that holds its controls and status indicators such as name, mute, solo, record-enable, monitor, and volume.",
+    "plain_english": "The track control panel is the strip of buttons and readouts for one track, like its name, mute, and solo. It is like the dashboard for that track, where you reach its main controls.",
+    "purpose_function": "It gives quick access to a track's key controls and status so an engineer can manage playback, recording, and monitoring without leaving the arrange view.",
+    "practical_application": "An engineer clicks mute and solo in the track control panel to isolate a part, or arms record-enable there before a take.",
+    "category": "Interface",
+    "related_terms": ["Track Color", "Mute", "Solo", "Record enable", "Inspector"],
+    "common_mistakes": [
+     "Confusing the record-enable button with the input-monitor button.",
+     "Leaving a track soloed and forgetting the control is engaged.",
+     "Overlooking that the visible controls can be customized, so a needed button seems missing."
+    ],
+    "scenario_contexts": [
+     "Arming a track for recording before a take.",
+     "Muting and soloing tracks to check a part.",
+     "Renaming and coloring tracks while organizing a session."
+    ]
+   },
+   "sources": ["Steinberg Cubase Pro Operation Manual (Track Controls)", "Avid Pro Tools Reference Guide"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

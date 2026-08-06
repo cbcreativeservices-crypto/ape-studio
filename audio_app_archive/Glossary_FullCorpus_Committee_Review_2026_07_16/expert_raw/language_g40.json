@@ -1,0 +1,230 @@
+{
+ "expert": "language",
+ "group": 40,
+ "reviews": [
+  {
+   "id": "0a7e84d9-85c2-4151-8dfe-38b4619b8730",
+   "term": "Reverberation / Reverb",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "plain_english",
+     "severity": "Low",
+     "issue": "'Reverb provides sense of space and size' is missing an article, reading as a grammatical slip amid the surrounding full sentences.",
+     "suggestion": "Change to 'Reverb provides a sense of space and size.'"
+    }
+   ]
+  },
+  {
+   "id": "cc254ead-6f84-4eda-9fcf-8f76cfd3e01c",
+   "term": "Reverberation time (RT60)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b3960ba7-5a20-476d-8c2d-28beb687b691",
+   "term": "Reverse Delay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eb010d19-750f-491c-8ce3-1571404c5044",
+   "term": "Reverse Reverb",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8872fa65-35c5-46bd-8b43-e74ba08d1b34",
+   "term": "Reversed-polarity cable",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "purpose_function",
+     "severity": "Low",
+     "issue": "The clause 'cancellation that no device is faulty to cause' is garbled and does not parse as a grammatical sentence.",
+     "suggestion": "Rewrite as 'Finding it explains thin sound and cancellation that no faulty device could account for.'"
+    }
+   ]
+  },
+  {
+   "id": "482a991b-27ee-4fc2-918b-1fa110ab80ac",
+   "term": "RF Coaxial Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fc43375c-2071-4f7a-b8fe-2735931d9d13",
+   "term": "RF dead spot",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d81a4099-da68-4946-87d3-fc047c2b3618",
+   "term": "RF desensitization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cadcf9e7-c10d-4ff6-832c-b9518d7eeced",
+   "term": "RF Dropout",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ac6ff06e-550e-4f2f-8126-9cb5f38fed95",
+   "term": "RF Exposure Limits",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bc3980f8-ad69-4155-8af0-4d35d487eff4",
+   "term": "RF filtering",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c02be3d6-6532-4bbb-b186-395a8f4efb51",
+   "term": "RF Gain",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "591b4366-fbc6-469b-810b-8ac0e2493433",
+   "term": "RF interference",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5585f518-82ed-40d9-bad0-a028225b7110",
+   "term": "RF System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3cc82960-1318-4663-acad-f638e4f58b7f",
+   "term": "RG-59 Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "69e746e3-d7b5-4f1a-80d1-cdde6cde7b0b",
+   "term": "RG-6 Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "98ac4e04-bbda-476c-a559-ef192d627912",
+   "term": "RIAA Equalization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7535a7ff-e23f-43f8-8075-d95ee3d1eed1",
+   "term": "RIAA equalization curve",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "01e5be34-978c-486e-9aee-4ea0506185d7",
+   "term": "Ribbon Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6911a7d7-5733-4a8e-ab3f-c26e761fc9a5",
+   "term": "Ribbon element",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c0bda8bb-2495-4a6e-b6d7-9620a471e559",
+   "term": "Ribbon Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "13118c84-3832-4202-b73b-d194df6baa3c",
+   "term": "Ribbon motor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cab43d52-b3e4-4710-baa0-17ede5579a88",
+   "term": "Ribbon sag",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2ee5d178-fe2f-4eff-b46d-08187faa500f",
+   "term": "Ribbon transformer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6b49eec3-5614-4df4-9772-aef4853cff6b",
+   "term": "Ribbon Tweeter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "42c8f43f-dfaf-40ff-9114-2c1b6ec4a0af",
+   "term": "Rigging Inspection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6ba3234c-e7ed-4151-9c9f-196a933e62d1",
+   "term": "Rigging point",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9b45e292-cfb7-4dd1-8c53-e5495baa3d05",
+   "term": "Right-Angle Adapter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "07b72270-ed47-49c7-95de-c814503a9df8",
+   "term": "Ring out",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1292fbd6-5a8c-4007-9d18-8c282dc0278c",
+   "term": "Ripple",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "457badaa-69ab-43b4-95c8-c4ae0c909888",
+   "term": "Riser-Rated Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d52fda00-cf39-49ca-ace5-a25f5e4bb53f",
+   "term": "RJ45",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8693f556-c36d-4999-9165-2846cc16845d",
+   "term": "RMS (Root Mean Square)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fdfab7d8-6c45-4a12-8450-10a1de7f6a09",
+   "term": "RMS Detection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2e73ef1e-dccd-4711-98e7-6200e4ead4ab",
+   "term": "RMS Power",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

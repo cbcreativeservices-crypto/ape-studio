@@ -1,0 +1,32 @@
+{
+ "expert": "Learning/Cognition",
+ "group": 104,
+ "reviews": [
+  {"id": "877217d2-623f-4778-9bc4-ead06c0afc1e", "term": "Pocket movement", "verdict": "OK", "suggestions": []},
+  {"id": "5e97c695-5fe9-40ef-98e7-d5086b74c6f5", "term": "Shuffle playback", "verdict": "OK", "suggestions": []},
+  {"id": "c4b89614-1211-4e62-b3c7-77f64c7d22b9", "term": "Tonal transition", "verdict": "OK", "suggestions": []},
+  {"id": "030b2df5-7600-4e99-b127-86e79da9b97e", "term": "Transition parameter", "verdict": "OK", "suggestions": []},
+  {"id": "e37cad22-5a7d-4f34-9382-cc2b8b654e75", "term": "Two-dimensional-to-three-dimensional blend", "verdict": "OK", "suggestions": []},
+  {"id": "7b43e0ac-cbdf-4281-837c-41491c6a30c8", "term": "Virtual-reality audio room", "verdict": "OK", "suggestions": []},
+  {"id": "b2e69598-c087-49b7-bdbc-eb402b397c48", "term": "AIVA", "verdict": "OK", "suggestions": []},
+  {"id": "d7c957f3-6943-49b4-bd95-88a1c40cfdc0", "term": "Prompt-based sound design", "verdict": "OK", "suggestions": []},
+  {"id": "3e81bc60-2efe-4d3d-a3e9-466362f6c632", "term": "RAVE", "verdict": "OK", "suggestions": []},
+  {"id": "0d9dd182-b069-4e03-8dc0-b4c44209b3ed", "term": "Riffusion", "verdict": "OK", "suggestions": []},
+  {"id": "14f63351-ec26-464b-8377-ea74786f9e6f", "term": "squelchy", "verdict": "OK", "suggestions": []},
+  {"id": "abca1197-fd62-47d9-ba72-c0e559583ada", "term": "Suno", "verdict": "OK", "suggestions": []},
+  {"id": "d2d2077e-4258-4a7e-a5ee-653db51c88f5", "term": "Timing-conditioning", "verdict": "OK", "suggestions": []},
+  {"id": "08ac4b5a-1f3f-4081-98fe-c2a82ba68324", "term": "Udio", "verdict": "OK", "suggestions": []},
+  {"id": "85b856e9-f120-44df-9016-b44ec4557dd6", "term": "w2v-BERT", "verdict": "OK", "suggestions": []},
+  {"id": "dac52a44-566f-475a-a649-342eda969c61", "term": "ACE Studio", "verdict": "OK", "suggestions": []},
+  {"id": "643d6613-9bae-40dd-b5d5-1dc9b34f28e5", "term": "ElevenLabs", "verdict": "OK", "suggestions": []},
+  {"id": "dc36b473-e383-410f-8a37-e551210bf99b", "term": "Resemble AI", "verdict": "OK", "suggestions": []},
+  {"id": "cf9c1ddf-1bff-4cfd-ba1f-5c34ecc9387c", "term": "Retrieval-based voice conversion (RVC)", "verdict": "OK", "suggestions": []},
+  {"id": "0676f8ce-89fc-407d-8cde-a8887eea9fd7", "term": "so-vits-svc", "verdict": "OK", "suggestions": []},
+  {"id": "7d464080-1759-409f-b38d-70c3913953ea", "term": "Make it pretty", "verdict": "OK", "suggestions": []},
+  {"id": "a6d6af76-0db8-4c80-bf09-667d3f3fafbd", "term": "Bench noise", "verdict": "OK", "suggestions": []},
+  {"id": "0da583a6-e51a-4675-91dd-b4dd2b01971d", "term": "brown sound", "verdict": "OK", "suggestions": []},
+  {"id": "dfaed48d-7ec8-41a2-8a0f-13ac3a384854", "term": "Ghost attack", "verdict": "OK", "suggestions": []},
+  {"id": "40d7f496-2fc8-44ed-9fd9-73e6dfc07081", "term": "Knock", "verdict": "OK", "suggestions": []},
+  {"id": "d3c022d6-ab63-4335-afca-a4b963dae156", "term": "Pick recovery", "verdict": "OK", "suggestions": []}
+ ]
+}

@@ -1,0 +1,231 @@
+{
+ "batch": 321,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "f1fb9fb7-13cb-4ba4-ab5f-061112823828",
+   "term": "Sparkling",
+   "fields": {
+    "definition": "A positive tonal descriptor for the presence of clean, extended high-frequency content, roughly above 10 kHz, that lends a recording air, brilliance and fine detail without edginess or harshness.",
+    "plain_english": "A sparkling sound has clear, airy highs, like the shimmer of a cymbal or a small bell. It sounds bright and full of detail, but not harsh.",
+    "purpose_function": "It communicates a desirable sense of top-end openness and detail, guiding EQ and microphone choices toward capturing or restoring high-frequency air.",
+    "practical_application": "An engineer adds sparkle with a gentle high-shelf boost around 10 to 15 kHz, an air-band EQ, or a brighter condenser mic on sources such as acoustic guitar, cymbals or vocals.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Air", "Bright", "Brilliance", "Presence", "Sibilance", "High-shelf"],
+    "common_mistakes": [
+     "Confusing pleasant sparkle with harshness or sibilance, then boosting highs until the sound turns edgy",
+     "Adding high-frequency boost to a dull source that lacks the content, only raising hiss and noise",
+     "Assuming more sparkle is always better, ignoring how excess top end fatigues listeners"
+    ],
+    "scenario_contexts": [
+     "A producer asks for more sparkle on an acoustic guitar so it cuts through a dense mix",
+     "Restoring air to a dull vocal recorded with a dark microphone",
+     "Adding shimmer to drum overheads so cymbals sound open and detailed"
+    ]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "599da359-739a-4814-b733-30eaf1e16cc0",
+   "term": "spitty",
+   "fields": {
+    "definition": "A negative tonal descriptor for a harsh, spitting quality in the upper-midrange and high frequencies, typically exaggerated sibilance or plosive and transient artifacts in the region of roughly 4 to 8 kHz.",
+    "plain_english": "A spitty sound has harsh, spitting 'sss' and 'tss' noises in the highs. It often comes from too much treble, a cheap mic, or heavy data compression.",
+    "purpose_function": "It flags an unpleasant, aggressive top-end fault so it can be tamed, pointing the engineer toward de-essing or a narrow EQ cut.",
+    "practical_application": "A technician who hears spitty consonants on a vocal applies a de-esser or a narrow cut around 5 to 8 kHz, swaps a harsh microphone, or checks for lossy-codec artifacts.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Sibilance", "Harsh", "De-esser", "Presence", "Brittle", "Edgy"],
+    "common_mistakes": [
+     "Fixing spittiness with a broad high cut that dulls the whole sound instead of a narrow, targeted cut",
+     "Over-de-essing until the vocal lisps and loses clarity",
+     "Blaming the mic when the real cause is a plosive pop or a lossy codec artifact"
+    ],
+    "scenario_contexts": [
+     "A lead vocal sounds spitty on loud 's' and 't' sounds and needs de-essing",
+     "A speech track through an aggressive codec develops a spitty high end",
+     "A cheap condenser makes an already bright singer sound spitty in the presence range"
+    ]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "92bfcb07-4b75-444d-8bee-537816451f05",
+   "term": "splatty",
+   "fields": {
+    "definition": "A negative tonal descriptor for an uncontrolled, distorted or smeared transient, most often on drums or cymbals, where the attack splatters rather than staying focused; commonly a symptom of over-compression, clipping or overdriven transients.",
+    "plain_english": "A splatty sound is when a drum hit smears out instead of staying sharp and clean. It usually means the sound was pushed too hard or squashed too much.",
+    "purpose_function": "It identifies a loss of transient control or the onset of distortion so the engineer can back off compression, gain or limiting.",
+    "practical_application": "When a snare or cymbal sounds splatty, a technician lowers compressor ratio or input gain, checks for clipping in the chain, and restores a cleaner, more defined attack.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Transient", "Compression", "Clipping", "Distortion", "Attack", "Punch"],
+    "common_mistakes": [
+     "Pushing a limiter or clipper too hard on drums until transients splatter and lose punch",
+     "Mistaking gain-stage clipping for a creative effect and leaving audible distortion in the mix",
+     "Over-compressing the drum bus so every hit smears together"
+    ],
+    "scenario_contexts": [
+     "A heavily limited drum bus makes snare hits sound splatty on loud sections",
+     "Cymbals distort and splatter after too much brickwall limiting in mastering",
+     "An overdriven preamp adds a splatty edge to a close-miked snare"
+    ]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e58edcc9-1b2c-46f7-b07e-5a9e4491144c",
+   "term": "sterile",
+   "fields": {
+    "definition": "A tonal descriptor, usually mildly negative, for a sound that is technically clean and accurate but lacks warmth, harmonic richness or emotional character; often associated with clinical, over-processed or early digital reproduction.",
+    "plain_english": "A sterile sound is very clean but cold and lifeless. It is correct, yet it lacks warmth and feeling, like a room with no character.",
+    "purpose_function": "It signals that a source or system, though free of obvious faults, feels lifeless, prompting the addition of warmth, saturation or ambience.",
+    "practical_application": "To counter a sterile mix, an engineer may add analogue-style saturation, subtle harmonic distortion, room ambience or gentle low-mid warmth to reintroduce character.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Warmth", "Clinical", "Coloration", "Saturation", "Harmonics", "Dry"],
+    "common_mistakes": [
+     "Chasing so much technical cleanliness that the mix ends up sterile and dull",
+     "Treating all added harmonics or noise as faults to remove, stripping out useful character",
+     "Confusing a sterile source with an accurate, neutral monitor and 'fixing' the monitoring instead"
+    ],
+    "scenario_contexts": [
+     "A fully in-the-box mix sounds sterile and the producer wants analogue warmth added",
+     "An early digital recording feels sterile compared with its tape counterpart",
+     "A vocal captured in a dead, dry booth sounds sterile and needs ambience"
+    ]
+   },
+   "sources": ["Sound on Sound (technical articles)", "Bobby Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5adda4ec-f723-4bd6-833d-c27d7719cd57",
+   "term": "Take the mud out",
+   "fields": {
+    "definition": "A common studio instruction to reduce excess low-midrange energy, typically in the region of roughly 200 to 500 Hz, that makes a source or mix sound muddy, boxy or congested; usually accomplished with an EQ cut in that band.",
+    "plain_english": "This means cutting the low-middle tones that make a mix sound thick and cloudy. Doing this helps each part sound clearer.",
+    "purpose_function": "It directs the engineer to clear low-mid buildup so individual parts gain definition and the mix sounds more open.",
+    "practical_application": "A technician sweeps a narrow EQ boost to find the offending frequency around 250 to 400 Hz, then cuts it on guitars, piano or the mix bus to take the mud out.",
+    "category": "EQ Instruction",
+    "related_terms": ["Muddy", "Boxy", "Low-mids", "Equalization", "Masking", "Clarity"],
+    "common_mistakes": [
+     "Cutting too much low-mid so the sound becomes thin and loses warmth and body",
+     "Cutting the same 300 Hz band on every track, hollowing out the whole mix",
+     "Trying to fix muddiness with more high boost instead of removing the low-mid cause"
+    ],
+    "scenario_contexts": [
+     "A dense rock mix sounds muddy and the producer says to take the mud out of the rhythm guitars",
+     "A boomy vocal recorded close to a mic needs low-mids cut for clarity",
+     "A piano masks the bass, so the engineer clears low-mid mud to separate them"
+    ]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d2fc545c-8301-4691-8065-86326403de43",
+   "term": "Thin",
+   "fields": {
+    "definition": "A negative tonal descriptor for a sound lacking low-frequency and low-mid body or fundamental energy, so it seems weak, lightweight and lacking fullness; the opposite of full, warm or fat.",
+    "plain_english": "A thin sound is missing its low notes and body, so it feels weak and small. It is like a voice heard through a cheap phone speaker.",
+    "purpose_function": "It flags a deficiency of low-end weight so the engineer can add body, adjust mic placement, or ease off excessive high-pass filtering.",
+    "practical_application": "When a guitar or vocal sounds thin, a technician boosts low-mids around 100 to 250 Hz, moves the mic closer for proximity effect, or backs off an aggressive low cut.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Full", "Warmth", "Body", "Proximity effect", "High-pass filter", "Fundamental"],
+    "common_mistakes": [
+     "High-passing too aggressively on every channel until sources sound thin",
+     "Confusing a thin source with good clarity and leaving it weak in the mix",
+     "Adding low-mid boost to fix thinness until the sound becomes muddy instead"
+    ],
+    "scenario_contexts": [
+     "A DI electric guitar sounds thin and needs low-mid weight added",
+     "A vocal recorded far from the mic loses body and sounds thin",
+     "Over-aggressive low cuts on a live console leave the whole band sounding thin"
+    ]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e1bcd784-8349-4546-974a-06ac4db0214b",
+   "term": "thumpy",
+   "fields": {
+    "definition": "A tonal descriptor for a sound dominated by a strong, emphasized low-frequency thump or punch, typically the impact of a kick drum or bass in the region of roughly 50 to 100 Hz; positive when it means solid punch, negative when it means boomy or one-note.",
+    "plain_english": "A thumpy sound has a strong, heavy low punch, like the thud of a kick drum you feel in your chest.",
+    "purpose_function": "It describes the weight and impact of the low end, guiding decisions about kick and bass level, EQ and dynamics.",
+    "practical_application": "An engineer may EQ a kick to be more thumpy by boosting around 60 to 80 Hz, or tame an over-thumpy low end that is masking the bass and clouding the mix.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Punch", "Boomy", "Low end", "Kick drum", "Sub-bass", "Tight"],
+    "common_mistakes": [
+     "Boosting kick thump so much it masks the bass guitar and muddies the low end",
+     "Judging thump on small speakers that cannot reproduce those frequencies",
+     "Confusing useful thump with uncontrolled room boom or resonance"
+    ],
+    "scenario_contexts": [
+     "A dance kick needs to be thumpy so listeners feel it on a club system",
+     "A live kick drum sounds too thumpy and boomy and needs low-end control",
+     "Adding thump to a lightweight kick to give it more impact in a rock mix"
+    ]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "44de79c7-fcd0-403d-9f8c-b121816b710a",
+   "term": "Tight",
+   "fields": {
+    "definition": "A positive tonal descriptor for a well-controlled, focused low end and transients with no boom, ringing or sloppy decay; also applied to rhythmic precision where parts lock cleanly together.",
+    "plain_english": "A tight sound has a firm, controlled low end with no boom or ringing. The notes start and stop cleanly.",
+    "purpose_function": "It signals control and definition in the low end and timing, guiding EQ, damping, gating and dynamics choices toward a clean, focused result.",
+    "practical_application": "A technician tightens low end by cutting boomy resonances, damping a drum, gating decay, or high-passing rumble so notes and hits start and stop cleanly.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Punch", "Boomy", "Gate", "Damping", "Transient", "Low end"],
+    "common_mistakes": [
+     "Over-tightening with heavy gating so the low end sounds unnatural and choppy",
+     "Assuming tight always means better and stripping away useful sustain and warmth",
+     "Confusing a tight source with one that is simply thin or lacking low-end weight"
+    ],
+    "scenario_contexts": [
+     "A bass and kick are aligned and EQ'd so the low end sounds tight together",
+     "A boomy live-stage low end is tightened with high-pass filters and EQ cuts",
+     "A drum kit is damped and gated to give a tighter, more controlled sound"
+    ]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "68b246ca-6ea2-4317-b0bc-e2e5820a8006",
+   "term": "Tighten it up",
+   "fields": {
+    "definition": "A studio and live-sound instruction to make a sound, usually the low end, more controlled and focused, for example by cutting boomy or excessive low frequencies, shortening reverb, damping resonance, or improving rhythmic timing.",
+    "plain_english": "This means making the low end more firm and controlled. You cut boomy low notes or shorten long echoes so the sound is clean.",
+    "purpose_function": "It directs the engineer to reduce looseness, boom or smear so the result sounds cleaner and more defined.",
+    "practical_application": "In response, a technician may high-pass rumble, cut a boomy resonance, gate a ringing drum, or shorten a long reverb tail to tighten the sound.",
+    "category": "Mix Instruction",
+    "related_terms": ["Tight", "Boomy", "High-pass filter", "Gate", "Reverb", "Low end"],
+    "common_mistakes": [
+     "Over-tightening until the sound loses natural weight and sustain",
+     "Only cutting lows when the real looseness is a timing or performance issue",
+     "Applying heavy gating that chops the sound unnaturally"
+    ],
+    "scenario_contexts": [
+     "A mix engineer is told to tighten up a boomy bass so it sits cleanly with the kick",
+     "A front-of-house engineer tightens up a loose, resonant stage low end",
+     "A producer asks to tighten up a ringing tom by damping and gating it"
+    ]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

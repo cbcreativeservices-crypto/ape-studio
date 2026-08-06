@@ -1,0 +1,231 @@
+{
+ "batch": 317,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "3f17fad1-2470-43c4-aae7-f4523b6d6b73",
+   "term": "Muddy",
+   "fields": {
+    "definition": "A subjective tonal descriptor for sound with excessive or poorly defined low-mid energy (roughly 100-500 Hz) that masks clarity and makes individual instruments hard to distinguish from one another.",
+    "plain_english": "Music that sounds thick and unclear, like everything is smeared together. It usually has too much low and low-mid sound, so you cannot pick out each instrument, a bit like a photo that is out of focus.",
+    "purpose_function": "It flags a common, correctable tonal fault so engineers know to cut low-mid buildup and reduce masking; the shared shorthand lets people agree on the problem quickly.",
+    "practical_application": "Hearing a muddy mix, an engineer sweeps an EQ to find and cut boxy buildup near 200-400 Hz, high-passes tracks that do not need low end, and checks for too many parts sharing the same range.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["muffled", "Boomy", "Boxy", "Warm", "Congested", "one-note bass"],
+    "common_mistakes": [
+     "Confusing muddy (excess low-mids) with dark (rolled-off highs).",
+     "Trying to fix muddiness by boosting treble instead of cutting the low-mid buildup.",
+     "Assuming it is always one source's fault rather than masking from many layered instruments."
+    ],
+    "scenario_contexts": [
+     "A dense rock mix where bass and kick overlap around 100-250 Hz.",
+     "An untreated room with strong low-mid reflections making vocals unclear.",
+     "A home recording with no high-pass filtering, stacking low-mid energy across tracks."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "26348071-0883-48da-b6df-a7a7720fcb6b",
+   "term": "muffled",
+   "fields": {
+    "definition": "A tonal descriptor for sound that seems covered or obstructed, with attenuated high frequencies and reduced clarity and intelligibility, as if heard through a barrier.",
+    "plain_english": "Sound that seems covered up, like music playing behind a closed door or with a blanket over the speaker. The crisp high sounds are missing, so it feels dull and less clear.",
+    "purpose_function": "It describes a treble-deficient, obstructed sound so a technician looks for rolled-off top end or a physical blockage rather than a low-end problem.",
+    "practical_application": "A muffled complaint leads a tech to check mic placement or a heavy pop screen, a covered speaker grille, a failed tweeter, or an unwanted high cut, then restore high-frequency content.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Dark", "Dull", "Muddy", "Bright", "Presence", "Open"],
+    "common_mistakes": [
+     "Confusing muffled (missing highs or obstruction) with muddy (excess low-mids).",
+     "Overboosting treble when the real cause is mic placement or a physical blockage.",
+     "Overlooking a blocked grille or a failed high-frequency driver as the cause."
+    ],
+    "scenario_contexts": [
+     "A vocal recorded far off-axis or behind a thick pop screen.",
+     "A PA with a blown high-frequency driver.",
+     "Playback through a phone speaker that is partly covered by a hand."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "226a0684-25dd-4c8e-bac9-a7ae41ddeb3e",
+   "term": "mushy",
+   "fields": {
+    "definition": "A tonal descriptor for sound lacking transient definition and tightness, where attacks and notes smear together and lose punch, often from over-processing, poor timing, or inadequate low-end damping.",
+    "plain_english": "Sound that is soft and smeared, with no sharp hits or clear edges. The notes blur into each other instead of sounding tight and punchy, like soggy food that has lost its crunch.",
+    "purpose_function": "It flags weak transients and poor definition so an engineer works on attack, timing, or damping rather than on frequency balance alone.",
+    "practical_application": "A mushy low end leads a tech to check bass note definition, ease off gating and heavy compression or limiting, and improve monitor or room damping to sharpen transients.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Muddy", "Punchy", "Tight", "Boomy", "Flabby", "one-note bass"],
+    "common_mistakes": [
+     "Confusing mushy (smeared transients) with muddy (frequency buildup).",
+     "Over-compressing, which flattens transients and makes the sound mushier.",
+     "Blaming the source when the room or monitors lack low-end damping."
+    ],
+    "scenario_contexts": [
+     "A bass DI over-compressed until the notes lose their attack.",
+     "A drum bus crushed by a limiter set too hard.",
+     "A boomy, untreated room smearing kick-drum transients."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4ab8195b-8102-41bb-bd5f-22c9164963ec",
+   "term": "musical",
+   "fields": {
+    "definition": "A subjective praise descriptor for a sound, device, or process that is pleasing, coherent, and easy on the ear, altering the source smoothly and agreeably rather than harshly or clinically.",
+    "plain_english": "A sound or tool people call musical just sounds pleasing and easy on the ears. It changes the sound in a smooth, gentle way instead of a harsh or ugly one, so it feels right for music.",
+    "purpose_function": "It conveys that a device or process flatters the source rather than sounding harsh or clinical, guiding gear and setting choices toward pleasing results.",
+    "practical_application": "Engineers call an EQ, compressor, or reverb musical when it can be pushed hard yet still sound smooth, and use the label when picking gear or settings for a natural, flattering result.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["natural", "Smooth", "Warm", "Harsh", "Open", "Transparent"],
+    "common_mistakes": [
+     "Treating musical as a measurable spec rather than a subjective judgment.",
+     "Assuming musical always means colored or warm, when it can also mean transparent.",
+     "Using the word so vaguely that it gives no actionable direction."
+    ],
+    "scenario_contexts": [
+     "Describing an analog-style compressor that stays smooth under heavy gain reduction.",
+     "A broad EQ curve that flatters a vocal without sounding processed.",
+     "A plate reverb that sits pleasingly behind a mix."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bbd75fd6-182f-4c2b-a51b-d508f87bb154",
+   "term": "Nasal",
+   "fields": {
+    "definition": "A tonal descriptor for a pinched, honky quality resembling a voice with a blocked nose, caused by a narrow-band emphasis in the upper midrange (roughly 1 kHz), often with a dip nearby.",
+    "plain_english": "Sound that is pinched and honky, like someone talking while holding their nose. It comes from too much sound in a narrow midrange band, which makes voices and instruments sound boxed-in.",
+    "purpose_function": "It names a specific midrange coloration so a technician can find and reduce the offending emphasis rather than guessing across the whole spectrum.",
+    "practical_application": "A nasal vocal or horn leads the engineer to sweep and cut a narrow band near 1 kHz, reconsider mic choice and placement, and restore a natural midrange.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Boxy", "Honky", "Presence", "natural", "Muddy", "muffled"],
+    "common_mistakes": [
+     "Confusing nasal (upper-mid honk near 1 kHz) with boxy (lower-mid buildup around 300-500 Hz).",
+     "Cutting too wide a band and hollowing out the whole midrange.",
+     "Blaming the microphone when the cause is room or placement."
+    ],
+    "scenario_contexts": [
+     "A vocal on a cheap dynamic mic that sounds honky and pinched.",
+     "A saxophone with a pronounced peak near 1 kHz.",
+     "A budget PA with a midrange bump making speech sound nasal."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8f172fd4-63bb-477f-b29f-ef36553626e2",
+   "term": "natural",
+   "fields": {
+    "definition": "A descriptor for reproduction that sounds true to the original acoustic source, without obvious coloration, hype, or artifacts, and is timbrally balanced and realistic.",
+    "plain_english": "Sound that seems real and true to life, like hearing the actual instrument in the room. Nothing is boosted or changed in an obvious way, so it feels honest.",
+    "purpose_function": "It sets a reference target of uncolored, realistic reproduction, guiding mic, EQ, and monitor choices toward fidelity to the source.",
+    "practical_application": "Engineers aim for a natural tone by choosing neutral mics and monitors and using light EQ so a recording matches how the source really sounds, and use it as an A/B reference.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["musical", "Open", "Transparent", "Warm", "Balanced", "Colored"],
+    "common_mistakes": [
+     "Confusing natural with a perfectly flat measured response; a natural result may still need gentle EQ.",
+     "Assuming heavy processing can still leave a sound natural.",
+     "Chasing a natural tone on poor monitors that hide coloration."
+    ],
+    "scenario_contexts": [
+     "An acoustic guitar recording that matches the live instrument.",
+     "A neutral studio monitor used as a reference.",
+     "A classical recording made with minimal EQ and simple miking."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "455b7d4f-3861-4275-b610-d42099ca7c30",
+   "term": "one-note bass",
+   "fields": {
+    "definition": "A low-end fault in which the bass region lacks pitch definition, so different bass notes sound at roughly the same level and character because one or a few resonant frequencies dominate, usually from room modes or a resonant speaker or port.",
+    "plain_english": "A bass sound where every note seems to hit the same, so you cannot tell the notes apart. Usually one strong resonant pitch booms louder than the rest and hides the real bass line, like a room that rings on one note.",
+    "purpose_function": "It names an evenness and resonance problem in the low end so a technician looks at room modes or equipment resonance rather than blaming the player.",
+    "practical_application": "Hearing one-note bass, a technician checks room modes and monitor or subwoofer placement, adds treatment or a narrow EQ cut, and looks for a resonant port or cabinet rather than re-tracking the bassist.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Boomy", "Room mode", "Muddy", "mushy", "Tight", "Resonance"],
+    "common_mistakes": [
+     "Blaming the bass player or instrument instead of the room or monitors.",
+     "Fixing it by cutting all bass instead of the specific resonant frequency.",
+     "Ignoring monitor or subwoofer placement as the cause."
+    ],
+    "scenario_contexts": [
+     "A small untreated control room with a strong axial room mode.",
+     "A bass guitar tracked in a resonant live room.",
+     "A ported loudspeaker with a dominant port tuning frequency."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Rane Pro Audio Reference"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "38481a39-5e87-4d3a-8ef2-039b6608bed0",
+   "term": "Open",
+   "fields": {
+    "definition": "A positive tonal descriptor for sound with a sense of space, air, and clarity, with extended, unrestricted high frequencies and good separation, as if nothing sits between listener and source; the opposite of closed, congested, or veiled.",
+    "plain_english": "Sound that feels spacious and clear, with plenty of air on top and room around each instrument. It seems like nothing is blocking the sound, the opposite of stuffy or boxed-in.",
+    "purpose_function": "It describes airy, uncongested sound with good high-frequency extension and separation, serving as a positive target for clarity and space.",
+    "practical_application": "Engineers aim for an open sound by managing high-frequency extension, reducing masking between parts, and using space and ambience so a mix breathes; it also helps judge mics and EQ.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Airy", "Open it up", "natural", "Congested", "Veiled", "muffled"],
+    "common_mistakes": [
+     "Confusing open (space, air, and separation) with simply loud or bright highs.",
+     "Over-brightening to fake openness, which causes harshness.",
+     "Cramming in too many parts, which kills the sense of openness."
+    ],
+    "scenario_contexts": [
+     "A sparse acoustic mix with plenty of air around each part.",
+     "A condenser mic with extended top-end response.",
+     "A well-separated stereo image with clear space between instruments."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9864e307-96dc-4473-8afd-51d02a33451a",
+   "term": "Open it up",
+   "fields": {
+    "definition": "A studio directive meaning to make a sound more open, increasing clarity, air, and space, typically by adding high-frequency extension, removing masking or clutter, or easing back heavy compression that closes the sound down.",
+    "plain_english": "A request to make a sound more open and airy. You do this by adding some top-end sparkle, easing off heavy compression, or clearing out clutter so the sound breathes and feels less boxed-in.",
+    "purpose_function": "It is shorthand for the goal of increasing openness, telling an engineer to move the sound toward something more spacious and clear.",
+    "practical_application": "Told to open it up, an engineer may add a high-shelf boost for air, back off compression, high-pass low-mid clutter, or lower masking parts so the mix breathes.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Open", "Airy", "Congested", "natural", "Presence", "Compression"],
+    "common_mistakes": [
+     "Only boosting treble while ignoring compression and masking that also close a sound down.",
+     "Overdoing it until the sound becomes harsh or thin.",
+     "Treating a broad direction as one fixed EQ move rather than a goal to reach."
+    ],
+    "scenario_contexts": [
+     "A producer asking to open up an over-compressed vocal.",
+     "Making a dense, congested mix breathe.",
+     "Adding air and space to a dull acoustic guitar."
+    ]
+   },
+   "sources": ["Rane Pro Audio Reference", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

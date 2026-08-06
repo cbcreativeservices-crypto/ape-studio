@@ -1,0 +1,79 @@
+{
+ "batch": 208,
+ "topic": "Broadcast Loudness & Compliance",
+ "authored": [
+  {
+   "id": "a3a88b6c-4323-4552-be9d-a5550d381b4b",
+   "term": "Transmission processor",
+   "fields": {
+    "definition": "The final audio processing stage in a broadcast signal chain, placed just ahead of the transmitter, exciter, or encoder, that conditions program audio for over-the-air or streamed delivery. It applies automatic gain control, multiband compression, and peak or true-peak limiting to hold loudness on target and prevent overmodulation; on FM it also adds pre-emphasis and stereo encoding.",
+    "plain_english": "It is the last box the sound goes through before it leaves the station. It evens out the volume and stops the signal from getting too strong. That way every show and advert reaches people at a steady, legal level.",
+    "purpose_function": "It exists to give a station a consistent, competitive sound while staying inside legal loudness and modulation limits, protecting audio quality and the transmitter from over-driven levels.",
+    "practical_application": "A broadcast engineer installs and tunes it at the transmitter site or in master control, choosing presets and loudness targets so on-air audio meets EBU R128 or ATSC A/85 while keeping the station's signature tone.",
+    "category": "Broadcast Processing",
+    "related_terms": [
+     "Loudness normalization",
+     "True-peak limiting",
+     "EBU R128",
+     "ATSC A/85",
+     "Dialnorm",
+     "Multiband compression"
+    ],
+    "common_mistakes": [
+     "Confusing loudness (LKFS/LUFS) with sample peak level, so the signal reads legal on a peak meter but still sounds too loud or too quiet to listeners.",
+     "Over-processing with heavy compression and clipping to chase loudness, which adds distortion and listener fatigue instead of clarity.",
+     "Assuming the processor alone guarantees compliance while ignoring correct dialnorm and metadata set upstream of it."
+    ],
+    "scenario_contexts": [
+     "An FM station installs an on-air processor before the exciter to build a consistent, competitive sound within modulation limits.",
+     "A TV station adds a transmission processor to hold dialog loudness near -24 LKFS and avoid CALM Act 'loud commercial' complaints.",
+     "During a format change, an engineer loads a new preset to shift the station's tonal balance and loudness density."
+    ]
+   },
+   "sources": [
+    "Orban OPTIMOD-TV 8685 Surround Loudness Controller technical documentation",
+    "ATSC A/85:2013, Techniques for Establishing and Maintaining Audio Loudness for Digital Television",
+    "EBU R 128, Loudness normalisation and permitted maximum level of audio signals",
+    "ITU-R BS.1770, Algorithms to measure audio programme loudness and true-peak audio level"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "706d0a18-9df8-4df6-8def-83df91ac0b26",
+   "term": "Transmission-quality report",
+   "fields": {
+    "definition": "A document produced by broadcast compliance monitoring or logging systems that records the measured technical quality of transmitted (aired) content over a defined period. It typically summarizes integrated and short-term loudness (LKFS/LUFS per ITU-R BS.1770), true-peak levels, dialnorm metadata, and any deviations from the applicable loudness standard such as EBU R128 or ATSC A/85.",
+    "plain_english": "It is a record that shows how good the signal that went out on air really was. It lists things like the volume levels and any moments that broke the rules, so the station can prove it followed the loudness laws.",
+    "purpose_function": "It gives a station documented proof that its output met loudness and technical rules, and helps engineers spot problems, fix them, or answer a complaint from a regulator or client.",
+    "practical_application": "An engineer or QC operator reads the report from a loudness logger to confirm programs and commercials stayed within limits, and pulls it as evidence if a regulator or client questions an aired segment.",
+    "category": "Loudness Compliance",
+    "related_terms": [
+     "Loudness logging",
+     "Integrated loudness",
+     "True-peak",
+     "EBU R128",
+     "ATSC A/85",
+     "As-run log"
+    ],
+    "common_mistakes": [
+     "Treating the report as a simple pass/fail stamp while ignoring short-term loudness spikes that can still draw viewer complaints.",
+     "Measuring against the wrong target or gating, so the report reads 'compliant' but was checked to the wrong standard.",
+     "Not retaining reports long enough to cover the period a regulator or client may later request."
+    ],
+    "scenario_contexts": [
+     "After a broadcast day, a station archives nightly loudness reports as evidence of CALM Act or EBU R128 compliance.",
+     "A client challenges the loudness of a delivered spot, and the station pulls the transmission-quality report to show it met the agreed target.",
+     "A QC engineer scans the report to find an over-peak event and trace it back to a mislabeled source file."
+    ]
+   },
+   "sources": [
+    "ATSC A/85:2013, Techniques for Establishing and Maintaining Audio Loudness for Digital Television",
+    "EBU R 128, Loudness normalisation and permitted maximum level of audio signals",
+    "ITU-R BS.1770, Algorithms to measure audio programme loudness and true-peak audio level"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,231 @@
+{
+ "batch": 63,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "8414e3cb-cc96-4483-90f6-df350d881512",
+   "term": "Pitch-offset layering",
+   "fields": {
+    "definition": "A layering technique in which a copy of a recorded part is combined with the original after being shifted slightly in pitch, typically by a few cents up to a semitone, so the two versions fuse into a thicker, wider composite sound. The offset is often paired with small timing or panning differences to reinforce the effect.",
+    "plain_english": "You copy a track and shift the copy a tiny bit up or down in pitch. Playing both at once makes the sound fuller and wider, like two singers who are almost but not quite in tune.",
+    "purpose_function": "It thickens and widens a single part without recording a second performance, exploiting the small differences between the original and the pitch-shifted copy. This adds richness and stereo width from one take.",
+    "practical_application": "An engineer duplicates a vocal or guitar track, nudges the copy a few cents sharp or flat, and pans the two apart to build width during mixing.",
+    "category": "Layering Technique",
+    "related_terms": ["Double tracking", "Quadruple tracking", "Detuning", "Chorus effect", "Stereo widening"],
+    "common_mistakes": [
+     "Shifting the pitch too far, so the layer sounds openly out of tune instead of thickened.",
+     "Forgetting to pan the layers apart, which throws away the width the technique is meant to create.",
+     "Applying it to a bass or lead line, where the detuning blurs the pitch and muddies the note."
+    ],
+    "scenario_contexts": [
+     "Widening a lead vocal in a pop mix.",
+     "Thickening a synth pad going into a chorus.",
+     "Building a wider rhythm-guitar bed from a single take."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dfc78458-3b83-4e98-bd1a-467cd95d2fb5",
+   "term": "Production embellishment",
+   "fields": {
+    "definition": "A non-essential musical or sonic element added during production to enhance interest, movement, or polish, such as an ear-candy fill, an ornament, a percussion accent, or an effect flourish. It decorates the arrangement without carrying its core structure.",
+    "plain_english": "A small extra sound added to a song to make it more interesting. The tune still works without it, like sprinkles on top of a cake.",
+    "purpose_function": "It adds detail, surprise, and forward motion to an arrangement, keeping the listener engaged and giving sections their own identity.",
+    "practical_application": "A producer drops in a reversed cymbal, a tambourine hit, or a filtered vocal chop at a transition to lift the moment.",
+    "category": "Arrangement Technique",
+    "related_terms": ["Ear candy", "Overdub", "Arrangement", "Fill", "Automation"],
+    "common_mistakes": [
+     "Adding so many embellishments that the arrangement becomes cluttered and busy.",
+     "Letting an embellishment compete with the lead melody instead of supporting it.",
+     "Treating an embellishment as a structural part the song depends on."
+    ],
+    "scenario_contexts": [
+     "Adding a riser just before a chorus.",
+     "Placing a subtle shaker under a verse.",
+     "Dropping an effect sweep at a section change."
+    ]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0c369905-3dd5-4325-832d-df4771af5cf7",
+   "term": "Quadruple tracking",
+   "fields": {
+    "definition": "A layering technique in which a performer records the same part four separate times and the four takes are combined, typically with two panned hard left and two hard right, to produce a thick, wide, powerful composite. It is most associated with distorted rhythm guitars in rock and metal.",
+    "plain_english": "The same guitar part is played and recorded four times, then stacked together. This makes it sound huge and wide, like a small choir of the same guitar.",
+    "purpose_function": "It builds a wall of sound with more thickness and stereo width than one take can give, because the small natural differences between takes fill out the stereo field.",
+    "practical_application": "A metal guitarist plays the rhythm riff four times, and the engineer pans two takes hard left and two hard right for a wide, solid guitar bed.",
+    "category": "Tracking Technique",
+    "related_terms": ["Double tracking", "Pitch-offset layering", "Rhythm-guitar mixing", "Overdub", "Panning"],
+    "common_mistakes": [
+     "Playing the four takes so identically that the natural width disappears.",
+     "Not checking tuning between takes, so intonation drifts and the stack sounds smeared.",
+     "Stacking four tracks when the arrangement only needs two, which piles up mud."
+    ],
+    "scenario_contexts": [
+     "Tracking rhythm guitars for a metal record.",
+     "Building a wide guitar wall in a rock chorus.",
+     "Layering power chords for a heavy breakdown."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Recording Engineer's Handbook (Owsinski)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7097d1c4-0823-43b0-96f7-a679ef2eaf93",
+   "term": "Rack-tom processing",
+   "fields": {
+    "definition": "The signal processing applied to rack toms, the smaller toms mounted above the kick drum, commonly including gating, EQ, transient shaping, and compression to control ring, tighten attack, and seat the toms in the mix.",
+    "plain_english": "Shaping the sound of the small drums mounted over the bass drum. Engineers use tools to cut unwanted ringing and make each hit punchy.",
+    "purpose_function": "It cleans up bleed and ring, sharpens the attack, and balances the toms so their fills cut through without muddying the rest of the kit.",
+    "practical_application": "During a mix the engineer gates each rack tom to remove cymbal bleed, EQs out boxy mids, boosts attack, and adds a touch of compression.",
+    "category": "Drum Processing",
+    "related_terms": ["Noise gate", "Resonant head", "Transient shaping", "Equalization", "Compression"],
+    "common_mistakes": [
+     "Setting the gate threshold so tight that soft tom hits get cut off.",
+     "Over-EQing until the toms sound thin and lifeless.",
+     "Gating the close mics while ignoring loud tom bleed in the overheads."
+    ],
+    "scenario_contexts": [
+     "Mixing a rock drum kit with busy tom fills.",
+     "Cleaning cymbal bleed off close tom mics.",
+     "Tightening toms for a punchy modern drum sound."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4b4dac84-f829-457c-9c89-7021fdb1112a",
+   "term": "Resonant head",
+   "fields": {
+    "definition": "The drumhead mounted on the side of a drum opposite the struck batter head, which on most drums is the bottom head. It is not played directly but vibrates sympathetically to shape the drum's sustain, resonance, pitch, and tone.",
+    "plain_english": "The drumhead on the side you do not hit, usually the bottom. It is not struck, but it rings along and controls how long and how full the drum sounds.",
+    "purpose_function": "It sets the drum's sustain and overall tone; its tuning relative to the batter head decides pitch bend, how long the note rings, and how full it sounds.",
+    "practical_application": "A drum tech tunes the resonant head to set sustain and pitch, tuning it near the batter head for a fuller, longer note or looser for more pitch drop.",
+    "category": "Drum Component",
+    "related_terms": ["Batter head", "Drumhead", "Drum tuning", "Rack-tom processing", "Sustain"],
+    "common_mistakes": [
+     "Thinking the resonant head is meant to be struck like the batter head.",
+     "Removing the resonant head and losing the drum's natural sustain and tone.",
+     "Tuning it with no regard for the batter head, which causes uncontrolled overtones."
+    ],
+    "scenario_contexts": [
+     "Tuning toms before a tracking session.",
+     "Adjusting snare sustain from the reso-side tuning.",
+     "Deciding whether to keep or remove the reso head for a drier sound."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Physics of Musical Instruments (Fletcher & Rossing)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6390e355-085c-461e-a18a-297191cc12bd",
+   "term": "Rhythm-guitar mixing",
+   "fields": {
+    "definition": "The set of mixing decisions applied to rhythm-guitar parts, including level balance, panning, EQ, compression, and effects, to seat the chordal or riff-based guitar within the arrangement and control its interaction with vocals, bass, and drums.",
+    "plain_english": "Balancing the chord-playing guitars in a song. The engineer sets their volume, spreads them left and right, and shapes their tone so they support the singer instead of covering it.",
+    "purpose_function": "It positions the rhythm guitars for width and energy while carving space so they reinforce the groove without masking the vocal or clashing with the bass.",
+    "practical_application": "The mixer pans doubled rhythm guitars left and right, high-passes to clear the low end for the bass, and dips mids that clash with the vocal.",
+    "category": "Mixing Technique",
+    "related_terms": ["Quadruple tracking", "Double tracking", "Panning", "Equalization", "Frequency masking"],
+    "common_mistakes": [
+     "Leaving too much low end in the guitars, so they fight the bass.",
+     "Panning a single rhythm take to the center, wasting the stereo width.",
+     "Setting the guitars so loud they bury the vocal."
+    ],
+    "scenario_contexts": [
+     "Mixing a rock band's chorus with doubled guitars.",
+     "Fitting rhythm guitar around a lead vocal.",
+     "Balancing guitars against bass in a dense arrangement."
+    ]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "56e5e0ba-cd6c-47ee-9cf9-447bdeabe7bc",
+   "term": "Rhythmic layering",
+   "fields": {
+    "definition": "An arrangement and production technique of stacking several parts with complementary rhythmic patterns, such as a steady eighth-note part, a syncopated accent, and a percussion figure, so their combined interplay creates a fuller, more driving groove.",
+    "plain_english": "Stacking several parts that each play a different rhythm. Together they lock into one bigger groove, like players whose patterns fit around each other.",
+    "purpose_function": "It builds groove, energy, and density by combining patterns that fill different rhythmic spaces, giving the track motion without any single part being busy.",
+    "practical_application": "A producer layers a straight rhythm guitar, an off-beat shaker, and a syncopated synth so the parts interlock into one groove.",
+    "category": "Layering Technique",
+    "related_terms": ["Rhythmic texture", "Production embellishment", "Pitch-offset layering", "Groove", "Arrangement"],
+    "common_mistakes": [
+     "Layering parts that share the same rhythm, which adds volume but no interest.",
+     "Stacking too many busy patterns until the groove turns to clutter.",
+     "Ignoring how the layers line up against the drums."
+    ],
+    "scenario_contexts": [
+     "Building a groove in a pop production.",
+     "Adding percussion layers to a verse.",
+     "Interlocking guitar and keys rhythms in a chorus."
+    ]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f6f34845-ea23-4792-8ea1-5fb864c9e822",
+   "term": "Rhythmic texture",
+   "fields": {
+    "definition": "The overall rhythmic character of a passage created by the combination and density of its rhythmic parts: how many rhythmic layers are present, how busy or sparse they are, and how their patterns interact. It is a quality of the whole arrangement rather than of one instrument's part.",
+    "plain_english": "The overall feel made by all the rhythms in a section working together. A few simple parts feel open and calm; many busy parts feel thick and driving.",
+    "purpose_function": "It shapes the energy and feel of each section, letting an arranger build contrast between sparse and dense moments to guide the listener.",
+    "practical_application": "An arranger thins the rhythmic texture in a verse and thickens it in the chorus so the chorus feels like a lift.",
+    "category": "Arrangement Concept",
+    "related_terms": ["Rhythmic layering", "Production embellishment", "Arrangement", "Groove", "Dynamics"],
+    "common_mistakes": [
+     "Keeping the same dense texture through the whole song, so no section stands out.",
+     "Confusing rhythmic texture with tempo.",
+     "Adding parts without listening to how busy the whole texture becomes."
+    ],
+    "scenario_contexts": [
+     "Planning verse-to-chorus contrast.",
+     "Arranging a build-up into a drop.",
+     "Deciding how many rhythmic parts a section needs."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9114a578-913a-4ae2-a4fc-7a51d3aec5c7",
+   "term": "Ride bell",
+   "fields": {
+    "definition": "The raised, cup-shaped dome at the center of a ride cymbal. Struck with the shoulder or tip of the stick, it produces a bright, high-pitched, penetrating ping with less wash than the cymbal's bow, and is used for accents and clearly defined patterns.",
+    "plain_english": "The raised cup in the middle of a ride cymbal. Hitting it gives a bright, bell-like ping that cuts through the band, clearer and sharper than the flat part.",
+    "purpose_function": "It gives the drummer a cutting, clearly pitched accent that stands out over loud passages, useful for marking sections or driving a chorus.",
+    "practical_application": "A drummer moves from the ride bow to the bell during the chorus for a louder, brighter pattern that cuts through the mix.",
+    "category": "Cymbal Component",
+    "related_terms": ["Ride cymbal", "Crash cymbal", "Hi-hat", "Overhead miking", "Cymbal wash"],
+    "common_mistakes": [
+     "Confusing the bell with the bow, the flat playing area of the ride.",
+     "Miking the kit so the loud bell overpowers the overheads.",
+     "Expecting the bell to give a washy sound like the cymbal's edge."
+    ],
+    "scenario_contexts": [
+     "Playing a driving bell pattern in a chorus.",
+     "Accenting section changes on the ride bell.",
+     "Setting overhead mic levels to tame a loud bell."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Physics of Musical Instruments (Fletcher & Rossing)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

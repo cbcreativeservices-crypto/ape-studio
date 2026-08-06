@@ -1,0 +1,231 @@
+{
+ "batch": 103,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "4b8940c0-aadd-4578-b342-ba0a6e1645e7",
+   "term": "Flex marker",
+   "fields": {
+    "definition": "In Logic Pro, a flex marker is an editable anchor point placed on an audio waveform, usually at a detected transient, that you drag to time-stretch or compress the surrounding audio without cutting or crossfading the region.",
+    "plain_english": "A flex marker is a handle you pin onto a sound wave. When you drag it, the nearby audio stretches or squeezes so a note lands on the beat. It works a bit like pulling a rubber band.",
+    "purpose_function": "It gives a precise, non-destructive way to move a single beat or note in time, so audio can be tightened to the grid or lined up with other tracks.",
+    "practical_application": "A technician clicks a transient to drop a flex marker, then drags it onto the nearest grid line to fix a late snare hit or align a doubled guitar part.",
+    "category": "Flex Editing",
+    "related_terms": ["Flex Time", "Flex mode", "Flex Pitch", "Transient", "Quantization", "Time stretching"],
+    "common_mistakes": [
+     "Confusing flex markers with arrangement markers or region edit points; flex markers only exist inside Flex-enabled audio.",
+     "Placing too many flex markers close together, which creates audible stretching artifacts.",
+     "Forgetting to enable Flex and choose a Flex mode first, so a marker cannot be added."
+    ],
+    "scenario_contexts": [
+     "Tightening a slightly rushed vocal syllable to the beat.",
+     "Aligning a live drum take to the project tempo grid.",
+     "Matching a double-tracked rhythm guitar to the original take."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide - Time stretch using flex markers", "Apple Logic Pro User Guide - Flex Time and Pitch overview"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6ba9e234-e9df-4acb-85f1-2eb4b482fe0b",
+   "term": "Flex mode",
+   "fields": {
+    "definition": "In Logic Pro, Flex mode is the per-track setting, chosen from the Flex Mode pop-up menu, that selects the algorithm used to analyze and edit audio timing or pitch, either Flex Pitch or one of the Flex Time algorithms (Slicing, Rhythmic, Monophonic, Polyphonic, Speed, or Tempophone).",
+    "plain_english": "Flex mode is the setting that tells Logic how to stretch or tune a track's audio. You pick the type that matches the sound, like a drum setting for drums or a single-voice setting for a solo vocal.",
+    "purpose_function": "Different audio, such as drums, single notes, or full chords, needs different processing, so the Flex mode picks the right algorithm to get clean results with the fewest artifacts.",
+    "practical_application": "Before editing timing, a technician sets Monophonic for a solo bass line or Slicing for a drum loop, choosing the mode that best fits the material.",
+    "category": "Flex Editing",
+    "related_terms": ["Flex Time", "Flex Pitch", "Flex marker", "Time stretching", "Transient", "Phase vocoder"],
+    "common_mistakes": [
+     "Leaving a default mode on material it does not suit instead of choosing a mode matched to the source.",
+     "Assuming every Flex mode preserves pitch; Speed and Tempophone deliberately change pitch and character.",
+     "Using the processor-heavy Polyphonic mode on every track and overloading the CPU."
+    ],
+    "scenario_contexts": [
+     "Choosing Slicing before quantizing a drum loop.",
+     "Selecting Monophonic to correct the timing of a solo vocal.",
+     "Using Polyphonic mode to stretch a full chordal guitar part."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide - Flex Time and Pitch overview", "Apple Logic Pro User Guide - Flex Time algorithms and parameters"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f4bd13cb-6d11-4d0a-a254-232790b0ded0",
+   "term": "Flex Pitch",
+   "fields": {
+    "definition": "Flex Pitch is Logic Pro's pitch-editing Flex mode that analyzes monophonic audio, displays each detected note as an editable block in the Audio Track Editor or Piano Roll, and lets you correct or reshape pitch, timing, and level non-destructively.",
+    "plain_english": "Flex Pitch lets you retune recorded audio, like fixing an out-of-tune vocal. It shows each note as a block you drag up or down to the right pitch, much like moving notes on a piano roll.",
+    "purpose_function": "It exists to correct tuning and shape performance details such as vibrato, drift, and level directly on the recorded audio, without re-recording or bouncing to a separate plug-in.",
+    "practical_application": "A technician turns on Flex Pitch for a lead vocal, then drags flat notes up to pitch and reduces excess vibrato before mixing.",
+    "category": "Flex Editing",
+    "related_terms": ["Flex Pitch note", "Flex mode", "Pitch correction", "Formant", "Vibrato", "Flex Time"],
+    "common_mistakes": [
+     "Dragging every note to perfect pitch, producing an unnatural, over-tuned sound.",
+     "Expecting Flex Pitch to cleanly separate notes in dense chords or polyphonic material.",
+     "Confusing Flex Pitch (pitch editing) with Flex Time (timing editing)."
+    ],
+    "scenario_contexts": [
+     "Tuning a lead vocal take before a mix.",
+     "Fixing a single sour note in an otherwise good bass line.",
+     "Reducing heavy vibrato at the end of a sustained vocal note."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide - Edit pitch and timing with Flex Pitch", "Apple Logic Pro User Guide - Flex Time and Pitch overview"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "be2ce275-9f17-4a58-b872-65dd87f8c72a",
+   "term": "Flex Pitch note",
+   "fields": {
+    "definition": "A Flex Pitch note is a single detected note-event in Logic Pro's Flex Pitch view, shown as a block whose hotspots let you edit its pitch, fine pitch, gain, vibrato, pitch drift at the start and end, and formant, along with its time position and length.",
+    "plain_english": "A Flex Pitch note is one note that Logic finds in your audio and shows as a small block. Its corners and edges are handles you grab to change the note's pitch, loudness, or wobble.",
+    "purpose_function": "It breaks a continuous recording into individual, editable pieces so you can adjust one note's tuning or expression without affecting the notes around it.",
+    "practical_application": "A technician clicks a single Flex Pitch note, drags its center to correct pitch, and uses the lower-corner hotspots to trim gain or shift the formant so the fix sounds natural.",
+    "category": "Flex Editing",
+    "related_terms": ["Flex Pitch", "Formant", "Fine pitch", "Vibrato", "Gain", "Pitch drift"],
+    "common_mistakes": [
+     "Grabbing the wrong hotspot and changing gain or formant when only pitch was intended.",
+     "Merging or splitting notes incorrectly, so Logic mis-tracks the pitch.",
+     "Ignoring the fine-pitch hotspot and leaving small tuning errors within a corrected note."
+    ],
+    "scenario_contexts": [
+     "Nudging one flat syllable up to pitch in a vocal line.",
+     "Lowering the gain of a single note that jumps out in level.",
+     "Shifting the formant of one note to keep a pitch-corrected vocal natural."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide - Edit pitch and timing with Flex Pitch", "Apple Logic Pro User Guide - Flex Time and Pitch overview"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6201a8fd-99d7-4b6f-a0f9-30528bf2e6f3",
+   "term": "Flex Time",
+   "fields": {
+    "definition": "Flex Time is Logic Pro's set of Flex modes for editing the timing of audio, moving, quantizing, stretching, or compressing individual beats and notes within a region using flex markers and transient analysis, without cutting or crossfading.",
+    "plain_english": "Flex Time lets you move the timing of recorded audio, like nudging a late drum hit onto the beat. It stretches or squeezes the sound instead of cutting it, so the edit stays smooth.",
+    "purpose_function": "It exists to correct or quantize the timing of recorded audio directly on the waveform, saving the manual slicing and crossfading that older editing required.",
+    "practical_application": "A technician enables a Flex Time mode, then quantizes a drum take or drags flex markers to tighten a loose bass performance to the grid.",
+    "category": "Flex Editing",
+    "related_terms": ["Flex marker", "Flex mode", "Flex Pitch", "Quantization", "Transient", "Time stretching"],
+    "common_mistakes": [
+     "Applying heavy time correction that creates audible stretching artifacts.",
+     "Choosing the wrong Flex mode for the material, causing glitches.",
+     "Confusing Flex Time (timing) with Flex Pitch (tuning)."
+    ],
+    "scenario_contexts": [
+     "Quantizing a live drum performance to the tempo grid.",
+     "Tightening a bass line that drifts behind the beat.",
+     "Aligning a doubled rhythm part to the main take."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide - Flex Time and Pitch overview", "Apple Logic Pro User Guide - Flex Time algorithms and parameters"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b66fd8cb-8c62-4bcd-989a-51b2d713aeb7",
+   "term": "Fold track",
+   "fields": {
+    "definition": "A fold track, commonly called a folder track, is a container track in a DAW arrangement that holds a group of other tracks and can be folded (collapsed) or unfolded (expanded) to hide or reveal them; its header often mirrors mute, solo, and record controls to the enclosed tracks.",
+    "plain_english": "A fold track is a folder in your song's track list that holds a group of related tracks. You can fold it shut to hide those tracks and tidy the screen, like closing a folder on your computer.",
+    "purpose_function": "It exists to organize large projects, letting you collapse related tracks such as all drums or all vocals into one row and often mute, solo, or move them together.",
+    "practical_application": "A technician packs all the drum tracks into a fold track, collapses it to clean up the arrange window, and can solo the whole group with one click.",
+    "category": "Track Organization",
+    "related_terms": ["Folder Stack", "Folder routing", "Track group", "Bus", "Summing stack", "Subgroup"],
+    "common_mistakes": [
+     "Assuming folding a track combines its audio; folding only hides tracks visually and does not sum them.",
+     "Confusing a plain fold or folder track (organization) with a summing group that also routes audio.",
+     "Losing track of parts by forgetting they are hidden inside a collapsed fold track."
+    ],
+    "scenario_contexts": [
+     "Collapsing all drum tracks into one row to reduce clutter.",
+     "Muting an entire instrument section by muting its folder track.",
+     "Grouping background vocals so they can be moved together in the timeline."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual - Folder Tracks", "Sound on Sound - Cubase: Folder Tracks & Folder Parts"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "aa0eb7ab-aff0-48d6-85c1-0f15fead17f6",
+   "term": "Fold-down master",
+   "fields": {
+    "definition": "A fold-down master is a master or monitor output that downmixes (folds down) a multichannel program, such as a 5.1 surround or immersive mix, to fewer channels, typically stereo or mono, using set summing coefficients so the mix can be checked for compatibility on smaller playback systems.",
+    "plain_english": "A fold-down master combines a surround mix down into stereo or a single mono speaker. It lets you check that your big multi-speaker mix still sounds right for listeners who only have two speakers or one.",
+    "purpose_function": "It exists so engineers can confirm that a surround or immersive mix stays balanced and free of level or phase problems when a listener's system collapses it to stereo or mono.",
+    "practical_application": "A post engineer routes the surround bus to a fold-down master and switches monitoring to the stereo or mono fold-down to confirm dialogue and balance survive the downmix.",
+    "category": "Monitoring & Downmix",
+    "related_terms": ["Downmix", "Surround", "Mono compatibility", "Master bus", "Stereo", "Phase"],
+    "common_mistakes": [
+     "Assuming a surround mix folds down cleanly without checking; center and surround levels can overpower or cancel in stereo or mono.",
+     "Ignoring phase problems that only appear when channels sum in the mono fold-down.",
+     "Confusing the fold-down (a derived stereo or mono check) with the actual multichannel master."
+    ],
+    "scenario_contexts": [
+     "Checking a 5.1 film mix for stereo compatibility before delivery.",
+     "Verifying dialogue stays clear in a mono fold-down for broadcast.",
+     "Testing whether surround effects cause cancellation when summed to mono."
+    ]
+   },
+   "sources": ["Ballou - Handbook for Sound Engineers (surround sound and downmixing)", "Dolby Laboratories technical documentation (downmix, Lo/Ro and Lt/Rt)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "440d6136-97f2-4979-9598-cc78574d8eed",
+   "term": "Folder routing",
+   "fields": {
+    "definition": "Folder routing is the practice of sending several tracks through a folder, group, or summing track so their combined signal shares one set of processing, level, and output controls, letting an engineer treat a group of related sources as a single mix element.",
+    "plain_english": "Folder routing sends a group of tracks, say all the drums, into one folder or group channel. Then you can control their volume and add effects to the whole group at once, instead of one track at a time.",
+    "purpose_function": "It exists to simplify mixing by combining related tracks into a subgroup, so shared processing and level are applied once to the whole group and the balance is easier to manage.",
+    "practical_application": "A technician routes every drum track's output to a drum folder or group, then compresses and fades the entire kit from that single channel.",
+    "category": "Signal Routing",
+    "related_terms": ["Folder Stack", "Summing stack", "Subgroup", "Bus", "Aux send", "Fold track"],
+    "common_mistakes": [
+     "Confusing an organization-only folder (no audio summing) with a routing folder or group that actually combines signals.",
+     "Routing tracks to a group but also leaving them going straight to the main output, doubling the signal.",
+     "Adding heavy processing on the folder without noticing it stacks with processing already on the individual tracks."
+    ],
+    "scenario_contexts": [
+     "Bussing all drum mics to one group for shared compression.",
+     "Grouping backing vocals to ride their overall level with one fader.",
+     "Sending a synth section to a folder for a single reverb and EQ pass."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual - Folder and Group Tracks", "Apple Logic Pro User Guide - Track Stacks overview"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dd606d69-178e-444d-90eb-fe9e6ac21075",
+   "term": "Folder Stack",
+   "fields": {
+    "definition": "In Logic Pro, a Folder Stack is a type of Track Stack that groups selected tracks under one main folder track purely for organization; the subtracks keep their own individual channel-strip outputs, so folding the stack hides or shows them without changing how their audio is routed, unlike a Summing Stack, which routes the subtracks to a shared aux or bus.",
+    "plain_english": "A Folder Stack is a Logic feature that tucks several tracks under one header to keep things tidy. It only hides or shows the tracks; it does not combine their sound, unlike a Summing Stack, which sends them all to one channel.",
+    "purpose_function": "It exists to declutter the track list by collapsing related tracks into one row while leaving each track's routing and output untouched.",
+    "practical_application": "A technician selects a group of tracks and creates a Folder Stack to collapse them, keeping the arrange window clean while every track still feeds its own output.",
+    "category": "Track Organization",
+    "related_terms": ["Summing stack", "Track Stack", "Fold track", "Folder routing", "Subgroup", "Channel strip"],
+    "common_mistakes": [
+     "Expecting a Folder Stack to sum or bus its tracks; that is a Summing Stack, while a Folder Stack is organizational only.",
+     "Adding plug-ins to a Folder Stack's main track expecting them to process the audio, when that track has no audio path.",
+     "Confusing the two stack types when parallel processing is needed."
+    ],
+    "scenario_contexts": [
+     "Collapsing all microphone tracks of a drum kit for a tidy arrangement.",
+     "Organizing layered synth tracks under one header without changing routing.",
+     "Grouping comped vocal takes visually while keeping separate outputs."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide - Track Stacks overview", "Apple Logic Pro User Guide - Create and edit Track Stacks"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

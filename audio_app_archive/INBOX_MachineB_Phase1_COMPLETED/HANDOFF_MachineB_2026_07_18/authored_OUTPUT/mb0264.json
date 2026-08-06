@@ -1,0 +1,159 @@
+{
+ "batch": 264,
+ "topic": "DAW Fundamentals & Session Management",
+ "authored": [
+  {
+   "id": "5047ed1c-6712-4e1c-a187-9b560614a6a9",
+   "term": "Continuous controller data",
+   "fields": {
+    "definition": "MIDI Control Change messages that carry continuously variable control values (0-127) on any of 128 controller numbers, used to transmit and automate performance parameters such as modulation, expression, volume, pan, and pedal position rather than note events.",
+    "plain_english": "This is a stream of MIDI messages that carry changing control values. A good example is how far you push a mod wheel or press a pedal. It tells an instrument or plug-in to change things like volume or tone over time. It does not play a note by itself.",
+    "purpose_function": "It lets expressive, changing controls such as volume, pan, modulation, and pedal position be recorded, edited, and played back with the notes, so MIDI performances can move and breathe rather than stay static.",
+    "practical_application": "A technician captures continuous controller data from a keyboard's wheels, faders, or pedals, then edits it as automation lanes or breakpoints in the DAW to fine-tune a MIDI part.",
+    "category": "MIDI Data",
+    "related_terms": ["MIDI", "Automation", "Modulation wheel", "Pitch bend", "Control surface", "Program change"],
+    "common_mistakes": ["Confusing continuous controller data with note data; CC messages shape parameters, they do not trigger notes.", "Assuming a controller number means the same thing on every synth; only some numbers are standardized.", "Recording overly dense CC streams that clog the MIDI track and are hard to edit.", "Treating the sustain pedal (CC64) as a smooth continuous control when many devices read it as simple on/off."],
+    "scenario_contexts": ["Recording mod-wheel movement to add vibrato to a virtual string patch.", "Drawing a volume (CC7) or expression (CC11) curve in the piano roll to shape a MIDI horn line.", "Mapping a control-surface fader to a synth filter cutoff and capturing the sweep as CC data."]
+   },
+   "sources": ["MIDI Association, MIDI 1.0 Detailed Specification (Control Change messages)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ad82bb78-5611-4c34-94d0-f27e6f0eae8b",
+   "term": "Count-In / Count-Off",
+   "fields": {
+    "definition": "A DAW transport feature that sounds a set number of metronome clicks, typically one or two bars, before recording or playback begins, establishing tempo and the starting point for the performer.",
+    "plain_english": "A count-in plays a few metronome clicks before recording starts. It works like a drummer counting '1, 2, 3, 4' before a song. Those clicks give you the tempo so you come in on time.",
+    "purpose_function": "It gives the performer the tempo and the downbeat before recording reaches the start point, so takes begin cleanly and stay locked to the grid.",
+    "practical_application": "An engineer sets a one- or two-bar count-in before each take so the artist can hear the click and enter in time.",
+    "category": "Transport",
+    "related_terms": ["Metronome", "Click track", "Tempo", "Pre-roll", "Punch-in", "Transport"],
+    "common_mistakes": ["Turning the count-in off and starting a take before the performer is ready.", "Confusing count-in with pre-roll; a count-in adds clicks before bar one, while pre-roll plays existing audio before the punch point.", "Setting a count-in so short that the player cannot lock to the tempo."],
+    "scenario_contexts": ["Giving a vocalist two bars of clicks before the punch so they enter in time.", "Setting a one-bar count-in for a drummer tracking to a click.", "Using a count-off in the studio so the whole band starts together on the downbeat."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Steinberg Cubase Operation Manual", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d2a2079d-7c70-42e1-ab8f-be7ebe866274",
+   "term": "Cycle",
+   "fields": {
+    "definition": "A DAW transport mode that continuously repeats playback or recording of a defined region between two locator points; called Cycle in Logic Pro and Cubase and Loop in many other DAWs.",
+    "plain_english": "Cycle mode makes the DAW loop the same section over and over. You set a start and end point, and playback keeps repeating between them. It is handy for practicing a part or recording many takes of one spot.",
+    "purpose_function": "It repeats a chosen section automatically so an engineer can rehearse, audition, comp, or record repeated takes of one passage without resetting the transport each time.",
+    "practical_application": "An engineer sets locators around a chorus and enables Cycle to loop it for comping takes or to keep playback repeating while tweaking a mix.",
+    "category": "Transport",
+    "related_terms": ["Loop", "Locators", "Loop recording", "Punch-in", "Transport", "Playback"],
+    "common_mistakes": ["Confusing cycle playback with loop recording; playback just repeats, while loop recording captures a take on each pass.", "Leaving Cycle enabled by accident so the transport never moves past the loop.", "Setting the locator points slightly off the beat, so the loop stutters or drifts."],
+    "scenario_contexts": ["Looping an eight-bar chorus to comp several vocal takes.", "Cycling a tricky guitar passage to rehearse it before recording.", "Setting Cycle over a two-bar drum groove to audition different sounds."]
+   },
+   "sources": ["Apple Logic Pro User Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7116419b-fff8-4b45-b3f7-fe1298962d25",
+   "term": "Data redundancy",
+   "fields": {
+    "definition": "The practice of deliberately maintaining more than one copy of data across separate drives, media, or locations so that the failure of any single storage device does not result in loss of the data.",
+    "plain_english": "Data redundancy means keeping more than one copy of your files. If one drive dies, another copy still has your work. It is like keeping a spare key so you are not locked out.",
+    "purpose_function": "It protects against data loss by ensuring more than one copy of critical files exists, so a single drive or media failure does not destroy the only copy.",
+    "practical_application": "A studio mirrors its record drives or keeps duplicate session copies so work can continue if one drive fails.",
+    "category": "Data Management",
+    "related_terms": ["RAID", "Backup", "Differential backup", "Disaster recovery plan", "Data scrubbing", "Archive"],
+    "common_mistakes": ["Thinking redundancy replaces backups; mirrored drives copy deletions and mistakes instantly, so you still need separate backups.", "Assuming a single external drive counts as redundancy; one copy is not redundant.", "Believing RAID protects against fire, theft, or ransomware; it does not replace off-site copies."],
+    "scenario_contexts": ["Mirroring session drives (RAID 1) so a single drive failure does not stop a session.", "Keeping a project on both the working drive and a second drive during a long recording.", "Storing duplicate copies of master files on separate media before archiving."]
+   },
+   "sources": ["NIST SP 800-34, Contingency Planning Guide for Federal Information Systems", "IEEE (Patterson, Gibson & Katz, RAID redundant storage)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2656b83f-3f9c-4baf-acac-2c8f586ca52f",
+   "term": "Data scrubbing",
+   "fields": {
+    "definition": "A background storage-integrity process that periodically reads stored data, verifies it against checksums or parity, and repairs detected errors from redundant copies to prevent silent corruption (bit rot) from accumulating.",
+    "plain_english": "Data scrubbing is a background check that reads your stored files to catch errors early. When it finds a bad spot, it repairs it using a spare copy. It is like a librarian checking books for damage before pages fall out.",
+    "purpose_function": "It maintains long-term data integrity by periodically reading stored data, detecting corruption or bit rot, and repairing it from redundancy before the damage spreads or a file is needed.",
+    "practical_application": "A studio schedules regular scrubs on its RAID array or NAS so archived sessions stay readable and errors are fixed before a restore is required.",
+    "category": "Data Management",
+    "related_terms": ["Data redundancy", "RAID", "Checksum", "Backup", "Archive", "Disaster recovery plan"],
+    "common_mistakes": ["Confusing storage data scrubbing with audio 'scrubbing' (dragging the playhead to hear audio).", "Assuming scrubbing can fix errors without redundancy; it needs a good copy or parity to repair from.", "Never scheduling scrubs, so silent bit rot goes unnoticed until a file will not open."],
+    "scenario_contexts": ["Scheduling a monthly scrub on a studio RAID array to catch bit rot early.", "A NAS automatically verifying archived sessions against stored checksums.", "Detecting and repairing a corrupted block in a backup before it is needed for a restore."]
+   },
+   "sources": ["NIST SP 800-34, Contingency Planning Guide for Federal Information Systems", "IEEE storage-reliability literature (disk scrubbing)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ef887c03-8ab2-4711-aff5-748662b304d2",
+   "term": "Destructive Record",
+   "fields": {
+    "definition": "A Pro Tools recording mode that writes new audio directly onto the existing audio file, permanently overwriting the previously recorded audio at that location with no undo.",
+    "plain_english": "Destructive Record permanently writes new audio over the old audio in the file. The sound you replace is gone for good, with no undo. It is like taping over a cassette, so the old take is erased.",
+    "purpose_function": "It records directly onto the existing audio file, permanently replacing the previous audio, which saves disk space and avoids creating extra takes or regions.",
+    "practical_application": "An engineer uses Destructive Record to overwrite a section directly in the file when extra takes are not wanted, knowing the old audio cannot be recovered.",
+    "category": "Recording",
+    "related_terms": ["Non-destructive editing", "Punch-in", "DestructivePunch", "Take", "Waveform", "Transport"],
+    "common_mistakes": ["Recording destructively over a take you want to keep; the original audio is permanently overwritten with no undo.", "Assuming Undo will bring back destructively recorded audio; the file on disk is already changed.", "Using Destructive Record when non-destructive recording would keep every take safely."],
+    "scenario_contexts": ["Using Destructive Record to overwrite noise or a bad section directly in the audio file.", "Committing a final take destructively when disk space is tight and extra takes are not wanted.", "Working in legacy sessions that require recording directly onto the existing file."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "78e6251b-d681-4eab-b312-2b219f8a434d",
+   "term": "DestructivePunch",
+   "fields": {
+    "definition": "A Pro Tools HD recording mode for fast, repeated punch-ins on long-format tracks in which recorded audio destructively replaces the existing audio in the underlying file, without creating new files or regions.",
+    "plain_english": "DestructivePunch lets you drop in and fix parts of a long recording without making new files. When you punch in, the new audio replaces the old audio in place. It suits long sessions where you do not want piles of extra takes.",
+    "purpose_function": "It allows fast, in-place punch recording on long tracks so corrections overwrite the existing audio file rather than spawning many new files and regions, keeping long sessions manageable.",
+    "practical_application": "On a Pro Tools HD system, an engineer primes the tracks and uses DestructivePunch to fix sections of a long continuous recording while keeping one contiguous file.",
+    "category": "Recording",
+    "related_terms": ["Destructive Record", "Punch-in", "QuickPunch", "Pre-roll", "Loop recording", "Transport"],
+    "common_mistakes": ["Confusing DestructivePunch with normal non-destructive punch recording; DestructivePunch overwrites the audio file in place.", "Forgetting that tracks must be prepared or 'primed' before DestructivePunch will engage.", "Punching over a good take, permanently replacing audio you still needed."],
+    "scenario_contexts": ["Tracking a long live concert to picture and punching fixes in place without new files.", "Overdubbing corrections into a long-form recording on a Pro Tools HD system.", "Replacing a flubbed phrase in a continuous take while keeping one contiguous audio file."]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "336edb18-ae34-4520-8bd5-c094ffa2b28e",
+   "term": "Differential backup",
+   "fields": {
+    "definition": "A backup method that copies only the data changed since the last full backup; each successive differential grows until the next full backup, and a restore requires the full backup plus the most recent differential.",
+    "plain_english": "A differential backup saves only the files that changed since the last full backup. This makes each backup faster and smaller than copying everything. To restore, you need the full backup plus the newest differential one.",
+    "purpose_function": "It shortens backup time and saves storage by copying only what changed since the last full backup, while still allowing a full restore from just two sets: the full backup and the latest differential.",
+    "practical_application": "A studio schedules periodic full backups with differential backups in between, so daily protection is quick and a restore needs only the full backup plus the newest differential.",
+    "category": "Data Management",
+    "related_terms": ["Full backup", "Incremental backup", "Data redundancy", "Disaster recovery plan", "Archive", "Backup"],
+    "common_mistakes": ["Confusing differential with incremental backups; incremental saves changes since the last backup of any kind, while differential saves changes since the last full backup.", "Deleting the full backup and keeping only differentials; a differential is useless without its full backup.", "Assuming differentials keep shrinking; they grow until the next full backup is made."],
+    "scenario_contexts": ["Running a weekly full backup with nightly differential backups of active sessions.", "Restoring a lost project from the last full backup plus the latest differential.", "Backing up only changed session files to save time and space between full backups."]
+   },
+   "sources": ["NIST SP 800-34, Contingency Planning Guide for Federal Information Systems", "IEEE professional storage/backup literature"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8b01f9d0-d028-4f71-9828-1e49522a237a",
+   "term": "Disaster recovery plan",
+   "fields": {
+    "definition": "A documented set of procedures for restoring data and resuming operations after a loss event such as drive failure, theft, fire, or flood, typically specifying backups, off-site copies, restore steps, and responsibilities.",
+    "plain_english": "A disaster recovery plan is a written set of steps for getting back to work after data is lost. It covers events like a dead drive, theft, fire, or flood. Having it ready means less panic and faster recovery when trouble hits.",
+    "purpose_function": "It defines in advance how to restore data and resume work after a failure, theft, or disaster, reducing downtime and the risk of permanent loss.",
+    "practical_application": "A facility documents backup locations, restore steps, and responsibilities, then periodically tests a full restore to confirm the plan actually works.",
+    "category": "Data Management",
+    "related_terms": ["Backup", "Data redundancy", "Differential backup", "Data scrubbing", "Archive", "Off-site backup"],
+    "common_mistakes": ["Writing a plan but never testing a restore, so no one knows if the backups actually work.", "Keeping the only recovery copy in the same room as the gear it is meant to protect.", "Assuming RAID or redundancy alone is a recovery plan; a plan also covers people, steps, and off-site copies."],
+    "scenario_contexts": ["Following written steps to restore sessions after a studio drive fails mid-project.", "Recovering client masters from off-site copies after a fire or flood.", "Testing the recovery plan by performing a full restore to spare hardware."]
+   },
+   "sources": ["NIST SP 800-34, Contingency Planning Guide for Federal Information Systems", "IEEE professional continuity/recovery literature"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

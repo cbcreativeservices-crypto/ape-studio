@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP&amp;E · Course Card Image Assigner</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#171d2b; --panel2:#1e2536; --line:#2b3550;
+    --txt:#e7ecf5; --muted:#93a0bd; --accent:#5b8cff; --good:#38c172; --warn:#e0b13a;
+    --chip:#243049; --drop:#22304d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--txt);font-size:14px;line-height:1.4}
+  header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#131926,#0f1420);
+         border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  header h1{font-size:16px;margin:0;font-weight:650;letter-spacing:.2px}
+  header .sub{color:var(--muted);font-size:12px}
+  .spacer{flex:1}
+  .btn{background:var(--chip);border:1px solid var(--line);color:var(--txt);padding:7px 13px;border-radius:8px;
+       cursor:pointer;font-size:13px;font-weight:550}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.ghost{background:transparent}
+  .wrap{max-width:1180px;margin:0 auto;padding:18px 20px 90px}
+  .stat{display:inline-flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);
+        border-radius:20px;padding:5px 12px;font-size:12px;color:var(--muted)}
+  .stat b{color:var(--txt);font-size:13px}
+  .bar{height:7px;border-radius:5px;background:var(--panel2);overflow:hidden;min-width:120px;flex:1;max-width:260px}
+  .bar>i{display:block;height:100%;background:var(--good);width:0}
+  .note{background:#1a2233;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;
+        padding:11px 14px;margin:14px 0;color:var(--muted);font-size:12.5px;line-height:1.55}
+  .note b{color:var(--txt)}
+  /* palette */
+  .palette{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:14px 0 22px;overflow:hidden}
+  .palette .phead{display:flex;align-items:center;gap:10px;padding:11px 15px;cursor:pointer;user-select:none}
+  .palette .phead h2{margin:0;font-size:13px;font-weight:600}
+  .palette .pbody{display:flex;gap:12px;padding:6px 15px 16px;overflow-x:auto}
+  .pitem{flex:0 0 auto;width:118px;text-align:center;cursor:grab}
+  .pitem .thumb{width:118px;height:74px;border-radius:8px;border:1px solid var(--line);
+        background:var(--panel2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;
+        color:var(--muted);font-size:10px;padding:4px;overflow:hidden}
+  .pitem .nm{font-size:10.5px;color:var(--muted);margin-top:5px;word-break:break-all;line-height:1.25}
+  .pitem:active{cursor:grabbing}
+  /* groups */
+  .group{margin-bottom:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+  .ghead{display:flex;align-items:center;gap:11px;padding:12px 15px;cursor:pointer;user-select:none;background:var(--panel2)}
+  .ghead .tw{width:14px;color:var(--muted);transition:transform .15s;font-size:11px}
+  .ghead.collapsed .tw{transform:rotate(-90deg)}
+  .ghead h2{margin:0;font-size:14px;font-weight:620;flex:1}
+  .ghead .gcount{font-size:11.5px;color:var(--muted);background:var(--chip);border-radius:12px;padding:3px 9px}
+  .gbody{padding:12px 14px}
+  .gbody.hidden{display:none}
+  /* card row */
+  .card{display:flex;align-items:center;gap:14px;padding:10px;border:1px solid var(--line);border-radius:10px;
+        margin-bottom:9px;background:var(--panel2);transition:border-color .12s}
+  .card:last-child{margin-bottom:0}
+  .card.assigned{border-color:#2f6b45}
+  .card.suggested{border-color:#6b5a2f}
+  .card .idx{width:22px;flex:0 0 auto;text-align:center;color:var(--muted);font-size:12px;font-weight:600}
+  .card .drop{width:132px;height:82px;flex:0 0 auto;border:1.5px dashed #3d496b;border-radius:9px;
+        background:var(--drop);display:flex;align-items:center;justify-content:center;
+        text-align:center;color:var(--muted);font-size:11px;overflow:hidden;position:relative;cursor:pointer}
+  .card .drop.over{border-color:var(--accent);background:#28406e;color:var(--txt)}
+  .card .drop img{width:100%;height:100%;object-fit:cover}
+  .card .drop .x{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.6);border-radius:50%;width:19px;height:19px;
+        display:none;align-items:center;justify-content:center;font-size:12px;color:#fff;cursor:pointer}
+  .card.assigned .drop .x,.card.suggested .drop .x{display:flex}
+  .card .meta{flex:1;min-width:0}
+  .card .meta .nm{font-weight:600;font-size:14px}
+  .card .meta .sl{font-size:11.5px;color:var(--muted);margin-top:2px;word-break:break-all}
+  .card .badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .tag{font-size:10.5px;padding:2px 8px;border-radius:11px;background:var(--chip);color:var(--muted)}
+  .tag.free{background:#123a33;color:#7fe6c8}
+  .tag.course{background:#26405f;color:#9fc6ff}
+  .tag.topic{background:#3a2d55;color:#c9b3ff}
+  .tag.prior{background:#123a33;color:#7fe6c8}
+  .tag.auto{background:#4a3a12;color:#f0d488}
+  .tag.new{background:#2a3d33;color:#9fe0b8}
+  .card .fn{font-size:11.5px;color:var(--good);margin-top:5px;word-break:break-all}
+  .card .fn.empty{color:var(--muted)}
+  footer{position:fixed;bottom:0;left:0;right:0;background:#0d1220;border-top:1px solid var(--line);
+         padding:11px 20px;display:flex;align-items:center;gap:14px;z-index:20}
+  .toggle{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none}
+  .toggle input{accent-color:var(--accent)}
+  code{background:#0c1019;padding:1px 5px;border-radius:4px;font-size:12px;color:#bcd0ff}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Course Card Image Assigner</h1>
+    <div class="sub">Pro Audio Training Academy · the real Course Select carousel — one image per card</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="stat"><span>Assigned</span> <b id="cntAssigned">0</b> / <span id="cntTotal">0</span></div>
+  <div class="bar"><i id="progbar"></i></div>
+</header>
+
+<div class="wrap">
+  <div class="note">
+    <b>This mirrors the carousel left-to-right, in 3 tiers.</b> Drop a card image onto any slot (or click to browse), or drag one from the palette below to reuse it.
+    <br>· <b>Green “carried over”</b> = your earlier confirmed pick. · <b>Amber “auto-matched”</b> = I matched it by filename — <b>verify it.</b> · Empty slots need your image (candidate art is in the palette).
+    <br>· <b style="color:#f0d488">Protect your work:</b> this browser doesn’t always keep changes between opens. Click <b>Export JSON</b> when you pause to save a backup, and <b>Import JSON</b> to restore it later. Importing <u>merges</u> — it never wipes existing picks.
+  </div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+    <button class="btn ghost" id="expandAll">Expand all</button>
+    <button class="btn ghost" id="collapseAll">Collapse all</button>
+  </div>
+
+  <div class="palette">
+    <div class="phead" id="palHead">
+      <span class="tw" style="font-size:11px">▾</span>
+      <h2>Card art files <span class="sub">(source set — drag onto a card to assign)</span></h2>
+      <span class="stat" style="margin-left:auto"><b id="palCount">0</b> files</span>
+    </div>
+    <div class="pbody" id="palBody"></div>
+  </div>
+
+  <div id="groups"></div>
+</div>
+
+<footer>
+  <label class="toggle"><input type="checkbox" id="hideAssigned"> Hide assigned</label>
+  <div class="spacer"></div>
+  <span class="sub" style="color:var(--muted);font-size:12px" id="saveNote">Auto-saved locally</span>
+  <input type="file" id="importFile" accept="application/json,.json" hidden>
+  <button class="btn" id="importBtn">Import JSON</button>
+  <button class="btn" id="resetBtn">Reset to defaults</button>
+  <button class="btn" id="clearBtn">Clear all</button>
+  <button class="btn primary" id="exportBtn">Export JSON</button>
+</footer>
+
+<script>
+const SUPA_BASE = "https://yjgolswjggmlpeowvtxr.supabase.co/storage/v1/object/public/course-cards/";
+const LS_KEY = "ape_course_card_assign_v2";
+
+// All known card-art files (source set). Thumbnails render for any already uploaded to the bucket.
+const PALETTE = ["205a_card.PNG","205b_card.PNG","Card_70v.PNG","Card_ALS.PNG","Card_AV.PNG","Card_AcousticalAudio.PNG","Card_Automotive.PNG","Card_DJ.PNG","Card_HomeHiFi.PNG","Card_IntroToAudio.PNG","Card_LiveSoundMusic.PNG","Card_MusicProductioin.PNG","Card_Technician.PNG","Card_Worship.PNG","Theatrical.PNG","Electronics.PNG","RoadCrew.PNG","audi_204_card.PNG","measurement_tools_card.PNG","glossay_card.PNG","muii_108_business_card.PNG","musi_201_rec_arts_card.PNG","musi_202_computermusic.PNG","pro_audio_safety_card.PNG","sound_reinforcement_systems.PNG"];
+
+// The real carousel, in order. tier groups: free / course / topic
+// pre = default assignment: {file, source:'prior'|'auto'}  (prior = Booth confirmed earlier; auto = filename match, verify)
+const CARDS = [
+  // ---- FREE ----
+  {id:"free:tools",    tier:"free", name:"Tools",    raw:"tools",    map:"Audio Tools card",         pre:{file:"measurement_tools_card.PNG",source:"prior"}},
+  {id:"free:glossary", tier:"free", name:"Glossary", raw:"glossary", map:"Glossary card",            pre:{file:"glossay_card.PNG",source:"prior"}},
+  {id:"free:safety",   tier:"free", name:"Pro Audio Safety", raw:"safety", map:"course · pro-audio-safety", pre:{file:"pro_audio_safety_card.PNG",source:"prior"}},
+  {id:"free:daw",      tier:"free", name:"DAW",      raw:"DAW",      map:"free single card",          pre:null},
+  // ---- ACADEMY · COURSES ----
+  {id:"course:intro-to-audio",                     tier:"course", name:"Intro to Audio",                raw:"intro",      map:"course · intro-to-audio",                     pre:{file:"Card_IntroToAudio.PNG",source:"prior"}},
+  {id:"course:sound-reinforcement-systems",        tier:"course", name:"Sound Reinforcement Systems",   raw:"sound rein", map:"course · sound-reinforcement-systems",        pre:{file:"sound_reinforcement_systems.PNG",source:"prior"}},
+  {id:"course:audio-system-design-and-maintenance",tier:"course", name:"Audio System Design & Maint.",  raw:"audio syst", map:"course · audio-system-design-and-maintenance",pre:{file:"audi_204_card.PNG",source:"prior"}},
+  {id:"course:recording-arts",                     tier:"course", name:"Recording Arts",                raw:"rec arts",   map:"course · recording-arts",                     pre:{file:"musi_201_rec_arts_card.PNG",source:"prior"}},
+  {id:"course:music-production",                    tier:"course", name:"Music Production",              raw:"music prod", map:"course · music-production",                   pre:{file:"Card_MusicProductioin.PNG",source:"prior"}},
+  {id:"course:career-and-business",                tier:"course", name:"Career & Business",             raw:"career",     map:"course · career-and-business",                pre:{file:"muii_108_business_card.PNG",source:"prior"}},
+  // ---- ACADEMY · SINGLE-TOPIC ACHIEVEMENTS ----
+  {id:"topic:podcast",     tier:"topic", name:"Podcasting & Broadcast", raw:"podcast",     map:"course · podcasting-and-broadcast (gs42)", pre:{file:"205a_card.PNG",source:"prior"}},
+  {id:"topic:film",        tier:"topic", name:"Film & Game Audio",      raw:"film",        map:"course · film-and-game (gs44)",            pre:{file:"205b_card.PNG",source:"prior"}},
+  {id:"topic:assist",      tier:"topic", name:"Assisted Listening",     raw:"assist",      map:"achievement gs17",                          pre:{file:"Card_ALS.PNG",source:"auto"}},
+  {id:"topic:commercial",  tier:"topic", name:"Commercial Audio",       raw:"commer",      map:"achievement gs20",                          pre:null},
+  {id:"topic:corporate",   tier:"topic", name:"Corporate AV",           raw:"corporate",   map:"achievement gs19",                          pre:{file:"Card_AV.PNG",source:"auto"}},
+  {id:"topic:dj",          tier:"topic", name:"DJ",                     raw:"DJ",          map:"coming topic",                              pre:{file:"Card_DJ.PNG",source:"auto"}},
+  {id:"topic:architectural",tier:"topic",name:"Architectural",         raw:"architectural",map:"coming topic",                             pre:null},
+  {id:"topic:vehicle",     tier:"topic", name:"Vehicle Audio",          raw:"vehicle",     map:"achievement gs22",                          pre:{file:"Card_Automotive.PNG",source:"auto"}},
+  {id:"topic:hifi",        tier:"topic", name:"Hi-Fi Systems",          raw:"hifi",        map:"achievement gs18",                          pre:{file:"Card_HomeHiFi.PNG",source:"auto"}},
+  {id:"topic:audio-tech",  tier:"topic", name:"Audio Technician",       raw:"audio tech",  map:"coming topic",                              pre:{file:"Card_Technician.PNG",source:"auto"}},
+  {id:"topic:theatrical",  tier:"topic", name:"Theatrical",             raw:"theatrical",  map:"coming topic",                              pre:null},
+  {id:"topic:audio-elect", tier:"topic", name:"Audio Electronics",      raw:"audio elect", map:"coming topic",                              pre:null},
+  {id:"topic:road-crew",   tier:"topic", name:"Road Crew",              raw:"road crew",   map:"coming topic",                              pre:null},
+  {id:"topic:live-sound",  tier:"topic", name:"Live Sound",             raw:"Live Sound",  map:"coming topic",                              pre:{file:"Card_LiveSoundMusic.PNG",source:"auto"}},
+  {id:"topic:worship",     tier:"topic", name:"Worship",               raw:"Worship",     map:"coming topic",                              pre:{file:"Card_Worship.PNG",source:"auto"}}
+];
+
+const TIERS = [
+  {key:"free",  title:"Free"},
+  {key:"course",title:"Academy · Courses"},
+  {key:"topic", title:"Academy · Single-Topic Achievements"}
+];
+
+// state: id -> {file, source}
+let state = null;
+try { state = JSON.parse(localStorage.getItem(LS_KEY)); } catch(e){ state = null; }
+if(!state){ state = seedDefaults(); }
+else {
+  // Non-destructive: apply defaults only for cards that have no saved entry yet (e.g. newly added cards).
+  CARDS.forEach(c=>{ if(c.pre && !(c.id in state)) state[c.id]={file:c.pre.file, source:c.pre.source}; });
+}
+localStorage.setItem(LS_KEY, JSON.stringify(state));
+
+function seedDefaults(){
+  const s={};
+  CARDS.forEach(c=>{ if(c.pre) s[c.id]={file:c.pre.file, source:c.pre.source}; });
+  return s;
+}
+
+const $ = s => document.querySelector(s);
+const el = (t,c) => { const e=document.createElement(t); if(c) e.className=c; return e; };
+
+let flashT; function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state));
+  const n=$("#saveNote"); n.textContent="Saved ✓"; clearTimeout(flashT); flashT=setTimeout(()=>n.textContent="Auto-saved locally",1200); }
+
+function thumbFor(entry){
+  if(!entry||!entry.file) return null;
+  if(entry._preview) return entry._preview;           // dropped this session
+  return SUPA_BASE + encodeURIComponent(entry.file);  // try bucket (renders if uploaded)
+}
+function txtNode(s){ const d=el("div"); d.textContent=s; return d; }
+
+function makeDrop(card){
+  const drop=el("div","drop");
+  const entry=state[card.id];
+  if(entry&&entry.file){
+    const t=thumbFor(entry);
+    const img=el("img"); img.src=t; img.onerror=()=>{drop.querySelector("img")&&drop.querySelector("img").remove(); if(!drop.querySelector(".fb")){const f=txtNode(entry.file);f.className="fb";drop.prepend(f);} };
+    drop.append(img);
+    const x=el("span","x"); x.textContent="✕";
+    x.onclick=(ev)=>{ ev.stopPropagation(); delete state[card.id]; save(); render(); };
+    drop.append(x);
+  } else drop.append(txtNode("drop image"));
+  drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("over");});
+  drop.addEventListener("dragleave",()=>drop.classList.remove("over"));
+  drop.addEventListener("drop",e=>{
+    e.preventDefault();drop.classList.remove("over");
+    const pal=e.dataTransfer.getData("text/ape-file");
+    if(pal){ state[card.id]={file:pal,source:"manual"}; save(); render(); return; }
+    const f=e.dataTransfer.files&&e.dataTransfer.files[0];
+    if(f){ state[card.id]={file:f.name,source:"manual",_preview:URL.createObjectURL(f)}; save(); render(); }
+  });
+  drop.addEventListener("click",()=>{
+    const inp=el("input"); inp.type="file"; inp.accept="image/*";
+    inp.onchange=()=>{ const f=inp.files[0]; if(f){ state[card.id]={file:f.name,source:"manual",_preview:URL.createObjectURL(f)}; save(); render(); } };
+    inp.click();
+  });
+  return drop;
+}
+
+function makeCard(card,idx){
+  const entry=state[card.id];
+  const isSug = entry && entry.source==="auto";
+  const wrap=el("div","card "+(entry&&entry.file?(isSug?"suggested":"assigned"):""));
+  const ix=el("div","idx"); ix.textContent=idx; wrap.append(ix);
+  wrap.append(makeDrop(card));
+  const meta=el("div","meta");
+  const nm=el("div","nm"); nm.textContent=card.name; meta.append(nm);
+  const sl=el("div","sl"); sl.textContent="“"+card.raw+"” · "+card.map; meta.append(sl);
+  const badges=el("div","badges");
+  const tt=el("span","tag "+card.tier); tt.textContent=card.tier==="free"?"Free":card.tier==="course"?"Course":"Single-topic";
+  badges.append(tt);
+  if(entry&&entry.file){
+    const src=el("span","tag "+(entry.source==="prior"?"prior":entry.source==="auto"?"auto":"new"));
+    src.textContent=entry.source==="prior"?"carried over":entry.source==="auto"?"auto-matched — verify":"assigned";
+    badges.append(src);
+  }
+  meta.append(badges);
+  const fn=el("div","fn"+(entry&&entry.file?"":" empty")); fn.textContent=entry&&entry.file?("→ "+entry.file):"no image assigned";
+  meta.append(fn);
+  wrap.append(meta);
+  return wrap;
+}
+
+function render(){
+  const root=$("#groups"); root.innerHTML="";
+  const hideAssigned=$("#hideAssigned").checked;
+  let n=0;
+  TIERS.forEach(tier=>{
+    const cards=CARDS.filter(c=>c.tier===tier.key);
+    const g=el("div","group");
+    const head=el("div","ghead");
+    const tw=el("span","tw"); tw.textContent="▾"; head.append(tw);
+    const h=el("h2"); h.textContent=tier.title; head.append(h);
+    const done=cards.filter(c=>state[c.id]&&state[c.id].file).length;
+    const gc=el("span","gcount"); gc.textContent=done+" / "+cards.length; head.append(gc);
+    const body=el("div","gbody");
+    cards.forEach(c=>{ n++; if(hideAssigned && state[c.id] && state[c.id].file) return; body.append(makeCard(c,n)); });
+    head.onclick=()=>{ head.classList.toggle("collapsed"); body.classList.toggle("hidden"); };
+    g.append(head,body); root.append(g);
+  });
+  // stats
+  const total=CARDS.length;
+  const done=CARDS.filter(c=>state[c.id]&&state[c.id].file).length;
+  $("#cntAssigned").textContent=done; $("#cntTotal").textContent=total;
+  $("#progbar").style.width=(done/total*100)+"%";
+}
+
+function renderPalette(){
+  const body=$("#palBody"); body.innerHTML=""; $("#palCount").textContent=PALETTE.length;
+  PALETTE.forEach(fn=>{
+    const it=el("div","pitem"); it.draggable=true;
+    const th=el("div","thumb"); th.textContent=fn;
+    const im=new Image(); im.onload=()=>{ th.textContent=""; th.style.backgroundImage="url('"+SUPA_BASE+encodeURIComponent(fn)+"')"; };
+    im.src=SUPA_BASE+encodeURIComponent(fn);
+    it.append(th);
+    const nm=el("div","nm"); nm.textContent=fn; it.append(nm);
+    it.addEventListener("dragstart",e=>{ e.dataTransfer.setData("text/ape-file",fn); });
+    body.append(it);
+  });
+}
+
+$("#exportBtn").onclick=()=>{
+  const out={generated:new Date().toISOString(),bucket:"course-cards",base_url:SUPA_BASE,carousel_order:[],cards:[]};
+  CARDS.forEach((c,i)=>{
+    const e=state[c.id];
+    out.carousel_order.push(c.id);
+    out.cards.push({position:i+1, card_id:c.id, tier:c.tier, name:c.name, label:c.raw, maps_to:c.map,
+                    file:e&&e.file?e.file:null, source:e&&e.file?e.source:null});
+  });
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
+  const a=el("a"); a.href=URL.createObjectURL(blob); a.download="ape_course_card_assignments.json"; a.click();
+};
+$("#importBtn").onclick=()=>$("#importFile").click();
+$("#importFile").onchange=(e)=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    let data; try{ data=JSON.parse(r.result); }catch(err){ alert("That file isn't valid JSON."); return; }
+    const rows = Array.isArray(data)?data : (data.cards||data.assignments||[]);
+    let merged=0;
+    rows.forEach(row=>{
+      const id=row.card_id||row.id; const file=row.file;
+      if(id && file){ state[id]={file:file, source:"imported"}; merged++; }
+    });
+    // fill any card still without an entry from its baked default
+    CARDS.forEach(c=>{ if(c.pre && !(c.id in state)) state[c.id]={file:c.pre.file, source:c.pre.source}; });
+    save(); render();
+    $("#importFile").value="";
+    alert("Imported "+merged+" assignment(s). Your existing picks were kept.");
+  };
+  r.readAsText(f);
+};
+$("#clearBtn").onclick=()=>{ if(confirm("Clear ALL card assignments?")){ state={}; save(); render(); } };
+$("#resetBtn").onclick=()=>{ if(confirm("Reset to the default (carried-over + auto-matched) set?")){ state=seedDefaults(); save(); render(); } };
+$("#hideAssigned").onchange=render;
+$("#expandAll").onclick=()=>document.querySelectorAll(".ghead.collapsed").forEach(h=>h.click());
+$("#collapseAll").onclick=()=>document.querySelectorAll(".ghead:not(.collapsed)").forEach(h=>h.click());
+$("#palHead").onclick=()=>{ const b=$("#palBody"); b.style.display=b.style.display==="none"?"flex":"none"; $("#palHead .tw").textContent=b.style.display==="none"?"▸":"▾"; };
+
+renderPalette();
+render();
+</script>
+</body>
+</html>

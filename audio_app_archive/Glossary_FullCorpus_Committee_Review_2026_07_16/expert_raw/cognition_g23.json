@@ -1,0 +1,223 @@
+{
+ "expert": "cognition",
+ "group": 23,
+ "reviews": [
+  {
+   "id": "cc9d7db1-a021-43ab-a5cd-32cf8e836951",
+   "term": "Hold Time",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "802c4111-065a-492e-8dc4-036dbf5dee4d",
+   "term": "Home Run",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7ebecfb3-02c1-42bd-b40a-ed370b8ccb42",
+   "term": "Home Theater",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ddbe11f1-3b85-4a41-a226-5175e3bbde73",
+   "term": "Horn Tweeter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "16ed1a48-0228-4780-a171-a48af32fc958",
+   "term": "Horn-Loaded",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a0b0284c-9467-4c02-9a66-04a4b97b6006",
+   "term": "Hot Conductor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7f523e8f-14ae-4a53-9cf5-34a42a581917",
+   "term": "House curve",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "855b4f09-0a94-4962-b386-6132387ed73b",
+   "term": "Howlround (UK)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2650941d-0644-4f63-b2ab-178971c1145e",
+   "term": "Hum",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b938c0ff-0c36-4913-94e0-65eebee076cf",
+   "term": "Hum Components",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4a69c82c-fb54-40da-a15a-84adfff29270",
+   "term": "Hum Eliminator",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4507c9b5-d7e4-4cbd-9f1b-1f01491012be",
+   "term": "Humidity sensitivity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "576fa7ef-840a-4c05-828d-73f7c51aa218",
+   "term": "HVAC noise",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "151dbdf0-4129-4dd8-b62c-dca37750c466",
+   "term": "Hybrid Meeting",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "51b0f5ab-561b-4c47-a1c1-486d097f88c0",
+   "term": "Hypercardioid",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8dc16a0c-110e-4edf-81ae-b1dcd99013f9",
+   "term": "Hysteresis",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "64a68a39-eeef-4872-b149-a6cca3bfd0b5",
+   "term": "IACC",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "59f0b8a6-acc2-4857-b112-cbb744c9169f",
+   "term": "IEC 60118-4",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "159197f3-9094-4bac-942f-2f8cf4eb76e6",
+   "term": "IEC Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "75b9ae9a-a34a-47b9-ab1d-cf9d3d2f8be7",
+   "term": "IEM (In-Ear Monitor)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ce5d70c1-0ca9-4708-b633-2bd8cc3ab511",
+   "term": "IIR filter (infinite impulse response)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1fca2436-eb27-4eca-acaa-70509afc3c89",
+   "term": "Imaging",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ae3cac8a-d677-4290-82d1-769d8330d41a",
+   "term": "IMD (SMPTE, ITU-R/CCIF, DIM/TIM)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8a0d0fb8-8a8a-44f6-b303-9da0feaf3c69",
+   "term": "Impedance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "53c65e81-e982-442d-baa5-00d4e2acfca0",
+   "term": "Impedance Bridging",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9037ee24-02bf-48f8-bda0-0963e239f543",
+   "term": "Impedance check",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9ce48fa0-75cb-4405-b096-135aa823b8f8",
+   "term": "Impedance converter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9454a892-dae2-421b-9ab2-e6e2dc16b4fb",
+   "term": "Impedance Meter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b8e35769-1709-45e6-ae3c-a7dd580edc60",
+   "term": "Impedance mismatch",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0137e8ce-2934-47ab-b679-91afac680b99",
+   "term": "Impedance-Matching Transformer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "de9e514b-6dc1-45f5-81db-d3603de62b4a",
+   "term": "Impedance-Matching Volume Control",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "35b0a09a-fd90-4a50-803b-90b2eedffd7d",
+   "term": "Impulse response",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Medium",
+     "issue": "Term is tagged partly 'beginner', but every listed common_mistake is an expert-level measurement-execution error (low SNR capture, incorrect windowing, one-position assumption). A beginner has no framework for these and gets no correction of a genuine beginner-level misconception about what an impulse response IS.",
+     "suggestion": "Add at least one conceptual beginner misconception, e.g.: 'Thinking you need a literal instantaneous impulse — in practice a sine sweep (or balloon pop) stands in for the impossible ideal impulse' and/or 'Assuming an IR only reveals echoes/reverb, when a single IR actually captures the full frequency AND phase response too.' Keep the technique mistakes for the intermediate side."
+    }
+   ]
+  },
+  {
+   "id": "7fb3a117-42c4-45d8-a5b8-772000c87e35",
+   "term": "Impulse Response Mode",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0a733691-12a4-480f-925c-0c3f74c1d0bc",
+   "term": "Impulse response of a room",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b0c6ac32-dddc-4b22-83c1-71961da49fba",
+   "term": "In phase",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

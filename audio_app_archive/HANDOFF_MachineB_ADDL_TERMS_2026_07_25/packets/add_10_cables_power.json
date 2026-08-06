@@ -1,0 +1,288 @@
+{
+ "packet": "add_10_cables_power.json",
+ "group": "Cables & Power (legitimate)",
+ "primary_topic": "Cables & Wiring",
+ "difficulty": "intermediate",
+ "terms": [
+  {
+   "id": "cb12e588-0cfe-435d-a921-72cbfddda8cd",
+   "term": "EMI Filter",
+   "topic": "Power Fundamentals, Distribution & Quality",
+   "topic_id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+     "name": "Power Fundamentals, Distribution & Quality"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "1e0d0e84-bbe6-4711-89c3-67f3defa98f0",
+   "term": "Ground Lift Box",
+   "topic": "Power Fundamentals, Distribution & Quality",
+   "topic_id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+     "name": "Power Fundamentals, Distribution & Quality"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "b263aa2d-4e24-40f8-8694-9b68de802d1c",
+   "term": "Litz Wire",
+   "topic": "Cables & Wiring",
+   "topic_id": "ef28a563-8bba-446a-b463-74d723c83e3e",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+     "name": "Power Fundamentals, Distribution & Quality"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "3ca1a9ec-dfc6-4c1e-a1c6-47fbb0b1ec50",
+   "term": "OCC Copper",
+   "topic": "Cables & Wiring",
+   "topic_id": "ef28a563-8bba-446a-b463-74d723c83e3e",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+     "name": "Power Fundamentals, Distribution & Quality"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "331525a4-e27b-4129-a0af-1278d9e809a8",
+   "term": "OFC Copper",
+   "topic": "Cables & Wiring",
+   "topic_id": "ef28a563-8bba-446a-b463-74d723c83e3e",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+     "name": "Power Fundamentals, Distribution & Quality"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "authoring_note": "Headword 'Oxygen-Free Copper (OFC)'."
+  },
+  {
+   "id": "1ffc7261-0b48-4638-bbb6-ba71590d5b2d",
+   "term": "Power Regenerator",
+   "topic": "Power Fundamentals, Distribution & Quality",
+   "topic_id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+     "name": "Power Fundamentals, Distribution & Quality"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "4280025d-de0e-4baa-abc4-97ed8a20c591",
+   "term": "RF Filter",
+   "topic": "Power Fundamentals, Distribution & Quality",
+   "topic_id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+     "name": "Power Fundamentals, Distribution & Quality"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "c82ee162-1dab-477b-ab51-ac8dccb6af9e",
+   "term": "Silver-Plated Copper",
+   "topic": "Cables & Wiring",
+   "topic_id": "ef28a563-8bba-446a-b463-74d723c83e3e",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+     "name": "Power Fundamentals, Distribution & Quality"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "03d93a2d-4d92-4d91-8e47-1d030bd0e3a7",
+   "term": "Skin Effect",
+   "topic": "Cables & Wiring",
+   "topic_id": "ef28a563-8bba-446a-b463-74d723c83e3e",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "ebd39152-c958-4d49-a57a-95195838b9e7",
+     "name": "Power Fundamentals, Distribution & Quality"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

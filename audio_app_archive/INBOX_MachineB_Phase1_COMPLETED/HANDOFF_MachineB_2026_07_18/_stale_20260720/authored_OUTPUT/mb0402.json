@@ -1,0 +1,330 @@
+{
+ "batch": 402,
+ "topic": "Preamp & Converter Engineering",
+ "authored": [
+  {
+   "id": "8700736a-b1c8-4c59-bdd6-169ac52858ca",
+   "term": "Interpolation filter",
+   "fields": {
+    "definition": "A digital filter in the playback (DAC) path that raises the sample rate of a signal by inserting zero-valued samples between the input samples (zero-stuffing) and low-pass filtering to compute the new intermediate samples; this removes the spectral images created by upsampling and lets the delta-sigma modulator and analog reconstruction filter run at the higher oversampled rate. It is the DAC-side counterpart of the ADC's decimation filter.",
+    "plain_english": "It is a digital filter that fills in extra samples. This lets a converter play sound back at a much higher rate. It also pushes unwanted copies of the signal far away, so only a gentle analog filter is needed.",
+    "purpose_function": "It exists so an oversampling DAC can move the spectral images of the audio band up to very high frequencies, which lets the analog reconstruction filter be simple and gentle while keeping the audio band clean.",
+    "practical_application": "Technicians encounter it as the oversampling stage inside a DAC or interface; it sets part of the converter's fixed group delay and is why modern DACs need only a mild analog output filter.",
+    "category": "Digital filtering",
+    "related_terms": [
+     "Decimation filter",
+     "Oversampling converter",
+     "Delta-sigma modulator",
+     "Reconstruction filter",
+     "Group delay",
+     "Sample rate"
+    ],
+    "common_mistakes": [
+     "Confusing the interpolation filter with the analog reconstruction filter; the interpolation filter is digital and does most of the image rejection",
+     "Thinking zero-stuffing alone raises the sample rate, when without the low-pass filtering the images remain and the signal is wrong",
+     "Assuming it adds no delay, when its linear-phase FIR response contributes a real, fixed group delay"
+    ],
+    "scenario_contexts": [
+     "Understanding why an oversampling DAC needs only a gentle analog output filter",
+     "Accounting for a DAC's fixed group delay when time-aligning against an analog path",
+     "Comparing linear-phase and minimum-phase interpolation filter options in a converter's settings"
+    ]
+   },
+   "sources": [
+    "Analog Devices MT-017 Tutorial (Kester), Oversampling Interpolating DACs",
+    "Pohlmann, Principles of Digital Audio",
+    "Watkinson, The Art of Digital Audio"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c14fcbfc-8544-4943-a8b9-c95b0f14f938",
+   "term": "Jitter attenuation circuit",
+   "fields": {
+    "definition": "A clock-conditioning circuit, typically a phase-locked loop (PLL) with a very low loop bandwidth or an asynchronous sample-rate converter, that recovers a clock from a jittery reference and regenerates a cleaner, lower-jitter clock; the narrow loop acts as a low-pass filter on phase noise, tracking slow frequency changes while strongly attenuating higher-frequency jitter above its corner.",
+    "plain_english": "It is a circuit that takes a shaky timing signal and cleans it up into a steadier one. It works like a heavy flywheel that smooths out small speed wobbles so the clock stays even.",
+    "purpose_function": "It exists to stop timing errors on an incoming digital clock from reaching the converter, because clock jitter adds noise and distortion to the converted audio.",
+    "practical_application": "Technicians rely on it inside AES3 and S/PDIF receivers, sample-rate converters and reclocking word-clock devices to isolate converters from cable- and source-induced jitter, which is why a good reclocker can clean up a jittery digital feed.",
+    "category": "Clocking & sync",
+    "related_terms": [
+     "Jitter",
+     "Phase-locked loop",
+     "Word clock",
+     "Sample rate converter",
+     "Phase-noise performance",
+     "Clock recovery"
+    ],
+    "common_mistakes": [
+     "Assuming any PLL removes jitter, when a wide-bandwidth PLL tracks and passes much of the incoming jitter instead of filtering it",
+     "Believing a jitter attenuator fixes data errors, when it only cleans the clock timing and not the audio data",
+     "Thinking the source clock quality no longer matters once a reclocker is used, when very low-frequency jitter still passes through"
+    ],
+    "scenario_contexts": [
+     "Reclocking a jittery S/PDIF or AES3 feed before it reaches a DAC",
+     "Using an asynchronous sample-rate converter to isolate a converter from source jitter",
+     "Choosing a low-jitter master clock or reclocker to improve a digital signal chain"
+    ]
+   },
+   "sources": [
+    "Cirrus Logic CS8420 Digital Audio Sample Rate Converter datasheet",
+    "Analog Devices MT-008 Tutorial (Kester), Converting Oscillator Phase Noise to Time Jitter",
+    "Pohlmann, Principles of Digital Audio"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "24258b31-5ac7-47fa-b662-32506b2b6a92",
+   "term": "Low-latency conversion mode",
+   "fields": {
+    "definition": "A converter operating mode that minimizes the group delay of the digital decimation or interpolation filter, usually by selecting a shorter or minimum-phase (\"short-delay\") FIR filter instead of a long linear-phase filter; it trades some filter steepness, stopband rejection or passband flatness for reduced through-latency.",
+    "plain_english": "It is a converter setting that shortens the small delay when sound is turned between analog and digital. You trade a little filter sharpness to get the sound through faster. This helps when players monitor themselves live.",
+    "purpose_function": "It exists so performers can monitor through a digital system with minimal delay, since the digital filter's group delay is the main fixed latency a converter adds.",
+    "practical_application": "A technician selects a low-latency or \"short delay\" filter mode when musicians monitor through an interface or digital console, accepting slightly relaxed filter performance for a tighter monitoring feel.",
+    "category": "Timing & latency",
+    "related_terms": [
+     "Converter latency",
+     "Group delay",
+     "Decimation filter",
+     "Interpolation filter",
+     "Linear-phase filter",
+     "Round-trip latency"
+    ],
+    "common_mistakes": [
+     "Confusing converter low-latency mode with the DAW buffer setting; they are separate contributors to total latency",
+     "Assuming low-latency filters are always better, when they can worsen stopband rejection or add passband ripple",
+     "Forgetting that even the lowest-latency converter mode still adds a real, fixed group delay"
+    ],
+    "scenario_contexts": [
+     "Setting a short-delay filter for a vocalist monitoring through an interface",
+     "Reducing round-trip latency for live in-ear monitoring on a digital console",
+     "Weighing filter sharpness against latency when choosing a converter mode"
+    ]
+   },
+   "sources": [
+    "Analog Devices MT-017 Tutorial (Kester), Oversampling Interpolating DACs",
+    "Cirrus Logic CS4271 audio codec datasheet",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5d9d1e82-8eac-4f93-b360-276eeb8a3910",
+   "term": "Multibit converter",
+   "fields": {
+    "definition": "A converter whose quantizer resolves each sample to more than one bit at a time, in contrast to a single-bit (1-bit) design; the term covers classic multi-bit PCM converters such as R-2R ladder and successive-approximation types, and modern multi-bit delta-sigma modulators that use a multi-level internal quantizer. Multi-bit quantizing lowers quantization noise per step and improves modulator stability, but the multiple DAC elements must be well matched, often using dynamic element matching.",
+    "plain_english": "It is a converter that measures each sample into several bits at once, instead of just one bit. Using more levels per step means less built-in noise, a bit like a ruler with finer marks reads more exactly.",
+    "purpose_function": "It exists to get lower quantization noise and steadier operation than a one-bit converter, by using a quantizer with many levels rather than a single on-or-off step.",
+    "practical_application": "Technicians encounter multibit designs in most modern high-resolution audio converters and DACs, where multi-bit delta-sigma modulators deliver low noise and distortion, with the element-matching trade-off handled internally.",
+    "category": "Converter architecture",
+    "related_terms": [
+     "Delta-sigma modulator",
+     "One-bit converter",
+     "Oversampling converter",
+     "Quantization accuracy",
+     "Dynamic element matching",
+     "Noise-shaped converter"
+    ],
+    "common_mistakes": [
+     "Assuming multibit always means an old R-2R ladder converter, when most modern parts are multibit delta-sigma",
+     "Thinking more quantizer bits alone set audio quality, when oversampling, noise shaping and element matching matter as much",
+     "Confusing the internal quantizer's bit count with the converter's output word length or stated resolution"
+    ],
+    "scenario_contexts": [
+     "Comparing a 1-bit and a multibit delta-sigma converter when specifying an interface",
+     "Understanding why a modern DAC's datasheet mentions a multi-level quantizer",
+     "Explaining why classic ladder DACs are still valued while modern parts use multibit delta-sigma"
+    ]
+   },
+   "sources": [
+    "Analog Devices, Data Conversion Handbook (Kester, ed.)",
+    "Pohlmann, Principles of Digital Audio",
+    "Watkinson, The Art of Digital Audio"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0f522914-65fb-4999-87c1-5a271d45c1f6",
+   "term": "Noise-shaped converter",
+   "fields": {
+    "definition": "A converter that uses noise shaping, most often a delta-sigma modulator, to spectrally redistribute quantization noise: feedback and filtering push most of the quantization-noise energy out of the audio band to higher frequencies, where the digital decimation filter later removes it, greatly increasing in-band resolution beyond the raw quantizer's bit count.",
+    "plain_english": "It is a converter that pushes its built-in noise up out of the range we can hear, then filters it away. It is like sweeping dust into a corner of the room you never use.",
+    "purpose_function": "It exists to get high resolution in the audio band from a coarse, fast quantizer, by moving most quantization noise to frequencies above the audio band where a filter can remove it.",
+    "practical_application": "Nearly every modern audio converter is noise-shaped; technicians benefit from its high dynamic range and rely on the decimation filter to remove the out-of-band noise before recording.",
+    "category": "Converter architecture",
+    "related_terms": [
+     "Delta-sigma modulator",
+     "Oversampling converter",
+     "Quantization accuracy",
+     "Decimation filter",
+     "Dynamic range",
+     "Dither"
+    ],
+    "common_mistakes": [
+     "Thinking noise shaping removes quantization noise, when it only moves it out of the audio band to be filtered later",
+     "Assuming the out-of-band noise is always harmless, when large ultrasonic noise can stress downstream analog stages",
+     "Confusing noise shaping inside a converter with the dither noise shaping applied during bit-depth reduction"
+    ],
+    "scenario_contexts": [
+     "Understanding how a 1-bit delta-sigma converter reaches high audio-band dynamic range",
+     "Explaining why converter noise rises steeply above the audio band",
+     "Choosing decimation and monitoring so ultrasonic shaped noise is properly filtered"
+    ]
+   },
+   "sources": [
+    "Analog Devices, Data Conversion Handbook (Kester, ed.)",
+    "Pohlmann, Principles of Digital Audio",
+    "Watkinson, The Art of Digital Audio"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "91214e7c-49a1-4cb5-8804-66397dc49a45",
+   "term": "Oversampling converter",
+   "fields": {
+    "definition": "A converter that samples at a rate many times higher than the Nyquist rate for the audio band (the oversampling ratio), rather than just above twice the highest audio frequency; oversampling spreads quantization noise over a much wider bandwidth so less of it falls in the audio band (about a 3 dB SNR gain per doubling of rate), relaxes the analog anti-alias and reconstruction filters, and is the basis of delta-sigma conversion.",
+    "plain_english": "It is a converter that takes far more samples per second than the minimum needed. Sampling this fast spreads its noise over a wide range so little lands in the audio, and it lets the analog filters be simple.",
+    "purpose_function": "It exists to move most quantization noise and the filter images far outside the audio band, so gentle analog filters can be used and, with noise shaping, high in-band resolution is achieved.",
+    "practical_application": "Technicians rely on oversampling in essentially all modern converters; it is why an interface can use a gentle analog anti-alias filter and still reject aliasing, and why higher oversampling underlies delta-sigma performance.",
+    "category": "Converter architecture",
+    "related_terms": [
+     "Nyquist rate",
+     "Delta-sigma modulator",
+     "Noise-shaped converter",
+     "Decimation filter",
+     "Anti-aliasing filter",
+     "Sample rate"
+    ],
+    "common_mistakes": [
+     "Confusing the oversampling ratio with the session sample rate; a 48 kHz converter still oversamples internally at a much higher rate",
+     "Assuming oversampling alone gives huge resolution gains, when the large improvement comes from combining it with noise shaping",
+     "Thinking oversampling removes the need for any analog filter, when a gentle analog anti-alias or reconstruction filter is still required"
+    ],
+    "scenario_contexts": [
+     "Explaining why a 44.1 or 48 kHz converter runs its modulator at megahertz rates internally",
+     "Understanding why modern converters tolerate gentle analog anti-alias filters",
+     "Relating oversampling ratio to a converter's achievable dynamic range"
+    ]
+   },
+   "sources": [
+    "Analog Devices MT-017 Tutorial (Kester), Oversampling Interpolating DACs",
+    "Pohlmann, Principles of Digital Audio",
+    "Watkinson, The Art of Digital Audio"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f5b5ed93-42d3-4d6f-82f6-4f5ef35c6f73",
+   "term": "Phase-noise performance",
+   "fields": {
+    "definition": "A measure of the short-term frequency and phase stability of a clock or oscillator, expressed as phase noise in dBc/Hz at specified offset frequencies from the carrier; it is the frequency-domain equivalent of time jitter, and integrating the phase-noise spectrum over a bandwidth yields rms jitter. In converters, poor phase-noise performance of the sampling clock raises the noise floor and degrades SNR, especially at high signal frequencies.",
+    "plain_english": "It describes how steady a clock timing is, seen as noise around its exact rate. A clock with poor phase noise wanders slightly in timing, and that wobble adds noise to what a converter records or plays.",
+    "purpose_function": "It quantifies clock quality in the frequency domain, so engineers can predict the timing jitter that will limit a converter's noise floor and dynamic range.",
+    "practical_application": "Technicians compare the phase-noise or jitter specs of master clocks and converters when choosing a clock source, knowing better phase-noise performance means lower jitter-induced noise, most audibly on high-frequency, high-level signals.",
+    "category": "Clocking & sync",
+    "related_terms": [
+     "Jitter",
+     "Word clock",
+     "Jitter attenuation circuit",
+     "Sample rate",
+     "Dynamic range",
+     "Clock recovery"
+    ],
+    "common_mistakes": [
+     "Treating phase noise and jitter as unrelated, when they are the frequency-domain and time-domain views of the same timing error",
+     "Judging a clock only by its rated frequency accuracy, which says nothing about short-term phase-noise or jitter performance",
+     "Assuming clock phase noise is inaudible, when its SNR impact grows with signal frequency and level"
+    ],
+    "scenario_contexts": [
+     "Comparing master-clock jitter and phase-noise specs before buying a studio clock",
+     "Diagnosing a raised high-frequency noise floor traced to a noisy sampling clock",
+     "Choosing which device makes the best clock master in a digital rig"
+    ]
+   },
+   "sources": [
+    "Analog Devices MT-008 Tutorial (Kester), Converting Oscillator Phase Noise to Time Jitter",
+    "Analog Devices, Data Conversion Handbook (Kester, ed.)",
+    "Pohlmann, Principles of Digital Audio"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4ad21965-1a2e-4007-b159-2ca5367a57e8",
+   "term": "Quantization accuracy",
+   "fields": {
+    "definition": "How precisely a converter represents each analog sample as a finite digital code, set by the step size (one LSB) and the resulting quantization error, which for an ideal converter is at most plus or minus one-half LSB; for an ideal N-bit converter with a full-scale sine input the theoretical signal-to-quantization-noise ratio is 6.02N + 1.76 dB, and real accuracy is further limited by linearity errors (INL/DNL) and analog noise.",
+    "plain_english": "It is how closely a converter numbers match the real level of each sample. More bits mean finer steps and smaller rounding errors, a bit like a ruler with more marks measuring more exactly.",
+    "purpose_function": "It sets the smallest level difference a converter can resolve and the noise floor from rounding, which together bound its dynamic range and low-level detail.",
+    "practical_application": "Technicians relate quantization accuracy to bit depth and dynamic range when choosing a recording resolution, and use dither to avoid audible quantization distortion at low levels.",
+    "category": "Converter performance",
+    "related_terms": [
+     "Quantization error",
+     "Bit depth",
+     "Dynamic range",
+     "Dither",
+     "Least significant bit",
+     "Converter linearity"
+    ],
+    "common_mistakes": [
+     "Assuming stated bit depth equals real accuracy, when linearity errors and analog noise usually limit it below the ideal 6.02N + 1.76 dB",
+     "Forgetting that undithered low-level signals produce correlated quantization distortion, not just benign noise",
+     "Confusing quantization accuracy (amplitude resolution) with sample rate (time resolution)"
+    ],
+    "scenario_contexts": [
+     "Choosing 24-bit over 16-bit recording for more low-level headroom and detail",
+     "Applying dither when reducing bit depth for a final master",
+     "Explaining why a converter's real dynamic range falls short of its theoretical bit-depth limit"
+    ]
+   },
+   "sources": [
+    "Analog Devices MT-001 Tutorial (Kester), SNR = 6.02N + 1.76dB",
+    "Pohlmann, Principles of Digital Audio",
+    "Watkinson, The Art of Digital Audio"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "76d25842-78c6-41fd-9d27-a90661942607",
+   "term": "Sample-and-hold circuit",
+   "fields": {
+    "definition": "An analog circuit (also called a track-and-hold) that captures the instantaneous value of a signal at the sampling instant and holds it steady on a capacitor while the ADC quantizes it; holding the value constant during conversion prevents errors from the input changing mid-conversion, and it defines the sampling aperture. Key non-idealities include aperture time and jitter, acquisition time, droop and pedestal (hold-step) error.",
+    "plain_english": "It is a circuit that grabs the signal value at one instant and holds it still while the converter measures it. It is like pausing a video on one frame so you can read it without it moving.",
+    "purpose_function": "It exists to freeze the input during conversion, so the converter measures a stable value instead of one that is still changing, which would cause errors.",
+    "practical_application": "Technicians meet it as a stage inside ADCs and older sampling gear; its aperture jitter and droop set limits on high-frequency accuracy, which is why clean, low-jitter sampling clocks matter.",
+    "category": "Converter architecture",
+    "related_terms": [
+     "Analog-to-digital converter",
+     "Aperture jitter",
+     "Sample rate",
+     "Quantization accuracy",
+     "Anti-aliasing filter",
+     "Sampling"
+    ],
+    "common_mistakes": [
+     "Assuming a sample-and-hold holds forever, when the capacitor slowly droops so conversion must finish quickly",
+     "Overlooking aperture jitter, which turns clock timing error into amplitude error, worst on fast, high-level signals",
+     "Confusing acquisition time (settling to the input) with the hold-and-convert phase"
+    ],
+    "scenario_contexts": [
+     "Understanding how a SAR ADC freezes each sample before converting it",
+     "Tracing high-frequency conversion errors to sample-and-hold aperture jitter",
+     "Explaining why low-jitter clocking improves converter accuracy at high frequencies"
+    ]
+   },
+   "sources": [
+    "Analog Devices, Data Conversion Handbook (Kester, ed.)",
+    "Pohlmann, Principles of Digital Audio",
+    "Watkinson, The Art of Digital Audio"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

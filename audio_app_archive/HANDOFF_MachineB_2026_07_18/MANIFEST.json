@@ -1,0 +1,2588 @@
+[
+ {
+  "packet": "mb0001.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0002.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0003.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0004.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0005.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0006.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0007.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0008.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0009.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0010.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0011.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0012.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0013.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0014.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0015.json",
+  "topic": "Instrument Recording \u2014 Strings & Guitar",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "mb0016.json",
+  "topic": "Instrument Recording \u2014 Drums & Percussion",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "mb0017.json",
+  "topic": "Instrument Recording \u2014 Keys, Winds & Brass",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0018.json",
+  "topic": "Instrument Recording \u2014 Keys, Winds & Brass",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0019.json",
+  "topic": "Instrument Recording \u2014 Keys, Winds & Brass",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0020.json",
+  "topic": "Instrument Recording \u2014 Keys, Winds & Brass",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0021.json",
+  "topic": "Instrument Recording \u2014 Keys, Winds & Brass",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "mb0022.json",
+  "topic": "Studio Recording Craft \u2014 Advanced",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0023.json",
+  "topic": "Drum-Kit Recording",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0024.json",
+  "topic": "Drum-Kit Recording",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0025.json",
+  "topic": "Drum-Kit Recording",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0026.json",
+  "topic": "Drum-Kit Recording",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0027.json",
+  "topic": "Drum-Kit Recording",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0028.json",
+  "topic": "Drum-Kit Recording",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "mb0029.json",
+  "topic": "Guitar, Bass & Amp Recording",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0030.json",
+  "topic": "Guitar, Bass & Amp Recording",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "mb0031.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0032.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0033.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0034.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0035.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0036.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0037.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0038.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0039.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0040.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0041.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0042.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0043.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0044.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0045.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0046.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0047.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0048.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0049.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0050.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0051.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0052.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0053.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0054.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0055.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0056.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0057.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0058.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0059.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0060.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0061.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0062.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0063.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0064.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0065.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0066.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0067.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0068.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0069.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0070.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0071.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0072.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0073.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0074.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0075.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0076.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0077.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0078.json",
+  "topic": "Band Tracking Workflow & Arrangement",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "mb0079.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0080.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0081.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0082.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0083.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0084.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0085.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0086.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0087.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0088.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0089.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0090.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0091.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0092.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0093.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0094.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0095.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0096.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0097.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0098.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0099.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0100.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0101.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0102.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0103.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0104.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0105.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0106.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0107.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0108.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0109.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0110.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0111.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0112.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0113.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0114.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0115.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0116.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0117.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0118.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0119.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0120.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0121.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0122.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0123.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0124.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0125.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0126.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0127.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0128.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0129.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0130.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0131.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0132.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0133.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0134.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0135.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0136.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0137.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0138.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0139.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0140.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0141.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0142.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0143.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0144.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0145.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0146.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0147.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0148.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0149.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0150.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0151.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0152.json",
+  "topic": "Mix Fundamentals & Workflow",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "mb0153.json",
+  "topic": "Creative & Advanced Mix Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0154.json",
+  "topic": "Creative & Advanced Mix Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0155.json",
+  "topic": "Creative & Advanced Mix Processing",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0156.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0157.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0158.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0159.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0160.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0161.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0162.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0163.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0164.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0165.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0166.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0167.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0168.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0169.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0170.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0171.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0172.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0173.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0174.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0175.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0176.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0177.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0178.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0179.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0180.json",
+  "topic": "Mastering Fundamentals & Chain",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "mb0181.json",
+  "topic": "Loudness, Dynamics & QC",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "mb0182.json",
+  "topic": "Delivery Formats & Metadata",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "mb0183.json",
+  "topic": "Podcast Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0184.json",
+  "topic": "Podcast Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0185.json",
+  "topic": "Podcast Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0186.json",
+  "topic": "Podcast Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0187.json",
+  "topic": "Podcast Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0188.json",
+  "topic": "Podcast Production",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "mb0189.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0190.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0191.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0192.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0193.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0194.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0195.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0196.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0197.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0198.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0199.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0200.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0201.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0202.json",
+  "topic": "Broadcast / Radio Production & Air Chain",
+  "terms": 6,
+  "fields": 48
+ },
+ {
+  "packet": "mb0203.json",
+  "topic": "Streaming & Distribution",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "mb0204.json",
+  "topic": "Broadcast Loudness & Compliance",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0205.json",
+  "topic": "Broadcast Loudness & Compliance",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0206.json",
+  "topic": "Broadcast Loudness & Compliance",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0207.json",
+  "topic": "Broadcast Loudness & Compliance",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0208.json",
+  "topic": "Broadcast Loudness & Compliance",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0209.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0210.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0211.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0212.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0213.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0214.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0215.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0216.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0217.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0218.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0219.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0220.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0221.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0222.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0223.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0224.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0225.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0226.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0227.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0228.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0229.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0230.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0231.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0232.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0233.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0234.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0235.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0236.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0237.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0238.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0239.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0240.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0241.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0242.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0243.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0244.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0245.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0246.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0247.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0248.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0249.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0250.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0251.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0252.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0253.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0254.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0255.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0256.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0257.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0258.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0259.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0260.json",
+  "topic": "Sound for Picture \u2014 Post Workflow & Deliverables",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0261.json",
+  "topic": "Production Sound & Field Recording",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0262.json",
+  "topic": "Re-Recording & Final Mix",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "mb0263.json",
+  "topic": "DAW Fundamentals & Session Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0264.json",
+  "topic": "DAW Fundamentals & Session Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0265.json",
+  "topic": "DAW Fundamentals & Session Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0266.json",
+  "topic": "DAW Fundamentals & Session Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0267.json",
+  "topic": "DAW Fundamentals & Session Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0268.json",
+  "topic": "DAW Fundamentals & Session Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0269.json",
+  "topic": "DAW Fundamentals & Session Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0270.json",
+  "topic": "DAW Fundamentals & Session Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0271.json",
+  "topic": "DAW Fundamentals & Session Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0272.json",
+  "topic": "DAW Fundamentals & Session Management",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "mb0273.json",
+  "topic": "Editing & Comping",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0274.json",
+  "topic": "In-the-Box Mixing & Automation",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0275.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0276.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0277.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0278.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0279.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0280.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0281.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0282.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0283.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0284.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0285.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0286.json",
+  "topic": "Sampling Fundamentals & Instruments",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "mb0287.json",
+  "topic": "Sample Editing & Manipulation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0288.json",
+  "topic": "Sample Editing & Manipulation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0289.json",
+  "topic": "Sample Editing & Manipulation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0290.json",
+  "topic": "Sample Editing & Manipulation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0291.json",
+  "topic": "Sample Editing & Manipulation",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "mb0292.json",
+  "topic": "Drum Programming & Beat-Making",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0293.json",
+  "topic": "Synthesis Fundamentals & Oscillators",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0294.json",
+  "topic": "Synthesis Fundamentals & Oscillators",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0295.json",
+  "topic": "Synthesis Fundamentals & Oscillators",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0296.json",
+  "topic": "Synthesis Fundamentals & Oscillators",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0297.json",
+  "topic": "Synthesis Fundamentals & Oscillators",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0298.json",
+  "topic": "Synthesis Fundamentals & Oscillators",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "mb0299.json",
+  "topic": "Filters, Envelopes & Modulation",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "mb0300.json",
+  "topic": "Synthesis Types, Modular & CV",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "mb0301.json",
+  "topic": "Hearing Anatomy & Function",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0302.json",
+  "topic": "Hearing Anatomy & Function",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0303.json",
+  "topic": "Hearing Anatomy & Function",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0304.json",
+  "topic": "Psychoacoustics",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0305.json",
+  "topic": "Psychoacoustics",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0306.json",
+  "topic": "Psychoacoustics",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0307.json",
+  "topic": "Voice & Vocal Perception",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0308.json",
+  "topic": "Voice & Vocal Perception",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0309.json",
+  "topic": "Voice & Vocal Perception",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0310.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0311.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0312.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0313.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0314.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0315.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0316.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0317.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0318.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0319.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0320.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0321.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0322.json",
+  "topic": "Tonal & Timbre Descriptors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0323.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0324.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0325.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0326.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0327.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0328.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0329.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0330.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0331.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0332.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0333.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0334.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0335.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0336.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0337.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0338.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0339.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0340.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0341.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0342.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0343.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0344.json",
+  "topic": "Attack, Decay, Resonance & Artifact Identification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0345.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0346.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0347.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0348.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0349.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0350.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0351.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0352.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0353.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0354.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0355.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0356.json",
+  "topic": "Strings, Guitar & Keys",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "mb0357.json",
+  "topic": "Drums & Percussion",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0358.json",
+  "topic": "Drums & Percussion",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0359.json",
+  "topic": "Drums & Percussion",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0360.json",
+  "topic": "Drums & Percussion",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0361.json",
+  "topic": "Drums & Percussion",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0362.json",
+  "topic": "Drums & Percussion",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0363.json",
+  "topic": "Drums & Percussion",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0364.json",
+  "topic": "Drums & Percussion",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0365.json",
+  "topic": "Drums & Percussion",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0366.json",
+  "topic": "Drums & Percussion",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0367.json",
+  "topic": "Drums & Percussion",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0368.json",
+  "topic": "Drums & Percussion",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "mb0369.json",
+  "topic": "Winds, Brass & Organ",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0370.json",
+  "topic": "Winds, Brass & Organ",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0371.json",
+  "topic": "Winds, Brass & Organ",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0372.json",
+  "topic": "Winds, Brass & Organ",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0373.json",
+  "topic": "Winds, Brass & Organ",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0374.json",
+  "topic": "Winds, Brass & Organ",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0375.json",
+  "topic": "Winds, Brass & Organ",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0376.json",
+  "topic": "Winds, Brass & Organ",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0377.json",
+  "topic": "Winds, Brass & Organ",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "mb0378.json",
+  "topic": "Immersive Formats & Delivery",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0379.json",
+  "topic": "Immersive Formats & Delivery",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "mb0380.json",
+  "topic": "Object & Bed Panning / Authoring",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0381.json",
+  "topic": "Object & Bed Panning / Authoring",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0382.json",
+  "topic": "Object & Bed Panning / Authoring",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "mb0383.json",
+  "topic": "Immersive Monitoring & Calibration",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0384.json",
+  "topic": "Immersive Monitoring & Calibration",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0385.json",
+  "topic": "Immersive Monitoring & Calibration",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0386.json",
+  "topic": "Immersive Monitoring & Calibration",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "mb0387.json",
+  "topic": "Dialogue Editing",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "mb0388.json",
+  "topic": "ADR & Looping",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0389.json",
+  "topic": "Dubbing & Localization",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "mb0390.json",
+  "topic": "Foley Performance & Recording",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "mb0391.json",
+  "topic": "Game Audio",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "mb0392.json",
+  "topic": "Themed Entertainment / Haunt Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0393.json",
+  "topic": "Themed Entertainment / Haunt Audio",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "mb0394.json",
+  "topic": "Audio Restoration & Archival",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0395.json",
+  "topic": "Audio Restoration & Archival",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0396.json",
+  "topic": "Audio Restoration & Archival",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0397.json",
+  "topic": "Audio Restoration & Archival",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0398.json",
+  "topic": "Audio Restoration & Archival",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "mb0399.json",
+  "topic": "Preamp & Converter Engineering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0400.json",
+  "topic": "Preamp & Converter Engineering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0401.json",
+  "topic": "Preamp & Converter Engineering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0402.json",
+  "topic": "Preamp & Converter Engineering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0403.json",
+  "topic": "Preamp & Converter Engineering",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "mb0404.json",
+  "topic": "Audio Plugin & DSP Development",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0405.json",
+  "topic": "Audio Plugin & DSP Development",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0406.json",
+  "topic": "Audio Plugin & DSP Development",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0407.json",
+  "topic": "Audio Plugin & DSP Development",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0408.json",
+  "topic": "Audio Plugin & DSP Development",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0409.json",
+  "topic": "Cloud & Emerging Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0410.json",
+  "topic": "Cloud & Emerging Production",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0411.json",
+  "topic": "AI Source Separation & Restoration",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0412.json",
+  "topic": "AI Source Separation & Restoration",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "mb0413.json",
+  "topic": "Music Information Retrieval",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "mb0414.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0415.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0416.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0417.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0418.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0419.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0420.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0421.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0422.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0423.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0424.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0425.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0426.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0427.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0428.json",
+  "topic": "AI/ML Foundations for Audio",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "mb0429.json",
+  "topic": "Live Sound \u2014 Crew Roles & Departments",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "mb0430.json",
+  "topic": "Live Sound \u2014 FOH Mixing Workflow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "mb0431.json",
+  "topic": "Live Sound \u2014 FOH Mixing Workflow",
+  "terms": 2,
+  "fields": 16
+ }
+]

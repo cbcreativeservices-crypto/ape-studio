@@ -1,0 +1,142 @@
+{
+ "batch": 286,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "7b4398d8-e0bb-4620-80c2-9d3a8714df3a",
+   "term": "Waveform morphing",
+   "fields": {
+    "definition": "A synthesis technique that produces a continuous, gradual transition between two or more source waveforms by interpolating between their shapes over time, so the timbre changes smoothly from one waveform to another.",
+    "plain_english": "It slowly blends one sound wave into another, the way one photo can fade into a different photo. As it blends, the tone changes little by little.",
+    "purpose_function": "It exists to create evolving, moving timbres from a small set of stored waveforms, giving a synth sound life and change without switching abruptly between fixed tones.",
+    "practical_application": "A technician modulates a morph or wavetable-position control with an envelope or LFO to make a pad or lead slowly shift from a dull, soft tone to a bright, harmonically rich one.",
+    "category": "Synthesis",
+    "related_terms": [
+     "Wavetable oscillator",
+     "Waveform shaping",
+     "Interpolation",
+     "Timbre",
+     "LFO"
+    ],
+    "common_mistakes": [
+     "Confusing morphing with a simple volume crossfade of two separate oscillators; true morphing interpolates the waveform shape itself, not just the loudness of two sounds.",
+     "Assuming morphing always sounds smooth, when large differences between source waveforms can produce audible stepping or harsh artifacts.",
+     "Thinking morphing and wavetable-position sweeps are unrelated, when sweeping through a wavetable is one common way morphing is implemented."
+    ],
+    "scenario_contexts": [
+     "Automating a slow timbral sweep on a pad so it evolves from a soft, sine-like tone to a bright, edgy one.",
+     "Using an LFO or envelope to morph an oscillator's shape and add movement to a lead sound.",
+     "Designing evolving textures in a soft synth such as Serum or Massive by moving through morphing waveforms."
+    ]
+   },
+   "sources": [
+    "Roads, The Computer Music Tutorial (MIT Press)",
+    "Puckette, The Theory and Technique of Electronic Music"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f5acbd98-9719-4e5b-a39e-b193b5a1c056",
+   "term": "Waveform shaping",
+   "fields": {
+    "definition": "A synthesis technique, also called waveshaping, in which a signal is passed through a nonlinear transfer function that reshapes its waveform and adds new harmonics, changing the timbre in a controlled, level-dependent way.",
+    "plain_english": "It bends a sound wave into a new shape to give it a richer, buzzier tone. Think of it like reshaping clay to change how it looks.",
+    "purpose_function": "It exists to add harmonics and character to a simple tone, letting a plain waveform become a complex, brighter, or more saturated sound without extra oscillators.",
+    "practical_application": "A technician routes a clean synth tone through a waveshaper or saturation stage to add warmth, grit, or harmonic edge, adjusting drive to control how much new harmonic content appears.",
+    "category": "Synthesis",
+    "related_terms": [
+     "Wavetable oscillator",
+     "Waveform morphing",
+     "Harmonic distortion",
+     "Transfer function",
+     "Timbre"
+    ],
+    "common_mistakes": [
+     "Confusing waveshaping with filtering; a filter removes harmonics, while waveshaping adds new ones through a nonlinear transfer function.",
+     "Driving the shaper too hard and creating harsh aliasing, especially at high pitches when no oversampling is used.",
+     "Assuming waveshaping only means heavy distortion, when gentle shaping can add subtle warmth and low-level harmonics."
+    ],
+    "scenario_contexts": [
+     "Adding harmonic richness and grit to a synth bass by routing it through a waveshaper.",
+     "Using a soft-clipping waveshaper to emulate analog saturation on a track.",
+     "Building complex timbres from a simple sine wave by shaping it with a nonlinear curve."
+    ]
+   },
+   "sources": [
+    "Roads, The Computer Music Tutorial (MIT Press)",
+    "Puckette, The Theory and Technique of Electronic Music"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "12a86bbe-6f2c-43eb-a8d6-bc1b894fdcda",
+   "term": "Wavetable oscillator",
+   "fields": {
+    "definition": "An oscillator that generates sound by repeatedly reading through a stored table of single-cycle waveforms, looping the table at a rate set by the desired pitch, and often sweeping across successive waveforms to change timbre over time.",
+    "plain_english": "It makes sound by playing through a list of stored wave shapes, one after another. Sweeping through the list slowly changes the tone, like flipping the pages of a flip book.",
+    "purpose_function": "It exists to produce a wide range of rich, evolving digital timbres efficiently, using stored waveforms instead of computing complex tones in real time.",
+    "practical_application": "A technician selects a wavetable and modulates its position with an envelope or LFO to make a lead, bass, or pad move through different tones as a note plays.",
+    "category": "Synthesis",
+    "related_terms": [
+     "Waveform morphing",
+     "Waveform shaping",
+     "Single-cycle waveform",
+     "Oscillator",
+     "Wavetable synthesis"
+    ],
+    "common_mistakes": [
+     "Thinking a wavetable holds a full recording, when each slot usually stores just one single-cycle waveform.",
+     "Sweeping the table position too fast and getting clicks or aliasing instead of smooth movement.",
+     "Confusing wavetable synthesis with sample playback; a wavetable oscillator loops short cycles at pitch rather than playing a whole recorded sample."
+    ],
+    "scenario_contexts": [
+     "Creating an evolving lead by modulating the wavetable position with an envelope.",
+     "Programming a bright, digital pad in a synth such as Serum, Massive, or a Waldorf instrument.",
+     "Layering two detuned wavetable oscillators for a fat, moving sound."
+    ]
+   },
+   "sources": [
+    "Roads, The Computer Music Tutorial (MIT Press)",
+    "Puckette, The Theory and Technique of Electronic Music"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "56de5cab-cf23-4f1e-aed5-86dfc5ef801b",
+   "term": "Zone mapping",
+   "fields": {
+    "definition": "In a sampler, the assignment of samples to defined ranges of the keyboard (key zones) and playing dynamics (velocity zones) so that the correct sample plays for a given note and playing dynamic (how hard the key is struck).",
+    "plain_english": "It tells a sampler which recorded sound to play for each key and how hard you press. So low keys, high keys, and soft or loud hits can each trigger their own sample.",
+    "purpose_function": "It exists so one instrument can cover a full keyboard and dynamic range with many samples, keeping each sample near its natural pitch and loudness instead of stretching one sound over everything.",
+    "practical_application": "A technician building a sampled instrument drags samples onto key and velocity ranges, sets each sample's root key, and checks that zones cover the whole keyboard with no gaps or unwanted overlaps.",
+    "category": "Sample mapping",
+    "related_terms": [
+     "Key mapping",
+     "Velocity layer",
+     "Sample",
+     "Multisampling",
+     "Root key"
+    ],
+    "common_mistakes": [
+     "Leaving gaps between key zones so some notes trigger no sample and play silence.",
+     "Overlapping velocity zones by mistake so two samples sound at once at certain velocities.",
+     "Forgetting to set a sample's root key, so its zone plays back at the wrong pitch."
+    ],
+    "scenario_contexts": [
+     "Building a multisampled piano by mapping each recorded note across a small range of keys.",
+     "Setting up velocity zones so soft hits trigger a quiet sample and hard hits trigger a bright, loud one.",
+     "Mapping a drum kit so each key or pad triggers a different drum sample."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Native Instruments Kontakt Manual"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

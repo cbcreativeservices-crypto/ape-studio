@@ -1,0 +1,148 @@
+{
+ "batch": 412,
+ "topic": "AI Source Separation & Restoration",
+ "authored": [
+  {
+   "id": "a3293e11-f27e-44bb-af8a-44489164f2e8",
+   "term": "Source separation",
+   "fields": {
+    "definition": "Source separation is the process of estimating the individual source signals that were combined to form an audio mixture, using only the mixture and sometimes side information. In audio the mixture is modelled as a sum of sources such as vocals, drums, bass and other instruments, and the goal is to recover one or more of these sources as separate signals.",
+    "plain_english": "It means pulling the separate sounds back out of a recording that mixed them all together. For example, you take a full song and get the singer on its own, away from the band.",
+    "purpose_function": "It exists to split a single recorded mixture back into its component parts, so each source can be heard, processed, remixed or studied on its own, which is impossible once the sounds have been summed together.",
+    "practical_application": "A technician uses source-separation software to lift vocals off a stereo master for a remix or karaoke version, isolate a problem instrument for cleanup, or recover usable stems when the original multitrack is lost.",
+    "category": "Separation fundamentals",
+    "related_terms": [
+     "Music source separation (MSS)",
+     "Signal separation",
+     "Unmixing",
+     "Demixing",
+     "Spectral masking",
+     "Short-time Fourier transform (STFT)"
+    ],
+    "common_mistakes": [
+     "Assuming separation is lossless; separated sources normally carry artifacts, bleed and dropouts because the process only estimates the hidden sources rather than perfectly recovering them",
+     "Confusing source separation with EQ or filtering; EQ only reshapes the whole mix, while separation aims to output each source as its own signal",
+     "Expecting clean isolation from a mono or heavily processed mixture, where overlapping and correlated sources make separation much harder"
+    ],
+    "scenario_contexts": [
+     "Creating an instrumental or acappella from a finished stereo master for remixing or sampling",
+     "Isolating dialogue from background music and effects to re-version or clean up an archive recording",
+     "Recovering approximate drum, bass and vocal stems when the original multitrack session is unavailable"
+    ]
+   },
+   "sources": [
+    "Vincent, Virtanen & Gannot (eds.), Audio Source Separation and Speech Enhancement (Wiley)",
+    "Muller, Fundamentals of Music Processing (2nd ed.)",
+    "Cano, FitzGerald, Liutkus, Plumbley & Stoter, Musical Source Separation: An Introduction, IEEE Signal Processing Magazine"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e03d4629-90c8-40ab-816f-ca35e72fd98e",
+   "term": "Spectral masking",
+   "fields": {
+    "definition": "Spectral masking is a source-separation technique that isolates a target source by applying a time-frequency mask to the mixture's spectrogram, scaling each time-frequency bin by an estimate of how much of that bin belongs to the target. The masked spectrogram is then converted back to audio, usually reusing the mixture's phase. Masks may be binary, where each bin is fully kept or removed, or soft (ratio) masks, where each bin is scaled between 0 and 1.",
+    "plain_english": "A song can be shown as a grid of tiny time-and-pitch cells. This method keeps the cells that hold the sound you want, turns the rest down, then turns the grid back into audio.",
+    "purpose_function": "It provides a simple, effective way to separate sounds by deciding, for each point in a spectrogram, how much energy belongs to the target source, and it is the core mechanism behind many classic and neural separation systems.",
+    "practical_application": "A technician meets spectral masking inside separation and restoration tools, where a mask, often predicted by a neural network, is multiplied with the spectrogram to pull out vocals or attenuate noise before the result is inverted back to sound.",
+    "category": "Separation techniques",
+    "related_terms": [
+     "Short-time Fourier transform (STFT)",
+     "Source separation",
+     "Unmixing",
+     "Music source separation (MSS)",
+     "Non-negative matrix factorization (NMF)"
+    ],
+    "common_mistakes": [
+     "Thinking the mask changes phase; standard masks scale magnitude only, and reusing the mixture's phase for the masked source is a common cause of separation artifacts",
+     "Confusing this separation mask with psychoacoustic masking, where one loud sound hides a quieter one; they are different ideas that happen to share the word masking",
+     "Assuming a binary mask always sounds best; hard on/off decisions often add 'musical noise', so soft ratio masks are usually smoother"
+    ],
+    "scenario_contexts": [
+     "Applying a neural-network-predicted mask to a spectrogram to isolate vocals from a mix",
+     "Using a time-frequency mask in a restoration tool to reduce broadband noise while keeping the wanted signal",
+     "Building a simple separation demo where a soft mask is multiplied with the STFT and inverted with an inverse STFT"
+    ]
+   },
+   "sources": [
+    "Wang & Brown (eds.), Computational Auditory Scene Analysis: Principles, Algorithms, and Applications (IEEE Press/Wiley)",
+    "Muller, Fundamentals of Music Processing (2nd ed.)",
+    "Vincent, Virtanen & Gannot (eds.), Audio Source Separation and Speech Enhancement (Wiley)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e8f53125-b811-43a4-8380-8c872f6aa8ca",
+   "term": "Unmixing",
+   "fields": {
+    "definition": "Unmixing is the recovery of the individual sources or stems that were combined into a finished audio mixture, producing separate signals from a single mixdown. It is used synonymously with source separation and demixing, especially in the music context where a stereo master is split back into parts such as vocals, drums, bass and other.",
+    "plain_english": "It means undoing a mix. You take a finished song and get its parts back out as separate tracks, like the vocals and drums on their own.",
+    "purpose_function": "It exists to reverse the mixdown step so that the individual parts locked inside a stereo or mono mixture can be edited, remixed or reused, even when the original separate recordings no longer exist.",
+    "practical_application": "A technician uses an unmixing (demixing) tool to pull stems from a released track for a remix, live re-performance or upmix, or to isolate a single part for editing when only the final mix survives.",
+    "category": "Separation fundamentals",
+    "related_terms": [
+     "Source separation",
+     "Demixing",
+     "Music source separation (MSS)",
+     "Spectral masking",
+     "Signal separation"
+    ],
+    "common_mistakes": [
+     "Treating unmixing as a perfect inverse of mixing; it only estimates the parts, so recovered stems carry artifacts and bleed rather than matching the originals",
+     "Assuming effects baked into the mix, such as reverb, compression and EQ, come off with the stems; those processes stay embedded in the separated parts",
+     "Confusing unmixing with soloing or muting; unmixing works from a single finished mixture, not from an existing multitrack session"
+    ],
+    "scenario_contexts": [
+     "Extracting stems from a released stereo track to build a remix or mashup",
+     "Isolating a vocal for a live tribute performance when no multitrack exists",
+     "Splitting an archival mono recording into parts for restoration or re-balancing"
+    ]
+   },
+   "sources": [
+    "Cano, FitzGerald, Liutkus, Plumbley & Stoter, Musical Source Separation: An Introduction, IEEE Signal Processing Magazine",
+    "Vincent, Virtanen & Gannot (eds.), Audio Source Separation and Speech Enhancement (Wiley)",
+    "Muller, Fundamentals of Music Processing (2nd ed.)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d052f324-e9ca-43c2-926e-0996636e5845",
+   "term": "Wave-U-Net",
+   "fields": {
+    "definition": "Wave-U-Net is a neural network architecture for end-to-end audio source separation that operates directly on the raw time-domain waveform rather than on a spectrogram. It adapts the U-Net encoder-decoder design to one-dimensional audio, repeatedly downsampling and then upsampling feature maps with skip connections between matching levels, so it captures structure at multiple time scales, models phase directly, and avoids a fixed spectral transform.",
+    "plain_english": "It is a computer model that splits sounds apart by working on the raw audio wave itself, not a picture of it. It first zooms out to catch the big shape, then zooms back in to rebuild each part.",
+    "purpose_function": "It exists to perform source separation without first converting audio to a spectrogram, letting the network learn its own features and handle phase directly, which removes errors that come from fixed transforms and from reusing the mixture's phase.",
+    "practical_application": "A technician encounters Wave-U-Net as a time-domain separation model, or a baseline it inspired, used to split singing voice from accompaniment or to separate instruments, running on the raw audio with no STFT step.",
+    "category": "Separation models",
+    "related_terms": [
+     "Source separation",
+     "Music source separation (MSS)",
+     "Conv-TasNet",
+     "Spectral masking",
+     "Short-time Fourier transform (STFT)",
+     "Signal separation"
+    ],
+    "common_mistakes": [
+     "Assuming it works on a spectrogram like mask-based systems; Wave-U-Net processes the raw waveform in the time domain",
+     "Treating the U-Net skip connections as a minor detail; they carry fine time detail from the encoder to the decoder and are central to reconstructing the output",
+     "Confusing it with the original image-segmentation U-Net; Wave-U-Net is a one-dimensional adaptation built for audio"
+    ],
+    "scenario_contexts": [
+     "Separating singing voice from the instrumental backing in a music track",
+     "Serving as a time-domain baseline when comparing waveform models against spectrogram-masking separators",
+     "Building or evaluating an end-to-end separator that avoids the STFT and inverse-STFT stages"
+    ]
+   },
+   "sources": [
+    "Stoller, Ewert & Dixon, Wave-U-Net: A Multi-Scale Neural Network for End-to-End Audio Source Separation, ISMIR 2018",
+    "Ronneberger, Fischer & Brox, U-Net: Convolutional Networks for Biomedical Image Segmentation, MICCAI",
+    "Cano, FitzGerald, Liutkus, Plumbley & Stoter, Musical Source Separation: An Introduction, IEEE Signal Processing Magazine"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

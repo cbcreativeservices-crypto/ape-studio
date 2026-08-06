@@ -1,0 +1,81 @@
+{
+ "batch": 181,
+ "topic": "Loudness, Dynamics & QC",
+ "terms": [
+  {
+   "id": "6b8faa64-a21b-439f-b54f-1e1c303469de",
+   "term": "Flux Pure Limiter",
+   "topic": "Loudness, Dynamics & QC",
+   "seq": 1170,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "57fbf4e2-81d6-47ca-853b-0d3cfb58023d",
+   "term": "Sonnox Limiter",
+   "topic": "Loudness, Dynamics & QC",
+   "seq": 1170,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "46aa40c8-8ecb-4f8d-90be-eff126927e1d",
+   "term": "Youlean Loudness Meter",
+   "topic": "Loudness, Dynamics & QC",
+   "seq": 1170,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

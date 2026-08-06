@@ -1,0 +1,231 @@
+{
+ "batch": 62,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "d71f9edd-7c4d-4bf5-8e59-09b6f27680e9",
+   "term": "Piano microphone blend",
+   "fields": {
+    "definition": "The practice of combining the signals from two or more microphones on a piano - such as a spaced or coincident inner pair, lid mics, or added room mics - into one balanced, coherent tone. The engineer sets each mic's relative level and tonal weight so their captured regions merge without phase cancellation or tonal imbalance.",
+    "plain_english": "It is mixing together the two or more mics used on one piano. You balance them so the piano sounds full and even. It is like blending a few photos of the same thing into one clear picture.",
+    "purpose_function": "It merges several microphone perspectives on a physically large instrument into a single natural sound, capturing low strings, high strings, hammers, and room in proportion. It exists because no single mic position captures a piano's full range and scale convincingly.",
+    "practical_application": "Tracking a grand, a technician balances an inner pair against lid or room mics in the console or DAW, adjusting relative levels and checking mono compatibility until the tone is even from bass to treble.",
+    "category": "Piano Recording",
+    "related_terms": ["Spaced pair", "Room microphone", "Piano phase alignment", "Stereo miking", "Microphone placement"],
+    "common_mistakes": [
+     "Blending mics without checking mono compatibility, so combining them causes comb filtering and a thin, hollow tone.",
+     "Leaning too heavily on close mics, which yields a hard, boxy sound with no sense of the instrument's body or room.",
+     "Matching mic levels by meter instead of by ear, ignoring how their tonal balance actually combines."
+    ],
+    "scenario_contexts": [
+     "Recording a jazz trio's grand piano with an inner pair plus a distant room mic and blending them for depth.",
+     "Balancing lid and under-lid mics on a pop session so the piano is bright but still full.",
+     "Adding a mono room mic to a close stereo pair to give a solo piano recording more space."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "639f3de7-dd58-413a-9946-55b12911c922",
+   "term": "Piano mixing",
+   "fields": {
+    "definition": "The set of processing and balancing decisions applied to recorded piano tracks within a mix - level, panning, EQ, dynamics, and effects - so the instrument sits clearly in the arrangement. It covers both solo-feature treatment and fitting the piano around vocals and other instruments.",
+    "plain_english": "It is all the work you do to make a recorded piano sit well in a song. You set its volume, tone, and place across the speakers. The goal is a piano that is clear but does not cover the other parts.",
+    "purpose_function": "It shapes the piano's level, tone, and space so it supports the song without masking or being masked by other parts. It exists because a raw piano recording rarely sits correctly against a full arrangement without deliberate balancing.",
+    "practical_application": "A mix engineer cuts mud around 200 to 400 Hz, adds gentle compression, sets pan and level, and applies reverb so the piano supports the vocal rather than fighting it.",
+    "category": "Piano Mixing",
+    "related_terms": ["Equalization", "Compression", "Panning", "Frequency masking", "Piano subgroup"],
+    "common_mistakes": [
+     "Leaving the full, wide piano recording untouched so it masks the vocal and crowds the mix.",
+     "Boosting highs for brightness without cutting low-mid buildup first, leaving the piano thin yet still muddy.",
+     "Using heavy stereo width on a piano that must share space with other wide instruments, blurring the mix."
+    ],
+    "scenario_contexts": [
+     "Fitting a piano under a lead vocal in a ballad by carving low mids and narrowing its stereo width.",
+     "Making a solo piano recording sound full and polished with EQ, light compression, and reverb.",
+     "Balancing a rhythm piano against acoustic guitar so both stay clear."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7a45da99-f1e1-4d0a-a71a-48d30982b895",
+   "term": "Piano pedal-noise control",
+   "fields": {
+    "definition": "Techniques for preventing mechanical noise from a piano's pedal mechanism - thumps, squeaks, and lyre or trapwork clatter - from being captured or heard in a recording. It combines instrument maintenance, mic placement away from the pedals, and corrective editing or gating.",
+    "plain_english": "It means stopping the thumps and squeaks the piano pedals make from ending up in your recording. You keep mics away from the pedals, oil the parts, or edit the noise out later. It is like moving a mic away from a creaky chair.",
+    "purpose_function": "It keeps distracting mechanical sounds out of an otherwise clean piano capture, since sensitive mics near the instrument readily pick up pedal and damper-lift noise. It exists because pedal noise can render an otherwise good take unusable.",
+    "practical_application": "A technician lubricates or adjusts a squeaky pedal, positions mics away from the pedal lyre, and edits or gates residual thumps out of quiet passages in the DAW.",
+    "category": "Piano Recording",
+    "related_terms": ["Mechanical noise", "Microphone placement", "Noise gate", "Damper pedal", "Editing"],
+    "common_mistakes": [
+     "Placing a mic low toward the pedals for warmth and then capturing every pedal thump.",
+     "Gating out pedal noise so aggressively that it chops the natural sustain and decay of notes.",
+     "Ignoring a squeaky pedal on the instrument and hoping to fix a mechanical problem entirely in the mix."
+    ],
+    "scenario_contexts": [
+     "Recording a quiet solo piano piece where each damper-pedal thump is audible between phrases.",
+     "Editing out a squeak from the sustain pedal that recurs through a ballad take.",
+     "Repositioning mics after noticing pedal clatter during a classical session."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "97b4d333-4ee4-4e20-8fc4-b311a69ee1ae",
+   "term": "Piano phase alignment",
+   "fields": {
+    "definition": "The process of correcting timing and polarity relationships between multiple microphones on a piano so their signals sum coherently rather than cancelling. It addresses arrival-time differences between, for example, an inner pair and room mics, and the polarity of each mic relative to the others.",
+    "plain_english": "When two mics record one piano, their sound can arrive at slightly different times. This can make the tone thin or hollow once you mix them together. Phase alignment lines the mics up in time so the sound stays full.",
+    "purpose_function": "It prevents comb filtering and loss of low end that occur when time-offset mic signals combine, preserving a full, solid tone when the mics are blended or summed to mono. It exists because multiple mics at different distances capture the same sound at slightly different times.",
+    "practical_application": "A technician checks polarity, nudges one mic's track in the DAW to align its waveform with another, or spaces mics by the 3:1 rule, listening in mono to confirm the blend stays full.",
+    "category": "Piano Recording",
+    "related_terms": ["Comb filtering", "Polarity", "3:1 rule", "Mono compatibility", "Piano microphone blend"],
+    "common_mistakes": [
+     "Confusing polarity inversion with time alignment and expecting a polarity switch to fix all arrival-time problems.",
+     "Judging phase only in stereo and never checking mono, where cancellation is most obvious.",
+     "Aligning waveforms visually without listening, so the tone that measures aligned still sounds thin."
+    ],
+    "scenario_contexts": [
+     "Blending close and room mics on a piano and flipping polarity to restore lost low end.",
+     "Nudging a room-mic track earlier in the DAW so it lines up with the close pair.",
+     "Setting mic spacing by the 3:1 rule to minimise phase issues before tracking."
+    ]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0c9b4ddd-7b88-487f-bc28-ca6c2897a450",
+   "term": "Piano resonance control",
+   "fields": {
+    "definition": "The management of unwanted resonant buildup in a piano's sound - sympathetic string ringing, boomy low-mid notes, and room-excited resonances - so the recorded tone stays clear. It uses EQ, including narrow or dynamic cuts, physical damping, and mic placement.",
+    "plain_english": "A piano can ring or boom on certain notes and sound muddy. Resonance control tames those loud, ringing notes. You might cut them with EQ or dampen the strings so the piano sounds clean.",
+    "purpose_function": "It tames specific notes or frequency bands that ring or boom out of proportion, keeping the piano even across its range. It exists because a piano's many undamped and sympathetic strings can build resonances that muddy or dominate a mix.",
+    "practical_application": "A technician sweeps a narrow EQ to find a booming note, applies a small static or dynamic cut, and may dampen strings or move mics to reduce sympathetic ringing at the source.",
+    "category": "Piano Mixing",
+    "related_terms": ["Resonant frequency", "Dynamic EQ", "Sympathetic resonance", "Notch filter", "Equalization"],
+    "common_mistakes": [
+     "Applying a wide, deep EQ cut that removes a resonant note but hollows out the whole instrument.",
+     "Treating every boomy note with static EQ when a dynamic EQ would act only when the note sounds.",
+     "Blaming the piano for resonance that is actually the room, and never testing mic position changes."
+    ],
+    "scenario_contexts": [
+     "Taming a single low note that booms every time it is played in a ballad.",
+     "Using dynamic EQ to control sympathetic ringing that builds during sustained chords.",
+     "Repositioning mics to reduce a room mode exciting the piano's low strings."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "caf89f50-d365-4714-a353-e7369db7a7fd",
+   "term": "Piano stereo-image control",
+   "fields": {
+    "definition": "The shaping of a piano's width and spatial placement across the stereo field, including how far the bass-to-treble spread extends and where the instrument sits between the speakers. It is set through mic technique, panning of the mic pair, and stereo-width processing.",
+    "plain_english": "This is how wide the piano sounds across your left and right speakers. You can make it narrow or spread it out. It also shapes where the low and high notes seem to sit in the stereo picture.",
+    "purpose_function": "It controls how wide the piano appears and where it sits so it fits the arrangement and stays mono-compatible. It exists because a stereo piano can either add welcome width or crowd and unbalance a mix if left unchecked.",
+    "practical_application": "A technician sets the pan spread of the two piano mics, may narrow the image so it does not swamp a dense mix, and checks in mono to ensure width does not cause cancellation.",
+    "category": "Piano Mixing",
+    "related_terms": ["Stereo width", "Panning", "Mono compatibility", "Spaced pair", "Stereo miking"],
+    "common_mistakes": [
+     "Panning the piano mics fully hard left and right so the image is unnaturally wide and collapses in mono.",
+     "Mixing an audience-view and a player-view stereo perspective inconsistently across a project.",
+     "Adding stereo-widening plugins that boost width but wreck mono compatibility."
+    ],
+    "scenario_contexts": [
+     "Narrowing a wide piano recording so a lead vocal and guitar have room in the center.",
+     "Setting a natural left-to-right spread for a solo piano feature.",
+     "Checking mono fold-down before committing to a wide piano image for broadcast."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6a65b9d9-eefd-4404-a49d-abb175d276e4",
+   "term": "Piano subgroup",
+   "fields": {
+    "definition": "A group bus to which all of a piano's microphone channels are routed so they can be controlled and processed together. A single fader adjusts the combined level, and bus processing such as EQ or compression can be applied to the whole instrument at once.",
+    "plain_english": "It is a single fader that controls all the piano mic channels at once. You send every piano mic to this one group. Then you can raise, lower, or process the whole piano together.",
+    "purpose_function": "It lets an engineer manage a multi-mic piano as one instrument, with one fader for level rides and one insert chain for shared processing, instead of adjusting each channel separately. It exists to simplify control and keep the mic blend consistent when riding levels.",
+    "practical_application": "On a console or DAW, a technician routes the inner-pair and room mics to a stereo group, sets the internal blend, then rides and processes the group fader to place the whole piano in the mix.",
+    "category": "Mix Routing",
+    "related_terms": ["Subgroup", "Bus", "Group fader", "Bus compression", "Piano microphone blend"],
+    "common_mistakes": [
+     "Routing piano mics to a subgroup but still riding individual channels for level, which breaks the set blend.",
+     "Applying heavy bus compression to the piano group without checking how it pumps against the mic balance.",
+     "Forgetting to keep the group in stereo, collapsing a stereo piano to mono at the bus."
+    ],
+    "scenario_contexts": [
+     "Grouping four piano mics to one stereo subgroup for a single level ride during a live mix.",
+     "Bus-compressing a multi-mic piano gently to glue the mics together.",
+     "Muting the whole piano quickly during tracking by pulling one group fader."
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6052948c-b3f7-4fd2-8eb6-e02b6e77c461",
+   "term": "Piano transient control",
+   "fields": {
+    "definition": "The shaping of the sharp attack transient produced when a piano hammer strikes the string, using compression, limiting, or transient-shaping tools. It can soften percussive attacks for a smoother tone or emphasise them for more clarity and punch in a mix.",
+    "plain_english": "Each piano note starts with a sharp knock as the hammer hits the string. Transient control shapes that sharp attack. You can soften it or make it punchier so the piano fits the track.",
+    "purpose_function": "It manages the level and character of a note's initial attack so the piano's dynamics suit the arrangement and stay controlled through processing. It exists because a piano's percussive transients can be too aggressive or too soft for a given mix.",
+    "practical_application": "A technician sets compressor attack and release, or uses a transient shaper, to tame spiky attacks that jump forward or to add bite so the piano cuts through a dense track.",
+    "category": "Piano Mixing",
+    "related_terms": ["Transient", "Compression", "Attack time", "Transient shaper", "Limiting"],
+    "common_mistakes": [
+     "Setting a fast compressor attack that clamps every hammer strike and dulls the piano's natural articulation.",
+     "Boosting transients so hard the piano clicks and sounds unnatural.",
+     "Confusing transient control with overall level compression and squashing dynamics instead of shaping the attack."
+    ],
+    "scenario_contexts": [
+     "Softening a pop piano's spiky attacks so they sit smoothly under a vocal.",
+     "Adding attack with a transient shaper so a rhythm piano cuts through a busy band mix.",
+     "Controlling loud hammer strikes on a close-miked upright before further processing."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9855f55b-6804-437d-abb4-6486b98d6c5d",
+   "term": "Pick-noise control",
+   "fields": {
+    "definition": "Techniques for reducing the scratchy, clicky noise a plectrum makes contacting guitar or bass strings so it does not distract in a recording. It combines playing technique and pick choice at the source with corrective EQ, de-essing, or editing afterward.",
+    "plain_english": "A guitar pick can make a scratchy, clicky sound on the strings. Pick-noise control keeps that scratch from being too loud. You change how you pick, use a softer pick, or cut it with EQ later.",
+    "purpose_function": "It keeps unwanted pick attack and string-scrape noise from dominating an otherwise clean guitar or bass tone. It exists because close miking and bright, articulate playing can exaggerate pick noise into a harsh, distracting artifact.",
+    "practical_application": "A technician has the player adjust pick angle and attack or switch pick material, then tames residual high-frequency scratch with a gentle EQ cut or a de-esser tuned to the noise band.",
+    "category": "Noise Control",
+    "related_terms": ["De-essing", "Equalization", "Plectrum", "Piano transient control", "Direct injection"],
+    "common_mistakes": [
+     "Cutting broad high frequencies to kill pick noise and dulling the whole instrument's brightness.",
+     "Trying to remove heavy pick noise in the mix instead of fixing pick angle and attack while tracking.",
+     "Using a de-esser set so aggressively that it lisps the note attacks and flattens the tone."
+    ],
+    "scenario_contexts": [
+     "Reducing loud pick clicks on a close-miked acoustic guitar strum track.",
+     "Taming scratchy attack on a bright bass DI played with a hard pick.",
+     "De-essing the high scratch on a picked electric guitar part."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

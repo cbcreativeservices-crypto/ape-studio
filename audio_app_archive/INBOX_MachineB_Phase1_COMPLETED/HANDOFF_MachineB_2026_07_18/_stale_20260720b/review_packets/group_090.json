@@ -1,0 +1,1028 @@
+{
+ "group": 90,
+ "terms": [
+  {
+   "id": "78f5ae2e-4e29-4c58-9481-d16715a4ed33",
+   "term": "Suona/shawm cry",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The loud, bright, penetrating and vocal (\"crying\" or \"wailing\") tone characteristic of the suona (the Chinese conical double-reed shawm) and, more broadly, of the shawm family; a small exposed double reed drives a conical bore ending in a flaring bell, giving a strident, human-voice-like sound prized for outdoor processions, weddings, and funerals.",
+   "plain_english": "The suona is a Chinese double-reed horn, and the shawm is its old European cousin. Both make a very loud, bright, wailing sound, almost like a human cry. This crying tone cuts through crowds, so they are played outdoors at weddings and funerals.",
+   "purpose_function": "The term names the signature timbre of these instruments, explaining why they project so powerfully outdoors and why their tone is often described as vocal or crying rather than smooth.",
+   "practical_application": "A recording or live-sound engineer expects a very high sound-pressure level and strong upper harmonics from a suona or shawm, so they choose a mic and gain structure that will not overload and position it slightly off-axis to tame the harsh top.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Double reed",
+    "Reed",
+    "Shawm",
+    "Overblowing",
+    "Conical bore"
+   ],
+   "common_mistakes": [
+    "Treating the loud, crying tone as a fault or a reed problem when it is the instrument's intended sound.",
+    "Miking a suona or shawm as if it were a soft oboe, then overloading the input on loud passages.",
+    "Confusing the suona (double reed) with a valved brass instrument because of its bell and volume."
+   ],
+   "scenario_contexts": [
+    "A folk ensemble features a suona whose piercing cry must be balanced against quieter instruments.",
+    "An engineer records a Renaissance shawm consort outdoors and manages its strident, penetrating tone.",
+    "A film composer wants the wailing suona sound for a funeral scene."
+   ]
+  },
+  {
+   "id": "5bd8f3da-977f-4c7f-a3b6-4d4d11fd49bb",
+   "term": "Tongue-block chord slap",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A tongue-blocking harmonica technique in which the player, while covering several holes with the tongue to isolate a single reed, briefly lifts the tongue so a full chord sounds and then instantly re-blocks it, producing a short percussive chordal \"slap\" that accents the melody note.",
+   "plain_english": "On a harmonica you can cover some holes with your tongue to play just one note. In a chord slap you lift your tongue for a split second so a full chord sounds, then put it back to leave the single note. It works like a quick drum hit before the melody note.",
+   "purpose_function": "The technique adds rhythmic, percussive emphasis and a fuller chordal texture to single-note lines, a staple of blues and traditional harmonica phrasing.",
+   "practical_application": "A blues harmonica player punches accents with chord slaps, and an engineer recording the part hears brief chordal transients ahead of notes and sets levels or compression so the percussive attack stays clear without clipping.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Tongue blocking",
+    "Warble (harmonica)",
+    "Draw note",
+    "Blow note",
+    "Reed"
+   ],
+   "common_mistakes": [
+    "Not fully re-blocking after the slap, so the chord keeps ringing instead of leaving a clean single note.",
+    "Slapping with inconsistent timing so accents fall out of the groove.",
+    "Confusing the chord slap with a warble, which is a shake between two holes rather than a percussive accent."
+   ],
+   "scenario_contexts": [
+    "A blues harmonica player uses chord slaps to drive the rhythm of a shuffle.",
+    "A student learns to isolate one hole while adding slaps for accent.",
+    "An engineer compresses a harmonica track to keep the slapped chords even in level."
+   ]
+  },
+  {
+   "id": "b4da2580-91d2-4cd3-a24f-d9a9da5423b3",
+   "term": "Tremulant",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "An organ device, controlled by its own stop or lever, that introduces a regular periodic fluctuation into the wind supply of a division, causing the sounding pipes to waver periodically in both loudness and pitch to produce a tremolo/vibrato (undulating) effect.",
+   "plain_english": "A tremulant is an organ control that makes the wind pulse in a steady beat. This makes the notes gently waver in loudness and pitch, like a singer's vibrato. It adds warmth to slow, singing stops.",
+   "purpose_function": "The tremulant adds expressive warmth and an undulating, voice-like quality to a registration, and exists to give the organ's otherwise steady tone the life of a natural vibrato.",
+   "practical_application": "An organist engages the tremulant for solo or string-toned stops in slow, lyrical passages, and an organ technician regulates its rate and depth (adjusting spring tension, weight, or valve) so the beat is even and not too fast or violent.",
+   "category": "Organ device",
+   "related_terms": [
+    "Stop",
+    "Windchest",
+    "Celeste",
+    "Vibrato",
+    "Tremolo"
+   ],
+   "common_mistakes": [
+    "Confusing the tremulant, which pulses the wind of a whole division, with a celeste, which beats by tuning two ranks slightly apart.",
+    "Setting the tremulant rate too fast or too deep so the tone sounds seasick rather than warm.",
+    "Using the tremulant on full or loud registrations where its wavering muddies the sound."
+   ],
+   "scenario_contexts": [
+    "An organist adds the tremulant to a solo reed stop for an expressive melody.",
+    "A technician adjusts a sluggish tremulant so its beat becomes steady and musical.",
+    "A recording of a slow hymn shows the gentle wavering of a tremulant on the string stops."
+   ]
+  },
+  {
+   "id": "45b8788c-6c70-42ac-b339-dcf064d049a7",
+   "term": "Warble (harmonica)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A harmonica ornament in which the player rapidly alternates between two adjacent holes—usually by shaking the instrument from side to side or moving the head—so the two notes sound in fast oscillation, creating a trill- or tremolo-like \"warbling\" effect; also called a shake or trill.",
+   "plain_english": "A warble is when you quickly rock a harmonica between two side-by-side holes. The two notes trade back and forth so fast that they blur into a shimmering, wavy sound. It is also called a shake.",
+   "purpose_function": "The warble adds a shimmering, sustained ornament and rhythmic energy to a held note, and is one of the harmonica's most recognizable expressive effects.",
+   "practical_application": "A blues or folk harmonica player uses a warble to color a long note or build intensity, and an engineer captures the fast oscillation cleanly, avoiding heavy noise gating that could chop the alternating notes.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Tongue-block chord slap",
+    "Vibrato",
+    "Draw note",
+    "Reed",
+    "Trill"
+   ],
+   "common_mistakes": [
+    "Shaking too slowly, so the effect sounds like two separate notes rather than a smooth warble.",
+    "Confusing a warble (a shake between two holes) with vibrato (a pulsing of a single note).",
+    "Gating a warbled note so hard that the rapid note changes are clipped."
+   ],
+   "scenario_contexts": [
+    "A harmonica player warbles a high draw note to end a blues phrase.",
+    "A student practices an even shake to turn two notes into a smooth warble.",
+    "An engineer records a warble and keeps the gate gentle so the shimmer stays intact."
+   ]
+  },
+  {
+   "id": "b8566e4d-cf0c-4fb3-985b-09e35355cb4c",
+   "term": "Wind noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The low-frequency, broadband rumble, roar, or thumping generated when moving air—outdoor wind or gusts of breath—creates turbulence at a microphone's diaphragm and grille; it is unrelated to the desired signal and is controlled with foam windscreens, furry windshields (blimps), and high-pass filtering.",
+   "plain_english": "Wind noise is the low rumble a mic makes when moving air hits it. It is not part of the real sound you want to record. A foam or furry cover over the mic blocks most of it, like a scarf over your face on a windy day.",
+   "purpose_function": "The term names a common noise problem so technicians can recognize air turbulence at the mic as the cause of low-frequency rumble and take the right steps to prevent it.",
+   "practical_application": "For outdoor or breezy work a technician fits a foam windscreen or furry windjammer, engages a high-pass filter, and positions or shields the mic so wind does not strike the diaphragm directly.",
+   "category": "Recording artifact",
+   "related_terms": [
+    "Windscreen",
+    "High-pass filter",
+    "Rumble",
+    "Proximity effect",
+    "Plosive"
+   ],
+   "common_mistakes": [
+    "Relying on a thin foam windscreen in strong wind when a furry windshield is needed.",
+    "Assuming a pop filter, which is made for plosives, will stop outdoor wind noise.",
+    "Cutting so much low end with the high-pass filter that the wanted sound is thinned out."
+   ],
+   "scenario_contexts": [
+    "A location recordist fits a windjammer to a shotgun mic for an outdoor interview.",
+    "A live-sound engineer hears rumble from wind on a stage mic and adds a high-pass filter.",
+    "A boom operator shields the mic from a gust so wind noise does not ruin a take."
+   ]
+  },
+  {
+   "id": "537b7fdd-2646-4d05-952c-d4b5bf2ddb98",
+   "term": "Wind-cap buzz",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The characteristic buzzing, nasal, reedy timbre of wind-cap instruments (such as the crumhorn, cornamuse, and rauschpfeife), in which a double reed is fully enclosed in a perforated cap that the player blows into rather than lipping the reed directly; the freely, uncontrolled vibrating reed gives a strong buzzy quality and a narrow dynamic range.",
+   "plain_english": "Some old reed instruments hide the reed inside a cap that you blow into, instead of putting the reed on your lips. Because you cannot control the reed, it buzzes freely and gives a strong, nasal, humming tone. That buzzy sound is normal, not a fault.",
+   "purpose_function": "The term names the signature timbre of wind-cap instruments, explaining why they sound buzzy and constant in volume and why the player cannot shape the tone with the lips.",
+   "practical_application": "A player or early-music engineer recognizes wind-cap buzz as the normal sound of these instruments, mics them to capture the reedy character, and does not expect the loud-soft dynamics or bending possible on lip-controlled reeds.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Double reed",
+    "Crumhorn",
+    "Reed",
+    "Overblowing",
+    "Nasal tone"
+   ],
+   "common_mistakes": [
+    "Trying to bend, overblow, or swell the volume as on a lipped reed, which the enclosed reed cannot do.",
+    "Mistaking the normal buzz for a cracked or faulty reed.",
+    "Blowing harder to get louder, which just chokes or overblows the reed instead of adding volume."
+   ],
+   "scenario_contexts": [
+    "An early-music consort records crumhorns whose steady buzz sits under the ensemble.",
+    "A student is surprised that a wind-cap instrument has almost no loud-soft control.",
+    "An engineer places a mic to capture the reedy buzz of a rauschpfeife without harshness."
+   ]
+  },
+  {
+   "id": "ffd63fa8-572e-4b28-ae82-7bb72c595ab1",
+   "term": "Xiao breath tone",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The soft, airy, breath-rich timbre characteristic of the xiao (a Chinese end-blown notched bamboo flute), in which audible breath noise from the air jet striking the blowing edge blends with the fundamental to give a mellow, intimate, slightly hollow tone; it is cultivated as an expressive feature rather than treated as a flaw.",
+   "plain_english": "The xiao is a Chinese bamboo flute you blow across the top edge. Some of your breath is heard as soft, airy sound mixed in with the note. This gives it a gentle, close, breathy tone that players use on purpose.",
+   "purpose_function": "The term names an intended expressive quality of the xiao, distinguishing its deliberate breathy color from unwanted noise and describing how the instrument's intimate sound is produced.",
+   "practical_application": "An engineer close-mics a xiao to capture its delicate breath tone, choosing placement that keeps the airy character without turning it into harsh wind blasts, and avoids gating that would strip the intended breathiness.",
+   "category": "Instrument timbre",
+   "related_terms": [
+    "Edge tone",
+    "Air jet",
+    "Embouchure",
+    "Bansuri edge chiff",
+    "Breath noise"
+   ],
+   "common_mistakes": [
+    "Gating or de-noising away all the breath, which removes the xiao's intended character.",
+    "Confusing the instrument's breath tone with wind noise hitting the microphone.",
+    "Blowing too hard chasing volume, which turns the soft airy tone into a harsh, breathy blast."
+   ],
+   "scenario_contexts": [
+    "A film composer wants an intimate solo xiao with its natural breath tone up close.",
+    "An engineer positions the mic to keep the airy quality without wind blasts.",
+    "A player shapes the breath tone expressively in a slow, meditative piece."
+   ]
+  },
+  {
+   "id": "f58519f2-dfe7-49c6-939f-e8b447b9819a",
+   "term": "Dolby Atmos music mix",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "A music mix created in Dolby Atmos, an object-based, three-dimensional audio format in which sounds are carried as a channel-based bed (typically up to 7.1.2) together with individual audio objects that hold positional metadata. A renderer interprets that metadata to reproduce the mix over a range of speaker layouts, including overhead speakers, or as a binaural headphone signal.",
+   "plain_english": "A song mixed so sounds can sit all around and even above the listener, not just left and right. It works like moving each instrument to its own spot in a room, including the ceiling.",
+   "purpose_function": "It lets an engineer position and move sounds in three dimensions so one mix can adapt to many speaker setups or headphones, giving music a more spacious, enveloping presentation than stereo.",
+   "practical_application": "An engineer routes tracks as objects or into the bed, places them in a 3D space with spatial panners, monitors through the Dolby Atmos Renderer, and delivers an ADM BWF master for immersive streaming platforms.",
+   "category": "Immersive format",
+   "related_terms": [
+    "Immersive music mix",
+    "Immersive bus structure",
+    "Immersive bass management",
+    "Immersive mix session",
+    "Front-wall placement",
+    "Immersive depth"
+   ],
+   "common_mistakes": [
+    "Overusing overhead and surround speakers so the mix sounds gimmicky rather than musical",
+    "Not checking the binaural or stereo fold-down, which is how most listeners actually hear it",
+    "Assuming Atmos automatically improves a weak stereo mix instead of remixing thoughtfully",
+    "Failing to deliver a correct ADM BWF master for the target platform"
+   ],
+   "scenario_contexts": [
+    "Mixing an album for delivery to an immersive music streaming service",
+    "Re-mixing a stereo catalog track into Dolby Atmos",
+    "Checking an Atmos mix on headphones through the binaural render"
+   ]
+  },
+  {
+   "id": "21512fbc-9c38-4a20-8ed1-fa137a95671c",
+   "term": "Front-wall placement",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "The positioning of sound elements, or of the loudspeakers themselves, at the front plane of an immersive listening space, the wall carrying the left, center, and right (and any screen) channels. In an immersive music mix, front-wall placement anchors focal elements such as lead vocal, bass, and drums toward the front so they stay stable and easy to locate.",
+   "plain_english": "Putting the main sounds, like the lead singer, at the front of the room where the big speakers are. It is like keeping the singer on a stage in front of you instead of behind you.",
+   "purpose_function": "It keeps important, focal sounds anchored and easy to locate at the front, matching listener expectation and translating well when the mix folds down to stereo.",
+   "practical_application": "When building an immersive mix, an engineer places lead vocal and core rhythm elements as front objects or in the front bed channels, reserving surrounds and overheads for space, effects, and ambience.",
+   "category": "Object placement",
+   "related_terms": [
+    "Immersive depth",
+    "Dolby Atmos music mix",
+    "Immersive bus structure",
+    "Immersive music mix",
+    "Immersive channel verification",
+    "Immersive bass management"
+   ],
+   "common_mistakes": [
+    "Placing the lead vocal overhead or in the surrounds, giving an unstable image and poor stereo fold-down",
+    "Ignoring the center channel and losing a solid front anchor for the vocal",
+    "Assuming the front wall is only the center speaker rather than the left, center, and right plane"
+   ],
+   "scenario_contexts": [
+    "Anchoring a lead vocal at the front of a Dolby Atmos pop mix",
+    "Keeping kick, snare, and bass at the front for punch and focus",
+    "Confirming front-placed elements survive the binaural and stereo fold-down"
+   ]
+  },
+  {
+   "id": "f927f6c4-5b9f-445a-98a6-238afa2a4ce6",
+   "term": "Immersive bass management",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": null,
+   "definition": "In an immersive playback or monitoring system, the routing function that filters low-frequency content out of channels that cannot reproduce it and redirects that energy to one or more subwoofers, kept separate from the dedicated low-frequency effects (LFE) channel. A crossover, commonly around 80 to 120 Hz, splits the low band from the main channels so smaller speakers are protected and the low end is reproduced correctly.",
+   "plain_english": "A way of sending the deep bass to a subwoofer when the other speakers are too small to play it. It is like giving the heavy lifting to one strong speaker so the little ones do not strain.",
+   "purpose_function": "It gives consistent, full low-frequency reproduction and protects smaller monitors from overload, helping an immersive mix translate across systems with different speaker sizes.",
+   "practical_application": "In the Dolby Atmos Renderer or an immersive monitor controller, a technician sets the bass-management crossover and confirms that low frequencies from full-range channels route to the subwoofer while the LFE channel stays separate.",
+   "category": "Low-frequency management",
+   "related_terms": [
+    "Immersive bus structure",
+    "Immersive channel verification",
+    "Dolby Atmos music mix",
+    "Immersive mix session",
+    "Immersive music mix",
+    "Immersive depth"
+   ],
+   "common_mistakes": [
+    "Confusing bass management, a playback redirection, with the LFE channel, which is a discrete content channel",
+    "Routing musical low end into the LFE channel instead of leaving it in the full-range beds and objects",
+    "Assuming every playback system applies the same crossover, so the low-end balance is misjudged"
+   ],
+   "scenario_contexts": [
+    "Monitoring an Atmos mix on a rig with small overhead speakers plus a subwoofer",
+    "Setting the bass-management crossover in the renderer before a mix session",
+    "Checking translation between a full-range room and a bass-managed one"
+   ]
+  },
+  {
+   "id": "ccbc7df4-0e2a-4ea6-8d3b-1821936bd10f",
+   "term": "Immersive bus structure",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "The routing architecture of an immersive mix session, meaning the arrangement of channel buses, group and aux buses, bed sub-mixes, and object outputs that feed audio to an immersive renderer. It defines how individual tracks are grouped and assigned either to a channel-based bed or to discrete objects carrying positional metadata.",
+   "plain_english": "The plan for how all the tracks flow through the mixer and reach the immersive renderer. It is like a road map that decides which sounds travel together and which get their own lane.",
+   "purpose_function": "It organizes a complex three-dimensional mix so each sound is correctly assigned to a bed channel or an object and reaches the renderer in an orderly, repeatable way.",
+   "practical_application": "An engineer sets up group buses for drums or backing vocals, sends them to bed channels or object outputs, and routes everything to the renderer so panning and metadata are captured correctly.",
+   "category": "Signal routing",
+   "related_terms": [
+    "Immersive mix session",
+    "Immersive mix template",
+    "Immersive channel verification",
+    "Immersive bass management",
+    "Dolby Atmos music mix",
+    "Front-wall placement"
+   ],
+   "common_mistakes": [
+    "Routing the same source to both a bed channel and an object, causing doubled or phasey audio",
+    "Assigning too many objects and running out of object outputs for the renderer",
+    "Using disorganized bus names that make later channel verification slow and error-prone"
+   ],
+   "scenario_contexts": [
+    "Building the routing for a large multi-track Atmos session",
+    "Deciding which stems go to the bed and which become objects",
+    "Troubleshooting a signal that reaches the wrong renderer input"
+   ]
+  },
+  {
+   "id": "5f040606-dea6-4cf8-b11f-b41ce7a8027e",
+   "term": "Immersive channel verification",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": null,
+   "definition": "The process of confirming that every output of an immersive mix session maps to the correct renderer input, bed channel, or loudspeaker before and during mixing. It commonly uses test tones, noise, or solo checks to verify that each bed channel and object output plays from its intended location.",
+   "plain_english": "Checking that every sound comes out of the right speaker before you start mixing. It is like a sound check where you make sure the left speaker really is the left one.",
+   "purpose_function": "It catches wiring, routing, or assignment errors early so that objects and bed channels reproduce from their intended positions, keeping the spatial mix accurate.",
+   "practical_application": "A technician sends a tone or noise to each bed channel and object in turn, then listens or watches meters to confirm it appears at the correct speaker and renderer input.",
+   "category": "Verification",
+   "related_terms": [
+    "Immersive bus structure",
+    "Immersive mix session",
+    "Immersive bass management",
+    "Dolby Atmos music mix",
+    "Front-wall placement",
+    "Immersive mix template"
+   ],
+   "common_mistakes": [
+    "Skipping verification and discovering swapped surround channels late in the mix",
+    "Trusting channel labels instead of testing the actual speaker output",
+    "Not re-checking routing after changing the monitor layout or re-patching outputs"
+   ],
+   "scenario_contexts": [
+    "Commissioning a new Dolby Atmos monitoring room",
+    "Running a routing check before delivering a master",
+    "Re-verifying outputs after re-patching the monitor controller"
+   ]
+  },
+  {
+   "id": "195e2004-2e64-4c78-8f82-758310286f0c",
+   "term": "Immersive depth",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "The perceived front-to-back dimension of an immersive sound field, the sense of distance and layering between sounds placed near the listener and those placed farther away. It is produced with front-to-rear speaker positioning combined with level, early-reflection, reverberation, and high-frequency cues.",
+   "plain_english": "The feeling of some sounds being close and others far away in a mix. It is like looking down a street where near things seem big and far things seem small, but for your ears.",
+   "purpose_function": "It adds realism and separation to an immersive mix, letting the listener sense space between elements instead of hearing everything at one distance.",
+   "practical_application": "An engineer creates depth by panning elements toward the rear, lowering their level, rolling off highs, and adding reverberation so they sit behind the front-anchored sounds.",
+   "category": "Spatial attribute",
+   "related_terms": [
+    "Front-wall placement",
+    "Immersive music mix",
+    "Dolby Atmos music mix",
+    "Immersive bus structure",
+    "Immersive mix session",
+    "Immersive bass management"
+   ],
+   "common_mistakes": [
+    "Confusing depth, the front-to-back dimension, with mix width or height",
+    "Using only level to imply distance while ignoring reflections and reverberation",
+    "Adding so much reverberation for depth that the mix loses clarity"
+   ],
+   "scenario_contexts": [
+    "Placing background vocals behind the lead in an Atmos mix",
+    "Creating a sense of a room around a live immersive recording",
+    "Layering pads far back while keeping drums up front"
+   ]
+  },
+  {
+   "id": "3e885d0d-7334-4495-ae1f-c2c1e4101e43",
+   "term": "Immersive mix session",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "A digital audio workstation session configured for immersive mixing, with tracks routed to bed channels and objects, spatial panners inserted, and outputs connected to an immersive renderer for monitoring and mastering. It holds the full arrangement, routing, automation, and metadata needed to produce an immersive mix.",
+   "plain_english": "The project file in the mixing software set up to build a surround-and-height mix. It is like a workshop already laid out with the right tools before you start the job.",
+   "purpose_function": "It provides the working environment where all tracks, routing, panning, and automation for an immersive mix live together and connect to the renderer.",
+   "practical_application": "An engineer opens or builds the session, assigns tracks to beds or objects, automates 3D panning, and monitors through the renderer while mixing.",
+   "category": "Session setup",
+   "related_terms": [
+    "Immersive mix template",
+    "Immersive bus structure",
+    "Immersive channel verification",
+    "Dolby Atmos music mix",
+    "Immersive music mix",
+    "Immersive bass management"
+   ],
+   "common_mistakes": [
+    "Starting from a plain stereo session without proper immersive routing",
+    "Not saving the setup as a reusable template for future projects",
+    "Letting the DAW session and renderer settings fall out of sync"
+   ],
+   "scenario_contexts": [
+    "Setting up a new Dolby Atmos project",
+    "Converting a stereo session for an immersive remix",
+    "Recalling a saved session to revise an immersive mix"
+   ]
+  },
+  {
+   "id": "fa652a78-92e9-4b55-a6fb-e69e151cf89a",
+   "term": "Immersive mix template",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "A pre-built, reusable DAW session file that contains the standard routing, bed and object output assignments, bus structure, and monitoring setup for an immersive mix. Loading it lets an engineer begin a new immersive project without rebuilding the signal flow each time.",
+   "plain_english": "A ready-made starting file for immersive mixes with the wiring already done. It is like a blank form that already has all the boxes and lines in the right place.",
+   "purpose_function": "It saves setup time and enforces a consistent, error-free routing structure across immersive projects.",
+   "practical_application": "An engineer loads the template, imports or records tracks into its pre-routed beds and object slots, and begins mixing immediately.",
+   "category": "Session setup",
+   "related_terms": [
+    "Immersive mix session",
+    "Immersive bus structure",
+    "Immersive channel verification",
+    "Dolby Atmos music mix",
+    "Immersive music mix",
+    "Front-wall placement"
+   ],
+   "common_mistakes": [
+    "Using an outdated template whose routing no longer matches the current renderer setup",
+    "Not adjusting the object count to suit the size of the project",
+    "Assuming the template's monitor layout matches the actual room"
+   ],
+   "scenario_contexts": [
+    "Standardizing Atmos setups across a studio's engineers",
+    "Quickly starting a new immersive project from a known-good file",
+    "Onboarding an assistant with a consistent routing structure"
+   ]
+  },
+  {
+   "id": "6dce7214-9b3c-4810-9dcc-c2764a840e74",
+   "term": "Immersive music mix",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "A music mix produced in an immersive, three-dimensional audio format such as Dolby Atmos, Sony 360 Reality Audio, or Auro-3D, that places sounds around and above the listener using surround and height channels or object-based positioning. It is monitored and delivered through a format-specific renderer or encoder rather than a two-channel stereo bus.",
+   "plain_english": "A song mixed to surround the listener with sound from all sides and overhead. It is like sitting inside the band instead of hearing them from across the room.",
+   "purpose_function": "It gives music a spacious, enveloping presentation and supports playback on immersive systems and headphones, going beyond the left-right limits of stereo.",
+   "practical_application": "An engineer distributes vocals, instruments, and effects across the surround and height field, monitors on an immersive system, and exports a format-specific master for streaming.",
+   "category": "Immersive format",
+   "related_terms": [
+    "Dolby Atmos music mix",
+    "Immersive mix session",
+    "Immersive depth",
+    "Front-wall placement",
+    "Immersive bus structure",
+    "Immersive bass management"
+   ],
+   "common_mistakes": [
+    "Treating it as just a louder or wider stereo mix",
+    "Ignoring how it folds down to stereo or binaural for most listeners",
+    "Overusing height and surround so the result sounds unnatural"
+   ],
+   "scenario_contexts": [
+    "Delivering an album in both Dolby Atmos and 360 Reality Audio",
+    "Remixing a catalog track for immersive streaming",
+    "Checking the binaural headphone fold-down of an immersive mix"
+   ]
+  },
+  {
+   "id": "8748f017-be02-4357-8d72-82822ac4b846",
+   "term": "Immersive reference level",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": null,
+   "definition": "The standardized, calibrated sound-pressure level at which an immersive (object-based) program is monitored, fixing the relationship between a given digital signal level and the acoustic level at the mix position. In Dolby Atmos cinema practice each full-range screen channel is aligned to 85 dB SPL (C-weighted, slow) using band-limited pink noise at -20 dBFS, while near-field and home or music rooms calibrate every speaker to a consistent, usually lower, per-speaker reference.",
+   "plain_english": "This is the loudness a room is set to when mixing surround-with-height sound. The engineer plays a test noise and adjusts each speaker so a set signal makes a set volume. When every studio uses the same reference, a mix sounds the same everywhere. It is like tuning all the pianos to the same pitch.",
+   "purpose_function": "It gives a fixed link between the signal level on the meters and real loudness in the room, so mixes made in different rooms match and translate to cinemas, home systems, and streaming.",
+   "practical_application": "A technician calibrates the room with an SPL meter and -20 dBFS pink noise, setting each speaker to the target level before an immersive mix, and rechecks after any monitor or gain change.",
+   "category": "Monitoring & calibration",
+   "related_terms": [
+    "Monitor calibration",
+    "Pink noise",
+    "SPL meter",
+    "Loudness normalization",
+    "Bass management",
+    "Dolby Atmos"
+   ],
+   "common_mistakes": [
+    "Calibrating with A-weighting or fast metering instead of C-weighted, slow, which reports the wrong level",
+    "Setting the reference by ear instead of using pink noise and an SPL meter",
+    "Assuming the cinema 85 dB per-channel reference applies unchanged to a small near-field room",
+    "UNSAFE: Monitoring for long sessions much above about 85 dBA risks hearing damage; follow OSHA and NIOSH exposure limits and take regular breaks"
+   ],
+   "scenario_contexts": [
+    "Calibrating a Dolby Atmos music room before a mix so it matches other studios",
+    "Aligning a home theater's speakers to reference for accurate playback",
+    "Troubleshooting why a mix plays too loud or too quiet on another system",
+    "Setting monitoring level so metering lines up with delivery loudness targets"
+   ]
+  },
+  {
+   "id": "7e4611ed-2c30-4be9-903b-d1089f823b8f",
+   "term": "Immersive stem structure",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "The organized set of grouped submixes (stems) exported from an immersive project in a way that preserves its bed-and-object layout, so the program can be re-balanced, re-versioned, mastered, or archived without reopening the full session. In Dolby Atmos work these are typically object-audio stems or multichannel re-renders that retain the spatial layout, unlike flat stereo or 5.1 stems.",
+   "plain_english": "A stem is a group of tracks bounced into one file, like all the drums together. In surround-with-height sound, the stems also keep where each sound sits in the room. This lets someone remix or fix the show later without opening the whole project. It is like keeping labeled boxes instead of one big pile.",
+   "purpose_function": "It lets a mix be handed off, re-versioned for trailers, languages, or formats, mastered, or archived while keeping the immersive positioning intact.",
+   "practical_application": "An engineer delivers dialogue, music, and effects as immersive re-renders or grouped object stems so a mastering house or another mixer can adjust balances and still output every required downmix.",
+   "category": "Delivery & mastering",
+   "related_terms": [
+    "Bed (Dolby Atmos)",
+    "Audio object",
+    "Re-render",
+    "Stem mastering",
+    "ADM BWF",
+    "Downmix"
+   ],
+   "common_mistakes": [
+    "Flattening immersive stems to stereo or 5.1 too early, losing the height and object placement",
+    "Exporting stems without their spatial layout or metadata, so positions are lost on import",
+    "Mismatched loudness or bus processing across stems, so the summed stems no longer equal the master",
+    "Naming or grouping stems inconsistently, which makes clean re-assembly error-prone"
+   ],
+   "scenario_contexts": [
+    "Delivering dialogue, music, and effects stems for a Dolby Atmos film master",
+    "Sending object stems to a mastering engineer for an immersive music release",
+    "Creating trailer or foreign-language versions from immersive stems",
+    "Archiving an immersive project for future re-versioning"
+   ]
+  },
+  {
+   "id": "a8b92ac4-2a6c-49d1-b917-330617dd3f7e",
+   "term": "Immersive translation check",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": null,
+   "definition": "A quality-control step in which an immersive mix is auditioned through the various renderings it will produce - binaural headphone fold-down, stereo, and multichannel downmixes such as 5.1 and 7.1, plus different speaker layouts - to confirm that balance, dialogue intelligibility, and spatial intent hold up on each.",
+   "plain_english": "This is a check to make sure a surround-with-height mix still sounds right on other systems. The engineer listens to the headphone, stereo, and smaller surround versions the format makes automatically. The goal is that nothing important gets lost or too loud on any of them. It is like checking a photo on both a phone and a laptop.",
+   "purpose_function": "It catches cases where the automatic downmixes or binaural fold-downs bury dialogue, shift balance, or lose height content, so the program works for every listener.",
+   "practical_application": "Before delivery, a technician switches the renderer through binaural, stereo, and 5.1 re-renders, checks on headphones and a soundbar, and adjusts object levels or downmix settings until each version translates.",
+   "category": "Quality control",
+   "related_terms": [
+    "Downmix",
+    "Binaural render",
+    "Re-render",
+    "Fold-down",
+    "Dialogue intelligibility",
+    "Loudness normalization"
+   ],
+   "common_mistakes": [
+    "Only checking the full immersive layout and never auditioning the stereo or binaural fold-down",
+    "Ignoring downmix coefficients, so the 5.1 or stereo version clips or loses level",
+    "Assuming height content survives a fold-down when it is usually attenuated",
+    "Not checking dialogue level on small, mono, or phone playback"
+   ],
+   "scenario_contexts": [
+    "Final QC of a Dolby Atmos music track before a streaming release",
+    "Checking a film mix's 5.1 and stereo downmixes for dialogue clarity",
+    "Verifying a mix on headphones through the binaural render",
+    "Testing playback on a consumer soundbar and TV speakers"
+   ]
+  },
+  {
+   "id": "3cd93ae4-9765-42db-897e-880dbad6f9b9",
+   "term": "Listener-relative placement",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "Positioning of sound sources defined relative to the listener's position and orientation (egocentric) rather than to fixed room coordinates, so a source keeps the same perceived direction as the layout, or the listener's head, changes. In object-based and VR/AR spatial audio this contrasts with allocentric, room-anchored placement.",
+   "plain_english": "This means placing a sound based on where the listener is, not where the walls are. If the listener turns, or the speakers change, the sound stays in the same spot around them. Head-tracked headphone audio works this way. It is like a sign that always turns to face you.",
+   "purpose_function": "It keeps spatial intent consistent across different speaker layouts and supports head-tracked and binaural playback, where sources must move relative to the listener.",
+   "practical_application": "When mixing for headphones or VR, a technician places objects in listener-relative space so head-tracking rotates the scene correctly; in Atmos, room-relative object coordinates are rendered to whatever layout the listener actually has.",
+   "category": "Spatial placement",
+   "related_terms": [
+    "Audio object",
+    "Head tracking",
+    "Binaural render",
+    "Egocentric coordinates",
+    "Allocentric coordinates",
+    "Object panning"
+   ],
+   "common_mistakes": [
+    "Confusing listener-relative (egocentric) placement with room-relative (allocentric) placement",
+    "Assuming head-locked and listener-relative are the same thing",
+    "Placing critical sounds so head-tracking swings them behind the listener, where they are hard to locate",
+    "Forgetting that speaker playback still renders positions to the actual room layout"
+   ],
+   "scenario_contexts": [
+    "Mixing head-tracked binaural audio for VR or spatial-audio earphones",
+    "Deciding whether a sound should follow the listener or stay fixed to the scene",
+    "Adapting a mix for many different consumer speaker layouts",
+    "Keeping a narrator front-and-center as the viewer looks around"
+   ]
+  },
+  {
+   "id": "2c9f499a-df81-4fda-b88a-029bee334f4b",
+   "term": "Overhead placement",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "Positioning of sound in the height (top or ceiling) layer of an immersive layout - the overhead speakers above the listener - to place or move sources vertically, such as rain, aircraft, or open-air ambience. In Dolby Atmos these correspond to the top or height speakers (for example Top Front, Top Middle, and Top Rear).",
+   "plain_english": "This means putting a sound above the listener, in the ceiling speakers. It suits things that belong overhead, like rain, a plane, or open-sky ambience. Height speakers are what make surround-with-height feel like a dome of sound. It is like hanging a speaker on the ceiling so sound comes from above.",
+   "purpose_function": "The height layer adds the vertical dimension that separates immersive audio from flat surround, giving a sense of overhead space and elevation.",
+   "practical_application": "A mixer pans ambience, weather, or fly-over effects into the top speakers, or raises an object's height coordinate, to lift them off the ear-level plane.",
+   "category": "Spatial placement",
+   "related_terms": [
+    "Height channel",
+    "Top speaker",
+    "Audio object",
+    "Elevation",
+    "Ambience layer",
+    "Bed (Dolby Atmos)"
+   ],
+   "common_mistakes": [
+    "Overusing the height layer so effects feel like a gimmick instead of natural",
+    "Putting key elements only overhead, where localization is weaker for many listeners",
+    "Assuming overhead content survives a stereo or 5.1 fold-down, when it is usually cut or lost",
+    "Confusing overhead height speakers with rear surround speakers at ear level"
+   ],
+   "scenario_contexts": [
+    "Placing rain or open-air ambience in the top speakers of an Atmos mix",
+    "Flying an effect from the front, up overhead, then to the rear",
+    "Adding overhead reverb for the feel of a tall room",
+    "Positioning a helicopter pass above the audience"
+   ]
+  },
+  {
+   "id": "e9aaa876-c20b-428c-847a-d36e5639f6f2",
+   "term": "Rear-wall placement",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "Positioning of a sound at the rear of the immersive listening space - the rear surround position behind the listener - either by panning to the rear surround speakers or by setting an object's coordinates to the back of the room. It completes the surround field behind the listener.",
+   "plain_english": "This means placing a sound behind the listener, at the back of the room. The back speakers handle sounds coming from behind, like a crowd or a door shutting behind you. It helps wrap the sound all the way around. It is like someone speaking to you from the doorway at your back.",
+   "purpose_function": "Rear placement completes the surround field behind the listener, supporting envelopment, off-screen effects, and front-to-back movement.",
+   "practical_application": "A mixer sends ambience, off-screen effects, or trailing reverb to the rear surrounds, or sets an object to the rear, to build depth behind the audience.",
+   "category": "Spatial placement",
+   "related_terms": [
+    "Surround channel",
+    "Rear surround",
+    "Audio object",
+    "Envelopment",
+    "Side-wall placement",
+    "Object panning"
+   ],
+   "common_mistakes": [
+    "Placing dialogue or lead vocals in the rear, where they distract and pull focus off the screen",
+    "Confusing rear surrounds with side surrounds when routing",
+    "Overloading the rears so the image feels unbalanced front-to-back",
+    "Assuming rear content translates to a stereo or soundbar downmix"
+   ],
+   "scenario_contexts": [
+    "Placing audience or crowd ambience behind the listener",
+    "Moving an effect from front to back across the room",
+    "Adding rear reverb returns for depth",
+    "Positioning an off-screen sound behind the viewer"
+   ]
+  },
+  {
+   "id": "6e906398-1bc8-4d68-948b-1d0dbde78aa7",
+   "term": "Side-wall placement",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "Positioning of a sound at the sides of the immersive listening space - the left and right side surround positions beside the listener - by panning to the side surround speakers or setting an object's coordinates to the side of the room. Side placement bridges the front and rear and supports lateral movement and width.",
+   "plain_english": "This means placing a sound to the left or right of the listener, from the side speakers. It fills the space between the front and back so sounds can move smoothly around. It also widens the sound picture. It is like someone talking to you from the seat right next to you.",
+   "purpose_function": "Side surrounds provide the lateral field that links front and rear, enabling smooth pans around the listener and a wider, more enveloping image.",
+   "practical_application": "A mixer routes passing effects, width, and ambience to the side surrounds, or sets objects to the sides, to move sounds along the walls and broaden the stage.",
+   "category": "Spatial placement",
+   "related_terms": [
+    "Surround channel",
+    "Side surround",
+    "Audio object",
+    "Envelopment",
+    "Rear-wall placement",
+    "Object panning"
+   ],
+   "common_mistakes": [
+    "Confusing side surrounds with rear surrounds when assigning speakers",
+    "Leaving a gap in a pan because side speakers are missing or misrouted in a smaller layout",
+    "Placing lead elements at the sides, which hurts the front image and dialogue focus",
+    "Assuming side content survives a fold-down to stereo"
+   ],
+   "scenario_contexts": [
+    "Panning a car or effect smoothly front to back along the side wall",
+    "Adding lateral ambience for width",
+    "Placing a sound beside the listener for a specific scene",
+    "Widening a music mix using the side surrounds"
+   ]
+  },
+  {
+   "id": "96157096-60f7-4ebc-88dc-6dc338a45d95",
+   "term": "Spatial music mix",
+   "topic": "Immersive Formats & Delivery",
+   "difficulty": "intermediate",
+   "definition": "A music mix produced and delivered in an immersive, spatial-audio format such as Dolby Atmos Music or Sony 360 Reality Audio, in which individual elements are placed in a three-dimensional field around and above the listener rather than only across a stereo pair. It is authored with beds and objects and rendered to the listener's playback layout or to a binaural headphone fold-down.",
+   "plain_english": "This is a song mixed so the parts sit all around you, and even above you, not just left and right. On headphones or the right speakers it can feel like being inside the music. Formats like Dolby Atmos Music make this. It is like moving from a flat photo to standing inside the scene.",
+   "purpose_function": "It gives listeners a more enveloping, three-dimensional music experience and lets artists place and move elements in space, delivered to many playback systems from one master.",
+   "practical_application": "A mix engineer places vocals, instruments, and reverb as objects and beds in a spatial workspace, monitors on a calibrated immersive rig, and delivers a master that streaming services fold down to each listener's device.",
+   "category": "Immersive format",
+   "related_terms": [
+    "Dolby Atmos",
+    "Audio object",
+    "Bed (Dolby Atmos)",
+    "Binaural render",
+    "Spatial audio",
+    "Downmix"
+   ],
+   "common_mistakes": [
+    "Treating it as just a wider stereo mix instead of using the full 3D field with intent",
+    "Placing lead vocals far from center or overhead, which hurts focus and translation",
+    "Ignoring the binaural and stereo fold-downs that most listeners actually hear",
+    "Not calibrating the room to reference before mixing"
+   ],
+   "scenario_contexts": [
+    "Producing a Dolby Atmos Music release for streaming platforms",
+    "Remixing a legacy stereo album into spatial audio",
+    "Mixing a live concert recording in an immersive format",
+    "Preparing a binaural version for headphone listeners"
+   ]
+  },
+  {
+   "id": "393f3056-f2f1-4d6b-bf8b-70aab8634c45",
+   "term": "Bed assignment",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The routing of an audio signal to a bed — the channel-based portion of an object-based mix that feeds fixed loudspeaker positions such as a 7.1.2 layout. Assigning a track to a bed makes it play back from set speaker channels rather than carrying dynamic 3D object metadata.",
+   "plain_english": "Sending a sound to the bed, which is the set of fixed speakers in a surround mix. It is like telling a sound to always come from the left speaker, instead of moving around the room.",
+   "purpose_function": "Beds provide a stable channel-based foundation for ambience, music and other content that does not need to move, so mixers do not have to author separate position data for every element.",
+   "practical_application": "A technician assigns steady elements like room tone, reverb returns and music stems to the bed, reserving objects for sounds that must move or sit in a precise spot.",
+   "category": "Signal routing",
+   "related_terms": [
+    "Object assignment",
+    "Bed panning",
+    "Bed-based music mix",
+    "Bed monitoring mode",
+    "Object-based audio",
+    "7.1.2 bed"
+   ],
+   "common_mistakes": [
+    "Putting sounds that need to move or sit overhead in the bed, where they are locked to fixed speaker channels.",
+    "Assuming a bed always has height channels; a 5.1 or 7.1 bed has no top layer.",
+    "Duplicating the same signal in both a bed and an object, causing doubled level and comb filtering."
+   ],
+   "scenario_contexts": [
+    "Assigning music stems and ambience to a 7.1.2 bed in a Dolby Atmos music session.",
+    "Routing reverb returns to the bed so they wrap around the room from fixed speakers.",
+    "Building a broadcast mix where dialogue stays in the bed's center channel."
+   ]
+  },
+  {
+   "id": "382db387-e160-4403-9055-ebf2db7c8ab1",
+   "term": "Bed monitoring mode",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "A monitoring mode that isolates the bed — the channel-based layer of an immersive mix — so the engineer hears only the content routed to fixed loudspeaker feeds, separate from the objects. It is used to check the balance and imaging of the bed on its own.",
+   "plain_english": "A way to listen to just the fixed-speaker part of a surround mix by itself. It is like soloing one group of instruments so you can hear only them and check they sound right.",
+   "purpose_function": "Monitoring the bed alone helps the engineer confirm the channel-based foundation is balanced and phase-correct before the moving object sounds are added back in.",
+   "practical_application": "When a mix sounds cluttered, a technician switches to bed-only monitoring to hear whether the problem lives in the static bed content or in the objects.",
+   "category": "Monitoring",
+   "related_terms": [
+    "Bed assignment",
+    "Bed panning",
+    "Object assignment",
+    "Re-render",
+    "Downmix",
+    "Object-based audio"
+   ],
+   "common_mistakes": [
+    "Mistaking bed-only monitoring for the full mix and setting levels against an incomplete picture.",
+    "Forgetting to return to full monitoring, then exporting while still soloed to the bed.",
+    "Assuming the bed layer alone shows how the mix renders on smaller speaker layouts."
+   ],
+   "scenario_contexts": [
+    "Soloing the bed to check the surround balance of music stems in an Atmos session.",
+    "Isolating the bed to trace an unwanted low-frequency buildup to the LFE channel.",
+    "Comparing bed-only and full playback to judge how much of the mix relies on objects."
+   ]
+  },
+  {
+   "id": "270c7e35-5d5e-4286-90b1-db19351acbd1",
+   "term": "Bed panning",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The positioning of a source within a bed by distributing its level across the bed's fixed loudspeaker channels, as in traditional surround panning. Unlike object panning, the result is tied to the bed's discrete speaker feeds rather than a free 3D coordinate.",
+   "plain_english": "Placing a sound among the fixed surround speakers by sending more of it to some speakers than others. It works like a normal surround pan knob, not a dot you drag anywhere in the room.",
+   "purpose_function": "Bed panning lets an engineer place channel-based content in the surround field without turning it into an object, keeping the mix simple and predictable across playback systems.",
+   "practical_application": "A technician uses bed panning to spread a stereo synth pad across the front and surround bed channels, or to seat a backing vocal slightly to one side.",
+   "category": "Panning",
+   "related_terms": [
+    "Object panning",
+    "Bed assignment",
+    "Height panning",
+    "Surround panning",
+    "Bed-based music mix",
+    "7.1.2 bed"
+   ],
+   "common_mistakes": [
+    "Expecting bed panning to place a sound overhead when the bed has no height channels.",
+    "Confusing bed panning with object panning; bed pans snap to speaker feeds, not free positions.",
+    "Hard-panning content fully into one surround channel so it vanishes on layouts missing that speaker."
+   ],
+   "scenario_contexts": [
+    "Panning a rhythm guitar into the left surround channels of a 7.1.2 bed.",
+    "Spreading crowd ambience evenly across the bed's surround speakers.",
+    "Seating a stereo keyboard part across the front bed channels of a music mix."
+   ]
+  },
+  {
+   "id": "5dcdf5c6-f7a6-431b-9571-837fac3780fc",
+   "term": "Bed-based music mix",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "An immersive music mix built mainly on the channel-based bed, with most elements placed in the bed layer (for example 7.1.2) and few or no discrete objects. It contrasts with an object-based approach that assigns many individual elements to moving objects.",
+   "plain_english": "An immersive music mix where most sounds live in the fixed surround speakers. Few or none are separate moving objects. It is like seating a band in set spots, not letting each player roam the room.",
+   "purpose_function": "A bed-based approach keeps sessions simple and translates predictably across playback systems, which suits music where instruments hold steady positions rather than moving.",
+   "practical_application": "An engineer mixing an album in Atmos may keep drums, bass and pads in the bed and use objects only for lead vocals or special effects.",
+   "category": "Mix approach",
+   "related_terms": [
+    "Bed assignment",
+    "Object-based audio",
+    "Bed panning",
+    "7.1.2 bed",
+    "Height panning",
+    "Downmix"
+   ],
+   "common_mistakes": [
+    "Assuming a bed-based mix cannot use height; a 7.1.2 bed includes two overhead channels.",
+    "Overusing the bed so nothing moves, wasting the format's ability to place discrete sounds.",
+    "Ignoring how the bed folds down to stereo and surround, leading to poor translation on smaller systems."
+   ],
+   "scenario_contexts": [
+    "Mixing a jazz record in Atmos with the ensemble seated in a 7.1.2 bed.",
+    "Delivering an immersive music master that must fold down cleanly to 5.1 and stereo.",
+    "Choosing a bed-based workflow to speed up mixing a large back catalog."
+   ]
+  },
+  {
+   "id": "c7c96c95-21ce-4bab-bb28-f0d724e960cf",
+   "term": "Height panning",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "Panning that moves a source in the vertical dimension, raising or lowering its apparent elevation toward the overhead (height) loudspeakers. It controls the elevation component of a position, the axis that distinguishes immersive audio from horizontal-only surround.",
+   "plain_english": "Moving a sound up or down so it seems to come from above you. It is like lifting a sound from ear level up to the ceiling.",
+   "purpose_function": "Height panning adds the vertical dimension that makes a mix immersive, letting engineers place sounds overhead for effects, ambience or a sense of space that flat surround cannot give.",
+   "practical_application": "A technician uses height panning to lift rain, applause or a synth wash into the top speakers, or to raise a helicopter as it flies overhead.",
+   "category": "Panning",
+   "related_terms": [
+    "Object panning",
+    "Bed panning",
+    "Object azimuth",
+    "Object distance",
+    "Overhead speakers",
+    "Elevation"
+   ],
+   "common_mistakes": [
+    "Pushing everything overhead, which tires listeners and weakens the main front image.",
+    "Assuming height panning works on any system; playback with no top speakers folds the height content down.",
+    "Confusing elevation (height) with azimuth (horizontal direction) when setting object position."
+   ],
+   "scenario_contexts": [
+    "Raising ambience and reverb into the overhead speakers of an Atmos music mix.",
+    "Flying a sound effect from the floor to the ceiling in a film scene.",
+    "Placing a backing choir slightly above the band to open up the vertical image."
+   ]
+  },
+  {
+   "id": "e2d1e31d-cd18-40df-9070-8968db5084c6",
+   "term": "Object assignment",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The routing of an audio track to an object input in an object-based renderer, so it is carried as an individual element with its own dynamic 3D position metadata rather than as fixed bed channels. In Dolby Atmos, inputs assigned as objects occupy the object slots above the bed channels.",
+   "plain_english": "Turning a track into a movable object the system can place anywhere in the room. It is like giving one sound its own GPS so it can travel around the listener.",
+   "purpose_function": "Object assignment lets a sound be positioned and moved freely in three dimensions and rendered to whatever speaker layout is present, which is the core advantage of object-based audio.",
+   "practical_application": "A technician assigns a lead vocal, a flying effect or any element that must move or sit precisely to an object, then automates its position with a panner.",
+   "category": "Signal routing",
+   "related_terms": [
+    "Bed assignment",
+    "Object panning",
+    "Object azimuth",
+    "Object distance",
+    "Object disable",
+    "Object-based audio"
+   ],
+   "common_mistakes": [
+    "Assigning steady, non-moving content to objects and creating needless metadata and session complexity.",
+    "Running out of object slots by making everything an object instead of using the bed.",
+    "Forgetting to set a position, leaving a new object defaulted to the center of the room."
+   ],
+   "scenario_contexts": [
+    "Assigning a lead vocal to an object so it can be placed precisely in front.",
+    "Making a sound effect an object so it can fly across and above the room.",
+    "Converting a bed track to an object when a specific element needs to move."
+   ]
+  },
+  {
+   "id": "889f22e2-2857-47c2-bf8b-8e68b6de65b9",
+   "term": "Object azimuth",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The horizontal angle of an audio object's position, describing its left-right and front-back direction around the listener in the horizontal plane. In the ADM (ITU-R BS.2076) polar coordinate system, azimuth is expressed in degrees with 0° at front center.",
+   "plain_english": "The direction a sound comes from around you, like whether it is in front, to the side, or behind. Think of it as where the sound sits on a clock face drawn around your head.",
+   "purpose_function": "Azimuth is one of the coordinates the renderer needs to place an object, fixing its horizontal direction so the sound images from the correct point around the listener.",
+   "practical_application": "A technician sets or automates an object's azimuth to move a sound from front to side, for example sweeping an effect from center to the left surround.",
+   "category": "Object metadata",
+   "related_terms": [
+    "Object distance",
+    "Height panning",
+    "Object assignment",
+    "Object panning",
+    "Elevation",
+    "Object-based audio"
+   ],
+   "common_mistakes": [
+    "Confusing azimuth (horizontal angle) with elevation (height), so sounds end up in the wrong plane.",
+    "Assuming every renderer uses the same zero point and sign for azimuth without checking the convention.",
+    "Automating azimuth so fast that the sound jumps unnaturally between speakers."
+   ],
+   "scenario_contexts": [
+    "Setting an object's azimuth to seat a lead vocal at front center.",
+    "Automating azimuth to pan a sound effect around the horizontal circle.",
+    "Matching an object's azimuth to on-screen action in a film mix."
+   ]
+  },
+  {
+   "id": "7f530f80-064c-4be6-b463-5fb35e554542",
+   "term": "Object disable",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "Turning off an object so the renderer no longer reproduces it as an active positioned element; the object's audio and position metadata are made inactive. Disabling silences or bypasses an object without deleting its assignment or automation.",
+   "plain_english": "Switching an object off so it stops playing and moving in the mix. It is like muting one moving sound while leaving its settings in place for later.",
+   "purpose_function": "Disabling an object lets an engineer silence or bypass a single element, or free its slot, without losing its routing and position data.",
+   "practical_application": "A technician disables an object to audition the mix without it, or to reclaim an object slot when the count runs high, then re-enables it later.",
+   "category": "Signal routing",
+   "related_terms": [
+    "Object assignment",
+    "Bed assignment",
+    "Object panning",
+    "Object azimuth",
+    "Object distance",
+    "Object-based audio"
+   ],
+   "common_mistakes": [
+    "Disabling an object instead of muting the source track, then forgetting it is off at export.",
+    "Assuming a disabled object still contributes to downmixes and re-renders; it does not.",
+    "Deleting an object when only a temporary disable was needed, losing its position automation."
+   ],
+   "scenario_contexts": [
+    "Disabling an effect object to A/B the mix with and without it.",
+    "Turning off unused objects to stay within the renderer's object limit.",
+    "Bypassing a problem object while troubleshooting a rendering error."
+   ]
+  },
+  {
+   "id": "d86db8cf-c23d-448b-80d4-f34ee497fe51",
+   "term": "Object distance",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The distance (radius) component of an audio object's position, describing how far the object sits from the listening position alongside its azimuth and elevation. In the ADM (ITU-R BS.2076) polar model, distance is normalized, where 1 corresponds to the reference loudspeaker radius.",
+   "plain_english": "How near or far a sound seems from the listener, on top of which direction it comes from. It is like saying a sound is right next to you versus far across the room.",
+   "purpose_function": "Distance gives the renderer the depth coordinate, letting it push a sound toward or away from the listener so the mix has a sense of near and far, not just direction.",
+   "practical_application": "A technician adjusts object distance to pull a whisper close to the listener or send a call far off, and may automate it to make a source approach or recede.",
+   "category": "Object metadata",
+   "related_terms": [
+    "Object azimuth",
+    "Height panning",
+    "Object assignment",
+    "Object panning",
+    "Divergence",
+    "Object-based audio"
+   ],
+   "common_mistakes": [
+    "Assuming every playback system reproduces distance the same way; renderers interpret it differently.",
+    "Confusing distance with level; distance is a position coordinate, not just a volume change.",
+    "Leaving distance at its default and losing the depth the format can provide."
+   ],
+   "scenario_contexts": [
+    "Pulling a narrator's voice close by setting a short object distance.",
+    "Automating distance so a vehicle sounds like it approaches from far away.",
+    "Placing crowd sounds at a greater distance to sit them behind the main action."
+   ]
+  },
+  {
+   "id": "e2451883-2106-4a57-b8c0-709b84e0f3f5",
+   "term": "Object divergence",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "A per-object panner parameter that sets the attenuation curve used as an object is positioned along an axis (front x-axis, rear x-axis, front/rear y-axis, and height z-axis), governing how sharply the image collapses onto the nearest speaker versus spreading across neighboring speakers. Higher divergence widens and softens the source; lower divergence produces a tighter, more localized image.",
+   "plain_english": "It controls how tightly a sound is focused on one speaker or spread across nearby ones. Low values keep the sound in a tight spot; high values let it bleed into the speakers around it.",
+   "purpose_function": "It lets a mixer trade pinpoint localization for a wider, smoother spatial image and shape how an object blends into surrounding speakers as it moves through the room.",
+   "practical_application": "A technician raises divergence to soften a hard-panned object so it does not jump speaker to speaker, or lowers it for a sharply localized effect such as a passing car.",
+   "category": "Object Panning",
+   "related_terms": [
+    "Object size",
+    "Object panning",
+    "Object elevation",
+    "Speaker snap",
+    "Object linking"
+   ],
+   "common_mistakes": [
+    "Confusing divergence with object size; divergence shapes the attenuation/spread curve per axis while size sets the physical spread area of the object.",
+    "Assuming maximum divergence always sounds better; too much spread smears localization and weakens the intended image.",
+    "Forgetting that divergence is set independently per axis (front, rear, front/rear, height), so one axis can behave differently from another."
+   ],
+   "scenario_contexts": [
+    "Widening a synth pad object so it fills the room without collapsing onto the nearest speaker.",
+    "Tightening divergence on a sound-effect object that must localize precisely to a screen position in a film mix.",
+    "Adjusting height divergence so an overhead object spreads smoothly across the ceiling array."
+   ]
+  },
+  {
+   "id": "9dc00d52-99bf-4d96-a203-afd92a09176b",
+   "term": "Object elevation",
+   "topic": "Object & Bed Panning / Authoring",
+   "difficulty": null,
+   "definition": "The vertical (z-axis / height) position of an audio object in the three-dimensional Dolby Atmos space, measured from the listener plane up toward the overhead speakers. In object panners it can be set manually or driven automatically by predefined elevation patterns (for example Wedge, Ceiling, Sphere, Cup, Tunnel, Half-Pipe, Ridge) that make height follow a fixed curve as the object moves in the horizontal plane.",
+   "plain_english": "It is how high off the floor a sound sits, from ear level up to the ceiling speakers. You can set the height by hand or let a preset path raise and lower it as the sound moves.",
+   "purpose_function": "It adds the vertical dimension that separates immersive object audio from flat surround, letting sounds be placed overhead or lifted off the listener plane.",
+   "practical_application": "A mixer raises a helicopter object toward the ceiling speakers, or applies a Wedge or Ceiling elevation pattern so a panned object automatically rises as it moves to the sides.",
+   "category": "Object Panning",
+   "related_terms": [
+    "Object panning",
+    "Object size",
+    "Object divergence",
+    "Bed",
+    "Overhead speakers"
+   ],
+   "common_mistakes": [
+    "Assuming every playback system has real height speakers; on many layouts elevation is virtualized, so extreme height cues may not translate.",
+    "Confusing the manual height parameter with elevation patterns, which override manual height while active.",
+    "Overusing height so the mix feels disconnected from the on-screen action."
+   ],
+   "scenario_contexts": [
+    "Placing ambience or rain in the overhead speakers of a cinema mix.",
+    "Using an elevation pattern so a lead ad-lib lifts as it sweeps to the sides.",
+    "Automating a rising riser effect from ear level to the ceiling in a music mix."
+   ]
+  }
+ ]
+}

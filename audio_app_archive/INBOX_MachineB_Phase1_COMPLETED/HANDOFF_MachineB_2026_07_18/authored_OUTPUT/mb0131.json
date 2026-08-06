@@ -1,0 +1,159 @@
+{
+ "batch": 131,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "144e438b-ee6f-41e6-8f5c-74c732e6f55c",
+   "term": "REAPER project",
+   "fields": {
+    "definition": "A REAPER project is the working document of the REAPER DAW, saved as a plain-text .RPP file. It stores the full session state - track layout, media item references, take and envelope data, routing, FX chains, tempo map, and markers and regions - while pointing to the audio files on disk rather than embedding them.",
+    "plain_english": "A REAPER project is the file that saves your whole session in REAPER. It remembers your tracks, edits, effects, and settings, and it links to your audio files instead of holding them inside. Opening it puts your work back just as you left it.",
+    "purpose_function": "It exists to capture every setting and edit of a mix session in one reloadable file, so work can be saved, reopened, and continued exactly where it stopped.",
+    "practical_application": "A technician opens, saves, and version-names .RPP files through a session, and keeps the project next to its audio in one folder so the links stay intact when moving between machines.",
+    "category": "Project Files",
+    "related_terms": ["REAPER project template", "Region manager", "Region marker", "Reason song", "Track", "Automation"],
+    "common_mistakes": ["Assuming the .RPP file contains the audio itself, then losing sound when the project is moved without its media folder", "Saving over one project file for every version instead of using incremental save or Save As", "Not copying media into the project folder, which breaks file links later"],
+    "scenario_contexts": ["Reopening yesterday's mix to continue where you left off", "Handing a session to another engineer by zipping the .RPP with its audio folder", "Recovering a crashed session from REAPER's auto-saved project backup"]
+   },
+   "sources": ["REAPER User Guide (Cockos)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5e233753-b5a3-41fc-9c79-0aec6bb3a1ba",
+   "term": "REAPER project template",
+   "fields": {
+    "definition": "A REAPER project template is a saved .RPP stored in REAPER's project-template folder that serves as a preconfigured starting point for new projects. Loading it opens a fresh, untitled project already containing chosen tracks, routing, FX, and settings, and one can be set as the default so every new project begins from it.",
+    "plain_english": "A REAPER project template is a ready-made starting layout you save once and reuse. When you load it, REAPER opens a new empty project that already has your usual tracks, effects, and settings in place. It saves you from building the same setup from scratch every time.",
+    "purpose_function": "It exists to remove repetitive setup by letting a technician begin each new session from a known, consistent configuration instead of an empty project.",
+    "practical_application": "An engineer builds a template with standard buses, monitoring, and FX chains, saves it with Save As Project Template, and either picks it for new work or sets it as the default startup project.",
+    "category": "Project Files",
+    "related_terms": ["REAPER project", "Track", "Bus", "FX chain", "Routing", "Region manager"],
+    "common_mistakes": ["Confusing a template with a normal project and saving mix work back over the template", "Building a template so overloaded with tracks and plugins that new sessions become heavy and cluttered", "Forgetting to set the template as the default, so new projects still open empty"],
+    "scenario_contexts": ["Starting every podcast edit from a template with host and guest tracks preset", "Opening a live-recording template with all stage inputs already labelled and routed", "Standardising a studio's sessions so any engineer starts from the same layout"]
+   },
+   "sources": ["REAPER User Guide (Cockos)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f0089946-7edd-43b2-b9fd-047a5e33f4d2",
+   "term": "Reason mixer",
+   "fields": {
+    "definition": "The Reason mixer is the Main Mixer in Reason Studios' Reason, a full-featured mixing console that acts as the remote control for the program's Audio Track and Mix Channel devices. Each channel strip offers input gain and phase, dynamics, a four-band parametric EQ with filters, insert and send effects, and pan, width, and fader controls, with a master section that includes a bus compressor and master inserts.",
+    "plain_english": "The Reason mixer is the big mixing desk inside the Reason program. It gives every track its own strip with volume, tone, and effect controls, just like a real studio console. You use it to balance all the sounds into one finished mix.",
+    "purpose_function": "It exists to give producers a single console-style surface for setting levels, tone, dynamics, and effects across all tracks, shaping many separate sounds into one balanced mix.",
+    "practical_application": "A user balances faders, dials in EQ and compression per channel, sends tracks to shared reverb or delay returns, and rides the master bus compressor to finish a mix inside Reason.",
+    "category": "DAW Mixer",
+    "related_terms": ["Reason Rack", "Reason song", "Channel strip", "Bus compressor", "Send effect", "EQ"],
+    "common_mistakes": ["Thinking the Main Mixer is separate from the rack, when each channel strip mirrors a Mix Channel or Audio Track device", "Over-processing every channel strip instead of setting a clean static balance first", "Loading effects as inserts when a shared send and return would be tidier and lighter"],
+    "scenario_contexts": ["Mixing a multitrack song down to a stereo master in Reason", "Setting up reverb and delay sends shared across several channels", "Using the master bus compressor to glue a full mix together"]
+   },
+   "sources": ["Reason 14 Operation Manual (Reason Studios)", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "26e7e09d-6d2d-46fb-a0a8-f03b617cedcf",
+   "term": "Reason Player device",
+   "fields": {
+    "definition": "A Player device in Reason is a MIDI/note effect placed above an instrument in the rack that generates or transforms note data before it reaches that instrument. Examples include Scales & Chords, Dual Arpeggio, and Note Echo, which respectively map notes to a key, create arpeggios, and add rhythmic note repeats.",
+    "plain_english": "A Player device in Reason is a helper that sits on top of an instrument and changes the notes it plays. It can turn one note into a full chord, make an arpeggio, or echo notes in time. You use it to create parts you might not play by hand.",
+    "purpose_function": "It exists to generate or reshape performance data automatically, letting a musician build chords, arpeggios, and rhythmic note patterns without programming every note by hand.",
+    "practical_application": "A producer stacks a Player like Scales & Chords or Dual Arpeggio above a synth so incoming notes are turned into in-key chords or moving arpeggios as they play or record.",
+    "category": "MIDI Effects",
+    "related_terms": ["Reason Rack", "Reason mixer", "Arpeggiator", "MIDI effect", "Sequencer", "Instrument device"],
+    "common_mistakes": ["Placing the Player device below the instrument instead of above it, so it never processes the notes", "Expecting a Player to change already-recorded audio rather than note data", "Stacking several note generators and losing track of which one is creating the parts"],
+    "scenario_contexts": ["Playing in-key chords from single notes with Scales & Chords", "Generating a moving arpeggio under a pad with Dual Arpeggio", "Adding rhythmic echoes to a lead line with Note Echo"]
+   },
+   "sources": ["Reason 14 Operation Manual (Reason Studios)", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f21436fd-977b-4e4b-b789-f8d81eed876a",
+   "term": "Reason Rack",
+   "fields": {
+    "definition": "The Reason Rack is the virtual equipment rack at the heart of Reason, where instrument, effect, and Player devices are added and wired together with virtual patch cables. It mirrors a hardware studio rack, letting audio and control signals flow between devices for sound design and routing.",
+    "plain_english": "The Reason Rack is a virtual stack of music gear inside the program. You add synths, effects, and note tools to it and connect them with on-screen cables, just like real studio equipment. It is where you build the sounds for your song.",
+    "purpose_function": "It exists to hold and interconnect all the sound-making and processing devices in a project, giving producers hardware-style patching and flexible signal routing in software.",
+    "practical_application": "A user adds instruments and effects to the rack, flips it around to see the back panel, and reconnects virtual cables to route audio and control voltage in custom ways.",
+    "category": "DAW Environment",
+    "related_terms": ["Reason mixer", "Reason song", "Reason Player device", "Instrument device", "Effect device", "CV routing"],
+    "common_mistakes": ["Forgetting to flip the rack to its back panel to see or change the actual cabling", "Deleting a device and breaking the cable chain that fed later devices", "Confusing the rack's device order with the Main Mixer's channel order"],
+    "scenario_contexts": ["Building a synth-and-effects chain from scratch in the rack", "Rewiring devices on the rack's back panel for creative routing", "Grouping several rack devices as one instrument with a Combinator"]
+   },
+   "sources": ["Reason 14 Operation Manual (Reason Studios)", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "90ac61c3-3d4e-46ee-82e7-4bc8047794b2",
+   "term": "Reason song",
+   "fields": {
+    "definition": "A Reason song is the project document of Reason, saved as a .reason file that contains the complete device setup and connections in the rack, all Main Mixer settings, and everything recorded in the sequencer, including tempo, markers, and automation. It can be made self-contained so its samples and REX files are stored inside the file for easy transfer.",
+    "plain_english": "A Reason song is the file that saves your whole project in Reason. It holds all your devices, cables, mixer settings, and recorded parts in one place. You can even pack the samples inside it so the song opens correctly on another computer.",
+    "purpose_function": "It exists to store an entire Reason project in one reopenable file, so a producer can save, share, and continue work with every device, setting, and recording intact.",
+    "practical_application": "A user saves work as a .reason file, turns on self-contain settings before moving it to another machine, and reopens it to find the rack, mixer, and sequence exactly as left.",
+    "category": "Project Files",
+    "related_terms": ["Reason Rack", "Reason mixer", "REAPER project", "Sequencer", "Self-contained song", "Sample"],
+    "common_mistakes": ["Moving a .reason file to another computer without self-containing it, so linked samples go missing", "Assuming recordings are embedded when unsaved audio sits in the Scratch Disk folder until the song is saved", "Saving over the only copy instead of keeping dated versions"],
+    "scenario_contexts": ["Saving and reopening a track to keep producing across several days", "Self-containing a song to send to a collaborator", "Archiving a finished project with all its samples in one file"]
+   },
+   "sources": ["Reason 14 Operation Manual (Reason Studios)", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d2220be8-cfb6-4d71-a59d-226c24ed4069",
+   "term": "Reference translation",
+   "fields": {
+    "definition": "Reference translation describes how well a mix keeps its intended tonal balance, clarity, and impact when judged against professional reference tracks and played back on different systems. It joins referencing - comparing a mix to trusted commercial recordings - with translation, the degree to which a mix holds up from studio monitors to earbuds, phones, and car speakers.",
+    "plain_english": "Reference translation is about making sure your mix sounds good everywhere, not just in the studio. You compare it to well-known songs you trust, then check it on phones, earbuds, and car speakers. If it still sounds right on all of them, your mix translates well.",
+    "purpose_function": "It exists to keep mix decisions honest and portable, guarding against choices that only sound right on one set of speakers by testing them against known references and varied playback.",
+    "practical_application": "An engineer level-matches a commercial reference track, A/Bs it against the mix, then auditions the mix on several playback systems to confirm the balance survives outside the control room.",
+    "category": "Mix Referencing",
+    "related_terms": ["Reference track", "Monitoring", "Mix bus", "Frequency balance", "Loudness matching", "Mastering"],
+    "common_mistakes": ["Comparing to a reference track without matching levels, so the louder one always seems better", "Judging translation only on one pair of monitors and skipping phone, earbud, and car checks", "Chasing the exact tone of a mastered reference during the mix stage"],
+    "scenario_contexts": ["A/Bing a mix against a commercial track in the same genre", "Checking a near-final mix on phone, earbuds, and car speakers", "Using references to set low-end weight and overall brightness"]
+   },
+   "sources": ["The Mixing Engineer's Handbook (Owsinski)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2debbf0a-6a1f-4921-8ed5-1f720938dd1c",
+   "term": "Region manager",
+   "fields": {
+    "definition": "A region manager is a dedicated window - in REAPER the Region/Marker Manager - that lists every marker and region in a project with their names, positions, and lengths. From it a technician can navigate to, rename, add, remove, and reorder markers and regions, and control which regions are included when rendering.",
+    "plain_english": "A region manager is a list window that shows all the markers and section labels in your project. From it you can jump to a spot, rename a section, or add and delete markers in one place. It makes moving around a long session much faster.",
+    "purpose_function": "It exists to give one organised list for viewing and managing all of a project's markers and regions, speeding navigation and controlling which regions get rendered.",
+    "practical_application": "An editor opens the region manager to jump between song sections, rename regions like verse and chorus, and tick which regions to export in a batch render.",
+    "category": "Markers & Regions",
+    "related_terms": ["Region marker", "REAPER project", "Marker", "Render matrix", "Timeline", "Arrangement"],
+    "common_mistakes": ["Confusing markers, which are single points, with regions, which are time spans, in the list", "Manually scrolling a long timeline instead of jumping from the manager", "Rendering the wrong regions by not checking the render selection in the manager"],
+    "scenario_contexts": ["Jumping between labelled song sections during a long mix", "Renaming regions before a batch stem or region render", "Cleaning up leftover markers from an edited session"]
+   },
+   "sources": ["REAPER User Guide (Cockos)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "50735a56-55fb-4cac-9369-ba7ac8296654",
+   "term": "Region marker",
+   "fields": {
+    "definition": "A region marker is a timeline marker that defines a region - a named span with a start and end point - rather than a single cue point. It labels and bounds a section of a project, such as a verse or chorus, and can be used to select that range for looping, editing, or rendering.",
+    "plain_english": "A region marker labels a whole section of your timeline, not just one spot. It has a start and an end, so it wraps around a part like the chorus. You can click it to select that section for looping, editing, or exporting.",
+    "purpose_function": "It exists to divide a project timeline into clearly labelled sections and to give a quick way to select or export a whole span at once.",
+    "practical_application": "A technician draws region markers around each song section, names them, and uses them to loop a part, jump to it, or render that span as a separate file.",
+    "category": "Markers & Regions",
+    "related_terms": ["Region manager", "Marker", "REAPER project", "Loop", "Timeline", "Render matrix"],
+    "common_mistakes": ["Mixing up a region marker, which labels a span, with a point marker, which is a single position", "Leaving regions unnamed, which makes the region manager and renders hard to read", "Overlapping regions and then rendering unexpected, doubled sections"],
+    "scenario_contexts": ["Marking out verse, chorus, and bridge in an arrangement", "Selecting a region to render it as an individual stem", "Looping a marked section for practice or editing"]
+   },
+   "sources": ["REAPER User Guide (Cockos)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

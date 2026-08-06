@@ -1,0 +1,318 @@
+{
+ "batch": 130,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "c773d0a5-b81f-4cba-9d4b-d3d51ba09720",
+   "term": "Rack cabling",
+   "fields": {
+    "definition": "The set of power and signal cables that interconnect the units mounted in an equipment rack, dressed and secured so each device's inputs, outputs, and power feeds are correctly routed and easy to service. It spans audio, data/network, and mains wiring managed within a rack and between racks.",
+    "plain_english": "Rack cabling is all the wires that link the gear stacked inside an equipment rack. The cables are tied down neatly. That way each box gets power and passes its sound to the next one.",
+    "purpose_function": "It carries power and audio or data between rack units in an orderly, labeled way so signal flows correctly and any fault can be traced and fixed quickly.",
+    "practical_application": "A technician wiring a rack routes and labels each cable, leaves a small service loop, and keeps mains power separated from audio lines to avoid hum before powering the system up.",
+    "category": "Rack Systems",
+    "related_terms": [
+     "Patchbay",
+     "Signal flow",
+     "Balanced connection",
+     "Ground loop",
+     "Rack instrument"
+    ],
+    "common_mistakes": [
+     "Running mains power cables tightly bundled with audio lines, which can induce hum and buzz",
+     "Leaving no service loop, so cables are strained and hard to trace later",
+     "Failing to label both ends of each cable, which makes fault-finding slow",
+     "UNSAFE: Overloading a single rack power circuit or daisy-chaining power strips beyond their rated load"
+    ],
+    "scenario_contexts": [
+     "Building a studio outboard rack and wiring processors to a patchbay",
+     "Prepping a touring effects or drive rack for fast setup and teardown",
+     "Tracing a hum fault back to power and audio cables bundled together"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (system installation and wiring)",
+    "ANSI/ESTA E1 production rigging and power practice",
+    "Manufacturer rack and power distribution technical documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9896dc06-1ae2-416b-a8d6-102189d4f1b4",
+   "term": "Rack chain",
+   "fields": {
+    "definition": "Within a device Rack (such as an Instrument or Effect Rack in a DAW), a chain is one of the parallel signal paths inside the rack; each chain receives the same input, processes it serially through its own devices, and the chains' outputs are summed to form the rack's output.",
+    "plain_english": "A rack chain is one lane of sounds or effects inside a bigger rack. Each lane gets the same signal and changes it in its own way. Then all the lanes are blended back together.",
+    "purpose_function": "Chains let you build parallel processing or layered sounds inside a single rack, so several effect or instrument paths run at once and are mixed together under one shared set of controls.",
+    "practical_application": "A producer uses chains to blend a distorted and a clean version of a sound, or to split a drum rack so each pad triggers its own chain of devices.",
+    "category": "DAW Devices",
+    "related_terms": [
+     "Rack instrument",
+     "Parallel processing",
+     "Signal routing",
+     "Macro control",
+     "Drum rack"
+    ],
+    "common_mistakes": [
+     "Thinking chains process one after another, when each parallel chain actually receives the same input at the same time",
+     "Leaving chain volume levels unbalanced, so the summed rack output clips or sounds lopsided",
+     "Deleting a chain and losing its devices instead of first extracting it to its own track",
+     "Forgetting to set chain key or velocity zones, so all chains sound together unintentionally"
+    ],
+    "scenario_contexts": [
+     "Layering two synth chains to create a fuller pad inside one instrument rack",
+     "Building a drum rack where each chain holds one drum sound",
+     "Setting up parallel clean and distorted guitar chains in an effect rack"
+    ]
+   },
+   "sources": [
+    "Ableton Live Reference Manual (Instrument, Drum and Effect Racks; Chains)",
+    "Steinberg Cubase Operation Manual (rack and device routing)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a26ea735-294f-469d-bc79-9944da30e4c1",
+   "term": "Rack Extension",
+   "fields": {
+    "definition": "Rack Extension is Reason Studios' native plug-in format for instruments and effects that install directly into Reason's virtual rack. Unlike VST or AU plug-ins, Rack Extensions run only inside the Reason rack environment and are distributed and authorized through Reason Studios' online shop.",
+    "plain_english": "A Rack Extension is an add-on instrument or effect built to slot into the Reason software's rack. It works only inside Reason, a bit like a game add-on that runs only in that one game.",
+    "purpose_function": "The format lets developers add new instruments and effects that behave like Reason's built-in rack gear, including back-panel cabling, while staying protected and stable inside the host.",
+    "practical_application": "A Reason user browses the Rack Extension shop, installs a device, and it appears in the rack ready to patch, play, and automate like any native module.",
+    "category": "Plugin Formats",
+    "related_terms": [
+     "Rack instrument",
+     "VST",
+     "Plugin",
+     "Combinator",
+     "Reason rack"
+    ],
+    "common_mistakes": [
+     "Assuming a Rack Extension is a standalone VST that loads into any DAW, when it runs only inside Reason or the Reason Rack plug-in",
+     "Confusing Rack Extensions with Reason's older ReFill sound libraries",
+     "Forgetting that a Rack Extension must be authorized to your account before it will load"
+    ],
+    "scenario_contexts": [
+     "Adding a third-party synth to Reason from the Rack Extension shop",
+     "Trying to open a Reason-only device in another host and finding it unavailable",
+     "Managing installed Rack Extensions and authorizations across two studio computers"
+    ]
+   },
+   "sources": [
+    "Reason Studios, Reason Operation Manual (the rack and Rack Extensions)",
+    "Reason Studios Rack Extension developer/technical documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "84fdfbd3-5999-4ce3-8ec2-540aca20fea0",
+   "term": "Rack instrument",
+   "fields": {
+    "definition": "A sound-generating instrument device housed in a rack rather than built into a keyboard: either a hardware rackmount sound module or tone generator, or a virtual instrument loaded into a software or DAW device rack (such as Reason's rack or a host's instrument rack).",
+    "plain_english": "A rack instrument is a sound-making unit that lives in a rack instead of having its own keys. It can be a real box in a metal rack or a software one in a program's rack. You play it by sending it notes.",
+    "purpose_function": "It provides playable sounds triggered by MIDI or a controller, keeping the tone generator separate from the keys so many instruments can share one keyboard or sequencer.",
+    "practical_application": "A technician patches a MIDI keyboard or sequencer to a rackmount sound module, or a producer loads a virtual instrument into the software rack and drives it from a MIDI track.",
+    "category": "Virtual Instruments",
+    "related_terms": [
+     "Sound module",
+     "MIDI",
+     "Virtual instrument",
+     "Rack Extension",
+     "Rack chain"
+    ],
+    "common_mistakes": [
+     "Expecting sound from a rack instrument without sending it MIDI note data or a controller signal",
+     "Confusing a rack instrument, which is a sound source, with an effects unit that only alters incoming audio",
+     "Forgetting to match the MIDI channel, so the instrument ignores the incoming notes"
+    ],
+    "scenario_contexts": [
+     "Driving a rackmount synth module from a master keyboard in a studio",
+     "Loading a software instrument into a device rack and sequencing it from a MIDI clip",
+     "Sharing one MIDI controller across several rack instruments on different channels"
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual (VST Instruments rack)",
+    "Reason Studios, Reason Operation Manual (rack instrument devices)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1b796314-46b9-45e1-8f32-de5c9223bc5c",
+   "term": "Rack zone",
+   "fields": {
+    "definition": "In an Ableton Live Rack, a zone is a data filter at the input of each chain that determines whether incoming MIDI notes, velocities, or macro data reach that chain's devices; the three zone types, edited in the Rack's zone editors, are the Key Zone (note range), the Velocity Zone (velocity range), and the Chain Select Zone (position relative to the Chain Selector).",
+    "plain_english": "A Rack zone is a range setting that decides which sounds inside a Rack will play. For example, a Key Zone can make low notes play a bass and high notes play a lead, like splitting a keyboard.",
+    "purpose_function": "Zones exist so one Rack can hold many chains and route notes, velocities, or macro positions to the right ones, enabling keyboard splits, velocity layers, and switchable preset banks.",
+    "practical_application": "A producer drags the Key, Velocity, or Chain Select zone edges in the Rack's Chain List to split a keyboard, layer sounds by playing strength, or crossfade between chains with the Chain Selector.",
+    "category": "Instrument Racks",
+    "related_terms": [
+     "Instrument Rack",
+     "Chain",
+     "Chain Selector",
+     "Key zone",
+     "Velocity",
+     "Macro control"
+    ],
+    "common_mistakes": [
+     "Confusing the three zone types (Key, Velocity, and Chain Select) and editing the wrong one",
+     "Setting a chain's zone so it does not overlap the current value, leaving that chain silent",
+     "Overlooking zone fade ranges, which attenuate at the edges rather than hard-cutting"
+    ],
+    "scenario_contexts": [
+     "Splitting a keyboard so different note ranges trigger different instruments",
+     "Building velocity layers so soft and hard hits play different samples",
+     "Setting up a Chain Select bank to switch or crossfade presets live"
+    ]
+   },
+   "sources": [
+    "Ableton Live Reference Manual, Instrument, Drum and Effect Racks (ableton.com/manual)",
+    "Sound On Sound, Using Racks In Ableton Live"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c5590a14-ccd7-470c-bbaa-b36ee9ded345",
+   "term": "Ratcheting",
+   "fields": {
+    "definition": "In step sequencing and synthesis, ratcheting is the rapid retriggering of a single sequencer step into two or more evenly spaced subdivisions, producing a fast roll, stutter, or burst of repeated notes within the time span of that one step.",
+    "plain_english": "Ratcheting is when one beat in a sequencer fires several fast hits instead of just one. It turns a single note into a quick burst, like a short drum roll.",
+    "purpose_function": "It adds rhythmic detail and energy to a pattern without extra programming, letting one step become a burst of subdivisions for rolls, fills, and accents.",
+    "practical_application": "A producer enables ratchet on a sequencer step to turn a single hi-hat or bass note into a two-, three-, or four-hit burst that drives the groove.",
+    "category": "Sequencing",
+    "related_terms": [
+     "Step sequencer",
+     "Note repeat",
+     "Gate",
+     "Trigger",
+     "Arpeggiator"
+    ],
+    "common_mistakes": [
+     "Confusing ratcheting with simply raising the tempo, when it only subdivides that one step",
+     "Overusing ratchets so the pattern sounds busy and cluttered",
+     "Expecting every device to call it 'ratchet', when some label the feature retrigger, note repeat, or roll"
+    ],
+    "scenario_contexts": [
+     "Programming rapid hi-hat rolls on a hardware step sequencer",
+     "Adding a burst of repeated bass notes on one step of a modular sequence",
+     "Recreating a drum fill without drawing in each individual note"
+    ]
+   },
+   "sources": [
+    "Elektron sequencer instrument manuals (retrig/ratchet per step)",
+    "Modular and step-sequencer manufacturer technical documentation",
+    "Sound on Sound technical articles on step sequencing"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "82e55d71-b041-4c42-b49a-2153dcd3a73c",
+   "term": "Razor edit area",
+   "fields": {
+    "definition": "In REAPER, a razor edit area is a user-drawn selection spanning one or more tracks, and optionally individual automation envelope lanes, that marks a region of content for non-destructive editing such as moving, copying, trimming, or deleting.",
+    "plain_english": "A razor edit area is a box you draw over part of your tracks in REAPER. It marks the exact chunk you want to change. Then you can move, copy, or delete that chunk without harming the rest.",
+    "purpose_function": "It gives precise, non-destructive control over any region of a project, so you can grab and edit sections across several tracks at once or just one envelope lane.",
+    "practical_application": "An editor drags a razor edit area across the chorus of several tracks to copy it, or over one section of a volume envelope to raise just that part.",
+    "category": "Editing",
+    "related_terms": [
+     "Non-destructive editing",
+     "Automation envelope",
+     "Time selection",
+     "Crossfade",
+     "Split"
+    ],
+    "common_mistakes": [
+     "Confusing a razor edit area with an ordinary time selection, which behaves differently",
+     "Editing across tracks by accident because the area spans more lanes than intended",
+     "Forgetting that a razor area can include envelope lanes, so automation moves along with the audio"
+    ],
+    "scenario_contexts": [
+     "Copying a multi-track section of a song to a new position in REAPER",
+     "Deleting a bad take across several tracks at once",
+     "Adjusting just one region of a volume envelope with a razor area"
+    ]
+   },
+   "sources": [
+    "Cockos REAPER User Guide (Razor Editing)",
+    "Cockos REAPER release notes and reference documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fc340549-ec65-4ec0-9b2b-adc72df7182c",
+   "term": "Re-recording mix",
+   "fields": {
+    "definition": "In film and television post-production, the re-recording mix is the final stage in which the edited dialogue, music, and sound-effects stems are combined, balanced, processed, and panned into the finished soundtrack, typically on a dubbing stage by a re-recording mixer.",
+    "plain_english": "A re-recording mix is the final sound mix for a film or TV show. All the speech, music, and sound effects are blended into one polished soundtrack. It is usually done in a special mixing theater.",
+    "purpose_function": "It brings every separately prepared sound element together into a single balanced, format-ready soundtrack that matches the picture and meets delivery standards.",
+    "practical_application": "A re-recording mixer works at a large console on a dubbing stage, balances the dialogue, music, and effects stems to picture, and outputs the final mix in stereo and surround formats.",
+    "category": "Post Production",
+    "related_terms": [
+     "Dialogue editing",
+     "Stem",
+     "Dubbing stage",
+     "Foley",
+     "Surround mix"
+    ],
+    "common_mistakes": [
+     "Confusing the re-recording mix with a music recording session; it combines finished stems rather than capturing new performances",
+     "Assuming 're-recording' means recording the audio again, when it means combining existing edited elements",
+     "Delivering without the required stems or loudness spec for broadcast or cinema"
+    ],
+    "scenario_contexts": [
+     "Finalizing a feature film's soundtrack on a dubbing stage",
+     "Mixing dialogue, music, and effects stems to picture for a TV episode",
+     "Producing both a cinema surround and a broadcast stereo version from the same stems"
+    ]
+   },
+   "sources": [
+    "Holman, Sound for Film and Television (final mix / re-recording)",
+    "Yewdall, The Practical Art of Motion Picture Sound",
+    "SMPTE post-production sound practice"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5ea359e7-1266-4e25-ab75-645841837bef",
+   "term": "Read automation mode",
+   "fields": {
+    "definition": "Read is the automation mode in which a DAW or console channel plays back its previously written automation data, moving faders, pans, and plug-in parameters accordingly, but records no new automation moves.",
+    "plain_english": "Read mode makes the mixer play back the automation you already recorded. The faders and knobs move on their own. In this mode your hands cannot change that saved data.",
+    "purpose_function": "It lets recorded automation control the mix on playback so moves repeat consistently every time, while protecting the existing data from accidental changes.",
+    "practical_application": "An engineer leaves channels in Read so the mix plays back exactly as automated, then switches a single channel to Write, Touch, or Latch only when new moves are needed.",
+    "category": "Automation",
+    "related_terms": [
+     "Write automation mode",
+     "Touch automation mode",
+     "Latch automation mode",
+     "Automation envelope",
+     "Fader"
+    ],
+    "common_mistakes": [
+     "Trying to adjust a fader in Read and wondering why it snaps back to the automated value",
+     "Confusing Read with Off; Off ignores automation entirely, while Read plays it back",
+     "Leaving a channel in Write instead of Read and erasing good automation on the next pass"
+    ],
+    "scenario_contexts": [
+     "Playing back a finished automated mix for a final review",
+     "Switching one channel out of Read to Touch to fix a single fader move",
+     "Auditioning automated plug-in changes without risk of overwriting them"
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (automation modes)",
+    "Steinberg Cubase Operation Manual (Read/Write automation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

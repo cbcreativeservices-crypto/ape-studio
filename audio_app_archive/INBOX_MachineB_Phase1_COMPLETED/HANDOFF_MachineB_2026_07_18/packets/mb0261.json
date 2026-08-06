@@ -1,0 +1,56 @@
+{
+ "batch": 261,
+ "topic": "Production Sound & Field Recording",
+ "terms": [
+  {
+   "id": "6116fafa-872e-4e56-a7f7-3706c7d2f202",
+   "term": "Field Sound-Effects Recording",
+   "topic": "Production Sound & Field Recording",
+   "seq": 1232,
+   "difficulty": "beginner",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "418079a9-4dd6-4cc2-a93c-4ff32dd12f18",
+   "term": "Near-field mixing room",
+   "topic": "Production Sound & Field Recording",
+   "seq": 1232,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

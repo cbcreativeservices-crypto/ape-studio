@@ -1,0 +1,159 @@
+{
+ "batch": 176,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "88e98450-8403-4172-8365-31999ab0701f",
+   "term": "Tape bias requirement",
+   "fields": {
+    "definition": "The specific level of high-frequency AC bias current a given magnetic tape formulation needs applied during recording to linearize its magnetic transfer and reach optimal sensitivity, distortion, and frequency response. Different formulations require different bias amounts, set by the bias adjustment during machine alignment.",
+    "plain_english": "Recording tape needs a hidden high-pitched signal, called bias, mixed in so the sound records cleanly. Each type of tape needs its own amount of bias, so the machine must be set to match the tape you load.",
+    "purpose_function": "Bias overcomes the tape's magnetic non-linearity so audio records with low distortion; the requirement tells the technician how much bias a specific tape needs for flat response and correct saturation.",
+    "practical_application": "During alignment a tech adjusts bias per the tape maker's spec, often over-biasing by a set amount at a reference frequency, whenever changing tape stock on a machine.",
+    "category": "Analog Tape",
+    "related_terms": ["Tape formulation", "Tape coercivity", "Tape compression characteristic", "Machine alignment", "Record equalization", "Tape hiss characteristic"],
+    "common_mistakes": ["Assuming one bias setting works for every tape brand or formulation", "Confusing AC record bias with DC erase or accidental magnetization", "Setting bias by ear instead of using a reference tape and level meter", "Over-biasing so far that high-frequency response is dulled"],
+    "scenario_contexts": ["Aligning a multitrack machine before a session after switching tape stock", "Restoring an archival machine to play a tape recorded on a different formulation", "Setting up a mastering deck to match a client's preferred tape"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Camras, Magnetic Recording Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9f806322-8823-4eea-ae38-3a14e2352fe0",
+   "term": "Tape coercivity",
+   "fields": {
+    "definition": "The magnetic field strength (measured in oersteds or A/m) required to reduce the remanent magnetization of a tape's magnetic particles to zero; it indicates how strongly the tape resists demagnetization and erasure. Higher-coercivity formulations such as metal particle store high levels and short wavelengths better but need stronger bias and erase fields.",
+    "plain_english": "Coercivity measures how hard it is to wipe or change the magnetism stored on a tape. High-coercivity tape holds its recording more firmly. It keeps loud and high sounds well but is harder to erase.",
+    "purpose_function": "Coercivity determines how much signal a tape can hold and how resistant the recording is to accidental erasure, and it sets the bias and erase current the machine must supply.",
+    "practical_application": "A tech checks a tape's coercivity rating to pick the right bias and erase settings and to know whether a bulk eraser is strong enough to fully wipe it.",
+    "category": "Analog Tape",
+    "related_terms": ["Tape formulation", "Tape bias requirement", "Tape compression characteristic", "Tape hiss characteristic", "Machine alignment", "Retentivity"],
+    "common_mistakes": ["Confusing coercivity, which is resistance to erasure, with retentivity, the amount of flux retained", "Assuming a standard bulk eraser fully wipes high-coercivity metal tape", "Ignoring coercivity when matching a tape to a machine's bias and erase capability"],
+    "scenario_contexts": ["Choosing bias and erase settings for a high-output formulation", "Verifying a degausser is strong enough to erase a given tape", "Comparing formulations when specifying stock for a project"]
+   },
+   "sources": ["Camras, Magnetic Recording Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bb7ead5b-d48e-4a9c-bd59-921894e32ac4",
+   "term": "Tape compression characteristic",
+   "fields": {
+    "definition": "The gentle, program-dependent gain reduction and soft saturation an analog tape exhibits as recording level approaches magnetic saturation, rounding transient peaks and adding harmonic content without the hard clipping of digital overload. The onset and curve depend on formulation, bias, level, and tape speed.",
+    "plain_english": "When you record loud onto tape, the tape cannot get any louder past a point, so it gently squashes the peaks instead of harshly cutting them off. This soft squashing is part of why tape often makes music sound warm and glued together.",
+    "purpose_function": "This natural compression tames peaks and adds pleasing harmonics, which is why engineers deliberately drive tape to glue a mix and control dynamics without a separate compressor.",
+    "practical_application": "A mix or mastering engineer sets record level to push the tape into mild saturation as a tone and dynamics tool; too much level smears transients and adds obvious distortion.",
+    "category": "Analog Tape",
+    "related_terms": ["Tape formulation", "Tape bias requirement", "Tape coercivity", "Tape hiss characteristic", "Headroom", "Harmonic distortion"],
+    "common_mistakes": ["Confusing tape's soft saturation with a compressor's threshold-based gain reduction", "Overdriving until distortion and pitch smear become obvious", "Expecting the same character at every tape speed and bias setting"],
+    "scenario_contexts": ["Printing a mix to tape to soften peaks and add warmth", "Tracking a loud snare to round its transient", "Choosing a tape-style plugin during mastering to mimic this behavior"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Camras, Magnetic Recording Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4670a20e-2962-440a-9978-f5aa2a99918c",
+   "term": "Tape condition assessment",
+   "fields": {
+    "definition": "The systematic evaluation of an archival magnetic tape's physical and chemical state, checking for binder hydrolysis (sticky-shed), shedding, pack quality, warping, mould, and edge damage, to determine whether it can be safely played and what remediation such as baking or cleaning it needs.",
+    "plain_english": "Before playing an old tape, you check its health: is it sticky, moldy, warped, or shedding bits of coating? This check tells you whether the tape is safe to play and whether it needs treatment first.",
+    "purpose_function": "It prevents damage to fragile tapes and machines during playback and lets the tech plan restoration, so a valuable recording is not lost by playing a tape that should have been baked or cleaned first.",
+    "practical_application": "An archivist or transfer engineer inspects each reel, notes defects, and decides whether to bake, clean, or reshell before a single-pass transfer to digital.",
+    "category": "Tape Archival",
+    "related_terms": ["Tape inspection report", "Tape lubricant condition", "Tape library catalog", "Tape formulation", "Sticky-shed syndrome", "Tape baking"],
+    "common_mistakes": ["Playing a suspect tape before assessing it, risking shed coating and clogged heads", "Assuming all brands of a given era degrade the same way", "Baking a tape without first confirming its problem is binder hydrolysis", "Skipping documentation of the tape's condition before transfer"],
+    "scenario_contexts": ["Preparing a 1980s reel for digitization", "Triaging a newly acquired tape collection", "Deciding whether a tape needs baking before a single safe playback"]
+   },
+   "sources": ["IASA TC-04, Guidelines on the Production and Preservation of Digital Audio Objects", "Van Bogart, Magnetic Tape Storage and Handling (NML/CLIR)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e52c2539-8455-488f-b4b6-b7cded364318",
+   "term": "Tape formulation",
+   "fields": {
+    "definition": "The specific composition of a magnetic tape's coating and base: the magnetic particle type (such as gamma ferric oxide, chromium dioxide, cobalt-doped, or metal particle), binder chemistry, and backing material and thickness, which together set its magnetic and mechanical performance. Each formulation has characteristic coercivity, output, bias needs, and noise.",
+    "plain_english": "A tape's formulation is the recipe of magnetic material and plastic used to make it. The recipe sets how loud, clean, and tough the tape is. It also sets how the machine must be tuned.",
+    "purpose_function": "The formulation defines a tape's electrical and physical behavior, so knowing it tells the tech how to bias, equalize, and handle the stock for the best results.",
+    "practical_application": "A tech identifies the formulation from the box or leader to choose alignment settings and to anticipate issues like sticky-shed that are common to certain brands and eras.",
+    "category": "Analog Tape",
+    "related_terms": ["Tape coercivity", "Tape bias requirement", "Tape compression characteristic", "Tape hiss characteristic", "Sticky-shed syndrome", "Machine alignment"],
+    "common_mistakes": ["Assuming all tape stocks share the same bias and EQ", "Mixing formulations on one reel and expecting consistent alignment", "Ignoring that some formulations are prone to sticky-shed"],
+    "scenario_contexts": ["Selecting stock for a new recording", "Identifying an archival tape's type before transfer", "Setting machine alignment to match the loaded formulation"]
+   },
+   "sources": ["Camras, Magnetic Recording Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "160c9db6-31b6-4d81-9108-db79acd6102a",
+   "term": "Tape hiss characteristic",
+   "fields": {
+    "definition": "The broadband, mostly high-frequency background noise inherent to analog tape, arising from the finite size and random distribution of the magnetic particles; its level and spectrum depend on formulation, tape speed, track width, and bias. It sets the noise floor that limits a tape system's dynamic range.",
+    "plain_english": "Tape hiss is the steady shhh background sound you hear from analog tape, caused by the tiny magnetic grains in the coating. Finer grains, faster speed, and wider tracks make the hiss quieter.",
+    "purpose_function": "Understanding hiss lets a technician predict a machine's noise floor and choose speed, track format, and noise reduction to keep quiet passages clean.",
+    "practical_application": "A tech runs tape faster or applies noise reduction such as Dolby to lower audible hiss, and sets record level high enough to stay above it without saturating.",
+    "category": "Analog Tape",
+    "related_terms": ["Tape formulation", "Tape compression characteristic", "Tape coercivity", "Signal-to-noise ratio", "Noise reduction", "Headroom"],
+    "common_mistakes": ["Recording too low and letting hiss dominate quiet parts", "Assuming hiss is a machine fault rather than inherent tape noise", "Forgetting that higher tape speed and wider tracks reduce hiss"],
+    "scenario_contexts": ["Setting record levels to keep hiss below the music", "Choosing 30 ips over 15 ips for a cleaner master", "Deciding whether to apply noise reduction on a transfer"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Camras, Magnetic Recording Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9cdb01eb-b7d9-49b9-bfdd-7000ebd69a6e",
+   "term": "Tape inspection report",
+   "fields": {
+    "definition": "A written record documenting the observed physical and chemical condition of a magnetic tape, including defects such as shedding, sticky-shed, mould, warping, splices, and pack faults, along with any recommended handling or remediation, produced during condition assessment. It travels with the tape to guide safe playback and transfer.",
+    "plain_english": "A tape inspection report is the written health record for a tape. It lists any problems found and what to do about them, so the next person knows how to handle the tape safely.",
+    "purpose_function": "It preserves a documented history of a tape's condition and needed treatment so decisions about baking, cleaning, or transfer are consistent and the tape is not mishandled.",
+    "practical_application": "An archivist fills out the report during inspection, noting defects and actions, and files it with the tape and its digital transfer metadata.",
+    "category": "Tape Archival",
+    "related_terms": ["Tape condition assessment", "Tape library catalog", "Tape lubricant condition", "Tape formulation", "Sticky-shed syndrome", "Tape baking"],
+    "common_mistakes": ["Transferring a tape without recording its condition for future reference", "Using vague notes the next technician cannot act on", "Omitting the formulation or brand, which predicts likely faults"],
+    "scenario_contexts": ["Documenting a reel's defects before a digitization session", "Passing condition notes to a restoration specialist", "Building a preservation file alongside a digital transfer"]
+   },
+   "sources": ["IASA TC-04, Guidelines on the Production and Preservation of Digital Audio Objects", "Van Bogart, Magnetic Tape Storage and Handling (NML/CLIR)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5deb21cf-ec1a-47db-9414-a5f68be0f01e",
+   "term": "Tape library catalog",
+   "fields": {
+    "definition": "An organized inventory of an archive's or studio's tape holdings that records each item's identifier, title, format, formulation, recording data, storage location, and condition, enabling retrieval, tracking, and preservation planning. It is the master metadata index for physical tape assets.",
+    "plain_english": "A tape library catalog is a master list of all the tapes an archive owns. It tells you what each tape is, where it lives, and what shape it is in, so you can find and care for it.",
+    "purpose_function": "It exists so staff can locate any tape, track its condition and history, and plan preservation without physically searching shelves.",
+    "practical_application": "Staff log every reel into the catalog with its ID, location, and condition, and update it when a tape is baked, transferred, or moved.",
+    "category": "Tape Archival",
+    "related_terms": ["Tape inspection report", "Tape condition assessment", "Tape lubricant condition", "Tape formulation", "Sticky-shed syndrome", "Tape baking"],
+    "common_mistakes": ["Leaving the catalog out of date after tapes move or are transferred", "Recording only titles and skipping format, condition, and location", "Using inconsistent IDs that make retrieval unreliable"],
+    "scenario_contexts": ["Locating a specific master reel for a reissue", "Auditing a collection's condition for preservation funding", "Tracking which tapes have already been digitized"]
+   },
+   "sources": ["IASA TC-04, Guidelines on the Production and Preservation of Digital Audio Objects", "Van Bogart, Magnetic Tape Storage and Handling (NML/CLIR)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "755d6cde-a7cf-48c8-b9ce-23497d9c887a",
+   "term": "Tape lubricant condition",
+   "fields": {
+    "definition": "The state of the lubricant incorporated in a magnetic tape's binder, which reduces friction between the tape and the heads and guides; loss, migration, or breakdown of this lubricant increases friction, squeal, and shedding and is often linked to binder degradation in aging tapes. Assessing it helps predict safe playability.",
+    "plain_english": "Tape has a built-in lubricant that helps it slide smoothly past the heads. When that lubricant dries out or breaks down, the tape drags, squeals, and sheds, so checking its condition tells you if the tape will play safely.",
+    "purpose_function": "The lubricant keeps tape moving smoothly with low friction and wear; assessing its condition warns the tech of squeal, stiction, or shedding before a fragile tape is played.",
+    "practical_application": "During inspection a tech watches and listens for drag or squeal and may clean or, for binder-related problems, bake the tape to restore playability for a single transfer pass.",
+    "category": "Tape Archival",
+    "related_terms": ["Tape condition assessment", "Tape inspection report", "Tape library catalog", "Tape formulation", "Sticky-shed syndrome", "Tape baking"],
+    "common_mistakes": ["Confusing lubricant loss with sticky-shed binder failure, though the two can occur together", "Playing a squealing tape repeatedly and worsening shed and head clogging", "Assuming cleaning alone fixes a binder or lubricant breakdown"],
+    "scenario_contexts": ["Diagnosing tape squeal during a transfer", "Deciding whether to bake or just clean a reel", "Assessing an aged reel's playability before digitizing"]
+   },
+   "sources": ["Van Bogart, Magnetic Tape Storage and Handling (NML/CLIR)", "IASA TC-04, Guidelines on the Production and Preservation of Digital Audio Objects"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

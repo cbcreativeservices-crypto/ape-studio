@@ -1,0 +1,117 @@
+{
+ "batch": 391,
+ "topic": "Game Audio",
+ "authored": [
+  {
+   "id": "5c3233b8-f14d-44f3-9d4c-68586b841c80",
+   "term": "Game-audio implementation room",
+   "fields": {
+    "definition": "A dedicated workspace equipped for game-audio implementation, the task of integrating audio assets into a game so they respond to gameplay. It typically runs the game engine (such as Unreal or Unity) alongside audio middleware (such as Audiokinetic Wwise or Firelight FMOD Studio) with calibrated monitoring, so a technician can author events, real-time parameters, states, and switches and audition the audio in-engine.",
+    "plain_english": "A room set up to put game sounds into a game. An audio person runs the game next to a tool like Wwise or FMOD, links each sound to what happens in play, and then tests it.",
+    "purpose_function": "It gives the person responsible for implementation the tools and monitoring needed to connect sound and music to game logic and to verify that behavior in the running build, rather than only mixing linear files.",
+    "practical_application": "A technician works here to import assets into Wwise or FMOD, wire events and RTPCs to game parameters, build and profile SoundBanks, and audition the result in the live engine to catch missing triggers or mix problems before a build ships.",
+    "category": "Game-audio facility",
+    "related_terms": [
+     "Game-audio suite",
+     "Interactive-audio lab",
+     "Audio middleware",
+     "Real-Time Parameter Control (RTPC)",
+     "SoundBank",
+     "Game engine"
+    ],
+    "common_mistakes": [
+     "Treating implementation as simply exporting mixed files, rather than authoring the events, parameters, states, and switches that make audio respond to gameplay.",
+     "Monitoring only on the room's studio speakers and never checking the mix on target playback such as TV speakers, headphones, or a phone.",
+     "Forgetting to rebuild and profile SoundBanks after asset changes, so the running game loads outdated or missing audio.",
+     "UNSAFE: auditioning game effects at high SPL for long implementation sessions without managing monitoring level, risking noise-induced hearing loss."
+    ],
+    "scenario_contexts": [
+     "Integrating a new weapon's sound set into the engine and mapping its firing, reload, and impact events.",
+     "Setting up an RTPC so an engine loop's pitch tracks vehicle speed, then testing it while driving in-game.",
+     "Profiling a level's audio in the running build to find voices that exceed the platform's voice limit."
+    ]
+   },
+   "sources": [
+    "Audiokinetic, Wwise Help / Reference documentation (Understanding Events, RTPCs, States, Switches; game engine integration)",
+    "Richard Stevens & Dave Raybould, Game Audio Implementation: A Practical Guide Using the Unreal Engine (Focal Press / Routledge)",
+    "Richard Stevens & Dave Raybould, The Game Audio Tutorial: A Practical Guide to Sound and Music for Interactive Games (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "feb4f691-45a1-43ce-a580-12fa47b0d135",
+   "term": "Game-audio suite",
+   "fields": {
+    "definition": "A complex of connected rooms configured as a complete game-audio production facility, typically covering recording and editing, sound design, implementation, and mixing for interactive projects. It groups the spaces and shared systems a game-audio team needs under one roof, as distinct from a single-purpose room.",
+    "plain_english": "A set of connected rooms that together make all the sound for games. One space might record sounds, another designs them, and another puts them into the game.",
+    "purpose_function": "It brings the full game-audio workflow—capture, design, implementation, and mixing—into one coordinated facility so a team can move a project through every stage without leaving the building.",
+    "practical_application": "A studio books its game-audio suite for a project, using its recording room for source capture, its design and edit rooms for asset creation, and its implementation room to integrate and mix the audio in-engine.",
+    "category": "Game-audio facility",
+    "related_terms": [
+     "Game-audio implementation room",
+     "Interactive-audio lab",
+     "Audio middleware",
+     "Sound design",
+     "Control room",
+     "SoundBank"
+    ],
+    "common_mistakes": [
+     "Confusing a game-audio suite with a music studio, overlooking that it must also support in-engine implementation and interactive testing, not just linear recording and mixing.",
+     "Assuming every room shares one calibrated reference, when target-platform monitoring and workstation setups differ between spaces.",
+     "Neglecting a shared middleware project and asset server, so rooms in the suite drift onto different builds and versions.",
+     "UNSAFE: running long high-level monitoring or repeated loud SFX passes across rooms without hearing-conservation practices, risking cumulative noise exposure."
+    ],
+    "scenario_contexts": [
+     "A game-audio team moving a title from field recording through design, implementation, and final mix within one facility.",
+     "Scheduling different rooms of the suite for parallel work, such as dialogue editing in one and implementation in another.",
+     "Setting up a shared asset server and middleware project so all rooms in the suite work from the same build."
+    ]
+   },
+   "sources": [
+    "Audiokinetic, Wwise Help / Reference documentation (project structure, SoundBanks, game engine integration)",
+    "Richard Stevens & Dave Raybould, Game Audio Implementation: A Practical Guide Using the Unreal Engine (Focal Press / Routledge)",
+    "Karen Collins, Game Sound: An Introduction to the History, Theory, and Practice of Video Game Music and Sound Design (MIT Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c195826c-db2c-4658-89f9-a8a6b12147c2",
+   "term": "Interactive-audio lab",
+   "fields": {
+    "definition": "A workspace outfitted for developing and testing interactive (adaptive) audio—sound and music that changes in real time in response to game state and player input. It combines a game engine, audio middleware, and monitoring so that non-linear audio systems can be prototyped, implemented, and evaluated; the term is common in educational, research, and development settings.",
+    "plain_english": "A room set up to build and test game sound that changes as you play. People try out music and effects that react to what the player does and check if they work in the game.",
+    "purpose_function": "It provides a controlled space to prototype and evaluate adaptive audio behavior—transitions, layering, and parameter-driven changes—so systems can be refined before they go into a shipping game.",
+    "practical_application": "Students or developers use the lab to build middleware projects, hook audio events and parameters to game logic, and audition how music and effects adapt while play conditions change.",
+    "category": "Game-audio facility",
+    "related_terms": [
+     "Game-audio implementation room",
+     "Game-audio suite",
+     "Adaptive music",
+     "Audio middleware",
+     "Real-Time Parameter Control (RTPC)",
+     "Interactive audio"
+    ],
+    "common_mistakes": [
+     "Thinking interactive audio is just looping a background track, rather than systems whose transitions and layers are driven by game parameters and state.",
+     "Testing adaptive behavior only in the middleware's preview or soundcaster tool and never in the actual running game, where timing and state changes differ.",
+     "Setting music transitions without defined sync points, so cues switch abruptly instead of on musically appropriate beats or bars.",
+     "UNSAFE: prototyping with sustained high monitoring levels during long lab sessions, risking noise-induced hearing loss."
+    ],
+    "scenario_contexts": [
+     "Building a vertical-layering music system whose intensity follows a combat parameter and testing it in-engine.",
+     "Prototyping a horizontal re-sequencing transition between exploration and danger music.",
+     "A class exercise implementing footstep switches that change with the surface the player walks on."
+    ]
+   },
+   "sources": [
+    "Audiokinetic, Wwise Help / Reference documentation (Interactive Music, States, Switches, RTPCs)",
+    "Karen Collins, Game Sound: An Introduction to the History, Theory, and Practice of Video Game Music and Sound Design (MIT Press)",
+    "Richard Stevens & Dave Raybould, The Game Audio Tutorial: A Practical Guide to Sound and Music for Interactive Games (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

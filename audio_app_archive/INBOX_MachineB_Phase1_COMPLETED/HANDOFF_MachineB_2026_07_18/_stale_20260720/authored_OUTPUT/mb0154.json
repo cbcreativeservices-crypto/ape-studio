@@ -1,0 +1,159 @@
+{
+ "batch": 154,
+ "topic": "Creative & Advanced Mix Processing",
+ "authored": [
+  {
+   "id": "991ee0ea-94fd-4d2f-87d6-bc36ef484013",
+   "term": "Repeat edit",
+   "fields": {
+    "definition": "An edit in which a short segment of audio is copied and played back several times in immediate succession, producing a rhythmic repetition or roll. It is commonly applied to a single beat, syllable, or transient to build fills, build-ups, or glitch patterns from existing material.",
+    "plain_english": "You take a tiny piece of sound and play it over and over, fast. It is like a skipping record that repeats one beat to make a cool roll.",
+    "purpose_function": "It adds rhythmic movement and energy to a part without recording anything new, letting an engineer build fills, transitions, and glitch textures from audio that is already there.",
+    "practical_application": "In a DAW an engineer chops a drum hit or vocal word, then duplicates it across a bar to create a stutter roll that leads into a chorus.",
+    "category": "Creative Editing",
+    "related_terms": ["Stutter edit", "Slice rearrangement", "Time-stutter effect", "Rhythmic mute", "Reverse edit"],
+    "common_mistakes": ["Repeating a segment that is not trimmed to a zero crossing, causing clicks between repeats.", "Setting the repeat length off the tempo grid so the roll sounds out of time.", "Overusing repeats until they lose impact and clutter the mix."],
+    "scenario_contexts": ["Building a drum roll into a chorus by repeating the last snare hit.", "Creating a glitch fill from a single vocal syllable.", "Filling a gap in an arrangement with a repeated synth stab."]
+   },
+   "sources": ["Sound on Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "16c49089-3757-4c4f-b515-2fd9217f307d",
+   "term": "Reverse edit",
+   "fields": {
+    "definition": "An edit in which a segment of audio is played backwards, reversing its waveform in time so that a natural decay becomes a rising swell. It is commonly applied to cymbals, reverb tails, vocals, or whole phrases for creative effect.",
+    "plain_english": "You flip a piece of sound so it plays backwards. A cymbal crash then turns into a sound that grows louder and rushes up to the next beat.",
+    "purpose_function": "Reversing audio creates a rising, anticipatory sound that draws the ear toward the next event, adding surprise and motion that forward audio cannot give.",
+    "practical_application": "An engineer reverses a cymbal or a snare's reverb tail so it swells up into the downbeat of a new section.",
+    "category": "Creative Editing",
+    "related_terms": ["Reverse transition", "Repeat edit", "Slice rearrangement", "Tape-stop effect", "Stutter edit"],
+    "common_mistakes": ["Forgetting to render or bounce the reversed clip so playback reverts to normal audio.", "Not aligning the swell's peak with the downbeat, so the build lands early or late.", "Reversing a clip with a hard start that creates an abrupt click."],
+    "scenario_contexts": ["Reversing a cymbal to lead into a chorus.", "Flipping a vocal phrase for an intro texture.", "Reversing a reverb tail to create a rising swell before a drop."]
+   },
+   "sources": ["Sound on Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4fcd5720-387f-411c-8639-957c8cd17cd8",
+   "term": "Reverse transition",
+   "fields": {
+    "definition": "A transition technique that uses reversed audio, such as a reversed cymbal, reverb swell, or synth, to lead from one section of a song into the next, building anticipation as the reversed sound rises toward the downbeat.",
+    "plain_english": "This uses a backwards sound to join two parts of a song. The backwards sound gets louder and pulls you into the next part, like a run-up before a jump.",
+    "purpose_function": "It signals and smooths the move between sections, giving the listener a rising cue that a change is coming and making the arrival feel bigger.",
+    "practical_application": "Before a chorus or drop, an engineer places a reversed cymbal or reverse-reverb swell that crescendos into the first beat of the new section.",
+    "category": "Transition Effects",
+    "related_terms": ["Reverse edit", "Tape-stop effect", "Repeat edit", "Riser", "Stutter edit"],
+    "common_mistakes": ["Letting the swell peak before the downbeat so the transition loses its punch.", "Making the reversed element too loud so it buries the following section.", "Using a reversed sound whose length does not match the bar, throwing off the timing."],
+    "scenario_contexts": ["Leading into a chorus with a reversed cymbal swell.", "Building tension before an electronic-dance drop.", "Bridging a verse and a breakdown with a reverse-reverb rise."]
+   },
+   "sources": ["Sound on Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0968ccf7-879e-4ba2-b42a-0fca56f6235d",
+   "term": "Rhythmic mute",
+   "fields": {
+    "definition": "The rhythmic muting and unmuting of a track or group in time with the tempo, creating gaps that chop a sustained sound into a pattern. It can be performed by automating a mute, drawing volume steps, or using a tempo-synced gate.",
+    "plain_english": "You quickly turn a sound off and on in time with the beat. A held pad then becomes a chopped, pulsing pattern, like flicking a light switch to the music.",
+    "purpose_function": "It turns a static or sustained part into a rhythmic element, adding groove and movement and helping a busy section breathe.",
+    "practical_application": "An engineer automates the mute on a pad or guitar so it drops out on certain beats, creating a stuttering rhythmic pattern in sync with the drums.",
+    "category": "Rhythmic Effects",
+    "related_terms": ["Trance-gate effect", "Stutter edit", "Repeat edit", "Slice rearrangement", "Time-stutter effect"],
+    "common_mistakes": ["Placing mute points off the grid so the pattern sounds sloppy.", "Muting without a short fade, causing clicks at each cut.", "Chopping so hard that the part loses its musical role."],
+    "scenario_contexts": ["Chopping a sustained pad into an eighth-note pattern.", "Muting a vocal on off-beats for a rhythmic hook.", "Gating a guitar chord in time with the kick."]
+   },
+   "sources": ["Sound on Sound", "Izhaki, Mixing Audio"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b62032c5-44c2-49d8-8685-fd7b3d4bb21f",
+   "term": "Slice rearrangement",
+   "fields": {
+    "definition": "An editing technique in which a passage of audio is cut into smaller slices, often at transients or beat divisions, and those slices are reordered, repeated, or removed to create a new rhythmic pattern. It is a core method of breakbeat and glitch editing.",
+    "plain_english": "You cut a loop into small pieces and put them back in a new order. It is like cutting up a sentence and rearranging the words to make a new one.",
+    "purpose_function": "It lets an engineer build fresh grooves and fills from existing audio, changing rhythm and feel without recording a new performance.",
+    "practical_application": "A producer slices a drum break at each hit, then drags the slices into a new order to make a unique beat or a fill.",
+    "category": "Creative Editing",
+    "related_terms": ["Stutter edit", "Repeat edit", "Time-stutter effect", "Reverse edit", "Rhythmic mute"],
+    "common_mistakes": ["Cutting between transients so slices start with clicks or clipped hits.", "Not snapping slices to the grid, making the new pattern drift off time.", "Leaving gaps or overlaps between slices that create unwanted silence or flams."],
+    "scenario_contexts": ["Rearranging a drum break into a new groove.", "Building a fill by reordering slices of a vocal chop.", "Chopping a sampled loop to fit a new tempo and pattern."]
+   },
+   "sources": ["Sound on Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2c082195-0d7e-40cc-8109-54004c560a99",
+   "term": "Stutter edit",
+   "fields": {
+    "definition": "An edit that rapidly repeats a very short slice of audio, often with changing rate, pitch, or volume, to produce a stuttering or glitching effect. It can be performed by hand in a DAW or with dedicated plugins built for the purpose.",
+    "plain_english": "You repeat a tiny bit of sound very fast so it seems to trip or stumble. It sounds like a word or beat getting stuck and repeating in quick bursts.",
+    "purpose_function": "It adds a burst of rhythmic, glitchy excitement, useful for fills, build-ups, and grabbing attention at transition points.",
+    "practical_application": "An engineer applies a stutter to the last beat before a drop, repeating a slice at a fast tempo-synced rate to create tension.",
+    "category": "Rhythmic Effects",
+    "related_terms": ["Repeat edit", "Time-stutter effect", "Slice rearrangement", "Trance-gate effect", "Rhythmic mute"],
+    "common_mistakes": ["Choosing a stutter rate not synced to tempo, so it clashes with the groove.", "Repeating a slice that has a click at its edges.", "Stuttering too long so it feels gimmicky and stalls the energy."],
+    "scenario_contexts": ["Adding a stutter fill before a chorus.", "Glitching a vocal word for a hook.", "Building tension on the final beat before a drop."]
+   },
+   "sources": ["Sound on Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "26f55ec5-d78e-43d3-b558-c130a12ffe0f",
+   "term": "Tape-stop effect",
+   "fields": {
+    "definition": "An effect that simulates an analog tape machine or turntable being switched off, where pitch and speed drop rapidly to zero as the medium slows to a stop. It produces a characteristic downward pitch-and-tempo glide.",
+    "plain_english": "It copies the sound of a tape or record slowing down and stopping. The pitch drops and the sound bends downward until it dies away.",
+    "purpose_function": "It creates a dramatic stop or hand-off between sections, giving a sudden, recognizable winding-down moment that grabs attention.",
+    "practical_application": "A producer places a tape-stop at the end of a section so the music appears to grind to a halt before the next part begins.",
+    "category": "Transition Effects",
+    "related_terms": ["Reverse transition", "Time-stutter effect", "Reverse edit", "Riser", "Rhythmic mute"],
+    "common_mistakes": ["Setting the slow-down time so the stop does not land on the beat.", "Using it so often that it loses its dramatic impact.", "Forgetting that the pitch drop can clash with a sustained note underneath."],
+    "scenario_contexts": ["Ending a section with a dramatic wind-down.", "Transitioning into a breakdown.", "Creating a DJ-style stop before a drop."]
+   },
+   "sources": ["Sound on Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bec2e464-f6f8-4d32-b42e-4f5b94b0cc4e",
+   "term": "Time-stutter effect",
+   "fields": {
+    "definition": "A time-based effect that repeats and re-triggers short slices of audio in rapid succession, often varying the repeat rate to create rolling or accelerating stutters. It manipulates playback timing rather than the source itself, producing glitch and roll textures.",
+    "plain_english": "This chops a sound into fast repeats and can speed them up or slow them down. It makes a rolling, stuttering pattern, like a drum roll built from one hit.",
+    "purpose_function": "It adds rhythmic, glitchy motion and build-up energy, letting an engineer create rolls and fills from a single sound by re-triggering it in time.",
+    "practical_application": "An engineer uses a time-stutter on a snare or synth to create an accelerating roll that builds into a new section.",
+    "category": "Rhythmic Effects",
+    "related_terms": ["Stutter edit", "Repeat edit", "Slice rearrangement", "Trance-gate effect", "Rhythmic mute"],
+    "common_mistakes": ["Leaving the repeat rate off the tempo grid so rolls feel unsteady.", "Stuttering slices that have clicky edges.", "Overusing the effect until it distracts from the song."],
+    "scenario_contexts": ["Building an accelerating drum roll into a drop.", "Adding a glitch fill on a synth stab.", "Creating tension in a breakdown with re-triggered slices."]
+   },
+   "sources": ["Sound on Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d10ad1ed-ad93-45c2-9cd5-d172249056cf",
+   "term": "Trance-gate effect",
+   "fields": {
+    "definition": "A rhythmic effect in which a tempo-synced gate or amplitude modulation rapidly opens and closes on a sustained sound, chopping it into a pulsing pattern of on and off steps. It is typically driven by a step sequencer or LFO and is a staple of trance and electronic dance music.",
+    "plain_english": "It quickly turns a held sound off and on in a set pattern, in time with the beat. A long pad becomes a chopping, pulsing rhythm, like a strobe light for sound.",
+    "purpose_function": "It turns a sustained pad or chord into a rhythmic, driving element, adding energy and movement locked to the tempo.",
+    "practical_application": "An engineer feeds a pad through a tempo-synced gate with a programmed step pattern so it pulses in time with the track.",
+    "category": "Rhythmic Effects",
+    "related_terms": ["Rhythmic mute", "Stutter edit", "Time-stutter effect", "Repeat edit", "Reverse transition"],
+    "common_mistakes": ["Running the gate free rather than synced to tempo, so the pulse drifts off beat.", "Using instant open and close with no fade, causing clicks on each step.", "Gating a part with little sustain, so the effect is barely audible."],
+    "scenario_contexts": ["Turning a pad into a rhythmic pulse in a trance track.", "Adding movement to a sustained chord in a breakdown.", "Creating a pumping synth rhythm synced to the tempo."]
+   },
+   "sources": ["Sound on Sound", "Izhaki, Mixing Audio"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

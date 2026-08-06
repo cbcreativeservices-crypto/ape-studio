@@ -1,0 +1,230 @@
+{
+ "expert": "language",
+ "group": 4,
+ "reviews": [
+  {
+   "id": "e0727816-a43f-481b-bc32-d163945f2977",
+   "term": "Arrival time",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6ccafaff-c1b1-486b-beba-e9cff306b196",
+   "term": "ASCII import",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7a20d878-2491-4b11-b937-ef908676460c",
+   "term": "ASIO (Audio Stream Input/Output)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4aac8c7c-9f11-4560-ba6e-cc43ea744ff5",
+   "term": "Assistive Listening System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eba310f1-af3a-4322-80e7-45ac0a6fc8e2",
+   "term": "Asymmetrical clipping",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "67142cad-7b80-41c9-9419-02776b611638",
+   "term": "Attack",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e2e6cd6c-2e7a-4ea7-ae88-ef6bc8add3ed",
+   "term": "Attack Time",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "37fc9f86-cef1-4a36-89fe-61dc5f202454",
+   "term": "Attenuation / Attenuate",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "46593a78-5084-4002-a3dd-85d8e2cb036b",
+   "term": "Audible inspection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b015ccb4-c063-44ca-8cd1-84560d534da5",
+   "term": "Audience",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0f506aee-9956-40b2-9c26-3d116ad94fa8",
+   "term": "Audience Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ffc80ea7-f312-4eeb-ad6e-e23cab1562bd",
+   "term": "Audience Safety Zone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a0b9c0cc-ad43-455c-aabc-8c27750c893e",
+   "term": "Audio Analyzer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d4097778-3769-4317-a0b3-54e9fe2d4c2e",
+   "term": "Audio Assistant (A2)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ff4ee3a7-0c42-43e9-8f97-2d08668b81f5",
+   "term": "Audio Frequency",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dbad14cb-9dad-4469-bb21-b4d54691551c",
+   "term": "Audio Installation and Integration",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bafa2c29-5679-45c7-9106-cb842e8c41f7",
+   "term": "Audio Interface",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "14af70f8-0d07-462e-a2cd-7c6d0495e25c",
+   "term": "Audio latency",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1fd27cff-5d20-4eda-bcf8-4aa2d5b0cfdf",
+   "term": "Audio Operator (A1)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dded950d-40e9-4ef9-a239-8a81186869f8",
+   "term": "Audio Splitter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b2b1dfb5-89e9-4389-8a42-a86d92dc1ead",
+   "term": "Audio Test Set",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "aca2733b-62c3-47c2-b0ea-dd6ec140648c",
+   "term": "Audyssey",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fcd67751-724c-49a2-880f-3f4db0813b5c",
+   "term": "Audyssey / Auto Room Calibration",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Low",
+     "issue": "The second list item runs two separate mistakes together with a comma and ends in a dangling fragment: 'using calibration once and expecting permanent optimization (recalibrate if furniture changes), not trusting system adjustments.' The trailing clause is a different, incomplete point grafted onto the first.",
+     "suggestion": "Split into two clean items: 'Running calibration once and expecting it to stay optimal - re-run it if speakers or furniture move' and 'Distrusting the automatic adjustments and manually overriding them without a measurement to justify the change.'"
+    }
+   ]
+  },
+  {
+   "id": "0457cbbb-178c-456d-96e8-6202fb369425",
+   "term": "Auracast",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e3cac290-adce-4c10-a54f-50be1da79406",
+   "term": "Auto-Release",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f609eaa8-aef6-4e2c-9b82-0b69a98b54f5",
+   "term": "Automatic Gain Control (AGC)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "19f12546-5f5f-452e-b072-4eb6e0e771db",
+   "term": "automatic mic mixer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6f8af905-1cea-4988-9f2b-8bc4dee11064",
+   "term": "Aux Mix",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "86df7338-c7f6-4423-95ea-e55534ebbb08",
+   "term": "Aux-fed subwoofer",
+   "verdict": "NEEDS_REVISION",
+   "suggestions": [
+    {
+     "field": "plain_english",
+     "severity": "High",
+     "issue": "plain_english (and purpose_function/practical_application) describe a home-theater AV receiver's dedicated sub output and receiver-based bass management, but the definition defines the term as a live-sound technique of driving subs from a console aux send fed by selected LF channels. The fields contradict the definition, so a reader cannot tell what 'aux-fed subwoofer' actually means.",
+     "suggestion": "Rewrite plain_english (and align purpose_function/practical_application) to the definition's live-sound sense, e.g.: 'Instead of letting the subs take the full main mix, you feed them from a dedicated aux send and choose exactly which low-frequency channels go to it - typically kick, bass, toms, and synths. This gives the engineer channel-by-channel control over what reaches the subs and keeps other sources out of them.'"
+    }
+   ]
+  },
+  {
+   "id": "018ff95c-1d93-47fd-b8b4-16b784bcc4bb",
+   "term": "Auxiliary Battery",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1859b183-9655-478e-9e2e-dd289c4c891a",
+   "term": "Auxiliary Input",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c60954e7-bb47-43f0-af54-e0fa31c602ec",
+   "term": "AV Receiver (AVR)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c2beaa32-3e35-43c9-9a16-bcffb1722d07",
+   "term": "AV Technician",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "185a2048-c5b9-46bd-971e-a9432fd5de0a",
+   "term": "AV-over-IP (AVoIP)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0e8c97ef-3184-49d4-9c24-4f203ae133bb",
+   "term": "AVB (Audio Video Bridging)",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

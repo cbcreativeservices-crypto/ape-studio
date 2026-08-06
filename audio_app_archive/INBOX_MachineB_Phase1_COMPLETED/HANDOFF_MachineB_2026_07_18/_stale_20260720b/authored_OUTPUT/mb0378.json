@@ -1,0 +1,331 @@
+{
+ "batch": 378,
+ "topic": "Immersive Formats & Delivery",
+ "authored": [
+  {
+   "id": "f58519f2-dfe7-49c6-939f-e8b447b9819a",
+   "term": "Dolby Atmos music mix",
+   "fields": {
+    "definition": "A music mix created in Dolby Atmos, an object-based, three-dimensional audio format in which sounds are carried as a channel-based bed (typically up to 7.1.2) together with individual audio objects that hold positional metadata. A renderer interprets that metadata to reproduce the mix over a range of speaker layouts, including overhead speakers, or as a binaural headphone signal.",
+    "plain_english": "A song mixed so sounds can sit all around and even above the listener, not just left and right. It works like moving each instrument to its own spot in a room, including the ceiling.",
+    "purpose_function": "It lets an engineer position and move sounds in three dimensions so one mix can adapt to many speaker setups or headphones, giving music a more spacious, enveloping presentation than stereo.",
+    "practical_application": "An engineer routes tracks as objects or into the bed, places them in a 3D space with spatial panners, monitors through the Dolby Atmos Renderer, and delivers an ADM BWF master for immersive streaming platforms.",
+    "category": "Immersive format",
+    "related_terms": [
+     "Immersive music mix",
+     "Immersive bus structure",
+     "Immersive bass management",
+     "Immersive mix session",
+     "Front-wall placement",
+     "Immersive depth"
+    ],
+    "common_mistakes": [
+     "Overusing overhead and surround speakers so the mix sounds gimmicky rather than musical",
+     "Not checking the binaural or stereo fold-down, which is how most listeners actually hear it",
+     "Assuming Atmos automatically improves a weak stereo mix instead of remixing thoughtfully",
+     "Failing to deliver a correct ADM BWF master for the target platform"
+    ],
+    "scenario_contexts": [
+     "Mixing an album for delivery to an immersive music streaming service",
+     "Re-mixing a stereo catalog track into Dolby Atmos",
+     "Checking an Atmos mix on headphones through the binaural render"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)",
+    "Dolby Atmos Music production guidance (Dolby Laboratories professional support)",
+    "Ballou, Handbook for Sound Engineers (immersive and object-based audio)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "21512fbc-9c38-4a20-8ed1-fa137a95671c",
+   "term": "Front-wall placement",
+   "fields": {
+    "definition": "The positioning of sound elements, or of the loudspeakers themselves, at the front plane of an immersive listening space, the wall carrying the left, center, and right (and any screen) channels. In an immersive music mix, front-wall placement anchors focal elements such as lead vocal, bass, and drums toward the front so they stay stable and easy to locate.",
+    "plain_english": "Putting the main sounds, like the lead singer, at the front of the room where the big speakers are. It is like keeping the singer on a stage in front of you instead of behind you.",
+    "purpose_function": "It keeps important, focal sounds anchored and easy to locate at the front, matching listener expectation and translating well when the mix folds down to stereo.",
+    "practical_application": "When building an immersive mix, an engineer places lead vocal and core rhythm elements as front objects or in the front bed channels, reserving surrounds and overheads for space, effects, and ambience.",
+    "category": "Object placement",
+    "related_terms": [
+     "Immersive depth",
+     "Dolby Atmos music mix",
+     "Immersive bus structure",
+     "Immersive music mix",
+     "Immersive channel verification",
+     "Immersive bass management"
+    ],
+    "common_mistakes": [
+     "Placing the lead vocal overhead or in the surrounds, giving an unstable image and poor stereo fold-down",
+     "Ignoring the center channel and losing a solid front anchor for the vocal",
+     "Assuming the front wall is only the center speaker rather than the left, center, and right plane"
+    ],
+    "scenario_contexts": [
+     "Anchoring a lead vocal at the front of a Dolby Atmos pop mix",
+     "Keeping kick, snare, and bass at the front for punch and focus",
+     "Confirming front-placed elements survive the binaural and stereo fold-down"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)",
+    "ITU-R BS.2051, Advanced sound system for programme production (speaker layouts)",
+    "Ballou, Handbook for Sound Engineers (surround and immersive monitoring)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f927f6c4-5b9f-445a-98a6-238afa2a4ce6",
+   "term": "Immersive bass management",
+   "fields": {
+    "definition": "In an immersive playback or monitoring system, the routing function that filters low-frequency content out of channels that cannot reproduce it and redirects that energy to one or more subwoofers, kept separate from the dedicated low-frequency effects (LFE) channel. A crossover, commonly around 80 to 120 Hz, splits the low band from the main channels so smaller speakers are protected and the low end is reproduced correctly.",
+    "plain_english": "A way of sending the deep bass to a subwoofer when the other speakers are too small to play it. It is like giving the heavy lifting to one strong speaker so the little ones do not strain.",
+    "purpose_function": "It gives consistent, full low-frequency reproduction and protects smaller monitors from overload, helping an immersive mix translate across systems with different speaker sizes.",
+    "practical_application": "In the Dolby Atmos Renderer or an immersive monitor controller, a technician sets the bass-management crossover and confirms that low frequencies from full-range channels route to the subwoofer while the LFE channel stays separate.",
+    "category": "Low-frequency management",
+    "related_terms": [
+     "Immersive bus structure",
+     "Immersive channel verification",
+     "Dolby Atmos music mix",
+     "Immersive mix session",
+     "Immersive music mix",
+     "Immersive depth"
+    ],
+    "common_mistakes": [
+     "Confusing bass management, a playback redirection, with the LFE channel, which is a discrete content channel",
+     "Routing musical low end into the LFE channel instead of leaving it in the full-range beds and objects",
+     "Assuming every playback system applies the same crossover, so the low-end balance is misjudged"
+    ],
+    "scenario_contexts": [
+     "Monitoring an Atmos mix on a rig with small overhead speakers plus a subwoofer",
+     "Setting the bass-management crossover in the renderer before a mix session",
+     "Checking translation between a full-range room and a bass-managed one"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)",
+    "ITU-R BS.2051, Advanced sound system for programme production (LFE and channel definitions)",
+    "Ballou, Handbook for Sound Engineers (bass management and monitoring)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ccbc7df4-0e2a-4ea6-8d3b-1821936bd10f",
+   "term": "Immersive bus structure",
+   "fields": {
+    "definition": "The routing architecture of an immersive mix session, meaning the arrangement of channel buses, group and aux buses, bed sub-mixes, and object outputs that feed audio to an immersive renderer. It defines how individual tracks are grouped and assigned either to a channel-based bed or to discrete objects carrying positional metadata.",
+    "plain_english": "The plan for how all the tracks flow through the mixer and reach the immersive renderer. It is like a road map that decides which sounds travel together and which get their own lane.",
+    "purpose_function": "It organizes a complex three-dimensional mix so each sound is correctly assigned to a bed channel or an object and reaches the renderer in an orderly, repeatable way.",
+    "practical_application": "An engineer sets up group buses for drums or backing vocals, sends them to bed channels or object outputs, and routes everything to the renderer so panning and metadata are captured correctly.",
+    "category": "Signal routing",
+    "related_terms": [
+     "Immersive mix session",
+     "Immersive mix template",
+     "Immersive channel verification",
+     "Immersive bass management",
+     "Dolby Atmos music mix",
+     "Front-wall placement"
+    ],
+    "common_mistakes": [
+     "Routing the same source to both a bed channel and an object, causing doubled or phasey audio",
+     "Assigning too many objects and running out of object outputs for the renderer",
+     "Using disorganized bus names that make later channel verification slow and error-prone"
+    ],
+    "scenario_contexts": [
+     "Building the routing for a large multi-track Atmos session",
+     "Deciding which stems go to the bed and which become objects",
+     "Troubleshooting a signal that reaches the wrong renderer input"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)",
+    "Avid Pro Tools Reference Guide (Dolby Atmos routing and workflow)",
+    "Ballou, Handbook for Sound Engineers (mix bus and signal routing)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5f040606-dea6-4cf8-b11f-b41ce7a8027e",
+   "term": "Immersive channel verification",
+   "fields": {
+    "definition": "The process of confirming that every output of an immersive mix session maps to the correct renderer input, bed channel, or loudspeaker before and during mixing. It commonly uses test tones, noise, or solo checks to verify that each bed channel and object output plays from its intended location.",
+    "plain_english": "Checking that every sound comes out of the right speaker before you start mixing. It is like a sound check where you make sure the left speaker really is the left one.",
+    "purpose_function": "It catches wiring, routing, or assignment errors early so that objects and bed channels reproduce from their intended positions, keeping the spatial mix accurate.",
+    "practical_application": "A technician sends a tone or noise to each bed channel and object in turn, then listens or watches meters to confirm it appears at the correct speaker and renderer input.",
+    "category": "Verification",
+    "related_terms": [
+     "Immersive bus structure",
+     "Immersive mix session",
+     "Immersive bass management",
+     "Dolby Atmos music mix",
+     "Front-wall placement",
+     "Immersive mix template"
+    ],
+    "common_mistakes": [
+     "Skipping verification and discovering swapped surround channels late in the mix",
+     "Trusting channel labels instead of testing the actual speaker output",
+     "Not re-checking routing after changing the monitor layout or re-patching outputs"
+    ],
+    "scenario_contexts": [
+     "Commissioning a new Dolby Atmos monitoring room",
+     "Running a routing check before delivering a master",
+     "Re-verifying outputs after re-patching the monitor controller"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)",
+    "ITU-R BS.2051, Advanced sound system for programme production (channel and speaker mapping)",
+    "Ballou, Handbook for Sound Engineers (system alignment and verification)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "195e2004-2e64-4c78-8f82-758310286f0c",
+   "term": "Immersive depth",
+   "fields": {
+    "definition": "The perceived front-to-back dimension of an immersive sound field, the sense of distance and layering between sounds placed near the listener and those placed farther away. It is produced with front-to-rear speaker positioning combined with level, early-reflection, reverberation, and high-frequency cues.",
+    "plain_english": "The feeling of some sounds being close and others far away in a mix. It is like looking down a street where near things seem big and far things seem small, but for your ears.",
+    "purpose_function": "It adds realism and separation to an immersive mix, letting the listener sense space between elements instead of hearing everything at one distance.",
+    "practical_application": "An engineer creates depth by panning elements toward the rear, lowering their level, rolling off highs, and adding reverberation so they sit behind the front-anchored sounds.",
+    "category": "Spatial attribute",
+    "related_terms": [
+     "Front-wall placement",
+     "Immersive music mix",
+     "Dolby Atmos music mix",
+     "Immersive bus structure",
+     "Immersive mix session",
+     "Immersive bass management"
+    ],
+    "common_mistakes": [
+     "Confusing depth, the front-to-back dimension, with mix width or height",
+     "Using only level to imply distance while ignoring reflections and reverberation",
+     "Adding so much reverberation for depth that the mix loses clarity"
+    ],
+    "scenario_contexts": [
+     "Placing background vocals behind the lead in an Atmos mix",
+     "Creating a sense of a room around a live immersive recording",
+     "Layering pads far back while keeping drums up front"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)",
+    "Ballou, Handbook for Sound Engineers (spatial perception and reverberation)",
+    "AES immersive audio literature (spatial imaging and envelopment)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3e885d0d-7334-4495-ae1f-c2c1e4101e43",
+   "term": "Immersive mix session",
+   "fields": {
+    "definition": "A digital audio workstation session configured for immersive mixing, with tracks routed to bed channels and objects, spatial panners inserted, and outputs connected to an immersive renderer for monitoring and mastering. It holds the full arrangement, routing, automation, and metadata needed to produce an immersive mix.",
+    "plain_english": "The project file in the mixing software set up to build a surround-and-height mix. It is like a workshop already laid out with the right tools before you start the job.",
+    "purpose_function": "It provides the working environment where all tracks, routing, panning, and automation for an immersive mix live together and connect to the renderer.",
+    "practical_application": "An engineer opens or builds the session, assigns tracks to beds or objects, automates 3D panning, and monitors through the renderer while mixing.",
+    "category": "Session setup",
+    "related_terms": [
+     "Immersive mix template",
+     "Immersive bus structure",
+     "Immersive channel verification",
+     "Dolby Atmos music mix",
+     "Immersive music mix",
+     "Immersive bass management"
+    ],
+    "common_mistakes": [
+     "Starting from a plain stereo session without proper immersive routing",
+     "Not saving the setup as a reusable template for future projects",
+     "Letting the DAW session and renderer settings fall out of sync"
+    ],
+    "scenario_contexts": [
+     "Setting up a new Dolby Atmos project",
+     "Converting a stereo session for an immersive remix",
+     "Recalling a saved session to revise an immersive mix"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)",
+    "Avid Pro Tools Reference Guide (Dolby Atmos session workflow)",
+    "Ballou, Handbook for Sound Engineers (mixing workflow)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fa652a78-92e9-4b55-a6fb-e69e151cf89a",
+   "term": "Immersive mix template",
+   "fields": {
+    "definition": "A pre-built, reusable DAW session file that contains the standard routing, bed and object output assignments, bus structure, and monitoring setup for an immersive mix. Loading it lets an engineer begin a new immersive project without rebuilding the signal flow each time.",
+    "plain_english": "A ready-made starting file for immersive mixes with the wiring already done. It is like a blank form that already has all the boxes and lines in the right place.",
+    "purpose_function": "It saves setup time and enforces a consistent, error-free routing structure across immersive projects.",
+    "practical_application": "An engineer loads the template, imports or records tracks into its pre-routed beds and object slots, and begins mixing immediately.",
+    "category": "Session setup",
+    "related_terms": [
+     "Immersive mix session",
+     "Immersive bus structure",
+     "Immersive channel verification",
+     "Dolby Atmos music mix",
+     "Immersive music mix",
+     "Front-wall placement"
+    ],
+    "common_mistakes": [
+     "Using an outdated template whose routing no longer matches the current renderer setup",
+     "Not adjusting the object count to suit the size of the project",
+     "Assuming the template's monitor layout matches the actual room"
+    ],
+    "scenario_contexts": [
+     "Standardizing Atmos setups across a studio's engineers",
+     "Quickly starting a new immersive project from a known-good file",
+     "Onboarding an assistant with a consistent routing structure"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)",
+    "Avid Pro Tools Reference Guide (session templates and Atmos routing)",
+    "Ballou, Handbook for Sound Engineers (mixing workflow)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6dce7214-9b3c-4810-9dcc-c2764a840e74",
+   "term": "Immersive music mix",
+   "fields": {
+    "definition": "A music mix produced in an immersive, three-dimensional audio format such as Dolby Atmos, Sony 360 Reality Audio, or Auro-3D, that places sounds around and above the listener using surround and height channels or object-based positioning. It is monitored and delivered through a format-specific renderer or encoder rather than a two-channel stereo bus.",
+    "plain_english": "A song mixed to surround the listener with sound from all sides and overhead. It is like sitting inside the band instead of hearing them from across the room.",
+    "purpose_function": "It gives music a spacious, enveloping presentation and supports playback on immersive systems and headphones, going beyond the left-right limits of stereo.",
+    "practical_application": "An engineer distributes vocals, instruments, and effects across the surround and height field, monitors on an immersive system, and exports a format-specific master for streaming.",
+    "category": "Immersive format",
+    "related_terms": [
+     "Dolby Atmos music mix",
+     "Immersive mix session",
+     "Immersive depth",
+     "Front-wall placement",
+     "Immersive bus structure",
+     "Immersive bass management"
+    ],
+    "common_mistakes": [
+     "Treating it as just a louder or wider stereo mix",
+     "Ignoring how it folds down to stereo or binaural for most listeners",
+     "Overusing height and surround so the result sounds unnatural"
+    ],
+    "scenario_contexts": [
+     "Delivering an album in both Dolby Atmos and 360 Reality Audio",
+     "Remixing a catalog track for immersive streaming",
+     "Checking the binaural headphone fold-down of an immersive mix"
+    ]
+   },
+   "sources": [
+    "Dolby Atmos Renderer Guide (Dolby Laboratories technical documentation)",
+    "ITU-R BS.2051, Advanced sound system for programme production (immersive channel layouts)",
+    "Ballou, Handbook for Sound Engineers (immersive and object-based audio)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

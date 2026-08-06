@@ -1,0 +1,236 @@
+{
+ "batch": 219,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "fbebf045-6247-42ed-be2a-536fa9a068d8",
+   "term": "Dialogue dereverberation",
+   "fields": {
+    "definition": "The process of reducing or removing unwanted room reverberation and reflections from recorded dialogue, typically using spectral or algorithmic dereverb processing, to improve clarity and intelligibility.",
+    "plain_english": "This means taking the echoey room sound out of recorded speech. It makes a voice sound clear and close, as if it were captured in a quiet booth instead of a big empty room.",
+    "purpose_function": "It exists to rescue location dialogue recorded in echoey spaces so it cuts through the mix and matches quieter studio or ADR lines.",
+    "practical_application": "A dialogue editor runs a dereverb plug-in such as iZotope RX De-reverb on a scene shot in a hard-walled room, dialing in reduction until the voice is clear without sounding hollow.",
+    "category": "Dialogue Processing",
+    "related_terms": ["Dialogue equalization", "Dialogue mixing", "Dialogue expansion", "Room tone", "ADR"],
+    "common_mistakes": [
+     "Over-processing until the voice sounds hollow, robotic, or underwater",
+     "Expecting dereverb to fully replace a bad recording rather than reduce reverb",
+     "Applying one static setting across a scene instead of adjusting per line",
+     "Confusing dereverberation with noise reduction, which targets a different problem"
+    ],
+    "scenario_contexts": [
+     "Cleaning up dialogue shot in an empty tiled bathroom or stairwell",
+     "Matching a reverberant wide-shot take to a tighter close-up take",
+     "Preparing echoey location dialogue to sit alongside dry ADR lines"
+    ]
+   },
+   "sources": ["iZotope RX technical documentation", "Yewdall, Practical Art of Motion Picture Sound", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8eb4cd30-ffba-4794-bbfc-4f8c10c85971",
+   "term": "Dialogue divergence",
+   "fields": {
+    "definition": "A mix control that spreads center-panned dialogue partly into the left and right channels, so a signal placed in the center is also reproduced by the adjacent speakers rather than solely by the center channel.",
+    "plain_english": "Normally movie dialogue comes only from the middle speaker. Divergence lets some of that voice also play from the left and right speakers, so it feels wider and does not vanish if you sit off to one side.",
+    "purpose_function": "It exists to keep center dialogue audible and stable across a wide seating area and to blend the voice into the front sound field instead of pinning it to one speaker.",
+    "practical_application": "A re-recording mixer adds a small amount of divergence to spread dialogue across the front three channels, or uses it so a phantom center still works when the center speaker is weak.",
+    "category": "Dialogue Mixing",
+    "related_terms": ["Dialogue localization", "Dialogue mixing", "Center channel", "Panning", "Downmix"],
+    "common_mistakes": [
+     "Adding too much divergence, which smears the dialogue image and weakens its anchor to the screen",
+     "Assuming divergence and ordinary panning do the same thing",
+     "Forgetting how divergence interacts with downmix and phantom-center behavior"
+    ],
+    "scenario_contexts": [
+     "Spreading dialogue across left, center, and right for a wide theatrical seating area",
+     "Keeping dialogue feeling centered when a center speaker is small or absent",
+     "Blending narration into the front field in a surround mix"
+    ]
+   },
+   "sources": ["Dolby technical documentation", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "04c7719c-9e71-4f1c-9efc-10c44e2cc0cf",
+   "term": "Dialogue echo effect",
+   "fields": {
+    "definition": "The deliberate addition of discrete delay repeats to a dialogue line as a creative effect, used to signal a memory, dream, hallucination, large space, or supernatural quality rather than to correct a recording.",
+    "plain_english": "This is adding repeats to a character's voice on purpose, so the words bounce back like a shout in a canyon. It is used for dreams, memories, or spooky moments, not to fix a bad recording.",
+    "purpose_function": "It exists as a storytelling tool to mark that a voice is inside a character's head, in a huge space, or otherworldly.",
+    "practical_application": "A mixer sends a flashback line to a delay plug-in and blends in timed repeats, often filtered, so the words echo without becoming impossible to understand.",
+    "category": "Dialogue Processing",
+    "related_terms": ["Dialogue mixing", "Dialogue futzing", "Dialogue equalization", "Delay", "Reverb"],
+    "common_mistakes": [
+     "Setting the echo so loud or long that the words become impossible to understand",
+     "Using a raw delay with no filtering, so the effect sounds cheap",
+     "Overusing the effect until it loses its dramatic impact"
+    ],
+    "scenario_contexts": [
+     "A dream or flashback sequence",
+     "A god-like or ghostly voice",
+     "A memory replaying a past line of dialogue"
+    ]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "158bd326-2af1-4e4b-919a-15c2b64af302",
+   "term": "Dialogue equalization",
+   "fields": {
+    "definition": "The application of equalization to dialogue tracks to shape their tonal balance, reducing problem frequencies such as low-end rumble, proximity boom, sibilance, or boxiness and adding presence, so lines are clear, consistent, and intelligible.",
+    "plain_english": "This is adjusting the tone of recorded speech by turning some pitch ranges up and others down. It removes booming or harsh sounds and adds clarity, like tuning the bass and treble so a voice is easy to understand.",
+    "purpose_function": "It exists to make dialogue intelligible and tonally even from shot to shot, and to help voices cut through music and effects without becoming harsh.",
+    "practical_application": "A dialogue mixer high-passes rumble, dips a boxy low-mid, and adds a gentle presence lift so a boomy location line matches the rest of the scene.",
+    "category": "Dialogue Processing",
+    "related_terms": ["Dialogue mixing", "Dialogue dereverberation", "Dialogue limiting", "High-pass filter", "De-essing"],
+    "common_mistakes": [
+     "Boosting instead of cutting, causing a harsh or unnatural tone",
+     "Not high-passing low-frequency rumble and handling noise",
+     "Applying one EQ across a whole scene instead of matching shot to shot",
+     "Over-brightening until sibilance turns harsh"
+    ],
+    "scenario_contexts": [
+     "Removing proximity boom from a close boom take",
+     "Matching the tone of a lav mic to a boom mic on the same line",
+     "Helping dialogue sit clearly over a loud music cue"
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "iZotope RX technical documentation", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "02e9e84f-72a2-4490-b295-a24ffcb90922",
+   "term": "Dialogue expansion",
+   "fields": {
+    "definition": "The use of downward expansion or gating on dialogue to reduce the level of background noise, room tone, and bleed during pauses between words or lines, lowering signal below a threshold while leaving speech largely untouched.",
+    "plain_english": "This quietly turns down the gaps between spoken words, where only background noise sits. The voice stays full, but hiss and room noise drop when nobody is talking, like muting the mic between lines.",
+    "purpose_function": "It exists to clean up the spaces around dialogue so noise does not pile up when many tracks play together, without dulling the speech itself.",
+    "practical_application": "An editor sets an expander threshold just below the quietest words so background hiss drops in the pauses, then checks that word beginnings and endings are not chopped off.",
+    "category": "Dialogue Processing",
+    "related_terms": ["Dialogue dereverberation", "Dialogue mixing", "Room tone", "Noise gate", "Noise reduction"],
+    "common_mistakes": [
+     "Setting the threshold too high, which clips off soft word starts and endings",
+     "Using heavy expansion instead of proper noise reduction, causing pumping",
+     "Forgetting that abrupt gating makes room tone jump on and off unnaturally"
+    ],
+    "scenario_contexts": [
+     "Reducing air-conditioning hiss between lines of dialogue",
+     "Cleaning bleed on a multi-mic dialogue scene",
+     "Tightening noisy lav-mic tracks before the final mix"
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "iZotope RX technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d384c5e7-ef0f-4b20-87fa-1ac8ace98d27",
+   "term": "Dialogue futzing",
+   "fields": {
+    "definition": "The intentional processing of dialogue to sound as though it is reproduced through a limited-fidelity device such as a telephone, radio, television, intercom, or PA, typically by band-limiting the frequency response and adding distortion or noise to match the source shown on screen.",
+    "plain_english": "Futzing means making a voice sound like it comes out of a phone, radio, or TV. You cut the deep and high tones and add a little grit, so it matches the small speaker the audience sees on screen.",
+    "purpose_function": "It exists to make off-screen or device-sourced voices believable, so a phone or radio voice truly seems to come from that device.",
+    "practical_application": "A mixer band-passes a line, adds slight distortion and maybe a codec or noise layer, and automates it so the futz starts exactly when a character raises a phone to their ear.",
+    "category": "Dialogue Processing",
+    "related_terms": ["Dialogue equalization", "Dialogue mixing", "Dialogue echo effect", "Band-pass filter", "Distortion"],
+    "common_mistakes": [
+     "Making the futz so extreme that the words become impossible to understand",
+     "Failing to match the futz to the on-screen device, such as a tiny phone versus a large PA",
+     "Not automating the effect so it starts and stops with the picture",
+     "Leaving the futzed line as wide and full as normal dialogue"
+    ],
+    "scenario_contexts": [
+     "A phone call heard from only one character's side",
+     "A voice over a two-way radio or intercom",
+     "A news anchor heard from a TV in the background"
+    ]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4f898b3c-ed86-42a0-adc4-8dfaa373a13f",
+   "term": "Dialogue limiting",
+   "fields": {
+    "definition": "The application of a limiter to dialogue to cap short-term peaks and control dynamic range, preventing overloads and keeping levels consistent so speech stays within target loudness and does not clip or jump out of the mix.",
+    "plain_english": "A limiter puts a ceiling on how loud the voice can get. It catches sudden loud words so nothing overloads, keeping speech steady and even, like a safety lid that stops peaks from spilling over.",
+    "purpose_function": "It exists to guard against clipping and to keep dialogue level even, so quiet and loud lines both sit within the loudness targets required for delivery.",
+    "practical_application": "A mixer places a limiter on the dialogue bus to catch stray peaks after compression, setting the ceiling below full scale so the stem stays clean and meets delivery loudness specs.",
+    "category": "Dialogue Processing",
+    "related_terms": ["Dialogue mixing", "Dialogue equalization", "Compression", "Loudness normalization", "True peak"],
+    "common_mistakes": [
+     "Over-limiting until dialogue sounds squashed and lifeless",
+     "Using a limiter to do the job of gain riding or compression",
+     "Watching only peaks while ignoring loudness delivery standards",
+     "UNSAFE: monitoring at excessive SPL for long sessions to judge peaks, risking noise-induced hearing loss; observe OSHA exposure limits"
+    ],
+    "scenario_contexts": [
+     "Catching plosive peaks before the dialogue stem",
+     "Meeting a broadcast or streaming loudness and true-peak spec",
+     "Keeping dialogue from clipping during a loud emotional line"
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Holman, Sound for Film and Television", "OSHA 29 CFR 1910.95"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0890c3d8-570e-45e2-83f0-6373622654e5",
+   "term": "Dialogue localization",
+   "fields": {
+    "definition": "The placement of dialogue at a specific perceived position within the stereo or surround sound field, using panning, level, and channel routing so a voice appears to come from the direction of its on-screen source.",
+    "plain_english": "This means making a voice seem to come from the right spot on the screen. If a character stands on the left, the sound is placed so your ears point that way, matching what your eyes see.",
+    "purpose_function": "It exists to tie voices to their on-screen sources and hold the audience's attention on the picture, though most lead dialogue is localized to the center for stability.",
+    "practical_application": "A mixer usually keeps lead dialogue in the center channel but may nudge off-screen or background voices toward their positions when it strengthens the scene without distracting the listener.",
+    "category": "Dialogue Mixing",
+    "related_terms": ["Dialogue divergence", "Dialogue mixing", "Center channel", "Panning", "Surround sound"],
+    "common_mistakes": [
+     "Hard-panning main dialogue to screen position, which distracts and breaks on downmix",
+     "Assuming stereo panning translates the same in a theater as on headphones",
+     "Ignoring that most narrative dialogue belongs in a stable center image"
+    ],
+    "scenario_contexts": [
+     "Deciding whether an off-screen voice should be panned to its side",
+     "Keeping lead dialogue centered while placing background voices",
+     "Matching a moving character's voice to their position across the frame"
+    ]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "49bfd4cc-43f7-4449-b695-3889ddc48a11",
+   "term": "Dialogue mixing",
+   "fields": {
+    "definition": "The stage of post-production in which all dialogue elements, including production sound, ADR, and group loop, are balanced, processed, and combined into a coherent, intelligible dialogue stem that sits correctly against music and effects.",
+    "plain_english": "This is the step where all the spoken lines are balanced and cleaned into one smooth track. The goal is to make every word clear and even, so you never struggle to hear the characters over the music and effects.",
+    "purpose_function": "It exists to make speech consistently clear and intelligible, since dialogue carries the story and must be understood over everything else in the mix.",
+    "practical_application": "A dialogue mixer edits, EQs, de-noises, compresses, and rides the level of each line, matching ADR to production sound and delivering a dialogue stem for the final re-recording mix.",
+    "category": "Dialogue Mixing",
+    "related_terms": ["Dialogue equalization", "Dialogue limiting", "Dialogue dereverberation", "ADR", "Re-recording mixing"],
+    "common_mistakes": [
+     "Mixing dialogue too low so it gets buried under music and effects",
+     "Failing to match ADR tone and level to the original production sound",
+     "Skipping cleanup so noise and inconsistency carry into the final mix",
+     "Judging levels without checking delivery loudness targets"
+    ],
+    "scenario_contexts": [
+     "Balancing production dialogue with ADR replacements in a scene",
+     "Building the dialogue stem for a film or episode",
+     "Keeping dialogue intelligible under a busy action sequence"
+    ]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, Practical Art of Motion Picture Sound", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

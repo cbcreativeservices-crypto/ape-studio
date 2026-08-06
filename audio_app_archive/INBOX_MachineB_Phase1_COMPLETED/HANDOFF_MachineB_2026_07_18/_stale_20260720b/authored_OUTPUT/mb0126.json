@@ -1,0 +1,159 @@
+{
+ "batch": 126,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "f6b33709-4c9e-4902-91e8-e89440f90022",
+   "term": "Polyphonic mode (Flex)",
+   "fields": {
+    "definition": "A Flex Time algorithm in Apple Logic Pro designed for editing the timing of complex, polyphonic audio that contains several simultaneous pitches, such as chords, piano, or a full mix. It analyzes the overlapping tones so transients and note positions can be moved and stretched without breaking the material into separate single notes.",
+    "plain_english": "A setting in Logic Pro for stretching the timing of parts that play several notes at once, like a guitar chord or a whole band. It lets you nudge the timing without the sound falling apart.",
+    "purpose_function": "It exists so an editor can correct or adjust the timing of chord-based or full-mix audio, where simpler single-note algorithms would fail, while keeping the harmony intact.",
+    "practical_application": "An editor selects Polyphonic as the Flex Time algorithm on a piano, acoustic guitar, or stereo mix track, then drags flex markers to tighten the timing against the grid or the other instruments.",
+    "category": "Time & Pitch Editing",
+    "related_terms": ["Flex Time", "Time stretching", "Quantization", "Transient detection", "Monophonic mode (Flex)", "Elastic Audio"],
+    "common_mistakes": ["Using the Monophonic algorithm on chordal material, which smears the sound, instead of Polyphonic", "Applying heavy stretching and expecting no artifacts, when polyphonic processing adds phasey or watery tone at large amounts", "Assuming Flex analysis is perfect and not checking or correcting the detected transient markers"],
+    "scenario_contexts": ["Tightening the timing of a strummed acoustic guitar to the grid", "Fixing a rushed piano chord in a live recording", "Stretching a stereo mix or loop to match a new project tempo"]
+   },
+   "sources": ["Apple Logic Pro User Guide (Flex Time and Flex Pitch)", "David Miles Huber & Robert E. Runstein, 'Modern Recording Techniques'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "74bee041-eb00-4e5e-9b35-2a3c779d6640",
+   "term": "Polyrhythmic sequence",
+   "fields": {
+    "definition": "A sequenced or programmed musical pattern in which two or more independent rhythmic cycles of differing subdivision or length sound at the same time, such as three notes played against two. The parts share a common pulse only at intervals, producing a layered, interlocking rhythmic texture.",
+    "plain_english": "A programmed pattern where two different rhythms run at once, like three beats laid over two. The parts line up only now and then, which gives the groove a rolling, woven feel.",
+    "purpose_function": "It lets a producer build rhythmic interest and tension by combining meters or subdivisions that do not share the same pulse, adding movement beyond a single straight rhythm.",
+    "practical_application": "A producer programs one MIDI part in triplets and another in eighth notes, or sets two step sequencers to different lengths, so the patterns drift against each other and realign over a longer cycle.",
+    "category": "Rhythm & Sequencing",
+    "related_terms": ["Step sequencer", "MIDI sequencing", "Time signature", "Quantization", "Groove template", "Subdivision"],
+    "common_mistakes": ["Confusing a polyrhythm (different pulses at once) with a polymeter (different bar lengths sharing one pulse)", "Quantizing every part to the same straight grid, which flattens the polyrhythm", "Setting the two patterns to the same cycle length so they never actually shift against each other"],
+    "scenario_contexts": ["Programming a three-against-two hand-drum pattern in a drum machine", "Layering step sequencers of different lengths in a modular or DAW project", "Building an African- or Latin-influenced groove from interlocking rhythmic parts"]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians (polyrhythm)", "David Miles Huber & Robert E. Runstein, 'Modern Recording Techniques' (MIDI sequencing)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fdcc9823-7737-44b6-bc6b-c086e3ee1fd0",
+   "term": "Pool window",
+   "fields": {
+    "definition": "In Steinberg Cubase and Nuendo, the Pool is a project window that lists and manages every media file used in or imported to the project, including audio, video, and MIDI. It shows each clip's status, format, disk location, and whether it is currently used, and is the central place for organizing and housekeeping project media.",
+    "plain_english": "A window in Cubase and Nuendo that lists every sound and clip your project uses. It works like a filing cabinet where you can find, rename, convert, or remove media.",
+    "purpose_function": "It centralizes media management so an editor can see which files are used, relink missing files, convert formats, or delete unused audio to keep a project tidy and portable.",
+    "practical_application": "An engineer opens the Pool to find and remove unused recordings before backing up a project, or to relink media that the DAW reports as missing after files were moved.",
+    "category": "Media Management",
+    "related_terms": ["Audio clip", "Project file", "Media file", "Import audio", "Back up project", "Region"],
+    "common_mistakes": ["Confusing 'Remove from Pool' (leaves the file on disk) with 'Delete' or emptying the Pool trash (erases the file permanently)", "Deleting clips that appear unused without checking edit versions, then losing takes still referenced elsewhere", "Ignoring missing-file warnings in the Pool instead of relinking, so audio drops out on playback"],
+    "scenario_contexts": ["Cleaning out unused audio before archiving a Cubase project", "Relinking media after moving a Nuendo project to another drive", "Reviewing which recordings are actually used in a large session"]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (The Pool)", "Steinberg Nuendo Operation Manual (The Pool)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b54b2eaa-1cd7-404d-8a07-fd337982a942",
+   "term": "Post-fader send mode",
+   "fields": {
+    "definition": "A send configuration in which the auxiliary send signal is tapped after the channel fader, so the send level follows the fader. Lowering or muting the channel fader also lowers or removes the signal fed to the effect or aux bus.",
+    "plain_english": "A send setting that takes its signal after the channel's volume fader. When you turn the channel down, the amount going to the effect goes down too, so the effect stays in balance.",
+    "purpose_function": "It keeps time-based effects like reverb and delay proportional to the dry channel level, so the wet-to-dry balance stays consistent as the engineer rides the fader.",
+    "practical_application": "An engineer sets reverb and delay sends to post-fader so that pulling down or muting a vocal also pulls down its reverb and delay tails, keeping the effect glued to the source.",
+    "category": "Signal Routing",
+    "related_terms": ["Aux send", "Pre-fader send mode", "Effects return", "Aux bus", "Channel fader", "Reverb"],
+    "common_mistakes": ["Using post-fader sends for stage monitor mixes, so a performer's monitor level changes every time the front-of-house engineer moves the channel fader", "Assuming all sends default to post-fader without checking the console or DAW routing", "Muting a channel and being surprised the effect return still needs muting when the send was actually pre-fader"],
+    "scenario_contexts": ["Feeding a shared reverb bus for vocals and instruments in a mix", "Setting up delay throws that follow a lead vocal's level", "Routing effects sends on a live console so effects track the main mix"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook (Gaddis)", "Glen Ballou, 'Handbook for Sound Engineers'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "02f3af10-a3c3-4f4c-a0d6-5b4f256fb16d",
+   "term": "Pre-fader send mode",
+   "fields": {
+    "definition": "A send configuration in which the auxiliary send signal is tapped before the channel fader, so the send level is independent of the fader position. Moving or muting the channel fader does not change the amount of signal fed to the aux bus.",
+    "plain_english": "A send setting that takes its signal before the channel's volume fader. The amount going out stays the same no matter where you set the channel volume.",
+    "purpose_function": "It provides a feed that is independent of the main mix, which is essential for monitor and foldback mixes and for headphone cues, where levels must not follow the front-of-house fader.",
+    "practical_application": "A monitor engineer uses pre-fader sends to build each performer's stage mix, so those levels stay put even when the front-of-house engineer adjusts the channel faders.",
+    "category": "Signal Routing",
+    "related_terms": ["Aux send", "Post-fader send mode", "Monitor mix", "Foldback", "Aux bus", "Cue mix"],
+    "common_mistakes": ["Building monitor mixes on post-fader sends by mistake, causing sudden stage-level changes when front-of-house faders move", "Forgetting a pre-fader send still passes signal when the channel fader is fully down, causing unexpected bleed in monitors", "Leaving a pre-fader send up on a muted channel, so the sound continues in the aux mix"],
+    "scenario_contexts": ["Creating independent stage monitor mixes at a live show", "Setting up headphone cue mixes for musicians in a studio", "Feeding a pre-fader signal to a parallel processing or recording bus"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook (Gaddis)", "Glen Ballou, 'Handbook for Sound Engineers'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "022ad6b5-1e23-49ee-9a70-851cc3e4840f",
+   "term": "Premix session",
+   "fields": {
+    "definition": "In audio post-production, a premix (or pre-dub) is a session in which related tracks, such as all dialogue, all music, or all sound effects, are combined, balanced, and processed into a smaller set of stems ahead of the final mix. It reduces a very large number of tracks to a manageable few before the final re-recording stage.",
+    "plain_english": "A stage in film and TV sound where you blend groups of tracks, like all the dialogue or all the effects, into a few tidy submixes. It clears the clutter so the final mix is easier to handle.",
+    "purpose_function": "It condenses hundreds of individual tracks into manageable dialogue, music, and effects stems, so the final mix can focus on overall balance rather than every raw track.",
+    "practical_application": "A re-recording team premixes dialogue, music, and effects separately, then loads those stems for the final mix and for building international music-and-effects deliverables.",
+    "category": "Post-Production Mixing",
+    "related_terms": ["Stem", "Final mix", "Re-recording mixer", "Printmaster", "Music-and-effects mix", "Dialogue stem"],
+    "common_mistakes": ["Baking in heavy or committed processing during the premix that cannot be undone at the final mix", "Confusing a premix with the final mix, and treating stems as finished deliverables", "Letting premixed stem levels drift so the elements no longer balance cleanly at the final stage"],
+    "scenario_contexts": ["Premixing dialogue, music, and effects before a film's final dub", "Consolidating a large TV episode's tracks into stems for the mix stage", "Preparing effects and Foley stems that will feed an M&E deliverable"]
+   },
+   "sources": ["Tomlinson Holman, 'Sound for Film and Television'", "David Lewis Yewdall, 'Practical Art of Motion Picture Sound'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "adc0eb9e-5a5d-4668-95d6-c7d4d4d46e7b",
+   "term": "Preservation master",
+   "fields": {
+    "definition": "The highest-quality, unaltered archival copy of a recording, created and stored specifically for long-term preservation. It captures the full resolution of the source with no added processing or corrective editing, and serves as the authoritative original from which access and distribution copies are later derived.",
+    "plain_english": "The top-quality archive copy of a recording, kept safe for the long term. It has no extra processing added, so clean copies can always be made from the original later.",
+    "purpose_function": "It safeguards the definitive version of a recording against loss and format decay, acting as the trusted source that all working and listening copies are made from.",
+    "practical_application": "An archivist captures a tape transfer at high resolution, saves it unprocessed with full metadata as the preservation master, and then makes separate access copies for listening and editing.",
+    "category": "Archiving & Preservation",
+    "related_terms": ["Access copy", "Production master", "Flat transfer", "Sample rate", "Bit depth", "Metadata"],
+    "common_mistakes": ["Applying noise reduction, EQ, or level changes to the preservation master instead of keeping it flat and unprocessed", "Storing only one copy in one place, with no verified backup against drive failure", "Capturing at too low a resolution so the master cannot represent the full source signal"],
+    "scenario_contexts": ["Digitizing analog tape for a sound archive", "Preparing an archival master before a label reissue", "Maintaining institutional collections of at-risk audio recordings"]
+   },
+   "sources": ["IASA-TC 04, 'Guidelines on the Production and Preservation of Digital Audio Objects'", "IASA-TC 03, 'The Safeguarding of the Audio Heritage'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5b03e8e6-f669-4d6b-8dee-c81c2e813d37",
+   "term": "Preview automation mode",
+   "fields": {
+    "definition": "In Avid Pro Tools, Preview is an automation state that lets an engineer audition proposed automation values in real time without writing them to the track. The change is heard against the existing automation but is committed only when the engineer chooses to punch it in or capture it.",
+    "plain_english": "A Pro Tools setting that lets you try out fader or plug-in moves and hear them without saving them yet. You listen first, then decide whether to keep the change.",
+    "purpose_function": "It lets a mixer experiment with a new level or setting in context and commit it only once it sounds right, avoiding accidental overwrites of existing automation.",
+    "practical_application": "A mixer enables Preview, sets a new chorus vocal level, listens in the mix, then punches it in to write that value while leaving the rest of the automation pass untouched.",
+    "category": "Mixing Automation",
+    "related_terms": ["Write mode", "Touch mode", "Latch mode", "Trim automation", "Punch (automation)", "Automation playlist"],
+    "common_mistakes": ["Forgetting to punch or capture a previewed value, so the audition is lost when playback stops", "Confusing Preview with Write mode and overwriting existing automation instead of auditioning it", "Leaving parameters in Preview and wondering why moves are not being recorded"],
+    "scenario_contexts": ["Auditioning a new vocal ride before committing it", "Trying a different reverb send level against a finished mix", "Refining one parameter without disturbing the surrounding automation"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Preview automation)", "Bobby Owsinski, 'The Mixing Engineer's Handbook'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "00e3fcb2-15ec-407a-8c34-92b83a997351",
+   "term": "Printmaster",
+   "fields": {
+    "definition": "In film and television post-production, the printmaster is the final, approved master of the completed soundtrack, combining all premixed stems at final level and format. It is the definitive source from which release prints, distribution masters, and delivery versions are made.",
+    "plain_english": "The finished master of a film's soundtrack, made from the final mix. It is the copy that release versions and streaming files are then made from.",
+    "purpose_function": "It provides one approved, correctly leveled and formatted version of the soundtrack, so every release copy is generated from the same authoritative master.",
+    "practical_application": "After the final mix is approved, the team creates the printmaster in the required channel layout and format, then derives theatrical, broadcast, and streaming deliverables from it.",
+    "category": "Post-Production Mixing",
+    "related_terms": ["Final mix", "Premix session", "Stem", "Music-and-effects mix", "Re-recording mixer", "Master"],
+    "common_mistakes": ["Confusing the printmaster with the premix or with the working final mix session", "Delivering the printmaster in the wrong channel layout or loudness spec for the target platform", "Making late fixes to a release copy instead of updating the printmaster and re-deriving deliverables from it"],
+    "scenario_contexts": ["Creating the theatrical soundtrack master after a film's final dub", "Producing a broadcast master that meets a network's loudness spec", "Deriving streaming and home-video deliverables from one approved master"]
+   },
+   "sources": ["Tomlinson Holman, 'Sound for Film and Television'", "David Lewis Yewdall, 'Practical Art of Motion Picture Sound'"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

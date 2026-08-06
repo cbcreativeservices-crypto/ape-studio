@@ -1,0 +1,311 @@
+{
+ "batch": 327,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "33ca8fa2-e856-4e20-8b7a-2ce2e423362d",
+   "term": "chug",
+   "fields": {
+    "definition": "A percussive, palm-muted rhythm-guitar articulation, usually on a low or down-tuned string through a high-gain amplifier, producing a tight, low-frequency-dominant transient with heavily damped sustain. The term names both the technique and the resulting chunky, staccato tone typical of metal and hard-rock rhythm playing.",
+    "plain_english": "A chug is the short, punchy thump a metal guitarist makes by resting a hand on the strings and picking hard. It has a lot of low-end punch but rings out very little.",
+    "purpose_function": "It gives heavy guitar parts percussive drive and low-end weight, using palm damping to cut sustain so fast riffs stay tight and clear instead of blurring together.",
+    "practical_application": "A technician identifies the chug when tracking and mixing rhythm guitars, then uses gating, transient shaping, and low-mid EQ so each muted note stays punchy and locks with the kick drum.",
+    "category": "Attack Descriptor",
+    "related_terms": [
+     "palm mute",
+     "attack",
+     "transient",
+     "sustain",
+     "gate",
+     "distortion"
+    ],
+    "common_mistakes": [
+     "Assuming any distorted power chord is a chug, when the defining feature is the palm-muted, damped attack that shortens sustain.",
+     "Over-gating the chug so hard that the natural low-end body of the note is cut off, leaving it thin and clicky.",
+     "Boosting sub-bass to make chugs heavier, which muddies the mix instead of tightening the attack."
+    ],
+    "scenario_contexts": [
+     "Tracking down-tuned rhythm guitars for a metal record and dialing in tight palm-muted chugs.",
+     "Mixing a heavy chorus where chugs must lock with the kick drum without masking it.",
+     "Using a transient shaper to add punch to soft, undefined chugs in a re-amped DI track."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound (electric-guitar recording and mixing articles)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "26e1b855-b0b0-488c-a181-2174e7600d6c",
+   "term": "Clack",
+   "fields": {
+    "definition": "A descriptive term for a hard, dry, high-frequency percussive transient with a fast rise and little sustain, resembling two rigid objects striking together. It is heard, for example, when a kick-drum beater slaps the head, a bass string strikes a fret, or castanets are played.",
+    "plain_english": "A clack is a hard, sharp knock high up in the sound, like two pieces of wood or plastic hitting. You might hear it when a kick beater slaps the drumhead or a bass string smacks a fret.",
+    "purpose_function": "As a listening label it lets technicians pinpoint a sharp contact transient in a sound, so they can decide whether that attack adds useful definition or should be reduced.",
+    "practical_application": "An engineer uses the word to flag beater or string clack during tracking, then changes mic placement, beater material, or EQ to shape how much of that hard attack reaches the mix.",
+    "category": "Attack Descriptor",
+    "related_terms": [
+     "click",
+     "crack",
+     "transient",
+     "attack",
+     "beater noise"
+    ],
+    "common_mistakes": [
+     "Confusing a musical clack, which is a wanted hard transient, with a click artifact caused by a fault or edit.",
+     "Trying to EQ out all clack, which removes the high-frequency attack that gives the sound its definition."
+    ],
+    "scenario_contexts": [
+     "Identifying excess beater clack on a kick drum and adjusting mic position or beater material.",
+     "Noticing string clack on a slap-bass track and deciding whether it adds definition or distraction.",
+     "Describing a percussion sound to a producer using the word clack during a session."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "282fe8c4-0bae-4699-8d45-e277b799b49d",
+   "term": "Clack resonance",
+   "fields": {
+    "definition": "The short resonant ring that follows a hard clack transient, produced when the impact excites a natural resonance in the instrument, shell, hardware, or nearby structure. It is the brief, pitched or metallic decay heard immediately after the initial percussive knock.",
+    "plain_english": "Clack resonance is the short ring that comes right after a hard clack sound. The knock sets a part of the instrument buzzing for a moment, like tapping a hollow box and hearing it hum.",
+    "purpose_function": "Naming this resonance helps a technician separate the initial hard attack from the ring that follows, so each can be judged and treated on its own.",
+    "practical_application": "A technician listens for the ring after a clack to decide if it adds character or needs taming, then uses damping, narrow EQ cuts, or a resonance suppressor to control it.",
+    "category": "Resonance Descriptor",
+    "related_terms": [
+     "clack",
+     "resonance",
+     "ring",
+     "sympathetic vibration",
+     "decay"
+    ],
+    "common_mistakes": [
+     "Mistaking the resonant ring after a clack for a separate note or an added echo.",
+     "Assuming the resonance is always a defect, when it is often a natural and wanted part of the instrument's tone."
+    ],
+    "scenario_contexts": [
+     "Hearing a short metallic ring after a hard drum hit and tracing it to shell or hardware resonance.",
+     "Deciding whether the resonance after a clack adds character or should be damped.",
+     "Using narrow EQ or a resonance suppressor to tame an unwanted ring after a percussive clack."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0fa0abea-2114-4269-893a-78594563259c",
+   "term": "Click",
+   "fields": {
+    "definition": "A very short, sharp, broadband impulsive sound perceived as a single tick. In production it may be a wanted attack component, such as a beater or pick click, or an unwanted artifact caused by a waveform discontinuity, an uncrossfaded edit point, or a digital-clock or buffer error.",
+    "plain_english": "A click is a very short, sharp tick, like a tiny snap. It can be a wanted part of an attack, or an unwanted glitch where the sound suddenly jumps.",
+    "purpose_function": "The term lets a technician flag an impulsive event and then judge whether it is a musical attack to keep or a fault to remove, guiding the correct fix.",
+    "practical_application": "On the job a technician traces a repeating click to word-clock or buffer settings, smooths an edit-point click with a short crossfade, and keeps a wanted beater click that helps a drum cut through.",
+    "category": "Attack Descriptor",
+    "related_terms": [
+     "clack",
+     "tick",
+     "transient",
+     "attack",
+     "pop",
+     "digital glitch"
+    ],
+    "common_mistakes": [
+     "Confusing a wanted attack click, such as a beater or pick click, with an unwanted digital click artifact.",
+     "Assuming every click is a fault, when edit-point clicks are fixed with crossfades while attack clicks are musical.",
+     "Ignoring that a steady repeating click can signal a real problem such as a bad clock or a buffer error."
+    ],
+    "scenario_contexts": [
+     "Hearing a repeating click in a digital recording and checking word-clock and buffer settings.",
+     "Removing a click at an edit point by adding a short crossfade.",
+     "Keeping the intended beater click on a kick drum because it helps the drum cut through the mix."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "25be9d7a-194f-485a-a9b8-68438b76a33c",
+   "term": "Closed tick",
+   "fields": {
+    "definition": "The short, dry, high-pitched transient produced by a closed hi-hat or similarly damped cymbal, in which the two cymbals are held together so the sound stops quickly with minimal sustain. It contrasts with the open hi-hat's longer, sizzling decay.",
+    "plain_english": "A closed tick is the short, dry tick a closed hi-hat makes. Because the two cymbals are pressed together, the sound stops fast instead of sizzling.",
+    "purpose_function": "Identifying the closed tick lets a technician place a tight rhythmic accent in a groove and keep it crisp and controlled rather than smeared or ringing.",
+    "practical_application": "An engineer balances the closed hi-hat tick against the snare, using EQ and level to keep it crisp without harshness, and checks that gating does not clip its short decay.",
+    "category": "Attack Descriptor",
+    "related_terms": [
+     "hi-hat",
+     "tick",
+     "attack",
+     "damping",
+     "transient"
+    ],
+    "common_mistakes": [
+     "Confusing the closed hi-hat tick with an open hi-hat's longer sizzling decay.",
+     "Gating a closed tick too tightly and cutting off its short natural decay."
+    ],
+    "scenario_contexts": [
+     "Balancing the closed hi-hat tick against the snare in a tight pop groove.",
+     "EQing a hi-hat so its closed tick stays crisp without becoming harsh.",
+     "Identifying whether a rhythmic tick comes from a closed hi-hat or a rimshot."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "573ca886-de29-49ee-a162-ac17792ad39a",
+   "term": "cocked-wah",
+   "fields": {
+    "definition": "A guitar tone created by setting a wah-wah pedal at a fixed position instead of rocking it, so its band-pass filter parks a strong resonant peak on one midrange band. The result is a fixed, nasal or honky filtered voicing rather than the sweeping wah effect.",
+    "plain_english": "A cocked wah is the honky, nasal guitar tone you get by leaving a wah pedal parked in one spot instead of rocking it. It boosts one band of middle notes, so the guitar sounds like it is talking through its nose.",
+    "purpose_function": "It lets a player carve a distinctive fixed midrange voice that adds presence and cut, helping a lead or rhythm part stand out without extra gain.",
+    "practical_application": "A technician recognizes and recreates the cocked-wah sound by parking a wah pedal or setting a fixed band-pass filter, usually placing it early in the chain before the main gain stage.",
+    "category": "Tonal Descriptor",
+    "related_terms": [
+     "wah-wah",
+     "resonant filter",
+     "midrange",
+     "formant",
+     "band-pass"
+    ],
+    "common_mistakes": [
+     "Thinking a cocked wah needs constant pedal movement, when the point is that it stays parked in one position.",
+     "Placing the parked wah after high-gain distortion, when it usually works best before the gain stage."
+    ],
+    "scenario_contexts": [
+     "Parking a wah pedal to get a nasal lead tone in a funk or rock track.",
+     "Recreating a classic cocked-wah guitar sound with a fixed band-pass filter in the box.",
+     "Diagnosing an unwanted midrange honk and finding a wah pedal was left partly pressed."
+    ]
+   },
+   "sources": [
+    "Sound on Sound (guitar effects and recording articles)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "069a9d0a-2cf4-47aa-9655-62b1ceaee3b8",
+   "term": "Col legno strike",
+   "fields": {
+    "definition": "A string-playing technique, properly col legno battuto, in which the player strikes the string with the wooden stick of the bow rather than drawing the hair across it. It produces a dry, percussive attack with a soft, indefinite pitch and very short sustain.",
+    "plain_english": "Col legno strike means hitting the string with the wooden stick of the bow instead of drawing the hair across it. It makes a dry, tapping sound with only a faint pitch.",
+    "purpose_function": "It gives string writing a percussive, brittle color used for special effect, adding a rhythmic, ghostly attack that a normal bow stroke cannot make.",
+    "practical_application": "When a score marks col legno, a technician expects a quiet, dry tapping sound and close-mics the section, since the strike is soft and its transient is easily lost.",
+    "category": "Articulation",
+    "related_terms": [
+     "col legno tratto",
+     "pizzicato",
+     "spiccato",
+     "attack",
+     "articulation"
+    ],
+    "common_mistakes": [
+     "Confusing col legno battuto, striking with the wood, with col legno tratto, drawing the wood across the string.",
+     "Expecting a strong, clear pitch, when the strike gives a dry percussive sound with only a faint pitch.",
+     "Using a fine performance bow for the strike, risking damage, when many players keep a cheaper bow for this."
+    ],
+    "scenario_contexts": [
+     "Reading a col legno marking in a string score and preparing the section to strike with the bow stick.",
+     "Recording a col legno passage and close-miking to capture the dry percussive tap.",
+     "Choosing a spare bow for col legno to avoid marking a valuable performance bow."
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Piston, Orchestration",
+    "Grove Dictionary of Music"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dc00efc9-2d30-41b1-9f98-558617d445f8",
+   "term": "crack",
+   "fields": {
+    "definition": "A descriptive term for a loud, sharp, explosive transient with strong high-frequency content and a very fast rise, such as a snare hit, rimshot, or whip. It denotes a bright, snapping attack that cuts sharply through a mix.",
+    "plain_english": "A crack is a loud, sharp snap with lots of high end, like a whip or a hard snare hit. It jumps up very fast and then is gone.",
+    "purpose_function": "As a listening label it marks the bright snapping attack that helps a hit sound powerful and present, guiding how a technician preserves or shapes that transient.",
+    "practical_application": "An engineer aims for a strong snare crack while tracking, and tames an overly harsh crack in the mix with dynamic EQ or transient control rather than dulling the whole hit.",
+    "category": "Attack Descriptor",
+    "related_terms": [
+     "snare",
+     "transient",
+     "attack",
+     "clack",
+     "rimshot",
+     "peak"
+    ],
+    "common_mistakes": [
+     "Confusing a snare crack, which is a wanted sharp transient, with distortion or clipping.",
+     "Cutting the high frequencies too far to tame harshness, which removes the crack and dulls the hit."
+    ],
+    "scenario_contexts": [
+     "Describing a desired snare tone as a sharp crack during a tracking session.",
+     "Taming an overly harsh crack on a rimshot with dynamic EQ.",
+     "Adding attack to a dull snare so it regains its crack in the mix."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "584f80b2-6145-4816-87a2-c63774077aa0",
+   "term": "Crash decay",
+   "fields": {
+    "definition": "The decay portion of a crash cymbal's sound: the long, shimmering wash of sustained overtones that fades after the initial attack. It is the ring-out that follows the strike, not the transient hit itself.",
+    "plain_english": "Crash decay is the long, shimmering wash a crash cymbal makes after you hit it. It is the sound slowly fading away, not the first loud hit.",
+    "purpose_function": "Recognizing the decay separately from the attack lets a technician control how long a cymbal rings in a mix, so its wash supports rather than clutters the music.",
+    "practical_application": "A technician sets gate and fade times so crash decays are not chopped off at section changes, and balances that wash against vocals and other instruments.",
+    "category": "Decay Descriptor",
+    "related_terms": [
+     "cymbal",
+     "decay",
+     "sustain",
+     "ring-out",
+     "shimmer"
+    ],
+    "common_mistakes": [
+     "Confusing the crash decay, the fade-out ring, with the initial attack of the cymbal.",
+     "Gating drums so hard that the crash decay is chopped off unnaturally.",
+     "Treating a long crash decay as bleed to remove, when it is the intended sustain of the cymbal."
+    ],
+    "scenario_contexts": [
+     "Deciding how much crash decay to keep when gating a drum kit.",
+     "Editing drum hits so crash decays are not cut off at section changes.",
+     "Balancing crash decay against vocals so long cymbal washes do not clutter the mix."
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

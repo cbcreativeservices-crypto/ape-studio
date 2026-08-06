@@ -1,0 +1,232 @@
+{
+ "batch": 344,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "5fe6bfda-a3d6-4aca-8944-cb796273eafd",
+   "term": "Transient spike",
+   "fields": {
+    "definition": "A transient spike is a very brief, high-amplitude peak at the onset of a sound that rises and falls far faster than the surrounding signal. It appears as a short, sharp jump in level, typical of drum hits, plucks, and vocal consonants, and carries much of a sound's attack information.",
+    "plain_english": "A transient spike is a quick, sharp jump in loudness at the very start of a sound, like the crack of a snare hit. It lasts only a moment but gives a sound its punch.",
+    "purpose_function": "Recognizing transient spikes lets a technician judge a sound's attack and guard against sudden peaks that can clip converters or trip limiters.",
+    "practical_application": "Engineers watch meters and waveforms for transient spikes when setting gain and compressor attack, keeping drums punchy while avoiding overload.",
+    "category": "Attack Artifact",
+    "related_terms": ["Initial transient", "Attack", "Peak", "Clipping", "Transient shaper", "Headroom"],
+    "common_mistakes": [
+     "Confusing a musical transient spike with an unwanted click or digital over.",
+     "UNSAFE: Chasing loudness so transient spikes drive amplifiers and drivers into hard clipping, which can overheat and destroy tweeters.",
+     "Using too fast a compressor attack and flattening the spike, killing the punch.",
+     "Trusting slow meters that miss the very fastest peaks."
+    ],
+    "scenario_contexts": [
+     "Setting converter gain so a snare's transient spike does not clip.",
+     "Choosing a limiter to tame transient spikes on a live drum bus.",
+     "Diagnosing intermittent clip lights caused by sharp vocal consonants."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "AES Pro Audio Reference (transient)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "956caf36-105a-4951-a5a7-8bbd8d845ed5",
+   "term": "trashy",
+   "fields": {
+    "definition": "Trashy describes a cymbal or similar metallic sound with a dense, noise-like, inharmonic spectrum, a fast and dry decay, and little clear pitch, giving an aggressive, dirty character like a trash or china cymbal rather than a clean, ringing tone.",
+    "plain_english": "Trashy is a dirty, noisy cymbal sound that ends fast and has no clear note, like a china cymbal or a trash-can lid. It sounds rough and splashy instead of smooth and ringing.",
+    "purpose_function": "The label lets a technician quickly describe a rough, noise-heavy metallic tone so they can decide whether it suits a track or needs taming.",
+    "practical_application": "An engineer calls a cymbal trashy when choosing effect cymbals or setting EQ, and may roll off harsh highs or use it deliberately for gritty, aggressive accents.",
+    "category": "Timbral descriptor",
+    "related_terms": ["Sizzle", "Wash", "China cymbal", "Overtone ring", "Decay", "Timbre"],
+    "common_mistakes": [
+     "Assuming trashy always means bad, when it is often a wanted effect-cymbal sound.",
+     "Confusing a naturally trashy cymbal with a cracked or damaged one.",
+     "Trying to EQ a trashy cymbal into a clean ping, which rarely works."
+    ],
+    "scenario_contexts": [
+     "Choosing a trashy china cymbal for aggressive rock accents.",
+     "Taming harsh, trashy overheads with a high-frequency cut.",
+     "Describing a cymbal's dirty, short character to a producer."
+    ]
+   },
+   "sources": ["Rossing, The Science of Percussion Instruments (cymbal noise-like inharmonic spectra)", "Fletcher & Rossing, The Physics of Musical Instruments (cymbal vibration)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ad035832-0914-454b-ba84-fa65159170ca",
+   "term": "Tremolo bowing",
+   "fields": {
+    "definition": "Tremolo bowing (bowed tremolo) is a string technique in which the player rapidly reiterates a note with quick, short back-and-forth bow strokes, usually near the tip, producing a shimmering, sustained, agitated sound. It is normally unmeasured, the strokes played as fast as possible rather than in strict rhythm.",
+    "plain_english": "Tremolo bowing is moving the bow back and forth very fast on the same note so it shivers and buzzes. Film composers use it to build tension or a sense of drama.",
+    "purpose_function": "It lets strings sustain and intensify a note with a trembling, dramatic texture that a single smooth stroke cannot give.",
+    "practical_application": "When recording or mixing strings, an engineer recognizes tremolo bowing by its dense, sustained shimmer and may adjust mics or reverb so the effect stays clear rather than smeared.",
+    "category": "Bowing technique",
+    "related_terms": ["Sul ponticello", "Measured tremolo", "Fingered tremolo", "Articulation", "Sustain", "Bow noise"],
+    "common_mistakes": [
+     "Confusing bowed tremolo with fingered tremolo, which alternates between two pitches.",
+     "Mistaking the fast bow noise of a tremolo for a recording fault.",
+     "Gating string tracks so hard that the quiet start of a tremolo is cut off."
+    ],
+    "scenario_contexts": [
+     "A film cue where violins play tremolo to build suspense.",
+     "Close-miking a section and hearing extra bow noise from tremolo strokes.",
+     "Adding reverb to a tremolo passage for a lush, sustained bed."
+    ]
+   },
+   "sources": ["Adler, The Study of Orchestration (bowed tremolo)", "Piston, Orchestration / Grove Dictionary of Music (tremolo)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "93eb5e6e-db70-4310-8de2-00f0cb662635",
+   "term": "twang",
+   "fields": {
+    "definition": "Twang is a bright, sharp, resonant tone with a fast, ringing attack rich in high harmonics and a quick, metallic decay, characteristic of tightly strung plucked instruments such as the banjo, a Telecaster-style guitar, or a jaw harp. It is heard as a pointed, spring-like pinging quality rather than a warm, rounded sound.",
+    "plain_english": "Twang is the bright, sharp, ringing sound of a plucked string, like a banjo or a country guitar. It has a quick, pingy snap with lots of high, metallic zing.",
+    "purpose_function": "Naming twang helps a technician identify and dial in the bright, cutting plucked-string character that defines styles like country and bluegrass.",
+    "practical_application": "An engineer boosts upper-mid and treble EQ or picks bright strings and pickups to bring out twang, and tames it when it turns harsh.",
+    "category": "Tonal descriptor",
+    "related_terms": ["Attack", "Brightness", "Pluck", "Sustain", "Harmonics", "Bite"],
+    "common_mistakes": [
+     "Confusing twang, a bright plucked tone, with vibrato or pitch bending.",
+     "Over-boosting treble to add twang and making the track thin and harsh.",
+     "Assuming twang is only a guitar term, when banjos and jaw harps twang too."
+    ],
+    "scenario_contexts": [
+     "EQing a Telecaster for more twang in a country mix.",
+     "Choosing bright strings and a bridge pickup for a twangy tone.",
+     "Reducing harsh twang on a banjo track with a gentle treble cut."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (plucked string spectra, banjo)", "Rossing (ed.), The Science of String Instruments"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "147ebd4a-b5fb-4737-93e1-666c89b60b56",
+   "term": "Uilleann pipes regulators",
+   "fields": {
+    "definition": "The regulators are keyed, closed-ended pipes on a full (concert) set of uilleann pipes, mounted with the drones on the common stock, that the piper sounds by pressing their keys, usually with the wrist or heel of the right hand, to add chords and rhythmic harmony beneath the chanter melody. A full set typically carries three: bass, baritone, and tenor.",
+    "plain_english": "Regulators are extra keyed pipes on Irish uilleann pipes that play chords. The piper taps their keys with the wrist to add harmony under the tune, like a one-person backing band.",
+    "purpose_function": "They let a single piper accompany their own melody with chords and rhythm, a feature that makes the uilleann pipes unusually self-contained among bagpipes.",
+    "practical_application": "When miking uilleann pipes, an engineer positions mics to capture the regulators' chordal accents along with the chanter, since the regulators add loud rhythmic stabs.",
+    "category": "Bagpipe component",
+    "related_terms": ["Chanter", "Drone", "Bellows", "Reed", "Bagpipe", "Harmony"],
+    "common_mistakes": [
+     "Confusing regulators with drones; drones sound continuously, regulators only when keyed.",
+     "Assuming every uilleann set has regulators, when practice (half) sets often lack them.",
+     "Miking only the chanter and missing the regulators' chords."
+    ],
+    "scenario_contexts": [
+     "Recording a solo piper who uses regulators for chordal accompaniment.",
+     "Balancing chanter and regulator levels in a traditional session mix.",
+     "Identifying rhythmic chord stabs as regulator work, not a second instrument."
+    ]
+   },
+   "sources": ["Baines, Bagpipes (Anthony Baines)", "Grove Dictionary of Music (uilleann pipes / union pipes)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "847ae384-5d58-4088-98e6-da1d272ad8f9",
+   "term": "Valve clatter",
+   "fields": {
+    "definition": "Valve clatter is the mechanical rattling or knocking noise produced by the moving pistons or rotors of a brass instrument's valves, most audible on larger or worn instruments and easily captured by close microphones. It is unwanted percussive noise unrelated to the instrument's musical tone.",
+    "plain_english": "Valve clatter is the rattly, knocking sound a brass instrument valves make as they move up and down. Close mics can pick it up like a faint tapping under the notes.",
+    "purpose_function": "Spotting valve clatter helps a technician separate a mechanical noise problem from the musical sound so it can be fixed at the source.",
+    "practical_application": "An engineer hearing valve clatter repositions the mic, often above and behind the player, or asks the player to oil the valves and press more smoothly.",
+    "category": "Mechanical artifact",
+    "related_terms": ["Valve click", "Valve noise", "Key click", "Mechanical noise", "Close miking"],
+    "common_mistakes": [
+     "Blaming valve clatter on the microphone instead of the instrument's action.",
+     "Trying to EQ out clatter, which shares frequencies with the instrument's tone.",
+     "Placing the mic right over the valves, maximizing the clatter."
+    ],
+    "scenario_contexts": [
+     "Close-miking a tuba and hearing knocking from the valves.",
+     "Repositioning a trumpet mic to reduce valve clatter.",
+     "Editing out isolated valve clatter in a quiet passage."
+    ]
+   },
+   "sources": ["DPA Microphones, mic university: How to mic woodwinds and brass (mechanical valve noise)", "Sound on Sound, Recording Brass & Reeds (mechanical noise, mic placement)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7261dad2-bbc3-4504-a613-4365eaf1cc20",
+   "term": "Valve click",
+   "fields": {
+    "definition": "Valve click is the short, sharp clicking sound made when a brass instrument's valve seats or returns, often from the piston contacting its casing or from worn felt or cork pads, captured as a brief transient by close microphones. It is a mechanical artifact, not part of the musical tone.",
+    "plain_english": "Valve click is the small, sharp tick you hear when a brass player presses or releases a valve. It is a quick mechanical noise, not a real note.",
+    "purpose_function": "Identifying valve clicks lets a technician tell a harmless mechanical tick apart from an electronic click or an edit glitch.",
+    "practical_application": "An engineer who hears valve clicks moves the mic away from the valve block, or edits out stray clicks in exposed passages during post.",
+    "category": "Mechanical artifact",
+    "related_terms": ["Valve clatter", "Valve noise", "Key click", "Transient", "Close miking"],
+    "common_mistakes": [
+     "Mistaking a mechanical valve click for a digital click or dropout.",
+     "Assuming worn valve felts are fine, when missing felts make clicks louder.",
+     "Miking too close to the valves in a quiet, exposed part."
+    ],
+    "scenario_contexts": [
+     "Hearing sharp ticks from a trumpet's valves in a soft passage.",
+     "Deciding whether a click is a valve or an edit point.",
+     "Replacing worn valve felts to quiet the clicking."
+    ]
+   },
+   "sources": ["DPA Microphones, mic university: How to mic woodwinds and brass (mechanical valve noise)", "Sound on Sound, Recording Brass & Reeds (mechanical noise, mic placement)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3ee7e37e-f53f-4a9c-9ebd-b96f18e86599",
+   "term": "Valve noise",
+   "fields": {
+    "definition": "Valve noise is the general term for the mechanical sounds, such as clicks, clatter, and rattles, made by the valve mechanism of a brass instrument as the player operates it, distinct from the musical tone and most noticeable with close microphones. In brass close-miking it refers to piston or rotary valve action, not to electronic tube (valve) noise.",
+    "plain_english": "Valve noise is the general name for the clicks and rattles a brass instrument valves make while being played. It is mechanical sound, not part of the music, and close mics make it easier to hear.",
+    "purpose_function": "The term groups the mechanical noises of valve action so a technician can diagnose and reduce them as one category.",
+    "practical_application": "When valve noise intrudes, an engineer changes mic angle and distance, typically miking from above and behind, or asks for smoother technique and freshly serviced valves.",
+    "category": "Mechanical noise",
+    "related_terms": ["Valve click", "Valve clatter", "Key click", "Mechanical artifact", "Close miking"],
+    "common_mistakes": [
+     "Confusing mechanical brass valve noise with electronic noise from a tube (valve) amplifier.",
+     "Blaming valve noise on the mic rather than the instrument or technique.",
+     "Positioning the mic directly over the valves, worsening the noise."
+    ],
+    "scenario_contexts": [
+     "A close-miked euphonium showing audible valve noise between notes.",
+     "Choosing mic placement to minimize valve noise on trumpet.",
+     "Explaining to a player how valve noise reaches the mic."
+    ]
+   },
+   "sources": ["DPA Microphones, mic university: How to mic woodwinds and brass (mechanical valve noise in close miking)", "Sound on Sound, Recording Brass & Reeds (valved instruments mechanically noisy; mic from above and behind)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9b20c6a7-bf04-4b0d-8d66-12785a5a8ba3",
+   "term": "Wash",
+   "fields": {
+    "definition": "Wash is a broad, sustained, undamped blend of overlapping sound with no clear pitch or transient focus, typically the ringing spread of open cymbals or a diffuse reverb tail, heard as a continuous, blurry layer of energy rather than as distinct notes.",
+    "plain_english": "Wash is a wide, blurry cloud of sound that keeps ringing, like crash cymbals or heavy echo smearing together. You hear one smooth haze instead of separate notes.",
+    "purpose_function": "Naming wash helps a technician spot when sustained, undamped sound is filling space and possibly masking detail in a mix.",
+    "practical_application": "An engineer hearing too much wash may dampen cymbals, shorten a reverb tail, or gate tracks to restore clarity.",
+    "category": "Resonance",
+    "related_terms": ["Cymbal wash", "Reverb tail", "Sustain", "Decay", "Masking", "Overtone ring"],
+    "common_mistakes": [
+     "Mistaking a reverb wash for a problem with the source instrument.",
+     "Adding more reverb to fix a thin mix and turning it into a muddy wash.",
+     "Letting cymbal wash build up until it masks the vocals."
+    ],
+    "scenario_contexts": [
+     "A drummer rides open cymbals, filling the mix with wash.",
+     "Shortening a reverb tail to cut excess wash on a vocal.",
+     "Gating room mics to control drum wash."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (reverberation / decay)", "Yamaha Sound Reinforcement Handbook (reverberant field, masking)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

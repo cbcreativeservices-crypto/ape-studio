@@ -1,0 +1,159 @@
+{
+ "batch": 71,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "db450d4b-6b06-4cc4-a66a-f7999a941d1d",
+   "term": "Vocal center placement",
+   "fields": {
+    "definition": "The mixing practice of panning the lead vocal to the phantom center of the stereo image, fed at equal level to the left and right channels so it appears directly in front of the listener.",
+    "plain_english": "Putting the lead singer's voice in the middle, so it comes out of both speakers the same. That makes the voice sound like it is right in front of you.",
+    "purpose_function": "It anchors the most important part of a song at the listener's focal point and keeps the vocal solid when the mix is heard in mono, matching how kick and bass are also centered.",
+    "practical_application": "On the console or DAW the engineer sets the lead vocal channel's pan control to center, then checks the mix in mono to confirm the voice stays strong and level.",
+    "category": "Vocal mixing",
+    "related_terms": ["Panning", "Stereo image", "Phantom center", "Mono compatibility", "Lead vocal", "Vocal compression"],
+    "common_mistakes": ["Panning the lead vocal off-center to make room, which weakens the song's focal point", "Forgetting to check the balance in mono, so a center vocal drifts when summed", "Assuming center placement alone makes a vocal sit forward, instead of using level and EQ"],
+    "scenario_contexts": ["Placing the lead vocal dead-center in a pop or rock mix while backing vocals spread to the sides", "Checking a broadcast mix in mono to confirm the centered vocal does not shift or drop in level", "Keeping the lead vocal centered alongside kick, snare, and bass in a typical band arrangement"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5d0e28fc-f5cd-42d7-af87-f360fef63135",
+   "term": "Vocal cleanup pass",
+   "fields": {
+    "definition": "An editing pass through a recorded vocal track that removes unwanted noises and artifacts before mixing, such as loud breaths, lip smacks, mic bumps, chair squeaks, and background noise in the gaps between phrases.",
+    "plain_english": "A careful listen-through of the vocal track to cut out sounds you do not want. That means things like loud breaths, mouth clicks, and hiss between the words.",
+    "purpose_function": "It gives the mix engineer a clean, distraction-free vocal and stops small noises from being made louder by the compression and EQ that come later.",
+    "practical_application": "The engineer zooms in on the vocal waveform, fades or silences the gaps between phrases, and lowers or deletes stray noises take by take.",
+    "category": "Vocal editing",
+    "related_terms": ["Vocal click removal", "Vocal comp map", "Noise gate", "Fades", "Vocal de-essing", "Breath control"],
+    "common_mistakes": ["Cutting every breath out completely, which makes the vocal sound unnatural and robotic", "Hard-cutting silence instead of using short fades, which leaves clicks at the edit points", "Deleting quiet consonant tails along with the noise, which dulls the words"],
+    "scenario_contexts": ["Editing a comped lead vocal to remove breaths and mouth noise before handing it to the mix engineer", "Silencing headphone bleed and room noise in the gaps of a quiet verse", "Cleaning stray coughs and chair squeaks from a long ballad take"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "82f5f357-d272-4665-a4dd-07db9c8c0300",
+   "term": "Vocal click removal",
+   "fields": {
+    "definition": "The targeted removal of short transient clicks, pops, and mouth noises from a vocal recording, including saliva clicks, digital clicks from bad edits, and pops from the microphone, usually using spectral repair or interpolation tools.",
+    "plain_english": "Taking out the tiny clicking and popping sounds in a vocal recording. These can come from the mouth, from bad edits, or from the microphone.",
+    "purpose_function": "Clicks and pops draw the ear and get louder after compression, so removing them keeps the vocal smooth and professional without changing the words.",
+    "practical_application": "The engineer finds each click on the waveform or spectrogram and repairs it with a de-click tool or a short redraw, or fixes edit clicks by adding a tiny crossfade.",
+    "category": "Vocal editing",
+    "related_terms": ["Vocal cleanup pass", "Crossfade", "Spectral editing", "Vocal comp map", "Vocal consonant editing", "Transient"],
+    "common_mistakes": ["Confusing a wanted consonant transient with a click and repairing it, which softens the word", "Fixing edit clicks by deleting audio instead of adding a short crossfade, leaving a gap", "Over-processing with broadband de-noise when only a few clicks need repair"],
+    "scenario_contexts": ["Removing saliva and lip clicks from a close-miked lead vocal in a sparse arrangement", "Repairing a digital click left where two comped takes were spliced together", "Fixing a plosive pop that slipped past the pop filter on an opening line"]
+   },
+   "sources": ["iZotope RX technical documentation", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e67373b9-75f6-49d2-978c-06d19a08a58a",
+   "term": "Vocal clip-gain editing",
+   "fields": {
+    "definition": "Adjusting the gain of individual vocal clips or regions on the timeline, before the channel fader and processing, to even out level differences between words, phrases, or takes.",
+    "plain_english": "Changing the loudness of small pieces of the vocal one at a time, before any other processing. It smooths out words that are too loud or too quiet.",
+    "purpose_function": "It hands the compressor a more even signal, so the compressor reacts musically instead of clamping hard on just a few loud words, and it saves heavy fader riding later.",
+    "practical_application": "In the DAW the engineer selects a loud syllable and pulls its clip-gain handle down a few dB, or lifts a buried word, evening out the take before the fader and plugins.",
+    "category": "Vocal editing",
+    "related_terms": ["Gain staging", "Vocal compression", "Automation", "Fader", "Vocal cleanup pass", "Dynamic range"],
+    "common_mistakes": ["Trying to fix every level jump with the compressor alone instead of leveling clip gain first", "Making large clip-gain jumps without checking that the noise floor does not pump up", "Boosting a clip so far that it clips or reveals room noise and breaths"],
+    "scenario_contexts": ["Evening out a singer who leaned into loud choruses and backed off in the verses", "Balancing word-to-word level before adding compression so gain reduction stays gentle", "Lifting a mumbled word at the end of a phrase so it stays intelligible in the mix"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "20d5c242-73a8-4d45-857a-0e1116703fc4",
+   "term": "Vocal comp map",
+   "fields": {
+    "definition": "A documented plan showing which section of which recorded take is chosen to build a single composite (comp) lead vocal, mapping take or playlist numbers to each line, phrase, or word.",
+    "plain_english": "A plan showing which piece of each recorded try is used to build the best full vocal. It is like picking the best word from take 1 and the best line from take 3.",
+    "purpose_function": "It keeps comping organized and repeatable, so the engineer knows the source of every phrase and can rebuild or revise the composite vocal later.",
+    "practical_application": "Using take lanes or playlists, the engineer marks the keeper phrases and notes them, then assembles the comped vocal and can revisit the map if a section needs changing.",
+    "category": "Vocal editing",
+    "related_terms": ["Vocal cleanup pass", "Take lanes", "Playlist", "Crossfade", "Lead vocal", "Vocal consonant editing"],
+    "common_mistakes": ["Comping so many tiny fragments that phrasing and consonants stop matching across the edits", "Not labeling chosen takes, making the comp impossible to rebuild after a change", "Forgetting crossfades at the comp joins, which leaves clicks between spliced takes"],
+    "scenario_contexts": ["Building one strong lead vocal from six recorded passes of the same song", "Noting keeper phrases per line so a producer's later notes can be applied quickly", "Rebuilding a chorus comp after the artist re-sings one weak line"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f43e5fea-db7f-4136-84f5-ee8a679e7faf",
+   "term": "Vocal compression",
+   "fields": {
+    "definition": "Dynamic-range compression applied to a vocal track, which reduces the level of passages above a set threshold by a chosen ratio, making the overall vocal level more consistent so it sits steadily in the mix.",
+    "plain_english": "Making the loud and quiet parts of a voice closer in volume. This keeps the singing steady so it does not jump out or get lost in the song.",
+    "purpose_function": "The human voice has a very wide dynamic range, so compression keeps every word audible over a busy band without the engineer having to ride the fader constantly.",
+    "practical_application": "The engineer sets a threshold, a ratio (often about 2:1 to 4:1 for control), and attack and release times so a few dB of gain reduction show on loud phrases, then adds make-up gain.",
+    "category": "Vocal processing",
+    "related_terms": ["Vocal de-essing", "Threshold", "Ratio", "Vocal clip-gain editing", "Make-up gain", "Attack and release"],
+    "common_mistakes": ["Over-compressing until the vocal sounds squashed, pumps, and loses natural dynamics", "Setting the attack too fast, which dulls the consonant attacks and softens the words", "Chasing loudness with heavy compression instead of leveling clip gain first"],
+    "scenario_contexts": ["Controlling a singer whose choruses are far louder than the verses", "Keeping a lead vocal steady and present over a loud rock arrangement", "Using gentle compression on tracking and more on the mix bus vocal chain"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d929d9f4-7835-4450-bcdd-0c0d10028f55",
+   "term": "Vocal consonant editing",
+   "fields": {
+    "definition": "Fine editing of the consonant sounds in a vocal, such as the hard onsets and endings of t, k, p, and s, to correct timing, align them across comped takes or doubled parts, and improve the clarity of the words.",
+    "plain_english": "Lining up and cleaning the sharp sounds in singing, like the t, k, and s. This makes the words clear and keeps doubled voices tight together.",
+    "purpose_function": "Consonants carry word clarity and timing, so editing them keeps lyrics easy to understand and makes stacked or doubled vocals lock tightly to the lead.",
+    "practical_application": "The editor nudges a late t into place, aligns the s and t of a double to the lead, and trims or crossfades each consonant edit so it does not click.",
+    "category": "Vocal editing",
+    "related_terms": ["Vocal comp map", "Vocal click removal", "Crossfade", "Vocal de-essing", "Double tracking", "Timing alignment"],
+    "common_mistakes": ["Cutting consonant tails too short, which makes words sound clipped and unclear", "Leaving doubled esses and tees out of alignment, which smears the stacked vocal", "Making consonant edits without crossfades, leaving audible clicks at the splices"],
+    "scenario_contexts": ["Tightening the ending consonants of a doubled chorus so they hit as one", "Nudging a late plosive back into time in a rap or fast lyric line", "Aligning the sibilants of a lead and its harmony before de-essing the pair"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a27bba86-5d6b-4e09-ae17-fd4196a09cdf",
+   "term": "Vocal de-essing",
+   "fields": {
+    "definition": "The reduction of excessive sibilance, the harsh high-frequency energy of s, sh, and t sounds (typically around 5 to 10 kHz), in a vocal, using a frequency-selective compressor called a de-esser.",
+    "plain_english": "Turning down the harsh sss sounds in singing without dulling the rest of the voice. A special tool listens for those sounds and only lowers them.",
+    "purpose_function": "Close-miking, bright EQ, and compression all boost sibilance, so de-essing tames it and keeps the vocal smooth and easy to listen to on bright playback systems.",
+    "practical_application": "The engineer inserts a de-esser after compression, sets the detection band around 5 to 8 kHz, and dials in a few dB of reduction that triggers only on the sibilant sounds.",
+    "category": "Vocal processing",
+    "related_terms": ["Vocal compression", "Sibilance", "Vocal consonant editing", "EQ", "Vocal cleanup pass", "Frequency-dependent compression"],
+    "common_mistakes": ["Setting too much reduction, which gives the singer a lisp by removing needed sibilance", "Placing the de-esser before heavy compression, so the compressor pushes sibilance back up", "Using broadband EQ cuts instead of a de-esser, which dulls the whole vocal"],
+    "scenario_contexts": ["Taming harsh esses on a close-miked pop vocal after adding high-shelf EQ", "Smoothing sibilance on a doubled and compressed chorus stack", "Fixing a bright condenser microphone that exaggerated a singer's s sounds"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5a034894-a45d-4051-b566-f05b19da9eba",
+   "term": "Vocal delay send",
+   "fields": {
+    "definition": "An auxiliary send that routes a portion of the vocal signal to a delay (echo) effect on a return bus, so the wet delay is blended in parallel with the dry vocal rather than inserted directly in the channel.",
+    "plain_english": "Sending a copy of the voice to an echo effect on its own channel. You can blend in as much echo as you want without changing the main dry voice.",
+    "purpose_function": "A parallel send lets the engineer add echo and control its level on its own, keep the dry vocal untouched, and feed one delay from several sources at once.",
+    "practical_application": "The engineer creates an aux or return with a delay, turns up the vocal channel's send to taste, and often times the delay to the song tempo, such as an eighth or quarter note.",
+    "category": "Vocal effects",
+    "related_terms": ["Aux send", "Return bus", "Delay", "Reverb send", "Tempo sync", "Lead vocal"],
+    "common_mistakes": ["Inserting the delay in-line instead of on a send, which makes the wet and dry levels hard to balance", "Leaving the return fader up so the echo washes over the words and hurts clarity", "Not timing the delay to tempo, so the repeats fight the groove of the song"],
+    "scenario_contexts": ["Adding a tempo-synced eighth-note echo to the ends of vocal phrases in a chorus", "Feeding one delay return from both the lead and a backing vocal to save channels", "Automating the send up on the last word of a line for a throw-style echo"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

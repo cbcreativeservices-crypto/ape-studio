@@ -1,0 +1,159 @@
+{
+ "batch": 19,
+ "topic": "Instrument Recording — Keys, Winds & Brass",
+ "authored": [
+  {
+   "id": "218fa973-3d25-48c5-a648-5260fa256b11",
+   "term": "Horn rotor",
+   "fields": {
+    "definition": "The rotating cylindrical core inside a rotary valve on a French (orchestral) horn; when the player's lever turns it, drilled ports in the rotor redirect the airflow through added tubing, lowering the pitch by lengthening the instrument.",
+    "plain_english": "A French horn has round valves. Inside each one is a spinning part called the rotor. When the player presses a lever, the rotor turns and sends air through extra tubing. That makes the note lower, as if the horn got longer.",
+    "purpose_function": "It lets the player instantly add or remove lengths of tubing to change pitch, extending the horn's range and giving smooth, quick note changes.",
+    "practical_application": "During close-miking, moving rotors and their linkage can click audibly, so engineers mic the bell from the side or behind and watch for valve noise while players keep rotors lightly oiled and fast.",
+    "category": "Brass instrument",
+    "related_terms": ["Rotary valve", "French horn", "Bell (brass)", "Valve slide", "Brass mic placement"],
+    "common_mistakes": ["Confusing the rotor of a rotary valve with the tuning slides", "Using heavy or wrong oil that gums up and slows the rotor", "Forgetting that rotor and linkage clicks get captured in quiet close-miked passages"],
+    "scenario_contexts": ["Hearing faint valve clicks when close-miking a soft horn section", "A player oiling the rotors before a session to keep them quiet and fast", "Tracing a sluggish or noisy note change to a dry or worn rotor"]
+   },
+   "sources": ["Baines, Brass Instruments: Their History and Development", "Fletcher & Rossing, The Physics of Musical Instruments"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "575ea25d-a508-41e8-8c7a-faa177daec03",
+   "term": "Keyboard line output",
+   "fields": {
+    "definition": "The line-level audio output on an electronic keyboard or synthesizer that delivers the instrument's internal sound at nominal line level (roughly -10 dBV to +4 dBu) on 1/4-inch or XLR jacks for connection to a mixer, audio interface, or amplifier.",
+    "plain_english": "This is the audio jack on a keyboard. It sends the keyboard's sound out at a fairly strong level called line level. You plug it into a mixer or an audio interface to record it. It is the keyboard's main sound socket.",
+    "purpose_function": "It provides the keyboard's finished mono or stereo sound at a standard level so it can feed a console, interface, or PA directly, with no microphone needed.",
+    "practical_application": "A technician patches the keyboard line outputs into line-level channels or a DI box, sets the keyboard's own volume near maximum, and trims gain at the console to avoid clipping.",
+    "category": "Keyboard I/O",
+    "related_terms": ["Line level", "DI box", "Keyboard output level", "Balanced connection", "Audio interface"],
+    "common_mistakes": ["Plugging a line-level output into a mic input and overloading the preamp", "Running long unbalanced 1/4-inch cables from the keyboard and picking up hum (use a DI)", "Leaving keyboard volume low and cranking console gain, which adds noise"],
+    "scenario_contexts": ["Recording a stage piano by taking its line outputs into an interface", "Sending keyboard line outs to a DI box for a long stage run to front of house", "Setting gain structure between a synth output and a mixer channel"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d646f10d-0c1c-4ff4-be23-2fe2f3d8d465",
+   "term": "Keyboard output level",
+   "fields": {
+    "definition": "The nominal signal strength present at a keyboard's audio output, typically line level (around -10 dBV consumer or +4 dBu professional), though many keyboards deliver a hotter or variable level set by their onboard volume control.",
+    "plain_english": "This is how strong the sound signal is when it leaves the keyboard. Most keyboards send out line level, a medium-strong signal. The keyboard's own volume knob can make it stronger or weaker. Getting this level right keeps the sound clean.",
+    "purpose_function": "Knowing the output level lets an engineer match the keyboard to the right input and set gain so the signal stays well above noise but does not distort.",
+    "practical_application": "The technician checks the keyboard's master volume, meters the signal at the console or interface, and adjusts input gain or engages a pad so peaks sit safely below clipping.",
+    "category": "Keyboard I/O",
+    "related_terms": ["Line level", "Keyboard line output", "Gain staging", "Clipping", "Pad (attenuator)"],
+    "common_mistakes": ["Assuming every keyboard outputs the same level; some are much hotter than others", "Turning the keyboard volume all the way up and clipping the input", "Ignoring gain staging so the recorded level is noisy or too low"],
+    "scenario_contexts": ["Matching a hot synth output to a console input by engaging a pad", "Balancing two keyboards that output very different levels in a live rig", "Setting record levels for a keyboard part in a DAW"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "01064c72-c080-4761-a443-9619c920cb1b",
+   "term": "Organ antiphonal division",
+   "fields": {
+    "definition": "A division of a pipe organ placed remotely from the main instrument, usually at the opposite end of the room such as a rear gallery, and playable from the same console so it can answer or contrast with the main organ in call-and-response (antiphonal) fashion.",
+    "plain_english": "A pipe organ can have a set of pipes placed far from the main organ. It often sits at the other end of the room. The player controls it from the same desk. It answers the main organ, like two choirs singing back and forth.",
+    "purpose_function": "It creates spatial and antiphonal effects, with sound arriving from a second location, giving the organist dramatic contrast and dialogue across a large space.",
+    "practical_application": "When recording, the engineer adds mics near the antiphonal division and blends them with the main-organ mics, watching for timing and phase differences caused by the distance between them.",
+    "category": "Pipe organ",
+    "related_terms": ["Organ division", "Organ console", "Organ stop", "Swell box", "Ambient miking"],
+    "common_mistakes": ["Thinking it is a separate organ; it is one instrument played from one console", "Miking only the main organ and missing the antiphonal answer", "Ignoring the time delay between distant divisions, causing phase smear when mixed"],
+    "scenario_contexts": ["Recording a cathedral organ with pipes in both the chancel and the rear gallery", "Blending antiphonal and main mics for a wide, immersive organ image", "A service using the antiphonal division for call-and-response passages"]
+   },
+   "sources": ["Audsley, The Art of Organ-Building", "Grove Dictionary of Music and Musicians (organ)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "caa34078-d7d7-4466-893c-038758b3c845",
+   "term": "Organ chamber opening",
+   "fields": {
+    "definition": "The grilled or screened tone opening through which sound from an enclosed organ chamber (a room or recess housing pipework) passes into the main room; its size, position, and covering strongly affect how much and how clearly the pipe sound reaches listeners.",
+    "plain_english": "Many organ pipes sit inside a hidden room called a chamber. Sound escapes through a covered opening, usually behind a grille or cloth. This opening works like a doorway for the sound. Its size and cover change how loud and clear the organ sounds.",
+    "purpose_function": "The opening couples the chamber's pipe sound to the room; builders size and place it to project the organ evenly while keeping the pipework out of sight.",
+    "practical_application": "Engineers often mic near or just outside the chamber opening to catch direct pipe sound, then mix it with room mics for depth; a dense grille cloth can dull the highs they capture.",
+    "category": "Pipe organ",
+    "related_terms": ["Organ chamber", "Swell box", "Grille cloth", "Organ speaker placement", "Close miking"],
+    "common_mistakes": ["Confusing the chamber opening with the swell shades inside it", "Pressing a mic dead-center against a grille and getting a boxy, blocked tone", "Forgetting that grille cloth absorbs high frequencies"],
+    "scenario_contexts": ["Miking a divided organ whose pipes speak through chamber grilles high on the walls", "Comparing a mic just outside the opening with a distant room mic", "Troubleshooting a muffled organ sound traced to a dense grille covering"]
+   },
+   "sources": ["Audsley, The Art of Organ-Building", "American Guild of Organists, Parts of the Pipe Organ"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8d50a5ea-577c-4338-8d37-547b2b7f9ac9",
+   "term": "Organ console",
+   "fields": {
+    "definition": "The control desk of a pipe or electronic organ, containing the manual keyboards, the pedalboard, and the stop controls (drawknobs, tabs, or tilting tablets), plus pistons and swell pedals, from which the organist plays and selects the instrument's sounds.",
+    "plain_english": "The console is the organ's control desk. It has the hand keyboards, the foot pedals, and the knobs that turn sounds on and off. The player sits here to run the whole organ. Think of it as the cockpit of the organ.",
+    "purpose_function": "It gathers every control in one place so the player can operate keyboards, pedals, and stops that may connect to pipes located far away in the room.",
+    "practical_application": "For recording and live sound, the console's key and stop action and the blower can add mechanical noise, so engineers keep mics away from the desk and aimed toward the pipes.",
+    "category": "Pipe organ",
+    "related_terms": ["Manual (keyboard)", "Pedalboard", "Organ stop", "Organ division", "Swell pedal"],
+    "common_mistakes": ["Assuming the sound comes from the console; the pipes, often distant, make the sound", "Close-miking the console and capturing key clatter instead of music", "Forgetting a detached console can sit far from the pipes, adding sound delay"],
+    "scenario_contexts": ["Recording a recital where the console sits in the chancel but pipes speak from the gallery", "Placing player-cue mics at the console while main mics face the pipes", "Managing key-action and blower noise on a quiet studio organ take"]
+   },
+   "sources": ["Audsley, The Art of Organ-Building", "American Guild of Organists, Parts of the Pipe Organ"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bb87bada-83ae-422d-bdcf-4eb1d8577948",
+   "term": "Organ pedal tones",
+   "fields": {
+    "definition": "The low bass notes produced by an organ's pedal division, played with the feet on the pedalboard and typically voiced by large 16-foot and 32-foot stops; a 32-foot stop's lowest note reaches into the deep sub-bass near 16 Hz.",
+    "plain_english": "These are the deep bass notes the organ player makes with their feet. The feet press big pedals, which sound the largest pipes. The lowest ones are so low you feel them more than hear them. A 32-foot pipe can reach about 16 Hz.",
+    "purpose_function": "Pedal tones give the organ its powerful bass foundation, anchoring the harmony and adding weight and rumble that fill a large room.",
+    "practical_application": "Capturing pedal tones needs mics and monitors with real low-frequency reach, so engineers use large-diaphragm or omni mics, high-pass only if truly needed, and check for room resonances and rumble.",
+    "category": "Pipe organ",
+    "related_terms": ["Pedalboard", "Organ stop", "Organ division", "Subwoofer", "Low frequency"],
+    "common_mistakes": ["UNSAFE: Sustained high-level 32-foot pedal tones can over-excite PA subwoofer drivers; respect amp and driver limits to avoid damage", "Using mics or monitors that roll off below 40 Hz and missing the true fundamental", "High-passing too aggressively and stripping away the pedal's power"],
+    "scenario_contexts": ["Recording an organ work with prominent 16-foot and 32-foot pedal lines", "Checking that studio monitors and subs reproduce the lowest pedal notes", "Taming a room mode excited by a sustained low pedal tone"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Audsley, The Art of Organ-Building", "Grove Dictionary of Music and Musicians (organ)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "19b778ef-9d38-4f1c-a61c-064bc3045524",
+   "term": "Organ speaker placement",
+   "fields": {
+    "definition": "The positioning of the loudspeaker or loudspeakers that reproduce an electronic or electric organ, most notably a Hammond organ's Leslie rotary-speaker cabinet, chosen so the sound projects naturally into the room and can be effectively miked, since a rotary cabinet's spinning horn and bass rotor radiate differently in each direction.",
+    "plain_english": "Many electric organs, like a Hammond, use a separate speaker cabinet. A Leslie cabinet even has spinning speakers inside. Where you put that cabinet changes how it sounds in the room. Good placement helps it fill the space and makes it easier to record.",
+    "purpose_function": "Proper placement lets the organ's speaker project evenly and, for rotary cabinets, lets the swirling motion develop in the room so it sounds full and can be captured cleanly.",
+    "practical_application": "To record a Leslie, engineers place mics on the top rotating horn (often two for stereo) and one or two on the lower bass rotor, keeping the cabinet off walls and out of corners to reduce boom.",
+    "category": "Electronic organ",
+    "related_terms": ["Leslie speaker", "Rotary speaker", "Hammond organ", "Speaker miking", "Stereo miking"],
+    "common_mistakes": ["Pushing a Leslie or organ cabinet into a corner, causing boomy, uneven bass", "Miking only the top horn and missing the bass rotor's body", "UNSAFE: A Leslie cabinet is heavy and tips easily; secure it and lift with proper technique to avoid injury or damage"],
+    "scenario_contexts": ["Setting up a Hammond and Leslie for a studio session", "Positioning a church electronic organ's speakers for even coverage", "Stereo-miking a rotary cabinet's top horn and bottom rotor"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5ab5e078-1255-404a-9efa-dbe5b7ed2cea",
+   "term": "Organ stop",
+   "fields": {
+    "definition": "A control (a drawknob, tilting tablet, or slider) that admits wind to a particular rank or ranks of pipes, and by extension the set of pipes it governs; each stop has a characteristic tone color and pitch, marked by a name and a foot-length such as 8' for unison pitch or 16' for an octave lower.",
+    "plain_english": "An organ stop is a control that turns one set of pipes on or off. Each set has its own sound and pitch. The name comes from stopping the sound until you pull the stop out. Pulling more stops adds more sounds together, which is where \"pull out all the stops\" comes from.",
+    "purpose_function": "Stops let the organist choose and combine tone colors and pitches, building anything from a single soft flute to the full, blazing sound of the whole organ.",
+    "practical_application": "The chosen stops set the tonal balance, so as the organist changes registration from soft flutes to full principals and reeds, engineers adjust mic distance and EQ to match.",
+    "category": "Pipe organ",
+    "related_terms": ["Rank", "Organ division", "Organ console", "Registration", "Organ pipe"],
+    "common_mistakes": ["Confusing a stop (a whole voice) with a single pipe or a single key", "Thinking the foot number is loudness; it marks pitch, not volume", "Assuming one stop equals one rank; mixture stops draw several ranks at once"],
+    "scenario_contexts": ["Reading a score's registration to know which stops will sound and how loud", "Re-miking as the organist shifts from a single 8' flute to full organ", "Explaining why a 16' stop sounds an octave below the keys played"]
+   },
+   "sources": ["Audsley, The Art of Organ-Building", "Grove Dictionary of Music and Musicians (organ)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

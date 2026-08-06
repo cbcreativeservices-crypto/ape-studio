@@ -349,10 +349,13 @@ export function SpeakerOutputToggle({
   value,
   onChange,
   sub,
+  title = 'PHONE SPEAKER OUTPUT',
 }: {
   value: boolean;
   onChange: (v: boolean) => void;
   sub?: string;
+  /** Override the tickbox title (e.g. "PHONE SPEAKER OUTPUT (REALITY)"). */
+  title?: string;
 }) {
   return (
     <Pressable
@@ -360,13 +363,13 @@ export function SpeakerOutputToggle({
       onPress={() => onChange(!value)}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: value }}
-      accessibilityLabel="Show phone speaker output"
+      accessibilityLabel={title}
     >
       <View style={[styles.spkBox, value && styles.spkBoxOn]}>
         {value ? <Text style={styles.spkCheck}>✓</Text> : null}
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={[styles.spkLabel, value && styles.spkLabelOn]}>PHONE SPEAKER OUTPUT</Text>
+        <Text style={[styles.spkLabel, value && styles.spkLabelOn]}>{title}</Text>
         {sub ? <Text style={styles.spkSub}>{sub}</Text> : null}
       </View>
     </Pressable>

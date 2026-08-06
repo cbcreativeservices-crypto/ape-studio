@@ -44,13 +44,14 @@ export const colors = {
   hairlineDim: '#1e1e1e',
   deepBorder: '#060606',
 
-  // Text
+  // Text — dim grays lifted (owner 2026-08-05: dark-gray text was hard to read
+  // on the black tool backgrounds; raised so it pops while keeping hierarchy).
   textPrimary: '#f0f0f0',
   textSecondary: '#e6e6e6',
-  textSub: '#999999',
-  textSubAlt: '#8f8f8f',
-  textMuted: '#666666',
-  textMutedDeep: '#555555',
+  textSub: '#a6a6ad',
+  textSubAlt: '#9a9aa2',
+  textMuted: '#8a8b93',
+  textMutedDeep: '#7a7c85',
   black: '#000000',
 } as const;
 

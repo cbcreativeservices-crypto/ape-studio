@@ -1,0 +1,323 @@
+{
+ "batch": 72,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "6eccd064-15c0-4082-829c-804c688ad413",
+   "term": "Vocal depth control",
+   "fields": {
+    "definition": "The use of reverb, delay, level, and equalization to place a vocal at a perceived front-to-back distance within a mix, controlling how close or far the voice sounds relative to other elements.",
+    "plain_english": "This is making a voice sound close-up or far away in a song. You add echo or reverb and roll off some high tones to push a voice back, because far-off sounds seem softer and less clear.",
+    "purpose_function": "It shapes the spatial layering of a mix so the lead voice sits at the right distance and does not clash with other parts, giving a flat stereo image a sense of depth.",
+    "practical_application": "A mixing engineer uses short reverb, pre-delay, and a gentle high-frequency roll-off to move a backing vocal behind a drier, up-front lead.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Reverb",
+     "Pre-delay",
+     "Vocal equalization",
+     "Vocal effects chain",
+     "Dry/wet balance"
+    ],
+    "common_mistakes": [
+     "Adding so much reverb that the vocal loses clarity and drowns in the mix",
+     "Treating depth as volume alone and ignoring reverb, pre-delay, and EQ cues",
+     "Skipping pre-delay, which smears the vocal instead of placing it back in space"
+    ],
+    "scenario_contexts": [
+     "Placing stacked backing vocals behind the lead",
+     "Creating an intimate, close-sounding lead vocal",
+     "Matching a vocal to the roominess of a live band mix"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound technical articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5801300c-d25f-413a-8210-f26e25ec6b35",
+   "term": "Vocal distortion",
+   "fields": {
+    "definition": "The addition of harmonic and intermodulation content to a vocal by driving a device, plug-in, or amplifier stage past its linear range; used deliberately as a creative effect or flagged as a fault when unintended.",
+    "plain_english": "This is adding grit or fuzz to a voice on purpose, or a fault when a signal is too loud. It comes from pushing the sound past a clean level, the way a guitar amp turned up gets a rough, edgy tone.",
+    "purpose_function": "As an effect it adds edge and harmonic richness so a vocal cuts through a dense mix; as a fault it signals that a stage is overloaded and clipping.",
+    "practical_application": "An engineer runs a vocal through a saturation plug-in or overdriven preamp for attitude, often blending it under the clean take on a parallel channel.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Saturation",
+     "Clipping",
+     "Harmonic distortion",
+     "Overdrive",
+     "Parallel processing",
+     "Gain staging"
+    ],
+    "common_mistakes": [
+     "Mistaking harsh digital clipping for pleasant analog-style saturation",
+     "Distorting the whole take instead of blending a parallel distorted copy",
+     "Adding so much grit that the words become hard to understand"
+    ],
+    "scenario_contexts": [
+     "Adding aggression to a rock or rap vocal",
+     "Creating a lo-fi telephone or megaphone effect",
+     "Diagnosing accidental clipping at an overloaded preamp"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound technical articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8698a591-1709-4796-9a0d-474e837442b9",
+   "term": "Vocal dynamic equalization",
+   "fields": {
+    "definition": "Equalization of a vocal in which the gain of one or more frequency bands changes in response to the signal level in that band, so correction is applied only when a threshold is crossed rather than statically.",
+    "plain_english": "This is EQ for a voice that only kicks in when one pitch range gets too loud. Instead of always cutting those tones, it turns them down just for the moments they jump out, then leaves them alone.",
+    "purpose_function": "It tames problem frequencies such as harsh sibilance, boomy notes, or resonances only when they actually occur, keeping the natural tone intact the rest of the time.",
+    "practical_application": "An engineer sets a dynamic EQ band around 3 to 6 kHz to duck only on harsh syllables, or a low band to control proximity boom, avoiding a permanent static cut.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Vocal equalization",
+     "De-esser",
+     "Multiband compression",
+     "Threshold",
+     "Resonance"
+    ],
+    "common_mistakes": [
+     "Confusing it with static EQ, which cuts a band all the time",
+     "Setting the threshold so low that the band acts constantly",
+     "Choosing attack and release times that make the band pump audibly"
+    ],
+    "scenario_contexts": [
+     "Taming sibilance only on the loud 's' sounds",
+     "Controlling proximity boom that comes and goes",
+     "Reducing a single resonant note that rings out"
+    ]
+   },
+   "sources": [
+    "Rane, Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound technical articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "eddd3add-b819-4938-983f-6e64e2e37714",
+   "term": "Vocal edit smoothing",
+   "fields": {
+    "definition": "The process of hiding audible artefacts at splice points in a comped or corrected vocal by using crossfades, matched levels, and continuous breath and room tone so assembled takes play as one seamless performance.",
+    "plain_english": "This is hiding the joins when you stitch the best bits of several vocal takes together. You blend each cut with a short fade so no clicks or jumps reveal where one take stops and the next begins.",
+    "purpose_function": "It makes a composite vocal built from many takes sound like one continuous performance, removing clicks, level jumps, and cut-off breaths at the edit points.",
+    "practical_application": "After comping, an engineer places short crossfades at each edit, matches breath and room tone across the splice, and cuts at zero crossings to avoid pops.",
+    "category": "Vocal Editing",
+    "related_terms": [
+     "Comping",
+     "Crossfade",
+     "Zero crossing",
+     "Room tone",
+     "Punch-in"
+    ],
+    "common_mistakes": [
+     "Cutting in the middle of a word so the join is obvious",
+     "Leaving hard cuts with no crossfade, which creates clicks",
+     "Deleting all breaths so the vocal sounds robotic and unnatural"
+    ],
+    "scenario_contexts": [
+     "Comping a lead vocal from several takes",
+     "Cleaning up a punch-in edit",
+     "Removing a click left at a splice point"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound technical articles",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b4cdfc85-e853-4350-8a1a-8854a0a9ce2b",
+   "term": "Vocal effects chain",
+   "fields": {
+    "definition": "The ordered series of signal processors, such as EQ, compression, de-essing, saturation, delay, and reverb, through which a vocal signal passes, where each stage's placement affects the overall result.",
+    "plain_english": "This is the line-up of effects a voice passes through, one after another, like an assembly line. The order matters, because each effect changes the sound before it reaches the next one.",
+    "purpose_function": "It shapes a raw vocal into a finished, polished sound, and the chosen order, such as EQ before or after compression, determines how the processors interact.",
+    "practical_application": "A typical chain runs gain, high-pass, compression, EQ, and de-esser into time-based sends; the engineer reorders stages to solve specific tonal or dynamic problems.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Signal chain",
+     "Insert",
+     "Vocal equalization",
+     "Compression",
+     "De-esser",
+     "Send/return"
+    ],
+    "common_mistakes": [
+     "Placing the de-esser after a big high boost so sibilance returns",
+     "Stacking so many processors that the vocal sounds over-processed",
+     "Failing to match levels between stages, which changes how each one reacts"
+    ],
+    "scenario_contexts": [
+     "Building a tracking chain for recording",
+     "Setting up an insert chain during the mix",
+     "Troubleshooting a chain by changing the order of processors"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound technical articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ee89a1bb-ff53-487a-a687-697546f81d9b",
+   "term": "Vocal effects pass",
+   "fields": {
+    "definition": "A dedicated stage in the production workflow during which time-based and creative effects, such as delays, reverbs, modulation, and throws, are added to a vocal, typically after corrective editing and balancing are complete.",
+    "plain_english": "This is a work session set aside just for adding effects to a voice, like echo and reverb. You do it after the voice is already tuned and balanced. That way you can focus only on the creative sounds.",
+    "purpose_function": "Separating effect-adding into its own pass lets the engineer focus on creative sound design once the vocal is clean, and makes automated throws and returns easier to manage.",
+    "practical_application": "During the mix, an engineer does an effects pass to automate delay throws on line ends, add reverb tails, and print special one-off effects to their own tracks.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Delay throw",
+     "Reverb",
+     "Automation",
+     "Vocal effects chain",
+     "Send/return"
+    ],
+    "common_mistakes": [
+     "Adding effects before the tuning and timing are fixed",
+     "Over-effecting so the words get buried",
+     "Leaving effects un-automated so they clutter quiet verses"
+    ],
+    "scenario_contexts": [
+     "Automating delay throws on the ends of vocal lines",
+     "Adding reverb tails during the mix",
+     "Printing a special one-off vocal effect to a track"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound technical articles",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2ba80812-58db-4756-bc96-36391664eacb",
+   "term": "Vocal equalization",
+   "fields": {
+    "definition": "The adjustment of the relative levels of frequency bands in a vocal signal using an equalizer, to correct tonal problems, remove unwanted resonances or rumble, and shape the voice to sit within a mix.",
+    "plain_english": "This is turning different pitch ranges of a voice up or down to fix its tone. Like the bass and treble knobs on a stereo, it can cut a boomy low end or add air on top so the voice sounds clear.",
+    "purpose_function": "It removes rumble, boxiness, and harshness and can add clarity or air, so the vocal is balanced on its own and carves out its own space in the mix.",
+    "practical_application": "An engineer high-passes below about 80 to 100 Hz to cut rumble, dips boxy mids around 300 to 500 Hz, and adds a gentle high shelf for air.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Equalization",
+     "High-pass filter",
+     "Proximity effect",
+     "De-esser",
+     "Presence"
+    ],
+    "common_mistakes": [
+     "Reaching for a boost when a cut would solve the problem more cleanly",
+     "Judging EQ with the vocal soloed instead of in the full mix",
+     "Making cuts so deep that the voice sounds thin and lifeless"
+    ],
+    "scenario_contexts": [
+     "Cleaning low-frequency rumble from a vocal track",
+     "Fixing a boxy or muddy tone",
+     "Adding presence so the vocal sits over a busy mix"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Rane, Pro Audio Reference"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "17d0f75b-efdb-428e-8031-ebffb1d3a13f",
+   "term": "Vocal excitation",
+   "fields": {
+    "definition": "The addition of synthesised high-frequency harmonics to a vocal using an exciter or harmonic enhancer, generating content derived from the source signal to increase perceived brightness, presence, and detail without a simple level boost.",
+    "plain_english": "This is brightening a voice by adding brand-new high harmonics, not just turning the treble up. A tool called an exciter makes fresh sparkle from the voice itself, so it sounds crisper and more present.",
+    "purpose_function": "It restores or adds air and articulation to a dull vocal, making it feel closer and more detailed while using less energy than a large equalizer boost would.",
+    "practical_application": "An engineer applies a harmonic exciter lightly to a dark or lifeless vocal to add sheen and intelligibility, watching that it does not sharpen sibilance.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Harmonic enhancement",
+     "Aural exciter",
+     "Vocal equalization",
+     "Saturation",
+     "Presence"
+    ],
+    "common_mistakes": [
+     "Overusing the exciter until the vocal sounds harsh and tiring",
+     "Exciting the sibilant range so 's' sounds become piercing",
+     "Using it to rescue a poorly recorded source instead of fixing the recording"
+    ],
+    "scenario_contexts": [
+     "Brightening a dull or muffled vocal",
+     "Adding air to a vocal cut on a dark microphone",
+     "Improving intelligibility in a dense mix"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound technical articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "13dc4890-f9ab-4080-8b08-df088db923ab",
+   "term": "Vocal expansion",
+   "fields": {
+    "definition": "The application of dynamic-range expansion to a vocal, in which the level of signal below a set threshold is reduced, widening the gap between loud and soft passages to lower noise, bleed, and low-level artefacts between phrases.",
+    "plain_english": "This is a tool that makes the quiet parts of a voice track even quieter. It turns down soft background noise and spill between words, so the gaps sound clean while the sung words stay full.",
+    "purpose_function": "Expansion, and its extreme form the noise gate, cleans up spill, breaths, headphone bleed, and room noise in the gaps of a vocal without the abrupt on-off of a hard gate.",
+    "practical_application": "An engineer sets a gentle downward expander with a threshold just under the softest sung notes to pull down bleed between phrases while keeping breaths sounding natural.",
+    "category": "Vocal Processing",
+    "related_terms": [
+     "Expander",
+     "Noise gate",
+     "Compression",
+     "Threshold",
+     "Dynamic range"
+    ],
+    "common_mistakes": [
+     "Setting the threshold too high, which chops off soft note tails and word endings",
+     "Using too fast a release (with no hold time or hysteresis), so the expander or gate chatters on and off when the signal hovers near the threshold",
+     "Confusing expansion with compression, which reduces dynamic range instead"
+    ],
+    "scenario_contexts": [
+     "Cleaning bleed between vocal phrases",
+     "Reducing steady room noise on a recorded take",
+     "Tightening a vocal without a hard, obvious gate"
+    ]
+   },
+   "sources": [
+    "Rane, Pro Audio Reference",
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

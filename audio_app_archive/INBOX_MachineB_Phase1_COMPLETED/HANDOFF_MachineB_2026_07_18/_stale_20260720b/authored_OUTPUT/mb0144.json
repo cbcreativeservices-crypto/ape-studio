@@ -1,0 +1,231 @@
+{
+ "batch": 144,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "4ea6549f-5f9e-45ac-826f-c036987a9b2c",
+   "term": "Take FX",
+   "fields": {
+    "definition": "In REAPER, Take FX is an effects chain applied to a single media item (take) rather than to the whole track, so the plugins process only that one item's audio and travel with it. In the signal path the Take FX chain runs before the track's own FX chain.",
+    "plain_english": "Take FX are effects that you put on just one recorded clip instead of the whole track. It is like adding a filter to a single photo in an album, not to every photo at once.",
+    "purpose_function": "It lets you process or repair one specific take or clip without affecting other items on the same track, and keeps that processing attached to the clip if it is moved.",
+    "practical_application": "A REAPER user adds a de-esser or pitch plugin as Take FX on one vocal comp clip while leaving the rest of the track untouched.",
+    "category": "DAW Editing",
+    "related_terms": ["Track FX", "Comping", "Insert effect", "Signal chain", "Take"],
+    "common_mistakes": [
+     "Confusing Take FX with Track FX and wondering why an effect only changes one clip.",
+     "Forgetting that Take FX are lost if the take is deleted or the item is glued/flattened.",
+     "Applying corrective processing as Take FX and then not carrying it when moving the clip to another track."
+    ],
+    "scenario_contexts": [
+     "Fixing a single loud breath or click on one vocal clip during comping.",
+     "Time-stretching or pitch-correcting one imported loop without changing the whole track.",
+     "Adding a temporary effect to audition an idea on a single item."
+    ]
+   },
+   "sources": ["Cockos REAPER User Guide", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e6f7113d-a9a2-4c75-b17e-eda682efb027",
+   "term": "Talk-microphone priority",
+   "fields": {
+    "definition": "A function in a mixer, mixer-amplifier, or paging system by which a designated talk or announcement microphone automatically overrides other inputs, ducking or muting them while it is in use so the spoken message is heard clearly. Priority is set by input assignment, a press-to-talk contact, or voice-activated (VOX) detection.",
+    "plain_english": "This is a setting that lets one microphone cut through by turning down the music or other sound while someone talks. It works like a car radio that drops the volume when the GPS voice speaks.",
+    "purpose_function": "It ensures paging and announcement messages stay intelligible by automatically lowering competing audio, without an operator having to ride the faders.",
+    "practical_application": "An installer wires a paging mic to the priority input of a commercial mixer-amplifier so store announcements duck the background music.",
+    "category": "Routing & Control",
+    "related_terms": ["Ducking", "Talkback", "Paging", "VOX", "Mute group"],
+    "common_mistakes": [
+     "Assuming the loudest mic automatically wins; priority must be configured on the input.",
+     "Setting the VOX threshold too low so background noise falsely triggers ducking.",
+     "UNSAFE: Relying on a background-music paging system for emergency messages without confirming it meets the site's life-safety and evacuation requirements."
+    ],
+    "scenario_contexts": [
+     "A retail store where staff announcements must duck the background music.",
+     "A house of worship where a speaker's mic takes priority over the music mix.",
+     "A transit hub where safety pages override all other audio zones."
+    ]
+   },
+   "sources": ["TOA A-2240 / A-800D Series Mixer Amplifier Operating Instructions", "Allen & Heath GR Series technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "91478040-24df-4b57-9e30-b6c6c2912187",
+   "term": "Target EQ curve",
+   "fields": {
+    "definition": "A target EQ curve is a defined desired frequency-response shape that an engineer equalizes toward, used as a reference for matching a mix, master, or monitoring system to a chosen tonal balance. Match-EQ and room-correction tools measure the source and apply filtering to move its response closer to the target.",
+    "plain_english": "A target EQ curve is the tone shape you are aiming for, drawn as a line across the frequencies. It is like a recipe that says how much bass, mids, and treble the finished sound should have.",
+    "purpose_function": "It gives an objective goal for tonal balance so mixes translate consistently and monitoring systems can be corrected to a known standard.",
+    "practical_application": "A mastering engineer loads a reference track's target curve into a match-EQ plugin, or a mixer applies a room-correction target curve to flatten studio monitors.",
+    "category": "EQ & Tone",
+    "related_terms": ["Match EQ", "Room correction", "Reference track", "Frequency response", "Tonal balance", "Equalization"],
+    "common_mistakes": [
+     "Matching a target curve so hard that the mix sounds unnatural or phasey.",
+     "Treating one target curve as correct for every genre and every playback system.",
+     "Confusing a monitor room-correction target with an EQ move on the mix itself."
+    ],
+    "scenario_contexts": [
+     "Matching a mix's tonal balance to a commercial reference in the same genre.",
+     "Calibrating studio monitors to a house or Harman-style target curve.",
+     "Keeping a series of album tracks tonally consistent against one target."
+    ]
+   },
+   "sources": ["Sonarworks SoundID Reference documentation", "iZotope Ozone Match EQ documentation", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cf164386-5f79-49f5-a002-ffd818364561",
+   "term": "Technical acceptance test",
+   "fields": {
+    "definition": "A technical acceptance test is a formal, specification-based check performed before a deliverable or installed system is accepted, verifying that measurable technical criteria (such as loudness, level, format, connectivity, or system performance) meet the agreed requirements. Passing it is the condition for sign-off and handover.",
+    "plain_english": "This is a final check to prove the work meets the agreed rules before anyone accepts it. It is like a home inspection that must pass before you buy the house.",
+    "purpose_function": "It protects both parties by confirming, with objective measurements, that a delivery or system does what the contract or spec requires before responsibility transfers.",
+    "practical_application": "A post engineer runs a technical acceptance test to confirm a mix's loudness and true-peak meet the broadcaster's delivery spec, or an integrator verifies an installed system against ANSI/AVIXA performance criteria.",
+    "category": "Delivery & QC",
+    "related_terms": ["Quality control", "Delivery spec", "Loudness normalization", "Commissioning", "Technical checklist", "True peak"],
+    "common_mistakes": [
+     "Treating a subjective listen as an acceptance test instead of measuring against the written spec.",
+     "Skipping the test and only discovering a failed deliverable after handover.",
+     "Testing one parameter such as loudness while ignoring format or channel-map requirements."
+    ],
+    "scenario_contexts": [
+     "QC of a broadcast mix against EBU R128 or ATSC A/85 delivery specs.",
+     "Commissioning and signing off a newly installed sound system.",
+     "Verifying a mastered file set before uploading to a distributor."
+    ]
+   },
+   "sources": ["ANSI/AVIXA 10:2013 Audiovisual Systems Performance Verification", "EBU R128 Loudness Recommendation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c58cd591-5f86-49ef-b3b1-dbb6a5c920ce",
+   "term": "Technical checklist",
+   "fields": {
+    "definition": "A technical checklist is a predetermined, itemized list of technical checks used to verify that required settings, conditions, or specifications are met at a defined stage of a workflow, such as before a session, show, or delivery. It standardizes verification so nothing critical is overlooked.",
+    "plain_english": "A technical checklist is a written list of things to check off so you do not forget any step. It works like a pilot's pre-flight list that makes sure everything is ready before takeoff.",
+    "purpose_function": "It reduces human error and keeps work consistent by turning expert knowledge into repeatable, verifiable steps.",
+    "practical_application": "A live engineer works through a technical checklist during setup to confirm every input, monitor, and safety item before doors open.",
+    "category": "Workflow",
+    "related_terms": ["Technical acceptance test", "Soundcheck", "Line check", "Delivery spec", "Commissioning", "Quality control"],
+    "common_mistakes": [
+     "Copying a generic checklist without adapting it to the specific rig or delivery.",
+     "Checking items off from memory instead of actually verifying each one.",
+     "Never updating the checklist after a failure reveals a missing step."
+    ],
+    "scenario_contexts": [
+     "Pre-show line check of every input and monitor on a live console.",
+     "Pre-delivery verification of file format, loudness, and metadata.",
+     "Studio session setup confirming routing, clocking, and record paths."
+    ]
+   },
+   "sources": ["ANSI/AVIXA 10:2013 Audiovisual Systems Performance Verification", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ee24ce79-9659-42bb-91dc-0de7ab8a8ade",
+   "term": "Television translation",
+   "fields": {
+    "definition": "Television translation refers to how well a mix holds up when played back over television systems, especially small built-in TV speakers and downmixed or loudness-normalized broadcast paths. A mix with good television translation keeps its balance, dialogue clarity, and impact on those systems, not only on studio monitors.",
+    "plain_english": "Television translation is how good your mix still sounds through a TV's small speakers. A mix can sound great in the studio but lose its bass or clear voices on a cheap TV, and that is a translation problem.",
+    "purpose_function": "Checking translation to television makes sure the audience actually hears the intended balance, since most viewers listen on modest built-in speakers.",
+    "practical_application": "A broadcast mixer checks television translation by auditioning the mix on small speakers and in mono to confirm dialogue stays clear after the broadcast downmix.",
+    "category": "Monitoring & Translation",
+    "related_terms": ["Mix translation", "Downmix", "Mono compatibility", "Loudness normalization", "Reference monitor", "Dialogue intelligibility"],
+    "common_mistakes": [
+     "Mixing only on large full-range monitors and never checking small or mono playback.",
+     "Overloading low end a TV speaker cannot reproduce, which masks the dialogue.",
+     "Assuming a great studio mix will automatically translate to broadcast playback."
+    ],
+    "scenario_contexts": [
+     "Mixing a TV show and checking it on a small reference speaker.",
+     "Confirming dialogue stays clear after a stereo-to-mono TV downmix.",
+     "Balancing music and effects so they do not bury speech on built-in TV speakers."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ceb61064-d1a9-47fd-a1e8-8563a0bd87ab",
+   "term": "Television-score mixing",
+   "fields": {
+    "definition": "Television-score mixing is the practice of balancing and processing the musical score for a television program so it supports the picture and sits correctly with dialogue and sound effects within the show's overall mix and delivery specification. It emphasizes clarity, consistent levels across episodes, and translation to home playback.",
+    "plain_english": "This is how you set the level of the music for a TV show. You balance it to fit under the voices and sound effects. The music should set the mood, but never cover up what people say.",
+    "purpose_function": "It shapes the score to support the story and emotion while staying out of the way of dialogue, and to meet broadcast loudness and delivery rules.",
+    "practical_application": "A music or re-recording mixer sets score levels and EQ so the music supports each scene yet never masks speech, then checks it against the broadcaster's loudness spec.",
+    "category": "Broadcast/Post",
+    "related_terms": ["Dialogue intelligibility", "Stems", "Loudness normalization", "Re-recording mix", "Television translation", "Balance"],
+    "common_mistakes": [
+     "Mixing the score too loud so it competes with the dialogue.",
+     "Ignoring level consistency, so the music jumps between scenes or episodes.",
+     "Judging the score in isolation instead of against dialogue and effects in the final mix."
+    ],
+    "scenario_contexts": [
+     "Balancing an episode's music under dialogue before delivery.",
+     "Keeping score levels consistent across a whole season.",
+     "Fitting a composer's cues into the final broadcast mix and its loudness spec."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5c612bc4-36c1-47f7-b673-41f388e0a019",
+   "term": "Tempo analysis",
+   "fields": {
+    "definition": "Tempo analysis is the process of determining the tempo (beats per minute) and beat positions of recorded audio, either manually or with a DAW's automatic detection, so the material can be aligned to a project's grid or a tempo map. It produces a tempo value or a series of tempo events that follow the performance.",
+    "plain_english": "Tempo analysis is figuring out how fast a piece of music is in beats per minute. Software listens for the beats and works out the speed, like tapping your foot to find the pace.",
+    "purpose_function": "It lets recorded audio line up with a DAW's bars-and-beats grid so edits, loops, quantizing, and added parts stay in time.",
+    "practical_application": "An engineer runs tempo analysis on a live drum recording so the session's tempo map follows the band and new overdubs snap to the grid.",
+    "category": "Tempo & Timing",
+    "related_terms": ["Tempo map", "Tempo List", "Warping", "Quantization", "Beat detection", "Grid"],
+    "common_mistakes": [
+     "Trusting automatic detection blindly, which may lock onto half or double the real tempo.",
+     "Running analysis on a rubato or drifting performance and expecting one fixed tempo.",
+     "Confusing detecting the tempo with time-stretching the audio to a new tempo."
+    ],
+    "scenario_contexts": [
+     "Building a tempo map from a click-free live recording.",
+     "Matching an imported loop to the project tempo.",
+     "Preparing a song for editing so quantize and grid tools work correctly."
+    ]
+   },
+   "sources": ["Steinberg Cubase Pro Operation Manual (Tempo Detection)", "Ableton Live Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6844d91c-7d7f-44e2-b047-6e3b8a87a52f",
+   "term": "Tempo List",
+   "fields": {
+    "definition": "In Logic Pro, the Tempo List is a list editor that displays all the tempo events in a project in chronological order and lets you create, view, and edit them precisely by position and value. It gives numerical control over tempo changes that complements the graphical Tempo track.",
+    "plain_english": "The Tempo List in Logic Pro is a table that shows every tempo change in a song and where each one happens. It lets you type exact speeds instead of dragging a line on a graph.",
+    "purpose_function": "It gives precise, numeric editing of tempo changes, which is useful for scoring and complex tempo maps where exact values and positions matter.",
+    "practical_application": "A composer opens the Tempo List to enter exact tempo changes at specific bars when syncing music to picture cues.",
+    "category": "Tempo & Timing",
+    "related_terms": ["Tempo track", "Tempo analysis", "Tempo map", "Event List", "Smart Tempo", "Marker"],
+    "common_mistakes": [
+     "Confusing the Tempo List with the graphical Tempo track; they edit the same events two ways.",
+     "Entering tempo changes in the wrong tempo set so they do not take effect.",
+     "Deleting a tempo event and unexpectedly shifting the timing of everything after it."
+    ],
+    "scenario_contexts": [
+     "Entering precise tempo changes to hit film or TV cues.",
+     "Cleaning up messy tempo events after automatic tempo detection.",
+     "Building a controlled ritardando or accelerando with exact values."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide (Tempo List)", "Sound on Sound"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

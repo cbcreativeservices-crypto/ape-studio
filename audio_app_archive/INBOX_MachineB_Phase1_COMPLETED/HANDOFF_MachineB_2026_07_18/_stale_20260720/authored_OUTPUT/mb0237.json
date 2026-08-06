@@ -1,0 +1,159 @@
+{
+ "batch": 237,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "d24ec90e-140f-47be-8925-e56fb7f533fe",
+   "term": "Maximum distance",
+   "fields": {
+    "definition": "In spatial or object-based audio, the maximum distance is the range from the listener beyond which a virtual sound source stops getting quieter, holding at a fixed floor level or being muted. It marks the outer end of a source's distance-attenuation curve, which otherwise follows the inverse-square falloff of sound with distance.",
+    "plain_english": "It is the farthest point where a virtual sound still changes. Past this distance the sound stays at one low level or goes silent. It is like a speaker so far away that walking even farther makes no difference.",
+    "purpose_function": "It caps how far a moving audio object stays audible, so distant sources do not clutter the mix or waste processing, and it defines the far end of a source's volume-versus-distance curve.",
+    "practical_application": "A sound editor building an immersive or game mix sets each object's maximum distance so off-screen sources fade out cleanly and only nearby sounds stay audible.",
+    "category": "Spatial Audio",
+    "related_terms": ["Minimum distance", "Panning", "Object-based audio", "Inverse-square law", "Attenuation"],
+    "common_mistakes": ["Setting the maximum distance so large that faraway sounds never fade and clutter the mix", "Confusing maximum distance with minimum distance, which sets where attenuation begins", "Assuming level keeps dropping past the maximum distance instead of holding or muting"],
+    "scenario_contexts": ["Setting attenuation limits for audio objects in an immersive film mix", "Culling distant off-screen sources in a game or VR soundscape", "Automating a source's fade-out as it moves away from the listener"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Roads, The Computer Music Tutorial"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7adb8e91-b96e-4b41-b9be-ee5a365feb75",
+   "term": "Metal footsteps",
+   "fields": {
+    "definition": "Metal footsteps are a Foley element in which footstep sounds are performed on a metal surface — such as steel stairs, grating, a catwalk, or a ship's deck — to match a character walking on metal on screen. They are performed on a dedicated feet track in sync with the picture.",
+    "plain_english": "These are footstep sounds made on metal, like a metal staircase or walkway. A Foley artist steps on real metal in the studio so the movie matches what you see. It makes a hard, ringing clank instead of a soft thud.",
+    "purpose_function": "They give a character's walk the correct hard, resonant character of a metal surface, adding realism and weight that production recordings often miss or that is lost when dialogue is cleaned up.",
+    "practical_application": "A Foley artist watches the scene and steps on a metal plate or grating in the Foley pit, choosing shoes and pace to match the actor's movement on the metal set.",
+    "category": "Foley",
+    "related_terms": ["Movement layer", "Foley pit", "Feet track", "Surface", "Sync"],
+    "common_mistakes": ["Using the wrong shoe or surface so the steps sound like wood or concrete instead of metal", "Ignoring the ring and resonance that real metal adds", "Failing to match the actor's step timing and weight to picture"],
+    "scenario_contexts": ["Foleying a character climbing a steel fire escape or ship ladder", "Adding footsteps for a fight on a metal catwalk", "Replacing missing footstep sound on an industrial or factory set"]
+   },
+   "sources": ["Ament, The Foley Grail", "Viers, The Sound Effects Bible", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "489d2607-216a-4315-a6be-bf17905cfeba",
+   "term": "Metal impact",
+   "fields": {
+    "definition": "A metal impact is a sound effect of a metal object striking or being struck — a clang, clank, or crash — created by hitting, dropping, or colliding metal items and usually layered and processed to fit the on-screen action. It may be produced as Foley or drawn from a sound-effects library.",
+    "plain_english": "This is the sound of metal hitting something, like a clang or crash. Sound artists make it by banging or dropping metal objects. It is used for things like a car crash, a sword hit, or a dropped tool.",
+    "purpose_function": "It supplies the hard, ringing collision sound that sells metal-on-metal or metal-on-hard-surface action, giving impacts weight and energy the picture alone cannot convey.",
+    "practical_application": "A sound editor or Foley artist creates a metal impact by striking metal props, then layers and EQs the recording to match the size and material of the object on screen.",
+    "category": "Sound Effects",
+    "related_terms": ["Metal footsteps", "Foley", "Sound effects library", "Layering", "Hard effects"],
+    "common_mistakes": ["Using one generic clang for every metal object regardless of size or material", "Forgetting to layer or pitch the impact to match a large versus small object", "Letting the metallic ring clash with dialogue or music in the mix"],
+    "scenario_contexts": ["Building the crunch and clang of a car collision", "Adding sword or armor clashes in an action or fantasy scene", "Creating the sound of a heavy metal door slamming"]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Ament, The Foley Grail"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9595112b-21c8-447a-ae2e-d83c34e3625f",
+   "term": "Meter change",
+   "fields": {
+    "definition": "A meter change is a shift from one metrical organization to another within a piece of music — for example moving from 4/4 to 3/4 or 6/8 — usually marked by a new time signature. It changes how beats are grouped and the pattern of strong and weak pulses.",
+    "plain_english": "It is when the beat pattern of the music changes partway through. For example, it may switch from counting in fours to counting in threes. A new time signature tells the players about the change.",
+    "purpose_function": "It lets a composer reshape the rhythmic feel, phrasing, or momentum of a passage, adding contrast or fitting the music to lyrics or on-screen action.",
+    "practical_application": "A composer or music editor writes a new time signature at the bar where the feel changes, and musicians or a scoring mixer count the new grouping to stay in time.",
+    "category": "Music Theory",
+    "related_terms": ["Time signature", "Tempo", "Beat", "Bar", "Downbeat"],
+    "common_mistakes": ["Confusing a meter change (beat grouping) with a tempo change (speed)", "Miscounting the first bar of the new meter and losing sync", "Assuming every meter change also changes the tempo"],
+    "scenario_contexts": ["Scoring a film cue that shifts feel from 4/4 to 3/4", "Following a meter change while conducting or clicking a scoring session", "Notating an odd-meter passage in a song arrangement"]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians (meter)", "Adler, The Study of Orchestration"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "96fe21ec-9f62-4335-a64f-987748af272e",
+   "term": "Minimum distance",
+   "fields": {
+    "definition": "In spatial or object-based audio, the minimum distance (or reference distance) is the range from the listener within which a virtual sound source plays at full level, with distance attenuation only beginning once the source moves beyond it. It sets the inner anchor of a source's distance-attenuation curve.",
+    "plain_english": "It is the closest zone where a virtual sound stays at full volume. Inside this distance, moving the sound nearer does not make it louder. Only past this point does the sound start to fade with distance.",
+    "purpose_function": "It stops a virtual source from becoming unrealistically loud when it sits very close to the listener, and it defines where the volume-versus-distance falloff begins.",
+    "practical_application": "A sound editor sets each object's minimum distance so close sources hold a controlled full level and only begin to fade once they move away in an immersive or game scene.",
+    "category": "Spatial Audio",
+    "related_terms": ["Maximum distance", "Panning", "Object-based audio", "Inverse-square law", "Attenuation"],
+    "common_mistakes": ["Setting the minimum distance so small that a nearby source jumps to extreme loudness", "Confusing minimum distance with maximum distance, which sets the outer fade limit", "Expecting attenuation to occur inside the minimum distance"],
+    "scenario_contexts": ["Anchoring the full-level zone for audio objects in an immersive film mix", "Preventing volume spikes as a source passes close to the listener in VR", "Tuning distance falloff for a moving sound in a game engine"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Roads, The Computer Music Tutorial"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "54a66e64-29fc-40de-881d-bd171322b243",
+   "term": "Mixing theater",
+   "fields": {
+    "definition": "A mixing theater (also called a dubbing stage or re-recording stage) is a purpose-built room where the final film or television soundtrack is mixed, sized and acoustically treated to represent a cinema and calibrated to a standard reference level and response. Dialogue, music, and effects stems are combined and balanced there for the finished mix.",
+    "plain_english": "It is a room built like a small movie theater where the final soundtrack is mixed. It is set up to sound like the cinema where the film will play. Mixers blend the voices, music, and effects here so the movie sounds right everywhere.",
+    "purpose_function": "It gives re-recording mixers a controlled, standardized listening environment so the mix they create translates predictably to real cinemas and other playback systems.",
+    "practical_application": "Re-recording mixers combine the dialogue, music, and effects stems on the dubbing stage, monitoring at the calibrated reference level to build the final mix and deliverables.",
+    "category": "Re-recording",
+    "related_terms": ["Re-recording mixer", "Dubbing stage", "Reference level", "Stem", "Final mix"],
+    "common_mistakes": ["Confusing the mixing theater with a music studio control room", "Mixing without confirming the room is calibrated to the standard reference level", "Assuming a home or small studio setup translates the same as a calibrated stage"],
+    "scenario_contexts": ["Mixing a feature film's final soundtrack on a dubbing stage", "Calibrating the stage monitors to the cinema reference level before a mix", "Creating theatrical and near-field deliverables from the same mix session"]
+   },
+   "sources": ["SMPTE RP 2096-1, Cinema Sound System B-Chain Alignment", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3ed2ce86-6b51-409a-a4c0-242e52898115",
+   "term": "Morphing",
+   "fields": {
+    "definition": "Audio morphing is the gradual transformation of one sound into another so that intermediate stages blend features of both, typically by interpolating between their spectral or synthesis parameters over time. The result is a smooth transition rather than a simple crossfade.",
+    "plain_english": "Morphing slowly turns one sound into a different sound. Along the way you hear a blend of both, not just one fading out while the other fades in. It is like a video that melts one face into another.",
+    "purpose_function": "It creates smooth, seamless transitions and hybrid textures, letting a sound designer move between two sounds or build a new sound that shares qualities of each.",
+    "practical_application": "A sound designer uses a morphing plug-in or synth to interpolate between two source sounds, automating the morph so a creature growl slowly becomes a machine hum.",
+    "category": "Sound Design",
+    "related_terms": ["Crossfade", "Spectral processing", "Synthesis", "Automation", "Sound design"],
+    "common_mistakes": ["Thinking morphing is the same as a simple crossfade between two clips", "Morphing sounds with very different spectra and getting an unnatural result", "Forgetting to automate the morph amount over time"],
+    "scenario_contexts": ["Transforming a human voice into a monster in a horror film", "Blending two textures into a new hybrid sound effect", "Creating an evolving transition riser between scenes"]
+   },
+   "sources": ["Roads, The Computer Music Tutorial", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "818e1a9f-1433-4c27-bedf-6b88b7625197",
+   "term": "Motion-capture audio stage",
+   "fields": {
+    "definition": "A motion-capture audio stage is the sound-recording setup on a motion- or performance-capture volume, where a production sound team records the performers' dialogue — usually as a guide or cue track — while keeping microphones, booms, and their shadows out of the cameras' capture area. The audio syncs the performance and typically guides later ADR rather than serving as the final track.",
+    "plain_english": "It is the sound recording done on a stage where actors' movements are captured by cameras. The mics must stay out of the camera area, so the sound is often just a guide. Actors usually re-record their lines cleanly later.",
+    "purpose_function": "It captures usable reference dialogue and timing during a capture session so editors can sync and cut the performance, even though the space and mic limits usually rule out final-quality audio.",
+    "practical_application": "A production sound mixer rigs lavalier and boom mics that stay clear of the capture volume, records each take as a cue track, and logs it with timecode for later syncing and ADR.",
+    "category": "Production Sound",
+    "related_terms": ["Guide track", "ADR", "Boom microphone", "Lavalier microphone", "Timecode"],
+    "common_mistakes": ["Expecting mocap-stage audio to be broadcast-quality final dialogue", "Letting a boom or mic shadow intrude into the camera capture volume", "Skipping timecode or logging so takes cannot be synced later"],
+    "scenario_contexts": ["Recording guide dialogue during a video-game performance-capture session", "Capturing reference audio on a virtual-production mocap volume", "Providing synced cue tracks that drive later ADR for an animated feature"]
+   },
+   "sources": ["IATSE Local 695 Production Sound & Video Quarterly", "AES E-Library (motion-capture stage audio recording)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d51bc730-ae33-4995-a5cd-1e1194bd83b4",
+   "term": "Movement layer",
+   "fields": {
+    "definition": "The movement layer (also called moves or cloth) is the Foley element that reproduces the sounds of a character's body movement and clothing — rustles, brushes, and shifts of fabric — performed in sync with the picture. It is one of the three main Foley categories, alongside footsteps and props.",
+    "plain_english": "This is the Foley layer for the sounds of clothes and body movement. It is the rustle you hear when someone moves, shrugs, or reaches out. A Foley artist makes it by moving fabric in time with the actor.",
+    "purpose_function": "It adds the subtle, constant cloth and movement sounds that make characters feel physically present, filling gaps left when production dialogue is replaced or cleaned up.",
+    "practical_application": "A Foley artist wears or handles clothing matching the character and moves in sync with the scene to record the cloth and body-movement track.",
+    "category": "Foley",
+    "related_terms": ["Metal footsteps", "Foley", "Cloth pass", "Props", "Feet track"],
+    "common_mistakes": ["Ignoring the movement layer and leaving characters sounding thin or lifeless", "Using clothing whose material does not match what the character wears", "Overplaying the cloth so rustles distract from dialogue"],
+    "scenario_contexts": ["Adding cloth movement under a dialogue scene after ADR", "Foleying a fight or chase where bodies and clothing move a lot", "Filling movement sounds for a fully looped foreign-language version"]
+   },
+   "sources": ["Ament, The Foley Grail", "Viers, The Sound Effects Bible"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

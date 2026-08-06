@@ -1,0 +1,159 @@
+{
+ "batch": 270,
+ "topic": "DAW Fundamentals & Session Management",
+ "authored": [
+  {
+   "id": "198ca07f-07dd-4751-83e5-47afabef24f3",
+   "term": "RAID 6 storage",
+   "fields": {
+    "definition": "RAID 6 is a storage scheme that stripes data across three or more disks together with two independent sets of distributed parity, allowing the array to keep running and rebuild after up to two simultaneous drive failures.",
+    "plain_english": "RAID 6 links several hard drives so they act like one big drive. It also stores two extra sets of repair data. Because of that, two drives can fail at the same time and you still lose nothing.",
+    "purpose_function": "It exists to protect large media libraries from data loss, tolerating two failed drives so a rebuild can finish even if a second disk dies while the first is being restored. This matters most on big arrays where rebuilds take a long time.",
+    "practical_application": "Studios use RAID 6 on shared media servers and archive storage where capacity is large and rebuild times are long, accepting some lost usable capacity and slower writes in exchange for higher fault tolerance.",
+    "category": "Storage & Backup",
+    "related_terms": ["RAID storage array", "SMART diagnostics", "Snapshot backup", "Shared project volume", "Restore verification", "Secondary recording volume"],
+    "common_mistakes": ["Believing RAID 6 is a backup, when it protects only against drive failure and not against deletion, corruption, theft, or fire, so a separate backup is still required", "Assuming any two-drive loss is always survivable while forgetting that a third failure during a long rebuild destroys the array", "Choosing RAID 6 for a small, fast record volume where its dual-parity write penalty can hurt real-time performance"],
+    "scenario_contexts": ["A post house keeps its shared project media on a RAID 6 server so a single drive failure never stops editing", "During a rebuild after one disk dies, a second disk also fails, but the array survives because RAID 6 holds two parity sets", "An archive unit storing finished masters uses RAID 6 to keep the most safe capacity across many high-capacity drives"]
+   },
+   "sources": ["SNIA Common RAID Disk Data Format Specification", "Seagate enterprise drive technical documentation (RAID levels and parity)", "Ballou, Handbook for Sound Engineers (data storage systems)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "84a5faf5-8b0d-42c0-973f-e009b858b766",
+   "term": "RAID storage array",
+   "fields": {
+    "definition": "A RAID (Redundant Array of Independent Disks) storage array combines multiple physical drives into one logical unit using a chosen RAID level to improve performance, redundancy, or both.",
+    "plain_english": "A RAID array is a group of hard drives joined so they work as one drive. Depending on how it is set up, it can make storage faster, safer, or both at once.",
+    "purpose_function": "It lets several drives act as a single volume so throughput and/or fault tolerance can exceed what one drive gives, which is essential for streaming many audio tracks at once without dropouts.",
+    "practical_application": "Technicians set up RAID arrays as project or media volumes on studio servers and workstations, picking a RAID level that matches the needed balance of speed, capacity, and protection.",
+    "category": "Storage & Backup",
+    "related_terms": ["RAID 6 storage", "Shared project volume", "Secondary recording volume", "SMART diagnostics", "Snapshot backup", "Restore verification"],
+    "common_mistakes": ["Treating a RAID array as a replacement for backups, when redundancy guards only against drive failure", "Mixing mismatched drives or ignoring a RAID level's minimum drive count, causing poor performance or a failed build", "Not monitoring drive health, so a failed drive in a redundant array goes unnoticed until a second failure causes total loss"],
+    "scenario_contexts": ["A recording studio builds a striped-and-mirrored array as its main record volume to sustain high track counts", "An engineer replaces a failed drive and lets the array rebuild while sessions keep running", "A facility presents one large RAID volume to the network so several edit rooms share the same media"]
+   },
+   "sources": ["SNIA Common RAID Disk Data Format Specification", "Avid Pro Tools Reference Guide (media storage and volumes)", "Ballou, Handbook for Sound Engineers (data storage systems)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bcef8507-7832-4456-a106-f8606ee70486",
+   "term": "Replace (record)",
+   "fields": {
+    "definition": "Replace is a record mode in which newly recorded audio or MIDI overwrites and erases the existing material inside the record-enabled range, so the old content in that span is removed rather than kept as an alternate take or layered part.",
+    "plain_english": "Replace is a record mode that erases the old sound as you record new sound over it. It is like recording over an old cassette tape and wiping out what was there before.",
+    "purpose_function": "It exists to let an engineer punch fresh material directly over a flawed section, clearing the old audio in that span so the track holds only the newest performance.",
+    "practical_application": "An engineer turns on Replace mode to overwrite a bad phrase or a wrong MIDI note in place, recording the fix over the existing region instead of stacking another take.",
+    "category": "Recording",
+    "related_terms": ["Snap to Grid", "Punch recording", "Overdub", "Comping", "Record enable", "Take"],
+    "common_mistakes": ["Confusing Replace with overdub and destroying a good part of a take, because Replace erases the existing material", "Forgetting Replace is active and recording over content you meant to keep", "Assuming Replace is nondestructive, when the removed audio in that range is gone unless you can undo"],
+    "scenario_contexts": ["A vocalist re-sings one bad line and the engineer uses Replace so only the new line remains", "A producer replaces a wrong MIDI note in a part without creating a second overlapping part", "An editor punches a corrected guitar phrase over a mistake using Replace record mode"]
+   },
+   "sources": ["Apple Logic Pro User Guide (Replace mode)", "Steinberg Cubase Operation Manual (MIDI record modes: Replace)", "Avid Pro Tools Reference Guide (record modes)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2a8673fb-36fe-4f2e-8d4f-ac365f999c61",
+   "term": "Restore verification",
+   "fields": {
+    "definition": "Restore verification is the practice of testing a backup by actually restoring its data and confirming the recovered files are complete, uncorrupted, and openable, proving that the backup can be relied on for recovery.",
+    "plain_english": "Restore verification means checking that a backup really works. You bring the files back, then open them and make sure they are complete before you trust the backup.",
+    "purpose_function": "It exists because a backup is only trustworthy once it is proven recoverable; verification catches silent corruption, incomplete jobs, or bad media before a real disaster depends on them.",
+    "practical_application": "A technician periodically restores a sample session from backup to a scratch drive and opens it to confirm the archive is valid, instead of assuming the backup job worked.",
+    "category": "Storage & Backup",
+    "related_terms": ["Snapshot backup", "RAID 6 storage", "Shared project volume", "SMART diagnostics", "Secondary recording volume", "RAID storage array"],
+    "common_mistakes": ["Trusting that a backup finished successfully without ever restoring and opening the files", "Verifying only that files exist, not that they open and play back correctly", "Testing a restore onto the same drive that holds the original, which fails to prove off-drive or off-site recovery"],
+    "scenario_contexts": ["Before wiping a full record drive, an engineer restores the archived session elsewhere and confirms it opens", "A monthly routine restores random projects from tape to check the archive is still readable", "After a backup software update, a technician verifies that restores still produce complete sessions"]
+   },
+   "sources": ["SNIA Dictionary and data-protection technical materials (restore and recovery)", "Avid Pro Tools Reference Guide (session backup and archiving)", "Ballou, Handbook for Sound Engineers (data storage and backup)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c519f83d-958f-45c6-8c89-1e31b21efa0e",
+   "term": "Secondary recording volume",
+   "fields": {
+    "definition": "A secondary recording volume is a separate storage disk, distinct from the system or boot drive, designated to hold recorded audio so that record and playback streaming does not compete with the operating system and application for disk bandwidth.",
+    "plain_english": "This is a second, separate drive used just for recording audio. Keeping recordings off the main system drive helps the computer run smoothly and record more tracks at once.",
+    "purpose_function": "It exists to keep recorded media off the busy system drive, giving record and playback their own sustained bandwidth and keeping takes separate from operating system and program files.",
+    "practical_application": "An engineer points the session's audio record path to a fast secondary drive so the boot disk stays free, which raises track count and reliability.",
+    "category": "Storage & Backup",
+    "related_terms": ["Shared project volume", "RAID storage array", "Snapshot backup", "Restore verification", "SMART diagnostics", "RAID 6 storage"],
+    "common_mistakes": ["Recording to the system drive because a dedicated volume was never selected, risking dropouts and low track counts", "Assuming a secondary internal volume is backed up when it is only working storage", "Filling the record volume near capacity, which degrades write speed and can stop recording"],
+    "scenario_contexts": ["A studio names a fast SSD as the secondary recording volume so the OS drive is never the record target", "An engineer sets each new session's audio files to save to the secondary drive by default", "On a mobile rig, tracks are recorded to an external secondary volume to keep the laptop's internal drive free"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (record volumes and disk allocation)", "Steinberg Cubase Operation Manual (project and audio file locations)", "Ballou, Handbook for Sound Engineers (data storage systems)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "69ce84e9-973a-4492-93fe-aa0d21cd6b16",
+   "term": "Shared project volume",
+   "fields": {
+    "definition": "A shared project volume is a storage volume, typically on networked or shared-access storage, that holds a project's media and session files so that multiple workstations or users can access the same content.",
+    "plain_english": "A shared project volume is a drive that many people or computers can reach. It lets a team work on the same session and media files instead of passing copies around.",
+    "purpose_function": "It exists to centralize project media so a team can collaborate on one set of files, avoiding duplicate copies and keeping everyone working from the current material.",
+    "practical_application": "In a multi-room facility, editors mount the shared project volume over the network and open the same sessions and media without copying files between machines.",
+    "category": "Storage & Backup",
+    "related_terms": ["Secondary recording volume", "RAID storage array", "RAID 6 storage", "Restore verification", "Snapshot backup", "SMART diagnostics"],
+    "common_mistakes": ["Two users overwriting the same session file because file-locking or check-out rules were ignored", "Assuming shared central storage is automatically backed up, when it still needs its own backup", "Running high-track-count playback over a network too slow for the shared volume, causing dropouts"],
+    "scenario_contexts": ["A post facility keeps all show media on a shared project volume so any suite can open any reel", "An assistant loads new dailies to the shared volume for editors across the building", "A band's overdub sessions live on a shared volume so each engineer works from the same files"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (shared and network storage workflows)", "SNIA Dictionary (shared and networked storage)", "Ballou, Handbook for Sound Engineers (data storage systems)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "495f8979-dbfc-4fcf-bfbc-24045e566b7a",
+   "term": "SMART diagnostics",
+   "fields": {
+    "definition": "SMART (Self-Monitoring, Analysis and Reporting Technology) is a drive-level monitoring system built into ATA/SATA and NVMe drives that tracks health attributes such as reallocated sectors, read errors, and temperature to predict impending failure.",
+    "plain_english": "SMART is a built-in health check inside most drives. It watches for early warning signs, like bad spots or heat, so you can swap a failing drive before it dies.",
+    "purpose_function": "It exists to give early warning of a degrading drive so it can be replaced before it fails outright and takes data with it.",
+    "practical_application": "A technician reads SMART attributes with disk utility software to spot rising reallocated-sector or pending-sector counts and retires a suspect drive before it fails during a session.",
+    "category": "Storage & Backup",
+    "related_terms": ["RAID storage array", "RAID 6 storage", "Restore verification", "Snapshot backup", "Secondary recording volume", "Shared project volume"],
+    "common_mistakes": ["Assuming a 'SMART OK' status guarantees the drive is fine, when some failures happen with no prior warning", "Ignoring rising reallocated or pending sector counts until the drive fails completely", "Relying on SMART instead of backups, though SMART only warns and cannot recover lost data"],
+    "scenario_contexts": ["A studio's monitoring flags rising bad-sector counts on a record drive, so it is swapped before a session", "During maintenance, a technician checks SMART data across the array members and replaces a weak drive", "A drive reporting high temperature in SMART prompts better cooling before it fails"]
+   },
+   "sources": ["INCITS/T13 AT Attachment (ATA) standard (SMART feature set)", "Seagate SMART technical documentation", "Ballou, Handbook for Sound Engineers (data storage systems)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "08b65d43-4f4f-430d-aa4f-5baaf97c375d",
+   "term": "Snap to Grid",
+   "fields": {
+    "definition": "Snap to Grid is an editing mode that constrains the movement and placement of clips, edit points, and selections so they align to a defined grid of bars, beats, or time divisions.",
+    "plain_english": "Snap to Grid makes clips jump to line up with the beat markers as you move them. It is like a magnet that pulls your edits neatly into place on the timeline.",
+    "purpose_function": "It exists to keep edits musically or timing-accurate on their own, so regions land exactly on beats or frames without slow manual nudging.",
+    "practical_application": "An editor turns on Snap to Grid to drag loops and clips so they lock to the bar or beat, keeping arrangement edits tight and in time.",
+    "category": "Editing",
+    "related_terms": ["Replace (record)", "Quantize", "Grid mode", "Bars and beats", "Zero crossing", "Tempo map"],
+    "common_mistakes": ["Leaving Snap to Grid on during fine detail edits, so clips jump and will not move to the exact intended spot", "Setting the grid value too coarse, forcing edits to snap far from where they are needed", "Confusing Snap to Grid with quantize, when snapping constrains manual moves and quantize repositions events to the grid automatically"],
+    "scenario_contexts": ["A producer arranges loops with Snap to Grid so every clip starts on a bar line", "An editor turns snapping off to slide a clip a few milliseconds for feel", "Building a beat, the user snaps drum hits to the sixteenth-note grid"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Grid mode and snapping)", "Steinberg Cubase Operation Manual (snap and grid)", "Ableton Live Reference Manual (grid and snapping)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "86ab95bc-7f6d-4381-8da2-287302410c02",
+   "term": "Snapshot backup",
+   "fields": {
+    "definition": "A snapshot backup is a point-in-time copy that captures the state of files or a volume at a specific instant, letting that exact version be preserved and restored later even as work on the live data continues.",
+    "plain_english": "A snapshot backup is an instant picture of your files at one moment. You can go back to that exact point later if something goes wrong.",
+    "purpose_function": "It exists to freeze a known-good state quickly so you can roll back to it after unwanted changes, corruption, or mistakes.",
+    "practical_application": "An engineer takes a snapshot of a session or volume before a risky edit or plugin change so the earlier state can be recovered if the change goes wrong.",
+    "category": "Storage & Backup",
+    "related_terms": ["Restore verification", "RAID 6 storage", "Shared project volume", "SMART diagnostics", "Secondary recording volume", "RAID storage array"],
+    "common_mistakes": ["Treating a snapshot on the same drive as a full backup, when a drive failure destroys both the data and its snapshots", "Assuming a snapshot copies all media, when it may only reference unchanged blocks on the same storage", "Never checking that a snapshot actually restores to a usable state"],
+    "scenario_contexts": ["Before a major mix revision, an engineer snapshots the session so the earlier version can return", "A shared storage system takes hourly snapshots so a deleted file can be recovered", "A technician restores yesterday's snapshot after a corrupt save"]
+   },
+   "sources": ["SNIA Dictionary (snapshot and point-in-time copy)", "Avid Pro Tools Reference Guide (session backup and versioning)", "Ballou, Handbook for Sound Engineers (data storage and backup)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

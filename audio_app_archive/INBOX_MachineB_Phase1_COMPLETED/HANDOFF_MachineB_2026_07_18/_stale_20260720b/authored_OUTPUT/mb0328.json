@@ -1,0 +1,231 @@
+{
+ "batch": 328,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "933b7ce0-9e59-49b2-875d-3c9f257ab630",
+   "term": "Cross-stick",
+   "fields": {
+    "definition": "A snare-drum technique in which the drummer lays the shoulder of the stick across the drumhead near the rim and strikes the rim with the butt end, producing a short, dry, woodblock-like click with almost no drum tone or sustain. It is also called a rim click or side stick.",
+    "plain_english": "The drummer lays the stick flat across the drum and taps the rim with the other end. This makes a short, dry click, a bit like knocking on wood, instead of a full drum hit.",
+    "purpose_function": "It gives a quiet, tight percussive accent with almost no ring, letting a drummer play soft grooves, often in ballads or verses, where a full backbeat would be too loud.",
+    "practical_application": "An engineer hears the cross-stick as a low-level, transient-heavy click and often gives it its own gain, compression, and gating so it is not lost or cut off when it appears mid-song.",
+    "category": "Articulation",
+    "related_terms": ["rimshot", "ghost note", "dead note", "attack", "transient"],
+    "common_mistakes": [
+     "Confusing a cross-stick with a rimshot, which is loud with the stick tip and rim struck together, when the cross-stick is a soft click.",
+     "Gating or editing the snare only for full hits, so quiet cross-stick clicks get cut off or lost.",
+     "Assuming the cross-stick will match the open snare in pitch and body, when it is drier and far more transient."
+    ],
+    "scenario_contexts": [
+     "A ballad verse where the drummer plays cross-stick on beats 2 and 4 for a soft groove.",
+     "Editing a drum take where cross-stick sections must be balanced separately from full backbeats.",
+     "Setting a snare noise gate so it opens for both quiet cross-sticks and loud hits."
+    ]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "28535082-a8fc-4415-9fb3-9ee2be153ac7",
+   "term": "Damped decay",
+   "fields": {
+    "definition": "The portion of a sound's decay that is cut short because energy is being removed from the vibrating system faster than by its natural losses, for example by a hand, mute, felt, or damper touching the string, head, or bar. The result is a shorter decay time and a faster-than-normal fall in level after the attack.",
+    "plain_english": "This is when a sound fades away faster than normal. It happens because something stops the vibration. Muting a guitar string with your hand is a good example. The note dies fast instead of ringing out.",
+    "purpose_function": "Damping controls how long notes ring, which shapes rhythm and clarity, so players and engineers use damped decay to tighten timing and stop unwanted ringing or overlap between notes.",
+    "practical_application": "A technician spots damped decay as a steep, short tail on a note and may add it, with a mute, palm, or gate, or preserve it so fast passages stay clean and defined.",
+    "category": "Decay Descriptor",
+    "related_terms": ["decay", "attack", "sustain", "palm mute", "dead note", "resonance"],
+    "common_mistakes": [
+     "Confusing damped decay with a fade made at the fader, when damping happens at the instrument itself.",
+     "Thinking a shorter decay means a weaker attack, when the attack can be loud even while the tail is cut short.",
+     "Over-damping so notes sound choked and lifeless when some natural decay was wanted."
+    ],
+    "scenario_contexts": [
+     "A palm-muted guitar riff where each note decays quickly for a tight, percussive feel.",
+     "A drummer pressing a hand on a tom to shorten its ring.",
+     "Judging whether a note's short tail comes from damping or from an over-aggressive noise gate."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e911557a-aca9-4a55-ba07-7d27224a6490",
+   "term": "Damper landing",
+   "fields": {
+    "definition": "On a piano or similar keyed string instrument, the moment the damper felt returns to rest on the string after a key or the sustain pedal is released, stopping the string's vibration and ending the note. The contact can also add a faint mechanical thump to the sound.",
+    "plain_english": "On a piano, this is when the soft felt pad drops back onto the string and stops the note. It works like a finger touching a ringing string to quiet it. The landing can add a tiny soft thump.",
+    "purpose_function": "The damper landing is what actually ends a piano note and sets its length, existing so strings do not keep ringing after the player lifts the key.",
+    "practical_application": "When recording or sampling a piano, an engineer hears damper landings as soft thumps at note releases and decides whether to keep them for realism or edit them out as noise.",
+    "category": "Decay Descriptor",
+    "related_terms": ["damper lift", "damper noise", "decay", "sustain pedal", "sympathetic resonance"],
+    "common_mistakes": [
+     "Mistaking the soft thump of a damper landing for a click or fault in the recording chain.",
+     "Editing out every damper landing, which can make a sampled piano sound unnatural.",
+     "Assuming the note ends the instant the key is released, ignoring the brief damper travel and landing."
+    ],
+    "scenario_contexts": [
+     "Close-miking a grand piano and hearing soft thumps as keys are released.",
+     "Programming a sampled piano that includes damper landing noise for realism.",
+     "Deciding whether a low thump on a piano track is a damper landing or a stand or floor bump."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ea75b11f-dab4-4df7-bbb0-81ed2f68874a",
+   "term": "Damper lift",
+   "fields": {
+    "definition": "On a piano, the raising of the damper felt off the string, caused by pressing a key or the sustain (damper) pedal, which frees the string to vibrate and ring. It allows sustain and lets other undamped strings add sympathetic resonance.",
+    "plain_english": "This is when the soft felt pads lift off the piano strings so the strings can ring freely. Pressing the sustain pedal lifts them all at once. That is why notes keep sounding after you let go of the keys.",
+    "purpose_function": "The damper lift lets strings sustain and resonate, existing so the player can hold notes and add richness by letting strings ring together.",
+    "practical_application": "A technician links a fuller, more resonant piano sound and added sympathetic ringing to pedal-driven damper lift, and may hear a faint mechanical noise as the dampers rise.",
+    "category": "Resonance Descriptor",
+    "related_terms": ["damper landing", "damper noise", "sustain pedal", "sympathetic resonance", "sustain"],
+    "common_mistakes": [
+     "Confusing damper lift, from the pedal or a key, with the una corda or 'soft' pedal, which shifts the action instead.",
+     "Blaming added ring or resonance on a reverb setting when it is really sustained strings from lifted dampers.",
+     "Thinking only the played note's damper lifts, when the sustain pedal lifts them all."
+    ],
+    "scenario_contexts": [
+     "A pianist using the sustain pedal so chords ring into each other.",
+     "Hearing extra sympathetic resonance on a piano track while the pedal is held.",
+     "Diagnosing why staccato notes still ring, and finding the dampers cannot land because the pedal is down."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5a39e6f8-21f7-4c2e-ae5f-2eca877ce7b2",
+   "term": "Damper noise",
+   "fields": {
+    "definition": "The incidental mechanical noise a piano's dampers make as their felts contact or leave the strings: soft thumps, felt friction, or a faint flutter heard alongside the musical tone. It is most noticeable in close-miked or sampled recordings.",
+    "plain_english": "This is the soft, non-musical sound the felt pads make as they touch or leave the strings. It is a bit like a muffled tap. Close microphones pick it up along with the notes.",
+    "purpose_function": "It is not a designed feature but an unavoidable by-product of the damping mechanism, and recognizing it helps a technician tell natural piano mechanics from an actual fault.",
+    "practical_application": "An engineer identifies damper noise as soft felt thumps tied to key releases and pedal moves, then uses mic placement, gating, or editing to control it without losing natural feel.",
+    "category": "Mechanical Artifact",
+    "related_terms": ["damper landing", "damper lift", "sustain pedal", "decay", "mechanical noise"],
+    "common_mistakes": [
+     "Mistaking damper noise for a bad cable, connector, or clipping when it is really the instrument's felt.",
+     "Trying to remove all damper noise, which strips natural realism from a piano recording.",
+     "Confusing damper noise with pedal squeak or bench creak, which come from different parts."
+    ],
+    "scenario_contexts": [
+     "Close-miking a piano and hearing soft felt thumps on note releases.",
+     "A/B-ing sampled pianos, some of which include modeled damper noise.",
+     "Tracing a soft thumping on a piano recording and confirming it is damper felt, not a fault."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b4b20cee-b879-4164-bc3d-6868ec93baaa",
+   "term": "Dead note",
+   "fields": {
+    "definition": "A deliberately muted note with no clear pitch, produced on guitar, bass, or similar string instruments by damping the strings, usually with the fretting hand resting lightly across them, while plucking or picking so only a short, dry percussive thud sounds. It is notated with an 'x' on the staff.",
+    "plain_english": "A dead note is a muted note with no real pitch. The player rests fingers on the strings, so a pluck only makes a short, dry thud. It adds rhythm and groove without a clear note.",
+    "purpose_function": "Dead notes add percussive rhythm and groove between pitched notes, filling space and driving the feel without changing the harmony.",
+    "practical_application": "An engineer hears dead notes as short, click-like transients with little pitch and keeps compression and gating set so they stay part of the groove rather than being squashed or cut.",
+    "category": "Articulation",
+    "related_terms": ["ghost note", "palm mute", "cross-stick", "attack", "transient"],
+    "common_mistakes": [
+     "Confusing a dead note with a ghost note, which is very quiet but still pitched, when a dead note has no clear pitch.",
+     "Gating a bass track so tightly that low-level dead notes disappear and the groove loses its feel.",
+     "Reading the 'x' notation as a mistake or a cymbal choke instead of a muted note."
+    ],
+    "scenario_contexts": [
+     "A funk bass line using dead notes between pitched notes for a percussive groove.",
+     "A guitar rhythm part with muted 'chuck' notes that drive the feel.",
+     "Editing a bass DI where dead notes must stay audible after compression."
+    ]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a95fa156-b2e6-499b-9c35-80222cea46e9",
+   "term": "djent",
+   "fields": {
+    "definition": "An onomatopoeic term for a subgenre and guitar-tone style of modern progressive metal, marked by a heavily distorted, tightly palm-muted, percussive low-string 'chug', usually on down-tuned or extended-range (7- or 8-string) guitars and played in syncopated, rhythmically complex patterns. The word imitates the short, muted attack of the sound.",
+    "plain_english": "Djent is the name for a heavy metal guitar sound. It is a tight, chunky, muted chug on low, down-tuned strings, played in tricky rhythms. The word copies the short, punchy sound the guitar makes.",
+    "purpose_function": "The djent tone exists to make low, heavy riffs sound tight and percussive rather than muddy, so fast, syncopated rhythms stay clear and punchy.",
+    "practical_application": "When mixing djent, an engineer keeps the guitars tight with high-pass filtering, careful gain staging, and a controlled low end so the palm-muted chugs stay defined and do not turn to mush.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["palm mute", "chug", "distortion", "attack", "transient"],
+    "common_mistakes": [
+     "Thinking djent is just heavy distortion, when its defining feature is the tight, palm-muted, rhythmic chug, not raw gain.",
+     "Adding too much low end so the chugs turn muddy and lose their percussive attack.",
+     "Confusing djent with any down-tuned metal, when its rhythmic, muted articulation is the key trait."
+    ],
+    "scenario_contexts": [
+     "Mixing a modern metal track that needs tight, percussive palm-muted guitars.",
+     "Dialing an amp or amp-sim for a djent tone with a controlled low end.",
+     "Identifying a guitar part as djent by its syncopated, muted chugging."
+    ]
+   },
+   "sources": ["Sound on Sound (Chocolate Audio Uproar RAW review)", "Sound on Sound (Mixing Metal / Making Modern Metal articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b471662d-748a-42e2-a733-e0544c30d8d9",
+   "term": "Double attack",
+   "fields": {
+    "definition": "A sound event that shows two distinct attack transients where a single onset is expected, heard as an unintended doubling of a note's start. It commonly appears as double-triggering on electronic drum pads or MIDI triggers, or as a flammed, doubled onset on an acoustic source.",
+    "plain_english": "This is when one note or hit seems to start twice. You hear two quick attacks instead of one. On electronic drums it often happens when a single hit is read as two.",
+    "purpose_function": "Recognizing a double attack helps a technician tell a genuine musical doubling from a fault, such as a mis-set trigger, so it can be fixed or kept on purpose.",
+    "practical_application": "A technician spots a double attack as two close transients on a waveform and, for electronic drums, adjusts the retrigger cancel or mask time and trigger sensitivity so one hit no longer registers twice.",
+    "category": "Attack Artifact",
+    "related_terms": ["attack", "transient", "double-triggering", "flam", "retrigger"],
+    "common_mistakes": [
+     "Mistaking a double attack for a natural flam when it is really a trigger reading one hit as two.",
+     "Raising trigger sensitivity to catch weak hits and causing more double attacks.",
+     "Trying to fix double-triggering only in the mix instead of correcting the trigger's retrigger or mask setting."
+    ],
+    "scenario_contexts": [
+     "An electronic kick drum registering two hits from one pedal stroke.",
+     "MIDI drum triggers producing doubled notes that need mask-time adjustment.",
+     "Editing a drum take where a doubled onset must be judged as a flam or a fault."
+    ]
+   },
+   "sources": ["Roland V-Drums technical/owner's documentation (retrigger cancel and mask time)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e982305a-f492-48a4-9016-6744daa5bdb5",
+   "term": "Drawbar noise",
+   "fields": {
+    "definition": "Unwanted noise on a tonewheel (Hammond-type) organ caused by dirty, oxidized, or worn drawbar and manual contacts, typically heard as crackle, scratch, or intermittent dropouts when drawbars or keys move. It arises because the sliding, wiping electrical contacts pass the signal imperfectly.",
+    "plain_english": "On a Hammond-style organ, this is the crackle you hear when the sliding controls or keys have dirty electrical contacts. It is like a scratchy volume knob. The sound comes from a poor connection, not the music.",
+    "purpose_function": "Spotting drawbar noise tells a technician the organ's contacts need cleaning, so the real fault is fixed rather than mistaken for an amp or cable problem.",
+    "practical_application": "A tech identifies drawbar noise as crackle tied to moving drawbars or keys and services it by cleaning the drawbar and manual contacts with the correct contact cleaner, restoring a clean signal.",
+    "category": "Mechanical Artifact",
+    "related_terms": ["drawbar", "tonewheel", "contact noise", "crackle", "signal dropout"],
+    "common_mistakes": [
+     "UNSAFE: Cleaning or probing inside a tonewheel organ while it is plugged in; it carries mains voltage, so unplug it and follow the service manual before opening it.",
+     "Blaming crackle on the amplifier or cable when the real cause is dirty drawbar or key contacts.",
+     "Spraying heavy oil or the wrong cleaner on the contacts, which attracts dirt and makes the noise worse."
+    ],
+    "scenario_contexts": [
+     "A Hammond organ crackles whenever a drawbar is moved during a session.",
+     "Intermittent dropouts on certain notes traced to dirty key contacts.",
+     "A tech scheduling contact cleaning after diagnosing drawbar noise."
+    ]
+   },
+   "sources": ["Hammond organ service manual / technical documentation", "Ballou, Handbook for Sound Engineers", "NFPA 70E (electrical safety, work de-energized)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

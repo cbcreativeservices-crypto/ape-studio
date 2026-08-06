@@ -1,0 +1,159 @@
+{
+ "batch": 173,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "1bd1d89c-4175-44f4-91b6-1b4c21f6d70d",
+   "term": "Renderer compatibility check",
+   "fields": {
+    "definition": "A verification step in object-based/immersive audio finishing that confirms a program's audio and accompanying metadata decode and render correctly across the target renderers and playback configurations — for example different speaker layouts and binaural or stereo downmix outputs — so the delivered mix translates as intended.",
+    "plain_english": "A test that makes sure an immersive mix plays back well on every system it reaches. It checks the mix still sounds right on many speakers, a soundbar, or plain headphones.",
+    "purpose_function": "It exists to catch translation and metadata errors before delivery, so the mix stays consistent across every renderer and speaker layout the audience might use.",
+    "practical_application": "An engineer auditions the master through the renderer's binaural and downmix outputs and on different speaker configurations, confirming object positions, levels, and metadata behave correctly before sign-off.",
+    "category": "Immersive Audio",
+    "related_terms": ["Renderer metadata", "Object audio", "Bed channel", "Binaural render", "Downmix", "Immersive master"],
+    "common_mistakes": ["Checking only the full speaker layout and never auditioning the binaural or stereo downmix that most listeners actually hear", "Assuming a mix that sounds correct in one DAW renderer will render identically in every decoder", "Ignoring metadata errors such as wrong object positions or trim settings because the beds sound fine"],
+    "scenario_contexts": ["Finishing a Dolby Atmos music master before delivery to a streaming service", "Preparing an immersive film mix for both cinema and home-theatre decoders", "Confirming a soundbar downmix of an object-based program matches the reference mix"]
+   },
+   "sources": ["Dolby Atmos Renderer technical documentation (Dolby Laboratories)", "ITU-R BS.2076 (Audio Definition Model)", "AES conference papers on object-based/immersive audio"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3a262916-cfe3-4e6e-a9b9-3dab0c19be19",
+   "term": "Renderer metadata",
+   "fields": {
+    "definition": "The descriptive data carried alongside object-based/immersive audio that tells the renderer how to reproduce each element — parameters such as object x/y/z position, size, gain, and bed/channel assignment — rather than the audio being fixed to specific speaker feeds.",
+    "plain_english": "Instructions that travel with immersive audio and tell the playback system where each sound should go. Instead of locking a sound to one speaker, the metadata says place it here, and the system picks the speakers.",
+    "purpose_function": "It lets one master adapt to many speaker layouts, because the renderer uses the metadata to place each sound correctly for whatever playback system is present.",
+    "practical_application": "Engineers set and automate object positions, sizes, and gains in the renderer, and that metadata is embedded in the deliverable so decoders can recreate the intended spatial mix on any system.",
+    "category": "Immersive Audio",
+    "related_terms": ["Renderer compatibility check", "Object audio", "Bed channel", "Audio Definition Model", "Binaural render", "Downmix"],
+    "common_mistakes": ["Confusing metadata-driven object positions with fixed channel assignments", "Forgetting that incorrect metadata can ruin the spatial image even when the audio itself is clean", "Not checking that authored metadata survives the export or encode to the delivery format"],
+    "scenario_contexts": ["Automating an instrument's position around the room in an Atmos music mix", "Delivering an ADM BWF master where object metadata must stay intact", "Troubleshooting why a program collapses to the front speakers on playback"]
+   },
+   "sources": ["Dolby Atmos Renderer technical documentation (Dolby Laboratories)", "ITU-R BS.2076 (Audio Definition Model)", "EBU Tech 3364 (Audio Definition Model)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f00bde6f-f3a0-4c7c-b310-f6e7eab2a313",
+   "term": "Replication master",
+   "fields": {
+    "definition": "The final, quality-control-approved production master supplied to a disc-manufacturing plant as the exact source for replication (mass-pressing of discs from a glass master and stampers), as distinct from duplication (burning individual discs); for CD it is typically a verified DDP image or approved premaster.",
+    "plain_english": "The final, checked master a factory uses to mass-produce pressed discs. Every copy is stamped from this one approved source, so it must have no errors.",
+    "purpose_function": "It gives the pressing plant a single verified reference so that every replicated disc is an exact copy of the approved master.",
+    "practical_application": "A mastering engineer exports and error-checks a DDP image or supplies approved parts, then sends this replication master to the plant, which cuts the glass master and stampers from it.",
+    "category": "Disc Mastering",
+    "related_terms": ["DDP", "Glass master", "Premaster", "Duplication", "PQ codes", "Run-out groove"],
+    "common_mistakes": ["Confusing replication (pressing from a stamper) with duplication (burning individual discs)", "Sending a master without verifying the DDP checksum, so any error gets pressed into every copy", "Assuming last-minute changes are still possible after the glass master has been cut"],
+    "scenario_contexts": ["Delivering a CD album to a pressing plant as a verified DDP image", "Supplying approved parts for a vinyl or optical-disc pressing run", "Archiving the exact source used to manufacture a commercial release"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "IEC 60908 (Compact Disc Digital Audio)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2264dd96-6d38-4375-8eef-2afe7246fb3b",
+   "term": "Reverb-only score stem",
+   "fields": {
+    "definition": "A score stem — a submixed group of a film, TV, or game musical score — that contains only the reverb and other wet effect returns, with the dry direct signals routed to separate stems, so the score's ambience can be balanced or removed independently in the final mix.",
+    "plain_english": "A separate track that holds only the echo and room sound of the music, not the dry instruments. Keeping it apart lets the mixer turn the music's space up or down on its own.",
+    "purpose_function": "It gives the re-recording mixer independent control over the score's ambience, so reverb can be adjusted against dialogue and effects without touching the dry music.",
+    "practical_application": "A composer or music editor delivers the wet reverb returns as their own stem so the dub stage can dial the score's space in or out for clarity under dialogue.",
+    "category": "Stem Delivery",
+    "related_terms": ["Score stem preparation", "Rhythmic music stem", "Score printmaster", "Reverb return", "Stem mixing", "Score-stem quality control"],
+    "common_mistakes": ["Baking the reverb into the dry music stem, which removes the mixer's ability to adjust ambience", "Delivering the reverb stem at a different sample rate or length than the other score stems", "Assuming the reverb stem alone is a usable mix — it must sum with the dry stems"],
+    "scenario_contexts": ["Delivering film score stems so the dub stage can reduce music reverb under dialogue", "Rebalancing a game's musical ambience for a drier in-game mix", "Recreating a score's original space when re-mixing for a new format"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a25571e6-db2f-4c84-812e-f3d2c83ca3a0",
+   "term": "Rhythmic music stem",
+   "fields": {
+    "definition": "A music stem containing the rhythmic elements of a piece — such as drums, percussion, and other timekeeping or groove parts — grouped together so they can be balanced or muted independently of the melodic and harmonic stems.",
+    "plain_english": "A single track that holds all the beat and percussion parts of the music, kept apart from the melodies. The mixer can then push the groove up or pull it back on its own.",
+    "purpose_function": "It lets a mixer control the energy and drive of a cue independently, for example lowering the beat under dialogue or emphasizing it in an action scene.",
+    "practical_application": "A composer stems the drums and percussion into one rhythmic stem so the final mix can adjust the groove's level without affecting the melody or pads.",
+    "category": "Stem Delivery",
+    "related_terms": ["Reverb-only score stem", "Score stem preparation", "Stem mixing", "Music stem", "Dialogue stem", "Score printmaster"],
+    "common_mistakes": ["Including melodic parts in the rhythmic stem, which defeats the point of separating the groove", "Delivering stems that do not sum back to the approved full mix", "Mismatched start times or lengths between the rhythmic stem and the other stems"],
+    "scenario_contexts": ["Lowering the drum groove under dialogue on a film dub stage", "Giving a game's interactive system a separate rhythm layer to fade in and out", "Rebalancing a song's beat for a TV promo edit"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a2efe7b1-b5c4-4ca3-bf49-cc2a2cd4b852",
+   "term": "Run-out groove",
+   "fields": {
+    "definition": "The section of groove at the very end of a phonograph record side, after the recorded program — comprising the lead-out (run-off) spiral that guides the stylus inward and terminating in a locked, concentric groove that keeps the stylus in place; the surrounding blank land often carries matrix and run-out etchings.",
+    "plain_english": "The groove at the end of a record side, after the music stops. Its spiral guides the needle inward to a closed loop that stops it drifting off, and the blank ring there often has hand-etched codes.",
+    "purpose_function": "It safely parks the stylus after playback by way of a locked groove and provides blank land where the cutting engineer etches matrix and identification codes.",
+    "practical_application": "When cutting a lacquer, the mastering engineer sets the lead-out and locked groove and scribes matrix numbers into the run-out; plants and collectors later read those etchings to identify the pressing.",
+    "category": "Vinyl Mastering",
+    "related_terms": ["Lead-in groove", "Locked groove", "Lacquer cutting", "Matrix number", "Replication master", "Stylus"],
+    "common_mistakes": ["Confusing the run-out groove at the end of the side with the lead-in groove at the start", "Thinking the run-out etchings are pressing defects rather than intentional matrix codes", "Assuming every record has a locked groove — some run off toward the label instead"],
+    "scenario_contexts": ["Reading matrix numbers in a record's run-out to identify the pressing plant", "Cutting a lacquer and scribing identification codes into the run-out area", "Diagnosing a stylus that will not lift because a record lacks a proper locked groove"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "72f445c2-b190-4aaa-a5c7-a879cad28237",
+   "term": "Score printmaster",
+   "fields": {
+    "definition": "The final, print-ready master of a production's mixed musical score — a fully balanced, format-conformed rendering of the music used for lay-back to picture and as the source for the music element in the final re-recording mix, from which delivery stems are derived.",
+    "plain_english": "The finished, ready-to-use master of a film's music. Everything in the score is already mixed and balanced, so it can drop straight into the movie.",
+    "purpose_function": "It provides a single approved music master the dub stage can place against dialogue and effects, delivering the score in its final, format-correct form.",
+    "practical_application": "After the scoring mix is approved, the engineer prints the score printmaster in the required format, sample rate, and frame rate so the re-recording mixer can integrate it into the final mix.",
+    "category": "Score Delivery",
+    "related_terms": ["Score stem preparation", "Score-stem quality control", "Reverb-only score stem", "Rhythmic music stem", "Stem mixing", "Final mix"],
+    "common_mistakes": ["Confusing the score printmaster (music only) with the full-mix printmaster that also includes dialogue and effects", "Printing at the wrong sample rate or frame rate so it will not conform to picture", "Delivering without checking sync against the locked cut"],
+    "scenario_contexts": ["Printing the final scoring mix for lay-back to a feature film", "Delivering the music master for a TV episode's final dub", "Archiving the approved score master for future re-use or remixing"]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0022ffeb-457f-448a-8fcd-7b9269ccdfa9",
+   "term": "Score stem preparation",
+   "fields": {
+    "definition": "The process of organizing and rendering a musical score into its component stems — submixed groups such as strings, brass, percussion, and reverb returns that sum to the approved full score — conformed to the required format, sample rate, level, and length for delivery.",
+    "plain_english": "Getting the music ready by splitting it into grouped tracks that add back up to the full score. Each group, such as strings or drums, is exported cleanly so a mixer can adjust it later.",
+    "purpose_function": "It gives the final mix flexible, independent control over parts of the score and provides broadcasters and archives with the separated elements they require.",
+    "practical_application": "A music editor bounces the score into agreed stem groups, checks they null against the full mix, and labels and formats them to the delivery spec.",
+    "category": "Score Delivery",
+    "related_terms": ["Score-stem quality control", "Score printmaster", "Reverb-only score stem", "Rhythmic music stem", "Stem mixing", "Null test"],
+    "common_mistakes": ["Creating stems that do not sum back to the approved full mix", "Leaving processing on the master bus so the stems do not null correctly", "Inconsistent naming, levels, or lengths across the stem set"],
+    "scenario_contexts": ["Preparing score stems for a film's final re-recording mix", "Delivering separated music elements for international and M&E versions", "Bouncing stems so a game engine can recombine them interactively"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "16a0f464-5dbb-4480-8536-e6328a8ccd2c",
+   "term": "Score-stem quality control",
+   "fields": {
+    "definition": "The verification stage in which delivered score stems are checked for technical and musical correctness — confirming they sum (null) to the approved full mix, share matching format, sample rate, start time and length, and are free of clicks, dropouts, clipping, and labeling errors before delivery.",
+    "plain_english": "A final check of the music stems before they go out. You make sure they add back up to the full mix and have no clicks, wrong lengths, or mislabels.",
+    "purpose_function": "It catches errors before delivery, so the mix stage or client receives stems that are correct, in sync, and reassemble into the intended score.",
+    "practical_application": "An engineer sums the stems and null-tests them against the printmaster, then scans each stem for clipping, dropouts, sync, and naming errors before sign-off.",
+    "category": "Score Delivery",
+    "related_terms": ["Score stem preparation", "Score printmaster", "Reverb-only score stem", "Null test", "Clipping", "Dropout"],
+    "common_mistakes": ["Skipping the null test, so stems that do not sum to the full mix slip through", "Missing clicks, dropouts, or clipping because only levels were checked", "Overlooking mismatched start times that break sync when stems are recombined"],
+    "scenario_contexts": ["QC of score stems before delivery to a film's dub stage", "Verifying broadcast music stems meet a network's delivery spec", "Catching a clipped or misnamed stem before it ships to the client"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Holman, Sound for Film and Television", "SMPTE deliverable specifications"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

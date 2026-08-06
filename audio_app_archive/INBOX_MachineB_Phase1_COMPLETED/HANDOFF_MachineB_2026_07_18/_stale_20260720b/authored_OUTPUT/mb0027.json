@@ -1,0 +1,231 @@
+{
+ "batch": 27,
+ "topic": "Drum-Kit Recording",
+ "authored": [
+  {
+   "id": "004ab7a1-e1c5-42c7-accf-75ebba5a9d2e",
+   "term": "Snare-wire tension",
+   "fields": {
+    "definition": "The degree of tightness applied to the snare wires (the coiled metal strands stretched across the resonant bottom head of a snare drum) via the strainer/throw-off, which sets how freely the wires vibrate against the head and thus controls the drum's snare response, sensitivity, and buzz.",
+    "plain_english": "Snare wires are the springy metal strands under a snare drum. Tighter wires give a crisp, short snap. Looser wires give a buzzy, rattly sound.",
+    "purpose_function": "It sets how the metal snares react to the head's vibration, tuning the balance between a crisp attack and a buzzy sustain so the snare suits the song and the mic.",
+    "practical_application": "Before tracking, the engineer or drummer adjusts the strainer tension to get an even snare response with no excess buzz; too loose sounds sloppy, too tight chokes the drum.",
+    "category": "Snare Tuning",
+    "related_terms": ["Resonant head", "Snare buzz", "Drum tuning", "Batter head", "Top-bottom head relationship"],
+    "common_mistakes": [
+     "Cranking the wires very tight to kill buzz, which chokes the drum and kills its natural response.",
+     "Blaming snare buzz on the wires when the real cause is a poorly tuned resonant head or sympathetic vibration from other drums.",
+     "Leaving the strainer too loose, giving an uneven, sloppy rattle instead of a crisp snare."
+    ],
+    "scenario_contexts": [
+     "Dialing in the strainer before tracking so the snare responds crisply without excess buzz.",
+     "Loosening the wires slightly for a looser, more open snare on a vintage or roots session.",
+     "Chasing sympathetic snare buzz during tom hits by adjusting wire tension and tuning."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Recording Engineer's Handbook (Bobby Owsinski)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1860d2ee-8347-4627-9382-30df2141655b",
+   "term": "Tom damping",
+   "fields": {
+    "definition": "The controlled reduction of a tom-tom's ring and sustain by adding energy-absorbing material (gel pads, tape, foam, external or internal mufflers, or dampening rings) to the drumhead, which shortens decay and tames unwanted overtones.",
+    "plain_english": "Damping means adding a gel pad, tape, or foam to a tom so it does not ring so long. It is like putting your hand on a bell to make it stop humming.",
+    "purpose_function": "It tames long ring and stray overtones so toms record tight and controlled, helping them sit better in a dense mix.",
+    "practical_application": "The engineer sticks a gel pad or a strip of tape near the edge of the head to shorten decay when a tom rings too much, and removes it if the drum starts to sound dead.",
+    "category": "Drum Damping",
+    "related_terms": ["Tom ring", "Tom sustain", "Drum tuning", "Dampening ring", "Resonant head"],
+    "common_mistakes": [
+     "Over-damping toms with too much gel or tape, leaving them dead and lifeless with no tone.",
+     "Using damping to fix a badly tuned tom instead of tuning the heads first.",
+     "Assuming more damping always cleans up the mix; some ring gives toms their body and pitch."
+    ],
+    "scenario_contexts": [
+     "Adding a gel pad to a rack tom that rings too long during a dense rock track.",
+     "Removing damping to open up floor toms for a big, ambient recording.",
+     "Taping a small strip near the head edge to tame one ugly overtone without deadening the drum."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Recording Engineer's Handbook (Bobby Owsinski)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8c207d98-7bd7-4108-9efb-71928ea6132f",
+   "term": "Tom gate",
+   "fields": {
+    "definition": "A noise gate applied to a tom-tom channel that mutes the signal below a set threshold and opens only when the tom is struck, removing bleed from cymbals, snare, and the rest of the kit during passages when the tom is not played.",
+    "plain_english": "A gate is an automatic switch on the tom mic. It stays shut and opens only when the tom is hit. That way you do not hear the rest of the kit leaking in.",
+    "purpose_function": "Toms are only played now and then, so their open mics pick up bleed; a gate keeps those channels silent until the tom is struck, cleaning up the recorded or live sound.",
+    "practical_application": "The engineer sets the threshold above the bleed level and dials in attack, hold, and release so the gate opens fast on the hit and closes cleanly without cutting the tom's decay.",
+    "category": "Signal Processing",
+    "related_terms": ["Noise gate", "Threshold", "Microphone bleed", "Tom trigger", "Attack and release"],
+    "common_mistakes": [
+     "Setting the threshold too low, so cymbal and snare bleed keeps opening the gate.",
+     "Setting the release too fast, which chops off the tom's natural decay and makes it sound clipped.",
+     "Setting the threshold too high, so soft or ghost hits never open the gate and get lost."
+    ],
+    "scenario_contexts": [
+     "Gating each tom channel in a multitrack rock mix to remove cymbal bleed between fills.",
+     "Setting up live tom gates so open tom mics don't muddy the front-of-house sound.",
+     "Adjusting gate hold and release so a tom fill's decay stays intact."
+    ]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "The Mixing Engineer's Handbook (Bobby Owsinski)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6b845103-ee3d-4dad-a136-98eb3e2b0ff9",
+   "term": "Tom phase relationship",
+   "fields": {
+    "definition": "The time and phase alignment between the multiple microphones capturing a tom (for example a close mic against the overheads and room, or a top and bottom tom mic), where differences in arrival time cause constructive or destructive interference that changes the recorded tom's tone and level.",
+    "plain_english": "The same tom hit reaches each mic at a slightly different time. If the mic signals do not line up, they can fight each other. That can make the tom sound thin and weak.",
+    "purpose_function": "Several mics capture each tom, and how their signals line up in phase decides whether frequencies add up or cancel; getting it right keeps the tom full and punchy.",
+    "practical_application": "When a bottom tom mic or the overheads are out of phase with the close mic, the engineer flips the polarity switch or nudges the tracks in time until the tom sounds fullest.",
+    "category": "Phase and Alignment",
+    "related_terms": ["Polarity", "Overhead miking", "Phase cancellation", "Close miking", "Microphone bleed"],
+    "common_mistakes": [
+     "Confusing the polarity (phase) button with EQ; flipping it changes how mics combine, not the tone of one mic on its own.",
+     "Ignoring the overhead-to-close-mic phase, so toms turn thin once all mics are combined.",
+     "Fixing phase by ear on a single tom but never checking the whole kit summed to mono."
+    ],
+    "scenario_contexts": [
+     "Checking polarity between the close tom mic and the overheads to keep toms full in mono.",
+     "Nudging a bottom tom mic track in the DAW to align it with the top mic.",
+     "Flipping the polarity switch on a tom channel and keeping whichever setting sounds fuller."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Recording Engineer's Handbook (Bobby Owsinski)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fc873259-2c77-4bfe-a989-62b09e12eb9a",
+   "term": "Tom rim mount",
+   "fields": {
+    "definition": "A tom mounting system that suspends the tom from its rim or tension rods through rubber-isolated brackets rather than clamping hardware into the shell, isolating the shell from the stand so it can resonate more freely.",
+    "plain_english": "A rim mount holds the tom by its metal hoop instead of drilling into the drum body. Freeing the shell lets the tom ring longer and more openly, like holding a wine glass by the stem.",
+    "purpose_function": "Traditional shell-mounted brackets choke a tom's resonance; a rim or isolation mount lets the shell vibrate freely for more sustain and a fuller, more open tone.",
+    "practical_application": "Techs fit isolation mounts so toms ring out fully; on a session this yields a more resonant, sustaining tom at the mic, and choked toms are often traced to a bracket bolted through the shell.",
+    "category": "Drum Hardware",
+    "related_terms": ["Tom sustain", "Shell resonance", "Isolation mount", "Tom ring", "Drum hardware"],
+    "common_mistakes": [
+     "Believing any tom holder isolates the shell; a bracket bolted through the shell still chokes resonance.",
+     "Over-tightening the mount hardware so the rubber grommets can no longer isolate the shell.",
+     "Expecting a rim mount to fix a dead-sounding tom that is really just tuned or damped wrong."
+    ],
+    "scenario_contexts": [
+     "Swapping stock shell mounts for isolation mounts to get more open, sustaining toms on a session.",
+     "Suspending rack toms from their rims so the shells ring freely at the mic.",
+     "Troubleshooting choked toms and finding a shell-mounted bracket is the cause."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Recording Engineer's Handbook (Bobby Owsinski)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "91e8185f-c664-4ea7-831a-4ddf06e464bb",
+   "term": "Tom ring",
+   "fields": {
+    "definition": "The sustained resonant overtone a tom produces after the initial attack, made up of the drum's decaying modal frequencies and often heard as a pitched, humming tone, especially when the drum is tuned high or left undamped.",
+    "plain_english": "Ring is the humming tone a tom makes after you hit it. It is the drum's own note singing on after the first thump.",
+    "purpose_function": "Ring is the tom's natural resonance; a little gives toms life and pitch, but too much muddies a recording, so engineers manage it with tuning and damping.",
+    "practical_application": "If toms ring too long or clash with the song's key, the engineer retunes the heads or adds light damping to control the ring while keeping the tone.",
+    "category": "Drum Acoustics",
+    "related_terms": ["Tom sustain", "Tom damping", "Overtones", "Drum tuning", "Resonant head"],
+    "common_mistakes": [
+     "Treating all ring as bad and damping it out, losing the tom's pitch and body.",
+     "Trying to remove ring with EQ alone when tuning or light damping is the real fix.",
+     "Ignoring that toms tuned to clash with the song's key make ring sound worse in the mix."
+    ],
+    "scenario_contexts": [
+     "Retuning toms whose ring clashes with the song's key during tracking.",
+     "Deciding how much ring to keep for a big, open tom sound versus a tight modern one.",
+     "Adding light damping to control ring on close-miked toms in a dense mix."
+    ]
+   },
+   "sources": ["The Physics of Musical Instruments (Fletcher & Rossing)", "The Recording Engineer's Handbook (Bobby Owsinski)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "30af459b-923d-446b-8568-d25f3663f76c",
+   "term": "Tom sustain",
+   "fields": {
+    "definition": "The length of time a tom-tom keeps sounding and decaying after it is struck, governed by head tuning, shell resonance, the mounting system, and any damping applied.",
+    "plain_english": "Sustain is how long a tom keeps ringing before it fades out. A well-tuned, open tom rings for a long time.",
+    "purpose_function": "Sustain gives toms their body and note length; controlling it through tuning, mounting, and damping sets how long each tom rings in the track.",
+    "practical_application": "For big, open toms the engineer maximizes sustain with resonant tuning and isolation mounts; for tight modern tones the engineer shortens it with damping or gating.",
+    "category": "Drum Acoustics",
+    "related_terms": ["Tom ring", "Tom damping", "Tom rim mount", "Resonant head", "Drum tuning"],
+    "common_mistakes": [
+     "Killing all sustain with heavy damping, then wondering why the toms sound small and boxy.",
+     "Expecting more sustain from tuning alone while ignoring a shell-choking mount.",
+     "Gating away too much of the natural decay, leaving unnaturally short toms."
+    ],
+    "scenario_contexts": [
+     "Maximizing floor tom sustain for an ambient, roomy drum recording.",
+     "Shortening tom sustain with damping for a tight, punchy pop production.",
+     "Comparing sustain before and after fitting isolation mounts."
+    ]
+   },
+   "sources": ["The Physics of Musical Instruments (Fletcher & Rossing)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "278c9574-74cc-4708-a2e6-2d4f59e95806",
+   "term": "Tom trigger",
+   "fields": {
+    "definition": "A drum trigger mounted on a tom-tom that uses a transducer (typically a piezo sensor) to convert each hit into an electronic pulse, which fires a sampled or synthesized tom sound from a drum module to reinforce or replace the acoustic tom.",
+    "plain_english": "A trigger is a small sensor stuck on the tom. Each hit sends a signal that plays a recorded drum sound. You can use it instead of, or on top of, the real drum.",
+    "purpose_function": "Triggers turn each hit into a pulse a module can read, giving clean, consistent, bleed-free tom sounds live and allowing reinforcement or replacement of weak acoustic toms in the studio.",
+    "practical_application": "The engineer clips a trigger on the tom and feeds a module so each hit fires a clean sample, or blends a sampled tom under a weak or poorly recorded acoustic track.",
+    "category": "Drum Triggering",
+    "related_terms": ["Tom gate", "Drum replacement", "Piezo sensor", "Drum module", "MIDI"],
+    "common_mistakes": [
+     "Mounting the trigger loosely or in the wrong spot, causing missed hits or double-triggers.",
+     "Setting the module sensitivity wrong so soft hits are missed and hard hits max out.",
+     "Assuming a trigger always replaces the acoustic tom; it can also just reinforce it."
+    ],
+    "scenario_contexts": [
+     "Adding triggered tom samples under weak acoustic toms during a mix.",
+     "Using triggers live to get clean, bleed-free tom sounds through the PA.",
+     "Replacing poorly recorded toms with triggered samples in post."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Recording Engineer's Handbook (Bobby Owsinski)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4a8124b2-3281-4fcb-a20e-117ccdb8e3c4",
+   "term": "Top-bottom head relationship",
+   "fields": {
+    "definition": "The tuning relationship between a drum's batter (top) head and resonant (bottom) head, whose relative pitches set the drum's fundamental pitch, its pitch bend or glide as it decays, its sustain, and its overall tonal character.",
+    "plain_english": "Every drum has a top head you hit and a bottom head under it. How their tunings compare sets the drum's pitch. It also sets how long the drum rings.",
+    "purpose_function": "The interval between the two heads shapes fundamental pitch, sustain, and pitch bend; matching them gives an even sustain, while tuning the resonant head higher raises pitch and adds a downward bend.",
+    "practical_application": "When tuning toms, the tech sets the top and bottom heads to a chosen relationship, equal for maximum even sustain or the resonant head higher for a pitch drop, to get the wanted tone.",
+    "category": "Drum Tuning",
+    "related_terms": ["Batter head", "Resonant head", "Drum tuning", "Tom sustain", "Snare-wire tension"],
+    "common_mistakes": [
+     "Tuning only the top head and ignoring the resonant head, so pitch and sustain never settle.",
+     "Assuming the bottom head does nothing; it strongly affects pitch, sustain, and pitch bend.",
+     "Cranking both heads to pull out wrinkles without listening to the interval between them."
+    ],
+    "scenario_contexts": [
+     "Tuning toms with the resonant head slightly higher for a downward pitch bend.",
+     "Matching top and bottom heads for maximum, even sustain on open toms.",
+     "Adjusting the resonant head to raise a tom's pitch without changing the batter feel."
+    ]
+   },
+   "sources": ["The Physics of Musical Instruments (Fletcher & Rossing)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

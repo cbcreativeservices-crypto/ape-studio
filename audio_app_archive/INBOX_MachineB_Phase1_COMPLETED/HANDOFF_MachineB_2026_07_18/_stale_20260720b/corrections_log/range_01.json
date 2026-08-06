@@ -1,0 +1,174 @@
+{
+ "range": 1,
+ "applied": [
+  {
+   "pkt": "mb0066",
+   "term": "Snare-bottom processing",
+   "field": "common_mistakes",
+   "severity": "Low",
+   "summary": "Removed the erroneous 'UNSAFE:' prefix that mislabeled a phase/tone (polarity-cancellation) issue as a safety hazard, and replaced the duplicate second polarity item with a distinct mistake (over-aggressive high-passing losing wire crispness). Addresses four converging audio/cognition/language flags."
+  },
+  {
+   "pkt": "mb0072",
+   "term": "Vocal expansion",
+   "field": "common_mistakes",
+   "severity": "Medium",
+   "summary": "Technical fix: gate/expander chatter is caused by too-fast release with no hold time or hysteresis while the signal hovers near threshold, not by attack time. Web-verified (Wikipedia Noise gate; Sound On Sound). Attack only sets how fast the gate opens."
+  },
+  {
+   "pkt": "mb0074",
+   "term": "Vocal multiband compression",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Made the closing analogy dynamic ('automatic volume that turns down only when that part gets too loud') so it no longer describes a static per-band level change, avoiding the EQ-vs-compression confusion the entry's own common_mistakes warns against. FK grade 5.9."
+  },
+  {
+   "pkt": "mb0075",
+   "term": "Vocal reverb send",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Replaced 'dial in the echo' with 'dial in the ambience' so reverb (a wash of reflections) is not conflated with discrete echo/delay, which the glossary treats as a separate concept (Vocal slapback). FK grade 6.1."
+  },
+  {
+   "pkt": "mb0079",
+   "term": "Absolute automation",
+   "field": "practical_application",
+   "severity": "Medium",
+   "summary": "Resolved internal contradiction: clarified that Write overwrites the entire pass (hence the erase risk singled out in common_mistakes), while Touch and Latch write absolute values only while the control is actively moved, leaving untouched sections intact."
+  },
+  {
+   "pkt": "mb0052",
+   "term": "Harmony-to-lead balance",
+   "field": "purpose_function",
+   "severity": "Low",
+   "summary": "Fixed malformed idiom: one does not 'strike the point'. Changed 'striking the point where...' to 'finding the point where...'."
+  },
+  {
+   "pkt": "mb0055",
+   "term": "Instrument room blend",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Fixed number-agreement slip within one clause (plural 'drums' shifting to singular 'the drum'): 'so the drum seems to fill the room instead of sounding like just the drum itself'. FK grade 6.4."
+  },
+  {
+   "pkt": "mb0064",
+   "term": "Sectional vocal panning",
+   "field": "common_mistakes",
+   "severity": "Low",
+   "summary": "Fixed garbled phrasing 'Panning sections hard so widely that...' to grammatical 'Panning sections so hard and wide that a chorus collapses to nothing when heard in mono.'"
+  },
+  {
+   "pkt": "mb0065",
+   "term": "Snare gating",
+   "field": "scenario_contexts",
+   "severity": "Low",
+   "summary": "Removed accidental word repetition 'to gain more gain before feedback' -> 'to get more gain before feedback'."
+  },
+  {
+   "pkt": "mb0069",
+   "term": "Upright-bass mixing",
+   "field": "common_mistakes",
+   "severity": "Low",
+   "summary": "Fixed contradictory phrasing ('the line disappears and jumps out unpredictably') to the intended meaning: 'so the line drops out on some notes and jumps out on others'; also 'hit to hit' -> 'from note to note'."
+  },
+  {
+   "pkt": "mb0076",
+   "term": "Vocal room-tone matching",
+   "field": "scenario_contexts",
+   "severity": "Low",
+   "summary": "Fixed garbled 'Cleaning breath and mouth-noise removal' (cannot 'clean a removal') to 'Cleaning up breath and mouth noise so the edited spots do not sound like dead holes'."
+  }
+ ],
+ "declined": [
+  {
+   "pkt": "mb0042",
+   "term": "Double-track alignment",
+   "field": "purpose_function",
+   "reason": "Enrichment, not an error. 'flammy' is understandable jargon in context ('sloppy and flammy'); adding a gloss is a clarity preference, and the suggestion also reaches into a different field (common_mistakes) that is not flagged here."
+  },
+  {
+   "pkt": "mb0046",
+   "term": "Electric-bass mixing",
+   "field": "difficulty",
+   "reason": "Out of scope for the authored output. 'difficulty' is packet-level metadata; it is not an authored field and not in empty_fields, so writing it into authored_OUTPUT would fail verify.py and violate the no-added-field constraint. Also a consistency/completeness inference, not a factual/safety/language error."
+  },
+  {
+   "pkt": "mb0046",
+   "term": "Electric-guitar mixing",
+   "field": "difficulty",
+   "reason": "Out of scope. 'difficulty' is not an authored field / not in empty_fields; adding it would fail verify.py. Completeness inference, not a correctable content error."
+  },
+  {
+   "pkt": "mb0046",
+   "term": "Electric-piano mixing",
+   "field": "difficulty",
+   "reason": "Out of scope. 'difficulty' is not an authored field / not in empty_fields; adding it would fail verify.py. Completeness inference, not a correctable content error."
+  },
+  {
+   "pkt": "mb0049",
+   "term": "Guitar microphone blend (EK)",
+   "field": "common_mistakes",
+   "reason": "Enrichment. The 3-to-1 rule item is correct; adding an inline definition is a 'consider adding more' clarity request, not a fix for an error."
+  },
+  {
+   "pkt": "mb0053",
+   "term": "Instrument articulation enhancement",
+   "field": "practical_application",
+   "reason": "Enrichment. Adding a clause explaining why a slower attack lets the transient through is desirable detail, not a correction of an error; the statement as written is accurate."
+  },
+  {
+   "pkt": "mb0056",
+   "term": "Internal muffler",
+   "field": "difficulty",
+   "reason": "Out of scope. 'difficulty' is not an authored field / not in empty_fields; adding it would fail verify.py. Completeness inference, not a correctable content error."
+  },
+  {
+   "pkt": "mb0056",
+   "term": "Keyboard automation",
+   "field": "difficulty",
+   "reason": "Out of scope. 'difficulty' is not an authored field / not in empty_fields; adding it would fail verify.py. Completeness inference, not a correctable content error."
+  },
+  {
+   "pkt": "mb0057",
+   "term": "Keyboard layering",
+   "field": "difficulty",
+   "reason": "Out of scope. 'difficulty' is not an authored field / not in empty_fields; adding it would fail verify.py. Completeness inference, not a correctable content error."
+  },
+  {
+   "pkt": "mb0057",
+   "term": "Keyboard mixing",
+   "field": "difficulty",
+   "reason": "Out of scope. 'difficulty' is not an authored field / not in empty_fields; adding it would fail verify.py. Completeness inference, not a correctable content error."
+  },
+  {
+   "pkt": "mb0057",
+   "term": "Keyboard subgroup",
+   "field": "difficulty",
+   "reason": "Out of scope. 'difficulty' is not an authored field / not in empty_fields; adding it would fail verify.py. Completeness inference, not a correctable content error."
+  },
+  {
+   "pkt": "mb0060",
+   "term": "Octave stack",
+   "field": "plain_english",
+   "reason": "Enrichment/disambiguation. Adding a clause to distinguish from 'Octave layering' fixes no error in the current, accurate description; it is a 'consider adding' improvement."
+  },
+  {
+   "pkt": "mb0067",
+   "term": "Synthesizer layering",
+   "field": "definition",
+   "reason": "Enrichment. Adding an 'also called synth layering' synonym clarifier is a knowledge-map improvement, not a correction of a factual or language error in the definition."
+  },
+  {
+   "pkt": "mb0076",
+   "term": "Vocal spread",
+   "field": "related_terms",
+   "reason": "Enrichment. Adding 'Vocal width control' as a new cross-reference is a completeness/linking preference; no existing list item is duplicated, wrong, or irrelevant."
+  },
+  {
+   "pkt": "mb0045",
+   "term": "Drum-bus punch",
+   "field": "practical_application",
+   "reason": "Style preference. 'attack slow and release faster' is a minor parallelism nit; the phrase parses and its meaning (slow attack, fast release) is clear, so it fixes no comprehension error."
+  }
+ ]
+}

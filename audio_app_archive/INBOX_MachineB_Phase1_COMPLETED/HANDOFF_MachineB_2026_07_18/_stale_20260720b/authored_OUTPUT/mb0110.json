@@ -1,0 +1,159 @@
+{
+ "batch": 110,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "46f4d107-1c11-4bec-8fae-e19f8188b5b5",
+   "term": "Inter-sample peak control",
+   "fields": {
+    "definition": "The practice of detecting and limiting inter-sample peaks, which are levels the reconstructed analog waveform reaches between digital sample points and can exceed a signal's highest sampled peak and 0 dBFS. It relies on true-peak (oversampled) metering per ITU-R BS.1770 and true-peak limiting, typically leaving headroom such as -1 dBTP.",
+    "plain_english": "Digital audio is stored as a row of dots. When those dots turn back into a real wave, the wave can rise higher between the dots than any single dot shows. That extra height can cause harsh distortion. Inter-sample peak control uses special meters and limiters to find and hold down those hidden peaks.",
+    "purpose_function": "It prevents distortion in digital-to-analog converters, sample-rate converters, and lossy codecs such as MP3 and AAC that would otherwise clip on peaks hidden between samples, keeping loud, limited masters clean and codec-safe.",
+    "practical_application": "When mastering or preparing a mix for streaming, an engineer switches the limiter and meter to true-peak mode and sets a ceiling around -1 dBTP so the file stays clean after encoding and on consumer converters.",
+    "category": "Loudness & Metering",
+    "related_terms": ["True peak", "dBFS", "Brickwall limiter", "Loudness normalization", "Headroom", "Sample rate conversion"],
+    "common_mistakes": ["Trusting a sample-peak reading of 0 dBFS and assuming there is no clipping, when the true peaks between samples exceed it", "Mastering to exactly 0 dBFS or 0 dBTP, leaving no margin for codec-induced inter-sample overs", "Confusing true-peak level (dBTP) with integrated loudness (LUFS) and treating them as the same target"],
+    "scenario_contexts": ["Setting a -1 dBTP ceiling before uploading a master to a streaming platform", "Checking a heavily limited loud mix on a true-peak meter to reveal overs invisible on a normal peak meter", "Preparing broadcast deliverables that must meet EBU R128 true-peak limits"]
+   },
+   "sources": ["ITU-R BS.1770 (Algorithms to measure audio programme loudness and true-peak level)", "EBU R128 and EBU Tech 3341 (loudness and true-peak metering)", "AES recommendations on loudness and true-peak level"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1a990aca-54a4-4e79-b8fc-bd8bc5d7a80c",
+   "term": "Interactive score",
+   "fields": {
+    "definition": "A musical score for a game or other interactive medium that is not fixed but changes in real time in response to user actions or program state, typically by re-sequencing, layering, or transitioning between pre-composed musical segments. It is authored as modular assets and playback rules rather than a single linear rendered track.",
+    "plain_english": "In a game, the music is not one fixed recording. An interactive score is written so it can change as you play. It might add layers, switch sections, or shift mood when the action does. The music is built from small pieces that software rearranges live.",
+    "purpose_function": "It lets music follow the player's experience, raising tension in combat or easing during exploration, so the soundtrack stays emotionally in step with unpredictable, branching gameplay.",
+    "practical_application": "A game composer writes stems and short segments, then an audio programmer or middleware such as Wwise or FMOD triggers, layers, and cross-fades them based on game events.",
+    "category": "Adaptive Music",
+    "related_terms": ["Adaptive music", "Horizontal resequencing", "Vertical layering", "Stems", "Audio middleware", "Crossfade"],
+    "common_mistakes": ["Composing one long linear cue and expecting it to adapt without modular segments or transition logic", "Ignoring musical transition points, causing jarring cuts when the game switches states", "Failing to match tempo and key across segments so layers and transitions stay musical"],
+    "scenario_contexts": ["Scoring a video game where combat music intensifies as enemies appear", "Building a museum or theme-park installation whose music reacts to visitor movement", "Authoring a mobile game soundtrack in FMOD that layers instruments as the player progresses"]
+   },
+   "sources": ["Karen Collins, 'Game Sound' (MIT Press)", "Michael Sweet, 'Writing Interactive Music for Video Games' (Addison-Wesley)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3f11f47b-547b-42e5-916c-a8b418826ade",
+   "term": "International version",
+   "fields": {
+    "definition": "An alternate mix delivered without the lead vocal but with the full instrumental and the backing or harmony vocals intact, so a lead vocal in another language can be recorded over it. It is one of several standard alternate deliverables prepared alongside the main mix.",
+    "plain_english": "This is a special version of a song's mix. It keeps all the music and the backing singers, but leaves out the main vocal. That empty space lets a singer add a lead vocal in another language. It helps a song reach listeners in different countries.",
+    "purpose_function": "It exists so a song can be re-voiced for foreign-language markets or covers without remixing the whole track, reusing the original production behind a new lead vocal.",
+    "practical_application": "At mixdown the engineer prints a version with the lead vocal muted but the backing vocals kept, labels it 'international', and delivers it alongside the main, instrumental, and TV mixes.",
+    "category": "Mix Deliverables",
+    "related_terms": ["Instrumental mix", "TV mix", "Stems", "A cappella", "Mixdown", "Alternate mix"],
+    "common_mistakes": ["Confusing the international version with a full instrumental, when the international version keeps backing vocals and the instrumental removes all vocals", "Leaving lead-vocal bleed or reverb tails in the muted lead path", "Forgetting to include it in the set of alternate versions requested by the label"],
+    "scenario_contexts": ["A label plans to release a hit with a new lead vocal recorded in another language", "Preparing a full delivery package of main, instrumental, TV, and international mixes for a pop single", "A foreign artist wants to cover a song over the original backing production"]
+   },
+   "sources": ["Bobby Owsinski, 'The Mixing Engineer's Handbook'", "Sound on Sound (mix deliverables and alternate versions coverage)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "121aa9fe-1652-4576-a899-56224272e496",
+   "term": "Item FX",
+   "fields": {
+    "definition": "In REAPER, an FX chain applied to an individual media item, acting on its active take, so it processes only that item's audio or MIDI rather than the whole track. Opened from the item's FX button, it runs before the track FX and is technically the take FX chain.",
+    "plain_english": "In the REAPER program, effects usually sit on a whole track. Item FX instead put effects on just one clip. Only that clip's sound passes through them. It is handy when one piece of audio needs its own treatment.",
+    "purpose_function": "It lets a technician process a single clip, fixing or shaping just that region without affecting other items on the same track, and it runs before the track's own FX.",
+    "practical_application": "An engineer drops a de-esser or EQ as item FX on one problem vocal phrase, or a pitch plug-in on a single guitar clip, leaving the rest of the take untouched.",
+    "category": "DAW Effects",
+    "related_terms": ["Take FX", "Track FX", "FX chain", "Media item", "Insert effect", "Signal chain"],
+    "common_mistakes": ["Adding a plug-in as item FX when it was meant for the whole track, so it affects only one clip", "Forgetting item FX exist and searching the track chain for an effect that is actually on the item", "Copying an item without realizing its item FX travel with it, duplicating processing unexpectedly"],
+    "scenario_contexts": ["Fixing a single harsh 's' on one vocal clip without touching the rest of the track", "Applying a one-off filter or tape-stop effect to a single loop", "Pitch-correcting just one guitar note printed on its own item"]
+   },
+   "sources": ["REAPER User Guide (Cockos Incorporated)", "Sound on Sound (REAPER technique coverage)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8663da26-6816-47b5-b554-3d593029990a",
+   "term": "Keep Project Tempo",
+   "fields": {
+    "definition": "In REAPER, an item timebase setting that ties a media item to the project tempo map, so its position and length are measured in beats and it time-stretches (audio) or scales (MIDI) to stay in sync when the project tempo changes. With it off, the item is anchored in absolute time and ignores tempo changes.",
+    "plain_english": "This setting tells a clip to follow your song's tempo. If you speed up or slow down the project, the clip stretches to stay in time. Without it, the clip plays at its own fixed speed and drifts out of sync. It keeps loops locked to the beat.",
+    "purpose_function": "It keeps imported loops and recorded parts musically aligned to the session's beat grid, so changing the project tempo does not throw them out of time.",
+    "practical_application": "When importing a drum loop recorded at a different tempo, the technician sets the item to follow project tempo so REAPER stretches the loop to match the project's BPM and it stays on the grid.",
+    "category": "DAW Tempo",
+    "related_terms": ["Project tempo", "Item timebase", "Time stretching", "Tempo map", "Beat grid", "BPM"],
+    "common_mistakes": ["Leaving items in a time-based timebase and wondering why they drift when the tempo changes", "Stretching audio far from its original tempo and introducing audible artifacts", "Assuming MIDI and audio follow tempo the same way, when audio must be time-stretched to conform"],
+    "scenario_contexts": ["Dropping a purchased 120 BPM loop into a 100 BPM project and having it conform automatically", "Building a tempo-mapped edit where the whole arrangement follows a changing tempo", "Keeping a recorded rhythm part in sync after adjusting the session tempo"]
+   },
+   "sources": ["REAPER User Guide (Cockos Incorporated)", "Sound on Sound (REAPER tempo and time-stretching coverage)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8157f1f8-aa50-4822-92f4-7bf7c515b96a",
+   "term": "Key Commands",
+   "fields": {
+    "definition": "The term used in DAWs such as Apple Logic Pro and Steinberg Cubase and Nuendo for keyboard shortcuts: user-assignable key and modifier combinations mapped to program functions, managed in a dedicated Key Commands window or editor. They can be customized and saved as presets.",
+    "plain_english": "Key commands are keyboard shortcuts inside music software. Instead of clicking through menus, you press a key to do a job fast. You can also change them to keys you like. Editors call the shortcut list 'Key Commands'.",
+    "purpose_function": "They speed up editing and mixing by letting a technician trigger common actions from the keyboard instead of hunting through menus, and they can be tailored to a personal or facility workflow.",
+    "practical_application": "An engineer assigns or learns key commands for split, fade, save, and cycle, and imports a saved key-command set when moving between studios.",
+    "category": "DAW Workflow",
+    "related_terms": ["Shortcut", "Macro", "Modifier key", "Preset", "Transport", "Tool switching"],
+    "common_mistakes": ["Assuming default key commands are identical across different DAWs or versions", "Overwriting an existing shortcut assignment and losing a needed command", "Not exporting or backing up a customized key-command set before reinstalling"],
+    "scenario_contexts": ["Customizing shortcuts in Logic Pro's Key Commands window for faster editing", "Loading a facility-standard key-command preset in Cubase on a new machine", "Learning transport and edit shortcuts to keep hands off the mouse during a session"]
+   },
+   "sources": ["Apple Logic Pro User Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e5bfaaf1-d777-43e0-8a3a-ad2e3a97c2e4",
+   "term": "Key zone",
+   "fields": {
+    "definition": "In a sampler or software instrument, the contiguous range of MIDI note numbers across which a given sample (zone) is assigned to sound; notes played inside it trigger that sample, usually transposed relative to its root key. Multiple key zones map different samples across the keyboard for multisampling.",
+    "plain_english": "A sampler plays recorded sounds from your keyboard. A key zone is the group of keys that plays one sound. Press a key inside that zone and you hear that recording, shifted up or down in pitch. Different zones let different keys play different recordings.",
+    "purpose_function": "It lets one recorded sample cover a span of pitches and lets a builder place many samples side by side, so an instrument sounds natural across its whole range.",
+    "practical_application": "When building a sampler instrument, a technician sets each sample's key zone with a low and high note plus a root key so the keyboard plays smoothly from one sample to the next.",
+    "category": "Sampling",
+    "related_terms": ["Root key", "Velocity layer", "Multisample", "Sampler", "Key mapping", "Keyswitch"],
+    "common_mistakes": ["Overlapping key zones by accident so two samples sound on the same note", "Setting the wrong root key, so samples in a zone play out of tune", "Stretching one sample across too wide a key zone, causing unnatural or dull transposition"],
+    "scenario_contexts": ["Mapping a multisampled piano so each note range plays its own recording", "Assigning a keyswitch zone at the bottom of the keyboard to change articulations", "Building a drum kit where each key zone triggers a different hit"]
+   },
+   "sources": ["Native Instruments Kontakt Manual", "Steinberg HALion Operation Manual", "Apple Logic Pro Sampler documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "85231036-ef2b-4dac-a6bb-3697ab8ae1e2",
+   "term": "Kick layering",
+   "fields": {
+    "definition": "A production technique of combining two or more kick-drum sounds, commonly one sample chosen for low-end weight and another for attack or click, into a single composite kick, with the layers level-balanced and phase-aligned. It builds a kick with both sub energy and definition that a single sound may lack.",
+    "plain_english": "One kick-drum sound may not have everything you want. Kick layering stacks two or more kicks together. One brings the deep low boom, another brings the sharp click you hear on small speakers. Lined up in time, they act as one bigger kick.",
+    "purpose_function": "It lets an engineer design a kick that has both deep sub weight and clear attack, so it translates on both large systems and small speakers like phones and laptops.",
+    "practical_application": "In a dance or hip-hop mix, the producer layers a sub-heavy kick sample under a clicky top sample, checks their phase, and balances the levels to taste.",
+    "category": "Drum Production",
+    "related_terms": ["Kick sample", "Layering", "Phase alignment", "Sub bass", "Transient", "Sample replacement"],
+    "common_mistakes": ["Stacking layers without phase-aligning them, causing low-end cancellation and a weak kick", "Layering two sub-heavy kicks and building a muddy, boomy low end", "Not high-pass filtering the click layer, leaving competing low frequencies"],
+    "scenario_contexts": ["Designing a club kick that hits hard on a big PA and still clicks on earbuds", "Reinforcing a thin recorded kick by layering a sample beneath it", "Building a signature kick sound for an electronic track"]
+   },
+   "sources": ["Bobby Owsinski, 'The Mixing Engineer's Handbook'", "Sound on Sound (drum production and layering coverage)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "310601e9-eb71-4473-8166-8dcb2ea36daa",
+   "term": "Kick sample",
+   "fields": {
+    "definition": "A recorded or synthesized audio sample of a single kick (bass) drum hit, loaded into a sampler, drum machine, or DAW and triggered to sound the kick. It can stand alone as the kick source or reinforce or replace a recorded acoustic kick.",
+    "plain_english": "A kick sample is a short recording of one kick-drum hit. You load it into software and trigger it to play the kick in a song. Many electronic tracks build their beat from kick samples. It can also be added under a real kick to make it stronger.",
+    "purpose_function": "It provides a consistent, tunable kick sound on demand, useful when programming beats or when a recorded kick is too weak or uneven to use on its own.",
+    "practical_application": "A producer auditions kick samples in a drum sampler, tunes and shapes one to fit the track, and triggers it from MIDI or uses it to replace a recorded kick.",
+    "category": "Drum Production",
+    "related_terms": ["Kick layering", "Sampler", "Sample replacement", "Drum machine", "One-shot", "MIDI trigger"],
+    "common_mistakes": ["Using a kick sample at its default tuning so it clashes with the song's key", "Picking a kick sample that sounds good on its own but disappears in the full mix", "Leaving an unwanted room tail on a one-shot that muddies tight programming"],
+    "scenario_contexts": ["Programming a beat from a kick sample in a drum sampler", "Replacing an uneven live kick with a triggered sample for a tight, consistent sound", "Choosing a kick sample that matches the genre and energy of a track"]
+   },
+   "sources": ["Sound on Sound (drum programming and sampling coverage)", "Bobby Owsinski, 'The Mixing Engineer's Handbook'"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

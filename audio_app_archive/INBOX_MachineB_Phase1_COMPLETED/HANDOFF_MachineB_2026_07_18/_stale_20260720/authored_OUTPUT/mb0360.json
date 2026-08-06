@@ -1,0 +1,262 @@
+{
+ "batch": 360,
+ "topic": "Drums & Percussion",
+ "authored": [
+  {
+   "id": "cafdd815-5567-4b16-bafe-06ca21240abd",
+   "term": "Cymbal wash",
+   "fields": {
+    "definition": "The sustained, shimmering blend of overtones and decaying sustain produced when cymbals, especially crash and ride cymbals, are struck firmly or played continuously, so their sound builds up and blurs together rather than reading as distinct hits. In recording, the term also describes this broadband cymbal sustain as it bleeds into overhead and room microphones.",
+    "plain_english": "Cymbal wash is the loud, shimmery haze a cymbal makes when it keeps ringing. The separate hits blur into one bright sound. It is like the long hiss you hear after crashing a cymbal hard.",
+    "purpose_function": "It adds energy, sustain, and a sense of size to drum parts, filling space during loud sections and swells, and it matters to engineers because it dominates the high end of overhead and room mics.",
+    "practical_application": "A technician manages cymbal wash by choosing and placing overhead mics, applying high-pass filtering and EQ, and controlling decay so the cymbals add excitement without masking vocals or smearing the mix.",
+    "category": "Cymbal technique",
+    "related_terms": ["Ride cymbal", "Crash cymbal", "Overhead microphone", "Decay", "Bleed", "Hi-hat"],
+    "common_mistakes": [
+     "Letting cymbal wash swamp the overheads so it buries the snare and vocals in the mix.",
+     "Assuming louder crashing sounds better, when excessive wash just adds harsh, fatiguing high end.",
+     "Trying to fix a washy mix with EQ alone instead of addressing cymbal choice, playing, and mic placement at the source."
+    ],
+    "scenario_contexts": [
+     "Miking a drum kit and hearing cymbal wash dominate the overhead channels.",
+     "Taming a bright, washy chorus where crash cymbals cover the lead vocal.",
+     "A drummer using rapid ride patterns to build a wash of sound into a song's climax."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques - drum and cymbal miking, overhead bleed",
+    "Ballou, Handbook for Sound Engineers (Focal Press) - percussion and overtone/decay behavior",
+    "Sound on Sound - recording drums, cymbal wash in overheads"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b9cf1c8d-ab08-4f8f-bd3f-5d962cb79fb2",
+   "term": "Cáscara",
+   "fields": {
+    "definition": "A steady, syncopated ostinato in Afro-Cuban music played with sticks on a hard surface, traditionally the metal shell (side) of the timbales or a woodblock, that outlines and locks with the clave. Played in continuous eighth- and sixteenth-note figures, it serves as a quieter timekeeping pattern, often in son and montuno sections, before the player moves to the bell or drum heads.",
+    "plain_english": "Cascara is a repeating stick pattern played on the metal side of the timbale drums. It keeps steady time and lines up with the clave beat. The word means \"shell\" in Spanish, which is the part of the drum you hit.",
+    "purpose_function": "It gives a driving but low-volume timekeeping groove that supports the clave and singer during softer sections, providing a rhythmic backbone without the loudness of the bell or drum heads.",
+    "practical_application": "A percussionist plays cascara on the timbale shells during verses and quiet passages, then switches to the mambo bell or drum heads to raise intensity for choruses and solos.",
+    "category": "Rhythmic pattern",
+    "related_terms": ["Clave", "Timbales", "Cencerro (bell)", "Montuno", "Paila", "Abanico"],
+    "common_mistakes": [
+     "Playing cascara out of alignment with the clave, so the pattern fights the song's rhythmic feel.",
+     "Confusing the 3-2 and 2-3 directions and starting the pattern on the wrong side of the clave.",
+     "Playing it too loudly on the shells, defeating its purpose as a softer, supportive timekeeper."
+    ],
+    "scenario_contexts": [
+     "A timbalero playing cascara on the shells through a salsa verse.",
+     "Switching from cascara to the mambo bell to lift a chorus.",
+     "Programming a realistic timbale part in a DAW using a cascara pattern locked to clave."
+    ]
+   },
+   "sources": [
+    "Uribe, The Essence of Afro-Cuban Percussion and Drum Set (Alfred) - cascara/paila patterns and clave",
+    "Mauleón, Salsa Guidebook for Piano and Ensemble (Sher Music) - cascara and clave alignment",
+    "Grove Music Online - timbales / Cuban percussion"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "238a48bc-f345-4864-96c6-0e08ad369a4d",
+   "term": "Daf ring",
+   "fields": {
+    "definition": "The small metal rings (jingles) fastened to the inner side of the wooden frame of the daf, a large Persian and Kurdish frame drum. When the head is struck or the drum is shaken and tilted, the rings strike the frame and one another, adding a bright, shimmering, sustained jingle to the drum's tone.",
+    "plain_english": "Daf rings are little metal rings hung inside the frame of the daf drum. When you hit or shake the drum, the rings rattle and add a bright, shimmery sound. They work a bit like the jingles on a tambourine.",
+    "purpose_function": "The rings give the daf its signature sizzling shimmer, extending the sustain of each stroke and adding rhythmic sparkle, especially during shakes and rolls.",
+    "practical_application": "A player uses wrist shakes and finger rolls to make the rings ring out, and a recording engineer positions mics to balance the bright jingle against the deeper head tone.",
+    "category": "Instrument component",
+    "related_terms": ["Daf", "Frame drum", "Riq", "Jingles", "Bendir", "Roll"],
+    "common_mistakes": [
+     "Thinking the rings are decorative rather than a functional part of the instrument's sound.",
+     "Miking only the head and missing the bright ring shimmer that defines the daf.",
+     "Confusing the daf's hanging internal rings with the paired metal jingles slotted into a tambourine or riq frame."
+    ],
+    "scenario_contexts": [
+     "Recording a daf and balancing the metallic ring shimmer against the low head tone.",
+     "A player producing a sustained shimmer with rapid shakes during a Sufi music piece.",
+     "Distinguishing a daf from a plain frame drum (bendir) by the sound of its internal rings."
+    ]
+   },
+   "sources": [
+    "Blades, Percussion Instruments and Their History (Faber) - frame drums with internal jingle rings",
+    "Grove Dictionary of Musical Instruments - daf / daff (frame drum)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d9420167-7e48-4f1d-a7d8-5616cd2ad0d5",
+   "term": "Davul dum-tek",
+   "fields": {
+    "definition": "The two contrasting basic strokes of the davul, a large double-headed cylindrical bass drum of Turkey and the Balkans: the deep, low \"dum\" produced by a heavy wooden beater on the larger, thicker head, and the sharp, high \"tek\" produced by a thin switch or stick on the opposite, thinner head. Their alternation forms the basic rhythmic drive of Anatolian and Balkan dance music.",
+    "plain_english": "On the davul drum, \"dum\" is the deep low hit and \"tek\" is the sharp high hit. A big beater makes the low sound on one side, and a thin stick makes the high sound on the other. Switching between them gives dance music its bounce.",
+    "purpose_function": "The low-high contrast lets one drummer state both the strong bass pulse and the lighter offbeats, driving folk-dance rhythms and outdoor processional music.",
+    "practical_application": "A davul player alternates the beater-hand \"dum\" and the stick-hand \"tek\" to lay down dance grooves, and an engineer mics both heads to capture the low body and the sharp high stroke.",
+    "category": "Playing technique",
+    "related_terms": ["Davul", "Dum and tek", "Darbuka", "Bass drum", "Beater", "Zurna"],
+    "common_mistakes": [
+     "Assuming both strokes come from the same head, when dum and tek are played on opposite heads with different sticks.",
+     "Playing dum and tek at equal volume, losing the low-high contrast that defines the groove.",
+     "Confusing the davul's stick-and-beater dum-tek with the hand-played dum and tek of the goblet drum (darbuka)."
+    ],
+    "scenario_contexts": [
+     "A davul-and-zurna duo driving a Turkish wedding dance.",
+     "Learning a 9/8 Balkan rhythm by counting the dum and tek strokes.",
+     "Miking a davul for a folk recording to capture both the low dum and the crisp tek."
+    ]
+   },
+   "sources": [
+    "Blades, Percussion Instruments and Their History (Faber) - davul / double-headed cylindrical drums",
+    "Grove Dictionary of Musical Instruments - davul (Turkish/Balkan bass drum), beater and switch strokes"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e3d73b90-a5dd-4281-982e-703ff91376c5",
+   "term": "Dha (tabla)",
+   "fields": {
+    "definition": "A resonant composite stroke (bol) on the tabla in which a treble stroke on the right-hand drum (dayan), typically \"na\" or \"ta\" on the rim, is played together with the open bass stroke \"ge/ghe\" on the left-hand drum (bayan). The two fuse into one full, ringing syllable, \"dha\", one of the most common bols in tabla rhythmic cycles (tala).",
+    "plain_english": "\"Dha\" is a tabla sound made by hitting both drums at once. You play a ringing high note on the small drum and a deep bass note on the big drum together. The two blend into one full, open sound.",
+    "purpose_function": "Combining treble and bass in a single stroke gives a strong, resonant accent, so \"dha\" often marks important beats, such as sam (the first beat), in a rhythmic cycle.",
+    "practical_application": "A tabla player uses \"dha\" as a full-sounding downbeat within spoken and played rhythm patterns, and it appears constantly in the recited bols of common talas such as teental.",
+    "category": "Drum stroke",
+    "related_terms": ["Tabla", "Bayan", "Dayan", "Bol", "Tala", "Dhin"],
+    "common_mistakes": [
+     "Striking the two drums slightly out of sync so the bass and treble do not fuse into one \"dha\".",
+     "Damping the bayan bass stroke, which turns the open \"dha\" into a closed, dead sound.",
+     "Confusing \"dha\" with \"dhin\", which pairs a different, more sustained treble stroke with the same bass."
+    ],
+    "scenario_contexts": [
+     "Reciting and playing teental, where \"dha\" opens the cycle on sam.",
+     "A student learning to land both hands together to produce a clean \"dha\".",
+     "Notating a tabla groove and marking the \"dha\" strokes on the accented beats."
+    ]
+   },
+   "sources": [
+    "Grove Music Online - tabla (bols; combined dayan/bayan strokes)",
+    "Naimpalli, Theory and Practice of Tabla (Popular Prakashan) - bols including dha, dhin, ge/na"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ea4d7791-2227-4616-acc9-52df59151063",
+   "term": "Dhol thali/dagga",
+   "fields": {
+    "definition": "The two contrasting striking sides of the dhol, a double-headed barrel drum of the Indian subcontinent: the higher-pitched treble side (thali, also tili/tihli), struck with a thin cane stick, and the lower-pitched bass side (dagga, also dhamma), struck with a heavier curved wooden stick. Playing the two together produces the drum's characteristic layered bass-and-treble rhythm.",
+    "plain_english": "A dhol has two heads. The \"thali\" side is the high side, hit with a thin stick, and the \"dagga\" side is the low bass side, hit with a thick curved stick. Playing both sides makes the big, punchy dhol beat.",
+    "purpose_function": "Splitting the drum into a bass side and a treble side lets one player produce a full low-and-high groove, the driving rhythmic engine of bhangra and folk processions.",
+    "practical_application": "A dhol player strikes the dagga side for deep downbeats and the thali side for fast, high offbeats, while an engineer mics both heads to catch the bass thump and the sharp treble crack.",
+    "category": "Playing technique",
+    "related_terms": ["Dhol", "Dagga", "Bhangra", "Barrel drum", "Dholak", "Beater"],
+    "common_mistakes": [
+     "Swapping the sticks, using the light treble stick on the bass side or the heavy stick on the treble side, and losing each side's proper tone.",
+     "Playing both sides at one volume, so the bass-treble contrast that drives the groove disappears.",
+     "Confusing the large two-stick dhol with the smaller, hand-played dholak."
+    ],
+    "scenario_contexts": [
+     "A dhol player driving a bhangra dance with alternating dagga and thali strokes.",
+     "Miking a dhol for a wedding-procession recording to balance both heads.",
+     "Learning a folk rhythm by separating the bass (dagga) and treble (thali) parts."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Musical Instruments - dhol (treble and bass sides; tihli and dagga sticks)",
+    "Blades, Percussion Instruments and Their History (Faber) - South Asian double-headed barrel drums"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bf5736e0-9854-42fc-819f-19eab027b332",
+   "term": "Ding (handpan)",
+   "fields": {
+    "definition": "The central, deep note of a handpan (and the earlier Hang): a hammered elliptical dome in the middle of the top shell, tuned to the instrument's lowest fundamental with harmonic partials (typically an octave and a fifth) and surrounded by a ring of higher tone fields. Struck near its center, the ding also helps excite the Helmholtz air resonance of the enclosed shell.",
+    "plain_english": "The ding is the big center note of a handpan. It is a small raised dome in the middle that plays the lowest, deepest note. All the other notes sit in a ring around it.",
+    "purpose_function": "The ding anchors the instrument as its lowest, most resonant note and, by exciting the enclosed air resonance, gives the handpan its warm, singing body of sound.",
+    "practical_application": "A player uses the ding as the tonic or bass note of a scale, returning to it for grounding, while an engineer mics near it to capture the instrument's deep low end.",
+    "category": "Instrument component",
+    "related_terms": ["Handpan", "Hang", "Tone field", "Gu (bottom port)", "Helmholtz resonance", "Fundamental"],
+    "common_mistakes": [
+     "Striking the ding too hard or off-center, which chokes the note instead of letting the dome ring.",
+     "Assuming the ding is just another note, rather than the tuned central tonic that anchors the whole layout.",
+     "Confusing the top-shell ding with the \"gu\", the sound port in the bottom shell."
+    ],
+    "scenario_contexts": [
+     "Playing a melody and using the ding as the home/bass note.",
+     "Miking a handpan close to the ding to capture its deep fundamental.",
+     "Tuning or checking a handpan by testing the ding's fundamental with its octave and fifth partials."
+    ]
+   },
+   "sources": [
+    "Rohner & Schärer (PANArt), The Hang: History, Development and Tuning - ISMA 2007 (central ding dome, harmonic partials, air resonance)",
+    "Grove Music Online - Hang (central tone field / ding)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f977c20a-baf3-4ea5-8cf5-875fb5f9a357",
+   "term": "Djembe bass (gun)",
+   "fields": {
+    "definition": "The lowest of the three fundamental djembe tones, produced by striking the center of the drumhead with the flat palm and fingers together and letting the hand rebound, releasing a deep, round bass note. In West African drum language it is commonly vocalized \"gun\" (or \"dun\"), and it anchors djembe rhythms alongside the tone and slap.",
+    "plain_english": "The bass is the deep, low sound of a djembe. You hit the middle of the drum with your whole flat hand and let it bounce off. Drummers often sing this stroke as \"gun\".",
+    "purpose_function": "The bass provides the low, grounding pulse of a djembe pattern, marking the main beats and giving the rhythm its foundation beneath the brighter tone and slap.",
+    "practical_application": "A djembe player strikes the head's center for bass downbeats within a rhythm, and teachers use the spoken \"gun dun\" to teach where the bass falls in a pattern.",
+    "category": "Drum stroke",
+    "related_terms": ["Djembe", "Open tone", "Djembe slap (pa)", "Dundun", "Kenken (bell)", "Hand drumming"],
+    "common_mistakes": [
+     "Leaving the hand resting on the head after the bass stroke, damping the note instead of letting it resonate.",
+     "Hitting the bass off-center toward the rim, which thins out the deep low tone.",
+     "Confusing the bass (gun) with the open tone, which is played nearer the edge and sounds higher."
+    ],
+    "scenario_contexts": [
+     "Playing a djembe accompaniment part built on steady bass strokes.",
+     "A teacher using the spoken \"gun dun\" to place the bass notes in a rhythm.",
+     "Miking a djembe to capture both the deep bass and the sharp slap."
+    ]
+   },
+   "sources": [
+    "Billmeier, Mamady Keïta: A Life for the Djembe (Arun) - bass/tone/slap strokes and notation",
+    "Blanc, African Percussion: The Djembe - fundamental djembe strokes (bass, tone, slap)",
+    "Grove Music Online - djembe (playing technique)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d8b0fd31-dfee-4b66-a7b2-31b732c71746",
+   "term": "Djembe slap (pa)",
+   "fields": {
+    "definition": "The highest and sharpest of the three fundamental djembe tones, produced by striking near the rim with a relaxed, slightly cupped hand so the fingers snap against the head, giving a bright, cracking, high-pitched sound with little sustain. In West African drum language it is commonly vocalized \"pa\" (or \"ta\").",
+    "plain_english": "The slap is the sharp, high crack of a djembe. You hit near the edge with loose fingers so they snap on the skin. Drummers often sing this stroke as \"pa\".",
+    "purpose_function": "The slap adds bright, cutting accents that sit above the bass and tone, giving djembe rhythms their punch, sparkle, and rhythmic detail.",
+    "practical_application": "A djembe player uses slaps for accents and lead phrases, especially when soloing, and teachers use the spoken \"pa ta\" to mark where slaps fall in a pattern.",
+    "category": "Drum stroke",
+    "related_terms": ["Djembe", "Djembe bass (gun)", "Open tone", "Accent", "Rim shot", "Hand drumming"],
+    "common_mistakes": [
+     "Tensing the hand and hitting flat, which produces a dull thud instead of a sharp, ringing slap.",
+     "UNSAFE: Playing hard slaps for long stretches without rest or proper technique, which can bruise or injure the hands and wrists; build up gradually and stop if pain develops.",
+     "Confusing the slap with the open tone; the slap is sharper and higher, played with snapping fingertips near the rim."
+    ],
+    "scenario_contexts": [
+     "A lead djembe player using slaps to accent a solo.",
+     "Learning the three djembe voices by contrasting bass, tone, and slap.",
+     "Placing bright slap accents in a rhythm to make it cut through an ensemble."
+    ]
+   },
+   "sources": [
+    "Billmeier, Mamady Keïta: A Life for the Djembe (Arun) - bass/tone/slap strokes and notation",
+    "Blanc, African Percussion: The Djembe - fundamental djembe strokes (bass, tone, slap)",
+    "Grove Music Online - djembe (playing technique)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

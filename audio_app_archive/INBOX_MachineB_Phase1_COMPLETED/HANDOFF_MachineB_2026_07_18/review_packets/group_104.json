@@ -1,0 +1,731 @@
+{
+ "group": 104,
+ "terms": [
+  {
+   "id": "877217d2-623f-4778-9bc4-ead06c0afc1e",
+   "term": "Pocket movement",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": "beginner",
+   "definition": "A Foley movement element covering the sound of a hand entering or leaving a pocket and its contents shifting inside — fabric friction plus the muted rattle of keys, coins or a phone.",
+   "plain_english": "It is the sound of a hand going into a pocket and the stuff inside moving. Like the soft jingle and rustle when someone reaches for their keys.",
+   "purpose_function": "It adds a small but telling layer of realism to a character's movement and business, cueing the audience that something is being reached for or stowed.",
+   "practical_application": "A Foley artist performs the reach into a matching garment pocket, adding coin or key content to sync with the actor's hand action.",
+   "category": "Foley",
+   "related_terms": [
+    "Jacket movement",
+    "Key jingle",
+    "Plastic movement",
+    "Hand contact",
+    "Object pickup"
+   ],
+   "common_mistakes": [
+    "Adding a loud coin rattle when the character's pocket should be empty.",
+    "Letting the pocket sound sit off sync with the visible hand movement.",
+    "Using the same content rattle regardless of what the character carries."
+   ],
+   "scenario_contexts": [
+    "Covering a character reaching for keys or a phone.",
+    "Adding fabric and content movement as someone pockets an object.",
+    "Layering pocket business under a walking shot to build character."
+   ]
+  },
+  {
+   "id": "5e97c695-5fe9-40ef-98e7-d5086b74c6f5",
+   "term": "Shuffle playback",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": "beginner",
+   "definition": "A randomized playback mode in which a container or playlist selects its child sounds in random order but does not repeat any element until all have played, avoiding immediate repetition while still varying the sequence.",
+   "plain_english": "It is a random play mode that mixes up the order of sounds but will not repeat one until all have played. It works like shuffling a deck of cards before dealing.",
+   "purpose_function": "It exists to keep repeated sounds — footsteps, gunshots, impacts — from sounding mechanically identical while still ensuring every variation is used before any repeats.",
+   "practical_application": "An implementer sets a random container of footstep variations to shuffle so consecutive steps never reuse the same sample, reducing the machine-gun effect.",
+   "category": "Interactive Audio",
+   "related_terms": [
+    "Playlist container",
+    "Sequence container",
+    "Layer container",
+    "Sound asset",
+    "Playback behavior"
+   ],
+   "common_mistakes": [
+    "Confusing shuffle (no repeat until all have played) with pure random, which can repeat the same sound back-to-back.",
+    "Loading too few variations, so even shuffled playback becomes obvious.",
+    "Assuming shuffle randomizes pitch or volume — it only randomizes selection order."
+   ],
+   "scenario_contexts": [
+    "Varying footstep samples so a character's walk never machine-guns.",
+    "Cycling weapon-fire variations during sustained shooting.",
+    "Playing ambient one-shots like bird calls in a non-repeating random order."
+   ]
+  },
+  {
+   "id": "c4b89614-1211-4e62-b3c7-77f64c7d22b9",
+   "term": "Tonal transition",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "In sound for picture, a tonal transition is a scene-to-scene transition built from a pitched or sustained tonal element - such as a drone, held note, riser, or resolving chord - rather than a broadband noise effect, used to smooth or emotionally bridge a picture edit.",
+   "plain_english": "It is a smooth scene change made with a musical, pitched sound like a held note or drone. The tone carries you from one shot to the next instead of a whoosh.",
+   "purpose_function": "It bridges two scenes or sections with harmonically coherent sound, guiding the listener's emotion across the cut and masking an abrupt change in picture or ambience.",
+   "practical_application": "An editor places a rising synth pad or sustained tone under a scene change so the cut feels connected, then automates its level to hand off into the next scene's ambience.",
+   "category": "Transitions & Effects",
+   "related_terms": [
+    "Tonal sweep",
+    "Transitional effect",
+    "Transition parameter",
+    "Trailer hit",
+    "Transient sweetener"
+   ],
+   "common_mistakes": [
+    "Confusing a tonal transition (pitched, sustained material) with a noise-based whoosh or riser",
+    "Letting the transition tone clash harmonically with the underscore or the next cue",
+    "Overusing tonal transitions so every scene change sounds the same"
+   ],
+   "scenario_contexts": [
+    "Bridging two dialogue scenes with a sustained drone in a documentary",
+    "Using a resolving chord to move from a tense scene into a calm one",
+    "Covering an ambience mismatch between two locations with a held tone"
+   ]
+  },
+  {
+   "id": "030b2df5-7600-4e99-b127-86e79da9b97e",
+   "term": "Transition parameter",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "A transition parameter is any adjustable setting that controls how one audio clip or scene gives way to another - for example crossfade length, fade-curve shape, overlap amount, or the timing offset of a transition effect.",
+   "plain_english": "It is a setting that controls how one sound blends into the next. Things like how long a fade lasts or what shape it takes are transition parameters.",
+   "purpose_function": "It gives the editor precise control over the speed, shape, and timing of a transition so edits sound smooth and intentional rather than abrupt or clumsy.",
+   "practical_application": "When crossfading two ambiences, a technician adjusts the transition parameters - fade length and curve - in the DAW until the seam between the clips is inaudible.",
+   "category": "Transitions & Effects",
+   "related_terms": [
+    "Transitional effect",
+    "Tonal transition",
+    "Tonal sweep",
+    "Trailer hit"
+   ],
+   "common_mistakes": [
+    "Assuming the default crossfade length works for every edit instead of setting it per transition",
+    "Choosing a linear fade curve where an equal-power curve is needed, causing a level dip",
+    "Adjusting only fade length while ignoring fade-curve shape"
+   ],
+   "scenario_contexts": [
+    "Setting crossfade length and curve when joining two room-tone clips",
+    "Adjusting an effect's transition time so a whoosh lands exactly on the picture cut",
+    "Tuning fade parameters to remove a click at an edit point"
+   ]
+  },
+  {
+   "id": "e37cad22-5a7d-4f34-9382-cc2b8b654e75",
+   "term": "Two-dimensional-to-three-dimensional blend",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "In immersive sound for picture, a two-dimensional-to-three-dimensional blend is the balance or control that mixes flat, planar (stereo or surround, 2D) content with height-bearing, object-based (3D/immersive) content, letting a source or bed sit anywhere between a horizontal plane and the full three-dimensional sound field.",
+   "plain_english": "It sets how much a sound stays flat around you versus wrapping fully above and around you. You dial between plain stereo-style sound and full 3D sound.",
+   "purpose_function": "It lets mixers move material between legacy 2D formats and immersive 3D formats and control how much height and envelopment a sound has, so one mix can serve both flat and immersive deliverables.",
+   "practical_application": "Preparing a Dolby Atmos deliverable, a mixer blends a 2D music stem with 3D object placement, adjusting how far elements lift off the horizontal plane into the height speakers.",
+   "category": "Immersive & Spatial",
+   "related_terms": [
+    "Virtual-reality audio room",
+    "Object divergence",
+    "Binaural rendering",
+    "Ambisonics"
+   ],
+   "common_mistakes": [
+    "Assuming a 2D-to-3D blend is a true upmix - it controls placement and height balance, not added source separation",
+    "Pushing everything into 3D height so the mix loses a solid front image and dialogue anchor",
+    "Forgetting to check the 2D fold-down, so the stereo or surround deliverable sounds wrong"
+   ],
+   "scenario_contexts": [
+    "Balancing a stereo music bed against object-based effects in a Dolby Atmos film mix",
+    "Deciding how much ambience lifts into height channels for an immersive trailer",
+    "Creating both a 5.1 and an immersive deliverable from one session"
+   ]
+  },
+  {
+   "id": "7b43e0ac-cbdf-4281-837c-41491c6a30c8",
+   "term": "Virtual-reality audio room",
+   "topic": "Sound for Picture — Post Workflow & Deliverables",
+   "difficulty": null,
+   "definition": "A virtual-reality audio room is a software-simulated acoustic environment - with modeled room geometry, reflections, and reverberation plus head-tracked 3D source positioning - in which a sound designer auditions, places, and mixes spatial audio for VR or other immersive content.",
+   "plain_english": "It is a pretend room inside software where you place sounds in 3D and hear them as they would sound in VR. You can move your head and the sound moves with the scene.",
+   "purpose_function": "It lets creators design and check how audio will behave inside a head-tracked virtual space before release, so sources sit in the right place and the room's echoes match the visual environment.",
+   "practical_application": "A VR sound designer loads a scene into a virtual-reality audio room, positions ambiences and effects around the listener, and monitors on head-tracked headphones to confirm the mix holds up as the viewer looks around.",
+   "category": "Immersive & Spatial",
+   "related_terms": [
+    "Two-dimensional-to-three-dimensional blend",
+    "Binaural rendering",
+    "Ambisonics",
+    "Head tracking",
+    "Object divergence"
+   ],
+   "common_mistakes": [
+    "Mixing only on speakers and skipping head-tracked headphone checks, so the VR experience differs from the mix",
+    "Ignoring the modeled room's reverb so sound does not match the visual space",
+    "Placing sources without checking behind and above the listener"
+   ],
+   "scenario_contexts": [
+    "Positioning ambisonic ambience for a 360 video in a virtual room",
+    "Auditioning a VR game scene's audio with head tracking before build",
+    "Matching modeled room reverb to a virtual environment's size and materials"
+   ]
+  },
+  {
+   "id": "b2e69598-c087-49b7-bdbc-eb402b397c48",
+   "term": "AIVA",
+   "topic": "Synthesis Fundamentals & Oscillators",
+   "difficulty": "beginner",
+   "definition": "AIVA (Artificial Intelligence Virtual Artist) is a commercial AI music-composition system, created by AIVA Technologies in 2016, that uses deep-learning models trained on a corpus of existing scores to generate original instrumental compositions across many styles; it was the first AI composer registered with a music-rights society (SACEM).",
+   "plain_english": "AIVA is an app that writes original music for you. You pick a style and length, and it makes a piece you can download and edit.",
+   "purpose_function": "It lets users generate music quickly without composing from scratch, serving creators who need scores for video, games, or media on a budget or deadline.",
+   "practical_application": "A content creator picks a mood, style, and duration in AIVA, generates a cue, then exports stems or MIDI to fine-tune the arrangement in a DAW.",
+   "category": "AI music generation",
+   "related_terms": [
+    "AI-assisted composition",
+    "AI arrangement",
+    "Suno",
+    "Udio",
+    "Symbolic music generation"
+   ],
+   "common_mistakes": [
+    "Assuming AIVA's output is automatically cleared for any commercial use without checking the license tier",
+    "Treating generated cues as final rather than editing stems or MIDI to fit picture",
+    "Expecting fully original creativity rather than patterns learned from training data"
+   ],
+   "scenario_contexts": [
+    "Generating a cinematic cue for a video project",
+    "Producing a first-draft game soundtrack to iterate on",
+    "Exporting MIDI from AIVA to rearrange in a DAW"
+   ]
+  },
+  {
+   "id": "d7c957f3-6943-49b4-bd95-88a1c40cfdc0",
+   "term": "Prompt-based sound design",
+   "topic": "Synthesis Fundamentals & Oscillators",
+   "difficulty": "beginner",
+   "definition": "Prompt-based sound design is the practice of creating or shaping sounds by writing natural-language text prompts (optionally with reference audio) that drive a generative AI model, rather than by manually programming synthesizer or sampler parameters.",
+   "plain_english": "It means making sounds by describing them in words. You type something like a rusty metal door creak and the AI makes that sound for you.",
+   "purpose_function": "It lets a creator specify a target sound in plain language and get usable audio fast, lowering the skill barrier and speeding up sketching or prototyping of sound effects and textures.",
+   "practical_application": "A sound designer types a prompt such as distant thunder with light rain into a text-to-audio tool, auditions several takes, and drops the best result into the timeline for cleanup.",
+   "category": "AI sound design",
+   "related_terms": [
+    "Text-to-audio",
+    "Text-to-SFX",
+    "AI sound effects generator",
+    "Text-conditioning",
+    "Stable Audio"
+   ],
+   "common_mistakes": [
+    "Expecting one prompt to nail the sound instead of iterating and refining the wording",
+    "Ignoring sample rate, length, and quality limits of the generated output",
+    "Assuming generated sounds are automatically license-cleared for release"
+   ],
+   "scenario_contexts": [
+    "Sketching placeholder SFX before a formal Foley session",
+    "Generating ambient textures for a game prototype",
+    "Creating quick sound variations from a written description"
+   ]
+  },
+  {
+   "id": "3e81bc60-2efe-4d3d-a3e9-466362f6c632",
+   "term": "RAVE",
+   "topic": "Synthesis Fundamentals & Oscillators",
+   "difficulty": "beginner",
+   "definition": "RAVE (Realtime Audio Variational autoEncoder) is a neural audio-synthesis model introduced by Caillon and Esling at IRCAM in 2021 that learns a compact latent representation of audio and decodes it back to a waveform, enabling fast, high-quality timbre transfer and generation that can run in real time, even on CPU.",
+   "plain_english": "RAVE is an AI that learns the sound of an instrument or voice and lets you play or transform audio through it in real time. It is fast enough to run live.",
+   "purpose_function": "It provides a lightweight neural model for real-time timbre transfer and sound generation, letting musicians route live audio through a trained model to reshape its timbre on stage or in the studio.",
+   "practical_application": "A musician trains a RAVE model on a chosen sound set, then runs it as a plug-in (for example via nn~ in Max/MSP or Pure Data) to morph a live instrument into that timbre during performance.",
+   "category": "Neural synthesis",
+   "related_terms": [
+    "Timbre transfer",
+    "Style transfer",
+    "Audio-domain generation",
+    "Autoregressive model",
+    "Audio tokenization"
+   ],
+   "common_mistakes": [
+    "Assuming RAVE needs a huge dataset - it can train on a few hours, but too little varied audio yields artifacts",
+    "Confusing RAVE's real-time timbre transfer with text-to-music generation",
+    "Expecting perfect fidelity at very low latency without tuning the model size"
+   ],
+   "scenario_contexts": [
+    "Real-time timbre transfer of a live vocal on stage",
+    "Building a custom instrument from a trained sound model in Max/MSP",
+    "Generating evolving textures for sound design"
+   ]
+  },
+  {
+   "id": "0d9dd182-b069-4e03-8dc0-b4c44209b3ed",
+   "term": "Riffusion",
+   "topic": "Synthesis Fundamentals & Oscillators",
+   "difficulty": "beginner",
+   "definition": "Riffusion is an AI music-generation system, released in 2022 by Seth Forsgren and Hayk Martiros, that fine-tunes the Stable Diffusion image model to generate spectrogram images from text prompts and then converts those spectrograms back into audio.",
+   "plain_english": "Riffusion makes music from text by drawing a picture of the sound and turning that picture into audio. It reuses an image AI to do it.",
+   "purpose_function": "It repurposes a text-to-image diffusion model for music by treating sound as spectrogram images, showing that existing image models can generate short musical clips from text descriptions.",
+   "practical_application": "A user types a style prompt into Riffusion, which generates a spectrogram and renders a short audio clip, useful for quick musical sketches or experimentation.",
+   "category": "AI music generation",
+   "related_terms": [
+    "Text-to-music",
+    "Text-to-audio",
+    "Stable Audio",
+    "Audio-domain generation",
+    "Suno"
+   ],
+   "common_mistakes": [
+    "Thinking Riffusion generates audio directly - it generates spectrogram images that are then converted to sound",
+    "Expecting long, structured songs rather than short clips",
+    "Assuming spectrogram-to-audio conversion is lossless"
+   ],
+   "scenario_contexts": [
+    "Generating a short musical riff from a text prompt",
+    "Experimenting with spectrogram-based music generation",
+    "Creating novelty clips by blending style prompts"
+   ]
+  },
+  {
+   "id": "14f63351-ec26-464b-8377-ea74786f9e6f",
+   "term": "squelchy",
+   "topic": "Synthesis Fundamentals & Oscillators",
+   "difficulty": null,
+   "definition": "In synthesis, 'squelchy' describes a wet, liquid, vocal-sounding timbre produced by sweeping a high-resonance low-pass filter while its cutoff is modulated (typically by an envelope or manual automation), most famously the Roland TB-303 acid bassline sound.",
+   "plain_english": "Squelchy is that wet, rubbery 'wow' sound in acid basslines. You get it by turning a filter's resonance up high and sweeping its cutoff.",
+   "purpose_function": "The term names a target timbre so musicians and technicians can communicate and dial in the resonant, filter-swept sound central to acid house, techno, and related electronic styles.",
+   "practical_application": "To get a squelchy bass, a producer raises filter resonance, sets a low cutoff with envelope modulation, uses a sawtooth oscillator, and adds note slides so the filter sweep morphs between pitches.",
+   "category": "Timbre descriptors",
+   "related_terms": [
+    "VCF",
+    "VCO",
+    "Sample and hold",
+    "Sequencer",
+    "Oscillator sync"
+   ],
+   "common_mistakes": [
+    "Thinking a special effect makes the squelch when it comes from filter resonance plus cutoff modulation",
+    "Setting resonance so high it self-oscillates and masks the bassline",
+    "Forgetting note slides and accents, which are key to the classic 303 squelch"
+   ],
+   "scenario_contexts": [
+    "Programming an acid bassline on a TB-303 or its emulations",
+    "Describing a desired resonant filter sound to a bandmate",
+    "Dialing in a squelchy lead on a subtractive synth"
+   ]
+  },
+  {
+   "id": "abca1197-fd62-47d9-ba72-c0e559583ada",
+   "term": "Suno",
+   "topic": "Synthesis Fundamentals & Oscillators",
+   "difficulty": "beginner",
+   "definition": "Suno is a commercial text-to-music platform from Suno, Inc. that generates complete songs - backing instrumentation plus sung vocals from supplied or AI-written lyrics - from short natural-language prompts; the company also released the open text-to-audio model Bark.",
+   "plain_english": "Suno makes full songs from a few words. You describe a style and give or ask for lyrics, and it sings and plays a complete track.",
+   "purpose_function": "It lets people with no musical training produce finished, vocal songs quickly, serving demos, social content, and idea sketches from a text description.",
+   "practical_application": "A creator types a genre, mood, and lyrics into Suno, generates a full song with vocals, and downloads it for a video or social post.",
+   "category": "AI music generation",
+   "related_terms": [
+    "Udio",
+    "AIVA",
+    "Riffusion",
+    "Text-to-music",
+    "Voice cloning"
+   ],
+   "common_mistakes": [
+    "Assuming Suno output is automatically cleared for commercial use - check the current license and plan",
+    "Expecting precise editing control like a DAW rather than prompt-level control",
+    "Treating AI-written lyrics as fact-checked or original"
+   ],
+   "scenario_contexts": [
+    "Generating a themed song for a social media clip",
+    "Sketching a demo song idea before recording live musicians",
+    "Making custom jingles from a text brief"
+   ]
+  },
+  {
+   "id": "d2d2077e-4258-4a7e-a5ee-653db51c88f5",
+   "term": "Timing-conditioning",
+   "topic": "Synthesis Fundamentals & Oscillators",
+   "difficulty": "beginner",
+   "definition": "Timing-conditioning is a technique in generative audio models where the network is conditioned on timing signals - such as the start offset and total duration of a clip - so it can generate audio of a specified length with coherent structure; Stability AI's Stable Audio uses seconds_start and seconds_total embeddings for this.",
+   "plain_english": "It tells the AI how long the clip should be and where it is in the track. That way the music starts, builds, and ends at the right time instead of just stopping.",
+   "purpose_function": "It lets a generative model produce variable-length outputs with proper beginnings, middles, and endings, rather than fixed-size chunks that cut off abruptly.",
+   "practical_application": "In Stable Audio, a user sets the total seconds so the model renders a clip of that exact length with a natural intro and outro instead of a hard stop.",
+   "category": "Model conditioning",
+   "related_terms": [
+    "Text-conditioning",
+    "Text-to-audio",
+    "Text-to-music",
+    "Stable Audio",
+    "Audio-domain generation"
+   ],
+   "common_mistakes": [
+    "Confusing timing-conditioning with tempo or BPM control - it governs length and position, not beat rate",
+    "Requesting a length beyond the model's training window and expecting coherent structure",
+    "Assuming any generator supports timing control; it must be trained with timing embeddings"
+   ],
+   "scenario_contexts": [
+    "Generating a 30-second cue that ends cleanly for an ad",
+    "Producing audio of an exact duration to fit a video slot",
+    "Rendering clips with proper intros and outros in Stable Audio"
+   ]
+  },
+  {
+   "id": "08ac4b5a-1f3f-4081-98fe-c2a82ba68324",
+   "term": "Udio",
+   "topic": "Synthesis Fundamentals & Oscillators",
+   "difficulty": "beginner",
+   "definition": "Udio is a commercial text-to-music platform, launched in 2024 by Uncharted Labs, that generates songs with instrumentation and sung vocals from natural-language prompts and user-supplied or AI-generated lyrics.",
+   "plain_english": "Udio makes songs from text. You describe the style and give lyrics, and it produces a track with singing and backing music.",
+   "purpose_function": "It enables fast creation of full, vocal songs from a written description, giving non-musicians and creators finished audio for content, demos, or ideas.",
+   "practical_application": "A user enters a style prompt and lyrics in Udio, generates short sections, then extends and stitches them into a full song for a project.",
+   "category": "AI music generation",
+   "related_terms": [
+    "Suno",
+    "AIVA",
+    "Riffusion",
+    "Text-to-music",
+    "Stable Audio"
+   ],
+   "common_mistakes": [
+    "Assuming outputs are automatically license-cleared for commercial release",
+    "Expecting a full arranged song in one pass rather than extending shorter sections",
+    "Confusing Udio with Suno; they are separate competing platforms"
+   ],
+   "scenario_contexts": [
+    "Creating a full song with vocals from a text brief",
+    "Extending a generated section into a complete track",
+    "Prototyping song ideas before a studio session"
+   ]
+  },
+  {
+   "id": "85b856e9-f120-44df-9016-b44ec4557dd6",
+   "term": "w2v-BERT",
+   "topic": "Synthesis Fundamentals & Oscillators",
+   "difficulty": "beginner",
+   "definition": "w2v-BERT is a self-supervised speech-representation model that learns from unlabeled audio by combining wav2vec 2.0-style contrastive learning (to discretize speech into units) with BERT-style masked-language-modeling over those units, producing features used for downstream tasks such as speech recognition and audio generation.",
+   "plain_english": "w2v-BERT is an AI that teaches itself the building blocks of speech from raw audio, with no labels. Those learned pieces then help other systems understand or make speech.",
+   "purpose_function": "It provides strong, general speech representations learned without transcripts, reducing the labeled data needed to train accurate speech recognition and other audio models.",
+   "practical_application": "An engineer uses a pretrained w2v-BERT model as a feature extractor or fine-tunes it on a smaller labeled set to build a speech recognizer or to tokenize audio for a generative model.",
+   "category": "Speech representation",
+   "related_terms": [
+    "HuBERT",
+    "Audio tokenization",
+    "Autoregressive model",
+    "SoundStream",
+    "Audio-domain generation"
+   ],
+   "common_mistakes": [
+    "Thinking w2v-BERT transcribes speech by itself - it learns representations that other models use",
+    "Confusing it with text BERT; w2v-BERT operates on audio, not written text",
+    "Assuming pretraining alone is enough without fine-tuning for a specific task"
+   ],
+   "scenario_contexts": [
+    "Pretraining speech features to cut labeled-data needs for ASR",
+    "Extracting audio tokens for a music or speech generation pipeline",
+    "Fine-tuning on a low-resource language's speech"
+   ]
+  },
+  {
+   "id": "dac52a44-566f-475a-a649-342eda969c61",
+   "term": "ACE Studio",
+   "topic": "Voice & Vocal Perception",
+   "difficulty": null,
+   "definition": "ACE Studio is a commercial AI singing-voice software from TimeDomain that generates realistic sung vocals from entered MIDI notes and lyrics, letting users choose AI singer voices and control pitch, timing, and expression within a vocal-focused production environment.",
+   "plain_english": "ACE Studio makes a computer sing your song. You give it notes and lyrics, pick a voice, and it produces vocals you can tweak.",
+   "purpose_function": "It lets producers create lead and backing vocals without a human singer, useful for demos, songwriting, and productions where a specific voice or quick turnaround is needed.",
+   "practical_application": "A songwriter draws a melody and types lyrics in ACE Studio, selects an AI voice, adjusts pitch and expression, and renders the vocal to drop into a DAW mix.",
+   "category": "AI vocal synthesis",
+   "related_terms": [
+    "Singing voice synthesis (SVS)",
+    "Synthesizer V",
+    "Voice model",
+    "Voice cloning",
+    "Singing voice conversion (SVC)"
+   ],
+   "common_mistakes": [
+    "Confusing ACE Studio (synthesizes singing from notes and lyrics) with voice conversion that transforms an existing recording",
+    "Expecting broadcast-perfect vocals with no editing of pitch, timing, and expression",
+    "Assuming any voice can be used commercially without checking licensing and consent"
+   ],
+   "scenario_contexts": [
+    "Producing demo vocals for a song before hiring a singer",
+    "Creating harmony and backing vocals from MIDI",
+    "Generating a guide vocal in a chosen style"
+   ]
+  },
+  {
+   "id": "643d6613-9bae-40dd-b5d5-1dc9b34f28e5",
+   "term": "ElevenLabs",
+   "topic": "Voice & Vocal Perception",
+   "difficulty": null,
+   "definition": "ElevenLabs is a commercial voice-AI company whose platform provides high-quality text-to-speech, voice cloning (instant and professional), speech-to-speech, and related tools via app and API, widely used for narration, dubbing, and character voices.",
+   "plain_english": "ElevenLabs turns written text into natural-sounding speech and can copy a voice from a sample. People use it for narration, dubbing, and characters.",
+   "purpose_function": "It lets creators generate realistic spoken audio and custom voices on demand, supplementing or replacing studio voice recording for scalable, multilingual narration and dubbing.",
+   "practical_application": "A producer uploads a script to ElevenLabs, picks or clones a voice, generates narration, and exports the audio or integrates it through the API into a pipeline.",
+   "category": "Voice AI platform",
+   "related_terms": [
+    "Voice cloning",
+    "Resemble AI",
+    "Text-to-audio",
+    "Speech-to-speech",
+    "Voice model"
+   ],
+   "common_mistakes": [
+    "Cloning a real person's voice without their explicit consent, which can breach law, platform terms, and publicity or likeness rights",
+    "Assuming default voice settings suit every script instead of tuning stability and style",
+    "Expecting flawless pronunciation of names and jargon without adjustments or phonetic input"
+   ],
+   "scenario_contexts": [
+    "Generating narration for an explainer video",
+    "Dubbing content into multiple languages",
+    "Creating consistent character voices for a game or audiobook"
+   ]
+  },
+  {
+   "id": "dc36b473-e383-410f-8a37-e551210bf99b",
+   "term": "Resemble AI",
+   "topic": "Voice & Vocal Perception",
+   "difficulty": null,
+   "definition": "Resemble AI is a commercial voice-AI company offering generative voice cloning, text-to-speech, speech-to-speech, and real-time voice tools, along with AI-speech (deepfake) detection and audio watermarking, delivered via app and API.",
+   "plain_english": "Resemble AI copies and generates voices from samples, and also builds tools to spot fake AI voices. Companies use it for custom voices and for security.",
+   "purpose_function": "It lets organizations create and deploy custom synthetic voices at scale while also providing detection and watermarking to help identify AI-generated or manipulated speech.",
+   "practical_application": "A developer clones an approved voice in Resemble AI and calls its API to generate dynamic speech in an app, or uses its detection tools to flag possible voice deepfakes.",
+   "category": "Voice AI platform",
+   "related_terms": [
+    "ElevenLabs",
+    "Voice cloning",
+    "Speech-to-speech",
+    "Voice model",
+    "Real-time voice conversion"
+   ],
+   "common_mistakes": [
+    "Cloning or deploying a voice without documented consent and rights, risking legal and ethical breaches",
+    "Assuming AI-voice detection is infallible rather than a probabilistic aid",
+    "Skipping watermarking or provenance steps when distributing synthetic voices"
+   ],
+   "scenario_contexts": [
+    "Building a branded synthetic voice for an IVR or assistant",
+    "Generating localized speech for content at scale",
+    "Screening audio for possible voice deepfakes"
+   ]
+  },
+  {
+   "id": "cf9c1ddf-1bff-4cfd-ba1f-5c34ecc9387c",
+   "term": "Retrieval-based voice conversion (RVC)",
+   "topic": "Voice & Vocal Perception",
+   "difficulty": "beginner",
+   "definition": "Retrieval-based voice conversion (RVC) is an open-source voice-conversion method that extracts content features from source audio with a self-supervised model (HuBERT/ContentVec), replaces each feature with its closest match retrieved (top-1) from an index of the target speaker's training features to reduce timbre leakage, and resynthesizes speech in the target voice with a VITS-based generator and neural vocoder.",
+   "plain_english": "RVC changes one person's recorded voice into another person's voice. It looks up the closest matching bits of the target voice so the result sounds more like them.",
+   "purpose_function": "It converts the timbre of a recording to a target voice while keeping the original words and delivery, and its retrieval step improves similarity and reduces leftover traces of the source voice.",
+   "practical_application": "A creator trains an RVC model on a target voice, then feeds in a vocal or speech recording to output the same performance in the target timbre, often for covers or dubbing.",
+   "category": "Voice conversion",
+   "related_terms": [
+    "Voice conversion",
+    "so-vits-svc",
+    "Singing voice conversion (SVC)",
+    "HuBERT",
+    "Voice model"
+   ],
+   "common_mistakes": [
+    "Cloning or converting to a real person's voice without consent, raising legal and ethical issues",
+    "Confusing RVC (converts an existing recording) with text-to-speech that starts from text",
+    "Training on noisy or too little audio, which produces artifacts - clean data of adequate length is recommended"
+   ],
+   "scenario_contexts": [
+    "Making a song cover in another singer's timbre",
+    "Changing a voice-over's timbre in post",
+    "Building a custom voice model for a character"
+   ]
+  },
+  {
+   "id": "0676f8ce-89fc-407d-8cde-a8887eea9fd7",
+   "term": "so-vits-svc",
+   "topic": "Voice & Vocal Perception",
+   "difficulty": null,
+   "definition": "so-vits-svc (SoftVC VITS Singing Voice Conversion) is an open-source singing-voice-conversion project that extracts content features from source audio with a SoftVC content encoder (HuBERT/ContentVec), combines them with extracted pitch (F0), and resynthesizes the performance in a trained target voice using a VITS-based model with a neural vocoder.",
+   "plain_english": "so-vits-svc turns a recorded singing performance into another singer's voice while keeping the tune. It listens to what is sung and the pitch, then rebuilds it in the new voice.",
+   "purpose_function": "It lets users convert a sung or spoken recording into a chosen target voice, preserving melody and timing, and became a widely used community tool for voice covers and character vocals.",
+   "practical_application": "A user trains a so-vits-svc model on a target singer, then converts a dry vocal recording so the same melody and lyrics are sung in that voice for a cover.",
+   "category": "Voice conversion",
+   "related_terms": [
+    "Singing voice conversion (SVC)",
+    "Retrieval-based voice conversion (RVC)",
+    "Voice conversion",
+    "HuBERT",
+    "Singing voice synthesis (SVS)"
+   ],
+   "common_mistakes": [
+    "Converting to a real artist's voice without consent, which raises legal and ethical concerns",
+    "Confusing so-vits-svc (converts a recording) with singing voice synthesis that generates singing from notes and lyrics",
+    "Feeding reverberant or noisy input; dry, clean vocals give far better results"
+   ],
+   "scenario_contexts": [
+    "Producing a song cover in a target singer's voice",
+    "Converting a guide vocal to a character voice",
+    "Creating fan covers with a trained voice model"
+   ]
+  },
+  {
+   "id": "7d464080-1759-409f-b38d-70c3913953ea",
+   "term": "Make it pretty",
+   "topic": "Tonal & Timbre Descriptors",
+   "difficulty": null,
+   "definition": "A subjective studio instruction to make a sound or mix more sonically pleasing and refined, typically by smoothing harshness, adding warmth, sheen, or ambience, and correcting tuning or timing, rather than by any single defined process. It states an aesthetic goal, an attractive and polished result, instead of a specific technical operation.",
+   "plain_english": "It means make it sound nicer and more polished. The person is not naming exact tools; they just want a smooth, easy-to-enjoy sound.",
+   "purpose_function": "It gives a producer or client a quick way to ask for a more attractive, finished sound without naming tools. Understanding it lets the engineer turn a vague aesthetic request into concrete moves like de-essing, gentle EQ, reverb, or tuning.",
+   "practical_application": "When a client says 'make it pretty' on a vocal, the engineer may tame sibilance and harsh mids, add a little high-end air and reverb, and tune stray notes to deliver a smoother, more flattering sound.",
+   "category": "Mixing Direction",
+   "related_terms": [
+    "Make it sit",
+    "Make it speak",
+    "Sweetening",
+    "Air",
+    "Sibilance"
+   ],
+   "common_mistakes": [
+    "Treating 'make it pretty' as one fixed process rather than asking what the client finds unpleasant.",
+    "Over-processing with heavy reverb or bright EQ until the sound is thin or washed out.",
+    "Assuming 'pretty' means the same thing in every genre, when an aggressive style may want grit, not gloss."
+   ],
+   "scenario_contexts": [
+    "A client asks an engineer to 'make it pretty' on a lead vocal during a mix revision.",
+    "A producer requests a smoother, more polished sound on a piano or string pad.",
+    "A mastering client asks for a glossier, more flattering overall tone on a ballad."
+   ]
+  },
+  {
+   "id": "a6d6af76-0db8-4c80-bf09-667d3f3fafbd",
+   "term": "Bench noise",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "Unwanted mechanical creak, squeak, or movement noise produced by a performer's bench, stool, or seat and captured in a recording. It is a low-level artifact that intrudes on quiet passages and is unrelated to the instrument's own sound.",
+   "plain_english": "It is the creak or squeak a piano bench or stool makes when a player shifts, and the mic picks it up. It has nothing to do with the music, but it can spoil a quiet part.",
+   "purpose_function": "Naming bench noise helps a technician separate seat or furniture creaks from the actual instrument sound. That makes the artifact easier to prevent, edit out, or gate.",
+   "practical_application": "When recording solo piano, an engineer who hears bench noise will tighten loose bolts, pad the bench, or ask the player to stay still, then edit any remaining creaks out of quiet sections.",
+   "category": "Noise artifact",
+   "related_terms": [
+    "Gear noise",
+    "Fret rattle",
+    "Cabinet rattle",
+    "Noise floor",
+    "Room tone"
+   ],
+   "common_mistakes": [
+    "Blaming a creak on the instrument or the mic stand when it is actually the player's bench or stool.",
+    "Trying to EQ out bench noise instead of fixing the source or editing the affected section.",
+    "Ignoring quiet bench creaks during tracking, then finding them exposed in the final mix."
+   ],
+   "scenario_contexts": [
+    "A squeaking piano bench captured during a soft solo passage.",
+    "An organ or drummer's stool creaking as the player shifts weight.",
+    "Editing out seat creaks from an exposed acoustic take."
+   ]
+  },
+  {
+   "id": "0da583a6-e51a-4675-91dd-b4dd2b01971d",
+   "term": "brown sound",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A colloquial guitar-tone descriptor for a thick, warm, saturated high-gain distortion sound with a strong, smooth midrange, tight low end, and a rounded, compressed feel rather than a bright or fizzy edge. The term is most associated with Eddie Van Halen's cranked, modified Marshall-style tone.",
+   "plain_english": "It is a warm, thick, growling electric guitar sound with lots of smooth distortion. People named it after Eddie Van Halen's famous tone, which sounds full and round, not thin or harsh.",
+   "purpose_function": "The term gives players and engineers a shorthand for a particular warm, saturated rock guitar tone. It helps communicate a tonal target when choosing amps, gain settings, and EQ.",
+   "practical_application": "To chase a brown sound, a player or engineer uses a high-gain tube amp pushed into saturation, favours midrange in the EQ, keeps the low end tight, and mics the cabinet carefully.",
+   "category": "Tonal Descriptor",
+   "related_terms": [
+    "Saturation",
+    "Distortion",
+    "Midrange",
+    "Harmonics",
+    "Gain"
+   ],
+   "common_mistakes": [
+    "Believing the tone comes mainly from running the amp on a variac at a lowered voltage, when amp choice, gain staging, EQ, and playing matter far more.",
+    "Adding so much gain that the tone becomes fizzy and thin, losing the warm, tight character.",
+    "Assuming one pedal or setting alone recreates it, when it depends on the whole amp, cabinet, and mic chain."
+   ],
+   "scenario_contexts": [
+    "A guitarist asks for a 'brown sound' rhythm tone in a hard-rock session.",
+    "An engineer dials in a warm, saturated high-gain guitar tone to match a classic Van Halen style.",
+    "Choosing a high-gain amp and mic position to capture a thick, midrange-forward distortion."
+   ]
+  },
+  {
+   "id": "dfaed48d-7ec8-41a2-8a0f-13ac3a384854",
+   "term": "Ghost attack",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The faint, low-level onset transient of a ghost note or similarly de-emphasized note: an attack so quiet it is felt or implied more than clearly heard, sitting well below the level of the accented notes around it. It marks the start of a note played with very light force.",
+   "plain_english": "It is the soft start of a very quiet note, the kind a drummer or bass player slips in gently between the loud hits. You feel it more than you really hear it.",
+   "purpose_function": "The term describes the quiet onset that gives a groove its subtle sense of motion and feel. Recognising it helps a technician preserve those soft attacks instead of losing them to gating or heavy compression.",
+   "practical_application": "When mixing drums or bass, an engineer sets gate thresholds and compression so ghost attacks survive, keeping the groove's light, in-between notes audible.",
+   "category": "Articulation",
+   "related_terms": [
+    "Ghost note",
+    "Attack",
+    "Transient",
+    "Articulation",
+    "Dynamics"
+   ],
+   "common_mistakes": [
+    "Setting a noise gate threshold so high that ghost attacks are cut off and the groove loses feel.",
+    "Over-compressing until the quiet ghost attacks jump forward and lose their subtle role.",
+    "Confusing a ghost attack with a recording glitch or noise, when it is an intended soft note."
+   ],
+   "scenario_contexts": [
+    "Preserving soft ghost-note attacks on a snare while gating a drum kit.",
+    "Keeping the light in-between notes of a funk bass line audible in a mix.",
+    "Editing programmed drums so ghost attacks stay quiet relative to the accents."
+   ]
+  },
+  {
+   "id": "40d7f496-2fc8-44ed-9fd9-73e6dfc07081",
+   "term": "Knock",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "A short, low-frequency percussive thump with strong impact and little sustain, such as the deep punch of a kick drum, 808, or low tom that is felt in the chest as much as heard. The term describes the tight low-end impact of a transient rather than a ringing or sustained tone.",
+   "plain_english": "Knock is the deep, punchy thump of a kick drum or bass hit that you feel in your chest. It is a short, hard hit, not a long ringing note.",
+   "purpose_function": "The term gives engineers a word for the tight, chest-hitting low-end impact of a percussive hit. It helps them aim for or dial in punch when shaping kicks and low percussion.",
+   "practical_application": "To add knock to a kick, an engineer emphasizes the low-frequency thump near the beater impact with EQ or transient shaping while keeping the sustain short and controlled.",
+   "category": "Percussive Artifact",
+   "related_terms": [
+    "Punch",
+    "Attack",
+    "Transient",
+    "Boom",
+    "Sub-bass"
+   ],
+   "common_mistakes": [
+    "Confusing knock, a short low-frequency impact, with boom, a longer resonant low-end buildup.",
+    "Adding so much low end that the kick booms and muddies the mix instead of knocking cleanly.",
+    "Assuming 'knock' always means a musical thump, when it can also describe a mechanical knocking fault noise."
+   ],
+   "scenario_contexts": [
+    "Shaping an 808 or kick so it knocks on club and car systems.",
+    "Adding low-end punch to a hip-hop or dance kick during mixing.",
+    "Judging whether a kick has enough knock to cut through on small speakers."
+   ]
+  },
+  {
+   "id": "d3c022d6-ab63-4335-afca-a4b963dae156",
+   "term": "Pick recovery",
+   "topic": "Attack, Decay, Resonance & Artifact Identification",
+   "difficulty": null,
+   "definition": "The return, or reset, phase of a pickstroke in which the plectrum lifts away from the string and repositions after the initial attack, before the next stroke. On close-miked or high-gain guitar it can add a faint secondary contact noise as the pick clears or grazes the string, distinct from the louder pick attack.",
+   "plain_english": "It is the moment the pick pulls back off the string after a note and gets ready for the next one. Sometimes the mic catches a small extra scratch as the pick lifts away.",
+   "purpose_function": "Naming the recovery phase separates the pick's return motion and its faint noise from the main pick attack. That helps a technician identify and manage stray picking sounds in a take.",
+   "practical_application": "On a close-miked clean guitar, an engineer who hears pick-recovery noise may adjust mic placement, ask for a lighter touch, or edit the faint contact sounds out of exposed sections.",
+   "category": "Picking Noise",
+   "related_terms": [
+    "Pick attack",
+    "Pick noise",
+    "Pick click",
+    "Pick scrape",
+    "Transient"
+   ],
+   "common_mistakes": [
+    "Confusing the faint pick-recovery noise with the main pick attack when editing.",
+    "Trying to remove every recovery sound and making the playing feel unnatural.",
+    "Blaming pick-recovery noise on a faulty cable or pickup rather than the picking hand."
+   ],
+   "scenario_contexts": [
+    "Hearing faint pick reset noises on a close-miked clean electric guitar.",
+    "Cleaning up stray picking sounds in an exposed acoustic guitar take.",
+    "Coaching a player toward a lighter touch to reduce picking-hand noise."
+   ]
+  }
+ ]
+}

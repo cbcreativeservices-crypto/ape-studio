@@ -1,0 +1,216 @@
+{
+ "expert": "Learning/Cognition",
+ "group": 60,
+ "reviews": [
+  {
+   "id": "52d4cb8d-9832-49cf-94ba-c380c55b9542",
+   "term": "Ritardando map",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e8187731-5a05-4089-a233-599f48a98b70",
+   "term": "Rolloff curve",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "97eba954-db5a-41d5-889b-37b2d135932b",
+   "term": "Room-and-portal system",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a4f5d1ee-fcac-4b3b-a148-e416b4b96091",
+   "term": "Rubato cue",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eb4d20db-38b9-4140-9cc2-01fb32b5ff8e",
+   "term": "Rubber impact",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6f53aeb7-a545-4d40-9ed9-7be294d3bc3c",
+   "term": "Running footsteps",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "82e7b2fc-aa1f-4437-9f1f-c7900d1763d5",
+   "term": "Runtime audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6acbf4ec-d4d3-45e1-92a9-b8c7c84c21af",
+   "term": "Runtime mixing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a46fafe3-eb3e-4f1b-87d7-e169d57e2b68",
+   "term": "Sample manipulation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9a3fd867-8ad2-4210-8798-ffc8372b43e6",
+   "term": "Scene-to-scene dialogue match",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "16ac7c1e-6215-43a1-a224-3799bd86fdc7",
+   "term": "Score assembly",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "30a10a74-bdd3-4d20-93f1-ea3a639afd9e",
+   "term": "Score comping",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d4083fda-1e5a-496c-8558-6c327c4966f8",
+   "term": "Score conform",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6f050142-e6fb-4431-8c1f-01a686603117",
+   "term": "Score edit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ca5e4b82-7d5c-43a5-af74-96e67ab664ec",
+   "term": "Score pickup edit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4f76f8bd-29db-4b34-b962-666cfe706b0f",
+   "term": "Score pitch repair",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "66e6b4cc-f3be-4f5d-a6fd-d18e832dd244",
+   "term": "Score timing edit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e8926e44-34a3-44f8-92a9-538630fa0e7f",
+   "term": "Scoring synchronization check",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1fec133f-b618-4393-b712-ad0e6c3c4d55",
+   "term": "Screening room",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "83509a3d-c12c-49d3-af63-e41dc21b91bf",
+   "term": "Section comping",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bd0544e8-79ed-4196-82c0-ae52af462aff",
+   "term": "Sequence container",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "47e52eeb-87c8-452c-8db0-d5e422a35805",
+   "term": "Single-pass Foley",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "246f6a79-3ba5-4374-87b7-060f07f0435c",
+   "term": "Sneaking footsteps",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3afaf5a7-d129-48cb-b4ae-86e56753e1e4",
+   "term": "Snow footsteps",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a185d9ab-7b78-4f5e-b6db-523c769da2d1",
+   "term": "Sound asset",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f39e8124-843a-468e-82ee-b4a6fd1f2c05",
+   "term": "Sound morphing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "237b9e5c-9d8c-4e18-a0e4-720fe8e822bb",
+   "term": "Sound variation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ffb6294a-187b-4432-9163-14fd47da3e65",
+   "term": "Sound-design session",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6709d952-f861-4d98-97a9-97b98ee2b5ef",
+   "term": "Sound-design suite",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ab93d484-1243-453b-bf8f-ee1ed49a0149",
+   "term": "Sound-effect stem",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3790c53d-8b33-4077-ab6e-4d4aef765fff",
+   "term": "Sound-effects editing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "89d44675-a8ac-4903-a85e-45c164da19d3",
+   "term": "Sound-effects premix",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8786545d-4d7a-474d-8431-1626284fc7c3",
+   "term": "Source library",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "88601211-99ee-4beb-92e4-3bb2f4b84f8b",
+   "term": "Source manipulation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cc0cea8c-1edd-4fab-a958-1d4f26907d3d",
+   "term": "Source orientation",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

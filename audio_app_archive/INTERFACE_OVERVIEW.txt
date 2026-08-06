@@ -1,0 +1,332 @@
+================================================================================
+MUSI 190 GLOSSARY REVIEW TOOL v2.0
+Interface Overview - What Instructors Will See
+================================================================================
+
+HEADER
+======
+
+🎵 MUSI 190 Glossary Review Tool
+Flag terms with issues and provide feedback
+
+
+CONTROL BAR (Tight, Single Row)
+===============================
+
+Total: 239  |  Flagged: 5  |  [Search box]  [📥 Export]  [Clear All]
+
+
+TERM CARD - UNFLAGGED (Most terms look like this)
+==================================================
+
+☐ A-weighting
+  Category: Audio Technology | Level: Foundational
+
+  Concise Definition
+  → A-weighting: a key audio production term for professional recording and mixing
+
+  Plain-English Explanation
+  → A-weighting is an important concept in audio engineering and music
+    production used across studios and live sound environments.
+
+
+TERM CARD - FLAGGED (When instructor checks the box)
+=====================================================
+
+☑ A-weighting                                         ⚠️ FLAGGED
+  Category: Audio Technology | Level: Foundational
+
+  Concise Definition
+  → A-weighting: a key audio production term for professional recording and mixing
+
+  Plain-English Explanation
+  → A-weighting is an important concept in audio engineering and music
+    production used across studios and live sound environments.
+
+  🚩 Issue/Feedback:
+
+  [Text box appears here - min 60px height, expandable]
+
+  "Definition is too vague. Students won't understand frequency weighting
+   or why it's used in audio production. Suggest adding example about how
+   different frequencies are weighted relative to human hearing perception."
+
+  [Saved ✓]  [Clear]
+
+
+VISUAL DIFFERENCES FOR FLAGGED TERMS
+====================================
+
+1. CHECKBOX: ☐ (unflagged) changes to ☑ (flagged)
+
+2. BORDER: Left side gets ORANGE 4px border
+
+3. BACKGROUND: Card background changes to light cream (#fff9f3)
+
+4. BADGE: Orange badge "⚠️ FLAGGED" appears top-right
+
+5. COMMENT BOX: Appears below definition (hidden when unflagged)
+
+6. COUNTER: "Flagged: 5" updates in real-time
+
+
+EXAMPLE OF MULTIPLE FLAGGED TERMS IN A ROW
+===========================================
+
+☑ Absorption                                          ⚠️ FLAGGED
+  Category: Audio Fundamentals | Level: Foundational
+
+  Concise Definition
+  → Absorption: a key audio production term for professional recording and mixing
+
+  Plain-English Explanation
+  → Absorption is an important concept in audio engineering and music production...
+
+  🚩 Issue/Feedback:
+  [Missing concrete examples of absorptive materials (foam, rockwool, fiberglass)]
+  [Saved ✓]  [Clear]
+
+---
+
+☑ Acoustic Panel                                      ⚠️ FLAGGED
+  Category: Acoustic Treatment | Level: Foundational
+
+  Concise Definition
+  → Acoustic Panel: a key audio production term for professional recording...
+
+  Plain-English Explanation
+  → Acoustic Panel is an important concept in audio engineering and music...
+
+  🚩 Issue/Feedback:
+  [Definition references "Absorption" but students may not understand relationship.
+   Consider linking or explaining how panels work.]
+  [Saved ✓]  [Clear]
+
+---
+
+☐ Acoustic Feedback / Howlround / Ringing
+  Category: Common Issues | Level: Foundational
+
+  Concise Definition
+  → Acoustic Feedback / Howlround / Ringing: a key audio production term...
+
+  Plain-English Explanation
+  → Acoustic Feedback / Howlround / Ringing is an important concept...
+
+  [Not flagged - no orange border, no comment box]
+
+
+SEARCH IN ACTION
+================
+
+[User types "frequency" in search box]
+
+Results shown:
+- A-weighting (term name matches)
+- Frequency response (term name matches)
+- Any other terms with "frequency" in name or definition
+
+Other terms hidden temporarily.
+
+[User clears search box]
+
+All terms shown again.
+
+
+EXPORT DIALOG
+=============
+
+When instructor clicks "📥 Export Flagged":
+
+1. Browser downloads: MUSI190_FlaggedTerms_2026-05-14.json
+
+2. Alert appears: "✓ Exported 5 flagged term(s)!"
+
+3. File can be opened with:
+   - Text editor (Notepad, VS Code, etc.)
+   - Excel (to view as table)
+   - Sent to course coordinator
+   - Attached to email
+
+
+CLEAR ALL DIALOG
+================
+
+When instructor clicks "🗑️ Clear All Flags":
+
+┌─────────────────────────────────────────┐
+│ ⚠️ Clear All Flags?                      │
+│                                          │
+│ This will remove all flags and comments. │
+│ This cannot be undone.                   │
+│                                          │
+│           [Cancel]  [Yes, Clear All]    │
+└─────────────────────────────────────────┘
+
+- Cancel: Returns to glossary, nothing changes
+- Yes, Clear All: Removes all flags and comments
+
+
+RESPONSIVE LAYOUT - MOBILE VIEW
+================================
+
+[On smaller screens, layout adjusts:]
+
+Header stays same size (readable)
+
+Control bar stacks vertically:
+┌─────────────────────┐
+│ Total: 239          │
+│ Flagged: 5          │
+│ [Search............] │
+│ [Export] [Clear All] │
+└─────────────────────┘
+
+Term cards stay same width (readable on phone)
+
+All functionality same
+
+
+KEYBOARD NAVIGATION EXAMPLE
+===========================
+
+User presses TAB repeatedly:
+
+1. Tab → Focus on Search Box
+2. Tab → Focus on Export Button
+3. Tab → Focus on Clear All Button
+4. Tab → Focus on First Checkbox
+5. Tab → Focus on Comment Box (if flagged)
+6. Tab → Focus on Clear Comment Button (if flagged)
+7. Tab → Loop back to next term or search box
+
+User can also:
+- Press SPACE to toggle checkbox
+- Press ENTER to click buttons
+- Type in comment box
+
+
+PERFORMANCE EXPERIENCE
+=====================
+
+Opening the file:
+→ Shows header immediately (instant)
+→ Control bar appears (instant)
+→ All 239 terms load (< 1 second)
+→ Ready to review
+
+Searching:
+→ Type "compression" in search box
+→ Results filter instantly as you type
+→ See matching terms immediately
+
+Flagging a term:
+→ Click checkbox
+→ Term gets orange border (instant)
+→ Comment box appears (instant)
+→ Type feedback
+→ "Saved ✓" appears briefly (shows it's saved)
+
+Exporting:
+→ Click Export button
+→ JSON file downloads immediately
+→ Alert confirms success with count of flagged terms
+
+
+EXAMPLE JSON EXPORT PREVIEW
+===========================
+
+When instructor exports, they see a file containing:
+
+{
+  "term": "A-weighting",
+  "conciseDefinition": "A-weighting: a key audio production term...",
+  "plainEnglishExplanation": "A-weighting is an important concept...",
+  "category": "Audio Technology",
+  "difficultyLevel": "Foundational",
+  "instructorIssue": "Too vague, needs frequency weighting explanation",
+  "timestamp": "2026-05-14T10:30:00Z"
+}
+
+[Next term...]
+{
+  "term": "Absorption",
+  "conciseDefinition": "Absorption: a key audio production term...",
+  ...
+}
+
+(One entry per flagged term)
+
+
+TYPICAL REVIEW SESSION
+======================
+
+Time: ~30 minutes (for 239 terms)
+
+Instructor opens file → Sees header + control bar + terms loading
+
+Scrolls through terms, reading definitions:
+  ☐ Term 1 → Read definitions → OK, no issue
+  ☐ Term 2 → Read definitions → OK, no issue
+  ☐ Term 3 → Read definitions → Issues found! Check box
+  ☐ Term 4 → Read definitions → OK, no issue
+  ☐ Term 5 → Read definitions → Check box
+
+When terms with issues are flagged:
+  Comment box appears → Type feedback
+  Watch for "Saved ✓" → Confirms auto-save
+  Continue to next term
+
+After reviewing all terms:
+  Counter shows "Flagged: 12"
+  Click Export button
+  JSON file downloads with all 12 flagged terms + feedback
+  Done!
+
+
+VISUAL COMPARISON: FLAGGED vs UNFLAGGED
+========================================
+
+UNFLAGGED:
+──────────────────────────────────────────
+☐ Term Name
+  Meta: Category | Level
+
+  Definition Text
+  Explanation Text
+──────────────────────────────────────────
+
+FLAGGED:
+──────────────────────────────────────────
+☑ Term Name                         ⚠️ FLAGGED
+  Meta: Category | Level
+
+  Definition Text
+  Explanation Text
+
+  🚩 Issue/Feedback:
+  [Comment box with text]
+  [Saved ✓]  [Clear]
+──────────────────────────────────────────
+(left border is orange)
+(background is cream colored)
+
+
+SPACING DETAILS (Designed for Speed)
+====================================
+
+Between term cards: 12px (tight)
+Padding inside card: 12px (compact)
+Padding in definitions box: 10px (tight)
+Gap between definition items: 8px (minimal)
+Comment box min-height: 60px (small enough for quick scanning)
+
+Result: More terms visible on screen at once
+        Easier to scan quickly
+        Less scrolling needed
+        Faster review process
+
+
+================================================================================
+                        READY FOR INSTRUCTOR USE!
+================================================================================

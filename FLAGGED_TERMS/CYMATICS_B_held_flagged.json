@@ -1,0 +1,238 @@
+{
+ "wave": "Computer B \u2014 CYMATICS",
+ "date": "2026-08-05",
+ "note": "5 flagged terms from the 91-term cymatics wave. 3 HELD from the 88-term merge (NOT in DB) \u2014 rename/confirm then INSERT using the same guarded pattern. 2 already merged (IN DB) \u2014 advisory decision only. Content authored to the committee standard; sources are NOT stored in the glossary.",
+ "held_not_in_db": [
+  {
+   "packet_id": "b0038",
+   "term": "Surface Fracture",
+   "in_db": false,
+   "action_needed": "Rename headword, then INSERT",
+   "canonical_suggestion": "Surface disintegration / Atomization",
+   "proposed_structural": {
+    "topic_gs": "2260",
+    "topic_name": "Sound Visualization & Acoustic Imaging",
+    "difficulty": "intermediate",
+    "source_category": "Liquid Cymatics",
+    "home_note": ""
+   },
+   "flags": [
+    "'Surface Fracture' is not an attested term in standard fluid-acoustics literature. The physical phenomenon (high-drive surface break-up and droplet ejection) is real and is conventionally called surface disintegration or atomization. Content is framed to the intended sense but the term itself should be renamed or confirmed before import."
+   ],
+   "confidence": "FLAG-FOR-REVIEW",
+   "sources": [
+    "R. J. Lang, 'Ultrasonic atomization of liquids' (Journal of the Acoustical Society of America, 1962)",
+    "S. Douady, 'Experimental study of the Faraday instability' (J. Fluid Mech. 221, 1990)"
+   ],
+   "authored_content": {
+    "definition": "The break-up of a strongly vibrated liquid surface into ejected droplets and spray once the drive amplitude exceeds the threshold at which wave crests sharpen and pinch off. Past this point the ordered standing-wave pattern collapses into disordered atomization; standard fluid-acoustics literature calls this surface disintegration or atomization rather than 'fracture'.",
+    "plain_english": "Shake a liquid hard enough and its surface stops holding a neat pattern. The peaks grow sharp and throw off tiny droplets. The smooth wave shapes break apart into spray.",
+    "purpose_function": "It marks the upper amplitude limit of coherent liquid cymatics: beyond it the surface can no longer hold a stable image and instead sheds droplets, which is the operating principle behind ultrasonic atomizers and nebulizers.",
+    "practical_application": "A technician recognizes it as the drive level where a liquid cymatics pattern dissolves into mist, and backs the amplitude off to keep a readable standing-wave image.",
+    "category": "Sound Visualization & Acoustic Imaging",
+    "related_terms": [
+     "Faraday wave",
+     "Capillary wave",
+     "Atomization",
+     "Wave crest",
+     "Standing wave"
+    ],
+    "common_mistakes": [
+     "Treating 'surface fracture' as established terminology; peer-reviewed work calls this surface disintegration, break-up, or atomization.",
+     "Assuming it occurs at any amplitude; it only sets in above a threshold drive where capillary crests pinch off droplets."
+    ],
+    "scenario_contexts": [
+     "Pushing a cymatics liquid rig past its stable range and watching the pattern turn to spray.",
+     "Ultrasonic atomization, where a thin liquid film breaks into fine droplets for humidifiers or nebulizers."
+    ]
+   }
+  },
+  {
+   "packet_id": "b0043",
+   "term": "Wave Cell",
+   "in_db": false,
+   "action_needed": "Rename headword, then INSERT",
+   "canonical_suggestion": "Unit cell (Faraday pattern) / Lattice cell",
+   "proposed_structural": {
+    "topic_gs": "2260",
+    "topic_name": "Sound Visualization & Acoustic Imaging",
+    "difficulty": "intermediate",
+    "source_category": "Liquid Cymatics",
+    "home_note": ""
+   },
+   "flags": [
+    "'Wave Cell' is not an attested term in standard fluid-acoustics literature. The repeating element of a Faraday/cymatics pattern is conventionally called the pattern's unit cell or lattice cell. Content is framed to that intended sense, but the term should be confirmed or renamed before import."
+   ],
+   "confidence": "FLAG-FOR-REVIEW",
+   "sources": [
+    "T. B. Benjamin and F. Ursell, 'The stability of the plane free surface of a liquid in vertical periodic motion' (Proc. R. Soc. Lond. A 225, 1954)",
+    "J. Miles and D. Henderson, 'Parametrically forced surface waves' (Annual Review of Fluid Mechanics, 1990)"
+   ],
+   "authored_content": {
+    "definition": "In liquid cymatics, an informal name for one repeating unit of a surface standing-wave pattern: a single closed compartment of the lattice (for example one square or hexagonal tile) bounded by nodal lines, within which the surface oscillates up and down together. In the pattern-formation literature the recurring lattice element is instead called the pattern's unit cell.",
+    "plain_english": "A vibrated liquid often forms a repeating grid of shapes. A wave cell is one tile of that grid. The whole surface pattern is many such cells side by side.",
+    "purpose_function": "It offers a way to talk about the basic building block of a cymatics pattern, whose size is set by the wavelength and whose shape reflects the symmetry, such as square, hexagonal, or striped, of the standing-wave field.",
+    "practical_application": "A technician gauges wavelength and drive frequency from the size of one repeating cell, and reads the cell shape to identify the pattern's symmetry.",
+    "category": "Sound Visualization & Acoustic Imaging",
+    "related_terms": [
+     "Faraday wave",
+     "Standing wave",
+     "Node",
+     "Nodal line",
+     "Wavelength",
+     "Cymatics"
+    ],
+    "common_mistakes": [
+     "Treating 'wave cell' as standard terminology; the literature speaks of the pattern's unit cell or lattice, not a 'wave cell'.",
+     "Confusing the cell boundary with an antinode; the cell is bounded by nodal lines and oscillates most strongly at its interior antinode."
+    ],
+    "scenario_contexts": [
+     "Estimating wavelength from the repeat spacing of tiles in a Faraday-wave pattern.",
+     "Identifying square versus hexagonal symmetry from the shape of the repeating cells."
+    ]
+   }
+  },
+  {
+   "packet_id": "b0091",
+   "term": "Cymascope",
+   "in_db": false,
+   "action_needed": "Confirm neutral framing, then INSERT (CymaScope(TM))",
+   "canonical_suggestion": null,
+   "proposed_structural": {
+    "topic_gs": "2260",
+    "topic_name": "Sound Visualization & Acoustic Imaging",
+    "difficulty": "intermediate",
+    "source_category": "Historic Names",
+    "home_note": "CONFIRM glossary accepts person-name entries; Eidophone/Cymascope are instruments (fine either way)"
+   },
+   "flags": [
+    "FLAG-FOR-REVIEW: CymaScope is a proprietary/commercial instrument. Its therapeutic and scientific claims (sound healing, medical benefit, DNA-signature imaging) are promotional and not corroborated by independent peer-reviewed sources; content is framed neutrally and those claims are flagged as contested.",
+    "John Stuart Reid's description as an 'acoustic-physics scientist' derives from the vendor's own materials and is not independently verified.",
+    "Independent, standards-grade documentation of the instrument's mechanism and performance is limited; existence and general operating principle are corroborable, specific performance/claims are not."
+   ],
+   "confidence": "FLAG-FOR-REVIEW",
+   "sources": [
+    "cymascope.com - manufacturer/vendor materials (pointer only, not treated as corroborating)",
+    "WaterToday.ca - third-party coverage: 'Cymatics: the science of sound made visible'",
+    "Apples and People - 'Holographic Properties of the Apple Crunch' (third-party project using the CymaScope)"
+   ],
+   "authored_content": {
+    "definition": "The CymaScope is a modern proprietary commercial instrument developed by John Stuart Reid that renders sound visible by imprinting acoustic vibrations onto a shallow water membrane and photographing the resulting patterns, often called CymaGlyphs. It is used to capture still and video images of tones for education, media, and art. Several claims associated with the instrument - particularly around sound \"healing,\" medical benefit, and reading patterns as signatures of DNA or other matter - are promotional and are not established by independent peer-reviewed science.",
+    "plain_english": "The CymaScope is a modern device that makes sound visible in water. Sound vibrates a thin layer of water on a membrane. A camera then records the patterns that form. It is a commercial product, and some health claims about it are unproven.",
+    "purpose_function": "It exists to visualize and photograph the geometric patterns that specific sounds create in water, mainly for demonstration, imaging, art, and commercial research.",
+    "practical_application": "It is used to produce still and video images of tones for education, media, and marketing, capturing how a given frequency shapes a water surface.",
+    "category": "History & Instruments",
+    "related_terms": [
+     "Cymatics",
+     "Faraday wave",
+     "Standing wave",
+     "Chladni figure",
+     "Resonance"
+    ],
+    "common_mistakes": [
+     "Presenting CymaScope images as proof that sound can heal disease or reveal DNA, when such claims are not supported by independent peer-reviewed evidence",
+     "Treating it as a standardized scientific instrument rather than a proprietary commercial product",
+     "Assuming its water patterns are identical to Chladni figures on solid plates, when the medium and physics differ"
+    ],
+    "scenario_contexts": [
+     "Producing sound-visualization imagery for education or media",
+     "Critically evaluating commercial cymatics claims",
+     "Comparing water-membrane imaging with plate-based Chladni methods"
+    ]
+   }
+  }
+ ],
+ "in_db_decisions": [
+  {
+   "packet_id": "b0042",
+   "term": "Liquid Resonance",
+   "in_db": true,
+   "action_needed": "Keep + cross-link to Fluid Resonance, or merge & drop",
+   "canonical_suggestion": "(see Fluid Resonance b0041)",
+   "proposed_structural": {
+    "topic_gs": "2260",
+    "topic_name": "Sound Visualization & Acoustic Imaging",
+    "difficulty": "intermediate",
+    "source_category": "Liquid Cymatics",
+    "home_note": ""
+   },
+   "flags": [
+    "'Liquid Resonance' is not a distinct canonical term; it is the general resonance phenomenon (see Fluid Resonance) specialized to a liquid body and its surface/sloshing modes. Content is well supported, but the term overlaps strongly with Fluid Resonance and may warrant merging or a disambiguation note at import."
+   ],
+   "confidence": "Medium",
+   "sources": [
+    "T. B. Benjamin and F. Ursell, 'The stability of the plane free surface of a liquid in vertical periodic motion' (Proc. R. Soc. Lond. A 225, 1954)",
+    "H. Lamb, 'Hydrodynamics' (Cambridge University Press)",
+    "J. Miles and D. Henderson, 'Parametrically forced surface waves' (Annual Review of Fluid Mechanics, 1990)"
+   ],
+   "authored_content": {
+    "definition": "Resonance of a body of liquid, in which a liquid layer or volume driven at one of its natural frequencies develops large standing surface-wave or sloshing oscillations. In liquid cymatics it is the condition, set by fill depth, dish geometry, gravity, and surface tension, that produces the strongest and most stable surface patterns.",
+    "plain_english": "Liquid resonance is resonance in a body of liquid. Drive the liquid at a natural rate and its surface swings hard. In cymatics this makes the clearest patterns.",
+    "purpose_function": "It identifies the frequencies at which a liquid forms bold, repeatable surface patterns, and is what a cymatics setup is tuned to in order to hold a clear image.",
+    "practical_application": "A technician adjusts drive frequency and fill depth so the liquid reaches resonance, locking in a steady, high-contrast pattern for photography or display.",
+    "category": "Sound Visualization & Acoustic Imaging",
+    "related_terms": [
+     "Fluid resonance",
+     "Resonance",
+     "Faraday wave",
+     "Standing wave",
+     "Cymatics"
+    ],
+    "common_mistakes": [
+     "Treating 'liquid resonance' as distinct physics from fluid resonance; it is the same resonance phenomenon applied specifically to a liquid.",
+     "Ignoring fill depth and dish geometry; both shift the resonant frequencies, so a pattern that resonates at one depth may not at another."
+    ],
+    "scenario_contexts": [
+     "Dialing in the frequency that makes a shallow water film snap into a sharp, stable cymatics pattern.",
+     "Choosing fill depth and dish size to place a desired pattern at a convenient drive frequency."
+    ]
+   }
+  },
+  {
+   "packet_id": "b0049",
+   "term": "Signal Exciter",
+   "in_db": true,
+   "action_needed": "Keep as synonym cross-linked to Vibration Exciter, or merge",
+   "canonical_suggestion": "Vibration Exciter (b0050)",
+   "proposed_structural": {
+    "topic_gs": "2260",
+    "topic_name": "Sound Visualization & Acoustic Imaging",
+    "difficulty": "intermediate",
+    "source_category": "Measurement & Excitation",
+    "home_note": "ALT home gs 560 Signal Analysis & Test Equipment (sibling: Mechanical resonance) \u2014 Booth to pick"
+   },
+   "flags": [
+    "'Signal Exciter' is a generic descriptor rather than a strongly standardized term; the canonical industry and standards term for this class of device is 'Vibration Exciter'. Authored in the general excitation-hardware sense; recommend Booth confirm the intended sense."
+   ],
+   "confidence": "Medium",
+   "sources": [
+    "Bruel & Kjaer, Vibration Exciter technical documentation",
+    "Ewins, Modal Testing: Theory, Practice and Application"
+   ],
+   "authored_content": {
+    "definition": "A device that converts an electrical drive signal into a controlled mechanical or acoustic excitation applied to a test object; the general class includes electrodynamic shakers, piezoelectric actuators, and acoustic drivers. It is the output stage that turns the driving signal into physical motion or sound.",
+    "plain_english": "It is the machine that turns an electrical signal into shaking or sound. It pushes the test object for you.",
+    "purpose_function": "It exists to deliver a repeatable, measurable force or motion from a chosen input signal, so a system's response can be studied.",
+    "practical_application": "A technician connects the signal exciter to the amplifier output and couples it to the specimen to apply the programmed excitation.",
+    "category": "Excitation & Drive",
+    "related_terms": [
+     "Vibration Exciter",
+     "Electromagnetic Shaker",
+     "Driving Signal",
+     "Piezoelectric Actuator",
+     "Transducer Coupling"
+    ],
+    "common_mistakes": [
+     "Confusing the signal generator, which is the source, with the exciter, which is the device that actually applies force",
+     "Overlooking that the exciter's own mass and dynamics load the test object",
+     "UNSAFE: exceeding the exciter's rated input from a mains-powered amplifier, risking coil overheating"
+    ],
+    "scenario_contexts": [
+     "Selecting an exciter to apply a set force to a panel",
+     "Driving a cymatics plate with a small electrodynamic exciter",
+     "Bench-testing a component's response with a portable exciter"
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,84 @@
+{
+ "batch": 413,
+ "topic": "Music Information Retrieval",
+ "authored": [
+  {
+   "id": "5357e904-024d-4b9e-9ccc-e6da679f67e3",
+   "term": "Key estimation",
+   "fields": {
+    "definition": "Key estimation (also key finding or key detection) is the Music Information Retrieval task of automatically determining the musical key of an audio recording or segment, meaning its tonic pitch class and mode, such as C major or A minor. A common approach computes a chroma (pitch-class profile) feature from the audio and matches it against template key profiles, for example by correlating with Krumhansl-Schmuckler profiles, choosing the best-fitting of the 24 major and minor keys.",
+    "plain_english": "Key estimation lets a computer listen to a song and guess its musical key, such as C major or A minor. It looks at which notes show up most and picks the key that fits that pattern best.",
+    "purpose_function": "It produces a compact, harmonically meaningful label for a piece's tonal center, which supports downstream tasks such as chord recognition, harmonic mixing, recommendation, and organizing large libraries by key.",
+    "practical_application": "A technician or DJ uses automatic key estimation to tag tracks for harmonic mixing or to pre-sort a sample library, then confirms borderline results by ear because algorithms often confuse musically related keys.",
+    "category": "Tonal analysis",
+    "related_terms": [
+     "Chroma feature",
+     "Chromagram",
+     "Chord recognition",
+     "Pitch class",
+     "Melody extraction",
+     "Tonic"
+    ],
+    "common_mistakes": [
+     "Confusing a key with a chord, when a key describes the overall tonal center of a passage rather than a single simultaneous group of notes",
+     "Trusting an estimate blindly, since algorithms frequently swap a key for its relative major or minor, its parallel key, or a perfect-fifth neighbor",
+     "Assuming one global key holds for a whole track, when many pieces modulate and need segment-level estimation",
+     "Treating a correlation with fixed key profiles as ground truth without checking it against the actual audio"
+    ],
+    "scenario_contexts": [
+     "Auto-tagging a DJ library so tracks can be beat- and key-matched for harmonic mixing",
+     "Pre-labeling one-shot samples and loops in a sample manager by detected key",
+     "Providing a key prior to a chord-recognition system to constrain likely chords",
+     "Sorting a large catalog by key for a music recommendation or playlisting feature"
+    ]
+   },
+   "sources": [
+    "Muller, Fundamentals of Music Processing (chroma features and tonal analysis)",
+    "Lerch, An Introduction to Audio Content Analysis (key detection)",
+    "MIREX Audio Key Detection task (music-ir.org)",
+    "Krumhansl, Cognitive Foundations of Musical Pitch (key profiles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a1a8cc58-bbb6-4777-90a2-5d777648e558",
+   "term": "Melody extraction",
+   "fields": {
+    "definition": "Melody extraction is the Music Information Retrieval task of automatically estimating a sequence of fundamental-frequency (F0) values that represent the pitch of the predominant melody, typically a lead voice or instrument, from a polyphonic music recording. It combines predominant-F0 estimation with voicing detection, deciding for each short time frame whether the melody is present and, if so, its pitch.",
+    "plain_english": "Melody extraction has a computer pick out the main tune from a full song and track its pitch over time. It is like following the singer's voice through a busy mix and writing down each note.",
+    "purpose_function": "It reduces a dense polyphonic mixture to a single pitch contour for the lead line, which enables tasks such as query-by-humming search, cover-song identification, transcription, and separating or muting the lead voice.",
+    "practical_application": "A technician uses melody extraction to build query-by-humming or cover-detection features, to generate a pitch reference for transcription, or to help isolate a lead vocal, checking output where accompaniment or harmony pulls the estimate off.",
+    "category": "Melody analysis",
+    "related_terms": [
+     "Fundamental frequency",
+     "Pitch detection",
+     "Voicing detection",
+     "Query by humming",
+     "Automatic music transcription",
+     "Source separation"
+    ],
+    "common_mistakes": [
+     "Confusing melody extraction with full polyphonic transcription, when it estimates only the single predominant melodic line rather than every note played",
+     "Ignoring voicing detection and assuming a melody is present in every frame, which produces spurious pitches during instrumental or silent passages",
+     "Overlooking octave errors, since an estimate can be correct in pitch class yet reported an octave too high or low",
+     "Expecting reliable results on dense mixes with no clear lead, where the predominant melody is ambiguous"
+    ],
+    "scenario_contexts": [
+     "Powering a query-by-humming search that matches a user's hummed tune to recordings",
+     "Extracting melodic contours for cover-song or version identification",
+     "Producing an F0 reference to seed automatic transcription of a lead line",
+     "Assisting lead-vocal isolation or karaoke accompaniment generation"
+    ]
+   },
+   "sources": [
+    "Salamon, Gomez, Ellis & Richard, Melody Extraction from Polyphonic Music Signals, IEEE Signal Processing Magazine (2014)",
+    "Muller, Fundamentals of Music Processing (F0 estimation and melody)",
+    "Lerch, An Introduction to Audio Content Analysis (pitch and melody)",
+    "MIREX Audio Melody Extraction task (music-ir.org)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

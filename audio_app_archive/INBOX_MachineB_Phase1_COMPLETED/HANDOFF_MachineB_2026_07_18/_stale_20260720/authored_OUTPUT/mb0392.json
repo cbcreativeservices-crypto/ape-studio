@@ -1,0 +1,159 @@
+{
+ "batch": 392,
+ "topic": "Themed Entertainment / Haunt Audio",
+ "authored": [
+  {
+   "id": "59a8a49e-6512-4f95-aeb2-496c08eb59ad",
+   "term": "Ambient-to-Scare Contrast",
+   "fields": {
+    "definition": "The deliberate level and dynamic contrast between a low-level ambient soundscape and a sudden high-level scare cue, engineered so the loudness jump maximizes the guest's startle response. It exploits relative loudness perception: a quiet bed lowers the listener's reference so the scare event is perceived as far more intense than its absolute level alone would suggest.",
+    "plain_english": "It is the big jump from a soft background sound to a loud scare. The quiet part makes the loud part feel even louder and more shocking.",
+    "purpose_function": "It exists to make scares effective through contrast rather than sheer volume, so designers can startle guests reliably while keeping average sound levels comfortable and within hearing-safe limits.",
+    "practical_application": "A technician sets the ambient bed several decibels below the scare cue and checks both the scare's peak level and the average exposure so the effect lands hard yet stays safe for guests and staff.",
+    "category": "Scare Sound Design",
+    "related_terms": ["Jump-Scare Audio", "Continuous Haunt Playback", "Distant Scream", "Decoy Sound"],
+    "common_mistakes": ["Raising the whole soundscape's level to make scares hit harder, which flattens the contrast and just fatigues guests", "Confusing loudness contrast with absolute volume, so the scare relies on brute level instead of the quiet-to-loud jump", "UNSAFE: Pushing scare-cue peaks above 140 dB peak sound pressure level or letting staff average exposure exceed OSHA limits, risking hearing damage"],
+    "scenario_contexts": ["A quiet fog-filled hallway with faint drips is broken by a loud chainsaw stinger as an actor lunges", "Tuning a room so its ambient bed sits well below the triggered scare so the contrast reads clearly", "Lowering baseline bed level in a long queue to protect staff hearing while keeping scare impact"]
+   },
+   "sources": ["Glen Ballou (ed.), Handbook for Sound Engineers (Audio Engineering Society Presents)", "Yamaha Sound Reinforcement Handbook (Davis & Jones)", "OSHA 29 CFR 1910.95 Occupational Noise Exposure"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0b8c0b5a-9d8d-4e33-a265-81de94478b8f",
+   "term": "Backstory Audio",
+   "fields": {
+    "definition": "Pre-recorded narrative or environmental audio that conveys the fictional history, lore, or context of a themed space or character, delivered through the sound system to immerse guests in the story rather than to scare them directly.",
+    "plain_english": "Sound that tells the story behind a scene, like a recorded voice or eerie details that explain what happened there. It sets the mood before anything jumps out.",
+    "purpose_function": "It exists to build narrative context and atmosphere so guests understand and feel the setting, supporting the story arc that scares punctuate.",
+    "practical_application": "A technician levels and places backstory tracks such as a whispered legend or distant broadcast on looped or ambient playback so they read clearly without masking scare cues or dialogue.",
+    "category": "Narrative Audio",
+    "related_terms": ["Found-Recording Audio", "Character Voice Track", "Continuous Haunt Playback", "Creature Vocal Track"],
+    "common_mistakes": ["Mixing backstory dialogue too quietly or too loudly, so it is unintelligible or overpowers scare cues", "Looping a spoken backstory track so short that guests notice the repeat and break immersion", "Treating backstory audio as a scare cue and triggering it abruptly instead of blending it into the bed"],
+    "scenario_contexts": ["A recorded radio bulletin explaining an outbreak plays softly in an infected-lab room", "A whispered legend loops in a queue to set up the haunt's story", "Environmental sounds of a working asylum establish a scene's history before actors appear"]
+   },
+   "sources": ["John Huntington, Introduction to Show Control (Zircon Designs Press)", "Glen Ballou (ed.), Handbook for Sound Engineers (Audio Engineering Society Presents)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e2bcac33-9db2-444d-a9e1-d63c37e68cf5",
+   "term": "Character Voice Track",
+   "fields": {
+    "definition": "A pre-recorded (or live) vocal recording for a specific scripted character or animatronic figure, played back and often synchronized to mouth movement, action, or a show-control cue so the figure appears to speak.",
+    "plain_english": "A recorded voice for one character or animatronic figure. It is played back, often timed to the figure's mouth so it looks like the character is really talking.",
+    "purpose_function": "It exists to give a character a consistent, repeatable voice performance that plays on cue, freeing a live performer and ensuring the same delivery every show.",
+    "practical_application": "A technician loads the character track into the playback or show-control system and aligns it with animatronic movement or lighting so voice and action stay in sync.",
+    "category": "Voice Content",
+    "related_terms": ["Creature Vocal Track", "Backstory Audio", "Continuous Haunt Playback", "Found-Recording Audio"],
+    "common_mistakes": ["Letting the voice track drift out of sync with the figure's mouth or gestures", "Recording the track at a level or tone that does not cut through the room's ambient bed", "Failing to match playback loudness across zones, so the same character sounds different from room to room"],
+    "scenario_contexts": ["An animatronic fortune teller delivers a scripted spiel from a looped voice track", "A talking portrait's lines are triggered when a guest enters the room", "Syncing a character's recorded dialogue to servo-driven jaw movement"]
+   },
+   "sources": ["John Huntington, Introduction to Show Control (Zircon Designs Press)", "Glen Ballou (ed.), Handbook for Sound Engineers (Audio Engineering Society Presents)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cbb128b7-edd2-4f5d-adb3-9a83d32aab0f",
+   "term": "Continuous Haunt Playback",
+   "fields": {
+    "definition": "An audio playback mode in which ambient beds, room tone, or music loop and play without interruption throughout operating hours, as distinct from momentary cues triggered by sensors or operators.",
+    "plain_english": "Sound that keeps playing on a loop the whole time the haunt is open, like background atmosphere. It runs on its own instead of waiting to be set off.",
+    "purpose_function": "It exists to maintain a constant atmosphere and mask outside noise so the environment stays immersive in the gaps between triggered scares.",
+    "practical_application": "A technician sets ambient tracks to seamless loop on a playback device or show-control system and confirms they restart cleanly and hold a consistent level for a full night.",
+    "category": "Show Playback",
+    "related_terms": ["Backstory Audio", "Ambient-to-Scare Contrast", "Jump-Scare Audio", "Character Voice Track"],
+    "common_mistakes": ["Using a loop with an audible seam or click that reveals the repeat", "Running continuous beds so loud that they mask triggered scare cues or fatigue guests and staff", "Assuming a continuous file will play all night without checking the player for dropouts or restarts"],
+    "scenario_contexts": ["A low wind-and-drone bed loops through a graveyard maze all evening", "Room tone plays continuously to hide HVAC and crowd noise between scares", "A music loop maintains dread in a waiting queue"]
+   },
+   "sources": ["John Huntington, Introduction to Show Control (Zircon Designs Press)", "Glen Ballou (ed.), Handbook for Sound Engineers (Audio Engineering Society Presents)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9269b34a-eedb-4810-9ad9-57942c6f11f9",
+   "term": "Creature Vocal Track",
+   "fields": {
+    "definition": "A pre-recorded set of non-human vocalizations such as growls, screeches, and roars, designed for a monster, creature, or animatronic and played back on cue to voice the creature's presence or attack.",
+    "plain_english": "Recorded monster sounds like growls and roars made for a creature or animatronic. They are played on cue so the creature seems alive and threatening.",
+    "purpose_function": "It exists to give a non-human character a believable, repeatable voice, letting designers craft sounds no live performer could safely sustain and trigger them on demand.",
+    "practical_application": "A technician loads creature vocals into the playback or trigger system and levels them so growls and roars sit menacingly in the mix without exceeding safe peaks.",
+    "category": "Voice Content",
+    "related_terms": ["Character Voice Track", "Jump-Scare Audio", "Distant Scream", "Backstory Audio"],
+    "common_mistakes": ["Reusing the same short growl so often that guests recognize the loop", "Mixing creature vocals so low they lose menace or so high they mask other cues", "UNSAFE: Setting a triggered roar's peak level so high near guests or actors that it approaches unsafe sound pressure levels"],
+    "scenario_contexts": ["A hidden speaker growls as an animatronic beast lunges from the dark", "Layered screeches play when a swarm effect is triggered", "A distant roar sets up a creature the guest will meet later"]
+   },
+   "sources": ["Glen Ballou (ed.), Handbook for Sound Engineers (Audio Engineering Society Presents)", "John Huntington, Introduction to Show Control (Zircon Designs Press)", "OSHA 29 CFR 1910.95 Occupational Noise Exposure"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "796888b0-2d36-4234-91ac-0ba654bb9b02",
+   "term": "Decoy Sound",
+   "fields": {
+    "definition": "A sound cue deliberately placed to draw a guest's attention and gaze toward one location so an actor or effect can surprise them from a different direction, exploiting auditory localization and the reflex to orient toward a sound.",
+    "plain_english": "A sound used to trick you into looking one way, so the real scare can come from another. It works because people turn toward a sound.",
+    "purpose_function": "It exists to misdirect attention, setting up a stronger surprise by controlling where the guest looks in the moment just before the actual scare.",
+    "practical_application": "A technician positions the decoy on a speaker away from the real scare and times it a beat before the reveal so guests turn the wrong way.",
+    "category": "Scare Sound Design",
+    "related_terms": ["Jump-Scare Audio", "Ambient-to-Scare Contrast", "Distant Scream", "Continuous Haunt Playback"],
+    "common_mistakes": ["Placing the decoy on the same speaker as the real scare, so it gives the location away instead of misdirecting", "Making the decoy so loud or long that it becomes the main event instead of a setup", "Mistiming the decoy so guests have already turned back before the real scare hits"],
+    "scenario_contexts": ["A crash on the left speaker pulls guests' eyes as an actor emerges on the right", "A whisper behind guests turns them around into a drop-panel scare", "A distant sound baits guests down a hallway toward a hidden trigger"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook (Davis & Jones)", "Glen Ballou (ed.), Handbook for Sound Engineers (Audio Engineering Society Presents)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0ec75386-1c78-4e6d-8d09-e37b19d9a399",
+   "term": "Distant Scream",
+   "fields": {
+    "definition": "A scream sound effect mixed and processed to be perceived as far away, using lower level, greater reverberation relative to the direct sound, and reduced high-frequency content, which are the acoustic cues the ear uses to judge source distance.",
+    "plain_english": "A scream made to sound like it is coming from far off. Lowering its volume, adding echo, and dulling the highs make our ears place it in the distance.",
+    "purpose_function": "It exists to expand a scene's sense of space and dread, suggesting off-scene danger or a larger world beyond what the guest can see.",
+    "practical_application": "A technician lowers the level, adds reverberation, and rolls off the highs on a scream, then plays it from a far or hidden speaker so it reads as distant.",
+    "category": "Scare Sound Design",
+    "related_terms": ["Ambient-to-Scare Contrast", "Jump-Scare Audio", "Continuous Haunt Playback", "Decoy Sound"],
+    "common_mistakes": ["Only lowering the volume without adding reverberation or dulling the highs, so it sounds close but quiet rather than far", "Placing a distant scream on a near speaker so its location contradicts the intended distance", "Adding so much reverberation that the scream turns to mush and loses its emotional read"],
+    "scenario_contexts": ["A faint scream echoes from deep in a maze to imply another victim", "A distant cry lures guests forward toward the next scene", "Layering a far-off scream under an ambient bed to enlarge a room's implied space"]
+   },
+   "sources": ["Kolarik et al., Auditory distance perception in humans: a review of cues, development, neuronal bases, and effects of sensory loss (Attention, Perception, & Psychophysics, 2016)", "Glen Ballou (ed.), Handbook for Sound Engineers (Audio Engineering Society Presents)", "Yamaha Sound Reinforcement Handbook (Davis & Jones)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "066b4c76-6df0-4b94-be30-c2028174169e",
+   "term": "Found-Recording Audio",
+   "fields": {
+    "definition": "Diegetic audio presented as a discovered artifact within the story, such as a recovered tape, voicemail, radio transmission, or log, usually given lo-fi, degraded processing to sell it as a real recording found in the environment.",
+    "plain_english": "Sound made to seem like a real recording the characters found, such as an old tape or phone message. It is roughened up so it feels discovered, not staged.",
+    "purpose_function": "It exists to deliver story and clues in the fiction's own voice, deepening immersion by making guests feel they are uncovering evidence.",
+    "practical_application": "A technician applies band-limiting, added noise, and distortion to sell the format, then places it on a prop speaker or looped bed where guests encounter the recording.",
+    "category": "Narrative Audio",
+    "related_terms": ["Backstory Audio", "Character Voice Track", "Continuous Haunt Playback", "Creature Vocal Track"],
+    "common_mistakes": ["Leaving the recording too clean, so it sounds like studio audio rather than a found artifact", "Degrading it so heavily that the words become unintelligible", "Looping a short found recording so obviously that the illusion of a real captured moment breaks"],
+    "scenario_contexts": ["A victim's last voicemail plays from a prop phone in a crime-scene room", "A degraded reel-to-reel confession loops in a researcher's office", "A staticky radio distress call sets up a scene's backstory"]
+   },
+   "sources": ["John Huntington, Introduction to Show Control (Zircon Designs Press)", "Glen Ballou (ed.), Handbook for Sound Engineers (Audio Engineering Society Presents)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "eb170a35-971d-43ba-bf77-5dbf7ff9b6be",
+   "term": "Jump-Scare Audio",
+   "fields": {
+    "definition": "A sudden, high-level, fast-attack sound cue (a stinger) timed to coincide with a visual reveal to trigger the acoustic startle reflex, the involuntary defensive response the auditory system produces to an abrupt, intense sound onset.",
+    "plain_english": "A sudden loud sound timed with a scare to make you flinch. Fast, sharp sounds set off the body's built-in startle reflex, which is why they make you jump.",
+    "purpose_function": "It exists to produce an immediate, reliable startle at the moment of a reveal, using rapid onset and high contrast rather than sustained volume.",
+    "practical_application": "A technician aligns the stinger tightly with the visual trigger and sets its peak for maximum startle while keeping peaks and average exposure within hearing-safe limits.",
+    "category": "Scare Sound Design",
+    "related_terms": ["Ambient-to-Scare Contrast", "Continuous Haunt Playback", "Decoy Sound", "Creature Vocal Track"],
+    "common_mistakes": ["Chasing startle with sheer volume instead of a fast onset and quiet-to-loud contrast", "Mistiming the stinger so it lands before or after the visual reveal and loses its punch", "UNSAFE: Letting stinger peaks exceed 140 dB peak sound pressure level or letting cumulative exposure exceed OSHA limits, risking hearing damage to guests and staff"],
+    "scenario_contexts": ["A sharp stinger fires as an animatronic drops from the ceiling", "A silent room is broken by a sudden screech synced to a strobe", "A fast transient hit is paired with an actor's lunge at a corner"]
+   },
+   "sources": ["OSHA 29 CFR 1910.95 Occupational Noise Exposure", "Koch, The neurobiology of startle (Progress in Neurobiology, 1999)", "Glen Ballou (ed.), Handbook for Sound Engineers (Audio Engineering Society Presents)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

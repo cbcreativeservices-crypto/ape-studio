@@ -26,7 +26,7 @@ export type SignalKey =
 
 export const SIGNAL_LABELS: Record<SignalKey, string> = {
   speech: 'Speech', kick: 'Kick drum', guitar: 'Guitar', whitenoise: 'White noise',
-  pinknoise: 'Pink noise', snare: 'Snare', organ: 'Sustained organ', sine: 'Sine',
+  pinknoise: 'Pink noise', snare: 'Snare', organ: 'Organ', sine: 'Sine',
   square: 'Square', triangle: 'Triangle', saw: 'Sawtooth', music: 'Music mix',
 };
 

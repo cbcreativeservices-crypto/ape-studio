@@ -1,0 +1,313 @@
+{
+ "batch": 340,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "dbd60971-4e79-4b0f-8da6-2e366e2c6cfe",
+   "term": "Saddle buzz",
+   "fields": {
+    "definition": "A rattling or buzzing artifact produced when a string vibrates against or through an improperly seated, worn, or too-low bridge saddle on a guitar or similar stringed instrument, adding a metallic, granular noise to the note's attack and sustain.",
+    "plain_english": "It is a buzzing rattle from where the string rests on the guitar bridge. The string is not sitting cleanly on that small part, so a fuzzy noise adds to the note.",
+    "purpose_function": "It is not a wanted feature but a diagnostic symptom; hearing it tells a technician the buzz starts at the saddle rather than the frets or nut, so the fix targets the bridge.",
+    "practical_application": "A guitar tech listens for buzz that persists on open and fretted notes and traces it to a loose, cracked, or low saddle, then reseats, shims, or replaces the saddle.",
+    "category": "Mechanical artifact",
+    "related_terms": [
+     "Fret buzz",
+     "Nut buzz",
+     "Rattle",
+     "Sympathetic resonance",
+     "Sustain"
+    ],
+    "common_mistakes": [
+     "Confusing saddle buzz with fret buzz, which comes from the fretboard rather than the bridge.",
+     "Assuming the string itself is faulty instead of checking how it seats on the saddle.",
+     "Over-sanding or over-tightening the saddle, which changes action height and intonation."
+    ],
+    "scenario_contexts": [
+     "Tracking an acoustic guitar and hearing a metallic buzz on certain notes that the mic picks up.",
+     "Setting up a guitar and isolating whether a buzz starts at the saddle, nut, or frets.",
+     "A worn or loosely fitted saddle rattling under heavy strumming."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Rossing, The Science of String Instruments"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "18b12d1e-266b-493d-99e1-df1de035990d",
+   "term": "Scratch tone",
+   "fields": {
+    "definition": "A rough, noisy, aperiodic sound produced on a bowed string instrument when bow force exceeds the maximum limit for stable Helmholtz motion, so the string slips irregularly instead of vibrating cleanly, yielding a scratchy crunch instead of a clear pitch.",
+    "plain_english": "A harsh, scratchy sound from a bowed string like a violin. It happens when the player presses the bow too hard, so the string cannot settle into a clean swing and you hear noise instead of a clear note.",
+    "purpose_function": "As a listening cue it tells the player or engineer that bow pressure is too high for the bow speed and contact point, signaling the tone has broken down and needs lighter pressure.",
+    "practical_application": "An engineer recording strings, or a coach, hears the scratchy crunch and asks the player to ease bow weight or shift the contact point so the note locks into a clean pitch.",
+    "category": "Playing artifact",
+    "related_terms": [
+     "Surface sound",
+     "Bow noise",
+     "Wolf tone",
+     "Attack transient",
+     "Sustain"
+    ],
+    "common_mistakes": [
+     "Blaming the microphone or strings for noise the bowing technique is creating.",
+     "Thinking more bow pressure always means more tone, when too much destroys the pitch.",
+     "Confusing an intentional gritty attack with an uncontrolled scratch tone."
+    ],
+    "scenario_contexts": [
+     "Close-miking a violin and capturing scratchy noise when the player digs in too hard.",
+     "A student pressing the bow too firmly and losing a clear pitch.",
+     "Coaching bow control to move from a scratchy sound to a focused tone."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Woodhouse, Euphonics: The Science of Musical Instruments",
+    "Schelleng, The bowed string and the player (J. Acoust. Soc. Am.)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8be75fe7-810c-4f54-a0e5-9b445dce836b",
+   "term": "Screw buzz",
+   "fields": {
+    "definition": "A buzzing or rattling artifact caused by a loose screw, bolt, or threaded fastener vibrating sympathetically with a sound source, adding an intermittent metallic rattle that appears at specific pitches or sound-pressure levels.",
+    "plain_english": "A rattle caused by a loose screw shaking along with the sound. When a certain note or a loud level hits, the screw vibrates and you hear a small buzzing rattle.",
+    "purpose_function": "Recognizing it points a technician to hardware that has worked loose, so the rattle can be traced and tightened rather than treated as an electronic or acoustic fault.",
+    "practical_application": "A tech chasing a mystery buzz plays sustained tones to find the pitch that excites a loose lug, grille, or panel screw, then tightens or isolates it.",
+    "category": "Mechanical artifact",
+    "related_terms": [
+     "Rattle",
+     "Sympathetic resonance",
+     "Saddle buzz",
+     "Cabinet resonance",
+     "Buzz"
+    ],
+    "common_mistakes": [
+     "Assuming a rattling buzz is a blown speaker when a loose screw is the real cause.",
+     "Tightening random screws without first finding which one resonates.",
+     "Ignoring the specific pitch that triggers the rattle, which is the best clue to its source."
+    ],
+    "scenario_contexts": [
+     "A loudspeaker cabinet rattling at a certain bass note from a loose grille screw.",
+     "Drum hardware buzzing during a sustained tom hit.",
+     "A rack panel or fixture screw buzzing when the subwoofer kicks in."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a86cc658-d362-42b2-b219-0f141af83265",
+   "term": "Semi-open wash",
+   "fields": {
+    "definition": "The sustained, sizzling wash of sound produced by playing hi-hat cymbals loosely closed (semi-open), so the two cymbals are near but not clamped and rattle against each other, giving a longer, brighter, less defined decay than fully closed hats.",
+    "plain_english": "The loose, hissing sound of hi-hat cymbals played not fully shut. The two cymbals sit close but are not squeezed together, so they rattle against each other and ring out longer and brighter.",
+    "purpose_function": "It gives drummers and engineers a controllable middle sound between tight closed hats and a fully open ring, adding energy and sustain to a groove.",
+    "practical_application": "A drummer eases hi-hat foot pressure for a washier feel, and an engineer adjusts mic placement and gating so the extra sustain sits right in the mix.",
+    "category": "Cymbal character",
+    "related_terms": [
+     "Wash",
+     "Sizzle",
+     "Sustain",
+     "Decay",
+     "Bleed"
+    ],
+    "common_mistakes": [
+     "Confusing a semi-open wash with a fully open hi-hat, which rings much longer.",
+     "Gating hi-hats too tightly and cutting off the natural wash.",
+     "Assuming the wash is unwanted bleed rather than an intended sound."
+    ],
+    "scenario_contexts": [
+     "Recording a groove where the drummer opens the hats slightly for energy in the chorus.",
+     "Mixing and deciding how much hi-hat wash to keep against the other cymbals.",
+     "Setting hi-hat mic height to balance stick attack against the wash."
+    ]
+   },
+   "sources": [
+    "Rossing, The Science of Percussion Instruments",
+    "Yamaha Musical Instrument Guide: Drums"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dd13752f-a602-4de4-8564-0003f0a5bd02",
+   "term": "Shake",
+   "fields": {
+    "definition": "A brass playing technique, common in jazz and big-band lead trumpet, in which the player rapidly alternates between a note and a higher partial by shaking the instrument or lips, producing a wide, fast, tremulous trill-like effect, usually at the top of a phrase.",
+    "plain_english": "A brass trick where a trumpet player quickly wobbles between a note and a higher one. It sounds like a fast, wide shiver on a high note, often at the end of a loud phrase.",
+    "purpose_function": "It adds excitement and emphasis to lead brass lines, giving a bold, showy flourish that projects over a large ensemble.",
+    "practical_application": "An engineer expects extra level and brightness when a lead trumpet shakes, and sets headroom and mic distance so the peak does not overload.",
+    "category": "Brass articulation",
+    "related_terms": [
+     "Lip trill",
+     "Vibrato",
+     "Attack transient",
+     "Overtone",
+     "Sustain"
+    ],
+    "common_mistakes": [
+     "Confusing a shake with vibrato, which is a narrower, steadier pitch waver.",
+     "Setting input gain with no headroom for the louder shake peak.",
+     "Thinking a shake is an even trill between neighboring notes rather than a wide, loose wobble."
+    ],
+    "scenario_contexts": [
+     "Miking a big-band lead trumpet that shakes at the climax of a chart.",
+     "Setting preamp gain to handle the extra level from a brass shake.",
+     "Identifying a shake versus vibrato when editing a brass take."
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Baines, Brass Instruments: Their History and Development"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d2ee84e1-0fc0-4e5e-a722-f194422892e9",
+   "term": "Shell hit",
+   "fields": {
+    "definition": "The short, dry percussive sound produced when a drummer strikes the drum's shell (its wooden or metal body) instead of the head, giving a woody or metallic click with fast decay and little tuned sustain.",
+    "plain_english": "The dry, knocking sound made by hitting the side of the drum, not the top skin. It gives a short, woody click instead of the full drum note.",
+    "purpose_function": "It provides a distinct percussive accent and helps a listener or engineer separate the woody shell sound from the tuned head sound when identifying a drum's stroke.",
+    "practical_application": "A drummer strikes the shell for a woody click accent, and an engineer places a mic or edits a sample to capture that dry attack apart from the head's tone.",
+    "category": "Drum attack",
+    "related_terms": [
+     "Rimshot",
+     "Attack transient",
+     "Shell resonance",
+     "Shell tone",
+     "Rim click"
+    ],
+    "common_mistakes": [
+     "Confusing a shell hit with a rimshot, which strikes head and rim together.",
+     "Expecting long sustain from a shell hit, which decays quickly.",
+     "Miking only the head and missing the woody shell attack."
+    ],
+    "scenario_contexts": [
+     "A drummer adding shell-click accents in a quiet passage.",
+     "Sampling a drum and capturing shell hits as separate articulations.",
+     "Identifying a dry woody click in a recording as a shell hit rather than a head strike."
+    ]
+   },
+   "sources": [
+    "Rossing, The Science of Percussion Instruments",
+    "Yamaha Musical Instrument Guide: Drums"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "762dd64c-5753-4d19-9ed1-91d24c5111c4",
+   "term": "Shell resonance",
+   "fields": {
+    "definition": "The resonant vibration of a drum's shell, driven by the vibrating heads and enclosed air, whose frequency and decay depend on shell material, thickness, diameter, and depth, coloring the drum's tone and sustain.",
+    "plain_english": "The way a drum's body rings along with the skins. The size, wood, and thickness of the shell shape how the drum sounds and how long it rings.",
+    "purpose_function": "It contributes part of a drum's pitch, warmth, and sustain, and knowing it helps a technician predict how shell choice and tuning change the tone.",
+    "practical_application": "A tech chooses shells and tunes heads to control resonance, and an engineer uses damping or EQ to tame or feature it in a mix.",
+    "category": "Drum resonance",
+    "related_terms": [
+     "Shell tone",
+     "Sustain",
+     "Sympathetic resonance",
+     "Overtone",
+     "Fundamental"
+    ],
+    "common_mistakes": [
+     "Believing the shell makes most of the sound, when the heads dominate.",
+     "Over-damping a drum and killing useful shell resonance.",
+     "Ignoring how shell depth and diameter shift the resonant frequency."
+    ],
+    "scenario_contexts": [
+     "Choosing between maple and birch shells for a warmer or brighter resonance.",
+     "Tuning toms to bring out a controlled shell ring.",
+     "Using EQ to reduce an unwanted resonant frequency from the shell."
+    ]
+   },
+   "sources": [
+    "Rossing, The Science of Percussion Instruments",
+    "Yamaha Musical Instrument Guide: Drums"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "277389b4-6c1a-4dbd-9bd9-12600c5bf011",
+   "term": "Shell tone",
+   "fields": {
+    "definition": "The tonal character a drum shell imparts to its sound, arising from shell resonance and construction (material, number of plies, thickness, and bearing edges), heard as the woody or metallic color layered over the tuned head pitch.",
+    "plain_english": "The particular color a drum's body gives its sound. Different woods and builds make a drum sound warm, bright, or dark on top of the note the skins make.",
+    "purpose_function": "It lets drummers and builders choose shells for a target sound and helps engineers recognize why two similarly tuned drums sound different.",
+    "practical_application": "When a drum sounds too dark or too bright, a tech may swap shells or reshape the bearing edges, while an engineer shapes the shell tone with EQ.",
+    "category": "Drum resonance",
+    "related_terms": [
+     "Shell resonance",
+     "Timbre",
+     "Overtone",
+     "Sustain",
+     "Bearing edge"
+    ],
+    "common_mistakes": [
+     "Crediting all tonal differences to heads and ignoring shell construction.",
+     "Assuming thicker shells always sound better, when they simply sound different.",
+     "Confusing shell tone with tuning, which is a separate control over pitch."
+    ],
+    "scenario_contexts": [
+     "Comparing maple, birch, and metal snares for their shell tone.",
+     "Explaining why two tuned toms of the same size sound different.",
+     "Choosing EQ to enhance a snare's woody shell tone."
+    ]
+   },
+   "sources": [
+    "Rossing, The Science of Percussion Instruments",
+    "Yamaha Musical Instrument Guide: Drums"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "191c1fec-f7f4-4434-a7f3-f09f9762bb98",
+   "term": "Shimmer",
+   "fields": {
+    "definition": "A bright, sustained, glistening high-frequency character in a sound's sustain or decay; in effects processing, shimmer also names a reverb in which the tail is pitch-shifted upward (commonly an octave) and recirculated to add an ethereal, sparkling sheen.",
+    "plain_english": "A bright, sparkly ring in the high notes as a sound fades. It can be the natural airy sustain of a cymbal, or an effect that adds a glowing, higher-pitched tail to reverb.",
+    "purpose_function": "As a descriptor it labels the airy top-end sustain engineers listen for; as an effect it adds height and atmosphere, filling space with a bright, evolving tail.",
+    "practical_application": "An engineer boosts air-band EQ or adds a shimmer reverb to give vocals, guitars, or synth pads a glistening, spacious top end.",
+    "category": "Decay character",
+    "related_terms": [
+     "Sustain",
+     "Sizzle",
+     "Reverb",
+     "Air band",
+     "Decay"
+    ],
+    "common_mistakes": [
+     "Confusing natural high-frequency shimmer with harsh sibilance or hiss.",
+     "Adding so much shimmer reverb that the mix loses clarity.",
+     "Assuming shimmer is only an effect and missing it as a natural decay trait."
+    ],
+    "scenario_contexts": [
+     "Adding shimmer reverb to a pad for an atmospheric intro.",
+     "Describing a cymbal's bright, airy sustain as shimmer.",
+     "Using EQ to enhance the shimmer in an acoustic guitar's decay."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Sound on Sound (technique reference)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

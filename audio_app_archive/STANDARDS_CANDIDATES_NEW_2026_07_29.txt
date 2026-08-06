@@ -1,0 +1,655 @@
+AA-IIR
+ADM Lookup Chunk
+AES EtherType
+AES Organizationally Unique Identifier
+AES protocol identifier
+AES3 block
+AES3 frame
+ATM adaptation-layer parameter
+ATM audio call
+ATM interworking
+AXML Chunk
+Abnormal Growth of Loudness
+Absolute Gating Threshold
+Absolute Limen
+Absolute object position
+Absolute-polarity inversion
+Absorption loss
+Access unit
+Accessibility metadata
+Accessibility presentation
+Acoustic Activity Index
+Acoustic Attenuation Constant
+Acoustic Black Hole
+Acoustic Bridge
+Acoustic Dispersion
+Acoustic Encounter
+Acoustic Equivalent Volume
+Acoustic Localization Error
+Acoustic Radiation Force
+Acoustic Streaming
+Acoustic admittance
+Acoustic appropriateness
+Acoustic boundary
+Acoustic coupler
+Acoustic diffraction
+Acoustic energy map
+Acoustic environment model
+Acoustic impedance of water
+Acoustic multitarget tracking
+Acoustic obstruction
+Acoustic opening
+Acoustic particle acceleration
+Acoustic particle motion
+Acoustic prediction data set
+Acoustic privacy
+Acoustic ray
+Acoustic ray path
+Acoustic region
+Acoustic source trajectory
+Acoustic transfer impedance
+Acoustic transfer-function vector
+Acoustic visibility
+Acoustic zone
+Acoustic-command injection
+Acoustic-environment recording
+Acoustic-response parameterization
+Acoustic-scene graph
+Acoustic-scene navigation
+Across-Ear Envelope Comparison
+Across-Formant Grouping
+Across-Modal Influence
+Action/Object Paradigm
+Actual loudspeaker position
+Adaptation control
+Adapted Port Resistance
+Adaptive Psychophysical Method
+Adaptive codebook
+Additivity of Forward Masking
+Adjacent listener space
+Administrative audio metadata
+Adversarial detection front end
+Affinity matrix
+Air-absorption model
+Air-conduction audiometry
+Airborne sound insulation
+Airborne sound insulation rating
+Album loudness
+Album-mode processing
+Algebraic Loop
+Algebraic code-excited linear prediction
+Algorithmic audio
+Alias-Free Neural Nonlinearity
+All Frame
+Alternate-language presentation
+Alternative Value Set
+Alternative audio element
+Ambient sound
+Ambisonic component ordering
+Ambisonic normalization convention
+Ambisonics Channel Numbering
+Anchor loudness
+Angular Deviation Loss
+Angular response data set
+Annotation Boundary Deviation
+Annoyance
+Anthropogenic sound
+Antiderivative Antialiasing
+Antiphasic Listening Condition
+Apical Excitation
+Apparent sound reduction index
+Arbitrary downmix gain
+Area source
+Arithmetic-coded spectral data
+Array manifold
+Array manifold vector
+Array self-localization
+Artificial mastoid
+Ascending method
+Assessment level
+Assessment period
+Attenuation coefficient
+Attenuation due to foliage
+Attenuation due to geometrical divergence
+Attenuation due to housing
+Attenuation due to industrial sites
+Attractor formation
+Attractor point
+Audibility path
+Audio Block Format
+Audio Complementary Object
+Audio Data Interchange Format
+Audio Data Transport Stream
+Audio Essence
+Audio Feature Ontology
+Audio Object Type
+Audio Pack Format
+Audio Programme Reference Screen
+Audio Thumbnailing
+Audio access unit
+Audio adversarial example
+Audio call-setup signaling
+Audio chunk interleaving
+Audio clip node
+Audio conformance point
+Audio delay node
+Audio description scheme
+Audio descriptor
+Audio element
+Audio element dependency
+Audio element group
+Audio element identifier
+Audio element interaction
+Audio elementary stream
+Audio frame
+Audio fundamental frequency
+Audio harmonicity
+Audio identification
+Audio interactivity
+Audio manifestation
+Audio matching
+Audio media timescale
+Audio metadata code point
+Audio metadata enhancement
+Audio metadata invalidation
+Audio mixing node
+Audio multiplex element
+Audio object characteristic
+Audio object structure
+Audio object type
+Audio over asynchronous transfer mode
+Audio power
+Audio preroll
+Audio preroll recovery
+Audio preservation event
+Audio profile-level compatibility
+Audio profile-level indication
+Audio protocol discriminator
+Audio sample description
+Audio sample duration
+Audio sample entry
+Audio sample group
+Audio sample packet
+Audio sample table
+Audio sampling clock traceability
+Audio scene
+Audio scene adaptation
+Audio scene anchor
+Audio scene composition
+Audio scene configuration
+Audio scene coordinate system
+Audio scene descriptor
+Audio scene displacement
+Audio scene graph
+Audio scene information
+Audio scene metadata
+Audio scene origin
+Audio scene reference point
+Audio scene rendering
+Audio scene rotation
+Audio scene scaling
+Audio scene translation
+Audio scene-graph traversal
+Audio signature
+Audio source node
+Audio spatialization node
+Audio spectrum basis
+Audio spectrum centroid
+Audio spectrum envelope
+Audio spectrum flatness
+Audio spectrum projection
+Audio spectrum spread
+Audio stream configuration
+Audio stream synchronization tolerance
+Audio style-transfer defense
+Audio subframe
+Audio superframe
+Audio switch node
+Audio sync stream
+Audio synchronization word
+Audio track timescale
+Audio waveform descriptor
+Audio-Language Retrieval
+Audio-Sheet-Music Correspondence
+Audio-bound metadata
+Audio-content indexing
+Audio-description extraction
+Audio-description presentation
+Audio-embedded downmix metadata
+Audio-embedded loudness metadata
+Audio-embedded metadata
+Audio-embedded true-peak metadata
+Audio-event description
+Audio-format box
+Audio-format migration
+Audio-frequency shield behavior
+Audio-network code-point registry
+Audio-node event
+Audio-node field
+Audio-node routing
+Audio-object instantiation
+Audio-object integrity
+Audio-object provenance
+Audio-object relationship
+Audio-rate processing
+Audio-sample metadata embedding
+Audio-sample time identification
+Audio-segment decomposition
+Audio-segment descriptor
+Audio-source classification
+Audio-specific configuration
+Audio-to-Lyrics Alignment
+Audio-to-Score Alignment
+Audio-visual coherence
+Audio-visual object association
+Audio-visual position mismatch
+Audio-visual spatial alignment
+Audio-visual synchronization metadata
+AudioBIFS
+Audiometric reference zero
+Audiometrically Normal Listener
+Audiovisual Speech Benefit
+Auditory Gap
+Auditory Negative Afterimage
+Auditory Sensation Area
+Auditory Time Error
+Auditory weighting function
+Auditory-Filter Asymmetry
+Auditory-field correction
+Auditory-filter bandwidth
+Augmented-reality acoustic environment
+Augmented-reality listener space
+Aural Combination Tone
+Aural Harmonic
+Author-defined preset
+Authoring Information
+Auxiliary sample bits
+Availability Bias
+Average Sound-Pressure Level in a Room
+Axial Sensitivity
+Backward Masking
+Baffled piston
+Band-limiting filter
+Bandwidth-extension coding
+Base curve
+Base layer
+Baseband audio
+Basilar-Membrane Motion
+Beam pattern
+Beamforming weight vector
+Beat Histogram
+Beat Spectrum
+Bel
+Between-Channel Masking
+Bidirectional predictive frame
+Bilateral Masking-Level Difference
+Binaural Advantage
+Binaural Interference
+Binaural Sluggishness
+Binaural room impulse response
+Binaural rendering
+Binaural unmasking
+Bistream element
+Bitstream payload
+Blauert Band
+Block companded PCM
+Block floating point
+Block switching
+Blocking matrix
+Bone-conduction threshold
+Boundary element method
+Broadband noise
+Building acoustics descriptor
+Building service noise
+Bulk delay
+Cardioid response
+Cascade filter bank
+Categorical Loudness Scaling
+Center-of-gravity effect
+Cepstral coefficient
+Channel element
+Channel pair element
+Channel-based audio
+Chirp signal
+Clarity index
+Class of a sound level meter
+Clean audio
+Click train
+Co-articulation cue
+Coarticulated cue
+Coded audio access unit
+Coded representation
+Codebook index
+Coherence function
+Coincidence dip
+Coincidence frequency
+Comodulation Masking Release
+Comfort noise
+Common Loudspeaker Format
+Common intelligibility scale
+Complex sound source
+Compression driver directivity
+Concert-hall acoustics
+Conditioned Threshold
+Cone of Confusion
+Confusion neighborhood
+Content dependency index
+Content kind
+Continuous descending method
+Continuous rating scale
+Contralateral routing of signals
+Contrast gain control
+Controlled acoustical environment
+Conversational level
+Core coder
+Core experiment
+Coupled channel
+Critical Bandwidth
+Critical ratio
+Cross-adaptive processing
+Cross-correlation lag
+Cross-fade window
+Cross-modal binding
+Cross-modulation distortion
+Cue integration
+Cumulative distribution of exposure
+Cut-off frequency of a filter
+Damping ratio of a resonator
+Data-driven room correction
+Dead room
+Decibel full scale
+Decibel relative to sound power
+Decision-directed estimation
+Decoded audio
+Decorrelation filter
+Dedicated metadata channel
+Deep clustering
+Delay-and-sum beamformer
+Delayed masking
+Denormalized number
+Depth of modulation
+Descriptor scheme
+Detection efficiency
+Detection theory
+Deterministic-plus-stochastic model
+Diagnostic Rhyme Test
+Dialogue enhancement
+Dialogue normalization
+Dichotic Pitch
+Difference limen for frequency
+Difference limen for intensity
+Diffraction coefficient
+Diffuse-field equalization
+Diffuse-field frequency response
+Diffuse-field sensitivity
+Directional loudness
+Directional weighting
+Discrete cosine transform coefficient
+Discrete-time analytic signal
+Dispersion relation
+Displacement transducer
+Distance attenuation model
+Distortion product otoacoustic emission
+Divergence loss
+Dominant Frequency Region
+Double-blind triple-stimulus test
+Downmix coefficient
+Downward Spread of Masking
+Drift-corrected clock
+Dry sound
+Dual-mono content
+Duplex Theory
+Duration model
+Dynamic Range Control
+Ear canal resonance
+Echo threshold
+Effective perceived noise level
+Emission sound pressure level
+Encoded bitstream
+Energy decay relief
+Ensemble duration
+Envelope following response
+Envelopment
+Equal-temperament deviation
+Equivalent continuous sound level
+Equivalent rectangular bandwidth
+Equivalent sound absorption area
+Error concealment
+Excess attenuation
+Excitation pattern
+Exposure action value
+Extended stereo image
+Extensible metadata scheme
+External-ear transfer function
+Far-field criterion
+Fast time weighting
+Feature-space maximum-likelihood linear regression
+Field calibration
+Filter bank
+Filter-bank equalizer
+Fine-structure cue
+Finite-difference time-domain acoustics
+First-arrival time
+First-wavefront law
+Fixed-point audio sample
+Fletcher-Munson effect
+Floating intermediate frame
+Foldback level
+Formant Transition Cue
+Forward-backward masking
+Frame loss concealment
+Free-field correction
+Free-field method
+Free-field sensitivity
+Frequency Selectivity
+Frequency band of interest
+Frequency-domain audio coding
+Frequency-following response
+Frequency-warping
+Fundamental-frequency contour
+Gap detection threshold
+Gated loudness
+Gaussian mixture model
+Generalized cross-correlation
+Generalized sidelobe canceller
+Geometric acoustics
+Global motion parameter
+Grouping cue
+Half-power bandwidth
+Harmonic-percussive source separation
+Head-related impulse response
+Hearing level
+Hearing threshold level
+High-order ambisonics
+Higher-order ambisonic coefficient
+Homomorphic deconvolution
+Huffman codebook
+Hybrid filter bank
+Immersive audio bitstream
+Impulsive noise
+In-head localization
+Informational Masking
+Inharmonicity coefficient
+Insert loss
+Insertion gain
+Instantaneous frequency
+Integrated loudness
+Intensity Discrimination
+Intensity stereo
+Interaural cross-correlation coefficient
+Interaural intensity difference
+Interaural phase difference
+Interchannel coherence
+Interchannel level difference
+Interchannel prediction
+Interchannel time difference
+Internal noise of the auditory system
+Inverse constant-Q transform
+Ipsilateral masking
+Isophonic contour
+Iterative closest point registration
+Joint stereo coding
+K-weighting
+Karhunen-Loeve transform
+Key profile
+Kurtosis of noise
+Late lateral energy
+Lateral energy fraction
+Lateral gain
+Lateralization
+Leakage current test
+Level-dependent frequency response
+Line source array
+Linear-phase filter
+Localization blur
+Log-area ratio
+Log-mel spectrogram
+Lombard effect
+Long-term average spectrum
+Lossless coding mode
+Loudness range
+Loudness recruitment
+Loudspeaker sensitivity
+Low-complexity profile
+Low-frequency effects channel
+Low-frequency oscillator rate
+Masker level
+Masking pattern
+Masking release
+Matrix decoding
+Maximum length sequence
+Maximum sound pressure level
+Mean opinion score
+Mel-frequency cepstral coefficient
+Metadata delivery unit
+Middle-ear transfer function
+Minimum audible angle
+Minimum audible field
+Minimum audible pressure
+Minimum phase response
+Modulation masking
+Modulation transfer function
+Monaural cue
+Monitoring reference level
+Mother wavelet
+Multichannel audio coding
+Multidimensional scaling of timbre
+Multitalker babble
+Multitrack stem
+Narrowband noise
+Near-field criterion
+Negative Level Difference
+Noise criterion curve
+Noise gate threshold
+Noise-reduction coefficient
+Non-negative matrix factorization
+Nonlinear distortion measure
+Normalized loudness
+Object priority
+Octave-band analysis
+Off-axis response
+Onset asynchrony
+Onset detection function
+Open-plan office acoustics
+Optimum reverberation time
+Order of an ambisonic system
+Otoacoustic emission
+Overlap-add reconstruction
+Oversampling ratio
+Parametric stereo
+Partial loudness
+Peak program meter
+Perceptual audio coding
+Perceptual evaluation of audio quality
+Perceptual evaluation of speech quality
+Perceptual linear prediction
+Perceptual noise substitution
+Perceptual weighting filter
+Phantom image
+Phase-locked loop jitter
+Pinna cue
+Pitch salience
+Pitch strength
+Plane-wave decomposition
+Point source model
+Polar pattern measurement
+Post-masking
+Pre-echo
+Pre-masking
+Predictive coding gain
+Presentation timestamp
+Primary-ambient decomposition
+Probe-tube microphone
+Quadrature mirror filter
+Quefrency
+Random-incidence response
+Rate-distortion optimization
+Reference listening level
+Region of dominance
+Release from masking
+Rendering matrix
+Residual echo suppression
+Reverberation radius
+Reverberation time
+Room transfer function
+Sabine absorption
+Scalable audio coding
+Scale-factor band
+Schroeder integration
+Sensation level
+Sequency
+Sidelobe level
+Signal-to-mask ratio
+Sine-sweep measurement
+Single-equivalent-level descriptor
+Sone
+Sound exposure level
+Sound reduction index
+Source-filter model
+Sparse coding of audio
+Spatial aliasing frequency
+Spatial audio object coding
+Spatial impression
+Spatial release from masking
+Spectral flatness measure
+Spectral tilt
+Speech intelligibility index
+Speech reception threshold
+Stationary noise assumption
+Stereo width control
+Stimulus-onset asynchrony
+Streaming loudness compliance
+Sub-band coding
+Successive masking
+Superdirective beamforming
+Suprathreshold
+Syllabic compression
+Temporal envelope cue
+Temporal fine structure
+Temporal masking
+Temporal weighting function
+Timbre space
+Time-frequency masking
+Time-scale modification
+Tonality index
+Tone-to-noise ratio
+Total harmonic distortion plus noise
+Transaural reproduction
+Transient detection
+True peak level
+Two-alternative forced choice
+Variable bit-rate coding
+Vector-base amplitude panning
+Virtual bass
+Vocoder analysis
+Wave field synthesis
+Waveform coding
+Wavelength constant
+Weighted overlap-add
+Weighting network
+Wet/dry mix ratio
+Whisper-mode processing
+Wideband speech coding
+Windowing function
+Zero-crossing rate
+Zwicker loudness model

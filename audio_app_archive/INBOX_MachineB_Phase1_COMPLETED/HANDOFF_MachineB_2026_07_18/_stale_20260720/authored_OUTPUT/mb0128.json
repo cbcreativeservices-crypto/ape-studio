@@ -1,0 +1,216 @@
+{
+ "batch": 128,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "cfd20b31-0afb-40db-8147-25478f631128",
+   "term": "Project Audio Browser",
+   "fields": {
+    "definition": "A project-level media list, exemplified by Logic Pro's Project Audio browser, that shows every audio file belonging to the current project along with the regions derived from those files, so they can be located, renamed, and managed independently of the timeline arrangement.",
+    "plain_english": "It is a list of every sound file used in your project. You can find, rename, or delete files here without touching the song's timeline. Think of it like a folder that shows all the clips your project depends on.",
+    "purpose_function": "It gives one place to see and manage all the audio a project references, so files can be organized, checked for use, or cleaned up without hunting through every track.",
+    "practical_application": "An engineer opens it to spot unused recordings, rename raw takes, or confirm every clip is present before archiving or backing up a session.",
+    "category": "Media Management",
+    "related_terms": ["Region", "Audio file", "Project Setup", "Bounce", "Session backup"],
+    "common_mistakes": [
+     "Deleting a file here thinking it only clears the view, when it can remove the file from the project or disk.",
+     "Confusing the audio file with the region: trimming a region does not change the underlying file.",
+     "Assuming listed files are copies stored inside the project, when they may be references to originals kept elsewhere."
+    ],
+    "scenario_contexts": [
+     "Cleaning up a finished session by removing unused recordings before archiving.",
+     "Renaming a batch of raw takes so a co-editor can find them.",
+     "Checking that every clip is accounted for before moving a session to another studio."
+    ]
+   },
+   "sources": ["Apple Logic Pro User Guide (Project Audio / Browsers)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "89115e24-cf2f-4ae6-a4a4-d2e78133e948",
+   "term": "Project Logical Editor",
+   "fields": {
+    "definition": "In Steinberg Cubase and Nuendo, the Project Logical Editor is a tool that automates editing in the Project window: the user defines filter conditions to select matching events, parts, tracks, or markers, then applies defined actions such as move, transform, or delete to everything that matches.",
+    "plain_english": "It is a search-and-change tool for your whole project. You tell it what to look for, like every track of one color, and what to do with them. It then makes that change everywhere at once, so you do not have to do each by hand.",
+    "purpose_function": "It exists to carry out repetitive or rule-based edits across a large project quickly and consistently, instead of selecting and changing each item by hand.",
+    "practical_application": "An editor might use it to select every event on muted tracks and delete them, or to shift all markers by a set amount, in a single step.",
+    "category": "DAW Editing",
+    "related_terms": ["Logical Editor", "MIDI Logical Editor", "Macro", "Project marker", "Event"],
+    "common_mistakes": [
+     "Confusing it with the MIDI Logical Editor; the Project version works on project events and structure, not MIDI note data.",
+     "Running an action without testing the filter first, so it changes more items than intended.",
+     "Forgetting that actions apply to everything matching the filter, not just the visible selection."
+    ],
+    "scenario_contexts": [
+     "Deleting all events on tracks whose names contain a keyword.",
+     "Selecting and processing every part of one color across a busy arrangement.",
+     "Building a reusable preset to tidy up imported projects."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (Project Logical Editor)", "Steinberg Nuendo Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "61f4c85c-6238-4508-ac8b-53abe29efdac",
+   "term": "Project marker",
+   "fields": {
+    "definition": "A project marker is a labeled reference point, or range, placed on a project's timeline to mark a specific position or section, allowing quick navigation to and identification of song parts, edit points, or cues.",
+    "plain_english": "It is a labeled flag on your project's timeline. You drop it at spots like the chorus or a scene change so you can jump straight there. It works like a bookmark in a long document.",
+    "purpose_function": "It lets an engineer name and instantly locate important points in a session, making navigation and talk about song structure faster.",
+    "practical_application": "A mixer sets markers at each song section to jump to the second chorus instantly, or to line up cues with picture in post.",
+    "category": "Navigation",
+    "related_terms": ["Cycle marker", "Marker track", "Locator", "Timeline", "Cue"],
+    "common_mistakes": [
+     "Leaving markers unnamed, so a project fills with generic labels that give no useful information.",
+     "Confusing a single position marker with a range or cycle marker that defines a start and end.",
+     "Assuming markers move audio; they only flag positions and do not edit the material."
+    ],
+    "scenario_contexts": [
+     "Labeling verse, chorus, and bridge before a mix session.",
+     "Marking edit or punch points for a vocal comp.",
+     "Placing cues to sync music to video in post-production."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (Markers)", "Avid Pro Tools Reference Guide (Memory Locations/Markers)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fa386961-9eb7-47da-aa6d-36d560a6c7e3",
+   "term": "Project Setup",
+   "fields": {
+    "definition": "In Steinberg Cubase and Nuendo, Project Setup is a dialog that defines a project's global properties, including sample rate, bit depth and record file format, project length, display format, and frame rate, which govern how audio is recorded and how time is shown throughout the session.",
+    "plain_english": "It is the settings page for a whole project. Here you pick basics like the sample rate and how time is shown before you start work. Getting these right early keeps everything in the project lined up.",
+    "purpose_function": "It sets the technical foundation of a session so that recording quality and the timeline behave consistently from the very start.",
+    "practical_application": "A technician opens Project Setup first to confirm the sample rate and bit depth match the session's delivery format and any imported material.",
+    "category": "Session Setup",
+    "related_terms": ["Sample rate", "Bit depth", "Frame rate", "Record file format", "Project marker"],
+    "common_mistakes": [
+     "Changing the sample rate after recording, which can make existing audio play back at the wrong pitch and speed.",
+     "Setting a bit depth or record format that does not match the delivery spec.",
+     "Overlooking frame rate when the project must sync to video."
+    ],
+    "scenario_contexts": [
+     "Starting a new session and matching its sample rate to the rest of an album.",
+     "Setting the frame rate for a project that will sync to picture.",
+     "Confirming record format before a tracking date."
+    ]
+   },
+   "sources": ["Steinberg Cubase Operation Manual (Project Setup dialog)", "Steinberg Nuendo Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8c6e5581-6f13-4827-bb7b-291d0d8ef0a5",
+   "term": "Project tab",
+   "fields": {
+    "definition": "A project tab is a clickable tab in a DAW's interface that represents one open project, letting the user keep several projects open at once and switch between them by selecting the matching tab.",
+    "plain_english": "It is a tab for each open project, like tabs in a web browser. When you have more than one session open, you click a tab to switch between them. It saves you from closing one project to see another.",
+    "purpose_function": "It provides fast switching between several open projects within one window, which streamlines tasks that span more than one session.",
+    "practical_application": "An engineer keeps a reference project and the working mix open in separate tabs to copy settings or compare arrangements quickly.",
+    "category": "DAW Interface",
+    "related_terms": ["Project", "Workspace", "Template", "Session", "Project Setup"],
+    "common_mistakes": [
+     "Editing in the wrong project because the active tab was not the one intended.",
+     "Assuming all open tabs share settings or playback, when each project is independent.",
+     "Leaving many projects open in tabs, which uses extra memory and CPU."
+    ],
+    "scenario_contexts": [
+     "Switching between a rough mix and a reference session while balancing a track.",
+     "Copying plug-in chains from one open project into another.",
+     "Keeping a template and a live session open side by side."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "PreSonus Studio One Reference Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3e2278d7-7e08-4051-b4b2-54acb1748097",
+   "term": "Promotional mix",
+   "fields": {
+    "definition": "A promotional mix is an alternate version of a song's mix prepared for promotion rather than commercial sale, such as a radio edit, clean version, or shortened cut supplied to broadcasters, DJs, or press to publicize a release.",
+    "plain_english": "It is a special version of a song made to help promote a release. It might be shorter, cleaned of swearing, or set up for radio play. It is handed out to get attention, not sold in stores.",
+    "purpose_function": "It exists to give radio, DJs, and media a version tailored for airplay and publicity, which can differ from the main commercial mix.",
+    "practical_application": "A mix engineer delivers a promotional mix alongside the main mix, often a clean, radio-length edit ready for broadcast rotation.",
+    "category": "Mix Deliverables",
+    "related_terms": ["Radio edit", "Clean version", "Alternate mix", "Instrumental mix", "Mixdown"],
+    "common_mistakes": [
+     "Treating the promotional mix as the final master rather than a purpose-made alternate.",
+     "Forgetting to clean explicit lyrics on a version meant for broadcast.",
+     "Delivering a full-length cut when a shorter radio edit was expected."
+    ],
+    "scenario_contexts": [
+     "Preparing a clean radio edit for airplay before an album drops.",
+     "Supplying a shortened mix to a promoter for a single launch.",
+     "Sending a tailored version to DJs to build early buzz."
+    ]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8335bcd5-c5ca-4eb7-9682-e4ab739e969f",
+   "term": "Public-address contribution",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: 'Public-address contribution' is not an attested, standardized audio term. It reads ambiguously between a broadcast 'contribution feed' taken from a public-address system and the acoustic 'contribution' (PA spill/energy) that a PA adds to a venue's captured mix. No two or more acceptable sources define it as a single canonical term, so it is flagged rather than guessed."
+   ]
+  },
+  {
+   "id": "f1709696-f9c9-447a-9e89-d46ecc092745",
+   "term": "Pull the band back",
+   "fields": {
+    "definition": "\"Pull the band back\" is an informal mixing instruction to lower the level of the backing band or instruments in a mix, usually so a featured element such as a lead vocal or spoken announcement sits clearly in front.",
+    "plain_english": "It means turn the band down in the mix. You do this so the singer or speaker is easy to hear over the music. It is like lowering background music when someone starts to talk.",
+    "purpose_function": "It serves to shift the balance so a lead voice or featured part becomes clearer by reducing the competing level of the instruments.",
+    "practical_application": "During a live broadcast, an engineer pulls the band back on the faders when a presenter speaks, then brings it up again for the performance.",
+    "category": "Mix Balance",
+    "related_terms": ["Fader", "Level balance", "Gain staging", "Ducking", "Foreground"],
+    "common_mistakes": [
+     "Pulling the band back so far that the mix loses energy and feels empty.",
+     "Making the level move abruptly instead of riding the faders smoothly.",
+     "Reaching for EQ or mutes when a simple level move would do the job."
+    ],
+    "scenario_contexts": [
+     "Lowering the band under a presenter's announcement in a live show.",
+     "Making room for a lead vocal during a quiet verse.",
+     "Bringing instruments down so a solo instrument can be featured."
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook (mixing and level balance)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "965cdba7-80dd-4235-bdb8-2e571f4148a9",
+   "term": "Punch automation mode",
+   "fields": {
+    "definition": "Punch automation is a method of writing mixer automation only across a defined section of the timeline: the engineer punches in to start overwriting automation and punches out to stop, leaving automation before and after that region unchanged, much as punch-in recording replaces only a selected part of a take.",
+    "plain_english": "It lets you rewrite automation for just one part of a track. You punch in where the change starts and punch out where it ends. Everything outside that spot keeps its old moves, like re-recording only one line of a take.",
+    "purpose_function": "It exists to let an engineer fix or replace automation in one exact spot without disturbing the moves already set elsewhere on the track.",
+    "practical_application": "A mixer punches in over a single loud word to write a quick volume dip, then punches out so the rest of the vocal automation stays as it was.",
+    "category": "Automation",
+    "related_terms": ["Automation", "Write mode", "Touch mode", "Latch mode", "Punch-in"],
+    "common_mistakes": [
+     "Staying punched in too long and overwriting good automation past the intended spot.",
+     "Confusing it with punch-in recording, which replaces audio rather than automation data.",
+     "Not setting clear in and out points, so the change bleeds into neighboring sections."
+    ],
+    "scenario_contexts": [
+     "Writing a fast level dip over one harsh note in a vocal.",
+     "Replacing a bad automation move in a single bar without redoing the whole pass.",
+     "Punching in a pan change for one phrase only."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Automation modes and punching)", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

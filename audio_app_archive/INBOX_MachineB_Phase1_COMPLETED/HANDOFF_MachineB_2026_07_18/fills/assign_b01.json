@@ -1,0 +1,191 @@
+{
+ "bucket": 1,
+ "packets": [
+  "mb0002",
+  "mb0004",
+  "mb0008",
+  "mb0009",
+  "mb0030",
+  "mb0057",
+  "mb0079",
+  "mb0080"
+ ],
+ "terms": [
+  {
+   "pkt": "mb0002",
+   "id": "c09bf679-ec93-497a-b802-de46ff0b4967",
+   "term": "Bass-string region",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Instrument Recording — Strings & Guitar"
+  },
+  {
+   "pkt": "mb0002",
+   "id": "15b7789f-ae54-4bd7-b7bd-721cb36c9d35",
+   "term": "Bass-string section",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Instrument Recording — Strings & Guitar"
+  },
+  {
+   "pkt": "mb0004",
+   "id": "043d3420-746e-4e65-8a4a-69ef9d45fdde",
+   "term": "Course imbalance",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Instrument Recording — Strings & Guitar"
+  },
+  {
+   "pkt": "mb0008",
+   "id": "ee42e329-58e0-45dd-8f30-ef9db725b803",
+   "term": "Mute bleed",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Instrument Recording — Strings & Guitar"
+  },
+  {
+   "pkt": "mb0008",
+   "id": "85e3bfd6-4fe3-4a55-92c1-6b44e9b287f1",
+   "term": "Onboard speaker bleed",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Instrument Recording — Strings & Guitar"
+  },
+  {
+   "pkt": "mb0009",
+   "id": "e23ad24b-e407-4a1b-b4db-57d29d167cc6",
+   "term": "Patch level variation",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Instrument Recording — Strings & Guitar"
+  },
+  {
+   "pkt": "mb0030",
+   "id": "c4b35316-fff6-4ea5-b723-e4eec23fe0ab",
+   "term": "Gel damper",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Guitar, Bass & Amp Recording"
+  },
+  {
+   "pkt": "mb0057",
+   "id": "e3d677a1-76d8-4b46-9847-8f0045796e3d",
+   "term": "Keyholing",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Band Tracking Workflow & Arrangement"
+  },
+  {
+   "pkt": "mb0079",
+   "id": "e7d40156-960e-41ba-8d7a-1f6bce5335a0",
+   "term": "A-side assignment",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0079",
+   "id": "dc0302f9-2edc-4c1b-853f-69c1bd3cbf22",
+   "term": "Acoustic contribution",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0080",
+   "id": "73f879dd-b833-4fe6-a714-7c2517f7999f",
+   "term": "AI loudness",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  }
+ ]
+}

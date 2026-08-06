@@ -1,0 +1,159 @@
+{
+ "batch": 179,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "cb6e3622-859a-4e79-bd69-2347608d58c4",
+   "term": "UPC encoding",
+   "fields": {
+    "definition": "The embedding of a release's UPC/EAN barcode number into a master's metadata — for example the Red Book CD subcode Q-channel or a DDP fileset's PQ data — so the finished product carries a unique, machine-readable catalog identifier.",
+    "plain_english": "A UPC is the barcode number that names a product. UPC encoding writes that number into the master file. Then shops and databases know exactly which release it is. It works like a name tag on the album so it can be tracked and sold.",
+    "purpose_function": "It links the audio master to a unique commercial identifier so the release can be catalogued, distributed, sold, and tracked correctly across stores and databases.",
+    "practical_application": "A mastering engineer enters the client's UPC/EAN into the DDP or disc-image metadata when finalizing a master, alongside the per-track ISRC codes, so the plant or distributor delivers a correctly tagged product.",
+    "category": "Metadata",
+    "related_terms": ["ISRC encoding", "DDP fileset", "PQ codes", "Red Book standard", "Production master"],
+    "common_mistakes": ["Confusing the UPC, which identifies the whole product, with the ISRC, which identifies each individual track", "Entering the barcode with a wrong or missing check digit, which makes it invalid", "Assuming the mastering engineer generates the UPC rather than the label or distributor supplying it"],
+    "scenario_contexts": ["Finalizing a DDP master for CD replication where the plant reads the UPC from the metadata", "Preparing a digital release package for a distributor that requires the UPC/EAN in the delivery", "Cross-checking the barcode printed on the artwork against the UPC encoded in the master"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "DDP 2.00 specification (Disc Description Protocol)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "69c8f6f8-d10e-4517-b899-37c936244454",
+   "term": "Variable groove depth",
+   "fields": {
+    "definition": "A disc-cutting lathe function that automatically varies the vertical depth of the cut groove in response to a preview of the program signal — cutting deeper where loud, low-frequency or out-of-phase content demands it and shallower during quiet passages to conserve lacquer surface.",
+    "plain_english": "On a record, a cutter carves a groove into the lacquer. Variable groove depth makes that cut deeper for loud parts and shallower for quiet parts. This saves space so more music fits on the side. It also keeps loud grooves from crashing into each other.",
+    "purpose_function": "It works together with variable pitch to maximize playing time and level per side while keeping the stylus safely in the groove, giving loud passages enough depth and wasting none on quiet ones.",
+    "practical_application": "The cutting engineer sets a depth range on the lathe and feeds it an advanced preview signal, and the system then trims groove depth in real time as the lacquer is cut.",
+    "category": "Disc Cutting",
+    "related_terms": ["Variable groove pitch", "Vertical modulation control", "Vinyl mastering", "Cutting lathe", "Preview head"],
+    "common_mistakes": ["Confusing depth, which is the vertical cut, with pitch, which is the spacing between grooves", "Cutting too shallow to save lacquer, which lowers level and causes mistracking on playback", "Forgetting that heavy out-of-phase bass forces deeper cuts and eats up side time"],
+    "scenario_contexts": ["Cutting a bass-heavy track where depth increases to hold the loud low end", "Fitting a long album side by letting depth drop during sparse, quiet sections", "Setting minimum and maximum depth limits before a cut to protect the stylus and lacquer"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Neumann technical documentation (disc-cutting lathe pitch and depth system)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "05f92402-d61f-41d2-830f-562e7fd0e014",
+   "term": "Variable groove pitch",
+   "fields": {
+    "definition": "A disc-cutting lathe function that automatically varies the pitch — the spacing between adjacent grooves (lines per inch) — based on a preview of the program, widening spacing for loud or bass-heavy passages and narrowing it for quiet ones to balance playing time against cutting level.",
+    "plain_english": "The grooves on a record run in a tight spiral. Variable groove pitch changes how far apart those grooves sit. It spreads them out for loud parts so they do not collide. It packs them close for quiet parts to fit more time on the side.",
+    "purpose_function": "It exists to balance the trade-off between how long a side can play and how loud it can be cut, packing grooves tightly when it is safe and spreading them when the signal is large.",
+    "practical_application": "The engineer sets a base pitch and pitch limits, and the lathe's preview system reads the audio ahead of the cut so the spacing opens just before a loud passage arrives.",
+    "category": "Disc Cutting",
+    "related_terms": ["Variable groove depth", "Vertical modulation control", "Vinyl mastering", "Cutting lathe", "Preview head"],
+    "common_mistakes": ["Confusing pitch, the spacing between grooves, with depth, how deep each groove is cut", "Setting pitch too tight, so loud grooves overcut into each other and cause echo", "Assuming more grooves per inch is always better and ignoring the loss of level and time balance"],
+    "scenario_contexts": ["Cutting a long side where tight pitch is needed to fit the running time", "Opening pitch automatically ahead of a loud chorus to keep adjacent grooves apart", "Deciding a maximum safe level after seeing how pitch limits affect total side time"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Neumann technical documentation (disc-cutting lathe pitch and depth system)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "69a91e52-1cbb-4fc8-b7dc-4dc9a0aee027",
+   "term": "Vertical modulation control",
+   "fields": {
+    "definition": "In stereo disc cutting, the management of the vertical (up-and-down) component of groove modulation — which carries the out-of-phase, left-minus-right difference signal — to keep it within safe limits, since excessive vertical motion can lift the stylus out of the groove or break through the groove wall.",
+    "plain_english": "A stereo groove wiggles side to side and also up and down. The up-and-down part holds the difference between the left and right channels. Vertical modulation control keeps that movement small. That way the needle stays in the groove instead of jumping out or cutting through the wall. Engineers often do this by making the deep bass mono.",
+    "purpose_function": "It protects both the cut and playback by limiting the vertical difference signal, preventing groove skipping, breakthrough, and tracing distortion, usually through mono-bass (elliptical) filtering and difference-signal limiting.",
+    "practical_application": "A cutting engineer applies an elliptical EQ or bass-mono filter and watches a scope for the vertical component, summing low frequencies to mono and taming out-of-phase energy before it reaches the cutter head.",
+    "category": "Disc Cutting",
+    "related_terms": ["Variable groove depth", "Variable groove pitch", "Vinyl mastering", "Elliptical EQ", "Mono bass"],
+    "common_mistakes": ["Leaving wide stereo bass in the mix, which creates large vertical swings that make the record skip", "Confusing lateral (side-to-side, sum) modulation with vertical (up-and-down, difference) modulation", "Over-tightening the elliptical filter, which needlessly narrows the low-end stereo image"],
+    "scenario_contexts": ["Cutting a mix with out-of-phase sub-bass that must be summed to mono to stop skipping", "Using a scope to check the vertical component of a loud kick-and-bass section before cutting", "Setting an elliptical crossover frequency so only the problem lows are summed to mono"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Neumann technical documentation (disc-cutting lathe / cutter head)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6e204390-8ae9-4387-9aba-c96f9098d4eb",
+   "term": "Vinyl mastering",
+   "fields": {
+    "definition": "The specialized mastering discipline of preparing and adapting audio for the vinyl record format — accounting for the RIAA pre-emphasis curve, the mechanical limits of the cutting lathe and playback stylus, mono or limited low-frequency and sibilance handling, and the level-versus-time trade-off of each side — culminating in a cut lacquer or DMM master.",
+    "plain_english": "Vinyl mastering means getting a mix ready to become a record. A record has physical limits that a digital file does not. So the engineer tames loud bass, harsh \"s\" sounds, and side length. It is like tailoring a song to fit and play cleanly in a spiral groove.",
+    "purpose_function": "It exists to translate a finished mix into a physically cuttable, reliably playable disc, solving the format's mechanical and geometric limits while preserving the intended sound.",
+    "practical_application": "An engineer reviews the mixes, adjusts EQ, dynamics and stereo bass, sets the side splits and levels, and either cuts a reference lacquer or delivers a vinyl-specific master to a cutting facility.",
+    "category": "Vinyl Mastering",
+    "related_terms": ["Vinyl mastering engineer", "Vinyl production master", "Variable groove pitch", "Vertical modulation control", "RIAA equalization"],
+    "common_mistakes": ["Sending a brickwalled, hyper-loud digital master and expecting it to cut and track cleanly", "Ignoring sibilance and wide stereo bass, which cause distortion and skipping on the disc", "Assuming the streaming or CD master will work unchanged for vinyl without side-length planning"],
+    "scenario_contexts": ["Preparing a loud rock album so it still tracks on a home turntable", "Splitting a long album across sides to keep each side within safe time and level", "Taming a bright vocal mix to avoid sibilant distortion in the cut"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Neumann technical documentation (vinyl mastering / disc-cutting lathe)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ee0eec5e-b2d8-4afc-b7e2-05c9d8d83e43",
+   "term": "Vinyl mastering engineer",
+   "fields": {
+    "definition": "The specialist mastering/cutting engineer who prepares audio for vinyl and operates the disc-cutting lathe, making the format-specific decisions — EQ, dynamics, stereo-bass and sibilance control, side sequencing, and pitch/depth settings — and cutting the lacquer or DMM master from which pressing parts are made.",
+    "plain_english": "A vinyl mastering engineer is the person who turns a finished mix into a record. They fix anything that would not cut or play well. Then they run the cutting lathe that carves the master disc. Think of them as a tailor and a machinist for records combined.",
+    "purpose_function": "This role exists to bridge the gap between a finished mix and the physical disc, applying craft and lathe skills so the record sounds right and plays reliably.",
+    "practical_application": "On the job they audition mixes, dial in a cutting chain, set the lathe's pitch and depth, cut reference and final lacquers, and report side times and level limits back to the client and plant.",
+    "category": "Roles",
+    "related_terms": ["Vinyl mastering", "Cutting lathe", "Vinyl production master", "Mastering engineer", "Lacquer master"],
+    "common_mistakes": ["Assuming any mastering engineer can cut vinyl without lathe training and format knowledge", "Thinking the engineer just presses a button rather than making creative and technical cutting choices", "Confusing the vinyl cutting engineer with the plating or pressing-plant technician"],
+    "scenario_contexts": ["Cutting a lacquer master and a reference acetate for client approval", "Advising a band that a 25-minute side must be quieter or split to cut safely", "Setting up the lathe's pitch and depth computer for a specific album's dynamics"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Neumann technical documentation (vinyl mastering / disc-cutting lathe)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7cc5f393-06ef-48aa-9ac0-458ea76daa71",
+   "term": "Vinyl production master",
+   "fields": {
+    "definition": "The final, approved master prepared specifically for vinyl manufacturing — either the vinyl-specific audio master delivered for cutting or the cut lacquer / DMM part sent to the plating and pressing plant to make stampers — as distinct from the master used for digital or CD release.",
+    "plain_english": "A production master is the final, approved version of the music that a factory uses to make copies. The vinyl production master is that final version prepared just for making records. It is the \"go\" copy the pressing plant works from.",
+    "purpose_function": "It exists to give the pressing plant one approved, format-correct source so every pressed record matches the artist's intended sound.",
+    "practical_application": "After approval, the engineer delivers the vinyl production master — a cut lacquer, a DMM, or a flagged vinyl audio fileset — with side splits and notes, and the plant makes stampers from it.",
+    "category": "Vinyl Mastering",
+    "related_terms": ["Vinyl mastering", "Lacquer master", "DMM", "Production master", "Stamper"],
+    "common_mistakes": ["Assuming the vinyl production master is the same file as the CD or streaming master", "Confusing the audio production master with the physical lacquer or DMM part sent for plating", "Not labeling side splits and running order on the delivered master"],
+    "scenario_contexts": ["Delivering an approved lacquer to a plating facility to grow stampers", "Sending a vinyl-flagged fileset to a cutting house as the production master", "Archiving the approved vinyl production master for future repressings"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Neumann technical documentation (vinyl mastering / disc-cutting lathe)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1f039391-8486-43cf-990d-dd8f60462f5f",
+   "term": "Vinyl side balancing",
+   "fields": {
+    "definition": "The mastering task of sequencing and distributing a release's program material across the record's sides so each side's total running time, level, and bass or dynamic demands stay within the format's physical limits, trading playing time against achievable loudness so no side is compromised.",
+    "plain_english": "A record has two or more sides, and each side can only hold so much time before it must get quieter. Vinyl side balancing means splitting the songs across the sides so each one fits and sounds good. It is like packing bags evenly so none is overloaded.",
+    "purpose_function": "It exists to keep every side within safe time-versus-level limits and to give a consistent listening experience, since a long side forces a lower level and a short side allows more.",
+    "practical_application": "The engineer decides the running order and where to split sides, checks each side's total time and loudest passages, and may move a track or trim a gap so both sides cut cleanly.",
+    "category": "Vinyl Mastering",
+    "related_terms": ["Vinyl mastering", "Variable groove pitch", "Variable groove depth", "Side length", "Vinyl production master"],
+    "common_mistakes": ["Cramming too much time on one side, which forces a quiet, thin cut", "Balancing only by time and ignoring that loud, bass-heavy tracks need more space", "Splitting sides purely by track count instead of by minutes and dynamics"],
+    "scenario_contexts": ["Deciding whether a 44-minute album fits one LP or should spread to a double LP", "Moving the loudest track to a shorter side so it can be cut hotter", "Trimming inter-track gaps to keep a long side within safe playing time"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Neumann technical documentation (vinyl mastering / disc-cutting lathe)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e54c9c18-008f-4e52-9a90-cc5c678504fa",
+   "term": "Weiss DS1-MK3",
+   "fields": {
+    "definition": "A professional two-channel digital dynamics processor from Weiss Engineering used in mastering, providing full-band or band-selective (frequency-selective) compression, limiting, and de-essing with mid/side operation and parallel-compression facilities, using 40-bit floating-point internal processing at sample rates up to 96 kHz over AES/EBU.",
+    "plain_english": "The Weiss DS1-MK3 is a high-end digital box used by mastering engineers. It can compress, limit, and tame harsh \"s\" sounds. It can act on just one frequency band or on the whole signal. Think of it as a very precise control for a finished mix's volume and harshness.",
+    "purpose_function": "It exists to give mastering engineers transparent, surgical control of dynamics and sibilance — for example squeezing a narrow band or de-essing without dulling the rest of the track.",
+    "practical_application": "An engineer patches it into the mastering chain over AES/EBU, or uses the plugin version, sets a crossover band, and de-esses or compresses just the problem range while leaving the rest untouched.",
+    "category": "Mastering Hardware",
+    "related_terms": ["De-esser", "Multiband compression", "Mid/side processing", "Parallel compression", "Mastering chain"],
+    "common_mistakes": ["Treating it as a simple loudness maximizer rather than a precise band and dynamics tool", "Over-de-essing until vocals sound lisped or dull", "Confusing the hardware unit with the plugin emulation and expecting identical routing"],
+    "scenario_contexts": ["De-essing a bright lead vocal on a stereo master without dulling the cymbals", "Applying gentle band-selective compression to control a boomy low-mid region", "Using mid/side mode to compress the center vocal separately from the sides"]
+   },
+   "sources": ["Weiss Engineering DS1-MK3 technical documentation", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

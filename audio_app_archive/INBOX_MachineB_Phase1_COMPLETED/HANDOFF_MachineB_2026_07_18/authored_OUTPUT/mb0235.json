@@ -1,0 +1,159 @@
+{
+ "batch": 235,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "3c4f1845-72bc-4812-8c62-65d087b25370",
+   "term": "Localization mix review",
+   "fields": {
+    "definition": "A supervised listening and approval session in which a completed foreign-language (localized) version of a program's soundtrack is checked against the original mix for lip-sync, level balance, tonal match, and creative intent before the deliverable is approved.",
+    "plain_english": "A check where people listen to a dubbed show and compare it to the original. They make sure the new voices line up with the picture and sound right. It is a bit like proofreading a translation, but for the soundtrack.",
+    "purpose_function": "It confirms that the localized soundtrack faithfully recreates the original mix in a new language and meets the client's creative and technical standards before release.",
+    "practical_application": "A localization mixer or supervisor plays the dubbed reels for a language director or client and notes any sync slips, level issues, or mismatched effects to fix in a revision pass.",
+    "category": "Localization Workflow",
+    "related_terms": ["Localization mixer", "M&E stem", "Localized dialogue stem", "Automated dialogue replacement (ADR)", "Quality control (QC)", "Re-recording mix"],
+    "common_mistakes": ["Assuming the review only checks lip-sync and skipping level and tonal matching against the original mix.", "Reviewing against a low-quality reference instead of the approved original mix.", "Approving a version where original-language dialogue still leaks through the M&E."],
+    "scenario_contexts": ["Signing off a Spanish dub of a series episode before delivery to a streaming platform.", "Comparing a localized feature mix to the original English mix on a dubbing stage.", "Flagging a scene where the dubbed line drifts out of sync with the actor's lips."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7dea6a55-d6b0-4780-aab3-36057636fd0a",
+   "term": "Localization mixer",
+   "fields": {
+    "definition": "The re-recording mixer responsible for combining a program's original music-and-effects (M&E) stem with newly recorded target-language dialogue to produce a finished foreign-language (localized) mix that matches the original.",
+    "plain_english": "The engineer who blends a show's music and sound effects with the new dubbed voices. The goal is to make the foreign-language version sound just like the original. It is a bit like a cook rebuilding a dish with one part swapped out.",
+    "purpose_function": "It recreates the original soundtrack in another language by placing dubbed dialogue smoothly into the existing music and effects, keeping the same balance and feel.",
+    "practical_application": "Working from the M&E and a dialogue guide, the mixer levels, EQs, and pans each dubbed line to sit like the original dialogue, then delivers the localized mix as stems or a printmaster.",
+    "category": "Localization Workflow",
+    "related_terms": ["M&E stem", "Localized dialogue stem", "Re-recording mix", "Localization mix review", "Automated dialogue replacement (ADR)", "Printmaster"],
+    "common_mistakes": ["Placing dubbed dialogue without matching the original's reverb and room tone, so voices sound pasted on.", "Ignoring the original dialogue stem as a level and panning reference.", "UNSAFE: monitoring at excessive levels during long dubbing sessions instead of working at the calibrated reference level, risking hearing damage."],
+    "scenario_contexts": ["Mixing a German-language version of a film from the supplied M&E and dub tracks.", "Rebalancing dubbed narration over a documentary's music and effects.", "Delivering localized dialogue, music, and effects stems for a streaming series."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2d394a3c-af07-4357-b611-3ecbdb8ca4f8",
+   "term": "Localization quality control",
+   "fields": {
+    "definition": "The technical and creative inspection process that verifies a completed localized (foreign-language) soundtrack meets delivery specifications, checking sync, loudness, audio artifacts, channel assignments, and the absence of original-language dialogue before the version is accepted.",
+    "plain_english": "The final checking step that makes sure a dubbed soundtrack is correct. Voices must be in sync, loudness must be on target, and there should be no glitches or leftover original speech. It is like inspecting a product before it ships.",
+    "purpose_function": "It catches sync errors, level and loudness problems, artifacts, and mistakes before a localized version is delivered, protecting quality and meeting the client's specs.",
+    "practical_application": "A QC operator screens the localized version end to end and logs timecoded issues such as dropped lines, off-sync dialogue, or loudness that fails the delivery target for correction.",
+    "category": "Localization Workflow",
+    "related_terms": ["Localization mix review", "Loudness normalization", "M&E stem", "Localized dialogue stem", "Deliverables", "Localization mixer"],
+    "common_mistakes": ["Spot-checking only a few scenes instead of screening the entire program.", "Checking picture sync but not verifying integrated loudness against the delivery target.", "Missing original-language dialogue bleeding through because the M&E was not fully filled."],
+    "scenario_contexts": ["QC of a French dub before delivery to a broadcaster.", "Rejecting a localized episode whose loudness fails the EBU R128 target.", "Logging a timecode where a dubbed line is missing from the dialogue stem."]
+   },
+   "sources": ["EBU R128 Loudness Recommendation", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "134c9158-91f1-4996-bc61-4c0584eb48f3",
+   "term": "Localization recording",
+   "fields": {
+    "definition": "The studio recording session in which target-language performances, such as dubbed dialogue, narration, or group crowd voices, are captured to picture so they can replace the original-language content in a localized version.",
+    "plain_english": "The studio session where actors record new voices in another language while watching the picture. This lets their lines replace the original speech. It is like re-voicing a cartoon in a different language.",
+    "purpose_function": "It produces clean, in-sync target-language vocal recordings that the localization mixer can drop into the M&E to build the foreign-language soundtrack.",
+    "practical_application": "In a dubbing booth, voice actors watch the picture and match their lines to the original timing while an engineer records each take for later editing and mixing.",
+    "category": "Localization Workflow",
+    "related_terms": ["Automated dialogue replacement (ADR)", "M&E stem", "Localized dialogue stem", "Localization mixer", "Group ADR", "Lip sync"],
+    "common_mistakes": ["Recording without watching picture, so lines will not sync to the actors' mouths.", "Capturing dubbed dialogue with reverb or room tone baked in, limiting the mixer's control.", "Using inconsistent mic and level choices between sessions, making dialogue hard to match."],
+    "scenario_contexts": ["Recording an Italian dub cast to picture in a dubbing studio.", "Capturing localized narration for a documentary's foreign version.", "Re-recording group crowd voices in the target language."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Rose, Producing Great Sound for Film and Video"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2fc8ea1b-fa00-47d3-9825-a4a41a9c2c45",
+   "term": "Localized broadcast mix",
+   "fields": {
+    "definition": "A final broadcast-ready mix of a program prepared for a specific language territory, in which the original dialogue has been replaced with target-language content over the original music and effects and delivered to that market's technical standards.",
+    "plain_english": "A finished, ready-to-air version of a show made for one country's language. It has dubbed voices over the original music and effects, and it meets that broadcaster's loudness and format rules.",
+    "purpose_function": "It supplies a broadcaster or platform in a given territory with an air-ready soundtrack in the local language that meets their loudness, channel, and format requirements.",
+    "practical_application": "A mixer combines the M&E with the localized dialogue, then conforms the mix to the territory's loudness standard, such as EBU R128, and to the required channel layout before delivery.",
+    "category": "Localization Workflow",
+    "related_terms": ["M&E stem", "Localized dialogue stem", "Loudness normalization", "Localization mixer", "Deliverables", "Localization quality control"],
+    "common_mistakes": ["Delivering at the wrong loudness target for the destination broadcaster.", "Forgetting to conform channel order or downmix for the target format.", "Leaving original-language dialogue in the M&E so it clashes with the dub."],
+    "scenario_contexts": ["Delivering a localized episode to a European broadcaster at the R128 loudness target.", "Preparing a dubbed program for a regional feed.", "Conforming a foreign-language mix to a broadcaster's stereo delivery spec."]
+   },
+   "sources": ["EBU R128 Loudness Recommendation", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fe0b15b1-1cf8-477e-8c70-c9d85086031a",
+   "term": "Localized crowd stem",
+   "fields": {
+    "definition": "A grouped submix containing a program's crowd or background voices (walla) re-performed in the target language, produced so that language-specific crowd content can replace the original when building a localized mix.",
+    "plain_english": "A separate track of background crowd voices recorded in the new language. It makes the murmur of a crowd match the country the dub is for. Think of re-recording the chatter in a busy restaurant scene in another language.",
+    "purpose_function": "It lets a localized mix carry recognizable, language-appropriate crowd voices instead of the original-language crowd, keeping backgrounds believable for the target audience.",
+    "practical_application": "When intelligible crowd voices in the original would sound wrong in the dub, a loop group records new walla in the target language, which is mixed as its own stem alongside the M&E.",
+    "category": "Localization Stem",
+    "related_terms": ["Group ADR", "Walla", "Localized group ADR stem", "M&E stem", "Localized dialogue stem", "Loop group"],
+    "common_mistakes": ["Confusing non-verbal crowd effects with intelligible walla that actually needs re-recording.", "Leaving original-language crowd voices in the M&E, so both languages are heard.", "Mixing new crowd voices too far forward, making them stand out from the original backgrounds."],
+    "scenario_contexts": ["Re-recording restaurant background chatter in the target language for a dub.", "Replacing a stadium crowd's chants for a localized sports drama.", "Building a walla stem that matches the original crowd's density and perspective."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a69f4f66-850d-4820-afc8-203dbc31b2dc",
+   "term": "Localized dialogue stem",
+   "fields": {
+    "definition": "The dialogue submix of a localized version, containing the target-language dubbed lines mixed to match the original dialogue's level, perspective, and processing, delivered separately so it sums with the M&E to form the full foreign-language soundtrack.",
+    "plain_english": "The track that holds just the dubbed voices for a show in the new language, balanced to sound like the original speech. It combines with the music and effects to make the complete dubbed soundtrack.",
+    "purpose_function": "It carries the replacement dialogue for a language version as its own stem, so the mix can be rebuilt, revised, or re-delivered without touching the music and effects.",
+    "practical_application": "The localization mixer edits and levels each dubbed line onto the dialogue stem, matching the original's EQ and reverb, then delivers it beside the M&E as part of the stem set.",
+    "category": "Localization Stem",
+    "related_terms": ["M&E stem", "Localized narration stem", "Automated dialogue replacement (ADR)", "Localization mixer", "DME stems", "Localized group ADR stem"],
+    "common_mistakes": ["Delivering dubbed dialogue that does not sum correctly with the M&E to recreate the mix.", "Skipping reverb and room-tone matching so the dub sounds detached from the scene.", "Baking effects into the stem that should stay adjustable."],
+    "scenario_contexts": ["Delivering a Portuguese dialogue stem alongside the M&E for a film.", "Revising a few dubbed lines by re-delivering only the dialogue stem.", "Matching dubbed dialogue perspective to an over-the-shoulder shot."]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e5128c69-9286-4883-881b-fb515746000c",
+   "term": "Localized group ADR stem",
+   "fields": {
+    "definition": "A submix of group ADR, meaning loop-group crowd and background voices (walla) recorded to picture, performed in the target language and delivered as its own stem so language-specific group voices can replace the original in a localized mix.",
+    "plain_english": "A track of background group voices, like a crowd or a busy room, re-recorded in the new language by a group of actors. It is kept separate so it can be swapped into the dubbed version.",
+    "purpose_function": "It supplies target-language crowd and background dialogue as an isolated stem, keeping incidental voices believable and swappable in the localized soundtrack.",
+    "practical_application": "A loop group records walla to picture in the target language, and the mixer places it on the group ADR stem to sit with the original backgrounds and M&E.",
+    "category": "Localization Stem",
+    "related_terms": ["Group ADR", "Walla", "Localized crowd stem", "Automated dialogue replacement (ADR)", "M&E stem", "Loop group"],
+    "common_mistakes": ["Treating principal dialogue and group ADR as one stem, removing mix flexibility.", "Recording group ADR without picture, so reactions miss the on-screen action.", "Leaving the original-language group voices audible under the dub."],
+    "scenario_contexts": ["Recording a target-language loop group for a hospital scene's background voices.", "Delivering a group ADR stem so a dub can replace intelligible crowd lines.", "Matching new walla density to the original background perspective."]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3dde0d73-7ae3-495b-9318-11addaa5b33b",
+   "term": "Localized narration stem",
+   "fields": {
+    "definition": "The narration or voice-over submix of a localized version, containing the target-language narration mixed to match the original, delivered separately so it sums with the M&E to complete the foreign-language soundtrack.",
+    "plain_english": "A track holding just the dubbed narrator's voice in the new language, balanced like the original. It joins the music and effects to make the full localized soundtrack.",
+    "purpose_function": "It carries a program's translated voice-over as its own stem, letting the narration be revised or re-delivered without affecting the music and effects.",
+    "practical_application": "For a documentary dub, the mixer places the target-language narration on its own stem, matches the original's level and tone, and delivers it with the M&E.",
+    "category": "Localization Stem",
+    "related_terms": ["M&E stem", "Localized dialogue stem", "Voice-over", "Localization mixer", "DME stems", "Localization recording"],
+    "common_mistakes": ["Letting translated narration run longer than the original and drift off the picture.", "Not matching the narration's level and EQ to the original voice-over.", "Combining narration with dialogue so it cannot be revised on its own."],
+    "scenario_contexts": ["Delivering a Japanese narration stem for a localized nature documentary.", "Re-delivering only the narration stem after a script correction.", "Matching dubbed narration loudness to the program's delivery target."]
+   },
+   "sources": ["Rose, Producing Great Sound for Film and Video", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

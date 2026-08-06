@@ -1,0 +1,326 @@
+{
+  "batch": 354,
+  "topic": "Strings, Guitar & Keys",
+  "authored": [
+    {
+      "id": "735a44f0-73df-4eec-9f1d-66db4c74974f",
+      "term": "Sawari buzz",
+      "fields": {
+        "definition": "The deliberate buzzing, overtone-rich, long-sustaining timbre produced by the sawari mechanism on Japanese lutes such as the shamisen and biwa, in which the lowest string (and, on the biwa, others) makes light grazing contact with a ridge or shaped surface near the nut instead of clearing it cleanly. This nonlinear string-surface contact adds bright upper harmonics and a singing sustain that is prized as an essential aesthetic feature, not a fault.",
+        "plain_english": "A buzzing, humming tone that some Japanese string instruments like the shamisen and biwa make on purpose. The lowest string lightly touches a small ridge near the top, so it buzzes and rings for a long time. Players want this sound. It is not a fault.",
+        "purpose_function": "The sawari buzz adds extra high overtones and long sustain, giving the shamisen and biwa their singing, buzzing voice, which is why builders shape the ridge to create it on purpose.",
+        "practical_application": "When recording a shamisen or biwa a technician expects a bright, buzzy sustain and places mics and sets EQ to keep that ringing overtone character rather than treating it as a fault to remove.",
+        "category": "Instrument timbre",
+        "related_terms": [
+          "Sitar jawari",
+          "Sympathetic resonance",
+          "Sustain",
+          "Timbre",
+          "Overtones",
+          "Plucked string"
+        ],
+        "common_mistakes": [
+          "Treating the sawari buzz as a defect or setup fault and trying to remove it; on a shamisen or biwa it is a wanted part of the tone.",
+          "Confusing sawari with an accidental fret or bridge buzz on a Western instrument, which usually is a genuine fault.",
+          "Miking too close and capturing only the harsh buzz instead of the full body and singing sustain."
+        ],
+        "scenario_contexts": [
+          "Recording a solo shamisen for a traditional Japanese music session.",
+          "Amplifying a biwa on stage while preserving its buzzing sustain.",
+          "Blending a shamisen into a fusion track where its bright buzz must sit in the mix."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments (Oxford) — shamisen / biwa / sawari entries",
+        "Taguti et al., 'Acoustical analysis on the sawari tone of Chikuzen biwa', Acoustical Science and Technology (Acoustical Society of Japan)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — plucked strings / nonlinear bridge contact"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "182cfb90-c2c0-4309-9ac9-b4b9f2cd473e",
+      "term": "Sitar jawari",
+      "fields": {
+        "definition": "The wide, gently curved (near-parabolic) main bridge of the sitar, and by extension the buzzing, harmonically rich, long-sustaining timbre it creates. Because each string grazes along the curved bridge surface rather than terminating at a sharp edge, the effective contact point shifts nonlinearly through every vibration cycle, generating strong high harmonics and the sitar's characteristic shimmering buzz; the bridge is periodically re-filed ('doing the jawari') to maintain the tone.",
+        "plain_english": "The curved bridge on a sitar, and the buzzing, ringing sound it gives. The string lightly grazes the curve instead of sitting on a sharp edge, so it makes many bright overtones and a long shimmer. Craftsmen reshape the bridge to keep this sound right.",
+        "purpose_function": "The jawari bridge shapes the sitar's signature bright, buzzing, long-sustaining tone by adding high harmonics, which is why its exact curve is carefully filed and maintained.",
+        "practical_application": "A technician recording a sitar captures the shimmering, harmonically dense buzz with careful mic placement, and knows a dull or over-buzzy instrument may need its jawari re-cut by a specialist rather than fixing it with EQ.",
+        "category": "Instrument timbre",
+        "related_terms": [
+          "Sawari buzz",
+          "Sitar sympathetic strings",
+          "Overtones",
+          "Sustain",
+          "Timbre",
+          "Plucked string"
+        ],
+        "common_mistakes": [
+          "Thinking the sitar's buzz is a fault; the jawari bridge is designed to buzz.",
+          "Assuming EQ can replace a properly cut jawari; the timbre comes from the physical bridge curve.",
+          "Confusing the main playing-string bridge (jawari) with the separate smaller bridge that carries the sympathetic strings."
+        ],
+        "scenario_contexts": [
+          "Recording a sitar for a film score and capturing its shimmering buzz.",
+          "Diagnosing a dull-sounding sitar that needs its jawari re-shaped by a maker.",
+          "Amplifying a sitar live and keeping the bright overtones without harshness."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments (Oxford) — sitar / jivari (jawari) entries",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — nonlinear/buzzing bridge and the sitar",
+        "Rossing (ed.), The Science of String Instruments (Springer) — curved-bridge (sitar) string excitation"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "646c0bba-3bec-484a-a1e3-410ae2d54537",
+      "term": "Sitar sympathetic strings",
+      "fields": {
+        "definition": "A set of thin, undamped resonating strings on the sitar (the tarab strings, typically eleven to thirteen) tuned to the notes of the raga and running beneath the frets to their own small bridge and tuning pegs. They are not normally plucked; instead they vibrate by sympathetic resonance whenever the played strings sound a matching pitch, producing a continuous shimmering halo of resonance behind the melody.",
+        "plain_english": "A group of thin extra strings on a sitar that the player usually does not pluck. They are tuned to the notes of the piece, and they ring on their own whenever a matching note is played. This adds a soft, shimmering echo behind the main melody.",
+        "purpose_function": "The sympathetic strings enrich and extend the sitar's sound with a resonant shimmer tuned to the raga, giving the instrument its floating, echoing quality without the player touching them.",
+        "practical_application": "When miking a sitar a technician places mics to capture both the played strings and the ringing sympathetic strings, and knows these resonances continue after each note and can build up in a mix.",
+        "category": "Instrument component",
+        "related_terms": [
+          "Sympathetic resonance",
+          "Sitar jawari",
+          "Resonance",
+          "Sustain",
+          "Drone string",
+          "Sawari buzz"
+        ],
+        "common_mistakes": [
+          "Assuming the sympathetic strings are played directly; they are normally left alone and ring on their own.",
+          "Forgetting to tune the sympathetic strings to the raga, so their resonance clashes with the melody.",
+          "Gating or muting a sitar recording so hard that the natural sympathetic ring is cut off."
+        ],
+        "scenario_contexts": [
+          "Recording a raga performance and capturing the shimmering sympathetic resonance.",
+          "Tuning a sitar's sympathetic strings to a specific raga before a session.",
+          "Managing the build-up of sympathetic ring when mixing a dense sitar track."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments (Oxford) — sitar (tarab / sympathetic strings)",
+        "'Shaping the resonance: sympathetic strings in Hindustani classical instruments', Proceedings of Meetings on Acoustics (Acoustical Society of America)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — sympathetic resonance"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "6d592ae6-f536-4d5f-806c-d0911808ff52",
+      "term": "Slap bass transient",
+      "fields": {
+        "definition": "The sharp, high-amplitude attack spike produced when a bass string is struck (slapped) by the side of the thumb or snapped (popped) by a finger against the fingerboard, giving a percussive, click-like onset with strong high-frequency content. Because this transient peaks well above the note's sustained level, it is a central concern in gain-staging, compression and limiting when recording or mixing slap bass.",
+        "plain_english": "The quick, loud spike of sound at the very start of a slapped or popped bass note. Hitting the string with your thumb or snapping it makes a sharp, clicky attack that is much louder than the rest of the note. Engineers watch this spike so it does not overload the recording.",
+        "purpose_function": "The bright transient gives slap bass its punchy, percussive funk character, but it also warns the engineer that peak level far exceeds the average, so gain and dynamics must be set to control it.",
+        "practical_application": "A technician recording slap bass sets converter levels with headroom for the peaks and often uses a compressor with a slower attack plus a fast limiter, so the transient's punch survives while clipping is prevented.",
+        "category": "Attack transient",
+        "related_terms": [
+          "Transient",
+          "Compression",
+          "Limiter",
+          "DI box",
+          "Attack time",
+          "Headroom"
+        ],
+        "common_mistakes": [
+          "Setting record levels by the average meter reading and letting the sharp transient clip the converter.",
+          "Using a fast compressor attack that flattens the transient and kills the slap's percussive punch.",
+          "Assuming the click is a fault; the bright transient is the whole point of the slap sound."
+        ],
+        "scenario_contexts": [
+          "Tracking a funk slap-bass part through a DI and leaving headroom for peaks.",
+          "Setting compressor attack and a limiter to tame slap transients without losing punch.",
+          "Mixing slap bass so the attack cuts through without overloading the bus."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, Modern Recording Techniques (Focal Press) — bass guitar recording and dynamics",
+        "Sound on Sound, 'Recording Bass Guitar' — slap technique, transients, compression and limiting",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — plucked/struck string attack"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "f251787b-1a1c-4f17-b0f4-0b1b4af64a68",
+      "term": "String buzz",
+      "fields": {
+        "definition": "An unwanted buzzing or rattling produced when a vibrating string contacts something it should clear, most often a fret (fret buzz), but also the nut, fingerboard or a loose component. It occurs when the string's vibrating arc runs too close to the obstruction, typically from low action, insufficient neck relief, uneven or worn frets, or a poorly cut nut.",
+        "plain_english": "A buzzing or rattling from a guitar or bass string hitting something it should not touch, usually a fret. It happens when the strings sit too low or the frets are uneven, so the vibrating string slaps against them. It is normally a fault to fix in the setup.",
+        "purpose_function": "Naming this fault helps a technician trace an unwanted rattle to its real cause, the action, relief, frets or nut, so it can be corrected at the instrument instead of masked with EQ.",
+        "practical_application": "A technician diagnoses string buzz by checking string height, neck relief and fret level, then adjusts the truss rod, raises the saddle, or dresses the frets to clear it.",
+        "category": "Mechanical noise",
+        "related_terms": [
+          "Fret buzz",
+          "Action",
+          "Neck relief",
+          "Truss rod",
+          "Nut",
+          "Fret dressing"
+        ],
+        "common_mistakes": [
+          "Lowering the action for easier playing until the strings buzz on the frets, then blaming the strings.",
+          "Ignoring neck relief and trying to cure buzz only by raising the saddle.",
+          "Confusing light fret contact from very hard playing with a genuine setup fault."
+        ],
+        "scenario_contexts": [
+          "Setting up a guitar and chasing buzz that appears only on certain frets.",
+          "Adjusting a truss rod to add relief and stop open-string buzz.",
+          "Isolating whether a rattle comes from the nut, the frets, or a loose part."
+        ]
+      },
+      "sources": [
+        "Erlewine, The Guitar Player Repair Guide (Backbeat Books) — setup, action, relief and fret buzz",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — string vibration and string-fret contact",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — fretted string instruments"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "7c5d614b-1031-4b73-b4a4-327aace881c9",
+      "term": "String crossing",
+      "fields": {
+        "definition": "In bowed-string playing, the movement of the bow from one string to an adjacent or non-adjacent string, requiring a change in the bow arm's plane so the hair cleanly contacts the new string. Coordinated at the shoulder, elbow and wrist, clean string crossing underpins smooth passages, arpeggios and bariolage; awkward crossings cause scratchy tone or an accidental double-stop.",
+        "plain_english": "Moving the bow from one string to the next on a violin, viola, cello or bass. The player raises or lowers the bow arm to reach the new string cleanly. Doing it smoothly is key to fast passages, and doing it clumsily makes scratchy or doubled notes.",
+        "purpose_function": "String crossing lets a player move between the pitches on different strings while keeping a smooth bow stroke, and mastering it avoids the scratches and accidental extra notes that spoil arpeggios and fast runs.",
+        "practical_application": "A technician recording strings expects slight bow noise at crossings and chooses mic placement and edits phrasing so these natural moments stay musical, while the player practices arm-level control to keep crossings clean.",
+        "category": "Bowing technique",
+        "related_terms": [
+          "Bowing",
+          "Arco",
+          "Bariolage",
+          "Détaché",
+          "Double stop",
+          "Legato"
+        ],
+        "common_mistakes": [
+          "Moving only the wrist for wide crossings, which causes scratchy tone or catches the wrong string.",
+          "Crossing too early or too late and sounding an accidental double-stop between the two strings.",
+          "Assuming crossing noise is a microphone problem when it comes from the bowing itself."
+        ],
+        "scenario_contexts": [
+          "Recording a violinist's arpeggios where smooth string crossings matter.",
+          "Coaching cleaner crossings in a fast passage during a session.",
+          "Editing a string take to smooth an awkward audible crossing."
+        ]
+      },
+      "sources": [
+        "Adler, The Study of Orchestration (Norton) — bowed-string technique and string crossing",
+        "The New Grove Dictionary of Music and Musicians (Oxford) — bowing / string technique"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "f474a887-2358-46ea-9edf-a373213c31d5",
+      "term": "String scrape",
+      "fields": {
+        "definition": "The scraping, rasping sound made when a hand or pick slides lengthwise along the wound (wrapped) surface of a string, dragging across the ridges of the winding. It occurs incidentally when shifting position on wound strings, and is also produced deliberately as an effect (for example a pick scrape) for a dramatic descending or ascending rasp.",
+        "plain_english": "The rough, scratchy sound made by sliding a finger or pick along the length of a wound string. The wrapped ridges of the string catch and rasp as you move. It can be an accident when shifting the hand, or done on purpose as a special effect.",
+        "purpose_function": "As a noise the scrape signals that a hand slid along a wound string; as an effect it adds a dramatic rasping swoop, so a technician must tell wanted scrapes from unwanted ones.",
+        "practical_application": "A technician decides case by case whether a string scrape is an intended effect to keep or an unwanted noise to reduce through cleaner shifting, flatwound or coated strings, or editing.",
+        "category": "Performance noise",
+        "related_terms": [
+          "String squeak",
+          "Pick scrape",
+          "Wound string",
+          "Flatwound string",
+          "Finger noise",
+          "Position shift"
+        ],
+        "common_mistakes": [
+          "Confusing a lengthwise string scrape with fret buzz; the scrape comes from sliding along the winding.",
+          "Trying to EQ out every scrape and dulling the whole track instead of adjusting technique or strings.",
+          "Assuming all scrapes are mistakes, when a pick scrape may be a deliberate effect."
+        ],
+        "scenario_contexts": [
+          "Cleaning up incidental scrape noise on a recorded bass shift.",
+          "Adding a deliberate pick scrape for effect in a rock track.",
+          "Switching to flatwound or coated strings to cut scrape on a session."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, Modern Recording Techniques (Focal Press) — guitar/bass recording and string noise",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — instrument recording and finger/string noise"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "ab6ee4d1-7600-4345-b08e-3d5dd783114c",
+      "term": "String squeak",
+      "fields": {
+        "definition": "The short, high-pitched squeak produced when a fingertip slides along a round-wound string while shifting position or changing chords, as skin drags over the string's spiral winding. Most audible on acoustic and electric guitar and bass fitted with wound strings, it is generally an unwanted artifact in recordings.",
+        "plain_english": "The quick, high squeak you hear when a finger slides along a wound guitar or bass string to change notes. The skin drags over the string's ridges and squeaks. It is usually an unwanted sound in a recording.",
+        "purpose_function": "The term names a common finger-noise artifact so technicians and players can target its cause, the technique, string type or dry skin, rather than blaming the microphone or the mix.",
+        "practical_application": "A technician reduces string squeak by advising lighter, lifted shifts and by using flatwound or coated strings, and can soften any remaining squeaks with careful editing.",
+        "category": "Performance noise",
+        "related_terms": [
+          "String scrape",
+          "Finger noise",
+          "Wound string",
+          "Flatwound string",
+          "Roundwound string",
+          "Position shift"
+        ],
+        "common_mistakes": [
+          "Blaming the microphone for squeaks that come from the player's hand sliding on wound strings.",
+          "Gating a track hard to kill squeaks and cutting off the start of real notes.",
+          "Ignoring string type when coated or flatwound strings would greatly reduce the squeak."
+        ],
+        "scenario_contexts": [
+          "Recording a fingerstyle acoustic part and reducing position-shift squeaks.",
+          "Choosing coated strings to cut squeak on a close-miked guitar.",
+          "Editing out distracting squeaks between phrases in a quiet passage."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, Modern Recording Techniques (Focal Press) — acoustic guitar recording and finger noise",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — instrument recording"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "1cd45c79-5605-4b5b-a2f2-48e25223f682",
+      "term": "String strike",
+      "fields": {
+        "definition": "The excitation of a string by striking (hitting) it, with a hammer, mallet, stick or the fingers (as in fret-hand hammer-ons and two-hand tapping), rather than plucking or bowing, producing a sharp percussive attack. Struck-string excitation defines instruments such as the piano and hammered dulcimer and gives techniques like slapping and tapping their percussive onset.",
+        "plain_english": "Making a string sound by hitting it instead of plucking or bowing it. A piano hammer, a dulcimer beater, or a finger tapping the fretboard all strike the string. This gives a sharp, percussive start to the note.",
+        "purpose_function": "Striking a string sets it moving with a fast, percussive attack and a distinct tone, which is why struck-string instruments and techniques exist alongside plucked and bowed ones.",
+        "practical_application": "A technician recording struck-string sounds, such as piano, hammered dulcimer or tapped guitar, expects a sharp attack transient and sets levels and mic placement to capture the percussive onset cleanly.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Attack transient",
+          "Hammer-on",
+          "Tapping",
+          "Plucked string",
+          "Bowing",
+          "Slap bass transient"
+        ],
+        "common_mistakes": [
+          "Confusing striking a string (hitting it) with plucking it; the attack and tone differ.",
+          "Setting a conservative-only level and clipping the sharp strike transient.",
+          "Miking only for sustain and missing the percussive attack of a struck note."
+        ],
+        "scenario_contexts": [
+          "Recording a hammered dulcimer and capturing its percussive attack.",
+          "Tracking two-hand tapping on electric guitar.",
+          "Close-miking piano hammers for a bright, percussive attack."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer) — hammered/struck strings (piano, dulcimer)",
+        "Ballou (ed.), Handbook for Sound Engineers (Focal Press) — instrument recording and attack transients"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

@@ -1,0 +1,442 @@
+{
+ "packet": "add_12_room_measurement.json",
+ "group": "Room, Speaker & Measurement",
+ "primary_topic": "Audio Measurement & Optimization",
+ "difficulty": "advanced",
+ "terms": [
+  {
+   "id": "91d43548-7b35-4967-9dfd-b3a9b6cf2a7e",
+   "term": "Boundary Reinforcement",
+   "topic": "Room Acoustics",
+   "topic_id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "d085c22e-6aef-47da-bd80-42d9094ee584",
+   "term": "ETC (Energy-Time Curve)",
+   "topic": "Audio Measurement & Optimization",
+   "topic_id": "ea5ea932-9963-43ee-a637-163e258e53d0",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "ef58888f-471b-4871-b6e1-b2cf52e567f0",
+   "term": "Farfield Listening",
+   "topic": "Room Acoustics",
+   "topic_id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "cd57db0a-383a-4625-9e65-7980c53df4a7",
+   "term": "Harman Curve",
+   "topic": "Audio Measurement & Optimization",
+   "topic_id": "ea5ea932-9963-43ee-a637-163e258e53d0",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "cf84bcdb-b348-4d87-8468-c8f338f5f83a",
+   "term": "Harman Target",
+   "topic": "Audio Measurement & Optimization",
+   "topic_id": "ea5ea932-9963-43ee-a637-163e258e53d0",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "58f0ef32-4623-460c-a467-47882da05476",
+   "term": "Klippel NFS",
+   "topic": "Audio Measurement & Optimization",
+   "topic_id": "ea5ea932-9963-43ee-a637-163e258e53d0",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "8170f8a9-d84a-41c4-8f9a-381acf137340",
+   "term": "Listening Triangle",
+   "topic": "Room Acoustics",
+   "topic_id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "e5253f67-2422-4063-8f6e-f877486f18df",
+   "term": "Listening Window",
+   "topic": "Audio Measurement & Optimization",
+   "topic_id": "ea5ea932-9963-43ee-a637-163e258e53d0",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "5d4f0e94-109a-44e5-be2a-06418e077c07",
+   "term": "Nearfield Listening",
+   "topic": "Room Acoustics",
+   "topic_id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "8328a90a-c846-44df-a1c7-32ddd5a3a2d5",
+   "term": "Olive Preference Score",
+   "topic": "Audio Measurement & Optimization",
+   "topic_id": "ea5ea932-9963-43ee-a637-163e258e53d0",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "690a8bb1-5fc8-4f2d-b96f-20569b0b38ae",
+   "term": "Predicted In-Room Response",
+   "topic": "Audio Measurement & Optimization",
+   "topic_id": "ea5ea932-9963-43ee-a637-163e258e53d0",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "65163a91-6c30-4b8a-a966-32e90635625b",
+   "term": "Speaker Coupling",
+   "topic": "Room Acoustics",
+   "topic_id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "99a7a908-2714-44fc-95ab-ea3fa124750b",
+   "term": "Speaker Decoupling",
+   "topic": "Room Acoustics",
+   "topic_id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "1cf53c88-aaa4-466e-a8d9-86b88d85d782",
+   "term": "Spinorama",
+   "topic": "Audio Measurement & Optimization",
+   "topic_id": "ea5ea932-9963-43ee-a637-163e258e53d0",
+   "difficulty": "advanced",
+   "cross_list_topics": [
+    {
+     "id": "d638116b-d1f0-45b0-bd09-6aa77eedd2b6",
+     "name": "Room Acoustics"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

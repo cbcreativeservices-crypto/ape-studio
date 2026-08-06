@@ -1,0 +1,319 @@
+{
+ "packet": "add_07_radio_transmission.json",
+ "group": "Radio \u2014 Transmission & FCC",
+ "primary_topic": "Broadcast / Radio Production & Air Chain",
+ "difficulty": "intermediate",
+ "terms": [
+  {
+   "id": "fa998867-acc3-4277-bde2-4199f427a6c4",
+   "term": "Composite MPX",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "e6248e00-52b1-4f93-994d-57305e66e9af",
+     "name": "Broadcast Loudness & Compliance"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "authoring_note": "Author as 'MPX / Composite (FM multiplex) Signal'."
+  },
+  {
+   "id": "03c97868-197c-46ec-9316-2f97fcec5373",
+   "term": "EAS Header",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "e6248e00-52b1-4f93-994d-57305e66e9af",
+     "name": "Broadcast Loudness & Compliance"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "b1c3b874-e071-4ec6-9b31-3ea82c152444",
+   "term": "HD Radio Delay",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "e6248e00-52b1-4f93-994d-57305e66e9af",
+     "name": "Broadcast Loudness & Compliance"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "773c5b1a-e618-48ff-9a28-1041faba323a",
+   "term": "Percent Modulation",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "e6248e00-52b1-4f93-994d-57305e66e9af",
+     "name": "Broadcast Loudness & Compliance"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "c1b9ff48-c87c-406e-ad53-3c9f63f69bab",
+   "term": "RBDS Encoder",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "e6248e00-52b1-4f93-994d-57305e66e9af",
+     "name": "Broadcast Loudness & Compliance"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "3f7771bc-db51-4b89-9ea7-be2cc0d7243c",
+   "term": "RDS Encoder",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "e6248e00-52b1-4f93-994d-57305e66e9af",
+     "name": "Broadcast Loudness & Compliance"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "5017aabc-1a67-486e-a980-0da8fd720230",
+   "term": "Required Monthly Test (RMT)",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "e6248e00-52b1-4f93-994d-57305e66e9af",
+     "name": "Broadcast Loudness & Compliance"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "48c37a94-5da9-498f-890e-67ee3a570dec",
+   "term": "Required Weekly Test (RWT)",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "e6248e00-52b1-4f93-994d-57305e66e9af",
+     "name": "Broadcast Loudness & Compliance"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "88a6990d-7e12-4fd8-b5f5-1326f2038e4b",
+   "term": "RPU (Remote Pickup Unit)",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "e6248e00-52b1-4f93-994d-57305e66e9af",
+     "name": "Broadcast Loudness & Compliance"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "c3c74754-814f-4b25-94dd-bf898c1c287d",
+   "term": "Stereo Generator",
+   "topic": "Broadcast / Radio Production & Air Chain",
+   "topic_id": "f0ff4116-be0e-4add-81c8-7d6459988527",
+   "difficulty": "intermediate",
+   "cross_list_topics": [
+    {
+     "id": "e6248e00-52b1-4f93-994d-57305e66e9af",
+     "name": "Broadcast Loudness & Compliance"
+    }
+   ],
+   "definition": "(definition pending)",
+   "plain_english": "",
+   "purpose_function": "",
+   "practical_application": "",
+   "category": "",
+   "related_terms": [],
+   "common_mistakes": [],
+   "scenario_contexts": [],
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

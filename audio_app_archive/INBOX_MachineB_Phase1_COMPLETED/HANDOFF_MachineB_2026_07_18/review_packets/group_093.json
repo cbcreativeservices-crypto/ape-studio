@@ -1,0 +1,1004 @@
+{
+ "group": 93,
+ "terms": [
+  {
+   "id": "23a6430d-7172-482b-9164-d7c4b11fe9ec",
+   "term": "Queue-Line Audio",
+   "topic": "Themed Entertainment / Haunt Audio",
+   "difficulty": null,
+   "definition": "The atmospheric and thematic audio program played in an attraction's queue (waiting line) area, delivered through distributed loudspeakers to theme the wait, build anticipation, and mask ambient crowd and mechanical noise. It is commonly zoned and looped so content stays coherent as guests move along the line.",
+   "plain_english": "The background sound played in the waiting line for a ride or show. It themes the wait, builds excitement, and helps cover the noise of the crowd.",
+   "purpose_function": "It extends the attraction's themed world into the waiting line to build anticipation, mask crowd and mechanical noise, and make the wait feel shorter and part of the story. Zoning the content keeps it fresh as guests move along the queue.",
+   "practical_application": "A technician designs and tunes zoned, looping playback along the queue through distributed loudspeakers, setting levels per section so the theming reads without becoming fatiguing over a long wait.",
+   "category": "Attraction Zone Audio",
+   "related_terms": [
+    "Preshow Audio",
+    "Ambient Audio",
+    "Backstory Audio",
+    "Distributed Sound System",
+    "Show Control",
+    "Background Music"
+   ],
+   "common_mistakes": [
+    "Looping a short music or ambience clip so tightly that the repetition becomes obvious and annoying over a long wait.",
+    "Setting one level for the whole queue instead of zoning it, so some sections are too loud and others are drowned out by crowd noise.",
+    "UNSAFE: mounting queue-line loudspeakers overhead without rated hardware and a secondary safety attachment, risking a fall onto guests below."
+   ],
+   "scenario_contexts": [
+    "Looping themed ambience and music play through distributed speakers along a switchback queue to theme the wait.",
+    "A haunt's outdoor line uses low, ominous soundscapes to build dread before guests reach the entrance.",
+    "Zoned queue audio shifts content as guests move from the outer line toward the loading area."
+   ]
+  },
+  {
+   "id": "9dab4ff6-adbe-4b8d-a1a3-4fc8b80e02f7",
+   "term": "Administrative metadata",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "Metadata that records the technical and management information needed to store, maintain, and preserve a digital object over time, including its technical characteristics (format, encoding, and file properties), rights and access conditions, and preservation history. In digital preservation it is commonly subdivided into technical, rights, and preservation (digital provenance) metadata, as distinct from descriptive and structural metadata.",
+   "plain_english": "Administrative metadata is the record-keeping data about a file, not about what the sound is. It notes things like the file format, who may use it, and every change made to it over time.",
+   "purpose_function": "It gives systems and staff the operational information needed to manage, protect, and preserve a file, tracking format, rights, and every preservation action so the object stays usable and trustworthy across its life.",
+   "practical_application": "An audio archivist captures administrative metadata (format, sample rate, bit depth, checksum, capture chain, and each processing step) at ingest so future staff know exactly how a file was made and handled.",
+   "category": "Metadata",
+   "related_terms": [
+    "Descriptive metadata",
+    "Structural metadata",
+    "Preservation metadata",
+    "Archival information package",
+    "Chain of custody",
+    "Fixity"
+   ],
+   "common_mistakes": [
+    "Confusing administrative metadata (how a file is managed and preserved) with descriptive metadata (what the recording is about).",
+    "Recording administrative metadata once at ingest and never updating it as preservation actions occur.",
+    "Treating the checksum or technical format details as optional rather than core preservation information."
+   ],
+   "scenario_contexts": [
+    "Documenting format, sample rate, bit depth, and capture chain when ingesting a digitized tape into a repository.",
+    "Recording each normalization, migration, or re-checksum event in a file's preservation history.",
+    "Storing rights and access restrictions alongside a broadcast recording so future users know usage conditions."
+   ]
+  },
+  {
+   "id": "7e20fe06-97c6-469a-8983-48802ac23261",
+   "term": "Archival information package",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "In the OAIS reference model (ISO 14721), the Archival Information Package (AIP) is the information package that a repository actually stores and preserves for the long term. It consists of the Content Information (the target digital object plus its Representation Information) together with the complete Preservation Description Information (Reference, Provenance, Context, Fixity, and Access Rights information) needed to preserve and interpret that content.",
+   "plain_english": "An archival information package is the keeper version of a file that the archive holds for the long term. It bundles the audio with all the extra data needed to prove what it is, where it came from, and that it has not changed.",
+   "purpose_function": "It defines a complete, self-describing unit for long-term storage so that content and everything needed to preserve, authenticate, and interpret it stay together, independent of the systems that created it.",
+   "practical_application": "When ingesting a submission (SIP), an archivist turns it into an AIP by adding preservation metadata, fixity checksums, and identifiers before committing it to archival storage.",
+   "category": "OAIS Framework",
+   "related_terms": [
+    "Submission information package",
+    "Dissemination information package",
+    "OAIS reference model",
+    "Preservation metadata",
+    "Administrative metadata",
+    "Fixity"
+   ],
+   "common_mistakes": [
+    "Confusing the AIP (the stored preservation version) with the SIP submitted at ingest or the DIP delivered to users.",
+    "Thinking the AIP is only the audio file, when it must also carry its Preservation Description Information.",
+    "Assuming an AIP never changes; its content is preserved, but its metadata (for example new fixity or provenance) may be updated."
+   ],
+   "scenario_contexts": [
+    "Packaging a digitized field recording with its checksums, provenance, and identifiers for deposit in a preservation repository.",
+    "Auditing a repository to confirm each AIP still contains complete Preservation Description Information.",
+    "Generating a dissemination copy (DIP) from a stored AIP to give a researcher access."
+   ]
+  },
+  {
+   "id": "8eb52360-4c35-4226-935d-dcb8073e479a",
+   "term": "Archive accession number",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A unique number or code assigned to a group of materials at the point it is acquired (accessioned) by a repository, used to identify that acquisition and to link the materials to their associated accession and management records. It is often structured as a year plus a running sequence.",
+   "plain_english": "An accession number is the unique ID an archive gives a batch of material when it first arrives. It works like a claim ticket that ties the items to their paperwork.",
+   "purpose_function": "It establishes intellectual and physical control at the moment of acquisition, giving each accession a persistent identifier so materials can be tracked, located, and tied to their documentation throughout their life in the repository.",
+   "practical_application": "When a collection of tapes arrives, the archivist assigns an accession number and records it on the containers and in the accession register so every later action references it.",
+   "category": "Archival Control",
+   "related_terms": [
+    "Chain of custody",
+    "Administrative metadata",
+    "Archive lifecycle management",
+    "Archival information package",
+    "Provenance"
+   ],
+   "common_mistakes": [
+    "Confusing the accession number (identifies an acquisition) with a catalog or call number used for description and retrieval.",
+    "Reusing or reassigning accession numbers, which breaks the link between materials and their records.",
+    "Assigning a single accession number to unrelated acquisitions received at different times."
+   ],
+   "scenario_contexts": [
+    "Logging a donated reel-to-reel collection into the accession register with a new accession number.",
+    "Tracing a specific tape back to its acquisition paperwork using its accession number.",
+    "Cross-referencing digitized files to the original accession number so provenance is preserved."
+   ]
+  },
+  {
+   "id": "b3828c65-8198-4584-a156-4bb277bc76cf",
+   "term": "Archive authenticity verification",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The process of confirming that an archived object is what it purports to be and has not been altered in an undocumented way, established through fixity information (checksums), documented provenance and chain of custody, and other integrity evidence maintained over the object's life.",
+   "plain_english": "This is how you prove that a stored recording is genuine and has not been changed. You check that its checksum still matches and that there is a clear record of who handled it.",
+   "purpose_function": "It protects trust in the archive by demonstrating that content is genuine and unmodified, which is essential for the legal, historical, and evidentiary use of recordings.",
+   "practical_application": "Before releasing an archived recording as evidence or as a master, a technician verifies its checksum against the recorded value and reviews its provenance and chain-of-custody records.",
+   "category": "Authenticity & Integrity",
+   "related_terms": [
+    "Fixity",
+    "Chain of custody",
+    "Archive integrity audit",
+    "Administrative metadata",
+    "Checksum",
+    "Provenance"
+   ],
+   "common_mistakes": [
+    "Treating a successful file open or playback as proof of authenticity, rather than verifying fixity and provenance.",
+    "Relying on MD5 alone where tampering is a concern; it detects accidental errors but is cryptographically compromised.",
+    "Assuming authenticity without an unbroken, documented chain of custody."
+   ],
+   "scenario_contexts": [
+    "Confirming a forensic audio recording is unaltered before it is submitted as evidence.",
+    "Validating a preservation master's checksum and provenance before creating derivative copies.",
+    "Verifying the authenticity of files received from another institution during an exchange."
+   ]
+  },
+  {
+   "id": "bc08e0fb-4f66-4002-83de-aca9b89cc310",
+   "term": "Archive integrity audit",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A systematic check of stored archival objects to confirm their bit-level integrity, typically by recalculating fixity values (checksums) across holdings and comparing them against the recorded values to detect data corruption, loss, or undocumented change.",
+   "plain_english": "An integrity audit is a regular checkup that scans stored files to make sure none have gone bad. It re-checks each file's checksum and flags any that no longer match.",
+   "purpose_function": "It detects bit rot, storage errors, and undocumented changes early so a damaged file can be restored from a verified copy before all copies are affected.",
+   "practical_application": "A repository runs scheduled integrity audits that recompute checksums across storage and report mismatches, letting staff replace corrupted files from verified backups.",
+   "category": "Authenticity & Integrity",
+   "related_terms": [
+    "Fixity",
+    "Checksum",
+    "Archive authenticity verification",
+    "Archive refresh cycle",
+    "Administrative metadata"
+   ],
+   "common_mistakes": [
+    "Assuming one copy passing a checksum check is enough; integrity auditing needs verified redundant copies to repair from.",
+    "Running audits so rarely that corruption is found only after every copy is affected.",
+    "Confusing an integrity audit (bit-level fixity) with authenticity verification (genuineness and provenance)."
+   ],
+   "scenario_contexts": [
+    "Scheduling periodic fixity checks across a digital audio repository to catch silent data corruption.",
+    "Investigating a checksum mismatch flagged during a routine audit and restoring from backup.",
+    "Reporting audit results as evidence of ongoing integrity for a trusted-repository assessment."
+   ]
+  },
+  {
+   "id": "a55b1b07-5563-41ad-8476-6d737082017a",
+   "term": "Archive lifecycle management",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The coordinated management of archival materials through all stages of their existence, from acquisition and accession, ingest, and description, through storage and active preservation (fixity checking, refreshment, and migration), access, and eventual disposition or continued retention, governed by defined policies.",
+   "plain_english": "This means caring for stored material at every stage, from the day it arrives to its long-term storage. It is like servicing a car on a set schedule instead of waiting for it to break down.",
+   "purpose_function": "It ensures preservation actions happen at the right time under consistent policy, so materials stay authentic, accessible, and usable across changing formats and technologies rather than degrading through neglect.",
+   "practical_application": "An archive follows lifecycle policies that trigger ingest workflows, scheduled fixity audits, media refresh, and format migration so each object is actively maintained rather than left static.",
+   "category": "Archival Management",
+   "related_terms": [
+    "Archive refresh cycle",
+    "Archive integrity audit",
+    "Archival information package",
+    "Administrative metadata",
+    "Archive accession number",
+    "Chain of custody"
+   ],
+   "common_mistakes": [
+    "Treating archiving as a one-time deposit rather than an ongoing cycle of active preservation.",
+    "Deferring migration and refresh until media or formats are already obsolete.",
+    "Managing storage in isolation from accession, description, and access policies."
+   ],
+   "scenario_contexts": [
+    "Setting policy that schedules fixity audits, media refresh, and format migration at defined intervals.",
+    "Planning a workflow from tape accession through digitization, storage, and researcher access.",
+    "Reviewing at-risk formats to prioritize migration within the preservation lifecycle."
+   ]
+  },
+  {
+   "id": "bca0e812-4e11-4d29-acad-ae70ac12467a",
+   "term": "Archive refresh cycle",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The scheduled recurring process of copying archived data onto new storage media of the same type (media refreshment) without changing the bitstream, performed to counter physical media degradation and reach media before it fails; it is distinct from migration, which moves content to a new format or a different media type.",
+   "plain_english": "A refresh cycle means copying stored files onto new media on a regular schedule, before the old media wears out. The files stay exactly the same; only the thing they sit on is renewed.",
+   "purpose_function": "It counters the limited and uncertain lifespan of storage media by moving bit-for-bit copies onto new carriers on a planned schedule, so files are never left on aging or failing media.",
+   "practical_application": "A repository refreshes its LTO tape or disk holdings on a set cycle, copying data to new carriers and verifying checksums after each copy to confirm nothing changed.",
+   "category": "Storage & Media",
+   "related_terms": [
+    "Archive integrity audit",
+    "Fixity",
+    "Data migration",
+    "Archive lifecycle management",
+    "Archival information package"
+   ],
+   "common_mistakes": [
+    "Confusing refresh (a bit-identical copy to new media of the same type) with migration (a change of format or media type).",
+    "Refreshing without verifying checksums, so a copy error goes undetected.",
+    "Setting the cycle longer than the media's reliable life, so carriers fail before they are refreshed."
+   ],
+   "scenario_contexts": [
+    "Copying an LTO tape library to new-generation tape before the old stock exceeds its rated life.",
+    "Copying disk-based masters to fresh drives on a scheduled refresh and re-verifying fixity.",
+    "Planning refresh intervals as part of a repository's storage maintenance policy."
+   ]
+  },
+  {
+   "id": "df9deca5-4be8-4d3d-8514-7e9e3a013505",
+   "term": "Archive restoration drill",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A planned test in which archived data is actually restored from backup or preservation copies to confirm that recovery procedures work and that the restored content is complete and valid; it is a disaster-recovery exercise that verifies recoverability rather than assuming it.",
+   "plain_english": "A restoration drill is a practice run of recovering files from backup to prove it really works. It is like a fire drill: you test the plan before a real emergency, not during one.",
+   "purpose_function": "It verifies that backups are usable and that recovery steps are correct, catching failed or unreadable backups and procedural gaps before a real loss makes them critical.",
+   "practical_application": "An archive periodically restores a sample of AIPs from its backup system, checks their fixity against recorded values, and times the process to confirm recovery targets are met.",
+   "category": "Disaster Recovery",
+   "related_terms": [
+    "Archive integrity audit",
+    "Fixity",
+    "Archival information package",
+    "Archive lifecycle management",
+    "Chain of custody"
+   ],
+   "common_mistakes": [
+    "Assuming backups are good because the backup job completes, without ever test-restoring them.",
+    "Restoring files but never verifying their fixity to confirm the copy is intact.",
+    "Drilling only on small files and never on the large media files that matter most."
+   ],
+   "scenario_contexts": [
+    "Test-restoring a set of preservation masters from off-site backup and verifying checksums.",
+    "Timing a full recovery to confirm the archive meets its recovery-time objective.",
+    "Discovering an unreadable backup tape during a drill and correcting the backup process."
+   ]
+  },
+  {
+   "id": "6ae0ef0c-a9b6-49d6-a93c-43ca0f8bfd07",
+   "term": "Chain of custody",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The documented, unbroken succession of the persons or offices that have held and controlled materials from the moment of their creation onward. In archives it is a key support for authenticity, because content whose custody is fully documented can be shown to have remained under continuous, accountable control.",
+   "plain_english": "Chain of custody is a complete record of everyone who has held an item, from the moment it was made. An unbroken record helps prove the recording is genuine and was not tampered with.",
+   "purpose_function": "It supports authenticity and trust by showing continuous, accountable control of an object, so any gap that could allow undetected alteration is visible and can be judged.",
+   "practical_application": "When accepting a recording as evidence or for preservation, a technician logs each transfer of custody, who handed it over, who received it, when, and any actions taken, to keep the chain unbroken.",
+   "category": "Authenticity & Integrity",
+   "related_terms": [
+    "Provenance",
+    "Archive authenticity verification",
+    "Administrative metadata",
+    "Archive accession number",
+    "Fixity"
+   ],
+   "common_mistakes": [
+    "Confusing chain of custody (who controlled the item) with provenance of the intellectual content or with descriptive metadata.",
+    "Leaving gaps in the custody record and assuming authenticity anyway.",
+    "Failing to log routine handling and transfers, so the chain cannot be reconstructed later."
+   ],
+   "scenario_contexts": [
+    "Documenting every handoff of a recording intended for use as legal evidence.",
+    "Recording custody transfers as tapes move from a donor through processing to storage.",
+    "Reviewing custody records to assess the authenticity of a recording of uncertain origin."
+   ]
+  },
+  {
+   "id": "7332c99c-f000-4622-8d54-a82c6ec04440",
+   "term": "Checksum audit",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A checksum audit is the scheduled, repeated recalculation of a file's checksum (a fixed-length value derived from its bitstream by an algorithm such as MD5 or SHA-256) and comparison against a stored reference value, performed to detect bit-level corruption, incomplete transfers, or tampering in archived audio files over time.",
+   "plain_english": "A checksum is a short code worked out from a file's exact data. An audit means the archive works out that code again over time and checks it still matches, so it can catch any file that has gone bad.",
+   "purpose_function": "It provides ongoing evidence of fixity—assurance that stored files remain bit-for-bit unchanged—so an archive can catch silent data corruption, failed copies, or unauthorized changes and restore from a good copy before the damage spreads.",
+   "practical_application": "An archivist runs fixity software on ingest and then on a set schedule (for example every six months for disk and yearly for tape) to compare each file's current checksum with its recorded value, then investigates and repairs any mismatch from a verified backup.",
+   "category": "Fixity & integrity",
+   "related_terms": [
+    "Fixity",
+    "Checksum",
+    "Bit rot",
+    "Digital fingerprinting",
+    "Digital preservation policy",
+    "Disaster-recovery exercise"
+   ],
+   "common_mistakes": [
+    "Assuming a single checksum check at ingest is enough, when integrity must be re-verified on a schedule for the life of the file",
+    "Believing a checksum can locate or repair corruption—it only signals that the file has changed, not where or how",
+    "Treating MD5 as tamper-proof; it detects accidental errors but can be deliberately defeated, so SHA-256 is preferred where malicious change is a concern",
+    "UNSAFE: overwriting the last remaining good copy after a failed check instead of restoring from a verified backup, which can destroy the only recoverable version"
+   ],
+   "scenario_contexts": [
+    "Verifying that a batch of newly digitized tapes transferred to preservation storage without corruption before deleting the working copies",
+    "Running a scheduled integrity sweep across a tape or disk repository and flagging files whose checksums no longer match",
+    "Confirming a file retrieved from a dark or deep archive is identical to the original before delivering an access copy"
+   ]
+  },
+  {
+   "id": "2556628d-1bc5-463b-b2cb-b126965ca3ed",
+   "term": "Codec migration strategy",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A codec migration strategy is a documented plan for moving archived audio out of an encoding or codec that is becoming obsolete, unsupported, or at risk and into a current, well-supported preservation format, while preserving the essential information and metadata of the original. In audio archiving the preferred target is uncompressed linear PCM in a WAVE/BWF container, and lossy perceptual codecs are avoided for preservation masters.",
+   "plain_english": "A codec is the method used to store audio in a file. Some codecs stop being supported over time. So this is a written plan to move the recordings into a newer, safer format before the old one dies out.",
+   "purpose_function": "It guards against technical obsolescence—the point where software or hardware can no longer decode a format—by planning migrations in advance so that content stays accessible and playable across changing generations of technology.",
+   "practical_application": "An archive monitors format viability, and when a codec is flagged as at risk it batch-transcodes affected files to the current preservation target (typically linear PCM WAV/BWF), verifies each result with checksums and quality checks, and records the action in preservation metadata.",
+   "category": "Preservation strategy",
+   "related_terms": [
+    "Linear PCM",
+    "Broadcast Wave Format",
+    "Preservation master",
+    "Descriptive metadata",
+    "Digital preservation policy",
+    "Checksum audit"
+   ],
+   "common_mistakes": [
+    "Migrating to another lossy or proprietary codec, which risks generation loss and simply repeats the obsolescence problem",
+    "Waiting until a format is already unreadable instead of migrating while working decoders still exist",
+    "Discarding the original file immediately after migration rather than validating the new copy first",
+    "Failing to carry embedded and external metadata across the transcode, breaking provenance"
+   ],
+   "scenario_contexts": [
+    "Transcoding a legacy collection stored in an outdated proprietary codec to linear PCM WAV before decoder support disappears",
+    "Scheduling periodic reviews of format viability as part of a preservation policy",
+    "Migrating perceptually coded access copies while keeping the uncompressed preservation masters untouched"
+   ]
+  },
+  {
+   "id": "3d247d63-244f-4a67-ab9e-58a150c8f991",
+   "term": "Cold archive",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A cold archive is a storage tier for digital objects that are accessed very rarely, held on low-cost, high-latency media such as offline data tape or a deep cloud storage class, where retrieval is slower and may incur delay or cost in exchange for low ongoing storage cost and, for offline media, isolation from live systems.",
+   "plain_english": "A cold archive is where files that are almost never opened are kept. They sit on cheap, slow storage such as offline tape, so getting a file back takes longer, but it costs very little and stays safe.",
+   "purpose_function": "It lets archives retain large volumes of infrequently used content affordably for the long term, and—when the media is kept offline—adds a safety barrier so that errors, ransomware, or accidental deletions on live systems cannot reach the stored copy.",
+   "practical_application": "A technician places seldom-requested preservation copies onto tape or a cold cloud tier, keeps faster online copies for daily access, and builds retrieval lead time into any workflow that needs to pull material back from the cold tier.",
+   "category": "Archival storage",
+   "related_terms": [
+    "Deep archive",
+    "Dark archive",
+    "Offline storage",
+    "Data tape",
+    "Digital preservation policy",
+    "Checksum audit"
+   ],
+   "common_mistakes": [
+    "Confusing cold storage (about how fast and cheap access is) with a dark archive (about who is allowed access)",
+    "Expecting instant retrieval and not budgeting the delay or cost of pulling files from cold media",
+    "Keeping only a cold copy and no verified second copy, leaving no recovery option if the media fails",
+    "Skipping fixity checks on cold media because it is assumed 'safe', allowing undetected bit rot"
+   ],
+   "scenario_contexts": [
+    "Storing rarely requested digitized recordings on offline tape to cut storage costs",
+    "Moving completed projects out of expensive online storage into a cold cloud tier",
+    "Retrieving a decades-old master from cold storage for a reissue, allowing for retrieval lead time"
+   ]
+  },
+  {
+   "id": "2f774a38-5a75-43e0-b83d-7ca1b8e70918",
+   "term": "Dark archive",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A dark archive is a repository whose holdings are stored and actively preserved but are not openly accessible—available only to its custodian (and sometimes designated depositors)—typically maintained as a secure preservation or fail-safe copy that is 'opened' and made accessible only under defined trigger conditions.",
+   "plain_english": "A dark archive is a collection that is kept safe but is not open to the public. Only the people who look after it can reach the files, which are held as a backup that is opened only if something goes wrong.",
+   "purpose_function": "It exists to guarantee long-term survival and disaster recovery of important content without providing routine public access, so a trusted preservation copy remains available even if the primary, publicly accessible ('light') copy is lost.",
+   "practical_application": "Publishers, libraries, and studios deposit content into a dark archive—such as a CLOCKSS-style repository or an internal preservation vault—that stays closed until a trigger event, like a provider ceasing operations, makes designated content accessible.",
+   "category": "Archival storage",
+   "related_terms": [
+    "Light archive",
+    "Cold archive",
+    "Deep archive",
+    "Digital preservation policy",
+    "Disaster-recovery exercise",
+    "Checksum audit"
+   ],
+   "common_mistakes": [
+    "Confusing 'dark' (an access policy — closed to the public) with 'cold' or 'deep' (about storage speed and cost)",
+    "Assuming a dark archive is merely a backup, when it is a fully preserved, actively managed and integrity-checked copy",
+    "Believing content stays dark forever; once it is released under a trigger it is no longer considered dark"
+   ],
+   "scenario_contexts": [
+    "Depositing e-journal or catalog content into a dark archive that is released only if the publisher fails",
+    "Keeping a closed preservation master of sensitive session recordings that is not available for routine access",
+    "Holding a fail-safe copy of a public collection so it can be restored after data loss"
+   ]
+  },
+  {
+   "id": "97e3f6fb-f082-4034-9541-c2fc32271e01",
+   "term": "Deep archive",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A deep archive is the most dormant, long-retention tier of preservation storage—typically offline data tape held for low cost and high safety—storing preservation copies that are expected to be retained indefinitely and retrieved only rarely, with the longest access latency of any storage tier.",
+   "plain_english": "A deep archive is the deepest, most out-of-the-way place an archive keeps its files. The copies here, often on offline tape, are meant to be held for the very long term and are hardly ever taken out.",
+   "purpose_function": "It provides a low-cost, highly durable resting place for preservation copies that must survive for the long term, keeping a protected master safely separated from the online systems used for everyday access.",
+   "practical_application": "An archive writes a preservation master to tape held in a deep archive as one of several geographically separated copies, expecting to touch it only for migration, audits, or recovery rather than daily use.",
+   "category": "Archival storage",
+   "related_terms": [
+    "Cold archive",
+    "Dark archive",
+    "Offline storage",
+    "Data tape",
+    "Preservation master",
+    "Digital preservation policy"
+   ],
+   "common_mistakes": [
+    "Treating a deep-archive copy as a live backup for quick restores, when its retrieval is deliberately slow",
+    "Confusing deep archive (storage latency and cost) with dark archive (who may access it)",
+    "Relying on a single deep-archive copy without additional geographically separated copies",
+    "Skipping periodic fixity checks and tape migration, letting media silently degrade"
+   ],
+   "scenario_contexts": [
+    "Writing preservation masters to LTO tape held offline as the deepest copy in a multi-copy strategy",
+    "Storing content that must be kept indefinitely but is almost never requested",
+    "Pulling a file from the deep archive during a scheduled media-migration cycle"
+   ]
+  },
+  {
+   "id": "635b55ed-cea1-45ec-bbfa-0a3f470517da",
+   "term": "Descriptive metadata",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "Descriptive metadata is metadata that describes the intellectual content of a resource—such as title, creator or performer, date, subject, and description—to support its discovery, identification, and retrieval. It is one of the standard metadata categories, alongside administrative, structural, technical, and preservation metadata, and is commonly expressed in schemes such as Dublin Core, MODS, or MARC.",
+   "plain_english": "Descriptive metadata is the information that tells you what a recording is, such as its title, who made it, and when. It works like a library catalog card that helps people find the right file.",
+   "purpose_function": "It enables users and systems to search, browse, identify, and select the correct resource from a collection, providing the intellectual access layer that raw files and technical data alone cannot.",
+   "practical_application": "When cataloging a digitized recording, an archivist records fields such as title, artist, date, and subject in a schema like Dublin Core or MODS so the item can be found and correctly identified later.",
+   "category": "Metadata",
+   "related_terms": [
+    "Administrative metadata",
+    "Structural metadata",
+    "Technical metadata",
+    "Preservation metadata",
+    "Dublin Core",
+    "PREMIS"
+   ],
+   "common_mistakes": [
+    "Confusing descriptive metadata (what the content is) with technical or preservation metadata (file format, checksums, actions taken)",
+    "Entering data inconsistently instead of following a controlled schema and vocabulary, which breaks searching",
+    "Assuming embedded file tags are enough and not maintaining catalog-level descriptive records"
+   ],
+   "scenario_contexts": [
+    "Cataloging an oral-history recording with title, interviewee, date, and subject terms",
+    "Populating a digital asset management system so users can search a music archive",
+    "Mapping fields from an old catalog into Dublin Core during a metadata migration"
+   ]
+  },
+  {
+   "id": "f80e6ea8-d9fa-41da-bd41-80a52ecf8a5d",
+   "term": "Digital fingerprinting",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "Digital (acoustic) fingerprinting is the computation of a compact, content-based signature derived from the perceptual features of an audio signal, so that a recording can be identified or matched by its actual sound regardless of file format, encoding, or minor distortion. Unlike a cryptographic checksum, which changes if any single bit changes, a fingerprint is designed to remain stable across format conversion and moderate processing while still discriminating between different recordings.",
+   "plain_english": "A digital fingerprint is a small summary made from what a recording sounds like. It lets a computer spot the same song even after the file has been changed or saved in a new format. A checksum cannot do this, because it breaks if even one bit changes.",
+   "purpose_function": "It allows content-based identification and matching of audio when metadata is missing or wrong, supporting deduplication, catalog matching, rights and broadcast monitoring, and linking unlabeled or format-converted files to a known recording.",
+   "practical_application": "An archivist or automated system runs unlabeled or duplicate-suspect files through a fingerprinting service to identify the recording, detect duplicates across formats, or match a transfer against a reference database, without relying on filenames or tags.",
+   "category": "Content identification",
+   "related_terms": [
+    "Checksum",
+    "Descriptive metadata",
+    "Deduplication",
+    "Watermarking",
+    "Digital preservation policy",
+    "Checksum audit"
+   ],
+   "common_mistakes": [
+    "Confusing a fingerprint (identifies content by its sound, tolerant of format changes) with a checksum (verifies exact bits and breaks on any change)",
+    "Expecting a fingerprint to prove a file is bit-for-bit intact—it confirms identity, not integrity",
+    "Assuming a fingerprint match guarantees identical audio quality, when it only means the recordings are the same content"
+   ],
+   "scenario_contexts": [
+    "Identifying untitled recordings in a backlog by matching them against a reference database",
+    "Finding duplicate copies of the same performance stored in different formats",
+    "Matching a digitized transfer to a known commercial release for cataloging"
+   ]
+  },
+  {
+   "id": "739fc707-87a0-491d-85e7-545bffa161ff",
+   "term": "Digital preservation policy",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A digital preservation policy is a high-level institutional document that sets an organization's goals, principles, scope, and responsibilities for keeping digital materials authentic, usable, and accessible over the long term. It states objectives and commitments rather than specific technologies, and provides the foundation on which preservation strategies and day-to-day procedures are built.",
+   "plain_english": "A digital preservation policy is an official document. It says how a group will keep its digital files safe and usable for a long time. It sets the goals and rules, and the detailed plans follow from it.",
+   "purpose_function": "It gives digital preservation formal authority and direction—defining what will be preserved, why, and who is responsible—so that preservation is managed consistently, can be funded and audited, and does not depend on individual effort or memory.",
+   "practical_application": "Staff refer to the policy to decide what content is in scope, what standards and how many copies apply, and who owns each responsibility, and it is reviewed and re-approved on a regular schedule.",
+   "category": "Preservation planning",
+   "related_terms": [
+    "Preservation strategy",
+    "Codec migration strategy",
+    "Checksum audit",
+    "Disaster-recovery exercise",
+    "Descriptive metadata",
+    "Dark archive"
+   ],
+   "common_mistakes": [
+    "Writing the policy around specific products or file formats, so it goes out of date instead of stating durable principles",
+    "Treating the policy as a one-off document and never reviewing or re-approving it",
+    "Confusing the high-level policy with the detailed strategy and procedures that implement it"
+   ],
+   "scenario_contexts": [
+    "Drafting an institution's first preservation policy to secure funding and management buy-in",
+    "Referring to the policy to decide whether a new collection falls within preservation scope",
+    "Reviewing and re-approving the policy on its scheduled cycle"
+   ]
+  },
+  {
+   "id": "aae89b36-54bf-4417-856a-c11210557197",
+   "term": "Disaster-recovery exercise",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A disaster-recovery exercise is a planned, periodic test of an organization's disaster-recovery or contingency plan, in which staff simulate a disruptive event and rehearse the procedures for restoring systems and data—verifying that backups are usable, that recovery steps work, and that personnel can meet recovery objectives. Forms range from discussion-based tabletop exercises to functional exercises that actually restore from backup media.",
+   "plain_english": "A disaster-recovery exercise is a practice run for a big failure, like a fire or a dead server. The team acts as if it has really happened. They try to restore the files to check the backups work and everyone knows what to do.",
+   "purpose_function": "It exists to prove—before a real emergency—that recovery plans, backups, and staff actually work together, exposing gaps, out-of-date steps, or unusable backups while there is still time to fix them.",
+   "practical_application": "An archive schedules regular exercises—perhaps a tabletop walkthrough one year and a functional test that restores files from backup media the next—then documents what failed and updates the recovery plan accordingly.",
+   "category": "Business continuity",
+   "related_terms": [
+    "Digital preservation policy",
+    "Dark archive",
+    "Cold archive",
+    "Deep archive",
+    "Checksum audit",
+    "Preservation strategy"
+   ],
+   "common_mistakes": [
+    "Assuming backups are good without ever testing a restore, and discovering they are unusable only during a real disaster",
+    "Running the exercise once and never repeating it as systems and staff change",
+    "Never updating the recovery plan after an exercise reveals problems",
+    "UNSAFE: testing recovery procedures directly on the only live production copy, risking loss of the original data"
+   ],
+   "scenario_contexts": [
+    "Holding a tabletop exercise to walk through the response to a storage-system failure",
+    "Performing a functional test that restores a sample collection from offline tape to confirm backups work",
+    "Revising the disaster-recovery plan after an exercise uncovers a broken step"
+   ]
+  },
+  {
+   "id": "637b7d06-cfe9-40ee-a59c-c7baa3c5f74a",
+   "term": "Dissemination information package",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "In the OAIS reference model (ISO 14721), the information package an archive assembles from one or more Archival Information Packages (AIPs) and delivers to a Consumer in response to an order or request. A DIP contains the requested content plus Packaging Information, and may carry full or partial Preservation Description Information, formatted for access, exchange, or system transfer rather than for long-term storage.",
+   "plain_english": "It is the copy an archive hands out when someone asks for a recording. The archive builds it from its stored master, then shapes it for easy use rather than for long storage.",
+   "purpose_function": "It separates what an archive gives out from what it keeps, so the preserved master (the AIP) stays untouched while users receive a version tailored for access, sharing, or migration to another system.",
+   "practical_application": "An audio archivist generates a DIP, such as an access-quality WAV or MP3 plus a metadata sheet, when a researcher, broadcaster, or partner institution requests material from the preservation store.",
+   "category": "Archival Standards",
+   "related_terms": [
+    "OAIS-compliant archive",
+    "Submission information package",
+    "Archival information package",
+    "Access copy",
+    "Preservation metadata"
+   ],
+   "common_mistakes": [
+    "Confusing the DIP with the AIP; the AIP is the preserved master, while the DIP is the delivery copy derived from it",
+    "Assuming a DIP must contain the whole archival package, when it often carries only the part a consumer ordered plus packaging information",
+    "Treating a DIP as a preservation copy and discarding the AIP after exporting it"
+   ],
+   "scenario_contexts": [
+    "Exporting an access-quality file and metadata for a researcher who requested a specific recording",
+    "Packaging content with complete metadata to hand a collection to another institution",
+    "Preparing a standardized DIP to transfer holdings to a successor archive system"
+   ]
+  },
+  {
+   "id": "727abf2a-0713-42f9-a3e7-9c3e09b0b500",
+   "term": "Fixity verification",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The process of confirming that a digital audio file or bitstream has remained unchanged, or fixed, over time or through transfer, typically by generating a checksum or cryptographic hash and comparing it against a previously stored reference value. A mismatch indicates corruption, alteration, or an incomplete transfer.",
+   "plain_english": "It is a way to prove a file has not changed. The computer makes a short code from the file, then later makes the code again and checks that the two still match.",
+   "purpose_function": "It gives an archive proof that stored files stay bit-for-bit identical, detecting silent data corruption, failed transfers, or tampering so a damaged file can be replaced from a good copy.",
+   "practical_application": "Preservation systems compute checksums at ingest and at scheduled intervals, flagging any file whose hash no longer matches its recorded value so it can be repaired from a redundant copy.",
+   "category": "Data Integrity",
+   "related_terms": [
+    "Long-term checksum validation",
+    "Checksum",
+    "Bit rot",
+    "Multiple-copy preservation",
+    "OAIS-compliant archive"
+   ],
+   "common_mistakes": [
+    "Believing fixity verification repairs files; it only detects change, and repair requires a known-good redundant copy",
+    "Recording a checksum once at ingest but never re-checking, so slow corruption goes unnoticed",
+    "Assuming a matching checksum proves audio quality, when it only proves the bits are unchanged, not that the original transfer was good"
+   ],
+   "scenario_contexts": [
+    "Verifying that a file transferred to archival storage matches the checksum recorded at ingest",
+    "Running scheduled integrity sweeps across a repository to catch bit rot on aging media",
+    "Confirming a retrieved file is intact before delivering it to a user"
+   ]
+  },
+  {
+   "id": "335661e7-137c-456b-b27c-a0716306f457",
+   "term": "Format-obsolescence planning",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The proactive practice of monitoring the file and encoding formats held in an archive for signs of obsolescence, such as loss of software or hardware support and backward compatibility, and planning timely migration to sustainable, well-documented formats before the content becomes inaccessible.",
+   "plain_english": "It means watching the file types you store and getting ready before they stop working. Old formats can become unreadable, so you plan to move the content into newer formats in good time.",
+   "purpose_function": "It protects long-term access by making sure files are never trapped in a format that current software can no longer open, guiding both format choice and migration timing.",
+   "practical_application": "Archivists track format risk using registries such as PRONOM, prefer open lossless formats like WAV and BWF for masters, and schedule migration when a format's support begins to decline.",
+   "category": "Preservation Planning",
+   "related_terms": [
+    "Media migration policy",
+    "File format",
+    "Broadcast Wave Format",
+    "OAIS-compliant archive",
+    "Preservation metadata"
+   ],
+   "common_mistakes": [
+    "Storing masters in proprietary or lossy formats that raise obsolescence risk instead of open, lossless, well-documented ones",
+    "Waiting until a format is already unreadable to act, rather than planning migration in advance",
+    "Assuming an open format can never become obsolete, when adoption and tool support still have to be monitored"
+   ],
+   "scenario_contexts": [
+    "Reviewing collection formats against a format-risk registry during an annual audit",
+    "Deciding to migrate a legacy encoded collection while conversion tools still exist",
+    "Selecting a sustainable master format when setting up a new digitization workflow"
+   ]
+  },
+  {
+   "id": "73629bab-91ab-47ec-9316-ac1d1be28863",
+   "term": "Geographic redundancy",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A storage strategy in which complete copies of archived content are kept at two or more physically separate locations, ideally in areas subject to different disaster threats, so that a localized event such as fire, flood, or power loss cannot destroy every copy.",
+   "plain_english": "It means keeping copies of your files in different places that are far apart. If one site is hit by a fire or flood, the copies stored somewhere else still survive.",
+   "purpose_function": "It hedges against regional and site-level threats by ensuring no single physical event can take out all copies, a requirement built into preservation frameworks such as the NDSA Levels.",
+   "practical_application": "An archive keeps one copy on-site and additional copies in data centers in other regions, or on offline media held elsewhere, so recovery is still possible after a local disaster.",
+   "category": "Storage and Backup",
+   "related_terms": [
+    "Multiple-copy preservation",
+    "Media migration policy",
+    "Fixity verification",
+    "OAIS-compliant archive",
+    "Disaster recovery"
+   ],
+   "common_mistakes": [
+    "Keeping all copies in the same building or region, which gives no protection against a local disaster",
+    "Counting copies without checking they sit in locations with genuinely different disaster threats",
+    "Assuming a cloud provider gives geographic redundancy by default without confirming where the copies physically reside"
+   ],
+   "scenario_contexts": [
+    "Placing a second copy of a master collection in a data center in a different region",
+    "Designing storage to meet a preservation level that requires copies in areas with different disaster threats",
+    "Recovering holdings from a remote copy after a flood damages the primary facility"
+   ]
+  },
+  {
+   "id": "b6b11ab7-d99d-4f0d-bb6d-e368e7f2cbc9",
+   "term": "Heritage recording preservation",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The practice of safeguarding audio recordings of cultural, historical, or documentary significance for the long term, prioritizing the preservation of their content, meaning the signal and its associated information, over the original carrier, since analog and physical carriers inevitably deteriorate and become obsolete.",
+   "plain_english": "It is the work of saving important old recordings so future people can still hear them. Because tapes and discs wear out, the goal is to save the sound itself, not just the object it came on.",
+   "purpose_function": "It ensures that culturally valuable sound, such as music, oral history, broadcast, and field recordings, survives carrier decay and format change so the recorded content stays accessible for future generations.",
+   "practical_application": "Archivists appraise and prioritize significant collections, transfer at-risk carriers to digital preservation formats, and then manage the results under standards such as IASA-TC 03 and TC-04.",
+   "category": "Preservation Strategy",
+   "related_terms": [
+    "Media migration policy",
+    "Format-obsolescence planning",
+    "OAIS-compliant archive",
+    "Multiple-copy preservation",
+    "Analog-to-digital transfer"
+   ],
+   "common_mistakes": [
+    "Focusing on preserving the physical carrier while neglecting to transfer the content before the carrier fails",
+    "Treating a single digital transfer as permanent, ignoring the ongoing migration and integrity checking preservation requires",
+    "Making lossy or low-resolution transfers of irreplaceable material to save space, which degrades the archival master"
+   ],
+   "scenario_contexts": [
+    "Digitizing a deteriorating collection of magnetic tapes holding unique oral histories",
+    "Prioritizing which at-risk heritage recordings to transfer first based on significance and carrier condition",
+    "Maintaining and periodically migrating a digitized heritage collection to keep it accessible"
+   ]
+  },
+  {
+   "id": "04e28269-db65-4259-9581-244cb2104ed4",
+   "term": "Long-term checksum validation",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The ongoing, scheduled recomputation and comparison of file checksums across the full lifetime of an archive, used to confirm that stored audio files remain bit-for-bit unchanged over years or decades and to detect gradual data corruption, or bit rot, as storage media age.",
+   "plain_english": "It means checking a file's fingerprint code again and again over many years. Doing it on a regular schedule catches slow damage before a file quietly rots away.",
+   "purpose_function": "It shifts trust away from the durability of any single storage medium toward repeated verification, so silent corruption is caught early and affected files repaired from a good copy.",
+   "practical_application": "Preservation systems store reference checksums and re-verify content at fixed intervals, often yearly for tape and more frequently for disk, logging the results and triggering repair when a hash fails.",
+   "category": "Data Integrity",
+   "related_terms": [
+    "Fixity verification",
+    "Checksum",
+    "Bit rot",
+    "Multiple-copy preservation",
+    "Media migration policy"
+   ],
+   "common_mistakes": [
+    "Calculating a checksum only at ingest and never revalidating, so long-term corruption goes undetected",
+    "Validating checksums but keeping no redundant copy to repair from when a file fails",
+    "Assuming newer storage media never degrade, so scheduled revalidation is skipped"
+   ],
+   "scenario_contexts": [
+    "Running an annual integrity sweep over an entire tape-based archive",
+    "Comparing current file hashes against reference values during a storage-system migration",
+    "Detecting and repairing a corrupted master file from a redundant copy after a failed check"
+   ]
+  },
+  {
+   "id": "107dc81a-ca25-4097-9230-fe78e7591d2a",
+   "term": "Media migration policy",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A documented archival policy defining when and how digital content is copied from aging or obsolescent storage media and systems onto current ones, along with the verification required, in order to counter the limited lifespan and obsolescence of storage carriers and hardware.",
+   "plain_english": "It is a written plan for moving files onto fresh storage before the old storage fails. Since drives and tapes do not last forever, the plan says when to move data and how to check it copied correctly.",
+   "purpose_function": "It ensures content outlives any single storage medium or system by scheduling regular transfers to current media, with fixity checks so nothing is lost or corrupted during the move.",
+   "practical_application": "An archive follows its policy to refresh or migrate collections onto new LTO tape generations or storage systems on a set cycle, verifying checksums before retiring the old media.",
+   "category": "Preservation Planning",
+   "related_terms": [
+    "Format-obsolescence planning",
+    "Fixity verification",
+    "Long-term checksum validation",
+    "Multiple-copy preservation",
+    "OAIS-compliant archive"
+   ],
+   "common_mistakes": [
+    "Confusing media migration, which moves bits to new storage, with format migration, which changes the file format",
+    "Migrating data without verifying checksums, so existing corruption is copied forward undetected",
+    "Delaying migration until the media are already failing or the reading hardware is obsolete"
+   ],
+   "scenario_contexts": [
+    "Copying a collection onto a new LTO tape generation before the old drives are unsupported",
+    "Scheduling routine storage-refresh cycles as part of a preservation plan",
+    "Verifying fixity on both source and destination during a system migration"
+   ]
+  },
+  {
+   "id": "068af4e2-5d95-4270-a3ad-d48331dde6eb",
+   "term": "Multiple-copy preservation",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A preservation strategy of maintaining several complete, independent copies of archived content, typically three or more on different storage systems and often in different locations, so that the failure, loss, or corruption of any one copy does not endanger the content.",
+   "plain_english": "It means keeping more than one full copy of everything you store. If one copy is lost or damaged, another good copy is still there to restore from.",
+   "purpose_function": "It removes reliance on any single copy or device, because redundant copies let a corrupted or destroyed file be rebuilt from an intact one and underpin fixity-based repair.",
+   "practical_application": "Archives keep a primary copy plus independent backups on separate systems and sites, following guidance such as the NDSA Levels or the 3-2-1 rule, and repair failed files from a healthy copy.",
+   "category": "Storage and Backup",
+   "related_terms": [
+    "Geographic redundancy",
+    "Fixity verification",
+    "Long-term checksum validation",
+    "Media migration policy",
+    "Disaster recovery"
+   ],
+   "common_mistakes": [
+    "Keeping several copies on the same drive or system, which share a single point of failure",
+    "Assuming a RAID array counts as multiple copies, when RAID is not a backup or an independent copy",
+    "Never verifying the copies, so all of them may already be corrupt when one is finally needed"
+   ],
+   "scenario_contexts": [
+    "Storing three independent copies of a master collection across different systems",
+    "Rebuilding a corrupted file from a redundant copy after a failed fixity check",
+    "Applying the 3-2-1 backup rule when designing archival storage"
+   ]
+  },
+  {
+   "id": "13eb6a50-072f-419e-b28b-7796eb0be85c",
+   "term": "OAIS-compliant archive",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A digital archive whose design and operations conform to the Open Archival Information System (OAIS) reference model (ISO 14721 / CCSDS 650.0), implementing its functional entities, namely Ingest, Archival Storage, Data Management, Administration, Preservation Planning, and Access, together with its information-package model of SIP, AIP, and DIP, to preserve digital content and keep it accessible to a designated community over the long term.",
+   "plain_english": "It is an archive built to follow one shared set of rules for keeping digital files safe and usable for a long time. Using the same rules lets different archives work alike and share files.",
+   "purpose_function": "It provides a common framework and vocabulary so long-term preservation is systematic and interoperable, ensuring content is ingested, stored, managed, and delivered with the metadata needed to stay understandable over time.",
+   "practical_application": "Audio archives adopt the OAIS model to structure their systems and workflows, taking content in as SIPs, preserving it as AIPs, and delivering DIPs to users.",
+   "category": "Archival Standards",
+   "related_terms": [
+    "Dissemination information package",
+    "Submission information package",
+    "Archival information package",
+    "Preservation metadata",
+    "Fixity verification"
+   ],
+   "common_mistakes": [
+    "Thinking OAIS is a piece of software or a certification, rather than a reference model that systems are designed to conform to",
+    "Implementing storage only and ignoring OAIS functions such as Preservation Planning and Data Management",
+    "Confusing OAIS conformance with trustworthy-repository certification, such as ISO 16363, which is a separate audit"
+   ],
+   "scenario_contexts": [
+    "Designing a new audio preservation repository around the six OAIS functional entities",
+    "Mapping ingest and delivery workflows to the SIP, AIP, and DIP model",
+    "Assessing whether an existing archive meets the OAIS mandatory responsibilities"
+   ]
+  },
+  {
+   "id": "7e7cbc41-2b46-41de-be21-1bcf5cf3ce04",
+   "term": "Permanent preservation copy",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The highest-quality, unaltered copy of a recording that an archive retains indefinitely for long-term preservation, produced to full archival specification and never used for routine access. Access and working copies are derived from it, so it is the authoritative source that must survive intact.",
+   "plain_english": "It is the best, untouched copy of a recording that an archive keeps for good. The copies people listen to are made from it, so it stays safe and is never used up.",
+   "purpose_function": "It preserves the most faithful version of a recording so the original content is not lost, and it gives every future access copy a trusted source to come from.",
+   "practical_application": "An archivist transfers a tape at full resolution to make this copy, stores it on protected storage, and only ever draws working or listening copies from it.",
+   "category": "Preservation Storage",
+   "related_terms": [
+    "Preservation package",
+    "Preservation metadata",
+    "Preservation verification",
+    "Provenance documentation",
+    "Preservation workflow"
+   ],
+   "common_mistakes": [
+    "Editing, noise-reducing, or normalizing the preservation copy instead of keeping it exactly as captured and doing restoration on a separate derivative.",
+    "Treating a compressed access copy such as an MP3 as the preservation copy, which loses quality that can never be recovered.",
+    "Keeping only one copy in one location instead of protected, checked storage with backups."
+   ],
+   "scenario_contexts": [
+    "Making the full-resolution master file after transferring an aging reel-to-reel tape.",
+    "Storing the archival master on managed storage while sending a listening copy to a researcher.",
+    "Rebuilding a damaged access file by generating a fresh derivative from the preservation copy."
+   ]
+  },
+  {
+   "id": "213eeb10-a307-426f-9bd9-3c1d4cf8f027",
+   "term": "Preservation audit trail",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A complete, chronological record of every action and event performed on a digital object during its life in an archive, such as ingest, format migration, fixity checks, and repairs, each with its date, responsible agent, and outcome. In OAIS and PREMIS it is captured as preservation events and supports provenance and accountability.",
+   "plain_english": "It is a dated logbook of everything ever done to a file in the archive. It shows who did what and when, so the file's whole history can be traced.",
+   "purpose_function": "It proves what has happened to a file over time so staff can trust it is authentic and unaltered, and it makes preservation actions accountable and repeatable.",
+   "practical_application": "When an archivist migrates a file to a new format or runs a checksum check, the system writes an event entry, and later anyone can read the trail to see the object's full history.",
+   "category": "Preservation Metadata",
+   "related_terms": [
+    "Preservation metadata",
+    "Provenance documentation",
+    "Preservation verification",
+    "Checksum",
+    "Preservation workflow"
+   ],
+   "common_mistakes": [
+    "Logging actions in a person's private notes instead of structured metadata stored with the object.",
+    "Recording that something was done but leaving out the date, the agent, or the outcome.",
+    "Assuming the trail updates itself, when many manual steps must be logged deliberately."
+   ],
+   "scenario_contexts": [
+    "Reviewing every fixity check and migration a file has had before certifying it for long-term storage.",
+    "Recording an ingest event automatically as a new transfer enters the repository.",
+    "Proving a recording was never quietly altered during a legal or rights dispute."
+   ]
+  },
+  {
+   "id": "e312a72d-7cde-47cf-8c6c-5e3d9a27b2ee",
+   "term": "Preservation metadata",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The structured information a repository records and maintains to support the long-term preservation and continued usability of a digital object, including its technical characteristics, provenance, fixity, rights, and the events performed on it. PREMIS is the widely used data model for it.",
+   "plain_english": "It is the background information an archive keeps about a file so it can care for it far into the future. It covers what the file is, where it came from, and everything done to keep it safe.",
+   "purpose_function": "It gives future staff and systems the facts they need to keep a file readable and trustworthy as formats and technology change. Without it, a stored file can become an unusable mystery.",
+   "practical_application": "During ingest an archivist captures format details, checksums, and origin information as preservation metadata, then adds event records each time the file is checked or migrated.",
+   "category": "Preservation Metadata",
+   "related_terms": [
+    "Structural metadata",
+    "Provenance documentation",
+    "Preservation audit trail",
+    "Preservation verification",
+    "Preservation package"
+   ],
+   "common_mistakes": [
+    "Confusing preservation metadata with descriptive catalog data such as title and artist, which serve discovery rather than preservation.",
+    "Capturing it once at ingest and never updating it as events and migrations occur.",
+    "Storing it apart from the object with no reliable link, so the two drift apart."
+   ],
+   "scenario_contexts": [
+    "Recording sample rate, bit depth, format, and checksum for each transferred audio master.",
+    "Adding event records after every fixity check or format migration.",
+    "Documenting the hardware and software chain used to digitize an analog recording."
+   ]
+  },
+  {
+   "id": "12e1e1ad-ad83-496f-b4e2-9e427db5f3b6",
+   "term": "Preservation package",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "A self-contained unit that bundles a digital object together with all the metadata needed to preserve and understand it over the long term. In the OAIS reference model this is the Archival Information Package (AIP): the Content Information plus its Preservation Description Information, which covers provenance, fixity, context, and reference.",
+   "plain_english": "It is a file bundle that keeps a recording together with all the information needed to look after it. Think of a labeled box holding both the item and its full paperwork.",
+   "purpose_function": "It keeps the content and its supporting information together as one managed unit so nothing important is lost or separated in long-term storage. This is how an archive stores and preserves an object.",
+   "practical_application": "At ingest an archivist assembles the audio master, its checksums, and its technical and provenance metadata into an AIP, which the repository then stores and maintains.",
+   "category": "Archival Packaging",
+   "related_terms": [
+    "Preservation metadata",
+    "Structural metadata",
+    "Provenance documentation",
+    "Preservation workflow",
+    "Permanent preservation copy"
+   ],
+   "common_mistakes": [
+    "Storing the audio file in one place and its metadata in another instead of packaging them together.",
+    "Confusing the submission package delivered for ingest with the stored archival package that the repository keeps.",
+    "Leaving out fixity or provenance information, so the package cannot prove the object is authentic."
+   ],
+   "scenario_contexts": [
+    "Building an archival package for a digitized concert tape before committing it to the repository.",
+    "Exporting a dissemination copy for a user from the stored preservation package.",
+    "Migrating packages to new storage while keeping content and metadata bound together."
+   ]
+  },
+  {
+   "id": "ef16c0c5-4339-4e38-a22d-c73aa4959056",
+   "term": "Preservation planning",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The ongoing archival function that monitors technology, formats, and risks and defines the strategies and actions needed to keep digital objects accessible and usable over the long term. In OAIS it is one of the six functional entities, responsible for setting and revising the repository's preservation strategy.",
+   "plain_english": "It is the ongoing work of planning ahead so recordings stay in reach as gear and software change. It spots risks early, like a file type going out of date, and acts before files can no longer be opened.",
+   "purpose_function": "It keeps an archive from being caught out by aging formats, failing media, or obsolete software by planning migrations and updates in advance. It turns preservation from reacting to crises into a managed strategy.",
+   "practical_application": "A preservation manager tracks which file formats are at risk, schedules migrations, and updates policies and target formats as standards and technology evolve.",
+   "category": "Preservation Management",
+   "related_terms": [
+    "Preservation workflow",
+    "Preservation package",
+    "Preservation metadata",
+    "Preservation verification",
+    "Provenance documentation"
+   ],
+   "common_mistakes": [
+    "Treating preservation as a one-time digitizing project rather than a continuing, planned activity.",
+    "Ignoring format obsolescence until files can no longer be opened.",
+    "Planning storage but not the staff, budget, and policies needed to keep it going."
+   ],
+   "scenario_contexts": [
+    "Deciding to migrate an obsolete audio format to a current archival target before playback tools disappear.",
+    "Setting the archive's standard file format, sample rate, and bit depth for future transfers.",
+    "Scheduling regular media refresh and fixity checking across the whole collection."
+   ]
+  },
+  {
+   "id": "7eff0566-0d5a-4d31-a6dd-71653410e216",
+   "term": "Preservation verification",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The process of confirming that a preserved digital object is complete, unaltered, and still usable, most commonly by comparing a newly computed checksum, or fixity value, against a stored one. It detects corruption, loss, or undocumented change so a problem can be corrected from a good copy.",
+   "plain_english": "It is the routine check that a stored file is still whole and unchanged. The system compares a fresh digital fingerprint of the file to the one saved earlier, and if they differ, something is wrong.",
+   "purpose_function": "It catches silent data corruption, media failure, or tampering early so a bad file can be restored from a good copy before the loss spreads. This is what lets an archive trust its stored files over decades.",
+   "practical_application": "On a schedule the repository recomputes checksums for stored files, compares them to the recorded values, logs the result, and flags any mismatch for repair from a backup.",
+   "category": "Integrity Verification",
+   "related_terms": [
+    "Checksum",
+    "Preservation audit trail",
+    "Preservation metadata",
+    "Preservation workflow",
+    "Permanent preservation copy"
+   ],
+   "common_mistakes": [
+    "Assuming files are safe just because they sit on storage, without ever re-checking their fixity.",
+    "Overwriting the only stored checksum, leaving nothing trustworthy to verify against.",
+    "Confirming the checksum matches but never testing that the file still actually plays."
+   ],
+   "scenario_contexts": [
+    "Running a scheduled fixity check across an archive and comparing results to stored checksums.",
+    "Verifying a file's checksum immediately after copying it to new storage.",
+    "Detecting bit rot on an aging drive and restoring the affected file from a verified backup."
+   ]
+  },
+  {
+   "id": "7b7b25e9-40fc-4425-aa2f-7e70e1036d8f",
+   "term": "Preservation workflow",
+   "topic": "Audio Restoration & Archival",
+   "difficulty": null,
+   "definition": "The defined, repeatable sequence of steps an archive follows to move a recording from source through transfer, packaging, metadata capture, quality control, and into managed long-term storage. It standardizes how objects are handled so preservation is consistent and each step is documented.",
+   "plain_english": "It is the set order of steps an archive follows to turn a recording into a safely stored file. Like a recipe, it keeps every job done the same careful way.",
+   "purpose_function": "It makes preservation consistent, repeatable, and traceable across many objects and staff, cutting errors and making sure no step is skipped. A clear workflow is what lets an archive handle large collections reliably.",
+   "practical_application": "A technician follows the workflow to clean and transfer a tape, run quality control, capture metadata and checksums, build the package, and commit it to storage, logging each stage.",
+   "category": "Preservation Management",
+   "related_terms": [
+    "Preservation planning",
+    "Preservation package",
+    "Preservation metadata",
+    "Preservation verification",
+    "Preservation audit trail"
+   ],
+   "common_mistakes": [
+    "Skipping quality control or metadata capture to save time, which creates gaps that are costly to fix later.",
+    "Relying on one person's memory instead of a written, followed procedure.",
+    "Not logging each step, so the resulting audit trail is incomplete."
+   ],
+   "scenario_contexts": [
+    "Setting a standard transfer, quality-control, and ingest procedure for a large tape digitization project.",
+    "Training new staff to follow the same steps so results are consistent.",
+    "Adjusting the workflow when a new file format or storage system is adopted."
+   ]
+  }
+ ]
+}

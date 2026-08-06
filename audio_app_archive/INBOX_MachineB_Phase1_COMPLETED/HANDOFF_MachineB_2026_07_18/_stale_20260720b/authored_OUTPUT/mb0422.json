@@ -1,0 +1,322 @@
+{
+ "batch": 422,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "7605024b-2026-448a-bea8-5d74ffa3113b",
+   "term": "MDX-Net",
+   "fields": {
+    "definition": "MDX-Net is a deep neural network architecture for music source separation that splits a mixed recording into stems such as vocals, drums, bass, and other. It works in the time-frequency (spectrogram) domain using a TFC-TDF U-Net, built from time-frequency convolution blocks followed by time-distributed fully-connected layers; the ISMIR 2021 Music Demixing Challenge system KUIELab-MDX-Net combined this spectrogram branch with a pretrained time-domain Demucs branch and blended their outputs.",
+    "plain_english": "MDX-Net is an AI model that pulls a finished song apart into separate tracks, like vocals and drums. It looks at the sound as a picture of its frequencies and learns to guess each part.",
+    "purpose_function": "It exists to recover individual instrument and vocal stems from a single stereo mix when the original multitrack is unavailable, using efficient frequency-domain modeling that separates cleanly.",
+    "practical_application": "A technician meets it inside stem-separation tools such as Ultimate Vocal Remover, picking an MDX-Net model to extract vocals or an instrumental from a mixdown for remixing, karaoke, or sampling.",
+    "category": "Source separation",
+    "related_terms": [
+     "Music source separation",
+     "Stem separation",
+     "HTDemucs",
+     "Mel-spectrogram",
+     "Neural network",
+     "Inference"
+    ],
+    "common_mistakes": [
+     "Expecting perfect stems; MDX-Net outputs are estimates that can contain bleed and spectral artifacts, especially on dense mixes",
+     "Assuming one MDX-Net model does everything; different trained models target different stems or trade quality for speed",
+     "Confusing MDX-Net, a spectrogram-domain model, with Demucs, a waveform-domain model; they are different architectures that are often combined",
+     "Blaming the model for poor results that actually come from feeding it low-quality or heavily lossy source audio"
+    ],
+    "scenario_contexts": [
+     "Extracting an a cappella vocal from a stereo master for a remix",
+     "Removing vocals to build a karaoke or backing track",
+     "Choosing an MDX-Net model in Ultimate Vocal Remover for a separation job"
+    ]
+   },
+   "sources": [
+    "Kim, Choi, Jeong & Lee, KUIELab-MDX-Net: A Two-Stream Neural Network for Music Demixing, MDX Workshop / ISMIR 2021",
+    "Choi, Kim, Chung & Lee, Investigating U-Nets with Various Intermediate Blocks for Spectrogram-based Singing Voice Separation, ISMIR 2020"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "af258cd2-7889-4634-9cda-ad07556a33ab",
+   "term": "Mel-spectrogram",
+   "fields": {
+    "definition": "A mel-spectrogram is a time-frequency representation of a signal in which the short-time Fourier transform magnitude is mapped onto the mel frequency scale by a bank of overlapping triangular filters, so the frequency axis approximates how the ear perceives pitch. The result is a matrix of energy over time and mel-frequency bands, usually displayed on a logarithmic (decibel) magnitude scale.",
+    "plain_english": "A mel-spectrogram is a picture of sound over time that spreads out the low pitches and squeezes the high ones, the way our ears do. Brighter spots show where more sound energy is.",
+    "purpose_function": "It exists to fold a spectrogram into perceptually spaced frequency bands, giving a compact, ear-matched representation that is widely used as the input feature for audio machine-learning models.",
+    "practical_application": "A technician encounters mel-spectrograms as the standard input to many neural audio systems and as an analysis display when inspecting the spectral content of a recording.",
+    "category": "Feature representation",
+    "related_terms": [
+     "Spectrogram",
+     "Mel scale",
+     "Short-time Fourier transform",
+     "MFCC (Mel-Frequency Cepstral Coefficients)",
+     "Filter bank",
+     "Feature extraction"
+    ],
+    "common_mistakes": [
+     "Confusing a mel-spectrogram with an MFCC; MFCCs come from taking a further log and discrete cosine transform of the mel-band energies",
+     "Ignoring the settings; window size, hop size, and the number of mel bands strongly change the result",
+     "Reading the mel frequency axis as linear; it is a warped, perceptual scale, not evenly spaced in hertz"
+    ],
+    "scenario_contexts": [
+     "Preparing input features to train an audio classification or source-separation model",
+     "Visualizing the spectral balance of a recording during analysis",
+     "Feeding a neural vocoder or text-to-speech model"
+    ]
+   },
+   "sources": [
+    "Mueller, Fundamentals of Music Processing",
+    "Stevens, Volkmann & Newman, A Scale for the Measurement of the Psychological Magnitude Pitch, Journal of the Acoustical Society of America 1937"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "794cabe2-f37e-427d-b818-fda6450bc21f",
+   "term": "Melodyne",
+   "fields": {
+    "definition": "Melodyne is a commercial audio-editing software from Celemony that analyzes a recording into individual notes and lets the user edit their pitch, timing, duration, volume, and related parameters after the fact. Its DNA Direct Note Access technology extends this note-based editing to polyphonic material, so individual notes within chords can be identified and altered.",
+    "plain_english": "Melodyne is software that finds each note in a recording and lets you move it. You can nudge a singer's pitch or fix timing, and even change one note inside a chord.",
+    "purpose_function": "It exists to give note-level control over recorded audio, letting engineers correct tuning and timing or reshape a performance without re-recording, by turning the audio into editable notes.",
+    "practical_application": "A technician uses Melodyne to tune vocals, tighten timing, or fix a wrong note in a chord, working note by note either standalone or through ARA integration inside a DAW.",
+    "category": "Pitch/time editing",
+    "related_terms": [
+     "Pitch correction",
+     "Pitch detection",
+     "Fundamental frequency",
+     "Time stretching",
+     "Formant",
+     "Auto-Tune"
+    ],
+    "common_mistakes": [
+     "Assuming pitch changes are always transparent; large corrections can sound unnatural or add artifacts",
+     "Expecting flawless polyphonic detection; dense or noisy chords can be mis-analyzed and need manual note correction",
+     "Confusing Melodyne's note-based editing with real-time pitch correction like Auto-Tune; Melodyne is primarily an offline, note-by-note editor"
+    ],
+    "scenario_contexts": [
+     "Tuning a lead vocal take before mixing",
+     "Correcting a single wrong note inside a recorded guitar or piano chord",
+     "Tightening the timing of a backing-vocal stack"
+    ]
+   },
+   "sources": [
+    "Celemony Melodyne technical documentation, DNA Direct Note Access technology overview",
+    "Celemony Melodyne studio user manual"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "573217a6-140b-41e4-86dc-4faf9e077e0a",
+   "term": "MFCC (Mel-Frequency Cepstral Coefficients)",
+   "fields": {
+    "definition": "Mel-frequency cepstral coefficients (MFCCs) are a compact set of features that summarize the short-term spectral envelope of a sound. They are computed by taking the magnitude spectrum of a short frame, mapping it to the mel scale with a triangular filter bank, taking the logarithm of the band energies, and applying a discrete cosine transform; the first several resulting coefficients are kept.",
+    "plain_english": "MFCCs are a short list of numbers that capture the overall tone color of a sound in a small slice of time. They let a computer compare sounds without storing the whole waveform.",
+    "purpose_function": "They exist to give a small, largely pitch-independent description of timbre that is efficient to compute and compare, which is why they became a standard feature for speech and music recognition.",
+    "practical_application": "A technician meets MFCCs as input features in speech recognition, speaker identification, and music classification tools, often extracted with libraries such as librosa.",
+    "category": "Feature representation",
+    "related_terms": [
+     "Mel-spectrogram",
+     "Cepstrum",
+     "Mel scale",
+     "Short-time Fourier transform",
+     "Feature extraction",
+     "Spectral envelope"
+    ],
+    "common_mistakes": [
+     "Treating MFCCs as a spectrogram; they are cepstral coefficients that describe the spectral envelope, not a direct frequency display",
+     "Keeping too many coefficients; usually only the lowest 12 to 13 are used, as higher ones capture fine detail and pitch",
+     "Assuming they are robust to noise and channel changes; MFCCs are sensitive to both, which hurts performance in the field"
+    ],
+    "scenario_contexts": [
+     "Building features for a speech or speaker recognition system",
+     "Classifying music by genre or instrument",
+     "Comparing sound similarity in an audio search tool"
+    ]
+   },
+   "sources": [
+    "Davis & Mermelstein, Comparison of Parametric Representations for Monosyllabic Word Recognition, IEEE Transactions on Acoustics, Speech, and Signal Processing 1980",
+    "Mueller, Fundamentals of Music Processing"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "364566ba-f170-4388-95c3-c96b0cd72b93",
+   "term": "Model size / parameters",
+   "fields": {
+    "definition": "In machine learning, a model's parameters are the internal values, chiefly the weights and biases, that are learned from data during training; model size usually refers to the total count of these parameters, often reported in millions or billions. Parameter count is a rough measure of a model's capacity and of the memory and computation it needs.",
+    "plain_english": "A model's parameters are the many numbers it adjusts as it learns. Model size is how many of these numbers there are; more usually means it can learn more, but it needs more memory and power.",
+    "purpose_function": "Counting parameters gives a quick sense of a model's capacity, memory footprint, and compute cost, which helps decide whether it can run on given hardware or in real time.",
+    "practical_application": "A technician checks parameter count when choosing between models, since a larger model may sound better but be too slow or too heavy to run on the available CPU, GPU, or embedded device.",
+    "category": "Machine learning concept",
+    "related_terms": [
+     "Model weights",
+     "Neural network",
+     "Inference",
+     "Training",
+     "Overfitting",
+     "Quantization"
+    ],
+    "common_mistakes": [
+     "Assuming more parameters always means better results; an oversized model can overfit or waste resources",
+     "Confusing parameters with hyperparameters; hyperparameters are set by the designer, while parameters are learned from data",
+     "Ignoring that parameter count drives memory and latency, so a big model may not run in real time"
+    ],
+    "scenario_contexts": [
+     "Choosing a source-separation or noise-reduction model light enough for a laptop",
+     "Comparing two model versions before deployment",
+     "Estimating whether a model will fit in a device's memory"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning",
+    "Bishop, Pattern Recognition and Machine Learning"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "407eec73-c77d-43ee-bcb5-f561508f45b2",
+   "term": "Model weights",
+   "fields": {
+    "definition": "In a neural network, weights are the learnable parameters that scale the connections between units; each input to a unit is multiplied by its weight, the products are summed with a bias, and the result is passed through an activation function. Weights are adjusted during training, typically by gradient descent and backpropagation, and the trained set of weights is what is saved and distributed as a model.",
+    "plain_english": "Weights are the numbers inside a neural network that decide how strongly each input affects the next step. Training tunes these numbers, and the finished set of weights is what you save and share as the model.",
+    "purpose_function": "Weights store what a network has learned; tuning them during training shapes inputs into useful outputs, and loading a saved set of weights is what makes a trained model reusable.",
+    "practical_application": "A technician handles model weights as the checkpoint files that are downloaded and loaded to run a trained model, such as the weight files a stem-separation or noise-reduction plugin needs to work.",
+    "category": "Machine learning concept",
+    "related_terms": [
+     "Model size / parameters",
+     "Neural network",
+     "Training",
+     "Backpropagation",
+     "Inference",
+     "Activation function"
+    ],
+    "common_mistakes": [
+     "Confusing weights with the model architecture; the architecture is the fixed structure, while weights are the learned values that fill it",
+     "Assuming weights can be read like settings; they are large arrays of numbers that are not human-interpretable",
+     "Loading weights into a mismatched architecture or version, which produces broken output or errors"
+    ],
+    "scenario_contexts": [
+     "Downloading a pretrained weights file to run a model locally",
+     "Swapping in a different weights checkpoint to change a plugin's behavior",
+     "Loading the correct weights version so a model runs as intended"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning",
+    "Bishop, Pattern Recognition and Machine Learning"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "786c339e-2e9c-4988-9dfd-750fda5ae309",
+   "term": "Moises",
+   "fields": {
+    "definition": "Moises (Moises.ai) is a commercial application that uses AI-based source separation to split songs into individual stems such as vocals, drums, bass, and other, and offers related tools including chord and key detection, tempo detection, pitch and speed changing, and a smart metronome. It is delivered as a web app, mobile apps, and a DAW plugin aimed at musicians and producers.",
+    "plain_english": "Moises is an app that splits a song into separate tracks, like vocals and drums, using AI. It can also find the chords, key, and tempo, and slow a song down for practice.",
+    "purpose_function": "It exists to give musicians an easy, hosted way to separate stems and analyze songs for practice, transcription, and content creation without running their own AI software.",
+    "practical_application": "A technician or musician uses Moises to pull a backing track or isolated vocal from a song, or to get its chords, key, and tempo, uploading a file through the app or web service.",
+    "category": "Source separation",
+    "related_terms": [
+     "Music source separation",
+     "Stem separation",
+     "LALAL.ai",
+     "MDX-Net",
+     "Beat tracking",
+     "Inference"
+    ],
+    "common_mistakes": [
+     "Assuming separated stems are studio multitracks; they are AI estimates that can contain artifacts and bleed",
+     "Trusting automatic chord or key detection blindly; results can be wrong and should be checked by ear",
+     "Assuming that separating a copyrighted song grants the right to reuse the stems; separation does not provide a license"
+    ],
+    "scenario_contexts": [
+     "Making a backing track by removing the vocal for live practice",
+     "Getting the chords and key of a song to learn or transcribe it",
+     "Slowing a track down without changing its pitch to practice a part"
+    ]
+   },
+   "sources": [
+    "Moises.ai official product and feature documentation",
+    "Moises.ai help center and technical guides"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ee3506d6-97a0-4de4-b594-e9e1846e6653",
+   "term": "Moorer reverberator",
+   "fields": {
+    "definition": "The Moorer reverberator is an artificial-reverberation algorithm introduced by James A. Moorer in 1979 that extends Schroeder's design. It generates early reflections with a tapped delay line (an FIR filter) and produces the late, diffuse tail with a bank of parallel comb filters, each having a one-pole lowpass filter in its feedback loop so high frequencies decay faster than low ones, followed by an allpass filter to increase echo density.",
+    "plain_english": "The Moorer reverb is a classic recipe for fake echo. It first adds the early bounces off nearby walls, then builds a smooth fading tail that loses its high frequencies over time, the way sound does in a real room.",
+    "purpose_function": "It exists to create natural-sounding reverberation digitally, improving on earlier designs by adding realistic early reflections and by making the decay lose highs over time, as air absorption does in real spaces.",
+    "practical_application": "A technician meets the Moorer design as a foundational algorithmic reverb studied and used in reverb plugins and DSP units, and as a classic teaching example of comb-and-allpass reverberator structure.",
+    "category": "Artificial reverberation",
+    "related_terms": [
+     "Schroeder reverberator",
+     "Comb filter",
+     "Allpass filter",
+     "Early reflections",
+     "Reverberation time",
+     "Feedback delay network"
+    ],
+    "common_mistakes": [
+     "Confusing it with Schroeder's reverberator; Moorer added a lowpass in the comb feedback path and an FIR early-reflection stage",
+     "Assuming it models a specific room; it is a parametric algorithm tuned for a pleasing decay, not a physical simulation",
+     "Setting the feedback too high; excessive comb feedback can make the reverb ring or become unstable"
+    ],
+    "scenario_contexts": [
+     "Studying algorithmic reverb design in an audio-DSP course",
+     "Implementing a classic comb-and-allpass reverb in code",
+     "Understanding the roots of reverb algorithms built into plugins and hardware"
+    ]
+   },
+   "sources": [
+    "Moorer, About This Reverberation Business, Computer Music Journal 3(2), 1979",
+    "Smith, Physical Audio Signal Processing (CCRMA), Artificial Reverberation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e119a7e3-fc85-40a6-8cd5-50331da4f5a4",
+   "term": "Neural network",
+   "fields": {
+    "definition": "A neural network (artificial neural network) is a machine-learning model made of interconnected processing units, or neurons, organized in layers, where each connection carries a learnable weight. Each unit computes a weighted sum of its inputs plus a bias and applies a nonlinear activation function; by adjusting the weights during training, the network learns to map inputs to desired outputs and can approximate complex, nonlinear functions.",
+    "plain_english": "A neural network is a computer model loosely based on brain cells. It uses many simple units, set out in layers, that pass numbers along. It learns by tuning how strongly they connect until it gives good answers.",
+    "purpose_function": "It exists to learn patterns and mappings directly from data instead of being hand-programmed, which lets it tackle hard audio tasks such as source separation, noise reduction, and speech recognition.",
+    "practical_application": "A technician encounters neural networks inside modern audio tools, running trained networks for stem separation, de-noising, upmixing, transcription, and voice processing.",
+    "category": "Machine learning concept",
+    "related_terms": [
+     "Model weights",
+     "Model size / parameters",
+     "Training",
+     "Inference",
+     "Activation function",
+     "Deep learning"
+    ],
+    "common_mistakes": [
+     "Taking the brain analogy literally; artificial neurons are simple math functions, not biological cells",
+     "Assuming a network understands audio; it maps inputs to outputs statistically and can fail on data unlike its training set",
+     "Confusing a neural network with the training process; the network is the model, while training is how its weights are learned"
+    ],
+    "scenario_contexts": [
+     "Running a neural stem-separation model on a mix",
+     "Using a neural noise-reduction plugin on a dialogue recording",
+     "Applying a neural speech-to-text model to transcribe audio"
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning",
+    "Bishop, Pattern Recognition and Machine Learning"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -17,10 +17,10 @@
  * the processed signal the view draws (raw engine signal × gain, + DC,
  * ± polarity) — no hidden normalization.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
-import { LabChip } from '../../LabShell';
+import { LabChip, CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, ListeningSoonCard, MythReality, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
 import {
@@ -42,7 +42,6 @@ import type { MeterModuleProps } from '../MeterModuleScreen';
 // Shared helpers — formatting + trivial staging only; every meter number
 // comes from meterEngine.
 
-const HONESTY = 'SYNTHESIZED TEACHING SIGNAL — deterministic, for pattern study';
 
 const gainLin = (gDb: number) => Math.pow(10, gDb / 20);
 /** 0.5 dB snap keeps the processed-buffer memo key stable while dragging. */
@@ -322,7 +321,6 @@ export function WaveformModule(p: MeterModuleProps) {
         ) : (
           <VizUnavailableCard />
         )}
-        <Badge text={HONESTY} />
         <DisplayGuideButton onPress={() => p.help('waveform_read')} />
         <View style={dstyles.chipRow}>
           <LabChip
@@ -338,6 +336,7 @@ export function WaveformModule(p: MeterModuleProps) {
           label="GAIN"
           readout={fmtDb(gainDb)}
           onHelp={() => p.help('clipping_view')}
+          levelTint
         />
         <DragSlider
           value={(dcOff + 0.3) / 0.6}
@@ -346,11 +345,13 @@ export function WaveformModule(p: MeterModuleProps) {
           readout={`${dcOff >= 0 ? '+' : ''}${(dcOff * 100).toFixed(0)} %`}
           onHelp={() => p.help('dc_offset')}
         />
+        <View style={dstyles.chipRow}>
+          <LabChip label="RESET DC OFFSET → 0%" selected={false} onPress={() => setDcOff(0)} onLongPress={() => p.help('dc_offset')} />
+        </View>
         <ReadoutGrid items={readouts} help={p.help} helpKey="waveform_read" />
       </PanelCard>
 
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>READING THE PICTURE — CUE BY CUE</Text>
+      <CollapsibleSection title="READING THE PICTURE — CUE BY CUE">
         <Text style={dstyles.body}>
           HEIGHT is amplitude — the peak readout, nothing more. SYMMETRY around the center is
           polarity balance: tap INVERT POLARITY Ø and the picture flips upside-down while every
@@ -368,7 +369,7 @@ export function WaveformModule(p: MeterModuleProps) {
           glance at any waveform now tells you level, polarity, damage, and dynamics before you
           ever press play.
         </Text>
-      </PanelCard>
+      </CollapsibleSection>
 
       <MistakesCard items={WAVEFORM_MISTAKES} />
       <CheckQuestion spec={WAVEFORM_CHECKS[0]} />
@@ -406,7 +407,7 @@ const PEAK_CHECK: CheckSpec = {
   ],
   correctIdx: 1,
   reveal:
-    'A peak meter answers exactly one question: "will it clip?" Loudness lives in the AVERAGE energy. Flip between KICK/SNARE and SUSTAINED ORGAN at the same peak and compare the RMS and CREST FACTOR readouts — around 20 dB apart. Module 3’s VU needle turns that difference into something you can watch move.',
+    'A peak meter answers exactly one question: "will it clip?" Loudness lives in the AVERAGE energy. Flip between KICK/SNARE and ORGAN at the same peak and compare the RMS and CREST FACTOR readouts — around 20 dB apart. Module 3’s VU needle turns that difference into something you can watch move.',
   wrongHint: 'Peak is one sample’s worth of information. What did the other thousand samples do?',
 };
 
@@ -421,13 +422,22 @@ export function PeakModule(p: MeterModuleProps) {
   const rawPeakDb = db(peakOf(proc));
   const overs = overRuns(proc);
   const peakLabel = rawPeakDb >= 0 ? `OVER · +${rawPeakDb.toFixed(1)} dB` : fmtDbfs(rawPeakDb);
-  const readouts = [
-    { k: 'PEAK', v: peakLabel },
-    { k: 'PEAK HOLD', v: `${peakLabel} (HELD)` },
-    { k: 'OVER COUNT', v: `${overs}${overs > 0 ? ' — LAMP LATCHED' : ''}` },
-    { k: 'RMS', v: fmtDbfs(db(rmsOf(proc))) },
-    { k: 'CREST FACTOR', v: `${crestDb(proc).toFixed(1)} dB` },
-  ];
+  // Real peak-HOLD latch (owner 2026-08-05): keeps the highest peak driven so
+  // far across signal/gain changes; the [Reset] re-baselines it to the current.
+  const [peakHold, setPeakHold] = useState(-Infinity);
+  useEffect(() => {
+    setPeakHold((h) => Math.max(h, rawPeakDb));
+  }, [rawPeakDb]);
+  const holdLabel =
+    peakHold === -Infinity ? '—' : peakHold >= 0 ? `OVER · +${peakHold.toFixed(1)} dB` : fmtDbfs(peakHold);
+  // Meter sits between two readout columns.
+  const meterW = Math.max(150, Math.min(200, Math.round(p.width * 0.5)));
+  const RO = ({ k, v }: { k: string; v: string }) => (
+    <View style={{ gap: 1 }}>
+      <Text style={dstyles.caption}>{k}</Text>
+      <Text style={dstyles.readout}>{v}</Text>
+    </View>
+  );
 
   return (
     <View style={{ gap: 12 }}>
@@ -440,12 +450,28 @@ export function PeakModule(p: MeterModuleProps) {
           helpKeys={PEAK_HELP}
           fallbackKey="peak_meter"
         />
-        {viz ? (
-          <PeakHost viz={viz} width={p.width} focused={p.focused} signal={signal} gainDb={gainDb} />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={HONESTY} />
+        {/* Readouts flank the meter left & right (owner 2026-08-05). */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <View style={{ flex: 1, gap: 12 }}>
+            <RO k="PEAK" v={peakLabel} />
+            <View style={{ gap: 4 }}>
+              <RO k="PEAK HOLD" v={holdLabel} />
+              <View style={dstyles.chipRow}>
+                <LabChip label="RESET" selected={false} onPress={() => setPeakHold(rawPeakDb)} onLongPress={() => p.help('peak_hold')} />
+              </View>
+            </View>
+          </View>
+          {viz ? (
+            <PeakHost viz={viz} width={meterW} focused={p.focused} signal={signal} gainDb={gainDb} />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <View style={{ flex: 1, gap: 12 }}>
+            <RO k="OVER COUNT" v={`${overs}${overs > 0 ? ' — LATCHED' : ''}`} />
+            <RO k="RMS" v={fmtDbfs(db(rmsOf(proc)))} />
+            <RO k="CREST FACTOR" v={`${crestDb(proc).toFixed(1)} dB`} />
+          </View>
+        </View>
         <DisplayGuideButton onPress={() => p.help('peak_meter')} />
         <DragSlider
           value={(gainDb + 12) / 30}
@@ -453,12 +479,11 @@ export function PeakModule(p: MeterModuleProps) {
           label="GAIN — DRIVE IT INTO THE OVER LAMP"
           readout={fmtDb(gainDb)}
           onHelp={() => p.help('peak_hold')}
+          levelTint
         />
-        <ReadoutGrid items={readouts} help={p.help} helpKey="peak_meter" />
       </PanelCard>
 
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>SAMPLE-BY-SAMPLE, THEN A MEMORY</Text>
+      <CollapsibleSection title="SAMPLE-BY-SAMPLE, THEN A MEMORY">
         <Text style={dstyles.body}>
           The live bar tracks the instantaneous maximum — up in microseconds, falling slowly only
           so your eye can follow. The floating segment above it is PEAK HOLD, the highest recent
@@ -468,12 +493,12 @@ export function PeakModule(p: MeterModuleProps) {
         </Text>
         <Text style={dstyles.eyebrow}>WHAT PEAK CANNOT TELL YOU — PREVIEW OF MODULE 3</Text>
         <Text style={dstyles.body}>
-          Set KICK and SUSTAINED ORGAN to the same peak and look at RMS: the meter face is
+          Set KICK and ORGAN to the same peak and look at RMS: the meter face is
           identical while the average energy differs by the CREST FACTOR — around 20 dB. Peak is
           the converter's bodyguard, not a loudness meter. The next module puts a 300 ms needle on
           the same signals and makes that difference physical.
         </Text>
-      </PanelCard>
+      </CollapsibleSection>
 
       <MistakesCard items={PEAK_MISTAKES} />
       <CheckQuestion spec={PEAK_CHECK} />
@@ -562,7 +587,6 @@ export function VuModule(p: MeterModuleProps) {
         ) : (
           <VizUnavailableCard />
         )}
-        <Badge text={HONESTY} />
         <DisplayGuideButton onPress={() => p.help('vu_meter')} />
         <DragSlider
           value={(gainDb + 12) / 24}
@@ -570,16 +594,16 @@ export function VuModule(p: MeterModuleProps) {
           label="GAIN"
           readout={fmtDb(gainDb)}
           onHelp={() => p.help('ballistics')}
+          levelTint
         />
         <ReadoutGrid items={readouts} help={p.help} helpKey="ballistics" />
       </PanelCard>
 
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>THE LESSON — WATCH THE NEEDLE LOSE TO THE LED</Text>
+      <CollapsibleSection title="THE LESSON — WATCH THE NEEDLE LOSE TO THE LED">
         <Text style={dstyles.body}>
           Select SNARE: the peak LED flashes hard on every hit while the needle barely stirs — by
           the time 300 ms of ballistics get it moving, the hit is long over. The NEEDLE MAX readout
-          shows how little of the peak it ever reaches. Now select SUSTAINED ORGAN: similar LED,
+          shows how little of the peak it ever reaches. Now select ORGAN: similar LED,
           but the needle climbs and SITS there, because the energy never stops arriving. Same peak,
           opposite needles — that is RMS versus peak made physical, and it is the single most
           important metering lesson in this lab.
@@ -591,7 +615,7 @@ export function VuModule(p: MeterModuleProps) {
           SPEECH swings it in gentle syllable-sized arcs. Read the needle for how loud it feels,
           the LED for whether it clips: two questions, two instruments on one face.
         </Text>
-      </PanelCard>
+      </CollapsibleSection>
 
       <MythReality
         myth="The VU meter is slow because it's old tech."
@@ -689,7 +713,6 @@ export function LoudnessModule(p: MeterModuleProps) {
         ) : (
           <VizUnavailableCard />
         )}
-        <Badge text={HONESTY} />
         <Badge text={LOUDNESS_MODEL_BADGE} />
         <DisplayGuideButton onPress={() => p.help('lufs')} />
         <View style={dstyles.chipRow}>
@@ -701,8 +724,7 @@ export function LoudnessModule(p: MeterModuleProps) {
         <ReadoutGrid items={readouts} help={p.help} helpKey="lufs" />
       </PanelCard>
 
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>WHY EVERYONE NORMALIZES BY INTEGRATED LUFS</Text>
+      <CollapsibleSection title="WHY EVERYONE NORMALIZES BY INTEGRATED LUFS">
         <Text style={dstyles.body}>
           Momentary (400 ms) answers "what is loud RIGHT NOW"; short-term (3 s) answers "how loud
           is this section"; integrated gates out the silence and averages the WHOLE program into
@@ -718,7 +740,7 @@ export function LoudnessModule(p: MeterModuleProps) {
           can still clip a DAC or a lossy encoder. Delivery specs park the true peak at −1 dBTP so
           the reconstruction — and the codec after it — always has room.
         </Text>
-      </PanelCard>
+      </CollapsibleSection>
 
       <ListeningSoonCard what="Level-matched loudness A/B comparison (same integrated LUFS, different crest and dynamics)" />
 

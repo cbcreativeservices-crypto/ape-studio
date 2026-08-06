@@ -1,0 +1,1011 @@
+{
+ "group": 99,
+ "terms": [
+  {
+   "id": "b9c1e6d3-c3a9-4f70-aa0a-516ba5f77812",
+   "term": "Linear interpolation",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Linear interpolation is a method of estimating an unknown value between two known data points by assuming a straight line between them, so the estimate is a weighted average of the two neighbors based on the fractional distance to each. In audio DSP it is the simplest form of interpolation used for resampling and for fractional-delay reads from a delay line.",
+   "plain_english": "Linear interpolation guesses a value between two known points by drawing a straight line between them. Say you know a sound's value at two moments. It estimates the value in between as a simple blend of the two.",
+   "purpose_function": "It exists to provide a fast, low-cost way to estimate in-between values, which lets systems resample signals or read a delay line at a non-integer position with minimal computation.",
+   "practical_application": "A technician meets linear interpolation inside delay-based effects, wavetable and sample playback, pitch shifting, and simple sample-rate conversion, wherever a value is needed between existing samples.",
+   "category": "Interpolation",
+   "related_terms": [
+    "Interpolation",
+    "Lagrange interpolation",
+    "Sample rate conversion",
+    "Delay line",
+    "Fractional delay filter",
+    "Wavetable synthesis"
+   ],
+   "common_mistakes": [
+    "Assuming it is high quality; linear interpolation attenuates high frequencies and adds distortion compared with higher-order or bandlimited methods",
+    "Confusing it with no interpolation; rounding to the nearest sample instead causes far worse artifacts",
+    "Expecting accuracy on curved data; the straight-line assumption introduces error when the signal changes nonlinearly between points"
+   ],
+   "scenario_contexts": [
+    "Reading a delay line at a fractional sample position for a chorus or vibrato effect",
+    "Playing back a sample at a changed pitch or speed",
+    "Doing a quick, low-cost sample-rate conversion"
+   ]
+  },
+  {
+   "id": "a9811690-f5d3-431b-8488-04844b8eb018",
+   "term": "Linear predictive coding",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Linear predictive coding (LPC) is a technique that models each sample of a signal as a linear combination of a number of previous samples, representing the signal by the prediction coefficients plus a residual, or error, signal. Applied to speech, it embodies a source-filter model in which the coefficients describe an all-pole filter approximating the vocal tract, enabling efficient analysis, low-bit-rate coding, and synthesis.",
+   "plain_english": "Linear predictive coding guesses the next bit of a sound from the bits just before it. It stores only the small guessing rules and the leftover error, which is a compact way to describe and rebuild speech.",
+   "purpose_function": "It exists to compactly represent a signal, especially speech, by capturing its spectral shape in a few filter coefficients, which supports low-bit-rate transmission, speech synthesis, and spectral analysis such as formant estimation.",
+   "practical_application": "A technician encounters LPC in speech codecs and voice communication, in formant analysis, and as the basis of talk-box and vocoder-style cross-synthesis effects in music production.",
+   "category": "Speech processing",
+   "related_terms": [
+    "Source-filter model",
+    "Formant",
+    "Vocoder",
+    "Speech coding",
+    "All-pole filter",
+    "Linear prediction"
+   ],
+   "common_mistakes": [
+    "Assuming LPC models any sound equally well; its all-pole model suits speech and resonant sounds but poorly captures sharp spectral notches",
+    "Confusing the coefficients with the audio; LPC stores prediction coefficients and a residual, not the waveform itself",
+    "Choosing the filter order carelessly; too few coefficients miss formants, while too many fit noise and waste bits"
+   ],
+   "scenario_contexts": [
+    "Encoding speech at a low bit rate for radio or telephony",
+    "Estimating formant frequencies in a speech-analysis tool",
+    "Building a talk-box or vocoder effect that imposes speech resonances on another sound"
+   ]
+  },
+  {
+   "id": "1349e617-8b42-468f-b0c5-2cc03d023471",
+   "term": "LoRA fine-tuning",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "LoRA (Low-Rank Adaptation) fine-tuning is a parameter-efficient fine-tuning method that adapts a large pretrained neural network by freezing its original weights and inserting small trainable low-rank matrices into selected layers, so that only these few added parameters are learned. The learned low-rank update is added to the frozen weights, achieving task adaptation while training a tiny fraction of the parameters and storing only a small adapter.",
+   "plain_english": "LoRA is a cheap way to teach a big AI model a new skill. Instead of retraining the whole model, it freezes the original and trains a small add-on. The add-on file is tiny and easy to share or swap.",
+   "purpose_function": "It exists to make fine-tuning large models affordable, cutting the memory, compute, and storage needed by training only small low-rank adapters instead of all the model's weights, while keeping quality close to full fine-tuning.",
+   "practical_application": "A technician uses LoRA to specialize a large audio, music, or speech model for a particular voice, style, or dataset, then loads or swaps the small adapter at run time without duplicating the whole model.",
+   "category": "Model training",
+   "related_terms": [
+    "Fine-tuning",
+    "Transfer learning",
+    "Parameter-efficient fine-tuning",
+    "Pretrained model",
+    "Neural network",
+    "Latent diffusion"
+   ],
+   "common_mistakes": [
+    "Thinking LoRA changes the base model's weights; the original weights stay frozen and the adapter is added separately",
+    "Assuming a higher rank is always better; too large a rank loses the efficiency benefit, while too small a rank may underfit the task",
+    "Applying an adapter to the wrong base model; a LoRA adapter is trained for a specific base and will not work correctly on a different one"
+   ],
+   "scenario_contexts": [
+    "Adapting a text-to-music model to a specific genre or artist style",
+    "Fine-tuning a speech model for a particular speaker or accent on limited data",
+    "Sharing a small style adapter that others load onto the same base model"
+   ]
+  },
+  {
+   "id": "592deea2-b049-4eab-9ccf-4b52a34a7825",
+   "term": "Loudness prediction",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Loudness prediction is the computational estimation of the loudness a listener will perceive from an audio signal, as opposed to its raw physical level. It is performed either by psychoacoustic loudness models that simulate the ear's frequency weighting and spectral and temporal integration, or by standardized meters and machine-learned estimators that map signal features to a perceived-loudness value.",
+   "plain_english": "Loudness prediction means estimating how loud a sound will really seem to a person. It is not the same as how strong the signal is. A soft bright tone and a deep bass can measure the same, so a model judges how loud each one feels.",
+   "purpose_function": "It exists because perceived loudness differs from measured level, so a model is needed to judge how loud material will sound, supporting consistent levels across programs, tracks, and platforms.",
+   "practical_application": "A technician encounters loudness prediction in loudness meters and normalization used for broadcast and streaming delivery, and in mastering and dynamics tools that target a consistent perceived level.",
+   "category": "Perceptual modeling",
+   "related_terms": [
+    "Loudness",
+    "Psychoacoustics",
+    "Loudness normalization",
+    "Equal-loudness contour",
+    "Dynamic range",
+    "Feature extraction"
+   ],
+   "common_mistakes": [
+    "Confusing loudness with signal level; peak or RMS level does not equal perceived loudness because hearing is frequency dependent",
+    "Assuming all loudness measures agree; different models and standards can give different values for the same audio",
+    "Trusting a predicted number blindly; models approximate average hearing and may not match a specific listener or unusual material"
+   ],
+   "scenario_contexts": [
+    "Normalizing programs to a target loudness for broadcast or streaming delivery",
+    "Matching perceived level between songs on an album during mastering",
+    "Checking that a mix meets a platform's loudness specification before upload"
+   ]
+  },
+  {
+   "id": "f3b14ffc-a1a2-410b-b34a-390c0e41f553",
+   "term": "Low-latency inference",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Low-latency inference is the execution of a trained machine-learning model so that the delay between receiving an input and producing an output is small enough for real-time or interactive use. It is achieved through techniques such as model compression, quantization, efficient architectures, streaming or block-wise processing, and hardware acceleration, and it trades off against throughput, accuracy, and cost.",
+   "plain_english": "Low-latency inference means running an AI model fast enough that the answer comes back almost at once. This matters for live audio. Even a tiny delay between input and output is easy to hear.",
+   "purpose_function": "It exists to make trained models usable in real-time settings, keeping the delay from input to output short enough that the result arrives in time to act on, such as processing a live audio stream.",
+   "practical_application": "A technician deals with low-latency inference when running neural noise suppression, source separation, or effects on a live signal, tuning buffer sizes, model size, and hardware to keep round-trip delay acceptable.",
+   "category": "Model deployment",
+   "related_terms": [
+    "Inference",
+    "Latency",
+    "Real-time processing",
+    "Quantization",
+    "Model compression",
+    "Buffer size"
+   ],
+   "common_mistakes": [
+    "Measuring only the model's compute time; end-to-end latency also includes buffering, data transfer, and pre- and post-processing",
+    "Assuming a smaller model is always the answer; aggressive compression can cut accuracy too far for the task",
+    "Confusing latency with throughput; a system can process many items per second yet still add too much delay for live use"
+   ],
+   "scenario_contexts": [
+    "Running real-time neural noise suppression on a live microphone feed",
+    "Deploying a low-delay source-separation or effect plugin for live monitoring",
+    "Fitting a model onto embedded hardware that must respond within a few milliseconds"
+   ]
+  },
+  {
+   "id": "756e9b05-d066-4378-bcc8-2373a068e95b",
+   "term": "LSTM",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A Long Short-Term Memory (LSTM) network is a type of recurrent neural network whose units contain a memory cell regulated by multiplicative input, forget, and output gates. These gates control what information is written to, retained in, and read from the cell, letting the network maintain information over long sequences and largely overcoming the vanishing-gradient problem that limits simple recurrent networks.",
+   "plain_english": "An LSTM is a neural network built to remember patterns over time. It uses gates that decide what to keep, forget, and pass on, so it can hold onto useful clues from earlier in a sequence.",
+   "purpose_function": "It exists to model long-range dependencies in sequential data, using gated memory cells so that important information can persist across many time steps without the gradients vanishing that hamper plain recurrent networks.",
+   "practical_application": "A technician encounters LSTMs in sequence tasks such as speech recognition, music generation and transcription, audio event detection, and time-series modeling, though transformers now often replace them.",
+   "category": "Neural network architecture",
+   "related_terms": [
+    "Recurrent neural network",
+    "Vanishing gradient",
+    "Gated recurrent unit",
+    "Transformer",
+    "Sequence modeling",
+    "Neural network"
+   ],
+   "common_mistakes": [
+    "Assuming an LSTM has unlimited memory; it retains information far longer than a simple RNN but still forgets over very long sequences",
+    "Confusing the cell state with the output; the internal memory cell and the exposed hidden output are distinct",
+    "Treating LSTMs as always best for sequences; transformers often outperform them on long contexts given enough data"
+   ],
+   "scenario_contexts": [
+    "Modeling audio or speech frames over time in a recognition system",
+    "Generating or transcribing music note sequences",
+    "Detecting sound events across a continuous audio stream"
+   ]
+  },
+  {
+   "id": "7605024b-2026-448a-bea8-5d74ffa3113b",
+   "term": "MDX-Net",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "MDX-Net is a deep neural network architecture for music source separation that splits a mixed recording into stems such as vocals, drums, bass, and other. It works in the time-frequency (spectrogram) domain using a TFC-TDF U-Net, built from time-frequency convolution blocks followed by time-distributed fully-connected layers; the ISMIR 2021 Music Demixing Challenge system KUIELab-MDX-Net combined this spectrogram branch with a pretrained time-domain Demucs branch and blended their outputs.",
+   "plain_english": "MDX-Net is an AI model that pulls a finished song apart into separate tracks, like vocals and drums. It looks at the sound as a picture of its frequencies and learns to guess each part.",
+   "purpose_function": "It exists to recover individual instrument and vocal stems from a single stereo mix when the original multitrack is unavailable, using efficient frequency-domain modeling that separates cleanly.",
+   "practical_application": "A technician meets it inside stem-separation tools such as Ultimate Vocal Remover, picking an MDX-Net model to extract vocals or an instrumental from a mixdown for remixing, karaoke, or sampling.",
+   "category": "Source separation",
+   "related_terms": [
+    "Music source separation",
+    "Stem separation",
+    "HTDemucs",
+    "Mel-spectrogram",
+    "Neural network",
+    "Inference"
+   ],
+   "common_mistakes": [
+    "Expecting perfect stems; MDX-Net outputs are estimates that can contain bleed and spectral artifacts, especially on dense mixes",
+    "Assuming one MDX-Net model does everything; different trained models target different stems or trade quality for speed",
+    "Confusing MDX-Net, a spectrogram-domain model, with Demucs, a waveform-domain model; they are different architectures that are often combined",
+    "Blaming the model for poor results that actually come from feeding it low-quality or heavily lossy source audio"
+   ],
+   "scenario_contexts": [
+    "Extracting an a cappella vocal from a stereo master for a remix",
+    "Removing vocals to build a karaoke or backing track",
+    "Choosing an MDX-Net model in Ultimate Vocal Remover for a separation job"
+   ]
+  },
+  {
+   "id": "af258cd2-7889-4634-9cda-ad07556a33ab",
+   "term": "Mel-spectrogram",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A mel-spectrogram is a time-frequency representation of a signal in which the short-time Fourier transform magnitude is mapped onto the mel frequency scale by a bank of overlapping triangular filters, so the frequency axis approximates how the ear perceives pitch. The result is a matrix of energy over time and mel-frequency bands, usually displayed on a logarithmic (decibel) magnitude scale.",
+   "plain_english": "A mel-spectrogram is a picture of sound over time that spreads out the low pitches and squeezes the high ones, the way our ears do. Brighter spots show where more sound energy is.",
+   "purpose_function": "It exists to fold a spectrogram into perceptually spaced frequency bands, giving a compact, ear-matched representation that is widely used as the input feature for audio machine-learning models.",
+   "practical_application": "A technician encounters mel-spectrograms as the standard input to many neural audio systems and as an analysis display when inspecting the spectral content of a recording.",
+   "category": "Feature representation",
+   "related_terms": [
+    "Spectrogram",
+    "Mel scale",
+    "Short-time Fourier transform",
+    "MFCC (Mel-Frequency Cepstral Coefficients)",
+    "Filter bank",
+    "Feature extraction"
+   ],
+   "common_mistakes": [
+    "Confusing a mel-spectrogram with an MFCC; MFCCs come from taking a further log and discrete cosine transform of the mel-band energies",
+    "Ignoring the settings; window size, hop size, and the number of mel bands strongly change the result",
+    "Reading the mel frequency axis as linear; it is a warped, perceptual scale, not evenly spaced in hertz"
+   ],
+   "scenario_contexts": [
+    "Preparing input features to train an audio classification or source-separation model",
+    "Visualizing the spectral balance of a recording during analysis",
+    "Feeding a neural vocoder or text-to-speech model"
+   ]
+  },
+  {
+   "id": "794cabe2-f37e-427d-b818-fda6450bc21f",
+   "term": "Melodyne",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Melodyne is a commercial audio-editing software from Celemony that analyzes a recording into individual notes and lets the user edit their pitch, timing, duration, volume, and related parameters after the fact. Its DNA Direct Note Access technology extends this note-based editing to polyphonic material, so individual notes within chords can be identified and altered.",
+   "plain_english": "Melodyne is software that finds each note in a recording and lets you move it. You can nudge a singer's pitch or fix timing, and even change one note inside a chord.",
+   "purpose_function": "It exists to give note-level control over recorded audio, letting engineers correct tuning and timing or reshape a performance without re-recording, by turning the audio into editable notes.",
+   "practical_application": "A technician uses Melodyne to tune vocals, tighten timing, or fix a wrong note in a chord, working note by note either standalone or through ARA integration inside a DAW.",
+   "category": "Pitch/time editing",
+   "related_terms": [
+    "Pitch correction",
+    "Pitch detection",
+    "Fundamental frequency",
+    "Time stretching",
+    "Formant",
+    "Auto-Tune"
+   ],
+   "common_mistakes": [
+    "Assuming pitch changes are always transparent; large corrections can sound unnatural or add artifacts",
+    "Expecting flawless polyphonic detection; dense or noisy chords can be mis-analyzed and need manual note correction",
+    "Confusing Melodyne's note-based editing with real-time pitch correction like Auto-Tune; Melodyne is primarily an offline, note-by-note editor"
+   ],
+   "scenario_contexts": [
+    "Tuning a lead vocal take before mixing",
+    "Correcting a single wrong note inside a recorded guitar or piano chord",
+    "Tightening the timing of a backing-vocal stack"
+   ]
+  },
+  {
+   "id": "573217a6-140b-41e4-86dc-4faf9e077e0a",
+   "term": "MFCC (Mel-Frequency Cepstral Coefficients)",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Mel-frequency cepstral coefficients (MFCCs) are a compact set of features that summarize the short-term spectral envelope of a sound. They are computed by taking the magnitude spectrum of a short frame, mapping it to the mel scale with a triangular filter bank, taking the logarithm of the band energies, and applying a discrete cosine transform; the first several resulting coefficients are kept.",
+   "plain_english": "MFCCs are a short list of numbers that capture the overall tone color of a sound in a small slice of time. They let a computer compare sounds without storing the whole waveform.",
+   "purpose_function": "They exist to give a small, largely pitch-independent description of timbre that is efficient to compute and compare, which is why they became a standard feature for speech and music recognition.",
+   "practical_application": "A technician meets MFCCs as input features in speech recognition, speaker identification, and music classification tools, often extracted with libraries such as librosa.",
+   "category": "Feature representation",
+   "related_terms": [
+    "Mel-spectrogram",
+    "Cepstrum",
+    "Mel scale",
+    "Short-time Fourier transform",
+    "Feature extraction",
+    "Spectral envelope"
+   ],
+   "common_mistakes": [
+    "Treating MFCCs as a spectrogram; they are cepstral coefficients that describe the spectral envelope, not a direct frequency display",
+    "Keeping too many coefficients; usually only the lowest 12 to 13 are used, as higher ones capture fine detail and pitch",
+    "Assuming they are robust to noise and channel changes; MFCCs are sensitive to both, which hurts performance in the field"
+   ],
+   "scenario_contexts": [
+    "Building features for a speech or speaker recognition system",
+    "Classifying music by genre or instrument",
+    "Comparing sound similarity in an audio search tool"
+   ]
+  },
+  {
+   "id": "364566ba-f170-4388-95c3-c96b0cd72b93",
+   "term": "Model size / parameters",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "In machine learning, a model's parameters are the internal values, chiefly the weights and biases, that are learned from data during training; model size usually refers to the total count of these parameters, often reported in millions or billions. Parameter count is a rough measure of a model's capacity and of the memory and computation it needs.",
+   "plain_english": "A model's parameters are the many numbers it adjusts as it learns. Model size is how many of these numbers there are; more usually means it can learn more, but it needs more memory and power.",
+   "purpose_function": "Counting parameters gives a quick sense of a model's capacity, memory footprint, and compute cost, which helps decide whether it can run on given hardware or in real time.",
+   "practical_application": "A technician checks parameter count when choosing between models, since a larger model may sound better but be too slow or too heavy to run on the available CPU, GPU, or embedded device.",
+   "category": "Machine learning concept",
+   "related_terms": [
+    "Model weights",
+    "Neural network",
+    "Inference",
+    "Training",
+    "Overfitting",
+    "Quantization"
+   ],
+   "common_mistakes": [
+    "Assuming more parameters always means better results; an oversized model can overfit or waste resources",
+    "Confusing parameters with hyperparameters; hyperparameters are set by the designer, while parameters are learned from data",
+    "Ignoring that parameter count drives memory and latency, so a big model may not run in real time"
+   ],
+   "scenario_contexts": [
+    "Choosing a source-separation or noise-reduction model light enough for a laptop",
+    "Comparing two model versions before deployment",
+    "Estimating whether a model will fit in a device's memory"
+   ]
+  },
+  {
+   "id": "407eec73-c77d-43ee-bcb5-f561508f45b2",
+   "term": "Model weights",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "In a neural network, weights are the learnable parameters that scale the connections between units; each input to a unit is multiplied by its weight, the products are summed with a bias, and the result is passed through an activation function. Weights are adjusted during training, typically by gradient descent and backpropagation, and the trained set of weights is what is saved and distributed as a model.",
+   "plain_english": "Weights are the numbers inside a neural network that decide how strongly each input affects the next step. Training tunes these numbers, and the finished set of weights is what you save and share as the model.",
+   "purpose_function": "Weights store what a network has learned; tuning them during training shapes inputs into useful outputs, and loading a saved set of weights is what makes a trained model reusable.",
+   "practical_application": "A technician handles model weights as the checkpoint files that are downloaded and loaded to run a trained model, such as the weight files a stem-separation or noise-reduction plugin needs to work.",
+   "category": "Machine learning concept",
+   "related_terms": [
+    "Model size / parameters",
+    "Neural network",
+    "Training",
+    "Backpropagation",
+    "Inference",
+    "Activation function"
+   ],
+   "common_mistakes": [
+    "Confusing weights with the model architecture; the architecture is the fixed structure, while weights are the learned values that fill it",
+    "Assuming weights can be read like settings; they are large arrays of numbers that are not human-interpretable",
+    "Loading weights into a mismatched architecture or version, which produces broken output or errors"
+   ],
+   "scenario_contexts": [
+    "Downloading a pretrained weights file to run a model locally",
+    "Swapping in a different weights checkpoint to change a plugin's behavior",
+    "Loading the correct weights version so a model runs as intended"
+   ]
+  },
+  {
+   "id": "786c339e-2e9c-4988-9dfd-750fda5ae309",
+   "term": "Moises",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Moises (Moises.ai) is a commercial application that uses AI-based source separation to split songs into individual stems such as vocals, drums, bass, and other, and offers related tools including chord and key detection, tempo detection, pitch and speed changing, and a smart metronome. It is delivered as a web app, mobile apps, and a DAW plugin aimed at musicians and producers.",
+   "plain_english": "Moises is an app that splits a song into separate tracks, like vocals and drums, using AI. It can also find the chords, key, and tempo, and slow a song down for practice.",
+   "purpose_function": "It exists to give musicians an easy, hosted way to separate stems and analyze songs for practice, transcription, and content creation without running their own AI software.",
+   "practical_application": "A technician or musician uses Moises to pull a backing track or isolated vocal from a song, or to get its chords, key, and tempo, uploading a file through the app or web service.",
+   "category": "Source separation",
+   "related_terms": [
+    "Music source separation",
+    "Stem separation",
+    "LALAL.ai",
+    "MDX-Net",
+    "Beat tracking",
+    "Inference"
+   ],
+   "common_mistakes": [
+    "Assuming separated stems are studio multitracks; they are AI estimates that can contain artifacts and bleed",
+    "Trusting automatic chord or key detection blindly; results can be wrong and should be checked by ear",
+    "Assuming that separating a copyrighted song grants the right to reuse the stems; separation does not provide a license"
+   ],
+   "scenario_contexts": [
+    "Making a backing track by removing the vocal for live practice",
+    "Getting the chords and key of a song to learn or transcribe it",
+    "Slowing a track down without changing its pitch to practice a part"
+   ]
+  },
+  {
+   "id": "ee3506d6-97a0-4de4-b594-e9e1846e6653",
+   "term": "Moorer reverberator",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "The Moorer reverberator is an artificial-reverberation algorithm introduced by James A. Moorer in 1979 that extends Schroeder's design. It generates early reflections with a tapped delay line (an FIR filter) and produces the late, diffuse tail with a bank of parallel comb filters, each having a one-pole lowpass filter in its feedback loop so high frequencies decay faster than low ones, followed by an allpass filter to increase echo density.",
+   "plain_english": "The Moorer reverb is a classic recipe for fake echo. It first adds the early bounces off nearby walls, then builds a smooth fading tail that loses its high frequencies over time, the way sound does in a real room.",
+   "purpose_function": "It exists to create natural-sounding reverberation digitally, improving on earlier designs by adding realistic early reflections and by making the decay lose highs over time, as air absorption does in real spaces.",
+   "practical_application": "A technician meets the Moorer design as a foundational algorithmic reverb studied and used in reverb plugins and DSP units, and as a classic teaching example of comb-and-allpass reverberator structure.",
+   "category": "Artificial reverberation",
+   "related_terms": [
+    "Schroeder reverberator",
+    "Comb filter",
+    "Allpass filter",
+    "Early reflections",
+    "Reverberation time",
+    "Feedback delay network"
+   ],
+   "common_mistakes": [
+    "Confusing it with Schroeder's reverberator; Moorer added a lowpass in the comb feedback path and an FIR early-reflection stage",
+    "Assuming it models a specific room; it is a parametric algorithm tuned for a pleasing decay, not a physical simulation",
+    "Setting the feedback too high; excessive comb feedback can make the reverb ring or become unstable"
+   ],
+   "scenario_contexts": [
+    "Studying algorithmic reverb design in an audio-DSP course",
+    "Implementing a classic comb-and-allpass reverb in code",
+    "Understanding the roots of reverb algorithms built into plugins and hardware"
+   ]
+  },
+  {
+   "id": "e119a7e3-fc85-40a6-8cd5-50331da4f5a4",
+   "term": "Neural network",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A neural network (artificial neural network) is a machine-learning model made of interconnected processing units, or neurons, organized in layers, where each connection carries a learnable weight. Each unit computes a weighted sum of its inputs plus a bias and applies a nonlinear activation function; by adjusting the weights during training, the network learns to map inputs to desired outputs and can approximate complex, nonlinear functions.",
+   "plain_english": "A neural network is a computer model loosely based on brain cells. It uses many simple units, set out in layers, that pass numbers along. It learns by tuning how strongly they connect until it gives good answers.",
+   "purpose_function": "It exists to learn patterns and mappings directly from data instead of being hand-programmed, which lets it tackle hard audio tasks such as source separation, noise reduction, and speech recognition.",
+   "practical_application": "A technician encounters neural networks inside modern audio tools, running trained networks for stem separation, de-noising, upmixing, transcription, and voice processing.",
+   "category": "Machine learning concept",
+   "related_terms": [
+    "Model weights",
+    "Model size / parameters",
+    "Training",
+    "Inference",
+    "Activation function",
+    "Deep learning"
+   ],
+   "common_mistakes": [
+    "Taking the brain analogy literally; artificial neurons are simple math functions, not biological cells",
+    "Assuming a network understands audio; it maps inputs to outputs statistically and can fail on data unlike its training set",
+    "Confusing a neural network with the training process; the network is the model, while training is how its weights are learned"
+   ],
+   "scenario_contexts": [
+    "Running a neural stem-separation model on a mix",
+    "Using a neural noise-reduction plugin on a dialogue recording",
+    "Applying a neural speech-to-text model to transcribe audio"
+   ]
+  },
+  {
+   "id": "8302208a-8e02-4942-98c9-92d75b4bcafc",
+   "term": "Noise-suppression model",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A noise-suppression model is a machine-learning system, typically a neural network, trained to attenuate unwanted background noise in an audio signal while preserving the target sound, most often speech. It commonly operates on a time-frequency representation, predicting a suppression mask or an enhanced spectrum, and may combine learned components with classical signal-processing stages.",
+   "plain_english": "A noise-suppression model is an AI trained to remove background noise, like fans or traffic, while keeping the voice clear. It works like a smart filter that learns which sounds to keep and which to mute.",
+   "purpose_function": "It exists to raise the clarity and intelligibility of a target signal in noisy conditions, cleaning audio for calls, recordings, or later processing without the harsh artifacts of older fixed noise-reduction rules.",
+   "practical_application": "A technician uses one in conferencing tools, broadcast chains, and plugins to strip room noise, hum, or crowd bleed from a mic feed, checking that the voice is not made dull or watery.",
+   "category": "Speech processing",
+   "related_terms": [
+    "Inference",
+    "Spectrogram",
+    "Neural network",
+    "Voice activity detection",
+    "Real-time processing",
+    "Source separation"
+   ],
+   "common_mistakes": [
+    "Assuming more suppression is always better; aggressive settings remove noise but also dull the voice and add watery or musical artifacts",
+    "Expecting it to handle any noise; a model works on the noise types it was trained on and can fail on unfamiliar sounds",
+    "Confusing noise suppression with source separation; it attenuates noise around a target rather than splitting a mix into full instrument tracks",
+    "Judging it on quiet-room tests only, when real deployments face varied noise, distance, and reverberation"
+   ],
+   "scenario_contexts": [
+    "Cleaning background noise from a remote guest's microphone on a live stream",
+    "Reducing HVAC and room rumble on a spoken-word recording",
+    "Running real-time suppression on a conferencing or intercom feed"
+   ]
+  },
+  {
+   "id": "87632faf-a7d8-42d5-a3b3-1b293d35b222",
+   "term": "NPU acceleration",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "NPU acceleration is the use of a Neural Processing Unit, a specialized hardware accelerator designed for the matrix and vector operations of neural networks, to run model inference faster and at lower power than a general-purpose CPU. NPUs use many parallel multiply-accumulate units and dedicated on-chip memory paths optimized for the low-precision arithmetic common in deep learning.",
+   "plain_english": "An NPU is a chip built just for AI math. Using it lets models run faster and use less power. It is like adding a small engine so the main processor does not do the hard work.",
+   "purpose_function": "It exists to make neural-network inference practical on phones, laptops, and embedded gear by offloading heavy tensor math to hardware tuned for it, saving battery and freeing the CPU for other work.",
+   "practical_application": "A technician meets NPU acceleration when an audio tool runs its model on a device's built-in AI engine, choosing that backend for real-time tasks like noise suppression so latency and power stay low.",
+   "category": "Hardware acceleration",
+   "related_terms": [
+    "Inference",
+    "On-device / edge inference",
+    "Neural network",
+    "Real-time processing",
+    "Latency",
+    "Noise-suppression model"
+   ],
+   "common_mistakes": [
+    "Assuming any model runs on an NPU unchanged; it usually must be converted and quantized to a supported format and operator set first",
+    "Expecting an NPU to speed up every workload; it accelerates supported neural operations, not general code, which still runs on the CPU",
+    "Confusing an NPU with a GPU; both are accelerators, but an NPU is specialized for neural inference at very low power"
+   ],
+   "scenario_contexts": [
+    "Running a real-time noise-suppression model on a laptop's built-in AI engine",
+    "Deploying a wake-word detector on an embedded chip with an NPU to save power",
+    "Choosing an NPU backend so an audio plugin's inference does not overload the CPU"
+   ]
+  },
+  {
+   "id": "144f2102-9bca-4a8d-9551-c392550b9f08",
+   "term": "Offline inference",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Offline inference is the mode of running a trained model on data that has already been captured, without real-time constraints, so the entire input is available and results need not be produced as the signal arrives. Freed from strict latency limits, it can use larger models, look-ahead or bidirectional context, and batch processing to reach higher quality.",
+   "plain_english": "Offline inference means running an AI model on a file you already recorded, not on live sound. Because there is no rush, the model can take its time and look at the whole clip to do a better job.",
+   "purpose_function": "It exists to get the best possible quality when latency does not matter, using the full recording and heavier models to process audio after capture rather than moment to moment.",
+   "practical_application": "A technician uses offline inference to batch-process recorded files through tasks like source separation, transcription, or restoration, running them overnight or in a render pass rather than live.",
+   "category": "Machine learning concept",
+   "related_terms": [
+    "Inference",
+    "On-device / edge inference",
+    "Real-time processing",
+    "Latency",
+    "Source separation",
+    "Automatic speech recognition"
+   ],
+   "common_mistakes": [
+    "Confusing offline with on-device; offline refers to timing (non-real-time), not to whether the model runs locally or in the cloud",
+    "Assuming offline results transfer to live use; a model tuned with look-ahead or large context may not run in real time",
+    "Ignoring that batch offline runs still need enough memory and time to handle large files"
+   ],
+   "scenario_contexts": [
+    "Batch-separating stems from a folder of finished mixes overnight",
+    "Transcribing a recorded interview after the session, not during it",
+    "Running a heavy restoration pass on an archived recording"
+   ]
+  },
+  {
+   "id": "a5fd1c4a-6009-45db-b5ce-ea58862ff3a0",
+   "term": "On-device / edge inference",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "On-device or edge inference is the practice of running a trained model's inference locally on the end device or a nearby edge processor, rather than sending data to a remote server or the cloud. Keeping computation local reduces latency and dependence on network connectivity and keeps input data on the device, at the cost of the device's limited compute, memory, and power.",
+   "plain_english": "On-device inference means the AI model runs right on your phone or laptop, not on a faraway server. It is faster and more private because your audio never leaves the device.",
+   "purpose_function": "It exists to deliver low, predictable latency, work without a network connection, and keep user data local, which matters for real-time and privacy-sensitive audio tasks.",
+   "practical_application": "A technician meets it when a noise-suppression, wake-word, or effects model runs inside a device or plugin, and must fit the model to the available CPU, NPU, memory, and power budget.",
+   "category": "Machine learning concept",
+   "related_terms": [
+    "Inference",
+    "Offline inference",
+    "NPU acceleration",
+    "Latency",
+    "Real-time processing",
+    "Keyword spotting"
+   ],
+   "common_mistakes": [
+    "Confusing edge inference with offline inference; edge is about where it runs (locally), offline is about timing (non-real-time)",
+    "Assuming a cloud-sized model fits on device; edge models usually must be compressed, quantized, or pruned first",
+    "Ignoring thermal and battery limits, so a model that benchmarks fast throttles or drains power in real use"
+   ],
+   "scenario_contexts": [
+    "Running wake-word detection on a smart speaker with no cloud call",
+    "Processing microphone noise suppression locally for privacy on a laptop",
+    "Deploying a real-time effect model inside a standalone hardware unit"
+   ]
+  },
+  {
+   "id": "c4f13dd5-829c-41c4-9e76-97dd2d160e66",
+   "term": "Overfitting",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Overfitting is the condition in which a machine-learning model fits its training data too closely, capturing noise and idiosyncrasies rather than the underlying pattern, so it generalizes poorly to new, unseen data. It typically shows as low training error together with substantially higher validation or test error, and is countered with regularization, more or more varied data, or reduced model capacity.",
+   "plain_english": "Overfitting is when a model memorizes its practice data instead of the real pattern. It is like a student who learns the answer key by heart but fails a new test.",
+   "purpose_function": "It is a core concept for judging whether a model has truly learned; recognizing it tells an engineer when to add data or regularization so the model performs on real inputs, not just the training set.",
+   "practical_application": "A technician watches for overfitting by comparing training and validation scores, and treats it with more diverse training audio, regularization, early stopping, or a smaller model when an audio model works on its own data but fails on real recordings.",
+   "category": "Machine learning concept",
+   "related_terms": [
+    "Training",
+    "Generalization",
+    "Regularization",
+    "Underfitting",
+    "Neural network",
+    "Inference"
+   ],
+   "common_mistakes": [
+    "Judging a model only by training accuracy; strong training scores can hide poor generalization",
+    "Confusing overfitting with underfitting; overfitting is too complex a fit, underfitting is too simple to capture the pattern",
+    "Adding model capacity to cut errors without more or better data, which often makes overfitting worse",
+    "Tuning repeatedly against the test set, which leaks it into training and hides overfitting"
+   ],
+   "scenario_contexts": [
+    "A classifier that labels its training clips perfectly but fails on new recordings",
+    "A separation model tuned to one studio's material that degrades on other sources",
+    "Deciding to stop training early once validation error starts rising"
+   ]
+  },
+  {
+   "id": "9755c202-78e9-47a6-a219-fd973cb18989",
+   "term": "Partitioned convolution",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Partitioned convolution is a fast-convolution technique that splits a long impulse response into smaller blocks, or partitions, each convolved with the input using FFT-based block processing and then summed, giving efficient linear convolution without the large input-output delay of a single full-length FFT. Non-uniform schemes use short partitions for the start of the impulse response to keep latency low and longer partitions later for efficiency.",
+   "plain_english": "Partitioned convolution cuts a long reverb sample into small chunks. The computer can then process the chunks fast and with little delay. It lets heavy convolution reverb run in real time.",
+   "purpose_function": "It exists to make FFT-based convolution both efficient and low-latency, so long impulse responses such as reverb tails can be applied live instead of forcing a long processing delay.",
+   "practical_application": "A technician relies on it inside convolution-reverb and speaker- or cabinet-emulation plugins, where a captured impulse response must be applied in real time with low latency.",
+   "category": "Convolution",
+   "related_terms": [
+    "Convolution",
+    "Impulse response",
+    "Fast Fourier transform",
+    "Overlap-add",
+    "Convolution reverb",
+    "Latency"
+   ],
+   "common_mistakes": [
+    "Assuming a single large FFT is best; one full-length transform is efficient but adds a long block delay unsuitable for live use",
+    "Ignoring the latency-versus-cost trade-off; uniformly small partitions cut latency but raise CPU load",
+    "Confusing partitioned convolution with an algorithmic reverb; it convolves a measured impulse response rather than modeling reflections with delays and filters"
+   ],
+   "scenario_contexts": [
+    "Running a long hall impulse response in a convolution reverb during tracking",
+    "Applying a guitar cabinet impulse response live with low latency",
+    "Auralizing a measured room response in real time"
+   ]
+  },
+  {
+   "id": "29a4c78d-cf14-4dbd-b35f-428adc791161",
+   "term": "Phoneme recognition",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Phoneme recognition is the speech-processing task of identifying the sequence of phonemes, the smallest distinctive sound units of a language, present in a spoken audio signal. It is typically performed by an acoustic model, historically HMM-based and now usually a deep neural network, that maps short frames of audio features to phoneme classes, and it often serves as a sub-component of full speech recognition.",
+   "plain_english": "Phoneme recognition means getting a computer to spot the basic speech sounds, like the \"b\" or \"sh\" sounds, inside spoken audio. These sounds are the building blocks that make up words.",
+   "purpose_function": "It exists to turn raw speech into a sequence of basic sound units, giving a compact, language-based intermediate step for speech recognition, pronunciation scoring, and alignment tasks.",
+   "practical_application": "A technician encounters it inside speech-recognition and forced-alignment tools, for example lining up a transcript with audio for captions or lip-sync, or scoring learner pronunciation.",
+   "category": "Speech processing",
+   "related_terms": [
+    "Automatic speech recognition",
+    "Acoustic model",
+    "Hidden Markov model",
+    "Deep neural network",
+    "Feature extraction",
+    "Forced alignment"
+   ],
+   "common_mistakes": [
+    "Confusing phonemes with letters; phonemes are sounds, and spelling does not map one-to-one to them",
+    "Assuming clean-speech accuracy holds in noise; background noise, accents, and coarticulation lower phoneme accuracy",
+    "Treating phoneme recognition as full transcription; it labels sounds, and turning them into correct words needs a language model or lexicon"
+   ],
+   "scenario_contexts": [
+    "Force-aligning a script to audio to generate time-accurate captions",
+    "Building the acoustic front-end of a speech-recognition system",
+    "Scoring learner pronunciation in a language-training app"
+   ]
+  },
+  {
+   "id": "bfba7714-ae2c-4b1f-be36-1e26e4872e14",
+   "term": "Pitch-tracking algorithm",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A pitch-tracking algorithm estimates the fundamental frequency (F0) of a signal as it changes over time, producing a pitch contour together with a voiced/unvoiced or confidence indication. Methods include time-domain autocorrelation and difference-function approaches such as YIN, frequency-domain and cepstral methods, and modern data-driven models.",
+   "plain_english": "A pitch-tracking algorithm follows the musical pitch of a sound moment by moment, telling you how high or low it is over time. It is how a tuner or auto-tune tool knows which note is being sung or played.",
+   "purpose_function": "It exists to extract a note's fundamental frequency over time so systems can tune, correct, analyze, or transcribe pitch, separating the perceived note from the sound's timbre.",
+   "practical_application": "A technician meets it in tuners, pitch-correction and auto-tune tools, melody transcription, and MIDI conversion, and must watch for octave errors and tracking glitches on noisy or polyphonic material.",
+   "category": "Pitch detection",
+   "related_terms": [
+    "Fundamental frequency",
+    "Autocorrelation",
+    "Pitch correction",
+    "Cepstrum",
+    "Automatic music transcription",
+    "Kalman filter"
+   ],
+   "common_mistakes": [
+    "Assuming pitch equals the loudest partial; the fundamental can be weak or missing, which causes octave errors",
+    "Applying a monophonic tracker to chords; most F0 trackers assume one note at a time and fail on polyphonic audio",
+    "Ignoring the voiced/unvoiced decision, so the tracker reports a pitch during noise, breaths, or silence",
+    "Confusing pitch with frequency in general; pitch tracking targets the perceived fundamental, not every spectral component"
+   ],
+   "scenario_contexts": [
+    "Driving a real-time tuner display for a guitar or voice",
+    "Feeding pitch correction or auto-tune on a vocal take",
+    "Transcribing a sung melody to notes or MIDI"
+   ]
+  },
+  {
+   "id": "b5fa589c-d05b-40fd-bd71-8db9bd8494ac",
+   "term": "Polyphase filter",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A polyphase filter is an efficient implementation of a filter based on polyphase decomposition, in which the filter's impulse response is split into several sub-sequences, or phases, that run in parallel at a lower rate. In multirate systems it lets decimators compute only the output samples that are kept and lets interpolators skip multiplications by inserted zeros, greatly reducing computation in sample-rate conversion and filter banks.",
+   "plain_english": "A polyphase filter is a smart way to change a signal's sample rate without wasting effort. It splits the work into parallel parts. That way the computer skips math that would be thrown away.",
+   "purpose_function": "It exists to make multirate operations like decimation, interpolation, and sample-rate conversion efficient, by reorganizing the filter so no work is spent on samples that are discarded or on zero-valued inputs.",
+   "practical_application": "A technician encounters polyphase structures inside sample-rate converters, oversampling converters and codecs, and filter banks, wherever audio must change rate efficiently and with good quality.",
+   "category": "Multirate processing",
+   "related_terms": [
+    "Sample rate conversion",
+    "Decimation",
+    "Interpolation",
+    "Finite impulse response filter",
+    "Filter bank",
+    "Anti-aliasing filter"
+   ],
+   "common_mistakes": [
+    "Thinking polyphase changes the filter's response; it is an efficiency restructuring that gives the same output as the direct filter",
+    "Skipping the anti-aliasing or anti-imaging filtering; polyphase makes it efficient but does not remove the need for it",
+    "Confusing the number of phases with filter quality; the phase count follows the rate-change factor, not the stopband performance"
+   ],
+   "scenario_contexts": [
+    "Converting audio between 44.1 kHz and 48 kHz efficiently",
+    "Building the decimation stage of an oversampling analog-to-digital converter",
+    "Implementing an analysis filter bank for a codec or effect"
+   ]
+  },
+  {
+   "id": "b3b3dbf1-b93a-4f76-89ea-866380e52af8",
+   "term": "Polyphase resampler",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A polyphase resampler is a sample-rate converter that changes a signal's sampling rate by an integer or rational L/M factor while implementing its anti-aliasing and interpolation filter as a polyphase structure, that is, decomposed into several parallel sub-filters called phases. This organization computes only the output samples that are actually retained, avoiding the wasted multiplications of computing and then discarding samples, so upsampling, downsampling, and fractional rate conversion run efficiently.",
+   "plain_english": "A polyphase resampler changes a sound's sample rate, such as going from 48 to 44.1 thousand samples a second. It splits its filter into small parts so it only does the math for samples it keeps, which saves a lot of work.",
+   "purpose_function": "It exists to convert between sample rates accurately and efficiently, using the polyphase decomposition so that only the needed output samples are computed and the filtering is done at the lowest workable rate.",
+   "practical_application": "A technician meets polyphase resampling inside the sample-rate converters in DAWs, audio interfaces, and DSP that must reconcile devices running at different clocks, for example bringing 48 kHz video audio into a 44.1 kHz session.",
+   "category": "Multirate DSP",
+   "related_terms": [
+    "Sample rate conversion",
+    "Decimation",
+    "Interpolation",
+    "Anti-aliasing filter",
+    "Finite impulse response filter",
+    "Nyquist frequency"
+   ],
+   "common_mistakes": [
+    "Assuming resampling is lossless; converting between unrelated rates such as 44.1 and 48 kHz always involves filtering and adds some error",
+    "Confusing the polyphase structure with a different filter; it computes the same result as the direct filter, just far more efficiently",
+    "Ignoring filter quality; a cheap resampler can alias or dull high frequencies, so the anti-alias and anti-image filter design matters",
+    "Thinking a higher output rate adds detail; upsampling cannot create information above the original signal's bandwidth"
+   ],
+   "scenario_contexts": [
+    "Importing 48 kHz location audio into a 44.1 kHz music session",
+    "Matching an interface or network-audio clock to a session running at a different sample rate",
+    "Building a sample-rate converter block inside an audio DSP signal chain"
+   ]
+  },
+  {
+   "id": "4ed43b81-d626-4d0a-a6f3-a1244ec5364e",
+   "term": "Pretraining",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Pretraining is the initial training phase in which a model learns general-purpose parameters from a large, often unlabeled or weakly labeled dataset, before it is adapted to a specific downstream task by fine-tuning. The pretrained model captures broadly useful features or representations, giving a strong starting point that improves performance and reduces the labeled data and compute needed for the target task.",
+   "plain_english": "Pretraining is a first round of learning on a huge pile of general data, before a model is tuned for one job. It is like a student getting a broad education first and then specializing later.",
+   "purpose_function": "It exists to build reusable, general knowledge in a model from abundant data, so that later fine-tuning on a smaller labeled set is faster, cheaper, and more accurate than training from scratch.",
+   "practical_application": "A technician encounters it when using audio models built on pretrained backbones, such as speech or music models pretrained on large audio corpora and then fine-tuned for tasks like transcription, tagging, or source separation.",
+   "category": "Model training",
+   "related_terms": [
+    "Fine-tuning",
+    "Transfer learning",
+    "Self-supervised learning",
+    "Representation learning",
+    "Foundation model",
+    "Inference"
+   ],
+   "common_mistakes": [
+    "Confusing pretraining with fine-tuning; pretraining builds general features, while fine-tuning adapts them to a specific task",
+    "Assuming a pretrained model works out of the box on any domain; a mismatch between the pretraining data and the target audio can hurt results",
+    "Thinking pretraining always needs labels; much pretraining is self-supervised on unlabeled data"
+   ],
+   "scenario_contexts": [
+    "Fine-tuning a speech model that was pretrained on thousands of hours of audio",
+    "Choosing an audio backbone pretrained on general sound before adapting it to a niche task",
+    "Explaining why a model needed little labeled data because it was already pretrained"
+   ]
+  },
+  {
+   "id": "029f041f-3efc-46b8-9ded-875f65b4a971",
+   "term": "Principal component analysis",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Principal component analysis (PCA) is an unsupervised linear technique that transforms a set of possibly correlated variables into a new set of uncorrelated variables called principal components, ordered so that each successive component captures the maximum remaining variance while being orthogonal to the others. It is computed from the eigenvectors of the data's covariance matrix, or equivalently via the singular value decomposition, and is widely used for dimensionality reduction, decorrelation, and visualization.",
+   "plain_english": "PCA finds the directions in which data varies the most and describes each point using those few directions instead of many. It is like summing up a cloud of points by its longest and widest spread.",
+   "purpose_function": "It exists to reduce the number of dimensions in data while keeping as much of its variation as possible, which removes redundancy, speeds later processing, and can reveal structure by projecting data onto its most informative axes.",
+   "practical_application": "A technician meets PCA when compressing or decorrelating audio feature sets, such as reducing large spectral or MFCC feature vectors before classification, or when visualizing high-dimensional audio data.",
+   "category": "Dimensionality reduction",
+   "related_terms": [
+    "Dimensionality reduction",
+    "Feature extraction",
+    "Representation learning",
+    "Singular value decomposition",
+    "Covariance matrix",
+    "Whitening"
+   ],
+   "common_mistakes": [
+    "Forgetting to center and usually scale the data first; PCA on unstandardized features is dominated by the largest-magnitude ones",
+    "Assuming principal components are meaningful physical features; they are abstract variance directions and are not necessarily interpretable",
+    "Using PCA on strongly nonlinear data; it captures only linear structure, so nonlinear methods may be needed"
+   ],
+   "scenario_contexts": [
+    "Reducing a large MFCC or spectral feature set before feeding a classifier",
+    "Visualizing high-dimensional audio embeddings in two or three dimensions",
+    "Decorrelating features to speed up or stabilize model training"
+   ]
+  },
+  {
+   "id": "84a271a5-7ee5-4c0b-9cb1-b072f823fa03",
+   "term": "Prompt / text conditioning",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Prompt or text conditioning is the technique of guiding a generative model's output with a natural-language text input so that the generated audio or other media matches the described content. The text is encoded into embeddings by a text encoder and injected into the generative model, commonly through cross-attention or by concatenation, so that it steers sampling toward outputs consistent with the prompt.",
+   "plain_english": "Text conditioning lets you steer an AI by typing a description, such as soft rain on a tin roof, and getting sound that matches. The words are turned into numbers the model can follow, like giving it a written order.",
+   "purpose_function": "It exists to give users control over what a generative model produces by turning a natural-language description into a signal the model can follow, aligning the output with the requested content or style.",
+   "practical_application": "A technician encounters it in text-to-audio, text-to-music, and text-to-speech tools, where typing a prompt drives sound-effect, music, or voice generation, and the exact wording strongly affects the result.",
+   "category": "Generative modeling",
+   "related_terms": [
+    "Generative model",
+    "Embedding",
+    "Cross-attention",
+    "Text encoder",
+    "Diffusion model",
+    "Text-to-audio"
+   ],
+   "common_mistakes": [
+    "Expecting exact, repeatable output from a prompt; generation is probabilistic, so the same prompt can give different results",
+    "Assuming more words always help; vague or overloaded prompts can confuse the model and blur the output",
+    "Confusing text conditioning with search; the model generates new audio, it does not retrieve an existing recording that matches the words"
+   ],
+   "scenario_contexts": [
+    "Typing a description to generate a sound effect in a text-to-audio tool",
+    "Prompting a text-to-music model for a backing track in a given style",
+    "Steering a text-to-speech voice with a written style or emotion cue"
+   ]
+  },
+  {
+   "id": "91d0fea9-211a-4fef-acd2-091e468b3f6d",
+   "term": "Quantization",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Quantization is the process of mapping values from a large or continuous range onto a smaller, finite set of discrete levels, which necessarily discards information and introduces quantization error. In digital audio it is the amplitude-rounding step of analog-to-digital conversion, in which each sample is rounded to the nearest level allowed by the bit depth; in machine learning it also refers to reducing the numerical precision of a model's weights and activations to shrink the model and speed up computation.",
+   "plain_english": "Quantization means rounding values to a fixed set of steps, so a little detail is lost each time. When you record, each sample is rounded to the nearest step, a bit like rounding money to the nearest cent.",
+   "purpose_function": "It exists because digital systems can store only a finite set of values, so continuous signals or high-precision numbers must be rounded to discrete levels; the number of levels sets the trade-off between size or speed and accuracy.",
+   "practical_application": "A technician meets quantization when choosing bit depth for recording and adding dither to mask its error, and, in AI audio tools, when a model is quantized to lower precision so it runs faster on limited hardware.",
+   "category": "Digital audio",
+   "related_terms": [
+    "Bit depth",
+    "Analog-to-digital conversion",
+    "Dither",
+    "Quantization error",
+    "Sampling",
+    "Signal-to-noise ratio"
+   ],
+   "common_mistakes": [
+    "Confusing quantization, which rounds amplitude, with sampling, which discretizes time; they are two separate steps in digitizing a signal",
+    "UNSAFE: Truncating to a lower bit depth without dither; this turns low-level quantization error into audible distortion and can also produce sudden full-scale artifacts that risk hearing and speaker damage at high monitoring levels",
+    "Thinking more bits always audibly improve a mix; beyond a point the quantization noise already sits below other noise and adds no audible benefit",
+    "Assuming model quantization is free; reducing a neural network's precision can lower its accuracy if done carelessly"
+   ],
+   "scenario_contexts": [
+    "Choosing 24-bit recording to keep quantization noise low while tracking",
+    "Applying dither when exporting a 24-bit mix down to 16-bit for CD",
+    "Quantizing a neural-network audio model to 8-bit integers so it runs on an embedded device"
+   ]
+  },
+  {
+   "id": "b1d80cb2-fa5e-461d-b673-c969a3fd29cd",
+   "term": "Real-time inference",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Real-time inference is the running of a trained model on incoming data under a strict latency budget, so that each input is processed and its output delivered fast enough to keep pace with a live stream. In audio this means the model must return its result within the available buffer time, typically a few to a few tens of milliseconds, so processing stays in step with the audio without dropouts.",
+   "plain_english": "Real-time inference means a trained model has to answer fast enough to keep up with live sound, not whenever it happens to finish. It is like a translator who must speak as the person talks, without falling behind.",
+   "purpose_function": "It exists to let learned models be used in live settings, imposing a hard time limit so the model's output arrives in step with the audio, which in turn shapes model size, hardware, and buffer choices.",
+   "practical_application": "A technician meets it when running AI plugins live, such as real-time noise suppression, de-reverb, or source separation, where latency and buffer size must be set so the model keeps up without glitches.",
+   "category": "Machine learning concept",
+   "related_terms": [
+    "Inference",
+    "Latency",
+    "Buffer size",
+    "Real-time processing",
+    "Quantization",
+    "Keyword spotting"
+   ],
+   "common_mistakes": [
+    "Confusing throughput with latency; a model can process many files quickly overall yet still be too slow to answer within one live buffer",
+    "Ignoring worst-case timing; occasional slow inferences cause dropouts even when the average speed is fine",
+    "Assuming a model that runs offline will run live; real-time use often forces a smaller or quantized model to meet the latency budget"
+   ],
+   "scenario_contexts": [
+    "Running a real-time noise-suppression model on a live broadcast microphone",
+    "Applying AI de-reverb during a live performance within the buffer time",
+    "Deploying a wake-word detector that must respond continuously with low latency"
+   ]
+  },
+  {
+   "id": "6fba68fe-7c4a-49a3-8591-fe19226eaf0d",
+   "term": "Recurrent neural network (RNN)",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A recurrent neural network (RNN) is a class of neural network for sequential data in which connections form cycles, so the network maintains a hidden state that is updated at each time step and carries information from previous inputs forward. This recurrence lets it model temporal dependencies in sequences of variable length and it is trained by backpropagation through time; gated variants such as LSTM and GRU were developed to reduce the vanishing-gradient problem that limits learning of long-range dependencies.",
+   "plain_english": "An RNN is a neural network that reads data in order and remembers what came before through a running memory. It is like reading a sentence word by word while keeping the earlier words in mind.",
+   "purpose_function": "It exists to process sequences such as audio or text by keeping a memory of past inputs, so its output at each step can depend on context rather than treating each input in isolation.",
+   "practical_application": "A technician encounters RNNs, often the LSTM or GRU variants, in older or lightweight speech recognition, music modeling, and some real-time audio effects, though Transformers have replaced them for many large-scale tasks.",
+   "category": "Neural network architecture",
+   "related_terms": [
+    "Neural network",
+    "Long short-term memory",
+    "Backpropagation through time",
+    "Transformer",
+    "Sequence modeling",
+    "Vanishing gradient"
+   ],
+   "common_mistakes": [
+    "Assuming a plain RNN captures long-range context well; without gating it suffers vanishing gradients and forgets distant inputs",
+    "Confusing the hidden state with stored training data; it is a running summary of the sequence, not a memory of past examples",
+    "Treating RNNs and Transformers as interchangeable; an RNN processes step by step, while a Transformer attends to a whole sequence in parallel"
+   ],
+   "scenario_contexts": [
+    "Modeling audio or MIDI sequences frame by frame",
+    "Running a lightweight LSTM-based speech or keyword model on limited hardware",
+    "Emulating a nonlinear audio effect with a small recurrent network"
+   ]
+  },
+  {
+   "id": "33a688b8-3d95-4570-ba7a-774990ebcd6e",
+   "term": "Recursive least squares filter",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "The recursive least squares (RLS) filter is an adaptive filter that updates its coefficients every sample to minimize a weighted sum of past squared errors, using a recursive update of the inverse input-correlation matrix so it need not re-solve the whole least-squares problem from scratch. Compared with the LMS algorithm it converges much faster and is nearly independent of the input signal's eigenvalue spread, at the cost of higher computational complexity and greater numerical sensitivity.",
+   "plain_english": "An RLS filter adjusts itself on the fly to best match a target, updating its settings with every new sample. It uses all the data so far, so it learns fast, like a marksman correcting aim after each shot.",
+   "purpose_function": "It exists to solve the least-squares filtering problem adaptively in real time, converging quickly to the best coefficients so it can track and cancel signals whose statistics are unknown or slowly changing.",
+   "practical_application": "A technician meets RLS in adaptive tasks such as echo and noise cancellation, feedback suppression, and system identification, where its fast convergence is worth the extra computation over LMS.",
+   "category": "Adaptive filtering",
+   "related_terms": [
+    "Adaptive filter",
+    "Least mean squares filter",
+    "Echo cancellation",
+    "System identification",
+    "Kalman filter",
+    "Wiener filter"
+   ],
+   "common_mistakes": [
+    "Assuming RLS is always better than LMS; it converges faster but costs far more computation and can be numerically unstable",
+    "Ignoring the forgetting factor; setting it wrong makes the filter either too sluggish or too jumpy on changing signals",
+    "Overlooking numerical issues; finite-precision updates of the inverse correlation matrix can drift or blow up without safeguards"
+   ],
+   "scenario_contexts": [
+    "Adaptive echo cancellation on a hands-free or conferencing audio path",
+    "Suppressing acoustic feedback that changes as a room or microphone moves",
+    "Identifying an unknown system response for equalization or modeling"
+   ]
+  },
+  {
+   "id": "4df37f3d-1b80-48dc-8c86-2541a4083e79",
+   "term": "Representation learning",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Representation learning is a set of machine-learning methods that automatically discover useful features or representations of raw data directly from the data, rather than relying on hand-engineered features. Good learned representations make the underlying factors of variation explicit and transferable, so that downstream tasks such as classification or separation become easier; deep neural networks perform representation learning by building a hierarchy of increasingly abstract features across their layers.",
+   "plain_english": "Representation learning is when a model finds useful features in raw data by itself. People do not have to design the features by hand. It is like the model learning what to notice on its own.",
+   "purpose_function": "It exists to replace manual feature engineering with features learned from data, producing representations that capture the important structure of a signal and transfer well to many downstream tasks.",
+   "practical_application": "A technician meets it in modern audio systems that learn embeddings straight from waveforms or spectrograms, feeding those learned features into tasks such as classification, tagging, source separation, or similarity search.",
+   "category": "Machine learning concept",
+   "related_terms": [
+    "Feature extraction",
+    "Embedding",
+    "Deep neural network",
+    "Self-supervised learning",
+    "Principal component analysis",
+    "Pretraining"
+   ],
+   "common_mistakes": [
+    "Assuming learned features are interpretable; they often are not directly meaningful to a human even when they work well",
+    "Confusing representation learning with hand-crafted feature extraction; here the features are learned from data, not designed by an engineer",
+    "Expecting learned representations to transfer everywhere; features learned on one domain can fail on very different audio"
+   ],
+   "scenario_contexts": [
+    "Learning audio embeddings from spectrograms for a tagging or search system",
+    "Using a self-supervised model's learned features as input to a small classifier",
+    "Comparing learned features with traditional MFCCs for a recognition task"
+   ]
+  },
+  {
+   "id": "daf926b0-0031-4d33-9bca-791928f9575f",
+   "term": "Reverberation estimation",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Reverberation estimation is the task of determining the reverberant characteristics of an acoustic space from recorded audio, typically by estimating parameters such as the reverberation time (RT60), the direct-to-reverberant ratio, or clarity. When these parameters are inferred directly from a reverberant speech or music signal without access to a measured impulse response, it is called blind reverberation estimation, and modern approaches often use machine-learning models trained on labelled or simulated data.",
+   "plain_english": "It means working out how echoey a room is just by listening to a recording made in it. A computer studies the sound and guesses things like how long the echoes take to fade away.",
+   "purpose_function": "It gives a compact description of how a space adds reverberation, which downstream systems need in order to dereverberate speech, match reverb between takes, or adapt recognition and separation models to room conditions.",
+   "practical_application": "An engineer or algorithm uses it to gauge a room's reverberation time from a recording, which helps decide how much dereverberation to apply or how to blend a new take into an existing reverberant recording.",
+   "category": "Acoustic parameter estimation",
+   "related_terms": [
+    "Room-impulse estimation",
+    "Reverberation time (RT60)",
+    "Dereverberation",
+    "Direct-to-reverberant ratio",
+    "Room impulse response",
+    "Blind source separation"
+   ],
+   "common_mistakes": [
+    "Confusing reverberation estimation with dereverberation; estimation measures the room's effect, while dereverberation tries to remove it",
+    "Assuming a single RT60 value fully describes a room, when reverberation time varies with frequency and with source and receiver positions",
+    "Trusting a blind estimate from a very short or noisy recording, where too little reverberant decay is captured to estimate parameters reliably"
+   ],
+   "scenario_contexts": [
+    "Estimating a room's reverberation time from a dialogue recording to set up matching dereverberation in post-production",
+    "Adapting a speech-recognition or source-separation model to the acoustics of an unfamiliar room",
+    "Checking whether two recorded takes were made in acoustically similar spaces before editing them together"
+   ]
+  },
+  {
+   "id": "c4010bf3-7c19-491a-b349-530895887564",
+   "term": "RipX DeepMix",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null
+  }
+ ]
+}

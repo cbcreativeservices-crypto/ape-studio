@@ -1,0 +1,242 @@
+old_topic,old_term_count,operation,target_or_children
+Professional Audio Safety,119,KEEP,Professional Audio Safety
+Sound & Acoustics,386,SPLIT,"Sound & Wave Fundamentals | Propagation, Reflection & Room Behavior | Frequency, Pitch & Spectral Concepts"
+Grounding & Electrical,239,SPLIT2,"Grounding & Shielding | Electrical Power, Distribution & Safety"
+"Power Fundamentals, Distribution & Quality",12,MERGE,Grounding & Electrical
+Signal Path & Levels,96,KEEP,Signal Path & Levels
+Connectors & Plugs,185,KEEP,Connectors & Plugs
+Cables & Wiring,69,KEEP,Cables & Wiring
+I/O Connections,14,MERGE,Connectors & Plugs
+Microphone Types & Transducers,467,SPLIT,Microphone Transducer Principles | Polar Patterns & Microphone Types | Specialized & Emerging Microphones
+Microphone Specs & Characteristics,65,KEEP,Microphone Specs & Characteristics
+Stereo & Ensemble Miking Techniques,122,KEEP,Stereo & Ensemble Miking Techniques
+Instrument & Close Miking Techniques,360,SPLIT,"Close-Miking - Drums & Percussion | Close-Miking - Guitars, Amps & Strings | Close-Miking - Keys, Winds, Brass & Vocals"
+"Mic Controls, Power & Mounting",35,MERGE,Microphone Specs & Characteristics
+Specialized & Application Microphones,8,MERGE,Specialized & Emerging Microphones
+Loudspeaker Types & Drivers,209,KEEP,Loudspeaker Types & Drivers
+Enclosures & Crossovers,0,MERGE,"Enclosure, Horn & Radiation Engineering"
+Loudspeaker Specs & Behavior,0,MERGE,Loudspeaker Measurement & Modeling
+Amplifiers,232,KEEP,Amplifiers
+Vacuum Tubes,85,KEEP,Vacuum Tubes
+Console Architecture & Signal Flow,250,SPLIT,Console Architecture & Bus Structure | Console Signal Flow & Gain Staging
+Channel Strip & Processing,17,MERGE,Console Signal Flow & Gain Staging
+"Buses, Routing & Matrix",16,MERGE,Console Architecture & Bus Structure
+Digital Console Workflow & Recall,12,MERGE,Console Architecture & Bus Structure
+Recorder Types & Formats,40,MERGE,Recorders & File Formats
+Audio File Formats & Media,56,MERGE,Recorders & File Formats
+Recording Transport & Controls,3,MERGE,Recorders & File Formats
+"Storage, Backup & Archival",1,MERGE,Audio Restoration & Archival
+"Racks, Patchbays & Wiring Infrastructure",163,KEEP,"Racks, Patchbays & Wiring Infrastructure"
+Studio/Stage Furniture & Mounting,11,MERGE,"Racks, Patchbays & Wiring Infrastructure"
+Physical Controls & Hardware,13,MERGE,"Racks, Patchbays & Wiring Infrastructure"
+Power & Signal Distribution Hardware,2,MERGE,"Racks, Patchbays & Wiring Infrastructure"
+Documentation & Diagrams,68,KEEP,Documentation & Diagrams
+Dante Fundamentals & Routing,210,KEEP,Dante Fundamentals & Routing
+"Dante Devices, Modules & Certification",27,MERGE,Dante Fundamentals & Routing
+"Clocking, Redundancy & Network Management",64,KEEP,"Clocking, Redundancy & Network Management"
+Control Surfaces & Machine Control,108,KEEP,Control Surfaces & Machine Control
+Equalization (EQ),170,KEEP,Equalization (EQ)
+Dynamics Processing,312,SPLIT,"Compression & Limiting | Gates, Expanders & Transient Design"
+Reverb,141,KEEP,Reverb
+Delay & Time-Based Effects,85,KEEP,Delay & Time-Based Effects
+Acoustic Principles & Room Behavior,223,KEEP,Acoustic Principles & Room Behavior
+Absorption & Bass Trapping,36,MERGE,Room Treatment Layout & Application
+Diffusion & Materials,24,MERGE,Room Treatment Layout & Application
+Room Treatment Layout & Application,166,KEEP,Room Treatment Layout & Application
+Measurement Fundamentals & Metering,500,SPLIT,"Levels, Metering & Reference Standards | Frequency & Spectrum Analysis | Acoustic & Room Measurement Methods | Test Signals & Measurement Instruments"
+Acoustic & Room Measurement,55,MERGE,Acoustic & Room Measurement Methods
+Signal Analysis & Test Equipment,276,SPLIT,Signal & Transfer-Function Analysis | Test & Measurement Instruments
+System Optimization,17,MERGE,System Deployment & Rigging
+Signal & Connection Troubleshooting,3,MERGE,System & Live Troubleshooting Method
+System & Live Troubleshooting Method,228,SPLIT2,Troubleshooting Methodology & Diagnostics | Live & System Fault Isolation
+Patch & Routing Diagnostics,8,MERGE,System & Live Troubleshooting Method
+System Maintenance,45,MERGE,Repair
+Analog Live Sound,79,KEEP,Analog Live Sound
+Digital Live Sound,74,KEEP,Digital Live Sound
+System Deployment & Rigging,187,SPLIT2,"System Deployment & Rigging | System Tuning, Optimization & Alignment"
+System Tuning & Alignment,12,MERGE,System Deployment & Rigging
+RF Wireless Systems,157,KEEP,RF Wireless Systems
+DJ Performance & Turntablism,53,MERGE,"Beatmatching, Mixing & FX"
+DJ Equipment & Software,9,MERGE,"Beatmatching, Mixing & FX"
+"Beatmatching, Mixing & FX",159,KEEP,"Beatmatching, Mixing & FX"
+Road Crew,177,KEEP,Road Crew
+Venue Architecture & Spaces,132,KEEP,Venue Architecture & Spaces
+Stage Geography & Backstage,70,KEEP,Stage Geography & Backstage
+House & Audience Areas,19,MERGE,Venue Architecture & Spaces
+"Stage Platforms, Scenery & Soft Goods",73,KEEP,"Stage Platforms, Scenery & Soft Goods"
+Fly Systems & Overhead Access,25,MERGE,"Rigging Hardware, Loads & Motorized Flying"
+"Rigging Hardware, Loads & Motorized Flying",91,KEEP,"Rigging Hardware, Loads & Motorized Flying"
+Orchestra Pit & Ensemble Layout,90,KEEP,Orchestra Pit & Ensemble Layout
+"Show Control, Cueing & Communications",125,KEEP,"Show Control, Cueing & Communications"
+Theatrical Sound (commercial card),157,KEEP,Theatrical Sound (commercial card)
+Worship Sound (commercial card),89,KEEP,Worship Sound (commercial card)
+Audio System Design,165,SPLIT2,Audio System Design & Specification | Commercial/Install AV & Assisted Listening
+Corporate AV,45,MERGE,Audio System Design
+Commercial 70/100V Systems,7,MERGE,Commercial & Distributed Audio
+Distributed Audio Systems,9,MERGE,Commercial & Distributed Audio
+Assisted Listening Systems,56,MERGE,Audio System Design
+Architectural Audio (commercial card),0,MERGE,Audio System Design
+Passive Components,113,KEEP,Passive Components
+Electromechanical Parts & Hardware,152,KEEP,Electromechanical Parts & Hardware
+Active Devices & Semiconductors,95,KEEP,Active Devices & Semiconductors
+Circuits & Topologies,234,SPLIT2,"Circuits & Topologies | Manufacturing, Assembly & Production"
+"PCB, Assembly & Soldering",34,MERGE,Soldering
+Manufacturing & Production,30,MERGE,Circuits & Topologies
+HiFi Consumer Audio,115,KEEP,HiFi Consumer Audio
+Home Theater & Residential AV,6,MERGE,HiFi Consumer Audio
+Vehicle Audio,130,KEEP,Vehicle Audio
+Soldering,61,KEEP,Soldering
+Repair,161,KEEP,Repair
+Recording Fundamentals & Signal Chain,135,KEEP,Recording Fundamentals & Signal Chain
+Microphone Technique for Recording,0,RETIRE,
+Session Setup & Signal Flow,20,MERGE,Recording Fundamentals & Signal Chain
+"Session Workflow, Takes & Documentation",217,KEEP,"Session Workflow, Takes & Documentation"
+Instrument Recording - Strings & Guitar,129,MERGE,Instrument Recording (by Source)
+Instrument Recording - Drums & Percussion,1,MERGE,Drum-Kit Recording
+"Instrument Recording - Keys, Winds & Brass",44,MERGE,Instrument Recording (by Source)
+Studio Recording Craft - Advanced,9,MERGE,Band Tracking Workflow & Arrangement
+Drum-Kit Recording,46,KEEP,Drum-Kit Recording
+"Guitar, Bass & Amp Recording",17,MERGE,Instrument Recording (by Source)
+Band Tracking Workflow & Arrangement,139,KEEP,Band Tracking Workflow & Arrangement
+Vocal & Overdub Production,0,RETIRE,
+Mix Fundamentals & Workflow,3,MERGE,"Mix Automation, Bus & Loudness"
+Instrument Mixing - Drums & Percussion,78,KEEP,Instrument Mixing - Drums & Percussion
+"Instrument Mixing - Guitars, Bass & Keys",97,KEEP,"Instrument Mixing - Guitars, Bass & Keys"
+Vocal Mixing,119,KEEP,Vocal Mixing
+"Orchestral, Choir & Acoustic-Ensemble Mixing",115,KEEP,"Orchestral, Choir & Acoustic-Ensemble Mixing"
+Mix Automation & Recall,40,MERGE,"Mix Automation, Bus & Loudness"
+"Mix Bus, Loudness & Translation",35,MERGE,"Mix Automation, Bus & Loudness"
+Creative & Advanced Mix Processing,252,SPLIT,Creative Effects & Sound Design in the Mix | Advanced Parallel & Bus Processing
+Mastering Fundamentals & Chain,192,SPLIT2,"Mastering Fundamentals & Chain | Loudness, QC, Delivery & Metadata"
+"Loudness, Dynamics & QC",55,MERGE,Mastering Fundamentals & Chain
+Delivery Formats & Metadata,8,MERGE,Mastering Fundamentals & Chain
+Podcast Production,96,KEEP,Podcast Production
+Broadcast / Radio Production & Air Chain,257,SPLIT,Radio Production & Studio Workflow | Broadcast Air Chain & Transmission | Broadcast Processing & Loudness
+Streaming & Distribution,1,MERGE,Broadcast Air Chain & Transmission
+Broadcast Loudness & Compliance,39,MERGE,Broadcast Processing & Loudness
+Sound for Picture - Post Workflow & Deliverables,283,SPLIT,"Post Workflow, Spotting & Sessions | Deliverables, Stems & Mastering for Picture"
+Production Sound & Field Recording,33,MERGE,"Post Workflow, Spotting & Sessions"
+Re-Recording & Final Mix,164,KEEP,Re-Recording & Final Mix
+DAW Fundamentals & Session Management,204,KEEP,DAW Fundamentals & Session Management
+Editing & Comping,10,MERGE,DAW Fundamentals & Session Management
+In-the-Box Mixing & Automation,15,MERGE,DAW Fundamentals & Session Management
+DAW: Logic,140,KEEP,DAW: Logic
+DAW: Cubase/Nuendo,60,KEEP,DAW: Cubase/Nuendo
+DAW: REAPER,72,KEEP,DAW: REAPER
+DAW: Ableton Live,128,KEEP,DAW: Ableton Live
+DAW: Studio One,30,KEEP,DAW: Studio One
+DAW: Digital Performer/Reason,37,KEEP,DAW: Digital Performer/Reason
+MIDI,131,KEEP,MIDI
+Plugins & Virtual Instruments,300,SPLIT,"Plugin Formats, Hosts & Processing | Virtual Instruments & Samplers"
+Sampling Fundamentals & Instruments,157,SPLIT2,Sampling & Sample Instruments | Sample Editing & Beat Programming
+Sample Editing & Manipulation,42,MERGE,Sampling Fundamentals & Instruments
+Drum Programming & Beat-Making,50,MERGE,Sampling Fundamentals & Instruments
+Synthesis Fundamentals & Oscillators,97,KEEP,Synthesis Fundamentals & Oscillators
+"Filters, Envelopes & Modulation",50,MERGE,Synthesis Fundamentals & Oscillators
+"Synthesis Types, Modular & CV",41,MERGE,Synthesis Fundamentals & Oscillators
+Hearing Anatomy & Function,17,MERGE,"Hearing Anatomy, Health & Disorders"
+Hearing Protection & Occupational Health,0,MERGE,"Hearing Anatomy, Health & Disorders"
+Hearing Disorders & Health,48,MERGE,"Hearing Anatomy, Health & Disorders"
+Psychoacoustics,207,KEEP,Psychoacoustics
+Spatial Hearing & Localization,51,MERGE,Loudness & Listening Environments
+Speech Intelligibility,67,MERGE,Speech & Voice Perception
+Loudness & Listening Environments,99,KEEP,Loudness & Listening Environments
+Voice & Vocal Perception,14,MERGE,Speech & Voice Perception
+Ear Training,8,MERGE,Tonal & Timbre Descriptors
+Tonal & Timbre Descriptors,130,KEEP,Tonal & Timbre Descriptors
+Listening Slang & Sound Identification,0,MERGE,Tonal & Timbre Descriptors
+Monitoring & Audio Evaluation,0,MERGE,"Attack, Decay, Resonance & Artifact Identification"
+"Attack, Decay, Resonance & Artifact Identification",198,KEEP,"Attack, Decay, Resonance & Artifact Identification"
+"Strings, Guitar & Keys",104,KEEP,"Strings, Guitar & Keys"
+Drums & Percussion,103,KEEP,Drums & Percussion
+"Winds, Brass & Organ",79,KEEP,"Winds, Brass & Organ"
+Project Management,133,KEEP,Project Management
+Workplace Skills,51,KEEP,Workplace Skills
+Audio Career Exploration,134,KEEP,Audio Career Exploration
+Portfolio Development,44,MERGE,Audio Career Exploration
+"Copyright, Publishing & Licensing",56,MERGE,Music Entrepreneurship
+Music Entrepreneurship,150,KEEP,Music Entrepreneurship
+Industry Foundations,69,KEEP,Industry Foundations
+Immersive Formats & Delivery,86,KEEP,Immersive Formats & Delivery
+Object & Bed Panning / Authoring,32,MERGE,Immersive Formats & Delivery
+Immersive Monitoring & Calibration,60,MERGE,Immersive Formats & Delivery
+Immersive Music Production & Delivery,0,RETIRE,
+Film Scoring,406,SPLIT,"Film Scoring - Composition & Orchestration | Film Scoring - Technology & MIDI Mockups | Film Scoring - Recording, Mixing & Delivery"
+Dialogue Editing,209,KEEP,Dialogue Editing
+ADR & Looping,103,KEEP,ADR & Looping
+Dubbing & Localization,234,KEEP,Dubbing & Localization
+Foley Performance & Recording,108,KEEP,Foley Performance & Recording
+SFX Editorial & Sound Design,101,KEEP,SFX Editorial & Sound Design
+Game Audio,161,KEEP,Game Audio
+Themed Entertainment / Haunt Audio,48,MERGE,Game Audio
+Studio & Facility Design,95,KEEP,Studio & Facility Design
+Studio Acoustics & Design,30,MERGE,Studio & Facility Design
+Analog Tape / Tape Machines,278,SPLIT,"Tape Machine Mechanics & Alignment | Tape Recording, Formats & Formulations"
+Vinyl / Disc Mastering,76,KEEP,Vinyl / Disc Mastering
+Audio Restoration & Archival,213,KEEP,Audio Restoration & Archival
+Preamp & Converter Engineering,128,KEEP,Preamp & Converter Engineering
+Loudspeaker / Transducer Engineering,440,SPLIT,"Transducer Design & Motor Systems | Enclosure, Horn & Radiation Engineering | Crossover & System Engineering | Loudspeaker Measurement & Modeling"
+Audio Plugin & DSP Development,46,MERGE,AI/ML Foundations & DSP
+Cloud & Emerging Production,8,MERGE,AI/ML Foundations & DSP
+AI Music Generation & Composition,19,MERGE,"AI Music, Voice & Creative Tools"
+AI Voice & Speech,31,MERGE,"AI Music, Voice & Creative Tools"
+AI Source Separation & Restoration,66,MERGE,"AI Music, Voice & Creative Tools"
+AI Mixing/Mastering & Adaptive Processing,19,MERGE,"AI Music, Voice & Creative Tools"
+Neural Amp Modeling & Neural Synthesis,17,MERGE,"AI Music, Voice & Creative Tools"
+Music Information Retrieval,23,MERGE,AI/ML Foundations & DSP
+AI/ML Foundations for Audio,194,MERGE,AI/ML Foundations & DSP
+"AI Audio Ethics, Rights & Provenance",15,MERGE,AI/ML Foundations & DSP
+Live Sound - Crew Roles & Departments,46,MERGE,Road Crew
+Live Sound - Production Documents & Advancing,4,MERGE,Live Sound - FOH Mixing Workflow
+Live Sound - Stage Patch & Signal Distribution,23,MERGE,Live Sound - FOH Mixing Workflow
+Live Sound - FOH Mixing Workflow,96,KEEP,Live Sound - FOH Mixing Workflow
+Live Sound - Monitor Engineering,109,KEEP,Live Sound - Monitor Engineering
+Live Sound - Soundcheck / Rehearsal / Virtual Soundcheck,52,MERGE,Live Sound - FOH Mixing Workflow
+Live Sound - PA Deployment & System Engineering,65,MERGE,System Deployment & Rigging
+Live Sound - Festival Changeovers & Guest-Engineer,47,MERGE,Live Sound - FOH Mixing Workflow
+Live Sound - Communication & Show Calls,25,MERGE,"Show Control, Cueing & Communications"
+Live Sound - Troubleshooting & Emergency,9,MERGE,System & Live Troubleshooting Method
+Live Sound - Concert-Audio Slang,80,KEEP,Live Sound - Concert-Audio Slang
+Magnetic Tape Preservation & Conservation,161,KEEP,Magnetic Tape Preservation & Conservation
+Archival Preservation & Obsolete Media,127,KEEP,Archival Preservation & Obsolete Media
+"Dubbing - Adaptation, Sync & Deliverables",121,KEEP,"Dubbing - Adaptation, Sync & Deliverables"
+"Digital Audio - Sampling, Quantization & Formats",137,KEEP,"Digital Audio - Sampling, Quantization & Formats"
+"Foundations - Sound, Waveform, Level & Phase",122,KEEP,"Foundations - Sound, Waveform, Level & Phase"
+"Recording, Mixing & Troubleshooting Concepts",127,KEEP,"Recording, Mixing & Troubleshooting Concepts"
+"Audio Electrical, Networking & Systems Concepts",0,RETIRE,
+"Signal Processing Concepts (Filters, Dynamics, FX & Noise)",0,RETIRE,
+"Loudspeaker Enclosures, Horns & Radiation",0,RETIRE,
+"Wireless, Forensic, DSP, Networking & Standards",0,RETIRE,
+"Immersive Audio, Metadata & File Formats",0,RETIRE,
+Automotive Audio Systems,0,RETIRE,
+"Aviation, Marine, Emergency & Specialized-Transport Audio",0,RETIRE,
+Automotive & Vehicle Acoustics (NVH),0,RETIRE,
+"Standards - Coding, Systems, Metadata & Transport",171,KEEP,"Standards - Coding, Systems, Metadata & Transport"
+Standards - General Acoustics & Signal Terms,147,KEEP,Standards - General Acoustics & Signal Terms
+"Standards - Immersive/Object/Scene, MIR, ML & Loudness",130,KEEP,"Standards - Immersive/Object/Scene, MIR, ML & Loudness"
+"Standards - Psychoacoustics, Hearing & Audiology",84,KEEP,"Standards - Psychoacoustics, Hearing & Audiology"
+"Standards - Room, Building, Environmental & Measurement",86,KEEP,"Standards - Room, Building, Environmental & Measurement"
+Advanced & Physical Acoustics (Nonlinear/Structural/Aero/Materials),170,KEEP,Advanced & Physical Acoustics (Nonlinear/Structural/Aero/Materials)
+"Ultrasonics, Underwater & Spatial-Audio Science",120,KEEP,"Ultrasonics, Underwater & Spatial-Audio Science"
+"Surveillance, Forensic & Covert Audio",147,KEEP,"Surveillance, Forensic & Covert Audio"
+Sound Law - Legal & Regulatory Framework,41,MERGE,"Sound Law - Framework, Metrics & Compliance"
+Sound Law - Measurement Descriptors & Compliance Metrics,37,MERGE,"Sound Law - Framework, Metrics & Compliance"
+Sound Law - Live Events & Entertainment Compliance,30,MERGE,"Sound Law - Framework, Metrics & Compliance"
+"Sound Law - Assessment, Mapping & Mitigation",69,KEEP,"Sound Law - Assessment, Mapping & Mitigation"
+"Sound Law - Standards, Laws & Instruments",31,MERGE,"Sound Law - Assessment, Mapping & Mitigation"
+Sound Visualization & Acoustic Imaging,298,SPLIT,Time/Frequency Displays & Spectrograms | Acoustic Imaging & Sound-Field Visualization
+Bioacoustics & Ecoacoustics,90,KEEP,Bioacoustics & Ecoacoustics
+"Sound Physics, Measurement & Acoustic Quantities",137,KEEP,"Sound Physics, Measurement & Acoustic Quantities"
+Advanced Acoustic Imaging & Sound-Field Reconstruction,229,KEEP,Advanced Acoustic Imaging & Sound-Field Reconstruction
+"Medical, Hearing & Clinical Acoustics",74,KEEP,"Medical, Hearing & Clinical Acoustics"
+"Ultrasonics, NDT & Industrial Inspection",80,KEEP,"Ultrasonics, NDT & Industrial Inspection"
+Geologic & Seismoacoustics,100,KEEP,Geologic & Seismoacoustics
+Astronomical & Cosmological Acoustics,91,KEEP,Astronomical & Cosmological Acoustics
+Archaeological & Heritage Acoustics,72,KEEP,Archaeological & Heritage Acoustics
+Anthropology & Sound Studies,89,KEEP,Anthropology & Sound Studies
+Chemical & Molecular Acoustics,103,KEEP,Chemical & Molecular Acoustics
+Cross-Disciplinary Sonic Sensing,19,MERGE,Data Sonification & Auditory Display
+Forensic Audio & Investigative Acoustics,58,MERGE,"Surveillance, Forensic & Covert Audio"
+Underwater Acoustics & Sonar,52,MERGE,"Ultrasonics, Underwater & Spatial-Audio Science"
+Aeroacoustics & Flow-Induced Sound,46,MERGE,Advanced & Physical Acoustics (Nonlinear/Structural/Aero/Materials)
+Data Sonification & Auditory Display,64,KEEP,Data Sonification & Auditory Display

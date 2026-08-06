@@ -1,0 +1,172 @@
+field,subject,topic,est_terms
+Foundations & Safety,Foundations of Sound & Signal,Sound & Wave Fundamentals,130
+Foundations & Safety,Foundations of Sound & Signal,"Propagation, Reflection & Room Behavior",128
+Foundations & Safety,Foundations of Sound & Signal,"Frequency, Pitch & Spectral Concepts",128
+Foundations & Safety,Foundations of Sound & Signal,Signal Path & Levels,96
+Foundations & Safety,Foundations of Sound & Signal,"Foundations - Sound, Waveform, Level & Phase",122
+Foundations & Safety,Foundations of Sound & Signal,"Digital Audio - Sampling, Quantization & Formats",137
+Foundations & Safety,Safety & Electrical,Professional Audio Safety,119
+Foundations & Safety,Safety & Electrical,Grounding & Shielding,126
+Foundations & Safety,Safety & Electrical,"Electrical Power, Distribution & Safety",125
+Audio Equipment & Signal Chain,Microphones,Microphone Transducer Principles,160
+Audio Equipment & Signal Chain,Microphones,Polar Patterns & Microphone Types,160
+Audio Equipment & Signal Chain,Microphones,Specialized & Emerging Microphones,155
+Audio Equipment & Signal Chain,Microphones,Microphone Specs & Characteristics,100
+Audio Equipment & Signal Chain,Microphones,Stereo & Ensemble Miking Techniques,122
+Audio Equipment & Signal Chain,Microphones,Close-Miking - Drums & Percussion,120
+Audio Equipment & Signal Chain,Microphones,"Close-Miking - Guitars, Amps & Strings",120
+Audio Equipment & Signal Chain,Microphones,"Close-Miking - Keys, Winds, Brass & Vocals",120
+Audio Equipment & Signal Chain,Loudspeakers & Amplification,Loudspeaker Types & Drivers,209
+Audio Equipment & Signal Chain,Loudspeakers & Amplification,Amplifiers,232
+Audio Equipment & Signal Chain,Loudspeakers & Amplification,Vacuum Tubes,85
+Audio Equipment & Signal Chain,Loudspeakers & Amplification,Transducer Design & Motor Systems,110
+Audio Equipment & Signal Chain,Loudspeakers & Amplification,"Enclosure, Horn & Radiation Engineering",110
+Audio Equipment & Signal Chain,Loudspeakers & Amplification,Crossover & System Engineering,110
+Audio Equipment & Signal Chain,Loudspeakers & Amplification,Loudspeaker Measurement & Modeling,110
+Audio Equipment & Signal Chain,Consoles & Control,Console Architecture & Bus Structure,153
+Audio Equipment & Signal Chain,Consoles & Control,Console Signal Flow & Gain Staging,142
+Audio Equipment & Signal Chain,Consoles & Control,Control Surfaces & Machine Control,108
+Audio Equipment & Signal Chain,"Cabling, Connectors & Infrastructure",Connectors & Plugs,199
+Audio Equipment & Signal Chain,"Cabling, Connectors & Infrastructure",Cables & Wiring,69
+Audio Equipment & Signal Chain,"Cabling, Connectors & Infrastructure","Racks, Patchbays & Wiring Infrastructure",189
+Audio Equipment & Signal Chain,"Cabling, Connectors & Infrastructure",Documentation & Diagrams,68
+Audio Equipment & Signal Chain,Recording Hardware & Media,Recorders & File Formats,99
+Audio Equipment & Signal Chain,Audio Networking,Dante Fundamentals & Routing,237
+Audio Equipment & Signal Chain,Audio Networking,"Clocking, Redundancy & Network Management",64
+Signal Processing & Effects,Dynamics & EQ,Equalization (EQ),170
+Signal Processing & Effects,Dynamics & EQ,Compression & Limiting,160
+Signal Processing & Effects,Dynamics & EQ,"Gates, Expanders & Transient Design",152
+Signal Processing & Effects,Time-Based & Creative FX,Reverb,141
+Signal Processing & Effects,Time-Based & Creative FX,Delay & Time-Based Effects,85
+Signal Processing & Effects,Time-Based & Creative FX,Creative Effects & Sound Design in the Mix,126
+Signal Processing & Effects,Time-Based & Creative FX,Advanced Parallel & Bus Processing,126
+Signal Processing & Effects,Plugins & Processing Platforms,"Plugin Formats, Hosts & Processing",150
+Acoustics & Measurement,Acoustics & Room Behavior,Acoustic Principles & Room Behavior,223
+Acoustics & Measurement,Acoustics & Room Behavior,Room Treatment Layout & Application,226
+Acoustics & Measurement,Acoustics & Room Behavior,Studio & Facility Design,125
+Acoustics & Measurement,Measurement & Analysis,"Levels, Metering & Reference Standards",130
+Acoustics & Measurement,Measurement & Analysis,Frequency & Spectrum Analysis,125
+Acoustics & Measurement,Measurement & Analysis,Acoustic & Room Measurement Methods,175
+Acoustics & Measurement,Measurement & Analysis,Test Signals & Measurement Instruments,125
+Acoustics & Measurement,Measurement & Analysis,Signal & Transfer-Function Analysis,138
+Acoustics & Measurement,Measurement & Analysis,Test & Measurement Instruments,138
+"Troubleshooting, Maintenance & Repair",System Troubleshooting,Troubleshooting Methodology & Diagnostics,124
+"Troubleshooting, Maintenance & Repair",System Troubleshooting,Live & System Fault Isolation,124
+"Troubleshooting, Maintenance & Repair",System Troubleshooting,"Recording, Mixing & Troubleshooting Concepts",127
+"Troubleshooting, Maintenance & Repair",Maintenance & Repair,Repair,206
+"Troubleshooting, Maintenance & Repair",Maintenance & Repair,Soldering,95
+Live Sound & Production,Live Systems & Deployment,Analog Live Sound,79
+Live Sound & Production,Live Systems & Deployment,Digital Live Sound,74
+Live Sound & Production,Live Systems & Deployment,System Deployment & Rigging,140
+Live Sound & Production,Live Systems & Deployment,"System Tuning, Optimization & Alignment",141
+Live Sound & Production,Live Systems & Deployment,RF Wireless Systems,157
+Live Sound & Production,Live Mixing & Crew,Live Sound - FOH Mixing Workflow,222
+Live Sound & Production,Live Mixing & Crew,Live Sound - Monitor Engineering,109
+Live Sound & Production,Live Mixing & Crew,Live Sound - Concert-Audio Slang,80
+Live Sound & Production,Live Mixing & Crew,Road Crew,223
+Live Sound & Production,DJ Performance,"Beatmatching, Mixing & FX",221
+"Venue, Stagecraft & Entertainment Systems",Stage & Venue,Venue Architecture & Spaces,151
+"Venue, Stagecraft & Entertainment Systems",Stage & Venue,Stage Geography & Backstage,70
+"Venue, Stagecraft & Entertainment Systems",Stage & Venue,"Stage Platforms, Scenery & Soft Goods",73
+"Venue, Stagecraft & Entertainment Systems",Stage & Venue,"Rigging Hardware, Loads & Motorized Flying",116
+"Venue, Stagecraft & Entertainment Systems",Stage & Venue,Orchestra Pit & Ensemble Layout,90
+"Venue, Stagecraft & Entertainment Systems",Show Control & Cueing,"Show Control, Cueing & Communications",150
+"Venue, Stagecraft & Entertainment Systems",Theatrical & Worship,Theatrical Sound (commercial card),157
+"Venue, Stagecraft & Entertainment Systems",Theatrical & Worship,Worship Sound (commercial card),89
+Installed & Commercial Audio,System Design & Install,Audio System Design & Specification,133
+Installed & Commercial Audio,System Design & Install,Commercial/Install AV & Assisted Listening,133
+Installed & Commercial Audio,Consumer & Vehicle Audio,HiFi Consumer Audio,121
+Installed & Commercial Audio,Consumer & Vehicle Audio,Vehicle Audio,130
+"Electronics, Engineering & Manufacturing",Components & Circuits,Passive Components,113
+"Electronics, Engineering & Manufacturing",Components & Circuits,Active Devices & Semiconductors,95
+"Electronics, Engineering & Manufacturing",Components & Circuits,Electromechanical Parts & Hardware,152
+"Electronics, Engineering & Manufacturing",Components & Circuits,Circuits & Topologies,132
+"Electronics, Engineering & Manufacturing",Build & Manufacturing,"Manufacturing, Assembly & Production",132
+"Electronics, Engineering & Manufacturing",Build & Manufacturing,Preamp & Converter Engineering,128
+Studio Recording,Recording Craft,Recording Fundamentals & Signal Chain,155
+Studio Recording,Recording Craft,"Session Workflow, Takes & Documentation",217
+Studio Recording,Recording Craft,Band Tracking Workflow & Arrangement,148
+Studio Recording,Recording Craft,Instrument Recording (by Source),190
+Studio Recording,Recording Craft,Drum-Kit Recording,47
+Mixing & Mastering,Mixing,Instrument Mixing - Drums & Percussion,78
+Mixing & Mastering,Mixing,"Instrument Mixing - Guitars, Bass & Keys",97
+Mixing & Mastering,Mixing,Vocal Mixing,119
+Mixing & Mastering,Mixing,"Orchestral, Choir & Acoustic-Ensemble Mixing",115
+Mixing & Mastering,Mixing,"Mix Automation, Bus & Loudness",78
+Mixing & Mastering,Mastering,Mastering Fundamentals & Chain,128
+Mixing & Mastering,Mastering,"Loudness, QC, Delivery & Metadata",127
+Mixing & Mastering,Mastering,Vinyl / Disc Mastering,76
+"Electronic Music, DAWs & Synthesis",DAWs & MIDI,DAW Fundamentals & Session Management,229
+"Electronic Music, DAWs & Synthesis",DAWs & MIDI,DAW: Logic,140
+"Electronic Music, DAWs & Synthesis",DAWs & MIDI,DAW: Cubase/Nuendo,60
+"Electronic Music, DAWs & Synthesis",DAWs & MIDI,DAW: REAPER,72
+"Electronic Music, DAWs & Synthesis",DAWs & MIDI,DAW: Ableton Live,128
+"Electronic Music, DAWs & Synthesis",DAWs & MIDI,DAW: Studio One,30
+"Electronic Music, DAWs & Synthesis",DAWs & MIDI,DAW: Digital Performer/Reason,37
+"Electronic Music, DAWs & Synthesis",DAWs & MIDI,MIDI,131
+"Electronic Music, DAWs & Synthesis",Sampling & Beat-Making,Sampling & Sample Instruments,125
+"Electronic Music, DAWs & Synthesis",Sampling & Beat-Making,Sample Editing & Beat Programming,124
+"Electronic Music, DAWs & Synthesis",Synthesis & Sound Design,Synthesis Fundamentals & Oscillators,188
+"Electronic Music, DAWs & Synthesis",Synthesis & Sound Design,Virtual Instruments & Samplers,150
+"Broadcast, Podcast & Streaming",Broadcast & Air Chain,Radio Production & Studio Workflow,86
+"Broadcast, Podcast & Streaming",Broadcast & Air Chain,Broadcast Air Chain & Transmission,86
+"Broadcast, Podcast & Streaming",Broadcast & Air Chain,Broadcast Processing & Loudness,125
+"Broadcast, Podcast & Streaming",Podcast,Podcast Production,96
+Sound for Picture & Media,Post Production,"Post Workflow, Spotting & Sessions",175
+Sound for Picture & Media,Post Production,"Deliverables, Stems & Mastering for Picture",141
+Sound for Picture & Media,Post Production,Re-Recording & Final Mix,164
+Sound for Picture & Media,Post Production,Dialogue Editing,209
+Sound for Picture & Media,Post Production,ADR & Looping,103
+Sound for Picture & Media,Post Production,Foley Performance & Recording,108
+Sound for Picture & Media,Post Production,SFX Editorial & Sound Design,101
+Sound for Picture & Media,Scoring,Film Scoring - Composition & Orchestration,135
+Sound for Picture & Media,Scoring,Film Scoring - Technology & MIDI Mockups,135
+Sound for Picture & Media,Scoring,"Film Scoring - Recording, Mixing & Delivery",136
+Sound for Picture & Media,Localization & Game,Dubbing & Localization,234
+Sound for Picture & Media,Localization & Game,"Dubbing - Adaptation, Sync & Deliverables",121
+Sound for Picture & Media,Localization & Game,Game Audio,209
+Sound for Picture & Media,Immersive,Immersive Formats & Delivery,178
+"Hearing, Perception & Listening",Hearing & Psychoacoustics,"Hearing Anatomy, Health & Disorders",65
+"Hearing, Perception & Listening",Hearing & Psychoacoustics,Psychoacoustics,207
+"Hearing, Perception & Listening",Hearing & Psychoacoustics,Loudness & Listening Environments,150
+"Hearing, Perception & Listening",Hearing & Psychoacoustics,Speech & Voice Perception,81
+"Hearing, Perception & Listening",Critical Listening & Ear Training,Tonal & Timbre Descriptors,138
+"Hearing, Perception & Listening",Critical Listening & Ear Training,"Attack, Decay, Resonance & Artifact Identification",198
+"Hearing, Perception & Listening",Critical Listening & Ear Training,"Strings, Guitar & Keys",104
+"Hearing, Perception & Listening",Critical Listening & Ear Training,Drums & Percussion,103
+"Hearing, Perception & Listening",Critical Listening & Ear Training,"Winds, Brass & Organ",79
+"Career, Business & Industry",Professional Practice,Project Management,184
+"Career, Business & Industry",Professional Practice,Audio Career Exploration,178
+"Career, Business & Industry",Professional Practice,Music Entrepreneurship,206
+"Career, Business & Industry",Professional Practice,Industry Foundations,69
+AI Audio,AI Audio,AI/ML Foundations for Audio,143
+AI Audio,AI Audio,"Audio DSP, MIR, Ethics & Emerging",143
+AI Audio,AI Audio,"AI Music, Voice & Creative Tools",152
+Preservation & Archival,Analog Formats & Machines,Tape Machine Mechanics & Alignment,139
+Preservation & Archival,Analog Formats & Machines,"Tape Recording, Formats & Formulations",139
+Preservation & Archival,Preservation & Restoration,Audio Restoration & Archival,214
+Preservation & Archival,Preservation & Restoration,Magnetic Tape Preservation & Conservation,161
+Preservation & Archival,Preservation & Restoration,Archival Preservation & Obsolete Media,127
+Standards & Sound Law,Technical Standards,"Standards - Coding, Systems, Metadata & Transport",171
+Standards & Sound Law,Technical Standards,Standards - General Acoustics & Signal Terms,147
+Standards & Sound Law,Technical Standards,"Standards - Immersive/Object/Scene, MIR, ML & Loudness",130
+Standards & Sound Law,Technical Standards,"Standards - Psychoacoustics, Hearing & Audiology",84
+Standards & Sound Law,Technical Standards,"Standards - Room, Building, Environmental & Measurement",86
+Standards & Sound Law,Sound Law & Compliance,"Sound Law - Framework, Metrics & Compliance",108
+Standards & Sound Law,Sound Law & Compliance,"Sound Law - Assessment, Mapping & Mitigation",100
+Acoustics Science & Applied Research,Sound Visualization & Imaging,Time/Frequency Displays & Spectrograms,149
+Acoustics Science & Applied Research,Sound Visualization & Imaging,Acoustic Imaging & Sound-Field Visualization,149
+Acoustics Science & Applied Research,Sound Visualization & Imaging,Advanced Acoustic Imaging & Sound-Field Reconstruction,229
+Acoustics Science & Applied Research,Sound Visualization & Imaging,Data Sonification & Auditory Display,83
+Acoustics Science & Applied Research,Physical & Advanced Acoustics,Advanced & Physical Acoustics (Nonlinear/Structural/Aero/Materials),216
+Acoustics Science & Applied Research,Physical & Advanced Acoustics,"Sound Physics, Measurement & Acoustic Quantities",137
+Acoustics Science & Applied Research,Physical & Advanced Acoustics,"Ultrasonics, Underwater & Spatial-Audio Science",172
+Acoustics Science & Applied Research,Physical & Advanced Acoustics,"Ultrasonics, NDT & Industrial Inspection",80
+Acoustics Science & Applied Research,"Life, Earth & Space Acoustics",Bioacoustics & Ecoacoustics,90
+Acoustics Science & Applied Research,"Life, Earth & Space Acoustics",Geologic & Seismoacoustics,100
+Acoustics Science & Applied Research,"Life, Earth & Space Acoustics",Astronomical & Cosmological Acoustics,91
+Acoustics Science & Applied Research,"Life, Earth & Space Acoustics",Chemical & Molecular Acoustics,103
+Acoustics Science & Applied Research,"Life, Earth & Space Acoustics","Medical, Hearing & Clinical Acoustics",74
+Acoustics Science & Applied Research,Human & Heritage Acoustics,Archaeological & Heritage Acoustics,72
+Acoustics Science & Applied Research,Human & Heritage Acoustics,Anthropology & Sound Studies,89
+Acoustics Science & Applied Research,Forensic & Investigative,"Surveillance, Forensic & Covert Audio",205

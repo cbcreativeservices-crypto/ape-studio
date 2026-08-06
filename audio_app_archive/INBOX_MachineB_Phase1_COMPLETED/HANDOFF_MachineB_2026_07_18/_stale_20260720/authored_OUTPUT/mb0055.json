@@ -1,0 +1,159 @@
+{
+ "batch": 55,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "2158830c-a0f3-4349-942a-9d58aa9a2cc8",
+   "term": "Instrument presence enhancement",
+   "fields": {
+    "definition": "Emphasizing an instrument's upper-midrange and low-treble energy, roughly 2 to 6 kHz, so it sounds clearer and more forward in a mix, usually with equalization or subtle harmonic saturation. It increases the sense that the instrument is close and detailed without raising its overall level.",
+    "plain_english": "Making an instrument stand out by boosting the tones that make it sound clear and up front. It is like turning up the clarity so the instrument feels closer to you.",
+    "purpose_function": "It helps an instrument cut through a busy arrangement and feel detailed, so it stays easy to hear even when many parts play at once.",
+    "practical_application": "A technician adds a gentle EQ boost around 3 to 5 kHz on a vocal or guitar during mixing so it sits on top of the band.",
+    "category": "Tonal Shaping",
+    "related_terms": ["Equalization", "Presence", "Frequency masking", "Midrange", "Harmonic saturation"],
+    "common_mistakes": ["Boosting too much presence, which makes the instrument harsh or sibilant", "Adding presence to every track, so nothing stands out and the mix sounds brittle", "Confusing presence in the upper mids with air in the very high treble"],
+    "scenario_contexts": ["Helping a lead vocal cut through a dense rock mix", "Bringing an acoustic guitar forward in a folk arrangement", "Adding clarity to a dull, muddy piano recording"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c1ca0d95-8e06-46bf-a838-db74efa4640c",
+   "term": "Instrument resonance management",
+   "fields": {
+    "definition": "Identifying and controlling unwanted resonant frequencies, the narrow peaks where an instrument or room rings or builds up, typically by notching them with equalization or taming them with dynamic EQ. The goal is a smoother, more even tone without dulling the instrument.",
+    "plain_english": "Finding the frequencies where an instrument rings out too loudly and gently turning them down. It is like softening one squeaky spring so the whole thing sounds even.",
+    "purpose_function": "It removes honky or boomy buildups that draw attention, giving the instrument a balanced tone that blends better with the rest of the band.",
+    "practical_application": "A technician sweeps a narrow EQ boost to find a ringing note on a snare or acoustic guitar, then cuts it a few dB to tame the resonance.",
+    "category": "Tonal Shaping",
+    "related_terms": ["Equalization", "Dynamic EQ", "Notch filter", "Q factor", "Standing wave"],
+    "common_mistakes": ["Cutting too many resonances until the instrument sounds thin and lifeless", "Using a wide EQ cut instead of a narrow one, removing more tone than needed", "Treating a natural body resonance as a fault when it is part of the instrument's character"],
+    "scenario_contexts": ["Taming a boomy low-mid note on a floor tom", "Removing a ringing frequency from an acoustic guitar body", "Controlling room buildup captured by a room microphone"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Rane technical notes"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3662d009-7c77-4b82-9d72-4ffde8f5300e",
+   "term": "Instrument reverb placement",
+   "fields": {
+    "definition": "Using reverb, along with its pre-delay and level, to position an instrument at a chosen distance and space within a mix, from dry and close to distant and washed in ambience. It sets how far back, and in what environment, the instrument appears to sit.",
+    "plain_english": "Using echo and room sound to decide how close or far away an instrument feels. A little reverb keeps it up front; a lot pushes it into the background.",
+    "purpose_function": "It creates a sense of depth and a shared space, so separate recorded tracks sound like they belong in one room together.",
+    "practical_application": "A technician sends a backing part to a reverb with a longer decay to push it behind the lead, keeping the lead drier and closer.",
+    "category": "Spatial Processing",
+    "related_terms": ["Reverb", "Pre-delay", "Stereo depth", "Send and return", "Ambience"],
+    "common_mistakes": ["Adding so much reverb that the instrument loses clarity and detail", "Ignoring pre-delay, which can smear the attack and blur timing", "Using a different reverb on every track, so nothing shares a believable space"],
+    "scenario_contexts": ["Placing a lead vocal in front of a reverberant backing arrangement", "Giving a dry, close-miked snare a sense of room", "Creating depth between rhythm and lead guitars"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ded0d503-da06-4cd3-be4c-789b654514d3",
+   "term": "Instrument room blend",
+   "fields": {
+    "definition": "Mixing a recorded room-microphone signal in with an instrument's close microphone to add natural ambience, size and depth. The blend ratio controls how much of the room's character is heard against the direct, close sound.",
+    "plain_english": "Mixing in the sound picked up by a microphone placed farther away in the room. It adds natural space, so the drums seem to fill the room instead of just the drum itself.",
+    "purpose_function": "It gives close-miked tracks a bigger, more natural sound and glues the band into a shared acoustic space.",
+    "practical_application": "A technician blends a compressed room mic under the close drum mics to add weight and ambience without re-recording anything.",
+    "category": "Spatial Processing",
+    "related_terms": ["Room microphone", "Close microphone", "Ambience", "Phase alignment", "Reverb"],
+    "common_mistakes": ["Blending the room mic without checking phase against the close mics, which thins the sound", "Adding too much room, which pushes the instrument back and muddies the mix", "Using a room mic recorded in a poor-sounding space and expecting it to help"],
+    "scenario_contexts": ["Adding size to a drum kit with a pair of room mics", "Giving a close-miked guitar amp a sense of the live room", "Blending ambience into a piano recording"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dcffbf7b-5df5-4fb2-8818-34b4a00bc087",
+   "term": "Instrument separation enhancement",
+   "fields": {
+    "definition": "Techniques that increase the perceived distinction between instruments in a mix, such as panning, complementary EQ, level balancing and timing, so each part is easy to hear on its own. It reduces masking, where one sound hides another.",
+    "plain_english": "Making each instrument easier to pick out from the others in a mix. It is like seating band members apart so you can hear each one clearly instead of a blur.",
+    "purpose_function": "It keeps a busy arrangement clear so a listener can follow every part, which matters most when many instruments share the same frequency range.",
+    "practical_application": "A technician pans two rhythm guitars left and right and carves complementary EQ so they stop competing for the same space.",
+    "category": "Mix Clarity",
+    "related_terms": ["Panning", "Frequency masking", "Equalization", "Stereo width", "Arrangement"],
+    "common_mistakes": ["Trying to fix a crowded arrangement with EQ instead of muting or rearranging parts", "Over-panning until the mix feels lopsided or hollow in mono", "Boosting every instrument to make it louder, which only increases masking"],
+    "scenario_contexts": ["Separating two guitars playing similar parts", "Keeping bass and kick drum from masking each other", "Clarifying a dense arrangement with many layered keyboards"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "18c99eab-3c7f-417b-94f0-502d89b7a179",
+   "term": "Instrument stem",
+   "fields": {
+    "definition": "A submix that combines all the tracks of one instrument or instrument group, for example all drum tracks or all guitars, into a single stereo or mono file. Stems keep related parts grouped for easier mixing, delivery and remixing.",
+    "plain_english": "One combined track that holds everything for a single instrument or group, like all the drums bounced together. It lets you handle a whole instrument as one piece instead of many separate tracks.",
+    "purpose_function": "Stems make it easier to balance, hand off or remix a production, because a whole instrument group can be moved or adjusted at once.",
+    "practical_application": "A technician bounces separate drum, bass, guitar and vocal stems so a mastering engineer or remixer can adjust each group without the full session.",
+    "category": "Stems & Deliverables",
+    "related_terms": ["Submix", "Bus", "Bounce", "Multitrack", "Master"],
+    "common_mistakes": ["Confusing a stem, which is a grouped submix, with a single raw track", "Bouncing stems with master-bus effects still applied, causing double processing later", "Not keeping stems aligned to the same start point, so they drift when reimported"],
+    "scenario_contexts": ["Delivering drum, bass and vocal stems for mastering", "Providing stems to a remixer", "Archiving a mix as stems for future recall"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "20a9b275-0287-43bf-b034-445b9df21b51",
+   "term": "Instrument stem print",
+   "fields": {
+    "definition": "Recording, or printing, an instrument's stem to a new audio file in real time or offline, capturing that instrument group's processed submix as a fixed track. Printing commits the current balance and effects to disk.",
+    "plain_english": "Recording an instrument's combined mix down to one finished file. It is like taking a photo of how that instrument sounds right now so you can use it later.",
+    "purpose_function": "It locks in a group's sound and frees up computer power, and it creates a ready-to-share file for delivery, archiving or remixing.",
+    "practical_application": "A technician prints a guitar stem through its plugins to a stereo file, then disables the original tracks to save processing.",
+    "category": "Stems & Deliverables",
+    "related_terms": ["Bounce", "Instrument stem", "Freeze", "Render", "Submix"],
+    "common_mistakes": ["Printing a stem with the wrong routing, so effects or other tracks bleed in", "Forgetting to match the print's start point to the session, causing timing drift", "Printing at a lower bit depth or sample rate than the project, reducing quality"],
+    "scenario_contexts": ["Printing stems to hand off to another studio", "Committing a processed drum group to save CPU", "Creating remix-ready stems at the end of a mix"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e7e172ca-1e8c-4b1a-9f00-3589313a4128",
+   "term": "Instrument stereo depth",
+   "fields": {
+    "definition": "The sense of front-to-back distance an instrument occupies in a stereo mix, created mainly by level, reverb amount, pre-delay and high-frequency roll-off. Greater depth makes an instrument seem farther away, while less depth brings it forward.",
+    "plain_english": "How near or far away an instrument feels in a stereo mix, from front to back. Quieter, more echoey, and duller sounds seem farther away, like sounds across a room.",
+    "purpose_function": "It adds a front-to-back dimension to a mix so instruments do not all sit at the same distance, making the arrangement sound more natural and layered.",
+    "practical_application": "A technician pushes a pad back with reverb and a gentle treble cut while keeping the lead vocal loud and dry up front.",
+    "category": "Stereo Imaging",
+    "related_terms": ["Reverb", "Pre-delay", "Panning", "Stereo width", "Ambience"],
+    "common_mistakes": ["Confusing depth, which is front-to-back, with width, which is left-to-right", "Making everything dry and up front, so the mix sounds flat and crowded", "Using bright EQ on a distant part, which fights the sense of distance"],
+    "scenario_contexts": ["Setting a lead vocal in front of the band", "Layering pads behind rhythm instruments", "Creating a natural sense of distance in an acoustic recording"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cde6daf7-3731-4e94-9106-98849625c922",
+   "term": "Instrument stereo width",
+   "fields": {
+    "definition": "How far an instrument's sound spreads across the left-to-right stereo field, set by panning, stereo miking, doubling, or width processing such as mid/side adjustment. A wide instrument fills the sides, while a narrow one stays near the center.",
+    "plain_english": "How far an instrument spreads from left to right in a stereo mix. A wide sound fills both speakers; a narrow sound sits in the middle.",
+    "purpose_function": "It gives each instrument its own place across the stereo image, which reduces clashing and makes a mix feel open and spacious.",
+    "practical_application": "A technician widens a synth pad with a stereo doubler while keeping the bass and kick centered for a solid, mono-safe low end.",
+    "category": "Stereo Imaging",
+    "related_terms": ["Panning", "Mid/side processing", "Stereo image", "Mono compatibility", "Double tracking"],
+    "common_mistakes": ["Widening the bass and kick, which weakens the low end and can cause mono problems", "Over-widening until the mix collapses or sounds hollow when played in mono", "Assuming wider always sounds better and ignoring mono compatibility"],
+    "scenario_contexts": ["Widening backing vocals to frame a centered lead", "Keeping kick and bass mono while spreading guitars wide", "Checking mono compatibility after widening synths"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

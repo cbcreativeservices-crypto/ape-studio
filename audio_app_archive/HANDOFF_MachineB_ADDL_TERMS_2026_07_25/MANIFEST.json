@@ -1,0 +1,137 @@
+{
+ "batch": "ADDL_MISSING_SHORTHAND_2026_07_25",
+ "total_terms": 150,
+ "packets": 16,
+ "fields": 1200,
+ "created": "2026-07-25",
+ "manifest": [
+  {
+   "packet": "add_01_radio_onair.json",
+   "group": "Radio \u2014 On-Air & Production",
+   "primary_topic": "Broadcast / Radio Production & Air Chain",
+   "difficulty": "intermediate",
+   "n_terms": 27,
+   "fields": 216
+  },
+  {
+   "packet": "add_02_radio_imaging.json",
+   "group": "Radio \u2014 Imaging",
+   "primary_topic": "Broadcast / Radio Production & Air Chain",
+   "difficulty": "intermediate",
+   "n_terms": 4,
+   "fields": 32
+  },
+  {
+   "packet": "add_03_radio_traffic.json",
+   "group": "Radio \u2014 Traffic & Advertising",
+   "primary_topic": "Broadcast / Radio Production & Air Chain",
+   "difficulty": "intermediate",
+   "n_terms": 5,
+   "fields": 40
+  },
+  {
+   "packet": "add_04_radio_dayparts.json",
+   "group": "Radio \u2014 Dayparts",
+   "primary_topic": "Broadcast / Radio Production & Air Chain",
+   "difficulty": "beginner",
+   "n_terms": 4,
+   "fields": 32
+  },
+  {
+   "packet": "add_05_radio_scheduling.json",
+   "group": "Radio \u2014 Music Scheduling",
+   "primary_topic": "Broadcast / Radio Production & Air Chain",
+   "difficulty": "intermediate",
+   "n_terms": 13,
+   "fields": 104
+  },
+  {
+   "packet": "add_06_radio_callin.json",
+   "group": "Radio \u2014 Call-in & Phone",
+   "primary_topic": "Broadcast / Radio Production & Air Chain",
+   "difficulty": "intermediate",
+   "n_terms": 5,
+   "fields": 40
+  },
+  {
+   "packet": "add_07_radio_transmission.json",
+   "group": "Radio \u2014 Transmission & FCC",
+   "primary_topic": "Broadcast / Radio Production & Air Chain",
+   "difficulty": "intermediate",
+   "n_terms": 10,
+   "fields": 80
+  },
+  {
+   "packet": "add_08_vinyl_setup.json",
+   "group": "Vinyl & Turntable Setup",
+   "primary_topic": "HiFi Consumer Audio",
+   "difficulty": "intermediate",
+   "n_terms": 15,
+   "fields": 120
+  },
+  {
+   "packet": "add_09_dac_clocking.json",
+   "group": "Digital / DAC & Clocking",
+   "primary_topic": "Preamp & Converter Engineering",
+   "difficulty": "advanced",
+   "n_terms": 10,
+   "fields": 80
+  },
+  {
+   "packet": "add_10_cables_power.json",
+   "group": "Cables & Power (legitimate)",
+   "primary_topic": "Cables & Wiring",
+   "difficulty": "intermediate",
+   "n_terms": 9,
+   "fields": 72
+  },
+  {
+   "packet": "add_11_tubes.json",
+   "group": "Tubes",
+   "primary_topic": "Vacuum Tubes",
+   "difficulty": "advanced",
+   "n_terms": 6,
+   "fields": 48
+  },
+  {
+   "packet": "add_12_room_measurement.json",
+   "group": "Room, Speaker & Measurement",
+   "primary_topic": "Audio Measurement & Optimization",
+   "difficulty": "advanced",
+   "n_terms": 14,
+   "fields": 112
+  },
+  {
+   "packet": "add_13_headphones.json",
+   "group": "Headphones (Head-Fi)",
+   "primary_topic": "HiFi Consumer Audio",
+   "difficulty": "intermediate",
+   "n_terms": 6,
+   "fields": 48
+  },
+  {
+   "packet": "add_14_descriptors.json",
+   "group": "Listening Descriptors",
+   "primary_topic": "Tonal & Timbre Descriptors",
+   "difficulty": "beginner",
+   "n_terms": 17,
+   "fields": 136
+  },
+  {
+   "packet": "add_15_general.json",
+   "group": "General / Culture",
+   "primary_topic": "HiFi Consumer Audio",
+   "difficulty": "beginner",
+   "n_terms": 2,
+   "fields": 16
+  },
+  {
+   "packet": "add_16_brand_features.json",
+   "group": "Brand-Specific Features (optional)",
+   "primary_topic": "Dynamics Processing",
+   "difficulty": "intermediate",
+   "n_terms": 3,
+   "fields": 24
+  }
+ ]
+}

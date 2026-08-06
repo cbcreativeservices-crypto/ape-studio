@@ -1,0 +1,322 @@
+{
+ "batch": 420,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "d7268f03-a1ad-4dd8-afa7-7de3757d3496",
+   "term": "HTDemucs",
+   "fields": {
+    "definition": "HTDemucs (Hybrid Transformer Demucs) is a deep neural network for music source separation that splits a mixed recording into separate stems, by default drums, bass, vocals, and other. It extends the Hybrid Demucs architecture by processing the waveform and spectrogram domains in parallel U-Nets whose innermost layers are replaced by a cross-domain Transformer encoder using self-attention within each domain and cross-attention between them.",
+    "plain_english": "HTDemucs is an AI model that takes a finished song and pulls it apart into separate tracks, such as drums, bass, and vocals. It works like un-mixing a smoothie back into its parts, using a trained network to guess each sound.",
+    "purpose_function": "It exists to recover individual instrument and vocal tracks from a single stereo mix when the original multitrack is unavailable, giving cleaner separation than earlier methods by combining time-domain and frequency-domain modeling.",
+    "practical_application": "A technician runs it, for example through the Demucs command-line tool or a host application, to extract stems from a mixdown for remixing, remastering, sampling, karaoke, or transcription.",
+    "category": "Source separation",
+    "related_terms": [
+     "Music source separation",
+     "Stem separation",
+     "Spectrogram",
+     "Transformer",
+     "Deep neural network",
+     "LALAL.ai"
+    ],
+    "common_mistakes": [
+     "Expecting perfect, artifact-free stems; separated tracks can contain bleed and swirling artifacts, especially on dense mixes",
+     "Assuming it separates any instrument on demand; the standard model outputs only four fixed stems (drums, bass, vocals, other)",
+     "Confusing an extracted stem with a real recorded track; the stems are model estimates, not the original multitrack",
+     "Blaming the model for poor results that actually come from feeding it low-quality or heavily lossy source audio"
+    ],
+    "scenario_contexts": [
+     "Extracting an a cappella vocal from a stereo master for a remix",
+     "Removing vocals to build a karaoke or backing track",
+     "Isolating a drum stem to sample or re-balance in a mix"
+    ]
+   },
+   "sources": [
+    "Rouard, Massa & Defossez, Hybrid Transformers for Music Source Separation, IEEE ICASSP 2023",
+    "Demucs technical documentation and code, github.com/facebookresearch/demucs"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "55fd8131-9203-413b-8359-1e4adb58198e",
+   "term": "Inference",
+   "fields": {
+    "definition": "In machine learning, inference is the phase in which a trained model is applied to new input data to produce outputs such as predictions, classifications, or generated results, as distinct from training, in which the model's parameters are learned. Its resource cost and latency are what determine whether a model can be deployed in a given setting.",
+    "plain_english": "Inference is when a trained AI model is actually used to answer or label new data. Training is like studying, and inference is like taking the test.",
+    "purpose_function": "It is the stage where a model delivers value, turning learned parameters into useful outputs on data it has not seen, so its speed and cost decide whether the model is practical to deploy.",
+    "practical_application": "A technician meets inference when running a trained model in real time or in batch, such as a noise-reduction or source-separation plugin processing audio, and tunes latency, buffer size, and hardware to meet performance needs.",
+    "category": "Machine learning concept",
+    "related_terms": [
+     "Training",
+     "Neural network",
+     "Latency",
+     "Real-time processing",
+     "Keyword spotting",
+     "HTDemucs"
+    ],
+    "common_mistakes": [
+     "Confusing inference with training; inference only runs the fixed model and does not change its learned weights",
+     "Ignoring inference latency, so a model that works offline is unusable for live, real-time audio",
+     "Assuming inference results are always correct; a model can output confident but wrong predictions on data unlike its training set"
+    ],
+    "scenario_contexts": [
+     "Running a real-time noise-suppression model on a live microphone feed",
+     "Batch-processing a folder of files through a source-separation model overnight",
+     "Deploying a wake-word detector that must run inference continuously on a low-power device"
+    ]
+   },
+   "sources": [
+    "Bishop, Pattern Recognition and Machine Learning",
+    "Goodfellow, Bengio & Courville, Deep Learning"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cc2d93f2-088c-4d24-8a9b-77f6ca582320",
+   "term": "Infinite impulse response filter",
+   "fields": {
+    "definition": "An infinite impulse response (IIR) filter is a filter whose impulse response, in principle, continues indefinitely because its output depends on past outputs as well as past and present inputs (feedback, or recursion). It is described by a difference equation with feedback terms and by a transfer function containing poles, letting it achieve a given frequency response with far fewer coefficients than a comparable FIR filter.",
+    "plain_english": "An IIR filter is a filter that feeds part of its output back into itself, so one input can keep affecting the sound for a long time. This feedback lets it do a lot of shaping with very little computing.",
+    "purpose_function": "It exists to realize steep or resonant frequency responses efficiently, using recursion so few coefficients are needed, which saves memory and processing at the cost of nonlinear phase and possible instability.",
+    "practical_application": "A technician encounters IIR designs in most parametric and shelving EQs, crossovers, and resonant filters in mixers, DSP units, and plugins, where their low computational cost matters, while watching for phase shift and stability.",
+    "category": "Digital filtering",
+    "related_terms": [
+     "Finite impulse response filter",
+     "Digital filter",
+     "Transfer function",
+     "Pole",
+     "Difference equation",
+     "Biquad filter"
+    ],
+    "common_mistakes": [
+     "Assuming IIR filters have linear phase; their feedback introduces phase distortion, unlike a linear-phase FIR",
+     "Ignoring stability; poorly placed poles or coefficient quantization can make an IIR filter oscillate or blow up",
+     "Confusing higher filter order with better sound; a higher-order IIR is steeper but can ring and is not automatically better"
+    ],
+    "scenario_contexts": [
+     "Dialing in a parametric EQ band, which is typically a biquad IIR section",
+     "Building a loudspeaker crossover in a DSP processor",
+     "Designing a resonant filter for a synthesizer"
+    ]
+   },
+   "sources": [
+    "Oppenheim & Schafer, Discrete-Time Signal Processing",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cb661bb7-15d0-4406-88b9-644609fe41c0",
+   "term": "Instrument recognition",
+   "fields": {
+    "definition": "Instrument recognition is a music information retrieval task in which an algorithm identifies which musical instruments are present in an audio signal, either by classifying isolated notes or single-instrument clips or by detecting multiple instruments in polyphonic mixtures. It typically relies on machine-learned models trained on audio features or on learned representations such as spectrograms fed to neural networks.",
+    "plain_english": "Instrument recognition means teaching a computer to name the instruments it hears in a song, like guitar, piano, or drums. You can tell a violin from a trumpet by ear. This gives a computer the same skill.",
+    "purpose_function": "It exists to automatically label the instrumentation of audio, which supports search, tagging, and cataloguing, and feeds downstream tasks such as source separation and automatic transcription.",
+    "practical_application": "A technician meets it in tagging and library tools that auto-label instrument content, or as a front-end that helps route, filter, or separate material in an audio workflow.",
+    "category": "Music information retrieval",
+    "related_terms": [
+     "Music information retrieval",
+     "Audio classification",
+     "Feature extraction",
+     "Spectrogram",
+     "Source separation",
+     "Automatic music transcription"
+    ],
+    "common_mistakes": [
+     "Assuming polyphonic recognition is as easy as single-instrument clips; overlapping instruments make identification much harder",
+     "Trusting a model outside its training scope; one trained on Western pop instruments may mislabel unfamiliar instruments",
+     "Confusing instrument recognition with source separation; recognition names instruments but does not split them into separate tracks"
+    ],
+    "scenario_contexts": [
+     "Auto-tagging a sample library by the instruments each file contains",
+     "Filtering a music catalogue to find tracks featuring a saxophone",
+     "Feeding instrument labels into a transcription or separation pipeline"
+    ]
+   },
+   "sources": [
+    "Mueller, Fundamentals of Music Processing",
+    "Eronen & Klapuri, Musical instrument recognition using cepstral coefficients and temporal features, IEEE ICASSP 2000"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "88ac93da-46bf-4c02-a3cf-55298e1e4564",
+   "term": "Kalman filter",
+   "fields": {
+    "definition": "The Kalman filter is a recursive algorithm that estimates the changing state of a linear dynamic system from a series of noisy measurements, producing at each step the optimal minimum mean-square-error estimate under Gaussian noise. It alternates a prediction step, which projects the state and its uncertainty forward using a system model, with an update step, which corrects the prediction using the latest measurement weighted by the Kalman gain.",
+    "plain_english": "A Kalman filter tracks something that changes over time. It blends a prediction with a new, noisy reading to get the best guess, like following a moving target when each reading is a bit off.",
+    "purpose_function": "It exists to combine an uncertain model prediction with uncertain measurements so the resulting estimate is more accurate than either alone, and to do so efficiently in real time by updating recursively rather than reprocessing all past data.",
+    "practical_application": "A technician encounters Kalman filtering in tracking and smoothing tasks such as pitch or fundamental-frequency tracking, sensor fusion, and parameter estimation, where it cleans up noisy time-varying measurements.",
+    "category": "Estimation algorithm",
+    "related_terms": [
+     "State estimation",
+     "Recursive filter",
+     "Gaussian noise",
+     "Pitch tracking",
+     "Sensor fusion",
+     "Signal processing"
+    ],
+    "common_mistakes": [
+     "Applying the standard Kalman filter to strongly nonlinear systems; it assumes linear dynamics, so nonlinear cases need variants such as the extended or unscented Kalman filter",
+     "Setting the process and measurement noise covariances carelessly; wrong values make the filter either too sluggish or too jumpy",
+     "Assuming the estimate is exact; it is a statistical best guess whose accuracy depends on the model and noise assumptions"
+    ],
+    "scenario_contexts": [
+     "Smoothing a noisy pitch-tracking curve in an audio analysis tool",
+     "Fusing sensor data to track the position of a moving microphone or camera",
+     "Estimating a slowly changing parameter from noisy real-time measurements"
+    ]
+   },
+   "sources": [
+    "Kalman, A New Approach to Linear Filtering and Prediction Problems, Transactions of the ASME 1960",
+    "Bishop, Pattern Recognition and Machine Learning (linear dynamical systems)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "131b403b-d0c3-475f-a760-cb83c97bb94a",
+   "term": "Karplus-Strong synthesis",
+   "fields": {
+    "definition": "Karplus-Strong synthesis is a physical-modeling sound-synthesis technique that produces plucked-string and drum-like timbres by feeding a short burst of noise into a delay line whose output passes through a simple low-pass filter and is fed back to its input. The delay length sets the pitch, and the low-pass averaging in the feedback loop makes higher harmonics decay faster than lower ones, imitating a vibrating string.",
+    "plain_english": "Karplus-Strong is a trick for making a plucked-string sound cheaply. You fill a short loop with noise, then keep smoothing and repeating it, so it rings and fades like a real guitar string.",
+    "purpose_function": "It exists to synthesize convincing string and percussion tones with very little computation, simulating the physical decay of a plucked string using only a delay line and a filter in a feedback loop.",
+    "practical_application": "A technician meets it as the basis of plucked-string patches in synthesizers and plugins, and as a classic teaching example of physical-modeling and delay-line synthesis when programming or patching sounds.",
+    "category": "Synthesis",
+    "related_terms": [
+     "Physical modeling synthesis",
+     "Delay line",
+     "Low-pass filter",
+     "Digital waveguide",
+     "Feedback",
+     "Lagrange interpolation"
+    ],
+    "common_mistakes": [
+     "Thinking the noise burst sets the pitch; pitch is set by the delay-line length (the loop delay), not the excitation",
+     "Expecting exact tuning from an integer delay; the whole-sample delay gives only coarse pitch, so fractional-delay tuning is needed for accuracy",
+     "Confusing it with sample playback; the sound is generated by a model, not read back from a stored waveform"
+    ],
+    "scenario_contexts": [
+     "Programming a plucked-string patch in a modular or software synthesizer",
+     "Demonstrating physical-modeling synthesis in an audio-DSP course",
+     "Creating lightweight string or harp sounds on limited hardware"
+    ]
+   },
+   "sources": [
+    "Karplus & Strong, Digital Synthesis of Plucked-String and Drum Timbres, Computer Music Journal 7(2), 1983",
+    "Jaffe & Smith, Extensions of the Karplus-Strong Plucked-String Algorithm, Computer Music Journal 7(2), 1983"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1e5ac225-67de-4f3a-8815-94e546f59ded",
+   "term": "Keyword spotting",
+   "fields": {
+    "definition": "Keyword spotting (KWS) is a speech-processing task in which a system continuously monitors an audio stream and detects the presence of specific predefined words or short phrases, rather than transcribing all speech. It is commonly implemented with small-footprint neural networks that classify short audio frames, and it is the technology behind the wake words that activate voice assistants.",
+    "plain_english": "Keyword spotting is when a device listens for one special word or phrase, like a wake word, and reacts only when it hears it. It ignores everything else instead of writing down all the talking.",
+    "purpose_function": "It exists to let a device react to a chosen trigger word while running efficiently, staying in a low-power listening state until the keyword is detected, at which point fuller processing begins.",
+    "practical_application": "A technician encounters it as the wake-word or voice-trigger stage in smart speakers, phones, and voice-controlled gear, where it must run continuously with low latency and low power while rejecting false triggers.",
+    "category": "Speech processing",
+    "related_terms": [
+     "Wake word",
+     "Automatic speech recognition",
+     "Voice activity detection",
+     "Inference",
+     "Neural network",
+     "Spectrogram"
+    ],
+    "common_mistakes": [
+     "Confusing keyword spotting with full speech recognition; KWS only detects chosen trigger words, not arbitrary speech",
+     "Ignoring the false-accept versus false-reject trade-off; a too-sensitive detector triggers on noise, a too-strict one misses the keyword",
+     "Testing only in quiet rooms; real deployments face noise, distance, and accents that hurt detection"
+    ],
+    "scenario_contexts": [
+     "Building the wake-word trigger for a smart speaker or voice assistant",
+     "Adding hands-free voice activation to a piece of audio equipment",
+     "Flagging spoken commands in a hands-busy live or broadcast setting"
+    ]
+   },
+   "sources": [
+    "Chen, Parada & Heigold, Small-footprint keyword spotting using deep neural networks, IEEE ICASSP 2014",
+    "Sainath & Parada, Convolutional neural networks for small-footprint keyword spotting, Interspeech 2015"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2cef652c-43e7-4a12-8f5a-9bec72f21faa",
+   "term": "Lagrange interpolation",
+   "fields": {
+    "definition": "Lagrange interpolation is a method of constructing the unique polynomial of degree at most N that passes exactly through N+1 given data points, expressed as a weighted sum of Lagrange basis polynomials. In audio DSP it is widely used to design fractional-delay filters and to resample signals, estimating a signal value at a time instant that lies between existing samples.",
+    "plain_english": "Lagrange interpolation is a way to draw a smooth curve that passes right through a set of known points, so you can estimate the values in between. In audio it helps guess a sound value that falls between two real samples.",
+    "purpose_function": "It exists to estimate values between known samples using a single polynomial fit, which in DSP gives simple, efficient fractional-delay and resampling filters whose coefficients are easy to compute on the fly.",
+    "practical_application": "A technician meets it inside delay lines, pitch shifters, sample-rate converters, and the tuning of physical-modeling synths, wherever fractional-sample delays are needed between whole-sample steps.",
+    "category": "Interpolation",
+    "related_terms": [
+     "Interpolation",
+     "Fractional delay filter",
+     "Sample rate conversion",
+     "Finite impulse response filter",
+     "Karplus-Strong synthesis",
+     "Delay line"
+    ],
+    "common_mistakes": [
+     "Using a very high polynomial order for accuracy; high orders can oscillate wildly between points and add distortion",
+     "Ignoring the frequency-dependent amplitude loss; Lagrange fractional-delay filters roll off high frequencies as the delay nears half a sample",
+     "Assuming it is exact; interpolated values are estimates and introduce error, especially for signals with energy near Nyquist"
+    ],
+    "scenario_contexts": [
+     "Implementing a fractional-delay line for a chorus or flanger effect",
+     "Resampling audio between two sample rates",
+     "Fine-tuning the pitch of a Karplus-Strong or waveguide string model"
+    ]
+   },
+   "sources": [
+    "Laakso, Valimaki, Karjalainen & Laine, Splitting the Unit Delay: Tools for Fractional Delay Filter Design, IEEE Signal Processing Magazine 13(1), 1996",
+    "Oppenheim & Schafer, Discrete-Time Signal Processing"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d4464682-8d8c-4c62-bba8-906f50b29e23",
+   "term": "LALAL.ai",
+   "fields": {
+    "definition": "LALAL.ai is a commercial cloud-based audio source-separation service that uses proprietary neural networks to split a mixed recording into separate stems, such as vocals, instrumental, drums, bass, guitar, and piano, and to perform related tasks such as voice cleaning and echo or reverb removal. It is accessed through a web application and a documented REST API.",
+    "plain_english": "LALAL.ai is an online tool that pulls a song apart into separate tracks, like vocals and drums, using AI. You upload a file and it sends back the split-out parts.",
+    "purpose_function": "It exists to give users an easy, hosted way to extract stems from finished audio without running their own separation software, handling the heavy processing on remote servers.",
+    "practical_application": "A technician uses it to quickly obtain vocal or instrumental stems for remixing, karaoke, or content editing, uploading a mix through the website or calling the API in a batch workflow.",
+    "category": "Source separation",
+    "related_terms": [
+     "Music source separation",
+     "Stem separation",
+     "HTDemucs",
+     "Vocal isolation",
+     "Cloud processing",
+     "Inference"
+    ],
+    "common_mistakes": [
+     "Assuming separated stems are studio multitracks; they are AI estimates and can contain artifacts and bleed",
+     "Assuming that separating a copyrighted track grants the right to reuse the stems; separation does not provide a license",
+     "Expecting identical quality across files; results vary with the mix, genre, and how buried a part is"
+    ],
+    "scenario_contexts": [
+     "Quickly pulling an a cappella from a stereo track for a remix",
+     "Removing vocals to make a karaoke version of a song",
+     "Batch-separating stems via the API for a content-production pipeline"
+    ]
+   },
+   "sources": [
+    "LALAL.ai API documentation and OpenAPI specification, official developer repository",
+    "LALAL.ai technical guides and API reference"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

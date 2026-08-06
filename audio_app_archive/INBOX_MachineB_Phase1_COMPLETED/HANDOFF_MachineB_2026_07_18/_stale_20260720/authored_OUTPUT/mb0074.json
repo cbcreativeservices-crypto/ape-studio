@@ -1,0 +1,159 @@
+{
+ "batch": 74,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "8a8ef51b-12d9-4c2e-a6b9-c753f096d6f9",
+   "term": "Vocal mouth-noise repair",
+   "fields": {
+    "definition": "The process of detecting and removing unwanted non-musical mouth sounds—lip smacks, clicks, saliva crackles, and tongue noises—from a recorded vocal track using specialized de-click/de-crackle tools or manual waveform editing.",
+    "plain_english": "This means cleaning small mouth sounds out of a singer's recording. Lip smacks, clicks, and spit noises get removed, so only the words are left. It is like wiping smudges off a photo to make the picture look clean.",
+    "purpose_function": "It removes distracting mouth sounds that become obvious once a vocal is compressed and pushed to the front of a mix, keeping the listener's focus on the words and tone.",
+    "practical_application": "An engineer zooms into the waveform between words and uses a mouth de-click module or short fades to silence tiny clicks, usually before compression exaggerates them.",
+    "category": "Vocal editing",
+    "related_terms": ["Vocal phrase editing", "De-essing", "Noise reduction", "Comping", "Vocal mud reduction"],
+    "common_mistakes": ["Removing so many mouth sounds that the vocal sounds unnatural and lifeless", "Confusing sibilance (ess sounds) with mouth clicks and treating them the same way", "Cutting whole sections instead of just the click, leaving audible gaps in room tone"],
+    "scenario_contexts": ["Cleaning a close-mic'd lead vocal before heavy compression in a pop mix", "Preparing an intimate acoustic ballad where every mouth noise is audible", "Editing a voiceover or podcast where clicks distract from the message"]
+   },
+   "sources": ["iZotope RX technical documentation (Mouth De-click / De-click)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7dc5f3ee-b1c6-4999-baa5-f76fe39037a4",
+   "term": "Vocal mud reduction",
+   "fields": {
+    "definition": "The reduction of excessive low-midrange energy in a vocal, typically in the range of roughly 150–500 Hz, usually with EQ cuts, to remove a boomy, cluttered \"muddy\" quality and improve clarity.",
+    "plain_english": "This means turning down the thick, boomy lower part of a voice. Too much energy around 200 to 400 Hz makes a voice sound muffled. Cutting it a little makes the words clearer, like opening a window in a stuffy room.",
+    "purpose_function": "It clears low-mid buildup so the vocal sits clearly in the mix and does not clash with bass, guitars, and other instruments crowding the same range.",
+    "practical_application": "The engineer sweeps a narrow EQ boost to find the boomy frequency, then cuts a few dB there, often around 200–400 Hz, while listening to the vocal in the full mix.",
+    "category": "Vocal processing",
+    "related_terms": ["Equalization", "Vocal nasality reduction", "High-pass filter", "Frequency masking", "Vocal multiband compression"],
+    "common_mistakes": ["Cutting too much low-mid so the vocal becomes thin and weak", "Judging mud on the soloed vocal instead of in the full mix where it matters", "Setting a high-pass filter too high and losing the natural body of the voice"],
+    "scenario_contexts": ["Cleaning up a male lead vocal that sounds boomy on a dense rock track", "Fixing a proximity-effect buildup from a singer working close to the mic", "Making room for bass and rhythm guitar in a crowded arrangement"]
+   },
+   "sources": ["Mixing Secrets for the Small Studio (Mike Senior)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "20cf3d3b-2b51-46a0-8d9b-179561a22bd9",
+   "term": "Vocal multiband compression",
+   "fields": {
+    "definition": "A dynamics process that splits a vocal signal into separate frequency bands and compresses each independently, allowing problem ranges such as boomy lows or harsh highs to be controlled without affecting the whole signal.",
+    "plain_english": "This tool splits the voice into low, middle, and high parts, then controls the loudness of each part on its own. So you can calm just the boomy or harsh part without changing the rest. It is like having a separate volume knob for each part of the sound.",
+    "purpose_function": "It tames only the frequency ranges that jump out—like a boom on low notes or a harsh edge on loud words—so the vocal stays even without dulling the whole track.",
+    "practical_application": "An engineer sets a band around the harsh or boomy range and applies gentle compression there, tightening trouble spots while leaving the rest of the vocal untouched.",
+    "category": "Vocal processing",
+    "related_terms": ["Compression", "Vocal peak compression", "De-essing", "Dynamic EQ", "Vocal mud reduction"],
+    "common_mistakes": ["Over-compressing every band until the vocal sounds squashed and lifeless", "Using it to fix problems that a simple EQ cut would solve more cleanly", "Setting crossover points carelessly and creating an uneven, phasey tone"],
+    "scenario_contexts": ["Controlling a singer whose low notes boom while high notes stay fine", "Smoothing an uneven vocal recorded with inconsistent mic distance", "Taming harsh loud words on a bright vocal during vocal processing"]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Modern Recording Techniques (Huber & Runstein)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "daae5eae-05e8-49e8-a29b-a5812623252a",
+   "term": "Vocal nasality reduction",
+   "fields": {
+    "definition": "The reduction of an excessively nasal, honky quality in a vocal, typically by cutting a narrow band in the roughly 1–2 kHz region with EQ or dynamic EQ, where nasal resonance tends to concentrate.",
+    "plain_english": "This means fixing a voice that sounds too honky, like someone talking through their nose. The problem sits around 1000 to 2000 Hz. Cutting a little there makes the voice sound more open and natural.",
+    "purpose_function": "It removes a pinched, nasal tone that can make a vocal sound unpleasant, helping the voice sound fuller and more natural in the mix.",
+    "practical_application": "The engineer sweeps a narrow EQ cut through the low treble to find the honky spot, then reduces it a few dB, sometimes with a dynamic EQ so it acts only on the nasal notes.",
+    "category": "Vocal processing",
+    "related_terms": ["Equalization", "Vocal mud reduction", "Dynamic EQ", "Formant", "Resonance"],
+    "common_mistakes": ["Cutting too wide a band and making the vocal sound dull and distant", "Confusing natural vocal formants with a nasal problem and over-correcting", "Removing so much that the vocal loses presence and intelligibility"],
+    "scenario_contexts": ["Fixing a singer with a naturally nasal tone on a lead vocal", "Reducing honk caused by a mic or room emphasizing the low treble", "Cleaning up backing vocals that sound pinched when stacked"]
+   },
+   "sources": ["Mixing Secrets for the Small Studio (Mike Senior)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ff070394-363b-4e59-b453-f390ad89e948",
+   "term": "Vocal onset alignment",
+   "fields": {
+    "definition": "The timing adjustment of the start (onset) of vocal notes or phrases—especially across doubled or stacked takes—so their attacks begin together, tightening the ensemble and cleaning up the stereo image.",
+    "plain_english": "This means lining up the exact moment each vocal take starts. When you stack two takes, their first sounds should hit at the same time. If they do not, you nudge them so they start together, like two hands clapping as one.",
+    "purpose_function": "It makes doubled and layered vocals sound tight and unified instead of loose or flammed, which is vital when several takes share the same words.",
+    "practical_application": "The engineer zooms into the waveform starts and slides syllables earlier or later so a double lines up with the lead, or uses timing-alignment software to match them.",
+    "category": "Vocal editing",
+    "related_terms": ["Vocal phrase editing", "Comping", "Double tracking", "Time alignment", "Vocal phrase replacement"],
+    "common_mistakes": ["Aligning so perfectly that stacked vocals lose their natural width and thickness", "Lining up only the note starts while ignoring where the words end", "Creating clicks or gaps when moving syllables without crossfading the edits"],
+    "scenario_contexts": ["Tightening a doubled chorus vocal against the lead take", "Lining up a group of stacked backing vocals singing the same line", "Fixing a late entrance where a singer came in slightly behind the beat"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Mixing Secrets for the Small Studio (Mike Senior)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "24e6933f-aa33-49e4-86fe-052a441d1aef",
+   "term": "Vocal parallel compression",
+   "fields": {
+    "definition": "A technique in which a heavily compressed copy of a vocal is blended underneath the original, largely uncompressed track, adding density and sustain while preserving natural dynamics and transients; also called New York or parallel compression.",
+    "plain_english": "This means mixing a squashed copy of the voice under the normal one. The squashed copy fills in the quiet parts, while the main track keeps its punch. It is like putting a soft cushion under the voice so nothing gets lost.",
+    "purpose_function": "It raises the quieter details and adds body and consistency to a vocal without crushing the loud peaks, keeping the performance lively yet steady.",
+    "practical_application": "The engineer sends the vocal to a bus with strong compression, then blends that bus quietly beneath the main vocal, adjusting the balance to taste.",
+    "category": "Vocal processing",
+    "related_terms": ["Compression", "Vocal peak compression", "Vocal multiband compression", "Bus routing", "Aux send"],
+    "common_mistakes": ["Blending in too much compressed signal so the vocal sounds pumping and unnatural", "Forgetting to match latency and causing phase problems between the two tracks", "Using it as a substitute for fixing a poorly recorded or badly performed take"],
+    "scenario_contexts": ["Adding sustain and body to a lead vocal in a pop or R&B mix", "Bringing up quiet breaths and word tails on an intimate vocal", "Giving a thin backing vocal more weight without obvious compression"]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Sound on Sound (technique articles)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2a052599-cf0e-4bc5-bebe-3073ec52699f",
+   "term": "Vocal peak compression",
+   "fields": {
+    "definition": "Fast-acting compression applied to a vocal to catch and reduce short, loud transient peaks, evening out the level so the vocal stays controlled and can be brought forward in the mix safely.",
+    "plain_english": "This means catching the loudest quick spikes in a voice and turning them down. Singers often jump loud on certain words, and this smooths those jumps. It is like a quick hand on the volume knob for every loud burst.",
+    "purpose_function": "It controls sudden loud peaks so the vocal has a steadier level, stopping spikes from clipping or jumping out and letting the overall vocal sit louder in the mix.",
+    "practical_application": "The engineer uses a fast attack and moderate ratio to clamp peaks, watching the gain-reduction meter so only the loudest moments are tamed.",
+    "category": "Vocal processing",
+    "related_terms": ["Compression", "Limiting", "Vocal parallel compression", "Vocal multiband compression", "Transient"],
+    "common_mistakes": ["Setting the attack too fast and dulling the natural consonants and life of the vocal", "Using a high ratio that squashes the whole vocal instead of just the peaks", "Chasing meters instead of listening for when the compression sounds natural"],
+    "scenario_contexts": ["Taming loud belted notes in a dynamic pop lead vocal", "Controlling peaks before a vocal reaches a limiter or further processing", "Evening out a singer who moves a lot on and off the mic"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8e6d302c-ffb2-4936-a455-78958f188907",
+   "term": "Vocal phrase editing",
+   "fields": {
+    "definition": "Editing a vocal at the level of whole phrases or lines—cutting, moving, timing, cleaning, and crossfading them—to assemble and polish a performance, as opposed to editing single syllables or the whole track at once.",
+    "plain_english": "This means working on a voice one line or phrase at a time. You cut, move, fix timing, and clean up each phrase, then smooth the joins. It is like editing a story sentence by sentence instead of all at once.",
+    "purpose_function": "It lets an engineer shape and repair a vocal performance in manageable chunks, fixing timing and cleaning gaps while keeping the natural flow of each line.",
+    "practical_application": "The engineer splits the vocal into phrases, nudges or replaces weak lines, trims noise between them, and crossfades the edits so the joins are inaudible.",
+    "category": "Vocal editing",
+    "related_terms": ["Comping", "Vocal phrase replacement", "Vocal onset alignment", "Crossfade", "Vocal mouth-noise repair"],
+    "common_mistakes": ["Leaving hard edits with no crossfade, causing clicks at the joins", "Cutting room tone or breaths unevenly so phrases sound disconnected", "Over-editing until the performance loses its natural feel"],
+    "scenario_contexts": ["Assembling a final lead vocal from several takes phrase by phrase", "Fixing the timing of a single weak line in an otherwise good take", "Cleaning noise and breaths between sung phrases before mixing"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Mixing Secrets for the Small Studio (Mike Senior)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "58717f67-a10e-4871-a44e-1851a4a65d86",
+   "term": "Vocal phrase replacement",
+   "fields": {
+    "definition": "Replacing a specific phrase, word, or line in a vocal track with the same phrase from another take or a re-recorded punch-in, matching level, timing, and tone so the swap is seamless.",
+    "plain_english": "This means swapping one bad line in a vocal for a better version of the same line. You take the good phrase from another take and drop it in. It is like fixing one wrong word in a sentence without rewriting the whole page.",
+    "purpose_function": "It fixes a single flawed phrase—wrong pitch, poor timing, or a slip—without redoing the whole vocal, saving the good parts of a performance.",
+    "practical_application": "The engineer finds a better take of the problem line, drops it onto the timeline, matches its timing and level, and crossfades the edges so the replacement blends in.",
+    "category": "Vocal editing",
+    "related_terms": ["Comping", "Punch-in", "Vocal phrase editing", "Vocal onset alignment", "Crossfade"],
+    "common_mistakes": ["Using a replacement phrase whose tone or mic distance does not match the rest", "Forgetting to align the timing so the swapped line feels off", "Leaving an audible level or room-tone jump at the edit points"],
+    "scenario_contexts": ["Swapping a flat-pitched word for a better take in a lead vocal", "Punching in a corrected line the singer re-recorded later", "Replacing a mistimed phrase during vocal comping"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Mixing Secrets for the Small Studio (Mike Senior)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

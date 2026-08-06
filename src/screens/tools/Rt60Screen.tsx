@@ -59,7 +59,7 @@ const T20_RANGE_DB = 35;
 const PLOT_BG = '#0c0c0f';
 const PLOT_FRAME = '#262b36';
 const DECAY_GREEN = '#5bff85'; // measured decay trace (house green)
-const TICK_TEXT = '#8f8f8f';
+const TICK_TEXT = '#a6a6ad';
 
 /** §13 discipline lines — always visible with results (spec Required warnings). */
 const DISCIPLINE = [

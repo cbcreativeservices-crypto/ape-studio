@@ -1,0 +1,159 @@
+{
+ "batch": 249,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "a46fafe3-eb3e-4f1b-87d7-e169d57e2b68",
+   "term": "Sample manipulation",
+   "fields": {
+    "definition": "The process of altering a recorded audio sample by changing properties such as pitch, duration, playback speed, or direction, or by slicing and rearranging it, using a sampler or DAW editing tools. In post-production it lets an editor reshape source recordings or designed elements to fit the picture and the creative intent.",
+    "plain_english": "This means changing a recorded sound to make it work better. You can raise or lower its pitch, make it longer or shorter, play it backward, or cut it into pieces. It is a bit like editing a photo, but for sound.",
+    "purpose_function": "It lets a technician reshape existing recordings instead of capturing new ones, so sounds can be tuned, retimed, or transformed to match a scene.",
+    "practical_application": "A sound editor might pitch a door slam down to feel heavier, stretch a sustained tone to cover a longer shot, or slice a loop and rearrange the hits.",
+    "category": "Audio Editing",
+    "related_terms": ["Time-stretching", "Pitch shifting", "Sampler", "Sound design", "Editing"],
+    "common_mistakes": ["Stretching a sample too far, which creates obvious artifacts and a smeared, unnatural sound", "Forgetting that large pitch shifts also change a sample's length and character unless formant or time settings are used", "Working on the original file instead of a copy, which loses the source recording"],
+    "scenario_contexts": ["Lowering the pitch of a recorded animal sound to create a monster voice", "Time-stretching a musical note to fill a longer scene", "Chopping a drum loop into slices and rearranging them into a new rhythm"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Avid Pro Tools Reference Guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9a3fd867-8ad2-4210-8798-ffc8372b43e6",
+   "term": "Scene-to-scene dialogue match",
+   "fields": {
+    "definition": "The dialogue-editing practice of keeping a character's recorded voice consistent in level, tone, room ambience, and perspective as the picture cuts from one shot, angle, or setup to another. It smooths differences between takes, microphones, or locations so dialogue does not jump audibly at an edit.",
+    "plain_english": "This means making a person's voice sound the same from one shot to the next. Different takes can be louder, quieter, or recorded in a different room. The editor matches them so the voice does not suddenly change when the picture cuts.",
+    "purpose_function": "It keeps dialogue seamless and believable so the audience follows the story instead of noticing changes in the sound between shots.",
+    "practical_application": "An editor compares clips across a cut and adjusts level, EQ, and room tone, sometimes swapping in a better take, so two lines recorded on different mics blend smoothly.",
+    "category": "Dialogue Editing",
+    "related_terms": ["Room tone", "Dialogue editing", "ADR", "Perspective", "Continuity"],
+    "common_mistakes": ["Matching only the volume while ignoring differences in room tone or EQ, so the space around the voice still jumps", "Not laying matching room tone under a quiet take, which leaves an audible hole at the cut", "Over-processing one clip until it no longer matches the natural takes around it"],
+    "scenario_contexts": ["Two angles of the same conversation were shot with different mics and must sound identical", "A line from a wide shot is quieter and roomier than the close-up next to it", "A pickup line recorded weeks later must match the original scene"]
+   },
+   "sources": ["Purcell, Dialogue Editing for Motion Pictures", "Sound on Sound (soundonsound.com)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "16ac7c1e-6215-43a1-a224-3799bd86fdc7",
+   "term": "Score assembly",
+   "fields": {
+    "definition": "The music-editing task of laying recorded score cues into the edit at their correct sync points, organized by reel and timeline, to build the complete music track for the mix. It brings individual recorded or delivered cues together in the session ready for the re-recording mix.",
+    "plain_english": "This means putting all the recorded music pieces into the timeline in the right spots. Each piece of music, called a cue, has to start at the right moment. The music editor lines them all up to build the full music track.",
+    "purpose_function": "It organizes every music cue at frame-accurate sync so the mixer receives a complete, correctly placed music track for the film.",
+    "practical_application": "After a scoring session, the music editor imports the mixed cues, places each at its start frame on the timeline, and splits them across reels for delivery to the dub stage.",
+    "category": "Music Editing",
+    "related_terms": ["Cue", "Music editor", "Reel", "Stems", "Re-recording mix"],
+    "common_mistakes": ["Placing a cue a frame or two off its sync point so it no longer hits the action", "Losing track of which take or version of a cue is the approved one", "Not labeling cues clearly by reel and cue number, which causes confusion at the mix"],
+    "scenario_contexts": ["Building the full music track from cues after an orchestral scoring session", "Placing delivered synth cues at their sync points before the dub", "Organizing cues by reel for handoff to the re-recording mixer"]
+   },
+   "sources": ["Saltzman, Music Editing for Film and Television", "Karlin & Wright, On the Track"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "30a10a74-bdd3-4d20-93f1-ea3a639afd9e",
+   "term": "Score comping",
+   "fields": {
+    "definition": "The music-editing process of assembling a composite score performance from multiple recorded takes, choosing the best sections of each and editing them together into one seamless cue. It is the film-scoring equivalent of comping a lead vocal from several passes.",
+    "plain_english": "This means building the best version of a music cue from many takes. The players record a section several times. The editor picks the best parts from each and joins them into one smooth performance.",
+    "purpose_function": "It delivers the strongest possible musical performance by combining the best moments from every take into a single clean cue.",
+    "practical_application": "Working from session takes, the music editor cuts the best phrasing from one take and the best ending from another, matching the edits at bar lines so the joins are inaudible.",
+    "category": "Music Editing",
+    "related_terms": ["Comping", "Take", "Cue", "Score pickup edit", "Music editor"],
+    "common_mistakes": ["Editing between takes where tempo or dynamics differ, which makes the join obvious", "Cutting mid-note instead of at a natural boundary such as a bar line or rest", "Choosing a take for one instrument that clashes with the leakage on the other mics"],
+    "scenario_contexts": ["Combining the best sections of three orchestral takes into one cue", "Fixing a flubbed note by dropping in the same bar from another take", "Building a clean solo from several recorded passes"]
+   },
+   "sources": ["Saltzman, Music Editing for Film and Television", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d4083fda-1e5a-496c-8558-6c327c4966f8",
+   "term": "Score conform",
+   "fields": {
+    "definition": "The process of adjusting an existing score edit to match changes in the picture, trimming, expanding, or repositioning cues so the music stays in sync after the film has been re-cut. It is typically driven by comparing the old and new change lists or EDLs.",
+    "plain_english": "This means fixing the music after the picture gets re-edited. When shots are added, cut, or moved, the music no longer lines up. The editor shifts and trims the cues so the music matches the new picture again.",
+    "purpose_function": "It preserves the existing music edit when the picture changes, so cues stay locked to the action without rebuilding them from scratch.",
+    "practical_application": "Given a change list for a new cut, the music editor moves and trims each affected cue, then checks that the musical hit points still land on the action.",
+    "category": "Music Editing",
+    "related_terms": ["Conform", "Change list", "EDL", "Hit point", "Score edit"],
+    "common_mistakes": ["Conforming picture changes by eye instead of using the change list, so cues drift out of sync", "Forgetting to re-check musical hit points after moving a cue", "Applying a change list to the wrong version of the session"],
+    "scenario_contexts": ["Updating cues after the editor adds several seconds to a scene", "Reconforming the score when a reel is re-cut before the final mix", "Matching temp or final music to a new version of the picture"]
+   },
+   "sources": ["Saltzman, Music Editing for Film and Television", "Sound on Sound (soundonsound.com)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6f050142-e6fb-4431-8c1f-01a686603117",
+   "term": "Score edit",
+   "fields": {
+    "definition": "A general term for editing a piece of recorded or delivered score, cutting, lengthening, shortening, or rearranging the music so it fits the scene's length, structure, and emotional beats. It covers any edit the music editor makes within or between cues to serve the picture.",
+    "plain_english": "This means changing a piece of music so it fits the scene. The editor can make it shorter, longer, or move parts around. The goal is to make the music match what happens on screen.",
+    "purpose_function": "It shapes existing music to the exact length and structure a scene needs, so a cue lands its emotional and timing beats.",
+    "practical_application": "To fit a cue to a shorter scene, the music editor removes a repeated section at a musically clean point so the piece still feels whole.",
+    "category": "Music Editing",
+    "related_terms": ["Cue", "Music editor", "Score conform", "Hit point", "Temp music"],
+    "common_mistakes": ["Cutting in the middle of a phrase instead of at a musical boundary, which breaks the flow", "Ignoring tempo or key so two joined sections clash", "Editing to length without checking that key hits still line up with the action"],
+    "scenario_contexts": ["Shortening a long cue to fit a trimmed scene", "Extending a piece of music to cover an added shot", "Reworking a temp cue so it fits a new edit"]
+   },
+   "sources": ["Saltzman, Music Editing for Film and Television", "Karlin & Wright, On the Track"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ca5e4b82-7d5c-43a5-af74-96e67ab664ec",
+   "term": "Score pickup edit",
+   "fields": {
+    "definition": "The music-editing task of cutting recorded pickup takes, short re-recorded sections captured to fix or replace part of a cue, into the assembled score in place of the flawed material. Pickups are recorded at or after the scoring session to correct performance or note errors.",
+    "plain_english": "This means fixing a music cue with small re-recordings. If part of a take had a wrong note, the players record just that part again. The editor drops the new piece into the cue in place of the mistake.",
+    "purpose_function": "It repairs a flawed section of a cue with a freshly recorded fix so the whole take does not have to be re-performed.",
+    "practical_application": "When a horn cracks a note in an approved take, the editor cuts in the pickup of those bars, matching the edit at bar lines and blending the room sound.",
+    "category": "Music Editing",
+    "related_terms": ["Pickup", "Take", "Score comping", "Cue", "Music editor"],
+    "common_mistakes": ["Dropping in a pickup without matching its level or room tone to the surrounding take", "Editing at a point where the pickup's tempo differs from the original take", "Losing track of which bars the pickup was meant to replace"],
+    "scenario_contexts": ["Replacing a cracked brass note with a pickup take of the same bars", "Cutting in a re-recorded ending after the conductor requested another pass", "Fixing an ensemble timing slip with a pickup of that phrase"]
+   },
+   "sources": ["Saltzman, Music Editing for Film and Television", "Karlin & Wright, On the Track"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4f76f8bd-29db-4b34-b962-666cfe706b0f",
+   "term": "Score pitch repair",
+   "fields": {
+    "definition": "The correction of tuning or intonation problems in a recorded score performance using pitch-processing tools, so notes sit in tune without re-recording. It targets individual instruments or sections that drifted flat or sharp.",
+    "plain_english": "This means fixing out-of-tune notes in recorded music. Sometimes a player or singer lands a little flat or sharp. Software nudges those notes back in tune so the music sounds right.",
+    "purpose_function": "It rescues an otherwise good take that has minor tuning issues, saving the performance without another recording session.",
+    "practical_application": "The music editor isolates a slightly sharp violin line and uses pitch-correction software to pull it into tune while keeping its natural vibrato and tone.",
+    "category": "Music Editing",
+    "related_terms": ["Pitch correction", "Intonation", "Score comping", "Take", "Music editor"],
+    "common_mistakes": ["Over-correcting until the performance sounds robotic and loses its natural vibrato", "Trying to tune a full ensemble mic where notes overlap, which causes artifacts", "Treating pitch repair as a fix for a poorly recorded or badly performed take"],
+    "scenario_contexts": ["Nudging a flat sustained note back into tune", "Correcting an intonation slip in an exposed solo line", "Tightening tuning on a section before the final mix"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Saltzman, Music Editing for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "66e6b4cc-f3be-4f5d-a6fd-d18e832dd244",
+   "term": "Score timing edit",
+   "fields": {
+    "definition": "A music edit that adjusts the timing of a score so events land on the intended moments in the picture, by shifting the cue, altering tempo, or micro-editing beats to align musical hits with visual action. It targets synchronization rather than musical content.",
+    "plain_english": "This means changing the timing of the music so it lands with the action. A big musical hit should match a big moment on screen. The editor nudges or stretches the music until they line up.",
+    "purpose_function": "It locks musical accents to on-screen events so the score feels tied to the picture rather than drifting against it.",
+    "practical_application": "To make a cymbal crash land on a door slam, the music editor shifts the cue or subtly adjusts the tempo so the accent hits the exact frame.",
+    "category": "Music Editing",
+    "related_terms": ["Hit point", "Sync", "Tempo map", "Score conform", "Click track"],
+    "common_mistakes": ["Shifting a whole cue to fix one hit, which throws every other hit out of sync", "Time-stretching so aggressively that the music develops audible artifacts", "Chasing a hit point the composer never intended, which fights the music"],
+    "scenario_contexts": ["Aligning a musical accent with an on-screen impact", "Tightening a cue that drifts a few frames late against the action", "Adjusting tempo so a phrase resolves exactly on a cut"]
+   },
+   "sources": ["Saltzman, Music Editing for Film and Television", "Karlin & Wright, On the Track"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

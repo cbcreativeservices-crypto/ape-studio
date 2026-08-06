@@ -1,0 +1,314 @@
+{
+ "batch": 353,
+ "topic": "Strings, Guitar & Keys",
+ "authored": [
+  {
+   "id": "a0a554bc-3f45-4498-b698-f0be73a24d35",
+   "term": "Rebab whine",
+   "fields": {
+    "definition": "The high, thin, nasal sustained tone characteristic of the rebab, a bowed spike fiddle of the Middle East, North Africa, and Southeast Asia; the sound arises from a small resonating body and bowed strings rich in upper harmonics, giving a penetrating, reedy voice often likened to a whine.",
+    "plain_english": "A whine is the thin, high, nose-like sound of the rebab, a small bowed fiddle. Because its body is tiny and the bow keeps the string going, the tone stays bright and cuts right through the music.",
+    "purpose_function": "Names the rebab's signature timbre so engineers and players can recognize, capture, and control the instrument's bright, penetrating character within a mix.",
+    "practical_application": "A technician close-mics the rebab and may tame harsh upper mids with EQ so the whine stays present and expressive without becoming piercing in a folk or world-music recording.",
+    "category": "Timbre",
+    "related_terms": [
+     "Sarangi wash",
+     "Sympathetic strings",
+     "Bowing",
+     "Harmonic content",
+     "EQ (equalization)"
+    ],
+    "common_mistakes": [
+     "Cranking high-frequency EQ to add brightness, which makes the whine harsh and fatiguing",
+     "Confusing the rebab's natural nasal tone with a fault in the mic or signal chain",
+     "Gating too aggressively and cutting the sustained bowed tail"
+    ],
+    "scenario_contexts": [
+     "Miking a rebab for a world-music or film-score session",
+     "Blending a rebab against a string section in a fusion arrangement",
+     "Taming harsh upper mids on a solo rebab line during mixing"
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (Grove Music Online), \"Rabab/Rebab\"",
+    "Fletcher & Rossing, The Physics of Musical Instruments (bowed-string acoustics and radiation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "56286b3d-85fc-4ff7-b206-127af71d7313",
+   "term": "Resonator cone ring (Dobro)",
+   "fields": {
+    "definition": "The bright, metallic, sustaining resonance produced by the spun-metal cone of a resonator (Dobro-style) guitar; driven by the bridge like a mechanical loudspeaker, the cone radiates the string energy with a characteristic ringing, bell-like sustain and strong upper-mid content.",
+    "plain_english": "The ring is the bright, bell-like sustain that comes from the metal cone inside a resonator guitar. The cone works like a small speaker, so the notes ring out longer and sound more metallic than on a normal acoustic.",
+    "purpose_function": "Describes the core tonal signature of resonator guitars so engineers can capture and preserve the ringing, sustaining character that defines blues, bluegrass, and country resonator tones.",
+    "practical_application": "A technician positions a mic between the cone and the body ports, a few feet back, to capture the ring and body warmth without exaggerating pick and slide noise.",
+    "category": "Timbre",
+    "related_terms": [
+     "Resonator feedback",
+     "Resonator rattle",
+     "Sustain",
+     "Slide technique",
+     "Microphone placement"
+    ],
+    "common_mistakes": [
+     "Miking directly on the cone, which captures pick noise instead of the full ring",
+     "Over-compressing and squashing the natural ringing sustain",
+     "Assuming all resonators sound alike regardless of single-cone (biscuit or spider) or tricone design"
+    ],
+    "scenario_contexts": [
+     "Recording a Dobro for a bluegrass or country track",
+     "Capturing bottleneck slide blues on a single-cone resonator",
+     "Balancing resonator ring against a vocal in a mix"
+    ]
+   },
+   "sources": [
+    "Sound on Sound, \"Recording Resonator Guitars\" (Michael Messer, resonator technical technique feature)",
+    "Fletcher & Rossing, The Physics of Musical Instruments (plate/cone radiation and driven-resonator behavior)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "068cbb30-7e7e-461f-a05c-7fc0b04692ca",
+   "term": "Resonator feedback",
+   "fields": {
+    "definition": "Acoustic feedback that occurs when an amplified resonator guitar's cone, designed to pick up and radiate string energy, is re-excited by sound arriving from monitors or the PA, producing a sustained howl or ring at the loop's resonant frequency.",
+    "plain_english": "Feedback is the loud howl that starts when a resonator guitar's cone picks up sound from the speakers and feeds it back around in a loop. Because the cone is built to grab and boost vibration, it feeds back more easily than a solid guitar.",
+    "purpose_function": "Warns that the resonator's amplifying cone makes it especially prone to feedback on stage, so technicians plan gain structure, monitor levels, and EQ to keep it under control.",
+    "practical_application": "A technician lowers monitor level, notches the ringing frequency with EQ, or blocks the body ports to stop a resonator from howling during a loud live set.",
+    "category": "Live Sound",
+    "related_terms": [
+     "Resonator cone ring",
+     "Acoustic feedback",
+     "Monitor wedge",
+     "Notch filter",
+     "Gain before feedback"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Pushing overall system or monitor gain to hear the resonator, which can trigger a sudden loud feedback howl that risks hearing damage and blown drivers",
+     "Blaming the PA rather than the resonator's cone for stage feedback",
+     "Notching so many frequencies that the guitar tone is hollowed out"
+    ],
+    "scenario_contexts": [
+     "A resonator player steps toward a monitor and the instrument begins to howl",
+     "Setting gain structure for an amplified resonator at soundcheck",
+     "Ringing out monitors to raise the feedback threshold for a resonator player"
+    ]
+   },
+   "sources": [
+    "Sound on Sound, \"Recording Resonator Guitars\" (resonator cone amplifies and feeds back through monitors)",
+    "Yamaha Sound Reinforcement Handbook (Davis & Jones, acoustic feedback and gain before feedback)",
+    "Ballou, Handbook for Sound Engineers (feedback and system gain structure)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5ec28c74-467e-460a-aa9c-2d45b9738054",
+   "term": "Resonator rattle",
+   "fields": {
+    "definition": "An unwanted buzzing or rattling noise from a resonator guitar caused by a loose or improperly seated cone, spider, coverplate, tailpiece, or hardware vibrating against the body or against itself when the strings are played.",
+    "plain_english": "A rattle is a buzzing noise from a resonator guitar. It happens when a loose part, like the metal cone or cover plate, shakes against the body. It usually means a part needs tightening, not that the guitar is broken.",
+    "purpose_function": "Flags a mechanical noise fault so a technician can locate and fix the loose component before it spoils a recording or performance.",
+    "practical_application": "A technician isolates the buzz by muting strings and tapping parts, then reseats the cone or snugs the coverplate hardware to silence the rattle.",
+    "category": "Instrument Noise",
+    "related_terms": [
+     "Resonator cone ring",
+     "Resonator feedback",
+     "Buzz",
+     "Setup and maintenance",
+     "Fret buzz"
+    ],
+    "common_mistakes": [
+     "Assuming the rattle is a bad string or amp fault when it is actually loose resonator hardware",
+     "Overtightening coverplate screws and distorting the cone seat",
+     "Ignoring a faint rattle that a close mic will clearly capture on a quiet recording"
+    ],
+    "scenario_contexts": [
+     "Tracking a Dobro and hearing a buzz on certain notes",
+     "Pre-gig inspection of a resonator for loose hardware",
+     "Diagnosing a rattle that only appears at high playing volume"
+    ]
+   },
+   "sources": [
+    "Sound on Sound, \"Recording Resonator Guitars\" (mechanical/hardware noise in resonator capture)",
+    "Fletcher & Rossing, The Physics of Musical Instruments (coupled-part vibration and buzzing in string instruments)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "68e8614a-2972-40d8-86fc-439a686e3268",
+   "term": "Risha tremolo",
+   "fields": {
+    "definition": "A rapid, even alternation of down-and-up plectrum (risha) strokes on the oud or buzuq that sustains a pitch or fills a phrase, producing the continuous, shimmering tremolo texture common in Arabic and Turkish string music.",
+    "plain_english": "Risha tremolo is fast back-and-forth picking on an oud, using the thin pick called a risha. The quick strokes blur into one long, shimmering note, the way a mandolin player holds a note.",
+    "purpose_function": "Names the technique that lets a plucked oud sustain a tone or ornament a melody, since a single pluck decays quickly.",
+    "practical_application": "An engineer captures the fine stroke detail of risha tremolo with a close condenser mic and avoids heavy transient limiting that would flatten the shimmer.",
+    "category": "Articulation",
+    "related_terms": [
+     "Risha/mizrab attack",
+     "Tremolo",
+     "Plectrum",
+     "Sustain",
+     "Transient"
+    ],
+    "common_mistakes": [
+     "Confusing tremolo (fast repeated notes) with vibrato (a pitch wobble)",
+     "Heavy transient shaping that smears the individual strokes into mush",
+     "Miking too far away and losing the crisp stroke detail"
+    ],
+    "scenario_contexts": [
+     "Recording an oud taqsim that uses tremolo on sustained notes",
+     "Blending an oud tremolo bed under a vocal line",
+     "Editing a tremolo passage where stroke evenness matters"
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (Grove Music Online), \"Oud\" and \"Tremolo\" (plectrum tremolo articulation)",
+    "Ballou, Handbook for Sound Engineers (transient/sustain envelope and capture)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "73227c0e-0026-451f-99ec-0b8066bd2b98",
+   "term": "Risha/mizrab attack",
+   "fields": {
+    "definition": "The sharp initial transient produced when a plectrum strikes the string on plucked lutes of the Middle East and South Asia — the risha (oud, buzuq), the wire mizrab worn on the finger (sitar), or the hand-held java plectrum (sarod) — giving each note its percussive onset and defining the music's rhythmic articulation.",
+    "plain_english": "The attack is the sharp pluck sound at the very start of a note when a pick hits the string. On an oud the pick is a risha; on a sitar it is a wire finger pick called a mizrab, while a sarod is played with a hand-held pick called a java. This crisp start gives the music its rhythmic bite.",
+    "purpose_function": "Describes the onset transient that carries the rhythm and clarity of plucked-lute lines, which engineers must preserve for definition in a mix.",
+    "practical_application": "A technician sets preamp and converter headroom so the sharp mizrab or risha attack is not clipped, and uses gentle compression to even out onsets without dulling them.",
+    "category": "Articulation",
+    "related_terms": [
+     "Risha tremolo",
+     "Attack (envelope)",
+     "Transient",
+     "Plectrum",
+     "Sarod glissando"
+    ],
+    "common_mistakes": [
+     "Using fast, hard compression that dulls the plectrum attack",
+     "Setting record levels too hot and clipping the sharp transient",
+     "Confusing the metal mizrab's bright attack with digital distortion"
+    ],
+    "scenario_contexts": [
+     "Recording a sitar where each mizrab stroke must stay crisp",
+     "Tracking an oud rhythm part that drives the groove",
+     "Setting gain staging to protect sharp plucked transients from clipping"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (attack transients, envelope, and headroom)",
+    "Grove Dictionary of Music (Grove Music Online), \"Mizrab,\" \"Sitar,\" and \"Oud\" (plectrum types and stroke articulation)",
+    "India Instruments encyclopedia (sarod); Chandraveena reference on sarod java plectrum"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "16b4e6e7-e311-43e8-85ae-47649e2f63ff",
+   "term": "Santoor shimmer",
+   "fields": {
+    "definition": "The bright, sustained, glistening decay of the santoor (santur), a hammered dulcimer whose many courses of metal strings, struck with light mallets, ring and reinforce one another to create a shimmering wash of overtones.",
+    "plain_english": "Shimmer is the bright, sparkling sound that lingers after a santoor is struck. It has many metal strings hit with small hammers, and they all ring together, like sunlight on water, leaving a glowing tail.",
+    "purpose_function": "Names the santoor's signature sustained, overtone-rich decay so engineers can capture and preserve its glistening character.",
+    "practical_application": "An engineer uses a stereo pair placed over the instrument to capture the full shimmer and reverberant tail without close-miking artifacts.",
+    "category": "Timbre",
+    "related_terms": [
+     "Sarangi wash",
+     "Sympathetic strings",
+     "Sustain",
+     "Overtones",
+     "Stereo miking"
+    ],
+    "common_mistakes": [
+     "Adding bright reverb that clashes with the natural overtone shimmer",
+     "Close-miking one region and missing the full field of ringing strings",
+     "Over-compressing and killing the long ringing decay"
+    ],
+    "scenario_contexts": [
+     "Recording a santoor solo in Persian or Indian classical music",
+     "Placing a santoor's shimmer in a film or ambient mix",
+     "Choosing reverb that complements rather than masks the natural decay"
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (Grove Music Online), \"Santur\" (hammered dulcimer, multiple metal string courses)",
+    "Fletcher & Rossing, The Physics of Musical Instruments (struck-string decay, overtones, and sympathetic reinforcement)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "98997b78-2ec0-449e-a58c-3d3781adc213",
+   "term": "Sarangi wash",
+   "fields": {
+    "definition": "The soft, continuous, blended texture of the sarangi, a bowed short-necked Indian fiddle whose numerous sympathetic strings resonate with the bowed melody strings to surround each note with a haze of sustained overtones.",
+    "plain_english": "The wash is the soft, cloudy blanket of sound around a sarangi's melody. The sarangi has many extra strings that ring on their own when you bow, filling the space with a smooth glow behind the tune.",
+    "purpose_function": "Describes the sympathetic-string resonance that gives the sarangi its vocal, enveloping sound, which engineers aim to capture rather than suppress.",
+    "practical_application": "A technician mics the sarangi to include the sympathetic strings' resonance, avoiding tight close-miking that would thin out the wash.",
+    "category": "Timbre",
+    "related_terms": [
+     "Santoor shimmer",
+     "Sympathetic strings",
+     "Bowing",
+     "Resonance",
+     "Reverb"
+    ],
+    "common_mistakes": [
+     "Aggressive noise gating that chops off the sustained resonant tail",
+     "Close-miking only the melody strings and losing the sympathetic wash",
+     "Mistaking the natural sympathetic resonance for added reverb"
+    ],
+    "scenario_contexts": [
+     "Recording a sarangi accompaniment in Hindustani classical music",
+     "Capturing the vocal-like sustain of a sarangi solo",
+     "Preserving sympathetic resonance while controlling bow noise"
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (Grove Music Online), \"Sarangi\" (bowed fiddle with sympathetic strings)",
+    "\"Bowed strings and sympathy, from violins to Indian sarangi\" (acoustics study of sympathetic-string resonance, HAL/ASA-indexed research)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3e81d6b9-0ab1-4917-8f0d-d0d39f299890",
+   "term": "Sarod glissando",
+   "fields": {
+    "definition": "A smooth, continuous slide in pitch on the sarod, a fretless plucked lute with a polished metal fingerboard that lets the fingernail glide along the string, producing the seamless pitch transitions (meend) central to Hindustani music.",
+    "plain_english": "A glissando is a smooth slide from one pitch to another. The sarod has no frets and a shiny metal board, so a player can slide a fingernail along the string and let the note glide, with no steps in between.",
+    "purpose_function": "Names the continuous pitch-slide technique that the sarod's fretless metal fingerboard makes possible and that defines its expressive, vocal phrasing.",
+    "practical_application": "An engineer captures the glissando with enough high-frequency detail to keep the sliding fingernail-on-metal character, avoiding heavy filtering that would dull it.",
+    "category": "Articulation",
+    "related_terms": [
+     "Risha/mizrab attack",
+     "Glissando",
+     "Portamento",
+     "Fretless",
+     "Sympathetic strings"
+    ],
+    "common_mistakes": [
+     "Confusing a glissando (a smooth slide) with discrete stepped notes",
+     "Rolling off the highs and losing the fingernail-slide detail",
+     "Using pitch correction that fights the continuous slide"
+    ],
+    "scenario_contexts": [
+     "Recording a sarod alap full of sliding meend phrases",
+     "Editing a sarod line without quantizing the pitch slides",
+     "Blending a sarod glissando into a fusion arrangement"
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music (Grove Music Online), \"Sarod\" (fretless metal fingerboard, meend/glissando) and \"Glissando\"",
+    "Fletcher & Rossing, The Physics of Musical Instruments (fretless continuous pitch control on plucked strings)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,232 @@
+{
+ "batch": 195,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "7c61cfc7-e4e7-4d79-b338-a93988b51c50",
+   "term": "Broadcast watchdog timer",
+   "fields": {
+    "definition": "A monitoring device or circuit in the air chain that must keep sensing a valid on-air signal (or a periodic system 'heartbeat') within a set interval; if that interval elapses without one, it assumes a fault such as prolonged silence or a stalled playout system and triggers an alarm, a changeover to a backup source, or an automatic restart.",
+    "plain_english": "It is a safety timer that watches the on-air signal. If the sound stops or the computer freezes for too long, the timer runs out. Then it switches to a backup or restarts the gear, so listeners do not hear silence.",
+    "purpose_function": "It protects against unattended failures such as dead air, a crashed playout PC, or a lost feed by detecting the fault quickly and forcing a recovery action without waiting for a human operator.",
+    "practical_application": "Engineers wire a silence-sensing watchdog near the final on-air point so that, if audio drops below a set level for a chosen number of seconds, it fires a relay to swap in an emergency player and raises an alert.",
+    "category": "Air chain / Redundancy",
+    "related_terms": ["Silence detection", "Dead air", "Automatic changeover", "Playout automation", "Confidence recording"],
+    "common_mistakes": [
+     "Setting the silence threshold too high or the delay too short, so normal quiet passages trigger a false changeover.",
+     "Assuming the watchdog confirms the audio is correct, when it only detects presence and level, not whether the right program is playing.",
+     "Forgetting the watchdog needs its own reliable power and a truly independent backup source, or it can fail at the same moment as the main path.",
+     "UNSAFE: Defeating or bypassing the watchdog to stop 'nuisance' switching, leaving the station with no automatic protection against extended dead air."
+    ],
+    "scenario_contexts": [
+     "An unattended overnight automation PC crashes and the watchdog detects the silence and switches to a backup player.",
+     "A satellite network feed drops out and the timer expires, rolling local emergency programming.",
+     "A studio-to-transmitter link fails and a watchdog at the transmitter site starts a local backup loop."
+    ]
+   },
+   "sources": ["DEVA Broadcast DB8000 Silence Monitor & Backup Audio Player technical documentation", "Trilogy Communications Watchdog Modular Signal Detection and Changeover User Guide"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "afbd0795-95c5-41d5-9dca-9e86c6f4a273",
+   "term": "Call-in channel",
+   "fields": {
+    "definition": "A mixer input/fader dedicated to caller audio delivered through a telephone hybrid, which separates the incoming caller signal from the outgoing send so a listener's phone call can be added to the on-air mix while, via a mix-minus feed, the caller hears the program minus their own returned voice.",
+    "plain_english": "It is the channel on the mixing desk that a phone caller comes in on. A special box called a hybrid splits the call so the caller's voice can go on air, while the caller hears the show minus their own voice, which stops echo.",
+    "purpose_function": "It lets talk and phone-in shows put listeners on air with clean, controllable audio and prevents the feedback and echo that occur if a caller hears their own delayed voice.",
+    "practical_application": "A talk-show operator screens a caller, opens the call-in fader when the host takes the call, and sets a mix-minus send so the caller monitors the program but not their own return.",
+    "category": "Studio sources",
+    "related_terms": ["Telephone hybrid", "Mix-minus", "Profanity delay", "On-air fader", "Continuity studio"],
+    "common_mistakes": [
+     "Forgetting to set up a proper mix-minus, so the caller hears their own voice delayed and the line howls or echoes.",
+     "Leaving the call-in fader open when no call is active, letting hybrid noise or a dial tone leak to air.",
+     "Not using a broadcast delay, so a caller's profanity or slip reaches air with no chance to dump it."
+    ],
+    "scenario_contexts": [
+     "A morning talk show takes listener calls during an on-air debate.",
+     "A sports phone-in lets fans react live right after a match.",
+     "A radio request line puts a caller on air to dedicate a song."
+    ]
+   },
+   "sources": ["Telos Alliance VX Enterprise broadcast talkshow system technical documentation", "Telos Alliance Hx1 Digital Hybrid Telephone Interface technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5dec2129-cb86-45a0-80bf-ba7f795e050f",
+   "term": "Commentary feed",
+   "fields": {
+    "definition": "An audio feed carrying a commentator's or announcer's spoken description of an event, kept separate from the effects and atmosphere sound so it can be mixed in, replaced, or supplied in several languages; in a full broadcast mix the commentary is typically placed in the centre while a clean effects feed can be sent to other broadcasters who add their own commentary.",
+    "plain_english": "It is the feed that carries just the commentator's voice. It stays apart from the crowd and game sounds. That way, each station can add its own voice over the same crowd sound, often in another language.",
+    "purpose_function": "Separating commentary from the effects and atmosphere lets one event's sound serve many outlets and languages and lets the mixer balance voice against crowd cleanly.",
+    "practical_application": "At a match the sound supervisor routes each commentator to their own feed and sends a clean effects mix plus the commentary feeds back to the broadcaster, who combines the chosen language with the atmosphere.",
+    "category": "Program feeds",
+    "related_terms": ["Contribution feed", "Crowd microphone pair", "Concert broadcast mix", "Clean feed", "Mix-minus"],
+    "common_mistakes": [
+     "Mixing commentary permanently into the effects, so other broadcasters cannot add their own language.",
+     "Letting crowd and atmosphere sit too high in the centre, masking the commentary and leaving no gap when the commentator's mic is muted.",
+     "Forgetting to give the commentator a clean IFB or mix-minus so they can hear the program without their own delayed voice."
+    ],
+    "scenario_contexts": [
+     "An international football final where a clean effects feed goes worldwide and each country adds its own commentary.",
+     "A radio sports desk taking a commentary feed from a stadium commentary position.",
+     "A multilingual event offering separate English and Spanish commentary feeds."
+    ]
+   },
+   "sources": ["Calrec 'Audio for HD & 3D - UEFA Champions League Final' application note", "DPA Microphones sports broadcast application notes"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6f158bf2-0b1f-4ece-944e-8f118c0d9093",
+   "term": "Commercial break",
+   "fields": {
+    "definition": "A scheduled interruption in program content during which advertisements, sponsor messages, or station promotions are aired, inserted at defined junctions in a programme so the broadcaster can carry paid spots; technically these breaks are timed and triggered from the traffic log by the playout automation.",
+    "plain_english": "It is the ad break, the planned gap in a show where commercials play. The station's schedule software knows exactly when each break starts and fires the ads in the right order.",
+    "purpose_function": "Commercial breaks let a station earn revenue by airing paid advertisements while giving programming a predictable structure of segments between breaks.",
+    "practical_application": "An operator or the automation system starts the break at the logged time, plays the spot cluster, and returns to programming, checking that the break length matches the traffic log.",
+    "category": "Programming",
+    "related_terms": ["Traffic log", "Playout automation", "Continuity studio", "Loudness normalisation", "Station identification"],
+    "common_mistakes": [
+     "Running a break long or short so it does not match the logged duration and a network join or top-of-hour is missed.",
+     "Airing commercials noticeably louder than programme content, breaching loudness rules such as EBU R128 or the CALM Act.",
+     "Leaving a gap or dead air between spots because a break element failed to load."
+    ],
+    "scenario_contexts": [
+     "A music station's automation fires a scheduled ad cluster every quarter hour.",
+     "A live host hands to a commercial break before a network newscast.",
+     "A traffic department schedules spots into breaks to fill the day's advertising log."
+    ]
+   },
+   "sources": ["EBU Tech 3401 Guidelines for Radio Production and Distribution", "Ballou, Handbook for Sound Engineers (broadcast operations)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0841d2f3-bd5b-4587-8bda-73e0a360b2e2",
+   "term": "Concert broadcast mix",
+   "fields": {
+    "definition": "A dedicated mix of a live concert created for transmission or recording rather than for the venue PA, balanced for the at-home listener over loudspeakers or headphones; it blends close and spot microphones on the performers with audience and ambience microphones to deliver both clarity and a sense of the room, and is built independently of the front-of-house PA mix.",
+    "plain_english": "It is the mix of a live concert made for people listening at home, not for the crowd in the room. The engineer blends close mics on the musicians with audience mics so it sounds clear but still feels live.",
+    "purpose_function": "It exists because the PA mix is tuned for the room and often leaves quiet instruments low; the broadcast mix instead delivers a full, balanced sound suited to home listening and captures the live atmosphere.",
+    "practical_application": "A broadcast mixer takes a split of the stage mics plus dedicated audience and ambience pairs and builds a separate stereo or surround mix in an OB truck, monitoring on reference speakers for the home listener.",
+    "category": "Broadcast mixing",
+    "related_terms": ["Crowd microphone pair", "Commentary feed", "Contribution feed", "Ambience microphone", "Front-of-house mix"],
+    "common_mistakes": [
+     "Just taking a feed of the front-of-house PA mix, which is balanced for the room and usually sounds thin or lopsided at home.",
+     "Using too little audience and ambience, so the recording sounds dry and lifeless with no sense of a live show.",
+     "Letting spill and hall PA dominate, blurring the close-mic clarity the broadcast needs."
+    ],
+    "scenario_contexts": [
+     "A festival set mixed in an OB truck for live radio broadcast.",
+     "An orchestral concert mixed for a surround broadcast with audience ambience pairs.",
+     "A televised awards show where the music is mixed separately from the room PA."
+    ]
+   },
+   "sources": ["Calrec 'Audio for HD & 3D - UEFA Champions League Final' application note", "Ballou, Handbook for Sound Engineers (broadcast and remote production)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2a8c0cd1-9831-4b36-84b8-32db35737cde",
+   "term": "Confidence recording",
+   "fields": {
+    "definition": "A recording captured at the same time as a live transmission or a primary recording, used to confirm that the material is actually being captured or aired correctly and to serve as a safeguard copy; the term derives from tape practice, where a three-head machine's separate playback (repro) head let the operator monitor the just-recorded signal off the medium a moment after recording it.",
+    "plain_english": "It is a second recording made at the same time as the main one, so you can be sure the audio is really being captured. It comes from tape decks that could play back what they had just recorded, a split second later, to prove it worked.",
+    "purpose_function": "It gives the operator confidence that the record path is truly working and provides a backup copy if the primary recording or the live feed is lost.",
+    "practical_application": "During an important session or live show an engineer runs a separate confidence recorder, or monitors off the playback head, so a failure in the main recorder does not lose the material.",
+    "category": "Air chain / Redundancy",
+    "related_terms": ["Broadcast watchdog timer", "Logging recorder", "Off-tape monitoring", "Backup recording", "Continuity studio"],
+    "common_mistakes": [
+     "Assuming the input meter proves a good recording, when only monitoring off the playback path confirms the medium actually captured it.",
+     "Running the confidence recorder from the same power or the same source split as the main recorder, so both fail together.",
+     "Never checking the confidence copy, so a silent or corrupt backup is discovered only when it is needed."
+    ],
+    "scenario_contexts": [
+     "A studio runs a confidence recorder alongside the main multitrack during a one-take live session.",
+     "A broadcaster keeps a simultaneous recording of the air signal as a safeguard and reference.",
+     "An engineer monitors off the repro head to verify a master is being captured cleanly."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (magnetic recording and monitoring)", "EBU Tech 3401 Guidelines for Radio Production and Distribution"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8edc76bb-9936-4ee2-a986-8a63d986036b",
+   "term": "Continuity studio",
+   "fields": {
+    "definition": "A small broadcast studio, also called a continuity or presentation suite, from which the station's output is controlled and continuity is kept between programmes: station identification, announcements, links, and smooth junctions from one item to the next; it usually houses a self-operated announcer position with the switching to take the transmission line.",
+    "plain_english": "It is a small studio that keeps the station running smoothly between shows. From here an announcer gives the station name, reads links, and makes sure one programme joins the next with no awkward gaps.",
+    "purpose_function": "It keeps the on-air output seamless, filling and bridging the joins between programmes and handling identification, trails, and last-minute changes so the channel never falls silent or overlaps.",
+    "practical_application": "A continuity announcer works the desk self-op, opening their mic for links, firing station idents and trails, and switching sources to hand cleanly from one programme to the next.",
+    "category": "Studio / Facility",
+    "related_terms": ["Commercial break", "Station identification", "Playout automation", "Self-op", "Broadcast watchdog timer"],
+    "common_mistakes": [
+     "Confusing continuity with the main programme studio; continuity handles the junctions and station presentation, not the programmes themselves.",
+     "Missing a clean junction so two sources overlap or a moment of dead air falls between programmes.",
+     "Leaving the announcer mic open after a link, letting off-air talk reach transmission."
+    ],
+    "scenario_contexts": [
+     "A TV network's continuity suite links from the end of one show into the next with an ident and trail.",
+     "A radio station's presentation studio covers the junction when a live programme ends early.",
+     "An announcer in continuity reads a schedule change and hands to a network newscast."
+    ]
+   },
+   "sources": ["EBU Tech 3401 Guidelines for Radio Production and Distribution", "Ballou, Handbook for Sound Engineers (broadcast facilities and operations)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b03f7f34-e906-4033-8e9a-1b3a37bcc9cb",
+   "term": "Contribution feed",
+   "fields": {
+    "definition": "A high-quality audio feed sent from a remote site, such as an outside broadcast, studio, or event venue, into the broadcaster's production centre for use in making a programme, as opposed to a distribution feed carrying finished programming out to the audience; contribution links use higher quality and lighter compression than distribution because the material may still be mixed and processed.",
+    "plain_english": "It is the feed that comes from an event or a remote studio back to the station to help build a show. It is kept at higher sound quality than the feed sent out to listeners, because it still has to be mixed.",
+    "purpose_function": "It brings remote sources into the production chain at a quality high enough to survive further mixing and processing, keeping the path into the broadcaster distinct from the distribution path out to the audience.",
+    "practical_application": "An engineer at an outside broadcast sends the mixed event audio as a contribution feed over a codec or IP link, following EBU N/ACIP practice, to the studio, which folds it into the network programme.",
+    "category": "Program feeds",
+    "related_terms": ["Commentary feed", "Distribution feed", "Concert broadcast mix", "Outside broadcast", "Crowd microphone pair"],
+    "common_mistakes": [
+     "Confusing contribution, which goes into the broadcaster, with distribution, which goes out to the audience, and using an over-compressed distribution-grade codec for source material.",
+     "Under-provisioning the link so the contribution feed drops or glitches during the event.",
+     "Sending only a finished mix when the studio needs split feeds, such as clean effects plus commentary, for flexibility."
+    ],
+    "scenario_contexts": [
+     "An OB truck sends a match's audio as a contribution feed to the network studio.",
+     "A remote reporter's studio feeds a contribution circuit into the main newsroom.",
+     "A concert venue sends a contribution feed over IP to a broadcaster for live transmission."
+    ]
+   },
+   "sources": ["EBU Tech 3401 Guidelines for Radio Production and Distribution", "EBU Tech 3329 (N/ACIP) A Tutorial on Audio Contribution over IP"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f0b2b2e3-5421-4951-a3b3-eed57cf8f219",
+   "term": "Crowd microphone pair",
+   "fields": {
+    "definition": "A stereo pair of microphones aimed at the audience or spectators to capture crowd reaction and venue atmosphere for the broadcast mix; small-diaphragm condensers in a coincident or near-coincident array such as X/Y or ORTF are typically used so the atmosphere has a stable stereo image and good separation from the commentary and effects channels.",
+    "plain_english": "It is a matched pair of mics pointed at the crowd to pick up their cheers and the atmosphere of the venue. Using a stereo pair makes the crowd sound spread naturally left and right instead of coming from one spot.",
+    "purpose_function": "It captures the live energy of the audience in stereo so the broadcast mix feels like being there, while a proper pattern keeps the crowd from smearing into the commentary and effects.",
+    "practical_application": "A broadcast sound crew rigs crowd pairs facing the stands, mixes them under the commentary and effects, and rides them up on big reactions such as goals or applause.",
+    "category": "Microphone technique",
+    "related_terms": ["Commentary feed", "Concert broadcast mix", "Contribution feed", "Ambience microphone", "Effects microphone"],
+    "common_mistakes": [
+     "Placing the pair too close to one section or a PA speaker, so the crowd sounds lopsided or full of announcements and music.",
+     "Collapsing a spaced or wide pair to mono for the mix and getting comb-filtering and phase problems.",
+     "Pushing crowd level so high it masks the commentary and leaves audible gaps when the commentator's mic closes."
+    ],
+    "scenario_contexts": [
+     "Stereo crowd pairs on the stands of a football stadium for a live broadcast.",
+     "Audience ambience pairs at a concert feeding the broadcast mix.",
+     "Crowd mics either side of an arena capturing reaction for a televised event."
+    ]
+   },
+   "sources": ["Schoeps / H. Wittek, 'Microphone Usage for Sports Broadcasting' technical paper", "Calrec 'Audio for HD & 3D - UEFA Champions League Final' application note"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

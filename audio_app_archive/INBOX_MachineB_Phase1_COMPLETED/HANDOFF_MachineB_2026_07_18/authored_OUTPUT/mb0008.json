@@ -1,0 +1,312 @@
+{
+ "batch": 8,
+ "topic": "Instrument Recording — Strings & Guitar",
+ "authored": [
+  {
+   "id": "ee42e329-58e0-45dd-8f30-ef9db725b803",
+   "term": "Mute bleed",
+   "fields": {
+    "definition": "Unwanted residual sound that remains audible even though a source or channel has been muted, for example a damped or muted note still leaking into other open microphones, or a console/DAW mute that does not fully attenuate the signal.",
+    "plain_english": "Sound you still hear even after something has been muted. It sneaks through because the mute is not complete, or because it leaks into a nearby mic.",
+    "purpose_function": "The term names a common capture and mixing fault so engineers can track down why a supposedly silenced part is still audible and fix the routing, gating, or mic setup.",
+    "practical_application": "When a palm-muted guitar or a muted string still shows up in the drum or room mics, an engineer improves isolation, repositions mics, or gates the offending channel to stop the bleed.",
+    "category": "Signal isolation",
+    "related_terms": [
+     "Bleed control",
+     "Palm muting",
+     "Onboard speaker bleed",
+     "Open string",
+     "Body knock"
+    ],
+    "common_mistakes": [
+     "Assuming a channel mute removes a sound that is actually leaking into other open mics",
+     "Relying on a noise gate to hide mute bleed instead of improving isolation at the source",
+     "Confusing intentional palm-mute tone with unwanted mute bleed"
+    ],
+    "scenario_contexts": [
+     "Tracking a full band live, where a muted guitar amp still bleeds into the drum overheads",
+     "Editing a multitrack and hearing a muted section still faintly present",
+     "Setting up mic screens or isolation to reduce bleed from a damped instrument"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bc25bf66-1a64-4ff8-9667-c0c6ce6afa4a",
+   "term": "Neck-body joint",
+   "fields": {
+    "definition": "The structural junction where a stringed instrument's neck attaches to its body, carrying constant string tension and coupling the neck to the body's vibration. Common guitar types are the glued set neck (dovetail or mortise-and-tenon), the bolt-on (screwed) neck, and neck-through construction in which the neck timber runs the full length of the body.",
+    "plain_english": "The place where a guitar's neck meets its body, and how it is fixed on — glued in, bolted on, or running all the way through. This joint influences the guitar's tone, sustain and how easily it can be repaired or adjusted.",
+    "purpose_function": "It anchors the neck against the strings' continuous pull and sets the neck angle that determines string height (action), while its rigidity and mass affect sustain and how vibration transfers between neck and body.",
+    "practical_application": "When close-miking an acoustic or diagnosing high action, buzzes, or a shifting neck angle, a technician inspects the joint area; on electrics, knowing whether a guitar is bolt-on, set, or neck-through guides setup, expected sustain, and repair approach.",
+    "category": "Guitar construction",
+    "related_terms": [
+     "Action",
+     "Neck relief",
+     "Sustain",
+     "Fretboard",
+     "Bridge"
+    ],
+    "common_mistakes": [
+     "Confusing the three joint types (bolt-on, set neck, neck-through) or assuming joint type alone dictates tone",
+     "Assuming a bolt-on neck is always inferior to a glued/set neck",
+     "Ignoring that a loose or shifting neck joint changes neck angle and action rather than treating it as a truss-rod issue"
+    ],
+    "scenario_contexts": [
+     "Recording or setting up an acoustic guitar with action or intonation problems",
+     "Comparing bolt-on vs set-neck electrics for a session",
+     "Repairing a loose or separating neck joint"
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (guitar construction and body/neck coupling)",
+    "The New Grove Dictionary of Musical Instruments (guitar, construction and neck attachment)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "75c63b74-b8b4-4723-9898-4f514080476e",
+   "term": "Nylon-string guitar",
+   "fields": {
+    "definition": "An acoustic guitar strung with nylon or nylon-core (often silver-plated-copper-wound bass) strings rather than steel, the family that includes the classical and flamenco guitar. Compared with a steel-string it uses much lower string tension, a wider flat fingerboard usually without a truss rod, and a lightly fan- or lattice-braced top, giving a warmer, mellower tone.",
+    "plain_english": "The soft-stringed acoustic guitar used for classical and flamenco music. Its nylon strings are gentle on the fingers. They make a warm, round sound. A steel-string acoustic is brighter and louder.",
+    "purpose_function": "The lower tension of nylon strings allows a lightly braced, responsive top and the wide neck suited to fingerstyle classical technique, delivering the mellow tone and fine dynamic nuance that this repertoire demands.",
+    "practical_application": "When recording one, engineers commonly place a small-diaphragm or quality condenser near where the fingerboard meets the body and treat it as a quiet, wide-dynamic-range source needing careful gain and low noise; its setup differs greatly from a steel-string because tension is far lower.",
+    "category": "Guitar type",
+    "related_terms": [
+     "Steel-string guitar",
+     "Fingerstyle",
+     "Condenser microphone",
+     "Soundhole",
+     "Bridge"
+    ],
+    "common_mistakes": [
+     "Fitting steel strings to a guitar built for nylon, whose lighter bracing and bridge can be damaged by the far higher tension",
+     "Expecting a truss-rod adjustment on an instrument that has none",
+     "Miking it as loud as a steel-string and under-gaining the quieter, more dynamic source"
+    ],
+    "scenario_contexts": [
+     "Classical guitar recording session",
+     "Flamenco or Latin fingerstyle tracking",
+     "Solo fingerstyle overdub needing a warm, intimate tone"
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (classical/nylon guitar acoustics and bracing)",
+    "Huber & Runstein, Modern Recording Techniques (acoustic/classical guitar microphone technique)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "85e3bfd6-4fe3-4a55-92c1-6b44e9b287f1",
+   "term": "Onboard speaker bleed",
+   "fields": {
+    "definition": "Leakage from a device's built-in (onboard) loudspeaker, such as a combo amplifier, keyboard, or practice amp with an integrated speaker, into microphones capturing other sources on a session. It is a specific form of mic bleed caused by the source monitoring itself through its own speaker.",
+    "plain_english": "When a mic picks up sound coming from a speaker built into an instrument or amp nearby. That built-in speaker leaks into recordings of other things in the room.",
+    "purpose_function": "The term pinpoints the source of unwanted leakage so an engineer can isolate or reposition the noisy built-in speaker and keep other tracks clean.",
+    "practical_application": "To stop onboard speaker bleed, a tech turns down or mutes the built-in speaker, uses a DI or line out instead, or moves the device out of the live room.",
+    "category": "Signal isolation",
+    "related_terms": [
+     "Bleed control",
+     "Mute bleed",
+     "Direct guitar track",
+     "Re-amping",
+     "Speaker cabinet isolation"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Draping blankets over a tube amp's vents or built-in speaker to block bleed, which traps heat and creates a fire and burn hazard",
+     "Forgetting a keyboard's onboard speaker is on and letting it leak into vocal mics",
+     "Assuming a DI signal is bleed-free while the instrument's own speaker still feeds the room"
+    ],
+    "scenario_contexts": [
+     "Recording vocals while a guitarist's combo amp speaker leaks into the vocal mic",
+     "Capturing a DI keyboard part while its onboard speaker bleeds into room mics",
+     "Isolating an amp in a separate room to remove its speaker bleed from drum mics"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c7cf81fe-c6f9-497b-844c-a1c21d14aa55",
+   "term": "Open bell",
+   "fields": {
+    "definition": "On a brass instrument, the natural unmuted and unstopped state of the bell — no mute inserted and, on the horn, the hand not stopping the bell — sounding the instrument's full, open tone. In notation the marking 'open' (often 'o') cancels a preceding muted or hand-stopped passage.",
+    "plain_english": "A brass instrument played normally, with nothing pushed into or covering the bell. It is the opposite of using a mute or, on French horn, hand-stopping the bell.",
+    "purpose_function": "The open bell gives the instrument its full, unaltered projection and timbre and acts as the default reference sound against which muted or stopped tone colours are contrasted.",
+    "practical_application": "When miking brass, an engineer aims near the open bell (often slightly off-axis to tame harshness) and must re-check level and tone whenever a player switches between open and muted passages, since output and directivity change.",
+    "category": "Brass technique",
+    "related_terms": [
+     "Mute",
+     "Stopped horn",
+     "Bell",
+     "Off-axis",
+     "Directivity"
+    ],
+    "common_mistakes": [
+     "Confusing 'open' (unmuted/unstopped) with 'bells up' (raising the bell for projection)",
+     "Forgetting that a mute-to-open change alters level and tone at the mic and needs a gain/EQ check",
+     "Miking straight into a bright open bell and capturing a harsh, edgy tone"
+    ],
+    "scenario_contexts": [
+     "Recording a brass section that alternates open and muted phrases",
+     "Horn passages moving between open and stopped notes",
+     "Setting mic distance and angle on a bright solo trumpet"
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration (brass: open vs muted/stopped, notation)",
+    "Piston, Orchestration (brass mutes and open tone)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e841b7a7-22c7-41ae-8888-436697fc3429",
+   "term": "Open string",
+   "fields": {
+    "definition": "A string sounded at its full vibrating length with no finger stopping it on the fingerboard, so it produces the pitch to which that string is tuned. On a standard-tuned guitar these are E-A-D-G-B-E; on the violin family they are the four tuned strings.",
+    "plain_english": "A string you play without pressing it down anywhere, so it rings at its natural full-length pitch. On a normal guitar those open notes are E, A, D, G, B and E.",
+    "purpose_function": "Open strings give fixed tuning-reference pitches, offer the longest, most resonant sustain, and enable techniques (drones, open-position chords, natural harmonics) unavailable on stopped notes, with a brighter timbre than a fretted note of the same pitch.",
+    "practical_application": "Players and engineers use open strings as tuning and intonation references, weigh their brighter, longer-sustaining tone when balancing a recorded part, and mute unwanted open-string ringing (sympathetic resonance) that can muddy a take.",
+    "category": "String technique",
+    "related_terms": [
+     "Fretting",
+     "Harmonics",
+     "Intonation",
+     "Tuning",
+     "Capo"
+    ],
+    "common_mistakes": [
+     "Assuming an open string and a fretted note of the same pitch have identical timbre and sustain",
+     "Letting open strings ring sympathetically and blur a recorded part",
+     "Confusing an open string with a natural harmonic played on that string"
+    ],
+    "scenario_contexts": [
+     "Tuning and checking intonation before a take",
+     "Playing open-position chords or a droning open-string part",
+     "Muting sympathetically ringing open strings during recording"
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration (strings: open strings, tuning, and timbre)",
+    "Piston, Orchestration (open strings vs stopped notes)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "090c023d-bb35-408d-a028-75ff4d60d7e9",
+   "term": "Open-back banjo",
+   "fields": {
+    "definition": "A banjo whose drum-like body (pot) has no resonator plate closing the back, leaving the rear of the head open. This gives a softer, warmer, more mellow tone with less volume and forward projection than a resonator banjo, and it is the type favoured in clawhammer and old-time playing.",
+    "plain_english": "A banjo with an open back — no cover plate behind the drum head. It sounds softer and mellower and is quieter than the closed-back 'resonator' banjos used in bluegrass.",
+    "purpose_function": "Leaving the back open lets sound radiate rearward and be partly absorbed by the player's body, reducing projection and producing the gentler, plunkier tone suited to old-time and clawhammer styles.",
+    "practical_application": "Because it is quieter and radiates from both front and back, an engineer mics it closer and mainly toward the front of the pot while watching for room bleed; a player's open-back-vs-resonator choice is a tone-and-volume decision the tech should anticipate.",
+    "category": "String instrument",
+    "related_terms": [
+     "Banjo",
+     "Resonator",
+     "Drumhead",
+     "Bridge",
+     "Clawhammer"
+    ],
+    "common_mistakes": [
+     "Treating open-back as a lower-quality or beginner instrument rather than a tonal choice",
+     "Expecting bluegrass-level volume and projection from it",
+     "Miking only the front and missing that it also radiates from the open rear"
+    ],
+    "scenario_contexts": [
+     "Recording old-time or clawhammer banjo",
+     "Folk sessions wanting a soft, warm banjo tone",
+     "Choosing open-back vs resonator for a bluegrass vs old-time part"
+    ]
+   },
+   "sources": [
+    "The New Grove Dictionary of Musical Instruments (banjo: open-back vs resonator construction and tone)",
+    "Fletcher & Rossing, The Physics of Musical Instruments (banjo membrane/pot acoustics)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ca33765b-2d16-499d-890b-72bdc19b0ab7",
+   "term": "Overblowing",
+   "fields": {
+    "definition": "On a wind instrument, forcing the air column to vibrate at a higher normal mode (harmonic) than its fundamental by raising blowing pressure and air speed and adjusting the embouchure, usually aided on woodwinds by opening a register or octave vent, so the same fingering sounds a note in a higher register. Conical-bore and open cylindrical instruments overblow at the octave (2nd mode), while stopped cylindrical instruments such as the clarinet overblow at the twelfth (3rd mode).",
+    "plain_english": "Blowing harder, and often pressing a register key, so a wind instrument jumps to a higher note. Most instruments jump up one octave. The clarinet jumps a twelfth because of how it is built.",
+    "purpose_function": "Overblowing extends a wind instrument's playable range well beyond its lowest register by reusing fingerings at higher harmonics, and register keys/vents exist specifically to make these mode jumps speak cleanly and reliably.",
+    "practical_application": "Players and engineers expect timbre and dynamics to shift across register breaks; overblown upper-register notes are often brighter or edgier and may call for adjusted mic placement or gain, and an unintended squeak is essentially an accidental overblow.",
+    "category": "Wind technique",
+    "related_terms": [
+     "Harmonics",
+     "Register key",
+     "Embouchure",
+     "Fundamental frequency",
+     "Partials"
+    ],
+    "common_mistakes": [
+     "Assuming every wind instrument overblows at the octave, when the clarinet overblows a twelfth",
+     "Confusing intentional overblowing with an accidental squeak",
+     "Expecting timbre to stay uniform across the register break"
+    ],
+    "scenario_contexts": [
+     "Playing or recording the upper register of a flute or saxophone",
+     "Negotiating the clarinet's register break in a take",
+     "Adjusting mic or gain for brighter overblown notes"
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments (wind-instrument modes; octave vs twelfth overblowing)",
+    "Benade, Fundamentals of Musical Acoustics (register changes and overblowing in cylindrical vs conical bores)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e0f5d73e-dcb6-4480-99fb-1e1f5c2afea6",
+   "term": "Palm muting",
+   "fields": {
+    "definition": "A guitar technique in which the picking-hand palm rests lightly on the strings just ahead of the bridge/saddle while picking, damping the strings to shorten their sustain and produce a tight, muffled, percussive tone. Widely used in rock and metal rhythm playing, it is usually marked 'P.M.' in notation and tab.",
+    "plain_english": "Resting the side of your picking hand on the strings right by the bridge as you play, so the notes come out short, chunky and muted instead of ringing out. It's the classic 'chugging' rock and metal rhythm sound.",
+    "purpose_function": "By damping the strings near the bridge the player controls sustain and tone — tightening the low end, adding percussive attack, and creating dynamic contrast against open, ringing passages.",
+    "practical_application": "It is central to tight electric rhythm tones; engineers find palm-muted parts have controlled sustain and strong transient and low-mid energy, which affects gain staging, compression, and how much of the amp's low end needs taming.",
+    "category": "Guitar technique",
+    "related_terms": [
+     "Damping",
+     "Bridge",
+     "Sustain",
+     "Distortion",
+     "Rhythm guitar"
+    ],
+    "common_mistakes": [
+     "Resting the palm too far from the bridge, choking the note into a dull thud",
+     "Uneven palm pressure making notes speak inconsistently",
+     "Confusing picking-hand palm muting with fretting-hand (left-hand) muting"
+    ],
+    "scenario_contexts": [
+     "Tracking tight metal or rock rhythm guitar",
+     "Funk or pop muted-strum parts",
+     "Adding dynamic contrast between muted and open sections of an arrangement"
+    ]
+   },
+   "sources": [
+    "Denyer, The Guitar Handbook (right-hand damping / palm muting technique)",
+    "Fletcher & Rossing, The Physics of Musical Instruments (string damping and decay)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

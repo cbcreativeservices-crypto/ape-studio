@@ -1,0 +1,310 @@
+{
+ "batch": 93,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "3549d563-6dac-4473-bf64-dd44a523bce2",
+   "term": "Control-voltage routing (Reason)",
+   "fields": {
+    "definition": "In Reason Studios' Reason software, control-voltage (CV) routing is the practice of connecting the CV and Gate mini-jacks on the back of virtual rack devices so one device can modulate or trigger a parameter on another. CV cables carry a changing control value rather than audio, Gate signals switch on and off to trigger notes and envelopes, and a trim knob at each CV input scales how strongly the incoming signal affects its target.",
+    "plain_english": "In the music app Reason, you can flip the gear rack around and run thin cables between devices. These cables do not carry sound. Instead they send a control signal, so one device can move a knob or trigger a note on another. It works like the patch cables on an old modular synth.",
+    "purpose_function": "It lets devices modulate and trigger each other, so a technician can build custom modulation and sequencing chains that go beyond fixed presets, much as hardware modular synths are patched.",
+    "practical_application": "A producer patches an LFO or Matrix sequencer's CV output to a synth's filter cutoff or pitch input, then uses the trim knob to set how much modulation is applied.",
+    "category": "Signal Routing",
+    "related_terms": [
+     "Gate signal",
+     "Modulation",
+     "LFO",
+     "Envelope",
+     "Step sequencer"
+    ],
+    "common_mistakes": [
+     "Confusing CV and Gate cables with audio cables and expecting to hear sound through them.",
+     "Leaving the CV trim knob fully down, so the routed modulation has no audible effect.",
+     "Forgetting that CV routing is separate from MIDI note data, so notes and modulation must be patched independently."
+    ],
+    "scenario_contexts": [
+     "Patching a Matrix pattern sequencer's Gate and Note CV to a synth to drive a melodic line.",
+     "Routing an LFO's CV output to a filter cutoff for slow, evolving movement.",
+     "Using an envelope follower's CV so one instrument's dynamics control a parameter on another device."
+    ]
+   },
+   "sources": [
+    "Reason Studios, Reason operation manual / documentation (Routing Audio and CV)",
+    "Sound on Sound, Reason techniques articles (Modular I/O in Reason)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "76aff3e6-7b5b-4225-af18-d22783168198",
+   "term": "Coverage shadow",
+   "fields": {
+    "definition": "A coverage shadow is an area within a listening space that receives little or no direct sound from a loudspeaker because it falls outside the loudspeaker's coverage pattern or is blocked by an obstruction, leaving that area dependent on lower-level, often lower-frequency, diffracted or reflected sound.",
+    "plain_english": "A coverage shadow is a spot where a speaker's sound does not really reach. It happens when the spot sits outside the speaker's aiming pattern, or when something big blocks the path. It is like standing where a spotlight cannot land, so you only get weak, indirect sound.",
+    "purpose_function": "Spotting coverage shadows matters because they mark seats or zones where the audience hears reduced level and clarity, so a designer can re-aim or add loudspeakers to fill them.",
+    "practical_application": "During system design or tuning, a technician predicts and measures coverage shadows behind balconies, pillars, or under-balcony seating, then adds fill loudspeakers or re-aims boxes to cover them.",
+    "category": "System Design",
+    "related_terms": [
+     "Coverage angle",
+     "Dispersion pattern",
+     "Fill loudspeaker",
+     "Acoustic shadow",
+     "SPL"
+    ],
+    "common_mistakes": [
+     "Assuming a single main loudspeaker covers the whole room and ignoring shadowed under-balcony seats.",
+     "Confusing a coverage shadow with a dead spot caused only by comb filtering.",
+     "Aiming the loudspeakers at the front rows and leaving the back or far sides in shadow."
+    ],
+    "scenario_contexts": [
+     "Under-balcony seats hearing muffled sound because the mains do not reach them.",
+     "A structural pillar casting a shadow across a block of seats.",
+     "Wide rooms where far-side seats fall outside the mains' horizontal coverage."
+    ]
+   },
+   "sources": [
+    "Bob McCarthy, Sound Systems: Design and Optimization",
+    "Encyclopaedia Britannica / Acoustical Society of America references on acoustical shadow (diffraction)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d91ce5f4-8292-4fcd-b2a0-f06ff8b48bc4",
+   "term": "Crash sample",
+   "fields": {
+    "definition": "A crash sample is a digital audio recording of a crash cymbal strike, stored as a one-shot sample for playback from a sampler, drum machine, or virtual instrument. It is triggered as a single hit and typically captures the full decay of the cymbal.",
+    "plain_english": "A crash sample is a recorded hit of a crash cymbal saved as a sound file. You load it into a drum program and press a pad or key to play it back. It is like taking a photo of one cymbal crash so you can reuse that exact sound.",
+    "purpose_function": "It gives a producer a consistent, ready-made cymbal sound to place in programmed drum parts without recording a live kit, so cymbal hits can be triggered on demand in electronic and hybrid productions.",
+    "practical_application": "A producer drops a crash sample on a downbeat or section change, then tunes, trims, or fades its long decay to fit the arrangement.",
+    "category": "Sampling",
+    "related_terms": [
+     "One-shot",
+     "Sampler",
+     "Drum machine",
+     "Velocity layer",
+     "Decay"
+    ],
+    "common_mistakes": [
+     "Letting the long crash decay clash with the next section instead of trimming or fading it.",
+     "Layering many crash samples so their combined level overpowers the mix.",
+     "Using a single fixed hit with no velocity variation, so repeated crashes sound machine-like."
+    ],
+    "scenario_contexts": [
+     "Adding a crash on the first beat of a new chorus in a programmed beat.",
+     "Reinforcing a live-recorded cymbal with a crash sample for extra weight.",
+     "Building an electronic drum kit in a sampler from individual cymbal samples."
+    ]
+   },
+   "sources": [
+    "David Miles Huber & Robert Runstein, Modern Recording Techniques (sampling)",
+    "Native Instruments, Battery / Kontakt operation manual (one-shot sample playback)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7bec3ce6-53e3-4b65-b5ec-f49e8c8f269f",
+   "term": "Creative acceptance test",
+   "sources": [
+    "ISTQB Glossary / ISO/IEC/IEEE 29119 — acceptance testing (evaluation against agreed requirements before acceptance)",
+    "Glen Ballou (ed.), Handbook for Sound Engineers — mix approval and delivery workflow"
+   ],
+   "confidence": "Medium",
+   "flags": [],
+   "fields": {
+    "definition": "A review step in which a deliverable is evaluated against the agreed creative brief or artistic intent—rather than only its technical specifications—to decide whether the client or creative lead accepts it as meeting the intended sound and feel.",
+    "plain_english": "It is a check to see if a mix actually sounds the way the client asked for, not just whether it meets the tech rules. It is the 'does this feel right?' sign-off.",
+    "purpose_function": "It confirms that subjective, artistic requirements are satisfied before final acceptance, catching mismatches between what was delivered and the creative vision.",
+    "practical_application": "A mixer plays the near-final mix for the artist or director against the brief, and only moves to delivery once the creative stakeholders sign off.",
+    "category": "Quality Control",
+    "related_terms": [
+     "Creative checklist",
+     "Delivery certification",
+     "Broadcast compliance verification",
+     "Delivery master"
+    ],
+    "common_mistakes": [
+     "Confusing creative acceptance (artistic approval) with technical compliance checks like loudness or clipping",
+     "Skipping written sign-off, so later disputes arise over whether the mix met the brief",
+     "Judging against the engineer's taste instead of the client's stated creative goals"
+    ],
+    "scenario_contexts": [
+     "Playing a mix for a director to confirm it matches the emotional intent of a scene",
+     "Getting artist approval on a mix's vibe before mastering",
+     "Reviewing a jingle against the ad agency's creative brief before final delivery"
+    ]
+   }
+  },
+  {
+   "id": "fbf0dee9-1559-4fd2-aa70-2bbea73fb89b",
+   "term": "Creative checklist",
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook — the mix critique and evaluating a finished mix",
+    "Glen Ballou (ed.), Handbook for Sound Engineers — mixing workflow and review"
+   ],
+   "confidence": "Medium",
+   "flags": [],
+   "fields": {
+    "definition": "A predefined list of creative or artistic tasks and decisions to review before a mix is considered complete—covering elements such as arrangement balance, effects, and automation, and adherence to the creative brief—used to ensure nothing is overlooked.",
+    "plain_english": "It is a to-do list of artistic things to check before you call a mix finished, like 'are the vocals loud enough?' It helps make sure you did not forget anything.",
+    "purpose_function": "It standardizes the final creative review so recurring artistic details are checked consistently, reducing missed elements from project to project.",
+    "practical_application": "Before printing a mix, an engineer runs through a creative checklist confirming vocal level, effect returns, automation moves, and brief requirements are handled.",
+    "category": "Quality Control",
+    "related_terms": [
+     "Creative acceptance test",
+     "Delivery certification",
+     "Bus validation",
+     "Clipping validation"
+    ],
+    "common_mistakes": [
+     "Treating the checklist as a substitute for critical listening rather than a support for it",
+     "Mixing technical delivery items (formats, loudness) with creative items and losing focus on either",
+     "Reusing a generic checklist without adapting it to the project's specific brief"
+    ],
+    "scenario_contexts": [
+     "Running a final creative pass before bouncing a song",
+     "Onboarding an assistant with the studio's standard creative checklist",
+     "Ensuring each track on an album meets the same set of creative goals"
+    ]
+   }
+  },
+  {
+   "id": "f90739ad-ab09-440d-acc9-59afe78fe8f5",
+   "term": "Crest-factor preservation",
+   "fields": {
+    "definition": "Crest-factor preservation is the practice of maintaining a signal's crest factor — the ratio between its peak level and its RMS (average) level, expressed in dB — while processing, so that transient peaks are not excessively flattened relative to the average level. It is a goal when applying compression, limiting, or loudness normalization to keep natural dynamics and transient impact intact.",
+    "plain_english": "Crest factor is the gap between a sound's loudest peaks and its average level. Preserving it means you keep that gap instead of squashing the peaks flat. It is like keeping the tall spikes in a graph instead of flattening them, so drums still hit hard.",
+    "purpose_function": "Preserving crest factor keeps transients punchy and the audio sounding dynamic and natural, so engineers weigh it against the loudness they gain when compressing or limiting.",
+    "practical_application": "When mastering, an engineer watches a crest-factor or dynamics meter and eases off limiting when peaks are being crushed too far, trading a little loudness to protect transient impact.",
+    "category": "Dynamics & Mastering",
+    "related_terms": [
+     "Crest factor",
+     "RMS",
+     "Peak level",
+     "Limiting",
+     "Dynamic range"
+    ],
+    "common_mistakes": [
+     "Pushing a limiter for maximum loudness until transients are flattened and the mix sounds lifeless.",
+     "Reading only peak meters and ignoring how far the RMS level has been raised.",
+     "Assuming louder always sounds better, when a healthy crest factor often sounds punchier."
+    ],
+    "scenario_contexts": [
+     "Mastering a drum-heavy track where keeping transient snap matters.",
+     "Meeting a streaming loudness target without over-limiting the dynamics.",
+     "Comparing two masters to hear how much punch was lost to heavy limiting."
+    ]
+   },
+   "sources": [
+    "Glen Ballou (ed.), Handbook for Sound Engineers (levels, crest factor, dynamics)",
+    "AES literature on loudness, dynamic range and crest factor"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "91609764-dd59-4b6a-b4c9-fcee6ca228a8",
+   "term": "Crossfader assignment",
+   "fields": {
+    "definition": "Crossfader assignment is the routing setting on a DJ mixer that selects which side of the crossfader — typically labeled A or B, or 'thru'/off — controls a given channel. Assigning a channel to a crossfader side lets that channel be faded in or out with the crossfader, while 'thru' removes the channel from crossfader control so its level follows only its own channel fader.",
+    "plain_english": "On a DJ mixer, the crossfader is the slider that blends between two sides. Crossfader assignment picks which side each channel belongs to: A, B, or none. If you set a channel to none, the crossfader stops controlling it and only its own volume fader does.",
+    "purpose_function": "It lets a DJ choose which decks the crossfader blends between and which channels stay independent, so scratching, cutting, and blending affect only the intended sources.",
+    "practical_application": "A scratch DJ assigns one turntable to side A and the other deck to side B, and sets a microphone or effects channel to 'thru' so the crossfader cannot mute it.",
+    "category": "DJ Mixing",
+    "related_terms": [
+     "Crossfader",
+     "Crossfader curve",
+     "Channel fader",
+     "Cut-in point",
+     "Deck"
+    ],
+    "common_mistakes": [
+     "Leaving a channel assigned to one crossfader side and wondering why it is silent when the fader sits on the opposite side.",
+     "Assigning a microphone or effects return to the crossfader so it cuts out during blends.",
+     "Forgetting to set a channel to 'thru' when it should always stay audible."
+    ],
+    "scenario_contexts": [
+     "Setting up a battle mixer so both turntables sit on opposite crossfader sides for scratching.",
+     "Routing a microphone channel to 'thru' so announcements are not cut by the crossfader.",
+     "Assigning decks so a smooth club blend happens across the crossfader."
+    ]
+   },
+   "sources": [
+    "Rane, DJ mixer technical support documentation (crossfader routing and 'thru')",
+    "Rane Note 146, Evolution of the DJ Crossfader"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dcab0751-8e6e-4e38-82ee-0a570de998d2",
+   "term": "Crossfader curve",
+   "fields": {
+    "definition": "The crossfader curve (also called the crossfader contour or taper) is the setting that defines how a DJ mixer's channel levels change across the travel of the crossfader. A gentle, constant-power curve fades sources gradually for smooth blends, while a sharp curve makes each side reach full level almost immediately near the edge of travel for fast cuts and scratching.",
+    "plain_english": "The crossfader curve sets how quickly the sound comes in as you move the slider. A smooth curve fades slowly for gentle blends. A sharp curve turns the sound full-on almost as soon as you nudge the slider, which is what scratch DJs use to cut fast.",
+    "purpose_function": "It lets a DJ match the crossfader's response to the task, giving slow, even fades for mixing and instant on/off action for cutting and scratching.",
+    "practical_application": "A DJ sets a smooth curve to beatmatch and blend two tracks, then switches to a sharp curve to perform cuts and scratches where the sound must snap on at the edge of travel.",
+    "category": "DJ Mixing",
+    "related_terms": [
+     "Crossfader",
+     "Crossfader assignment",
+     "Constant-power fade",
+     "Scratching",
+     "Fader curve"
+    ],
+    "common_mistakes": [
+     "Trying to scratch with a smooth curve, so cuts sound slow and mushy.",
+     "Using a very sharp curve for blends, causing abrupt jumps in level.",
+     "Confusing the crossfader curve with the separate channel fader curve."
+    ],
+    "scenario_contexts": [
+     "Setting a sharp curve for a scratch routine.",
+     "Choosing a constant-power curve for long, smooth club blends.",
+     "Adjusting the contour knob to fine-tune how quickly a track cuts in near the edge."
+    ]
+   },
+   "sources": [
+    "Rane Note 146, Evolution of the DJ Crossfader",
+    "Rane, DJ mixer technical support documentation (crossfader contour/curve)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b32b373e-124d-46db-b90d-e0d11116cd9d",
+   "term": "Crowd noise floor",
+   "fields": {
+    "definition": "The crowd noise floor is the background sound-pressure level produced by an audience — talking, movement, and applause between numbers — that sets the minimum ambient level a sound system must overcome for program material to be clearly heard. It effectively raises the room's noise floor during a show and rises with crowd size and energy.",
+    "plain_english": "The crowd noise floor is the steady background noise a crowd makes: talking, clapping, and moving around. The music has to be louder than this for people to hear it clearly. It is like trying to talk to a friend in a busy cafe. The bigger and louder the crowd, the louder you must be.",
+    "purpose_function": "Knowing the crowd noise floor helps an engineer set a level and headroom that keep vocals and detail intelligible above the audience instead of being masked by it.",
+    "practical_application": "An engineer notices that a full, loud room raises the ambient level and nudges up overall level or vocal presence so lyrics stay intelligible above the crowd.",
+    "category": "Live Sound",
+    "related_terms": [
+     "Noise floor",
+     "Signal-to-noise ratio",
+     "Headroom",
+     "Intelligibility",
+     "SPL"
+    ],
+    "common_mistakes": [
+     "Setting levels at soundcheck in an empty room and being caught out when the full crowd raises the ambient level.",
+     "Confusing the crowd noise floor with the electronic noise floor of the system itself.",
+     "UNSAFE: chasing intelligibility over a loud crowd by pushing SPL to hearing-damaging levels instead of improving mix clarity."
+    ],
+    "scenario_contexts": [
+     "A packed club where between-song chatter masks quiet intros.",
+     "A sports venue where crowd roar sets how loud announcements must be.",
+     "Nudging vocal level up once a venue fills and the ambient noise rises."
+    ]
+   },
+   "sources": [
+    "Glen Ballou (ed.), Handbook for Sound Engineers (noise floor, signal-to-noise, intelligibility)",
+    "Yamaha Sound Reinforcement Handbook (system levels, ambient noise, headroom)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

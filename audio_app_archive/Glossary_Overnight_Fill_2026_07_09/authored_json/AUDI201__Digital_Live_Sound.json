@@ -1,0 +1,87 @@
+{
+  "course": "AUDI201",
+  "topic": "Digital Live Sound",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "78d3c31f-5b58-42f6-ba9c-9d11f74838aa",
+      "term": "Digital Snake",
+      "fields": {
+        "plain_english": "Instead of a thick, heavy cable with dozens of separate wires, one thin network cable carries all the stage's audio to the mixer as digital data.",
+        "purpose_function": "It replaces bulky multicore analog copper with a lightweight Cat5e/Cat6 or fiber link so many channels of audio can travel long distances with less weight, less signal loss, and less setup labor. It exists to move high channel counts between stage and mix position efficiently and reliably.",
+        "practical_application": "A tech plugs mics and DIs into a stage rack on stage, runs a single Ethernet or fiber line to the console at front of house, and gets all inputs and returns without pulling a heavy analog snake.",
+        "category": "Digital Console Systems",
+        "related_terms": ["Stagebox", "Dante", "MADI", "Remote Head Amp", "Expansion Card", "Digital Console"],
+        "common_mistakes": ["Assuming any Ethernet cable works: unshielded or damaged patch cables and non-locking connectors cause dropouts, so use shielded, ruggedized locking (etherCON) cable rated for the network in use", "Confusing the audio transport (Dante, AVB, MADI) with the physical cable, and assuming snakes from different systems interoperate", "Forgetting the copper distance limit (about 100 m per Ethernet hop) and needing fiber or a switch for longer runs", "Running a single cable with no backup and having no redundant path for a critical show"],
+        "scenario_contexts": ["Touring band setup where a fiber or Cat line replaces a 150-foot analog multicore between stage and FOH", "A house of worship permanently installing a stage rack feeding a Dante network to the booth", "Festival changeovers where two consoles share one stage rack over the same digital link", "Corporate AV event where a lightweight snake speeds load-in and reduces cable weight"]
+      },
+      "sources": ["Audinate/Harman, Dante Digital Snake Application Guide", "Sound on Sound, 'Can I send mic signals over Cat5 cable for live sound?'", "Front of House Magazine, Cat5 Digital Snake Stage Boxes buyers guide"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "3ec971d2-a2cd-406c-a62a-6fe77462df2b",
+      "term": "Expansion Card",
+      "fields": {
+        "plain_english": "A plug-in card that slots into the back of a digital mixer to give it extra ways to send and receive audio, like adding a new port to a computer.",
+        "purpose_function": "It lets one console support different audio networking and I/O formats (Dante, MADI, Waves SoundGrid, analog, and others) by populating a manufacturer option slot, so the same desk can adapt to different venues and systems without being replaced.",
+        "practical_application": "A tech fits a Dante or MADI card into the console's option slot to connect it to a stage rack, a broadcast truck, or a recording rig, then patches the added channels in the console's routing.",
+        "category": "Digital Console Systems",
+        "related_terms": ["Digital Console", "Dante", "MADI", "Digital Snake", "Remote Head Amp", "Offline Editor"],
+        "common_mistakes": ["Buying a card in the wrong physical or electrical format for the console's slot (for example a DiGiCo DMI card versus a Yamaha mini-YGDAI card are not interchangeable)", "Assuming the card automatically routes audio: channels still have to be patched and, for networked cards, configured in the network controller software", "Overlooking sample-rate and channel-count limits (many cards do 64x64 at 48 kHz but half that or different behavior at 96 kHz)", "Hot-swapping a card with the console powered when the manufacturer requires power-down, risking damage"],
+        "scenario_contexts": ["Adding a Dante card so a console can join a venue's existing audio network", "Fitting a MADI card to feed a multitrack recorder or broadcast split", "Installing a Waves SoundGrid card to run plugin processing on the live desk", "Upgrading a rental console's connectivity to match a client's stage rack format"]
+      },
+      "sources": ["DiGiCo, DMI Cards product documentation (digico.biz)", "ProSoundWeb, 'Recent Digital Console Interconnect & Routing Options'", "DiGiCo SD12 console documentation (dual DMI slot specification)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "587893cb-d031-44e1-886b-c31bd83bae7d",
+      "term": "Gain Compensation",
+      "fields": {
+        "plain_english": "When two mixers share the same stage preamps, this feature automatically undoes level jumps on your desk when the other engineer changes the shared gain, so your mix stays put.",
+        "purpose_function": "It exists to solve the shared-preamp problem in a FOH/monitor split: when one console owns the analog preamp gain, the other desk's channel level would shift every time that gain moves, so gain compensation applies an equal, opposite digital trim to hold the receiving console's level constant.",
+        "practical_application": "On a split show, the monitor engineer sets analog preamp gain on the stage rack while the FOH engineer enables gain compensation (also called gain tracking) so FOH levels do not jump when monitors adjust a preamp mid-set.",
+        "category": "Digital Console Systems",
+        "related_terms": ["Remote Head Amp", "Digital Snake", "Stagebox", "Trim", "Gain Structure", "Digital Console"],
+        "common_mistakes": ["Confusing analog preamp gain with the digital trim that compensation adjusts: only one console truly controls the head amp, the other is trimming after conversion", "Assuming both consoles keep full independent analog gain control; on many systems only the preamp owner has real gain and the other relies on trim/compensation", "Turning compensation on but pushing the analog preamp so hard it clips the converter, which no digital trim can undo", "Enabling it and then wondering why nudging the preamp no longer changes level on the compensated desk"],
+        "scenario_contexts": ["FOH and monitor consoles sharing one stage rack where monitors own the preamps", "A guest engineer's console taking a digital split without disturbing the house desk's levels", "Broadcast plus PA split where the broadcast mixer must stay unaffected by stage gain changes", "Two linked consoles of the same brand set so one controls gain and the other tracks it"]
+      },
+      "sources": ["Front of House Magazine, 'Gain Sharing and Gain Compensation, Explained'", "DiGiCo SD-series gain tracking documentation", "Allen & Heath Digital Community, monitor/FOH split gain compensation guidance"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "c277cc43-d973-497b-bf2c-9ed499684792",
+      "term": "Offline Editor",
+      "fields": {
+        "plain_english": "Free software from the console maker that runs on a laptop so you can build and tweak your whole show file at home, without the actual mixer in front of you.",
+        "purpose_function": "It lets an engineer prepare a show file (channel names, patching, buses, DCAs, mutes, EQ, colors, and processing) away from the desk, so setup time on site is shorter and the console is ready to load the file at soundcheck.",
+        "practical_application": "A tech builds the session on a plane or at home in the manufacturer editor, saves the show file to a USB stick or transfers it over the network, then loads it into the console when they arrive to fine-tune during soundcheck.",
+        "category": "Digital Console Systems",
+        "related_terms": ["Show File", "Scene", "Digital Console", "Virtual Soundcheck", "Expansion Card", "DCA"],
+        "common_mistakes": ["Building a file in an editor version that does not match the console's firmware, so the show file will not load or loads with errors", "Assuming everything transfers: some hardware-dependent or I/O-specific settings still need setting or confirming on the desk", "Forgetting to verify actual input patch and physical I/O once on site, trusting the offline layout blindly", "Not backing up the show file before editing and losing prior work"],
+        "scenario_contexts": ["Prepping channel names, patch, and DCAs for a festival before load-in", "A touring engineer editing tomorrow's file on the tour bus", "Checking and cleaning a guest engineer's show file before it hits the house console", "Teaching or rehearsing console layout on a laptop without hardware access"]
+      },
+      "sources": ["Front of House Magazine, 'Taking Advantage of Offline Console Editors'", "DiGiCo, SD Offline Software documentation (support.digico.biz)", "Allen & Heath, dLive Director offline editor documentation"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "447b5197-feff-4002-9188-a4ff47af7d5b",
+      "term": "Remote Head Amp",
+      "fields": {
+        "plain_english": "The mic preamp lives in the stage box out on stage, but you turn its gain up and down from the mixing console far away, as if it were right in front of you.",
+        "purpose_function": "It exists so that in a digital system the preamp and A/D conversion can sit close to the source on stage (avoiding long analog runs and their noise and loading) while the engineer still adjusts gain, phantom power, and pad from the mix position over the control network.",
+        "practical_application": "A tech sets and rides input gain, +48V phantom, and highpass from the console surface, and the commands travel down the digital link to the stage rack preamp, often adjustable in 1 dB steps.",
+        "category": "Digital Console Systems",
+        "related_terms": ["Stagebox", "Digital Snake", "Gain Compensation", "Phantom Power", "Preamp", "Digital Console"],
+        "common_mistakes": ["Not realizing that in a shared split only one console controls the actual head amp; changing it affects every desk fed by that preamp", "Toggling phantom power remotely on a live channel and popping the PA or damaging a ribbon mic that cannot take +48V", "Assuming remote gain is digital trim: it moves the real analog preamp, so overdriving it clips the converter for everyone", "Losing track of which console owns the preamp on a FOH/monitor split and fighting over gain"],
+        "scenario_contexts": ["FOH engineer setting stage-rack input gain from the console 150 feet away", "Monitor engineer owning preamp control on a split while FOH uses trim", "Recording a live show where preamp settings on the stage rack are recalled with the show file", "Adjusting phantom power for condenser mics remotely during line check"]
+      },
+      "sources": ["Yamaha AD8HR Head Amp Remote-Control documentation", "ProSoundWeb, 'Real World Gear: Remote Control Microphone Preamps'", "Mix Magazine, 'Remote Microphone Preamps'"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

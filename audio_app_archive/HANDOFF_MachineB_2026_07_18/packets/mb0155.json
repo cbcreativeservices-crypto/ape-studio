@@ -1,0 +1,56 @@
+{
+ "batch": 155,
+ "topic": "Creative & Advanced Mix Processing",
+ "terms": [
+  {
+   "id": "5715f143-8a4b-456c-a283-050a4a20efe6",
+   "term": "Vinyl-stop effect",
+   "topic": "Creative & Advanced Mix Processing",
+   "seq": 1150,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "513e6c25-ac92-470f-b30d-6f33b0939362",
+   "term": "Vocal chop",
+   "topic": "Creative & Advanced Mix Processing",
+   "seq": 1150,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

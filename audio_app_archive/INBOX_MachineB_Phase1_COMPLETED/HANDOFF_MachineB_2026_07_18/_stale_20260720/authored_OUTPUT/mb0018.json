@@ -1,0 +1,330 @@
+{
+  "batch": 18,
+  "topic": "Instrument Recording — Keys, Winds & Brass",
+  "authored": [
+    {
+      "id": "9b916df1-ad1f-4e71-a1ee-09dac071182d",
+      "term": "Diatonic harmonica",
+      "fields": {
+        "definition": "A small free-reed wind instrument, typically with ten chambers, each holding a pair of thin metal reeds fixed at one end over a close-fitting slot — one reed sounded by blowing (positive pressure) and one by drawing (negative pressure) — with the reeds tuned to the notes of a single diatonic (major) scale in one key. Air flow drives the appropriate reed to vibrate through its slot to produce the tone.",
+        "plain_english": "A small hand-held 'blues harp' you play by breathing in and out. Each hole gives one note when you blow. It gives a different note when you draw. The whole harmonica is tuned to one musical key.",
+        "purpose_function": "It provides a compact, portable melodic wind instrument tuned to one key, so a player can sound scale notes just by choosing a hole and blowing or drawing, with the fixed reeds setting the pitches so no keys or fingerings are needed.",
+        "practical_application": "A technician records a diatonic harmonica either acoustically with a small-diaphragm condenser at a short distance for a clean sound, or, for blues, with a cupped high-output 'bullet' mic into an amp for a gritty tone, while managing the player's hand cupping and breath noise.",
+        "category": "Free-reed instrument",
+        "related_terms": [
+          "Harmonica overblow",
+          "Harmonica overdraw",
+          "Harmonica distortion",
+          "Chromatic harmonica",
+          "Bullet microphone"
+        ],
+        "common_mistakes": [
+          "Assuming one diatonic harmonica can play every chromatic note in tune — it cannot without bends, overblows and overdraws",
+          "Thinking you must play only in the harp's stamped key; blues players use 'cross harp' (second position) on a harp pitched a fourth below the song's key",
+          "Blowing or drawing too hard, which pushes reeds out of tune and can permanently crack or damage a reed",
+          "Confusing the 10-hole diatonic harmonica with the button-operated chromatic harmonica"
+        ],
+        "scenario_contexts": [
+          "Recording a blues harmonica solo cupped into a bullet mic and small tube amp for a dirty tone",
+          "Overdubbing a folk or country harmonica part with a small-diaphragm condenser for a clean, natural sound",
+          "A player swapping harps between songs to match each song's key",
+          "Miking a cupped harmonica in a live blues band while controlling feedback"
+        ]
+      },
+      "sources": [
+        "Bahnson, Antaki & Beery, 'Acoustical and physical dynamics of the diatonic harmonica,' J. Acoust. Soc. Am. 103(4), 2134-2144 (1998)",
+        "Fletcher & Rossing, The Physics of Musical Instruments, 2nd ed. (free-reed instruments chapter)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "69bd68c3-10e3-4be2-a0c5-e9884c680fe7",
+      "term": "Digital piano",
+      "fields": {
+        "definition": "An electronic keyboard instrument that reproduces the sound and touch of an acoustic piano, generating notes from stored digital samples (or physical models) of piano tones and typically using a weighted, hammer-action keyboard to emulate the feel of an acoustic piano action.",
+        "plain_english": "An electronic piano that plays real-piano sounds through speakers or headphones. The sounds are recorded or made by a computer. The keys are heavy and push back like real piano keys. So it feels a lot like a real piano to play.",
+        "purpose_function": "It gives players an acoustic-piano-like sound and feel without the size, weight, tuning needs and cost of an acoustic piano, and adds practical features such as volume control, silent headphone practice, and direct line and MIDI outputs.",
+        "practical_application": "In the studio a technician usually records a digital piano by taking its balanced line output or USB/MIDI directly into the interface rather than miking it, and often captures MIDI so the performance can be re-voiced or edited later.",
+        "category": "Keyboard instrument",
+        "related_terms": [
+          "Grand piano",
+          "MIDI",
+          "Weighted keys",
+          "Sampling",
+          "DI box"
+        ],
+        "common_mistakes": [
+          "Confusing a digital piano (weighted, piano-focused) with a synth or arranger keyboard (light keys, many sounds)",
+          "Miking a digital piano's built-in speakers instead of taking the clean line or DI output",
+          "Ignoring the difference between fully weighted/graded-hammer actions and semi-weighted or unweighted actions when selecting an instrument",
+          "Forgetting that MIDI carries note and performance data, not audio, so a sound source is still required"
+        ],
+        "scenario_contexts": [
+          "Tracking a piano part via the digital piano's stereo line outputs straight into the interface",
+          "Capturing MIDI so a producer can change the piano sound or fix timing afterward",
+          "Using a digital piano on stage through a DI or its line out into the console",
+          "Silent late-night practice through headphones"
+        ]
+      },
+      "sources": [
+        "Yamaha Music, 'A Quick Guide to Weighted Keys' (manufacturer technical article)",
+        "Huber & Runstein, Modern Recording Techniques (electronic keyboards / MIDI / sampling)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "0ad386e3-8023-4037-8407-1f47f9b9fec8",
+      "term": "Double reed",
+      "fields": {
+        "definition": "A sound-generating mouthpiece made of two thin cane (or synthetic) blades bound together so a narrow slit remains between them; blown air makes the blades vibrate against each other, repeatedly opening and closing the aperture to pulse the air stream that drives the instrument's air column. It is the reed system of instruments such as the oboe, bassoon, English horn and bagpipe chanter.",
+        "plain_english": "Two thin strips of cane tied together with a tiny gap between them. You blow through the gap. The two strips beat against each other. This makes the buzzy tone of the oboe and bassoon.",
+        "purpose_function": "The double reed acts as the vibrating valve that converts the player's steady breath pressure into rapid puffs of air, exciting and sustaining the standing wave in the instrument's bore.",
+        "practical_application": "When recording oboe or bassoon a technician usually places the mic off the bell and more toward the body and keywork, because much of the tone radiates from the tone holes rather than the bell, and expects reed and breath noise up close.",
+        "category": "Woodwind reed",
+        "related_terms": [
+          "Single reed",
+          "Reed",
+          "Woodwind instrument",
+          "Embouchure",
+          "Flute embouchure hole"
+        ],
+        "common_mistakes": [
+          "Calling any woodwind reed a 'double reed' — clarinets and saxophones use a single reed against a mouthpiece",
+          "Miking straight down the bell, which misses much of the true oboe/bassoon tone radiating from the tone holes",
+          "Assuming reeds are consistent — cane double reeds vary greatly and players constantly adjust or hand-make them",
+          "Confusing the reed (the vibrating cane) with the whole mouthpiece/staple assembly"
+        ],
+        "scenario_contexts": [
+          "Positioning a condenser mic on an oboe for an orchestral or overdub session",
+          "Recording a bassoon and choosing mic height to balance body tone against key noise",
+          "A player scraping and adjusting a double reed between takes to fix intonation or response",
+          "Isolating a double-reed instrument within an ensemble recording"
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments, 2nd ed. (woodwind reed instruments chapter)",
+        "Baines, Woodwind Instruments and Their History"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "77b109fe-623c-4c58-ae3d-c7ff2d40bf6c",
+      "term": "Flute embouchure hole",
+      "fields": {
+        "definition": "The oval blow-hole cut into the head joint of a transverse flute (in the raised lip plate on a modern metal flute) across which the player directs a narrow air jet; the jet striking the far edge of the hole sets up an edge tone that excites and sustains the standing wave in the flute's air column. It is also called the mouth hole or blow hole.",
+        "plain_english": "The hole you blow across at the top of a flute. You blow across it, not into it. Your breath splits on the far edge, and that makes the sound. It works like blowing across the top of a bottle.",
+        "purpose_function": "It is the flute's sound generator — the point where the player's air jet is turned into the oscillating air motion that drives the pipe, so its size and shape and the player's aim strongly affect tone and pitch.",
+        "practical_application": "Because a strong jet of air and breath noise comes off the embouchure hole, a technician usually positions the mic slightly above and out toward the far end of the flute rather than right at the mouth, balancing airy 'chiff' against body tone and avoiding wind blasts.",
+        "category": "Flute component",
+        "related_terms": [
+          "Embouchure",
+          "Head joint",
+          "Edge tone",
+          "Double reed",
+          "Air jet"
+        ],
+        "common_mistakes": [
+          "Thinking the player blows into the hole rather than across its outer edge",
+          "Placing the mic right at the embouchure hole, capturing excessive wind and breath blast",
+          "Confusing the embouchure hole (the blow hole) with the tone holes and keys along the body",
+          "Assuming 'embouchure' means only the lips — here it names the instrument's blow-hole"
+        ],
+        "scenario_contexts": [
+          "Miking a concert flute for a classical recording, offset above and past the mouth",
+          "Managing breath and key noise on a close-miked flute overdub",
+          "Explaining to a beginner why aiming the air jet at the edge produces the tone",
+          "Choosing placement to capture the airy 'chiff' of the embouchure for a jazz or pop flute sound"
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments, 2nd ed. (flutes / air-jet instruments chapter)",
+        "Baines, Woodwind Instruments and Their History"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "9f193053-6c94-49de-8ddd-6d26a9715ff7",
+      "term": "Grand piano",
+      "fields": {
+        "definition": "A large acoustic piano whose strings, cast-iron frame and soundboard lie horizontally and whose keys drive felt hammers through a repetition action; string length increases toward the bass, and sizes range from small 'baby grands' (roughly 1.5 m) to concert grands (roughly 2.7 m). Pressing a key throws a hammer against the strings and lifts the damper, and the string vibration is radiated acoustically by the soundboard.",
+        "plain_english": "A full-size piano that lies flat. The long strings and soundboard sit flat under a lid that lifts. Press a key and a felt hammer flicks up at the strings. The big wooden soundboard makes the sound loud.",
+        "purpose_function": "The horizontal frame allows longer bass strings and a fast, gravity-assisted repetition action, giving grands greater volume, dynamic range, sustain and control than upright (vertical) pianos.",
+        "practical_application": "A technician typically records a grand with the lid on the stick and a stereo pair over the strings (often one mic toward the bass strings and one toward the treble/hammers), adjusting distance for the desired blend of attack, body and room.",
+        "category": "Keyboard instrument",
+        "related_terms": [
+          "Digital piano",
+          "Soundboard",
+          "Stereo miking",
+          "Damper pedal",
+          "Hammer action"
+        ],
+        "common_mistakes": [
+          "UNSAFE: Lifting a grand's lid or moving the instrument without enough help or proper technique — lids are heavy and grands can tip; use a crew and piano dollies/skid boards and secure the lid prop",
+          "Placing both mics too close, exaggerating hammer attack and losing the instrument's blend",
+          "Failing to seat the lid prop stick properly, so it can slip and slam",
+          "Judging low-end from a short baby grand as if it matched a concert grand's bass response"
+        ],
+        "scenario_contexts": [
+          "Setting a stereo pair inside a grand for a pop or rock session with the lid on the short or long stick",
+          "Close-miking a concert grand for a jazz trio while controlling bleed from drums",
+          "Recording solo classical piano with a more distant pair to capture the room",
+          "Moving a grand into a live room safely with a crew and dollies"
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments, 2nd ed. (piano chapter)",
+        "Yamaha Musical Instrument Guide, Piano — 'What is a Piano's Action?' (manufacturer technical guide)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "62f69b63-6c49-402d-9926-81766212762b",
+      "term": "Harmonica distortion",
+      "fields": {
+        "definition": "The deliberately overdriven, harmonically saturated tone characteristic of amplified blues and rock harmonica, produced when the harmonica signal is clipped — most often by cupping a high-output, high-impedance 'bullet' microphone tightly around the harp and driving a tube amplifier into overload. The clipping adds harmonic and intermodulation distortion and compresses the signal, giving the thick, gritty 'dirty harp' sound.",
+        "plain_english": "The fat, growling harmonica tone in blues and rock. You cup a special mic tight around the harp. Then you push a tube amp until it distorts. The sound comes from the amp, not the harmonica itself.",
+        "purpose_function": "It exists as a deliberate creative effect: overdriving the amp thickens and sustains the harmonica tone, adds edge and warmth, and helps the instrument cut through a loud band.",
+        "practical_application": "A technician sets it up with a bullet mic into a small tube amp (or an amp sim / overdrive pedal) and then mics the amp; managing feedback from the tightly cupped mic and taming harsh upper harmonics with EQ are the main tasks.",
+        "category": "Amplified harmonica",
+        "related_terms": [
+          "Diatonic harmonica",
+          "Bullet microphone",
+          "Clipping",
+          "Overdrive",
+          "Tube amplifier"
+        ],
+        "common_mistakes": [
+          "Thinking the distortion comes from the harmonica reeds rather than the mic and amp overload",
+          "UNSAFE: Running a tube amp with no speaker load or a mismatched load to force distortion, which can destroy the output transformer or tubes",
+          "Boosting harsh high-frequency content instead of shaping it, producing an ice-pick, feedback-prone tone",
+          "Using a modern low-impedance vocal mic and wondering why the classic cupped 'dirty' tone will not appear"
+        ],
+        "scenario_contexts": [
+          "Recording a Chicago-blues harp solo through a bullet mic and small tube amp",
+          "Re-amping a clean harmonica DI through an overdrive plug-in for grit in the mix",
+          "Controlling feedback during a loud live blues set with a cupped bullet mic",
+          "Blending a clean condenser track with a distorted amp track for size"
+        ]
+      },
+      "sources": [
+        "Shure 520DX ('Green Bullet') User Guide (manufacturer technical documentation)",
+        "Ballou (ed.), Handbook for Sound Engineers (harmonic distortion / clipping)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "619e6397-7816-484f-9590-a241af22d295",
+      "term": "Harmonica overblow",
+      "fields": {
+        "definition": "An advanced diatonic-harmonica technique in which precise breath and vocal-tract control forces the normally silent draw (inhale) reed of a hole to sound on a blow (exhale) breath, speaking as an 'opening' reed about a semitone above its natural draw pitch. This yields chromatic notes — mainly in the middle octave — not available from the standard blow and draw reeds or from bending.",
+        "plain_english": "A hard trick to learn. You shape your mouth and breath just right. This makes a note come out that is not normally there. It fills in missing sharps and flats without switching harps.",
+        "purpose_function": "The overblow lets a diatonic harmonica play the full chromatic scale, so a player can perform jazz and other chromatic music on a single 10-hole diatonic harp instead of switching instruments.",
+        "practical_application": "For a technician it means the player may need a well-set-up (gapped) harp and very quiet handling, since overblows are soft and easily lost; close, clean miking and low ambient noise help capture them.",
+        "category": "Harmonica technique",
+        "related_terms": [
+          "Diatonic harmonica",
+          "Harmonica overdraw",
+          "Note bending",
+          "Chromatic harmonica",
+          "Reed gapping"
+        ],
+        "common_mistakes": [
+          "Confusing an overblow with simply blowing harder — it is a controlled resonance change, not brute force",
+          "Assuming any stock harmonica overblows easily; most need reed gapping or embossing to respond",
+          "Thinking the overblow sounds on the blow reed, when it actually comes from the draw reed of the hole",
+          "Expecting overblows to be as loud as normal notes and setting gain too low to catch them"
+        ],
+        "scenario_contexts": [
+          "A jazz harmonica player using overblows to play chromatic lines on one diatonic harp",
+          "Setting up (gapping) a harmonica so overblows respond reliably before a session",
+          "Close-miking quietly to capture soft overblown notes",
+          "Explaining why a harp part needs a well-adjusted instrument to reach certain notes"
+        ]
+      },
+      "sources": [
+        "Bahnson, Antaki & Beery, 'Acoustical and physical dynamics of the diatonic harmonica,' J. Acoust. Soc. Am. 103(4), 2134-2144 (1998)",
+        "Antaki, Bahnson et al., 'Physics, phonetics, and physiology of the diatonic harmonica,' J. Acoust. Soc. Am. 106, 2287 (1999)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "b24121a3-d6b1-41d2-9d4a-9b8287565aa3",
+      "term": "Harmonica overdraw",
+      "fields": {
+        "definition": "The upper-register counterpart of the overblow: an advanced diatonic-harmonica technique in which breath and vocal-tract control forces the blow (exhale) reed of a hole to sound on a draw (inhale) breath, as an opening reed about a semitone above its natural blow pitch. Overdraws supply missing chromatic notes in the harmonica's high register.",
+        "plain_english": "Like an overblow, but at the high end and reversed. You inhale in a special way to make an extra note come out. It fills in the sharps and flats at the top of the harmonica.",
+        "purpose_function": "Together with overblows, overdraws complete the chromatic scale on a diatonic harmonica, letting a player cover all twelve notes across the instrument's range without switching harps.",
+        "practical_application": "Overdraws are the softest, most delicate notes on the harp and demand a precisely set-up instrument; a technician captures them best with a low-noise signal path, careful gain staging and minimal ambient noise.",
+        "category": "Harmonica technique",
+        "related_terms": [
+          "Diatonic harmonica",
+          "Harmonica overblow",
+          "Note bending",
+          "Reed gapping",
+          "Chromatic harmonica"
+        ],
+        "common_mistakes": [
+          "Mixing up overdraw (high register, sounding on the blow reed) with overblow (mid register, sounding on the draw reed)",
+          "Trying to overdraw on a stock harp without gapping or embossing the reeds first",
+          "Drawing too aggressively and knocking the note out or damaging the reed",
+          "Setting record levels too low to capture the very quiet overdrawn notes"
+        ],
+        "scenario_contexts": [
+          "A player using overdraws to reach high chromatic notes in a jazz solo",
+          "Preparing a high-register harp so overdraws speak in the studio",
+          "Capturing delicate overdrawn notes with a clean, quiet mic chain",
+          "Troubleshooting why a specific high note will not sound on an un-set-up harmonica"
+        ]
+      },
+      "sources": [
+        "Bahnson, Antaki & Beery, 'Acoustical and physical dynamics of the diatonic harmonica,' J. Acoust. Soc. Am. 103(4), 2134-2144 (1998)",
+        "Antaki, Bahnson et al., 'Physics, phonetics, and physiology of the diatonic harmonica,' J. Acoust. Soc. Am. 106, 2287 (1999)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "7a8c2e1b-7435-4a87-83e8-8a57cdc95b59",
+      "term": "Horn attenuator",
+      "fields": {
+        "definition": "A passive level control — typically an L-pad, a series-plus-shunt resistor network that attenuates the driver while presenting a roughly constant impedance to the crossover — placed ahead of the high-frequency horn/compression driver in a loudspeaker to reduce (attenuate) its output so its higher sensitivity is matched to the less-sensitive low-frequency driver. It may be a fixed pad or a rotary/switchable HF level control.",
+        "plain_english": "A volume trim inside a speaker. It turns the high 'horn' driver down, because horns are usually louder than the woofer. The L-pad type does this and still keeps a steady load for the crossover.",
+        "purpose_function": "Compression-driver horns are commonly several dB more sensitive than the woofer, so the attenuator pads the horn down to balance the two and give a flat, even frequency response instead of a bright, harsh top end.",
+        "practical_application": "A technician uses a horn/HF attenuator when voicing a passive two-way cabinet or monitor — setting the fixed pad value or the rotary HF control to match the horn to the woofer for the room — and checks it when a box suddenly sounds too bright or too dull.",
+        "category": "Loudspeaker component",
+        "related_terms": [
+          "L-pad",
+          "Compression driver",
+          "Passive crossover",
+          "Sensitivity",
+          "Biamping"
+        ],
+        "common_mistakes": [
+          "Using a plain series resistor or a simple potentiometer instead of an L-pad, which changes the driver's load impedance and shifts the crossover behavior",
+          "UNSAFE (gear damage): fitting a pad resistor with too low a power rating, so it overheats and fails under drive",
+          "Assuming a bright cabinet needs EQ when the horn attenuator/L-pad is simply set too high",
+          "Confusing this loudspeaker HF attenuator with an inline mic/line pad or with a brass-instrument mute"
+        ],
+        "scenario_contexts": [
+          "Voicing a passive two-way PA top so the horn matches the 15-inch woofer",
+          "Adjusting the rotary HF level control on a stage monitor to tame harshness",
+          "Matching a high-sensitivity compression driver to a lower-sensitivity woofer in a crossover build",
+          "Diagnosing an overly bright loudspeaker traced to a mis-set HF attenuator"
+        ]
+      },
+      "sources": [
+        "Yamaha Sound Reinforcement Handbook (Davis & Jones), loudspeaker systems / crossovers",
+        "Ballou (ed.), Handbook for Sound Engineers (loudspeakers and dividing networks; L-pad attenuators)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    }
+  ]
+}

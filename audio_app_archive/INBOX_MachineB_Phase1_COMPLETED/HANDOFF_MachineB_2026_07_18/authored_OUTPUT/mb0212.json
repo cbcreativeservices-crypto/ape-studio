@@ -1,0 +1,159 @@
+{
+ "batch": 212,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "a5232f7a-214a-4ccc-a61c-17755479487c",
+   "term": "Background sound effect",
+   "fields": {
+    "definition": "A continuous, non-specific ambient sound layer that establishes the environment or location of a scene, such as room tone, traffic, wind, or a distant crowd. Commonly called backgrounds (BGs) or ambiences, these tracks sit beneath dialogue and hard effects to create a believable sense of place.",
+    "plain_english": "A steady sound that tells you where a scene takes place, like traffic outside a window or birds in a park. It sits quietly under the voices so the scene feels real and is never dead silent.",
+    "purpose_function": "Creates a believable sense of place and keeps the soundscape continuous, hiding edits and preventing the unnatural dead silence that would otherwise make a scene feel empty.",
+    "practical_application": "A sound editor lays continuous background loops under each scene, matches them to the location on screen, and crossfades between them at scene changes so the ambience never cuts out.",
+    "category": "Sound Effects",
+    "related_terms": ["Ambience", "Room tone", "Hard sound effect", "Foley", "Dialogue editing"],
+    "common_mistakes": ["Letting backgrounds get loud enough to compete with or mask the dialogue instead of sitting beneath it", "Using an obviously short loop so the repeat becomes noticeable", "Failing to change or crossfade the background when the scene's location changes", "Confusing a background (continuous ambience) with a hard effect (a specific sync sound)"],
+    "scenario_contexts": ["Adding city traffic and distant sirens under an outdoor dialogue scene", "Filling a quiet interior with soft room tone so cuts are seamless", "Crossfading from a forest ambience to a cave ambience as a character walks inside"]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Viers, The Sound Effects Bible", "Holman, Sound for Film and Television"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "64e7e9e9-0a4e-4d11-98a7-c130ae63c068",
+   "term": "Backpack movement",
+   "fields": {
+    "definition": "A movement sound effect capturing the noises a worn backpack makes as a character moves — the creak of straps, shift of fabric, and clink of buckles or contents. It belongs to the movement (or moves) category of Foley and sound effects tied to a character's motion.",
+    "plain_english": "The rustle, creak, and jingle a backpack makes as someone walks or turns. It helps a character feel like they are really carrying gear on their back.",
+    "purpose_function": "Adds weight and realism to a character's motion, reinforcing that they carry equipment and helping match or cover their on-screen movement.",
+    "practical_application": "A Foley artist performs backpack sounds in sync with the actor, or an editor cuts library moves under a character to match their pace and how heavy the pack looks.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Cloth pass", "Footsteps", "Movement effects", "Prop effects"],
+    "common_mistakes": ["Placing the sounds out of sync with the actor's steps and gestures", "Making the backpack too loud so it distracts from dialogue", "Reusing the same clip so identical creaks become noticeable", "Ignoring the pack's apparent weight and contents when choosing the sound"],
+    "scenario_contexts": ["Foleying a hiker's loaded pack as they climb a trail", "Adding strap creaks to a soldier moving through a scene", "A student running for a bus with a heavy school bag"]
+   },
+   "sources": ["Ament, The Foley Grail", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "895194bc-8609-4f45-b39a-679663c32f5c",
+   "term": "Bar-and-beat conform",
+   "fields": {
+    "definition": "Aligning or re-syncing recorded audio or edits to a project's musical bar-and-beat (tempo) grid rather than to timecode, so that events fall on their intended bars and beats. It is used when material must follow a tempo map, as in music editing and scoring to picture.",
+    "plain_english": "Lining up recorded music or edits so they land on the right bars and beats, not just a clock time. It is like snapping notes onto a song's beat grid so everything stays in time.",
+    "purpose_function": "Keeps musical material locked to the tempo grid so edits, overdubs, and cues stay rhythmically in time even as the tempo changes.",
+    "practical_application": "A music editor sets the session's tempo map, then conforms takes or a cue to the bars and beats so new edits fall cleanly on the grid.",
+    "category": "Music Editing",
+    "related_terms": ["Bar-and-beat display", "Tempo map", "Beat-level edit", "Quantize", "Conform"],
+    "common_mistakes": ["Confusing a bar-and-beat conform with a timecode conform to picture changes", "Conforming before a correct tempo map is set, so events land off the grid", "Assuming the conform fixes performance feel when it only aligns events to bars and beats"],
+    "scenario_contexts": ["Aligning a recorded cue to a tempo map before editing", "Re-syncing music edits to the beat grid after a tempo change", "Fitting overdubs to the bars and beats of a click-based session"]
+   },
+   "sources": ["Saltzman, Music Editing for Film and Television", "Avid Pro Tools Reference Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "773a7286-23e0-4ed6-85b5-9a42ebcfb1ec",
+   "term": "Bar-and-beat display",
+   "fields": {
+    "definition": "A DAW timeline ruler or counter that shows position in musical units — bars, beats, and ticks — rather than in timecode or minutes and seconds. In Pro Tools this is the Bars|Beats ruler, driven by the session's tempo and meter.",
+    "plain_english": "A way of showing your place in a song by bar and beat number instead of by clock time. It is like counting \"measure 4, beat 2\" instead of \"12 seconds in.\"",
+    "purpose_function": "Lets editors and composers navigate and edit in musical time, so positions and grid snapping follow the tempo instead of the clock.",
+    "practical_application": "An editor switches the ruler to Bars|Beats to snap edits to the grid, place cues on downbeats, and follow the click track.",
+    "category": "Music Editing",
+    "related_terms": ["Timecode", "Tempo map", "Bar-and-beat conform", "Grid mode", "Meter"],
+    "common_mistakes": ["Expecting bar-and-beat positions to stay fixed when the tempo map changes", "Confusing bars and beats with timecode when reading delivery specs", "Setting the wrong meter so the beats per bar are counted incorrectly"],
+    "scenario_contexts": ["Editing music to a click by snapping to the bar grid", "Placing a musical hit on a specific downbeat to match picture", "Reading a composer's session in musical time"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Steinberg Cubase Operation Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1dec3edf-1e8a-4d09-bff7-bf197a3b43c9",
+   "term": "Bar-level edit",
+   "fields": {
+    "definition": "An edit made at the resolution of a whole musical bar, where cuts, moves, and selections snap to bar boundaries on a bars-and-beats grid. It is a coarse musical edit granularity, as opposed to finer beat-level or sample-level edits.",
+    "plain_english": "An edit that lines up to whole measures, so you cut or move music one full bar at a time. It is like rearranging a song block by block instead of note by note.",
+    "purpose_function": "Keeps musical structure intact by editing in complete bars, which preserves phrasing and downbeats when rearranging, looping, or shortening a piece.",
+    "practical_application": "An editor sets the grid to bars and trims or moves a section by whole bars to loop or shorten a cue without breaking its timing.",
+    "category": "Music Editing",
+    "related_terms": ["Beat-level edit", "Bar-and-beat display", "Grid mode", "Looping", "Tempo map"],
+    "common_mistakes": ["Editing at the bar when a finer beat-level edit is needed for a tight cut", "Not snapping to the grid, so bars drift out of time", "Assuming every phrase is a whole number of bars"],
+    "scenario_contexts": ["Looping a four-bar section to extend a cue", "Removing a full bar to shorten music to picture", "Rearranging song sections one bar at a time"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Saltzman, Music Editing for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "965ff27e-9925-430c-b25a-89a4b3474c0d",
+   "term": "Beat-level edit",
+   "fields": {
+    "definition": "An edit made at the resolution of individual beats or sub-beats, where cuts, moves, and quantizing snap to the beat grid within a bar. It is a finer musical edit granularity than a bar-level edit.",
+    "plain_english": "An edit that lines up to single beats, so you can cut or nudge music beat by beat. It is like fixing a song one tap of the foot at a time.",
+    "purpose_function": "Allows precise rhythmic edits and timing fixes within a bar without disturbing the surrounding bars.",
+    "practical_application": "An editor snaps to beats to tighten a fill, fix a timing slip, or move a hit onto the correct beat.",
+    "category": "Music Editing",
+    "related_terms": ["Bar-level edit", "Bar-and-beat display", "Quantize", "Grid mode", "Tempo map"],
+    "common_mistakes": ["Snapping to the wrong beat because the meter is set incorrectly", "Making beat-level cuts that break the musical phrase", "Over-quantizing so the performance loses its natural feel"],
+    "scenario_contexts": ["Nudging a drum hit onto the correct beat", "Tightening a musical fill within one bar", "Moving a downbeat accent by a single beat to match picture"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Saltzman, Music Editing for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "987d9f3a-68d6-4846-8813-683c771b76dc",
+   "term": "Binaural game audio",
+   "fields": {
+    "definition": "Game audio rendered for headphone playback using head-related transfer functions (HRTFs) to place sounds in three dimensions around the listener, including height and behind-the-head cues. It recreates how real ears sense direction and distance, giving accurate spatial localization over two channels.",
+    "plain_english": "Game sound made for headphones that seems to come from all around you, even above or behind. It copies how your ears sense direction so you can tell where a sound is coming from.",
+    "purpose_function": "Delivers convincing 3D spatial cues over ordinary headphones, boosting immersion and letting players locate sounds like footsteps or gunfire by ear.",
+    "practical_application": "A game audio designer enables an HRTF-based binaural renderer, such as a spatializer plugin in the audio engine, so 3D sources are folded down to two channels for headphones.",
+    "category": "Spatial Audio",
+    "related_terms": ["HRTF", "Spatial audio", "Binaural production suite", "Ambisonics", "Head tracking"],
+    "common_mistakes": ["Expecting the 3D effect to hold up on loudspeakers instead of headphones", "Using a generic HRTF that fits some listeners poorly", "Confusing binaural rendering with plain stereo panning"],
+    "scenario_contexts": ["Letting a player hear enemy footsteps behind them in a shooter", "Rendering a VR scene so sounds track head movement", "Mixing a horror game for headphone players"]
+   },
+   "sources": ["Valve Steam Audio SDK documentation", "Audiokinetic Wwise Spatial Audio documentation", "AES publications on HRTF and binaural rendering"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "20e6143c-7dc7-47c4-9198-738cb47f0729",
+   "term": "Binaural production suite",
+   "fields": {
+    "definition": "An integrated set of software tools or plugins for authoring binaural audio, typically providing HRTF-based spatial encoding, panning, and monitoring so a mix can be positioned in 3D for headphone playback. Suites may add head-tracking, reverb, and room modeling.",
+    "plain_english": "A bundle of tools for making 3D headphone sound in one place. It lets you place sounds all around a listener and hear the result as you work.",
+    "purpose_function": "Gives producers a complete workflow to place, process, and monitor sounds in three dimensions for binaural delivery, instead of stitching together separate tools.",
+    "practical_application": "A producer loads the suite's spatial panner on each track and its monitoring plugin on the master to build and check a binaural mix for headphones.",
+    "category": "Spatial Audio",
+    "related_terms": ["Binaural game audio", "HRTF", "Spatial audio", "Ambisonics", "Head tracking"],
+    "common_mistakes": ["Judging the binaural mix on speakers rather than headphones", "Leaving the monitoring or decoder plugin engaged in the final render", "Assuming one HRTF profile works equally well for every listener"],
+    "scenario_contexts": ["Mixing a binaural music track for headphone release", "Producing spatial audio for a VR experience", "Creating an immersive 3D podcast or ASMR piece"]
+   },
+   "sources": ["AES publications on binaural audio production", "Audiokinetic Wwise Spatial Audio documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8bed6755-cf68-4bcd-a73e-c12fce2379b1",
+   "term": "Blend container",
+   "fields": {
+    "definition": "In Audiokinetic Wwise, a container object that groups child objects into one or more blend tracks, playing them together and crossfading between them along a Game Parameter (RTPC) or as a continuous layered blend. It lets multiple sounds combine or morph based on a game value such as speed or engine RPM.",
+    "plain_english": "A Wwise tool that plays several sounds together and smoothly mixes between them as a game value changes, like an engine getting louder and rougher as a car speeds up. It blends layers instead of picking just one.",
+    "purpose_function": "Combines or crossfades layered sounds driven by live game data, so audio reacts smoothly to continuous changes like speed, load, or intensity.",
+    "practical_application": "A game sound designer builds a Blend Container for engine layers and maps them to an RPM parameter so the sound morphs as the car accelerates.",
+    "category": "Game Audio",
+    "related_terms": ["RTPC", "Switch container", "Random container", "Sequence container", "Game parameter"],
+    "common_mistakes": ["Confusing a Blend Container (plays layers together) with a Switch or Random Container (picks one child)", "Forgetting to assign an RTPC or Game Parameter so crossfades never trigger", "Setting overlapping crossfade ranges poorly so layers pop or double", "Placing objects in the wrong blend track"],
+    "scenario_contexts": ["Crossfading engine layers by RPM in a driving game", "Layering wind and intensity beds that change with player speed", "Blending calm and combat music stems by a tension parameter"]
+   },
+   "sources": ["Audiokinetic Wwise User's Guide (Blend Containers)", "Audiokinetic Wwise SDK documentation"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

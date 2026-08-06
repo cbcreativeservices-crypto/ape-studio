@@ -1,0 +1,316 @@
+{
+ "batch": 307,
+ "topic": "Voice & Vocal Perception",
+ "authored": [
+  {
+   "id": "dac52a44-566f-475a-a649-342eda969c61",
+   "term": "ACE Studio",
+   "fields": {
+    "definition": "ACE Studio is a commercial AI singing-voice software from TimeDomain that generates realistic sung vocals from entered MIDI notes and lyrics, letting users choose AI singer voices and control pitch, timing, and expression within a vocal-focused production environment.",
+    "plain_english": "ACE Studio makes a computer sing your song. You give it notes and lyrics, pick a voice, and it produces vocals you can tweak.",
+    "purpose_function": "It lets producers create lead and backing vocals without a human singer, useful for demos, songwriting, and productions where a specific voice or quick turnaround is needed.",
+    "practical_application": "A songwriter draws a melody and types lyrics in ACE Studio, selects an AI voice, adjusts pitch and expression, and renders the vocal to drop into a DAW mix.",
+    "category": "AI vocal synthesis",
+    "related_terms": [
+     "Singing voice synthesis (SVS)",
+     "Synthesizer V",
+     "Voice model",
+     "Voice cloning",
+     "Singing voice conversion (SVC)"
+    ],
+    "common_mistakes": [
+     "Confusing ACE Studio (synthesizes singing from notes and lyrics) with voice conversion that transforms an existing recording",
+     "Expecting broadcast-perfect vocals with no editing of pitch, timing, and expression",
+     "Assuming any voice can be used commercially without checking licensing and consent"
+    ],
+    "scenario_contexts": [
+     "Producing demo vocals for a song before hiring a singer",
+     "Creating harmony and backing vocals from MIDI",
+     "Generating a guide vocal in a chosen style"
+    ]
+   },
+   "sources": [
+    "ACE Studio official documentation (acestudio.ai) and TimeDomain (timedomain.ai)",
+    "ACE Studio user guide and help documentation (acestudio.ai)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c5fc2fab-dd41-4ed2-9d55-f8c8ee81e621",
+   "term": "AI voice changer",
+   "fields": {
+    "definition": "An AI voice changer is software that uses machine-learning voice-conversion (voice-transformation) models to alter a speaker's vocal characteristics — such as timbre, pitch, and perceived identity or gender — so the output sounds like a different voice while preserving the spoken words, operating either offline or in real time.",
+    "plain_english": "An AI voice changer is an app that makes your voice sound like someone else. It uses trained AI models, not just simple pitch shifting. You still say the same words, but the voice can sound like another person.",
+    "purpose_function": "It lets a user take on a different voice or persona for privacy, entertainment, content creation, or accessibility, going beyond simple pitch or effect-based changers by learning realistic voice qualities from data.",
+    "practical_application": "Creators and technicians run an AI voice changer on recorded tracks or on a live microphone feed, choosing a target voice and managing latency and audio quality within a DAW or streaming setup.",
+    "category": "Voice Conversion",
+    "related_terms": [
+     "Voice conversion",
+     "Real-time voice conversion",
+     "Retrieval-based voice conversion (RVC)",
+     "Pitch shifting",
+     "Formant"
+    ],
+    "common_mistakes": [
+     "Confusing an AI voice changer with a basic pitch-shift or effect changer; AI models learn a full voice identity, not just pitch.",
+     "Assuming perfect, artifact-free results, when quality depends on the model, its training data, and the input recording.",
+     "Overlooking consent and likeness rules when cloning or imitating a real person's voice."
+    ],
+    "scenario_contexts": [
+     "Changing a streamer's or gamer's voice live on the microphone.",
+     "Post-production redubbing, where a recorded voice is transformed into another character.",
+     "Anonymizing a speaker's identity in an interview or podcast."
+    ]
+   },
+   "sources": [
+    "Sisman et al., 'An Overview of Voice Conversion and Its Challenges: From Statistical Modeling to Deep Learning', IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2021",
+    "Mohammadi & Kain, 'An overview of voice conversion systems', Speech Communication (Elsevier), 2017"
+   ],
+   "confidence": "Medium",
+   "flags": [
+    "'AI voice changer' is a consumer-category label rather than a standardized term; authored as a transparent descriptor (voice conversion/voice transformation implemented with machine learning), citing acceptable sources for the underlying technique. Specific products are not endorsed."
+   ]
+  },
+  {
+   "id": "643d6613-9bae-40dd-b5d5-1dc9b34f28e5",
+   "term": "ElevenLabs",
+   "fields": {
+    "definition": "ElevenLabs is a commercial voice-AI company whose platform provides high-quality text-to-speech, voice cloning (instant and professional), speech-to-speech, and related tools via app and API, widely used for narration, dubbing, and character voices.",
+    "plain_english": "ElevenLabs turns written text into natural-sounding speech and can copy a voice from a sample. People use it for narration, dubbing, and characters.",
+    "purpose_function": "It lets creators generate realistic spoken audio and custom voices on demand, supplementing or replacing studio voice recording for scalable, multilingual narration and dubbing.",
+    "practical_application": "A producer uploads a script to ElevenLabs, picks or clones a voice, generates narration, and exports the audio or integrates it through the API into a pipeline.",
+    "category": "Voice AI platform",
+    "related_terms": [
+     "Voice cloning",
+     "Resemble AI",
+     "Text-to-audio",
+     "Speech-to-speech",
+     "Voice model"
+    ],
+    "common_mistakes": [
+     "Cloning a real person's voice without their explicit consent, which can breach law, platform terms, and publicity or likeness rights",
+     "Assuming default voice settings suit every script instead of tuning stability and style",
+     "Expecting flawless pronunciation of names and jargon without adjustments or phonetic input"
+    ],
+    "scenario_contexts": [
+     "Generating narration for an explainer video",
+     "Dubbing content into multiple languages",
+     "Creating consistent character voices for a game or audiobook"
+    ]
+   },
+   "sources": [
+    "ElevenLabs Documentation - Text to Speech (elevenlabs.io/docs)",
+    "ElevenLabs Documentation - Voice cloning: how it works (elevenlabs.io/docs)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f24199f7-693b-4938-b8b4-5e7a30dff8bf",
+   "term": "HuBERT",
+   "fields": {
+    "definition": "HuBERT (Hidden-Unit BERT) is a self-supervised speech representation learning model pre-trained to predict masked, discrete cluster labels — obtained by offline k-means clustering of audio features — from unlabeled speech, so it learns acoustic and linguistic structure that can later be fine-tuned for tasks such as speech recognition and voice conversion.",
+    "plain_english": "HuBERT is an AI model that learns from speech with no labels. It hides parts of the audio and tries to guess what was there, like filling in blanks. Doing this teaches it the sound patterns of speech, which other tools can then reuse.",
+    "purpose_function": "It turns large amounts of unlabeled audio into useful speech representations, reducing the need for costly transcribed data and providing strong features for downstream speech tasks.",
+    "practical_application": "Engineers and developers use HuBERT (or its learned features) as a building block in voice-conversion, speech-recognition, and singing-voice pipelines, where its representations help separate what is said from who is saying it.",
+    "category": "Speech AI Models",
+    "related_terms": [
+     "wav2vec 2.0",
+     "Self-supervised learning",
+     "Phonetic posteriorgram (PPG)",
+     "Voice conversion",
+     "Automatic speech recognition"
+    ],
+    "common_mistakes": [
+     "Thinking HuBERT transcribes or generates speech by itself, when it produces representations that other models use.",
+     "Assuming it needs labeled or transcribed data to train, when its pre-training is self-supervised on unlabeled audio.",
+     "Confusing HuBERT with wav2vec 2.0; they are related but use different training targets."
+    ],
+    "scenario_contexts": [
+     "Extracting speech features to train a voice-conversion model.",
+     "Fine-tuning on a small labeled set to build a speech recognizer.",
+     "Using its content representations to separate linguistic content from speaker identity in a voice pipeline."
+    ]
+   },
+   "sources": [
+    "Hsu et al., 'HuBERT: Self-Supervised Speech Representation Learning by Masked Prediction of Hidden Units', IEEE/ACM Transactions on Audio, Speech, and Language Processing, vol. 29, 2021",
+    "Sisman et al., 'An Overview of Voice Conversion and Its Challenges: From Statistical Modeling to Deep Learning', IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2021"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f765eb6f-f0df-4107-9708-80673723a80c",
+   "term": "Phonetic posteriorgram (PPG)",
+   "fields": {
+    "definition": "A phonetic posteriorgram (PPG) is a time-versus-class matrix in which each short frame of speech is represented by the posterior probabilities of phonetic classes (such as phones or senones), produced by a speaker-independent automatic speech recognizer; it captures the linguistic content of an utterance while being largely independent of the speaker's voice.",
+    "plain_english": "A phonetic posteriorgram, or PPG, is a chart of speech over time. For each short moment, it shows how likely each speech sound is. Because it focuses on what was said, not who said it, tools use it to swap one voice for another.",
+    "purpose_function": "It gives a speaker-independent description of what was spoken, so systems can keep the spoken content while changing the voice — a key reason it is used to bridge source and target speakers in voice conversion.",
+    "practical_application": "Developers extract PPGs from a recording with a pretrained recognizer and feed them into a conversion model, so the output keeps the original words and pronunciation but takes on a different speaker's timbre.",
+    "category": "Speech Features",
+    "related_terms": [
+     "Voice conversion",
+     "Automatic speech recognition",
+     "HuBERT",
+     "Phoneme",
+     "Prosody"
+    ],
+    "common_mistakes": [
+     "Thinking a PPG stores the audio or the speaker's voice, when it stores phonetic probabilities rather than sound.",
+     "Assuming PPGs capture prosody and emotion, when they mainly carry linguistic content and usually need separate pitch/prosody modeling.",
+     "Believing PPGs are perfectly speaker-independent in practice, when some speaker information can still leak through."
+    ],
+    "scenario_contexts": [
+     "Building a many-to-one voice-conversion system without parallel training data.",
+     "Accent conversion, where content is kept but pronunciation is retargeted.",
+     "Cross-lingual voice conversion using phonetic representations as a bridge."
+    ]
+   },
+   "sources": [
+    "Sun, Li, Wang, Kang & Meng, 'Phonetic Posteriorgrams for Many-to-One Voice Conversion without Parallel Data Training', IEEE International Conference on Multimedia and Expo (ICME), 2016",
+    "Sisman et al., 'An Overview of Voice Conversion and Its Challenges: From Statistical Modeling to Deep Learning', IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2021"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "acb93e5a-cdfb-4484-acc5-2499d1b2e2f4",
+   "term": "Prosody",
+   "fields": {
+    "definition": "Prosody is the set of suprasegmental features of speech — variations in pitch (intonation), loudness (stress), duration, rhythm, and tempo — that span across syllables and words rather than individual speech sounds, and that convey emphasis, emotion, phrasing, and grammatical meaning.",
+    "plain_english": "Prosody is the melody and rhythm of speech. It is the way pitch, loudness, and timing change while we talk. These changes stress important words, show feelings, and mark a question or a statement.",
+    "purpose_function": "Prosody carries meaning that word choice alone cannot — signaling emphasis, emotion, sentence type, and phrase boundaries — so it is essential for natural, intelligible, and expressive speech.",
+    "practical_application": "Audio and voice engineers judge prosody when editing dialogue, tuning vocals, or evaluating text-to-speech and voice-conversion output, since flat or unnatural prosody makes speech sound robotic even when every word is clear.",
+    "category": "Voice Perception",
+    "related_terms": [
+     "Intonation",
+     "Pitch",
+     "Formant",
+     "Phonetic posteriorgram (PPG)",
+     "Text-to-speech"
+    ],
+    "common_mistakes": [
+     "Confusing prosody with pitch or intonation alone, when it also includes loudness, timing, and rhythm.",
+     "Assuming prosody is only decorative, when it can change literal meaning, such as a statement versus a question.",
+     "Treating clear pronunciation of every word as enough, while ignoring flat or wrong prosody that makes speech sound unnatural."
+    ],
+    "scenario_contexts": [
+     "Evaluating a text-to-speech or AI voice for natural, human-like delivery.",
+     "Editing recorded dialogue or narration so emphasis and phrasing sound right.",
+     "Comparing voice-conversion output to the source to check that emotion and phrasing survive.",
+     "Coaching a voice actor on stress and intonation during a session."
+    ]
+   },
+   "sources": [
+    "Xu, 'Prosody, Tone and Intonation', in The Routledge Handbook of Phonetics, Routledge, 2019",
+    "ISCA Speech Prosody / Interspeech proceedings on suprasegmental features and prosody modeling"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6ee08973-7520-4a65-9adf-4a1bbb5033d7",
+   "term": "Real-time voice conversion",
+   "fields": {
+    "definition": "Real-time voice conversion is the transformation of a source speaker's voice into a target voice with low enough latency to be used live — as the person speaks — while preserving the linguistic content and, usually, the prosody of the original speech.",
+    "plain_english": "Real-time voice conversion changes your voice into someone else's while you talk. It works fast enough that there is almost no delay. The words stay the same, but the voice sounds like a different person.",
+    "purpose_function": "It lets a speaker take on another voice or persona instantly during live use — such as streaming, gaming, or performance — rather than only on pre-recorded files.",
+    "practical_application": "A technician places a low-latency conversion model in the signal chain (often on a GPU) and manages buffer size, latency, and monitoring so the converted voice stays natural and stable during a live stream, broadcast, or show.",
+    "category": "Voice Conversion",
+    "related_terms": [
+     "Voice conversion",
+     "AI voice changer",
+     "Latency",
+     "Retrieval-based voice conversion (RVC)",
+     "Timbre"
+    ],
+    "common_mistakes": [
+     "Confusing real-time voice conversion with offline conversion; real-time must run within a live latency budget and usually sacrifices some quality.",
+     "Underestimating latency from buffering and processing, which breaks the live illusion when the converted voice lags the speaker.",
+     "UNSAFE: Raising headphone or monitor level to mask processing delay, which can cause hearing damage; keep monitoring at safe levels per hearing-conservation practice and reduce latency instead."
+    ],
+    "scenario_contexts": [
+     "Live streaming or gaming with an altered on-mic voice.",
+     "Live performance where a singer or presenter adopts a different vocal character.",
+     "Broadcast or podcast where a guest's voice is changed on the fly for anonymity."
+    ]
+   },
+   "sources": [
+    "Sisman et al., 'An Overview of Voice Conversion and Its Challenges: From Statistical Modeling to Deep Learning', IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2021",
+    "Mohammadi & Kain, 'An overview of voice conversion systems', Speech Communication (Elsevier), 2017"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dc36b473-e383-410f-8a37-e551210bf99b",
+   "term": "Resemble AI",
+   "fields": {
+    "definition": "Resemble AI is a commercial voice-AI company offering generative voice cloning, text-to-speech, speech-to-speech, and real-time voice tools, along with AI-speech (deepfake) detection and audio watermarking, delivered via app and API.",
+    "plain_english": "Resemble AI copies and generates voices from samples, and also builds tools to spot fake AI voices. Companies use it for custom voices and for security.",
+    "purpose_function": "It lets organizations create and deploy custom synthetic voices at scale while also providing detection and watermarking to help identify AI-generated or manipulated speech.",
+    "practical_application": "A developer clones an approved voice in Resemble AI and calls its API to generate dynamic speech in an app, or uses its detection tools to flag possible voice deepfakes.",
+    "category": "Voice AI platform",
+    "related_terms": [
+     "ElevenLabs",
+     "Voice cloning",
+     "Speech-to-speech",
+     "Voice model",
+     "Real-time voice conversion"
+    ],
+    "common_mistakes": [
+     "Cloning or deploying a voice without documented consent and rights, risking legal and ethical breaches",
+     "Assuming AI-voice detection is infallible rather than a probabilistic aid",
+     "Skipping watermarking or provenance steps when distributing synthetic voices"
+    ],
+    "scenario_contexts": [
+     "Building a branded synthetic voice for an IVR or assistant",
+     "Generating localized speech for content at scale",
+     "Screening audio for possible voice deepfakes"
+    ]
+   },
+   "sources": [
+    "Resemble AI official documentation - Clone a Voice Overview (docs.resemble.ai)",
+    "Resemble AI - Deepfake Detection technical documentation (resemble.ai/detect)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cf9c1ddf-1bff-4cfd-ba1f-5c34ecc9387c",
+   "term": "Retrieval-based voice conversion (RVC)",
+   "fields": {
+    "definition": "Retrieval-based voice conversion (RVC) is an open-source voice-conversion method that extracts content features from source audio with a self-supervised model (HuBERT/ContentVec), replaces each feature with its closest match retrieved (top-1) from an index of the target speaker's training features to reduce timbre leakage, and resynthesizes speech in the target voice with a VITS-based generator and neural vocoder.",
+    "plain_english": "RVC changes one person's recorded voice into another person's voice. It looks up the closest matching bits of the target voice so the result sounds more like them.",
+    "purpose_function": "It converts the timbre of a recording to a target voice while keeping the original words and delivery, and its retrieval step improves similarity and reduces leftover traces of the source voice.",
+    "practical_application": "A creator trains an RVC model on a target voice, then feeds in a vocal or speech recording to output the same performance in the target timbre, often for covers or dubbing.",
+    "category": "Voice conversion",
+    "related_terms": [
+     "Voice conversion",
+     "so-vits-svc",
+     "Singing voice conversion (SVC)",
+     "HuBERT",
+     "Voice model"
+    ],
+    "common_mistakes": [
+     "Cloning or converting to a real person's voice without consent, raising legal and ethical issues",
+     "Confusing RVC (converts an existing recording) with text-to-speech that starts from text",
+     "Training on noisy or too little audio, which produces artifacts - clean data of adequate length is recommended"
+    ],
+    "scenario_contexts": [
+     "Making a song cover in another singer's timbre",
+     "Changing a voice-over's timbre in post",
+     "Building a custom voice model for a character"
+    ]
+   },
+   "sources": [
+    "RVC-Project - Retrieval-based-Voice-Conversion-WebUI official documentation (github.com/RVC-Project)",
+    "Kim et al., Conditional Variational Autoencoder with Adversarial Learning for End-to-End Text-to-Speech (VITS), 2021",
+    "Hsu et al., HuBERT: Self-Supervised Speech Representation Learning by Masked Prediction (2021)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

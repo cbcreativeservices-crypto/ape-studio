@@ -1,0 +1,971 @@
+{
+ "group": 102,
+ "terms": [
+  {
+   "id": "c09bf679-ec93-497a-b802-de46ff0b4967",
+   "term": "Bass-string region",
+   "topic": "Instrument Recording — Strings & Guitar",
+   "difficulty": null,
+   "definition": "The group of lower-pitched, typically wound strings on a stringed instrument (on a six-string guitar, the E, A and D strings) and the lower-frequency register they produce. It is contrasted with the treble-string region formed by the higher, thinner strings.",
+   "plain_english": "The thicker, lower-sounding strings on a guitar or similar instrument, and the deep tones they make. Think of the left-hand end of a piano, but for strings.",
+   "purpose_function": "It labels the low end of a stringed instrument so players and engineers can tune, discuss, and capture those notes separately, since the wound bass strings carry the harmonic foundation and behave differently from treble strings.",
+   "practical_application": "An engineer positions or angles a mic to balance the bass-string region against the treble strings, and may use EQ so the wound low strings do not sound boomy or dull in the recording.",
+   "category": "String register",
+   "related_terms": [
+    "Bass-string section",
+    "Open string",
+    "Course imbalance",
+    "Drop tuning",
+    "Palm muting"
+   ],
+   "common_mistakes": [
+    "Assuming the bass-string region only needs low-frequency EQ, when its note fundamentals and playing noise span a wide range",
+    "Confusing the bass-string region of a guitar with a separate bass guitar",
+    "Miking only over the soundhole, which exaggerates the boom from the wound low strings"
+   ],
+   "scenario_contexts": [
+    "Balancing the low strings against the high strings when close-miking an acoustic guitar",
+    "Applying gentle EQ so the wound E and A strings do not dominate a fingerpicked part",
+    "Discussing which strings carry the low end during a tracking session"
+   ]
+  },
+  {
+   "id": "15b7789f-ae54-4bd7-b7bd-721cb36c9d35",
+   "term": "Bass-string section",
+   "topic": "Instrument Recording — Strings & Guitar",
+   "difficulty": null,
+   "definition": "The set of an instrument's lower-pitched bass strings treated as a single group, such as the wound bass strings of a guitar or the long, thick strings on the bass side of a piano or harp. The term refers to the strings themselves rather than to a frequency range.",
+   "plain_english": "The bunch of thick, low-sounding strings on an instrument, grouped together. On a piano these are the long strings at the left end.",
+   "purpose_function": "Grouping the bass strings lets players, tuners, and engineers address the low strings as a unit for tuning, damping, or miking, because they share construction and tonal behavior.",
+   "practical_application": "When recording a grand piano or harp, an engineer places or aims a microphone to capture the bass-string section evenly with the rest of the instrument.",
+   "category": "String register",
+   "related_terms": [
+    "Bass-string region",
+    "Course imbalance",
+    "Open string",
+    "Pedal harp",
+    "Pizzicato"
+   ],
+   "common_mistakes": [
+    "Treating the bass-string section as a separate instrument rather than part of the whole",
+    "Placing a mic so close to the bass strings that the section overpowers the treble strings",
+    "Forgetting that wound bass strings lose brightness as they age and dull the section's tone"
+   ],
+   "scenario_contexts": [
+    "Positioning a piano mic to balance the bass-string section against the treble",
+    "Checking tuning across the bass-string section of a harp before a take",
+    "Explaining to a client why the low strings sound duller than the high strings"
+   ]
+  },
+  {
+   "id": "043d3420-746e-4e65-8a4a-69ef9d45fdde",
+   "term": "Course imbalance",
+   "topic": "Instrument Recording — Strings & Guitar",
+   "difficulty": null,
+   "definition": "On an instrument with paired or grouped strings (a course), an unevenness between the strings of the same course in loudness, tuning, tone, or string age, so the pair no longer sounds as one unified note. It commonly appears on 12-string guitars, mandolins, and lutes.",
+   "plain_english": "On instruments where strings come in pairs, it is when the two strings of a pair do not match. One may be louder or slightly out of tune, so the pair sounds uneven.",
+   "purpose_function": "The term flags a specific fault so it can be diagnosed and corrected; a balanced course produces the rich, chorused sound that paired strings are meant to give.",
+   "practical_application": "A tech listens for beating or a weak string within each course and fixes it by tuning both strings precisely, matching string gauges, or replacing a dead string before tracking.",
+   "category": "String balance",
+   "related_terms": [
+    "Open string",
+    "Drop tuning",
+    "Dry tuning",
+    "Bass-string section"
+   ],
+   "common_mistakes": [
+    "Tuning only the main string of a course and ignoring its octave or unison partner",
+    "Blaming the room or mic for a beating, uneven sound that is really a course imbalance",
+    "Mixing a fresh string with a worn one in the same course, causing a tone and volume mismatch"
+   ],
+   "scenario_contexts": [
+    "Prepping a 12-string guitar before recording so each pair rings evenly",
+    "Diagnosing a beating, phasey chord on a mandolin during tracking",
+    "Checking octave-pair balance after changing one broken string"
+   ]
+  },
+  {
+   "id": "ee42e329-58e0-45dd-8f30-ef9db725b803",
+   "term": "Mute bleed",
+   "topic": "Instrument Recording — Strings & Guitar",
+   "difficulty": null,
+   "definition": "Unwanted residual sound that remains audible even though a source or channel has been muted, for example a damped or muted note still leaking into other open microphones, or a console/DAW mute that does not fully attenuate the signal.",
+   "plain_english": "Sound you still hear even after something has been muted. It sneaks through because the mute is not complete, or because it leaks into a nearby mic.",
+   "purpose_function": "The term names a common capture and mixing fault so engineers can track down why a supposedly silenced part is still audible and fix the routing, gating, or mic setup.",
+   "practical_application": "When a palm-muted guitar or a muted string still shows up in the drum or room mics, an engineer improves isolation, repositions mics, or gates the offending channel to stop the bleed.",
+   "category": "Signal isolation",
+   "related_terms": [
+    "Bleed control",
+    "Palm muting",
+    "Onboard speaker bleed",
+    "Open string",
+    "Body knock"
+   ],
+   "common_mistakes": [
+    "Assuming a channel mute removes a sound that is actually leaking into other open mics",
+    "Relying on a noise gate to hide mute bleed instead of improving isolation at the source",
+    "Confusing intentional palm-mute tone with unwanted mute bleed"
+   ],
+   "scenario_contexts": [
+    "Tracking a full band live, where a muted guitar amp still bleeds into the drum overheads",
+    "Editing a multitrack and hearing a muted section still faintly present",
+    "Setting up mic screens or isolation to reduce bleed from a damped instrument"
+   ]
+  },
+  {
+   "id": "85e3bfd6-4fe3-4a55-92c1-6b44e9b287f1",
+   "term": "Onboard speaker bleed",
+   "topic": "Instrument Recording — Strings & Guitar",
+   "difficulty": null,
+   "definition": "Leakage from a device's built-in (onboard) loudspeaker, such as a combo amplifier, keyboard, or practice amp with an integrated speaker, into microphones capturing other sources on a session. It is a specific form of mic bleed caused by the source monitoring itself through its own speaker.",
+   "plain_english": "When a mic picks up sound coming from a speaker built into an instrument or amp nearby. That built-in speaker leaks into recordings of other things in the room.",
+   "purpose_function": "The term pinpoints the source of unwanted leakage so an engineer can isolate or reposition the noisy built-in speaker and keep other tracks clean.",
+   "practical_application": "To stop onboard speaker bleed, a tech turns down or mutes the built-in speaker, uses a DI or line out instead, or moves the device out of the live room.",
+   "category": "Signal isolation",
+   "related_terms": [
+    "Bleed control",
+    "Mute bleed",
+    "Direct guitar track",
+    "Re-amping",
+    "Speaker cabinet isolation"
+   ],
+   "common_mistakes": [
+    "UNSAFE: Draping blankets over a tube amp's vents or built-in speaker to block bleed, which traps heat and creates a fire and burn hazard",
+    "Forgetting a keyboard's onboard speaker is on and letting it leak into vocal mics",
+    "Assuming a DI signal is bleed-free while the instrument's own speaker still feeds the room"
+   ],
+   "scenario_contexts": [
+    "Recording vocals while a guitarist's combo amp speaker leaks into the vocal mic",
+    "Capturing a DI keyboard part while its onboard speaker bleeds into room mics",
+    "Isolating an amp in a separate room to remove its speaker bleed from drum mics"
+   ]
+  },
+  {
+   "id": "e23ad24b-e407-4a1b-b4db-57d29d167cc6",
+   "term": "Patch level variation",
+   "topic": "Instrument Recording — Strings & Guitar",
+   "difficulty": null,
+   "definition": "The difference in output level between one patch (preset/program) and another on a synthesizer, sampler, or amp/effects modeler, so that switching patches changes the perceived loudness even at the same played dynamics.",
+   "plain_english": "When you switch sounds on a synth or modeler, some presets are louder than others. That change in volume between presets is patch level variation.",
+   "purpose_function": "Recognizing this helps players and engineers level-match presets so a performance stays consistent and no patch jumps out or disappears in the mix.",
+   "practical_application": "Before a session or show, a tech auditions each patch and adjusts its output or a gain stage so all patches sit at a similar level when switched.",
+   "category": "Gain & level",
+   "related_terms": [
+    "Patch-change transient",
+    "Direct guitar track",
+    "Re-amping",
+    "Coil tap"
+   ],
+   "common_mistakes": [
+    "Assuming all factory patches are level-matched out of the box",
+    "Setting record levels on one loud patch and then clipping or under-recording quieter ones",
+    "Confusing patch level variation with a performer simply playing louder"
+   ],
+   "scenario_contexts": [
+    "Level-matching amp-modeler presets before tracking a guitar",
+    "Balancing synth patches during a live set so no sound jumps out",
+    "Gain-staging a keyboard rig where presets differ in output"
+   ]
+  },
+  {
+   "id": "c4b35316-fff6-4ea5-b723-e4eec23fe0ab",
+   "term": "Gel damper",
+   "topic": "Guitar, Bass & Amp Recording",
+   "difficulty": null,
+   "definition": "A small, reusable, self-adhesive gel pad applied to a vibrating surface, most often a drumhead, to absorb vibration and tame unwanted overtones, ring, and sustain. The best-known example is the Moongel-type damping pad.",
+   "plain_english": "A soft, sticky gel square you press onto a drum to calm down extra ringing. It works like putting a finger on a wine glass to stop it humming.",
+   "purpose_function": "It gives a quick, removable way to control overtones and shorten sustain without permanently altering the head, so a drum or surface sounds more focused on the recording.",
+   "practical_application": "An engineer sticks one or more gel dampers near the edge of a snare or tom head, moving or adding pads until the ring is controlled without deadening the tone.",
+   "category": "Damping & tone control",
+   "related_terms": [
+    "Kick click control",
+    "Kick beater definition",
+    "Palm muting",
+    "Body knock"
+   ],
+   "common_mistakes": [
+    "Using too many gel dampers and deadening the drum completely",
+    "Placing the gel in the center of the head instead of near the edge, killing tone and volume",
+    "Assuming a gel damper replaces proper drum tuning"
+   ],
+   "scenario_contexts": [
+    "Taming snare ring during a tracking session",
+    "Controlling tom overtones for a tighter recorded sound",
+    "Quickly adjusting damping between takes without changing heads"
+   ]
+  },
+  {
+   "id": "e3d677a1-76d8-4b46-9847-8f0045796e3d",
+   "term": "Keyholing",
+   "topic": "Band Tracking Workflow & Arrangement",
+   "difficulty": null,
+   "definition": "Elongation of a cymbal's central mounting hole into a keyhole shape, caused by repeated metal-to-metal contact between the cymbal and an unprotected stand rod. The deformation weakens the cymbal and can lead to cracks radiating from the center hole.",
+   "plain_english": "When a cymbal is mounted on a bare metal rod, the constant banging slowly stretches its center hole into a keyhole shape. That worn hole can weaken the cymbal and make it crack.",
+   "purpose_function": "Knowing about keyholing tells techs to protect the mounting point with a sleeve and felts, preventing costly cymbal damage and sudden failures during a session.",
+   "practical_application": "A drum tech checks cymbals for an oval, worn center hole and always mounts them with a plastic or rubber sleeve and felt washers above and below to prevent keyholing.",
+   "category": "Instrument maintenance",
+   "related_terms": [
+    "Kick beater definition",
+    "Gel damper",
+    "Body knock",
+    "Kick click control"
+   ],
+   "common_mistakes": [
+    "Mounting a cymbal directly on a bare metal rod with no plastic sleeve",
+    "Tightening the wing nut so hard the cymbal cannot move, which speeds up hole wear and cracking",
+    "Ignoring an oval, elongated center hole until the cymbal cracks"
+   ],
+   "scenario_contexts": [
+    "Inspecting a drummer's cymbals before a session for keyholing damage",
+    "Fitting new sleeves and felts to prevent hole wear on a touring kit",
+    "Diagnosing a crack that started at a worn, keyholed center hole"
+   ]
+  },
+  {
+   "id": "e7d40156-960e-41ba-8d7a-1f6bce5335a0",
+   "term": "A-side assignment",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "The designation of a particular song or mix as the A-side, the featured and promoted primary track of a single release, as opposed to the secondary B-side. The term originates from the two sides of a vinyl single, the A-side being the side intended for airplay and promotion.",
+   "plain_english": "Picking which song is the main track of a single release, the one meant for radio and promotion. It comes from old records, where the A-side was the hit side.",
+   "purpose_function": "Assigning the A-side sets which track gets priority in mastering, marketing, and delivery, guiding how time and polish are spent.",
+   "practical_application": "When delivering a single, the team confirms the A-side assignment so the lead track is mastered, labeled, and submitted to platforms as the primary release.",
+   "category": "Release workflow",
+   "related_terms": [
+    "Approval master",
+    "Action List",
+    "Anchor the mix",
+    "Active take"
+   ],
+   "common_mistakes": [
+    "Thinking the A-side must be the first song recorded rather than the chosen lead track",
+    "Assuming only the A-side needs careful mastering, when the B-side should also meet spec",
+    "Confusing A-side/B-side (release role) with the A/B of monitor or mix comparison"
+   ],
+   "scenario_contexts": [
+    "Deciding which single from a session is promoted as the lead A-side",
+    "Labeling and delivering master files with the correct A-side and B-side",
+    "Planning a vinyl single's sides for a release"
+   ]
+  },
+  {
+   "id": "dc0302f9-2edc-4c1b-853f-69c1bd3cbf22",
+   "term": "Acoustic contribution",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "The share of a recorded or monitored sound that arises from real acoustic (airborne) sound, the natural tone of an instrument and its room, as distinct from a direct or electronic signal such as a DI feed. It describes how much of the result comes from air-moving sound versus a captured electrical signal.",
+   "plain_english": "The part of a sound that comes from real air moving in a room, like a mic on an instrument, rather than a direct plugged-in signal. It is the natural, in-the-room part of the sound.",
+   "purpose_function": "Separating the acoustic contribution from direct signal lets an engineer blend natural room tone and direct clarity, and control how live or dry a track feels.",
+   "practical_application": "When recording an electric bass or an acoustic-electric guitar, an engineer blends the DI with a mic to dial in the right amount of acoustic contribution.",
+   "category": "Signal sources",
+   "related_terms": [
+    "Direct guitar track",
+    "Re-amping",
+    "Anchor the mix",
+    "Off-axis pickup"
+   ],
+   "common_mistakes": [
+    "Ignoring the room's acoustic contribution and wondering why a DI-only track sounds lifeless",
+    "Blending mic and DI without checking polarity, so the acoustic contribution partly cancels",
+    "Assuming a close mic captures no room, when it always adds some acoustic contribution"
+   ],
+   "scenario_contexts": [
+    "Blending a bass DI with a mic'd cabinet to add acoustic contribution",
+    "Deciding how much room mic to fold into a drum mix",
+    "Recording an acoustic-electric guitar and balancing pickup with a mic"
+   ]
+  },
+  {
+   "id": "73f879dd-b833-4fe6-a714-7c2517f7999f",
+   "term": "AI loudness",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "The use of AI or machine-learning tools to analyze a mix and automatically adjust its loudness to hit a target, usually an integrated loudness in LUFS defined by standards such as ITU-R BS.1770 and EBU R128, often as part of automated mastering or loudness-matching services.",
+   "plain_english": "Software that uses AI to measure how loud a song is and set it to the right level on its own. It aims for the loudness targets that streaming services expect.",
+   "purpose_function": "It speeds up loudness matching and normalization so tracks meet platform targets consistently, without an engineer setting every level by hand.",
+   "practical_application": "An engineer runs a mix through an AI loudness or mastering tool to reach a streaming target, then checks the result against a compliant metering standard.",
+   "category": "Loudness & metering",
+   "related_terms": [
+    "AI mastering",
+    "Adaptive gain",
+    "Adaptive DSP",
+    "Anchor the mix"
+   ],
+   "common_mistakes": [
+    "Trusting an AI loudness result without checking it on a compliant LUFS meter",
+    "Pushing loudness so high the AI tool adds audible distortion or pumping",
+    "Assuming one loudness target fits every platform, when specs differ"
+   ],
+   "scenario_contexts": [
+    "Normalizing a batch of tracks to a streaming LUFS target with an AI tool",
+    "Using an AI mastering service to loudness-match songs across an album",
+    "Checking an AI-set level against ITU-R BS.1770 metering before delivery"
+   ]
+  },
+  {
+   "id": "bb46e763-d598-4b94-b4b8-9c236223da35",
+   "term": "Arrangement region",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "A defined section of a song's overall arrangement—such as an intro, verse, chorus, or bridge—treated as a single selectable block on a DAW timeline, commonly delimited by arrangement markers so it can be named, moved, copied, or deleted as a unit.",
+   "plain_english": "It is a labeled chunk of a song, like the chorus or verse. You can grab that whole chunk and move it or copy it in one go.",
+   "purpose_function": "It lets an engineer organize and restructure a song at the section level rather than editing individual regions or notes, speeding up arrangement changes and navigation.",
+   "practical_application": "An engineer marks the intro, verse, and chorus as arrangement regions, then drags a chorus block to a new spot to try a different song order without cutting each track by hand.",
+   "category": "Arrangement",
+   "related_terms": [
+    "Arrangement track (Logic)",
+    "Arranger track",
+    "Marker",
+    "Region",
+    "Cycle area"
+   ],
+   "common_mistakes": [
+    "Confusing an arrangement region (a whole song section) with an individual audio or MIDI region on a single track",
+    "Moving an arrangement region without checking that markers and automation stay aligned to the new position",
+    "Assuming section boundaries snap to bars automatically when they may sit off the grid"
+   ],
+   "scenario_contexts": [
+    "Reordering a song's structure by dragging the chorus section earlier during a mix revision",
+    "Duplicating a verse arrangement region to extend a song for an alternate edit",
+    "Navigating quickly to the bridge by selecting its arrangement region"
+   ]
+  },
+  {
+   "id": "1a4ec082-ccb2-487c-87bc-d6f6b2134dd7",
+   "term": "B-side assignment",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "The release-planning decision to designate a completed recording as the B-side—the secondary track paired with the promoted A-side (lead single)—of a single release.",
+   "plain_english": "It means picking which finished song rides along as the extra track on a single, behind the main hit. The A-side is the star; the B-side is the bonus track.",
+   "purpose_function": "It determines which mix or master is delivered and promoted as the lead track versus the supporting track, shaping the release package and its metadata.",
+   "practical_application": "When prepping a single for release, an engineer or label labels and delivers one master as the A-side and assigns another finished mix as the B-side.",
+   "category": "Release & Delivery",
+   "related_terms": [
+    "Delivery master",
+    "Broadcast master",
+    "Archival master",
+    "Mastering",
+    "Metadata"
+   ],
+   "common_mistakes": [
+    "Assuming the B-side is a lower-quality or unfinished mix rather than a fully mastered release track",
+    "Confusing the physical A/B sides of vinyl with streaming-era 'single plus bonus track' assignments",
+    "Mislabeling deliverable files so the A-side and B-side masters are swapped"
+   ],
+   "scenario_contexts": [
+    "Choosing which of two finished songs becomes the B-side of a 7-inch vinyl single",
+    "Assigning a remix or alternate version as the B-side of a digital single",
+    "Preparing delivery files and metadata that identify the A-side and B-side"
+   ]
+  },
+  {
+   "id": "9027107a-9075-4770-9ca6-bf07d5d0d5c0",
+   "term": "Boss music",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "In video game audio, a distinct musical cue that plays during a boss encounter—typically a heightened, more intense or dramatic piece that signals a major challenge and often differs sharply from the surrounding level music.",
+   "plain_english": "It is the special, intense music that kicks in when you fight a big enemy in a game. It tells you this fight is a huge deal.",
+   "purpose_function": "It heightens tension and signals the stakes of a major fight, giving players an emotional and gameplay cue that the encounter matters more than normal combat.",
+   "practical_application": "A game composer writes a dedicated boss theme, and an audio implementer triggers it—often with a transition from the level music—when the boss fight begins.",
+   "category": "Game Audio",
+   "related_terms": [
+    "Combat music",
+    "Defeat music",
+    "Adaptive music",
+    "Delayed transition"
+   ],
+   "common_mistakes": [
+    "Assuming boss music must be loud or fast when its role is to signal significance, which some games do with quieter, ominous themes",
+    "Forgetting to score a smooth transition into and out of the boss cue, causing an abrupt musical jump",
+    "Treating boss music as a fixed loop when many games layer or adapt it to the fight's phases"
+   ],
+   "scenario_contexts": [
+    "Triggering a unique theme when the player enters a boss arena",
+    "Transitioning from exploration music into boss music as a fight begins",
+    "Layering an extra intensity section of the boss theme when the boss reaches a second phase"
+   ]
+  },
+  {
+   "id": "f802202e-849a-4505-b46e-b7c0a3e70ae2",
+   "term": "Bus validation",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "The quality-control step of confirming that a mix's bus (subgroup/aux) routing, assignments, and levels are correct—verifying each source feeds the intended bus, that bus outputs reach the proper destinations, and that no unintended sums, gain errors, or missing feeds exist before printing or delivery.",
+   "plain_english": "It means double-checking that every group of channels is wired to the right place before you finish the mix. It is like making sure each pipe empties into the correct tank.",
+   "purpose_function": "It catches routing mistakes—wrong assignments, doubled signals, or dead buses—so the printed mix and stems match what the engineer intended.",
+   "practical_application": "Before bouncing stems, an engineer checks the routing matrix and solos each bus to confirm drums, vocals, and effects land on their assigned subgroups at the right levels.",
+   "category": "Signal Routing",
+   "related_terms": [
+    "Bus",
+    "Subgroup",
+    "Aux send",
+    "Signal flow",
+    "Clipping validation"
+   ],
+   "common_mistakes": [
+    "Assuming a channel is routed correctly because it makes sound, without confirming which bus it feeds",
+    "Accidentally summing a signal to both a subgroup and the main bus, so it is counted twice",
+    "Overlooking a bus whose output is unassigned, so its audio never reaches the mix or print"
+   ],
+   "scenario_contexts": [
+    "Verifying subgroup routing before printing stems for a film re-recording mix",
+    "Checking that all input channels feed the correct buses after loading a session template",
+    "Troubleshooting a missing instrument by confirming its bus assignment"
+   ]
+  },
+  {
+   "id": "f49b47df-31fc-4e29-a9fc-705d73039ae6",
+   "term": "Clipping validation",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "The quality-control step of checking a mix or master for clipping—confirming that no samples reach or exceed the digital ceiling (0 dBFS) and that inter-sample (true) peaks stay within the intended limit—typically using a peak or true-peak (dBTP) meter as defined by ITU-R BS.1770.",
+   "plain_english": "It means checking that the loudest parts of a track do not go over the top and distort. Going past the ceiling is like pouring water past the rim of a full glass.",
+   "purpose_function": "It ensures the delivered audio contains no hard digital distortion or inter-sample overs that can distort on playback devices and converters.",
+   "practical_application": "Before delivery, an engineer runs a true-peak meter and keeps the master at or below the target ceiling (commonly -1 dBTP) to pass clipping checks for streaming and broadcast.",
+   "category": "Quality Control",
+   "related_terms": [
+    "Clipping",
+    "True peak",
+    "Inter-sample peak",
+    "Bus validation",
+    "Broadcast compliance"
+   ],
+   "common_mistakes": [
+    "Trusting a sample-peak meter alone when inter-sample (true) peaks can still clip after digital-to-analog conversion",
+    "Assuming a limiter set to 0 dBFS prevents clipping, ignoring true-peak overshoot on lossy codecs",
+    "Confusing loudness (LUFS) with peak level and checking only one"
+   ],
+   "scenario_contexts": [
+    "Checking a master against a -1 dBTP ceiling before uploading to a streaming platform",
+    "Verifying no clipping after loudness normalization for broadcast delivery",
+    "Spotting inter-sample overs revealed by a true-peak meter that a standard peak meter missed"
+   ]
+  },
+  {
+   "id": "a6b2a47a-6c26-4bb5-b20b-fa96bfc800dc",
+   "term": "CloudBounce",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "CloudBounce is a commercial online, automated (algorithmic/AI-driven) audio mastering service that analyzes an uploaded mix and returns a processed, mastered version; it is offered both as a web service and as a desktop application.",
+   "plain_english": "It is a website and app that masters your song for you automatically. You upload a mix and it sends back a louder, polished version without a human engineer.",
+   "purpose_function": "It gives musicians a fast, low-cost way to obtain a mastered-sounding track without booking a mastering engineer, by applying automated processing based on analysis of the audio.",
+   "practical_application": "A producer uploads a stereo mix to CloudBounce, chooses a style or reference, and downloads the automatically mastered file for a demo or release.",
+   "category": "Mastering",
+   "related_terms": [
+    "Assistive mastering",
+    "Mastering",
+    "Delivery master",
+    "Loudness normalization"
+   ],
+   "common_mistakes": [
+    "Treating automated mastering as a full replacement for a skilled mastering engineer on critical releases",
+    "Uploading an already-loud or clipped mix and expecting the service to fix underlying mix problems",
+    "Assuming one automated result fits every playback target without checking loudness and true-peak levels"
+   ],
+   "scenario_contexts": [
+    "Mastering a demo quickly for a client to review before a full session",
+    "Producing a streaming-ready master on a tight budget",
+    "Comparing an automated master against a manual one to evaluate results"
+   ]
+  },
+  {
+   "id": "f0741c05-2d6c-4d39-8ae0-efbe2c104a6d",
+   "term": "Combat music",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "In video game audio, the music that plays during combat or battle sequences—usually a more energetic, driving cue that contrasts with exploration or ambient music and is triggered when the player enters a fight.",
+   "plain_english": "It is the fast, exciting music that plays while you are fighting enemies in a game. When the fight ends, the game usually switches back to calmer music.",
+   "purpose_function": "It raises energy and tension during fights, cueing the player that they are in danger and reinforcing the pace of the action.",
+   "practical_application": "An audio implementer sets combat music to trigger when enemies engage and to transition back to exploration music—often at a musical boundary—when the threat clears.",
+   "category": "Game Audio",
+   "related_terms": [
+    "Boss music",
+    "Defeat music",
+    "Adaptive music",
+    "Delayed transition"
+   ],
+   "common_mistakes": [
+    "Cutting abruptly between exploration and combat music instead of using a musical transition",
+    "Assuming combat music must always be fast and loud rather than fitting the game's tone",
+    "Looping a single combat cue with no variation, causing listener fatigue in long fights"
+   ],
+   "scenario_contexts": [
+    "Switching from ambient exploration music to combat music when a fight starts",
+    "Layering additional instruments as more enemies appear",
+    "Returning to background music at the next bar after combat ends"
+   ]
+  },
+  {
+   "id": "7bec3ce6-53e3-4b65-b5ec-f49e8c8f269f",
+   "term": "Creative acceptance test",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "A review step in which a deliverable is evaluated against the agreed creative brief or artistic intent—rather than only its technical specifications—to decide whether the client or creative lead accepts it as meeting the intended sound and feel.",
+   "plain_english": "It is a check to see if a mix actually sounds the way the client asked for, not just whether it meets the tech rules. It is the 'does this feel right?' sign-off.",
+   "purpose_function": "It confirms that subjective, artistic requirements are satisfied before final acceptance, catching mismatches between what was delivered and the creative vision.",
+   "practical_application": "A mixer plays the near-final mix for the artist or director against the brief, and only moves to delivery once the creative stakeholders sign off.",
+   "category": "Quality Control",
+   "related_terms": [
+    "Creative checklist",
+    "Delivery certification",
+    "Broadcast compliance verification",
+    "Delivery master"
+   ],
+   "common_mistakes": [
+    "Confusing creative acceptance (artistic approval) with technical compliance checks like loudness or clipping",
+    "Skipping written sign-off, so later disputes arise over whether the mix met the brief",
+    "Judging against the engineer's taste instead of the client's stated creative goals"
+   ],
+   "scenario_contexts": [
+    "Playing a mix for a director to confirm it matches the emotional intent of a scene",
+    "Getting artist approval on a mix's vibe before mastering",
+    "Reviewing a jingle against the ad agency's creative brief before final delivery"
+   ]
+  },
+  {
+   "id": "fbf0dee9-1559-4fd2-aa70-2bbea73fb89b",
+   "term": "Creative checklist",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "A predefined list of creative or artistic tasks and decisions to review before a mix is considered complete—covering elements such as arrangement balance, effects, and automation, and adherence to the creative brief—used to ensure nothing is overlooked.",
+   "plain_english": "It is a to-do list of artistic things to check before you call a mix finished, like 'are the vocals loud enough?' It helps make sure you did not forget anything.",
+   "purpose_function": "It standardizes the final creative review so recurring artistic details are checked consistently, reducing missed elements from project to project.",
+   "practical_application": "Before printing a mix, an engineer runs through a creative checklist confirming vocal level, effect returns, automation moves, and brief requirements are handled.",
+   "category": "Quality Control",
+   "related_terms": [
+    "Creative acceptance test",
+    "Delivery certification",
+    "Bus validation",
+    "Clipping validation"
+   ],
+   "common_mistakes": [
+    "Treating the checklist as a substitute for critical listening rather than a support for it",
+    "Mixing technical delivery items (formats, loudness) with creative items and losing focus on either",
+    "Reusing a generic checklist without adapting it to the project's specific brief"
+   ],
+   "scenario_contexts": [
+    "Running a final creative pass before bouncing a song",
+    "Onboarding an assistant with the studio's standard creative checklist",
+    "Ensuring each track on an album meets the same set of creative goals"
+   ]
+  },
+  {
+   "id": "b0fb497a-1d60-45fb-9244-8ac9b79e8aa1",
+   "term": "Cycle action",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "In REAPER (via the SWS/S&M extension), a user-programmable command that performs a different action or step each time its shortcut is triggered, cycling through a defined sequence of actions or states, so one key command can step through multiple behaviors in turn.",
+   "plain_english": "It is a shortcut in Reaper that does a different thing each time you press it, moving through a list you set up. One button, several jobs in a set order.",
+   "purpose_function": "It lets a user pack several related commands onto one shortcut and step through them, streamlining repetitive multi-step workflows and toggles.",
+   "practical_application": "An editor builds a cycle action so one key repeatedly steps through a set of zoom levels or track views during editing.",
+   "category": "Workflow",
+   "related_terms": [
+    "Custom action",
+    "Macro",
+    "Key command",
+    "Action list"
+   ],
+   "common_mistakes": [
+    "Confusing a cycle action (steps through actions on repeated presses) with a custom action/macro (runs all its steps at once)",
+    "Forgetting that cycle actions require the SWS/S&M extension to be installed in REAPER",
+    "Losing track of the cycle's current state, so the shortcut appears to do the 'wrong' thing"
+   ],
+   "scenario_contexts": [
+    "Assigning one shortcut to step through several zoom presets in REAPER",
+    "Toggling between mixer and arrange views with repeated presses",
+    "Rotating through take lanes while comping"
+   ]
+  },
+  {
+   "id": "e1a64248-9646-4ff2-aeaf-18ff4a394388",
+   "term": "Dashboard",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "A consolidated screen or window that presents key status information and controls at a glance; in Pro Tools specifically, the Dashboard is the window shown when creating or opening a session, where the user sets sample rate, bit depth, file type, and I/O settings and locates recent or existing sessions.",
+   "plain_english": "It is a single screen that shows the important info and controls in one place. In Pro Tools, it is the window that pops up to set up or open a session.",
+   "purpose_function": "It centralizes the settings and choices needed to start work, so the user configures a session or reviews status from one place instead of hunting through menus.",
+   "practical_application": "When launching Pro Tools, an engineer uses the Dashboard to create a new session at 48 kHz / 24-bit or to reopen a recent project.",
+   "category": "Interface",
+   "related_terms": [
+    "Session",
+    "Sample rate",
+    "Bit depth",
+    "Audio Connections window"
+   ],
+   "common_mistakes": [
+    "Rushing past the Dashboard and creating a session at the wrong sample rate or bit depth",
+    "Assuming the Dashboard is only for new sessions when it also opens recent and existing ones",
+    "Confusing a software 'dashboard' overview with a hardware metering panel"
+   ],
+   "scenario_contexts": [
+    "Setting sample rate and bit depth when starting a new Pro Tools session",
+    "Reopening a recent project from the Dashboard at launch",
+    "Choosing file type and I/O settings before recording begins"
+   ]
+  },
+  {
+   "id": "8def116f-2cbd-467c-b584-6cd98cd3459a",
+   "term": "Defeat music",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "In video game audio, a musical cue that plays when the player loses—such as a game-over, death, or failure state—typically a short, downbeat or resolving piece that signals the negative outcome.",
+   "plain_english": "It is the sad or 'you lost' music that plays when you fail or die in a game. It tells you the round is over and you did not win.",
+   "purpose_function": "It gives clear emotional feedback that the player has failed, marking the end of an attempt and setting the tone before a retry.",
+   "practical_application": "A composer writes a brief defeat cue, and an implementer triggers it on the game-over or death event, usually stopping the gameplay music first.",
+   "category": "Game Audio",
+   "related_terms": [
+    "Boss music",
+    "Combat music",
+    "Adaptive music",
+    "Delayed transition"
+   ],
+   "common_mistakes": [
+    "Confusing defeat music (a loss cue) with victory or level-complete music",
+    "Letting gameplay music keep playing under the defeat cue instead of stopping or ducking it",
+    "Making the defeat cue so long it delays the player's retry"
+   ],
+   "scenario_contexts": [
+    "Playing a game-over theme when the player's health reaches zero",
+    "Triggering a short failure sting when a timed mission is lost",
+    "Transitioning from combat music to a defeat cue on player death"
+   ]
+  },
+  {
+   "id": "a7cfdb4b-261f-4230-b160-ef6729a17031",
+   "term": "Delayed transition",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "A change from one section, cue, or mix state to another that is intentionally deferred—executing only after a set time delay or at the next musical boundary (such as the next bar or an exit marker)—rather than taking effect the instant it is triggered.",
+   "plain_english": "It is a switch between two parts that waits for the right moment instead of happening right away. Like waiting for the end of a musical phrase before changing the song.",
+   "purpose_function": "It keeps changes musical and smooth by aligning them to a natural point, avoiding abrupt jumps when a cue or state change is triggered off-beat.",
+   "practical_application": "In interactive game music, an implementer sets a combat-to-explore transition to wait until the next bar, so the music switches cleanly after the trigger.",
+   "category": "Transitions",
+   "related_terms": [
+    "Bar-aligned transition",
+    "Beat-aligned transition",
+    "Combat music",
+    "Adaptive music"
+   ],
+   "common_mistakes": [
+    "Confusing a delayed transition (deferred to a sync point) with a slow crossfade, which is about fade length, not timing",
+    "Setting the delay so long the change feels disconnected from its trigger",
+    "Forgetting to define an exit point, so the transition waits far longer than intended"
+   ],
+   "scenario_contexts": [
+    "Waiting for the next bar before switching from exploration to combat music",
+    "Delaying a mix scene change until a song section ends",
+    "Scheduling a stinger to land on the next downbeat"
+   ]
+  },
+  {
+   "id": "cbcaa623-3aa8-4e25-98b0-fcac50facade",
+   "term": "Distortion validation",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "The quality-control step of confirming that a finished mix or master contains no unwanted distortion, checking for digital clipping, inter-sample (true-peak) overs, and excess total harmonic distortion against accepted limits before the audio is delivered.",
+   "plain_english": "It means checking the final track to make sure the sound is clean and not crackling or breaking up. You look at the meters and listen closely to catch any harsh, clipped spots before you send it out.",
+   "purpose_function": "It exists to catch level and processing errors that add harshness or crackle, ensuring the delivered audio plays back cleanly and meets accepted peak and distortion limits on every system.",
+   "practical_application": "An engineer runs a true-peak meter and does a focused listen on headphones and monitors at the end of a session, flagging any clip indicators or audible breakup before bouncing the final file.",
+   "category": "Metering & QC",
+   "related_terms": [
+    "Distortion prevention",
+    "Dynamic-range validation",
+    "Noise-floor validation",
+    "Headroom preservation",
+    "True-peak metering"
+   ],
+   "common_mistakes": [
+    "Assuming a mix is clean because it sounds fine on one system, without checking meters or a second set of monitors",
+    "Confusing intentional, musical distortion such as a driven guitar with unwanted digital clipping",
+    "UNSAFE: Cranking monitor level to hunt for faint distortion, risking hearing damage from prolonged loud exposure"
+   ],
+   "scenario_contexts": [
+    "Final QC pass on a master before uploading to a streaming distributor",
+    "Checking a location dialogue recording for mic-preamp overload before the mix",
+    "Verifying a bounced stem has no inter-sample peaks after limiting"
+   ]
+  },
+  {
+   "id": "2806e872-664c-490d-9c05-52dc61956ed8",
+   "term": "Dynamic score",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "A musical score that changes in real time in response to user actions or program state, rather than playing back as a fixed linear cue; also called adaptive or interactive music, its layers, sections, or parameters are altered on the fly to match on-screen events.",
+   "plain_english": "It is game or app music that changes as you play, instead of staying the same. When the action heats up, the music can grow more intense to match it.",
+   "purpose_function": "It keeps music matched to unpredictable, user-driven events, sustaining mood and tension without relying on a fixed timeline.",
+   "practical_application": "A game composer builds the score as stems and sections, then uses audio middleware to add or remove layers and trigger transitions as the player moves between calm and combat.",
+   "category": "Game Audio",
+   "related_terms": [
+    "Music switch",
+    "Music transition rule",
+    "Exploration music",
+    "Music synchronization point",
+    "Music-only stem"
+   ],
+   "common_mistakes": [
+    "Composing one long linear track and expecting it to feel interactive without stems or middleware logic",
+    "Not matching musical keys and tempos across sections, so transitions clash",
+    "Layering too many parts at once, muddying the mix when several states trigger together"
+   ],
+   "scenario_contexts": [
+    "Combat music intensifying as more enemies appear in a video game",
+    "Menu music smoothly shifting into gameplay music when a level loads",
+    "An interactive exhibit whose music responds to visitor movement"
+   ]
+  },
+  {
+   "id": "c25caee0-8614-416f-970e-508a0c0ae1ac",
+   "term": "eMastered",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "eMastered is a commercial cloud-based automated mastering platform that uses machine-learning algorithms to analyze an uploaded mix and apply mastering processing such as EQ, compression, stereo-width, and level adjustment, producing a finished master with user controls for intensity and reference-track matching.",
+   "plain_english": "It is an online service that masters your song for you using software instead of a person. You upload your mix, and it polishes the sound and gives you a finished, louder version.",
+   "purpose_function": "It offers a fast, low-cost route to a release-ready master without booking a mastering engineer, aimed mainly at independent artists working to a budget.",
+   "practical_application": "A producer uploads a stereo mixdown, picks a mastering intensity or a reference track, previews the result, and downloads the master, often as a quick check before deciding whether to hire a human engineer.",
+   "category": "Mastering Tools",
+   "related_terms": [
+    "Mastering",
+    "Reference track",
+    "Loudness normalization",
+    "Dynamic-range validation",
+    "Final release authorization"
+   ],
+   "common_mistakes": [
+    "Treating an automated master as a fix for a poor mix, when mastering cannot repair balance or arrangement problems",
+    "Chasing maximum loudness and losing dynamic range and transient punch",
+    "Skipping a critical listen and QC of the returned master on trusted monitors"
+   ],
+   "scenario_contexts": [
+    "An independent artist mastering a single on a tight budget before a streaming release",
+    "A producer generating a quick reference master to gauge how a mix compares to commercial tracks",
+    "A songwriter creating a polished demo to pitch to a label"
+   ]
+  },
+  {
+   "id": "29211841-fef3-4d66-8d29-000272e0b0dd",
+   "term": "Final production package",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "The complete set of finished deliverables handed off at the end of a production, typically including the approved final mix and master, alternate versions and stems, session or project files, and accompanying documentation such as track sheets, metadata, and cue sheets.",
+   "plain_english": "It is the full bundle of finished files you hand over when a project is done. It holds the final song plus extras like stems, notes, and the session, so others can use or revisit the work later.",
+   "purpose_function": "It gathers everything a client, label, or post house needs to release, archive, or revise the project, so nothing essential is missing after the team moves on.",
+   "practical_application": "At project close, an engineer bounces the master and stems, exports session files, writes up track and metadata sheets, and delivers them together as one organized, labeled package.",
+   "category": "Deliverables",
+   "related_terms": [
+    "Final mix session",
+    "Music-only stem",
+    "Final release authorization",
+    "Engineering sign-off",
+    "Nearfield printmaster"
+   ],
+   "common_mistakes": [
+    "Delivering only the final master and forgetting stems, alternate mixes, or session files the client later needs",
+    "Sending files with vague names and no track sheet or metadata, causing confusion downstream",
+    "Not confirming the client's required formats, sample rates, and bit depths before packaging"
+   ],
+   "scenario_contexts": [
+    "Handing a finished album's masters, stems, and documentation to a record label for release",
+    "Delivering a film mix package to a post-production house for the final conform",
+    "Archiving a completed project so it can be reopened and revised years later"
+   ]
+  },
+  {
+   "id": "cddaf31d-5989-471b-b443-8363dbfcd302",
+   "term": "Final release authorization",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "The formal approval that a finished master is cleared for release or distribution, given after quality control and client or label sign-off; it marks the point at which no further changes will be made and the audio can be manufactured, uploaded, or published.",
+   "plain_english": "It is the final 'yes, this is done, send it out' step. Once the client signs off and the checks pass, the song is locked and ready to release.",
+   "purpose_function": "It creates a clear, documented go/no-go point so files are not released before they are checked and approved, preventing costly recalls of wrong or faulty audio.",
+   "practical_application": "Before a distributor upload or disc replication, the engineer confirms QC has passed and obtains written client approval, then treats the master as final and locked.",
+   "category": "Workflow",
+   "related_terms": [
+    "Engineering sign-off",
+    "Final production package",
+    "Distortion validation",
+    "Final mix stage",
+    "Dynamic-range validation"
+   ],
+   "common_mistakes": [
+    "Releasing or sending files to manufacturing before written approval, then discovering an error too late",
+    "Skipping a final QC listen because the deadline is tight",
+    "Authorizing release from an unchecked or wrong file version, so the released audio differs from the approved one"
+   ],
+   "scenario_contexts": [
+    "Approving a master for upload to streaming platforms after client sign-off",
+    "Clearing a mastered album for CD or vinyl manufacturing",
+    "Signing off a broadcast mix as ready for air"
+   ]
+  },
+  {
+   "id": "9c7b2c5e-c14e-4423-bbb6-964acbfe1a99",
+   "term": "Group Suspension",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "Temporarily disabling the linking of mix or edit groups so that an action such as a fader move, edit, or automation change affects only the selected track instead of every member of the group; in Pro Tools this is the Suspend Groups command.",
+   "plain_english": "It is a way to switch off track grouping for a moment so you can tweak just one channel. Normally moving one grouped fader moves them all, so you pause the group to fix a single track.",
+   "purpose_function": "It lets an engineer make a quick, isolated adjustment to one grouped track without permanently ungrouping it, then restore linked control instantly.",
+   "practical_application": "While mixing a grouped drum kit, the engineer suspends groups (Command/Ctrl+Shift+G in Pro Tools) to nudge the snare fader alone, then re-enables groups to keep the kit linked.",
+   "category": "Mix Groups",
+   "related_terms": [
+    "Grouping matrix",
+    "VCA group",
+    "Mute group",
+    "Hands-on-faders",
+    "Mute automation pass"
+   ],
+   "common_mistakes": [
+    "Forgetting groups are suspended and then wondering why grouped moves no longer track together",
+    "Ungrouping tracks entirely to make one tweak, instead of briefly suspending groups",
+    "Assuming it affects only one group when the command disables group behavior globally"
+   ],
+   "scenario_contexts": [
+    "Nudging one drum in a grouped kit without moving the whole group",
+    "Fixing a single track's automation inside a linked edit group",
+    "Temporarily balancing one channel within a VCA-controlled section"
+   ]
+  },
+  {
+   "id": "b87b7e4e-904a-49c1-b3f0-7608cd2fcbca",
+   "term": "Music switch",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "In interactive and game audio, a change from one piece or section of music to another triggered by a game state or parameter rather than by a fixed timeline; in Wwise this is handled by a Music Switch Container that selects the appropriate music for the current Switch or State.",
+   "plain_english": "It is when a game swaps one piece of music for another as things change on screen. Move from a quiet area into a fight, and the music switches to match.",
+   "purpose_function": "It lets music follow unpredictable gameplay by choosing the right cue for the current situation, keeping the score in step with what the player is doing.",
+   "practical_application": "A game-audio implementer maps calm, tension, and combat cues to game states in middleware, so the engine switches music automatically as the player crosses those thresholds.",
+   "category": "Interactive Music",
+   "related_terms": [
+    "Dynamic score",
+    "Music transition rule",
+    "Music synchronization point",
+    "Music-only stem",
+    "Musical stinger"
+   ],
+   "common_mistakes": [
+    "Switching music instantly at any moment, causing an abrupt jump instead of a musical change",
+    "Not pairing switches with transition rules, so cues cut off mid-phrase",
+    "Building too many music states, making behavior hard to predict and test"
+   ],
+   "scenario_contexts": [
+    "Music changing when a player enters a boss arena",
+    "Switching from exploration to stealth music as the player is detected",
+    "Menu-to-gameplay music changes when a match starts"
+   ]
+  },
+  {
+   "id": "7fe17fd0-2622-4877-a611-7e67b0693502",
+   "term": "Music transition rule",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "In interactive music systems, a rule that defines how playback moves from a source musical segment to a destination one, specifying where the source may exit (immediately or on the next beat, bar, grid, or cue point), any fade or transition segment used, and where the destination begins, so state-driven music changes stay musical.",
+   "plain_english": "It is the set of instructions that tells the music how to change smoothly from one piece to the next. It waits for a good spot, like the end of a bar, so the switch sounds natural.",
+   "purpose_function": "It prevents jarring cuts when music changes with gameplay by controlling the timing and blending of each transition, keeping the score on beat and in phrase.",
+   "practical_application": "In Wwise, an implementer sets a transition rule to exit the source at the next bar with a short crossfade, so combat music enters cleanly when the player is attacked.",
+   "category": "Interactive Music",
+   "related_terms": [
+    "Music switch",
+    "Dynamic score",
+    "Music synchronization point",
+    "Music-only stem",
+    "Musical stinger"
+   ],
+   "common_mistakes": [
+    "Using immediate exit for everything, producing abrupt, unmusical jumps",
+    "Ignoring tempo and time-signature differences between segments, so transitions fall out of time",
+    "Forgetting to set a destination entry point, so the new cue starts in the wrong place"
+   ],
+   "scenario_contexts": [
+    "Setting music to change only on the next bar during a combat trigger",
+    "Adding a short transition segment between exploration and boss music",
+    "Matching exit and entry cue points so a stinger lands on the beat"
+   ]
+  },
+  {
+   "id": "8cedf0de-8251-42ed-9a4c-da3f4c2ee87a",
+   "term": "Nanosampler",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "Nanosampler is the sample-playback instrument plug-in bundled with MOTU Digital Performer; samples are dragged into its waveform display and played from a MIDI keyboard, with modes for pitched playback across the keys, one-shot triggering, and automatic slicing, plus time-stretch/pitch-shift, filter, envelopes, and an LFO.",
+   "plain_english": "It is a built-in instrument in the Digital Performer program that lets you play sounds from your keyboard. You drop in an audio clip, and it turns that clip into a playable instrument or drum kit.",
+   "purpose_function": "It gives Digital Performer users a quick way to turn any audio sample into a playable, tunable instrument without leaving the DAW.",
+   "practical_application": "A DP user drags a vocal or loop into Nanosampler, chooses Classic, 1-Shot, or Slice mode, and plays or sequences it via MIDI, shaping it with the built-in filter and envelopes.",
+   "category": "Virtual Instruments",
+   "related_terms": [
+    "Digital Performer project",
+    "Drum multisample",
+    "Sampler",
+    "One-shot",
+    "Time-stretching"
+   ],
+   "common_mistakes": [
+    "Expecting it to work as a full REX loop player, when it does not trigger individual REX slices or time-stretch independently of pitch",
+    "Loading long samples in Classic mode and getting unwanted pitch changes across the keyboard",
+    "Forgetting to set the right playback mode (Classic, 1-Shot, or Slice) for the material"
+   ],
+   "scenario_contexts": [
+    "Turning a one-shot vocal phrase into a playable keyboard instrument in Digital Performer",
+    "Slicing a drum loop across MIDI notes to re-sequence a beat",
+    "Building a quick drum kit from individual hit samples inside DP"
+   ]
+  },
+  {
+   "id": "d238425c-0814-46f8-bf9d-257a05751da4",
+   "term": "Ozone",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": "beginner",
+   "definition": "iZotope Ozone is a modular mastering software suite, available as a plug-in and standalone application, that combines processing modules such as an equalizer, dynamics, multiband exciter, stereo imager, and a peak-limiting Maximizer together with metering, used to finalize a mix into a distribution-ready master.",
+   "plain_english": "Ozone is a mastering program. It puts many polishing tools in one place, like EQ, compression, and a loudness limiter. Engineers use it as the last step to make a song sound balanced and ready to release.",
+   "purpose_function": "It exists to provide an integrated mastering chain and consistent metering in one interface, so an engineer can shape tonal balance, control dynamics, adjust stereo width, and raise loudness on a finished mix without patching together separate plug-ins.",
+   "practical_application": "A technician loads Ozone on the stereo/master bus or in its standalone editor and uses its modules, reference tools, and meters to match a target tonal balance and hit a required integrated loudness and true-peak ceiling before export.",
+   "category": "Mastering Software",
+   "related_terms": [
+    "Maximizer",
+    "Limiter",
+    "True peak",
+    "Integrated loudness",
+    "Mastering",
+    "Stereo imaging"
+   ],
+   "common_mistakes": [
+    "Treating the Master Assistant or a preset as a finished master rather than a starting point that still needs critical listening",
+    "Pushing the Maximizer for maximum loudness and introducing audible distortion or true-peak overshoots",
+    "Expecting mastering in Ozone to repair a poor balance that should have been fixed in the mix"
+   ],
+   "scenario_contexts": [
+    "Preparing a final stereo master to meet streaming loudness and true-peak targets before upload",
+    "Matching the tonal balance of a mix to a commercial reference track",
+    "Applying gentle, consistent bus processing and metering across an album"
+   ]
+  },
+  {
+   "id": "acf04dd8-ddb2-42e9-a160-87e44553322a",
+   "term": "Peak validation",
+   "topic": "Mix Fundamentals & Workflow",
+   "difficulty": null,
+   "definition": "Peak validation is the quality-control process of measuring and confirming that an audio file's peak levels, including inter-sample (true) peaks, stay at or below a defined ceiling and meet the delivery specification, so the signal does not clip on playback or when re-encoded.",
+   "plain_english": "Peak validation means checking that the loudest points in a track never go over the safe limit. It is like making sure nothing pokes above a line before you send the file, so it will not crackle or distort.",
+   "purpose_function": "It exists to catch clipping and true-peak overshoots before delivery, protecting the audio from distortion added by converters and lossy encoders, which can push inter-sample peaks above 0 dBFS.",
+   "practical_application": "An engineer reads a true-peak meter during export or in a metering tool and confirms peaks sit at or below the required ceiling, often around -1 dBTP for streaming, re-limiting if any overshoot appears.",
+   "category": "Quality Control",
+   "related_terms": [
+    "True peak",
+    "Clipping",
+    "Peak meter",
+    "dBFS",
+    "Limiter",
+    "Loudness normalization"
+   ],
+   "common_mistakes": [
+    "Reading only the sample-peak meter and missing inter-sample (true) peaks that exceed 0 dBFS after conversion",
+    "Assuming a file that reads 0 dBFS is safe for lossy encoding, which can raise true peaks further",
+    "Confusing peak level with loudness (LUFS), which measure different things"
+   ],
+   "scenario_contexts": [
+    "Verifying a master meets a -1 dBTP true-peak ceiling before uploading to a streaming platform",
+    "Checking a mix or stems for clipping before sending to mastering",
+    "Confirming a broadcast deliverable meets the true-peak limit of its loudness standard"
+   ]
+  }
+ ]
+}

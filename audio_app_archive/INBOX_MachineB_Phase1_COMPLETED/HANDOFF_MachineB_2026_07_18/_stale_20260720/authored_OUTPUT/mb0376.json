@@ -1,0 +1,324 @@
+{
+ "batch": 376,
+ "topic": "Winds, Brass & Organ",
+ "authored": [
+  {
+   "id": "6538c72e-ff2e-4ef3-bbc7-22a2d5e79f27",
+   "term": "Reed-stop snarl",
+   "fields": {
+    "definition": "The aggressive, buzzing, brassy timbre of a pipe organ's reed stops — ranks whose pipes sound by a vibrating brass tongue beating against a shallot rather than by an air jet — in which prominent upper harmonics give a raspy, snarling edge, most notably in chorus reeds such as the Trumpet, Bombarde or Trompeta.",
+    "plain_english": "On a pipe organ, some pipes make sound with a small vibrating metal tongue instead of a plain jet of air. These reed pipes have a buzzy, brassy growl. That harsh edge is called the snarl.",
+    "purpose_function": "Reed stops add power, bite and a brass-like voice to the organ chorus; the snarling edge lets them cut through full organ and carry solo lines over the smoother flue ranks.",
+    "practical_application": "An organist hears reed snarl when drawing chorus reeds for a big tutti, and a voicer or tuner sets the tongue curvature and tuning wire to keep the snarl even across the rank without turning harsh or spitting.",
+    "category": "Organ timbre",
+    "related_terms": [
+     "Reed stop",
+     "Shallot",
+     "Chorus reed",
+     "Flue pipe",
+     "Stop-change thunk",
+     "Voicing"
+    ],
+    "common_mistakes": [
+     "Assuming every organ pipe is a reed; most stops are flue (labial) pipes that sound with an air jet, not a beating tongue.",
+     "Mistaking a musical reed snarl for a fault, when a rough, spitting or uneven reed usually means the tongue, tuning wire or shallot needs regulating.",
+     "Thinking the snarl comes from the resonator alone; the tongue and shallot set the buzz, and the resonator shapes and reinforces it."
+    ],
+    "scenario_contexts": [
+     "Drawing chorus reeds like the Trumpet and Bombarde for a full-organ climax and hearing them snarl above the flue chorus.",
+     "A voicer regulating a new reed rank so the snarl is even from bass to treble.",
+     "A tuner curving the tongue and setting the tuning wire on a Trompeta to control brightness and edge."
+    ]
+   },
+   "sources": [
+    "Audsley, The Art of Organ Building",
+    "Grove Dictionary of Music and Musicians (organ stop; reed pipes)",
+    "Fletcher & Rossing, The Physics of Musical Instruments (organ reed pipes)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4a683819-2393-48dd-b3a6-bd5d50931237",
+   "term": "Rhaita/mizmar blare",
+   "fields": {
+    "definition": "The loud, piercing, buzzy tone of the rhaita (Maghrebi ghaita) and mizmar — conical-bore double-reed shawms of North Africa and the Arab world, related to the zurna — whose wide, open reed and flaring bell produce a penetrating, blaring sound suited to outdoor and ceremonial playing.",
+    "plain_english": "The rhaita and mizmar are loud folk oboes from North Africa and the Middle East. Their big double reed and open bell give a bright, buzzy blast that carries far outdoors. That piercing sound is the blare.",
+    "purpose_function": "The blaring tone lets these shawms lead outdoor processions, weddings and dances without amplification; the double reed and conical bore make the instrument naturally loud and rich in high harmonics.",
+    "practical_application": "An engineer capturing a rhaita or mizmar expects very high levels and sharp upper harmonics, so they pad the input, back the mic off and watch for harshness in the upper mids.",
+    "category": "Instrument timbre",
+    "related_terms": [
+     "Zurna",
+     "Shawm",
+     "Double reed",
+     "Circular breathing",
+     "Conical bore",
+     "Reed-stop snarl"
+    ],
+    "common_mistakes": [
+     "Calling the rhaita or mizmar a single-reed instrument; both are double-reed shawms like the zurna, not clarinet-type instruments.",
+     "UNSAFE: Close-miking a rhaita or mizmar at full blare with no pad and no hearing protection; these shawms reach very high sound-pressure levels that risk hearing damage and input overload.",
+     "Treating the buzzy blare as distortion to be equalized away, when the strong high harmonics are the instrument's real voice."
+    ],
+    "scenario_contexts": [
+     "Miking a mizmar in an Egyptian wedding band and adding a pad to handle the loud, piercing level.",
+     "A world-music session where the rhaita must sit over drums without swamping the mix.",
+     "An engineer gently taming harsh upper-mid blare while keeping the instrument's character."
+    ]
+   },
+   "sources": [
+    "Baines, Woodwind Instruments and Their History",
+    "Grove Dictionary of Music and Musicians (ghaita; mizmar; zurna)",
+    "OSHA 29 CFR 1910.95 (occupational noise exposure)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "30a664c3-99b4-4446-9f21-b81b269a2c59",
+   "term": "Rip/smear (brass)",
+   "fields": {
+    "definition": "Two expressive brass approaches to a note: a rip is a fast, aggressive upward flourish that races through the harmonic series into a target pitch, while a smear is a slower slide or bend that glides into or between pitches using lip and partial-valve control.",
+    "plain_english": "On brass instruments, a rip is a quick, rough slide up into a note. A smear is a slower slide or bend into it. Think of a trumpet player scooping up to a big note in a jazz band.",
+    "purpose_function": "Rips and smears add jazz and blues expression, letting brass players attack notes with excitement or ease instead of hitting them cleanly; they shape phrasing and style in big-band and pop writing.",
+    "practical_application": "An arranger notates a rip or smear so brass players know to slide into the note, and an engineer mixing the section leaves headroom for the loud, bright peak a rip lands on.",
+    "category": "Brass technique",
+    "related_terms": [
+     "Glissando",
+     "Fall (brass)",
+     "Doit",
+     "Scoop",
+     "Harmonic series",
+     "Half-valve"
+    ],
+    "common_mistakes": [
+     "Confusing a rip with a clean glissando; a rip is a fast, rough flourish through the harmonics, not a smooth continuous slide.",
+     "Playing a smear as a hard, in-tune interval, when the effect depends on bending lazily into the pitch rather than snapping to it.",
+     "Notating a rip with no target note, leaving the player unsure where the flourish should land."
+    ],
+    "scenario_contexts": [
+     "A big-band trumpet section ripping up to a shout-chorus hit.",
+     "A trombonist smearing into a bluesy melody note.",
+     "An arranger marking rips and smears in a horn chart for a pop record."
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Kennan & Grantham, The Technique of Orchestration",
+    "Sebesky, The Contemporary Arranger"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b4daca01-1616-4199-80dc-e8b50c587897",
+   "term": "Serpent/ophicleide rasp",
+   "fields": {
+    "definition": "The rough, buzzing, gravelly bass tone of the serpent — a curved, leather-covered wooden lip-reed instrument of the cornett family with open finger holes — and of the ophicleide, its 19th-century keyed-brass successor; both are blown with a cup mouthpiece and noted for a coarse, rasping voice that filled the bass before the tuba.",
+    "plain_english": "The serpent and ophicleide are old bass horns you buzz your lips into, like a tuba's ancestors. Their sound is rough and buzzy. That gritty growl is called the rasp.",
+    "purpose_function": "These instruments supplied the bass voice in early wind bands, churches and orchestras before the tuba; the rasp comes from wide finger or key holes and a large cup mouthpiece that make the low notes speak with a coarse edge.",
+    "practical_application": "A player or engineer working with period instruments expects the serpent's and ophicleide's uneven, rasping low notes and mics them close to capture body without exaggerating the buzz.",
+    "category": "Instrument timbre",
+    "related_terms": [
+     "Cornett",
+     "Ophicleide",
+     "Cup mouthpiece",
+     "Lip reed",
+     "Tuba",
+     "Keyed bugle"
+    ],
+    "common_mistakes": [
+     "Classing the serpent as a woodwind because it is made of wood; it is sounded by buzzing the lips, so acoustically it belongs with the brass or lip-reed family.",
+     "Treating the natural rasp as a defect, when the coarse tone is characteristic of these instruments rather than a fault.",
+     "Assuming the ophicleide is valved like a modern tuba; it uses keys and tone holes, like a large keyed bugle."
+    ],
+    "scenario_contexts": [
+     "Recording a period-instrument ensemble where the serpent doubles the bass line in a church acoustic.",
+     "An ophicleide standing in for a tuba in a historically informed performance of early Romantic music.",
+     "An engineer choosing mic placement to capture the rasp without harshness."
+    ]
+   },
+   "sources": [
+    "Baines, Brass Instruments: Their History and Development",
+    "Grove Dictionary of Music and Musicians (serpent; ophicleide)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "47d1b0de-f64e-428b-b64f-55b5f9bc9f46",
+   "term": "Sheng chord tone",
+   "fields": {
+    "definition": "The sheng's ability to sound several of its free-reed bamboo pipes at once, producing chords or intervals rather than a single line — traditionally parallel fourths and fifths and, on modern instruments, full harmonies — since each reed speaks only when its pipe's finger hole is covered and the player blows or draws air.",
+    "plain_english": "The sheng is a Chinese mouth organ made of bamboo pipes. Each pipe has a small vibrating metal reed. Unlike a flute or trumpet, it can play several notes at once, so a player can hold a whole chord.",
+    "purpose_function": "Chord playing lets the sheng provide harmony and sustained accompaniment within an ensemble, a rare trait among wind instruments; the free reeds give steady tone whether the player blows out or draws in.",
+    "practical_application": "An arranger uses the sheng for held chords and clusters under a melody, and an engineer mics it to capture the blend of several pipes without favoring one reed.",
+    "category": "Instrument technique",
+    "related_terms": [
+     "Free reed",
+     "Mouth organ",
+     "Sho",
+     "Tone cluster",
+     "Reed stop",
+     "Harmony"
+    ],
+    "common_mistakes": [
+     "Thinking the sheng plays only one note at a time like a flute, when it is built to sound several pipes together for chords.",
+     "Assuming a pipe sounds when its hole is open; a sheng reed speaks only when the finger hole is covered.",
+     "Expecting sound on the out-breath only, when the free reeds sound on both blowing and drawing air."
+    ],
+    "scenario_contexts": [
+     "A sheng holding sustained chords beneath a dizi melody in a Chinese orchestra.",
+     "A modern keyed sheng playing full harmonies in a contemporary work.",
+     "Miking a sheng to blend its stacked pipe tones evenly."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music and Musicians (sheng)",
+    "Fletcher & Rossing, The Physics of Musical Instruments (free reeds)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "aee3bb6d-d78e-4ad5-affa-57e603a9de3a",
+   "term": "Shofar blast",
+   "fields": {
+    "definition": "A tone sounded on the shofar — an ancient natural horn made from a ram's or other kosher animal's horn and blown by buzzing the lips like a brass instrument — which, having no finger holes or valves, yields only two or three harmonic pitches; the ritual calls tekiah, shevarim and teruah are its prescribed blasts in Jewish liturgy.",
+    "plain_english": "A shofar is a ram's horn you play by buzzing your lips, like a simple trumpet with no buttons. Because it has no finger holes, it makes just two or three notes. The loud calls it sounds are its blasts.",
+    "purpose_function": "The shofar's blast serves as a ceremonial signal and call in Jewish worship, above all at Rosh Hashanah and Yom Kippur; with no valves or holes it relies on lip tension to reach its few available pitches.",
+    "practical_application": "An engineer recording a shofar in a service expects a loud, buzzy, narrow-pitch tone and places the mic off the bell axis so the blasts do not overload the input.",
+    "category": "Instrument timbre",
+    "related_terms": [
+     "Natural horn",
+     "Lip reed",
+     "Harmonic series",
+     "Overblowing",
+     "Embouchure",
+     "Cup mouthpiece"
+    ],
+    "common_mistakes": [
+     "Thinking the shofar can play a melody, when with no holes or valves it sounds only two or three harmonics.",
+     "Assuming it is a woodwind; the shofar is lip-blown, so acoustically it is a natural horn in the brass family.",
+     "Expecting a smooth, refined tone, when the shofar's voice is meant to be raw and penetrating."
+    ],
+    "scenario_contexts": [
+     "Miking a shofar for a Rosh Hashanah service broadcast.",
+     "Capturing the tekiah and teruah calls cleanly despite their loud, buzzy peaks.",
+     "A sound designer using a shofar blast as a signal or dramatic effect."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music and Musicians (shofar)",
+    "Baines, Brass Instruments: Their History and Development (animal-horn lip instruments)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f73c62e4-0041-48f5-8011-a36ebe2c7918",
+   "term": "Spit/water gurgle",
+   "fields": {
+    "definition": "A bubbling or crackling sound produced when condensation from the player's warm breath collects in the bore of a wind or brass instrument and disturbs the airflow, typically near valves, tone holes or tubing bends; it is cleared with a water key (spit valve), by emptying slides, or by swabbing.",
+    "plain_english": "When you blow warm breath into a horn, tiny water drops form inside, like fog on a cold window. When that water pools in the tubing, air bubbling through it makes a gurgle. Players open a little water key to drain it.",
+    "purpose_function": "The gurgle is a byproduct of condensation, not a musical feature; recognizing it tells the player to drain the instrument so notes speak cleanly instead of sputtering.",
+    "practical_application": "A brass player empties the water key during a rest to stop gurgling, and a live engineer learns to expect the odd bubbling noise and may edit or ride around it on a recording.",
+    "category": "Wind maintenance",
+    "related_terms": [
+     "Water key",
+     "Spit valve",
+     "Condensation",
+     "Bore",
+     "Swab",
+     "Valve"
+    ],
+    "common_mistakes": [
+     "Thinking the water is mostly saliva, when it is mainly condensation from warm, moist breath cooling inside the metal tubing.",
+     "Blaming a gurgle or airy note on the reed or embouchure when the bore simply needs draining.",
+     "Forgetting to empty the water key or slides during rests, so notes sputter at the worst moment."
+    ],
+    "scenario_contexts": [
+     "A trumpet player draining the water key between phrases to stop a gurgle.",
+     "An engineer hearing a bubbling noise on a trombone take and asking for another pass.",
+     "A tuba player emptying condensation from the slides during a long rehearsal."
+    ]
+   },
+   "sources": [
+    "Baines, Brass Instruments: Their History and Development",
+    "Fletcher & Rossing, The Physics of Musical Instruments (condensation in wind instrument bores)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3d55a63d-6e87-4412-bec5-7e7467bc69fb",
+   "term": "Stop-change thunk",
+   "fields": {
+    "definition": "The soft mechanical thump heard on a pipe organ when stops are drawn or retired — the drawknobs, sliders or combination-action pistons moving ranks into or out of play — an incidental noise of the stop action rather than a musical tone.",
+    "plain_english": "A pipe organ turns sets of pipes on and off using stops. When the player changes stops, the mechanism moves. You can hear a soft thunk, most of all when the preset buttons switch many stops at once.",
+    "purpose_function": "The thunk is a side effect of the stop or combination action engaging ranks; hearing it confirms the mechanism moved, though a well-regulated action keeps the noise low.",
+    "practical_application": "An organist times stop changes to musical rests to hide the thunk, and a technician regulates the combination action or slider motors when the noise grows loud or the change is sluggish.",
+    "category": "Organ mechanism",
+    "related_terms": [
+     "Stop (organ)",
+     "Combination action",
+     "Drawknob",
+     "Slider chest",
+     "Reed-stop snarl",
+     "Registration"
+    ],
+    "common_mistakes": [
+     "Mistaking a normal stop-change thunk for a mechanical fault, when a light thump is inherent to slider and combination actions.",
+     "Changing many stops during a quiet passage, letting the thunk intrude instead of hiding it in a louder moment or rest.",
+     "Ignoring a thunk that grows louder or uneven, which can signal a combination action or slider motor needing service."
+    ],
+    "scenario_contexts": [
+     "An organist hitting a general piston mid-piece and hearing the stops thunk in.",
+     "A technician regulating an electro-pneumatic combination action to quiet the change.",
+     "A recording engineer placing mics to minimize audible stop-change noise during a broadcast."
+    ]
+   },
+   "sources": [
+    "Audsley, The Art of Organ Building (stop action; combination action)",
+    "Grove Dictionary of Music and Musicians (organ; combination action)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a68c16c2-098e-4954-9197-40894d527fdf",
+   "term": "Strike-in squeal (bagpipe)",
+   "fields": {
+    "definition": "An unwanted squeal or squawk at the moment of strike-in — the start of the bagpipe, when the player fills the bag and strikes it to set the drone and chanter reeds sounding together — caused when the reeds fail to speak cleanly at once under uneven or insufficient bag pressure.",
+    "plain_english": "A piper starts the pipes by filling the bag and giving it a firm squeeze, so all the reeds sound at once. If the pressure is uneven, a reed can squeak before it settles. That messy start is the strike-in squeal.",
+    "purpose_function": "A clean strike-in is a mark of good piping; the squeal signals that bag pressure or reed setup is off, so removing it means the drones and chanter speak together crisply.",
+    "practical_application": "A piper practices a firm, even strike-in to avoid the squeal, and adjusts reed strength or seating when a reed squawks at start-up every time.",
+    "category": "Bagpipe technique",
+    "related_terms": [
+     "Chanter",
+     "Drone",
+     "Bag pressure",
+     "Reed",
+     "Cut-off",
+     "Strike-in"
+    ],
+    "common_mistakes": [
+     "Filling the bag too slowly or with uneven pressure, so a reed squeals instead of the pipes striking in cleanly.",
+     "Blaming the squeal on the chanter reed alone when a drone reed or the strike itself is at fault.",
+     "Neglecting reed seating and strength, letting the same reed squawk at every start-up."
+    ],
+    "scenario_contexts": [
+     "A piper striking in before a competition and fighting a chanter squeal.",
+     "A pipe band tuning up where uneven strike-ins cause squeals across the corps.",
+     "An engineer recording pipes and editing out a squeal at the start of a take."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music and Musicians (bagpipe)",
+    "Baines, Bagpipes (Pitt Rivers Museum monograph)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

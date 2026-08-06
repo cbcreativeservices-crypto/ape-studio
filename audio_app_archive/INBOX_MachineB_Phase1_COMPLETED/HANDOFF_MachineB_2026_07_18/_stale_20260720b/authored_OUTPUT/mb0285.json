@@ -1,0 +1,231 @@
+{
+ "batch": 285,
+ "topic": "Sampling Fundamentals & Instruments",
+ "authored": [
+  {
+   "id": "e6dbf388-35ba-4e53-8736-0047ce4aa75b",
+   "term": "Tape strip",
+   "fields": {
+    "definition": "A length of pre-recorded magnetic tape that stores a single note or sound in a tape-replay keyboard such as the Mellotron; each key draws its own tape strip across a playback head to sound the recorded tone.",
+    "plain_english": "A tape strip is a short piece of recording tape that holds one note. On a Mellotron, each key plays its own strip, like a row of tiny tape players.",
+    "purpose_function": "It holds the real recorded sound of an instrument so a keyboard can replay actual tones per key; it was the storage medium that made the Mellotron an early sample-playback instrument.",
+    "practical_application": "A technician cleans, aligns, and replaces worn tape strips on a Mellotron and checks that each strip returns fully to its start position after the key is released.",
+    "category": "Tape sampling",
+    "related_terms": ["Vintage Mellotron sound", "Tape wow", "Sample playback", "Multisampling", "Wow and flutter"],
+    "common_mistakes": [
+     "Thinking a tape strip loops forever; classic Mellotron strips play for only about eight seconds before the note must be released and reset.",
+     "Assuming keys share one tape; on a Mellotron every key has its own dedicated strip.",
+     "Handling old strips roughly, since aged tape becomes brittle and stretches easily."
+    ],
+    "scenario_contexts": [
+     "Restoring a vintage Mellotron and replacing brittle or stretched tape strips.",
+     "Explaining how early sample-playback keyboards stored sound before digital memory.",
+     "Recreating the Mellotron effect in software by mapping short samples to each key."
+    ]
+   },
+   "sources": ["Vail, The Synthesizer (Oxford University Press)", "Russ, Sound Synthesis and Sampling (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ac45eae1-63c9-48fd-a268-a06fe59ca689",
+   "term": "Tape wow",
+   "fields": {
+    "definition": "Tape wow is a slow, cyclic variation in reproduced pitch, typically below about 6 Hz, caused by uneven tape transport speed; it is the low-rate component of wow and flutter.",
+    "plain_english": "Tape wow is a slow wobble in pitch that happens when tape does not move at a steady speed. The sound drifts a little sharp and flat, like a record player slowing down and speeding up.",
+    "purpose_function": "As a fault it reveals speed-stability problems in a tape machine; as an effect it is deliberately emulated to give digital audio a warm, vintage, slightly unstable character.",
+    "practical_application": "A technician measures wow and flutter to a standard when servicing a tape deck, and a producer may add modeled tape wow to make sampled or synthesized sounds feel analog.",
+    "category": "Tape artifacts",
+    "related_terms": ["Wow and flutter", "Tape strip", "Vintage Mellotron sound", "Pitch modulation", "Flutter"],
+    "common_mistakes": [
+     "Confusing wow with flutter; wow is slow pitch drift while flutter is fast.",
+     "Blaming wow on the recording when it comes from uneven tape transport speed.",
+     "Thinking all wow is a defect; some producers add tape wow on purpose for a vintage feel."
+    ],
+    "scenario_contexts": [
+     "Adding subtle tape wow with a plugin to make a clean synth pad feel vintage.",
+     "Diagnosing a worn pinch roller or motor causing unwanted wow on a tape machine.",
+     "Teaching the difference between wow and flutter in an audio class."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "51c9bf7a-b352-42ea-9a82-a15766705a84",
+   "term": "Time-stretch sampling",
+   "fields": {
+    "definition": "Time-stretch sampling is digital processing that changes the duration of a sampled sound without altering its pitch, usually by resynthesizing or repositioning short overlapping segments of the audio.",
+    "plain_english": "Time-stretch sampling makes a sound longer or shorter without changing its pitch. It is like slowing down speech so you can still understand the words, just at a new speed.",
+    "purpose_function": "It lets a sample fit a new tempo or length while keeping its original pitch, decoupling time from pitch so loops and phrases can be matched to a project.",
+    "practical_application": "In a DAW a technician warps or stretches a loop to lock it to the session tempo, choosing an algorithm suited to drums, vocals, or complex material.",
+    "category": "Sample editing",
+    "related_terms": ["Pitch shifting", "Transient slicing", "Warp markers", "Granular synthesis", "Resampling"],
+    "common_mistakes": [
+     "Expecting extreme stretching to stay clean; large ratios add smearing or metallic artifacts.",
+     "Confusing time-stretching with pitch shifting; stretching changes length, not pitch.",
+     "Forgetting to pick the right transient or complexity mode for the material."
+    ],
+    "scenario_contexts": [
+     "Fitting a vocal sample to a new song tempo without changing its pitch.",
+     "Slowing a drum break for a remix while keeping the same key.",
+     "Lining up a loop to the project tempo in a DAW using warp or stretch."
+    ]
+   },
+   "sources": ["Roads, The Computer Music Tutorial (MIT Press)", "Russ, Sound Synthesis and Sampling (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ec9cf625-593e-4a10-bbfc-2200323a3cc0",
+   "term": "Transient slicing",
+   "fields": {
+    "definition": "Transient slicing is the automatic or manual segmentation of an audio sample at its transients, cutting it into individual hits or events that can be triggered, reordered, or re-timed independently.",
+    "plain_english": "Transient slicing cuts a sound into small pieces at each hit or beat. A drum loop can be split into single hits, so you can move or replay them one at a time.",
+    "purpose_function": "It breaks a continuous loop into playable pieces so the rhythm can follow tempo changes or be rearranged without relying on pitch-changing time-stretch.",
+    "practical_application": "A producer slices a drum loop into separate hits, maps them across a sampler or pads, and rebuilds or re-times the groove.",
+    "category": "Sample editing",
+    "related_terms": ["Beat slicing", "Time-stretch sampling", "Transient detection", "Sample chopping", "Warp markers"],
+    "common_mistakes": [
+     "Setting the sensitivity too high so quiet noises create false slices.",
+     "Confusing slicing with time-stretching; slicing cuts the audio into parts.",
+     "Slicing just after the start of a hit and losing the attack."
+    ],
+    "scenario_contexts": [
+     "Chopping a drum loop into single hits to rearrange the groove.",
+     "Preparing a loop so it follows tempo changes by triggering slices.",
+     "Extracting a single snare hit from a recorded break."
+    ]
+   },
+   "sources": ["Russ, Sound Synthesis and Sampling (Focal Press)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "949e5dc8-e134-47c4-993c-a790f96a02c4",
+   "term": "Tremolo sample",
+   "fields": {
+    "definition": "A tremolo sample is a recorded sample that captures an instrument played with tremolo — rapid repetition of a note or fast amplitude or bowing modulation — supplied as a distinct articulation within a sampled instrument.",
+    "plain_english": "A tremolo sample is a recording of an instrument played with a fast, shaky, repeating sound. Sample libraries include it so a keyboard can play that trembling effect.",
+    "purpose_function": "It provides a realistic trembling articulation in sample libraries so a player can call up authentic tremolo instead of faking it with a modulated volume envelope.",
+    "practical_application": "A composer selects a string or mandolin tremolo articulation, often through a keyswitch, to add tension or shimmer in a mock-up or score.",
+    "category": "Sample articulation",
+    "related_terms": ["Articulation", "Multisampling", "Sample library", "Vibrato", "Amplitude modulation"],
+    "common_mistakes": [
+     "Confusing tremolo, a change in volume or repetition, with vibrato, a change in pitch.",
+     "Looping a tremolo sample poorly so the pulse becomes uneven.",
+     "Assuming one tremolo speed fits every tempo; the rate may clash with the song."
+    ],
+    "scenario_contexts": [
+     "Loading a string tremolo articulation in an orchestral library for a tense scene.",
+     "Layering a tremolo sample under a pad for a shimmering texture.",
+     "Switching from a sustain to a tremolo articulation with a keyswitch."
+    ]
+   },
+   "sources": ["Russ, Sound Synthesis and Sampling (Focal Press)", "Adler, The Study of Orchestration"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1cd63e6a-a58c-4116-9367-016edb9c2467",
+   "term": "Unison detuning",
+   "fields": {
+    "definition": "Unison detuning is the slight pitch offsetting of two or more voices or oscillators sounding the same note, producing beating between the near-identical pitches and a thicker, wider timbre.",
+    "plain_english": "Unison detuning plays several copies of the same note slightly out of tune with each other. The tiny differences make the sound fuller and wider, like many singers on one note.",
+    "purpose_function": "It fattens and widens a sound by creating gentle beating between near-identical pitches, a core technique behind rich leads, pads, and supersaw tones.",
+    "practical_application": "A sound designer sets a synth to unison mode and dials in a small detune amount to thicken a lead, watching polyphony use since each stacked voice adds load.",
+    "category": "Synthesis technique",
+    "related_terms": ["Detune", "Voice allocation", "Chorus effect", "Oscillator", "Supersaw"],
+    "common_mistakes": [
+     "Adding too much detune so the note sounds out of tune instead of full.",
+     "Forgetting that detuned unison voices use more polyphony and processing power.",
+     "Confusing unison detune with a chorus effect, though they can sound similar."
+    ],
+    "scenario_contexts": [
+     "Thickening a lead synth by stacking detuned unison voices.",
+     "Programming a wide supersaw for an electronic track.",
+     "Adding gentle detune to a sampled pad so it sounds less static."
+    ]
+   },
+   "sources": ["Russ, Sound Synthesis and Sampling (Focal Press)", "Vail, The Synthesizer (Oxford University Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "645816be-f82a-4e9c-b5b5-3d99972ecc80",
+   "term": "Vintage Mellotron sound",
+   "fields": {
+    "definition": "The vintage Mellotron sound is the characteristic timbre of the Mellotron tape-replay keyboard: recorded instrument samples on tape reproduced with noticeable pitch instability, limited note length, tape noise, and a warm, wavering, lo-fi character.",
+    "plain_english": "The vintage Mellotron sound is the wobbly, breathy tone of an old tape keyboard. Its notes waver in pitch and sound a bit worn, which many people find warm and haunting.",
+    "purpose_function": "It denotes a recognizable retro texture — flutes, strings, choirs — prized for its imperfect, haunting quality and often emulated to evoke 1960s and 1970s recordings.",
+    "practical_application": "A producer picks a real or software Mellotron for a period-authentic string or choir part and often keeps its pitch drift and tape noise for character.",
+    "category": "Tape sampling",
+    "related_terms": ["Tape strip", "Tape wow", "Sample playback", "Multisampling", "Wow and flutter"],
+    "common_mistakes": [
+     "Thinking the Mellotron is a synthesizer; it plays back real recorded tape samples.",
+     "Expecting long sustained notes; original tape strips run out after a few seconds.",
+     "Assuming the wobble is a fault; the pitch drift is part of the classic sound."
+    ],
+    "scenario_contexts": [
+     "Adding a Mellotron flute or strings part to a retro-style song.",
+     "Choosing a software Mellotron for an authentic 1960s to 1970s texture.",
+     "Restoring an original Mellotron for a studio session."
+    ]
+   },
+   "sources": ["Vail, The Synthesizer (Oxford University Press)", "Russ, Sound Synthesis and Sampling (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "790ea4f2-1669-4ede-b600-39ceda1c9352",
+   "term": "Voice allocation",
+   "fields": {
+    "definition": "Voice allocation is the process by which a polyphonic synthesizer or sampler assigns incoming notes to its finite number of available voices, including how it reuses or steals voices when the voice limit is reached.",
+    "plain_english": "Voice allocation decides which notes a synth or sampler will play when only so many can sound at once. It is like having a set number of seats and choosing who sits down.",
+    "purpose_function": "It manages limited polyphony so the most important notes keep sounding, deciding which voice plays a new note and which older note is cut when voices run out.",
+    "practical_application": "A player configures voice-stealing or note-priority behavior so that held chords and sustained notes are not cut abruptly during busy passages.",
+    "category": "Voice management",
+    "related_terms": ["Polyphony", "Voice stealing", "Note priority", "Unison detuning", "Multitimbral"],
+    "common_mistakes": [
+     "Confusing a voice with a patch; a voice is one sounding note, not one instrument.",
+     "Not expecting voice stealing when you exceed the polyphony limit.",
+     "Assuming more voices are always free; each active voice uses processing power."
+    ],
+    "scenario_contexts": [
+     "Setting how a synth steals voices when a player holds many notes.",
+     "Choosing note-priority rules on a monophonic synth.",
+     "Managing polyphony on a sampler to avoid cut-off notes in a busy part."
+    ]
+   },
+   "sources": ["Roads, The Computer Music Tutorial (MIT Press)", "Russ, Sound Synthesis and Sampling (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b6974f94-e833-4ab9-8faf-1a70570a0fca",
+   "term": "Waveform folding",
+   "fields": {
+    "definition": "Waveform folding, or wavefolding, is a nonlinear synthesis technique that reflects the portions of a waveform exceeding a threshold back toward the center, adding harmonics and reshaping the timbre rather than simply clipping the peaks.",
+    "plain_english": "Waveform folding bends the loud peaks of a wave back on themselves. This folding adds bright, buzzy overtones and turns a plain tone into a richer one.",
+    "purpose_function": "It enriches a simple waveform with new overtones, creating bright, complex, often evolving tones that are central to West Coast and modular synthesis.",
+    "practical_application": "A synthesist feeds a sine or triangle wave into a wavefolder and modulates the fold amount with an envelope or LFO to generate moving, harmonically rich sounds.",
+    "category": "Synthesis technique",
+    "related_terms": ["Wavetable synthesis", "Waveshaping", "Frequency modulation", "Additive synthesis", "Distortion"],
+    "common_mistakes": [
+     "Confusing folding with clipping; clipping flattens peaks while folding turns them back.",
+     "Pushing the fold amount so high the tone becomes harsh and unstable.",
+     "Expecting only a subtle change; folding can strongly alter the timbre."
+    ],
+    "scenario_contexts": [
+     "Using a wavefolder to add bright harmonics to a plain sine or triangle wave.",
+     "Modulating fold amount with an envelope for evolving timbres.",
+     "Designing aggressive West Coast style synth tones."
+    ]
+   },
+   "sources": ["Roads, The Computer Music Tutorial (MIT Press)", "Russ, Sound Synthesis and Sampling (Focal Press)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

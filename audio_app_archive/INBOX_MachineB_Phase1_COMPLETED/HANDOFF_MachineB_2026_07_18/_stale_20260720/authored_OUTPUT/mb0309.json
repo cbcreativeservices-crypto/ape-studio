@@ -1,0 +1,52 @@
+{
+ "batch": 309,
+ "topic": "Voice & Vocal Perception",
+ "authored": [
+  {
+   "id": "ff557b12-f78f-45b3-a419-cd65790ca68d",
+   "term": "Voice.ai",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "Voice.ai is a proprietary commercial product/brand — real-time AI voice-changer software from Voice.ai Inc. — not an established technical term with a canonical meaning. Every source located is the vendor's own marketing/product page (voice.ai) or an SEO/blog listing; no standards body, recognised professional text, or manufacturer TECHNICAL documentation defines it. Per the strict source standard these do not count as corroboration, so all fields (definition, plain_english, purpose_function, practical_application, category, related_terms, common_mistakes, scenario_contexts) are left blank pending review."
+   ]
+  },
+  {
+   "id": "200a631e-ede4-462a-a2b9-b33b1c746fe4",
+   "term": "Zero-shot voice cloning",
+   "fields": {
+    "definition": "A neural speech-synthesis technique that reproduces a target speaker's vocal timbre and identity from only a few seconds of reference audio, with no retraining or fine-tuning of the model on that speaker. A separately trained speaker encoder extracts a fixed speaker embedding from the reference clip, and this embedding conditions a text-to-speech or voice-conversion model to generate new speech in that voice; 'zero-shot' means the target speaker was never present in the training data.",
+    "plain_english": "It is a way for a computer to copy a person's voice after hearing only a few seconds of them talk. The system does not have to be trained on that person first. It listens to a short clip, learns what makes the voice sound unique, then speaks new words in that same voice. It works like a mimic who can copy a stranger after one quick listen.",
+    "purpose_function": "It lets a system produce speech in a new person's voice almost instantly, avoiding the large per-speaker datasets and model retraining that older voice-cloning methods require. This makes personalized text-to-speech, dubbing, and voice restoration practical at scale.",
+    "practical_application": "A post or content technician can feed a short voice sample to a zero-shot cloning tool to generate ADR, pickup lines, narration, or localized dialogue in a chosen speaker's voice, and should confirm consent and likeness rights before using or delivering the result.",
+    "category": "AI Voice Synthesis",
+    "related_terms": [
+     "Text-to-speech",
+     "Voice conversion",
+     "Speaker embedding",
+     "Speech synthesis",
+     "Audio deepfake"
+    ],
+    "common_mistakes": [
+     "Assuming 'zero-shot' means no training at all — the underlying model is heavily pre-trained on many speakers; only the specific target speaker was unseen.",
+     "Confusing zero-shot cloning with fine-tuned cloning, which adapts the model on minutes of a speaker's audio for higher fidelity.",
+     "Expecting a clone from a few seconds of audio to match full studio-quality fidelity, when short references limit prosody, accent, and expressiveness.",
+     "Ignoring consent and likeness/publicity rights — cloning a real person's voice without permission can be unlawful and unethical."
+    ],
+    "scenario_contexts": [
+     "Generating ADR or pickup dialogue in an actor's voice during post-production when reshoots or re-records are not possible.",
+     "Localizing or dubbing content into other languages while preserving the original speaker's vocal identity.",
+     "Restoring a personalized synthetic voice for someone who has lost their speech, built from a short archived recording.",
+     "Building conversational voice agents or narration that speak in a chosen presenter or brand voice."
+    ]
+   },
+   "sources": [
+    "IEEE Xplore — speech synthesis proceedings/journals on zero-shot voice cloning (e.g., 'Zero-Shot Voice Cloning Using Variational Embedding with Attention Mechanism'; 'Zero-Shot Voice Cloning Text-to-Speech for Dysphonia Disorder Speakers')",
+    "IEEE/ACM Transactions on Audio, Speech, and Language Processing — speaker-encoder / speaker-adaptation and voice-conversion literature"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

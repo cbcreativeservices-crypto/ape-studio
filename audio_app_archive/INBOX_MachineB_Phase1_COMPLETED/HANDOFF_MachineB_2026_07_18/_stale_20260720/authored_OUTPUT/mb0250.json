@@ -1,0 +1,214 @@
+{
+ "batch": 250,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "e8926e44-34a3-44f8-92a9-538630fa0e7f",
+   "term": "Scoring synchronization check",
+   "fields": {
+    "definition": "A verification that a score's music lines up exactly with the picture at its intended sync points — hit points, scene edits, and downbeats — confirmed against timecode during or after the scoring session using tools such as click tracks, streamers, and punches.",
+    "plain_english": "A check that the music matches the film at the right moments. Editors line up each musical hit with the action on screen, like matching a drum hit to a door slam.",
+    "purpose_function": "It confirms the music supports the picture as the composer intended, so emotional beats and on-screen actions land on the right frame.",
+    "practical_application": "In the scoring session or the DAW, the music editor aligns cues to timecode and confirms each hit point falls on the correct frame before the final mix.",
+    "category": "Music Post",
+    "related_terms": ["Timecode", "Hit point", "Click track", "Spotting session", "Music editor"],
+    "common_mistakes": [
+     "Assuming the composer's DAW tempo map alone guarantees sync without checking against picture timecode",
+     "Confusing frame rate or pull-up/pull-down settings so the music drifts against picture over a reel",
+     "Only checking sync at hit points and missing gradual drift across a long cue"
+    ],
+    "scenario_contexts": [
+     "Confirming a recorded orchestral cue lands its hits on the exact frames before the final dub",
+     "Catching a tempo or frame-rate mismatch that makes music drift late by the end of a reel",
+     "A music editor conforming cues after a picture change to re-verify sync"
+    ]
+   },
+   "sources": ["Karlin & Wright, On the Track: A Guide to Contemporary Film Scoring", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1fec133f-b618-4393-b712-ad0e6c3c4d55",
+   "term": "Screening room",
+   "fields": {
+    "definition": "A dedicated, acoustically controlled theater used in film and television post-production to view and evaluate picture and sound together — dailies, edited cuts, and mixes — under conditions that approximate a target exhibition environment such as a cinema.",
+    "plain_english": "A small private cinema used to watch and judge a film during editing. It is set up to look and sound like a real theater so the team can check their work.",
+    "purpose_function": "It lets filmmakers and sound crews review the film in controlled conditions, so picture and sound choices are judged the way an audience will experience them.",
+    "practical_application": "A re-recording mixer or supervising sound editor plays the reel in a screening room to spot problems and get director or client approval before final delivery.",
+    "category": "Post Facilities",
+    "related_terms": ["Dailies", "Re-recording mix", "Dub stage", "Reference monitor", "Calibration"],
+    "common_mistakes": [
+     "Confusing a screening room with a dub stage; the dub stage is built for mixing while a screening room is built for review",
+     "Assuming any conference room with a screen counts, ignoring the need for calibrated level and acoustics",
+     "Judging a theatrical mix on near-field speakers instead of in a properly calibrated room"
+    ],
+    "scenario_contexts": [
+     "Reviewing a temp mix with the director before the final dub",
+     "Checking a finished feature in a calibrated room to confirm dialogue clarity and levels",
+     "Screening dailies so the team can flag sound problems early"
+    ]
+   },
+   "sources": ["Holman, Sound for Film and Television", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "83509a3d-c12c-49d3-af63-e41dc21b91bf",
+   "term": "Section comping",
+   "fields": {
+    "definition": "Assembling a single best composite take for one part or section by selecting and joining the strongest portions of multiple recorded takes, as when combining several passes of a string or vocal section into one clean, continuous performance.",
+    "plain_english": "Building one good take by picking the best bits from several tries. Like making a photo album from many shots, an editor keeps the best part of each pass and joins them.",
+    "purpose_function": "It produces one clean, continuous performance from several imperfect takes, saving re-recording and giving the editor control over phrasing and timing.",
+    "practical_application": "The editor lays takes on playlists or lanes, auditions each phrase, and pulls the best segments into a comp for the section before further editing or mixing.",
+    "category": "Editing",
+    "related_terms": ["Comping", "Playlist", "Take", "Crossfade", "Punch-in"],
+    "common_mistakes": [
+     "Forgetting to crossfade edit points, leaving clicks or level jumps between segments",
+     "Comping for the best single moments while losing the natural flow of the whole phrase",
+     "Not keeping the original takes, so the comp cannot be revised later"
+    ],
+    "scenario_contexts": [
+     "Combining three string-section passes into one clean take",
+     "Comping a backing-vocal section from several recorded tries",
+     "Fixing a few flubbed notes in a section by dropping in a better take"
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Avid Pro Tools Reference Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bd0544e8-79ed-4196-82c0-ae52af462aff",
+   "term": "Sequence container",
+   "fields": {
+    "definition": "In audio middleware such as Audiokinetic Wwise, a container object that plays its child sound objects one after another in a defined order — either the authored step order or a set sequence — in contrast to a Random Container, which selects children at random.",
+    "plain_english": "A folder of sounds that plays them one after another in a set order. It works like a playlist that always plays its tracks in the same sequence.",
+    "purpose_function": "It lets sound designers build ordered patterns — such as a footstep cycle or a reload sequence — from separate sound files without scripting each step in the game engine.",
+    "practical_application": "A game audio designer drops several footstep samples into a Sequence Container so they trigger in order each time the character walks.",
+    "category": "Game Audio",
+    "related_terms": ["Random container", "Switch container", "Blend container", "Sound bank", "Audio middleware"],
+    "common_mistakes": [
+     "Confusing a Sequence Container with a Random Container, which plays children in random order",
+     "Expecting variety from a sequence, which repeats the same order and can sound mechanical",
+     "Forgetting to set the step or continuous play mode, changing how the sequence advances"
+    ],
+    "scenario_contexts": [
+     "Building a repeating footstep cycle in Wwise",
+     "Sequencing a multi-part weapon reload sound",
+     "Playing an ordered set of dialogue lines as a short exchange"
+    ]
+   },
+   "sources": ["Audiokinetic Wwise Help — Property Editor: Sequence Container", "Audiokinetic Wwise Fundamentals (Wwise-101) course documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5e97c695-5fe9-40ef-98e7-d5086b74c6f5",
+   "term": "Shuffle playback",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["All fields left blank: 'Shuffle playback' has no established meaning in professional sound-for-picture post workflow. Its only clear attestation is a consumer media-player feature (randomized-order playback); no acceptable standards body, manufacturer technical doc, or recognized professional text defines the phrase in this context, and its intended sense here is genuinely ambiguous. Cannot confirm to a professional standard."]
+  },
+  {
+   "id": "47e52eeb-87c8-452c-8db0-d5e422a35805",
+   "term": "Single-pass Foley",
+   "fields": {
+    "definition": "A Foley recording approach in which a cue's movements — typically footsteps or cloth and prop moves — are performed and captured in one continuous take synced to picture, rather than being built up from multiple layered passes.",
+    "plain_english": "Recording a Foley sound in one go while watching the scene, instead of layering it up in several takes. The artist moves in time with the picture and captures the whole action at once.",
+    "purpose_function": "It captures a natural, connected performance in a single take, saving editing time and keeping the timing and feel of the moves consistent.",
+    "practical_application": "A Foley artist watches the scene and performs all of a character's footsteps for the shot in one synced pass, then moves on to the next cue.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Footsteps", "Cloth pass", "Foley pit", "Spotting"],
+    "common_mistakes": [
+     "Trying to capture too many separate sounds in one pass, so nothing is clean enough to use",
+     "Poor sync because the artist watches the meters instead of the picture",
+     "Assuming one pass always works; dense scenes may still need layered passes"
+    ],
+    "scenario_contexts": [
+     "Recording a character's walk across a room in a single synced take",
+     "Performing a full cloth move for a costume change in one pass",
+     "Laying down straightforward footsteps quickly on a tight schedule"
+    ]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "246f6a79-3ba5-4374-87b7-060f07f0435c",
+   "term": "Sneaking footsteps",
+   "fields": {
+    "definition": "A Foley footstep performance category representing quiet, careful, stealthy steps, performed with reduced weight and controlled foot contact to match a character moving silently on screen.",
+    "plain_english": "Soft, careful footsteps made for a character trying to move without being heard. The Foley artist steps gently and slowly to match the sneaky action on screen.",
+    "purpose_function": "It gives a sneaking character believable, tension-building footsteps that read as quiet and cautious rather than a normal walk.",
+    "practical_application": "The Foley artist lightens each step and rolls the foot to keep it soft, matching a character tiptoeing past a threat on screen.",
+    "category": "Foley",
+    "related_terms": ["Footsteps", "Heel-toe", "Foley", "Foley walker", "Surface"],
+    "common_mistakes": [
+     "Making sneaks too loud or too even, which reads as a normal walk",
+     "Ignoring the surface, so the sneak lacks the right quiet texture",
+     "Forgetting the pauses and shifts in weight that sell caution"
+    ],
+    "scenario_contexts": [
+     "A character creeping down a hallway to avoid being caught",
+     "Footsteps for a burglar moving through a dark house",
+     "A soldier advancing quietly in a tense scene"
+    ]
+   },
+   "sources": ["Ament, The Foley Grail", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3afaf5a7-d129-48cb-b4ae-86e56753e1e4",
+   "term": "Snow footsteps",
+   "fields": {
+    "definition": "Foley footsteps that recreate the crunch of walking on snow, traditionally produced by squeezing a pouch of cornstarch (or a similar granular material such as salt) in rhythm with the on-screen steps.",
+    "plain_english": "The crunchy sound of walking on snow, made in a Foley studio. The artist often squeezes a bag of cornstarch in time with the steps, because it crunches just like packed snow.",
+    "purpose_function": "It supplies the distinctive crunch that real snow makes underfoot, which is hard to record on location, so winter scenes sound convincing.",
+    "practical_application": "A Foley artist squeezes a cornstarch-filled pouch or bag in sync with each step to create fresh or packed snow footsteps for a winter scene.",
+    "category": "Foley",
+    "related_terms": ["Footsteps", "Foley", "Surface", "Foley prop", "Single-pass Foley"],
+    "common_mistakes": [
+     "Using loose sand or gravel, which sounds too hard and lacks the soft snow crunch",
+     "Squeezing out of time with the picture, so the crunch does not match the steps",
+     "Overdoing the crunch so it sounds fake instead of subtle"
+    ],
+    "scenario_contexts": [
+     "Footsteps for a character trudging through deep snow",
+     "Creating crunch for a snowball or boot-in-snow shot",
+     "Adding winter footsteps a location mic could not capture cleanly"
+    ]
+   },
+   "sources": ["Ament, The Foley Grail", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a185d9ab-7b78-4f5e-b6db-523c769da2d1",
+   "term": "Sound asset",
+   "fields": {
+    "definition": "An individual sound element — such as a recorded file, sound effect, music cue, or dialogue clip — that is managed, catalogued, and reused as a discrete unit within a production's audio library or session.",
+    "plain_english": "A single sound file used in a project, like one sound effect or one music clip. Teams store and label these so they can find and reuse them easily.",
+    "purpose_function": "Treating each sound as a named, tracked asset lets teams organize, search, share, and reuse audio across a project without losing or duplicating work.",
+    "practical_application": "An editor pulls a labeled sound asset from the library, drops it into the session, and relinks it later during conform or delivery.",
+    "category": "Asset Management",
+    "related_terms": ["Sound library", "Metadata", "Session", "Stem", "Conform"],
+    "common_mistakes": [
+     "Saving assets without clear names or metadata, making them impossible to find later",
+     "Editing the master asset instead of a copy, corrupting the original",
+     "Losing track of which asset version is in the current cut"
+    ],
+    "scenario_contexts": [
+     "Searching a sound library for a specific effect by its metadata",
+     "Handing off labeled assets to another editor or facility",
+     "Relinking assets during a conform before final delivery"
+    ]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Audiokinetic Wwise Help — Working with Audio Files and Sources"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

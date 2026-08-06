@@ -1,0 +1,159 @@
+{
+ "batch": 246,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "bbee0332-a904-400d-9332-8ce9d9e731a9",
+   "term": "Public-address voice processing",
+   "fields": {
+    "definition": "The deliberate signal processing of a recorded voice so it sounds as though it is emerging from a public-address (PA) loudspeaker system, typically by band-limiting the audio, adding midrange coloration and distortion, and layering room reverberation. It is a form of 'futz' processing used in film and television sound to place a voice in an amplified, announced space.",
+    "plain_english": "This means treating a voice so it sounds like it is coming out of a loudspeaker in a station or a stadium. You cut the highs and lows, add a bit of grit and echo, and the voice feels announced over a big room.",
+    "purpose_function": "It sells the illusion that a voice is broadcast over a venue's speaker system rather than spoken directly on set, matching the tinny, reverberant character audiences expect from real PA horns.",
+    "practical_application": "A dialogue editor applies EQ, distortion and reverb, or a dedicated futz plug-in, to a clean announcer take so it reads as a train-station or arena announcement in the final mix.",
+    "category": "Dialogue Processing",
+    "related_terms": ["Radio voice processing", "Futz", "Worldizing", "Dialogue editing", "Reverberation"],
+    "common_mistakes": ["Over-processing the line until the announcement is unintelligible", "Omitting the PA reverb tail that places the voice inside the venue", "Reusing one futz preset for every space regardless of the room's size"],
+    "scenario_contexts": ["A train-station announcement heard by characters on a platform", "A stadium announcer's voice under a crowd scene", "An airport gate call in the background of a terminal scene"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "28b07fc8-fb5a-47a9-94d8-2d59e5c822ed",
+   "term": "Quality-control room",
+   "fields": {
+    "definition": "A dedicated, calibrated review environment in a post-production or broadcast facility where finished audio and video deliverables are checked against technical and creative specifications before delivery. QC operators verify loudness, channel assignment, sync, and the absence of clicks, dropouts and other faults to confirm the master meets the delivery standard.",
+    "plain_english": "This is a special room where a finished show is checked before it is sent out. A trained person watches and listens on trusted gear to catch problems like wrong loudness, bad sync, or clicks, so the client gets a clean copy.",
+    "purpose_function": "It exists to catch technical and content errors before a master ships, protecting the facility from costly rejected deliveries and ensuring the program meets broadcast or streaming specifications.",
+    "practical_application": "Before a finished episode is uploaded to a network, a QC operator plays it in the QC room, confirms loudness meets the spec, checks channel mapping and lip-sync, and logs any faults for the mixers to fix.",
+    "category": "Deliverables QC",
+    "related_terms": ["Loudness normalization", "Delivery specification", "Lip sync", "Channel mapping", "Master"],
+    "common_mistakes": ["Assuming an automated QC pass replaces a trained human reviewer", "Running QC on uncalibrated speakers so real faults go unnoticed", "Skipping loudness verification against the target delivery spec"],
+    "scenario_contexts": ["Checking a feature mix against a streaming platform's delivery spec", "Verifying a broadcast promo for loudness and channel assignment", "Catching a dropout in a stereo downmix before delivery"]
+   },
+   "sources": ["SMPTE (delivery and QC recommended practice)", "EBU R 128 (loudness)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d1b8e884-17b1-4fcf-9b40-f915f19cfbc1",
+   "term": "Quiet Foley",
+   "fields": {
+    "definition": "Foley performance and recording of subtle, low-level sounds such as cloth movement, gentle prop handling, and soft footsteps, captured at close range on a quiet stage so delicate on-screen action reads clearly in the mix. It is the detail end of Foley work, distinct from loud, impact-heavy cues.",
+    "plain_english": "This is Foley for the small, soft sounds in a scene, like clothes rustling or a hand touching a cup. The artist works close to a quiet mic so these tiny sounds come through clearly.",
+    "purpose_function": "It adds the quiet, intimate details that make a performance feel real and present, filling the gaps left when a scene has little dialogue or music.",
+    "practical_application": "A Foley artist performs cloth rustles and soft object handling in sync with picture on a treated stage, recording at low levels so the editor can place them under intimate dialogue scenes.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Foley stage", "Footsteps", "Props", "Ambience"],
+    "common_mistakes": ["Recording quiet Foley in a noisy room so the noise floor swamps the detail", "Performing too heavily so subtle actions sound exaggerated", "Treating quiet Foley as optional and skipping it in intimate scenes"],
+    "scenario_contexts": ["Cloth movement under a whispered bedroom conversation", "The soft handling of a letter being opened", "Gentle footsteps of a character sneaking through a house"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7aaf9b7e-0008-482c-a26d-8fe045a2f270",
+   "term": "Radio voice processing",
+   "fields": {
+    "definition": "Signal processing applied to a recorded voice so it sounds as though it is received over a two-way radio, walkie-talkie or broadcast receiver, characteristically narrow-band and midrange-heavy with added distortion, compression, and often squelch, static or transmission artifacts. It is a 'futz' technique widely used in film, television and game dialogue.",
+    "plain_english": "This treats a voice so it sounds like it is coming through a walkie-talkie or radio. You make it thin and crackly, cut the deep and high tones, and add static, so it feels transmitted, not spoken in the room.",
+    "purpose_function": "It signals to the audience that a character is speaking over a radio link rather than in person, using the limited bandwidth and noise of real radios to make the transmission believable.",
+    "practical_application": "A dialogue editor runs a clean line through band-pass EQ, distortion and a radio-futz plug-in, adding squelch clicks so a pilot's or dispatcher's line reads as a radio call in the mix.",
+    "category": "Dialogue Processing",
+    "related_terms": ["Public-address voice processing", "Futz", "Band-pass filter", "Dialogue editing", "Worldizing"],
+    "common_mistakes": ["Narrowing the band so far the line becomes unintelligible", "Omitting radio artifacts like squelch and mic clicks that sell the effect", "Applying radio futz to a voice that is meant to be present in the room"],
+    "scenario_contexts": ["A soldier's line heard over a squad radio", "Air-traffic control talking to a cockpit", "A police dispatcher calling units over the radio"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8b1e133b-f79f-4426-9b3e-97cfe05e4e1d",
+   "term": "Random container",
+   "fields": {
+    "definition": "In audio middleware such as Wwise, a Random Container is a parent object that holds several child sounds and, each time it is triggered, plays one child chosen at random. It supports 'standard' random, where any child may be chosen with possible immediate repeats, and 'shuffle' random, where each child plays once before any repeats, making it the primary tool for varying repeated sounds.",
+    "plain_english": "This is a folder in game-audio software that holds several versions of a sound. Every time the game asks for that sound, the folder picks one at random, so a repeated action does not use the exact same clip each time.",
+    "purpose_function": "It exists to stop repeated sounds like footsteps, gunshots and impacts from sounding identical and robotic, by automatically rotating through a pool of variations.",
+    "practical_application": "A game sound designer drops ten footstep recordings into a Random Container set to shuffle, so a walking character cycles through all ten before any repeats.",
+    "category": "Game Audio",
+    "related_terms": ["Randomized playback", "Sequence container", "Audio middleware", "Sound bank", "Footsteps"],
+    "common_mistakes": ["Confusing a Random Container (random order) with a Sequence Container (fixed order)", "Leaving it on standard random so the same clip can repeat back-to-back", "Loading only two variations, so the repetition is still obvious"],
+    "scenario_contexts": ["Varying footstep sounds as a character walks", "Randomizing gunshot samples on a weapon", "Rotating impact sounds when objects collide in a game"]
+   },
+   "sources": ["Audiokinetic Wwise documentation", "FMOD Studio documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e05f3d16-356f-4421-aa53-d7438d4ed1da",
+   "term": "Randomized playback",
+   "fields": {
+    "definition": "A playback strategy in which sample selection or sound properties are varied at random each time a sound is triggered, commonly randomizing which sample of a set plays plus small random offsets to pitch, volume or timing, in order to avoid audible repetition. It is fundamental to interactive and game audio, where a single event may fire thousands of times.",
+    "plain_english": "This means letting software change a sound a little each time it plays. It might pick a different clip, or shift the pitch and volume slightly, so the same action never sounds exactly the same twice.",
+    "purpose_function": "It keeps frequently repeated sounds from becoming a noticeable, fatiguing loop by adding natural-sounding variation without the designer hand-placing every instance.",
+    "practical_application": "A designer enables random pitch and volume ranges on a footstep sound and pulls samples from a random pool, so a long walking sequence stays lively and believable.",
+    "category": "Game Audio",
+    "related_terms": ["Random container", "Sample variation", "Pitch randomization", "Audio middleware", "Round robin"],
+    "common_mistakes": ["Setting randomization ranges so wide the sound loses its identity", "Randomizing pitch on tonal sounds so they drift out of tune", "Relying on randomization instead of recording enough source variations"],
+    "scenario_contexts": ["Footsteps that vary as a character runs", "Bullet impacts that differ shot to shot", "UI clicks that vary slightly on each press"]
+   },
+   "sources": ["Audiokinetic Wwise documentation", "FMOD Studio documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6500b382-ffb4-487c-8db3-ca65faa7a283",
+   "term": "Real-time audio rendering",
+   "fields": {
+    "definition": "The generation or processing of an audio signal fast enough to be delivered as it is heard, with latency low enough for live monitoring or interactive response, as opposed to offline rendering to a file. Every sample must be produced within its playback deadline, so the processing load must fit the available time budget.",
+    "plain_english": "This means the computer makes or changes the sound at the same moment you hear it, with almost no delay. It has to keep up with playback, unlike offline work where it can take its time and save a file.",
+    "purpose_function": "It lets performers, mixers and games hear effects and mixes instantly, which is essential for live monitoring, interactive media, and any situation where the audio must respond to the moment.",
+    "practical_application": "A mixer runs plug-ins in real time to monitor a session live, while a game engine renders and mixes sound effects on the fly as the player moves.",
+    "category": "Audio Processing",
+    "related_terms": ["Real-time reverberation", "Latency", "Offline rendering", "Buffer size", "DSP"],
+    "common_mistakes": ["Loading too many plug-ins so the CPU cannot meet the real-time deadline, causing dropouts", "Confusing real-time rendering with an offline bounce", "Setting the buffer so low that the system glitches"],
+    "scenario_contexts": ["Monitoring effects live while tracking a vocal", "A game mixing sound effects as the player moves", "Live processing of a broadcast feed"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Audiokinetic Wwise documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f4d29aa1-9279-4599-8210-3b339c342eb1",
+   "term": "Real-time reverberation",
+   "fields": {
+    "definition": "Reverberation generated on the fly by an algorithmic or convolution reverb processor as the source signal passes through it, producing the reverb tail live rather than from a pre-rendered file. It lets the reverberant character of a space be applied and adjusted during monitoring, mixing or live performance.",
+    "plain_english": "This is echo and room sound added to audio instantly as it plays, using software or hardware. You can hear and tweak the 'room' live, instead of baking it in ahead of time.",
+    "purpose_function": "It places a voice or instrument in a believable space in real time, so engineers and performers can hear the ambience immediately and adjust it while they work.",
+    "practical_application": "A mixer patches a real-time reverb across a dialogue stem to match a scene's room, hearing the change instantly and automating the amount to picture.",
+    "category": "Audio Processing",
+    "related_terms": ["Real-time audio rendering", "Convolution reverb", "Algorithmic reverb", "Reverberation time", "Latency"],
+    "common_mistakes": ["Printing heavy real-time reverb while tracking so it is permanently baked in", "Ignoring the latency a convolution reverb adds to the signal path", "Using one reverb for every space instead of matching the room's size"],
+    "scenario_contexts": ["Placing ADR lines in the acoustic of the original scene", "Adding live reverb to a vocal during tracking for the singer's monitor", "Matching reverb on a Foley pass to the on-screen room"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "eee50eb2-4644-4923-b47d-dd155e90ae57",
+   "term": "Replacement dialogue",
+   "fields": {
+    "definition": "Dialogue re-recorded in a studio to replace original production audio that is unusable or needs changing, with the actor performing lines in sync to picture. Also called ADR (automated dialogue replacement) or looping, it is used when location recordings are too noisy, poorly performed, or altered for creative or censorship reasons.",
+    "plain_english": "This is new dialogue an actor records in a studio to swap out lines that did not work on set. Watching the film, they match their voice to their lip movements so it fits the picture.",
+    "purpose_function": "It rescues scenes whose original dialogue is unusable, too noisy, mumbled, or changed in the edit, by providing clean, controllable lines that match the performance on screen.",
+    "practical_application": "In an ADR session, an actor watches a scene loop and re-performs each line in sync while the mixer records clean takes to replace the noisy location track.",
+    "category": "Dialogue",
+    "related_terms": ["Lip sync", "Dialogue editing", "Production sound", "Foley", "Looping"],
+    "common_mistakes": ["Recording ADR out of sync with the actor's lip movements", "Not matching the mic and perspective of the original scene so the line stands out", "Assuming ADR can fix any take, ignoring differences in performance energy"],
+    "scenario_contexts": ["Replacing a line ruined by traffic noise on location", "Re-recording dialogue changed during the edit", "Cleaning up a mumbled line for clarity"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

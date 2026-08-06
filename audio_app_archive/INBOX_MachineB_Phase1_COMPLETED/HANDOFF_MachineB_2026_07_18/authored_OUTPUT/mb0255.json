@@ -1,0 +1,159 @@
+{
+ "batch": 255,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "f7508a4d-65eb-47ae-8907-a8fe997552dd",
+   "term": "Synthetic sound design",
+   "fields": {
+    "definition": "The creation of sound effects and textures from synthesized or electronically generated signals — oscillators, samplers, modular or software synths and signal processing — rather than from recorded real-world sources, used to build sounds that do not exist in nature or that need a stylized, designed character.",
+    "plain_english": "You make sound effects from scratch on a synth, not by recording real objects. It is like drawing a made-up monster instead of taking a photo of a real animal.",
+    "purpose_function": "It lets sound editors create sounds that cannot be recorded, such as spaceships, force fields or laser weapons, with full control over pitch, movement and tone. It exists because many on-screen elements have no real-world sound to capture.",
+    "practical_application": "A designer patches oscillators or a soft-synth, shapes the sound with filters and envelopes, then layers it with processing to score a robot, laser or magic effect for a film or game.",
+    "category": "Sound Design",
+    "related_terms": ["Synthesizer", "Sound effects editing", "Layering", "Foley", "Sampling", "Sweetening"],
+    "common_mistakes": ["Assuming synthetic design means only sci-fi sounds, when it also builds risers, whooshes and textures for any genre", "Relying on a single synth patch instead of layering several sources for depth", "Ignoring how the synthetic sound sits against dialogue and music in the final mix", "Leaving the sound static with no movement, so it reads as obviously artificial"],
+    "scenario_contexts": ["Building a laser-blast sound for a science-fiction feature", "Creating UI beeps and alerts for a video game menu", "Designing an abstract riser to build tension before a scene change", "Generating a fantasy magic-spell effect that has no real-world recording"]
+   },
+   "sources": ["Sonnenschein, Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema", "Ric Viers, The Sound Effects Bible"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6f56c7da-0b89-490c-858e-d5d3d3683e9f",
+   "term": "Table impact",
+   "fields": {
+    "definition": "An impact sound effect of an object, hand or body striking a tabletop or similar hard surface, used as a hard effect or Foley cue synced to an on-screen hit on a table.",
+    "plain_english": "The sound of something hitting a table, added so an on-screen bang matches the picture. Think of a fist slamming down or a mug set down hard on a table.",
+    "purpose_function": "It sells the moment of contact between an actor or prop and a table, adding weight and realism that the production recording often does not capture cleanly.",
+    "practical_application": "An editor pulls a table-impact from a library or Foley-records one, then trims and syncs it to the exact frame where the hit lands, adjusting level and low end for the desired force.",
+    "category": "Sound Effects",
+    "related_terms": ["Foley", "Hard effects", "Impact", "Sound effects editing", "Sync", "Sweetening"],
+    "common_mistakes": ["Placing the impact a frame or two off the visible hit so it feels loose", "Using a boomy library hit that is too big for a light tap", "Forgetting to match the room tone or reverb of the scene", "Layering so many hits that the moment sounds unnatural"],
+    "scenario_contexts": ["Syncing a fist slam to a heated argument scene", "Adding weight to a mug being slammed onto a bar", "Covering a prop dropped on a desk in an office scene", "Reinforcing a body being shoved onto a table in a fight"]
+   },
+   "sources": ["Ric Viers, The Sound Effects Bible", "David Lewis Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d80883d5-f71d-4a5c-84bb-649748866f68",
+   "term": "Tail extension",
+   "fields": {
+    "definition": "Lengthening the natural decay or tail at the end of a sound — a reverb, room tone, note or effect — by adding reverb, time-stretching, or overlapping material so it fades out smoothly instead of cutting off abruptly.",
+    "plain_english": "Making the fade-out at the end of a sound last longer so it does not stop suddenly. It is like letting a bell ring out instead of muting it right away.",
+    "purpose_function": "It smooths edits and transitions and keeps a sound or ambience from ending unnaturally, which matters when a clip is cut short or needs to bridge into the next scene.",
+    "practical_application": "An editor adds reverb or copies and crossfades the end of a region to stretch its decay, often to fill a gap left after trimming dialogue, music or an effect.",
+    "category": "Editing Technique",
+    "related_terms": ["Reverb tail", "Crossfade", "Room tone", "Fade", "Decay", "Time stretching"],
+    "common_mistakes": ["Extending a tail so far it drags and muddies the next cue", "Using a reverb that does not match the space of the scene", "Creating an obvious loop point when copying the tail", "Forgetting that a longer tail can bleed over a hard picture cut"],
+    "scenario_contexts": ["Extending a music cue's final chord to land on a fade to black", "Smoothing the end of a trimmed sound effect so it does not click", "Filling a gap after shortening a line of dialogue", "Letting a reverb wash carry from one scene into the next"]
+   },
+   "sources": ["Jay Rose, Producing Great Sound for Film and Video", "David Lewis Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "503fbc5d-03c8-4eb0-97c7-b780323642a5",
+   "term": "Take assembly",
+   "fields": {
+    "definition": "The process of selecting and joining the best portions of multiple recorded takes into a single continuous performance — in dialogue, ADR or music editing — choosing lines or phrases from different takes and editing them together seamlessly.",
+    "plain_english": "Building one clean performance by picking the best bits from several recorded tries and joining them. It is like making one great photo by combining the best parts of several shots.",
+    "purpose_function": "It produces the strongest possible performance and technical quality from all available takes, fixing flubs, noises or timing issues by swapping in a better version of a word or line.",
+    "practical_application": "A dialogue or ADR editor auditions each take, marks the best words or phrases, and cuts them together at natural breaths and edit points, matching level and tone so the joins are inaudible.",
+    "category": "Editing Technique",
+    "related_terms": ["ADR", "Dialogue editing", "Comping", "Take", "Crossfade", "Room tone"],
+    "common_mistakes": ["Cutting mid-word instead of at a breath or consonant, making the join audible", "Assembling takes with different mic distances or tone that do not match", "Ignoring changes in background noise between takes", "Choosing a technically clean take over the better-acted one"],
+    "scenario_contexts": ["Comping a lead actor's ADR from six recorded takes", "Joining the best half of two dialogue takes to remove a cough", "Assembling a voiceover from multiple reads for a documentary", "Building a final music vocal from several studio passes"]
+   },
+   "sources": ["David Lewis Yewdall, The Practical Art of Motion Picture Sound", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7c407a54-ba32-455a-af82-f307be15918b",
+   "term": "Technical sound designer",
+   "fields": {
+    "definition": "A specialist, most common in game audio, who implements sound into an interactive engine or middleware — building the systems, scripting and logic that trigger and modulate audio in real time — bridging creative sound design and software or engine programming.",
+    "plain_english": "A sound person who is also part programmer, making sounds play correctly inside a game engine. They set the rules for when and how each sound triggers as the player moves and acts.",
+    "purpose_function": "The role exists because interactive media need audio that responds to gameplay, so someone must connect creative sounds to the code and middleware to play at the right time, place and intensity.",
+    "practical_application": "Using tools such as Wwise or FMOD, they build audio events, mix states and parameter controls, script triggers, and profile performance so sounds behave correctly and stay within memory and CPU budgets.",
+    "category": "Role",
+    "related_terms": ["Sound designer", "Game audio", "Middleware", "Audio implementation", "Interactive audio", "Foley"],
+    "common_mistakes": ["Confusing the role with a pure sound designer who only creates sounds, not implementation", "Overlooking CPU, memory and voice-count budgets when building audio systems", "Assuming middleware skills alone are enough without creative sound judgment", "Not testing how sounds behave across the full range of gameplay states"],
+    "scenario_contexts": ["Implementing footstep systems that change with surface in a game engine", "Setting up an interactive music system in Wwise or FMOD", "Debugging why a weapon sound fails to trigger during gameplay", "Optimizing an audio build to fit a console's memory budget"]
+   },
+   "sources": ["MIDI Association, Roles and Specializations for Game Audio Professionals", "Game Developer (Gamasutra), The role of technical sound designers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fe2103cd-5cdc-48b0-a52c-44f7ce03de19",
+   "term": "Telephone voice processing",
+   "fields": {
+    "definition": "Processing a voice to sound as if heard through a telephone, radio or intercom — typically a narrow bandpass filter around 300 Hz to 3.4 kHz, plus added distortion, compression and sometimes codec artifacts — commonly called futzing.",
+    "plain_english": "Filtering a voice so it sounds like it is coming through a phone or radio. It cuts the deep lows and airy highs and adds a bit of grit, the way a real phone squeezes a voice.",
+    "purpose_function": "It makes a caller or a voice over a speaker sound believable and separate from voices in the room, selling the storytelling of an off-screen or transmitted line.",
+    "practical_application": "An editor inserts a bandpass EQ or a dedicated phone or futz plugin on the dialogue clip, tuning the band and distortion so the line reads as a phone, walkie or PA without losing clarity.",
+    "category": "Dialogue Processing",
+    "related_terms": ["Futz", "Bandpass filter", "EQ", "Dialogue editing", "Worldizing", "Codec"],
+    "common_mistakes": ["Filtering so hard the words become hard to understand", "Using the same phone preset for every device instead of matching phone, radio or PA", "Forgetting to remove real room reverb before adding the effect", "Applying it to a full stereo mix instead of just the transmitted voice"],
+    "scenario_contexts": ["Making one side of a phone conversation sound like it is on the line", "Creating a police-radio voice for a dispatch scene", "Processing a PA announcement heard across a station", "Adding an intercom effect to a spaceship crew call"]
+   },
+   "sources": ["Jay Rose, Producing Great Sound for Film and Video", "McDSP FutzBox plug-in operation manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d3dbf6eb-cc71-4a61-8bd3-3a0a6b8107e8",
+   "term": "Television music editing",
+   "fields": {
+    "definition": "The craft of preparing, placing and adjusting music — score and licensed songs — to picture for television, including spotting cues, editing them to fit scene timing, handling fast revisions, and delivering conformed music tracks and cue sheets.",
+    "plain_english": "Fitting music to the pictures in a TV show, choosing where each piece starts and stops and trimming it to match the scene. It is like a puzzle of matching songs and score to what is on screen.",
+    "purpose_function": "It ensures music supports the story and hits the right moments while meeting broadcast timing and paperwork rules, freeing the composer and keeping the episode on a fast delivery schedule.",
+    "practical_application": "A music editor spots episodes with the producers, cuts and conforms cues to picture changes in a DAW, builds temp music, and prepares cue sheets for licensing and royalty reporting.",
+    "category": "Music Editing",
+    "related_terms": ["Spotting session", "Music editor", "Cue sheet", "Temp music", "Conform", "Source music"],
+    "common_mistakes": ["Editing a cue so the join breaks the musical phrasing or beat", "Forgetting to reconform music after a picture change", "Neglecting accurate cue sheets needed for royalties", "Letting music levels fight the dialogue in the mix"],
+    "scenario_contexts": ["Spotting music for an hour-long drama episode", "Recutting a score cue after the picture edit changes", "Building temp music for a comedy before the composer scores it", "Preparing a cue sheet for a broadcast network"]
+   },
+   "sources": ["Tomlinson Holman, Sound for Film and Television", "Jay Rose, Producing Great Sound for Film and Video"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dbeafe8f-c966-4f68-a9a3-dba1bea421d3",
+   "term": "Tempo click",
+   "fields": {
+    "definition": "A metronomic click, or click track, set to a defined tempo and often a bar and beat structure, that musicians and editors follow to keep performance and edits locked to a steady beat, frequently referenced to picture and timecode when scoring to film or television.",
+    "plain_english": "A steady clicking beat, like a metronome, that players hear to stay in time. It is the same idea as tapping your foot so everyone keeps the same speed.",
+    "purpose_function": "It keeps a performance or edit at a steady tempo so parts line up with each other and with picture hits, making it possible to sync music to on-screen action.",
+    "practical_application": "A composer or editor sets the session tempo, generates a click, and has players record to it in headphones, or uses it to align edits and hit points when cutting music to picture.",
+    "category": "Music Editing",
+    "related_terms": ["Click track", "Tempo map", "Metronome", "Timecode", "Hit point", "Bars and beats"],
+    "common_mistakes": ["Recording to a click set to the wrong tempo or time signature", "Making the click so loud it bleeds into the recorded mics", "Ignoring tempo changes needed to hit picture cues", "Assuming a rigid click suits music that should breathe or use rubato"],
+    "scenario_contexts": ["Recording an orchestra to a click while scoring to picture", "Setting a click so a drummer stays locked to the grid", "Aligning a music edit to bars and beats in a DAW", "Following a variable click that speeds up to hit an on-screen action"]
+   },
+   "sources": ["Tomlinson Holman, Sound for Film and Television", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5d4d4d1a-c40d-4452-9439-caab3d095d79",
+   "term": "Tempo display",
+   "fields": {
+    "definition": "The on-screen readout in a DAW, sequencer or metronome showing the current tempo in beats per minute, and often the time signature and bar and beat position, so the user can see and set the session's timing.",
+    "plain_english": "The part of the screen that shows the current speed of the music in beats per minute. It is like a speedometer for the song, telling you how fast the beat is going.",
+    "purpose_function": "It lets the user read and set the project tempo at a glance, which is needed to keep recordings, edits and clicks in sync and to match music to picture.",
+    "practical_application": "An editor reads the tempo display to confirm the BPM before recording to a click, typing in or tapping a new value and watching it update as tempo changes occur along the timeline.",
+    "category": "Music Editing",
+    "related_terms": ["Tempo", "BPM", "Tempo map", "Click track", "Transport", "Time signature"],
+    "common_mistakes": ["Misreading the displayed tempo and recording at the wrong speed", "Not noticing the display reflects a tempo map that changes over time", "Confusing displayed BPM with the project's frame rate or timecode", "Assuming tap-tempo entry is exact without checking the value"],
+    "scenario_contexts": ["Checking the BPM readout before setting up a click track", "Watching the tempo display update through a slowing tempo map", "Typing a new tempo into the transport for a remix", "Confirming a song's tempo to match a licensed track"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

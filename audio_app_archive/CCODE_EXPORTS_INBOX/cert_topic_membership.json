@@ -1,0 +1,1226 @@
+[
+  {
+    "certificate_id": "cert-microphones-amplifiers-and-loudspeakers",
+    "gs": 190,
+    "name": "Microphone Types & Transducers",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-microphones-amplifiers-and-loudspeakers",
+    "gs": 240,
+    "name": "Loudspeaker Types & Drivers",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-microphones-amplifiers-and-loudspeakers",
+    "gs": 270,
+    "name": "Amplifiers",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-cables-and-connectivity",
+    "gs": 150,
+    "name": "Signal Path & Levels",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-cables-and-connectivity",
+    "gs": 160,
+    "name": "Connectors & Plugs",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-cables-and-connectivity",
+    "gs": 170,
+    "name": "Cables & Wiring",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-consoles",
+    "gs": 290,
+    "name": "Console Architecture & Signal Flow",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-consoles",
+    "gs": 300,
+    "name": "Channel Strip & Processing",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-consoles",
+    "gs": 310,
+    "name": "Buses, Routing & Matrix",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-recording-systems",
+    "gs": 330,
+    "name": "Recorder Types & Formats",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-recording-systems",
+    "gs": 340,
+    "name": "Audio File Formats & Media",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-recording-systems",
+    "gs": 360,
+    "name": "Storage, Backup & Archival",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-infrastructure",
+    "gs": 370,
+    "name": "Racks, Patchbays & Wiring Infrastructure",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-infrastructure",
+    "gs": 400,
+    "name": "Power & Signal Distribution Hardware",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-infrastructure",
+    "gs": 410,
+    "name": "Documentation & Diagrams",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-networking",
+    "gs": 420,
+    "name": "Dante Fundamentals & Routing",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-networking",
+    "gs": 430,
+    "name": "Dante Devices, Modules & Certification",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-networking",
+    "gs": 440,
+    "name": "Clocking, Redundancy & Network Management",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-power-systems",
+    "gs": 130,
+    "name": "Power Fundamentals, Distribution & Quality",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-power-systems",
+    "gs": 140,
+    "name": "Batteries, Backup & Touring Power",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-power-systems",
+    "gs": 400,
+    "name": "Power & Signal Distribution Hardware",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-signal-processing",
+    "gs": 460,
+    "name": "Equalization (EQ)",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-signal-processing",
+    "gs": 470,
+    "name": "Dynamics Processing",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-signal-processing",
+    "gs": 480,
+    "name": "Reverb",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-acoustics-and-measurement",
+    "gs": 500,
+    "name": "Acoustic Principles & Room Behavior",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-acoustics-and-measurement",
+    "gs": 540,
+    "name": "Measurement Fundamentals & Metering",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-acoustics-and-measurement",
+    "gs": 550,
+    "name": "Acoustic & Room Measurement",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-room-treatment",
+    "gs": 510,
+    "name": "Absorption & Bass Trapping",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-room-treatment",
+    "gs": 520,
+    "name": "Diffusion & Materials",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-room-treatment",
+    "gs": 530,
+    "name": "Room Treatment Layout & Application",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-troubleshooting",
+    "gs": 580,
+    "name": "Signal & Connection Troubleshooting",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-troubleshooting",
+    "gs": 600,
+    "name": "Patch & Routing Diagnostics",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-troubleshooting",
+    "gs": 610,
+    "name": "System Maintenance",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-systems",
+    "gs": 620,
+    "name": "Analog Live Sound",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-systems",
+    "gs": 630,
+    "name": "Digital Live Sound",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-systems",
+    "gs": 650,
+    "name": "System Tuning & Alignment",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-wireless-audio-systems",
+    "gs": 660,
+    "name": "RF Wireless Systems",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-wireless-audio-systems",
+    "gs": 220,
+    "name": "Mic Controls, Power & Mounting",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-wireless-audio-systems",
+    "gs": 230,
+    "name": "Specialized & Application Microphones",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-dj-audio",
+    "gs": 670,
+    "name": "DJ Performance & Turntablism",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-dj-audio",
+    "gs": 680,
+    "name": "DJ Equipment & Software",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-dj-audio",
+    "gs": 690,
+    "name": "Beatmatching, Mixing & FX",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-stagecraft-and-venue-operations",
+    "gs": 710,
+    "name": "Venue Architecture & Spaces",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-stagecraft-and-venue-operations",
+    "gs": 720,
+    "name": "Stage Geography & Backstage",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-stagecraft-and-venue-operations",
+    "gs": 740,
+    "name": "Stage Platforms, Scenery & Soft Goods",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-entertainment-rigging-fundamentals",
+    "gs": 640,
+    "name": "System Deployment & Rigging",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-entertainment-rigging-fundamentals",
+    "gs": 750,
+    "name": "Fly Systems & Overhead Access",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-entertainment-rigging-fundamentals",
+    "gs": 760,
+    "name": "Rigging Hardware, Loads & Motorized Flying",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-theatrical-audio",
+    "gs": 780,
+    "name": "Show Control, Cueing & Communications",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-theatrical-audio",
+    "gs": 790,
+    "name": "Theatrical Sound",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-theatrical-audio",
+    "gs": 770,
+    "name": "Orchestra Pit & Ensemble Layout",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-worship-audio",
+    "gs": 800,
+    "name": "Worship Sound",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-worship-audio",
+    "gs": 630,
+    "name": "Digital Live Sound",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-worship-audio",
+    "gs": 1980,
+    "name": "Live Sound — Monitor Engineering",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-commercial-audio-systems",
+    "gs": 810,
+    "name": "Audio System Design",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-commercial-audio-systems",
+    "gs": 830,
+    "name": "Commercial 70/100V Systems",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-commercial-audio-systems",
+    "gs": 840,
+    "name": "Distributed Audio Systems",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-architectural-audio",
+    "gs": 810,
+    "name": "Audio System Design",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-architectural-audio",
+    "gs": 860,
+    "name": "Architectural Audio",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-architectural-audio",
+    "gs": 570,
+    "name": "System Optimization",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-corporate-av-audio",
+    "gs": 820,
+    "name": "Corporate AV",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-corporate-av-audio",
+    "gs": 810,
+    "name": "Audio System Design",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-corporate-av-audio",
+    "gs": 850,
+    "name": "Assisted Listening Systems",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-residential-and-consumer-audio",
+    "gs": 940,
+    "name": "HiFi Consumer Audio",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-residential-and-consumer-audio",
+    "gs": 950,
+    "name": "Home Theater & Residential AV",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-residential-and-consumer-audio",
+    "gs": 840,
+    "name": "Distributed Audio Systems",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-vehicle-audio",
+    "gs": 960,
+    "name": "Vehicle Audio",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-vehicle-audio",
+    "gs": 170,
+    "name": "Cables & Wiring",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-vehicle-audio",
+    "gs": 270,
+    "name": "Amplifiers",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-electronic-music-production",
+    "gs": 1380,
+    "name": "Synthesis Fundamentals & Oscillators",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-electronic-music-production",
+    "gs": 1350,
+    "name": "Sampling Fundamentals & Instruments",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-electronic-music-production",
+    "gs": 1370,
+    "name": "Drum Programming & Beat-Making",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-synthesis-and-sound-design",
+    "gs": 1400,
+    "name": "Synthesis Types, Modular & CV",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-synthesis-and-sound-design",
+    "gs": 1390,
+    "name": "Filters, Envelopes & Modulation",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-synthesis-and-sound-design",
+    "gs": 1380,
+    "name": "Synthesis Fundamentals & Oscillators",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-studio-recording",
+    "gs": 990,
+    "name": "Recording Fundamentals & Signal Chain",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-studio-recording",
+    "gs": 1000,
+    "name": "Microphone Technique for Recording",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-studio-recording",
+    "gs": 1010,
+    "name": "Session Setup & Signal Flow",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-instrument-recording",
+    "gs": 1020,
+    "name": "Instrument Recording — Strings & Guitar",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-instrument-recording",
+    "gs": 1022,
+    "name": "Instrument Recording — Drums & Percussion",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-instrument-recording",
+    "gs": 1024,
+    "name": "Instrument Recording — Keys, Winds & Brass",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-advanced-recording-production",
+    "gs": 1030,
+    "name": "Studio Recording Craft — Advanced",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-advanced-recording-production",
+    "gs": 1060,
+    "name": "Band Tracking Workflow & Arrangement",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-advanced-recording-production",
+    "gs": 1070,
+    "name": "Vocal & Overdub Production",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-microphone-techniques",
+    "gs": 1000,
+    "name": "Microphone Technique for Recording",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-microphone-techniques",
+    "gs": 212,
+    "name": "Instrument & Close Miking Techniques",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-microphone-techniques",
+    "gs": 210,
+    "name": "Stereo & Ensemble Miking Techniques",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-music-mixing",
+    "gs": 1080,
+    "name": "Mix Fundamentals & Workflow",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-music-mixing",
+    "gs": 1130,
+    "name": "Mix Automation & Recall",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-music-mixing",
+    "gs": 1140,
+    "name": "Mix Bus, Loudness & Translation",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-instrument-mixing",
+    "gs": 1090,
+    "name": "Instrument Mixing — Drums & Percussion",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-instrument-mixing",
+    "gs": 1100,
+    "name": "Instrument Mixing — Guitars, Bass & Keys",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-instrument-mixing",
+    "gs": 1120,
+    "name": "Orchestral, Choir & Acoustic-Ensemble Mixing",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-vocal-mixing-and-production",
+    "gs": 1070,
+    "name": "Vocal & Overdub Production",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-vocal-mixing-and-production",
+    "gs": 1110,
+    "name": "Vocal Mixing",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-vocal-mixing-and-production",
+    "gs": 1490,
+    "name": "Voice & Vocal Perception",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-mastering",
+    "gs": 1160,
+    "name": "Mastering Fundamentals & Chain",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-mastering",
+    "gs": 1170,
+    "name": "Loudness, Dynamics & QC",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-mastering",
+    "gs": 1180,
+    "name": "Delivery Formats & Metadata",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-broadcast-and-streaming-audio",
+    "gs": 1200,
+    "name": "Broadcast / Radio Production & Air Chain",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-broadcast-and-streaming-audio",
+    "gs": 1210,
+    "name": "Streaming & Distribution",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-broadcast-and-streaming-audio",
+    "gs": 1220,
+    "name": "Broadcast Loudness & Compliance",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-podcast-production",
+    "gs": 1190,
+    "name": "Podcast Production",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-podcast-production",
+    "gs": 1110,
+    "name": "Vocal Mixing",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-podcast-production",
+    "gs": 1210,
+    "name": "Streaming & Distribution",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-production-sound",
+    "gs": 1232,
+    "name": "Production Sound & Field Recording",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-production-sound",
+    "gs": 340,
+    "name": "Audio File Formats & Media",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-production-sound",
+    "gs": 410,
+    "name": "Documentation & Diagrams",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-daw-production",
+    "gs": 1240,
+    "name": "DAW Fundamentals & Session Management",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-daw-production",
+    "gs": 1250,
+    "name": "Editing & Comping",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-daw-production",
+    "gs": 1260,
+    "name": "In-the-Box Mixing & Automation",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-logic-production",
+    "gs": 1240,
+    "name": "DAW Fundamentals & Session Management",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-logic-production",
+    "gs": 1250,
+    "name": "Editing & Comping",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-logic-production",
+    "gs": 1270,
+    "name": "DAW: Logic",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-cubase-nuendo-production",
+    "gs": 1240,
+    "name": "DAW Fundamentals & Session Management",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-cubase-nuendo-production",
+    "gs": 1250,
+    "name": "Editing & Comping",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-cubase-nuendo-production",
+    "gs": 1280,
+    "name": "DAW: Cubase/Nuendo",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-reaper-production",
+    "gs": 1240,
+    "name": "DAW Fundamentals & Session Management",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-reaper-production",
+    "gs": 1250,
+    "name": "Editing & Comping",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-reaper-production",
+    "gs": 1290,
+    "name": "DAW: REAPER",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ableton-live-production",
+    "gs": 1240,
+    "name": "DAW Fundamentals & Session Management",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ableton-live-production",
+    "gs": 1330,
+    "name": "MIDI",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ableton-live-production",
+    "gs": 1300,
+    "name": "DAW: Ableton Live",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-studio-one-production",
+    "gs": 1240,
+    "name": "DAW Fundamentals & Session Management",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-studio-one-production",
+    "gs": 1250,
+    "name": "Editing & Comping",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-studio-one-production",
+    "gs": 1310,
+    "name": "DAW: Studio One",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-digital-performer-reason-production",
+    "gs": 1240,
+    "name": "DAW Fundamentals & Session Management",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-digital-performer-reason-production",
+    "gs": 1330,
+    "name": "MIDI",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-digital-performer-reason-production",
+    "gs": 1320,
+    "name": "DAW: Digital Performer/Reason",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-hearing-and-audio-health",
+    "gs": 1410,
+    "name": "Hearing Anatomy & Function",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-hearing-and-audio-health",
+    "gs": 1420,
+    "name": "Hearing Protection & Occupational Health",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-hearing-and-audio-health",
+    "gs": 1430,
+    "name": "Hearing Disorders & Health",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-psychoacoustics-and-listening",
+    "gs": 1440,
+    "name": "Psychoacoustics",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-psychoacoustics-and-listening",
+    "gs": 1450,
+    "name": "Spatial Hearing & Localization",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-psychoacoustics-and-listening",
+    "gs": 1470,
+    "name": "Loudness & Listening Environments",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-critical-listening",
+    "gs": 1500,
+    "name": "Ear Training",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-critical-listening",
+    "gs": 1510,
+    "name": "Tonal & Timbre Descriptors",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-critical-listening",
+    "gs": 1530,
+    "name": "Monitoring & Audio Evaluation",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-instrument-sound-identification",
+    "gs": 1550,
+    "name": "Strings, Guitar & Keys",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-instrument-sound-identification",
+    "gs": 1560,
+    "name": "Drums & Percussion",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-instrument-sound-identification",
+    "gs": 1570,
+    "name": "Winds, Brass & Organ",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-career-development",
+    "gs": 1600,
+    "name": "Audio Career Exploration",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-career-development",
+    "gs": 1610,
+    "name": "Portfolio Development",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-career-development",
+    "gs": 1640,
+    "name": "Industry Foundations",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-music-business-and-entrepreneurship",
+    "gs": 1620,
+    "name": "Copyright, Publishing & Licensing",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-music-business-and-entrepreneurship",
+    "gs": 1630,
+    "name": "Music Entrepreneurship",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-music-business-and-entrepreneurship",
+    "gs": 1580,
+    "name": "Project Management",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-immersive-audio-production",
+    "gs": 1650,
+    "name": "Immersive Formats & Delivery",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-immersive-audio-production",
+    "gs": 1660,
+    "name": "Object & Bed Panning / Authoring",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-immersive-audio-production",
+    "gs": 1670,
+    "name": "Immersive Monitoring & Calibration",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-immersive-music-production",
+    "gs": 1650,
+    "name": "Immersive Formats & Delivery",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-immersive-music-production",
+    "gs": 1670,
+    "name": "Immersive Monitoring & Calibration",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-immersive-music-production",
+    "gs": 1680,
+    "name": "Immersive Music Production & Delivery",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-dialogue-and-localization",
+    "gs": 1700,
+    "name": "Dialogue Editing",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-dialogue-and-localization",
+    "gs": 1710,
+    "name": "ADR & Looping",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-dialogue-and-localization",
+    "gs": 1720,
+    "name": "Dubbing & Localization",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-foley-and-sound-effects",
+    "gs": 1730,
+    "name": "Foley Performance & Recording",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-foley-and-sound-effects",
+    "gs": 1732,
+    "name": "SFX Editorial & Sound Design",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-foley-and-sound-effects",
+    "gs": 1232,
+    "name": "Production Sound & Field Recording",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-game-and-themed-entertainment-audio",
+    "gs": 1740,
+    "name": "Game Audio",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-game-and-themed-entertainment-audio",
+    "gs": 1750,
+    "name": "Themed Entertainment / Haunt Audio",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-game-and-themed-entertainment-audio",
+    "gs": 1732,
+    "name": "SFX Editorial & Sound Design",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-electronics",
+    "gs": 880,
+    "name": "Passive Components",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-electronics",
+    "gs": 890,
+    "name": "Active Devices & Semiconductors",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-electronics",
+    "gs": 900,
+    "name": "Circuits & Topologies",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-equipment-service",
+    "gs": 970,
+    "name": "Soldering",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-equipment-service",
+    "gs": 980,
+    "name": "Repair",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-equipment-service",
+    "gs": 920,
+    "name": "Bench Test, Measurement & Repair",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-manufacturing",
+    "gs": 910,
+    "name": "PCB, Assembly & Soldering",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-manufacturing",
+    "gs": 920,
+    "name": "Bench Test, Measurement & Repair",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-manufacturing",
+    "gs": 930,
+    "name": "Manufacturing & Production",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-hardware-engineering",
+    "gs": 1810,
+    "name": "Preamp & Converter Engineering",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-hardware-engineering",
+    "gs": 1820,
+    "name": "Loudspeaker / Transducer Engineering",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-hardware-engineering",
+    "gs": 900,
+    "name": "Circuits & Topologies",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-software-and-dsp-development",
+    "gs": 1830,
+    "name": "Audio Plugin & DSP Development",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-software-and-dsp-development",
+    "gs": 1840,
+    "name": "Cloud & Emerging Production",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-software-and-dsp-development",
+    "gs": 1910,
+    "name": "AI/ML Foundations for Audio",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-audio-foundations",
+    "gs": 1910,
+    "name": "AI/ML Foundations for Audio",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-audio-foundations",
+    "gs": 1900,
+    "name": "Music Information Retrieval",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-audio-foundations",
+    "gs": 1920,
+    "name": "AI Audio Ethics, Rights & Provenance",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-music-and-sound-creation",
+    "gs": 1850,
+    "name": "AI Music Generation & Composition",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-music-and-sound-creation",
+    "gs": 1890,
+    "name": "Neural Amp Modeling & Neural Synthesis",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-music-and-sound-creation",
+    "gs": 1920,
+    "name": "AI Audio Ethics, Rights & Provenance",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-audio-production",
+    "gs": 1870,
+    "name": "AI Source Separation & Restoration",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-audio-production",
+    "gs": 1880,
+    "name": "AI Mixing/Mastering & Adaptive Processing",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-audio-production",
+    "gs": 1920,
+    "name": "AI Audio Ethics, Rights & Provenance",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-voice-and-speech",
+    "gs": 1860,
+    "name": "AI Voice & Speech",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-voice-and-speech",
+    "gs": 1900,
+    "name": "Music Information Retrieval",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-ai-voice-and-speech",
+    "gs": 1920,
+    "name": "AI Audio Ethics, Rights & Provenance",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-crew-operations",
+    "gs": 1930,
+    "name": "Live Sound — Crew Roles & Departments",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-crew-operations",
+    "gs": 1940,
+    "name": "Live Sound — Production Documents & Advancing",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-crew-operations",
+    "gs": 1950,
+    "name": "Live Sound — Load-In / Setup / Strike / Load-Out",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-mixing",
+    "gs": 1960,
+    "name": "Live Sound — Stage Patch & Signal Distribution",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-mixing",
+    "gs": 1970,
+    "name": "Live Sound — FOH Mixing Workflow",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-mixing",
+    "gs": 1980,
+    "name": "Live Sound — Monitor Engineering",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-system-engineering",
+    "gs": 1990,
+    "name": "Live Sound — Soundcheck / Rehearsal / Virtual Soundcheck",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-system-engineering",
+    "gs": 2000,
+    "name": "Live Sound — PA Deployment & System Engineering",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-live-sound-system-engineering",
+    "gs": 2030,
+    "name": "Live Sound — Troubleshooting & Emergency",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-festival-audio-production",
+    "gs": 1940,
+    "name": "Live Sound — Production Documents & Advancing",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-festival-audio-production",
+    "gs": 2010,
+    "name": "Live Sound — Festival Changeovers & Guest-Engineer",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-festival-audio-production",
+    "gs": 2020,
+    "name": "Live Sound — Communication & Show Calls",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-road-crew-operations",
+    "gs": 700,
+    "name": "Road Crew",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-road-crew-operations",
+    "gs": 1950,
+    "name": "Live Sound — Load-In / Setup / Strike / Load-Out",
+    "required": true
+  },
+  {
+    "certificate_id": "cert-road-crew-operations",
+    "gs": 1930,
+    "name": "Live Sound — Crew Roles & Departments",
+    "required": true
+  }
+]

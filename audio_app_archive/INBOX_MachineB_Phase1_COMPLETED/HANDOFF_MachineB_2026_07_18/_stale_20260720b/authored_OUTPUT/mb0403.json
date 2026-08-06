@@ -1,0 +1,74 @@
+{
+ "batch": 403,
+ "topic": "Preamp & Converter Engineering",
+ "authored": [
+  {
+   "id": "831322e8-62bb-4856-81fb-85080f8a6aa6",
+   "term": "Sample-rate switching",
+   "fields": {
+    "definition": "The act of changing the sampling frequency at which an audio converter or digital interface operates, for example moving among the standard families of 44.1, 88.2, 176.4 kHz and 48, 96, 192 kHz. The change forces the device clocking (its PLL or oscillator) to relock and its decimation or interpolation filters to reconfigure for the new rate.",
+    "plain_english": "It means changing how many samples a converter takes each second, like switching from 44,100 to 48,000. When you switch, the gear has to lock to the new clock, so the sound is muted for a moment.",
+    "purpose_function": "It lets one converter or interface serve projects and formats that use different sampling frequencies, and it forces a clean clock relock so every connected digital device stays sample-locked to the same rate.",
+    "practical_application": "A technician sets or changes the session rate in the DAW or interface control panel; on the change the PLL relocks and outputs briefly mute, and every device on the digital link must be set to the same rate.",
+    "category": "Clocking & Sync",
+    "related_terms": ["Sample rate", "Word clock", "Phase-locked loop", "Asynchronous sample-rate converter", "Decimation filter", "Jitter"],
+    "common_mistakes": ["Changing the sample rate on only one device in a digital chain, which causes clicks, dropouts, or loss of lock because the devices disagree on rate", "Assuming a rate change resamples audio already recorded; changing the project rate does not convert existing files, which must be sample-rate converted separately", "Freely mixing the 44.1 kHz and 48 kHz families; moving between them needs sample-rate conversion, not just a clock change"],
+    "scenario_contexts": ["Switching an interface from 48 kHz for video post to 44.1 kHz for a music session", "A Dante network set to a common sample rate where changing it forces every device to relock", "Playing a 96 kHz file through a DAC that must switch from 44.1 kHz and briefly mutes while it relocks"]
+   },
+   "sources": ["Analog Devices AD1938 4 ADC/8 DAC 192 kHz 24-Bit Codec data sheet (sample-rate groups, PLL lock time)", "Pohlmann, Principles of Digital Audio (sampling frequencies, clocking and lock)", "AES5 recommended sampling frequencies for digital audio"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "628c02ee-2521-46fa-8284-9036dbe2508c",
+   "term": "Signal-to-noise-and-distortion ratio",
+   "fields": {
+    "definition": "SINAD is the ratio, in decibels, of the RMS value of the input signal to the root-sum-square of all other spectral components, including harmonic distortion and noise but excluding DC. It is a single figure of merit for overall dynamic performance and relates to the effective number of bits by ENOB = (SINAD minus 1.76) divided by 6.02.",
+    "plain_english": "SINAD is one number that shows how clean a signal is. It compares the real signal to everything unwanted mixed in, both noise and distortion. A bigger number means a cleaner sound.",
+    "purpose_function": "It combines noise and distortion into one figure so engineers can judge and compare the true dynamic quality of converters and preamps, and can derive the effective number of bits actually achieved.",
+    "practical_application": "A technician reads SINAD from a converter datasheet or measures it on an audio analyzer with a near-full-scale test tone to confirm a unit meets spec and to compute its ENOB.",
+    "category": "Performance Metrics",
+    "related_terms": ["Effective number of bits", "Signal-to-noise ratio", "Total harmonic distortion", "THD+N", "Spurious-free dynamic range", "Dynamic range"],
+    "common_mistakes": ["Confusing SINAD with SNR; SNR excludes harmonic distortion while SINAD includes it, so SINAD is always equal to or lower than SNR", "Comparing SINAD numbers taken at different input frequencies or levels, when the figure is only comparable under identical test conditions", "Treating a converter's stated bit resolution as its real performance instead of using SINAD-derived ENOB"],
+    "scenario_contexts": ["Comparing two audio interfaces' converter quality from their datasheet SINAD and ENOB figures", "Bench-testing a repaired preamp with an audio analyzer that reports SINAD", "Verifying an ADC meets its published dynamic performance before deployment"]
+   },
+   "sources": ["Analog Devices MT-003 Tutorial: Understand SINAD, ENOB, SNR, THD, THD+N, and SFDR", "IEEE Std 1241 Standard for Terminology and Test Methods for Analog-to-Digital Converters", "Kester (ed.), Data Conversion Handbook (Analog Devices)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "33719eb0-e6a9-4c2a-8f99-d1b21d695c1c",
+   "term": "Successive-approximation converter",
+   "fields": {
+    "definition": "An analog-to-digital converter that resolves each output bit by a binary search: a track-and-hold captures the input, then successive-approximation-register logic drives an internal DAC and comparator to test one bit at a time from the MSB down to the LSB. An N-bit result takes N comparison cycles.",
+    "plain_english": "This converter finds a number by guessing in a smart way, like a scale. It first checks the biggest half, keeps or drops it, then checks the next, and so on. Each guess gets it closer to the real value.",
+    "purpose_function": "It converts analog voltage to a digital code with good resolution and low latency using little power and few parts, which makes it a workhorse for moderate-speed, high-accuracy data acquisition.",
+    "practical_application": "A technician meets SAR converters in metering, control, and data-acquisition circuits, where each conversion finishes in a fixed, predictable number of clock cycles.",
+    "category": "Converter Architecture",
+    "related_terms": ["Track-and-hold circuit", "Comparator", "Digital-to-analog converter", "Delta-sigma converter", "Flash converter", "Quantization"],
+    "common_mistakes": ["Assuming a SAR converter needs no input hold; the input must stay within about 1 LSB during conversion, so a track-and-hold is required", "Confusing SAR with delta-sigma converters; delta-sigma oversamples and dominates audio, while SAR does a one-bit-per-cycle binary search", "Overlooking that conversion always takes N cycles, so resolution and conversion speed trade off directly"],
+    "scenario_contexts": ["Instrumentation and metering that need fast, low-latency single-shot conversions", "Multiplexed multichannel data-acquisition front ends", "Control and sensor interfaces inside audio gear, such as fader position and level sensing"]
+   },
+   "sources": ["Analog Devices technical article: Understanding SAR and Flash ADCs (binary search, comparator, DAC, N cycles)", "Kester (ed.), Data Conversion Handbook (Analog Devices)", "Pohlmann, Principles of Digital Audio"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3b66b740-c0e8-44ba-aba5-d987f1c39ffb",
+   "term": "Track-and-hold circuit",
+   "fields": {
+    "definition": "A track-and-hold (T/H) circuit acquires an analog signal onto a hold capacitor while its switch is closed (track mode) and freezes that voltage when the switch opens (hold mode), presenting a stable sample to an ADC during conversion. It is functionally the same as a sample-and-hold, the name stressing that its output accurately follows the input while tracking.",
+    "plain_english": "This circuit takes a quick snapshot of a changing signal and holds it still. While it tracks, its output follows the input. When it holds, it freezes the value so the converter has something steady to read.",
+    "purpose_function": "It keeps the input voltage constant during the brief conversion window so a fast-changing signal cannot smear the result, which many ADCs require because the input must stay within about 1 LSB during conversion.",
+    "practical_application": "A technician finds the T/H built into or ahead of an ADC; its acquisition time, aperture jitter, droop, and pedestal set the limits on how fast and how accurately the converter can sample.",
+    "category": "Converter Architecture",
+    "related_terms": ["Successive-approximation converter", "Aperture jitter", "Acquisition time", "Analog-to-digital converter", "Droop", "Sample rate"],
+    "common_mistakes": ["Confusing track-and-hold with sample-and-hold; in practice they name the same block, with track-and-hold stressing accurate tracking in the sample phase", "Ignoring aperture jitter; timing uncertainty at the instant of hold adds noise that grows with signal frequency and slope", "Overlooking droop and pedestal, which offset the held voltage during long holds or from charge injection at switching"],
+    "scenario_contexts": ["Holding the input steady at the front end of a SAR ADC during each conversion", "High-frequency sampling where aperture jitter limits the achievable SNR", "Diagnosing conversion errors traced to droop during an extended hold interval"]
+   },
+   "sources": ["Analog Devices MT-090 Tutorial: Sample-and-Hold Amplifiers (track/hold modes, acquisition time, aperture, droop, pedestal)", "Kester (ed.), Data Conversion Handbook (Analog Devices)", "Pohlmann, Principles of Digital Audio"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,259 @@
+{
+ "batch": 417,
+ "topic": "AI/ML Foundations for Audio",
+ "authored": [
+  {
+   "id": "80e4d24c-59a3-434a-af7e-8b1315f99847",
+   "term": "Convolution engine",
+   "fields": {
+    "definition": "A convolution engine is a software or hardware component that computes the convolution of an input signal with a fixed kernel or impulse response, most often implemented as fast, FFT-based block convolution using overlap-add or overlap-save. In audio it is the processing core of convolution reverb and cabinet or speaker emulation, and the same operation underlies the filtering performed inside convolutional neural network layers.",
+    "plain_english": "It is the part of a system that blends a sound with a recorded fingerprint of a room or filter. Feed in a dry sound and it plays back as if it happened in that space.",
+    "purpose_function": "It exists to apply a filter or an acoustic space to a signal efficiently, letting long impulse responses run in real time by working in the frequency domain instead of one sample at a time.",
+    "practical_application": "A technician loads an impulse response of a hall, plate, or guitar cabinet into a convolution reverb plugin, and the convolution engine renders the dry track as if it were played in that space or through that gear.",
+    "category": "Signal Processing",
+    "related_terms": ["Impulse response", "Convolution reverb", "Convolutional neural network (CNN)", "Fast Fourier transform (FFT)", "Finite impulse response (FIR) filter"],
+    "common_mistakes": [
+     "Assuming a longer impulse response always sounds better, when it mainly increases CPU load and latency without adding realism.",
+     "Confusing the convolution engine, a fixed DSP process, with a convolutional neural network, which learns its kernels from data.",
+     "Forgetting that an impulse response captures the gear or room it was recorded through, so a bright or noisy capture is baked into every use."
+    ],
+    "scenario_contexts": [
+     "Applying a sampled concert-hall impulse response to a close-miked vocal in a mix.",
+     "Emulating a specific guitar speaker cabinet during a direct-input recording session.",
+     "Running real-time convolution reverb on a live console, where latency and CPU limits matter."
+    ]
+   },
+   "sources": [
+    "Oppenheim & Schafer, Discrete-Time Signal Processing (convolution; overlap-add and overlap-save fast convolution)",
+    "W3C Web Audio API specification, Convolution Architecture / Convolution Reverb section",
+    "DAFx conference proceedings, Optimization of Convolution Reverberation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2add02e9-6195-4762-a032-7593f3e8fb32",
+   "term": "Convolutional neural network (CNN)",
+   "fields": {
+    "definition": "A convolutional neural network is a deep neural network that applies learnable convolutional filters across local regions of its input, using weight sharing and spatial pooling to build translation-tolerant, hierarchical feature representations. It is designed for grid-like data such as images and time-frequency audio representations like spectrograms.",
+    "plain_english": "It slides small pattern finders across a picture or a sound image to pick out useful features. Early layers catch simple edges, and later ones join them into bigger shapes.",
+    "purpose_function": "It exists to learn features directly from grid data while reusing the same filters everywhere, which cuts the number of parameters and lets the model recognize patterns wherever they appear.",
+    "practical_application": "In audio work a CNN is trained on spectrogram images to tag instruments, detect events, or classify sounds, and it forms the front end of many source-separation and music-tagging systems.",
+    "category": "Neural Networks",
+    "related_terms": ["Deep learning", "Convolution engine", "Spectrogram", "Feature map", "Pooling", "Recurrent neural network (RNN)"],
+    "common_mistakes": [
+     "Thinking a CNN reads sound as a raw waveform, when it usually works on a spectrogram or another fixed input representation.",
+     "Assuming more layers always help; too many can overfit small audio datasets and hurt real-world accuracy.",
+     "Confusing fixed DSP convolution with a CNN, whose filter values are learned during training."
+    ],
+    "scenario_contexts": [
+     "Training a model to classify drums, vocals, and guitar from spectrogram slices.",
+     "Detecting a specific sound event, such as a snare hit, in a long recording.",
+     "Building the encoder stage of a neural source-separation tool."
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning, Chapter 9 (Convolutional Networks)",
+    "LeCun, Bengio & Hinton, Deep Learning, Nature (review article)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "53974ab8-8337-4096-a91b-62682523cfdd",
+   "term": "Cubic interpolation",
+   "fields": {
+    "definition": "Cubic interpolation estimates values between known samples by fitting a third-degree polynomial to neighboring points, giving a smoother reconstruction than linear interpolation. In audio it is commonly used for sample-rate conversion, fractional-delay lines, and wavetable or pitch-shift read positions.",
+    "plain_english": "It guesses the values that sit between known samples by drawing a smooth curve through nearby points. The curve bends more naturally than a straight line, so the result sounds cleaner.",
+    "purpose_function": "It exists to rebuild a signal at points that fall between stored samples with less error and fewer artifacts than simpler methods, which matters when changing sample rate or reading a wavetable at a moving position.",
+    "practical_application": "A technician meets cubic interpolation inside resamplers, pitch shifters, and time-stretch tools, where it estimates sample values at fractional positions to avoid the harshness of linear interpolation.",
+    "category": "Signal Processing",
+    "related_terms": ["Interpolation", "Linear interpolation", "Sample rate conversion", "Resampling", "Wavetable synthesis"],
+    "common_mistakes": [
+     "Assuming cubic interpolation removes aliasing; it reduces some artifacts but does not replace a proper anti-aliasing filter.",
+     "Thinking more interpolation points always sound better, ignoring the extra CPU cost and possible ringing.",
+     "Confusing cubic interpolation with cubic spline interpolation, which enforces smoothness across a whole set of points rather than a local fit."
+    ],
+    "scenario_contexts": [
+     "Converting a 44.1 kHz file to 48 kHz for video post.",
+     "Reading a wavetable oscillator at a pitch that lands between stored samples.",
+     "Implementing a fractional delay line for a modulation or chorus effect."
+    ]
+   },
+   "sources": [
+    "Oppenheim & Schafer, Discrete-Time Signal Processing (sampling, reconstruction, and sample-rate conversion)",
+    "Mueller, Fundamentals of Music Processing (resampling and interpolation in audio)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a5f4fe54-9a97-4e96-bb2b-e6f1af00885d",
+   "term": "Dataset",
+   "fields": {
+    "definition": "In machine learning, a dataset is a structured collection of examples, usually paired inputs and target labels, used to train, validate, and test a model. It is typically split into separate training, validation, and test subsets so that performance can be measured on data the model has not seen.",
+    "plain_english": "It is the collection of examples a model learns from, like a big pile of labeled sound clips. Part of it is kept aside to fairly check how well the model does.",
+    "purpose_function": "It exists to give a model the examples it needs to learn patterns and to provide held-out data for honestly measuring how well it generalizes to new inputs.",
+    "practical_application": "An engineer building an audio classifier gathers or licenses a labeled dataset of sounds, splits it into training and test sets, and uses it to train and score the model.",
+    "category": "ML Fundamentals",
+    "related_terms": ["Deep learning", "Training set", "Validation set", "Test set", "Overfitting", "Label"],
+    "common_mistakes": [
+     "Letting the same recording appear in both the training and test sets, which inflates accuracy and hides poor generalization.",
+     "Assuming a bigger dataset is always better, while ignoring label quality, balance, and bias.",
+     "Testing on the training data and reporting that score as real-world performance."
+    ],
+    "scenario_contexts": [
+     "Assembling labeled instrument clips to train a music tagger.",
+     "Splitting recordings into train, validation, and test sets before training.",
+     "Auditing a dataset for class imbalance before a project."
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning, Chapter 5 (Machine Learning Basics; datasets and train/validation/test splits)",
+    "Bishop, Pattern Recognition and Machine Learning (data, training and generalization)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3ffa97bb-8bd9-45df-95bc-15a26bda8756",
+   "term": "Deep learning",
+   "fields": {
+    "definition": "Deep learning is a branch of machine learning that uses neural networks with many layers to learn hierarchical representations of data directly from raw or lightly processed inputs. Successive layers transform the input into increasingly abstract features, removing much of the need for hand-designed feature extraction.",
+    "plain_english": "It is a way of teaching computers using many-layered networks that learn features on their own. Each layer builds on the one before it, turning raw sound into more useful patterns.",
+    "purpose_function": "It exists to let models learn their own features from large amounts of data, which often beats hand-crafted features on hard tasks like speech, music, and image understanding.",
+    "practical_application": "Deep learning powers the audio tools a technician now uses daily, including noise reduction, source separation, transcription, and generative sound tools.",
+    "category": "ML Fundamentals",
+    "related_terms": ["Machine learning", "Neural network", "Convolutional neural network (CNN)", "Dataset", "Training", "Diffusion model"],
+    "common_mistakes": [
+     "Treating deep learning as magic that needs no clean, well-labeled data, when data quality strongly drives results.",
+     "Assuming deeper always means better, ignoring overfitting, cost, and the risk of worse results on small datasets.",
+     "Confusing deep learning with all of artificial intelligence; it is one approach among many."
+    ],
+    "scenario_contexts": [
+     "Using a deep-learning plugin to separate vocals from a stereo mix.",
+     "Running automatic dialogue transcription on interview recordings.",
+     "Applying a learned noise-reduction model to a noisy field recording."
+    ]
+   },
+   "sources": [
+    "Goodfellow, Bengio & Courville, Deep Learning (definition and hierarchical representation learning)",
+    "LeCun, Bengio & Hinton, Deep Learning, Nature (review article)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f31d108d-d5d1-4f57-b05c-c625c4e0468a",
+   "term": "Delay-and-sum beamforming",
+   "fields": {
+    "definition": "Delay-and-sum beamforming is a microphone-array technique that applies a time delay to each microphone signal to align the wavefront arriving from a chosen direction, then sums the channels so the desired direction adds constructively while other directions partly cancel. It is the simplest fixed, non-adaptive beamformer and steers the array's main lobe through the choice of delays.",
+    "plain_english": "It points a group of microphones at a sound without moving them. By nudging each mic signal in time so they line up, the wanted direction gets louder and other directions get quieter.",
+    "purpose_function": "It exists to give a microphone array spatial directivity, boosting a source from one direction and reducing noise and reflections from others, without any mechanical aiming.",
+    "practical_application": "A technician meets delay-and-sum beamforming in conferencing mic arrays, laptops, and measurement rigs, where per-microphone delays steer a pickup beam toward a talker or source.",
+    "category": "Array Processing",
+    "related_terms": ["Microphone array", "Beamforming", "Time delay of arrival", "Direction of arrival", "Spatial filtering"],
+    "common_mistakes": [
+     "Expecting sharp directivity at low frequencies, where long wavelengths make a small array nearly omnidirectional.",
+     "Ignoring aliasing from too-wide microphone spacing, which creates unwanted grating lobes.",
+     "Assuming it adapts to moving noise; the basic delay-and-sum beamformer is fixed and does not track interference."
+    ],
+    "scenario_contexts": [
+     "Steering a ceiling conference array toward the person speaking.",
+     "Reducing room noise pickup in a hands-free voice system.",
+     "Localizing a source with a measurement microphone array."
+    ]
+   },
+   "sources": [
+    "Brandstein & Ward (Eds.), Microphone Arrays: Signal Processing Techniques and Applications",
+    "McCowan, Microphone Arrays: A Tutorial (IDIAP)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1fb11403-7d1a-45cc-a38c-6d95dc0f2591",
+   "term": "Demucs",
+   "fields": {
+    "definition": "Demucs is an open-source deep-learning model for music source separation developed at Meta AI, which splits a mixed track into stems such as drums, bass, vocals, and other. Later versions use a hybrid design that processes both the waveform and the spectrogram, and the current release adds transformer layers (Hybrid Transformer Demucs).",
+    "plain_english": "It is a free AI tool that pulls a song apart into separate tracks like vocals, drums, and bass. You feed it a finished mix and it hands back the pieces.",
+    "purpose_function": "It exists to recover individual instrument stems from a stereo mix when the original multitrack is unavailable, using a network trained to model each source.",
+    "practical_application": "Engineers use Demucs to extract stems for remixing, sampling, karaoke or vocal removal, and cleanup, or as a front end before further processing.",
+    "category": "Source Separation",
+    "related_terms": ["Music source separation", "Deep learning", "Convolutional neural network (CNN)", "Spectrogram", "Stem", "U-Net"],
+    "common_mistakes": [
+     "Expecting perfect, artifact-free stems; separated tracks often have bleed and watery artifacts, especially on dense mixes.",
+     "Assuming its output stems are legally clear to release, ignoring the copyright of the source recording.",
+     "Feeding it a low-bitrate MP3 and blaming the model for artifacts already in the source."
+    ],
+    "scenario_contexts": [
+     "Extracting an isolated vocal from a stereo master for a remix.",
+     "Creating a karaoke backing track by removing vocals.",
+     "Pulling a drum stem out of a reference track for study or sampling."
+    ]
+   },
+   "sources": [
+    "Rouard, Massa & Defossez, Hybrid Transformers for Music Source Separation (ICASSP)",
+    "facebookresearch/demucs official repository technical documentation (Hybrid Spectrogram and Waveform Source Separation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e16baefb-91be-4adc-811b-6108b146657a",
+   "term": "Diffusion audio model",
+   "fields": {
+    "definition": "A diffusion audio model is a generative model that applies the diffusion framework to audio, learning to reverse a gradual noising process to synthesize waveforms or spectrograms from noise, optionally conditioned on text, a mel-spectrogram, or other cues. Examples include waveform vocoders and text-to-audio systems built on denoising diffusion.",
+    "plain_english": "It makes new sound by starting from random noise and cleaning it up step by step. After many small steps the noise turns into speech, music, or effects.",
+    "purpose_function": "It exists to generate high-quality, varied audio and to act as a neural vocoder or text-to-sound system, trading extra compute at generation time for strong sample quality.",
+    "practical_application": "A technician meets diffusion audio models in text-to-music and text-to-sound tools, neural vocoders, and restoration or upsampling plugins that generate missing detail.",
+    "category": "Generative Models",
+    "related_terms": ["Diffusion model", "Deep learning", "Vocoder", "Mel spectrogram", "Text-to-audio", "Generative model"],
+    "common_mistakes": [
+     "Assuming generation is instant; many diffusion samplers need many steps and can be slow without acceleration.",
+     "Treating outputs as faithful recordings, when the model invents plausible detail that may not be accurate.",
+     "UNSAFE: Ignoring rights and consent when generating a real person's voice, which can create legal and ethical harm."
+    ],
+    "scenario_contexts": [
+     "Generating a sound effect or short music bed from a text prompt.",
+     "Using a diffusion vocoder to turn a mel-spectrogram into a waveform.",
+     "Restoring or upsampling degraded audio by generating missing high-frequency detail."
+    ]
+   },
+   "sources": [
+    "Kong, Ping, Huang, Zhao & Catanzaro, DiffWave: A Versatile Diffusion Model for Audio Synthesis (ICLR)",
+    "Chen, Zhang, Zen, Weiss, Norouzi & Chan, WaveGrad: Estimating Gradients for Waveform Generation (ICLR)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "afaac4b9-abc7-4c69-a699-86f43b4462f8",
+   "term": "Diffusion model",
+   "fields": {
+    "definition": "A diffusion model is a class of generative model that learns to reverse a fixed forward process which gradually adds Gaussian noise to data, so new samples can be produced by starting from noise and iteratively denoising. Denoising diffusion probabilistic models train a network to predict the noise added at each step and are widely used for image and audio generation.",
+    "plain_english": "It learns to undo noise. During training it watches data get messed up with noise, then learns to reverse that, so it can turn pure noise into a fresh, realistic sample.",
+    "purpose_function": "It exists to generate new, high-quality samples that resemble the training data, offering stable training and strong quality compared with some earlier generative approaches.",
+    "practical_application": "In audio, diffusion models underlie many generative and vocoding tools, and the same idea powers well-known image generators a technician may use for artwork.",
+    "category": "Generative Models",
+    "related_terms": ["Diffusion audio model", "Generative model", "Deep learning", "Denoising", "Neural network", "Variational autoencoder (VAE)"],
+    "common_mistakes": [
+     "Confusing the forward noising process, which is fixed and needs no learning, with the learned reverse denoising process.",
+     "Assuming diffusion models memorize and replay training data, when they learn a distribution and sample from it.",
+     "Expecting one-step output; standard sampling is iterative and can be slow."
+    ],
+    "scenario_contexts": [
+     "Generating novel audio or images from noise.",
+     "Using a diffusion-based vocoder in a speech pipeline.",
+     "Comparing diffusion models with GANs when choosing a generative approach."
+    ]
+   },
+   "sources": [
+    "Ho, Jain & Abbeel, Denoising Diffusion Probabilistic Models (NeurIPS)",
+    "Sohl-Dickstein, Weiss, Maheswaranathan & Ganguli, Deep Unsupervised Learning using Nonequilibrium Thermodynamics (ICML)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

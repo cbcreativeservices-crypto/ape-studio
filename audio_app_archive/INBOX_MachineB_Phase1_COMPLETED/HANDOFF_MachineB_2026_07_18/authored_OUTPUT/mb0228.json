@@ -1,0 +1,304 @@
+{
+ "batch": 228,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "9aac2f1a-7d42-4dee-84fb-f74d67ff114d",
+   "term": "Foreign-language printmaster",
+   "fields": {
+    "definition": "The final, format-encoded master mix of a film's soundtrack rebuilt for a specific language, combining the original music-and-effects (M&E) stems with newly dubbed foreign-language dialogue, matched to the format, sync, and levels of the original printmaster.",
+    "plain_english": "A finished movie soundtrack made in another language. The mixer keeps the original music and sound effects. Then they swap the spoken lines for new lines dubbed in that language.",
+    "purpose_function": "It lets a film be released in other countries with local-language dialogue while keeping the same music and effects mix, so the picture can be distributed worldwide without remaking the whole soundtrack.",
+    "practical_application": "A re-recording mixer builds it from the delivered M&E stems plus the dubbed dialogue stem, matching loudness and format specs before delivery to the distributor.",
+    "category": "Deliverables",
+    "related_terms": [
+     "Music and effects (M&E)",
+     "Printmaster",
+     "Dubbing",
+     "ADR",
+     "Dialogue stem",
+     "Stems"
+    ],
+    "common_mistakes": [
+     "Confusing the M&E with the printmaster: the M&E is a dialogue-free stem, while the printmaster is the finished, combined mix.",
+     "Leaving essential sync effects or non-verbal vocalizations only in the dialogue stem, so gaps appear when the original dialogue is removed for the foreign version.",
+     "Not matching the loudness and format specs of the original, so the foreign printmaster fails delivery QC."
+    ],
+    "scenario_contexts": [
+     "Preparing a feature for release in France by combining the M&E with French dubbed dialogue.",
+     "A streaming platform requesting localized printmasters in several languages for a series.",
+     "QC-checking a foreign printmaster against the original for level, format, and sync."
+    ]
+   },
+   "sources": [
+    "Holman, Sound for Film and Television",
+    "Yewdall, Practical Art of Motion Picture Sound",
+    "SMPTE deliverables standards"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a9b0695c-acf1-48ff-9949-df21c4edf13e",
+   "term": "Found Prop",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No acceptable professional audio source attests a distinct, canonical 'found prop' term. The meaning is genuinely ambiguous between the art-department sense (an existing real-world object used as a prop rather than fabricated or purchased) and a Foley sense (a found object pressed into service to create a sound effect). All fields left blank pending clarification of the intended sense."
+   ]
+  },
+  {
+   "id": "0187e321-5499-4666-b01c-754902d6b0b3",
+   "term": "Free-time conducting",
+   "fields": {
+    "definition": "Conducting music that is not in strict, measured tempo (free time, senza misura, or ad libitum), in which the conductor guides entrances, phrasing, and pacing through gesture, cueing, and eye contact rather than beating a fixed, steady pulse.",
+    "plain_english": "Leading players through music that has no strict, steady beat. The conductor uses hand signals and eye contact to tell each player when to come in and how fast to move.",
+    "purpose_function": "It keeps an ensemble together during passages meant to breathe or float freely, where a mechanical, evenly counted beat would sound stiff and unmusical.",
+    "practical_application": "A conductor gives clear preparatory gestures and eye contact to cue entrances and control rubato in cadenzas, freely timed openings, or film-score fermatas without a click track.",
+    "category": "Conducting",
+    "related_terms": [
+     "Rubato",
+     "Fermata",
+     "Ad libitum",
+     "Cue",
+     "Tempo",
+     "Downbeat"
+    ],
+    "common_mistakes": [
+     "Thinking free-time means no leadership; the conductor still tightly controls entrances and pacing through gesture.",
+     "Beating a subdivided pulse anyway, forcing the rigid feel the passage is meant to avoid.",
+     "Giving unclear or late preparatory gestures, causing ragged, mistimed ensemble entrances."
+    ],
+    "scenario_contexts": [
+     "Conducting a slow, rubato film-score cue recorded without a click track.",
+     "Leading an ensemble through a cadenza or a freely timed opening phrase.",
+     "Shaping a ritardando into a fermata and cueing its release."
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration",
+    "Rudolf, The Grammar of Conducting",
+    "Grove Dictionary of Music"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "79923475-794e-49df-8132-25c70ab44c91",
+   "term": "Frequency modulation synthesis",
+   "fields": {
+    "definition": "A sound-synthesis method in which the frequency of one oscillator (the carrier) is modulated at an audio rate by another oscillator (the modulator), generating sidebands that produce complex, harmonically rich timbres from simple sine sources.",
+    "plain_english": "A way to build sounds by using one fast wobbling tone to shake the pitch of another tone. That shaking adds many extra tones (overtones), so a plain tone can turn bright, metallic, or bell-like.",
+    "purpose_function": "It creates rich, evolving timbres such as bells, electric pianos, and brass efficiently, without needing many oscillators or recorded samples.",
+    "practical_application": "A sound designer sets carrier-to-modulator ratios and modulation depth on an FM synth (such as a Yamaha DX7 or a software FM instrument) to dial in metallic, bell, or electric-piano tones.",
+    "category": "Synthesis",
+    "related_terms": [
+     "Carrier",
+     "Modulator",
+     "Operator",
+     "Sideband",
+     "Additive synthesis",
+     "Subtractive synthesis"
+    ],
+    "common_mistakes": [
+     "Confusing audio-rate FM synthesis with slow vibrato; only audio-rate modulation creates the sidebands that define FM timbres.",
+     "Assuming more modulation always sounds better, when too much depth quickly turns the tone harsh and inharmonic.",
+     "Swapping the carrier and modulator roles when setting the frequency ratio, giving an unexpected timbre."
+    ],
+    "scenario_contexts": [
+     "Programming an electric-piano patch on a DX7-style FM synth.",
+     "Designing metallic or bell-like sound effects for a game or film.",
+     "Recreating classic 1980s FM bass and lead sounds in a software instrument."
+    ]
+   },
+   "sources": [
+    "Chowning, JAES 'The Synthesis of Complex Audio Spectra by Means of Frequency Modulation'",
+    "Roads, The Computer Music Tutorial",
+    "Yamaha DX7 technical documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9459314e-3bae-446f-a2d5-5989db7fcb61",
+   "term": "Frequency shifting",
+   "fields": {
+    "definition": "A process that shifts every frequency component of a signal up or down by the same fixed number of hertz (a linear shift). Unlike pitch shifting, it does not preserve harmonic ratios, so the output becomes inharmonic and detuned.",
+    "plain_english": "An effect that moves every part of a sound up or down by the same amount. Because low and high parts shift equally, their natural spacing breaks. The sound then turns metallic or out of tune.",
+    "purpose_function": "It creates inharmonic, metallic, or dissonant textures for sound design, and historically has been used to nudge frequencies off a room's feedback tuning to gain a little feedback margin in sound reinforcement.",
+    "practical_application": "An engineer uses a frequency-shifter plug-in for robotic or sci-fi effects, or applies a shift of a few hertz in a PA system to push back acoustic feedback.",
+    "category": "Signal Processing",
+    "related_terms": [
+     "Pitch shifting",
+     "Ring modulation",
+     "Single-sideband modulation",
+     "Heterodyning",
+     "Acoustic feedback",
+     "Modulation"
+    ],
+    "common_mistakes": [
+     "Confusing frequency shifting with pitch shifting; pitch shifting keeps harmonic ratios, frequency shifting does not.",
+     "Expecting a musical transposition, when a linear hertz shift detunes the overtones and sounds inharmonic.",
+     "Using too large a shift for feedback control, which audibly detunes the program material."
+    ],
+    "scenario_contexts": [
+     "Creating robotic or alien voices in film and game post.",
+     "Adding a few hertz of shift to a live PA to raise the feedback threshold.",
+     "Designing clangorous, metallic sound-design textures."
+    ]
+   },
+   "sources": [
+    "Roads, The Computer Music Tutorial",
+    "Ballou, Handbook for Sound Engineers",
+    "Rane technical notes"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8d16ebcf-77d6-469d-9539-e72f192555d2",
+   "term": "Frequency sweep",
+   "fields": {
+    "definition": "A signal whose frequency changes continuously over time from a start to an end frequency, either linearly or logarithmically; also called a swept sine or chirp. It is used as a test stimulus to excite a system across its whole range, and sometimes as an effect.",
+    "plain_english": "A tone that slides smoothly from a low pitch to a high one, or the other way. Engineers play it through a system to test how it responds at every pitch. It works a bit like running a finger up a piano to hear each note.",
+    "purpose_function": "It exercises a device or room across its full frequency range so an engineer can measure frequency response, resonances, and distortion.",
+    "practical_application": "A technician plays a logarithmic sine sweep through a loudspeaker and captures it with measurement software to derive the frequency response and impulse response.",
+    "category": "Test & Measurement",
+    "related_terms": [
+     "Chirp",
+     "Frequency response",
+     "Impulse response",
+     "Pink noise",
+     "Signal generator",
+     "Room measurement"
+    ],
+    "common_mistakes": [
+     "Playing a sweep at too high a level, which can distort or damage high-frequency drivers.",
+     "UNSAFE: Running loud sweeps without hearing protection or without warning others nearby; sustained high-level tones can harm hearing.",
+     "Using a linear sweep when a logarithmic sweep would give more even resolution and better distortion rejection."
+    ],
+    "scenario_contexts": [
+     "Measuring a loudspeaker's frequency and impulse response with a swept sine.",
+     "Finding room resonances and ringing modes before tuning a system.",
+     "Testing the usable bandwidth of a signal chain or crossover."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Farina, AES 'Simultaneous Measurement of Impulse Response and Distortion with a Swept-Sine Technique'",
+    "AES measurement standards"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "287c3050-5cea-4c73-930a-60e336b77569",
+   "term": "Front-back localization",
+   "fields": {
+    "definition": "The listener's ability to judge whether a sound source lies in front of or behind the head, resolved mainly by spectral (pinna/HRTF) cues and small head movements, because interaural time and level differences alone are ambiguous along the front-back axis.",
+    "plain_english": "Telling whether a sound comes from in front of you or from behind. Timing and loudness clues at the two ears are almost the same both ways. So your brain uses the way your outer ear colors the sound, plus small head turns, to decide.",
+    "purpose_function": "It is part of how we locate sounds in three dimensions, and it matters wherever front-back cues must be reproduced correctly, as in surround, binaural, and immersive audio.",
+    "practical_application": "A spatial-audio engineer relies on accurate pinna/HRTF cues, speaker placement, or head-tracking so that rear content does not collapse to the front for the listener.",
+    "category": "Psychoacoustics",
+    "related_terms": [
+     "Localization",
+     "Cone of confusion",
+     "HRTF",
+     "Binaural audio",
+     "Interaural time difference",
+     "Pinna cues"
+    ],
+    "common_mistakes": [
+     "Assuming interaural time and level differences alone locate a source; they cannot resolve front from back.",
+     "Ignoring pinna/HRTF spectral cues when designing binaural or immersive mixes, causing front-back confusion.",
+     "Expecting headphone playback without individualized HRTFs to give reliable front-back imaging."
+    ],
+    "scenario_contexts": [
+     "Mixing a surround or Atmos scene where a sound must clearly read as behind the listener.",
+     "Designing binaural audio for VR and testing for front-back reversals.",
+     "Diagnosing why rear-channel effects seem to collapse to the front on a given system."
+    ]
+   },
+   "sources": [
+    "Blauert, Spatial Hearing",
+    "Everest, Master Handbook of Acoustics",
+    "AES publications"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ca41804a-c6a0-43bb-9c73-2d7cd80d497b",
+   "term": "Game audio",
+   "fields": {
+    "definition": "The discipline of creating and implementing sound for interactive games, including dialogue, sound effects, music, and ambience, where the audio responds dynamically in real time to player actions and game state rather than following a fixed timeline.",
+    "plain_english": "The sound side of video games: the effects, voices, music, and background noise you hear while playing. Unlike a movie, the sound changes as you play and reacts to what you do.",
+    "purpose_function": "It provides interactive, responsive sound that gives the player feedback, builds atmosphere, and guides attention, adapting in real time to gameplay.",
+    "practical_application": "Sound designers create assets and set up rules in audio middleware such as Wwise or FMOD so that sounds trigger, blend, and change with in-game events.",
+    "category": "Game Audio",
+    "related_terms": [
+     "Game-audio designer",
+     "Audio middleware",
+     "Interactive audio",
+     "Adaptive music",
+     "Sound design",
+     "Wwise"
+    ],
+    "common_mistakes": [
+     "Treating game audio like linear film audio, when game sound must be built to react to unpredictable player actions.",
+     "Ignoring memory, voice-count, and CPU limits, so audio glitches or gets cut off at runtime.",
+     "Delivering only finished mixes instead of implementing assets in middleware with proper triggers and states."
+    ],
+    "scenario_contexts": [
+     "Building a footstep system that changes with surface type in a game engine.",
+     "Setting up adaptive music that shifts with combat intensity.",
+     "Implementing sound events in middleware and mixing them against the game's states."
+    ]
+   },
+   "sources": [
+    "Stevens & Raybould, The Game Audio Tutorial",
+    "AES Conference on Audio for Games",
+    "Audiokinetic Wwise technical documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3aeba52d-3e1f-408c-a32f-8d4b3109c1f3",
+   "term": "Game-audio designer",
+   "fields": {
+    "definition": "The audio professional responsible for creating and implementing a game's sound: designing sound effects, dialogue, ambience, and often interactive music, and setting up how those assets behave in real time within the game engine or audio middleware.",
+    "plain_english": "The person who makes and sets up the sounds in a video game. They create the effects and voices, then build the rules for how and when each sound plays as you play.",
+    "purpose_function": "The role exists to produce and integrate all of a game's sound so it responds correctly to gameplay and supports feedback, immersion, and mood.",
+    "practical_application": "They author assets in a DAW, then implement them in middleware such as Wwise or FMOD, wiring events, parameters, and mix states to the game engine.",
+    "category": "Roles",
+    "related_terms": [
+     "Game audio",
+     "Sound designer",
+     "Audio middleware",
+     "Technical sound designer",
+     "Audio implementation",
+     "Wwise"
+    ],
+    "common_mistakes": [
+     "Assuming the role is only asset creation, when implementation and real-time behavior are a core part of the job.",
+     "Overlooking performance budgets (voices, memory, CPU) when designing sounds.",
+     "Not collaborating early with programmers and designers, so audio hooks are missing in the build."
+    ],
+    "scenario_contexts": [
+     "Designing and implementing a weapon's layered sound set in Wwise.",
+     "Balancing a game's runtime mix across dialogue, music, and effects.",
+     "Debugging why an in-game event fails to trigger its sound."
+    ]
+   },
+   "sources": [
+    "Stevens & Raybould, The Game Audio Tutorial",
+    "AES Conference on Audio for Games",
+    "Audiokinetic Wwise technical documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

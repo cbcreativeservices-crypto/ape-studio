@@ -1,0 +1,164 @@
+{
+ "authored": [
+  {
+   "id": "ff557b12-f78f-45b3-a419-cd65790ca68d",
+   "term": "Voice.ai",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "'Voice.ai' is a proprietary commercial brand/product - real-time AI voice-changer and voice-agent software from Voice.ai Inc. - not an established technical term with a canonical meaning. The only locatable sources are the vendor's own marketing/product pages and SEO/blog listings; no standards body, recognized professional text, or manufacturer TECHNICAL documentation defines it. Per the strict source standard these do not count, so all fields are left blank pending review or disambiguation to a generic concept such as AI voice conversion."
+   ]
+  },
+  {
+   "id": "7d464080-1759-409f-b38d-70c3913953ea",
+   "term": "Make it pretty",
+   "fields": {
+    "definition": "A subjective studio instruction to make a sound or mix more sonically pleasing and refined, typically by smoothing harshness, adding warmth, sheen, or ambience, and correcting tuning or timing, rather than by any single defined process. It states an aesthetic goal, an attractive and polished result, instead of a specific technical operation.",
+    "plain_english": "It means make it sound nicer and more polished. The person is not naming exact tools; they just want a smooth, easy-to-enjoy sound.",
+    "purpose_function": "It gives a producer or client a quick way to ask for a more attractive, finished sound without naming tools. Understanding it lets the engineer turn a vague aesthetic request into concrete moves like de-essing, gentle EQ, reverb, or tuning.",
+    "practical_application": "When a client says 'make it pretty' on a vocal, the engineer may tame sibilance and harsh mids, add a little high-end air and reverb, and tune stray notes to deliver a smoother, more flattering sound.",
+    "category": "Mixing Direction",
+    "related_terms": ["Make it sit", "Make it speak", "Sweetening", "Air", "Sibilance"],
+    "common_mistakes": [
+     "Treating 'make it pretty' as one fixed process rather than asking what the client finds unpleasant.",
+     "Over-processing with heavy reverb or bright EQ until the sound is thin or washed out.",
+     "Assuming 'pretty' means the same thing in every genre, when an aggressive style may want grit, not gloss."
+    ],
+    "scenario_contexts": [
+     "A client asks an engineer to 'make it pretty' on a lead vocal during a mix revision.",
+     "A producer requests a smoother, more polished sound on a piano or string pad.",
+     "A mastering client asks for a glossier, more flattering overall tone on a ballad."
+    ]
+   },
+   "sources": ["Bobby Owsinski, The Mixing Engineer's Handbook", "Bruce Bartlett & Jenny Bartlett, Practical Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a6d6af76-0db8-4c80-bf09-667d3f3fafbd",
+   "term": "Bench noise",
+   "fields": {
+    "definition": "Unwanted mechanical creak, squeak, or movement noise produced by a performer's bench, stool, or seat and captured in a recording. It is a low-level artifact that intrudes on quiet passages and is unrelated to the instrument's own sound.",
+    "plain_english": "It is the creak or squeak a piano bench or stool makes when a player shifts, and the mic picks it up. It has nothing to do with the music, but it can spoil a quiet part.",
+    "purpose_function": "Naming bench noise helps a technician separate seat or furniture creaks from the actual instrument sound. That makes the artifact easier to prevent, edit out, or gate.",
+    "practical_application": "When recording solo piano, an engineer who hears bench noise will tighten loose bolts, pad the bench, or ask the player to stay still, then edit any remaining creaks out of quiet sections.",
+    "category": "Noise artifact",
+    "related_terms": ["Gear noise", "Fret rattle", "Cabinet rattle", "Noise floor", "Room tone"],
+    "common_mistakes": [
+     "Blaming a creak on the instrument or the mic stand when it is actually the player's bench or stool.",
+     "Trying to EQ out bench noise instead of fixing the source or editing the affected section.",
+     "Ignoring quiet bench creaks during tracking, then finding them exposed in the final mix."
+    ],
+    "scenario_contexts": [
+     "A squeaking piano bench captured during a soft solo passage.",
+     "An organ or drummer's stool creaking as the player shifts weight.",
+     "Editing out seat creaks from an exposed acoustic take."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0da583a6-e51a-4675-91dd-b4dd2b01971d",
+   "term": "brown sound",
+   "fields": {
+    "definition": "A colloquial guitar-tone descriptor for a thick, warm, saturated high-gain distortion sound with a strong, smooth midrange, tight low end, and a rounded, compressed feel rather than a bright or fizzy edge. The term is most associated with Eddie Van Halen's cranked, modified Marshall-style tone.",
+    "plain_english": "It is a warm, thick, growling electric guitar sound with lots of smooth distortion. People named it after Eddie Van Halen's famous tone, which sounds full and round, not thin or harsh.",
+    "purpose_function": "The term gives players and engineers a shorthand for a particular warm, saturated rock guitar tone. It helps communicate a tonal target when choosing amps, gain settings, and EQ.",
+    "practical_application": "To chase a brown sound, a player or engineer uses a high-gain tube amp pushed into saturation, favours midrange in the EQ, keeps the low end tight, and mics the cabinet carefully.",
+    "category": "Tonal Descriptor",
+    "related_terms": ["Saturation", "Distortion", "Midrange", "Harmonics", "Gain"],
+    "common_mistakes": [
+     "Believing the tone comes mainly from running the amp on a variac at a lowered voltage, when amp choice, gain staging, EQ, and playing matter far more.",
+     "Adding so much gain that the tone becomes fizzy and thin, losing the warm, tight character.",
+     "Assuming one pedal or setting alone recreates it, when it depends on the whole amp, cabinet, and mic chain."
+    ],
+    "scenario_contexts": [
+     "A guitarist asks for a 'brown sound' rhythm tone in a hard-rock session.",
+     "An engineer dials in a warm, saturated high-gain guitar tone to match a classic Van Halen style.",
+     "Choosing a high-gain amp and mic position to capture a thick, midrange-forward distortion."
+    ]
+   },
+   "sources": ["Dave Hunter, The Guitar Amp Handbook", "Aspen Pittman, The Tube Amp Book"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dfaed48d-7ec8-41a2-8a0f-13ac3a384854",
+   "term": "Ghost attack",
+   "fields": {
+    "definition": "The faint, low-level onset transient of a ghost note or similarly de-emphasized note: an attack so quiet it is felt or implied more than clearly heard, sitting well below the level of the accented notes around it. It marks the start of a note played with very light force.",
+    "plain_english": "It is the soft start of a very quiet note, the kind a drummer or bass player slips in gently between the loud hits. You feel it more than you really hear it.",
+    "purpose_function": "The term describes the quiet onset that gives a groove its subtle sense of motion and feel. Recognising it helps a technician preserve those soft attacks instead of losing them to gating or heavy compression.",
+    "practical_application": "When mixing drums or bass, an engineer sets gate thresholds and compression so ghost attacks survive, keeping the groove's light, in-between notes audible.",
+    "category": "Articulation",
+    "related_terms": ["Ghost note", "Attack", "Transient", "Articulation", "Dynamics"],
+    "common_mistakes": [
+     "Setting a noise gate threshold so high that ghost attacks are cut off and the groove loses feel.",
+     "Over-compressing until the quiet ghost attacks jump forward and lose their subtle role.",
+     "Confusing a ghost attack with a recording glitch or noise, when it is an intended soft note."
+    ],
+    "scenario_contexts": [
+     "Preserving soft ghost-note attacks on a snare while gating a drum kit.",
+     "Keeping the light in-between notes of a funk bass line audible in a mix.",
+     "Editing programmed drums so ghost attacks stay quiet relative to the accents."
+    ]
+   },
+   "sources": ["Grove Dictionary of Music and Musicians", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "40d7f496-2fc8-44ed-9fd9-73e6dfc07081",
+   "term": "Knock",
+   "fields": {
+    "definition": "A short, low-frequency percussive thump with strong impact and little sustain, such as the deep punch of a kick drum, 808, or low tom that is felt in the chest as much as heard. The term describes the tight low-end impact of a transient rather than a ringing or sustained tone.",
+    "plain_english": "Knock is the deep, punchy thump of a kick drum or bass hit that you feel in your chest. It is a short, hard hit, not a long ringing note.",
+    "purpose_function": "The term gives engineers a word for the tight, chest-hitting low-end impact of a percussive hit. It helps them aim for or dial in punch when shaping kicks and low percussion.",
+    "practical_application": "To add knock to a kick, an engineer emphasizes the low-frequency thump near the beater impact with EQ or transient shaping while keeping the sustain short and controlled.",
+    "category": "Percussive Artifact",
+    "related_terms": ["Punch", "Attack", "Transient", "Boom", "Sub-bass"],
+    "common_mistakes": [
+     "Confusing knock, a short low-frequency impact, with boom, a longer resonant low-end buildup.",
+     "Adding so much low end that the kick booms and muddies the mix instead of knocking cleanly.",
+     "Assuming 'knock' always means a musical thump, when it can also describe a mechanical knocking fault noise."
+    ],
+    "scenario_contexts": [
+     "Shaping an 808 or kick so it knocks on club and car systems.",
+     "Adding low-end punch to a hip-hop or dance kick during mixing.",
+     "Judging whether a kick has enough knock to cut through on small speakers."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d3c022d6-ab63-4335-afca-a4b963dae156",
+   "term": "Pick recovery",
+   "fields": {
+    "definition": "The return, or reset, phase of a pickstroke in which the plectrum lifts away from the string and repositions after the initial attack, before the next stroke. On close-miked or high-gain guitar it can add a faint secondary contact noise as the pick clears or grazes the string, distinct from the louder pick attack.",
+    "plain_english": "It is the moment the pick pulls back off the string after a note and gets ready for the next one. Sometimes the mic catches a small extra scratch as the pick lifts away.",
+    "purpose_function": "Naming the recovery phase separates the pick's return motion and its faint noise from the main pick attack. That helps a technician identify and manage stray picking sounds in a take.",
+    "practical_application": "On a close-miked clean guitar, an engineer who hears pick-recovery noise may adjust mic placement, ask for a lighter touch, or edit the faint contact sounds out of exposed sections.",
+    "category": "Picking Noise",
+    "related_terms": ["Pick attack", "Pick noise", "Pick click", "Pick scrape", "Transient"],
+    "common_mistakes": [
+     "Confusing the faint pick-recovery noise with the main pick attack when editing.",
+     "Trying to remove every recovery sound and making the playing feel unnatural.",
+     "Blaming pick-recovery noise on a faulty cable or pickup rather than the picking hand."
+    ],
+    "scenario_contexts": [
+     "Hearing faint pick reset noises on a close-miked clean electric guitar.",
+     "Cleaning up stray picking sounds in an exposed acoustic guitar take.",
+     "Coaching a player toward a lighter touch to reduce picking-hand noise."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

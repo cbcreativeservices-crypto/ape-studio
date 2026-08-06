@@ -1,0 +1,110 @@
+{
+ "group": 4,
+ "corrections": [
+  {
+   "id": "dbc16ee5-d302-4149-a8b7-387d62cc5865",
+   "term": "Front Fill",
+   "corrected": {
+    "practical_application": "A tech spaces low-profile cabinets along the stage lip and time-aligns them (adding a small delay) so the audience still localizes to the stage rather than to the fill boxes."
+   },
+   "notes": [
+    "practical_application: removed the redundant 'delays them slightly late' phrasing per the language suggestion; reworded to 'time-aligns them (adding a small delay)' while preserving meaning and length."
+   ]
+  },
+  {
+   "id": "90daecc8-1767-4ef3-9a5f-38b5c278a891",
+   "term": "Shackle",
+   "corrected": {
+    "common_mistakes": [
+     "UNSAFE: Side-loading a shackle (pulling at an angle across the bow/pin), which can cut capacity drastically - roughly 50% at 90 degrees - and bend the bow.",
+     "UNSAFE: Judging capacity by size instead of the WLL marking stamped on the body, or using an unmarked/unrated shackle.",
+     "UNSAFE: Using a screw-pin shackle where motion can back the pin out, without mousing it (securing the screw pin with wire or a zip tie so vibration cannot back it out) or using a bolt-type (safety) shackle.",
+     "Loading the shackle so the sling bears on the pin instead of the bow, or not fully seating the pin."
+    ],
+    "practical_application": "A tech reads the Working Load Limit (WLL) stamped on the bow, selects the right type (screw-pin or bolt/safety type), fully seats the pin, and connects the sling to the pick point, keeping the load in line with the bow."
+   },
+   "notes": [
+    "common_mistakes: added an inline gloss for 'mousing it' in the third bullet so a beginner grasps the safety takeaway; UNSAFE prefixes and all other bullets unchanged.",
+    "practical_application: spelled out 'Working Load Limit (WLL)' on first use for the beginner audience; rest of sentence unchanged."
+   ]
+  },
+  {
+   "id": "18b275cc-f2f3-4d8e-a8a5-bc56c82dd842",
+   "term": "Splay Angle",
+   "corrected": {
+    "common_mistakes": [
+     "Using splay angles too wide near the top of the array, which reduces high-frequency coupling and long-throw energy and can leave coverage gaps in the back rows.",
+     "Applying a uniform splay when a progressive scheme (tight top to wide bottom) is needed for even coverage.",
+     "Ignoring the prediction software's calculated angles and eyeballing the array instead.",
+     "Confusing splay (angle between cabinets) with the overall array/site angle set at the bumper."
+    ],
+    "plain_english": "The angle between two neighboring boxes in a line array; usually tight at the top for far throw and progressively wider toward the bottom for near coverage."
+   },
+   "notes": [
+    "common_mistakes: corrected the mechanism per Audio Technical (verified) - dropped the 'low-frequency phase/comb' claim because LF couples across the array regardless of splay and comb filtering is predominantly a high-frequency phenomenon; now attributes over-wide top splay to lost HF coupling/long-throw energy and back-row gaps. Top-tight/bottom-wide guidance retained; other bullets unchanged.",
+    "plain_english: changed British 'neighbouring' to American 'neighboring' for spelling consistency."
+   ]
+  },
+  {
+   "id": "e896a8ab-9b11-4305-b60f-bb126684c44b",
+   "term": "Digital Wireless System",
+   "corrected": {
+    "related_terms": [
+     "Companding",
+     "Latency",
+     "Frequency Coordination",
+     "Analog Wireless System",
+     "RF Interference"
+    ]
+   },
+   "notes": [
+    "related_terms: removed the self-reference 'Digital Wireless System' and replaced it with 'Analog Wireless System', the choice favored by multiple experts because it reinforces the analog-FM/compander contrast the definition draws. Other terms unchanged."
+   ]
+  },
+  {
+   "id": "d03e4ec6-f1a6-4c97-801b-5f51615b92d3",
+   "term": "Dipole Antenna",
+   "corrected": {
+    "common_mistakes": [
+     "Believing a dipole is perfectly omnidirectional, when its pattern is a torus that is weakest off the ends of the elements",
+     "Mounting the antenna flat or against metal, distorting the pattern and hurting reception",
+     "Confusing dBi and dBd references, since a half-wave dipole has about 2.15 dB of gain relative to isotropic (2.15 dBi = 0 dBd)",
+     "Using a bundled dipole for long-throw coverage where a directional antenna is required"
+    ]
+   },
+   "notes": [
+    "common_mistakes: HIGH-severity factual fix (verified). A half-wave dipole is ~2.15 dBi, i.e. 2.15 dB ABOVE isotropic, and dBi = dBd + 2.15 (2.15 dBi = 0 dBd). Corrected the third bullet from the reversed 'about 2.15 dB below isotropic'. Other bullets unchanged."
+   ]
+  },
+  {
+   "id": "5787f149-6511-495d-82e1-6e2514892c6f",
+   "term": "Yagi Antenna",
+   "corrected": {
+    "common_mistakes": [
+     "Using a Yagi across a wide wireless-mic frequency range when its bandwidth is often only about one 6 MHz TV channel",
+     "Assuming high gain fixes all range problems, ignoring that narrow beamwidth requires careful aiming",
+     "Placing a directional antenna too close to transmitters instead of the recommended minimum distance (about 50 feet / roughly 15 meters minimum)",
+     "Confusing a Yagi with a log-periodic array, which offers similar directivity over much wider bandwidth for audio use"
+    ]
+   },
+   "notes": [
+    "common_mistakes: fixed the metric conversion in the third bullet - 50 feet is approximately 15 meters (50 x 0.3048 = 15.24 m), not 3 meters. Kept the 50 ft directional-antenna figure, which matches Shure's guidance. Other bullets unchanged."
+   ]
+  },
+  {
+   "id": "a54a03c1-1fdd-46f2-9ae9-fb038203c9e2",
+   "term": "High-Level Input",
+   "corrected": {
+    "common_mistakes": [
+     "Confusing high-level (speaker-level) inputs with line-level RCA inputs and feeding the wrong signal type into the wrong terminals.",
+     "Tapping the speaker wires after a factory amplifier or processor, capturing an already-EQ'd/limited signal instead of a clean full-range one.",
+     "Setting amp gain using the high-level input as if it were a low-level source, causing clipping because the input voltage is much higher.",
+     "Assuming you must disconnect the factory speakers when tapping their wires for a high-level input; the input is typically high-impedance and simply senses the signal, so the factory speakers can stay connected, and some factory head units actually need that load to work correctly or to sustain signal-sense turn-on."
+    ]
+   },
+   "notes": [
+    "common_mistakes: reframed the inverted fourth bullet per both experts. High-level inputs are high-impedance and do not load the tapped signal, so leaving factory speakers connected in parallel is normal (and sometimes required for signal-sense turn-on); the real misconception is thinking you must disconnect them. Removed the muddled 'bridged/high-impedance sense signal' framing. Other bullets unchanged."
+   ]
+  }
+ ]
+}

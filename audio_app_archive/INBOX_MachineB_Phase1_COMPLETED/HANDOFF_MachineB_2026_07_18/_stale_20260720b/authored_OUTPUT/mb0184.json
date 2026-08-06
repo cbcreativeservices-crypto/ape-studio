@@ -1,0 +1,312 @@
+{
+ "batch": 184,
+ "topic": "Podcast Production",
+ "authored": [
+  {
+   "id": "bf223b85-9638-49fe-a749-1ba289fe5c74",
+   "term": "Commentary booth",
+   "fields": {
+    "definition": "A small, acoustically isolated enclosure at an event venue or studio from which a commentator or announcer speaks into a microphone for a live or recorded broadcast. Its treatment limits crowd noise and spill so the presenter's voice stays clean.",
+    "plain_english": "A small, sound-proofed room where a sports or event announcer talks into a mic. The walls keep out crowd noise, so listeners hear the voice clearly.",
+    "purpose_function": "It gives commentators a quiet, controlled space so their voice is captured cleanly and kept separate from crowd and field noise.",
+    "practical_application": "A broadcast technician wires the booth's microphones, headphones, and talkback to the console, then sets levels so the commentator hears program and cue feeds while speaking.",
+    "category": "Recording Space",
+    "related_terms": [
+     "Commentary position",
+     "Isolation booth",
+     "Talkback",
+     "Lip microphone",
+     "Outside broadcast"
+    ],
+    "common_mistakes": [
+     "Assuming the booth is fully soundproof and skipping a directional or noise-cancelling mic, so crowd noise still bleeds in.",
+     "Forgetting to feed clean talkback and program audio to the commentator's headphones, leaving them unable to follow cues.",
+     "Placing the booth without sightlines to the action, so the commentator cannot see what they are describing."
+    ],
+    "scenario_contexts": [
+     "A stadium sports broadcast where announcers call the game from a booth overlooking the field.",
+     "A convention or esports event where hosts commentate from an isolated booth beside a noisy hall.",
+     "A studio show that records play-by-play style commentary in an acoustically treated booth."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (broadcast facilities and OB)",
+    "Glensound technical documentation (commentary systems)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "82c492a4-d2a7-489f-b23e-87483ca11afa",
+   "term": "Commentary position",
+   "fields": {
+    "definition": "A designated operating point at a venue, equipped with a commentary unit (microphone, headphones, and talkback controls), from which one or more commentators contribute audio to a broadcast. A venue may host many positions, each feeding a central mix.",
+    "plain_english": "The exact spot at an event where a commentator sits to work. It has a mic, headphones, and controls so their voice reaches the broadcast.",
+    "purpose_function": "It provides a fixed, pre-wired place for commentators to plug in, hear the show, and talk, so venues can host many broadcasters in an organized way.",
+    "practical_application": "Technicians assign and cable each commentary position to the outside-broadcast truck, label its channel, and check the mic, headphone, and talkback path before the event.",
+    "category": "Recording Space",
+    "related_terms": [
+     "Commentary booth",
+     "Commentary unit",
+     "Talkback",
+     "Mix-minus",
+     "Outside broadcast"
+    ],
+    "common_mistakes": [
+     "Confusing a commentary position with a full booth; a position may be an open desk with no acoustic isolation.",
+     "Not confirming the mix-minus feed to each position, so a commentator hears an echo of their own voice.",
+     "Mislabeling positions, so the wrong commentator's microphone reaches air."
+    ],
+    "scenario_contexts": [
+     "A multi-language broadcast where each network gets its own commentary position along a stadium gantry.",
+     "An awards show with several commentary positions feeding one central mix.",
+     "A radio sports broadcast where two presenters share one commentary position."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (broadcast and OB systems)",
+    "Glensound technical documentation (commentary units and positions)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "abbdc69a-04e2-41d6-9689-004789bf42df",
+   "term": "Creator studio",
+   "fields": {
+    "definition": "A compact, self-contained recording and production space outfitted for an individual content creator, typically combining a treated room, microphone, camera, lighting, and an audio interface or all-in-one recorder for podcasts and video. It is scaled for one person or a small team rather than a full commercial facility.",
+    "plain_english": "A small, ready-to-use studio set up for a single creator. It bundles a mic, camera, lights, and recording gear so one person can make podcasts or videos.",
+    "purpose_function": "It packages the core recording tools in one manageable space so a solo creator can produce professional-sounding content without a large commercial studio.",
+    "practical_application": "A technician helps a creator lay out the studio: positioning the mic and acoustic treatment, setting camera and lighting, and configuring the interface so levels stay consistent across sessions.",
+    "category": "Recording Space",
+    "related_terms": [
+     "Home studio",
+     "Podcast studio",
+     "Audio interface",
+     "Acoustic treatment",
+     "Portable recorder"
+    ],
+    "common_mistakes": [
+     "Spending on cameras and lights while ignoring acoustic treatment, so the room sounds echoey.",
+     "Choosing a mic that is too sensitive for an untreated room, which then picks up background noise.",
+     "Not setting a repeatable gain and gear layout, so each recording sounds different."
+    ],
+    "scenario_contexts": [
+     "A solo podcaster building a spare-room studio for weekly episodes.",
+     "A video creator setting up a corner studio for talking-head content.",
+     "A small team sharing a compact studio to record interviews."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques (project and home studio design)",
+    "Ballou, Handbook for Sound Engineers (studio acoustics and layout)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ae8d75a0-327b-49cd-8095-93958b26f30c",
+   "term": "Descript",
+   "fields": {
+    "definition": "Descript is a commercial audio and video editing application that transcribes a recording and lets the user edit the media by editing its text transcript; deleting words removes the matching audio and video. It also bundles tools such as filler-word removal, voice enhancement, and synthetic voice generation.",
+    "plain_english": "Descript is an app that turns your recording into text, then lets you edit the audio or video by editing that text. Delete a word in the transcript and the matching sound is cut too.",
+    "purpose_function": "It speeds up podcast and video editing by letting creators work in a familiar word-processor style instead of dragging clips along a timeline.",
+    "practical_application": "An editor imports a raw interview, cleans up the transcript, removes filler words and mistakes by deleting text, then exports the finished episode.",
+    "category": "Editing Software",
+    "related_terms": [
+     "Filler-word removal",
+     "Diarization",
+     "Forced alignment",
+     "Transcription",
+     "Multitrack editing"
+    ],
+    "common_mistakes": [
+     "Trusting the auto-transcript without proofreading, so wrong words lead to bad edits.",
+     "Deleting filler words so aggressively that the speech sounds choppy and unnatural.",
+     "Assuming AI voice or enhancement features can fully fix a poor original recording."
+    ],
+    "scenario_contexts": [
+     "Editing a two-host podcast by cleaning up the transcript.",
+     "Cutting a long video interview into short clips by deleting text.",
+     "Correcting a mispronounced word using synthetic voice tools."
+    ]
+   },
+   "sources": [
+    "Descript technical documentation and user guide (help center)",
+    "Reynolds Journalism Institute (RJI), Descript editing workflow guidance"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3debbf34-ac65-43f9-8225-558ecd5f7ecd",
+   "term": "Diarization",
+   "fields": {
+    "definition": "Diarization (speaker diarization) is the process of partitioning an audio recording into segments labeled by speaker identity, answering 'who spoke when' without necessarily knowing the words. It groups speech regions so each is attributed to a distinct speaker.",
+    "plain_english": "Diarization is a way for software to figure out who is talking and when. It splits the audio into pieces and labels each one with a speaker, like Speaker 1 or Speaker 2.",
+    "purpose_function": "It labels multi-speaker audio so transcripts, captions, and edits can show who said what.",
+    "practical_application": "A podcast editor uses diarization in a transcription tool to auto-tag each host and guest, then fixes only the few sections it mislabels.",
+    "category": "Speech Processing",
+    "related_terms": [
+     "Transcription",
+     "Forced alignment",
+     "Voice activity detection",
+     "Descript",
+     "Speaker embedding"
+    ],
+    "common_mistakes": [
+     "Assuming diarization also transcribes words; it only separates speakers, not what they say.",
+     "Expecting perfect labels when speakers talk over each other, which causes errors.",
+     "Not correcting swapped speaker labels before publishing a transcript."
+    ],
+    "scenario_contexts": [
+     "Auto-labeling hosts and guests in a multi-person podcast transcript.",
+     "Separating speakers in a recorded interview for accurate captions.",
+     "Indexing a meeting recording by who spoke."
+    ]
+   },
+   "sources": [
+    "Anguera et al., 'Speaker Diarization: A Review of Recent Research', IEEE Transactions on Audio, Speech, and Language Processing (2012)",
+    "Park et al., 'A Review of Speaker Diarization: Recent Advances with Deep Learning', Computer Speech & Language (2022)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3183c94f-0fb2-4b97-844f-f7a08b5bc0ee",
+   "term": "Enhance Speech v2",
+   "fields": {
+    "definition": "Enhance Speech v2 is Adobe's second-generation AI speech-enhancement tool, part of Adobe Podcast, that removes background noise and reverberation from voice recordings and re-synthesizes the speech to sound as if recorded in a studio. Version 2 improves fidelity and adds an adjustable strength control over how much processing is applied.",
+    "plain_english": "Enhance Speech v2 is a free Adobe web tool that cleans up voice recordings. It strips out background noise and echo and makes the voice sound like it was recorded in a good studio.",
+    "purpose_function": "It rescues voice recordings made in noisy or echoey spaces so creators can publish clear audio without re-recording.",
+    "practical_application": "A podcaster uploads a noisy remote-guest track, applies Enhance Speech v2, and dials back the strength if the processed voice starts to sound artificial.",
+    "category": "Speech Enhancement",
+    "related_terms": [
+     "Noise reduction",
+     "De-reverberation",
+     "Audio restoration",
+     "Descript",
+     "Diarization"
+    ],
+    "common_mistakes": [
+     "Pushing the enhancement to full strength, which can make the voice sound robotic or 'underwater'.",
+     "Using it as an excuse to record in a bad room instead of fixing the source.",
+     "Running music or multi-source audio through it, when it is designed only for speech."
+    ],
+    "scenario_contexts": [
+     "Cleaning a remote interview recorded on a laptop mic in an echoey room.",
+     "Salvaging a field recording with traffic noise in the background.",
+     "Improving a phone-quality voice memo before adding it to an episode."
+    ]
+   },
+   "sources": [
+    "Adobe Podcast technical documentation ('What is Enhance Speech' / Enhance Speech v2)",
+    "Adobe Research, speech enhancement model documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "355ed18c-7716-4879-8263-648b8b895e5f",
+   "term": "Filler-word removal",
+   "fields": {
+    "definition": "Filler-word removal is an editing process, often automated, that detects and deletes disfluencies such as 'um', 'uh', 'like', and 'you know' from recorded speech. In transcript-based editors it flags these words so they can be removed individually or in bulk.",
+    "plain_english": "Filler-word removal cuts out sounds like 'um' and 'uh' from a recording. Editing software can find them for you, so you delete them in one step.",
+    "purpose_function": "It tightens speech and helps a host sound more confident and polished without changing the meaning.",
+    "practical_application": "An editor runs automatic filler-word detection on an interview, reviews the flagged words, and keeps a few natural pauses so the speech does not sound clipped.",
+    "category": "Editing",
+    "related_terms": [
+     "Descript",
+     "Transcription",
+     "Disfluency",
+     "Audio editing",
+     "Enhance Speech v2"
+    ],
+    "common_mistakes": [
+     "Removing every filler word, which makes speech sound rushed and unnatural.",
+     "Trusting the automatic tool without listening, so real words get cut.",
+     "Cutting fillers without smoothing the edit, leaving audible clicks or jumps."
+    ],
+    "scenario_contexts": [
+     "Cleaning up a nervous guest's answers in an interview episode.",
+     "Tightening a rambling monologue before publishing.",
+     "Preparing a short clip for social media where every second counts."
+    ]
+   },
+   "sources": [
+    "Descript technical documentation (Remove filler words)",
+    "Adobe Podcast technical documentation (filler-word / disfluency editing)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d54d4569-63fa-48da-b70f-cb42265fa0be",
+   "term": "Forced alignment",
+   "fields": {
+    "definition": "Forced alignment is a speech-processing technique that automatically time-aligns a known transcript to its audio, producing start and end times for each word and often each phoneme. It 'forces' the recognizer to follow the supplied text rather than guessing the words.",
+    "plain_english": "Forced alignment lines up a written script with its recording. It marks exactly when each word is spoken, giving a time stamp for every word.",
+    "purpose_function": "It creates accurate word timings used for captions, transcript-based editing, word highlighting, and speech research.",
+    "practical_application": "A transcript-based editor relies on forced alignment so that clicking a word in the text jumps to that exact moment in the audio.",
+    "category": "Speech Processing",
+    "related_terms": [
+     "Diarization",
+     "Transcription",
+     "Speech recognition",
+     "Phoneme",
+     "Descript"
+    ],
+    "common_mistakes": [
+     "Feeding a transcript that does not match the audio, which throws off all the timings.",
+     "Assuming alignment stays accurate through long silences or noise, where it can drift.",
+     "Confusing forced alignment with speech recognition; alignment needs the text supplied."
+    ],
+    "scenario_contexts": [
+     "Syncing captions to a video so words appear exactly as spoken.",
+     "Enabling word-level editing where deleting text cuts the matching audio.",
+     "Building a phonetics dataset with word and phoneme timings."
+    ]
+   },
+   "sources": [
+    "McAuliffe et al., Montreal Forced Aligner technical documentation and paper (Interspeech 2017)",
+    "NVIDIA Research, technical article on forced alignment (2023)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1d4f753c-d5ac-4338-a614-2f7f34ac9d3e",
+   "term": "Griffin-Lim",
+   "fields": {
+    "definition": "Griffin-Lim is an iterative algorithm that reconstructs a time-domain signal from the magnitude of its short-time Fourier transform by estimating the missing phase. It repeatedly converts between the spectrogram and waveform, forcing consistency until the reconstructed magnitude matches the target.",
+    "plain_english": "Griffin-Lim is a method that turns a spectrogram back into real sound. A spectrogram is a picture of a sound's frequencies. That picture leaves out the timing part called phase, so the method guesses the phase and improves it step by step until the sound fits.",
+    "purpose_function": "It lets systems recover playable audio from a spectrogram alone, which is useful in speech synthesis and in effects that work in the frequency domain.",
+    "practical_application": "A developer building a text-to-speech or vocoder pipeline uses Griffin-Lim to turn a generated spectrogram into audio when no learned vocoder is available.",
+    "category": "Signal Processing",
+    "related_terms": [
+     "Short-time Fourier transform",
+     "Spectrogram",
+     "Phase",
+     "Vocoder",
+     "Speech synthesis"
+    ],
+    "common_mistakes": [
+     "Expecting perfect quality; Griffin-Lim often leaves a slight metallic or 'phasey' artifact.",
+     "Running too few iterations, which leaves the audio rough and robotic.",
+     "Assuming it can invent detail that is missing from the magnitude spectrogram."
+    ],
+    "scenario_contexts": [
+     "Generating audio from a spectrogram in a classic text-to-speech system.",
+     "Reconstructing sound after editing a magnitude spectrogram.",
+     "Serving as a baseline vocoder before switching to a neural one."
+    ]
+   },
+   "sources": [
+    "Griffin & Lim, 'Signal Estimation from Modified Short-Time Fourier Transform', IEEE Transactions on Acoustics, Speech, and Signal Processing (1984)",
+    "Aalto University, 'Introduction to Speech Processing' (Griffin-Lim algorithm chapter)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

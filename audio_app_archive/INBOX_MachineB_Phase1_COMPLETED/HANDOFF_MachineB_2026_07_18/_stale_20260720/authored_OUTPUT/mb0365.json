@@ -1,0 +1,327 @@
+{
+  "batch": 365,
+  "topic": "Drums & Percussion",
+  "authored": [
+    {
+      "id": "1a458d08-69eb-4d57-9e5e-12345f575a77",
+      "term": "Resonator tubes",
+      "fields": {
+        "definition": "The tuned, usually metal, tubes suspended beneath the bars of a marimba, xylophone, vibraphone or similar mallet instrument, each acting as a quarter-wavelength air column tuned to the fundamental of the bar above it. By resonating in sympathy with the struck bar, the tube reinforces and radiates the fundamental, increasing loudness and sustain while shaping timbre.",
+        "plain_english": "Hollow tubes that hang under each bar of a marimba or vibraphone. Each tube is tuned to match its bar, so it makes that note louder and fuller. It works a bit like blowing across a bottle to get a tone.",
+        "purpose_function": "They exist to amplify and prolong the relatively weak sound of a struck bar by resonating at the bar's pitch, giving mallet instruments their full, singing tone rather than a short, thin click.",
+        "practical_application": "A technician keeps the tubes clear, correctly aligned under the bars and at the right length, and when miking checks that the pickup captures the tubes' radiated fundamental as well as the attack from the bars.",
+        "category": "Instrument anatomy",
+        "related_terms": [
+          "Marimba",
+          "Vibraphone",
+          "Tone bar",
+          "Fundamental",
+          "Sustain",
+          "Soft mallet"
+        ],
+        "common_mistakes": [
+          "Thinking the tube changes the note's pitch; it only reinforces the pitch already set by the bar's length and tuning.",
+          "Letting debris or a misaligned tube sit under a bar, which weakens and dulls that note's resonance.",
+          "Miking only the bars from above and missing the fuller fundamental radiated from the open tube ends."
+        ],
+        "scenario_contexts": [
+          "Setting up a marimba and aligning each resonator under its bar before a session.",
+          "Miking a vibraphone to capture both the bar attack and the sustained tone from the tubes.",
+          "Diagnosing a weak, thin note traced to a blocked or misaligned resonator tube."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "Rossing, Science of Percussion Instruments (World Scientific)",
+        "Adler, The Study of Orchestration (W. W. Norton)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "f0525177-2532-4537-a15f-3532f0ef39ef",
+      "term": "Riq tremolo",
+      "fields": {
+        "definition": "A rapid, continuous roll produced on the riq (a small Middle Eastern frame drum with jingles) by fast finger or wrist motion, or by shaking the frame, so the pairs of jingles and the head sound in quick succession to create a sustained shimmering effect. It is the frame drum's equivalent of a sustained roll, used to fill and color a rhythmic line.",
+        "plain_english": "A fast roll on the riq, a small Arabic tambourine with jingles. The quick motion blurs the jingles into a smooth, steady shimmer. It works much like a drum roll that holds a sound out.",
+        "purpose_function": "It lets a frame-drum player sustain sound and add a shimmering wash beneath or between accented strokes, since a single struck note decays almost instantly.",
+        "practical_application": "A player produces it with rapid alternating fingers or a shaking wrist, and an engineer recording it uses a mic and any gentle compression that keeps the fast jingle detail without smearing the transients.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Riq",
+          "Frame drum",
+          "Jingles",
+          "Tremolo",
+          "Roll",
+          "Tambourine"
+        ],
+        "common_mistakes": [
+          "Confusing the tremolo with a single accented strike; the tremolo is a fast, sustained succession of sounds, not one hit.",
+          "Gripping the frame too tightly, which chokes the jingles and stops the shimmer from ringing evenly.",
+          "Recording it with heavy compression or a slow attack setting that smears the fast jingle detail into mush."
+        ],
+        "scenario_contexts": [
+          "Sustaining energy under a vocal phrase in Arabic or Turkish classical music.",
+          "Filling the space between accented dum and tak strokes in a rhythmic cycle.",
+          "Recording a riq part where the engineer must preserve the fine jingle shimmer."
+        ]
+      },
+      "sources": [
+        "Blades, Percussion Instruments and Their History (Bold Strummer)",
+        "The New Grove Dictionary of Music and Musicians (riqq / frame drum entries)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "d3097352-db7b-41d5-92ea-bd482df996db",
+      "term": "Saron ping",
+      "fields": {
+        "definition": "The bright, bell-like metallic attack and ring of a struck saron bar, the saron being a bronze-keyed metallophone of the Indonesian gamelan. The 'ping' is the clear, high partial-rich tone that sounds the instant the bar is hit and before the player's free hand damps it.",
+        "plain_english": "The bright, ringing sound a saron bar makes the moment it is struck. The saron is a metal-bar instrument from Indonesian gamelan music. Its bronze bars ring out clearly, a little like small bells.",
+        "purpose_function": "This ringing attack carries the saron's melodic line and gives the gamelan its shimmering metallic character; the free hand damps each bar so the ring does not blur into the next note.",
+        "practical_application": "When recording gamelan a technician places mics to capture the bright bar attack without harshness and expects each ping to be cut short by the player's damping hand.",
+        "category": "Timbre",
+        "related_terms": [
+          "Saron",
+          "Gamelan",
+          "Metallophone",
+          "Damping",
+          "Attack",
+          "Tabuh"
+        ],
+        "common_mistakes": [
+          "Assuming the bars ring on indefinitely; in correct playing each ping is quickly damped by the free hand.",
+          "Miking too close and exaggerating a harsh, clangy attack instead of the balanced bell-like tone.",
+          "Confusing the saron's ping with a struck cymbal's wash; the saron sounds a definite pitch, not a spread of noise."
+        ],
+        "scenario_contexts": [
+          "Recording a Javanese gamelan where the saron carries the core melody.",
+          "Placing mics to capture the saron's bright attack while keeping it musical.",
+          "Balancing the saron ping against softer gong and drum voices in a mix."
+        ]
+      },
+      "sources": [
+        "Sorrell, A Guide to the Gamelan (Faber / Bafford)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "The New Grove Dictionary of Music and Musicians (gamelan / saron entries)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "2e79d209-7011-442d-8870-b65aebd603bd",
+      "term": "Shaker transient",
+      "fields": {
+        "definition": "The brief, sharp burst of energy at the onset of each shaker stroke, produced as the beads, seeds or shot inside strike the shell before the sound quickly decays. This fast, high-frequency transient defines the shaker's rhythmic articulation and its ability to sit at the top of a mix.",
+        "plain_english": "The quick burst of sound at the start of each shaker shake. It is the sharp 'chh' you hear before the sound fades away. This crisp start is what makes a shaker cut through a mix.",
+        "purpose_function": "The transient carries the shaker's timing and crispness; because the sound is mostly high frequency and short, the sharp onset is what the ear locks onto for groove and placement.",
+        "practical_application": "An engineer preserves the shaker transient by choosing a fast, detailed mic and avoiding slow compressor attack times or heavy limiting that would round off and dull the leading edge.",
+        "category": "Sound property",
+        "related_terms": [
+          "Shaker",
+          "Transient",
+          "Attack",
+          "Compression",
+          "Transient shaping",
+          "High frequency"
+        ],
+        "common_mistakes": [
+          "Using a slow compressor attack that clamps down after the transient, flattening the shaker's crisp leading edge.",
+          "Rolling off too much high frequency, which buries the transient and makes the shaker sound dull and distant.",
+          "Over-quantizing a live shaker part and losing the subtle transient timing that gave it feel."
+        ],
+        "scenario_contexts": [
+          "Recording an overdubbed shaker to add high-end drive to a pop groove.",
+          "Setting compressor attack and release so the shaker stays crisp and controlled.",
+          "Using a transient shaper to bring a buried shaker forward without raising overall level."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (Focal Press)",
+        "Huber & Runstein, Modern Recording Techniques (Focal Press)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "a0a9b67a-9a6c-4d89-a327-8c224e5dd5b0",
+      "term": "Shekere slap",
+      "fields": {
+        "definition": "A stroke on the shekere (a West African beaded gourd rattle) in which the open bottom of the gourd is struck against the palm or heel of the hand, producing a deep, low-pitched 'boom' beneath the rattle of the beaded net. It is one of the instrument's core strokes, contrasted with the sharper sound of shaking or slapping the beads.",
+        "plain_english": "A slap on the bottom of a shekere, which is a beaded gourd rattle from West Africa. The palm hits the open end of the gourd to make a deep, low 'boom.' That boom sits under the beady, shaking sound.",
+        "purpose_function": "The slap adds a low, resonant accent that anchors the shekere's rhythm, giving the instrument a bass note to balance the bright rattle of the surrounding beads.",
+        "practical_application": "A player alternates the palm slap with bead shakes to build a pattern, and when miking a technician positions the mic to capture both the low gourd 'boom' and the higher bead rattle.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Shekere",
+          "Gourd",
+          "Rattle",
+          "Slap",
+          "Low frequency",
+          "Groove"
+        ],
+        "common_mistakes": [
+          "Striking the gourd too hard on a bony part of the hand, which risks cracking a dried gourd shell.",
+          "Miking only for the bright bead rattle and missing the low 'boom' of the slapped gourd body.",
+          "Confusing the gourd-body slap with the bead sound; the slap is the low accent, the beads are the bright rattle."
+        ],
+        "scenario_contexts": [
+          "Playing a shekere in an Afro-Cuban or West African percussion ensemble.",
+          "Recording a shekere so both the low body slap and bead rattle are captured.",
+          "Using the slap to place a low accent on the downbeat of a groove."
+        ]
+      },
+      "sources": [
+        "Blades, Percussion Instruments and Their History (Bold Strummer)",
+        "The New Grove Dictionary of Music and Musicians (shekere / rattle entries)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "bc7d12c7-0c9c-414b-a5aa-c310b3845600",
+      "term": "Snare buzz",
+      "fields": {
+        "definition": "The buzzing, sizzling component of a snare drum's sound, created when the metal snare wires (snares) stretched across the bottom head vibrate against that head as the drum is struck. The same mechanism produces sympathetic buzz when the snares are excited by other instruments or by resonances in the room.",
+        "plain_english": "The buzzy sizzle a snare drum makes. It comes from the metal wires stretched under the drum. Each time the drum is hit, those wires rattle against the skin and add the buzz.",
+        "purpose_function": "The buzz is what distinguishes a snare drum from a plain tom; the snares' response gives the backbeat its bright, cutting sizzle and its characteristic sharp decay.",
+        "practical_application": "A technician tunes the resonant head and sets the snare-wire tension so the buzz is crisp and quick, and adjusts throw-off tension or damping to control excess sympathetic buzz picked up by nearby mics.",
+        "category": "Sound property",
+        "related_terms": [
+          "Snare wires",
+          "Snare rattle",
+          "Resonant head",
+          "Backbeat",
+          "Sympathetic vibration",
+          "Snare tuning"
+        ],
+        "common_mistakes": [
+          "Over-tightening the snare wires to kill buzz, which chokes the drum and removes its characteristic sizzle.",
+          "Gating the snare so hard that the natural buzz tail is cut off and the drum sounds abrupt and dead.",
+          "Blaming the snare wires for a rattly sound when the resonant head tuning is the real cause."
+        ],
+        "scenario_contexts": [
+          "Tuning a snare drum so the wire buzz is tight and cuts through the mix.",
+          "Managing sympathetic snare buzz that leaks into tom and vocal mics.",
+          "Setting snare-wire tension to balance sizzle against a clean, controlled decay."
+        ]
+      },
+      "sources": [
+        "Rossing, Science of Percussion Instruments (World Scientific)",
+        "Ballou, Handbook for Sound Engineers (Focal Press)",
+        "Huber & Runstein, Modern Recording Techniques (Focal Press)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "385ffeff-bba6-48ae-b0f7-511683d7f106",
+      "term": "Snare rattle",
+      "fields": {
+        "definition": "The unwanted rattling or buzzing of a snare drum's wires when they vibrate sympathetically in response to other instruments (bass, toms, low brass) or stage energy rather than a direct strike. It is heard as extraneous noise and is controlled through snare tension, drum tuning, muffling, or gating.",
+        "plain_english": "An unwanted rattle from a snare drum's wires when other loud instruments play nearby. The wires shake on their own and add noise, even when no one hits the snare. It is usually treated as a problem to tame.",
+        "purpose_function": "Recognizing sympathetic snare rattle matters because it adds noise and buzz to a recording or live mix; identifying it lets a technician tame it without dulling the drum's intended sound.",
+        "practical_application": "A technician reduces rattle by adjusting snare-wire tension, retuning the offending drum or resonant head, or using light muffling, and on the desk may gate the snare mic to reject the buzz between hits.",
+        "category": "Sound property",
+        "related_terms": [
+          "Snare wires",
+          "Snare buzz",
+          "Sympathetic vibration",
+          "Resonant head",
+          "Gate",
+          "Muffling"
+        ],
+        "common_mistakes": [
+          "Over-tightening the snares to stop rattle, which strangles the drum's natural sizzle and response.",
+          "Ignoring the true source; the rattle often comes from a tom or bass frequency exciting the snares, not the snare itself.",
+          "Reaching for heavy gating first instead of fixing the tuning or wire tension that causes the rattle."
+        ],
+        "scenario_contexts": [
+          "Chasing a rattle that appears on the snare only when the bass guitar plays a certain note.",
+          "Retuning a floor tom whose resonance is setting off the snare wires.",
+          "Gating a snare mic to reject sympathetic rattle between backbeats."
+        ]
+      },
+      "sources": [
+        "Rossing, Science of Percussion Instruments (World Scientific)",
+        "Ballou, Handbook for Sound Engineers (Focal Press)",
+        "Huber & Runstein, Modern Recording Techniques (Focal Press)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "3ac9cd1e-d49b-4ae8-bac9-f78dfa740e2e",
+      "term": "Soft mallet",
+      "fields": {
+        "definition": "A percussion beater whose head is wound with soft yarn, cord or a soft rubber core, giving a low striking hardness. The soft head lengthens the contact time with the bar, cymbal or drumhead, which suppresses high harmonics and the sharp attack to produce a warm, rounded, fundamental-rich tone.",
+        "plain_english": "A stick with a soft, padded head used to hit tuned percussion. The soft tip gives a warm, mellow sound with less click at the start. It is like tapping something with a cushioned end instead of a hard one.",
+        "purpose_function": "Soft mallets exist to bring out an instrument's warm fundamental and reduce hard attack, used to swell suspended cymbals, play smooth marimba lines, or roll timpani without a harsh edge.",
+        "practical_application": "A player chooses mallet hardness to suit the passage, and a technician expects a softer mallet to give a duller attack and stronger low end, adjusting mic placement or EQ accordingly.",
+        "category": "Beaters & mallets",
+        "related_terms": [
+          "Mallet",
+          "Hard mallet",
+          "Marimba",
+          "Suspended cymbal",
+          "Attack",
+          "Timbre"
+        ],
+        "common_mistakes": [
+          "Assuming mallet hardness only changes volume; it mainly changes attack sharpness and brightness of tone.",
+          "Using a very soft mallet for fast passages where the soft head blurs note definition and articulation.",
+          "Playing hard bars or bells with a soft mallet and losing the clear attack the part needs."
+        ],
+        "scenario_contexts": [
+          "Swelling a suspended cymbal roll smoothly with a pair of soft yarn mallets.",
+          "Choosing soft mallets for a warm, singing marimba melody.",
+          "Rolling timpani with softer mallets to avoid a harsh, clacky attack."
+        ]
+      },
+      "sources": [
+        "Adler, The Study of Orchestration (W. W. Norton)",
+        "Blades, Percussion Instruments and Their History (Bold Strummer)",
+        "Rossing, Science of Percussion Instruments (World Scientific)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "1f797ff8-5ec9-472d-a86d-01b4463e842f",
+      "term": "Steel pan strum",
+      "fields": {
+        "definition": "A steelpan accompaniment technique in which the player sounds chord tones in rapid, repeated strokes to sustain harmony and rhythm, imitating a strummed or comped chordal instrument. It is the characteristic role of the lower 'strumming' pans (guitar and cello pans) in a steelband, whose fast repeated notes fill the texture between melody and bass.",
+        "plain_english": "A way of playing chords on a steel pan by tapping the notes fast, one right after another. It fills in the rhythm and harmony under the tune. It does much the same job as strumming a guitar.",
+        "purpose_function": "Strumming provides the harmonic and rhythmic middle layer of a steelband, keeping chords sounding between the sharp attacks of the melody pans and the bass, so the ensemble sounds full.",
+        "practical_application": "A background or guitar-pan player uses fast repeated strokes to comp chords, and an engineer miking a steelband captures these strumming pans as the harmonic bed beneath the lead pans.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Steelpan",
+          "Guitar pan",
+          "Cello pan",
+          "Steelband",
+          "Comping",
+          "Roll"
+        ],
+        "common_mistakes": [
+          "Thinking a strum sounds all chord notes at once; on a pan it is a fast series of repeated strokes, not a single sweep.",
+          "Striking too hard while strumming, which overwhelms the melody pans and muddies the ensemble balance.",
+          "Miking only the lead pans and losing the strumming pans that carry the harmony."
+        ],
+        "scenario_contexts": [
+          "A guitar-pan section comping chords behind the melody in a steelband arrangement.",
+          "Recording a steelband and balancing the strumming pans under the lead pans.",
+          "Learning the strumming role to fill the harmonic middle of an ensemble."
+        ]
+      },
+      "sources": [
+        "Rossing, Science of Percussion Instruments (World Scientific)",
+        "The New Grove Dictionary of Music and Musicians (steel band / steelpan entries)",
+        "Blades, Percussion Instruments and Their History (Bold Strummer)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    }
+  ]
+}

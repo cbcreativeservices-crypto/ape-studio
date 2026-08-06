@@ -43,8 +43,8 @@ import { fonts } from '../../../theme/tokens';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const BG = '#0c0c0f';
-const GRID = '#2c2c33';
-const GHOST = '#232329';
+const GRID = '#3a3b46';
+const GHOST = '#2e2f38';
 const LINE = '#d7dbe2';
 const AMBER = '#ffc64d';
 const BLUE = '#6fa8ff';
@@ -52,7 +52,7 @@ const GREEN = '#5bff85';
 const RED = '#ff6b5e';
 const PLATE_HI = '#24252d';
 const PLATE_LO = '#141419';
-const AXIS_TEXT = '#767a85';
+const AXIS_TEXT = '#9a9ca8';
 
 type SkPathT = ReturnType<typeof Skia.Path.Make>;
 

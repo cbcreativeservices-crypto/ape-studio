@@ -1,0 +1,371 @@
+{
+ "batch": 5,
+ "topic": "Mix Fundamentals & Workflow / Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "40ec5efd-47d2-40c9-bbc8-5c0d4be61950",
+   "term": "Speed mode",
+   "fields": {
+    "definition": "In Logic Pro's Flex Time, the Speed algorithm time-stretches audio by changing playback speed like a tape machine, so the material's pitch rises or falls together with its tempo instead of being held constant.",
+    "plain_english": "Speed mode stretches or shrinks audio by playing it faster or slower, like speeding up a tape. When it plays faster the pitch goes up, and when it plays slower the pitch goes down.",
+    "purpose_function": "It provides a resampling-style, varispeed time-stretch that deliberately couples pitch to tempo, giving vintage tape character that pitch-preserving algorithms remove; it exists as a creative/FX option in the Flex Time algorithm set.",
+    "practical_application": "An engineer selects the Speed algorithm on a Flex-enabled region when they want tape-style pitch-and-tempo shifts on drums or effects rather than a transparent tempo change.",
+    "category": "Time-Stretch Algorithm",
+    "related_terms": ["Tempophone mode", "Flex Time", "Varispeed", "Time stretching", "Tempo set"],
+    "common_mistakes": [
+     "Assuming Speed keeps the original pitch; it deliberately changes pitch with tempo, unlike the Monophonic or Polyphonic modes.",
+     "Using it on tonal, harmonic material and expecting a clean result, when it is best suited to percussive or effect sounds.",
+     "Confusing the Flex Time Speed algorithm with a global transport or project varispeed."
+    ],
+    "scenario_contexts": [
+     "Speeding up a drum loop so it rises in pitch like a classic tape pull-up.",
+     "Creating a downward pitch-and-tempo drop as a transition effect.",
+     "Fitting a percussive sample to the session tempo when the retro pitch shift is wanted."
+    ]
+   },
+   "sources": [
+    "Apple, Logic Pro User Guide - 'Flex Time algorithms and parameters'",
+    "David Nahmani, Apple Pro Training Series: Logic Pro (Peachpit/Apple)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e4d388d0-8bce-4e8f-a4f2-f41f4f10259f",
+   "term": "Stage wash",
+   "fields": {
+    "definition": "A stage wash is a broad, even, relatively soft field of light that covers the whole stage or a large area of it, produced with wash or flood fixtures rather than tightly focused spotlights, to supply general illumination and overall colour or tone for a scene.",
+    "plain_english": "A stage wash is a wide, even blanket of light that covers the whole stage at once. It lights everything softly instead of pointing a tight beam at one spot.",
+    "purpose_function": "It provides the base layer of visibility and colour across the performance area so performers can be seen everywhere, on top of which sharper specials and spotlights are added.",
+    "practical_application": "A lighting technician builds a stage wash by hanging and focusing wash fixtures to blend into even coverage, often in a chosen colour, then balances specials and spots against it.",
+    "category": "Stage Lighting",
+    "related_terms": ["Front of house", "Backlight", "Spotlight", "Colour wash", "Lighting cue"],
+    "common_mistakes": [
+     "Confusing a wash (broad, soft coverage) with a spot (narrow, focused beam).",
+     "Assuming 'stage wash' is an audio term; it is a stage-lighting term and appears here under a mismatched topic.",
+     "Relying on a wash alone with no specials, leaving the scene flat and without focus."
+    ],
+    "scenario_contexts": [
+     "Lighting a full band evenly before adding solo spotlights.",
+     "Setting a coloured wash to establish the mood of a theatrical scene.",
+     "Providing overall even visibility across a conference stage for camera."
+    ]
+   },
+   "sources": [
+    "J. Michael Gillette, Theatrical Design and Production (McGraw-Hill)",
+    "Steven Louis Shelley, A Practical Guide to Stage Lighting (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c9fad748-eca7-42ed-b105-2e2e9d436714",
+   "term": "Stealth music",
+   "fields": {
+    "definition": "Stealth music is a low-intensity, tense music state used in games and stealth-themed media that plays while the player is sneaking or avoiding detection; it is typically quiet and sparse to convey caution, and is designed to transition into combat or alert music if the player is discovered.",
+    "plain_english": "Stealth music is the quiet, tense music that plays in a game while you sneak around trying not to be seen. If a guard spots you, it usually switches to louder action music.",
+    "purpose_function": "It reinforces the sneaking gameplay state and player caution, and serves as one node in an adaptive music system that changes with the player's situation.",
+    "practical_application": "A game-audio implementer sets up a stealth cue as a music state in middleware such as Wwise or FMOD, then defines transitions to combat or exploration music based on game parameters.",
+    "category": "Score Cue Type",
+    "related_terms": ["Suspense music", "Victory music", "Transition matrix", "Transition segment", "Tension layer"],
+    "common_mistakes": [
+     "Making stealth music too busy or loud, which undercuts the tense, quiet feel.",
+     "Failing to author smooth transitions to combat music, causing an abrupt jump when the player is detected.",
+     "Treating it as a fixed track rather than an adaptive state that responds to gameplay."
+    ],
+    "scenario_contexts": [
+     "Sneaking past guards in a stealth action game.",
+     "Infiltrating a base while avoiding detection.",
+     "Switching from stealth to combat music the moment an alarm triggers."
+    ]
+   },
+   "sources": [
+    "Karen Collins, Game Sound (MIT Press)",
+    "Richard Stevens & Dave Raybould, Game Audio Implementation (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "19921ded-9e00-4d3c-9d78-d7092fd16706",
+   "term": "Suspense music",
+   "fields": {
+    "definition": "Suspense music is underscore written to build and sustain tension, unease, or anticipation in the audience during a film, television, or game scene, typically using sustained dissonance, low drones, sparse rhythmic pulses, and gradual dynamic build rather than clear melody or resolution.",
+    "plain_english": "Suspense music is background music that makes a scene feel tense, so you feel something bad might happen. It often uses low, uneasy sounds that slowly grow.",
+    "purpose_function": "It shapes the audience's emotional response, signalling threat or anticipation and heightening dramatic tension in step with the on-screen action.",
+    "practical_application": "A composer or music editor places a suspense cue under a stalking or countdown scene and mixes it to swell as tension peaks, often resolving into a stinger or a sudden release.",
+    "category": "Score Cue Type",
+    "related_terms": ["Stealth music", "Victory music", "Tension layer", "Stinger", "Underscore"],
+    "common_mistakes": [
+     "Overloading a suspense cue with melody or resolution, which releases the tension too early.",
+     "Mixing it too loud so it competes with dialogue instead of supporting the scene.",
+     "Confusing suspense (building anticipation) with a jump-scare stinger (a single sudden hit)."
+    ],
+    "scenario_contexts": [
+     "Underscoring a character creeping through a dark house.",
+     "Building tension during a bomb-defusal countdown.",
+     "Scoring the slow reveal of a threat in a thriller."
+    ]
+   },
+   "sources": [
+    "Richard Davis, Complete Guide to Film Scoring (Berklee Press)",
+    "Fred Karlin & Rayburn Wright, On the Track: A Guide to Contemporary Film Scoring (Routledge)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c1346793-79b5-4a64-91bf-d0d491779ac1",
+   "term": "Take a lap",
+   "fields": {
+    "definition": "\"Take a lap\" is informal studio slang for stepping away from a session for a short break, leaving the room or building, to rest fatigued ears and regain objective perspective before making further mixing or performance decisions.",
+    "plain_english": "Take a lap means step away and take a short break during a session. Resting your ears helps you hear the mix clearly again when you come back.",
+    "purpose_function": "It counteracts the ear fatigue and loss of objectivity that build up over a long session, so decisions are made with fresh, reliable hearing.",
+    "practical_application": "When a mix stops improving or the room grows tense, an engineer or producer calls a short break, leaves the control room, then returns with fresh ears and quickly notes any problems.",
+    "category": "Studio Workflow",
+    "related_terms": ["Ear fatigue", "Reference track", "Monitoring level", "Fresh ears", "Mixdown"],
+    "common_mistakes": [
+     "Staying at the desk on a phone instead of truly leaving the acoustic space, which does not reset your hearing.",
+     "Ignoring fatigue and pushing on, then making changes you regret once your ears are rested.",
+     "Forgetting that fresh ears last only a short time, so failing to note issues quickly on return."
+    ],
+    "scenario_contexts": [
+     "Pausing a long mix session to rest the ears before final balancing.",
+     "Stepping out after many tracking takes to reset before overdubs.",
+     "Leaving the control room to break tension during a difficult session."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook (Bobby Owsinski Media Group)",
+    "Sound on Sound - 'The Psychology of Mixing'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "920d744f-541a-4a3a-9b31-5ff0da3c7a65",
+   "term": "Tempophone mode",
+   "fields": {
+    "definition": "In Logic Pro's Flex Time, the Tempophone algorithm time-stretches audio using grain-based (granular) processing that emulates the Springer Tempophone, a historical tape machine with a rotating head drum; it holds pitch while changing timing but adds pronounced mechanical, grainy artifacts.",
+    "plain_english": "Tempophone mode stretches audio into tiny grains, like chopping it into small pieces and spacing them out. It keeps the pitch but adds a rough, choppy, robot-like sound on purpose.",
+    "purpose_function": "It recreates the artifact-rich character of the mechanical Tempophone/Springer time-stretcher, giving mixers a deliberately lo-fi, granular time-stretch as a creative effect rather than a transparent one.",
+    "practical_application": "A technician selects the Tempophone algorithm on a Flex region, then adjusts the grain-size and crossfade parameters, when they want a gritty, granular stretch on vocals, pads, or sound design.",
+    "category": "Time-Stretch Algorithm",
+    "related_terms": ["Speed mode", "Flex Time", "Granular synthesis", "Time stretching", "Tempo set"],
+    "common_mistakes": [
+     "Expecting clean, transparent stretching; Tempophone is designed to add granular artifacts.",
+     "Ignoring the grain-size and crossfade controls, which strongly shape the resulting sound.",
+     "Choosing it for routine tempo matching instead of the Rhythmic, Monophonic, or Polyphonic modes."
+    ],
+    "scenario_contexts": [
+     "Designing a gritty, mechanical texture from a sustained vocal note.",
+     "Stretching a pad far beyond its length for an ambient sound-design bed.",
+     "Adding vintage granular character to a sample as a creative effect."
+    ]
+   },
+   "sources": [
+    "Apple, Logic Pro User Guide - 'Flex Time algorithms and parameters'",
+    "Curtis Roads, Microsound (MIT Press) - granular time-stretching and the Springer Tempophone",
+    "Sound and Science: Digital Histories - 'Anton Springer and the Time and Pitch Regulator'"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fe704389-053f-487e-95a3-ab0c60ce6b9e",
+   "term": "Transition matrix",
+   "fields": {
+    "definition": "In interactive game music, such as in Audiokinetic Wwise, the transition matrix is a grid inside a music switch container in which each row is a possible source (currently playing) music object and each column a destination (next) music object; every cell defines the rules for moving between that source-destination pair.",
+    "plain_english": "A transition matrix is a grid that tells game music how to move from one piece to another. Each box sets the rules for going from the music playing now to the music that plays next.",
+    "purpose_function": "It lets a sound designer control musical transitions between game states smoothly, setting exit and entry points, fades, and optional bridging segments so the score changes without jarring the player.",
+    "practical_application": "A game-audio implementer fills the matrix cells to choose where the current cue exits (immediately, on the next bar, or at an exit cue), which transition segment plays, and where the next cue enters, then tests it in-game.",
+    "category": "Interactive Music",
+    "related_terms": ["Transition segment", "Stealth music", "Victory music", "Stinger", "Music switch container"],
+    "common_mistakes": [
+     "Assuming it is a mathematical Markov table; here it is a Wwise-style grid of musical transition rules.",
+     "Leaving cells at abrupt defaults, so the music cuts harshly between states.",
+     "Forgetting to set entry and exit cues, which breaks musical timing during transitions."
+    ],
+    "scenario_contexts": [
+     "Moving smoothly from exploration to combat music when an enemy appears.",
+     "Bridging two cues with a short transition segment on a beat boundary.",
+     "Returning to calm music with a musical fade after a fight ends."
+    ]
+   },
+   "sources": [
+    "Audiokinetic, Wwise User's Guide - 'Understanding the transition matrix' / Working with transitions",
+    "Richard Stevens & Dave Raybould, Game Audio Implementation (Focal Press)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cef9722a-a9a6-45a8-91a3-19115541c891",
+   "term": "Victory music",
+   "fields": {
+    "definition": "Victory music is a short, triumphant cue, often a fanfare or upbeat stinger, played to mark a win, level completion, boss defeat, or successful outcome in games, film, sports, and other media.",
+    "plain_english": "Victory music is the happy, triumphant music that plays when you win or finish something, like a level in a game. It tells you that you succeeded.",
+    "purpose_function": "It rewards and signals success to the audience or player, providing clear emotional payoff and closure at the end of a challenge.",
+    "practical_application": "A game-audio implementer triggers a victory stinger when a win condition is met, ducking or stopping the current music so the fanfare lands cleanly.",
+    "category": "Score Cue Type",
+    "related_terms": ["Suspense music", "Stealth music", "Stinger", "Transition matrix", "Underscore"],
+    "common_mistakes": [
+     "Letting the previous cue clash with the victory stinger instead of ducking or stopping it.",
+     "Making the cue too long, so it drags past the moment of triumph.",
+     "Reusing the same victory cue so often that it loses its impact."
+    ],
+    "scenario_contexts": [
+     "Playing a fanfare when the player defeats a boss.",
+     "Marking level completion in a mobile game.",
+     "Underscoring a team's win in a sports broadcast."
+    ]
+   },
+   "sources": [
+    "Karen Collins, Game Sound (MIT Press)",
+    "Aaron Marks, The Complete Guide to Game Audio (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "116f1f52-a188-45f1-91f9-a243fe251e2b",
+   "term": "Far binaural setting",
+   "fields": {
+    "definition": "In the Dolby Atmos binaural render mode, Far is the setting that renders an object or bed with the greatest amount of binaural (HRTF-based) processing, so it is perceived as the most distant from the listener when the mix is folded down to a binaural headphone stream.",
+    "plain_english": "The Far setting makes a sound feel far away from you when you listen on headphones. It adds the most space processing so the sound seems distant.",
+    "purpose_function": "It lets the mixer assign a distant spatial impression to specific objects in a binaural headphone render, adding depth and separation between near and far sounds.",
+    "practical_application": "In the Dolby Atmos Renderer, a mixer sets ambience, reverb returns, or background elements to Far so they sit back in the binaural image while close elements stay nearer.",
+    "category": "Binaural Render Mode",
+    "related_terms": ["Near binaural setting", "Mid binaural setting", "Binaural render mode", "HRTF", "Dolby Atmos"],
+    "common_mistakes": [
+     "Assuming Far changes level or panning; it only sets the perceived binaural distance for the headphone folddown.",
+     "Expecting the setting to affect the loudspeaker (multichannel) render, when it applies to the binaural stream.",
+     "Forgetting that binaural render mode is set per object and is not automatable during the mix."
+    ],
+    "scenario_contexts": [
+     "Placing reverb and ambience beds far back in a binaural music mix.",
+     "Pushing crowd or room tone into the distance on a headphone render.",
+     "Contrasting a close lead vocal (Near) against distant instruments (Far)."
+    ]
+   },
+   "sources": [
+    "Dolby, Dolby Atmos Renderer Guide / Dolby Professional Support - 'What is Binaural Render Mode and how do the settings affect my mix?'",
+    "Apple, Logic Pro User Guide - 'Set up binaural render modes'"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0a012a67-197e-4b04-abb0-8087d16126c8",
+   "term": "Featured-score mix",
+   "fields": {
+    "definition": "A featured-score mix is a version of the score mix in which the music is brought forward as a featured, foreground element of the soundtrack, mixed to sit prominently rather than as subtle background underscore, for moments or deliverables where the score is meant to be the focus.",
+    "plain_english": "A featured-score mix is a version where the music is turned up front and center, not kept quietly in the background. It is used when the score is meant to stand out.",
+    "purpose_function": "It gives the dub or picture editor a version with the score foregrounded, so music-led moments land with full impact without rebalancing from scratch.",
+    "practical_application": "A scoring mixer supplies a featured-score mix for montage or music-driven sequences, where the re-recording mixer wants the score prominent over reduced dialogue and effects.",
+    "category": "Score Deliverable",
+    "related_terms": ["Full score mix", "Music stem", "Underscore", "Music-only master", "Theatrical printmaster"],
+    "common_mistakes": [
+     "Confusing a featured-score mix (score foregrounded) with a full score mix (all elements combined at standard balance).",
+     "Pushing the score so far forward that it buries essential dialogue.",
+     "Assuming every scene wants a featured balance, when most underscore should sit under dialogue."
+    ],
+    "scenario_contexts": [
+     "Mixing a music-led montage where the score carries the scene.",
+     "Providing a score-forward version for a trailer or promo.",
+     "Featuring the main theme prominently during an emotional climax."
+    ]
+   },
+   "sources": [
+    "Richard Davis, Complete Guide to Film Scoring (Berklee Press)",
+    "Fred Karlin & Rayburn Wright, On the Track: A Guide to Contemporary Film Scoring (Routledge)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c508a9da-73fc-4ac2-8b5b-7113941ef015",
+   "term": "Full score mix",
+   "fields": {
+    "definition": "A full score mix is the complete, balanced mix of a musical score or cue containing all of its instrument groups together (for example strings, brass, percussion, choir, and soloists), as opposed to individual stems or reduced alternate versions.",
+    "plain_english": "A full score mix is the whole piece of music mixed together with every instrument included. It is the complete version, not a stripped-down one.",
+    "purpose_function": "It serves as the primary, reference version of the music for the dub or final mix, giving editors and re-recording mixers the composer's intended balance in a single stereo or multichannel file.",
+    "practical_application": "A composer or scoring mixer delivers the full score mix alongside stems and alternate mixes, and the re-recording mixer places it under picture, adjusting level against dialogue and effects.",
+    "category": "Score Deliverable",
+    "related_terms": ["Featured-score mix", "Music stem", "Music-only master", "Theatrical printmaster", "Stem"],
+    "common_mistakes": [
+     "Confusing the full score mix (everything combined) with individual score stems (separate element groups).",
+     "Delivering only the full mix when the dub also needs stems and alternates for flexibility.",
+     "Assuming the full-mix level is final, when it is still balanced against dialogue and effects at the dub."
+    ],
+    "scenario_contexts": [
+     "Delivering the composer's complete cue for the final dub.",
+     "Referencing the intended balance before rebalancing stems.",
+     "Supplying a full mix for a soundtrack album master."
+    ]
+   },
+   "sources": [
+    "Richard Davis, Complete Guide to Film Scoring (Berklee Press)",
+    "Fred Karlin & Rayburn Wright, On the Track: A Guide to Contemporary Film Scoring (Routledge)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d5bde576-7fb9-4c30-9314-9616303014f0",
+   "term": "Mid binaural setting",
+   "fields": {
+    "definition": "In the Dolby Atmos binaural render mode, Mid is the middle setting between Near and Far: it renders an object or bed with a moderate amount of binaural (HRTF-based) processing, giving a medium perceived distance from the listener in the binaural headphone folddown.",
+    "plain_english": "The Mid setting makes a sound feel a medium distance away on headphones, not right next to you and not far off. It adds a middle amount of space processing.",
+    "purpose_function": "It offers an intermediate distance option so the mixer can place elements between the close Near sound and the distant Far sound in the binaural image.",
+    "practical_application": "In the Dolby Atmos Renderer, a mixer assigns Mid to supporting instruments or backing elements that should sit behind the lead but in front of far ambience in the headphone render.",
+    "category": "Binaural Render Mode",
+    "related_terms": ["Near binaural setting", "Far binaural setting", "Binaural render mode", "HRTF", "Dolby Atmos"],
+    "common_mistakes": [
+     "Thinking Mid is a level or pan control rather than a perceived-distance setting for headphones.",
+     "Expecting it to affect the loudspeaker render, when it applies to the binaural folddown.",
+     "Using one distance for everything, which loses the depth that Near/Mid/Far contrast provides."
+    ],
+    "scenario_contexts": [
+     "Placing rhythm instruments at a middle depth behind the lead vocal.",
+     "Giving backing vocals a moderate distance in a binaural music mix.",
+     "Balancing depth across a mix using Near, Mid, and Far together."
+    ]
+   },
+   "sources": [
+    "Dolby, Dolby Atmos Renderer Guide / Dolby Professional Support - 'What is Binaural Render Mode and how do the settings affect my mix?'",
+    "Apple, Logic Pro User Guide - 'Set up binaural render modes'"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ea44279a-5a8b-4f29-bdd0-970ca90a9860",
+   "term": "Near binaural setting",
+   "fields": {
+    "definition": "In the Dolby Atmos binaural render mode, Near is the setting that renders an object or bed with the least amount of binaural (HRTF-based) processing, so it is perceived as the closest to the listener in the binaural headphone folddown.",
+    "plain_english": "The Near setting makes a sound feel close to you on headphones. It uses the least space processing, so the sound seems right up front.",
+    "purpose_function": "It lets the mixer keep chosen objects intimate and up-front in a binaural render, which helps lead elements stay clear and present.",
+    "practical_application": "In the Dolby Atmos Renderer, a mixer sets lead vocals or close instruments to Near so they stay forward in the binaural image, contrasted against Mid and Far elements.",
+    "category": "Binaural Render Mode",
+    "related_terms": ["Mid binaural setting", "Far binaural setting", "Binaural render mode", "HRTF", "Dolby Atmos"],
+    "common_mistakes": [
+     "Assuming Near boosts level; it sets perceived closeness for the binaural render, not gain.",
+     "Expecting it to change the loudspeaker render rather than the headphone folddown.",
+     "Setting everything to Near, which flattens depth and crowds the image."
+    ],
+    "scenario_contexts": [
+     "Keeping a lead vocal close and present in a binaural music mix.",
+     "Placing a narrator up front on a headphone render.",
+     "Contrasting a Near lead against Far ambience for depth."
+    ]
+   },
+   "sources": [
+    "Dolby, Dolby Atmos Renderer Guide / Dolby Professional Support - 'What is Binaural Render Mode and how do the settings affect my mix?'",
+    "Apple, Logic Pro User Guide - 'Set up binaural render modes'"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

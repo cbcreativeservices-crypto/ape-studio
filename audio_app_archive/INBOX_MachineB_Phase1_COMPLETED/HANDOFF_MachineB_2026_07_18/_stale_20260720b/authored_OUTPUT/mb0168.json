@@ -1,0 +1,150 @@
+{
+ "batch": 168,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "cc57a1af-8f80-401b-82b2-8c9db51e86ff",
+   "term": "Mastering studio",
+   "fields": {
+    "definition": "A specialized production facility, acoustically designed and equipped for audio mastering, where a mastering engineer applies final processing and quality control to finished mixes and produces the distribution master. It provides accurate, calibrated full-range monitoring and a neutral, low-coloration listening environment.",
+    "plain_english": "A room built and tuned for the very last step of making a record. It has very accurate speakers and a neutral sound, so the engineer can hear tiny problems and fix them before a song is released. Think of it like a photo studio with perfect lighting, but for sound.",
+    "purpose_function": "It gives the mastering engineer a trustworthy, repeatable listening space so that final tone, level, and loudness choices translate well across phones, cars, and other playback systems.",
+    "practical_application": "A technician sends approved mixes to a mastering studio, or works in one, to have them EQ'd, leveled, sequenced, and turned into delivery masters for streaming, CD, or vinyl.",
+    "category": "Mastering environment",
+    "related_terms": ["Mastering workflow", "Music delivery master", "Reference monitor", "Monitor calibration", "Room acoustics", "Loudness normalization"],
+    "common_mistakes": ["Assuming any home room with nice speakers equals a proper mastering studio, ignoring acoustic treatment and monitor calibration", "Expecting mastering to fix a poor mix rather than treating it as final polish", "Making tonal decisions on uncalibrated or nearfield speakers, then finding they do not translate", "UNSAFE: Monitoring for long periods at very high SPL risks permanent hearing loss; follow OSHA 1910.95 exposure limits and take breaks"],
+    "scenario_contexts": ["Booking an album for a mastering session at a dedicated studio", "Calibrating and acoustically treating a mastering room before critical work", "Comparing a mix on accurate mastering monitors versus consumer earbuds"]
+   },
+   "sources": ["Bob Katz, Mastering Audio: The Art and the Science", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "794a43e7-1014-4eeb-ac96-f92ec760dcf7",
+   "term": "Mastering workflow",
+   "fields": {
+    "definition": "The ordered sequence of steps a mastering engineer follows to turn approved mixes into finished, delivery-ready masters: importing and evaluating each mix, corrective and tonal processing (EQ, dynamics, limiting), matching level and loudness across a project, sequencing and spacing, quality control, and generating format-specific delivery files.",
+    "plain_english": "The step-by-step order of jobs used to finish songs for release. The engineer listens, fixes the tone and loudness, puts the tracks in order, checks for errors, then makes the files each store needs. It is like a checklist you follow the same way every time so nothing gets missed.",
+    "purpose_function": "A consistent workflow makes sure every release meets its loudness, tonal, and technical delivery targets and cuts down on errors before distribution.",
+    "practical_application": "An engineer follows the workflow to process an album, keep song-to-song loudness even, run a final quality check, and export the masters plus a DDP set for duplication or upload.",
+    "category": "Mastering process",
+    "related_terms": ["Mastering studio", "Music-stem preparation", "Music delivery master", "Loudness normalization", "DDP image", "Quality control"],
+    "common_mistakes": ["Skipping the final quality-control and error-check pass before delivery", "Over-limiting to chase loudness and crushing the dynamics", "Not comparing against reference tracks during the session", "Leaving inconsistent levels between tracks on an album"],
+    "scenario_contexts": ["Mastering a full album so every song sits at a consistent loudness", "Preparing a single to meet a streaming platform's loudness target", "Running a final QC pass before sending a master to a pressing plant"]
+   },
+   "sources": ["Bob Katz, Mastering Audio: The Art and the Science", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "02afe610-800c-43ce-9c64-2fdfa80d2893",
+   "term": "Melodic music stem",
+   "fields": {
+    "definition": "A stem, or submixed group, containing the pitched, melodic musical elements of a production, such as lead and backing instruments, synths, and harmony parts, rendered as one stereo or multichannel file separate from the rhythm, percussion, and vocal stems.",
+    "plain_english": "One combined track that holds the tuneful instruments of a song, like guitars, keys, and synths, kept apart from the drums and vocals. It lets someone adjust just those parts later without touching the rest. Think of it as one labeled bag holding all the melody pieces.",
+    "purpose_function": "Grouping the melodic instruments into one stem lets a mixing or mastering engineer change their balance, tone, or level as a single unit and supports remixing and re-versioning.",
+    "practical_application": "An engineer receives a melodic music stem alongside drum, bass, and vocal stems to fine-tune the instrumental balance during stem mastering or to build an alternate mix.",
+    "category": "Stems",
+    "related_terms": ["Music-edit stem", "Music-stem preparation", "Music-only master", "Stem mastering", "Submix", "Vocal stem"],
+    "common_mistakes": ["Confusing a stem with a single raw track or the full multitrack session", "Letting content overlap between stems so they do not sum back to the original mix", "Printing stems at mismatched levels, sample rate, or start points so they will not recombine cleanly"],
+    "scenario_contexts": ["Delivering grouped stems for a stem-mastering session", "Providing stems to a remixer who needs only the instruments", "Building an immersive or alternate mix from grouped stems"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d99a1764-a0d1-42dc-844f-0dc8505a146a",
+   "term": "Metal-particle tape",
+   "fields": {
+    "definition": "A magnetic recording tape whose coating uses pure metal (iron) particles rather than a metal-oxide pigment, giving high coercivity (up to roughly 1500 Oe) and high remanence. Classified as IEC Type IV in the compact cassette, it delivers greater output and extended high-frequency response but requires higher record bias and erase levels.",
+    "plain_english": "A recording tape coated with tiny bits of pure metal instead of a rust-like oxide. The metal holds a stronger magnetic signal, so it records louder, cleaner sound with brighter highs. In cassettes this is the top Type IV, or Metal, grade.",
+    "purpose_function": "Its high coercivity stores a stronger, higher-frequency signal for better output and headroom, at the cost of needing more bias and erase current from the recorder.",
+    "practical_application": "An engineer picks metal-particle (Type IV) tape and sets the deck to the matching bias and EQ position for the highest-fidelity cassette, DAT, or digital-video recordings; fully erasing it needs a machine rated for metal tape.",
+    "category": "Recording media",
+    "related_terms": ["Coercivity", "Tape bias", "Ferric-oxide tape", "IEC tape type", "Chromium-dioxide tape", "Analog recording"],
+    "common_mistakes": ["Recording metal tape on a deck set for Type I or Type II bias, giving dull, distorted sound", "Assuming any deck can properly bias or fully erase metal tape when it is not rated for it", "Confusing metal-particle (MP) tape with the rarer metal-evaporated (ME) tape"],
+    "scenario_contexts": ["Choosing tape for a high-fidelity cassette dub", "Transferring or archiving old Type IV cassettes and DAT masters", "Setting the correct bias and EQ position on a cassette deck before recording"]
+   },
+   "sources": ["IEC 60094 (magnetic tape sound recording)", "IASA TC-05 (components and stability of magnetic tapes)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d5bde576-7fb9-4c30-9314-9616303014f0",
+   "term": "Mid binaural setting",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["All fields left blank: 'Mid binaural setting' is not an established professional audio term and maps to no recognized parameter, control, or technique. Its meaning is genuinely ambiguous, conflating the 'mid' channel of mid/side processing with binaural/HRTF reproduction, which are distinct concepts. No acceptable source (standards body, manufacturer technical doc, or recognized professional text) defines it, so it cannot be authored to standard."]
+  },
+  {
+   "id": "91684592-3158-495b-898f-090accb68c76",
+   "term": "Music delivery master",
+   "fields": {
+    "definition": "The final, approved master of a music program prepared specifically for distribution, conformed to the file format, sample rate and bit depth, loudness, and metadata required by the target channel, such as streaming, a CD/DDP image, or a vinyl pre-master.",
+    "plain_english": "The finished song file made ready to hand off for release. It is set to the exact format, loudness, and details a store or streaming service asks for. Think of it as the final print you send out, not a rough copy.",
+    "purpose_function": "It provides a distribution-ready, specification-compliant version of the master so a release plays back correctly and consistently on the intended platform.",
+    "practical_application": "After mastering, the engineer exports a music delivery master, for example a 24-bit WAV at the platform's loudness target or a DDP image for replication, and checks it against the distributor's spec before upload.",
+    "category": "Deliverables",
+    "related_terms": ["Mastering workflow", "Music-only master", "DDP image", "Loudness normalization", "Delivery specification", "Production master"],
+    "common_mistakes": ["Delivering the wrong sample rate, bit depth, or file format for the target platform", "Ignoring the platform's loudness target so the release is turned down or sounds off", "Missing or incorrect metadata such as ISRC codes or track IDs", "Sending a clipped or over-limited file as the final master"],
+    "scenario_contexts": ["Uploading a release to a streaming distributor or aggregator", "Sending a master to a vinyl cutting house or CD plant", "Meeting a record label's written delivery specification"]
+   },
+   "sources": ["Bob Katz, Mastering Audio: The Art and the Science", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "371e8fcb-3e23-4a46-9c80-2db1198e6a77",
+   "term": "Music-edit stem",
+   "fields": {
+    "definition": "In audio post-production, a stem containing the edited and mixed music elements of a program, delivered separately from the dialogue and effects stems. It carries the final music as prepared by the music editor and mixer so it can be balanced, re-versioned, or replaced without affecting other elements.",
+    "plain_english": "In film and TV sound, one track that holds only the finished music, kept apart from the talking and the sound effects. Keeping music on its own lets editors change or swap it later without touching the voices. It is like keeping the music on its own labeled layer.",
+    "purpose_function": "Isolating the music into its own stem lets a re-recording mixer adjust music level or content on its own and supports foreign-language and music-and-effects versions.",
+    "practical_application": "A post engineer delivers the music-edit stem alongside the dialogue and effects stems so the mix can be re-balanced for broadcast, or the music muted and replaced for a music-and-effects version.",
+    "category": "Stems",
+    "related_terms": ["Music-only master", "Melodic music stem", "Music-stem preparation", "M&E (music and effects)", "Dialogue stem", "Re-recording mix"],
+    "common_mistakes": ["Bouncing the music stem at a different level or reference than the final mix so it will not sum correctly", "Leaving dialogue or effects bleed inside the music stem", "Mismatched sample rate, timecode, or start point across the stem set"],
+    "scenario_contexts": ["Delivering broadcast or streaming audio stems for a show", "Building a music-and-effects version for foreign dubbing", "Re-balancing music level under narration during a mix"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "SMPTE deliverable and stem specifications"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4971ce8c-8d15-4ec1-95ba-af2155e0e59b",
+   "term": "Music-only master",
+   "fields": {
+    "definition": "A master version of a program containing only the music, with dialogue and sound effects removed. It is supplied as a component of a deliverables package for re-versioning, foreign-language production, or licensing where the music must stand alone.",
+    "plain_english": "A finished version of the audio that has the music but no talking or sound effects. It is handed over so the music can be reused on its own, such as for a different-language dub or a licensing deal. It is the music-only copy.",
+    "purpose_function": "It supplies an isolated music version so a program can be re-voiced in other languages or its music reused and licensed without any other audio.",
+    "practical_application": "A post or mastering engineer prepares a music-only master as part of the deliverables so a distributor can create foreign dubs or license the score separately.",
+    "category": "Deliverables",
+    "related_terms": ["Music-edit stem", "Music delivery master", "M&E (music and effects)", "Stem mastering", "Dialogue stem", "Re-versioning"],
+    "common_mistakes": ["Confusing a music-only master with a full M&E, which also includes the sound effects", "Leaving reverb tails or effects bleed from other elements inside the music", "Level or format mismatch between the music-only master and the main master"],
+    "scenario_contexts": ["Assembling a delivery package for international distribution", "Supplying music on its own for a trailer or promo", "Licensing a program's music separately from the full soundtrack"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "SMPTE deliverable specifications"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cadbd2c6-dcd9-47d6-b57c-3b7a235bba1d",
+   "term": "Music-stem preparation",
+   "fields": {
+    "definition": "The process of readying music stems for mixing, mastering, or delivery: bouncing consistent, time-aligned files that sum back to the reference mix, with matched sample rate and bit depth, correct start points and headroom, and clear labeling.",
+    "plain_english": "Getting the music stems ready before the next step. You bounce each group as a clean, matching file that lines up in time and adds back up to the full song. Good prep means clear names, the right settings, and no surprises for the next engineer.",
+    "purpose_function": "Careful preparation makes sure the stems sum correctly to the intended mix and meet the technical specs of the mastering or post-production workflow, which prevents rework.",
+    "practical_application": "Before stem mastering or hand-off, an engineer exports each music stem from the same start point at a common sample rate and bit depth, checks that the stems sum to the mix, and labels the files clearly.",
+    "category": "Stems",
+    "related_terms": ["Melodic music stem", "Music-edit stem", "Music delivery master", "Stem mastering", "Submix", "Mastering workflow"],
+    "common_mistakes": ["Exporting stems from different start points so they drift out of sync", "Using mismatched sample rate, bit depth, or levels so stems will not sum to the mix", "Applying the master-bus limiter to each stem so the sum is over-processed", "Poor or missing file labeling that confuses the next engineer"],
+    "scenario_contexts": ["Preparing stems to send to a stem-mastering engineer", "Bouncing stems for a remix or re-version", "Checking that exported stems sum back to the approved mix before hand-off"]
+   },
+   "sources": ["Bob Katz, Mastering Audio: The Art and the Science", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

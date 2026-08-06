@@ -1,0 +1,91 @@
+{
+ "batch": 356,
+ "topic": "Strings, Guitar & Keys",
+ "authored": [
+  {
+   "id": "fb18f517-a235-47f6-bd01-e9c4830afa2e",
+   "term": "USB ground noise",
+   "fields": {
+    "definition": "Audible hum or buzz introduced into an audio signal when a USB link (typically between a computer and a bus-powered audio interface or other gear) bonds two devices' grounds together, forming a ground loop through which small power-related currents flow across the audio signal ground. It usually appears as low-frequency mains hum (50/60 Hz and its harmonics) or a digital whine that changes with computer activity.",
+    "plain_english": "This is the hum or buzz you hear when a computer and an audio device share more than one ground path through a USB cable. The extra loop lets stray electrical current leak into the sound. It is a bit like two sinks joined by two pipes, so water sneaks around a loop instead of draining cleanly.",
+    "purpose_function": "The term names a specific noise fault so a technician can diagnose and cure it rather than mask it; the noise exists because USB carries a shared ground reference that can close a loop with other grounded gear and let power-line currents modulate the audio ground.",
+    "practical_application": "A technician who hears hum from a laptop-fed USB interface confirms USB ground noise by unplugging other grounded connections, then cures it with a USB isolator, an audio isolation transformer, correct balanced wiring, or by running the computer on battery.",
+    "category": "Noise & Grounding",
+    "related_terms": ["Ground loop", "Hum", "Balanced connection", "Isolation transformer", "Pin 1 problem", "Shield grounding"],
+    "common_mistakes": ["Assuming the interface is defective when the hum is really a ground loop that disappears once the loop is broken.", "Chasing the noise with EQ or a noise gate instead of removing the ground loop at its source.", "Blaming USB cable quality when the problem is the shared ground path, not the data connection.", "UNSAFE: Lifting the equipment's mains safety/earth ground with a cheater plug or ground-lift adapter to silence the hum, which defeats protective earthing and creates a shock hazard; use a proper audio isolation transformer or USB isolator instead."],
+    "scenario_contexts": ["A laptop on its charger feeds a bus-powered USB interface and a steady hum appears that vanishes when the charger is unplugged.", "A desktop PC connected to powered monitors and a USB interface produces buzz that shifts as CPU load changes.", "A guitarist recording direct into a USB interface hears mains hum only when the amp and interface plug into different outlets."]
+   },
+   "sources": ["Rane RaneNote 110, \"Sound System Interconnection\"", "Rane RaneNote 151, \"Grounding and Shielding Audio Devices\"", "AES48 (grounding and EMC of balanced audio interconnections)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3da3b9a1-d4c7-4980-aef2-e267a4d31142",
+   "term": "Volume-swell (steel)",
+   "fields": {
+    "definition": "A performance technique on steel guitar (pedal or lap steel) in which the player keeps the note attenuated at the moment of the pick attack and then raises the level, usually with a foot-operated volume pedal, so the note fades in smoothly with no audible pick transient. The result is a soft, vocal or bowed-string-like swell that is a signature of the pedal-steel sound.",
+    "plain_english": "This is a way of playing steel guitar where you hide the pluck and let each note fade in gently. You keep the volume down as you pick, then push a foot pedal to bring the sound up. It ends up smooth and singing, a bit like a bowed violin.",
+    "purpose_function": "It removes the percussive pick attack and reshapes the note's volume envelope, letting a plucked string imitate sustained, bowed or vocal phrasing and blend smoothly into pads and chords.",
+    "practical_application": "A steel player rocks the volume pedal from heel-down (silent) toward toe-down (full) just after picking so each note or chord blooms in; guitarists use the same move with a volume pedal or the guitar's volume knob to emulate the steel sound.",
+    "category": "Performance Technique",
+    "related_terms": ["Volume pedal", "Pedal steel guitar", "Attack transient", "Envelope", "Sustain", "Lap steel"],
+    "common_mistakes": ["Starting the swell too late so the pick attack is still heard, defeating the smooth fade-in.", "Placing the volume pedal after time-based effects so reverb or delay tails get choked off during the swell.", "Confusing volume swell with a tremolo effect; a swell shapes each note's attack, while tremolo repeatedly modulates volume."],
+    "scenario_contexts": ["A country pedal-steel part where every chord blooms in behind the vocal.", "An ambient guitarist using a volume pedal to create pad-like swells under a song.", "A session player emulating pedal steel on a Telecaster by swelling notes with the volume knob."]
+   },
+   "sources": ["Ernie Ball Volume Pedal (MVP) instructions and warranty document (manufacturer technical documentation)", "Pigtronix Gloamer (auto-swell) User's Guide (manufacturer technical documentation)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "851a6440-c616-41cf-af12-5c36e6665b68",
+   "term": "Whammy-bar dive",
+   "fields": {
+    "definition": "A guitar technique that uses the tremolo (vibrato) arm, the \"whammy bar,\" to lower the pitch of a note or chord by pushing the arm toward the body; this rotates the bridge, slackens the strings and drops the pitch. An extreme version, the \"dive bomb,\" is pushed until the strings go nearly slack for a dramatic downward glide.",
+    "plain_english": "A whammy-bar dive is when a guitarist pushes the metal bar on the bridge to make the notes drop in pitch. Pressing the bar loosens the strings, so the sound slides downward. Pushed all the way, it can drop into a deep growl, like a plane diving.",
+    "purpose_function": "The tremolo arm lets a player bend pitch smoothly and in real time; the dive is used for expressive downward glides, dramatic effects and dive-bomb accents that a fixed bridge cannot produce.",
+    "practical_application": "On a guitar fitted with a Fender-style synchronized tremolo or a locking Floyd Rose, the player presses the bar after striking a note to swoop the pitch down; a Floyd Rose's locking nut and fine tuners keep the guitar in tune after deep dives.",
+    "category": "Performance Technique",
+    "related_terms": ["Tremolo arm", "Floyd Rose", "Vibrato", "Locking nut", "String tension", "Pitch bend"],
+    "common_mistakes": ["Calling the arm a 'tremolo' when it actually produces vibrato/pitch change; true tremolo is volume modulation.", "Using deep dives on a non-locking tremolo without a well-set-up nut and springs, causing the guitar to go out of tune.", "Mismatching spring and string tension so a floating bridge will not return to pitch after a dive."],
+    "scenario_contexts": ["A metal solo ending with a screaming dive bomb into slack strings.", "Adding subtle downward dips to sustained notes for expression.", "Setting up a Floyd Rose so it returns to pitch after repeated dives."]
+   },
+   "sources": ["Mottola et al., \"The physics of unwound and wound strings on the electric guitar applied to the pitch intervals produced by tremolo/vibrato arm systems,\" PLOS ONE (peer-reviewed)", "Fender, \"Pitch Control: A Tremolo Primer\" (manufacturer technical article)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e076f868-0482-4d15-a2d1-7306329dca92",
+   "term": "Yangqin damped stop",
+   "fields": {
+    "definition": "A playing technique on the yangqin (Chinese hammered dulcimer) in which the performer lightly touches or presses the ringing strings with a hand or finger to damp their resonance and stop the note. Because the instrument has no mechanical dampers and its struck strings otherwise ring until they decay, this hand damping is used to shorten notes and produce staccato or percussive articulation.",
+    "plain_english": "The yangqin is a Chinese instrument whose strings are hit with small hammers, and the strings keep ringing on their own. A damped stop is when the player touches the strings with a hand or finger to quiet them and cut the note short. It works like resting your hand on a bell to stop it humming.",
+    "purpose_function": "Because the yangqin lacks dampers, hand damping gives the player control over note length and clarity, keeping notes from blurring together and allowing crisp, staccato phrasing.",
+    "practical_application": "A yangqin player mutes strings with the side of the hand or the fingertips right after striking to end a note cleanly, to keep fast passages from ringing into one another, or to add percussive, staccato accents.",
+    "category": "Performance Technique",
+    "related_terms": ["Yangqin", "Damping", "Staccato", "Sustain", "Hammered dulcimer", "Muting"],
+    "common_mistakes": ["Letting all struck notes ring, so rapid passages smear into a muddy blur instead of sounding clear.", "Damping too hard or too slowly, which adds an unwanted thud or buzz instead of a clean stop.", "Assuming the yangqin has built-in dampers like a piano; sustain must be controlled by hand."],
+    "scenario_contexts": ["Stopping a chord cleanly at the end of a phrase so it does not ring over the next one.", "Playing a crisp staccato passage that would otherwise blur because the strings sustain.", "Muting sympathetic ringing from nearby courses during a quiet solo passage."]
+   },
+   "sources": ["Organology: Musical Instruments Encyclopedia, \"Yangqin\" (muting/damping strings by hand for staccato)", "Organology: Musical Instruments Encyclopedia, \"Khim\" (hand-muting an undampered hammered dulcimer for staccato)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d0a76f2e-e6a6-4b0d-b531-92259aa1f81b",
+   "term": "Yaozhi vibrato-press",
+   "fields": {
+    "definition": "A combined guzheng (Chinese zither) technique in which the right hand plays yaozhi (摇指), a rapid, repeated in-and-out plucking of a single string that produces a continuous, sustained tone, while the left hand presses and rocks the same string on the far side of the movable bridge to add vibrato and bend the pitch. The tremolo supplies sustain and the left-hand press supplies expressive pitch inflection.",
+    "plain_english": "On the guzheng, a Chinese string instrument, yaozhi means plucking one string very fast so the note sounds long and steady. In a yaozhi vibrato-press, the other hand presses and wiggles that same string to add a wavering pitch. Together they make a held note that also bends and shivers.",
+    "purpose_function": "Yaozhi overcomes the quick decay of a plucked string by sustaining the tone, and the left-hand vibrato-press adds the pitch shaping and vibrato that give guzheng melodies their vocal, speech-like quality.",
+    "practical_application": "A guzheng player holds a long melody note with a right-hand yaozhi tremolo and, at the same time, uses the left hand behind the bridge to add vibrato or slide the pitch up and down for emotional emphasis.",
+    "category": "Performance Technique",
+    "related_terms": ["Guzheng", "Yaozhi", "Vibrato", "Tremolo", "Pitch bend", "Portamento"],
+    "common_mistakes": ["Pressing the string with the left hand before the tremolo has spoken, so a pitch bend is heard without a clear sustained tone.", "Using stiff fingers or a locked wrist for yaozhi, which makes the tremolo uneven instead of smooth and continuous.", "Confusing yaozhi (a right-hand tremolo for sustain) with the left-hand vibrato press; they are different roles that combine here."],
+    "scenario_contexts": ["Sustaining a long, expressive melody note that also needs vibrato and pitch inflection.", "Imitating a singing voice or a bowed string on a plucked guzheng.", "A slow, emotional passage where held notes rise and fall in pitch while ringing continuously."]
+   },
+   "sources": ["Wang, \"Extending the Sound of the Guzheng,\" PhD thesis, University of Leeds / White Rose eTheses (academic reference; yaozhi tremolo and left-hand vibrato/pressing)", "Timbre and Orchestration Resource, Chinese orchestra plucked strings (guzheng: pitch changes and vibrato produced with the left hand)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

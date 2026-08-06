@@ -1,0 +1,314 @@
+{
+ "bucket": 7,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "3eba25e6-a019-4e1d-a5e7-d26035458016",
+   "term": "Hand synchronization",
+   "fields": {
+    "definition": "In Foley, the practice of performing and editing hand-related sounds — grabs, pats, claps and prop contacts — so they line up precisely, frame by frame, with the actor's hand movements on screen.",
+    "plain_english": "It means making the sound of hands match what the hands do on screen. If the actor claps, the clap sound must land at the exact same moment.",
+    "purpose_function": "It restores believable, sync-accurate hand sounds that the production microphone missed or captured poorly, keeping what the audience sees and hears in agreement.",
+    "practical_application": "A Foley artist loops the picture and re-performs each hand action to a monitor, then the Foley editor nudges the takes in the DAW until every contact hits its frame.",
+    "category": "Foley",
+    "related_terms": ["Hand contact", "Hand slap", "Picture synchronization", "Hit point", "Heel strike"],
+    "common_mistakes": [
+     "Treating rough sync as good enough — hand sounds even a frame or two off read as fake to the audience.",
+     "Performing the motion without watching the picture, so the rhythm of the sounds drifts from the on-screen action.",
+     "Doubling hand sounds that already exist in usable production audio."
+    ],
+    "scenario_contexts": [
+     "Adding clap and handshake sounds to a dialogue scene shot on a noisy location.",
+     "Re-syncing hand pats and applause for a crowd insert.",
+     "Matching prop-handling hand contacts in an ADR-heavy scene where production audio was discarded."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, The Foley Grail: The Art of Performing Sound for Film, Games, and Animation (Focal Press)",
+    "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "634e9e21-d40c-4fd9-a6ec-dc1d2b764f3f",
+   "term": "Headphone translation room",
+   "fields": {
+    "definition": "A dedicated listening space used to audition a finished mix over reference headphones, confirming that its balance, dialogue clarity and spatial imaging translate for the large audience that listens on headphones and earbuds.",
+    "plain_english": "It is a room set up to check how a mix sounds through headphones. Many people watch shows with earbuds, so mixers make sure it still sounds right there.",
+    "purpose_function": "It exists because a mix balanced on room monitors can shift on headphones, so a controlled headphone check protects dialogue and spatial cues for headphone listeners.",
+    "practical_application": "A re-recording mixer takes a near-final mix into this space, plays it on calibrated headphones, and flags any dialogue, bass or panning that only works on the main monitors.",
+    "category": "Post Facilities",
+    "related_terms": ["Immersive-audio mixing room", "Screening room", "Picture monitor", "Post-production suite", "Post-production facility"],
+    "common_mistakes": [
+     "Assuming a mix that sounds great on studio monitors will automatically translate to headphones.",
+     "Judging headphone translation on random consumer earbuds instead of a known reference set.",
+     "Monitoring too loud on headphones, which hides balance problems that appear at normal listening levels."
+    ],
+    "scenario_contexts": [
+     "Checking a streaming series mix that most viewers will hear on earbuds.",
+     "Confirming a binaural or immersive headphone render before delivery.",
+     "Spotting a boosted low end that only becomes obvious on closed-back headphones."
+    ]
+   },
+   "sources": [
+    "Bobby Owsinski, The Mixing Engineer's Handbook (translation across playback systems)",
+    "Tomlinson Holman, Sound for Film and Television (Focal Press) — monitoring and translation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9b833db6-04ac-4844-95ec-6bd248452b7f",
+   "term": "Health parameter",
+   "fields": {
+    "definition": "A game parameter (real-time parameter control) that reports a character's or object's remaining health to the audio engine, letting the game's sound change continuously as that health value rises or falls.",
+    "plain_english": "It is a number from the game that tells the sound system how healthy a character is. As health drops, the audio can change, like a heartbeat that gets louder when you are hurt.",
+    "purpose_function": "It links game state to sound so audio can react to health in real time — muffling the mix, adding a heartbeat, or shifting the music when a player nears death.",
+    "practical_application": "A game-audio implementer maps the health parameter to a low-pass filter and a heartbeat loop in Wwise or FMOD, so the mix darkens and the pulse rises as health falls toward zero.",
+    "category": "Interactive Audio",
+    "related_terms": ["Parameter-driven audio", "Positional audio", "Procedural ambience", "Playback behavior", "Physics-driven sound"],
+    "common_mistakes": [
+     "Confusing the health parameter (a game value) with the audio effects it drives, such as the heartbeat itself.",
+     "Mapping health to sound with an abrupt curve, so the audio jumps instead of changing smoothly.",
+     "Updating the parameter too infrequently, causing audible stepping as health changes."
+    ],
+    "scenario_contexts": [
+     "Adding a rising heartbeat as a player's health drops in a shooter.",
+     "Muffling and desaturating the mix during a low-health near-death state.",
+     "Switching music intensity when a boss's health crosses a threshold."
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise documentation — Game Parameters (RTPC), Wwise-101 Lesson 3",
+    "Richard Stevens & Dave Raybould, Game Audio Implementation / The Game Audio Tutorial (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "03d52bdc-e0fd-4487-9eee-cd697d3c7de0",
+   "term": "Impact system",
+   "fields": {
+    "definition": "A game-audio system that generates collision and impact sounds at runtime by taking physics data — such as material type, velocity and mass — and selecting or shaping the appropriate hit, thud or crash.",
+    "plain_english": "It is a set-up that makes crash and bump sounds by itself when things collide in a game. It picks the right sound based on what hit what and how hard.",
+    "purpose_function": "It exists so that unpredictable, physics-driven collisions still produce believable, varied impact sounds without a sound designer hand-placing every hit.",
+    "practical_application": "An implementer connects the physics engine's collision events to sound containers keyed by material and velocity, so a light tap and a heavy crash draw from different samples.",
+    "category": "Interactive Audio",
+    "related_terms": ["Physics-driven sound", "Impact tail", "Parameter-driven audio", "Positional audio", "Procedural ambience"],
+    "common_mistakes": [
+     "Triggering one impact sound regardless of velocity, so gentle and violent hits sound identical.",
+     "Not limiting simultaneous impacts, so a pile-up of collisions creates a harsh, distorted burst.",
+     "Ignoring material data, so a metal-on-stone hit plays a wood sound."
+    ],
+    "scenario_contexts": [
+     "Generating debris and impact sounds as a physics-driven structure collapses.",
+     "Playing correct hit sounds when objects of different materials collide in a sandbox game.",
+     "Scaling impact loudness with collision force in a racing or combat title."
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise documentation — containers and event triggering; Firelight FMOD Studio documentation",
+    "Richard Stevens & Dave Raybould, Game Audio Implementation (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "933bb6a0-7810-491c-820d-2205668f3e86",
+   "term": "Layer container",
+   "fields": {
+    "definition": "A container in game-audio middleware that holds several child sounds and plays them together as simultaneous layers, so a single event outputs a blended, composite sound rather than one file.",
+    "plain_english": "It is a holder that plays several sounds at once, stacked on top of each other. It is like layering a few tracks so they blend into one bigger sound.",
+    "purpose_function": "It lets designers build one rich sound from stacked elements — such as a low rumble, a mid body and a high detail — and control or crossfade those layers together.",
+    "practical_application": "A designer drops the sub, body and detail layers of an explosion into a layer container so they always trigger together and can be blended with one game parameter.",
+    "category": "Interactive Audio",
+    "related_terms": ["Sequence container", "Playlist container", "Hybrid layering", "Parameter-driven audio", "Sound asset"],
+    "common_mistakes": [
+     "Confusing a layer container (plays sounds together) with a sequence or random container (plays sounds one at a time).",
+     "Stacking too many layers, wasting voices and muddying the sound.",
+     "Leaving layers phase-misaligned, so combining them thins the sound instead of thickening it."
+    ],
+    "scenario_contexts": [
+     "Building a layered weapon or explosion sound from separate low, mid and high elements.",
+     "Crossfading engine layers with RPM using one game parameter.",
+     "Combining a base ambience with intermittent detail layers for a location."
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise documentation — Blend Container (summing and layering with Blend Containers)",
+    "Richard Stevens & Dave Raybould, Game Audio Implementation (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "37be77ba-a6ab-4a5a-b957-da33dfb4beae",
+   "term": "Noise transition",
+   "fields": {
+    "definition": "A transitional sound-design element built largely from filtered or swept noise — such as a riser, whoosh or sweep — used to bridge two scenes, shots or sections and carry the ear across the cut.",
+    "plain_english": "It is a whoosh or sweep sound made from noise that carries the viewer from one scene to the next. It smooths over the jump between shots.",
+    "purpose_function": "It smooths and energises edits by giving the audience an audible bridge across a picture change, hiding the seam and building or releasing tension.",
+    "practical_application": "An editor places a rising noise sweep a few frames before a hard cut so its peak lands on the new shot, gluing the transition together.",
+    "category": "Sound Design",
+    "related_terms": ["Hard sound effect", "Hybrid sound design", "Picture-change conform", "Hit point", "Impact tail"],
+    "common_mistakes": [
+     "Making the transition so loud it overwhelms the dialogue or music around the cut.",
+     "Peaking the sweep at the wrong moment, so it fights rather than supports the picture change.",
+     "Overusing noise whooshes until every edit sounds the same."
+    ],
+    "scenario_contexts": [
+     "Bridging a flashback with a filtered noise sweep in a trailer.",
+     "Whooshing between locations in a fast montage.",
+     "Adding a riser into a reveal or title card."
+    ]
+   },
+   "sources": [
+    "David Sonnenschein, Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema (Michael Wiese)",
+    "Ric Viers, The Sound Effects Bible (Michael Wiese Productions)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b135965f-78ef-4fac-9217-389ffafa1964",
+   "term": "Object pickup",
+   "fields": {
+    "definition": "A Foley or sound-effect element covering the sound of a character picking up or setting down a handled object — the contact, grip and material movement of the prop as it leaves or meets a surface.",
+    "plain_english": "It is the sound of someone picking something up or putting it down. Think of the small clink and rustle when a hand grabs a cup off a table.",
+    "purpose_function": "It adds tactile realism to on-screen handling, telling the audience an object has weight and material even when the production mic missed the contact.",
+    "practical_application": "A Foley artist handles a matching prop in sync with the picture, capturing the pick-up and set-down contacts that the editor then places to frame.",
+    "category": "Foley",
+    "related_terms": ["Object placement", "Hand contact", "Paper handling", "Key jingle", "Pocket movement"],
+    "common_mistakes": [
+     "Using a generic clink for every object instead of matching the prop's real material and weight.",
+     "Placing the pick-up sound off the frame where the hand actually grips the object.",
+     "Forgetting the set-down sound, so objects seem to vanish rather than be placed."
+    ],
+    "scenario_contexts": [
+     "Adding the sound of a character picking up a coffee mug.",
+     "Covering a character lifting and holstering a prop weapon.",
+     "Selling the weight of a heavy box as it is lifted off the floor."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, The Foley Grail (Focal Press)",
+    "Ric Viers, The Sound Effects Bible (Michael Wiese Productions)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cf3b6df7-e3ea-47c8-9aca-6920ec784691",
+   "term": "Paper handling",
+   "fields": {
+    "definition": "A Foley category covering the sounds of manipulating paper materials — rustling, folding, crumpling, sorting and page movement — performed to match on-screen handling of documents, books, letters or packaging.",
+    "plain_english": "It is the rustle and crinkle sound of someone handling paper. Like the noise a letter makes when it is unfolded or a stack of pages is shuffled.",
+    "purpose_function": "It gives paper actions audible texture and weight, making documents, books and letters feel real and reinforcing the pace of the on-screen handling.",
+    "practical_application": "A Foley artist rustles and folds matching paper stock in sync with the picture, choosing weight and stiffness to suit the document shown.",
+    "category": "Foley",
+    "related_terms": ["Page turn", "Object pickup", "Plastic movement", "Jacket movement", "Hand contact"],
+    "common_mistakes": [
+     "Using the wrong paper weight, so a thin note sounds like heavy cardstock.",
+     "Over-performing rustles until routine handling sounds distractingly busy.",
+     "Letting the paper sound drift off sync with the visible page or fold."
+    ],
+    "scenario_contexts": [
+     "Covering a character reading and folding a letter.",
+     "Adding page rustles as someone flips through a report.",
+     "Selling the handling of a newspaper or map in a dialogue scene."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, The Foley Grail (Focal Press)",
+    "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "23298695-4a13-4892-a927-67fc14d70482",
+   "term": "Plastic movement",
+   "fields": {
+    "definition": "A Foley movement category covering the crinkle, creak and rustle of plastic materials — bags, packaging, rain gear, tarps and hard plastic props — performed to match on-screen handling or body movement.",
+    "plain_english": "It is the crinkle and creak sound of plastic being moved. Like the noise a shopping bag or a raincoat makes when someone shifts around.",
+    "purpose_function": "It adds material-specific texture to movement, distinguishing plastic from cloth or leather and reinforcing what a character is wearing or handling.",
+    "practical_application": "A Foley artist manipulates matching plastic — a bag, a tarp or a raincoat — in sync with the actor, layering it under footsteps or handling as needed.",
+    "category": "Foley",
+    "related_terms": ["Jacket movement", "Pocket movement", "Paper handling", "Jewelry movement", "Object pickup"],
+    "common_mistakes": [
+     "Choosing plastic with the wrong stiffness, so soft film sounds like a rigid crate.",
+     "Performing plastic crinkle louder than the scene warrants, pulling focus from dialogue.",
+     "Reusing the same plastic rustle for every material instead of matching the prop."
+    ],
+    "scenario_contexts": [
+     "Adding raincoat crinkle to a character walking in a storm.",
+     "Covering the handling of a plastic shopping bag.",
+     "Layering tarp movement over a construction-site scene."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, The Foley Grail (Focal Press)",
+    "Ric Viers, The Sound Effects Bible (Michael Wiese Productions)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "877217d2-623f-4778-9bc4-ead06c0afc1e",
+   "term": "Pocket movement",
+   "fields": {
+    "definition": "A Foley movement element covering the sound of a hand entering or leaving a pocket and its contents shifting inside — fabric friction plus the muted rattle of keys, coins or a phone.",
+    "plain_english": "It is the sound of a hand going into a pocket and the stuff inside moving. Like the soft jingle and rustle when someone reaches for their keys.",
+    "purpose_function": "It adds a small but telling layer of realism to a character's movement and business, cueing the audience that something is being reached for or stowed.",
+    "practical_application": "A Foley artist performs the reach into a matching garment pocket, adding coin or key content to sync with the actor's hand action.",
+    "category": "Foley",
+    "related_terms": ["Jacket movement", "Key jingle", "Plastic movement", "Hand contact", "Object pickup"],
+    "common_mistakes": [
+     "Adding a loud coin rattle when the character's pocket should be empty.",
+     "Letting the pocket sound sit off sync with the visible hand movement.",
+     "Using the same content rattle regardless of what the character carries."
+    ],
+    "scenario_contexts": [
+     "Covering a character reaching for keys or a phone.",
+     "Adding fabric and content movement as someone pockets an object.",
+     "Layering pocket business under a walking shot to build character."
+    ]
+   },
+   "sources": [
+    "Vanessa Theme Ament, The Foley Grail (Focal Press)",
+    "David Lewis Yewdall, Practical Art of Motion Picture Sound (Focal Press)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5e97c695-5fe9-40ef-98e7-d5086b74c6f5",
+   "term": "Shuffle playback",
+   "fields": {
+    "definition": "A randomized playback mode in which a container or playlist selects its child sounds in random order but does not repeat any element until all have played, avoiding immediate repetition while still varying the sequence.",
+    "plain_english": "It is a random play mode that mixes up the order of sounds but will not repeat one until all have played. It works like shuffling a deck of cards before dealing.",
+    "purpose_function": "It exists to keep repeated sounds — footsteps, gunshots, impacts — from sounding mechanically identical while still ensuring every variation is used before any repeats.",
+    "practical_application": "An implementer sets a random container of footstep variations to shuffle so consecutive steps never reuse the same sample, reducing the machine-gun effect.",
+    "category": "Interactive Audio",
+    "related_terms": ["Playlist container", "Sequence container", "Layer container", "Sound asset", "Playback behavior"],
+    "common_mistakes": [
+     "Confusing shuffle (no repeat until all have played) with pure random, which can repeat the same sound back-to-back.",
+     "Loading too few variations, so even shuffled playback becomes obvious.",
+     "Assuming shuffle randomizes pitch or volume — it only randomizes selection order."
+    ],
+    "scenario_contexts": [
+     "Varying footstep samples so a character's walk never machine-guns.",
+     "Cycling weapon-fire variations during sustained shooting.",
+     "Playing ambient one-shots like bird calls in a non-repeating random order."
+    ]
+   },
+   "sources": [
+    "Audiokinetic Wwise documentation — Random Container play modes (Standard vs Shuffle)",
+    "Firelight Technologies FMOD Studio documentation — Multi Instrument playlist / shuffle"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

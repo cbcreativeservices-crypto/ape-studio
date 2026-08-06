@@ -260,7 +260,73 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      {/* READOUTS — the current settings at a glance + the LIVE GR meter. */}
+      {/* Wave-Physics layout order (owner 2026-08-05): buttons → display →
+          controls → readouts, with the explanation/definitions as a collapsed
+          reveal so the interactive controls fit without scrolling. */}
+
+      {/* SOURCE — the test-signal buttons that feed the display (the "what
+          feeds it" buttons sit at the top, like the wave labs' layer chips). */}
+      <CollapsibleSection title="SOURCE">
+        <View style={styles.chipRow}>
+          {config.sources.map((s, i) => (
+            <LabChip
+              key={s.label}
+              label={s.label}
+              selected={sourceIdx === i}
+              onPress={() => pickSource(i)}
+              onLongPress={() => openSourceHelp(s.gen)}
+            />
+          ))}
+        </View>
+      </CollapsibleSection>
+
+      {/* DISPLAY — the animated signal-flow hero (Skia, gated) above the
+          static analytic hero, which ALWAYS renders (pre-Skia fallback AND
+          the response-curve source of truth). Not drag-interactive — no
+          InteractionZone needed. */}
+      <CollapsibleSection title="DISPLAY" onHelp={() => openLesson('display')}>
+        {/* Tapping the display toggles play/stop (owner 2026-07-31). */}
+        <Pressable
+          onPress={fxReady ? () => (running ? stop() : void start()) : undefined}
+          accessibilityRole="button"
+          accessibilityLabel={running ? 'Tap to stop the effect audio' : 'Tap to play the source through the effect'}
+        >
+          {fxAnim && config.anim ? (
+            <>
+              <Text style={styles.badge}>{ANIM_BADGE}</Text>
+              <fxAnim.FxAnimHero model={config.anim(values)} active={focused} grDb={running ? grDb : 0} />
+            </>
+          ) : null}
+          <Text style={styles.badge}>{config.heroBadge}</Text>
+          {config.Hero(values)}
+          {config.heroCaption ? <Text style={styles.caption}>{config.heroCaption(values)}</Text> : null}
+        </Pressable>
+        <DisplayGuideButton onPress={() => openLesson('display')} />
+      </CollapsibleSection>
+
+      {/* CONTROLS — the param chip rows (the "sliders"). */}
+      <CollapsibleSection title="CONTROLS">
+        <Text style={styles.caption}>Long-press any labeled control, source, or meter for what it does.</Text>
+        {config.params.map((p) => (
+          <View key={p.paramId} style={styles.paramBlock}>
+            <Text style={styles.sectionHead}>{p.label}</Text>
+            <View style={styles.chipRow}>
+              {p.choices.map((c) => (
+                <LabChip
+                  key={c.label}
+                  label={c.label}
+                  selected={values[p.paramId] === c.value}
+                  onPress={() => setParam(p.paramId, c.value)}
+                  onLongPress={() => openLesson(p.lessonKey)}
+                />
+              ))}
+            </View>
+          </View>
+        ))}
+      </CollapsibleSection>
+
+      {/* READOUTS — current settings at a glance + LIVE GR meter (below the
+          controls, wave-lab template). */}
       <CollapsibleSection title="READOUTS">
         <View style={styles.readoutRow}>
           <Pressable
@@ -299,66 +365,9 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         ) : null}
       </CollapsibleSection>
 
-      {/* DISPLAY — the animated signal-flow hero (Skia, gated) above the
-          static analytic hero, which ALWAYS renders (pre-Skia fallback AND
-          the response-curve source of truth). Not drag-interactive — no
-          InteractionZone needed. */}
-      <CollapsibleSection title="DISPLAY" onHelp={() => openLesson('display')}>
-        {/* Tapping the display toggles play/stop (owner 2026-07-31). */}
-        <Pressable
-          onPress={fxReady ? () => (running ? stop() : void start()) : undefined}
-          accessibilityRole="button"
-          accessibilityLabel={running ? 'Tap to stop the effect audio' : 'Tap to play the source through the effect'}
-        >
-          {fxAnim && config.anim ? (
-            <>
-              <Text style={styles.badge}>{ANIM_BADGE}</Text>
-              <fxAnim.FxAnimHero model={config.anim(values)} active={focused} grDb={running ? grDb : 0} />
-            </>
-          ) : null}
-          <Text style={styles.badge}>{config.heroBadge}</Text>
-          {config.Hero(values)}
-          {config.heroCaption ? <Text style={styles.caption}>{config.heroCaption(values)}</Text> : null}
-        </Pressable>
-        <DisplayGuideButton onPress={() => openLesson('display')} />
-      </CollapsibleSection>
-
-      {/* CONTROLS — the param chip rows. */}
-      <CollapsibleSection title="CONTROLS">
-        <Text style={styles.caption}>Long-press any labeled control, source, or meter for what it does.</Text>
-        {config.params.map((p) => (
-          <View key={p.paramId} style={styles.paramBlock}>
-            <Text style={styles.sectionHead}>{p.label}</Text>
-            <View style={styles.chipRow}>
-              {p.choices.map((c) => (
-                <LabChip
-                  key={c.label}
-                  label={c.label}
-                  selected={values[p.paramId] === c.value}
-                  onPress={() => setParam(p.paramId, c.value)}
-                  onLongPress={() => openLesson(p.lessonKey)}
-                />
-              ))}
-            </View>
-          </View>
-        ))}
-      </CollapsibleSection>
-
-      {/* ACTIONS — source pickers + audio status (the PLAY control itself is
-          the compact ▶ top-right in the header). */}
-      <CollapsibleSection title="ACTIONS">
-        <Text style={styles.sectionHead}>SOURCE</Text>
-        <View style={styles.chipRow}>
-          {config.sources.map((s, i) => (
-            <LabChip
-              key={s.label}
-              label={s.label}
-              selected={sourceIdx === i}
-              onPress={() => pickSource(i)}
-              onLongPress={() => openSourceHelp(s.gen)}
-            />
-          ))}
-        </View>
+      {/* ABOUT — the explanation/definitions as a collapsed reveal (owner
+          2026-08-05: descriptions & explanations get expand/collapse toggles). */}
+      <CollapsibleSection title="ABOUT THIS LAB" startOpen={false}>
         {engineReady ? (
           fxReady ? (
             <>

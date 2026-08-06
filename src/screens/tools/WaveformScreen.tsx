@@ -39,6 +39,7 @@ import { ApeDsp, type WaveBucket } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { useColorModePref } from '../../features/tools/colorModePref';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
@@ -97,6 +98,12 @@ export function WaveformScreen({ navigation }: Props) {
   // baseline; the display shows (total − baseline). The native counter keeps
   // running (it resets to 0 on each capture start, when we also zero the base).
   const [clipBase, setClipBase] = useState(0);
+  // COLORS toggle (owner 2026-08-05, items 6/7): MIDI level colours on the
+  // trace, persisted per user, first-ever default ON.
+  const [colorsOn, setColorsOn] = useColorModePref();
+  // Clip latch (owner 2026-08-05, item 4): the CLIP OVERRUNS readout stays
+  // GREEN "0" until the first real overrun, then turns RED and holds until reset.
+  const [hasClipped, setHasClipped] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Clear the SAVED ✓ timer on unmount (house review rule 2026-07-23).
@@ -133,6 +140,17 @@ export function WaveformScreen({ navigation }: Props) {
   // Live quality flags (spec §6) — the SAME flags get stored on save.
   const flags = useMemo(() => meterWarningFlags(meter), [meter]);
 
+  // Clip-overrun display count + latch (item 4). Green 0 until the first real
+  // overrun, then red until reset.
+  const clipShown = meter ? Math.max(0, meter.clipRuns - clipBase) : 0;
+  useEffect(() => {
+    if (clipShown > 0) setHasClipped(true);
+  }, [clipShown]);
+  const resetClip = useCallback(() => {
+    if (meter) setClipBase(meter.clipRuns);
+    setHasClipped(false);
+  }, [meter]);
+
   const toggleFreeze = useCallback(() => {
     setFrozen((f) => (f ? null : liveBuckets));
   }, [liveBuckets]);
@@ -153,6 +171,7 @@ export function WaveformScreen({ navigation }: Props) {
     // cleared only once we are actually running (below), so the frozen viewer
     // stays up and seamlessly goes live.
     setClipBase(0); // native clip counter restarts at 0 on capture start
+    setHasClipped(false); // fresh capture = fresh clip latch
     void start();
   }, [start]);
   // Clear the paused flag ONLY when truly running (never during 'starting').
@@ -313,7 +332,7 @@ export function WaveformScreen({ navigation }: Props) {
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1 }}>
-          <Text style={styles.title}>WAVEFORM VIEWER</Text>
+          <Text style={styles.title}>WAVEFORM VIEWER (OSCILLOSCOPE)</Text>
           <Text style={styles.subtitle}>Live oscilloscope · amplitude vs time</Text>
         </View>
       </View>
@@ -342,18 +361,19 @@ export function WaveformScreen({ navigation }: Props) {
                   <Text style={styles.statUnit}> dBFS</Text>
                 </Text>
               </Pressable>
-              {/* Tap to RESET the shown count; long-press for help (owner 2026-08-01). */}
+              {/* Tap to RESET the shown count; long-press for help (owner 2026-08-01).
+                  Green until the first overrun, then red until reset (item 4). */}
               <Pressable
-                style={styles.statCell}
-                onPress={() => meter && setClipBase(meter.clipRuns)}
+                style={[styles.statCell, hasClipped && styles.statCellClipped]}
+                onPress={resetClip}
                 onLongPress={() => help('clip_runs')}
                 delayLongPress={260}
                 accessibilityRole="button"
                 accessibilityLabel="Clip overruns — tap to reset the count"
               >
                 <Text style={styles.statLabel}>CLIP OVERRUNS</Text>
-                <Text style={[styles.statValue, styles.statValueRed]}>
-                  {meter ? Math.max(0, meter.clipRuns - clipBase) : '—'}
+                <Text style={[styles.statValue, hasClipped ? styles.statValueRed : styles.statValueGreen]}>
+                  {meter ? clipShown : '—'}
                 </Text>
               </Pressable>
               <Pressable style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
@@ -399,10 +419,10 @@ export function WaveformScreen({ navigation }: Props) {
                       <G key={t.db}>
                         <Line x1={30} x2={panelW} y1={t.yTop} y2={t.yTop} stroke={colors.hairlineDim} strokeDasharray="2 6" />
                         <Line x1={30} x2={panelW} y1={t.yBot} y2={t.yBot} stroke={colors.hairlineDim} strokeDasharray="2 6" />
-                        <SvgText x={3} y={t.yTop + 3} fill={colors.textSub} fontSize={10} fontFamily={fonts.mono}>
+                        <SvgText x={3} y={t.yTop + 4} fill={colors.textSecondary} fontSize={12} fontFamily={fonts.mono}>
                           {t.db === 0 ? '0dB' : `${t.db}`}
                         </SvgText>
-                        <SvgText x={3} y={t.yBot + 3} fill={colors.textMuted} fontSize={10} fontFamily={fonts.mono}>
+                        <SvgText x={3} y={t.yBot + 4} fill={colors.textSecondary} fontSize={12} fontFamily={fonts.mono}>
                           {t.db === 0 ? '0dB' : `${t.db}`}
                         </SvgText>
                       </G>
@@ -410,16 +430,16 @@ export function WaveformScreen({ navigation }: Props) {
                     {/* Zero line — centered, always visible (§11). The −∞ label sits
                         ON the line (0 amplitude = −∞ dBFS). */}
                     <Line x1={0} x2={panelW} y1={half} y2={half} stroke={MIDLINE_BLUE} strokeWidth={1} />
-                    <SvgText x={4} y={half + 4} fill={colors.textSub} fontSize={11} fontFamily={fonts.mono}>
+                    <SvgText x={4} y={half + 5} fill={colors.textSecondary} fontSize={13} fontFamily={fonts.mono}>
                       -∞
                     </SvgText>
                     {scope ? (
                       <>
-                        {/* DAW-style solid waveform, level-coloured (owner 2026-07-31):
-                            the peak (min/max) body filled with the loudness gradient,
-                            a denser RMS core on top — no outline, no glow. */}
-                        <Path d={scope.area} fill="url(#waveLevel)" opacity={0.9} />
-                        <Path d={scope.rmsArea} fill="url(#waveLevel)" opacity={0.6} />
+                        {/* DAW-style solid waveform: the peak (min/max) body +
+                            denser RMS core. MIDI level gradient, or a flat teal
+                            fill when COLORS is off (owner 2026-08-05, item 6). */}
+                        <Path d={scope.area} fill={colorsOn ? 'url(#waveLevel)' : TRACE} opacity={0.9} />
+                        <Path d={scope.rmsArea} fill={colorsOn ? 'url(#waveLevel)' : TRACE} opacity={0.6} />
                         {/* Clipped buckets — red ticks in the top lane. */}
                         {scope.clip !== '' ? (
                           <Path d={scope.clip} stroke={colors.red} strokeWidth={scope.clipW} />
@@ -487,6 +507,28 @@ export function WaveformScreen({ navigation }: Props) {
                 </Pressable>
               ))}
             </View>
+            {/* Display toggles (owner 2026-08-05): COLORS + clip RESET. */}
+            <View style={styles.chipRow}>
+              <Text style={styles.rowLabel}>DISPLAY</Text>
+              <Pressable
+                style={[styles.chip, colorsOn && styles.chipGreen]}
+                onPress={() => setColorsOn(!colorsOn)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: colorsOn }}
+                accessibilityLabel="Toggle MIDI level colours on the waveform"
+              >
+                <Text style={[styles.chipText, colorsOn && styles.chipTextGreen]}>COLORS</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.chip, styles.chipWide]}
+                onPress={resetClip}
+                accessibilityRole="button"
+                accessibilityLabel="Reset the clip overrun count"
+              >
+                <Text style={styles.chipText}>RESET CLIP</Text>
+              </Pressable>
+            </View>
+
             {zoom > 1 ? (
               // Required §11 honesty line — visible whenever zoom is engaged.
               <Text style={styles.liveWarn}>Vertical zoom changes display size, not audio level.</Text>
@@ -495,17 +537,9 @@ export function WaveformScreen({ navigation }: Props) {
               Zoom and window change the display only — capture keeps running unchanged.
             </Text>
 
-            <Text style={styles.calNote}>Levels are dBFS · uncalibrated approximate — not dB SPL.</Text>
-
-            {/* Live quality warnings (spec §6) — same flags stored on save. */}
-            {flags.map((f) => (
-              <Text key={f} style={styles.liveWarn}>
-                ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
-              </Text>
-            ))}
-
             <DisplayGuideButton onPress={helpAll} />
 
+            {/* START / SAVE — ABOVE the dBFS + warning notes (owner 2026-08-05, item 10). */}
             <View style={styles.controls}>
               <View style={{ flex: 1 }}>
                 {running ? (
@@ -539,6 +573,16 @@ export function WaveformScreen({ navigation }: Props) {
             >
               <Text style={styles.libraryLink}>VIEW SAVED MEASUREMENTS ›</Text>
             </Pressable>
+
+            <Text style={styles.calNote}>Levels are dBFS · uncalibrated approximate — not dB SPL.</Text>
+
+            {/* Live quality warnings (spec §6) — same flags stored on save.
+                Below the controls (owner 2026-08-05, item 10). */}
+            {flags.map((f) => (
+              <Text key={f} style={styles.liveWarn}>
+                ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+              </Text>
+            ))}
 
             {/* Required interpretation warnings (spec §11). */}
             <Text style={styles.footnote}>
@@ -583,7 +627,7 @@ const styles = StyleSheet.create({
     color: colors.cyanBright,
   },
   axisRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 },
-  axisText: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
+  axisText: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary },
 
   // Zoom / window / freeze chip rows.
   chipRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
@@ -616,7 +660,7 @@ const styles = StyleSheet.create({
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.textSecondary },
   chipTextActive: { color: TRACE },
   chipTextFrozen: { color: colors.cyanBright },
-  settingsNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
+  settingsNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
 
   // Readouts.
   statGrid: { flexDirection: 'row', gap: 10 },
@@ -630,14 +674,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     gap: 4,
   },
-  statLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
-  statValue: { fontFamily: fonts.mono, fontSize: 20, color: colors.textPrimary },
+  // Readout text — larger + higher contrast (owner 2026-08-05, item 4).
+  statCellClipped: { borderColor: '#ff5a48' },
+  statLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSecondary },
+  statValue: { fontFamily: fonts.mono, fontSize: 23, color: colors.textPrimary },
   statValueRed: { color: '#ff5a48' },
+  statValueGreen: { color: colors.green }, // clip readout before the first event (item 4)
   statValueBlue: { color: '#7fa8ff' },
-  statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amberLabel },
+  statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.amberLabel },
   statUnitBlue: { color: '#7fa8ff' },
   statUnitWhite: { color: colors.textPrimary },
-  calNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
+  calNote: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSecondary },
 
   // Live quality warning line (spec §6) — house amber warning style.
   liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
@@ -667,8 +714,8 @@ const styles = StyleSheet.create({
   footnote: {
     fontFamily: fonts.barlowRegular,
     fontStyle: 'italic',
-    fontSize: 12.5,
-    lineHeight: 18,
-    color: colors.textMuted,
+    fontSize: 13,
+    lineHeight: 18.5,
+    color: colors.textSub,
   },
 });

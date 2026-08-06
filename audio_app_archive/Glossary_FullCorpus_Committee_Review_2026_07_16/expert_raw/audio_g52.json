@@ -1,0 +1,223 @@
+{
+ "expert": "audio",
+ "group": 52,
+ "reviews": [
+  {
+   "id": "c0ee2473-527c-453e-af6d-bb34d9c16326",
+   "term": "Walkway Clearance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4bd361bd-c81d-4ab6-b821-71d093095f87",
+   "term": "Waterfall Plot (CSD)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "febc5d8a-ac98-42d3-aedc-3c7a58f9511a",
+   "term": "Watt",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a0575481-c5c8-477a-bde6-4e86a1b4d598",
+   "term": "Wattage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "64a528c3-4632-4597-a318-d8cfbf1a52a7",
+   "term": "WAV / WAVE",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "356326fe-bd5b-4e4a-9a05-eb467863c82a",
+   "term": "Waveform",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3ad2d190-c941-4a3e-b219-f0a3213bed14",
+   "term": "Wavefront",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e8e72fbc-a5c3-4b46-8125-fd514d21c0d3",
+   "term": "Waveguide",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b12f9457-7569-475b-a6ae-55a725053fcf",
+   "term": "Wavelength",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b15cdc8e-dcd0-4ab1-a0b7-0c10e75a5094",
+   "term": "Weather effects",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "03b44108-3853-4335-9db7-43cc399d7042",
+   "term": "Weather Monitoring",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "947831c5-20a6-42e5-b4b8-90a3898ca06f",
+   "term": "Webcast",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7fcd45fb-596b-426d-9820-77a29129a2f9",
+   "term": "Webinar",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "104fb892-f39c-4060-a857-6bd3beb560dd",
+   "term": "Weighting filters",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0811e190-be24-4025-bd97-d1a1d3ab942a",
+   "term": "Weighting selector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "de6191fb-f8ed-40a8-9655-edaf1efc64fc",
+   "term": "Wet/Dry Mix",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a359f452-fbad-4928-a928-cd3fed2e1d1c",
+   "term": "White Noise",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d539f3c6-655e-489a-8c88-9abcbcceb20f",
+   "term": "White Noise Generator",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cb92b62f-3a9f-48d1-a404-079f26343e59",
+   "term": "White Space",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "81d59c17-90a4-42e4-a721-8ec9accc4169",
+   "term": "Whizzer Cone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4dd20588-f9ef-436c-a03b-d0e30bc0aafe",
+   "term": "Wi-Fi Assistive Streaming",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c85da0c6-9e41-4711-8318-7277a2fcaa08",
+   "term": "Wind Loading",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0d4902a6-7451-455d-bbbd-7121f5d72960",
+   "term": "Window function",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "806e8571-91e7-4779-a754-85d408c9dd84",
+   "term": "Windscreen",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5a4e63e0-5d52-4f23-9097-5a26fad84a52",
+   "term": "Wire Loom",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5dfe9fe5-6498-4e13-a7bc-a4daea3603bb",
+   "term": "Wireless bodypack",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "10061630-a11b-4fdc-be65-15dc4fa2fea0",
+   "term": "Wireless handheld transmitter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d2aaa194-c04f-49a9-bc58-091e73d6c682",
+   "term": "Wireless microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b74b85ba-640b-4174-84bc-bbaea806ddcb",
+   "term": "Wireless Microphone Management",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "Duplicate list item: 'Frequency Coordination' appears twice in related_terms.",
+     "suggestion": "Remove the duplicate; replace the second 'Frequency Coordination' with a distinct relevant term such as 'RF Scan' or 'Antenna Distribution', or simply delete it."
+    }
+   ]
+  },
+  {
+   "id": "69703dec-5199-4b22-86ab-3e8373947191",
+   "term": "Wiring Diagram",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4c09b2f4-7944-42e8-a72d-3f7755dd4a1e",
+   "term": "Wiring fault",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b449920b-7ba2-419e-a5a5-111af277a715",
+   "term": "Wiring Harness Adapter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ca634958-e084-46ac-a245-afa97f637bb4",
+   "term": "woofer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2ae7ed0d-3b76-443d-87bd-df042bbe9fff",
+   "term": "Word Clock",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d0bfd7dc-a107-49e4-b97f-81972aa24764",
+   "term": "Word clock error",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

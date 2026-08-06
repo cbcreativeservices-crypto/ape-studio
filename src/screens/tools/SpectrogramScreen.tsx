@@ -292,9 +292,10 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
           x2={width}
           y1={yForHz(l.hz)}
           y2={yForHz(l.hz)}
-          stroke="#1c1c26"
+          stroke="#4a4a58"
           strokeWidth={1}
           strokeDasharray="3 5"
+          strokeOpacity={0.8}
         />
       ))}
       {[1, 2, 3].map((k) => (
@@ -304,9 +305,10 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
           x2={width - k * colsPer5s * colW}
           y1={0}
           y2={GRID_H}
-          stroke="#17171f"
+          stroke="#3c3c48"
           strokeWidth={1}
           strokeDasharray="3 5"
+          strokeOpacity={0.8}
         />
       ))}
       {/* All columns live at fixed virtual x; scrolling = this one translate. */}
@@ -561,21 +563,6 @@ export function SpectrogramScreen({ navigation }: Props) {
                 time → · ~{((HISTORY_COLS / speed) * SPECTRO_POLL_MS / 1000).toFixed(0)} s visible · {speed}× scroll · {ROWS} freq rows
               </Text>
 
-              {/* Color-scale legend strip — dark → blue → … → red, with the dB
-                  endpoints of the anchor actually mapped (see anchor docs). */}
-              <View style={styles.legendRow}>
-                <View style={styles.legendStrip}>
-                  {BUCKET_COLORS.map((c, i) => (
-                    <View key={i} style={{ flex: 1, backgroundColor: c }} />
-                  ))}
-                </View>
-                <Text style={styles.legendText}>
-                  {anchor != null
-                    ? `${fmtDb(anchor - dynRange)} → ${fmtDb(anchor)} dBFS`
-                    : '—'}
-                </Text>
-              </View>
-
               <Text style={styles.unitLine}>dBFS · uncalibrated approximate</Text>
               {/* Required warning (spec §12) — always visible while live. */}
               <Text style={styles.scaleNote}>Color intensity is relative to the selected scale.</Text>
@@ -598,13 +585,6 @@ export function SpectrogramScreen({ navigation }: Props) {
               ))}
             </View>
 
-            {/* Live quality warnings (spec §6) — same flags stored on save. */}
-            {liveFlags.map((f) => (
-              <Text key={f} style={styles.liveWarn}>
-                ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
-              </Text>
-            ))}
-
             {/* Controls (spec §12): dynamic range · freeze · save snapshot. */}
             <View style={styles.ctrlRow}>
               <HelpHead title="DYN RANGE" onHelp={() => help('db_range')} style={styles.ctrlLabel} />
@@ -618,10 +598,6 @@ export function SpectrogramScreen({ navigation }: Props) {
                 />
               ))}
             </View>
-            <Text style={styles.settingsNote}>
-              Dynamic range changes the color scale only — capture and analysis are unaffected.
-              Snapshots record the range in use.
-            </Text>
 
             <View style={styles.buttonRow}>
               <Pressable
@@ -661,6 +637,33 @@ export function SpectrogramScreen({ navigation }: Props) {
               fontSize={15}
               onPress={state === 'running' ? onStop : onStart}
             />
+
+            {/* MIDI colour scale legend — moved below the buttons (owner
+                2026-08-05): dark → blue → … → red, with the dB endpoints of the
+                anchor actually mapped (see anchor docs). */}
+            <View style={styles.legendRow}>
+              <View style={styles.legendStrip}>
+                {BUCKET_COLORS.map((c, i) => (
+                  <View key={i} style={{ flex: 1, backgroundColor: c }} />
+                ))}
+              </View>
+              <Text style={styles.legendText}>
+                {anchor != null ? `${fmtDb(anchor - dynRange)} → ${fmtDb(anchor)} dBFS` : '—'}
+              </Text>
+            </View>
+
+            {/* Dynamic-range note — below the colour legend (owner 2026-08-05). */}
+            <Text style={styles.settingsNote}>
+              Dynamic range changes the color scale only — capture and analysis are unaffected.
+              Snapshots record the range in use.
+            </Text>
+
+            {/* Live quality warnings (spec §6) — below both (owner 2026-08-05). */}
+            {liveFlags.map((f) => (
+              <Text key={f} style={styles.liveWarn}>
+                ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+              </Text>
+            ))}
 
             <Pressable
               onPress={() => navigation.navigate('ToolLibrary', { toolKey: 'spectrogram' })}

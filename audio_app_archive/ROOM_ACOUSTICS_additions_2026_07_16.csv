@@ -1,0 +1,15 @@
+term,status,current_topics
+Comb Filtering,EXISTS,"Equalization (EQ), Recording Arts, Reverb & Delay, Sound & Acoustics"
+Flutter Echo,EXISTS,"Ear Training, Room Acoustics, Sound & Acoustics, Troubleshooting"
+Live-End Dead-End (LEDE),EXISTS,Room Acoustics
+Reflection-Free Zone (RFZ),EXISTS,Room Acoustics
+Schroeder (Transition) Frequency,EXISTS,Room Acoustics
+Speaker-Boundary Interference Response (SBIR),EXISTS,Room Acoustics
+Absorption vs Diffusion,NEW,
+Cumulative Spectral Decay (Waterfall / Modal Ringing),NEW,
+Membrane / Helmholtz Bass Trap,NEW,
+Noise Reduction Coefficient (NRC),NEW,
+Reflection Decay Time (RdT),NEW,
+Room Dimension Ratios (Bolt Area),NEW,
+RT60 / Reverberation Time,NEW,
+Standing Waves / Axial Room Modes,NEW,

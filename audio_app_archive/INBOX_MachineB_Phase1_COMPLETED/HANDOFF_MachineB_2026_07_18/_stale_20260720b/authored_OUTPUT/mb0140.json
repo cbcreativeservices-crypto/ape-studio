@@ -1,0 +1,186 @@
+{
+ "batch": 140,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "c2eed830-1250-4d80-a5db-7017244d554a",
+   "term": "Soundcheck level",
+   "fields": {
+    "definition": "The reference signal and monitoring levels established for each input and output during soundcheck, used as the baseline settings from which the engineer mixes once the performance begins.",
+    "plain_english": "The volume settings the sound engineer dials in during soundcheck. They act as a starting point, so the mix is close to right the moment the show begins.",
+    "purpose_function": "It gives the engineer a known, repeatable starting point for gain structure and for monitor and front-of-house levels, reducing surprises and feedback risk when the show starts.",
+    "practical_application": "During soundcheck a technician sets input gains and fader positions per source, notes or saves them, then fine-tunes from those soundcheck levels during the actual performance.",
+    "category": "Live Sound",
+    "related_terms": ["Gain structure", "Monitor mix", "Front of house", "Line check", "Feedback"],
+    "common_mistakes": [
+     "Assuming soundcheck levels will hold during the show, when a full room and energetic performers change stage volume and gain needs.",
+     "Setting levels with only one player instead of the full band, so the balance falls apart once the whole song plays.",
+     "UNSAFE: Pushing monitor or PA levels far above soundcheck settings without regard to safe hearing-exposure limits."
+    ],
+    "scenario_contexts": [
+     "Setting each channel's gain and fader during a pre-show soundcheck at a club.",
+     "Recalling saved soundcheck levels on a digital console before a second night of a tour.",
+     "Adjusting up from soundcheck levels once the venue fills with an audience."
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8e06a77c-5205-4c52-be13-7632048435e2",
+   "term": "SoundID Reference",
+   "fields": {
+    "definition": "Sonarworks' monitor and headphone calibration software that measures the frequency response of a room and speakers, or applies a stored headphone profile, and inserts a correction filter to flatten playback toward a neutral reference response.",
+    "plain_english": "Software from Sonarworks that fixes the sound of your speakers or headphones. It measures how they color the sound, then evens out the tone so your mixes translate well to other systems.",
+    "purpose_function": "It exists to remove the tonal coloring of a room, speakers, or headphones so mixing decisions rest on a neutral reference rather than a flattering or misleading playback.",
+    "practical_application": "An engineer measures the room with the supplied microphone or loads a headphone model, then runs the SoundID Reference plugin on the monitor path to hear a corrected, flat response while mixing.",
+    "category": "Monitoring",
+    "related_terms": ["Room correction", "Monitor calibration", "Frequency response", "Reference monitor", "Translation"],
+    "common_mistakes": [
+     "Trusting the correction after moving the speakers or listening far off-axis, which invalidates the original measurement.",
+     "Believing correction fully fixes a bad room, when acoustic treatment is still needed for reflections and low-frequency problems.",
+     "Leaving the calibration plugin active on the output at export, so the correction is printed into the final file."
+    ],
+    "scenario_contexts": [
+     "Calibrating a project-studio monitor setup before starting a mix.",
+     "Loading a headphone profile to mix while travelling.",
+     "Comparing mix translation between corrected and uncorrected monitoring."
+    ]
+   },
+   "sources": ["Sonarworks SoundID Reference User Manual (manufacturer technical documentation)", "AES literature on loudspeaker/room equalization and monitor calibration"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2dc0f80a-9701-450c-b82d-7c38b2a35bca",
+   "term": "Spectral consistency",
+   "fields": {
+    "definition": "The degree to which the frequency content or tonal balance of audio stays uniform over time and between related elements, such as across sections of a song, between edited takes, or across different playback systems.",
+    "plain_english": "How steady the tone of a sound stays from moment to moment. If the brightness and weight do not jump around between parts, the mix has good spectral consistency.",
+    "purpose_function": "Keeping it steady makes a mix or edit sound cohesive and professional, so the listener is not distracted by sudden shifts in brightness, thickness, or tonal color.",
+    "practical_application": "A technician checks spectral consistency when comping vocal takes or matching a punch-in, using EQ or a spectrum analyzer so the joined parts share the same tonal balance.",
+    "category": "Mix Fundamentals",
+    "related_terms": ["Tonal balance", "Equalization", "Spectrum analyzer", "Frequency response", "Comping"],
+    "common_mistakes": [
+     "Comping takes recorded on different mics or positions without matching EQ, so the tone shifts audibly between phrases.",
+     "Judging balance only by ear on colored monitors, missing a buildup in a narrow frequency band.",
+     "Chasing a perfectly flat analyzer reading instead of a musical tonal balance."
+    ],
+    "scenario_contexts": [
+     "Matching the tone of two vocal takes joined at a comp edit.",
+     "Ensuring verse and chorus guitars keep a consistent tonal balance.",
+     "Checking that a mix holds its tonal balance on phone, car, and studio speakers."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "AES literature on tonal balance and spectral analysis"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "40ec5efd-47d2-40c9-bbc8-5c0d4be61950",
+   "term": "Speed mode",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No established, single canonical meaning for 'Speed mode' within mix fundamentals/workflow could be confirmed against two or more acceptable sources; the phrase is used for various unrelated device/plugin settings (e.g. transport, tape, or processor speed parameters) and is not a standardized term. All fields left blank pending clarification of the intended sense."
+   ]
+  },
+  {
+   "id": "6de0914f-a6e4-4cd0-b49f-e9963b5ae551",
+   "term": "Spider Audio Merger and Splitter",
+   "fields": {
+    "definition": "A utility device in Reason Studios' Reason that combines several audio signals into one and splits one audio signal into several, providing a merge section (multiple inputs summed to a single output) and a splitter section (one input copied to multiple outputs).",
+    "plain_english": "A tool in the Reason music program that joins audio cables together or splits one into many. Think of it like a power strip for audio signals inside the software.",
+    "purpose_function": "It exists to work around the fixed number of jacks on Reason devices, letting you feed several sources into one input or send one output to many destinations.",
+    "practical_application": "On the back of the Reason rack a user patches, for example, one instrument output through the splitter to several effects, or merges several returns into a single mixer channel.",
+    "category": "Signal Routing",
+    "related_terms": ["Signal routing", "Patch cable", "Mixer", "Send effect", "Spider Control Voltage Merger and Splitter"],
+    "common_mistakes": [
+     "Confusing the merge and splitter halves and patching a source into an output jack.",
+     "Expecting the merge section to sum many hot signals cleanly without watching for clipping.",
+     "Using the audio Spider for modulation duties, which need the CV Spider instead."
+    ],
+    "scenario_contexts": [
+     "Sending one synth output to three different effect chains at once.",
+     "Merging several instrument outputs into one channel for group processing.",
+     "Expanding limited device connections in a complex Reason rack."
+    ]
+   },
+   "sources": ["Reason Studios, Reason Operation Manual (manufacturer technical documentation)", "Ballou, Handbook for Sound Engineers (signal distribution/splitting)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "656023f4-eb33-49f3-bca3-ed7020974e57",
+   "term": "Spider Control Voltage Merger and Splitter",
+   "fields": {
+    "definition": "A utility device in Reason that merges and splits control-voltage (CV) and gate signals, with a merge section that sums several CV sources into one output and a splitter section that copies one CV signal to multiple outputs, including inverted outputs for reversed modulation.",
+    "plain_english": "A tool in the Reason program for modulation signals, the hidden controls that move knobs by themselves. It sends one control signal to many places or combines several into one.",
+    "purpose_function": "It lets one modulation source, such as an LFO or envelope, drive several parameters at once, or lets several modulation sources be combined before reaching a destination.",
+    "practical_application": "A user patches an LFO into the CV splitter to sweep filter cutoff on several synths together, or uses an inverted output so one control opens one parameter while closing another.",
+    "category": "Signal Routing",
+    "related_terms": ["Control voltage", "Gate signal", "LFO", "Modulation", "Spider Audio Merger and Splitter"],
+    "common_mistakes": [
+     "Patching audio through the CV Spider, which is meant for control and gate signals, not audio.",
+     "Forgetting that merged CV signals add together, producing more modulation depth than expected.",
+     "Overlooking the built-in inverted outputs and hand-patching a second reversed modulation source instead."
+    ],
+    "scenario_contexts": [
+     "Driving several synth parameters from a single LFO.",
+     "Combining an envelope and an LFO into one modulation signal.",
+     "Using an inverted CV output for opposing modulation of two parameters."
+    ]
+   },
+   "sources": ["Reason Studios, Reason Operation Manual (manufacturer technical documentation)", "Ballou, Handbook for Sound Engineers (control voltage/synthesis signal routing)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cf54c0d5-6b8e-4ffa-8769-77640aad96b4",
+   "term": "squashed",
+   "fields": {
+    "definition": "An informal term for audio that has been heavily compressed or limited so its dynamic range is greatly reduced, often to the point of audibly flattened transients and diminished punch or life.",
+    "plain_english": "A word for sound that has been compressed so hard it loses its punch. The loud and quiet parts get pushed to almost the same level, so it can sound flat or lifeless.",
+    "purpose_function": "The term flags an audible side effect of over-processing dynamics, warning that too much compression or limiting has traded transient impact and openness for loudness or consistency.",
+    "practical_application": "An engineer calls a drum bus or master squashed when a compressor or limiter is set too hard, then eases the ratio, threshold, or make-up gain to restore dynamics.",
+    "category": "Dynamics",
+    "related_terms": ["Compression", "Limiting", "Dynamic range", "Transient", "Loudness war"],
+    "common_mistakes": [
+     "Adding heavy master limiting for loudness and squashing the mix until it loses impact.",
+     "Confusing a squashed, over-compressed sound with a naturally dense arrangement.",
+     "Judging loudness on quiet monitors and over-compressing until the mix is squashed."
+    ],
+    "scenario_contexts": [
+     "Diagnosing a lifeless master that has been limited too hard.",
+     "Describing an over-compressed drum bus during a mix review.",
+     "Comparing a dynamic mix with a squashed, loudness-maximized version."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (dynamic range control)", "Yamaha Sound Reinforcement Handbook (compression and limiting)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e4d388d0-8bce-4e8f-a4f2-f41f4f10259f",
+   "term": "Stage wash",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "'Stage wash' has no established, citable definition within professional audio/mixing literature; its standard established meaning is a stage-lighting term (broad, even light coverage), which falls outside the acceptable audio-source set and this app's scope. No two or more acceptable audio sources define an audio sense, so all fields are left blank pending clarification."
+   ]
+  },
+  {
+   "id": "c9fad748-eca7-42ed-b105-2e2e9d436714",
+   "term": "Stealth music",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "'Stealth music' is not an established audio-engineering or mix-workflow term and could not be confirmed against two or more acceptable sources; it is used loosely (e.g. unobtrusive underscore, or the adaptive cue during stealth video-game gameplay) with no single standardized definition. All fields left blank pending clarification of the intended sense."
+   ]
+  }
+ ]
+}

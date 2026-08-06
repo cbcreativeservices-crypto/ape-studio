@@ -1,0 +1,159 @@
+{
+ "batch": 59,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "3b1ee6c5-4870-4708-a23b-7e3735369ec2",
+   "term": "Kick-in track processing",
+   "fields": {
+    "definition": "The signal processing applied to the 'kick-in' microphone, an inner mic placed inside the drum near the beater in a dual-mic kick setup, typically emphasizing beater attack and midrange click through EQ, compression, and gating.",
+    "plain_english": "Many engineers put two mics on the kick drum. The 'in' mic sits inside, near the beater. Processing this track means shaping its sound so the beater click cuts through the mix.",
+    "purpose_function": "It isolates and shapes the beater-side attack of the kick so the drum defines timing and cuts through a dense mix, because a single kick mic rarely captures both punch and body well.",
+    "practical_application": "An engineer boosts around 2-5 kHz for click, gates out cymbal bleed, and blends this track with the kick-out mic to dial in attack versus weight.",
+    "category": "Drum Processing",
+    "related_terms": ["Kick-out track processing", "Low-end reinforcement", "Sidechain compression", "Phase alignment", "Noise gate", "Kick-triggered bass ducking"],
+    "common_mistakes": ["Boosting sub-lows on the kick-in mic, which muddies the mix instead of adding the click the mic is meant to provide", "Forgetting to check phase between the kick-in and kick-out mics, which cancels the low end", "Over-gating so soft hits disappear from the track"],
+    "scenario_contexts": ["Tracking a rock drum kit with both an inside and outside kick mic", "Mixing a metal song where the beater click must cut through distorted guitars", "Reinforcing a weak beater attack on a recorded kick"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Recording Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "69293e4b-2ea2-41ba-b294-39a24ef1b900",
+   "term": "Kick-out track processing",
+   "fields": {
+    "definition": "The signal processing applied to the 'kick-out' microphone, placed outside the resonant (front) head or in a tunnel in a dual-mic kick setup, usually shaping the low-frequency body, sustain, and tone of the kick drum.",
+    "plain_english": "The 'out' mic sits by the front of the kick drum. It picks up the deep boom and body of the drum. Processing this track shapes that low, full sound.",
+    "purpose_function": "It captures and shapes the deep weight and resonance a beater-side mic misses, so the kick has both punch and fullness in the mix.",
+    "practical_application": "The engineer boosts lows around 60-100 Hz for weight, tames boom with EQ or compression, and blends it under the kick-in track for body.",
+    "category": "Drum Processing",
+    "related_terms": ["Kick-in track processing", "Low-end reinforcement", "Phase alignment", "Sub-bass", "Kick-triggered bass ducking", "Drum tuning"],
+    "common_mistakes": ["Leaving the kick-in and kick-out mics out of phase, which cancels the low end you are trying to build", "Adding so much low boost that the kick masks the bass guitar", "Trying to fix a boomy drum only with EQ instead of also tuning the resonant head"],
+    "scenario_contexts": ["Blending inside and outside kick mics for a full studio drum sound", "Adding weight to a thin-sounding kick in a rock mix", "Using a large-diaphragm or sub mic outside the kick for extra low end"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Recording Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "687a6c18-8cd8-49f6-b16c-7f4ccced7141",
+   "term": "Kick-triggered bass ducking",
+   "fields": {
+    "definition": "A sidechain compression technique in which the kick-drum signal triggers a compressor on the bass, briefly reducing the bass level on each kick hit so the two low-frequency sources do not compete.",
+    "plain_english": "Bass and kick drum both live in the low end, so they can clash. This trick uses the kick to briefly turn down the bass each time the kick hits. That gives the kick room to punch through cleanly.",
+    "purpose_function": "It creates space in the low end so the kick's transient is heard clearly while the bass stays loud between hits, because kick and bass share the same frequency range and mask each other.",
+    "practical_application": "The engineer routes the kick to the bass compressor's sidechain input and sets a fast attack and quick release so the bass dips only for the moment the kick strikes.",
+    "category": "Dynamics Processing",
+    "related_terms": ["Sidechain compression", "Low-end reinforcement", "Kick-out track processing", "Frequency masking", "Compression ratio", "Attack and release"],
+    "common_mistakes": ["Setting the release too long, so the bass stays ducked and the low end sounds pumped or uneven", "Applying so much gain reduction that the bass audibly disappears on every beat", "Using a slow attack that lets the clash through before ducking begins"],
+    "scenario_contexts": ["Tightening the low end in an electronic or pop mix where kick and bass overlap", "Making the kick punch through a busy rock mix without turning it up", "Cleaning up muddiness when bass and kick sit in the same octave"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7b407dc0-bdcd-442a-9221-71c94f345b69",
+   "term": "Lead-guitar mixing",
+   "fields": {
+    "definition": "The process of blending the lead (melodic or solo) guitar into a mix through level, panning, EQ, dynamics, and effects so it occupies its intended role without masking the vocal or other lead elements.",
+    "plain_english": "The lead guitar plays the solos and main riffs. Mixing it means setting its level, tone, and effects so it stands out. The goal is to make it clear without burying the singer.",
+    "purpose_function": "It places the lead guitar at the right prominence and tone so solos and hooks are heard clearly while the part still sits within the arrangement.",
+    "practical_application": "An engineer carves EQ space around the vocal, adds delay or reverb for depth, and automates the level so solos step forward while rhythm passages sit back.",
+    "category": "Instrument Mixing",
+    "related_terms": ["Lead-to-background balance", "Lead-vocal production", "Frequency masking", "Automation", "Panning", "Reverb"],
+    "common_mistakes": ["Letting the lead guitar and lead vocal fight for the same midrange instead of carving space for each", "Leaving the solo at a fixed level so quiet phrases vanish and loud ones jump out", "Drowning the lead in reverb until it loses definition and timing"],
+    "scenario_contexts": ["Bringing a guitar solo forward in a rock song's bridge", "Fitting a lead guitar hook around a lead vocal in a pop mix", "Balancing twin lead guitars panned left and right"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d9d79cc3-2b43-4684-8c5c-6cf0eac42b7a",
+   "term": "Lead-to-background balance",
+   "fields": {
+    "definition": "The relative level and tonal relationship set between the lead vocal (or lead element) and the supporting background vocals or parts, so the lead stays dominant while the backing adds depth and harmony.",
+    "plain_english": "A song often has one main singer and softer backing voices. This balance sets how loud the backing voices are next to the lead. It keeps the main voice on top while the harmonies fill in behind.",
+    "purpose_function": "It keeps the main melody or message clearly heard while background parts reinforce rather than compete, controlling the sense of size and support in the arrangement.",
+    "practical_application": "The engineer sets background vocals several dB below the lead, often EQing and compressing them as a group and panning them wide so the lead stays centered and forward.",
+    "category": "Vocal Mixing",
+    "related_terms": ["Lead-vocal production", "Background vocals", "Vocal stacking", "Panning", "Bus compression", "Frequency masking"],
+    "common_mistakes": ["Pushing background vocals too loud so they blur or overpower the lead", "Panning backing vocals to the same spot as the lead so the two smear together in the center", "Leaving backing vocals uncompressed so their level jumps above the lead on peaks"],
+    "scenario_contexts": ["Balancing a stacked harmony chorus behind a solo lead vocal", "Setting a gospel or backing choir under a lead singer", "Mixing call-and-response vocal parts in pop"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a8c06017-22ab-4858-84ba-58e005d66210",
+   "term": "Lead-vocal production",
+   "fields": {
+    "definition": "The full set of production tasks applied to the lead (main) vocal, including comping the best takes, tuning, timing correction, EQ, compression, de-essing, and effects, to deliver a clear, expressive, front-of-mix vocal.",
+    "plain_english": "The lead vocal is the main singing part, and it usually grabs the most attention. Producing it covers picking the best takes, then tuning, timing, and adding effects. The aim is a clear, emotional voice that fits the song.",
+    "purpose_function": "It shapes the most important element of most songs so it is intelligible, emotionally engaging, and sits consistently at the front of the mix.",
+    "practical_application": "The engineer comps takes into one strong performance, tunes and de-esses it, then uses compression and automation so every word stays audible over the backing.",
+    "category": "Vocal Production",
+    "related_terms": ["Lead-to-background balance", "Comping", "De-essing", "Pitch correction", "Vocal compression", "Automation"],
+    "common_mistakes": ["Over-tuning until the vocal sounds robotic and loses its natural emotion", "Compressing so hard the vocal sounds lifeless and loses all dynamics", "Skipping de-essing, leaving harsh sibilant 's' sounds that fatigue the listener"],
+    "scenario_contexts": ["Comping and polishing a lead vocal for a pop single", "Getting a rap vocal to sit clearly over a dense beat", "Preparing a lead vocal for a live-to-broadcast performance"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d4381a49-1e37-41b1-b2c2-0040b82ab320",
+   "term": "Low-end reinforcement",
+   "fields": {
+    "definition": "The deliberate strengthening of low-frequency content, roughly below 250 Hz, through EQ, layering, sub-synthesis, or added subwoofers, to deliver a full and powerful bottom end in a mix or sound system.",
+    "plain_english": "Low-end means the deep bass sounds you feel as much as hear. Reinforcing it means adding or boosting that weight so the mix feels full and strong. It is like adding a solid foundation under a house.",
+    "purpose_function": "It adds weight, warmth, and physical impact that a thin source or small system lacks, and in live sound it extends output down to frequencies the main speakers cannot reproduce.",
+    "practical_application": "In the studio an engineer layers a sub-bass or boosts fundamentals, while in live sound a technician adds and time-aligns subwoofers to reinforce the low end for the room.",
+    "category": "Low-Frequency Management",
+    "related_terms": ["Sub-bass", "Subwoofer alignment", "Kick-out track processing", "Kick-triggered bass ducking", "Equalization", "Headroom"],
+    "common_mistakes": ["UNSAFE: Driving subwoofers or amplifiers past their limits to force more low end, risking driver damage and excessive sound-pressure exposure", "Boosting lows so much that the mix turns muddy and loses headroom", "Adding subs without checking phase and alignment, so the low end cancels instead of adding"],
+    "scenario_contexts": ["Adding subwoofers to a live PA for a bass-heavy genre", "Layering a sine sub under a weak kick or bass in a mix", "Filling out the low end of a small-speaker recording for club playback"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5a75d3b3-aae6-4e19-b935-18c32269ec20",
+   "term": "Main-choir pair",
+   "fields": {
+    "definition": "The primary stereo microphone pair positioned to capture a choir as a whole, establishing the main stereo image and natural blend of the ensemble, with any spot or accent mics added only for support.",
+    "plain_english": "When recording a choir, engineers often use two main mics set up as a stereo pair. This 'main pair' captures the whole group and its natural blend. Other spot mics just add support around it.",
+    "purpose_function": "It provides the foundational stereo recording of the full choir with a natural sense of blend and space, so the result sounds cohesive rather than a collage of separate voices.",
+    "practical_application": "The engineer places a coincident or near-coincident pair, such as XY or ORTF, in front of and slightly above the choir, then adds spot mics only where sections need reinforcement.",
+    "category": "Microphone Technique",
+    "related_terms": ["Stereo miking", "ORTF technique", "Spaced pair", "Spot microphone", "Room miking", "Lead-to-background balance"],
+    "common_mistakes": ["Placing the main pair too close, so the front row dominates and the back of the choir disappears", "Ignoring the spacing or angle rules of the chosen stereo technique, causing a narrow or hole-in-the-middle image", "Relying on spot mics for the whole sound instead of building the balance from the main pair"],
+    "scenario_contexts": ["Recording a choir in a church or concert hall", "Capturing a backing choir for an album with a main stereo pair", "Miking a large vocal ensemble where a single pair sets the core sound"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "68d2389d-d09e-4260-8fa5-50da1eaffde1",
+   "term": "Mechanical noise reduction",
+   "fields": {
+    "definition": "The reduction or removal of unwanted mechanical sounds captured during recording, such as pedal squeaks, key or valve clicks, chair creaks, page turns, and HVAC or motor rumble, achieved by treating the source or by editing and noise-reduction processing afterward.",
+    "plain_english": "Instruments and rooms make unwanted little noises, like squeaky pedals or humming fans. Mechanical noise reduction means stopping or cleaning up these sounds. You can fix the source or remove the noise later with editing.",
+    "purpose_function": "It clears distracting non-musical sounds out of a recording so the intended performance is heard clearly, because acoustic instruments, players, and rooms all generate incidental noise.",
+    "practical_application": "A technician lubricates or dampens noisy mechanisms, repositions mics, and turns off HVAC before tracking, then uses spectral editing or a noise gate to clean remaining noise in post.",
+    "category": "Noise Reduction",
+    "related_terms": ["Noise gate", "Spectral editing", "Room treatment", "Microphone placement", "Signal-to-noise ratio", "High-pass filter"],
+    "common_mistakes": ["Trying to remove all mechanical noise with heavy processing, which leaves audible artifacts on the music", "Ignoring the source when quieting a squeak or turning off the HVAC would prevent the noise entirely", "Setting a noise gate so aggressively that quiet musical detail is cut along with the noise"],
+    "scenario_contexts": ["Cleaning pedal and mechanism noise from a piano recording", "Removing HVAC rumble picked up during a quiet acoustic session", "Editing out chair creaks and page turns in a classical recording"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

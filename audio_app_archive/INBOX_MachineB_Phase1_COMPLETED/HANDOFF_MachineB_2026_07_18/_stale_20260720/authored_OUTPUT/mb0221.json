@@ -1,0 +1,159 @@
+{
+ "batch": 221,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "5e51ac3c-3eff-4d45-8b90-0299259440c0",
+   "term": "Directional emitter",
+   "fields": {
+    "definition": "A sound source that radiates energy unevenly with direction, projecting more strongly along a principal axis than to the sides or rear. In immersive and game audio it is an audio object or virtual source given a directivity pattern such as a cone, so its level and tone depend on how it is oriented toward the listener; in acoustics the term describes any loudspeaker or source with pronounced directivity.",
+    "plain_english": "This is a sound source that is louder in the way it points, like a beam of sound. Turn it away from you and it gets quieter and duller.",
+    "purpose_function": "It exists to make virtual and real sources behave like real objects, which are usually louder when they face you. Giving an emitter a direction adds realism and helps aim and place sound in a scene.",
+    "practical_application": "A sound designer sets an emitter's facing and cone width in a game engine or object renderer so a character's voice or a speaker prop sounds right as it turns toward or away from the listener.",
+    "category": "Spatial Audio",
+    "related_terms": ["Distance attenuation", "Distance parameter", "Audio object", "Panning", "Omnidirectional source", "Sound propagation"],
+    "common_mistakes": ["Treating every emitter as omnidirectional, so a source sounds the same no matter which way it faces", "Setting the directivity cone too narrow, so the sound cuts out abruptly as the source turns", "Confusing a directional emitter with a directional microphone; one radiates sound, the other picks it up"],
+    "scenario_contexts": ["Placing a character's voice as a directional emitter in a VR scene so it dims when they turn away", "Simulating a loudspeaker prop that is loud in front and muffled behind", "Aiming a vehicle's engine emitter so its tone changes as the car passes the listener"]
+   },
+   "sources": ["Audiokinetic Wwise technical documentation", "Firelight FMOD technical documentation", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e8ff80d8-8b25-405c-92f1-f898b97cc9b7",
+   "term": "Dirt footsteps",
+   "fields": {
+    "definition": "A Foley footstep performance and its recording made on a dirt or earthen surface, capturing the soft, gritty, slightly crunchy impacts of feet on loose ground. It is one of a library of surface-specific footstep types Foley artists create to match a character's shoes and the terrain shown on screen.",
+    "plain_english": "These are footstep sounds made by walking on dirt, so they sound soft and a little crunchy. A Foley artist records them to match a character walking on bare ground on screen.",
+    "purpose_function": "They exist to give on-screen walking on dirt a believable, matched sound when the location recording is unusable or missing. Surface-matched steps help sell where a character is and how they move.",
+    "practical_application": "A Foley artist steps in a dirt pit or tray in sync with the picture, choosing shoes and effort that match the actor, and the editor then trims and locks the takes to the frame.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Foley pit", "Footsteps", "Surface sounds", "Ambience", "Spotting session"],
+    "common_mistakes": ["Using the same footstep surface for every scene, so dirt, wood, and tile all sound alike", "Performing steps out of sync with the actor's feet on screen", "Recording dirt steps too cleanly or too loud, so they feel bigger than the character's real weight and pace"],
+    "scenario_contexts": ["Adding footsteps for a character crossing a dry field where the location sound was too noisy", "Matching a Western character's boots walking down a dusty street", "Replacing footsteps lost under dialogue in an outdoor scene"]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Ament, The Foley Grail", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b76bc618-261a-481e-8fab-e43fcbbcbdd0",
+   "term": "Distance attenuation",
+   "fields": {
+    "definition": "The decrease in sound pressure level as distance from a source increases. For a point source in a free field the level falls by about 6 dB for each doubling of distance (the inverse-square law); in post production it is also modeled by panners and object renderers so that sources seem nearer or farther.",
+    "plain_english": "This means a sound gets quieter the farther away it is. In open air, moving twice as far from a source drops its loudness by about 6 dB, which is a clearly noticeable step down.",
+    "purpose_function": "It exists as a basic rule of how sound behaves, letting mixers and tools make sources feel close or distant. Modeling it keeps sound believable and matched to how far away things look on screen.",
+    "practical_application": "A mixer or sound designer lowers level, and usually adds high-frequency loss and reverb, as a source moves away, or sets a renderer's distance model so an object fades naturally with range.",
+    "category": "Acoustics",
+    "related_terms": ["Inverse-square law", "Distance parameter", "Sound pressure level", "Free field", "Perspective", "Air absorption"],
+    "common_mistakes": ["Assuming level always drops 6 dB per doubling; reflections in an enclosed room make the real falloff gentler", "Changing only level for distance and forgetting the high-frequency dulling and added room sound of a far source", "Confusing distance attenuation with air absorption, which mainly cuts high frequencies over long distances"],
+    "scenario_contexts": ["Setting how quickly a passing car quiets as it moves away", "Matching a shouted line's level to a character standing far from camera", "Tuning an object renderer's distance curve so a helicopter fades in from the horizon"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook", "McCarthy, Sound Systems"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "716d3a04-30e9-4fce-b67f-94c8eb7090c6",
+   "term": "Distance parameter",
+   "fields": {
+    "definition": "A control in a panner, spatial-audio object, or game-audio emitter that sets the perceived distance of a source from the listener. Adjusting it scales cues such as level, high-frequency roll-off, direct-to-reverberant ratio, and stereo width so the source is placed nearer or farther.",
+    "plain_english": "This is a setting that tells the software how far away a sound should seem. Turn it up and the sound gets quieter, duller, and more echoey, as if it moved away.",
+    "purpose_function": "It exists so a mixer can move a sound in depth with one control instead of adjusting several by hand. It ties the distance cues together so a source shifts nearer or farther in a natural, consistent way.",
+    "practical_application": "A designer automates an object's distance parameter so a car pulls away, letting the renderer handle the matching drop in level, brightness, and added reverb.",
+    "category": "Spatial Audio",
+    "related_terms": ["Distance attenuation", "Audio object", "Panning", "Direct-to-reverberant ratio", "Perspective", "Object renderer"],
+    "common_mistakes": ["Assuming the distance parameter only changes volume, when it usually also affects tone and reverb", "Pushing distance to an extreme so a source becomes too dull and washed out to read", "Expecting the same distance setting to sound identical across different renderers or panners"],
+    "scenario_contexts": ["Automating a source's distance so it recedes with a camera pull-back", "Placing a background voice deep in a room with an object panner", "Fading a sound effect into the distance in a game engine"]
+   },
+   "sources": ["Dolby Atmos Renderer technical documentation", "Steinberg Nuendo operation manual", "Audiokinetic Wwise technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0b5600fa-f1fc-4f98-b176-d19678c0531c",
+   "term": "Distance performance",
+   "fields": {
+    "definition": "A vocal or Foley performance deliberately delivered to convey that its source is far from the camera or listener, by projecting or calling out, backing away from the microphone, or adjusting effort and articulation so the recording matches a distant on-screen perspective. It is common in ADR and loop-group work, where near, medium, and distant takes are captured for a line.",
+    "plain_english": "This is performing a line or sound so it feels like it comes from far away. The actor might call out, step back from the mic, or push their voice to match a character who is across the room or down the street.",
+    "purpose_function": "It exists so distant characters and actions sound like they are really far off, not recorded up close. Capturing the right effort and delivery is more convincing than only turning a close take down in level.",
+    "practical_application": "In an ADR or loop-group session the supervisor asks talent for near, medium, and distant versions of a line, and the mixer positions the performer or mic so the distant take already has the right effort and room sound.",
+    "category": "ADR",
+    "related_terms": ["ADR", "Loop group", "Dialogue perspective", "Off-mic", "Mic distance", "Worldizing"],
+    "common_mistakes": ["Recording every line close and flat, then trying to fake distance later with only a volume cut", "Having talent shout for distance but staying right on the mic, so the effort and closeness disagree", "Ignoring the added room sound a truly distant source would have"],
+    "scenario_contexts": ["Recording a character shouting from across a valley in ADR", "Capturing loop-group calls meant to sit far in the background of a crowd", "Getting a distant, off-screen version of a line to match a wide shot"]
+   },
+   "sources": ["Yewdall, The Practical Art of Motion Picture Sound", "Holman, Sound for Film and Television"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a45df0d5-5cf4-41ac-a9b4-032d72d98c2d",
+   "term": "Door creak",
+   "fields": {
+    "definition": "The sustained, often pitched squeal or groan produced by a door's hinges as it slowly opens or closes, caused by friction in the hinge. As a sound effect it is recorded or performed and then stretched, trimmed, and pitched to match the speed and length of a door move on screen, and is frequently exaggerated for suspense.",
+    "plain_english": "This is the long squeaky groan a door makes when its hinges rub as it swings. In films it is often made louder and creepier to build tension.",
+    "purpose_function": "It exists to give an opening or closing door a believable, expressive sound and, in drama or horror, to build mood and suspense. Matching the creak to the on-screen motion sells the action.",
+    "practical_application": "A Foley artist or editor performs or picks a creak, then stretches, trims, and pitches it so its length and movement follow the door on screen.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Door slam", "Door latch", "Hard effects", "Sound library", "Spotting session"],
+    "common_mistakes": ["Using a creak whose length or speed does not match the door's movement on screen", "Reaching for the same stock creak so different doors all sound identical", "Making every door creak, even ones a scene implies are well-oiled and quiet"],
+    "scenario_contexts": ["Adding a slow, eerie creak to a door opening in a horror scene", "Matching a short creak to a character easing a door shut quietly", "Building a haunted-house feel from layered door and floor creaks"]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Ament, The Foley Grail"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "127a5ee4-9e06-416a-8223-df9b9203c149",
+   "term": "Door handle movement",
+   "fields": {
+    "definition": "The sound of a door's handle, knob, or lever being grasped and turned, including the mechanical movement of the latch it operates, without the door itself opening or slamming. As a Foley element it is performed on a real handle or matching prop to follow a character reaching for or working a door.",
+    "plain_english": "This is the small rattly, clicky sound of someone grabbing and turning a door handle or knob. It is the noise the handle makes before the door actually opens.",
+    "purpose_function": "It exists to add the small, realistic detail of a character operating a door, which helps sell the action and the character's intent. These little sounds make a scene feel physical and real.",
+    "practical_application": "A Foley artist works a matching handle or knob in sync with the actor's hand, capturing the grab, turn, and mechanism so the editor can place it exactly on the picture.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Door latch", "Door creak", "Door slam", "Foley props", "Footsteps"],
+    "common_mistakes": ["Performing the handle sound out of sync with the actor's hand on screen", "Using a handle or latch that sounds nothing like the door shown", "Making the movement too loud or busy, so a small action sounds exaggerated"],
+    "scenario_contexts": ["Adding the turn of a knob as a character quietly enters a room", "Building tension as someone slowly works a locked door's handle", "Covering the small handle sounds lost while dialogue was being recorded"]
+   },
+   "sources": ["Ament, The Foley Grail", "Viers, The Sound Effects Bible"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1161873d-8eae-4904-adc4-03f7e259d08a",
+   "term": "Door latch",
+   "fields": {
+    "definition": "The short, sharp click of a door's latch bolt engaging or releasing in the strike plate as the door is closed or opened, distinct from the louder impact of a slam. As a sound effect it marks the exact moment a door catches shut or is unlatched.",
+    "plain_english": "This is the small click a door makes when it catches shut or is opened. It is the neat little click of the catch, not the bang of a slam.",
+    "purpose_function": "It exists to mark, with a small precise sound, that a door has securely closed or been released. That click gives a closing door a finished, believable ending and can signal privacy or intent in a scene.",
+    "practical_application": "A Foley artist or editor places a latch click at the exact frame the door meets the frame, choosing a click that matches the door's size and hardware.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Door slam", "Door creak", "Door handle movement", "Hard effects", "Sync"],
+    "common_mistakes": ["Placing the latch click a few frames off from where the door actually catches", "Using a heavy latch on a light door or the reverse, so the sound does not match", "Forgetting the latch entirely, so a door closes with no sense of it catching shut"],
+    "scenario_contexts": ["Adding a soft latch as a character eases a door shut without waking anyone", "Marking the click of a door being quietly unlatched", "Finishing a gentle door close where a full slam would be too much"]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Ament, The Foley Grail"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ab41de99-36a7-4902-9498-a05232d56926",
+   "term": "Door slam",
+   "fields": {
+    "definition": "The loud, percussive impact of a door being forcefully shut, combining the low thud of the door hitting the frame, the latch, and often a rattle of the door and hardware. It is a common hard effect used both realistically and dramatically, and is frequently sweetened for emphasis.",
+    "plain_english": "This is the loud bang of a door being shut hard. It mixes the deep thud of the door hitting the frame with the click of the latch and a bit of rattle.",
+    "purpose_function": "It exists to give a forcefully closed door a strong, believable impact and, in drama, to punctuate a moment such as anger or a scene ending. A well-placed slam adds weight and emotion.",
+    "practical_application": "A Foley artist slams a matching door in sync with the picture, or an editor places and layers a library slam, adjusting weight and low end so it fits the door and the moment.",
+    "category": "Foley",
+    "related_terms": ["Foley", "Door latch", "Door creak", "Hard effects", "Sweetening", "Layering"],
+    "common_mistakes": ["Using an oversized, boomy slam on a light door, so the impact sounds fake", "Placing the slam a frame or two off from where the door hits, so sound and picture disagree", "Layering so many slam elements that it turns into a mushy, unrealistic bang"],
+    "scenario_contexts": ["Punctuating an argument as a character storms out and slams the door", "Matching a car door thud to a character getting in and shutting it", "Adding weight to a heavy vault or steel door closing"]
+   },
+   "sources": ["Viers, The Sound Effects Bible", "Ament, The Foley Grail", "Yewdall, The Practical Art of Motion Picture Sound"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

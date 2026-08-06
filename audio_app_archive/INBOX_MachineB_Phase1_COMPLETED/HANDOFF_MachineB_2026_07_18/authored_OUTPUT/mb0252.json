@@ -1,0 +1,159 @@
+{
+ "batch": 252,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "cc0cea8c-1edd-4fab-a958-1d4f26907d3d",
+   "term": "Source orientation",
+   "fields": {
+    "definition": "In object-based and spatial audio, the directional facing of a sound source within a 3D scene, describing how a directional (non-omnidirectional) emitter is aimed relative to the listener and room. Together with the source's position, orientation shapes how the object's directivity pattern projects energy into the soundfield.",
+    "plain_english": "It is the way a 3D sound is turned to face, like which way a speaker points. If a sound is aimed at you it feels direct; if it faces away it sounds duller and farther off.",
+    "purpose_function": "It lets a spatial mix control not just where a sound sits but which way it faces, so directional sources project realistically into the room or headphone soundfield.",
+    "practical_application": "A mixer sets a source's orientation in an object or ambisonic panner so an on-screen loudspeaker or voice aims correctly as the action or camera moves.",
+    "category": "Spatial Audio",
+    "related_terms": ["Spatial emitter", "Spatial blend", "Object-based audio", "Ambisonics", "Panning", "Directivity"],
+    "common_mistakes": ["Confusing source orientation (which way it faces) with source position (where it is).", "Assuming orientation matters for omnidirectional sources, which radiate equally in all directions.", "Forgetting that orientation is only audible when the source or renderer models directivity."],
+    "scenario_contexts": ["Aiming a diegetic on-screen speaker in a Dolby Atmos object mix.", "Setting emitter facing in a VR or 360 ambisonic scene.", "Rotating a directional source in a game-audio spatial scene."]
+   },
+   "sources": ["ITU-R BS.2076 (Audio Definition Model)", "ISO/IEC 23008-3 (MPEG-H 3D Audio)", "Audiokinetic Wwise technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8d7c3e8c-cf83-4023-9fe3-9d851ff59178",
+   "term": "Source Recording",
+   "fields": {
+    "definition": "The original audio captured at the time of shooting or in the field — production dialogue, effects, or ambience — that serves as the primary, unprocessed material from which the post-production soundtrack is edited and mixed.",
+    "plain_english": "It is the original sound recorded on set or in the field, before anyone edits it. Think of it as the raw ingredients a cook starts with before making the meal.",
+    "purpose_function": "It provides the authentic, primary audio, especially production dialogue, that the whole post soundtrack is built from and cut against.",
+    "practical_application": "A dialogue editor pulls the source recordings from the field mixer's files, syncs them to picture, and picks the best takes to cut.",
+    "category": "Post Workflow",
+    "related_terms": ["Source Sound", "Production sound", "Field recording", "Dialogue editing", "Room tone", "ADR"],
+    "common_mistakes": ["Editing or processing the only copy instead of working on a duplicate of the source.", "Assuming the source recording is one track when field mixers often deliver multitrack isos plus a mix.", "Ignoring embedded timecode and metadata that keep source recordings synced to picture."],
+    "scenario_contexts": ["Importing a location mixer's poly-WAV files into the DAW.", "Choosing between iso mic tracks and the mixdown within a source recording.", "Cleaning up a noisy source recording before the mix."]
+   },
+   "sources": ["Tomlinson Holman, 'Sound for Film and Television'", "David Lewis Yewdall, 'Practical Art of Motion Picture Sound'"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "773b9dfb-bac8-420e-bc03-4aa19c727916",
+   "term": "Source Sound",
+   "fields": {
+    "definition": "The original sound produced by a real, identifiable source — a voice, instrument, prop, or environment — as captured or used before it is edited, processed, or transformed. In post it denotes the raw sonic material that later design and effects are built from.",
+    "plain_english": "It is the real sound a thing actually makes, before anyone changes it. Like the plain sound of a door slam before you add echo or make it louder.",
+    "purpose_function": "It is the starting point of the soundtrack: the honest recorded sound that gives design and mixing a believable base.",
+    "practical_application": "A sound designer starts with a source sound, say a real engine recording, then layers and processes it into the final vehicle effect.",
+    "category": "Post Workflow",
+    "related_terms": ["Source Recording", "Source transformation", "Foley", "Sound design", "Field recording", "Sample library"],
+    "common_mistakes": ["Confusing source sound (the raw captured sound) with the finished, processed effect.", "Assuming any library sample is a clean source when many are already processed.", "Overlooking that a strong source sound reduces how much processing is needed later."],
+    "scenario_contexts": ["Recording a real prop as the source sound for a designed effect.", "Auditioning library source sounds to build a creature vocalization.", "Comparing a source sound to its transformed version in the mix."]
+   },
+   "sources": ["David Lewis Yewdall, 'Practical Art of Motion Picture Sound'", "David Sonnenschein, 'Sound Design'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "91edcf3b-ce32-41d9-b250-690cdbe3d6ae",
+   "term": "Source transformation",
+   "fields": {
+    "definition": "The sound-design process of taking a recorded source sound and reshaping it — through pitch, time, spectral, and effects processing — into new material whose origin is no longer literally recognizable. It is a core method for creating effects that cannot be recorded directly.",
+    "plain_english": "It means taking a real recorded sound and changing it a lot to make something new. Like slowing and stretching a tiger's growl until it becomes a monster's roar.",
+    "purpose_function": "It lets designers build impossible or larger-than-life sounds from believable real recordings, keeping an organic quality that synthesis alone struggles to give.",
+    "practical_application": "A designer transforms a source recording with pitch-shifting, time-stretching, and spectral tools to turn everyday sounds into sci-fi or creature effects.",
+    "category": "Sound Design",
+    "related_terms": ["Source Sound", "Source Recording", "Pitch shifting", "Time stretching", "Spectral processing", "Sound design"],
+    "common_mistakes": ["Transforming so heavily that the result loses realism and detail.", "Working destructively instead of keeping the untouched source for later.", "Expecting one plug-in to do what layered, staged processing achieves."],
+    "scenario_contexts": ["Turning an animal recording into a monster voice.", "Building a spaceship pass-by from processed vehicle recordings.", "Designing a weapon effect by transforming mechanical source sounds."]
+   },
+   "sources": ["David Sonnenschein, 'Sound Design'", "Udo Zölzer, 'DAFX: Digital Audio Effects'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6da698f9-6a09-4360-86b6-f6de16ed4678",
+   "term": "Spatial blend",
+   "fields": {
+    "definition": "The relative balance between spatialized (positioned, immersive) and non-spatialized (stereo or mono, all-around) treatment of a source in a mix, controlling how strongly it locks to a point in 3D space versus a flat, enveloping presence. In some tools it is an explicit parameter that morphs a source from 2D to fully 3D positioning.",
+    "plain_english": "It sets how 3D a sound is, from coming at you from all around to pinned to one exact spot. Like a dial between 'everywhere' and 'right over there.'",
+    "purpose_function": "It lets a mixer decide how strongly each element locks to a position in an immersive field, trading envelopment against clear localization.",
+    "practical_application": "In an immersive mix or game engine, an engineer sets spatial blend so ambience stays wide and enveloping while key effects snap to a precise 3D location.",
+    "category": "Spatial Audio",
+    "related_terms": ["Spatial emitter", "Source orientation", "Object-based audio", "Bed (immersive audio)", "Panning", "Immersive mix"],
+    "common_mistakes": ["Making every element fully 3D, which collapses the sense of a stable, wide background.", "Confusing spatial blend with simple left-right pan.", "Assuming a fully spatialized source always translates cleanly to a stereo fold-down."],
+    "scenario_contexts": ["Setting the 2D-versus-3D behavior of a source in a game-audio engine.", "Balancing enveloping beds against pin-point objects in a Dolby Atmos mix.", "Deciding how localized dialogue should be in an immersive presentation."]
+   },
+   "sources": ["ITU-R BS.2076 (Audio Definition Model)", "Dolby Atmos technical documentation", "Audiokinetic Wwise technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "36886468-f10f-4fb7-8079-dcc4c2469501",
+   "term": "Spatial emitter",
+   "fields": {
+    "definition": "A discrete sound-source object placed at a defined position, and often orientation, within a 3D spatial audio scene, from which audio is rendered to the listener according to direction, distance, and directivity. In object-based and interactive audio it is the fundamental positioned element the renderer localizes.",
+    "plain_english": "It is a single sound placed at a spot in a 3D scene, like a tiny speaker sitting somewhere in the room. The system works out how it should sound from where you are.",
+    "purpose_function": "It gives the renderer a positioned point source to localize, so sounds appear to come from specific places around the listener.",
+    "practical_application": "In a VR or game scene, a designer attaches a spatial emitter to an object so its sound tracks that object's position as the listener moves.",
+    "category": "Spatial Audio",
+    "related_terms": ["Source orientation", "Spatial blend", "Object-based audio", "Ambisonics", "Renderer", "Panning"],
+    "common_mistakes": ["Confusing an emitter (a positioned source) with a channel or bed that has no single position.", "Placing too many emitters and overloading the spatial renderer.", "Forgetting to set distance attenuation, so far emitters stay unrealistically loud."],
+    "scenario_contexts": ["Placing emitters on props in a VR ambisonic scene.", "Assigning game objects as emitters in audio middleware.", "Rendering positioned emitters to binaural for headphone delivery."]
+   },
+   "sources": ["ITU-R BS.2076 (Audio Definition Model)", "ISO/IEC 23008-3 (MPEG-H 3D Audio)", "Audiokinetic Wwise technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3617e1f4-0d27-45f1-b8f3-fa616b6b1cbd",
+   "term": "Spatial-audio room",
+   "fields": {
+    "definition": "A monitoring room configured and calibrated for producing and reviewing spatial or immersive audio, using a multichannel loudspeaker layout (for example a 7.1.4 Dolby Atmos array with height speakers), controlled acoustics, and level and time alignment to a defined reference. It provides an accurate, standards-based environment for mixing immersive deliverables.",
+    "plain_english": "It is a mixing room set up with speakers all around and overhead so you can hear 3D sound properly. It is carefully tuned so what you hear matches how it should sound elsewhere.",
+    "purpose_function": "It gives engineers a trustworthy, calibrated space to place and judge sounds in three dimensions, so immersive mixes translate to other rooms and devices.",
+    "practical_application": "A studio builds a spatial-audio room to a 7.1.4 layout and calibrates each speaker to reference level before mixing Atmos deliverables.",
+    "category": "Post Workflow",
+    "related_terms": ["Dolby Atmos", "Immersive mix", "Monitoring", "Speaker calibration", "Reference level", "Bed (immersive audio)"],
+    "common_mistakes": ["Adding height speakers without calibrating their level and timing to reference.", "Assuming any surround room is Atmos-ready without the correct layout.", "Ignoring room acoustics, which corrupt localization in immersive playback."],
+    "scenario_contexts": ["Certifying a room to Dolby Atmos music or home specifications.", "Calibrating a 7.1.4 array to reference SPL.", "Mixing an immersive deliverable in a purpose-built spatial-audio room."]
+   },
+   "sources": ["Dolby Atmos technical and studio documentation", "ITU-R BS.775 (Multichannel stereophonic monitoring)", "SMPTE ST 2098 (Immersive Audio)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3741b2ac-f2db-437d-8ecd-402869880951",
+   "term": "Spectral morphing",
+   "fields": {
+    "definition": "A signal-processing technique that gradually blends the spectral content (the frequency-and-amplitude, and often phase, makeup) of one sound into that of another, so one timbre is heard smoothly transforming into a different one. It is typically achieved with frequency-domain (FFT / phase-vocoder) analysis and resynthesis.",
+    "plain_english": "It slowly turns the tone of one sound into the tone of another, like one voice melting into a different one. It works on the mix of pitches inside a sound, not just its volume.",
+    "purpose_function": "It lets designers create smooth, otherworldly transitions between two timbres that plain crossfading or EQ cannot produce.",
+    "practical_application": "A designer uses a spectral or FFT morphing tool to morph a human voice into an animal call for an on-screen transformation.",
+    "category": "Signal Processing",
+    "related_terms": ["Spectral processing", "Source transformation", "FFT", "Phase vocoder", "Cross synthesis", "Time stretching"],
+    "common_mistakes": ["Confusing a spectral morph with a simple volume crossfade between two clips.", "Morphing sounds with very different pitch or rhythm, which smears the result.", "Ignoring FFT window and size settings that cause artifacts."],
+    "scenario_contexts": ["Morphing a voice into a creature for a transformation scene.", "Blending two instrument timbres into a hybrid for a score.", "Designing a smooth transition between two ambiences."]
+   },
+   "sources": ["Udo Zölzer, 'DAFX: Digital Audio Effects'", "Curtis Roads, 'The Computer Music Tutorial'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "56fd3046-ddfd-41dc-9370-7e23bf4c9cdd",
+   "term": "Spectral processing",
+   "fields": {
+    "definition": "Audio processing carried out in the frequency domain, where a signal is analyzed into its spectrum (typically via the short-time Fourier transform / FFT), individual frequency components are edited or modified, and the result is resynthesized back into audio. It underlies tools for noise reduction, spectral repair, and spectral effects.",
+    "plain_english": "It works on sound by its separate frequencies instead of just its overall loudness. It is like editing a photo pixel by pixel, so you can fix or change tiny parts of the sound.",
+    "purpose_function": "It lets an engineer see and change specific frequencies over time, so unwanted sounds can be removed or textures reshaped with surgical precision.",
+    "practical_application": "A dialogue editor uses a spectral editor to paint out a cough or beep from a take without dulling the surrounding speech.",
+    "category": "Signal Processing",
+    "related_terms": ["Spectral morphing", "FFT", "Spectrogram", "Noise reduction", "Phase vocoder", "De-noising"],
+    "common_mistakes": ["Over-processing until speech sounds watery or full of artifacts.", "Treating spectral repair as a substitute for recording a clean source in the first place.", "Ignoring the FFT resolution trade-off between frequency detail and time detail."],
+    "scenario_contexts": ["Removing a phone ring from a dialogue take with a spectral editor.", "Reducing steady broadband noise from a location recording.", "Isolating and reshaping a specific frequency band in a design element."]
+   },
+   "sources": ["Udo Zölzer, 'DAFX: Digital Audio Effects'", "Glen Ballou, 'Handbook for Sound Engineers'", "iZotope RX technical documentation"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,72 @@
+{
+ "range": 6,
+ "applied": [
+  {
+   "pkt": "mb0244",
+   "term": "Playlist container",
+   "field": "definition",
+   "severity": "Low",
+   "summary": "Reworded 'sequence, random, step, or continuous' as two orthogonal axes (order: sequence/random; play mode: step/continuous) to remove the internal contradiction with practical_application's 'random-continuous' combination."
+  },
+  {
+   "pkt": "mb0266",
+   "term": "Half-Speed Record/Playback",
+   "field": "plain_english",
+   "severity": "Low",
+   "summary": "Split the two workflows so the 'returns to right pitch and tempo at full speed' outcome attaches only to the record-slow/play-fast case, not to learning playback. FK grade ~5.0."
+  },
+  {
+   "pkt": "mb0269",
+   "term": "Primary recording volume",
+   "field": "purpose_function",
+   "severity": "Low",
+   "summary": "Fixed garbled sentence 'Designating it exists so the DAW knows...' (subject-verb disagreement) to 'Designating it lets the DAW know where to place new recordings and manage storage reliably.'"
+  },
+  {
+   "pkt": "mb0270",
+   "term": "RAID 6 storage",
+   "field": "scenario_contexts",
+   "severity": "Low",
+   "summary": "Replaced the ungrammatical third scenario item ('to keep the most safe capacity') with 'to keep its large capacity as safe as possible across many high-capacity drives'."
+  },
+  {
+   "pkt": "mb0277",
+   "term": "Legato sample",
+   "field": "common_mistakes",
+   "severity": "Low",
+   "summary": "Fixed non-parallel first item; changed 'played fully separated instead of overlapping them' to 'played fully separated rather than overlapped'."
+  }
+ ],
+ "declined": [
+  {
+   "pkt": "mb0242",
+   "term": "Phase modulation synthesis",
+   "field": "difficulty",
+   "reason": "difficulty is pre-existing packet metadata (top-level 'beginner'), not an authored empty_field; it does not exist in authored_OUTPUT and adding it would break verify.py. Re-tag beginner->intermediate is also a debatable cognitive-load judgment, not a factual error."
+  },
+  {
+   "pkt": "mb0247",
+   "term": "Resynthesis",
+   "field": "difficulty",
+   "reason": "Same as above: difficulty is packet metadata, not an authored field; cannot be edited without adding a disallowed field, and the re-tag is a debatable difficulty judgment."
+  },
+  {
+   "pkt": "mb0280",
+   "term": "Retriggered oscillator",
+   "field": "difficulty",
+   "reason": "Same as above: difficulty is packet metadata, not an authored field; setting a value would break verify, and difficulty assignment is a subjective judgment rather than an error."
+  },
+  {
+   "pkt": "mb0258",
+   "term": "United Nations-style voice-over",
+   "field": "related_terms",
+   "reason": "Pure enrichment ('add a cross-link'); no wrong or irrelevant existing item. The list already carries six correct related terms."
+  },
+  {
+   "pkt": "mb0259",
+   "term": "Voice-over translation",
+   "field": "related_terms",
+   "reason": "Pure enrichment ('add a cross-link' plus 'note in purpose_function'); no wrong or irrelevant existing item. Existing six related terms are all valid."
+  }
+ ]
+}

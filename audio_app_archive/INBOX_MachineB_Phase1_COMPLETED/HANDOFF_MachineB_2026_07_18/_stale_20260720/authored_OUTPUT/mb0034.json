@@ -1,0 +1,321 @@
+{
+  "batch": 34,
+  "topic": "Band Tracking Workflow & Arrangement",
+  "authored": [
+    {
+      "id": "e9c7b7bd-d515-453d-a814-2d084853ff20",
+      "term": "Bass DI track",
+      "fields": {
+        "definition": "A bass DI track is a recorded track of the bass guitar taken as a direct feed through a DI (direct injection) box or preamp instrument input, capturing the instrument's signal before any amplifier or speaker; it is distinguished from a miked amp track, which carries the amplifier and cabinet sound.",
+        "plain_english": "This is a bass part recorded straight from the instrument, not from an amp. A small box called a DI sends the clean signal to the recorder. It keeps a pure copy of the bass that you can shape later.",
+        "purpose_function": "It captures a clean, direct, noise-free bass signal with full low end and matched impedance, giving the mix a solid foundation and preserving a signal that can be re-amped or reprocessed after the session.",
+        "practical_application": "An engineer patches the bass through a DI box, records the direct track, and often blends it with a miked amp track for weight and bite, keeping the DI so tone can be re-amped or edited later.",
+        "category": "Recording technique",
+        "related_terms": [
+          "DI box",
+          "Amp track",
+          "Re-amping",
+          "Input impedance",
+          "Direct box",
+          "Bass equalization"
+        ],
+        "common_mistakes": [
+          "Recording the DI too hot so the input clips, baking distortion into a track that was meant to stay clean.",
+          "Using a passive DI on a weak passive bass and losing high-frequency detail when a buffered active DI would have preserved it.",
+          "Blending the DI with a miked amp track without checking polarity, so the low end thins out from phase cancellation."
+        ],
+        "scenario_contexts": [
+          "Tracking a rock band and capturing a clean bass DI alongside a miked amp for later blending.",
+          "Keeping only a DI feed during a fast session so the bass tone can be re-amped after the band leaves.",
+          "Recording bass direct in a small room where a loud amp would bleed into the drum and vocal mics."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, Modern Recording Techniques (direct injection / DI recording)",
+        "Radial Engineering direct box technical documentation (active vs passive DI, instrument level)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "3b53f97c-a279-4c8a-bd17-1f10f0b39d7c",
+      "term": "Bass distortion",
+      "fields": {
+        "definition": "Bass distortion is the deliberate nonlinear processing of a bass signal (via overdrive, fuzz, saturation, or clipping) to add harmonic content and grit; it generates new harmonics above the fundamental, increasing perceived loudness and helping the bass cut through a dense mix.",
+        "plain_english": "This is grit or fuzz added to the bass sound on purpose. It adds extra tones that help the bass cut through a busy mix. Think of it like the growl in a hard rock bass line.",
+        "purpose_function": "It exists to add harmonics and edge so the bass stays audible on small speakers and through loud guitars, and to give the tone character and aggression that a clean signal lacks.",
+        "practical_application": "A technician adds distortion with a pedal, amp, or plugin, and commonly distorts only a parallel copy of the bass so the clean low end stays intact while the gritty layer adds presence.",
+        "category": "Signal processing",
+        "related_terms": [
+          "Bass distortion track",
+          "Harmonic distortion",
+          "Saturation",
+          "Overdrive",
+          "Parallel processing",
+          "Bass harmonic enhancement"
+        ],
+        "common_mistakes": [
+          "Distorting the whole bass signal so the deep low end disappears, leaving a thin, buzzy tone.",
+          "Adding heavy distortion without high-passing or filtering it, letting the fuzz smear the sub frequencies.",
+          "Overdriving until the note pitch is lost, so the bass no longer defines the harmony clearly."
+        ],
+        "scenario_contexts": [
+          "Adding fuzz to a rock bass so it drives the song alongside distorted guitars.",
+          "Saturating a bass part lightly so it reads on phone and laptop speakers.",
+          "Blending a distorted bass layer under a clean DI to add bite without losing weight."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (harmonic distortion, nonlinear processing)",
+        "Owsinski, The Mixing Engineer's Handbook (distortion and saturation on bass)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "a72dbbbf-c8c7-4271-bb8b-7de52061d912",
+      "term": "Bass distortion track",
+      "fields": {
+        "definition": "A bass distortion track is a separate track carrying a distorted or saturated version of the bass, usually run in parallel with a clean bass track so the two can be blended; the distorted layer supplies harmonics and midrange bite while the clean layer holds the low-frequency foundation.",
+        "plain_english": "This is a second bass track with the grit added. You keep the clean bass on one track and the fuzzy one on another. Then you blend the two to get both weight and bite.",
+        "purpose_function": "It lets an engineer control clean low end and distorted harmonics independently, so the bass gains presence and audibility on small speakers without losing its deep foundation.",
+        "practical_application": "An engineer splits the bass, distorts one copy, often high-passes that distorted track, and mixes it under the clean track to add grind that survives on phones and earbuds.",
+        "category": "Recording technique",
+        "related_terms": [
+          "Bass distortion",
+          "Bass DI track",
+          "Parallel processing",
+          "Re-amping",
+          "Saturation",
+          "Bass layering"
+        ],
+        "common_mistakes": [
+          "Not aligning the distorted track with the clean track, so timing or phase differences cause cancellation and a hollow low end.",
+          "Leaving low frequencies in the distorted track, which fights the clean bass and muddies the sub range.",
+          "Pushing the distortion layer too loud so the blended bass sounds harsh and buzzy instead of full."
+        ],
+        "scenario_contexts": [
+          "Re-amping a stored bass DI through a fuzz pedal to create a distortion track after tracking.",
+          "High-passing a saturated bass track and blending it under the clean bass for laptop-speaker presence.",
+          "Automating the distortion track up only in the loud chorus to add energy where the song needs it."
+        ]
+      },
+      "sources": [
+        "Owsinski, The Mixing Engineer's Handbook (parallel/layered bass processing)",
+        "Huber & Runstein, Modern Recording Techniques (parallel processing and re-amping)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "52a568d9-3d78-4a39-b2a7-df7a50822c05",
+      "term": "Bass dynamic equalization",
+      "fields": {
+        "definition": "Bass dynamic equalization is the use of a dynamic equalizer on a bass signal, where the gain of a chosen frequency band changes automatically in response to the signal's level, so a band boosts or cuts only when the audio in that band crosses a threshold; it combines the frequency selectivity of an EQ with the level-dependent action of a compressor.",
+        "plain_english": "This is a smart tone control that only acts when a sound gets too strong. It might cut a boomy note only on the loudest hits. The rest of the time it leaves the bass alone.",
+        "purpose_function": "It tames problem frequencies that appear only on certain notes or louder passages, controlling boom, resonance, or mud without permanently changing the tone the way a fixed EQ would.",
+        "practical_application": "A technician sets a dynamic EQ band on a boomy note and a threshold so it cuts only when that note rings out, keeping the overall bass tone consistent from note to note.",
+        "category": "Signal processing",
+        "related_terms": [
+          "Bass equalization",
+          "Multiband compression",
+          "Compressor",
+          "Threshold",
+          "Resonance",
+          "Bass envelope control"
+        ],
+        "common_mistakes": [
+          "Confusing dynamic EQ with a static EQ and expecting a constant cut, when the band only moves when the level crosses the threshold.",
+          "Setting the threshold so low that the band acts on every note, which turns it into an ordinary fixed EQ.",
+          "Using wide bands with fast settings so the processing pumps and audibly changes tone."
+        ],
+        "scenario_contexts": [
+          "Controlling one boomy note on a bass that rings louder than the others in a room.",
+          "Cutting low mud only during dense chorus sections while leaving sparse verses untouched.",
+          "Reducing a resonant peak that jumps out only on the hardest-played notes."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (equalizers and dynamics processors)",
+        "Owsinski, The Mixing Engineer's Handbook (dynamic and frequency-dependent EQ on bass)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "f7932f6f-fcde-495d-bff4-b90d403338bc",
+      "term": "Bass envelope control",
+      "fields": {
+        "definition": "Bass envelope control is the shaping of a bass note's amplitude envelope over time, chiefly its attack and sustain, using tools such as transient shapers, compressors, or envelope processors; it adjusts how sharply a note begins and how it decays without necessarily changing pitch or timbre.",
+        "plain_english": "This shapes how a bass note starts and fades. You can make the pluck sharper or softer, and the note ring longer or shorter. It is like changing how hard and how long each note is hit.",
+        "purpose_function": "It controls the punch and length of bass notes so they lock with the kick drum and groove, adding attack for definition or evening out sustain for a steady, consistent low end.",
+        "practical_application": "A technician uses a transient shaper or compressor attack and release settings to bring out the finger or pick attack, or to smooth uneven note lengths so the bass sits tightly with the drums.",
+        "category": "Signal processing",
+        "related_terms": [
+          "Transient shaper",
+          "Attack",
+          "Sustain",
+          "Compressor",
+          "Bass dynamic equalization",
+          "Bass level ride"
+        ],
+        "common_mistakes": [
+          "Adding too much attack so every note clicks and competes with the kick drum.",
+          "Over-extending sustain so notes run together and blur the groove.",
+          "Confusing envelope shaping with EQ, and reaching for tone controls when the real issue is note punch and length."
+        ],
+        "scenario_contexts": [
+          "Sharpening the attack of a finger-style bass so it defines the beat against a busy drum kit.",
+          "Evening out uneven sustain on a bass part where some notes ring longer than others.",
+          "Shortening note decay so the bass stays tight in a fast, up-tempo song."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (dynamics and transient behavior)",
+        "Owsinski, The Mixing Engineer's Handbook (transient shaping and envelope control)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "3160e036-c15c-45fd-b349-c0276eeddaf1",
+      "term": "Bass equalization",
+      "fields": {
+        "definition": "Bass equalization is the adjustment of the frequency balance of a bass signal by boosting or cutting selected frequency bands with an equalizer; it shapes the low end, controls mud and boom, and carves space so the bass sits clearly in the mix relative to the kick drum and other instruments.",
+        "plain_english": "This is turning bass tones up or down with tone controls. You might boost the deep lows or cut a boomy note. It helps the bass sit well next to the drums and the rest of the song.",
+        "purpose_function": "It corrects tonal problems and shapes the bass so its low end supports the track without masking the kick drum or clouding the midrange, giving the bass a defined place in the frequency spectrum.",
+        "practical_application": "A technician high-passes unneeded sub rumble, cuts problem mud around the low mids, and boosts a band for definition, often coordinating the bass EQ with the kick so the two do not fight.",
+        "category": "Signal processing",
+        "related_terms": [
+          "Equalizer",
+          "High-pass filter",
+          "Bass dynamic equalization",
+          "Frequency masking",
+          "Kick drum",
+          "Bass DI track"
+        ],
+        "common_mistakes": [
+          "Boosting the deep lows heavily on studio monitors, then finding the bass is overpowering everywhere else.",
+          "Cutting so much low end that the bass loses weight and power in the mix.",
+          "EQing the bass in isolation instead of against the kick drum, so the two mask each other in the full mix."
+        ],
+        "scenario_contexts": [
+          "Carving a dip in the bass where the kick drum's punch lives so both stay clear.",
+          "High-passing infrasonic rumble from a bass track to clean up the low end.",
+          "Boosting upper harmonics so the bass line is audible on small speakers."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (equalizers and frequency shaping)",
+        "Huber & Runstein, Modern Recording Techniques (equalization in mixing)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "0b8785fd-dd03-4fe5-82c4-fc90a6b50e8b",
+      "term": "Bass harmonic enhancement",
+      "fields": {
+        "definition": "Bass harmonic enhancement is the generation of upper harmonics from a bass signal, using saturation, exciters, or dedicated harmonic generators, so that overtones related to the low fundamental are added; because small speakers cannot reproduce deep fundamentals, these harmonics let the ear infer the bass pitch through the missing-fundamental effect.",
+        "plain_english": "This adds bright extra tones on top of the deep bass. Small speakers cannot play the deepest lows, so these extra tones let people still hear the bass line. Then phones and laptops still show the bass.",
+        "purpose_function": "It makes the bass translate across playback systems by adding overtones the ear links to the low note, so listeners perceive the bass even on devices that cannot reproduce its true low frequency.",
+        "practical_application": "A technician runs the bass through a saturator or bass enhancer, often on a parallel track limited to a chosen harmonic band, and checks the result on small speakers to confirm the low end still reads.",
+        "category": "Signal processing",
+        "related_terms": [
+          "Missing fundamental",
+          "Harmonic distortion",
+          "Saturation",
+          "Exciter",
+          "Bass distortion",
+          "Parallel processing"
+        ],
+        "common_mistakes": [
+          "Adding so many harmonics that the bass turns harsh and buzzy instead of warm and clear.",
+          "Assuming enhancement replaces real low end, when full-range systems still need the fundamental present.",
+          "Applying the harmonics across the whole spectrum instead of a focused band, cluttering the midrange."
+        ],
+        "scenario_contexts": [
+          "Making a sub-heavy bass audible on phone and laptop speakers before releasing a track.",
+          "Adding overtones to a bass so it survives a car stereo and earbud playback.",
+          "Using an exciter on a parallel bass track to boost presence while keeping the clean sub."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (psychoacoustics, missing fundamental, harmonic generation)",
+        "Owsinski, The Mixing Engineer's Handbook (bass enhancement and small-speaker translation)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "de2a81c0-855e-4f69-a266-3d56ded2b78a",
+      "term": "Bass layering (EF)",
+      "fields": {
+        "definition": "Bass layering is the technique of combining two or more bass sounds or tracks into a single perceived bass part, typically assigning each layer a role, such as one layer holding the deep sub fundamental and another supplying midrange grit or attack, so the blended result is fuller and more consistent than any single source.",
+        "plain_english": "This is stacking two or more bass sounds to make one fuller part. One sound covers the deep lows and another adds bite up higher. Together they sound bigger than either one alone.",
+        "purpose_function": "It lets an engineer build a bass that works on every speaker by splitting duties, deep weight from one layer and audible presence from another, so the bass is both powerful on big systems and clear on small ones.",
+        "practical_application": "A technician layers a clean sub bass with a grittier or synth bass, matches their tuning and timing, and often filters each layer to its own frequency range so they combine without clashing.",
+        "category": "Arrangement technique",
+        "related_terms": [
+          "Bass distortion track",
+          "Bass harmonic enhancement",
+          "Parallel processing",
+          "Sub bass",
+          "High-pass filter",
+          "Phase"
+        ],
+        "common_mistakes": [
+          "Layering two basses in the same frequency range without filtering, so they overlap and turn muddy.",
+          "Not checking polarity between layers, so the low end cancels and the bass sounds weaker combined.",
+          "Leaving the layers out of tune or out of time with each other, which blurs the note and the groove."
+        ],
+        "scenario_contexts": [
+          "Stacking a clean sub bass under a distorted bass so the part has both weight and grit.",
+          "Adding a synth bass layer to a recorded electric bass to fill out a pop production.",
+          "Splitting a bass into a low layer and a high layer, each filtered to its own band, for better translation."
+        ]
+      },
+      "sources": [
+        "Owsinski, The Mixing Engineer's Handbook (layering and combining bass sources)",
+        "Huber & Runstein, Modern Recording Techniques (layering and frequency-range splitting)"
+      ],
+      "confidence": "Medium",
+      "flags": []
+    },
+    {
+      "id": "10acca63-fed5-4fba-a46d-8fce921e7634",
+      "term": "Bass level ride",
+      "fields": {
+        "definition": "A bass level ride is the manual adjustment of the bass track's fader (gain riding) over the course of a song to keep its loudness consistent, raising softer notes and lowering louder ones; it is a form of hands-on level automation used in place of, or alongside, a compressor.",
+        "plain_english": "This is slowly moving the bass volume up and down by hand as the song plays. You lift the soft notes and pull back the loud ones. It keeps every bass note easy to hear.",
+        "purpose_function": "It evens out note-to-note and section-to-section level differences so the bass stays steady in the mix, giving transparent control that avoids the tone changes a heavy compressor can add.",
+        "practical_application": "An engineer writes fader automation on the bass, nudging weak notes up and strong notes down, and often rides levels before or after a compressor to fix moments the compressor misses.",
+        "category": "Mixing technique",
+        "related_terms": [
+          "Fader automation",
+          "Gain riding",
+          "Compressor",
+          "Bass envelope control",
+          "Bass equalization",
+          "Automation"
+        ],
+        "common_mistakes": [
+          "Relying only on a heavy compressor for consistency instead of riding levels, which can dull the tone and pump.",
+          "Making sudden fader jumps that are audible as level steps rather than smooth moves.",
+          "Riding the bass in solo instead of against the full mix, so the moves do not match what the song needs."
+        ],
+        "scenario_contexts": [
+          "Lifting a few quiet bass notes that got lost under a loud chorus.",
+          "Pulling the bass down slightly in a sparse verse so it does not overpower the vocal.",
+          "Riding the bass fader ahead of a compressor to smooth big level swings before compression."
+        ]
+      },
+      "sources": [
+        "Owsinski, The Mixing Engineer's Handbook (fader rides / gain riding on bass)",
+        "Huber & Runstein, Modern Recording Techniques (fader automation and level control)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

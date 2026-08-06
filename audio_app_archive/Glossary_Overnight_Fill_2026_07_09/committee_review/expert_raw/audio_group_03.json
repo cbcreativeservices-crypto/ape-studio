@@ -1,0 +1,146 @@
+{
+ "expert": "AUDIO TECHNICAL EXPERT",
+ "group": 3,
+ "reviews": [
+  {
+   "id": "53f756da-bd36-46e9-8977-976ac856b84d",
+   "term": "Tracking Force",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "870e8e9e-20d2-42d4-a136-4455c52b4846",
+   "term": "Breakout Room",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "98361ac6-10cf-4d89-889e-e3ecb8f0ebe5",
+   "term": "General Session",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ab2bad4c-275e-4aa0-95cb-8cd3d06251cb",
+   "term": "Green Room",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a7c872ef-f6a4-47dd-a4d8-153e692537f5",
+   "term": "Lectern",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3b136c85-d3a7-4d14-ad8a-7323d7b6e54d",
+   "term": "Mult Box",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "856a072f-24a6-4df9-8d4b-91fe353e739c",
+   "term": "Push-To-Talk Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "daa3eb48-cdd7-4a21-b08f-ec53b8432248",
+   "term": "Speaker Timer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "72fbcb14-4dba-46ec-8862-0fb96d07c9d6",
+   "term": "Throwable Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "78d3c31f-5b58-42f6-ba9c-9d11f74838aa",
+   "term": "Digital Snake",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3ec971d2-a2cd-406c-a62a-6fe77462df2b",
+   "term": "Expansion Card",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "587893cb-d031-44e1-886b-c31bd83bae7d",
+   "term": "Gain Compensation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c277cc43-d973-497b-bf2c-9ed499684792",
+   "term": "Offline Editor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "447b5197-feff-4002-9188-a4ff47af7d5b",
+   "term": "Remote Head Amp",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0e8c97ef-3184-49d4-9c24-4f203ae133bb",
+   "term": "AVB (Audio Video Bridging)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6c46b314-34e8-44d9-898d-a42c36f2fc59",
+   "term": "Milan",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "da74bad3-8c24-4c1d-be3b-f9755a22abbc",
+   "term": "Ravenna",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "22bca3ec-6362-475e-98de-923e6ec2a39c",
+   "term": "RTP (Real-time Transport Protocol)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "58961882-5c54-404d-b8e8-0b60d54ceb09",
+   "term": "Array Bumper",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5de777e2-1b77-4077-996c-2b34c5849bd1",
+   "term": "Bridle",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Low",
+     "issue": "The first (UNSAFE) mistake says a 90-120 degree included apex angle 'multiplies each leg's tension far above the shared load.' The physics is more specific: at a 120 degree included angle each leg tension already equals the FULL suspended load (leg = (W/2)/cos60 = W), and at 90 degrees it is about 0.71W per leg, i.e. above half-load but not yet 'far above' the load. Tension only climbs steeply BEYOND about 120 degrees (roughly 2x the load near 150 degrees). The warning is directionally safe (conservative) but the numeric characterization is imprecise for teaching load multipliers.",
+     "suggestion": "Reframe to teach the multiplier accurately, e.g.: 'Letting the included apex angle approach or exceed about 120 degrees, where each leg tension already equals the full suspended load and then rises sharply (roughly 2x the load near 150 degrees); keep included angles well under 90-120 degrees and always calculate leg tensions from the sling-angle factor.'"
+    }
+   ]
+  },
+  {
+   "id": "d8913652-af40-4dec-ae41-6d730a48cafe",
+   "term": "Chain Hoist",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "practical_application",
+     "severity": "Low",
+     "issue": "The duty-class framing (D8, D8+, C1) is accurate and correctly applied, but these designations are EU-origin (derived from German BGV D8 / BGV-C1 and codified in IGVW SQ P2). Because this app certifies technicians for North American work, the applicable powered-hoist safety standard is not cited. This is an enhancement, not an error.",
+     "suggestion": "Add a reference to the applicable North American standard alongside the EU duty classes, e.g. note that ANSI E1.6-1 (Powered Hoist Systems) and ANSI E1.6-2 (Design/Inspection/Maintenance) govern entertainment powered hoists in the US, and that overhead-load-over-people practice should follow ANSI/ESTA E1.6 and OSHA 1926 alongside the D8/D8+/C1 duty framework."
+    }
+   ]
+  }
+ ]
+}

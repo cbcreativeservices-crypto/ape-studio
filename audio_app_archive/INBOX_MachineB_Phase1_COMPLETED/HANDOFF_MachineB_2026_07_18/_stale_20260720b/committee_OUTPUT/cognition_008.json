@@ -1,0 +1,230 @@
+{
+ "expert": "Learning/Cognition",
+ "group": 8,
+ "reviews": [
+  {
+   "id": "75d8cda0-7426-4b36-8931-c117b276a155",
+   "term": "Attack reinforcement",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "The definition, plain_english, and practical_application all center on transient shaping / a transient shaper, but that central concept is absent from related_terms, which instead lists alphabetically adjacent, weakly related entries (e.g. Acoustic-guitar mixing, Ambience layer). A learner navigating related terms cannot reach the core technique of the entry.",
+     "suggestion": "Replace a weak neighbor such as 'Acoustic-guitar mixing' with 'Transient shaper' (or 'Transient shaping') so the knowledge map links to the technique the entry actually teaches."
+    }
+   ]
+  },
+  {
+   "id": "1bb9a868-9d20-4df5-9cd6-5e7b9af0e317",
+   "term": "Background texture",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5e78416c-1597-4f42-8fcb-c5e4d627451c",
+   "term": "Background-vocal alignment",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c6f57177-bb46-4a9f-bc26-2f4293869c43",
+   "term": "Background-vocal automation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d69969da-9723-4c0f-8d52-cc8b6e13f509",
+   "term": "Background-vocal bus",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8128910a-7a67-4426-ad20-eec2b9a86c57",
+   "term": "Background-vocal compression",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "16c9501a-fd41-4894-9d57-0258aa036244",
+   "term": "Background-vocal de-essing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f2655ed2-1792-4d89-862e-0b7d350805f2",
+   "term": "Background-vocal delay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "266631fb-f1a5-48c5-8cb4-e8a615f4fe41",
+   "term": "Background-vocal equalization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e9806221-daef-4ddc-b372-6fab47ec2c8d",
+   "term": "Background-vocal panning",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "56377c2f-0f9c-4160-8d07-fa316425a963",
+   "term": "Background-vocal production",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "55fa4756-2d04-47cb-bab7-a123fb345551",
+   "term": "Background-vocal reverb",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "47cf2256-83f3-497e-9751-149eb18c0893",
+   "term": "Background-vocal saturation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8a3fbf73-2abe-4f5e-8707-b66ce70ca4bd",
+   "term": "Background-vocal stack",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cc890491-84cc-4b8b-a9c6-1380ed2eebd3",
+   "term": "Background-vocal subgroup",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5f9663f7-46c5-4eb9-b9a8-06941bdbb323",
+   "term": "Background-vocal width",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6ee342bd-0048-4faf-864b-a89fc87a6b92",
+   "term": "Bass amplifier track",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "29fc3201-179c-4dd7-b127-2905fc993313",
+   "term": "Bass attack layer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e85962a9-f097-404e-b06f-a315e8aefa05",
+   "term": "Bass automation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fb358a51-a625-4730-8d82-d7442aabe4aa",
+   "term": "Bass bus",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "49429c2b-a244-4850-8297-2dbb391d9d15",
+   "term": "Bass definition enhancement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e9c7b7bd-d515-453d-a814-2d084853ff20",
+   "term": "Bass DI track",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3b53f97c-a279-4c8a-bd17-1f10f0b39d7c",
+   "term": "Bass distortion",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a72dbbbf-c8c7-4271-bb8b-7de52061d912",
+   "term": "Bass distortion track",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "52a568d9-3d78-4a39-b2a7-df7a50822c05",
+   "term": "Bass dynamic equalization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f7932f6f-fcde-495d-bff4-b90d403338bc",
+   "term": "Bass envelope control",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3160e036-c15c-45fd-b349-c0276eeddaf1",
+   "term": "Bass equalization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0b8785fd-dd03-4fe5-82c4-fc90a6b50e8b",
+   "term": "Bass harmonic enhancement",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "plain_english",
+     "severity": "Low",
+     "issue": "The final sentence 'Then phones and laptops still show the bass.' is grammatically awkward (a speaker does not 'show' bass) and merely restates the previous sentence, adding confusion rather than clarity for a beginner reader.",
+     "suggestion": "Cut the redundant final sentence or rewrite it concretely, e.g. 'So even on a phone speaker, listeners can still follow the bassline.'"
+    }
+   ]
+  },
+  {
+   "id": "de2a81c0-855e-4f69-a266-3d56ded2b78a",
+   "term": "Bass layering (EF)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "10acca63-fed5-4fba-a46d-8fce921e7634",
+   "term": "Bass level ride",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5b8a27c6-b2ec-45bc-b794-7931d2c81ed2",
+   "term": "Bass limiting",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "41b27b26-e1e9-41fc-adf4-56b875160d7a",
+   "term": "Bass low-frequency control",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "40ce7747-5aff-47b3-a8a4-807940606955",
+   "term": "Bass midrange layer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d22560be-000e-4677-baa7-b9b061f6b30d",
+   "term": "Bass mixing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2928c603-1199-4c6a-bf3a-027d7e94c813",
+   "term": "Bass mono compatibility",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

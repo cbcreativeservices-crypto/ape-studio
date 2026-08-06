@@ -1,0 +1,159 @@
+{
+ "batch": 342,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "d623c1e2-23f6-4549-ab9c-cdabcd350e8b",
+   "term": "Spring resonance",
+   "fields": {
+    "definition": "The natural resonant frequency, together with its overtone modes, at which a metal helical spring oscillates when excited; in audio it governs the ringing, dispersive metallic response of a spring-reverb tank and the low-frequency resonance of spring-suspended microphone shock mounts. At these frequencies the spring stores and returns energy efficiently, producing a pronounced, slowly decaying response.",
+    "plain_english": "Every spring has certain notes it likes to shake at. When something hits those notes, the spring rings loudly and takes a while to stop. This is why a spring reverb makes its famous 'boing' sound.",
+    "purpose_function": "It explains why spring-based devices color sound as they do: a spring-reverb tank uses these resonances to build its dense, metallic reverberation, while in a shock mount the spring's resonance is placed below the audio band so it isolates the mic instead of ringing.",
+    "practical_application": "A technician recognizes spring resonance as the twangy, metallic ring of a reverb tank and damps or EQs it, and checks that a mic shock mount's spring resonance sits well below program material so knocks are absorbed rather than passed through.",
+    "category": "Mechanical Resonance",
+    "related_terms": ["Spring vibration", "Spring reverb", "Resonant frequency", "Shock mount", "Decay time", "Reverberation"],
+    "common_mistakes": ["Confusing spring resonance with a smooth digital reverb tail; the spring's dispersive, metallic ring is a mechanical artifact", "Assuming a spring-reverb tank can be mounted anywhere, when its springs pick up floor and cabinet vibration and will 'boing' if bumped", "Thinking more spring tension always means more reverb, rather than shifting the resonant modes"],
+    "scenario_contexts": ["Dialing in a guitar amp's built-in spring reverb and taming the metallic ring", "Diagnosing a 'boing' when a spring-reverb combo amp is bumped during a live set", "Choosing a microphone shock mount whose spring resonance falls below the vocal range"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (reverberation / spring-type reverb)", "Yamaha Sound Reinforcement Handbook (Davis & Jones), Sec. 5.2 Spring-Type Reverbs", "Fletcher & Rossing, The Physics of Musical Instruments (resonance of vibrating systems)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2716517d-c0f8-44f0-822b-06cdc84b65e5",
+   "term": "Spring vibration",
+   "fields": {
+    "definition": "The physical back-and-forth oscillation of a spring after it is disturbed, in which the coil transmits waves along its length and rings at its resonant modes before damping out. In audio this is the mechanism by which a spring-reverb tank carries and re-radiates a signal, and also the unwanted motion of shock-mount or floor springs that can inject noise.",
+    "plain_english": "A spring vibration is just a spring shaking after you tap it. The shaking travels up and down the coil and slowly dies away. Inside a spring reverb, that traveling shake is what smears the sound out over time.",
+    "purpose_function": "Understanding spring vibration tells a technician how a spring turns a quick input into a spread-out, ringing output, which is useful for spring reverb, and warns when a spring is instead passing stray shakes into the signal.",
+    "practical_application": "On the job you hear spring vibration as the rattling, springy decay of a reverb tank, and you keep tanks and spring mounts away from anything that could bump them during a take.",
+    "category": "Mechanical Artifact",
+    "related_terms": ["Spring resonance", "Spring reverb", "Damping", "Decay", "Mechanical noise", "Shock mount"],
+    "common_mistakes": ["Treating every spring 'boing' as a fault when it is the intended reverb mechanism", "Ignoring that a vibrating tank can be re-excited by nearby subwoofers or footsteps", "Confusing spring vibration, which is mechanical, with electrical hum in the signal"],
+    "scenario_contexts": ["Recording a surf-rock guitar tone that relies on the reverb tank's spring vibration", "Isolating a combo amp so stage thump does not shake its reverb springs", "Troubleshooting a springy noise traced to a knocked reverb pan"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook (Davis & Jones), Sec. 5.2 Spring-Type Reverbs", "Fletcher & Rossing, The Physics of Musical Instruments (oscillation and damping of vibrating systems)", "Ballou, Handbook for Sound Engineers (reverberation devices)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "33e4925f-91fb-45e4-8acc-16be71be12bf",
+   "term": "Stand vibration",
+   "fields": {
+    "definition": "Low-frequency mechanical energy from footsteps, stage rumble, HVAC, or handling that travels up a microphone stand into the capsule as structure-borne noise, appearing as thumps and low-frequency rumble in the signal rather than airborne sound. It is controlled with shock mounts, isolation feet, high-pass filtering, and careful stand placement.",
+    "plain_english": "Stand vibration is shaking that travels up a mic stand into the microphone. Footsteps or a bumped stand turn into low thumps in the recording. A shock mount and a low-cut filter help stop it.",
+    "purpose_function": "Recognizing stand vibration matters because a mic picks up not only air but anything shaking its body; naming that path lets a technician block it before it muddies a recording.",
+    "practical_application": "A technician suspects stand vibration when low thumps appear in time with footsteps or bumps, then fits a shock mount, adds isolation, and engages a high-pass filter to remove it.",
+    "category": "Mechanical Artifact",
+    "related_terms": ["Shock mount", "Handling noise", "Low-frequency rumble", "High-pass filter", "Structure-borne noise", "Microphone isolation"],
+    "common_mistakes": ["Blaming stand-vibration rumble on the mic's electronics instead of the mechanical path", "Skipping the shock mount on a sensitive large-diaphragm condenser", "Placing a stand directly on a resonant riser or hollow stage without isolation"],
+    "scenario_contexts": ["Vocal tracking where the singer taps or leans on the stand", "A live stage where subwoofers and footfalls shake mic stands", "Boom-mounted overheads picking up floor rumble in a drum room"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook (Davis & Jones), Sec. 1.4.2 Shock Mounts / Fig. 1-12", "Huber & Runstein, Modern Recording Techniques (microphone mounting and low-frequency noise)", "Ballou, Handbook for Sound Engineers (microphone accessories and isolation)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5be4fbf2-9f7e-4444-99e3-ee6b6d450620",
+   "term": "Stick attack",
+   "fields": {
+    "definition": "The sharp initial transient produced when a drumstick, mallet, or beater strikes a drum, cymbal, or other percussion surface: the brief, high-amplitude onset that precedes the body and decay of the note and that largely defines its perceived punch and articulation.",
+    "plain_english": "Stick attack is the quick 'crack' at the very start of a drum hit. It is the first burst of sound before the drum rings out. This snap is what makes a hit feel punchy.",
+    "purpose_function": "The stick attack carries most of the cues the ear uses to place a drum in time and judge its impact, so preserving or shaping it is central to a tight, punchy drum sound.",
+    "practical_application": "A technician protects the stick attack with fast-transient mics and careful compressor attack settings, or boosts it with a transient shaper when a drum sounds soft and undefined.",
+    "category": "Transient / Attack",
+    "related_terms": ["Transient", "Attack", "Stick definition", "Stick click", "Transient shaper", "Decay"],
+    "common_mistakes": ["Setting a compressor's attack too fast and squashing the stick attack, killing the drum's punch", "Confusing the stick attack, a transient, with the drum's tuning or body tone", "Over-boosting the attack until the drum sounds clicky and unnatural"],
+    "scenario_contexts": ["Compressing a snare while keeping its stick attack intact", "Using a transient designer to add punch to a dull kick", "Choosing overhead mics fast enough to capture cymbal stick attack"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (transients and drum recording)", "Owsinski, The Mixing Engineer's Handbook (attack and transient shaping)", "Ballou, Handbook for Sound Engineers (transient response)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "da9cd79a-01a7-475c-92ba-d7ed6410f4ed",
+   "term": "Stick click",
+   "fields": {
+    "definition": "The brief, high-frequency click heard at the instant a drumstick contacts a head, rim, cymbal, or another stick: the hard, wood-on-surface component of the attack. It can be a desired articulation, such as a defined kick-beater click or a cross-stick, or an unwanted artifact, such as stray stick noise bleeding into cymbal mics.",
+    "plain_english": "Stick click is the little 'tick' of the wooden stick hitting a surface. Sometimes you want it, like a clear kick-drum click. Other times it is just noise leaking into a mic.",
+    "purpose_function": "Naming the stick click lets a technician decide whether to feature it for attack and definition or reduce it when it clutters cymbals and overheads.",
+    "practical_application": "A technician boosts around the click frequency to help a kick cut through a mix, or uses EQ, mic angle, and gating to tame stick clicks bleeding into overhead and cymbal mics.",
+    "category": "Attack Artifact",
+    "related_terms": ["Stick attack", "Beater click", "Cross-stick", "Bleed", "Stick definition", "Transient"],
+    "common_mistakes": ["Confusing the stick click with the drum's body tone", "Over-gating overhead mics to remove clicks and cutting the cymbal attack as well", "Assuming stick click is always a fault, when a defined beater click helps the mix cut through"],
+    "scenario_contexts": ["Adding beater click to a kick so it cuts through a dense mix", "Reducing stray stick clicks bleeding into overhead mics", "Capturing a clean cross-stick (rim click) on a ballad"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques (drum miking and bleed)", "Owsinski, The Mixing Engineer's Handbook (kick beater click and EQ)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "99802dd0-9ab7-4bd0-991e-a692f7790305",
+   "term": "Stick definition",
+   "fields": {
+    "definition": "The clarity and audibility of the stick's attack within a drum sound: how distinctly the initial transient and its high-frequency detail come through relative to the body and decay. High stick definition makes each hit read as crisp and articulate, while low definition sounds dull or smeared.",
+    "plain_english": "Stick definition is how clearly you can hear the stick hit in a drum sound. When it is high, each hit sounds crisp and clear. When it is low, the hits sound dull and blurry.",
+    "purpose_function": "Stick definition is what lets a listener follow fast drum parts clearly, so engineers manage it to keep drums articulate without making them harsh.",
+    "practical_application": "A technician improves stick definition with presence-range EQ, transient shaping, or closer mic placement, and eases it back when a part sounds too clicky.",
+    "category": "Transient Clarity",
+    "related_terms": ["Stick attack", "Stick click", "Transient", "Presence", "Definition", "Transient shaper"],
+    "common_mistakes": ["Chasing stick definition with harsh high-frequency boosts that make cymbals brittle", "Confusing definition, the clarity of the attack, with overall loudness", "Over-compressing so the attack is lost and definition drops"],
+    "scenario_contexts": ["Restoring articulation to a dull snare with presence EQ", "Balancing stick definition against cymbal harshness on overheads", "Tightening a fast double-kick pattern so each stroke reads clearly"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook (definition, presence, and transient shaping)", "Huber & Runstein, Modern Recording Techniques (attack clarity and equalization)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "610b0ba4-5061-4d48-8cbe-a7132b926de0",
+   "term": "Stick rebound",
+   "fields": {
+    "definition": "The natural bounce of a drumstick back off the drumhead or other surface after impact, driven by the head's tension and elasticity returning stored energy to the stick. Drummers exploit this rebound with a relaxed fulcrum grip to play faster, smoother strokes with less effort and to produce multiple-bounce strokes.",
+    "plain_english": "Stick rebound is the way a stick bounces back up after it hits a drum. The tight, springy head pushes the stick back, like a ball bouncing off the floor. Drummers use that bounce to play fast without tiring out.",
+    "purpose_function": "Rebound turns the drumhead's own springiness into free motion for the next stroke, which is why controlling it is central to speed, evenness, and endurance at the kit.",
+    "practical_application": "A drummer relies on stick rebound for buzz rolls, double strokes, and fast single strokes, adjusting grip pressure and head tension to control how much the stick bounces.",
+    "category": "Playing Technique",
+    "related_terms": ["Stick attack", "Drumhead tension", "Double stroke", "Buzz roll", "Rebound stroke", "Grip"],
+    "common_mistakes": ["Gripping the stick too tightly, which kills the rebound and forces muscling every stroke", "Expecting the same rebound from a loose head as from a tightly tuned one", "Relying only on rebound and neglecting controlled strokes for softer dynamics"],
+    "scenario_contexts": ["Practicing double-stroke rolls that depend on even rebound", "Adjusting drumhead tension to get a lively rebound for fast playing", "Playing a soft buzz roll using controlled multiple-bounce rebound"]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (membrane tension and restoring force)", "Stone, Stick Control for the Snare Drummer (standard percussion technique text)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "85894828-fea5-4be8-84ab-577713871d58",
+   "term": "Sul tasto tone",
+   "fields": {
+    "definition": "The soft, flute-like timbre produced on a bowed string instrument by playing sul tasto, that is, drawing the bow over the fingerboard away from the bridge. Bowing there weakens the upper harmonics and emphasizes the fundamental, giving a veiled, mellow tone; the technique is also called flautando and contrasts with the bright, harmonic-rich sul ponticello.",
+    "plain_english": "Sul tasto tone is a soft, breathy string sound. The player bows over the fingerboard instead of near the bridge. This mellows the sound, a bit like a flute.",
+    "purpose_function": "Sul tasto gives composers and players a gentle, veiled color at the quiet end of the string palette, useful when a normal or bright tone would be too present.",
+    "practical_application": "A player moves the bow over the fingerboard to get a hushed, colorless pad, and an engineer recognizes the tone as intentionally dark rather than a dull mic or muffled recording.",
+    "category": "String Articulation",
+    "related_terms": ["Sul ponticello", "Flautando", "Bow position", "Harmonic content", "Timbre", "Con sordino"],
+    "common_mistakes": ["Confusing a sul tasto tone with a poorly recorded, muffled string sound and 'fixing' it with EQ", "Bowing too near the bridge and losing the intended soft color", "Assuming sul tasto only changes volume, when it mainly changes timbre"],
+    "scenario_contexts": ["Recording a string section asked to play sul tasto for a soft passage", "Identifying an intentionally veiled tone versus a dull microphone", "Contrasting sul tasto and sul ponticello colors in an arrangement"]
+   },
+   "sources": ["Adler, The Study of Orchestration (sul tasto / flautando)", "Piston, Orchestration (bowing position and tone color)", "The New Grove Dictionary of Music and Musicians (sul tasto)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cd90dd69-e319-42ed-8780-9e1a58842276",
+   "term": "Swell",
+   "fields": {
+    "definition": "A gradual increase in loudness, and often in intensity or brightness, over a note or phrase from soft to louder, a crescendo shaped as a smooth rise that is sometimes followed by a decrease. It can be performed by bowing, breath, or an organ swell box, or created electronically by fading in level with a volume pedal, a guitar volume knob, or a slow envelope or automation.",
+    "plain_english": "A swell is a smooth rise in volume, from quiet to loud. Instead of a sharp start, the sound eases in. Guitarists make one by turning up the volume knob right after they pick a note.",
+    "purpose_function": "A swell removes the hard attack of a note so a sound blooms in gently, which is why it is used for pads, ambient textures, and expressive dynamics.",
+    "practical_application": "A technician creates swells with volume-pedal moves, a slow synth attack, or fade-in automation, and shapes their timing so the sound arrives smoothly under the mix.",
+    "category": "Dynamics / Envelope",
+    "related_terms": ["Crescendo", "Attack", "Volume pedal", "Envelope", "Fade-in", "Dynamics"],
+    "common_mistakes": ["Confusing a swell, a gradual level change, with tremolo, a rapid repeated pulsing", "Making the swell so slow that the note loses its pitch and timing cues", "Forgetting that a fast envelope attack setting cancels an intended slow synth swell"],
+    "scenario_contexts": ["Automating a volume swell on a pad so it blooms into a chorus", "Using a volume pedal for attack-less guitar swells", "Setting a slow synth amplitude-envelope attack to make notes swell in"]
+   },
+   "sources": ["The New Grove Dictionary of Music and Musicians (swell / crescendo)", "Adler, The Study of Orchestration (dynamics and dynamic shaping)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,87 @@
+{
+  "course": "MUSI190",
+  "topic": "Equalization (EQ)",
+  "safety_critical": false,
+  "authored": [
+    {
+      "id": "005c4924-c323-4e14-8953-42424bbaa23a",
+      "term": "Band Solo",
+      "fields": {
+        "plain_english": "It lets you listen to only the slice of sound one EQ band is working on, so you can hear the problem frequency by itself before deciding to cut or boost it.",
+        "purpose_function": "It isolates the frequency range covered by a single EQ band so an engineer can pinpoint resonances, sibilance, or muddiness quickly and accurately instead of sweeping blindly.",
+        "practical_application": "An engineer holds the band's solo/listen button and drags it across the spectrum until the offending ring or harshness stands out, then places a cut exactly there.",
+        "category": "Equalization",
+        "related_terms": ["Parametric EQ", "Q (Bandwidth)", "Bell Filter", "Resonance Suppressor", "Sweepable EQ", "Notch Filter"],
+        "common_mistakes": ["Confusing band solo (which auditions only the frequency range affected by that band) with soloing the whole channel", "Using boost-and-sweep to find a frequency and then leaving an unnecessary boost in place", "Assuming anything that sounds bad in solo must be cut, ignoring how it actually sits in the full mix", "Forgetting to disengage solo before printing or bouncing"],
+        "scenario_contexts": ["Hunting a ringing resonance on a snare drum", "Finding the exact sibilant band on a lead vocal", "Isolating a feedback or room-mode frequency in live sound", "Locating muddy build-up around 200-400 Hz on an acoustic guitar"]
+      },
+      "sources": ["FabFilter Pro-Q 4 Help - Solo (fabfilter.com)", "FabFilter Pro-Q 3 Manual (fabfilter.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "ee7c98a4-dde5-44ee-aaeb-675259c9c9d1",
+      "term": "Cramped EQ (Frequency Cramping)",
+      "fields": {
+        "plain_english": "In some digital EQs, boosts near the top of the audible range get squashed and harsher-sounding, because the math forces the curve to unity gain at the sampling limit, so the bell can no longer stay symmetrical.",
+        "purpose_function": "The term names an artifact rather than a tool: it describes how a standard bilinear-transform digital filter warps high-frequency bell and shelf shapes as they approach Nyquist, which designers counter with oversampling or analog-matched (decramped) filter designs.",
+        "practical_application": "An engineer who hears a high bell or shelf turning harsh and asymmetric on a 44.1 kHz session switches to an oversampled or analog-matched EQ mode, or works at a higher sample rate, to restore a smoother, more symmetrical curve.",
+        "category": "Equalization",
+        "related_terms": ["Bilinear Transform", "Nyquist Frequency", "Oversampling", "Bell Filter", "High-Shelf Filter", "Parametric EQ"],
+        "common_mistakes": ["Believing all digital EQs cramp equally, when analog-matched or oversampled designs largely avoid it", "Blaming the source or converters for harshness that is actually filter cramping near Nyquist", "Assuming oversampling also fixes the phase warping, when it primarily corrects the magnitude response", "Thinking cramping affects low and mid bands, when it only appears as a band's center approaches Nyquist"],
+        "scenario_contexts": ["Boosting air/presence around 12-16 kHz at 44.1 kHz and hearing an unexpectedly narrow, harsh peak", "A/B comparing a native digital EQ against an analog-matched version on the same high shelf", "Deciding whether to enable oversampling on a mastering EQ", "Working at 88.2 or 96 kHz to push cramping artifacts well above the audio band"]
+      },
+      "sources": ["Production Expert - What Is EQ Cramping And Should You Care? (production-expert.com)", "vladg/sound - A classification of digital equalizers (vladgsound.wordpress.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "5c0cfec1-31ca-486e-a00c-70421ab76bd3",
+      "term": "Fixed-Frequency EQ",
+      "fields": {
+        "plain_english": "An EQ where each band boosts or cuts at a frequency the designer already chose; you decide how much, but not where.",
+        "purpose_function": "It offers fast, repeatable tone-shaping at musically useful preset points, which is why it appears on vintage consoles, channel strips, and simple tone controls where speed and consistency matter more than surgical targeting.",
+        "practical_application": "On a vintage console channel a tech simply turns a fixed high or low band up or down; on classic units such as a Pultec, the center frequency is chosen from a stepped selector rather than swept continuously.",
+        "category": "Equalization",
+        "related_terms": ["Semi-Parametric EQ", "Parametric EQ", "Graphic EQ", "Shelving Filter", "Baxandall EQ", "Channel Strip"],
+        "common_mistakes": ["Expecting to sweep the center frequency, when fixed-frequency bands only change gain (or select from stepped presets)", "Confusing fixed-frequency EQ with a graphic EQ", "Assuming the preset frequencies are wrong when a small move at a nearby band solves the problem", "Using large boosts to compensate for not being able to target the exact frequency"],
+        "scenario_contexts": ["Quick tone tweaks on a vintage or budget console channel", "Adding air or trimming low end with a two-knob channel tone section", "Using a Pultec-style unit with stepped frequency selection", "Live-sound input strips with fixed HF/LF bands for fast setup"]
+      },
+      "sources": ["Sweetwater InSync - Sweepable EQ (sweetwater.com)", "Behind The Mixer - Do You Really Know Your Channel EQ Controls? (behindthemixer.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "54a0a15f-d878-43b2-889b-1c70c92b2ff3",
+      "term": "Resonance Suppressor",
+      "fields": {
+        "plain_english": "An automatic tool that constantly watches the sound and clamps down on any narrow frequency that starts ringing or sticking out, only for as long as it is a problem, then lets go.",
+        "purpose_function": "It exists to tame harsh or resonant peaks such as fizz, sibilance, or boxy ring transparently, applying gain reduction only when and where a resonance appears so it avoids the static tone loss of a permanent cut.",
+        "practical_application": "An engineer inserts one on a vocal, acoustic guitar, or drum overheads and sets a depth/sensitivity so it automatically pulls down harsh resonances without dulling the whole track, often replacing manual notching and de-essing.",
+        "category": "Equalization",
+        "related_terms": ["Dynamic EQ", "Band Solo", "Notch Filter", "De-Esser", "Parametric EQ", "Q (Bandwidth)"],
+        "common_mistakes": ["Setting the depth too aggressively so the source sounds dull and lifeless", "Treating it as a substitute for fixing tone at the source with mic choice and placement", "Confusing it with a static multi-band EQ, when it only acts while a resonance is ringing", "Leaving it working hard across a whole mix instead of targeting specific problem tracks"],
+        "scenario_contexts": ["Taming harsh vocal resonances and sibilance without a separate de-esser", "Controlling a ringy snare or cymbal fizz on drum overheads", "Smoothing harsh overtones on distorted or acoustic guitar", "De-harshing a bright mix or master"]
+      },
+      "sources": ["oeksound soothe2 - dynamic resonance suppressor product documentation (oeksound.com)", "MixingGPT - Soothe 3 vs FabFilter Pro-Q 4: Dynamic Resonance Suppression vs Dynamic EQ (mixinggpt.com)"],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "9130e995-1158-40f9-8f37-0d88b8f3911c",
+      "term": "Semi-Parametric EQ",
+      "fields": {
+        "plain_english": "An EQ band where you choose the frequency and how much to boost or cut, but the width of the affected area is fixed for you.",
+        "purpose_function": "It gives more targeting than a fixed tone control by letting you sweep the center frequency, while staying simpler and faster than full parametric, which is why it is the standard mid band on many live and budget consoles.",
+        "practical_application": "On a console mid band an engineer sweeps to find the frequency, often boosting first to locate a problem and then cutting, and sets the amount while accepting the preset bandwidth.",
+        "category": "Equalization",
+        "related_terms": ["Parametric EQ", "Fixed-Frequency EQ", "Q (Bandwidth)", "Sweepable EQ", "Bell Filter", "Channel Strip"],
+        "common_mistakes": ["Expecting a Q/bandwidth control, when semi-parametric fixes the width for you", "Leaving a boost in place after boost-sweeping to find a problem frequency", "Calling any sweepable EQ fully parametric", "Trying to make a surgical narrow notch when the fixed Q is too broad for it"],
+        "scenario_contexts": ["Dialing the swept mid on a live console input channel", "Carving boxiness on a bass amp's semi-parametric mid", "Quick tone-shaping on a budget studio channel strip", "Ringing out a problem midrange frequency during soundcheck"]
+      },
+      "sources": ["Sweetwater InSync - Sweepable EQ (sweetwater.com)", "Behind The Mixer - Do You Really Know Your Channel EQ Controls? (behindthemixer.com)"],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+{
+ "expert": "cognition",
+ "group": 7,
+ "reviews": [
+  {
+   "id": "8c1ec7e5-3c41-4378-93b3-bdc3bbd0448d",
+   "term": "Bonded Pair",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2845811b-ee50-41b5-afc9-5f93b266e387",
+   "term": "Bonding",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7f92ea09-8e57-4558-bb15-b864e87ee565",
+   "term": "Bookshelf Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "edd7ec7c-930d-4bcd-a7b6-87c758ca0d86",
+   "term": "Boom Arm",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f933f99d-944f-408c-905f-1ecec9eff794",
+   "term": "Boom Pole",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fbb1ddbc-8eaf-4ab4-9c2b-7c73a408d974",
+   "term": "boost/cut equalizer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bda28020-848f-4878-bcef-215188c752de",
+   "term": "Booth Monitor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f0162147-b56a-4182-82f2-589c57f8916b",
+   "term": "Booth Output",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "158fb1d0-1a9e-4b06-ad88-a0ca03611f96",
+   "term": "Booth Speakers",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "de406a33-a33b-4745-b832-c50c534d089f",
+   "term": "Bottom-up troubleshooting",
+   "verdict": "NEEDS_REVISION",
+   "suggestions": [
+    {
+     "field": "plain_english",
+     "severity": "High",
+     "issue": "The entry contradicts itself on which end is 'bottom', a direction that is the whole point of the method. plain_english defines bottom-up as starting 'at the source, such as the microphone or input, and works forward through the chain toward the output.' But scenario 1 ('first proving amps and speakers, then working back to the console') and scenario 2 ('from the physical layer (cabling) upward to application settings') both start at the OUTPUT/physical end and work back toward the source. A student who learns the stated direction and then reads the scenarios will be confused about how to actually run the method.",
+     "suggestion": "Make the definition and scenarios agree. The scenarios follow the common convention (bottom = the output/physical end), so revise plain_english to: 'Bottom-up troubleshooting starts at the output/physical end of the system (e.g., the speakers and amps, or the cabling) and works back toward the source and higher-level settings' — or, if the source-first direction is intended, replace scenario 1 with one that begins at the mic/input and moves toward the speakers. Pick one direction and use it consistently across definition, plain_english, and scenarios."
+    }
+   ]
+  },
+  {
+   "id": "84a3026e-b3c4-4cff-a301-fe42db17a36f",
+   "term": "Bounce",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "3536fd76-eff0-4ab1-8c28-db6aba62ee8e",
+   "term": "Boundary Microphone (PZM)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "69f6b8ad-a866-4002-9e91-95fb6c20abb2",
+   "term": "Braided Shield",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "75100a90-ac82-48bd-9bed-7eece1da83db",
+   "term": "Breaker Panel (Service Panel)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c071b18a-b5da-4764-bec8-1429e798a2e7",
+   "term": "Breakout Box",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f579debc-4fb8-4e13-ae07-ed00c9563327",
+   "term": "Breakout Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "870e8e9e-20d2-42d4-a136-4455c52b4846",
+   "term": "Breakout Room",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d26f638e-91f7-4c8b-a476-b9c85e39f129",
+   "term": "Breathing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a7565839-e447-4113-a393-22b92fe38016",
+   "term": "Brickwall Limiter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fdd8eab9-0ec2-4764-acfd-442ce56d646a",
+   "term": "Bridged Mode",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5de777e2-1b77-4077-996c-2b34c5849bd1",
+   "term": "Bridle",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7e8ce768-4c3e-4ab8-b4d5-9fc35246554f",
+   "term": "Broadband EQ",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "45895402-124a-472f-8b14-2275f6e031ca",
+   "term": "Broadcast WAV (BWF)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0969e63a-2962-4fb9-bd7c-28e3561dc926",
+   "term": "Broken Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5a489fcf-7900-41f2-9c5f-41e10f68a1b3",
+   "term": "Brown",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d14b8d8f-a4ea-4e6e-8186-49a0eae0ee50",
+   "term": "Brownout",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fcde074f-4c35-4c9f-a2da-c9f76cfa43ee",
+   "term": "Bucket-Brigade Delay (BBD)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "13ee439c-c0fd-4fb7-819c-06430dfc2a19",
+   "term": "buffer amplifier",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1474e263-1ed4-4d8d-aed0-87cc5efe7ac2",
+   "term": "Buffer overrun",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "020fa245-7e8a-4dde-a2b0-8686b2ef9a68",
+   "term": "Buffer underrun",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b70d875f-d27a-4f4f-b26d-7084dfd4337b",
+   "term": "Build-up method",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "854b0d5f-649d-4688-a55f-4154473578e0",
+   "term": "Bulk Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b5c1cc47-1679-479c-8cfe-a01b89cbad5e",
+   "term": "Bulkhead Speaker",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2853f135-8725-40dc-893d-85c453be8d33",
+   "term": "Bus",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "73f106ca-3768-42e9-abbf-0ee5cffcd69e",
+   "term": "Bus Assignment",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

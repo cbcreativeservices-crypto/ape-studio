@@ -1,0 +1,159 @@
+{
+ "batch": 48,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "61a88a96-9fd3-4743-84de-670bf90aa3d8",
+   "term": "Guitar DI blend (EK)",
+   "fields": {
+    "definition": "Mixing a guitar's clean direct-injection (DI) signal with its amplified or otherwise processed signal, so the dry unaltered pickup tone and the coloured amp or effects tone combine into one balanced sound. The two paths are time- and phase-aligned so the sum stays clean.",
+    "plain_english": "A DI blend mixes the clean guitar sound, taken straight from the guitar, with the fuller sound from its amp. This lets you keep the sharp pick attack while adding the amp's body and warmth.",
+    "purpose_function": "It gives the engineer both the tight attack of the clean DI and the character of the amp, and it preserves an untouched DI so the tone can be re-amped or changed later.",
+    "practical_application": "A tracking engineer splits the guitar to a DI box and to an amp with a mic, records both at once, then balances the two in the mix and nudges one slightly to fix any phase cancellation.",
+    "category": "Guitar Recording",
+    "related_terms": ["Direct injection", "Re-amping", "Phase alignment", "Amp miking", "Parallel processing"],
+    "common_mistakes": ["Not time-aligning the DI and amp signals, so they partly cancel and sound thin", "Assuming a raw DI alone sounds like an amp, when it needs amp or cabinet processing to be usable", "Blending the two at full level without checking mono compatibility for phase problems"],
+    "scenario_contexts": ["Recording an electric guitar with a DI box plus a miked amp so both are captured for later mixing", "Keeping a clean DI so a producer can re-amp the part through a different rig", "Adding clean DI under a heavily processed amp tone to restore pick attack and note clarity"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a877fa10-7ce3-40dc-8070-59eb5c46f90c",
+   "term": "Guitar distortion blending",
+   "fields": {
+    "definition": "Combining a distorted guitar signal with a cleaner or differently distorted version of the same part, so the blend keeps the grit and edge of the distortion while retaining the note definition and low-end clarity of the cleaner tone.",
+    "plain_english": "This means mixing a gritty, distorted guitar sound with a cleaner take of the same part. The clean take keeps the notes clear while the distorted one adds bite and power.",
+    "purpose_function": "It exists because heavy distortion can blur the pick attack and low end; adding a cleaner layer restores clarity while the distorted layer supplies aggression.",
+    "practical_application": "A mix engineer runs a rhythm guitar through a clean channel and a distorted channel, or two different amp models, then balances them so chords stay defined without losing edge.",
+    "category": "Guitar Recording",
+    "related_terms": ["Distortion", "Parallel processing", "Guitar double tracking", "Gain staging", "Guitar equalization"],
+    "common_mistakes": ["Adding so much distortion that low notes turn to mush before blending in a clean layer", "Leaving the two layers out of phase, which thins the combined tone", "Overpowering the clean layer so it adds no definition"],
+    "scenario_contexts": ["Blending a clean DI under a distorted amp to keep chords defined in a dense mix", "Layering two distortion tones to get more sustain without extra mud", "Restoring low-end punch on a high-gain metal rhythm guitar"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2a01851b-a482-446a-baf5-ea22762aaf95",
+   "term": "Guitar double tracking",
+   "fields": {
+    "definition": "Recording the same guitar part two or more separate times as independent performances, then panning the takes apart, often hard left and right, so the small natural timing and pitch differences between performances create a wider, thicker stereo image.",
+    "plain_english": "Double tracking means playing and recording the same guitar part twice. Panning one take to the left and one to the right makes the guitar sound wider and fuller.",
+    "purpose_function": "It widens and thickens guitars in a stereo mix; the tiny human differences between the two takes create width that a single copied track cannot.",
+    "practical_application": "An engineer has the guitarist play a rhythm part twice, pans the two takes left and right, and checks that they lock tightly in time so the part stays clear.",
+    "category": "Guitar Recording",
+    "related_terms": ["Overdubbing", "Panning", "Stereo image", "Comping", "Guitar distortion blending"],
+    "common_mistakes": ["Copying and pasting one take to both sides instead of a real second performance, which gives no true width", "Sloppy second takes that do not line up in time, blurring the part", "Panning both takes near the center, which cancels the widening effect"],
+    "scenario_contexts": ["Tracking a rock rhythm guitar twice and panning hard left and right for a wide wall of sound", "Doubling a clean arpeggio part to add depth in a chorus", "Layering two distorted takes so the guitars fill the stereo field"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7880b528-031e-454a-be69-6f57fd6136da",
+   "term": "Guitar dynamic equalization",
+   "fields": {
+    "definition": "Equalization of a guitar signal in which the boost or cut in a chosen band changes automatically in response to the signal level in that band, so the EQ acts only when the target frequencies pass a set threshold rather than applying a fixed, constant amount.",
+    "plain_english": "Dynamic EQ turns an EQ band up or down only when it is needed. For example, it can tame a harsh high note only on the loud chords, then leave the quieter parts alone.",
+    "purpose_function": "It fixes problems that come and go, like an occasional harsh or boomy note, without permanently reshaping the tone the way fixed EQ would.",
+    "practical_application": "An engineer sets a dynamic EQ band on a guitar to cut around 2 to 4 kHz only when the tone gets harsh, leaving the rest of the performance untouched.",
+    "category": "Guitar Tone Shaping",
+    "related_terms": ["Guitar equalization", "Multiband compression", "De-essing", "Guitar harshness reduction", "Threshold"],
+    "common_mistakes": ["Setting the threshold so low that the band cuts constantly, acting like plain fixed EQ", "Using too wide a band, so nearby useful frequencies get pulled down as well", "Reaching for a fixed EQ cut when the problem only happens on some notes"],
+    "scenario_contexts": ["Taming an occasional harsh upper-mid on a distorted rhythm guitar only when it spikes", "Controlling a boomy low note that rings out on certain chords", "Keeping a bright lead guitar smooth without dulling its quieter passages"]
+   },
+   "sources": ["FabFilter Pro-Q 3 user manual", "Ballou, Handbook for Sound Engineers", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "66a164a3-08d7-4a55-bf20-bf73bdd861a1",
+   "term": "Guitar effects return",
+   "fields": {
+    "definition": "The input channel or path that brings an effect's processed (wet) output back into the mixer or DAW, specifically the return carrying time-based or other effects applied to a guitar through an auxiliary or effects send.",
+    "plain_english": "An effects return is the channel that brings a guitar's effect sound, like reverb or delay, back into the mix. The guitar is sent out to the effect, and the return is where that effect sound comes back.",
+    "purpose_function": "It lets one effect unit be shared by several channels through sends, and it lets the returned wet signal be blended against the dry guitar without routing the whole channel through the effect.",
+    "practical_application": "On a console or DAW the engineer sends the guitar to a reverb on an aux, then brings the reverb back on an effects return channel to set its level, EQ and pan.",
+    "category": "Signal Routing",
+    "related_terms": ["Auxiliary send", "Effects send", "Wet/dry balance", "Reverb", "Send and return"],
+    "common_mistakes": ["Turning up the send with no return channel active, so no effect is heard", "Duplicating the dry signal into the return, which doubles the guitar instead of adding pure effect", "Forgetting to mute or manage feedback when routing a return back toward its own send"],
+    "scenario_contexts": ["Bringing a shared reverb back on a return channel and blending it under the guitar", "Setting up a delay send and return so several tracks share one delay", "EQing an effects return to keep the wet reverb from clouding the mix"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1423e6c0-8d9b-4f80-a8e9-887c90924f5b",
+   "term": "Guitar equalization",
+   "fields": {
+    "definition": "Adjusting the relative levels of specific frequency bands in a guitar signal to shape its tone, for example cutting low-mid mud, boosting presence, or removing an offending resonance, using shelving, peaking, or filter EQ.",
+    "plain_english": "Guitar EQ means turning certain pitch ranges of the guitar up or down to shape its sound. You might cut boomy lows or add some bite in the highs so the guitar sits well in the song.",
+    "purpose_function": "It shapes a guitar's tone and carves space so the guitar fits with vocals, bass and other instruments without clashing.",
+    "practical_application": "An engineer high-passes a rhythm guitar to clear low-end mud, then dips a boxy midrange so it sits neatly under the vocal.",
+    "category": "Guitar Tone Shaping",
+    "related_terms": ["High-pass filter", "Shelving filter", "Parametric EQ", "Guitar high-cut filtering", "Frequency masking"],
+    "common_mistakes": ["Boosting many bands instead of cutting the ones that cause problems, which builds up level and harshness", "EQing a solo guitar to sound great alone, then finding it clashes in the full mix", "Using very narrow boosts that make the tone sound unnatural"],
+    "scenario_contexts": ["High-passing a rhythm guitar to remove rumble and free up the low end for bass", "Cutting an ugly resonant frequency found by sweeping a boost", "Adding a gentle presence boost so a lead guitar cuts through the mix"]
+   },
+   "sources": ["Rane technical notes on equalizers", "Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2bc9971a-4a6b-479a-8d62-6cb39c4d0f6a",
+   "term": "Guitar fizz reduction",
+   "fields": {
+    "definition": "Attenuating the harsh, buzzy high-frequency content, typically above roughly 5 to 8 kHz, produced by distorted guitar tones and especially amp simulators, usually with a low-pass filter or high-shelf cut, to remove the fizzy edge while keeping useful presence.",
+    "plain_english": "Fizz is the harsh, buzzy hiss on top of a distorted guitar, common with amp modelling. Fizz reduction cuts those very high frequencies so the tone sounds smooth instead of scratchy.",
+    "purpose_function": "It makes distorted guitars, especially digital amp sims, sound smoother and more like a real miked cabinet, which naturally rolls off the extreme highs.",
+    "practical_application": "An engineer places a low-pass filter around 6 to 10 kHz on a distorted guitar and adjusts by ear until the harsh top is gone but the tone stays clear.",
+    "category": "Guitar Tone Shaping",
+    "related_terms": ["Guitar high-cut filtering", "Low-pass filter", "Amp simulator", "Cabinet simulation", "Guitar harshness reduction"],
+    "common_mistakes": ["Cutting so low that the guitar goes dull and lifeless", "Blaming fizz on the amp when a proper cabinet or speaker simulation would fix it", "Fixing fizz with a narrow notch instead of a smooth roll-off, leaving a ragged top end"],
+    "scenario_contexts": ["Taming digital fizz on an amp-sim rhythm guitar to match a real cabinet sound", "Rolling off harsh highs on a high-gain lead so it is easier to listen to", "Cleaning up a re-amped distorted track that picked up extra buzz"]
+   },
+   "sources": ["Sound on Sound technical articles", "Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4e127dee-ccbd-4883-aedd-3a43706d7664",
+   "term": "Guitar harshness reduction",
+   "fields": {
+    "definition": "Reducing the aggressive, ear-fatiguing energy in a guitar's upper midrange, often around 2 to 5 kHz, typically with a narrow EQ cut or dynamic EQ, to make the tone easier to listen to without dulling its presence.",
+    "plain_english": "Harshness is a sharp, piercing sound some guitars have in the higher mid pitches. Reducing it means gently turning down those pitches so the guitar is easier on the ears.",
+    "purpose_function": "It tames fatiguing frequencies that make a guitar sound painful or brittle, which improves how the guitar sits in a full mix.",
+    "practical_application": "An engineer sweeps a narrow EQ boost to find the harshest spot around 3 kHz, then cuts there, or uses a dynamic EQ so the cut only acts on loud, harsh moments.",
+    "category": "Guitar Tone Shaping",
+    "related_terms": ["Guitar dynamic equalization", "Guitar equalization", "Guitar fizz reduction", "Notch filter", "Upper midrange"],
+    "common_mistakes": ["Cutting too deeply, which leaves the guitar dull and buried in the mix", "Confusing upper-mid harshness with high-end fizz and cutting the wrong range", "Using a fixed cut for harshness that only appears on some notes, when dynamic EQ would be better"],
+    "scenario_contexts": ["Softening a piercing 3 kHz edge on a distorted rhythm guitar", "Making a bright single-coil clean part easier to listen to", "Reducing fatigue on a lead guitar that sounds sharp on loud notes"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Ballou, Handbook for Sound Engineers", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ebda4bdf-2aa2-4406-9bd0-66b4f2cea0a4",
+   "term": "Guitar high-cut filtering",
+   "fields": {
+    "definition": "Applying a low-pass (high-cut) filter to a guitar signal to progressively attenuate frequencies above a chosen corner frequency, removing unwanted high-frequency content such as hiss, fizz, or excessive brightness.",
+    "plain_english": "A high-cut filter lowers everything above a set pitch, so the very high sounds are removed. On guitar it is used to take off hiss or harsh top so the tone is warmer.",
+    "purpose_function": "It cleans up or darkens a guitar tone by removing highs that add hiss, fizz or harshness, or that clash with cymbals and vocals.",
+    "practical_application": "An engineer sets a low-pass filter on a guitar track around 8 to 12 kHz to remove hiss and fizz, moving the corner lower for a warmer, more vintage tone.",
+    "category": "Guitar Tone Shaping",
+    "related_terms": ["Low-pass filter", "Guitar fizz reduction", "High-pass filter", "Guitar equalization", "Corner frequency"],
+    "common_mistakes": ["Setting the corner too low, which makes the guitar dull and lifeless", "Confusing a high-cut (low-pass) with a high-pass filter and cutting the wrong end", "Using a very steep slope that removes air abruptly and sounds unnatural"],
+    "scenario_contexts": ["Rolling off hiss and fizz on a distorted guitar for a smoother top end", "Darkening a bright guitar so it does not fight the cymbals and vocals", "Adding a gentle high-cut for a warm, vintage guitar tone"]
+   },
+   "sources": ["Rane technical notes on filters", "Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

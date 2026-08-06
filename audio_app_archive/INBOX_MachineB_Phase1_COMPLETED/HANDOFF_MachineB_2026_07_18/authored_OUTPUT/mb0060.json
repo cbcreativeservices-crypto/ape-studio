@@ -1,0 +1,231 @@
+{
+ "batch": 60,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "bdf7f635-23fb-4805-ab2e-374e3a3e49be",
+   "term": "Microtiming offset",
+   "fields": {
+    "definition": "A small, deliberate displacement of a note or track relative to the metric grid, measured in milliseconds or ticks, used to shape groove and feel rather than to correct errors. Positive offsets place events slightly ahead of the beat (pushing) and negative offsets slightly behind it (laying back).",
+    "plain_english": "It is a tiny shift of a note a little earlier or later than the exact beat. It gives music a human feel, the way a real drummer never plays perfectly in time.",
+    "purpose_function": "It lets an engineer or producer control the groove and interaction between parts by nudging events off the strict grid, since perfectly quantized timing often sounds stiff. Small offsets create the sense of push or laid-back feel that defines a band's pocket.",
+    "practical_application": "When editing tracked drums or MIDI, a technician nudges a snare or bass note a few milliseconds early or late, or dials in a percentage of quantize strength, to tighten timing without killing the feel.",
+    "category": "Timing & Groove",
+    "related_terms": ["Quantization", "Groove template", "Swing", "Pocket", "Beat grid"],
+    "common_mistakes": [
+     "Quantizing every part fully to 100 percent, which removes the natural push and pull and makes the performance feel mechanical.",
+     "Confusing microtiming feel with sloppy timing, and correcting deliberate laid-back playing that was giving the track its groove.",
+     "Applying the same offset to every track instead of judging each instrument's relationship to the beat by ear."
+    ],
+    "scenario_contexts": [
+     "Editing a live drum take so the kick sits tighter with the bass while keeping the drummer's natural feel.",
+     "Programming a MIDI beat and nudging the snare slightly late to get a relaxed, laid-back groove.",
+     "Aligning a doubled guitar to the main take without making both parts sound robotically locked."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d639a063-71a7-4b68-a7e0-4add6a193114",
+   "term": "Noise texture",
+   "fields": {
+    "definition": "A textural sonic layer built from broadband or colored noise, such as white, pink, vinyl crackle, tape hiss, or field-recorded ambience, added to an arrangement for atmosphere, glue, or character rather than for pitch or rhythm. It functions as a background bed or transitional element rather than a melodic part.",
+    "plain_english": "It is a soft layer of noise, like static, hiss, or record crackle, added under a song. It fills empty space and sets a mood, like the faint hum you hear on an old record.",
+    "purpose_function": "It fills gaps in the frequency spectrum and the stereo field, adds a sense of space or grit, and can glue disparate elements together into one cohesive bed. Producers use it to make sparse arrangements feel fuller and more intentional.",
+    "practical_application": "A technician layers a low-level noise sample or synthesized noise under a mix, filters it to taste, and rides its level so it adds air or vibe without masking the main instruments.",
+    "category": "Arrangement Texture",
+    "related_terms": ["Ambience layer", "Sound bed", "Pink noise", "Field recording", "Foley"],
+    "common_mistakes": [
+     "Setting the noise layer too loud so it masks detail and raises the overall noise floor of the mix.",
+     "Leaving noise textures unfiltered, so their high or low content clashes with the instruments they are meant to support.",
+     "Adding noise as an afterthought instead of choosing its color and character to match the song's mood."
+    ],
+    "scenario_contexts": [
+     "Adding vinyl crackle under a lo-fi hip-hop beat to give it a warm, nostalgic feel.",
+     "Placing a filtered noise sweep before a chorus to build tension into the drop.",
+     "Layering quiet room ambience under an electronic track so it feels less sterile."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "88d9ccb2-e464-45cd-baae-c30e14fdc651",
+   "term": "Octave layering",
+   "fields": {
+    "definition": "An arrangement technique in which a part is doubled by a copy pitched one or more octaves above or below the original and blended with it, reinforcing the line and thickening its timbre. The layers can be separate performances, transposed copies, or an octave-generating effect.",
+    "plain_english": "It means playing the same part again one octave higher or lower and blending them. It makes the sound thicker and fuller, like two singers on the same tune but at different pitches.",
+    "purpose_function": "It adds weight, fullness, and reinforcement to a melodic or harmonic line without changing the notes, and can extend a part's presence into higher or lower ranges. This helps a single instrument or voice occupy more of the frequency spectrum.",
+    "practical_application": "A technician doubles a bass line an octave up to add definition on small speakers, or layers a synth lead an octave higher to make a hook cut through the mix.",
+    "category": "Arrangement Technique",
+    "related_terms": ["Octave stack", "Doubling", "Unison", "Layering", "Voicing"],
+    "common_mistakes": [
+     "Layering octaves in an already crowded frequency range, which causes buildup and masking instead of reinforcement.",
+     "Assuming a higher or lower octave copy is always in tune, when transposition artifacts or timing drift can smear the result.",
+     "Overusing octave layers so every part sounds oversized and the mix loses contrast."
+    ],
+    "scenario_contexts": [
+     "Doubling a synth bass an octave up so it stays audible on phone and laptop speakers.",
+     "Reinforcing a vocal hook with a part sung an octave higher for a bigger chorus.",
+     "Layering a guitar riff with an octave pedal to fatten a two-piece band's sound."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "34446eed-b017-4640-9062-6119588368bb",
+   "term": "Octave stack",
+   "fields": {
+    "definition": "A group of two or more copies of the same sound spaced at octave intervals and played together as a single reinforced voice. It is common in synthesis, organ registration, and guitar or bass processing, where the stacked octaves fuse into one thick, full-range timbre.",
+    "plain_english": "It is a set of copies of one sound spaced an octave apart and played at once. It makes a big, full sound, like a whole group singing the same note high and low together.",
+    "purpose_function": "It creates a powerful, full-bodied tone from a single note or part by combining energy across several octaves, giving weight and richness that one voice alone cannot. It is a fast way to make leads, basses, and pads sound large.",
+    "practical_application": "A technician stacks oscillators or organ drawbars at octave intervals, or uses an octave effect on guitar, to build a thick lead or a fat bass without adding new notes.",
+    "category": "Arrangement Technique",
+    "related_terms": ["Octave layering", "Unison", "Drawbar registration", "Oscillator", "Voicing"],
+    "common_mistakes": [
+     "Stacking so many octaves that the low end becomes boomy and the sound loses focus in the mix.",
+     "Confusing an octave stack with a chord, when a stack reinforces one pitch class rather than adding harmony.",
+     "Ignoring phase and tuning between the stacked layers, which can thin or smear the combined tone."
+    ],
+    "scenario_contexts": [
+     "Building a fat synth lead by stacking oscillators one and two octaves apart.",
+     "Setting Hammond organ drawbars at octave intervals for a full band-supporting pad.",
+     "Using a guitar octave pedal to create a thick riff for a stripped-down live set."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8bf37faf-f5bd-478c-b80a-b40d5c9a0521",
+   "term": "Open hi-hat",
+   "fields": {
+    "definition": "A hi-hat sound produced when the two cymbals are held apart, letting them ring and sizzle with sustained decay rather than a short, choked tick. On an acoustic kit the drummer lifts the foot off the pedal to open the cymbals; in sampled or programmed drums it is a separate sound in the hi-hat group.",
+    "plain_english": "It is the sound of the two hi-hat cymbals held apart so they ring and sizzle. A drummer lifts the foot pedal to let them buzz instead of making a short, tight tick.",
+    "purpose_function": "It provides an accent, a sustained sizzle, and rhythmic openness that contrasts with the tight closed hi-hat, adding movement and energy to a groove. Drummers use it to mark offbeats, transitions, and lifts.",
+    "practical_application": "When tracking or programming drums, a technician places open hi-hat hits on offbeats or before fills, and ensures each open hit is choked or cut by the following closed hit so they do not overlap unnaturally.",
+    "category": "Drum Sounds",
+    "related_terms": ["Closed hi-hat", "Hi-hat", "Choke", "Cymbal", "Groove"],
+    "common_mistakes": [
+     "Letting an open hi-hat sample ring over the next closed hit, which sounds unnatural since a real hi-hat closes when the pedal is pressed.",
+     "Using open hi-hats on every beat so the groove loses its tight, driving feel.",
+     "Mixing the open hi-hat too bright or loud so its sustained sizzle masks vocals and cymbals."
+    ],
+    "scenario_contexts": [
+     "Programming a beat with an open hi-hat on the offbeat to add lift before a chorus.",
+     "Choking an open hi-hat with the following closed hit so a sampled groove sounds like a real drummer.",
+     "Miking a drum kit and checking that open hi-hat sizzle is captured without excessive bleed into the vocal mic."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7a91f9aa-7489-44e2-9308-21863bba8da1",
+   "term": "Organ mixing",
+   "fields": {
+    "definition": "The set of techniques used to place an organ, typically a tonewheel or electric organ such as a Hammond, into a band mix by managing its level, frequency balance, dynamics, and spatial position. Because organ tone is broadband and sustained, mixing focuses on carving space so it supports rather than masks guitars, keys, and vocals.",
+    "plain_english": "It is how you set the level, tone, and space of an organ in a song. The goal is to let it fill out the sound without covering the guitars or vocals.",
+    "purpose_function": "It integrates a dense, sustained instrument into an arrangement so it adds warmth and body while leaving room for the other parts. Good organ mixing keeps the track full without turning it muddy or cluttered.",
+    "practical_application": "A technician EQs out overlapping low-mids, adds compression to steady the sustained tone, and pans or adds rotary-speaker stereo width so the organ sits under the vocal and glues the band together.",
+    "category": "Instrument Mixing",
+    "related_terms": ["Rotary speaker", "Drawbar registration", "Equalization", "Compression", "Panning"],
+    "common_mistakes": [
+     "Leaving the organ full-range so its low-mids clash with guitars and bass and muddy the mix.",
+     "Over-compressing the sustained tone until it pumps and loses its natural swell.",
+     "Placing the organ too loud or dead center so it competes with the lead vocal instead of supporting it."
+    ],
+    "scenario_contexts": [
+     "Fitting a Hammond organ pad under a rock vocal by cutting overlapping low-mids.",
+     "Adding rotary-speaker stereo spread so the organ widens the mix without crowding the center.",
+     "Balancing organ and rhythm guitar in a soul track so both hold their own place."
+    ]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d21f77bb-a24e-4f50-991d-612cf91d1fe0",
+   "term": "Organic texture",
+   "fields": {
+    "definition": "A sonic character that sounds natural, acoustic, and human rather than synthetic or rigidly programmed, arising from real instruments, room ambience, subtle timing and tuning variation, and unquantized performance. It is a descriptive quality of an arrangement or sound rather than a specific process.",
+    "plain_english": "It is a sound that feels natural and alive, not stiff or robotic. It often comes from real instruments and small human flaws, like the warm buzz of an acoustic guitar in a room.",
+    "purpose_function": "It gives a production warmth, life, and a human feel that listeners connect with, contrasting with clean but sterile digital sounds. Producers pursue it to make even electronic tracks feel more relatable.",
+    "practical_application": "A technician introduces organic texture by tracking real instruments, keeping natural timing and tuning variation, adding room ambience, or layering acoustic and foley sounds into an otherwise programmed arrangement.",
+    "category": "Arrangement Texture",
+    "related_terms": ["Noise texture", "Ambience layer", "Room sound", "Microtiming offset", "Foley"],
+    "common_mistakes": [
+     "Assuming full quantization and pitch correction will still sound organic, when they remove the human variation that creates the feel.",
+     "Confusing organic texture with a lack of polish, and leaving genuine mistakes that distract rather than add life.",
+     "Over-processing real instruments until they sound as sterile as the synthetic parts they were meant to offset."
+    ],
+    "scenario_contexts": [
+     "Adding a live-tracked acoustic guitar to an electronic song to warm up the arrangement.",
+     "Keeping a drummer's natural timing instead of hard quantizing to preserve a human feel.",
+     "Layering room ambience and light foley under a sampled beat to make it feel real."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3d750b1c-5913-460b-b1dd-a2eb2e380b17",
+   "term": "Overhead compression",
+   "fields": {
+    "definition": "Dynamic-range compression applied to the drum overhead microphone channels, which capture cymbals and a stereo image of the whole kit. It is used to control cymbal transients and level swings and to help the kit sound cohesive and fuller.",
+    "plain_english": "It is squashing the loud and soft parts of the drum overhead mics so they sit steadier. It glues the cymbals and the whole kit together and can make the drums feel bigger.",
+    "purpose_function": "It tames peaky cymbal hits, evens out the level of the overall kit image, and can add punch and glue when driven harder, since the overheads carry much of the kit's tone and stereo picture. This keeps the drums consistent and powerful in the mix.",
+    "practical_application": "A technician patches a compressor across the stereo overhead bus, sets a moderate ratio and attack that lets transients through, and adjusts threshold so the cymbals and kit stay controlled without pumping.",
+    "category": "Drum Processing",
+    "related_terms": ["Overhead equalization", "Drum bus compression", "Transient", "Parallel compression", "Attack time"],
+    "common_mistakes": [
+     "Using too fast an attack, which dulls the cymbal transients and robs the kit of its snap.",
+     "Over-compressing the overheads so the cymbals pump and the room sound becomes unnatural.",
+     "Compressing overheads heavily while ignoring bleed, which pulls up snare and room spill in an uncontrolled way."
+    ],
+    "scenario_contexts": [
+     "Applying gentle bus compression to stereo overheads so the cymbal levels stay even across a take.",
+     "Driving overhead compression harder for an aggressive rock drum sound with more room and glue.",
+     "Balancing overhead and close-mic compression so the full kit sounds cohesive."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Sound on Sound technical articles"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f5cce9a9-b54c-4ecf-bc9b-e33279d8f7e7",
+   "term": "Overhead equalization",
+   "fields": {
+    "definition": "Equalization applied to the drum overhead microphone channels to shape the tone of the cymbals and the overall kit image they capture. It typically involves cutting harshness or low-frequency spill and adjusting high-frequency content so cymbals sound clear without being brittle.",
+    "plain_english": "It is shaping the tone of the drum overhead mics by boosting or cutting certain pitches. It keeps the cymbals crisp and clear while trimming harsh or muddy sounds.",
+    "purpose_function": "It controls the brightness and clarity of the cymbals and the captured kit sound, and removes unwanted low-end rumble and bleed that the overheads pick up. This helps the overheads blend with the close mics instead of clashing.",
+    "practical_application": "A technician high-passes the overhead channels to remove kick and low rumble, dips harsh upper-mid resonances, and gently lifts the highs so cymbals sound airy rather than clanky.",
+    "category": "Drum Processing",
+    "related_terms": ["Overhead compression", "High-pass filter", "Equalization", "Cymbal", "Bleed"],
+    "common_mistakes": [
+     "Boosting the highs too much so cymbals become harsh and fatiguing to listen to.",
+     "Skipping a high-pass filter, leaving kick and rumble in the overheads that muddy the drum bus.",
+     "EQing the overheads in isolation instead of in context with the close mics and full mix."
+    ],
+    "scenario_contexts": [
+     "High-passing overheads to strip low rumble before blending them with the snare and kick mics.",
+     "Cutting a harsh upper-mid frequency so a bright ride cymbal stops piercing the mix.",
+     "Adding a gentle high-shelf lift to give dull-sounding cymbals more air."
+    ]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

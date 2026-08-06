@@ -1,0 +1,191 @@
+{
+ "bucket": 3,
+ "packets": [
+  "mb0096",
+  "mb0098",
+  "mb0100",
+  "mb0102",
+  "mb0107",
+  "mb0116",
+  "mb0120",
+  "mb0121"
+ ],
+ "terms": [
+  {
+   "pkt": "mb0096",
+   "id": "cbcaa623-3aa8-4e25-98b0-fcac50facade",
+   "term": "Distortion validation",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0098",
+   "id": "2806e872-664c-490d-9c05-52dc61956ed8",
+   "term": "Dynamic score",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0100",
+   "id": "c25caee0-8614-416f-970e-508a0c0ae1ac",
+   "term": "eMastered",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0102",
+   "id": "29211841-fef3-4d66-8d29-000272e0b0dd",
+   "term": "Final production package",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0102",
+   "id": "cddaf31d-5989-471b-b443-8363dbfcd302",
+   "term": "Final release authorization",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0107",
+   "id": "9c7b2c5e-c14e-4423-bbb6-964acbfe1a99",
+   "term": "Group Suspension",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0116",
+   "id": "f121a4e1-a72e-4da8-a5f0-a9a320494418",
+   "term": "Miss the solo",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0120",
+   "id": "b87b7e4e-904a-49c1-b3f0-7608cd2fcbca",
+   "term": "Music switch",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0120",
+   "id": "7fe17fd0-2622-4877-a611-7e67b0693502",
+   "term": "Music transition rule",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0121",
+   "id": "8cedf0de-8251-42ed-9a4c-da3f4c2ee87a",
+   "term": "Nanosampler",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  },
+  {
+   "pkt": "mb0121",
+   "id": "89d16e4d-45b2-4c8d-be3d-5186d5288274",
+   "term": "Navigation Memory",
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ],
+   "topic": "Mix Fundamentals & Workflow"
+  }
+ ]
+}

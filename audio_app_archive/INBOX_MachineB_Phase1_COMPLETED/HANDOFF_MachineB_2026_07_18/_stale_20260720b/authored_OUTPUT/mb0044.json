@@ -1,0 +1,159 @@
+{
+ "batch": 44,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "d4106092-4cc0-465a-b768-01ea74215557",
+   "term": "Drum sample bus",
+   "fields": {
+    "definition": "A dedicated bus or auxiliary channel to which triggered or replacement drum samples are routed so they can be processed and level-balanced together, separately from the acoustic drum tracks.",
+    "plain_english": "One mixer channel that gathers all the added or fake drum sounds in one place. From there you can shape and balance them together instead of one by one.",
+    "purpose_function": "It keeps drum reinforcement and replacement samples on a single path so their level, tone and effects can be managed as a unit and blended under the live kit.",
+    "practical_application": "When an engineer triggers kick or snare samples to reinforce weak recorded hits, all the sample outputs feed this bus for shared EQ, compression and fader control before joining the main drum mix.",
+    "category": "Signal routing",
+    "related_terms": ["Drum subgroup", "Sample replacement", "Drum trigger", "Parallel compression", "Kick reinforcement"],
+    "common_mistakes": ["Letting sample levels overpower the live drums so the kit sounds artificial", "Forgetting to time-align the samples with the original hits, causing phase smear or flams", "Not high-pass filtering or gating the samples, which adds unwanted low-end or noise"],
+    "scenario_contexts": ["Reinforcing a thin recorded kick with a sample layer in a rock mix", "Blending snare samples across a multitrack to even out inconsistent hits", "Building a consistent drum layer under a live acoustic performance"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1d34f36f-b711-4e54-a116-a4cc145915cb",
+   "term": "Drum saturation",
+   "fields": {
+    "definition": "The deliberate addition of harmonic distortion to drum signals using tape, tube, transformer or clipping-style processing, adding harmonics, perceived loudness and warmth or aggression.",
+    "plain_english": "Adding a bit of controlled grit to the drums. It makes them sound fuller and louder without just turning up the volume, like the warm crunch of tape or a tube amp.",
+    "purpose_function": "It generates extra harmonics that thicken the sound, soften sharp peaks and help the drums cut through a dense mix.",
+    "practical_application": "An engineer drives a saturation plug-in or analog emulation on the snare or the drum bus to add weight and edge, watching that it does not turn into harshness.",
+    "category": "Harmonic processing",
+    "related_terms": ["Drum-bus compression", "Harmonic distortion", "Tape emulation", "Drum transient shaping", "Parallel compression"],
+    "common_mistakes": ["Over-driving until the drums sound fuzzy and lose their punch", "Confusing saturation with clean gain and pushing levels too hot", "Applying heavy saturation across the whole bus instead of the one drum that needs it"],
+    "scenario_contexts": ["Adding tube warmth to a clean sampled kit", "Driving a room mic for aggressive rock drums", "Using gentle tape saturation on the drum bus for glue"]
+   },
+   "sources": ["Izhaki, Mixing Audio: Concepts, Practices and Tools", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a2a07717-67a9-4f84-a3ce-5ca226503e99",
+   "term": "Drum subgroup",
+   "fields": {
+    "definition": "A mix group or bus that sums several individual drum channels onto one set of controls, allowing collective level, dynamics and effects processing of the whole kit.",
+    "plain_english": "One master fader that controls the whole drum kit at once. Instead of moving ten channels, you move one to turn the whole kit up or down.",
+    "purpose_function": "It simplifies control of the many drum mics and lets an engineer process and automate the entire kit as a single unit.",
+    "practical_application": "The engineer routes kick, snare, toms and overheads into a drum subgroup, then rides one fader and adds bus compression or EQ across all of them.",
+    "category": "Signal routing",
+    "related_terms": ["Drum-bus compression", "Drum sample bus", "Aux send", "VCA group", "Mix bus"],
+    "common_mistakes": ["Confusing a subgroup, which sums audio, with a VCA, which only links faders", "Routing drums to both the subgroup and the main output, which doubles the signal", "Clipping the subgroup by summing many hot channels without watching the group meter"],
+    "scenario_contexts": ["Combining all drum mics onto one fader for easy balance", "Applying a single compressor across the whole kit", "Muting the entire kit in one move during arrangement edits"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bc17d084-fef7-49ab-a743-9d89a1564d35",
+   "term": "Drum sustain control",
+   "fields": {
+    "definition": "The adjustment of the decay or tail portion of a drum's envelope, typically with a transient designer, to lengthen or shorten how long each hit rings after its initial attack.",
+    "plain_english": "A control that sets how long each drum hit rings out. Turn it down for a tight, dry thud, or up to let the drum ring and breathe longer.",
+    "purpose_function": "It shapes the body and room feel of drums after the attack, tightening loose kits or adding fullness without re-recording.",
+    "practical_application": "An engineer lowers the sustain on a boomy tom to dry it up, or raises it on a dead snare to bring back some ring, using a transient shaper.",
+    "category": "Transient processing",
+    "related_terms": ["Drum transient shaping", "Attack time", "Noise gate", "Drum-bus compression", "Envelope shaper"],
+    "common_mistakes": ["Cutting sustain so hard the drums sound lifeless and gated", "Boosting sustain until room noise and bleed become obvious", "Assuming sustain control is the same as a compressor release setting"],
+    "scenario_contexts": ["Tightening a ringing tom in a rock mix", "Drying out an overly live room sound", "Adding tail back to a heavily damped snare"]
+   },
+   "sources": ["SPL Transient Designer, technical documentation", "Izhaki, Mixing Audio: Concepts, Practices and Tools"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "11b61388-a1d3-4ace-abc3-cd5485c6ae88",
+   "term": "Drum transient shaping",
+   "fields": {
+    "definition": "The use of a transient designer to independently boost or cut the attack and sustain portions of drum hits, changing punch and body without threshold-based compression.",
+    "plain_english": "Reshaping the punch and ring of each drum hit. You can make a hit snappier or softer, and its tail longer or shorter, all on purpose.",
+    "purpose_function": "It lets an engineer add attack for punch or reduce sustain for tightness independent of level, going beyond what a normal compressor can do.",
+    "practical_application": "An engineer boosts attack on a soft kick to make it click through the mix, or cuts sustain on toms to tighten them, using a transient designer plug-in.",
+    "category": "Transient processing",
+    "related_terms": ["Drum sustain control", "Attack time", "Drum-bus compression", "Envelope shaper", "Drum saturation"],
+    "common_mistakes": ["Adding so much attack that the drums click harshly and unnaturally", "Forgetting that boosting attack also raises peak level and can clip later stages", "Using a transient shaper on a noisy track, which pumps up the bleed and hiss"],
+    "scenario_contexts": ["Sharpening a dull kick drum's attack", "Tightening loose, ringy toms", "Bringing more snap to an ambient snare"]
+   },
+   "sources": ["SPL Transient Designer, technical documentation", "Izhaki, Mixing Audio: Concepts, Practices and Tools"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "139bebf6-7602-415e-a25c-2e1990b58580",
+   "term": "Drum-bus automation",
+   "fields": {
+    "definition": "The recording and playback of time-based changes to drum-bus parameters, such as fader level, compression, EQ or effect sends, so the drum group responds dynamically through a song.",
+    "plain_english": "Programming the drum group to change on its own over time. For example, the drums get louder in the chorus without you touching the fader each time.",
+    "purpose_function": "It keeps the drum group balanced and expressive across a song, letting sections build or pull back without manual moves during every playback.",
+    "practical_application": "An engineer draws automation to raise the drum-bus fader in the chorus, open a reverb send in a fill, or ease off compression in a quiet verse.",
+    "category": "Automation",
+    "related_terms": ["Drum subgroup", "Drum-bus compression", "Fader ride", "Aux send", "Mix bus"],
+    "common_mistakes": ["Writing jumpy automation that causes sudden, unnatural level jumps", "Automating the bus fader when a single channel actually needed the fix", "Leaving old automation active after re-balancing, which fights new fader moves"],
+    "scenario_contexts": ["Lifting the whole kit for a chorus", "Opening a reverb throw on a drum fill", "Pulling drums back under a soft vocal verse"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fb3be9fa-c5b1-4f46-a100-93dfa9621cf5",
+   "term": "Drum-bus compression",
+   "fields": {
+    "definition": "Compression applied across the summed drum bus rather than individual channels, used to glue the kit together, control dynamics and add punch or density to the whole drum group.",
+    "plain_english": "One compressor placed on the whole drum group. It squeezes the kit so it sounds like one solid, punchy instrument instead of separate pieces.",
+    "purpose_function": "It binds the separate drum mics into a cohesive whole, evens out the overall level and can add energy and sustain to the kit.",
+    "practical_application": "An engineer patches a bus compressor across the drum subgroup with slow attack and fast release to keep transients while pulling the kit together.",
+    "category": "Dynamics processing",
+    "related_terms": ["Drum subgroup", "Parallel compression", "Attack time", "Drum saturation", "Drum-bus density"],
+    "common_mistakes": ["Setting attack too fast, which kills the drum punch and softens hits", "Using too much gain reduction so the kit pumps and breathes unnaturally", "Confusing bus glue compression with heavy individual-channel compression"],
+    "scenario_contexts": ["Gluing a multi-mic kit into one cohesive sound", "Adding punch and energy to a rock drum bus", "Using parallel bus compression to thicken drums under the dry kit"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio: Concepts, Practices and Tools"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4e40f173-5a0c-4d71-9b50-7bf85232fe98",
+   "term": "Drum-bus density",
+   "fields": {
+    "definition": "The perceived fullness, sustain and cohesion of the drum bus, usually increased through bus compression, saturation or parallel processing that raises low-level detail and thickens the overall sound.",
+    "plain_english": "How thick and full the whole drum group sounds. More density makes the drums feel solid and packed together; less leaves them thin and spaced out.",
+    "purpose_function": "It describes how solid and connected the kit feels, a quality engineers build so drums sit powerfully in a mix rather than sounding sparse.",
+    "practical_application": "An engineer raises drum-bus density by adding bus compression, parallel compression or saturation until the kit feels full and supported without losing punch.",
+    "category": "Dynamics processing",
+    "related_terms": ["Drum-bus compression", "Parallel compression", "Drum saturation", "Drum subgroup", "Drum-bus gain staging"],
+    "common_mistakes": ["Chasing density until the drums sound squashed and lose dynamics", "Confusing density with loudness and simply turning the bus up", "Adding so much parallel signal that the dry punch disappears"],
+    "scenario_contexts": ["Thickening a sparse-sounding kit with parallel compression", "Building a solid drum foundation for a dense rock mix", "Adding sustain and body to a dry, close-miked kit"]
+   },
+   "sources": ["Izhaki, Mixing Audio: Concepts, Practices and Tools", "Owsinski, The Mixing Engineer's Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "403a6ad9-8b73-4c42-afb1-c6b823bac1c4",
+   "term": "Drum-bus gain staging",
+   "fields": {
+    "definition": "Setting appropriate signal levels into and out of the drum bus and its processors so each stage runs in its optimal range, avoiding noise at low levels and clipping or unwanted distortion at high levels.",
+    "plain_english": "Setting the right volume at each step through the drum group. Keep it loud enough to stay clean, but not so hot that it distorts.",
+    "purpose_function": "It ensures the drum bus and its plug-ins are fed at their intended level, protecting headroom and keeping the sound clean and consistent.",
+    "practical_application": "An engineer trims the summed drum channels so the bus meter sits with healthy headroom before compression, then matches output level after processing.",
+    "category": "Gain staging",
+    "related_terms": ["Drum subgroup", "Drum-bus compression", "Headroom", "Signal-to-noise ratio", "Metering"],
+    "common_mistakes": ["Summing many hot channels and clipping the bus before any processing", "Ignoring how a plug-in's output gain changes the level feeding the next stage", "Assuming a loud bus is fine as long as the master does not clip"],
+    "scenario_contexts": ["Trimming the drum bus so it does not clip after summing", "Matching input and output levels around a bus compressor", "Leaving headroom on the drum bus for mastering"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Izhaki, Mixing Audio: Concepts, Practices and Tools"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

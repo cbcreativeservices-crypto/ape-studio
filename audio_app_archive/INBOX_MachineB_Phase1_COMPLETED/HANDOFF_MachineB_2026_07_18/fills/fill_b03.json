@@ -1,0 +1,175 @@
+{
+ "bucket": 3,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "cbcaa623-3aa8-4e25-98b0-fcac50facade",
+   "term": "Distortion validation",
+   "fields": {
+    "definition": "The quality-control step of confirming that a finished mix or master contains no unwanted distortion, checking for digital clipping, inter-sample (true-peak) overs, and excess total harmonic distortion against accepted limits before the audio is delivered.",
+    "plain_english": "It means checking the final track to make sure the sound is clean and not crackling or breaking up. You look at the meters and listen closely to catch any harsh, clipped spots before you send it out.",
+    "purpose_function": "It exists to catch level and processing errors that add harshness or crackle, ensuring the delivered audio plays back cleanly and meets accepted peak and distortion limits on every system.",
+    "practical_application": "An engineer runs a true-peak meter and does a focused listen on headphones and monitors at the end of a session, flagging any clip indicators or audible breakup before bouncing the final file.",
+    "category": "Metering & QC",
+    "related_terms": ["Distortion prevention", "Dynamic-range validation", "Noise-floor validation", "Headroom preservation", "True-peak metering"],
+    "common_mistakes": ["Assuming a mix is clean because it sounds fine on one system, without checking meters or a second set of monitors", "Confusing intentional, musical distortion such as a driven guitar with unwanted digital clipping", "UNSAFE: Cranking monitor level to hunt for faint distortion, risking hearing damage from prolonged loud exposure"],
+    "scenario_contexts": ["Final QC pass on a master before uploading to a streaming distributor", "Checking a location dialogue recording for mic-preamp overload before the mix", "Verifying a bounced stem has no inter-sample peaks after limiting"]
+   },
+   "sources": ["Bob Katz, 'Mastering Audio: The Art and the Science' (clipping, true-peak/overs, QC listening)", "ITU-R BS.1770 / EBU R128 (true-peak level measurement)", "Ballou, 'Handbook for Sound Engineers' (distortion and THD)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2806e872-664c-490d-9c05-52dc61956ed8",
+   "term": "Dynamic score",
+   "fields": {
+    "definition": "A musical score that changes in real time in response to user actions or program state, rather than playing back as a fixed linear cue; also called adaptive or interactive music, its layers, sections, or parameters are altered on the fly to match on-screen events.",
+    "plain_english": "It is game or app music that changes as you play, instead of staying the same. When the action heats up, the music can grow more intense to match it.",
+    "purpose_function": "It keeps music matched to unpredictable, user-driven events, sustaining mood and tension without relying on a fixed timeline.",
+    "practical_application": "A game composer builds the score as stems and sections, then uses audio middleware to add or remove layers and trigger transitions as the player moves between calm and combat.",
+    "category": "Game Audio",
+    "related_terms": ["Music switch", "Music transition rule", "Exploration music", "Music synchronization point", "Music-only stem"],
+    "common_mistakes": ["Composing one long linear track and expecting it to feel interactive without stems or middleware logic", "Not matching musical keys and tempos across sections, so transitions clash", "Layering too many parts at once, muddying the mix when several states trigger together"],
+    "scenario_contexts": ["Combat music intensifying as more enemies appear in a video game", "Menu music smoothly shifting into gameplay music when a level loads", "An interactive exhibit whose music responds to visitor movement"]
+   },
+   "sources": ["Karen Collins, 'Game Sound' (MIT Press)", "Stevens & Raybould, 'The Game Audio Tutorial' (Focal Press)", "Audiokinetic Wwise documentation (interactive music / Music Switch Container)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c25caee0-8614-416f-970e-508a0c0ae1ac",
+   "term": "eMastered",
+   "fields": {
+    "definition": "eMastered is a commercial cloud-based automated mastering platform that uses machine-learning algorithms to analyze an uploaded mix and apply mastering processing such as EQ, compression, stereo-width, and level adjustment, producing a finished master with user controls for intensity and reference-track matching.",
+    "plain_english": "It is an online service that masters your song for you using software instead of a person. You upload your mix, and it polishes the sound and gives you a finished, louder version.",
+    "purpose_function": "It offers a fast, low-cost route to a release-ready master without booking a mastering engineer, aimed mainly at independent artists working to a budget.",
+    "practical_application": "A producer uploads a stereo mixdown, picks a mastering intensity or a reference track, previews the result, and downloads the master, often as a quick check before deciding whether to hire a human engineer.",
+    "category": "Mastering Tools",
+    "related_terms": ["Mastering", "Reference track", "Loudness normalization", "Dynamic-range validation", "Final release authorization"],
+    "common_mistakes": ["Treating an automated master as a fix for a poor mix, when mastering cannot repair balance or arrangement problems", "Chasing maximum loudness and losing dynamic range and transient punch", "Skipping a critical listen and QC of the returned master on trusted monitors"],
+    "scenario_contexts": ["An independent artist mastering a single on a tight budget before a streaming release", "A producer generating a quick reference master to gauge how a mix compares to commercial tracks", "A songwriter creating a polished demo to pitch to a label"]
+   },
+   "sources": ["eMastered official documentation, 'What Is AI Mastering' (emastered.com)", "Bob Katz, 'Mastering Audio: The Art and the Science' (mastering process: EQ, compression, limiting, loudness)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "29211841-fef3-4d66-8d29-000272e0b0dd",
+   "term": "Final production package",
+   "fields": {
+    "definition": "The complete set of finished deliverables handed off at the end of a production, typically including the approved final mix and master, alternate versions and stems, session or project files, and accompanying documentation such as track sheets, metadata, and cue sheets.",
+    "plain_english": "It is the full bundle of finished files you hand over when a project is done. It holds the final song plus extras like stems, notes, and the session, so others can use or revisit the work later.",
+    "purpose_function": "It gathers everything a client, label, or post house needs to release, archive, or revise the project, so nothing essential is missing after the team moves on.",
+    "practical_application": "At project close, an engineer bounces the master and stems, exports session files, writes up track and metadata sheets, and delivers them together as one organized, labeled package.",
+    "category": "Deliverables",
+    "related_terms": ["Final mix session", "Music-only stem", "Final release authorization", "Engineering sign-off", "Nearfield printmaster"],
+    "common_mistakes": ["Delivering only the final master and forgetting stems, alternate mixes, or session files the client later needs", "Sending files with vague names and no track sheet or metadata, causing confusion downstream", "Not confirming the client's required formats, sample rates, and bit depths before packaging"],
+    "scenario_contexts": ["Handing a finished album's masters, stems, and documentation to a record label for release", "Delivering a film mix package to a post-production house for the final conform", "Archiving a completed project so it can be reopened and revised years later"]
+   },
+   "sources": ["Yamaha Pro Audio Hub, 'The Art of Mastering, Part 6: Deliverables'", "Bob Katz, 'Mastering Audio: The Art and the Science' (deliverables, archiving, QC)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "cddaf31d-5989-471b-b443-8363dbfcd302",
+   "term": "Final release authorization",
+   "fields": {
+    "definition": "The formal approval that a finished master is cleared for release or distribution, given after quality control and client or label sign-off; it marks the point at which no further changes will be made and the audio can be manufactured, uploaded, or published.",
+    "plain_english": "It is the final 'yes, this is done, send it out' step. Once the client signs off and the checks pass, the song is locked and ready to release.",
+    "purpose_function": "It creates a clear, documented go/no-go point so files are not released before they are checked and approved, preventing costly recalls of wrong or faulty audio.",
+    "practical_application": "Before a distributor upload or disc replication, the engineer confirms QC has passed and obtains written client approval, then treats the master as final and locked.",
+    "category": "Workflow",
+    "related_terms": ["Engineering sign-off", "Final production package", "Distortion validation", "Final mix stage", "Dynamic-range validation"],
+    "common_mistakes": ["Releasing or sending files to manufacturing before written approval, then discovering an error too late", "Skipping a final QC listen because the deadline is tight", "Authorizing release from an unchecked or wrong file version, so the released audio differs from the approved one"],
+    "scenario_contexts": ["Approving a master for upload to streaming platforms after client sign-off", "Clearing a mastered album for CD or vinyl manufacturing", "Signing off a broadcast mix as ready for air"]
+   },
+   "sources": ["Bob Katz, 'Mastering Audio: The Art and the Science' (QC and approval before release)", "Yamaha Pro Audio Hub, 'The Art of Mastering' (deliverables and sign-off)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9c7b2c5e-c14e-4423-bbb6-964acbfe1a99",
+   "term": "Group Suspension",
+   "fields": {
+    "definition": "Temporarily disabling the linking of mix or edit groups so that an action such as a fader move, edit, or automation change affects only the selected track instead of every member of the group; in Pro Tools this is the Suspend Groups command.",
+    "plain_english": "It is a way to switch off track grouping for a moment so you can tweak just one channel. Normally moving one grouped fader moves them all, so you pause the group to fix a single track.",
+    "purpose_function": "It lets an engineer make a quick, isolated adjustment to one grouped track without permanently ungrouping it, then restore linked control instantly.",
+    "practical_application": "While mixing a grouped drum kit, the engineer suspends groups (Command/Ctrl+Shift+G in Pro Tools) to nudge the snare fader alone, then re-enables groups to keep the kit linked.",
+    "category": "Mix Groups",
+    "related_terms": ["Grouping matrix", "VCA group", "Mute group", "Hands-on-faders", "Mute automation pass"],
+    "common_mistakes": ["Forgetting groups are suspended and then wondering why grouped moves no longer track together", "Ungrouping tracks entirely to make one tweak, instead of briefly suspending groups", "Assuming it affects only one group when the command disables group behavior globally"],
+    "scenario_contexts": ["Nudging one drum in a grouped kit without moving the whole group", "Fixing a single track's automation inside a linked edit group", "Temporarily balancing one channel within a VCA-controlled section"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide (Grouping tracks; Suspend Groups command)", "MusicTech, 'Mixing with Groups in Pro Tools' (Suspend Groups behavior and shortcut)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f121a4e1-a72e-4da8-a5f0-a9a320494418",
+   "term": "Miss the solo",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["All 8 fields left blank: 'Miss the solo' could not be confirmed as an established audio/mixing term in standards, manufacturer technical documentation, or recognized professional texts. It reads as an ambiguous colloquial phrase with at least two plausible unconfirmed meanings (accidentally leaving a channel soloed at bounce/mixdown, versus failing to feature or hear an instrumental solo in the mix). No canonical sense is documented, so authoring any definition would be a guess. Recommend the source confirm the intended meaning."]
+  },
+  {
+   "id": "b87b7e4e-904a-49c1-b3f0-7608cd2fcbca",
+   "term": "Music switch",
+   "fields": {
+    "definition": "In interactive and game audio, a change from one piece or section of music to another triggered by a game state or parameter rather than by a fixed timeline; in Wwise this is handled by a Music Switch Container that selects the appropriate music for the current Switch or State.",
+    "plain_english": "It is when a game swaps one piece of music for another as things change on screen. Move from a quiet area into a fight, and the music switches to match.",
+    "purpose_function": "It lets music follow unpredictable gameplay by choosing the right cue for the current situation, keeping the score in step with what the player is doing.",
+    "practical_application": "A game-audio implementer maps calm, tension, and combat cues to game states in middleware, so the engine switches music automatically as the player crosses those thresholds.",
+    "category": "Interactive Music",
+    "related_terms": ["Dynamic score", "Music transition rule", "Music synchronization point", "Music-only stem", "Musical stinger"],
+    "common_mistakes": ["Switching music instantly at any moment, causing an abrupt jump instead of a musical change", "Not pairing switches with transition rules, so cues cut off mid-phrase", "Building too many music states, making behavior hard to predict and test"],
+    "scenario_contexts": ["Music changing when a player enters a boss arena", "Switching from exploration to stealth music as the player is detected", "Menu-to-gameplay music changes when a match starts"]
+   },
+   "sources": ["Audiokinetic Wwise documentation (Music Switch Container)", "Stevens & Raybould, 'The Game Audio Tutorial' (Focal Press)", "Karen Collins, 'Game Sound' (MIT Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7fe17fd0-2622-4877-a611-7e67b0693502",
+   "term": "Music transition rule",
+   "fields": {
+    "definition": "In interactive music systems, a rule that defines how playback moves from a source musical segment to a destination one, specifying where the source may exit (immediately or on the next beat, bar, grid, or cue point), any fade or transition segment used, and where the destination begins, so state-driven music changes stay musical.",
+    "plain_english": "It is the set of instructions that tells the music how to change smoothly from one piece to the next. It waits for a good spot, like the end of a bar, so the switch sounds natural.",
+    "purpose_function": "It prevents jarring cuts when music changes with gameplay by controlling the timing and blending of each transition, keeping the score on beat and in phrase.",
+    "practical_application": "In Wwise, an implementer sets a transition rule to exit the source at the next bar with a short crossfade, so combat music enters cleanly when the player is attacked.",
+    "category": "Interactive Music",
+    "related_terms": ["Music switch", "Dynamic score", "Music synchronization point", "Music-only stem", "Musical stinger"],
+    "common_mistakes": ["Using immediate exit for everything, producing abrupt, unmusical jumps", "Ignoring tempo and time-signature differences between segments, so transitions fall out of time", "Forgetting to set a destination entry point, so the new cue starts in the wrong place"],
+    "scenario_contexts": ["Setting music to change only on the next bar during a combat trigger", "Adding a short transition segment between exploration and boss music", "Matching exit and entry cue points so a stinger lands on the beat"]
+   },
+   "sources": ["Audiokinetic Wwise documentation (music transitions / transition rules)", "Stevens & Raybould, 'The Game Audio Tutorial' (Focal Press)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8cedf0de-8251-42ed-9a4c-da3f4c2ee87a",
+   "term": "Nanosampler",
+   "fields": {
+    "definition": "Nanosampler is the sample-playback instrument plug-in bundled with MOTU Digital Performer; samples are dragged into its waveform display and played from a MIDI keyboard, with modes for pitched playback across the keys, one-shot triggering, and automatic slicing, plus time-stretch/pitch-shift, filter, envelopes, and an LFO.",
+    "plain_english": "It is a built-in instrument in the Digital Performer program that lets you play sounds from your keyboard. You drop in an audio clip, and it turns that clip into a playable instrument or drum kit.",
+    "purpose_function": "It gives Digital Performer users a quick way to turn any audio sample into a playable, tunable instrument without leaving the DAW.",
+    "practical_application": "A DP user drags a vocal or loop into Nanosampler, chooses Classic, 1-Shot, or Slice mode, and plays or sequences it via MIDI, shaping it with the built-in filter and envelopes.",
+    "category": "Virtual Instruments",
+    "related_terms": ["Digital Performer project", "Drum multisample", "Sampler", "One-shot", "Time-stretching"],
+    "common_mistakes": ["Expecting it to work as a full REX loop player, when it does not trigger individual REX slices or time-stretch independently of pitch", "Loading long samples in Classic mode and getting unwanted pitch changes across the keyboard", "Forgetting to set the right playback mode (Classic, 1-Shot, or Slice) for the material"],
+    "scenario_contexts": ["Turning a one-shot vocal phrase into a playable keyboard instrument in Digital Performer", "Slicing a drum loop across MIDI notes to re-sequence a beat", "Building a quick drum kit from individual hit samples inside DP"]
+   },
+   "sources": ["MOTU Digital Performer documentation / MOTU tech note (Nanosampler; Nanosampler and REX files)", "Sound on Sound, 'Digital Performer: Exploring Nanosampler 2'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "89d16e4d-45b2-4c8d-be3d-5186d5288274",
+   "term": "Navigation Memory",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["All 8 fields left blank: 'Navigation Memory' could not be confirmed as an established audio, DAW, or console term in standards, manufacturer technical documentation, or recognized professional texts. It is distinct from documented features with similar wording (e.g., Pro Tools 'Memory Locations' or console 'scene memory') and has no canonical definition, so authoring one would be a guess. Recommend the source confirm the intended term or feature."]
+  }
+ ]
+}

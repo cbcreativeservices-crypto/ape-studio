@@ -1,0 +1,159 @@
+{
+ "batch": 134,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "691b9e73-7d9b-4b20-84eb-b14b0cf20907",
+   "term": "Round-robin drum sample",
+   "fields": {
+    "definition": "One of a set of alternating recordings of the same drum hit, where a sampler cycles through the variations on successive triggers so repeated notes are not identical. This avoids the mechanical 'machine-gun' effect of retriggering a single static sample.",
+    "plain_english": "It is one of several recordings of the same drum hit. The sampler swaps between them each time you play the note, so fast repeats sound real instead of like a stuck button.",
+    "purpose_function": "It makes programmed or sampled drums sound natural by adding slight variation between repeated hits, mimicking how a real drummer never plays two strokes exactly alike.",
+    "practical_application": "A technician loading a sampled kit relies on round-robin layers so a fast snare roll or hi-hat pattern sounds human rather than obviously looped.",
+    "category": "Sampling",
+    "related_terms": ["Sample-based Track", "Sample choke group", "Velocity layering", "Sample tuning", "One-shot sample"],
+    "common_mistakes": ["Assuming one sample per drum is enough, leaving fast repeats sounding like a 'machine gun'", "Confusing round-robin (cycling equal-velocity takes) with velocity layers (different samples per hit strength)", "Programming too few round-robins so the cycle audibly repeats"],
+    "scenario_contexts": ["Building a realistic sampled drum kit in a software sampler", "Programming a rapid snare roll that must not sound mechanical", "Choosing a drum library based on how many round-robin variations it offers"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Native Instruments Kontakt Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c23360f0-4018-4f65-a0a5-9ff36f4e0bf5",
+   "term": "Routing Folder",
+   "fields": {
+    "definition": "A folder track in a DAW that groups several tracks and passes their combined output through a single point, letting the group be routed, processed, and controlled together. It acts as an organizational container that also serves as a submix or bus for the tracks nested inside it.",
+    "plain_english": "It is a folder that holds a group of tracks and sends them all to one place. You can move, mute, or add effects to the whole group at once, like putting many files in one labeled box.",
+    "purpose_function": "It keeps a busy session tidy while giving one set of controls over a whole group of tracks, so drums or backing vocals can be handled as a single unit.",
+    "practical_application": "A mixer drops all the drum tracks into a routing folder to fold them down to one fader, apply bus compression, and clean up the mixer view.",
+    "category": "Signal Routing",
+    "related_terms": ["Routing window", "Routing validation", "Bus", "Submix", "Group channel"],
+    "common_mistakes": ["Confusing a plain organizing folder with one that actually sums and routes audio", "Adding the same processing on both the folder and its child tracks, doubling the effect", "Forgetting that soloing or muting the folder affects every track inside it"],
+    "scenario_contexts": ["Grouping all drum tracks to a single bus for shared compression", "Cleaning up a large session by nesting related tracks", "Automating one fader to raise or lower a whole vocal group"]
+   },
+   "sources": ["PreSonus Studio One Reference Manual", "Steinberg Cubase Operation Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0d8bad5b-7287-47fa-9db1-b1749ffa2d59",
+   "term": "Routing validation",
+   "fields": {
+    "definition": "The practice of checking that every signal path in a session or system - inputs, outputs, buses, sends, and returns - is assigned to its intended destination before recording or performance. It confirms audio flows where expected and that no path is misassigned, missing, or duplicated.",
+    "plain_english": "It means checking that every signal goes where it should before you hit record or start a show. You trace each path so nothing is sent to the wrong place or left silent.",
+    "purpose_function": "It catches routing errors early, preventing lost takes, silent channels, or feedback caused by signal reaching the wrong output.",
+    "practical_application": "Before tracking a band, an engineer walks each input to its channel and each bus to its output, confirming meters move where expected.",
+    "category": "Signal Routing",
+    "related_terms": ["Routing window", "Routing Folder", "Signal flow", "Bus", "Patchbay"],
+    "common_mistakes": ["Assuming default routing is correct without checking it", "Testing only the main output and missing wrong bus or send assignments", "Skipping validation after loading a template built for a different session"],
+    "scenario_contexts": ["Line-checking inputs before a recording session", "Verifying monitor and record paths in a new session template", "Confirming console routing before a live show"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Avid Pro Tools Reference Guide"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fa564c9a-9cb0-4e91-ba24-bbbf54ffe37d",
+   "term": "Routing window",
+   "fields": {
+    "definition": "A screen or view in a DAW or digital console that displays and edits signal routing assignments, such as which physical inputs feed channels and which channels feed buses, outputs, sends, and returns. It presents the routing as a list or matrix the user can reassign.",
+    "plain_english": "It is the screen where you see and change where signals go. It lays out the inputs, outputs, and buses so you can connect them, like a map of all the cables inside the software.",
+    "purpose_function": "It gives one place to set up and review the whole signal path, so a technician can wire a session without hunting through every channel.",
+    "practical_application": "An engineer opens the routing window to assign hardware inputs to record tracks and to send a group to a headphone mix.",
+    "category": "Signal Routing",
+    "related_terms": ["Routing validation", "Routing Folder", "Bus", "Signal flow", "Patchbay"],
+    "common_mistakes": ["Confusing the routing window with the mixer view and editing the wrong assignment", "Reassigning an input without noticing it breaks another track's path", "Overlooking that some routings only appear in this window, not on the channel strip"],
+    "scenario_contexts": ["Assigning audio-interface inputs to tracks at the start of a session", "Setting up bus and send routing for a headphone mix", "Reconfiguring outputs when moving a session to a different studio"]
+   },
+   "sources": ["Avid Pro Tools Reference Guide", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3d244a91-9375-4584-98b4-dfb466262ce1",
+   "term": "Sample choke group",
+   "fields": {
+    "definition": "A group setting in a sampler or drum machine where triggering one assigned sound immediately silences another in the same group, so only one can sound at a time. It is most commonly used so a closed hi-hat cuts off a ringing open hi-hat.",
+    "plain_english": "It is a group where playing one sound stops another in the same group. The classic use is a closed hi-hat cutting off an open hi-hat, just like a drummer's foot closing the cymbals.",
+    "purpose_function": "It recreates sounds that cannot physically ring at once, keeping sampled drums realistic and stopping overlapping notes from piling up.",
+    "practical_application": "A beatmaker puts open and closed hi-hat pads in the same choke group so each new hat hit stops the previous one cleanly.",
+    "category": "Sampling",
+    "related_terms": ["Round-robin drum sample", "Sample decay control", "Sample-based Track", "Mute group", "Sample end offset"],
+    "common_mistakes": ["Confusing a choke group (one sound cuts another) with a mute group used only for mixing", "Placing unrelated drums in the same group so wanted hits get cut off", "Forgetting to choke the open hi-hat, leaving it ringing under closed hits"],
+    "scenario_contexts": ["Programming realistic hi-hat patterns on a drum machine or sampler", "Setting up cymbal chokes for an electronic drum kit", "Preventing overlapping one-shots from cluttering a beat"]
+   },
+   "sources": ["Akai MPC Reference Manual", "Native Instruments Battery Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a3f45653-528b-477a-857f-d51a0381cf92",
+   "term": "Sample decay control",
+   "fields": {
+    "definition": "A parameter that sets how quickly a sample's level falls after its initial attack, shaping the length of the sound's tail. On drum machines and samplers it is often a single decay knob that shortens or lengthens sounds such as a kick or open hi-hat.",
+    "plain_english": "It is a control that sets how fast a sound fades after it starts. Turn it down for a short, tight hit; turn it up for a long ringing tail, like choosing how long a bell rings.",
+    "purpose_function": "It lets a sound be tightened or stretched to fit a track's tempo and feel without replacing the sample itself.",
+    "practical_application": "A producer shortens the decay on an 808-style kick so it stops before the next note, keeping a fast bassline clean.",
+    "category": "Sampling",
+    "related_terms": ["Sample end offset", "Sample tuning", "Sample choke group", "Amplitude envelope", "Sample-based Track"],
+    "common_mistakes": ["Confusing decay (fall after attack) with release (fade after the note is let go)", "Setting a very long decay so drum hits blur into each other", "Using decay to fix timing that really needs the sample's end point trimmed"],
+    "scenario_contexts": ["Tightening a long 808 kick to fit a fast tempo", "Shaping the tail of an open hi-hat sample", "Matching sample length to the groove of a beat"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Native Instruments Kontakt Reference Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "014d792c-292c-4e5a-8697-e439e59f9e42",
+   "term": "Sample end offset",
+   "fields": {
+    "definition": "A setting that moves the point at which sample playback stops, ending it before the audio file's natural end. It trims unwanted tail, silence, or noise from the back of a sample.",
+    "plain_english": "It sets where a sample stops playing, cutting it off before the recording actually ends. You use it to trim a dead tail or noise at the end, like trimming the end of a video clip.",
+    "purpose_function": "It cleans up or shortens a sample's tail without editing the source file, tightening loops and one-shots.",
+    "practical_application": "A technician nudges the end offset in to drop a click or room noise at the tail of a snare one-shot.",
+    "category": "Sampling",
+    "related_terms": ["Sample decay control", "Sample tuning", "Sample-based Track", "Start point", "Loop point"],
+    "common_mistakes": ["Confusing the end offset (where playback stops) with the loop end point", "Trimming too far in and cutting off part of the wanted sound", "Assuming the offset edits the audio file itself rather than just playback"],
+    "scenario_contexts": ["Trimming noise from the tail of a one-shot drum sample", "Tightening a sampled loop so it ends on the beat", "Removing dead air at the end of a recorded phrase"]
+   },
+   "sources": ["Native Instruments Kontakt Reference Manual", "Ableton Live Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "48da6259-9805-4ba5-a81b-94439e884492",
+   "term": "Sample tuning",
+   "fields": {
+    "definition": "Adjusting the perceived pitch of a sample, typically by coarse (semitone) and fine (cent) controls, either by changing playback speed or by pitch-shifting. It brings a sample into a target key or aligns it with other pitched material.",
+    "plain_english": "It means changing the pitch of a sample up or down. You do it to put a sound in the right key, like tuning a guitar string so it matches the song.",
+    "purpose_function": "It fits a sample to a track's key and tunes drums for punch or musical effect, so sampled sounds sit in tune with everything else.",
+    "practical_application": "A producer tunes a kick drum sample to the song's root note so the low end reinforces the bass instead of clashing.",
+    "category": "Sampling",
+    "related_terms": ["Sample-based Track", "Sample decay control", "Round-robin drum sample", "Pitch shifting", "Transpose"],
+    "common_mistakes": ["Confusing coarse tuning in semitones with fine tuning in cents", "Tuning a sample so far by playback speed that it sounds obviously sped up or slowed down", "Leaving drum samples untuned so the kick clashes with the bassline"],
+    "scenario_contexts": ["Tuning a kick or 808 to the key of a track", "Matching a vocal chop to the song's melody", "Correcting a slightly off-pitch sampled instrument"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Native Instruments Kontakt Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6bf82ba6-262b-43e6-8401-f94db4751cd6",
+   "term": "Sample-based Track",
+   "fields": {
+    "definition": "A track whose sound is built from prerecorded audio samples - loops, one-shots, or sampled instruments triggered from a sampler - rather than from live-recorded audio or synthesized tones. The samples are arranged, triggered, and processed to form the part.",
+    "plain_english": "It is a track made from ready-made sound recordings instead of live playing or a synth. You build the part by placing and triggering samples, like making music from a box of prerecorded clips.",
+    "purpose_function": "It lets a producer build parts from existing sounds quickly, giving access to realistic or hard-to-record sounds without live performers.",
+    "practical_application": "A beatmaker builds a drum part on a sample-based track by triggering kick, snare, and hat one-shots from a sampler.",
+    "category": "Sampling",
+    "related_terms": ["Round-robin drum sample", "Sample tuning", "Sample choke group", "One-shot sample", "Sample decay control"],
+    "common_mistakes": ["Assuming samples need no tuning or timing edits to sit in a mix", "Overusing one identical sample so repeats sound mechanical", "Ignoring the sample rate or quality of source clips, hurting the final sound"],
+    "scenario_contexts": ["Building a hip-hop or electronic beat from one-shots and loops", "Layering sampled instruments to form a backing track", "Replacing a recorded drum with a sampled one during production"]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ableton Live Manual"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

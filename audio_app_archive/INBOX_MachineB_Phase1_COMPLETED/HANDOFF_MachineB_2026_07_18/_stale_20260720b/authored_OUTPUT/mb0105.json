@@ -1,0 +1,321 @@
+{
+ "batch": 105,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "e81212e5-6db9-4f7c-9020-29bb11db645c",
+   "term": "Freeze track (Live)",
+   "fields": {
+    "definition": "In Ableton Live, a command that temporarily renders a track's complete output — including all of its instruments and effects — to a hidden audio file, so those devices no longer have to be processed in real time. The track can be unfrozen to resume editing its devices, or flattened to permanently replace them with the rendered audio.",
+    "plain_english": "Freezing a track in Ableton records it to a hidden sound file so the computer no longer has to run its plug-ins live. This frees up computer power, like saving a finished drawing as a photo so you do not have to redraw it each time. You can unfreeze the track later if you want to change the plug-ins again.",
+    "purpose_function": "It lowers real-time CPU load by playing back a pre-rendered audio file instead of continuously processing CPU-heavy instruments and effects, letting a large project keep running smoothly on limited hardware.",
+    "practical_application": "When playback starts to stutter or drop out, an engineer freezes the most demanding tracks to recover CPU headroom, then unfreezes them only if the devices still need editing.",
+    "category": "DAW Workflow",
+    "related_terms": [
+     "Bounce in place",
+     "CPU load",
+     "Rendering",
+     "Virtual instrument",
+     "Flatten",
+     "Latency"
+    ],
+    "common_mistakes": [
+     "Trying to adjust a frozen track's instrument or effects without unfreezing first, since the devices are locked while frozen.",
+     "Forgetting that freezing captures the current device settings, so later changes require unfreezing and re-freezing.",
+     "Confusing Freeze (reversible) with Flatten (permanent), and flattening before the edits are final."
+    ],
+    "scenario_contexts": [
+     "A dense electronic project with many software synths begins to crackle, so the producer freezes the synth tracks to keep playback stable.",
+     "Preparing a laptop set for a show, a musician freezes CPU-heavy tracks to guarantee reliable playback on stage.",
+     "Before sending a session to a collaborator who lacks the same plug-ins, tracks are frozen so the sound is preserved."
+    ]
+   },
+   "sources": [
+    "Ableton Reference Manual (Working with Instruments and Effects; Computer Audio Resources and Strategies)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2e975f54-c648-431e-a33b-54310f1efbad",
+   "term": "Frequency-response validation",
+   "fields": {
+    "definition": "The process of measuring a device's or system's output level across the audible frequency band and comparing it against a target curve or published specification to confirm it responds within an allowed tolerance. It typically uses a calibrated measurement microphone with a dual-channel transfer-function analyzer or a swept/pink-noise test signal.",
+    "plain_english": "This means checking that a speaker or piece of gear plays every pitch — from low bass to high treble — at about the right loudness. You feed it a test sound, measure the result, and compare it to how it should look. It is like checking that every key on a piano sounds at the correct volume.",
+    "purpose_function": "It verifies that a signal chain or loudspeaker reproduces all frequencies evenly, or matches a defined target, catching problems like dips, peaks, or roll-off before they affect the mix or the audience.",
+    "practical_application": "A technician runs a measurement sweep through a PA using a transfer-function analyzer, then adjusts EQ or checks wiring until the measured response matches the intended target within tolerance.",
+    "category": "Measurement",
+    "related_terms": [
+     "Frequency response",
+     "Pink noise",
+     "Transfer function",
+     "Measurement microphone",
+     "Equalization",
+     "Room correction"
+    ],
+    "common_mistakes": [
+     "Judging response by ear alone instead of using a calibrated microphone and analyzer.",
+     "Ignoring the effect of the room, so measured dips and peaks are wrongly blamed on the equipment.",
+     "Using an uncalibrated mic and trusting its own colored response as the true system curve."
+    ],
+    "scenario_contexts": [
+     "Commissioning a new PA, an engineer validates each loudspeaker's response against the manufacturer's published curve.",
+     "After repairing a mixing-console channel, a tech confirms its frequency response is flat before returning it to service.",
+     "Setting up a monitoring room, an engineer validates the response at the listening position to plan corrective EQ."
+    ]
+   },
+   "sources": [
+    "McCarthy, Sound Systems: Design and Optimization",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bf57e46b-4ae7-430c-8752-9e914822b3af",
+   "term": "Fully Filled Effects Track",
+   "fields": {
+    "definition": "In film and television post-production, a sound-effects stem that contains every effect element — hard effects, backgrounds/ambiences, and Foley — needed to reproduce the program's complete effects soundtrack, including effects that originally played underneath dialogue. 'Fully filled' means no effect is missing when the dialogue is removed, so the track stands on its own for foreign-language dubbing or reversioning.",
+    "plain_english": "This is a separate track holding all of a show's sound effects, like footsteps, doors, and background noise, with nothing left out. It even includes sounds that were hidden under people talking. That way, when the original voices are removed for another language, the world still sounds complete.",
+    "purpose_function": "It exists so a program can be re-voiced in other languages or re-edited without losing any sound effects, since the effects are delivered separately and completely from the dialogue.",
+    "practical_application": "A post-production mixer builds the fully filled effects track by adding Foley and effects for moments that were masked by dialogue, then checks that it plays convincingly with the dialogue muted.",
+    "category": "Post-Production Deliverable",
+    "related_terms": [
+     "M&E track",
+     "Fully Filled Music-and-Effects Track",
+     "Foley",
+     "Stem",
+     "Dialogue stem",
+     "Backgrounds/Ambience"
+    ],
+    "common_mistakes": [
+     "Leaving gaps where effects were originally covered by dialogue, so the track is not truly 'fully filled'.",
+     "Assuming production sound captured under dialogue can substitute for clean, separate Foley and effects.",
+     "Confusing the effects-only track with the combined music-and-effects (M&E) track."
+    ],
+    "scenario_contexts": [
+     "A series is sold to an overseas broadcaster who will dub it, requiring a fully filled effects track so no sound is lost.",
+     "During QC, a reviewer mutes the dialogue and finds missing footsteps, sending the effects track back to be fully filled.",
+     "A streaming platform's delivery spec demands separate, fully filled effects for localization."
+    ]
+   },
+   "sources": [
+    "Holman, Sound for Film and Television",
+    "Yewdall, The Practical Art of Motion Picture Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "87f5d26e-95f5-4953-81f1-06ea6be504cd",
+   "term": "Fully Filled Music-and-Effects Track",
+   "fields": {
+    "definition": "A composite deliverable stem containing all of a program's music and sound effects but no dialogue, mixed so the full soundtrack can be recreated except for the voices. 'Fully filled' means every effect and music cue is present, including material that originally played under dialogue, so the music-and-effects (M&E) track stands alone when foreign-language dialogue is added.",
+    "plain_english": "This is one track that has all the music and sound effects from a show but none of the talking. 'Fully filled' means nothing is missing, even sounds that were hidden under the voices. A studio in another country can add their own language on top and everything else still sounds right.",
+    "purpose_function": "It lets a program be translated and re-voiced for other markets while keeping the original music and effects intact, which is why broadcasters and streamers require it as a standard deliverable.",
+    "practical_application": "When mixing for delivery, the re-recording mixer creates and checks the fully filled M&E by muting the dialogue stem and confirming that music and effects still cover every moment.",
+    "category": "Post-Production Deliverable",
+    "related_terms": [
+     "Fully Filled Effects Track",
+     "Foley",
+     "Stem",
+     "Dialogue stem",
+     "Re-recording mix",
+     "Deliverables"
+    ],
+    "common_mistakes": [
+     "Delivering an M&E with holes where dialogue used to mask effects, failing the 'fully filled' requirement.",
+     "Accidentally leaving dialogue or narration bleeding into the M&E stem.",
+     "Forgetting music cues that were low under dialogue, which leaves silent gaps."
+    ],
+    "scenario_contexts": [
+     "A distributor requires a fully filled M&E before licensing a film to non-English territories.",
+     "A dubbing studio uses the M&E to replace the original voices with a new-language cast.",
+     "A network's QC rejects an M&E because effects drop out where the dialogue was removed."
+    ]
+   },
+   "sources": [
+    "Holman, Sound for Film and Television",
+    "Yewdall, The Practical Art of Motion Picture Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "084b08f9-4c9a-44ed-bd67-410e63042611",
+   "term": "Gain control in Flex Pitch",
+   "fields": {
+    "definition": "In Logic Pro's Flex Pitch editor, the Gain 'hotspot' on each detected note (with a matching Gain control in the inspector) that raises or lowers that individual note's level without affecting neighboring notes. It lets an engineer balance the loudness of specific words or syllables within a monophonic audio region during pitch editing.",
+    "plain_english": "In Logic Pro, Flex Pitch shows each sung note as a block you can edit. The gain control lets you make one single note louder or quieter without touching the notes around it. It is like turning up just one word in a vocal line.",
+    "purpose_function": "It provides note-by-note level control so an engineer can even out a performance — lifting weak notes and taming loud ones — right in the pitch editor instead of drawing volume automation.",
+    "practical_application": "While tuning a lead vocal with Flex Pitch, an engineer drags a note's Gain hotspot to bring a buried word forward or pull back an overly loud one before compression.",
+    "category": "Pitch/Audio Editing",
+    "related_terms": [
+     "Flex Pitch",
+     "Pitch correction",
+     "Volume automation",
+     "Gain staging",
+     "Compression",
+     "Comping"
+    ],
+    "common_mistakes": [
+     "Confusing the note Gain hotspot with the region's overall gain or the channel fader.",
+     "Boosting a note's gain so far that it distorts or exposes noise, instead of using compression.",
+     "Assuming gain changes also fix pitch, when Gain only affects level and not tuning."
+    ],
+    "scenario_contexts": [
+     "Evening out a vocal take where one line was sung too softly, note by note.",
+     "Reducing a single popped or shouted word that jumps out of an otherwise smooth vocal.",
+     "Balancing individual notes of a bass or backing-vocal part during detailed editing."
+    ]
+   },
+   "sources": [
+    "Apple Logic Pro User Guide (Edit pitch and timing with Flex Pitch; Change the gain of notes using Flex Pitch)",
+    "Sound on Sound (Logic technique articles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9f12be77-0c6c-4027-9747-7d461cc251b4",
+   "term": "Get a rough mix",
+   "fields": {
+    "definition": "To create a quick, preliminary balance of a multitrack recording — setting basic levels, panning, and perhaps light EQ and effects — without the detailed processing of a final mix. A rough mix captures the song's overall shape early and serves as a reference for the artist, producer, and later mixing.",
+    "plain_english": "A rough mix is a fast, first version of a song where you just balance the levels so everything can be heard. It is not the polished final version, more like a rough sketch before the finished painting. Artists and producers use it to judge the song and share ideas.",
+    "purpose_function": "It gives everyone an early, listenable version of the song to evaluate the arrangement and performances, and it acts as a reference that guides decisions in the final mix.",
+    "practical_application": "During or right after tracking, an engineer quickly balances faders and panning to bounce a rough mix for the band to take home and for the mix engineer to reference later.",
+    "category": "Mix Workflow",
+    "related_terms": [
+     "Rough mix",
+     "Reference mix",
+     "Balance",
+     "Final mix",
+     "Bounce",
+     "Monitor mix"
+    ],
+    "common_mistakes": [
+     "Over-processing a rough mix and wasting time that belongs in the final mix stage.",
+     "Committing rough-mix effects or levels permanently instead of keeping them adjustable.",
+     "Ignoring the rough mix as a reference and losing the vibe that first excited the artist."
+    ],
+    "scenario_contexts": [
+     "After a tracking session, the engineer bounces a rough mix so the band can listen at home.",
+     "A producer asks for a rough mix to judge whether an arrangement is working before overdubs.",
+     "A mix engineer plays the artist's rough mix as a reference to match the intended feel."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "abde7f24-48cb-4a32-93f2-412e6a448e39",
+   "term": "Ghost-note programming",
+   "fields": {
+    "definition": "The practice of entering very low-velocity notes — most often light snare or hi-hat hits between the main accents — into a programmed MIDI drum pattern to imitate the subtle, near-silent 'ghost notes' a live drummer plays for groove and feel. The notes are deliberately quiet so they add rhythmic texture without competing with the backbeat.",
+    "plain_english": "Ghost notes are the tiny, quiet drum hits a real drummer sneaks in between the loud beats to make a groove feel human. Programming them means adding those soft hits to a computer drum part using low velocity, so it does not sound stiff. It is like faint pencil marks that make a drawing feel alive.",
+    "purpose_function": "It makes programmed drums feel more natural and groovy by restoring the quiet in-between hits that give a real performance its swing and momentum.",
+    "practical_application": "A producer draws extra low-velocity snare hits between the main backbeats in the piano roll, adjusting their velocity until the pattern grooves like a live drummer.",
+    "category": "MIDI Programming",
+    "related_terms": [
+     "Velocity",
+     "MIDI programming",
+     "Quantization",
+     "Humanize",
+     "Groove",
+     "Backbeat"
+    ],
+    "common_mistakes": [
+     "Setting ghost-note velocities too high, so they compete with the main backbeat instead of sitting under it.",
+     "Placing ghost notes rigidly on the grid, which keeps the groove stiff instead of loose.",
+     "Adding so many ghost notes that the pattern becomes cluttered and loses its pulse."
+    ],
+    "scenario_contexts": [
+     "Programming a funk or R&B drum part where light snare ghost notes drive the groove.",
+     "Making a stiff drum-machine pattern feel human before a session.",
+     "Layering quiet hi-hat and snare hits under a straight beat to add motion."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f898d821-ee6f-4b18-986d-8118642fe1b7",
+   "term": "Global Tracks",
+   "fields": {
+    "definition": "In Logic Pro, a set of special tracks displayed below the ruler that control project-wide, time-based parameters rather than audio or MIDI content — including the Tempo, Signature (time and key), Marker, Arrangement, Transposition, Beat Mapping, and Movie tracks. Their events apply to the whole project at their positions on the timeline.",
+    "plain_english": "Global Tracks in Logic Pro are special lanes that control things for the whole song, not just one instrument. They hold the tempo, the time and key signature, section markers, and more. Think of them as the song's master settings shown along the top of the timeline.",
+    "purpose_function": "They give one central place to control and edit project-level events like tempo changes, key and time signatures, and song sections, so these apply consistently across every track.",
+    "practical_application": "An engineer opens the Global Tracks to add a tempo change for a breakdown, drop a marker on the chorus, or set a key-signature change, then hides them again to reclaim screen space.",
+    "category": "DAW Workflow",
+    "related_terms": [
+     "Tempo track",
+     "Marker",
+     "Arrangement track",
+     "Transposition track",
+     "Signature track",
+     "Beat mapping"
+    ],
+    "common_mistakes": [
+     "Leaving Global Tracks hidden and not realizing tempo or signature changes can be edited there.",
+     "Confusing the project-wide Transposition track with transposing a single region.",
+     "Editing tempo in the wrong place instead of the Tempo global track, which causes sync problems."
+    ],
+    "scenario_contexts": [
+     "Adding a ritardando by drawing tempo changes in the Tempo global track.",
+     "Marking song sections with the Marker track to navigate a large arrangement.",
+     "Reorganizing verses and choruses using arrangement markers in the Arrangement track."
+    ]
+   },
+   "sources": [
+    "Apple Logic Pro User Guide (Global tracks overview; Global changes overview)",
+    "Sound on Sound (Logic technique articles)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5977257a-9c5f-47eb-9c7e-c89ea04c6a77",
+   "term": "gluey",
+   "fields": {
+    "definition": "A subjective mix descriptor for a sound in which separate elements feel bonded into one cohesive whole rather than sitting apart, often the result of gentle bus ('glue') compression, shared reverb, and consistent tonal treatment across a group. A 'gluey' mix or bus sounds unified and connected.",
+    "plain_english": "'Gluey' describes a mix where all the parts feel stuck together as one solid sound, instead of separate pieces. Engineers often get this with gentle compression on a group of tracks. It is like glue holding a collage into a single picture.",
+    "purpose_function": "The term communicates a goal of cohesion — making a group of tracks or a full mix sound like one connected performance rather than a stack of isolated parts.",
+    "practical_application": "An engineer chasing a 'gluey' drum bus applies light bus compression and a shared room reverb so the kit sounds like one instrument in one space.",
+    "category": "Mix Terminology",
+    "related_terms": [
+     "Glue compression",
+     "Bus compression",
+     "Cohesion",
+     "Mix bus",
+     "Parallel compression",
+     "Reverb"
+    ],
+    "common_mistakes": [
+     "Over-compressing the bus to force 'glue', which flattens the dynamics and causes pumping.",
+     "Assuming glue comes only from compression, ignoring shared reverb and tonal balance.",
+     "Treating 'gluey' as an exact spec rather than a subjective description to judge by ear."
+    ],
+    "scenario_contexts": [
+     "Placing gentle compression across the drum bus to make the kit sound glued together.",
+     "Using a mix-bus compressor to help a full mix feel cohesive.",
+     "Sharing one reverb across backing vocals so they blend into a single, gluey texture."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Izhaki, Mixing Audio: Concepts, Practices and Tools"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

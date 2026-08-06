@@ -1,0 +1,223 @@
+{
+ "expert": "language",
+ "group": 11,
+ "reviews": [
+  {
+   "id": "bae9665b-5275-45de-8abe-65aea3385345",
+   "term": "Common-Mode Rejection (CMRR)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "20dccbd6-0f77-4d07-a711-ca8413f863df",
+   "term": "Compander",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "425518c9-7302-458e-bf00-b07530fcfeed",
+   "term": "Companding",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6992b6fb-694d-4fb9-983a-5dd98afd5f8a",
+   "term": "Companding artifact",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "97256884-7938-4dbd-93d2-c04cec5c33b0",
+   "term": "Complex averaging",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f8e9ec4d-0613-483c-a02c-cea18432ccec",
+   "term": "Complex Tone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0e88c041-b310-4ffb-ac26-dc6b7e9a4a14",
+   "term": "Compliance Documentation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2cd3498c-d96b-436a-b5d3-955e267a45ef",
+   "term": "Component isolation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5a818cd4-2db2-487e-96a7-4452952651dc",
+   "term": "Component Speakers",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4506ff37-ee61-40a6-ba8c-7173dbd5ee1b",
+   "term": "Component Tester",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f007da3a-b9ba-421d-8967-cd7e249b9360",
+   "term": "Compression (acoustics)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "06af1c7c-b269-46e6-a090-9f9eca813382",
+   "term": "Compression / Compressor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0e4472b2-5c0c-4922-b96f-eb2b41cbafac",
+   "term": "Compression Driver",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "096e399e-e731-4c17-92c4-a98b8cd6673c",
+   "term": "Concentric Driver",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2be28697-a5cf-42e2-9e72-14d4be212846",
+   "term": "Concert Pitch (A440)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ffa1d878-e467-4316-8809-729bb278f420",
+   "term": "Condenser Microphone",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "purpose_function",
+     "severity": "Low",
+     "issue": "The field is a comma-spliced string of imperative instructions ('Record vocals with condenser mics, mic acoustic instruments, use large-diaphragm...'), not a descriptive purpose/function statement. It is a sentence fragment, and its imperative voice is inconsistent with the descriptive prose used in every other purpose_function field.",
+     "suggestion": "Rewrite as descriptive prose, e.g.: 'A condenser mic uses a capacitor capsule to capture sound with high sensitivity and detailed high-frequency response, making it the studio standard for vocals and acoustic instruments; large-diaphragm models suit vocals and fuller sources, small-diaphragm models suit bright or detailed sources, and both require phantom power to charge the capsule.'"
+    }
+   ]
+  },
+  {
+   "id": "e54cf54d-e1b6-41b2-bde1-9e95f4df0e4d",
+   "term": "Conductor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a35f742e-df82-483c-98b3-1dd603d2acec",
+   "term": "Conduit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4d552095-7502-4612-b049-40227ad8ab18",
+   "term": "Cone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "27146ef2-dbb7-448f-b72b-93ab998d2036",
+   "term": "Cone Breakup",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2f273b63-c9d0-4c8c-bacd-6c3a03d8895a",
+   "term": "Cone Material",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4d020c36-9927-45de-88d5-a01d33ea169f",
+   "term": "Conference System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "abb141ed-1877-4a02-bb12-020f768038ed",
+   "term": "Confidence Monitor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f2cfb071-f009-442b-97d6-2769109e934f",
+   "term": "Connector strain relief failure",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d3b2d453-4024-4ce9-b40b-d8f9c5d05ac4",
+   "term": "Connectors",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6901cbda-31e0-4739-9029-bdcd8e78c7b5",
+   "term": "Console Layer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b7f0730b-7f07-4acb-9fa0-564f7427b23c",
+   "term": "Consonance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "531ce508-84b3-4974-a467-d1d67e12ac07",
+   "term": "constant directivity (CD) horn",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "afe1326a-a079-4a54-89e7-584e0eb3799d",
+   "term": "Constant Voltage System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b5de4255-7139-406d-b09e-f7626b74ebd5",
+   "term": "Constant-Q",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "64283112-fbeb-4ced-9893-7d0a50e44bc8",
+   "term": "constant-voltage (70V / 100V) distribution",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dce31de6-6e89-4c27-bd97-0aa5b96391d3",
+   "term": "Constructive Interference",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "433e7be0-ef3b-4725-9cb9-35b3dee41e0f",
+   "term": "Consumer Level (−10 dBV)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1d9008d0-ab09-4718-81cc-9b6fd6aaa627",
+   "term": "Contact Microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ff1d859c-1963-4066-82af-04d8c5117129",
+   "term": "Continuity buzzer",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

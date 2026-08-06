@@ -1,0 +1,258 @@
+{
+  "batch": 14,
+  "topic": "Instrument Recording — Strings & Guitar",
+  "authored": [
+    {
+      "id": "05190a26-fbc7-48b1-9652-4fa28fd9447f",
+      "term": "Treble-string section",
+      "fields": {
+        "definition": "In piano construction, the treble-string section is the upper-register portion of the string scale strung with plain (unwound) high-tensile steel wire, in which most notes use three identically tuned unison strings per key (a trichord); it is distinguished from the copper-wound, single- or double-strung bass section.",
+        "plain_english": "The group of high-note strings in a piano. They are thin, bare steel wires. Most notes here use three wires each. They make the bright, high notes. The low strings are thick and wrapped in copper.",
+        "purpose_function": "Using thin plain wire at high tension and grouping three strings per note gives the upper register enough loudness, sustain and bright tone while keeping string length and inharmonicity manageable.",
+        "practical_application": "When miking or tuning a piano, a technician treats this region as the source of note attack and brightness, often favouring a mic position over the treble bridge, and tunes each trichord's unison strings tightly so they do not beat or sound chorused.",
+        "category": "Piano",
+        "related_terms": ["Bass-string section", "Trichord", "Soundboard", "Inharmonicity", "Upright piano", "Una corda"],
+        "common_mistakes": [
+          "Assuming every treble note has three strings — the extreme top and the bass-to-treble transition may have two, so unisons must be checked individually.",
+          "Confusing the plain-steel treble strings with the copper-wound bass strings when restringing or ordering wire gauges.",
+          "UNSAFE: Cutting or releasing high-tension piano wire without eye protection and gloves; a snapping string can whip and cause eye or hand injury."
+        ],
+        "scenario_contexts": [
+          "Close-miking a grand piano and placing a mic over the treble strings to capture note clarity and attack.",
+          "A piano technician tuning the treble trichord unisons to eliminate audible beating.",
+          "Replacing a broken plain-wire treble string on a studio upright before a session."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments, 2nd ed. (Springer), Ch. 12 'The Piano'",
+        "The New Grove Dictionary of Musical Instruments, 'Pianoforte'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "ba0aacd0-fde1-4b61-ae52-86c3298ca04c",
+      "term": "Tremolo picking",
+      "fields": {
+        "definition": "A plucked-string technique in which a single note (or a pair of notes) is sounded with very rapid, repeated plectrum or finger strokes — typically fast alternating down-up motion — to produce a sustained, shimmering tone from an instrument whose notes would otherwise decay quickly.",
+        "plain_english": "You pick one note over and over, as fast as you can. A single pluck fades fast. But fast picking makes it sound like one long, buzzing note.",
+        "purpose_function": "It exists to create sustain and a continuous, tremulous timbre on plucked instruments such as the mandolin, guitar and bouzouki, which cannot hold a note the way a bowed or wind instrument can.",
+        "practical_application": "Recording tremolo-picked mandolin or surf/metal guitar means capturing a dense stream of pick attacks, so a technician gain-stages for the transients and watches for string and pick noise that becomes obvious under compression.",
+        "category": "Playing Technique",
+        "related_terms": ["Alternate picking", "Tremolo", "Mandolin", "Sustain", "Transient", "Palm muting"],
+        "common_mistakes": [
+          "Confusing tremolo picking (rapid repeated picking of a note) with a vibrato/'whammy' bar or with an amplitude-tremolo effect pedal — they are unrelated.",
+          "Confusing tremolo (rapid repetition) with vibrato (pitch variation).",
+          "Applying heavy limiting or a slow-responding chain that smears the individual pick attacks into mush."
+        ],
+        "scenario_contexts": [
+          "Tracking a mandolin melody whose sustained notes are produced entirely by tremolo picking.",
+          "Recording surf or black-metal guitar built on continuous tremolo-picked lines.",
+          "Editing a comp where tremolo-picked passages must be time-aligned by their pick transients."
+        ]
+      },
+      "sources": [
+        "The New Grove Dictionary of Musical Instruments, 'Tremolo' and 'Mandolin'",
+        "Adler, The Study of Orchestration (plucked-string and mandolin tremolo)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "1af127a8-7b83-42fb-999f-81e50b792d4a",
+      "term": "Tricone resonator",
+      "fields": {
+        "definition": "A metal-bodied resonator guitar design that uses three small spun-aluminum cones linked at their apexes by a T-shaped bridge assembly to mechanically amplify and radiate the strings' vibration in place of a conventional wooden soundboard.",
+        "plain_english": "A metal guitar with three thin metal cones under the bridge. The cones work a bit like small speakers. A normal guitar uses a wooden top instead. This gives a loud, ringing, metal sound.",
+        "purpose_function": "It was created by National in the late 1920s to make an acoustic guitar loud enough to cut through a band before electric amplification, and its three coupled cones give a smoother, more sustaining tone than single-cone designs.",
+        "practical_application": "When recording a tricone for blues, bluegrass or Hawaiian slide, a technician typically mics both the coverplate/cone area and the neck or body to balance the metallic cone resonance against string and slide noise, and allows for the instrument's strong ringing sustain.",
+        "category": "Resonator Guitar",
+        "related_terms": ["Resonator guitar", "Single-cone resonator", "Biscuit bridge", "Spider bridge", "Slide guitar", "Coverplate"],
+        "common_mistakes": [
+          "Assuming all resonator guitars are tricones — single-cone biscuit and spider (Dobro-style) designs are mechanically and tonally different.",
+          "Thinking the cones are steel; they are very thin spun aluminum (well under half a millimetre) and are easily dented or deformed by rough handling.",
+          "Miking only the coverplate holes and missing the string and slide attack, or vice versa."
+        ],
+        "scenario_contexts": [
+          "Close-miking a National tricone for a Delta-blues slide session.",
+          "Recording lap-style Hawaiian tricone where the cone resonance is central to the tone.",
+          "Choosing a tricone over a single-cone guitar for a smoother, more sustaining part in an acoustic arrangement."
+        ]
+      },
+      "sources": [
+        "Rau & Smith, 'Measurement and Modeling of a Resonator Guitar,' ISMA 2019 (CCRMA, Stanford University)",
+        "The New Grove Dictionary of Musical Instruments, 'Resonator guitar' / 'National'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "4887d07c-ca2c-40b1-932e-2ba0e939bb50",
+      "term": "Ukulele body resonance",
+      "fields": {
+        "definition": "The set of low-frequency acoustic resonances of a ukulele's hollow body — principally the Helmholtz-type air resonance of the enclosed cavity coupled to the fundamental flexural modes of the top plate and back — which shape and radiate the instrument's tone; because the body is small, these resonances lie at relatively high frequencies compared with a guitar.",
+        "plain_english": "The natural boom of the ukulele's little box. The air inside and the wooden top shake together. This gives the uke its warm yet bright sound.",
+        "purpose_function": "These body resonances reinforce and radiate the string energy, particularly in the low-mids, and largely determine the ukulele's loudness and tonal character.",
+        "practical_application": "A technician chooses mic type and distance around the soundhole and lower bout to capture or tame these body resonances, since aiming a mic into the soundhole exaggerates the boomy air resonance while moving out and toward the 12th fret evens the tone.",
+        "category": "Instrument Acoustics",
+        "related_terms": ["Helmholtz resonance", "Soundhole", "Top plate", "Ukulele strumming transient", "Proximity effect", "Body resonance"],
+        "common_mistakes": [
+          "Aiming the mic straight into the soundhole and capturing a boomy, unnatural low-mid buildup dominated by the air resonance.",
+          "Assuming a ukulele has the same body resonance frequencies as a guitar — the smaller body pushes them higher.",
+          "Blaming 'boominess' on the room when it is actually the instrument's own Helmholtz air resonance."
+        ],
+        "scenario_contexts": [
+          "Positioning a small-diaphragm condenser off-axis from the soundhole to control body-resonance boom while tracking ukulele.",
+          "EQing a recorded ukulele to tame a resonant low-mid peak from the body air mode.",
+          "Comparing soprano and tenor ukuleles whose different body sizes shift the resonant character."
+        ]
+      },
+      "sources": [
+        "Journal of the Acoustical Society of America, 'Physics of the guitar at the Helmholtz and first top-plate resonances' (JASA 61(2), 1977)",
+        "Fletcher & Rossing, The Physics of Musical Instruments, 2nd ed. (Springer), guitar body resonances"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "1f2d08e0-61a6-4bdf-b318-6857de139ca5",
+      "term": "Ukulele strumming transient",
+      "fields": {
+        "definition": "The brief, high-amplitude broadband attack produced at the onset of a strummed ukulele chord — the composite of finger/nail-and-nylon contact noise and the rapid sequential excitation of the strings — occurring before the tone settles into its sustained, body-resonant portion.",
+        "plain_english": "The sharp little burst you hear the instant a ukulele chord is strummed, before the ringing note settles in.",
+        "purpose_function": "The transient carries much of the rhythmic feel and perceived attack of ukulele strumming, and its short, spiky nature is what lets a strummed uke sit as a percussive rhythm layer in a mix.",
+        "practical_application": "Because these transients peak well above the sustained level, a technician leaves ample headroom, sets converters and preamps to avoid transient clipping, and dials compressor attack/release so the strum's snap is controlled without being flattened.",
+        "category": "Instrument Acoustics",
+        "related_terms": ["Transient", "Attack", "Headroom", "Compression", "Ukulele body resonance", "Peak level"],
+        "common_mistakes": [
+          "Setting levels to the average/RMS reading and letting the sharp strum transients clip the converter or preamp.",
+          "Using a very fast compressor attack that swallows the transient and kills the strum's rhythmic snap.",
+          "Trusting slow/averaging meters that under-read the true transient peak level."
+        ],
+        "scenario_contexts": [
+          "Gain-staging a ukulele track and leaving headroom so strum transients do not clip the interface.",
+          "Dialing compressor attack and release to preserve the percussive snap of a strummed rhythm part.",
+          "Choosing a mic and preamp with good transient response for a bright, articulate strummed track."
+        ]
+      },
+      "sources": [
+        "Ballou (ed.), Handbook for Sound Engineers (transients and program dynamics)",
+        "Huber & Runstein, Modern Recording Techniques (transient response and acoustic-instrument miking)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "533c0c68-d611-4836-b805-b3312e9a6f8c",
+      "term": "Una corda",
+      "fields": {
+        "definition": "The soft (left) pedal of a grand piano; depressing it shifts the whole keyboard and action sideways so the hammers strike two of the three unison strings (historically only one, hence 'una corda,' Italian for 'one string') and contact a less-worn strip of hammer felt, reducing loudness and softening timbre. On most upright pianos the equivalent pedal instead moves the hammers closer to the strings (a 'half-blow') and is not a true una corda.",
+        "plain_english": "The left piano pedal. It makes the sound softer and mellower. On a grand piano, it slides the hammers sideways. Then each hammer hits fewer strings.",
+        "purpose_function": "It gives the player a distinct soft, veiled tone colour — not merely lower volume — by changing how many strings are struck and which part of the hammer felt strikes them.",
+        "practical_application": "A recording engineer learns to hear the una corda's timbral shift and knows that on a grand it changes attack and string coupling, whereas on an upright the 'soft pedal' only lightens the blow — useful when a producer asks for that softer colour.",
+        "category": "Piano",
+        "related_terms": ["Soft pedal", "Sustain pedal", "Sostenuto pedal", "Treble-string section", "Upright piano", "Hammer"],
+        "common_mistakes": [
+          "Believing a modern grand strikes literally one string on una corda — it typically shifts to strike two of the three unison strings.",
+          "Assuming an upright's 'soft pedal' works like a grand's una corda; the upright uses a half-blow, not a lateral action shift.",
+          "Confusing the una corda (left) pedal with the sostenuto (middle) pedal."
+        ],
+        "scenario_contexts": [
+          "A pianist engaging the una corda for a hushed passage while the engineer captures the timbral change.",
+          "Producing a soft, intimate piano track and asking for the una corda pedal on a grand.",
+          "Diagnosing a mechanical rattle when the una corda shift leaves the hammers misaligned on a studio grand."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments, 2nd ed. (Springer), Ch. 12 'The Piano' (soft pedal)",
+        "The New Grove Dictionary of Musical Instruments, 'Pianoforte' / 'Una corda'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "9de36243-90dc-4be9-a8e7-bc28d14b4b17",
+      "term": "Upright piano",
+      "fields": {
+        "definition": "A piano in which the strings, soundboard and frame are mounted vertically in a case behind the keyboard rather than horizontally as in a grand, typically with the bass strings overstrung (crossing diagonally over the treble strings) to fit a longer speaking length into a compact height; its action relies on springs and bridle straps to return the hammers because it cannot use gravity.",
+        "plain_english": "A piano that saves space. Its strings stand up straight behind the keys. So it fits neatly against a wall. A grand piano lies flat instead.",
+        "purpose_function": "The vertical layout makes a full-range acoustic piano compact and affordable for homes, schools and studios, trading some of the grand's action speed, string length and tonal power for a smaller footprint.",
+        "practical_application": "When recording an upright, a technician often removes the top lid and/or lower front panel and mics over the exposed strings or the open back, working around the vertical soundboard and the action noise that sits close to the strings.",
+        "category": "Piano",
+        "related_terms": ["Grand piano", "Soundboard", "Overstringing", "Treble-string section", "Una corda", "Piano action"],
+        "common_mistakes": [
+          "Miking an upright only through the closed front and getting a dull, boxy sound instead of opening the case to reach the strings.",
+          "Expecting an upright's action to repeat notes as fast as a grand's — the vertical spring-return action is slower.",
+          "Overlooking pedal and action noise, which on an upright is physically close to the strings and mics."
+        ],
+        "scenario_contexts": [
+          "Recording a studio upright by removing panels and placing a stereo pair over the strings.",
+          "Capturing a deliberately 'honky-tonk' upright piano character for a track.",
+          "Choosing mic placement to minimize an upright's action noise during quiet passages."
+        ]
+      },
+      "sources": [
+        "Fletcher & Rossing, The Physics of Musical Instruments, 2nd ed. (Springer), Ch. 12 'The Piano'",
+        "The New Grove Dictionary of Musical Instruments, 'Pianoforte' (upright/vertical pianos)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "990d90a3-8ec3-4252-a78f-42f918d6d7c9",
+      "term": "Velocity curve",
+      "fields": {
+        "definition": "A transfer function inside a MIDI keyboard/controller or sound engine that converts the measured speed or force of a key strike into a transmitted or applied MIDI velocity value (0–127); selectable curves (for example light/soft, medium, heavy/hard, or fixed) change how readily hard or soft playing reaches high or low velocities.",
+        "plain_english": "The setting that turns your playing strength into MIDI numbers. These numbers say how hard you hit a key. A light curve makes soft playing sound loud. A heavy curve makes you press harder for loud notes.",
+        "purpose_function": "It lets a keyboard match its velocity output to the player's touch and to the target sound, so the same physical playing can be made more or less sensitive without changing technique.",
+        "practical_application": "A technician sets or edits the velocity curve on a controller (or remaps it in the DAW) so a player's dynamics translate naturally into a sampled instrument, or selects a fixed curve to record parts such as hi-hats at a constant velocity.",
+        "category": "MIDI",
+        "related_terms": ["Velocity response", "MIDI velocity", "Note On", "Aftertouch", "Dynamics", "MIDI controller"],
+        "common_mistakes": [
+          "Confusing the velocity curve (input touch-to-velocity mapping) with the sound engine's velocity response (how it turns velocity into loudness and timbre).",
+          "Blaming a soft-sounding recording on the instrument when the controller's velocity curve is limiting the transmitted velocity range.",
+          "Leaving a 'fixed' velocity curve engaged and then wondering why no dynamics are being recorded."
+        ],
+        "scenario_contexts": [
+          "Adjusting a MIDI controller's velocity curve so a light-touch player can reach full velocity.",
+          "Setting a fixed velocity curve to program drum parts at a constant level.",
+          "Remapping velocity in the DAW when a controller's curve does not suit a particular sampled instrument."
+        ]
+      },
+      "sources": [
+        "MIDI Association, MIDI 1.0 Detailed Specification (Note On message and velocity data byte, 0–127)",
+        "Roland A-300PRO Owner's Manual (Keyboard Velocity Curve and Key Velocity settings)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "3de3d511-9cd2-454c-a0ae-146b50fb4946",
+      "term": "Velocity response",
+      "fields": {
+        "definition": "The way an instrument, sampler or sound engine reacts to incoming note velocity — the relationship between the velocity value (0–127) and the resulting sound, typically loudness plus, in many instruments, timbre changes, sample-layer selection, or envelope/filter modulation. The MIDI specification defines velocity but does not standardize this mapping, so response varies widely between devices.",
+        "plain_english": "How the sound changes when you play harder or softer. Harder playing is usually louder. It is often brighter too. The instrument reads the velocity numbers to do this.",
+        "purpose_function": "It is what makes an electronic or virtual instrument feel dynamic and expressive, translating a performer's touch into changes in level and tone rather than a flat, uniform sound.",
+        "practical_application": "A technician auditions and edits an instrument's velocity response (velocity-to-volume, velocity layers, velocity-to-filter) so programmed or performed MIDI reads as musically dynamic, and compensates when different synths respond very differently to the same velocities.",
+        "category": "MIDI",
+        "related_terms": ["Velocity curve", "MIDI velocity", "Velocity layers", "Dynamics", "Note On", "Sample library"],
+        "common_mistakes": [
+          "Assuming every instrument responds identically to a given velocity — dynamic range and tone mapping vary greatly between devices.",
+          "Confusing velocity response (the engine's reaction to velocity) with the controller's velocity curve (how touch becomes velocity).",
+          "Treating velocity purely as volume and ignoring that it often also drives brightness, sample layers and articulation."
+        ],
+        "scenario_contexts": [
+          "Programming piano or string samples and editing velocity layers so soft and hard notes change tone, not just level.",
+          "Matching the velocity response of two synths so a doubled MIDI part sounds even.",
+          "Adjusting velocity-to-filter on a synth patch so harder notes open up brighter."
+        ]
+      },
+      "sources": [
+        "MIDI Association, MIDI 1.0 Detailed Specification (velocity defined but interpretation not standardized)",
+        "Dannenberg, 'The Interpretation of MIDI Velocity,' ICMC 2006 (Carnegie Mellon University)"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

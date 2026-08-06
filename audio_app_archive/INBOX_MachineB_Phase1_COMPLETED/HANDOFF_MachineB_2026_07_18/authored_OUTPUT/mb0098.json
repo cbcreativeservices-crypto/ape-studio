@@ -1,0 +1,329 @@
+{
+ "batch": 98,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "1fa4a956-174c-4c8a-8459-c0a69dba0959",
+   "term": "Drum sample replacement",
+   "fields": {
+    "definition": "An editing and mixing process in which recorded drum hits are detected, usually by transient triggering, and then either replaced with, or reinforced by, pre-recorded drum samples so the drum track gains a consistent, controllable tone and level.",
+    "plain_english": "It swaps or backs up recorded drum hits with clean sampled sounds. The software spots each hit and fires a matching sample. That way a weak or messy drum track can be made to sound solid.",
+    "purpose_function": "It exists to fix drums that were recorded poorly, weakly, or inconsistently, giving the engineer control over tone and consistency without re-recording the kit.",
+    "practical_application": "An engineer feeds a dull, uneven snare track into a trigger or replacer plugin, aligns the samples to the original hits, and blends or replaces them to tighten the snare in a rock mix.",
+    "category": "Drum Editing",
+    "related_terms": [
+     "Transient",
+     "Trigger",
+     "Drum sample",
+     "Quantization",
+     "Gate",
+     "Layering"
+    ],
+    "common_mistakes": [
+     "Setting the trigger threshold poorly so soft ghost notes are missed or bleed causes false triggers.",
+     "Leaving replacement samples out of time with the original hits, which smears the groove.",
+     "Making every hit identical, removing the natural dynamics and feel of the live performance."
+    ],
+    "scenario_contexts": [
+     "Reinforcing a weak or dull recorded kick with a sampled kick for more low-end punch.",
+     "Replacing a badly bleeding or out-of-tune snare on a live-tracked drum recording.",
+     "Blending a sample under acoustic drums to add consistency across an album."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9a55d3bf-5013-498c-af76-fca67530f141",
+   "term": "Drum-machine pattern",
+   "fields": {
+    "definition": "A programmed, usually looping sequence of drum and percussion events stored in a drum machine or step sequencer, defining which drum sound plays on each step or beat along with its timing and accent. Patterns are the building blocks that get chained together into a full song.",
+    "plain_english": "It is a short drum beat you program step by step on a grid. Each step turns a drum sound on or off. You loop it, then join patterns together to build a whole song.",
+    "purpose_function": "It provides a repeatable, editable rhythmic part that can be looped, layered, and chained into full arrangements without playing drums live.",
+    "practical_application": "A producer programs a kick, snare, and hi-hat pattern on a step grid, adjusts accents and swing, then chains variations for the verse and chorus.",
+    "category": "Drum Programming",
+    "related_terms": [
+     "Step sequencer",
+     "Quantization",
+     "Swing",
+     "Drum-pattern variation",
+     "Groove",
+     "Drum sample"
+    ],
+    "common_mistakes": [
+     "Leaving everything perfectly quantized with no swing or accents, so the beat feels stiff and robotic.",
+     "Building one static loop and never varying it across the song.",
+     "Ignoring velocity and accent so every hit plays at the same loudness."
+    ],
+    "scenario_contexts": [
+     "Programming a beat on a step sequencer for a demo or backing track.",
+     "Loading factory patterns on a drum machine as a starting groove.",
+     "Chaining several patterns into a full song arrangement."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dcb81aaa-27a6-486b-8e8e-cb3c482c05a3",
+   "term": "Drum-pattern variation",
+   "fields": {
+    "definition": "A modified version of a base drum pattern, created through fills, added or removed hits, accent or velocity changes, or altered timing, used to keep a programmed rhythm from sounding static and to mark different song sections.",
+    "plain_english": "It is a small change to a repeating drum beat so it does not sound the same over and over. You might add a fill, drop a hit, or change the accents. This helps signal a new section of the song.",
+    "purpose_function": "It adds movement and structure to programmed drums, preventing listener fatigue and signalling transitions between song sections.",
+    "practical_application": "A producer copies the main groove, adds a fill on the last bar, and drops the kick for a breakdown, then chains these variations across the arrangement.",
+    "category": "Drum Programming",
+    "related_terms": [
+     "Drum-machine pattern",
+     "Fill",
+     "Groove",
+     "Quantization",
+     "Arrangement",
+     "Accent"
+    ],
+    "common_mistakes": [
+     "Repeating one identical loop for the entire track so it feels lifeless.",
+     "Cramming every bar with fills so the groove never feels stable.",
+     "Changing the pattern so drastically that the groove loses its continuity."
+    ],
+    "scenario_contexts": [
+     "Writing a drum fill to lead into a chorus.",
+     "Creating a stripped-down variation for a breakdown section.",
+     "Varying accents bar to bar to make a loop feel more human."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "91890661-cd1e-46c7-951f-a064e7941f97",
+   "term": "Dynamic automation curve",
+   "fields": {
+    "definition": "An automation envelope that varies a level or dynamics-related parameter, such as fader gain, clip gain, or a compressor threshold, over time. It is drawn or recorded as a curve on the timeline so the parameter changes smoothly as the mix plays.",
+    "plain_english": "It is a line you draw over time that tells the mix how loud something should be at each moment. The fader follows the line by itself, moving up and down as the song plays.",
+    "purpose_function": "It lets the engineer shape level and dynamics changes precisely over time, so the moves repeat exactly on every playback instead of relying on live hands on the fader.",
+    "practical_application": "An engineer draws a volume automation curve to lift a vocal in quiet verses and ease it down in loud choruses, using curved rather than stepped points for smooth transitions.",
+    "category": "Automation",
+    "related_terms": [
+     "Fader automation",
+     "Clip gain",
+     "Volume riding",
+     "Breakpoint",
+     "Compression",
+     "Envelope"
+    ],
+    "common_mistakes": [
+     "Using sharp stepped nodes where a smooth curve is needed, causing audible level jumps.",
+     "Automating the channel fader when clip gain before the compressor would be more consistent.",
+     "Overwriting good automation by leaving a track in latch or write mode by accident."
+    ],
+    "scenario_contexts": [
+     "Riding a lead vocal level line by line through a song.",
+     "Automating a filter or send to build up into a drop.",
+     "Smoothing an instrument that jumps in level between sections."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "024b010c-9761-4ce3-b60d-08826f09dbe7",
+   "term": "Dynamic impact",
+   "fields": {
+    "definition": "The perceived power, punch, or sense of force a sound or mix delivers, arising from its dynamic contrast, its strong transients and the difference between loud and quiet passages, rather than from steady loudness alone.",
+    "plain_english": "It is how much punch or force a sound seems to hit you with. It comes from the gap between loud and soft moments, not just from being turned up. Squash that gap too much and the punch fades away.",
+    "purpose_function": "It describes a quality engineers try to protect when balancing loudness against feel, because preserving transients and contrast keeps music exciting and powerful.",
+    "practical_application": "When an engineer hears that a heavily compressed drum bus sounds flat, they back off the compression to restore the transient punch and dynamic impact.",
+    "category": "Dynamics",
+    "related_terms": [
+     "Transient",
+     "Dynamic range",
+     "Compression",
+     "Punch",
+     "Loudness",
+     "Limiting"
+    ],
+    "common_mistakes": [
+     "Over-compressing or over-limiting until the transients and impact are gone.",
+     "Assuming louder always means more impactful, ignoring dynamic contrast.",
+     "Using slow attack with fast release settings that flatten the transient detail."
+    ],
+    "scenario_contexts": [
+     "Deciding how hard to compress a drum bus without killing the punch.",
+     "Preserving impact while raising a master toward a competitive loudness.",
+     "Comparing an over-limited master against a more dynamic reference track."
+    ]
+   },
+   "sources": [
+    "Katz, Mastering Audio",
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2806e872-664c-490d-9c05-52dc61956ed8",
+   "term": "Dynamic score",
+   "fields": {
+    "definition": "A musical score that changes in real time in response to user actions or program state, rather than playing back as a fixed linear cue; also called adaptive or interactive music, its layers, sections, or parameters are altered on the fly to match on-screen events.",
+    "plain_english": "It is game or app music that changes as you play, instead of staying the same. When the action heats up, the music can grow more intense to match it.",
+    "purpose_function": "It keeps music matched to unpredictable, user-driven events, sustaining mood and tension without relying on a fixed timeline.",
+    "practical_application": "A game composer builds the score as stems and sections, then uses audio middleware to add or remove layers and trigger transitions as the player moves between calm and combat.",
+    "category": "Game Audio",
+    "related_terms": [
+     "Music switch",
+     "Music transition rule",
+     "Exploration music",
+     "Music synchronization point",
+     "Music-only stem"
+    ],
+    "common_mistakes": [
+     "Composing one long linear track and expecting it to feel interactive without stems or middleware logic",
+     "Not matching musical keys and tempos across sections, so transitions clash",
+     "Layering too many parts at once, muddying the mix when several states trigger together"
+    ],
+    "scenario_contexts": [
+     "Combat music intensifying as more enemies appear in a video game",
+     "Menu music smoothly shifting into gameplay music when a level loads",
+     "An interactive exhibit whose music responds to visitor movement"
+    ]
+   },
+   "sources": [
+    "Karen Collins, 'Game Sound' (MIT Press)",
+    "Stevens & Raybould, 'The Game Audio Tutorial' (Focal Press)",
+    "Audiokinetic Wwise documentation (interactive music / Music Switch Container)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fa286826-018c-43f0-bf35-a75fe969ec95",
+   "term": "Dynamic Voice Allocation",
+   "fields": {
+    "definition": "A voice-management scheme in electronic instruments where the available polyphony, the pool of voices, is assigned to notes on demand as they are played rather than being fixed per part. When all voices are in use, a note-stealing rule frees the least important voice for the newest note.",
+    "plain_english": "A synth can only play so many notes at once. This system hands those note slots out only when they are needed, so none are wasted. If it runs out, it drops the oldest or quietest note to make room.",
+    "purpose_function": "It lets a synth or sampler with limited polyphony cover more parts and notes than a fixed allocation would, sharing the voice pool wherever it is needed moment to moment.",
+    "practical_application": "On a multitimbral workstation, a technician relies on dynamic voice allocation so a busy MIDI arrangement shares voices; when polyphony runs out they hear notes cut off and reduce layers or free up voices.",
+    "category": "Synthesis",
+    "related_terms": [
+     "Polyphony",
+     "Voice stealing",
+     "Multitimbral operation",
+     "MIDI",
+     "Sampler",
+     "Note-on"
+    ],
+    "common_mistakes": [
+     "Confusing polyphony, the total number of voices, with the allocation method that shares them out.",
+     "Assuming a patch is faulty when notes cut off, instead of recognising voice stealing from used-up polyphony.",
+     "Stacking many voices per key without accounting for the reduced note count that leaves available."
+    ],
+    "scenario_contexts": [
+     "Programming a dense multitimbral sequence on a hardware workstation.",
+     "Troubleshooting sustained notes that get cut off during a live keyboard performance.",
+     "Choosing a synth whose voice count suits a heavily layered pad patch."
+    ]
+   },
+   "sources": [
+    "Roland synthesizer owner's/technical manuals",
+    "Yamaha synthesizer owner's/technical manuals",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1dbd0b5c-7f9d-47d4-b9b4-1e74d73a4c30",
+   "term": "Dynamic-range validation",
+   "fields": {
+    "definition": "A quality-control check that measures a program's dynamic range, the span between its loudest and quietest levels or a loudness-range metric, and confirms it meets a target or delivery specification such as a broadcast loudness-range requirement.",
+    "plain_english": "It is a check that measures the gap between the loudest and quietest parts of audio. You compare that gap to the rules a project must meet, like a broadcast standard. If it is too squashed or too wide, you fix it before delivery.",
+    "purpose_function": "It confirms audio meets loudness and dynamics delivery specs and is not over-compressed, protecting quality and compliance before release or broadcast.",
+    "practical_application": "Before delivering a broadcast mix, an engineer uses a loudness meter to check integrated loudness and loudness range against the R128 or ATSC target and adjusts if it fails.",
+    "category": "Metering & QC",
+    "related_terms": [
+     "Dynamic range",
+     "Loudness",
+     "Loudness range",
+     "Metering",
+     "Mastering",
+     "True peak"
+    ],
+    "common_mistakes": [
+     "Confusing peak level with dynamic range; a loud peak does not mean the audio has wide dynamics.",
+     "Over-compressing to hit a loudness target and then failing the dynamics or loudness-range spec.",
+     "Reading only a peak meter and ignoring integrated loudness and loudness range."
+    ],
+    "scenario_contexts": [
+     "QC of a broadcast mix against EBU R128 or ATSC A/85.",
+     "Checking a master's dynamic-range value before release.",
+     "Verifying a podcast meets a streaming loudness target."
+    ]
+   },
+   "sources": [
+    "Katz, Mastering Audio",
+    "EBU R128 / ITU-R BS.1770 loudness standards",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6020c0db-3bbd-43e4-814f-f5ddb91437b4",
+   "term": "Earbud translation",
+   "fields": {
+    "definition": "How well a finished mix holds up, in its balance, bass, vocal level, and clarity, when played back on earbuds and other small consumer earphones rather than on studio monitors. It is one aspect of overall mix translation across playback systems.",
+    "plain_english": "It is how good your mix still sounds on cheap earbuds, not just big studio speakers. A mix can sound great in the studio but lose its bass or hide the vocal on earbuds. Checking this makes sure it works everywhere.",
+    "purpose_function": "It makes sure a mix works on the small, limited playback devices most listeners actually use, catching balance problems that studio monitors can hide.",
+    "practical_application": "After mixing on monitors, an engineer checks the mix on earbuds to confirm the bass, vocal, and lead still balance well, then fixes anything that falls apart.",
+    "category": "Mix Translation",
+    "related_terms": [
+     "Mix translation",
+     "Reference monitors",
+     "Nearfield monitors",
+     "Frequency balance",
+     "Mono compatibility",
+     "Reference track"
+    ],
+    "common_mistakes": [
+     "Mixing only on one system and never checking earbud or phone playback.",
+     "Piling on sub-bass that earbuds cannot reproduce, so the kick and bass balance is wrong there.",
+     "Setting the vocal or lead too low, so it disappears on small earphones."
+    ],
+    "scenario_contexts": [
+     "Referencing a mix on earbuds before finalising it.",
+     "Fixing a bass balance that only sounds right on big monitors.",
+     "Checking a mostly-streamed release plays well on phone earbuds."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

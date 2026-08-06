@@ -1,0 +1,264 @@
+{
+ "batch": 343,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "890c382c-22f0-4d0d-901b-c1b29673a126",
+   "term": "Tail",
+   "fields": {
+    "definition": "The final, gradually fading portion of a sound after its initial attack and body have ended, most often the decaying reverberation or delay repeats that continue after the source note stops. It is characterized by falling amplitude over time and, in rooms, by a reverberation decay commonly quantified as RT60, the time for the sound to fall 60 dB.",
+    "plain_english": "A tail is the soft, fading part of a sound. It lingers after the main note stops. Think of the echo you hear after you clap in a big empty room.",
+    "purpose_function": "The tail carries the sense of space, size, and sustain in a sound, and engineers listen to it to judge room reverberation, delay settings, and how long a note rings before it fully dies away.",
+    "practical_application": "A technician shapes reverb and delay tails with decay-time, damping, and gating controls, then trims or fades them so they add depth without cluttering the mix or masking the next note.",
+    "category": "Decay characteristic",
+    "related_terms": ["Decay", "Reverberation", "Release", "Delay", "Sustain", "RT60"],
+    "common_mistakes": [
+     "Confusing the reverb tail (the fading space around a sound) with the dry note's own release or sustain.",
+     "Setting decay times so long that overlapping tails smear the mix and mask following notes.",
+     "Hard-cutting or gating a tail too abruptly, leaving an unnatural chopped-off sound instead of a smooth fade."
+    ],
+    "scenario_contexts": [
+     "Adjusting a reverb's decay time so a vocal's tail fades smoothly between phrases.",
+     "Using a gate or automated fade to shorten a snare reverb tail in a busy rock mix.",
+     "Judging a hall's reverberation tail (RT60) when tuning a live sound system."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (Focal Press) - reverberation and decay time (RT60)",
+    "Davis & Jones, Yamaha Sound Reinforcement Handbook - reverberation and decay",
+    "Sound on Sound - reverb parameters (decay/tail)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "863a02fd-782f-41d0-b198-32a6bf10a55c",
+   "term": "Tap",
+   "fields": {
+    "definition": "A single output point drawn from a specific position along a delay line, producing one discrete delayed copy (echo) of the input signal. Multiple taps at different delay times, each optionally scaled and summed, form a tapped delay line used to create multi-echo, rhythmic, or reverberant effects.",
+    "plain_english": "A tap is one 'listening spot' along a delay that grabs a single echo of the sound. Line up several taps and you get a row of repeats, a bit like bouncing a ball and hearing each bounce.",
+    "purpose_function": "Taps let one delay line yield many timed echoes at once, so designers can build rhythmic multi-tap delays, early-reflection patterns, and reverberation from a single efficient structure.",
+    "practical_application": "On a multi-tap delay plugin or hardware unit, a technician sets each tap's time, level, and pan to place individual echoes in time and space, often synced to the song tempo.",
+    "category": "Delay processing",
+    "related_terms": ["Delay", "Echo", "Feedback", "Early reflections", "Multi-tap delay"],
+    "common_mistakes": [
+     "Confusing a delay tap (one echo output point) with 'tap tempo,' the button used to set delay time by tapping.",
+     "Assuming each tap needs its own separate delay line, when one delay line can feed many taps.",
+     "Forgetting that raising feedback, not adding taps, is what makes echoes repeat and build up over time."
+    ],
+    "scenario_contexts": [
+     "Programming a multi-tap delay so guitar echoes fall on musically useful beats.",
+     "Designing early reflections in a reverb by placing several short taps.",
+     "Setting individual tap levels and pans to spread echoes across the stereo field."
+    ]
+   },
+   "sources": [
+    "Julius O. Smith, Physical Audio Signal Processing (Stanford CCRMA) - Tapped Delay Line (TDL)",
+    "Ballou, Handbook for Sound Engineers - digital delay lines",
+    "AES/Rane Pro Audio Reference - delay/tap"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7eade947-cee1-491c-b0f1-f6ae6c763827",
+   "term": "thud",
+   "fields": {
+    "definition": "A subjective descriptor for a low-frequency, dull, short-lived percussive sound with a fast decay and little high-frequency content, such as the weighty body of a struck object like a kick drum, floor tom, or a bumped microphone. It denotes energy concentrated in the low and low-mid range with a soft, damped attack rather than a sharp, bright click.",
+    "plain_english": "A thud is a low, dull thump you feel more than hear, like dropping a heavy book on a table. It has plenty of low end but no bright 'click' on top.",
+    "purpose_function": "Naming a sound a 'thud' quickly tells engineers it lives in the low frequencies with a soft attack, guiding EQ and microphone choices to add or control that weight.",
+    "practical_application": "A technician boosting the thud of a kick drum works in the low bass region for weight, and may cut it to tame a boomy, thuddy tom or a handling-noise bump on a microphone.",
+    "category": "Timbral descriptor",
+    "related_terms": ["Attack", "Transient", "Boom", "Punch", "Low frequency"],
+    "common_mistakes": [
+     "Treating 'thud' as an exact measurement rather than a subjective, low-frequency impression that varies between listeners.",
+     "Boosting low frequencies to add thud without checking on full-range monitors, then overloading small speakers.",
+     "Confusing a musical thud (wanted low-end body) with rumble or handling-noise that should be filtered out."
+    ],
+    "scenario_contexts": [
+     "Describing the low-end body of a kick drum during a mix.",
+     "Diagnosing an unwanted thud from microphone handling or foot noise on a stage.",
+     "EQing a floor tom to keep its thud while removing boxy mid frequencies."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers - transients and low-frequency instrument character",
+    "Davis & Jones, Yamaha Sound Reinforcement Handbook - instrument frequency ranges and character",
+    "Sound on Sound - kick-drum low-end body EQ"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "473916fa-a90c-4196-8f8a-ff9db4320a97",
+   "term": "Thumb slap",
+   "fields": {
+    "definition": "A bass-guitar technique in which the side of the thumb strikes a string near the end of the fingerboard and bounces off, producing a percussive, sharply transient note with a bright attack and strong fundamental. It is the 'slap' half of slap-and-pop playing, where thumb slapping is combined with finger popping (pulling and releasing) of strings.",
+    "plain_english": "Thumb slap is when a bass player bounces the side of their thumb off a string to make a punchy, drum-like note. It gives that snappy, funky 'slap bass' sound.",
+    "purpose_function": "It adds a percussive, attack-heavy sound to the bass, letting the instrument drive rhythm with a bright snap that cuts through a mix in funk, pop, and fusion styles.",
+    "practical_application": "Players slap over the last frets and combine it with popped strings, while engineers capture the extra transient and string noise with careful gain-staging, compression, and sometimes brighter EQ.",
+    "category": "Playing technique",
+    "related_terms": ["Attack", "Transient", "Slap and pop", "Pop", "Percussive attack"],
+    "common_mistakes": [
+     "Slapping with the flat pad of the thumb instead of bouncing the side off the string, which mutes the tone.",
+     "Hitting too hard and clipping the preamp or interface input from the strong transient peak.",
+     "Confusing the thumb slap (percussive strike) with the popped note (string pulled and released) in slap-and-pop playing."
+    ],
+    "scenario_contexts": [
+     "Recording a funk bass line that alternates thumb slaps and pops.",
+     "Setting input gain to handle the loud transient peaks of slap bass without clipping.",
+     "Compressing a slap-bass track to even out the strong attack against quieter fingered notes."
+    ]
+   },
+   "sources": [
+    "Grove Music Online (Grove Dictionary of Music and Musicians) - electric bass guitar, slap technique",
+    "Berklee College of Music (Berklee Online) - slap bass technique"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "995bb478-ca32-48cc-941d-aafe467c250d",
+   "term": "thwack",
+   "fields": {
+    "definition": "A subjective descriptor for a sharp, hard, percussive transient with a strong, fast attack and pronounced mid/high-frequency snap, such as the aggressive crack of a snare hit, a hard beater on a kick, or a slapped bass string striking the frets. It emphasizes a pronounced attack transient rather than sustained body.",
+    "plain_english": "A thwack is the hard, cracking snap at the very start of a hit, like a ruler smacked flat on a desk. It is all sharp attack and very little ring.",
+    "purpose_function": "Calling a sound a 'thwack' flags a strong attack transient in the upper frequencies, telling engineers to protect or enhance that snap with transient shaping and EQ.",
+    "practical_application": "A technician adds thwack to a snare by boosting a few kilohertz and using a transient shaper to lift the attack, while watching that the sharp peak does not trigger limiting too hard.",
+    "category": "Transient descriptor",
+    "related_terms": ["Attack", "Transient", "Snap", "Punch", "Transient shaper"],
+    "common_mistakes": [
+     "Overusing a transient shaper to add thwack until the sound becomes clicky and unnatural.",
+     "Mistaking a musical thwack (wanted attack) for a distortion click or edit glitch that should be repaired.",
+     "Boosting high-mids for snap without controlling the resulting sharp peaks, causing harsh clipping."
+    ],
+    "scenario_contexts": [
+     "Enhancing the attack thwack of a snare in a rock mix.",
+     "Comparing drum samples by how much thwack their attack has.",
+     "Using a transient designer to restore thwack lost to heavy compression."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers - attack transients",
+    "Sound on Sound - snare/drum attack and transient shaping"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dfd29b95-bc75-4a03-b284-862d1a618b27",
+   "term": "Tick",
+   "fields": {
+    "definition": "A very brief, high-frequency click, a sharp low-level transient often heard as an unwanted artifact, such as a digital sample-level glitch, a word-clock or edit-point click, a metronome/click-track pulse, or surface noise on vinyl. It occupies a tiny slice of time with high-frequency or broadband content and no sustained tone.",
+    "plain_english": "A tick is a tiny, sharp click, like the tap of a clock's second hand. In recordings it is usually an unwanted little pop you want to find and remove.",
+    "purpose_function": "Identifying a tick tells a technician there is a momentary discontinuity or click in the signal, which points to editing, clocking, or playback problems to fix.",
+    "practical_application": "Engineers locate ticks by ear and on the waveform, then remove them with de-click tools, crossfades at edit points, or by fixing the digital clock or connection causing them.",
+    "category": "Audio artifact",
+    "related_terms": ["Click", "Pop", "Artifact", "Word clock", "Crossfade"],
+    "common_mistakes": [
+     "Confusing a musical click-track tick with an unwanted click artifact in the recording.",
+     "Ignoring a repeating tick that signals a word-clock or sync error rather than a one-off glitch.",
+     "Editing on the waveform without a crossfade, creating a tick at every cut point."
+    ],
+    "scenario_contexts": [
+     "Removing mouth or edit clicks (ticks) from a spoken-word recording.",
+     "Tracing a regular tick to a word-clock or digital-sync fault in a studio setup.",
+     "Cleaning ticks and pops from a needle-drop transfer of a vinyl record."
+    ]
+   },
+   "sources": [
+    "Sound on Sound - removing clicks and pops; digital audio glitches",
+    "Ballou, Handbook for Sound Engineers - digital audio clicks and word clock",
+    "AES/Rane Pro Audio Reference - click"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "dc197406-4aa2-43fd-ada7-fc95222b6be6",
+   "term": "Tone color",
+   "fields": {
+    "definition": "A synonym for timbre: the perceptual attribute of a sound, other than pitch, loudness, and duration, that lets a listener distinguish two sounds presented at the same pitch and loudness, such as a violin versus a flute. It arises mainly from a sound's harmonic (spectral) content and how that content evolves over time, especially during the attack.",
+    "plain_english": "Tone color is what makes two instruments playing the same note still sound different, like a trumpet next to a guitar. It is the 'flavor' or character of a sound, not how high or loud it is.",
+    "purpose_function": "Tone color is how we identify and describe the character of instruments and voices, and engineers shape it with microphone choice, EQ, and processing to make sounds sit and blend in a mix.",
+    "practical_application": "A technician changes tone color by picking microphones, positions, and EQ curves, listening to how the harmonic balance and attack define an instrument's character.",
+    "category": "Timbre",
+    "related_terms": ["Timbre", "Harmonics", "Overtones", "Spectrum", "Attack"],
+    "common_mistakes": [
+     "Thinking tone color and timbre are different things, when they are two names for the same property.",
+     "Assuming tone color depends only on frequency content, ignoring how the attack and time-evolution shape it.",
+     "Confusing tone color (sound character) with pitch or loudness."
+    ],
+    "scenario_contexts": [
+     "Choosing a microphone to capture the tone color of an acoustic guitar.",
+     "Using EQ to match the tone color of two vocal takes recorded on different days.",
+     "Describing why two synth patches at the same note sound different."
+    ]
+   },
+   "sources": [
+    "Grove Music Online (Grove Dictionary of Music and Musicians) - timbre / tone colour",
+    "Letowski et al., 'Timbre, tone color, and sound quality: concepts and definitions,' Archives of Acoustics",
+    "ANSI S1.1 / ASA Acoustical Terminology - timbre"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "397562c6-f8e6-494f-8695-91138a27613b",
+   "term": "Tongue click",
+   "fields": {
+    "definition": "A sharp, percussive click produced by forming suction with the tongue against the roof of the mouth or teeth and releasing it, sounding an ingressive click. In phonetics these are click consonants; in recording they appear as mouth-noise click artifacts on close-miked vocal and voice-over tracks, and are also used deliberately in vocal percussion and beatboxing.",
+    "plain_english": "A tongue click is a little clicking sound. You make it by pressing your tongue to the roof of your mouth and pulling it away fast, like a 'tsk-tsk' noise. On close vocal recordings, these clicks show up as unwanted little pops.",
+    "purpose_function": "Recognizing a tongue click helps a technician tell a natural mouth noise from an electronic glitch, so it can be edited out of speech or kept as a rhythmic element.",
+    "practical_application": "On voice-over and vocal tracks, engineers find tongue clicks between words and remove them with de-click tools or manual edits and fades, and keeping the performer hydrated reduces them at the source.",
+    "category": "Mouth-noise artifact",
+    "related_terms": ["Click", "Tick", "Mouth noise", "De-click", "Artifact"],
+    "common_mistakes": [
+     "Confusing a natural tongue click with a digital click artifact and chasing a gear fault that is not there.",
+     "Removing every tongue click so aggressively that the speech starts to sound unnatural.",
+     "Ignoring the cause, a dry mouth, and only editing clicks out afterward instead of preventing them."
+    ],
+    "scenario_contexts": [
+     "Cleaning tongue clicks from a voice-over before final delivery.",
+     "Coaching a singer to stay hydrated to reduce mouth clicks at the microphone.",
+     "Using a tongue click as a percussive sound in a beatbox or a cappella track."
+    ]
+   },
+   "sources": [
+    "Ladefoged & Johnson, A Course in Phonetics - click consonants",
+    "Sound on Sound - mouth noise and de-clicking vocal recordings"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "587b8a50-22d5-49a4-aa1c-d10fe106f5e6",
+   "term": "Tongued attack",
+   "fields": {
+    "definition": "A note onset on a wind or brass instrument in which the tongue briefly interrupts the airstream, typically with a 'tu' or 'du' motion, to give the note a clean, defined start. It contrasts with a slurred (un-tongued) attack, where consecutive notes are connected with no tongue articulation.",
+    "plain_english": "A tongued attack is when a wind or brass player uses a little 'tu' of the tongue to start a note crisply, instead of letting notes glide together. It gives each note a clear, clean beginning.",
+    "purpose_function": "Tonguing defines the start of each note, controlling articulation, clarity, and rhythm, and it produces the sharp attack transient that shapes how a wind or brass line is perceived.",
+    "practical_application": "When recording winds and brass, engineers position microphones to capture a clear tongued attack without over-emphasizing breath and tonguing noise, and may use transient control to balance attack against body.",
+    "category": "Articulation",
+    "related_terms": ["Attack", "Articulation", "Transient", "Staccato", "Slur"],
+    "common_mistakes": [
+     "Confusing a tongued attack (tongue-started note) with a slur, where notes connect without tonguing.",
+     "Assuming tonguing stops the air fully, when it only briefly interrupts it to separate notes.",
+     "Close-miking winds so tightly that tonguing and breath noise overpower the note's tone."
+    ],
+    "scenario_contexts": [
+     "Miking a trumpet to capture crisp tongued attacks in a horn section.",
+     "Editing a flute part where soft tongued attacks need a little transient lift.",
+     "Distinguishing tongued (articulated) from slurred passages when comping wind takes."
+    ]
+   },
+   "sources": [
+    "Adler, The Study of Orchestration - articulation and tonguing on winds and brass",
+    "Brass Techniques and Pedagogy (PALNI open text) - articulation on brass instruments",
+    "Grove Music Online - tonguing / articulation"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

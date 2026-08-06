@@ -1,0 +1,242 @@
+{
+ "batch": 308,
+ "topic": "Voice & Vocal Perception",
+ "authored": [
+  {
+   "id": "cdb111b8-b1ce-48ea-bafe-2ef403fc40b2",
+   "term": "Singing voice conversion (SVC)",
+   "fields": {
+    "definition": "A form of voice conversion specialized for singing, which transforms a source singing recording so it sounds as though sung by a different target singer while preserving the melody, lyrics, timing, and expression of the original performance. Because it must maintain musical pitch and prosody such as vibrato, it is more tightly constrained than speech voice conversion.",
+    "plain_english": "Singing voice conversion takes a recorded song and makes it sound like a different singer, but the tune and words stay the same. It is like re-skinning a performance with someone else's voice.",
+    "purpose_function": "It lets producers change the singer on an existing vocal take without re-recording, which supports demos, character voices, and remixes. It keeps the musical performance intact while swapping only the singer's timbre.",
+    "practical_application": "A producer might use an SVC model to hear how a topline sounds in a chosen vocalist's timbre, or to build a virtual guest-vocalist part from a guide vocal.",
+    "category": "AI Voice Processing",
+    "related_terms": ["Voice conversion", "Singing voice synthesis (SVS)", "Voice model", "Voice cloning", "so-vits-svc"],
+    "common_mistakes": [
+     "Confusing it with singing voice synthesis: SVC converts an existing sung recording, while synthesis generates singing from a score and lyrics.",
+     "Feeding an off-key input and expecting the model to fix the tuning; SVC preserves the source pitch and timing.",
+     "Assuming the lyrics can be changed during conversion, when SVC keeps the original words."
+    ],
+    "scenario_contexts": [
+     "Turning a songwriter's rough guide vocal into a chosen singer's timbre for a demo.",
+     "Creating a virtual duet by converting one recorded take into a second singer's voice.",
+     "Auditioning several vocal timbres on the same performance before committing to one."
+    ]
+   },
+   "sources": [
+    "The Singing Voice Conversion Challenge 2023 (ISCA/vc-challenge.org; arXiv:2306.14422)",
+    "Sisman, Yamagishi, King & Li, \"An Overview of Voice Conversion and Its Challenges,\" IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2021"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b0b5adff-5e48-476f-b8e6-4d683819c1fd",
+   "term": "Singing voice synthesis (SVS)",
+   "fields": {
+    "definition": "The generation of a singing vocal performance directly from a musical score (notes and timing) and lyrics, producing audio with no human singing input. Systems render pitch, phonemes, and expression into a sung voice using concatenative sampling or neural models.",
+    "plain_english": "Singing voice synthesis makes a computer sing a song from written notes and words, with no real singer needed. It is like sheet music read aloud, but sung instead of spoken.",
+    "purpose_function": "It exists to create sung vocals on demand for composition, demos, and virtual artists, giving producers a controllable voice without booking a singer. Users edit notes, lyrics, and expression to shape the performance.",
+    "practical_application": "A composer enters a melody and lyrics into an SVS editor to hear a full sung vocal, then tunes phrasing and vibrato before mixing it like a real vocal track.",
+    "category": "AI Voice Processing",
+    "related_terms": ["Singing voice conversion (SVC)", "Synthesizer V", "Voice model", "Voice cloning", "Voice conversion"],
+    "common_mistakes": [
+     "Confusing synthesis with conversion: SVS builds singing from a score, while singing voice conversion transforms an existing sung recording.",
+     "Expecting natural results without editing timing, vibrato, and pronunciation, which usually need manual shaping.",
+     "Treating exported synthesized vocals as royalty-free, when the voice and library often carry licensing terms."
+    ],
+    "scenario_contexts": [
+     "Prototyping a topline vocal before a session with a human singer.",
+     "Producing vocals for a virtual singer or Vocaloid-style project.",
+     "Filling in a temporary guide vocal so instrumentalists can rehearse to the melody."
+    ]
+   },
+   "sources": [
+    "Bonada & Serra, \"Synthesis of the Singing Voice by Performance Sampling and Spectral Models,\" IEEE Signal Processing Magazine, 2007",
+    "Kenmochi & Ohshita, \"VOCALOID - Commercial Singing Synthesizer Based on Sample Concatenation,\" Interspeech 2007 (Yamaha)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0676f8ce-89fc-407d-8cde-a8887eea9fd7",
+   "term": "so-vits-svc",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: so-vits-svc (SoftVC VITS Singing Voice Conversion) is a specific open-source community project distributed only via GitHub/Hugging Face forks and community blogs. No acceptable source (standards body, manufacturer technical documentation, or recognised professional text/reference) documents or defines this particular tool; the underlying VITS and SoftVC research does not define the named project. Under the strict source standard, at least two acceptable sources could not be found, so definition, plain_english, purpose_function, practical_application, category, related_terms, common_mistakes, and scenario_contexts are all omitted pending review."
+   ]
+  },
+  {
+   "id": "1970e329-bb11-41d3-9e46-5b88dcc58158",
+   "term": "Speech-to-speech",
+   "fields": {
+    "definition": "A processing approach in which both the input and the output are speech audio, as in speech-to-speech translation or speech-driven voice conversion. The system takes spoken audio and produces new spoken audio, sometimes directly and sometimes via internal intermediate representations.",
+    "plain_english": "Speech-to-speech means spoken audio goes in and spoken audio comes out. For example, it can hear one language and say the same thing in another. It can also change one voice into a different voice.",
+    "purpose_function": "It exists to transform spoken audio end to end, for translation, voice change, or repair, without forcing a stop at written text. Keeping speech in and speech out preserves timing and delivery that text would lose.",
+    "practical_application": "In voice-conversion work, a technician runs a source recording through a speech-to-speech model so the same words come out in a target voice.",
+    "category": "AI Voice Processing",
+    "related_terms": ["Voice-to-voice", "Voice conversion", "Voice cloning", "Voice model", "Singing voice conversion (SVC)"],
+    "common_mistakes": [
+     "Confusing speech-to-speech with text-to-speech: text-to-speech starts from written text, while speech-to-speech starts from spoken audio.",
+     "Assuming it always translates languages, when speech-to-speech also covers same-language voice conversion.",
+     "Believing there is never a text step inside, when some pipelines still transcribe internally."
+    ],
+    "scenario_contexts": [
+     "Speech-to-speech translation on a live call or conference.",
+     "Converting a recorded voice-over into a different target voice for dubbing.",
+     "Restyling a spoken take while keeping the natural delivery."
+    ]
+   },
+   "sources": [
+    "Jia et al., \"Direct Speech-to-Speech Translation with a Sequence-to-Sequence Model,\" Interspeech 2019 (ISCA)",
+    "Sisman, Yamagishi, King & Li, \"An Overview of Voice Conversion and Its Challenges,\" IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2021"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4552430d-9214-4d8c-b691-3007d9d0a38b",
+   "term": "Synthesizer V",
+   "fields": {
+    "definition": "Synthesizer V is an AI-based singing (and speech) voice synthesis software developed by Dreamtonics that generates a sung vocal performance from user-entered notes and lyrics. It uses voice databases built from recordings of real singers, supports third-party voices, and can render some voices across Japanese, Mandarin, and English.",
+    "plain_english": "Synthesizer V is a program that sings for you. You type the notes and words, pick a voice, and the software makes a realistic sung vocal without a real singer.",
+    "purpose_function": "It exists to give producers a controllable virtual singer, so they can create finished or demo vocals without booking a vocalist. Users shape pitch, timing, and expression to make the performance sound natural.",
+    "practical_application": "A songwriter enters a melody and lyrics in Synthesizer V, chooses a voice database, and edits phrasing and vibrato to produce a lead or backing vocal for a track.",
+    "category": "AI Voice Processing",
+    "related_terms": ["Singing voice synthesis (SVS)", "Voice model", "Singing voice conversion (SVC)", "Voice cloning"],
+    "common_mistakes": [
+     "Assuming exported vocals are free to use commercially, when the voices and libraries carry their own licensing terms.",
+     "Expecting natural results with no editing, when note timing, pronunciation, and vibrato usually need adjustment.",
+     "Confusing it with voice conversion; Synthesizer V generates singing from notes and lyrics rather than converting an existing recording."
+    ],
+    "scenario_contexts": [
+     "Producing a virtual lead vocal for an original song.",
+     "Creating a guide vocal so a human singer can learn the melody and phrasing.",
+     "Adding layered backing vocals using different voice databases."
+    ]
+   },
+   "sources": [
+    "Sound on Sound, \"Dreamtonics Synthesizer V\" review (soundonsound.com)",
+    "Sound on Sound, \"Dreamtonics Synthesizer V Studio 2 Pro\" review (soundonsound.com)",
+    "Dreamtonics, Synthesizer V Studio User Manual / Help Resources (manufacturer technical documentation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fc926911-0764-458f-88bc-ec8d85a1842b",
+   "term": "Voice cloning",
+   "fields": {
+    "definition": "The creation of a synthetic model of a specific person's voice from a limited set of their recordings, enabling new speech (or singing) to be generated in that voice. It typically pairs a speaker-identity representation with a text-to-speech or voice-conversion system so arbitrary content can be rendered in the cloned voice.",
+    "plain_english": "Voice cloning learns how a certain person sounds from a few recordings, then makes new speech in that same voice. It is like taking a voice print and using it to say things the person never actually said.",
+    "purpose_function": "It exists to reproduce a target person's voice on demand for dubbing, accessibility, and personalization, so content can be made without that person re-recording. The cloned voice can then speak any new script.",
+    "practical_application": "A studio might clone an actor's voice to patch a few missing lines in post, or build a personal text-to-speech voice for someone who has lost the ability to speak.",
+    "category": "AI Voice Processing",
+    "related_terms": ["Voice conversion", "Voice model", "Singing voice synthesis (SVS)", "Speech-to-speech", "Voice-to-voice"],
+    "common_mistakes": [
+     "Confusing voice cloning with voice conversion: cloning builds a reusable voice model that can speak new text, while conversion transforms one existing recording.",
+     "Assuming a good clone needs only a few seconds of audio, when quality usually improves with more clean, varied recordings.",
+     "Cloning a person's voice without written consent, which can breach likeness and publicity rights and platform policies."
+    ],
+    "scenario_contexts": [
+     "Recreating a narrator's voice to fix mispronounced words after the talent has left.",
+     "Building an accessibility voice for a person who is losing their speech.",
+     "Generating localized voice-overs that keep a brand's signature voice."
+    ]
+   },
+   "sources": [
+    "Arik et al., \"Neural Voice Cloning with a Few Samples,\" Advances in Neural Information Processing Systems (NeurIPS) 2018",
+    "Jia et al., \"Transfer Learning from Speaker Verification to Multispeaker Text-to-Speech Synthesis,\" NeurIPS 2018",
+    "Sisman, Yamagishi, King & Li, \"An Overview of Voice Conversion and Its Challenges,\" IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2021"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "44878367-dcea-4bb9-8f59-2d6f620d7ef3",
+   "term": "Voice conversion",
+   "fields": {
+    "definition": "A speech-processing technique that transforms the perceived speaker identity of a recorded utterance so it sounds as if spoken by a different target speaker, while preserving the linguistic content and usually the prosody. It maps voice-timbre characteristics such as the spectral envelope, formants, and pitch statistics from the source onto the target using statistical or neural models.",
+    "plain_english": "Voice conversion makes a recording of one person sound like someone else said it, but the words stay the same. It is like keeping the sentence and swapping the voice that speaks it.",
+    "purpose_function": "It exists to change who a voice sounds like without re-recording, which enables anonymization, dubbing, accessibility voices, and creative production. It separates what is said from who says it, so the identity can be replaced on its own.",
+    "practical_application": "A technician might use a voice-conversion model to anonymize a contributor in a broadcast interview, or to keep a character voice consistent across takes.",
+    "category": "AI Voice Processing",
+    "related_terms": ["Voice cloning", "Voice-to-voice", "Speech-to-speech", "Singing voice conversion (SVC)", "Voice model"],
+    "common_mistakes": [
+     "Confusing voice conversion with text-to-speech: conversion needs an existing speech recording as input, while text-to-speech starts from written text.",
+     "Assuming it changes the words too, when it changes the voice identity but keeps the spoken content.",
+     "Expecting high quality from very short or noisy target recordings, when too little clean target data degrades the result."
+    ],
+    "scenario_contexts": [
+     "Anonymizing a whistle-blower's voice in a news package while keeping their words intact.",
+     "Dubbing so a replacement performer's lines match the original character's voice.",
+     "Producing consistent pickup takes when the original talent is unavailable."
+    ]
+   },
+   "sources": [
+    "Sisman, Yamagishi, King & Li, \"An Overview of Voice Conversion and Its Challenges,\" IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2021",
+    "Stylianou, Cappe & Moulines, \"Continuous Probabilistic Transform for Voice Conversion,\" IEEE Transactions on Speech and Audio Processing, 1998"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "44bb7b7d-0346-4e22-9d07-c281f82558eb",
+   "term": "Voice model",
+   "fields": {
+    "definition": "A trained representation that captures the vocal characteristics of a particular voice, such as timbre, spectral qualities, and often pitch behavior, so that voice can be synthesized or converted to. In neural voice systems it is the set of learned parameters, or the voice database, associated with one speaker or singer.",
+    "plain_english": "A voice model is the saved recipe a computer learns for how one person sounds. Once trained, it lets software speak or sing in that voice.",
+    "purpose_function": "It exists to store a voice's identity in reusable form, so a system can generate or convert audio into that voice on demand. Swapping the voice model swaps the voice.",
+    "practical_application": "A producer downloads or trains a voice model for a specific singer, then loads it into a conversion or synthesis tool to render vocals in that voice.",
+    "category": "AI Voice Processing",
+    "related_terms": ["Voice cloning", "Voice conversion", "Singing voice conversion (SVC)", "Singing voice synthesis (SVS)", "Voice-to-voice"],
+    "common_mistakes": [
+     "Thinking a voice model stores actual recordings, when it stores learned parameters that describe how the voice sounds.",
+     "Expecting one model to work in every tool, when models are usually tied to a specific framework or software version.",
+     "Using or sharing a voice model of a real person without permission or licensing."
+    ],
+    "scenario_contexts": [
+     "Loading a trained singer voice model into an SVC tool to convert a guide vocal.",
+     "Selecting a voice database (voice model) inside a singing-synthesis program.",
+     "Managing a library of voice models for different characters in a production."
+    ]
+   },
+   "sources": [
+    "Sisman, Yamagishi, King & Li, \"An Overview of Voice Conversion and Its Challenges,\" IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2021",
+    "Dreamtonics, Synthesizer V Studio User Manual / Help Resources (voice databases; manufacturer technical documentation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1caf9807-0828-4281-ad6e-76f76327c638",
+   "term": "Voice-to-voice",
+   "fields": {
+    "definition": "A voice-conversion mode in which a spoken or sung input from one voice is transformed directly into the voice of a target speaker, preserving the words and delivery. It is functionally synonymous with voice conversion and contrasts with text-to-voice, where the input is written text.",
+    "plain_english": "Voice-to-voice takes audio of one person talking and turns it into another person's voice, keeping the same words. The input is a voice and the output is a different voice.",
+    "purpose_function": "It exists to change the speaker identity of an existing recording without going through text, which keeps natural timing and expression. It is used when you already have the audio and just want a different voice.",
+    "practical_application": "A creator records a line themselves, then runs it voice-to-voice through a target model so it comes out in the desired character's voice.",
+    "category": "AI Voice Processing",
+    "related_terms": ["Voice conversion", "Speech-to-speech", "Voice model", "Voice cloning", "Singing voice conversion (SVC)"],
+    "common_mistakes": [
+     "Confusing voice-to-voice with text-to-speech: voice-to-voice needs recorded audio as input, not typed text.",
+     "Assuming it rewrites the words, when it keeps the original spoken content and only changes the voice.",
+     "Expecting clean output from noisy or clipped input, since poor source audio carries through."
+    ],
+    "scenario_contexts": [
+     "Turning a guide take into a character's voice for a game or animation.",
+     "Letting one performer voice several characters through different target models.",
+     "Restyling a rough voice-over into a chosen voice for a demo."
+    ]
+   },
+   "sources": [
+    "Sisman, Yamagishi, King & Li, \"An Overview of Voice Conversion and Its Challenges,\" IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2021",
+    "The Voice Conversion Challenge 2018 (ISCA; Speaker Odyssey / Interspeech)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

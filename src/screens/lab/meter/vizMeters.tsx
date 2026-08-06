@@ -48,18 +48,18 @@ import {
   type SignalKey,
 } from './meterEngine';
 import { fonts } from '../../../theme/tokens';
-import { LOUDNESS_STOPS } from '../../../features/tools/levelColor';
+import { LOUDNESS_STOPS, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 // House lab palette (visual standards §3).
 const BG = '#0c0c0f';
-const GRID = '#2c2c33';
-const GHOST = '#232329';
+const GRID = '#3a3b46';
+const GHOST = '#2e2f38';
 const AMBER = '#ffc64d';
 const BLUE = '#6fa8ff';
 const GREEN = '#5bff85';
 const RED = '#ff6b5e';
-const TEXT_DIM = '#767a85';
+const TEXT_DIM = '#9a9ca8';
 
 const DEG = Math.PI / 180;
 /** Waveform column density — device pixels (capped for very dense screens). */
@@ -310,7 +310,10 @@ export function WaveformView(p: {
     rails.lineTo(w, yOf(1));
     rails.moveTo(0, yOf(-1));
     rails.lineTo(w, yOf(-1));
-    return { body, caps, grid, rails, stats };
+    // Is the signal actually clipping right now? (owner 2026-08-05: whole
+    // waveform goes red while clipping, back to the MIDI ramp when under.)
+    const clipping = clT.some(Boolean) || clB.some(Boolean);
+    return { body, caps, grid, rails, stats, clipping };
   }, [p.signal, gain, dc, inv, showClip, w, h]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Playhead sweeping the loop on the phase clock (the ONLY per-frame path).
@@ -335,15 +338,22 @@ export function WaveformView(p: {
         <Path path={S.grid} color={GHOST} style="stroke" strokeWidth={1} />
         <SkLine p1={{ x: 0, y: yOf(0) }} p2={{ x: w, y: yOf(0) }} color="#3a3b43" strokeWidth={1.2} />
         <Path path={S.rails} color={showClip ? RED : '#33343c'} style="stroke" strokeWidth={1.1} opacity={showClip ? 0.85 : 1} />
-        <Path path={S.body}>
-          <LinearGradient
-            start={vec(0, yOf(1))}
-            end={vec(0, yOf(-1))}
-            colors={['#ffd47c', '#a86f18', '#5e3d0c', '#a86f18', '#ffd47c']}
-            positions={[0, 0.28, 0.5, 0.72, 1]}
-          />
-        </Path>
-        <Path path={S.body} color={AMBER} style="stroke" strokeWidth={1.1} opacity={0.85} />
+        {/* Amplitude painted by the MIDI loudness ramp (blue at the zero line →
+            red at ±full scale); the WHOLE body flips solid red while clipping,
+            back to the ramp when brought under (owner 2026-08-05). */}
+        {S.clipping ? (
+          <Path path={S.body} color="#ff4d3d" opacity={0.92} />
+        ) : (
+          <Path path={S.body}>
+            <LinearGradient
+              start={vec(0, yOf(1))}
+              end={vec(0, yOf(-1))}
+              colors={WAVE_LEVEL_STOPS.map((s) => s.color)}
+              positions={WAVE_LEVEL_STOPS.map((s) => s.offset)}
+            />
+          </Path>
+        )}
+        <Path path={S.body} color={S.clipping ? RED : '#dfe4ee'} style="stroke" strokeWidth={1.1} opacity={S.clipping ? 0.95 : 0.55} />
         {showClip ? (
           <>
             <Path path={S.caps} color={RED} opacity={0.55}>
@@ -410,9 +420,11 @@ export function PeakMeterView(p: {
   const wellH = h - wellY - 26;
   const gutter = 40;
   const padI = 9;
-  const colWpx = (wellW - gutter - padI * 2) / 2;
-  const colLx = wellX + padI;
-  const colRx = wellX + padI + colWpx + gutter;
+  // Thinner bars, centered in the well (owner 2026-08-05).
+  const colWpx = Math.min(16, (wellW - gutter - padI * 2) / 2);
+  const contentW = colWpx * 2 + gutter;
+  const colLx = wellX + (wellW - contentW) / 2;
+  const colRx = colLx + colWpx + gutter;
   const barTop = wellY + 7;
   const barBot = wellY + wellH - 7;
   const span = barBot - barTop;
@@ -630,6 +642,10 @@ export function PeakMeterView(p: {
         <Screw x={w - 12} y={h - 12} r={3.6} slotDeg={60} />
         {/* Inset bezel well. */}
         <Path path={G.well} color="#08090b" />
+        {/* Whole meter washes RED while it clips (owner 2026-08-05 — like the
+            SPL/VU LED display). Latches with the OVER series; clears when the
+            gain is pulled back under 0 dBFS. */}
+        <Path path={G.well} color={withAlpha(RED, 0.22)} opacity={overO} />
         <Path path={G.well} color="#000000" style="stroke" strokeWidth={1.6} opacity={0.8} />
         <Path path={G.well} color="#3d4049" style="stroke" strokeWidth={0.8} opacity={0.5} />
         {/* Unlit LED stacks — the meter face at rest. */}
@@ -646,6 +662,8 @@ export function PeakMeterView(p: {
         {/* Floating peak-hold caps. */}
         <Path path={caps} color="#f2f5fa" />
         <Path path={G.ticks} color="#565a64" style="stroke" strokeWidth={1} />
+        {/* Red frame over the whole well while clipping. */}
+        <Path path={G.well} color={RED} style="stroke" strokeWidth={2.4} opacity={overO} />
         {/* Latching OVER lamp. */}
         <Path path={G.lamp} color="#1c0f10" />
         <Path path={G.lamp} color="#000000" style="stroke" strokeWidth={1.2} opacity={0.8} />
@@ -901,11 +919,21 @@ export function VuMeterView(p: {
     // 0.30→0.10 speed-up, a middle ground):
     const a = 1 - Math.exp(-dt / 0.2);
     vuVal.value = vuVal.value + (target - vuVal.value) * a;
-    // Under-damped follower at the midpoint of the earlier stiffening (so it
-    // catches up at a moderate pace without ringing).
-    const acc = (vuVal.value - nx.value) * 520 - nv.value * 33;
-    nv.value = nv.value + acc * dt;
-    nx.value = nx.value + nv.value * dt;
+    // Under-damped ballistic follower — SUB-STEPPED (owner 2026-08-05 bug fix).
+    // The explicit-Euler spring (k = 520) is numerically unstable when dt is
+    // large: at the 0.08 s cap the effective step 520·0.08 ≈ 42 ≫ 2, so on a
+    // loud step it overshot violently — the needle pegged full, then the huge
+    // restoring velocity snapped it past rest and it "disappeared" off the
+    // scale. Integrating in small fixed sub-steps keeps the spring stable while
+    // preserving the natural ballistic overshoot.
+    let rem = dt;
+    while (rem > 1e-6) {
+      const h = rem > 0.002 ? 0.002 : rem;
+      const acc = (vuVal.value - nx.value) * 520 - nv.value * 33;
+      nv.value = nv.value + acc * h;
+      nx.value = nx.value + nv.value * h;
+      rem -= h;
+    }
     let pct = nx.value / (RMS0 * 1.4125);
     if (pct < -0.015) pct = -0.015;
     if (pct > 1.06) pct = 1.06;
@@ -1208,7 +1236,9 @@ export function LoudnessView(p: {
   phase: SharedValue<number>;
 }) {
   const w = p.width;
-  const h = p.height ?? 220;
+  // Taller face + bigger fonts (owner 2026-08-05: the display was too small to
+  // read). The integrated LUFS numeral is the headline, enlarged up top.
+  const h = p.height ?? 300;
   const sim = useMemo(() => simulateLoudness(p.signal), [p.signal]);
   const N = sim.momentary.length;
 
@@ -1343,7 +1373,7 @@ export function LoudnessView(p: {
           <LinearGradient start={vec(0, 0)} end={vec(0, h)} colors={['#171b22', '#0c0e12']} />
         </Path>
         <Path path={G.panel} color={GRID} style="stroke" strokeWidth={1.2} />
-        <SkLine p1={{ x: 10, y: 2 }} p2={{ x: w - 10, y: 2 }} color="#39404d" strokeWidth={1} opacity={0.6} />
+        <SkLine p1={{ x: 10, y: 2 }} p2={{ x: w - 10, y: 2 }} color="#5a6376" strokeWidth={1} opacity={0.6} />
         {/* M / S bars on the −36..0 LUFS scale, −14 target line. */}
         <Path path={G.wells} color="#0a0c0f" />
         <Path path={G.wells} color={GHOST} style="stroke" strokeWidth={1} />
@@ -1384,42 +1414,43 @@ export function LoudnessView(p: {
         <Circle cx={w - 26} cy={20} r={4.4} color={RED} opacity={tpO} />
         <Circle cx={w - 26} cy={20} r={5} color="#000000" style="stroke" strokeWidth={1} opacity={0.7} />
       </Canvas>
-      <Lbl x={10} y={6} w={160} align="left" size={8} font={fonts.oswaldSemiBold} ls={1}>
+      <Lbl x={10} y={6} w={200} align="left" size={11} font={fonts.oswaldSemiBold} ls={1}>
         LOUDNESS · LUFS
       </Lbl>
       {[0, -9, -18, -27, -36].map((v) => (
-        <Lbl key={v} x={2} y={yL(v) - 4} w={26} align="right" size={6.5}>
+        <Lbl key={v} x={0} y={yL(v) - 5} w={28} align="right" size={9}>
           {`${v}`}
         </Lbl>
       ))}
-      <Lbl x={mX + barW / 2 - 10} y={barBot + 8} w={20} size={8} color="#9aa0ac">
+      <Lbl x={mX + barW / 2 - 12} y={barBot + 8} w={24} size={11} color="#9aa0ac">
         M
       </Lbl>
-      <Lbl x={sX + barW / 2 - 10} y={barBot + 8} w={20} size={8} color="#9aa0ac">
+      <Lbl x={sX + barW / 2 - 12} y={barBot + 8} w={24} size={11} color="#9aa0ac">
         S
       </Lbl>
-      <Lbl x={mX - 6} y={yL(-14) - 11} w={80} align="left" size={6.5} color={AMBER}>
+      <Lbl x={mX - 6} y={yL(-14) - 13} w={90} align="left" size={9} color={AMBER}>
         TARGET −14
       </Lbl>
-      <Lbl x={cMid - 60} y={56} w={120} size={30} color={AMBER}>
+      {/* Integrated LUFS — the headline number, enlarged up top. */}
+      <Lbl x={cMid - 95} y={24} w={190} size={48} color={AMBER}>
         {sim.integratedLufs.toFixed(1)}
       </Lbl>
-      <Lbl x={cMid - 60} y={92} w={120} size={7} ls={1}>
+      <Lbl x={cMid - 95} y={80} w={190} size={11} ls={1}>
         LUFS INTEGRATED
       </Lbl>
-      <Lbl x={cMid - 60} y={G.lraY + 12} w={120} size={8} color="#9db4d6">
+      <Lbl x={cMid - 95} y={G.lraY + 12} w={190} size={11} color="#9db4d6">
         {`LRA ${sim.lraLu.toFixed(1)} LU`}
       </Lbl>
-      <Lbl x={histX} y={histBot + 6} w={histW} size={6.5}>
+      <Lbl x={histX} y={histBot + 7} w={histW} size={9}>
         SHORT-TERM · LOOP ≈ 24 s
       </Lbl>
-      <Lbl x={w - 96} y={32} w={84} align="right" size={8} color={over ? RED : TEXT_DIM}>
+      <Lbl x={w - 110} y={32} w={98} align="right" size={10} color={over ? RED : TEXT_DIM}>
         {`TP ${sim.truePeakDbtp.toFixed(1)} dBTP`}
       </Lbl>
-      <Lbl x={w - 60} y={14} w={20} align="right" size={7} color={over ? '#f4d9d5' : TEXT_DIM}>
+      <Lbl x={w - 62} y={12} w={22} align="right" size={9} color={over ? '#f4d9d5' : TEXT_DIM}>
         TP
       </Lbl>
-      <Lbl x={10} y={h - 14} w={220} align="left" size={6.5}>
+      <Lbl x={10} y={h - 16} w={260} align="left" size={9}>
         M · MOMENTARY   S · SHORT-TERM
       </Lbl>
     </View>
@@ -2150,11 +2181,21 @@ export function SplDialView(p: {
     let target = (spl - SPL_MIN) / SPAN;
     if (target < 0) target = 0;
     if (target > 1.04) target = 1.04;
-    const a = 1 - Math.exp(-dt / 0.1);
+    // Faster follower (owner 2026-08-05: the meter felt sluggish) — tc 0.1→0.07.
+    const a = 1 - Math.exp(-dt / 0.07);
     val.value = val.value + (target - val.value) * a;
-    const acc = (val.value - nx.value) * 700 - nv.value * 38;
-    nv.value = nv.value + acc * dt;
-    nx.value = nx.value + nv.value * dt;
+    // Under-damped needle spring, SUB-STEPPED (owner 2026-08-05). k=700 at the
+    // 0.08 s dt cap is 700·0.08 ≈ 56 ≫ 2 = numerically unstable — it overshot
+    // and snapped, which read as lag/jitter. Small fixed sub-steps keep it
+    // stable and snappy (same fix as the VU needle).
+    let rem = dt;
+    while (rem > 1e-6) {
+      const h = rem > 0.002 ? 0.002 : rem;
+      const acc = (val.value - nx.value) * 700 - nv.value * 38;
+      nv.value = nv.value + acc * h;
+      nx.value = nx.value + nv.value * h;
+      rem -= h;
+    }
     let pct = nx.value;
     if (pct < -0.02) pct = -0.02;
     if (pct > 1.05) pct = 1.05;
@@ -2880,10 +2921,13 @@ export function PeakAvgMeterView(p: {
     // arrives (zero attack smoothing, so the LED can never lag a rise), with a
     // quick 62 dB/s fall on the way down (owner 2026-07-30).
     lPk.value = Math.max(pk, lPk.value - 62 * dt);
-    // Advance the wall clock and LATCH the moment the peak SPL passes 100 (even a
-    // single-sample overshoot), so the red frame can flash for ≥0.333 s.
+    // Advance the wall clock and LATCH the whole-meter red only when the
+    // SUSTAINED (RMS/average) SPL passes 100 — NOT a single peak transient
+    // (owner 2026-08-05: a lone AGC'd peak in a quiet room was flashing the
+    // meter red = false clipping). `av` is the weighted RMS level, already
+    // ballistic-smoothed, so brief spikes no longer trip it.
     clock.value += dt;
-    if (pk > -120 && pk + splOffset > 100) lastOver100.value = clock.value;
+    if (av > -120 && av + splOffset > 100) lastOver100.value = clock.value;
     // AVERAGE: lively, ASYMMETRIC (owner 2026-07-30) — a very short 0.05 s attack
     // so it rises almost immediately with the peak, and a slower 0.2 s musical
     // release; in silence it decays at 34 dB/s.

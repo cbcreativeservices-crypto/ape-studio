@@ -1,0 +1,159 @@
+{
+  "expert": "LEARNING / COGNITION EXPERT",
+  "group": 1,
+  "reviews": [
+    {
+      "id": "bb121575-2887-4738-b7c0-4a7b037d6383",
+      "term": "Class G",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "cbbea526-411a-4597-b01f-0760a537a260",
+      "term": "Class H",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "a5b4946e-ffe4-4096-bcaf-71f44ad230a3",
+      "term": "Crossover Distortion",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "a8290d76-c665-4670-9b20-1f10f006367d",
+      "term": "Quiescent Current",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "fe06ef1a-1cfe-4e05-83b6-69f0c32f7f9e",
+      "term": "Rail Voltage",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "350edfe9-82d8-4201-b14f-7325fc5e9523",
+      "term": "Switch-Mode Power Supply (SMPS)",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "76c06f85-266e-4dfd-87c5-c307b1bc879d",
+      "term": "Toroidal Transformer",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "af3b82bf-d089-4fde-b6cb-2a7ad630897f",
+      "term": "Backline",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "82436f8b-520a-4f97-b546-6d86a5331df2",
+      "term": "Cable Management",
+      "verdict": "MINOR",
+      "suggestions": [
+        {
+          "field": "common_mistakes",
+          "severity": "Low",
+          "issue": "The 'over-under coil' technique is invoked as the correct method in both common_mistakes and scenario_contexts but is never explained. An intermediate learner who has not yet met the term is told what NOT to do ('coiling against its natural lay') without being shown what over-under actually is, so the correction does not land as a usable skill.",
+          "suggestion": "Add a one-clause gloss the first time it appears, e.g. 'an over-under coil (alternating a normal loop with a reversed loop so the cable lies flat and pays out without twist)'. This turns the warning into an actionable technique instead of an unexplained label."
+        }
+      ]
+    },
+    {
+      "id": "6304386f-e7fb-454d-b746-3a77f4df8537",
+      "term": "Downstage",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "06322674-a960-47ae-a085-2cb4b1f3a83b",
+      "term": "Load-In",
+      "verdict": "MINOR",
+      "suggestions": [
+        {
+          "field": "common_mistakes",
+          "severity": "Low",
+          "issue": "The phrase 'the advanced load-in schedule' risks conflating two ideas for a beginner: 'advance' is itself a sibling glossary term (Production Advance), and 'advanced' reads as a difficulty/complexity descriptor rather than 'provided ahead of time.' Small wording, but it muddies the connection to the related term the map is trying to build.",
+          "suggestion": "Reword to 'Ignoring the load-in schedule and access details confirmed during the advance (dock, door sizes, union/house rules)...' so the tie to Production Advance is explicit and the beginner isn't left parsing 'advanced.'"
+        }
+      ]
+    },
+    {
+      "id": "678d1904-9176-4211-bcd0-42a7a901bd90",
+      "term": "Load-Out",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "a82d4d61-1298-4668-b930-ac09db089fde",
+      "term": "Monitor World",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "218820da-38c6-41ec-adf1-aee97c8c73c3",
+      "term": "Production Advance",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "50f64a99-aa14-4a04-a74f-56da3ebf61aa",
+      "term": "Spike Mark",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "7588c2bf-7cb5-40a0-bfa1-f6c397ee4327",
+      "term": "Stage Left / Stage Right",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "f702b12a-dfb8-471d-b0e1-6c66491a83b8",
+      "term": "Strike",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "1cd1e29e-8dfd-458e-96cf-5799b8dc09d0",
+      "term": "Tech Rider",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "f5788783-c0d6-4a24-9086-548de6e2873f",
+      "term": "Upstage",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "0457cbbb-178c-456d-96e8-6202fb369425",
+      "term": "Auracast",
+      "verdict": "OK",
+      "suggestions": []
+    },
+    {
+      "id": "c9b2f81a-b99b-47d8-aec7-1c5db19ba8a9",
+      "term": "Closed Captioning",
+      "verdict": "MINOR",
+      "suggestions": [
+        {
+          "field": "practical_application",
+          "severity": "Low",
+          "issue": "The acronym 'CART' is introduced in practical_application and reused in scenario_contexts with no expansion. For a beginner-tagged term this is an unglossed acronym doing real work (it names the live-captioning workflow), which forces the learner to either guess or look it up mid-explanation.",
+          "suggestion": "Expand on first use: 'a CART (Communication Access Realtime Translation) feed'. Small change that removes the comprehension gap without adding load."
+        },
+        {
+          "field": "common_mistakes",
+          "severity": "Low",
+          "issue": "Depth is uneven for a 'beginner' tag: the plain_english is well-pitched, but common_mistakes and purpose_function lean on FCC quality rules and ADA assembly-area obligations without framing them, so the term jumps from beginner to regulatory detail. The fourth bullet is also garbled ('...synchronization and accuracy, which FCC quality rules require captions to be...'), which hurts readability of an already dense point.",
+          "suggestion": "Repair the fourth bullet to a clean sentence, e.g. 'Neglecting synchronization and accuracy - FCC quality rules require captions to be accurate, synchronous, complete, and properly placed.' Consider a five-word lead-in that frames why the ADA/FCC references appear, so a beginner sees them as 'rules that govern this' rather than unexplained jargon."
+        }
+      ]
+    }
+  ]
+}

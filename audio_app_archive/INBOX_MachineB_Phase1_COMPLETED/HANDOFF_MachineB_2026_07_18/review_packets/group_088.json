@@ -1,0 +1,1012 @@
+{
+ "group": 88,
+ "terms": [
+  {
+   "id": "68e3d066-b705-45e6-bdbb-d93b38269791",
+   "term": "Alphorn-fa (11th partial)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The alphorn-fa is the note produced by the 11th harmonic (11th partial) of a natural, valveless labrosone such as the alphorn or natural horn; relative to the instrument's harmonic series it falls about a quarter-tone between F and F-sharp and sounds distinctly out of tune to ears expecting equal temperament.",
+   "plain_english": "On an alphorn you can only play the notes of the natural harmonic series, and one of them, the 11th, sits halfway between F and F-sharp. This alphorn-fa sounds oddly out of tune to us, like a note stuck between two piano keys.",
+   "purpose_function": "The term identifies a characteristic pitch of natural brass and alphorn music, explaining why some traditional melodies use a note that falls outside the standard scale.",
+   "practical_application": "A player or arranger uses the alphorn-fa knowingly as part of the instrument's authentic sound, and a recording engineer or transcriber recognizes it as intended rather than a tuning error to correct.",
+   "category": "Harmonics",
+   "related_terms": [
+    "Harmonic series",
+    "Natural horn",
+    "Partial",
+    "Overblowing",
+    "Just intonation"
+   ],
+   "common_mistakes": [
+    "Thinking the alphorn-fa is simply an F or F-sharp played out of tune by mistake.",
+    "Trying to correct the note in tuning software when it is a genuine feature of the harmonic series.",
+    "Confusing it with the flat 7th partial, which is a different out-of-tune harmonic."
+   ],
+   "scenario_contexts": [
+    "A folk melody for alphorn deliberately features the alphorn-fa as its signature color.",
+    "An engineer transcribing a natural-horn part must decide how to notate the 11th-partial note.",
+    "A student overblows a valveless horn and lands on the alphorn-fa between F and F-sharp."
+   ]
+  },
+  {
+   "id": "fafee9aa-5be9-42ac-8247-5e269a7cbe47",
+   "term": "Bagpipe chanter",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The chanter is the melody pipe of a bagpipe, fitted with fingerholes and driven by a reed (a double reed on Great Highland pipes), on which the player fingers the tune while the bag supplies a continuous air stream.",
+   "plain_english": "The chanter is the part of the bagpipe you play the tune on, using finger holes like a recorder. A reed inside makes the sound, and the bag keeps feeding it air so the notes never stop for a breath.",
+   "purpose_function": "The chanter carries the melody of the instrument, and its reed and fingerholes set the pitch range and scale of the bagpipe.",
+   "practical_application": "A piper tunes and maintains the chanter reed and hole taping, and a sound engineer usually aims the main melody mic at the chanter.",
+   "category": "Instrument component",
+   "related_terms": [
+    "Bagpipe drone",
+    "Bagpipe drones",
+    "Reed",
+    "Double reed",
+    "Blowpipe"
+   ],
+   "common_mistakes": [
+    "Confusing the chanter, which plays the melody, with a drone, which holds one fixed note.",
+    "Assuming the chanter can be silenced on its own like a woodwind; it sounds whenever the bag has air.",
+    "Aiming the microphone at the bag or drones instead of the chanter for the melody."
+   ],
+   "scenario_contexts": [
+    "A piper swaps to a softer chanter reed for indoor recording.",
+    "A sound engineer close-mics the chanter to capture the melody clearly over the drones.",
+    "A pipe band tunes each chanter to a common pitch before a performance."
+   ]
+  },
+  {
+   "id": "21a91736-3efe-4405-a273-53890c69a69b",
+   "term": "Bagpipe drone",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A drone is a bagpipe pipe that sounds a single, fixed, continuous pitch and is not fingered, usually driven by a single reed and tuned to the tonic of the chanter to provide a constant harmonic backdrop to the melody.",
+   "plain_english": "A drone is a bagpipe pipe that plays just one steady note the whole time, with no finger holes. It sits under the tune like a held bass note, giving that classic droning bagpipe sound.",
+   "purpose_function": "The drone supplies a constant reference pitch and sustained harmony against which the chanter's melody is heard.",
+   "practical_application": "A piper tunes each drone by sliding its joints so it matches the chanter's tonic, and an engineer may add a separate mic or accept spill to balance drones against the melody.",
+   "category": "Instrument component",
+   "related_terms": [
+    "Bagpipe drones",
+    "Bagpipe chanter",
+    "Reed",
+    "Tonic",
+    "Blowpipe"
+   ],
+   "common_mistakes": [
+    "Thinking the drone can play a melody; it holds only one fixed pitch.",
+    "Leaving a drone slightly out of tune with the chanter, which sounds sour.",
+    "Corking off a drone but forgetting it changes the overall balance."
+   ],
+   "scenario_contexts": [
+    "A piper tunes the bass drone to the low A of the chanter before playing.",
+    "An engineer notices one drone beating against the chanter and asks the piper to retune.",
+    "A solo piper corks two drones to record with a single drone for a thinner texture."
+   ]
+  },
+  {
+   "id": "4d3e59e0-1272-4151-83f4-2b7b54b40d94",
+   "term": "Bagpipe drones",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The drones are the set of fixed-pitch, non-fingered pipes on a bagpipe (typically two tenor and one bass on the Great Highland bagpipe), each driven by its own reed and tuned in octaves to the chanter's tonic so they sound together as a sustained chord beneath the melody.",
+   "plain_english": "The drones are the group of pipes on a bagpipe that each hold one steady note. Together they add a full, humming background under the tune, usually tuned to the same note in different octaves.",
+   "purpose_function": "As a group the drones create the bagpipe's signature sustained harmony and fix the tonal center of the music.",
+   "practical_application": "A piper tunes all the drones to lock with the chanter and with each other, and a sound engineer balances the drones' low hum against the chanter melody in the mix.",
+   "category": "Instrument component",
+   "related_terms": [
+    "Bagpipe drone",
+    "Bagpipe chanter",
+    "Reed",
+    "Tonic",
+    "Octave"
+   ],
+   "common_mistakes": [
+    "Tuning the drones to each other but not to the chanter.",
+    "Assuming every bagpipe has three drones; the number varies by type.",
+    "Miking only the drones and losing melody detail from the chanter."
+   ],
+   "scenario_contexts": [
+    "A pipe band lines up so all players' drones sound as one steady chord.",
+    "An engineer sets a room mic to capture the blended drones of a full band.",
+    "A piper corks one tenor drone to change the drone texture."
+   ]
+  },
+  {
+   "id": "99e4f7ab-0dd5-4a68-a9ce-7078c6ef793c",
+   "term": "Bagpipe moisture noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The gurgling, burbling, or unstable sounds caused by condensed moisture from the player's breath collecting in a bagpipe's bag, reeds, and bores, which disturbs reed vibration and can be captured as unwanted noise on close-miked recordings.",
+   "plain_english": "When a piper blows into the bag, warm breath leaves moisture inside, and that wet build-up makes gurgling or crackly sounds. It can make reeds sound rough, a bit like blowing bubbles through a straw in a drink.",
+   "purpose_function": "Naming this noise helps players and engineers spot moisture as the cause of gurgling or reed instability and take steps to control it.",
+   "practical_application": "Pipers fit moisture traps or drying agents and let the instrument dry out, while engineers may edit or gate stray gurgles from a recording.",
+   "category": "Recording artifact",
+   "related_terms": [
+    "Air leakage",
+    "Bellows air noise",
+    "Reed",
+    "Bagpipe drone",
+    "Close miking"
+   ],
+   "common_mistakes": [
+    "Blaming a rough reed when trapped moisture is the real cause.",
+    "Ignoring moisture buildup until a reed stops speaking during a performance.",
+    "Over-editing natural playing sounds while chasing every small gurgle."
+   ],
+   "scenario_contexts": [
+    "A long studio session leaves the bag damp, so gurgling appears in later takes.",
+    "A piper's drone reed becomes unstable outdoors on a cold day from condensation.",
+    "An engineer hears burbling under quiet passages and asks the piper to dry the reeds."
+   ]
+  },
+  {
+   "id": "8ce432fd-5899-448a-ab81-101913eae9cc",
+   "term": "Bansuri edge chiff",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The brief, breathy transient heard at the onset of a note on a bansuri (a side-blown Indian bamboo flute), produced as the player's air jet first strikes the sharp edge of the blowing hole before a stable tone forms; \"chiff\" is a term borrowed from organ flue-pipe voicing for this attack noise.",
+   "plain_english": "When a bansuri player starts a note, the breath hits the sharp edge of the blow hole and makes a soft puff before the clear note settles. This little breathy attack is called chiff, like the burst of air at the start of the word who.",
+   "purpose_function": "The term describes a natural attack transient that gives the bansuri its breathy, expressive character and signals how a note begins.",
+   "practical_application": "A recording engineer places and angles the mic to capture a pleasing amount of edge chiff without harsh wind blasts, and a player controls breath to shape it.",
+   "category": "Attack transient",
+   "related_terms": [
+    "Chiff",
+    "Edge tone",
+    "Embouchure",
+    "Attack transient",
+    "Air jet"
+   ],
+   "common_mistakes": [
+    "Treating all chiff as a flaw and gating it away, which removes natural expression.",
+    "Confusing chiff with wind pops that come from breath hitting the mic.",
+    "Blowing too hard so the chiff turns into harsh wind noise."
+   ],
+   "scenario_contexts": [
+    "A film composer wants an intimate bansuri with just a touch of edge chiff.",
+    "An engineer moves the mic off-axis to soften strong chiff on loud attacks.",
+    "A student learns to control breath so each note's chiff is even."
+   ]
+  },
+  {
+   "id": "3c6780dd-919f-450a-b025-0ee96db9c3cb",
+   "term": "Bellows air noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The broadband rushing or whooshing sound produced by air moving through and around the bellows and wind path of a bellows-driven instrument (accordion, concertina, harmonium or reed organ, or an organ blower system), heard separately from the musical tone and often captured as noise on close-miked recordings.",
+   "plain_english": "Instruments like accordions and reed organs push air with bellows, and that moving air makes a soft rushing sound of its own. Up close a mic can pick it up, a bit like the hiss you hear when you squeeze an air pump.",
+   "purpose_function": "Naming this noise helps engineers separate normal air-handling sound from musical tone and manage it during recording.",
+   "practical_application": "An engineer chooses mic placement and may use gating or editing to control bellows air noise, or keeps it when a natural, intimate sound is wanted.",
+   "category": "Recording artifact",
+   "related_terms": [
+    "Air-button hiss",
+    "Air leakage",
+    "Bagpipe moisture noise",
+    "Reed",
+    "Close miking"
+   ],
+   "common_mistakes": [
+    "Mistaking normal bellows air noise for an air leak or fault.",
+    "Placing the mic directly at the bellows fold, which exaggerates the noise.",
+    "Gating so aggressively that soft note tails are lost with the noise."
+   ],
+   "scenario_contexts": [
+    "A close-miked accordion recording shows steady air rush under sustained chords.",
+    "A harmonium track in a quiet mix reveals bellows noise that needs gentle editing.",
+    "An engineer keeps some bellows noise on a folk recording for a natural feel."
+   ]
+  },
+  {
+   "id": "2525ea55-186a-433d-9482-27703aaffcc1",
+   "term": "Bellows noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The mechanical and air-related sound produced by the bellows of a free-reed instrument (accordion, concertina, bandoneon) or the wind-raising bellows of an organ or harmonium, including the hiss of escaping air, valve clatter, and the creak or thump of the folds as they open and close. It is an incidental noise, distinct from the musical tone, and is most noticeable at direction changes and under close microphone placement.",
+   "plain_english": "This is the puffing, hissing, or creaking sound a bellows makes as it pushes air, apart from the notes themselves. It is like the whoosh you hear when you squeeze a fireplace bellows.",
+   "purpose_function": "It is an unwanted byproduct of moving air through a bellows; recognizing it helps a technician judge instrument condition and control how much of it reaches a recording.",
+   "practical_application": "When close-miking an accordion, concertina, or chamber organ, a technician positions and angles microphones to capture the reeds or pipes while minimizing bellows hiss and mechanical thumps.",
+   "category": "Instrument noise",
+   "related_terms": [
+    "Bellows shake (rale)",
+    "Blower rumble",
+    "Free reed",
+    "Reed valve",
+    "Wind noise",
+    "Close miking"
+   ],
+   "common_mistakes": [
+    "Assuming all bellows noise is a fault when some is normal to the instrument",
+    "Placing a microphone right at the bellows seam, which exaggerates air hiss and valve clatter",
+    "Confusing bellows air hiss with reed or pipe speech noise"
+   ],
+   "scenario_contexts": [
+    "Close-miking an accordion for a studio folk session",
+    "Recording a chamber organ or harmonium where the hand-pumped bellows is audible",
+    "Editing out bellows thumps at direction changes in a solo recording"
+   ]
+  },
+  {
+   "id": "9c9b30a5-a7b1-46ee-9a85-3e6e97140ddb",
+   "term": "Bellows shake (rale)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "An accordion (and concertina/bandoneon) technique in which the player rapidly reverses the direction of the bellows while holding one or more keys, rearticulating the sustained note into a fast, even tremolo or rhythmic pulsation. The pitch stays constant while the bellows motion supplies repeated attacks, producing a shimmering or driving rhythmic effect.",
+   "plain_english": "The player wiggles the bellows quickly back and forth while holding a note, so the note pulses fast instead of staying flat. It works a bit like flicking a light on and off fast to make one steady light seem to flutter.",
+   "purpose_function": "It lets a bellows-driven instrument, which cannot re-strike a note from the keys alone, add rhythmic drive and a tremolo-like accent to a held chord.",
+   "practical_application": "A player uses the bellows shake for energetic passages in forro, musette, and folk styles; a technician recording it watches levels because each shake adds a burst of transient energy and bellows noise.",
+   "category": "Bellows technique",
+   "related_terms": [
+    "Bellows noise",
+    "Tremolo",
+    "Free reed",
+    "Accordion",
+    "Articulation",
+    "Circular-breathing drone"
+   ],
+   "common_mistakes": [
+    "Thinking the shake changes pitch when only the attack pattern changes",
+    "Confusing the bellows shake with keyboard tremolo, which the accordion cannot produce",
+    "Shaking so hard the reeds choke or the pitch bends from pressure spikes"
+   ],
+   "scenario_contexts": [
+    "A forro accordionist driving a fast dance groove",
+    "A French musette waltz adding rhythmic shimmer to a held chord",
+    "Miking an accordion solo where bellows-shake transients must not clip"
+   ]
+  },
+  {
+   "id": "933c1a24-ea14-4cb9-89d1-e928b76f0895",
+   "term": "Bisbigliando",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A harp technique (Italian for 'whispering') in which a note or chord is repeated very softly and rapidly, usually by alternating the fingers of both hands near the soundboard, to create a delicate, murmuring tremolo. It is marked with the word 'bisbigliando' (often abbreviated 'bisb.') and a wavy line, and is played at a low dynamic.",
+   "plain_english": "On the harp, this is a soft, fast fluttering of a note or chord that sounds like a whisper. The player gently trades the strings between both hands to make it shimmer quietly.",
+   "purpose_function": "It gives the harp a sustained, veiled shimmer on a held note, since a plucked string quickly fades; it exists to add quiet color and atmosphere.",
+   "practical_application": "An arranger writes bisbigliando for a hushed background wash, and an engineer captures it with a sensitive, low-noise microphone setup because the effect lives at very low levels.",
+   "category": "Harp technique",
+   "related_terms": [
+    "Tremolo",
+    "Harp harmonics",
+    "Glissando",
+    "Arpeggio",
+    "Pres de la table",
+    "Dynamics"
+   ],
+   "common_mistakes": [
+    "Playing it too loudly, which destroys the whispered character",
+    "Treating it as a strict measured tremolo instead of a free, rapid shimmer",
+    "Assuming it is a wind or organ effect because of the topic label, when it is a harp technique"
+   ],
+   "scenario_contexts": [
+    "Orchestrating a quiet, atmospheric harp background",
+    "A harpist sustaining a soft chord under a solo melody",
+    "Recording delicate harp textures at very low dynamic levels"
+   ]
+  },
+  {
+   "id": "d328e202-d189-40d3-8972-b57837a85eae",
+   "term": "Blower rumble",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A low-frequency noise in a pipe organ (or other blown instrument) caused by the electric wind blower and its motor, transmitted through the wind trunks, reservoir, and building structure into the pipe chamber or room. It appears as a steady low hum or rumble beneath the musical sound, separate from the pipe tone itself.",
+   "plain_english": "This is the low humming or rumbling sound an organ air blower makes, heard under the music. It is like the background drone of a fan or furnace running in another room.",
+   "purpose_function": "It is unwanted mechanical and airflow noise from the blower that supplies the organ's wind; identifying it helps a technician keep it out of recordings and diagnose wind-system problems.",
+   "practical_application": "When recording a pipe organ, an engineer uses high-pass filtering and careful microphone placement to reduce blower rumble, and a technician may check for loose ducting or a failing motor bearing if it grows louder.",
+   "category": "Wind-supply noise",
+   "related_terms": [
+    "Bellows noise",
+    "Wind supply",
+    "Reservoir",
+    "Rumble",
+    "High-pass filter",
+    "Pipe organ"
+   ],
+   "common_mistakes": [
+    "UNSAFE: Opening or servicing a running blower or its electrical motor without locking out and tagging out power, risking shock or injury from live parts and moving blades",
+    "Mistaking blower rumble for a low pedal pipe or room HVAC noise",
+    "Trying to fix rumble only with EQ when the microphone is placed too near the blower or wind trunks"
+   ],
+   "scenario_contexts": [
+    "Recording a church pipe organ where blower rumble intrudes on quiet passages",
+    "Diagnosing a new low-frequency hum after blower maintenance",
+    "Setting up microphones in an organ loft to avoid the blower and wind trunks"
+   ]
+  },
+  {
+   "id": "e9b87b2c-4460-4c85-8df7-bd79ccf40fce",
+   "term": "Bronx cheer/raspberry",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A raspy, buzzing 'raspberry' used as a comic or derisive effect, produced on a brass instrument by buzzing the lips very loosely and slackly into the mouthpiece so the tone breaks up into a flabby, uncontrolled buzz rather than a clear pitch. Vocally it is the familiar lip 'raspberry'; on brass it is the deliberately unfocused, sputtering counterpart.",
+   "plain_english": "This is the rude raspberry buzzing sound, like a fake fart noise. On a brass instrument the player makes it by letting the lips flap loosely into the mouthpiece instead of buzzing a clean note.",
+   "purpose_function": "It provides a humorous, rude, or gritty special effect, and a loose-lip 'free buzz' that brass players also use to relax and warm up the embouchure.",
+   "practical_application": "A composer may call for a Bronx cheer in a novelty or cartoon-style passage, and brass players also free-buzz a raspberry as a warm-up to loosen the lips.",
+   "category": "Brass technique",
+   "related_terms": [
+    "Flutter tonguing",
+    "Growl",
+    "Lip buzz",
+    "Embouchure",
+    "Mute",
+    "Conch blast"
+   ],
+   "common_mistakes": [
+    "Trying to force a clear pitch, which the effect deliberately avoids",
+    "Confusing it with flutter tonguing, which uses a rolled tongue rather than loose lips",
+    "Over-relying on loose free-buzzing so the working embouchure weakens"
+   ],
+   "scenario_contexts": [
+    "A novelty or comedic brass passage calling for a rude effect",
+    "A brass player free-buzzing a raspberry during warm-up",
+    "A jazz or theatrical setting adding a derisive 'razz'"
+   ]
+  },
+  {
+   "id": "c591e0c8-71b4-48ba-9d6f-56ad86e2d587",
+   "term": "Chanter gracing chiff",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "On a bagpipe chanter, the brief, breathy 'chiff' - a short transient of noise at the very start of a note - created when a grace note (a fast finger movement, or 'gracing') articulates and separates otherwise continuous notes. Because the chanter sounds without pause, gracings inject these tiny chiffs to mark note beginnings, functioning like tonguing on other wind instruments.",
+   "plain_english": "On bagpipes the notes never stop, so players flick quick grace notes to separate them. Each flick makes a tiny puff at the note start, called a chiff, a bit like the little t sound of tonguing a flute.",
+   "purpose_function": "The chiff from gracing gives note definition and rhythm on an instrument that cannot stop or tongue, so listeners hear separate, articulated notes instead of one smeared drone.",
+   "practical_application": "A piper practices crisp gracings so each chiff is clean, and an engineer close-miking a chanter captures these transients, which carry the tune's rhythmic clarity.",
+   "category": "Bagpipe articulation",
+   "related_terms": [
+    "Grace note",
+    "Chanter",
+    "Drone",
+    "Articulation",
+    "Embellishment",
+    "Circular-breathing drone"
+   ],
+   "common_mistakes": [
+    "Playing gracings too slowly so they sound like real melody notes instead of quick chiffs",
+    "Thinking the chanter can be tongued or stopped like a flute",
+    "Miking only the drones and missing the chanter chiffs that carry the rhythm"
+   ],
+   "scenario_contexts": [
+    "A Highland piper articulating a fast reel with crisp gracings",
+    "Teaching a beginner why grace notes replace tonguing",
+    "Close-miking a solo chanter so its gracing chiffs stay clear"
+   ]
+  },
+  {
+   "id": "2320559d-1d89-4cd1-b111-2937e18c915c",
+   "term": "Circular-breathing drone",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A continuous, unbroken sustained tone (drone) produced on a wind instrument by circular breathing: the player pushes stored air from the puffed cheeks to keep the instrument sounding while quickly inhaling through the nose, so the note never stops. It is central to instruments such as the didgeridoo, launeddas, and zurna, and to drone accompaniments on double reeds.",
+   "plain_english": "This is a wind note that goes on and on with no break, because the player breathes in through the nose while pushing air out from the cheeks. It works like a bagpipe bag holding air, but the cheeks do the storing.",
+   "purpose_function": "It lets a single player hold an endless drone or line without pausing to breathe, providing a steady harmonic foundation under a melody.",
+   "practical_application": "A didgeridoo or duduk player circular-breathes to hold a drone for minutes, and a technician records it knowing there is no natural breath gap to edit or punch in at.",
+   "category": "Breathing technique",
+   "related_terms": [
+    "Circular breathing",
+    "Drone",
+    "Dam drone (duduk)",
+    "Didgeridoo",
+    "Embouchure",
+    "Double reed"
+   ],
+   "common_mistakes": [
+    "Believing the player never inhales, when they inhale through the nose during the cheek push",
+    "Letting the tone dip or waver at the cheek-to-lung switch",
+    "Expecting a breath gap to edit at, when the drone is deliberately seamless"
+   ],
+   "scenario_contexts": [
+    "A didgeridoo player holding a long continuous drone",
+    "A duduk 'dam' player sustaining an accompaniment",
+    "Recording a seamless drone with no breath points for edits"
+   ]
+  },
+  {
+   "id": "ff04cceb-c4bc-434f-b208-a377a1bab663",
+   "term": "Conch blast",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The loud, sustained tone sounded on a conch-shell (or other shell) trumpet, produced by buzzing the lips into a hole cut at the shell's apex or side, exactly as on a natural brass horn. The shell's conical cavity fixes the pitch, and players typically sound one strong note used for signaling or ceremony.",
+   "plain_english": "This is the deep, powerful note made by blowing into a large seashell like a horn. The player buzzes their lips into a hole in the shell, and it rings out one loud tone, often used to call people together.",
+   "purpose_function": "It turns a shell into a natural lip-blown horn for signaling, ceremony, or ritual, carrying a strong tone over long distances.",
+   "practical_application": "In ceremonial or world-music recordings, a technician captures the conch blast knowing it is a loud natural horn tone with a strong attack and a very limited pitch range.",
+   "category": "Shell-trumpet sound",
+   "related_terms": [
+    "Shell trumpet",
+    "Natural horn",
+    "Embouchure",
+    "Lip buzz",
+    "Harmonic series",
+    "Bronx cheer/raspberry"
+   ],
+   "common_mistakes": [
+    "Thinking the conch has valves or holes to change pitch, when it plays essentially one natural tone",
+    "Blowing without a firm lip buzz, which produces only breathy air",
+    "Underestimating its loudness and overloading a close microphone"
+   ],
+   "scenario_contexts": [
+    "A ceremonial conch call in ritual or theatrical music",
+    "A world-music session featuring a shell trumpet",
+    "Herald or signal effects requiring a natural horn blast"
+   ]
+  },
+  {
+   "id": "8742c63d-e031-4915-9afb-69be04dcc36e",
+   "term": "Dam drone (duduk)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The sustained drone ('dam') that underlies Armenian duduk music, held continuously on a second duduk by an accompanist using circular breathing while the lead player performs the melody. The dam is usually the tonic and sometimes shifts pitch to follow the mode, giving the music its steady harmonic ground.",
+   "plain_english": "In Armenian duduk music, a second player holds one long, unbroken note called the dam while the first plays the tune over it. The dam is the steady background hum that the melody floats on top of.",
+   "purpose_function": "The dam supplies a constant tonal center and drone, anchoring the melody's mode and creating the duduk's deep, sustained atmosphere.",
+   "practical_application": "In an ensemble recording, the dam player is often given a separate microphone and holds the drone by circular breathing, so the engineer balances a steady low line against the moving melody duduk.",
+   "category": "Drone technique",
+   "related_terms": [
+    "Circular-breathing drone",
+    "Drone",
+    "Duduk",
+    "Tonic",
+    "Double reed",
+    "Chanter gracing chiff"
+   ],
+   "common_mistakes": [
+    "Assuming the dam is a machine or bag drone, when a live player holds it by circular breathing",
+    "Thinking the dam is always a fixed pitch, when it can shift to follow the mode",
+    "Miking only the melody duduk and losing the dam's supporting drone"
+   ],
+   "scenario_contexts": [
+    "A traditional Armenian duduk duo with lead and dam players",
+    "Film-score sessions using duduk for a mournful, drone-based mood",
+    "Balancing a sustained dam under an expressive melody line in a mix"
+   ]
+  },
+  {
+   "id": "152229c8-c776-4ef0-839d-06c3f269fa32",
+   "term": "Didgeridoo drone",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The continuous low fundamental tone of the didgeridoo, a lip-blown Australian Aboriginal wooden or bamboo tube sounded by loosely buzzing the lips into one end. The player sustains it indefinitely by circular breathing, and the tube's length fixes the drone's pitch while the vocal tract shapes its timbre.",
+   "plain_english": "This is the deep, steady humming note that a didgeridoo makes without stopping. The player buzzes their lips into the long tube, and the same low tone rings out over and over, like a constant hum.",
+   "purpose_function": "It provides the sustained tonal and rhythmic foundation of didgeridoo playing, over which the player layers overtone, vocal, and rhythmic effects.",
+   "practical_application": "When recording a didgeridoo, a technician expects a strong, sustained low fundamental with heavy low-frequency energy and no natural breath gaps, and places and equalizes microphones accordingly.",
+   "category": "Instrument sound",
+   "related_terms": [
+    "Didgeridoo wobble (vocalized overtone)",
+    "Circular-breathing drone",
+    "Drone",
+    "Embouchure",
+    "Lip buzz",
+    "Fundamental frequency"
+   ],
+   "common_mistakes": [
+    "Thinking the drone stops for breaths, when circular breathing keeps it seamless",
+    "Under-powering the low end so the deep fundamental is lost in a recording",
+    "Confusing the steady fundamental drone with the overlaid vocal and overtone effects"
+   ],
+   "scenario_contexts": [
+    "Recording a solo didgeridoo drone for a world-music or film session",
+    "Layering a sustained didgeridoo drone under an ambient mix",
+    "Explaining to a student why there are no breath points to edit at"
+   ]
+  },
+  {
+   "id": "e09b0ff8-0160-4b8e-bc7d-648f5edc18d6",
+   "term": "Didgeridoo wobble (vocalized overtone)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The characteristic rhythmic, wah-like timbral modulation of a didgeridoo, produced by the player altering the vocal-tract shape (tongue, jaw, cheeks) and adding vocalizations such as hums, calls, or vowel sounds over the sustained drone. These changes shift the vocal-tract resonances, emphasizing different overtones of the fundamental so the drone's tone color pulses and 'wobbles' without the pitch itself changing.",
+   "plain_english": "This is the wobbly, wah-wah change in a didgeridoo sound. The player moves the tongue and cheeks and adds voice sounds. That makes different overtones ring out over the steady drone. It is like changing your mouth shape while you hum.",
+   "purpose_function": "It turns a single unchanging drone into a rich, evolving, rhythmic texture, which is the core expressive resource of didgeridoo playing.",
+   "practical_application": "A player shapes the mouth and adds vocal sounds to create rhythmic wobble patterns, and an engineer captures the resulting shifting overtones and formants without smoothing them away with heavy processing.",
+   "category": "Instrument technique",
+   "related_terms": [
+    "Didgeridoo drone",
+    "Circular-breathing drone",
+    "Overtone",
+    "Formant",
+    "Timbre",
+    "Embouchure"
+   ],
+   "common_mistakes": [
+    "Thinking the wobble changes the pitch, when only the overtone balance and timbre change",
+    "Assuming it is added electronically, when it comes from vocal-tract movement and vocalizations",
+    "Over-compressing or heavily filtering the signal so the moving overtones are flattened out"
+   ],
+   "scenario_contexts": [
+    "Recording rhythmic didgeridoo patterns for a fusion track",
+    "Capturing vocalized overtone effects over a sustained drone",
+    "Teaching how tongue and vocal sounds shape the didgeridoo's tone"
+   ]
+  },
+  {
+   "id": "ced94709-9ea1-4739-ac06-67a8422b4944",
+   "term": "Dimo buzz (membrane)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The bright, buzzing, reedy resonance added to the tone of the Chinese dizi (bamboo transverse flute) by the dimo, a thin membrane taken from the inner skin of reed or bamboo and glued over a dedicated hole (mokong) between the embouchure and finger holes. The membrane vibrates sympathetically with the air column, enriching the sound with a nasal, penetrating buzz that is essential to the dizi's characteristic timbre.",
+   "plain_english": "On a Chinese dizi flute, a thin skin is glued over one hole. It buzzes along with the notes and gives the flute a bright, reedy, humming edge. It works a little like the paper buzz on a kazoo.",
+   "purpose_function": "The membrane buzz gives the dizi its distinctive bright, carrying, reedy voice; without a properly tensioned dimo the flute sounds dull and muffled.",
+   "practical_application": "A player tunes the buzz by adjusting the membrane's tension with garlic juice or e'jiao glue, and an engineer miking a dizi captures the strong high-frequency buzz, which can sound harsh if the microphone is placed too close.",
+   "category": "Instrument sound",
+   "related_terms": [
+    "Dizi",
+    "Membrane",
+    "Timbre",
+    "Overtone",
+    "Sympathetic resonance",
+    "Embouchure"
+   ],
+   "common_mistakes": [
+    "Assuming the buzz is a defect or a bad reed, when it is the intended sound of the dimo membrane",
+    "Tensioning the membrane too tightly, which kills the buzz and dulls the tone",
+    "Miking too closely so the membrane buzz becomes harsh and shrill"
+   ],
+   "scenario_contexts": [
+    "Recording a solo dizi where the membrane buzz must stay bright but not harsh",
+    "Diagnosing a dull dizi tone traced to a loose or damaged dimo",
+    "Balancing the buzzy high end of a dizi in a traditional ensemble mix"
+   ]
+  },
+  {
+   "id": "a4f28f68-b3c1-4b53-adbe-ec3138bb802e",
+   "term": "Duduk subtone",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A soft, breathy, low-dynamic tone on the Armenian duduk, produced by relaxing the embouchure and using gentle breath pressure on the large double reed so that audible air blends with the pitch. As with subtone playing on other wind and reed instruments, it yields a warm, veiled, intimate sound especially in the instrument's low register, rather than a full, focused tone.",
+   "plain_english": "This is a soft, breathy low note on the duduk, played gently so air blends with the tone. It sounds warm and hushed, like speaking in a low, airy whisper.",
+   "purpose_function": "It gives the duduk its mournful, intimate, close-up quality at quiet dynamics, extending the instrument's expressive range downward toward near-whisper.",
+   "practical_application": "A player uses subtone for hushed, plaintive phrases, and an engineer records it with a sensitive, low-noise microphone chain because the breathy tone sits at low level and is easily buried.",
+   "category": "Playing technique",
+   "related_terms": [
+    "Dam drone (duduk)",
+    "Duduk",
+    "Double reed",
+    "Embouchure",
+    "Dynamics",
+    "Circular-breathing drone"
+   ],
+   "common_mistakes": [
+    "Pushing too much breath, which turns the intimate subtone into audible hiss with little pitch",
+    "Assuming subtone is only a saxophone term and not applicable to double-reed instruments",
+    "Recording it too far back so the quiet, breathy detail is lost under room noise"
+   ],
+   "scenario_contexts": [
+    "A film-score duduk part calling for a hushed, mournful low phrase",
+    "Close-miking a soft, breathy duduk melody in the studio",
+    "Balancing a whisper-quiet subtone passage against a louder accompaniment"
+   ]
+  },
+  {
+   "id": "f6d445d0-1327-49e2-905f-f6cc93c63c0f",
+   "term": "Embouchure noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "Incidental sound generated at the player's mouth-to-instrument interface, distinct from the musical tone, including breath hiss, air escaping around the lips or embouchure hole, lip smacks, and reed or mouthpiece contact noises. It is most audible on breathy or low-dynamic wind playing and under close microphone placement.",
+   "plain_english": "This is the extra breath, hiss, or lip sounds a wind player makes at the mouthpiece, apart from the real notes. It is like hearing someone puff air when they blow across a bottle top.",
+   "purpose_function": "It is an unwanted byproduct of how a wind player forms the tone; recognizing it helps a technician judge technique and control how much of it reaches a recording.",
+   "practical_application": "When close-miking flutes, reeds, or brass, a technician angles and distances the microphone to capture the tone while minimizing breath hiss and lip noise, and may use a small amount of high-frequency control if needed.",
+   "category": "Instrument noise",
+   "related_terms": [
+    "Embouchure",
+    "Flute key noise",
+    "Breath noise",
+    "Close miking",
+    "Windscreen",
+    "Duduk subtone"
+   ],
+   "common_mistakes": [
+    "Placing the microphone directly in the breath stream, which exaggerates hiss and pops",
+    "Assuming all embouchure noise is a player fault when some is normal to the instrument",
+    "Trying to remove it entirely with EQ instead of fixing microphone placement first"
+   ],
+   "scenario_contexts": [
+    "Close-miking a flute where breath hiss competes with the tone",
+    "Recording a soft, breathy reed passage in a quiet studio",
+    "Choosing microphone angle to reduce lip and air noise on a brass solo"
+   ]
+  },
+  {
+   "id": "2d2e3b11-4b61-4ae2-a363-9e823952a5cd",
+   "term": "Fall-off/doink",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A jazz brass and wind articulation in which the pitch drops and slides downward at the release of a note. A 'fall-off' (or 'fall') is a longer descending smear off the end of the note, produced by relaxing the embouchure, dropping valves/slide, or a chromatic finger-fall; a 'doink' is a short, quick downward drop of the same kind. The pitch trails off rather than ending cleanly.",
+   "plain_english": "This is a jazz brass sound where a note drops and slides down as it ends. A long slide down is a fall-off, and a short quick drop is a doink. It is like your voice sliding down at the end of a word.",
+   "purpose_function": "It adds expressive, vocal-like shaping and stylistic punctuation to the end of a note, a staple of jazz and big-band phrasing.",
+   "practical_application": "A player reads fall-off and doink symbols in a big-band chart and executes them by lip, slide, or finger, and an engineer captures the trailing downward pitch without gating it off too early.",
+   "category": "Brass technique",
+   "related_terms": [
+    "Glissando smear (trombone)",
+    "Doit",
+    "Scoop",
+    "Embouchure",
+    "Articulation",
+    "Bend"
+   ],
+   "common_mistakes": [
+    "Confusing a fall-off (downward) with a doit or scoop, which move upward",
+    "Ending the fall on a definite pitch instead of letting it trail off",
+    "Setting a noise gate to close too fast, cutting off the tail of the fall-off"
+   ],
+   "scenario_contexts": [
+    "Playing a big-band shout chorus with fall-offs on accented notes",
+    "A jazz brass section adding doinks for punctuation",
+    "Editing a horn track so fall-off tails are not clipped by gating"
+   ]
+  },
+  {
+   "id": "670f1ed5-7333-4dab-a727-3b048b255764",
+   "term": "Flute key noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The percussive mechanical noise made by a flute's keys and pads as they close against the tone holes, heard as clicks or thumps separate from the musical tone. It arises from the metal keywork and pad seating of a Boehm-system flute and is most noticeable in fast passages, at low dynamics, and under close microphone placement; it is sometimes used deliberately as a percussive extended technique.",
+   "plain_english": "These are the small clicks and thumps a flute's keys and pads make as fingers press them. A close microphone can pick them up along with the music, like hearing key clicks under a voice.",
+   "purpose_function": "It is normally an incidental byproduct of the keywork; recognizing it lets a technician control how much reaches a recording, or capture it on purpose when a composer calls for percussive key clicks.",
+   "practical_application": "When close-miking a flute, a technician chooses microphone position and distance to keep key clacks in balance, and checks a player's pads and mechanism if the noise is unusually loud.",
+   "category": "Instrument noise",
+   "related_terms": [
+    "Embouchure noise",
+    "Flute",
+    "Close miking",
+    "Extended technique",
+    "Pad",
+    "Key click"
+   ],
+   "common_mistakes": [
+    "Placing the microphone right over the keywork, which exaggerates clicks and thumps",
+    "Assuming all key noise is a fault when some is inherent to the mechanism",
+    "Confusing normal key noise with worn pads or loose keywork that actually need service"
+   ],
+   "scenario_contexts": [
+    "Close-miking a flute solo where key clicks intrude on quiet passages",
+    "Recording deliberate percussive key-click effects in contemporary music",
+    "Diagnosing unusually loud key noise traced to worn pads"
+   ]
+  },
+  {
+   "id": "136230b8-cbed-430b-9915-88b3e732f556",
+   "term": "Fujara overtone whistle",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The high, breathy overtone tones sounded on the fujara, a very large three-holed Slovak overtone shepherd's fipple flute, produced mainly by overblowing to jump the air column up through its natural harmonic series. Melodies are formed largely from these overblown partials above the low fundamental, and each overtone typically speaks with a soft, airy whistle at its onset.",
+   "plain_english": "The fujara is a very long Slovak shepherd's flute. The player blows harder to jump up to high, whistling notes above the low base note. Each jump starts with an airy whistle sound.",
+   "purpose_function": "Overblowing the harmonic series is how the fujara produces its melodic range from only three finger holes, giving it its distinctive high, whistling overtone voice over a deep drone-like fundamental.",
+   "practical_application": "A player controls breath pressure to select and cleanly speak each overtone, and an engineer records both the deep fundamental and the airy high overtones, mindful of the breathy onset transients.",
+   "category": "Instrument technique",
+   "related_terms": [
+    "Overtone",
+    "Harmonic series",
+    "Overblowing",
+    "Fujara",
+    "Fipple",
+    "Fundamental frequency"
+   ],
+   "common_mistakes": [
+    "Thinking pitches come mainly from the three finger holes rather than from overblowing the harmonic series",
+    "Using too little breath support so the overtone cracks or drops back to the fundamental",
+    "Miking only the fipple end and missing the breathy overtone character"
+   ],
+   "scenario_contexts": [
+    "Recording a solo fujara featuring its overblown overtone melody",
+    "Capturing the airy whistle onsets of each overtone in a folk session",
+    "Explaining how a three-hole flute plays full melodies via overblowing"
+   ]
+  },
+  {
+   "id": "27ef794e-8b88-4b3f-91b0-c66b481c68c8",
+   "term": "Glissando smear (trombone)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A continuous slide in pitch on the trombone (also called a 'smear'), produced by moving the slide while sustaining the tone so the pitch glides smoothly between notes with no discrete steps. A true glissando is limited to the range covered within a single harmonic (up to about a tritone across the slide positions); wider slides require a change of partial and are not fully continuous.",
+   "plain_english": "This is the smooth slide between two notes on a trombone. The player keeps blowing and moves the slide, so the pitch glides with no gaps, like a siren swooping up or down.",
+   "purpose_function": "It exploits the trombone's continuously variable slide to produce a smooth pitch glide for expressive, comic, or dramatic effect, something valved brass cannot do as seamlessly.",
+   "practical_application": "A player executes a smear by moving the slide steadily while keeping the same partial, and an arranger keeps written glissandos within the roughly tritone span playable without switching harmonics.",
+   "category": "Brass technique",
+   "related_terms": [
+    "Fall-off/doink",
+    "Glissando",
+    "Portamento",
+    "Slide",
+    "Harmonic series",
+    "Trombone"
+   ],
+   "common_mistakes": [
+    "Writing a continuous glissando wider than one harmonic allows, which forces an audible partial change",
+    "Confusing a smooth slide smear with a stepped chromatic run",
+    "Moving the slide unevenly so the smear speeds up or stalls instead of gliding smoothly"
+   ],
+   "scenario_contexts": [
+    "A big-band or Dixieland trombone smear for comic or bluesy effect",
+    "Notating a playable trombone glissando within one harmonic",
+    "Recording a dramatic trombone slide in a film-score cue"
+   ]
+  },
+  {
+   "id": "2a4d6774-76d7-4c41-a670-7971442b18a1",
+   "term": "Growl (vocalized brass/reed)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A rough, gravelly tone effect on a brass or reed instrument produced when the player vocalizes (hums, sings, or growls in the throat) while blowing, so the sung pitch and the played pitch beat against each other and roughen the sound. It is common on saxophone, trumpet, and trombone in jazz, blues, and rhythm and blues, and is sometimes reinforced with flutter tonguing.",
+   "plain_english": "The player hums or growls in the throat while blowing the note. The two sounds clash and make the tone rough and dirty, like a singer adding rasp to their voice.",
+   "purpose_function": "It adds a gritty, vocal, aggressive color to a sustained note, giving brass and reed lines an expressive, human, dirty edge.",
+   "practical_application": "A saxophone or trumpet player growls on a held note for a bluesy or funky solo, and an engineer capturing it notes that the added harshness broadens the harmonic content and can peak harder than a clean note.",
+   "category": "Brass/reed technique",
+   "related_terms": [
+    "Flutter tonguing",
+    "Bronx cheer/raspberry",
+    "Multiphonics",
+    "Overblowing",
+    "Embouchure",
+    "Subtone"
+   ],
+   "common_mistakes": [
+    "Thinking growl comes only from the lips or reed, when it is the vocalized throat tone beating against the played note",
+    "Confusing growl with flutter tonguing, which rolls the tongue instead of using the voice",
+    "Pushing so hard that pitch and intonation become unstable"
+   ],
+   "scenario_contexts": [
+    "A tenor saxophonist growling through a blues or rhythm and blues solo",
+    "A trumpet or trombone adding a dirty growl in a big-band shout chorus",
+    "Recording a growled line and watching for extra peak level and harshness"
+   ]
+  },
+  {
+   "id": "ad75ac0e-a510-4a53-b6d2-12c76f2094d9",
+   "term": "Guanzi glide",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "An expressive pitch slide (portamento) on the guanzi, a Chinese cylindrical double-reed pipe (also called bili), produced by continuously varying lip and jaw pressure on the large reed and by sliding or gradually uncovering the finger holes so the pitch bends smoothly between notes. Wide, vocal glides are a hallmark of guanzi style and can span a large interval.",
+   "plain_english": "On the guanzi, a Chinese double-reed pipe, the player slides smoothly from one note to another. They squeeze the reed with the lips and roll the fingers off the holes, bending the pitch like a voice sliding up or down.",
+   "purpose_function": "The glide gives the guanzi its crying, vocal, speech-like quality, connecting notes expressively and imitating the human voice.",
+   "practical_application": "A guanzi player uses wide glides for mournful or dramatic passages, and an engineer records the instrument close enough to catch these continuous pitch slides and its strong, reedy tone.",
+   "category": "Wind technique",
+   "related_terms": [
+    "Double reed",
+    "Portamento",
+    "Kari (head-raise pitch bend)",
+    "Embouchure",
+    "Overblowing",
+    "Suona"
+   ],
+   "common_mistakes": [
+    "Assuming pitch changes only by lifting fingers, when lip and jaw pressure on the reed do much of the bending",
+    "Treating the glide as a fast slur rather than a smooth continuous slide",
+    "Confusing the guanzi with the suona, a conical double-reed with a brighter, louder tone"
+   ],
+   "scenario_contexts": [
+    "A guanzi solo in Chinese traditional or folk music using wide expressive glides",
+    "A film or world-music session wanting a crying double-reed line",
+    "Close-miking a guanzi to capture its glides and reedy timbre"
+   ]
+  },
+  {
+   "id": "12a6765e-7073-4e55-a053-ef91a87ced91",
+   "term": "Half-valve smear",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A brass technique (trumpet, cornet, and other valved brass) in which one or more valves are pressed only partway down, partially restricting the airway so the instrument produces a stuffy, muffled, indeterminate pitch. Moving the valves and adjusting the lip while half-valved lets the player slide or smear between pitches, producing a lazy glissando or a muted, choked color.",
+   "plain_english": "The player presses a valve only halfway, which chokes the air and blurs the note. Sliding the valve and lips this way smears smoothly between pitches, a bit like a slow scoop up to a note.",
+   "purpose_function": "It lets a valved brass instrument, which normally jumps between fixed notes, slide smoothly between pitches and add a muffled, expressive effect.",
+   "practical_application": "A trumpeter uses a half-valve smear to scoop into a note or add a jazzy, choked effect, and an engineer notes that the tone is softer and less focused than a normal note.",
+   "category": "Brass technique",
+   "related_terms": [
+    "Glissando",
+    "Growl (vocalized brass/reed)",
+    "Lip bend",
+    "Embouchure",
+    "Valve",
+    "Portamento"
+   ],
+   "common_mistakes": [
+    "Pressing the valve fully instead of halfway, which produces a normal clear note rather than a smear",
+    "Expecting a loud, focused tone when the half-valve sound is deliberately stuffy and quiet",
+    "Confusing a half-valve smear with a lip glissando that follows the harmonic series"
+   ],
+   "scenario_contexts": [
+    "A jazz trumpeter scooping into a phrase with a half-valve smear",
+    "A brass effect calling for a lazy, muffled glissando",
+    "Recording a soloist whose half-valve notes sit lower in level than clean notes"
+   ]
+  },
+  {
+   "id": "9dd4bce3-a429-496e-aa33-72aea0b16c6f",
+   "term": "Harmonica bend",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A pitch-altering technique on the harmonica in which the player changes the shape and resonance of the mouth and throat, along with breath pressure, to lower a note's pitch (a draw bend or blow bend) or, with overblowing and overdrawing, to raise it. Bending works because the two reeds sharing a channel interact, and the vocal-tract resonance forces them to sound at a pitch between or above their natural notes.",
+   "plain_english": "The player changes the shape of the mouth and throat to slide a note down in pitch, or up with a harder trick. It works like whistling lower by changing your mouth. This lets a simple harmonica reach the blue notes between the built-in ones.",
+   "purpose_function": "Bending fills in notes missing from the harmonica's fixed layout and adds the expressive, vocal, blue inflections central to blues and folk playing.",
+   "practical_application": "A blues harmonica player bends draw notes to reach missing pitches and add feeling, and a technician recording it hears smooth pitch dips that need clean, low-noise capture.",
+   "category": "Free-reed technique",
+   "related_terms": [
+    "Free reed",
+    "Overblowing",
+    "Harmonica feedback",
+    "Embouchure",
+    "Reed",
+    "Portamento"
+   ],
+   "common_mistakes": [
+    "Thinking bending comes from breathing harder, when it is the mouth and throat shape (resonance) that bends the pitch",
+    "Biting or clamping the harmonica instead of shaping the oral cavity",
+    "Assuming every hole bends the same amount, when the bend range differs by hole"
+   ],
+   "scenario_contexts": [
+    "A blues player bending draw notes in second position (cross harp)",
+    "Reaching a missing scale note by bending rather than switching harmonicas",
+    "Recording expressive pitch dips in a folk or blues harmonica part"
+   ]
+  },
+  {
+   "id": "a40654fd-d76c-4bbd-bf50-b3e6eeb2b76f",
+   "term": "Harmonica feedback",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "Acoustic feedback in amplified harmonica playing, which occurs when sound from the amplifier's loudspeaker re-enters the closely cupped microphone and the loop gain reaches unity, causing a sustained howl or squeal. Chicago-blues players deliberately court controlled feedback and mild distortion by cupping a bullet microphone tightly against a small tube amplifier, using it as part of the raw, saturated tone.",
+   "plain_english": "This is the squeal that starts when a harmonica mic picks up its own sound from the amp in a loop. Blues players learn to ride a little of it on purpose for a gritty sound. It is like standing just close enough to a speaker to make it buzz.",
+   "purpose_function": "As a fault it is unwanted howl to be controlled; as a stylistic tool it adds sustain, grit, and saturation to amplified blues harmonica tone.",
+   "practical_application": "A player cups a bullet microphone to a tube amp and manages gain and position to get grit without a runaway squeal, while the sound technician sets levels and placement to keep feedback under control.",
+   "category": "Amplified sound",
+   "related_terms": [
+    "Acoustic feedback",
+    "Gain before feedback",
+    "Bullet microphone",
+    "Harmonica bend",
+    "Monitor wedge",
+    "Distortion"
+   ],
+   "common_mistakes": [
+    "UNSAFE: Driving an amp into sustained feedback at high level near the ears without hearing protection or level limits, risking noise-induced hearing loss",
+    "Blaming the harmonica when a too-loud amp or poor microphone placement is causing the feedback loop",
+    "Trying to cure feedback only with EQ instead of reducing gain or moving the microphone away from the speaker"
+   ],
+   "scenario_contexts": [
+    "A Chicago-blues harp player cupping a bullet microphone into a small tube amp for grit",
+    "A sound technician chasing runaway harmonica feedback on a loud stage",
+    "Setting monitor and amp levels so the player gets tone without a howl"
+   ]
+  },
+  {
+   "id": "ef18157e-21a4-430e-9b39-69e93aef5fcb",
+   "term": "Harmonium drone",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A sustained, unchanging tone (or pair of tones, typically tonic and fifth) held on the harmonium, a hand-pumped free-reed keyboard instrument, to provide a constant pitch reference beneath a melody. On many South Asian harmoniums it is produced by pulling drone stops or by wedging or holding specific keys while the bellows keep the reeds sounding.",
+   "plain_english": "On the harmonium, a pumped reed keyboard, the player holds one or two notes that never change under the tune. This steady background hum gives singers a fixed pitch to sing against, like a tuning note that stays on.",
+   "purpose_function": "The drone anchors the tonal center (the key note) so melody and singing stay in tune with a constant reference, which is central to Indian classical and devotional music.",
+   "practical_application": "A singer or player sets harmonium drone reeds for a raga or bhajan and pumps steadily, and an engineer records a continuous low sustain that has no natural breaks to edit at.",
+   "category": "Free-reed technique",
+   "related_terms": [
+    "Drone",
+    "Free reed",
+    "Harmonium",
+    "Tonic",
+    "Circular-breathing drone",
+    "Reed"
+   ],
+   "common_mistakes": [
+    "Letting the bellows pressure sag so the drone wavers in pitch and volume",
+    "Confusing the harmonium drone with an electronic tanpura or shruti box, which serve the same role differently",
+    "Choosing drone notes that do not match the piece's key or mode"
+   ],
+   "scenario_contexts": [
+    "A harmonium holding a tonic-and-fifth drone under a raga or bhajan",
+    "Accompanying qawwali or kirtan singing with a steady pitch reference",
+    "Recording a continuous harmonium drone with no breath gaps to edit"
+   ]
+  },
+  {
+   "id": "1c7a3ce3-7c49-49b7-b410-6303ce1037fb",
+   "term": "Kari (head-raise pitch bend)",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A shakuhachi (Japanese end-blown bamboo flute) technique in which the player raises the head and tilts the flute outward, moving the blowing edge away from the lips to raise a note's pitch and brighten its tone. It is the opposite of meri (head lowered, blowing edge partly covered, pitch lowered and tone darkened), and the two are used together to bend pitch and shade color expressively.",
+   "plain_english": "On the shakuhachi, a Japanese bamboo flute, the player lifts the head and tilts the flute out to push a note higher and brighter. It is the opposite of meri, where dropping the head makes the note lower and darker.",
+   "purpose_function": "Kari lets the player raise pitch and brighten tone without changing fingering, giving fine control over intonation and expressive color on a flute with few holes.",
+   "practical_application": "A shakuhachi player uses kari and meri to bend between pitches and shade tone within a phrase, and an engineer close-miking the flute captures these subtle pitch and timbre shifts and the instrument's breathy attack.",
+   "category": "Wind technique",
+   "related_terms": [
+    "Meri",
+    "Embouchure",
+    "Portamento",
+    "Overblowing",
+    "Guanzi glide",
+    "End-blown flute"
+   ],
+   "common_mistakes": [
+    "Thinking pitch changes only by fingering, when head angle (kari and meri) bends it too",
+    "Overshooting the head raise so the note breaks or the tone thins out",
+    "Confusing kari (raise, brighter) with meri (lower, darker)"
+   ],
+   "scenario_contexts": [
+    "A shakuhachi player using kari to raise pitch and brighten a sustained note",
+    "Bending expressively between meri and kari within a honkyoku phrase",
+    "Close-miking a shakuhachi to capture head-motion pitch and timbre changes"
+   ]
+  },
+  {
+   "id": "bbfdd0f3-bc6f-436e-b583-25f5faf8f27c",
+   "term": "Kaval overblow break",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "On the kaval, an end-blown rim flute of the Balkans and Anatolia, the point at which increasing breath pressure overblows the tube into a higher register, jumping to the next note of the harmonic series rather than rising smoothly. Around this break the tone can crack or split, and skilled players control the transition to move cleanly between the low and upper registers.",
+   "plain_english": "On the kaval, a Balkan rim-blown flute, blowing harder makes the note jump up to a higher register instead of rising smoothly. That jump point is the break, where the tone can crack if the player is not careful.",
+   "purpose_function": "Overblowing past the break extends the kaval's range across several registers from a single tube, and controlling it cleanly is a mark of skilled playing.",
+   "practical_application": "A kaval player manages breath and embouchure through the break to keep register changes clean, and an engineer records the instrument knowing upper-register notes are louder and brighter than low ones.",
+   "category": "Wind technique",
+   "related_terms": [
+    "Overblowing",
+    "Register break",
+    "Embouchure",
+    "Harmonic series",
+    "End-blown flute",
+    "Breath support"
+   ],
+   "common_mistakes": [
+    "Blowing too softly or too hard at the break, causing the note to crack or split",
+    "Thinking the register jump comes from fingering alone rather than breath pressure and embouchure",
+    "Expecting even loudness across registers when the upper register is naturally louder and brighter"
+   ],
+   "scenario_contexts": [
+    "A kaval player moving cleanly across the register break in a fast tune",
+    "A beginner whose notes crack at the overblow transition",
+    "Recording a kaval where upper-register phrases sit louder than low ones"
+   ]
+  },
+  {
+   "id": "51aaa45b-caee-4bdd-b8a4-97a73d3bcfc7",
+   "term": "Khaen drone chord",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "A sustained cluster of notes sounded together on the khaen (also khene), a free-reed bamboo mouth organ of Laos and northeastern Thailand, produced when the player holds several pipes open at once so their reeds drone continuously beneath or around the melody. Certain pipes are held with the fingers or stopped with wax to sound constantly, giving the instrument its characteristic thick, sustained harmony.",
+   "plain_english": "The khaen is a bamboo mouth organ from Laos and Thailand. The player sounds several pipes at once to make a thick, held chord. This steady bundle of notes hums under the tune, like both hands playing an accordion.",
+   "purpose_function": "The drone chord gives the khaen a full, continuous harmonic backing under the melody, so a single player can supply both tune and accompaniment.",
+   "practical_application": "A khaen player holds drone pipes open with the fingers or wax stops while playing the melody, and an engineer records a dense, sustained free-reed sound with no natural breath gaps to edit at.",
+   "category": "Free-reed technique",
+   "related_terms": [
+    "Free reed",
+    "Drone",
+    "Harmonium drone",
+    "Circular-breathing drone",
+    "Reed",
+    "Mouth organ"
+   ],
+   "common_mistakes": [
+    "Assuming the khaen plays single lines, when it typically sounds drone chords under the melody",
+    "Confusing the khaen with the Chinese sheng, a related but differently built free-reed mouth organ",
+    "Expecting breath gaps to edit at, when the drone is held nearly continuously"
+   ],
+   "scenario_contexts": [
+    "A khaen player backing a molam singer with a sustained drone chord",
+    "A Lao or Isan folk performance featuring continuous free-reed harmony",
+    "Recording a dense, sustained khaen part with few natural breaks"
+   ]
+  },
+  {
+   "id": "b71afdcf-b32f-4141-bb1c-1c3db27ab7e9",
+   "term": "Mechanical key noise",
+   "topic": "Winds, Brass & Organ",
+   "difficulty": null,
+   "definition": "The audible clicking, tapping, or thudding produced by a woodwind instrument's key mechanism as it is worked, such as pads seating on tone holes and keys striking their posts, felt, or cork bumpers; it is a mechanical byproduct distinct from the instrument's musical tone.",
+   "plain_english": "The clicking and tapping sound a flute, clarinet, or sax makes as its keys and pads open and close. It is a bit like the click of a keyboard as you type.",
+   "purpose_function": "It is an unavoidable byproduct of a padded key mechanism; identifying it lets players and engineers manage it so it does not distract from the musical sound of the instrument.",
+   "practical_application": "A recording engineer positions and angles the microphone away from the keywork and may service or lubricate the mechanism to reduce the amount of key clatter captured in a close-miked take.",
+   "category": "Instrument Noise",
+   "related_terms": [
+    "Tone hole",
+    "Pad",
+    "Embouchure",
+    "Spot microphone",
+    "Transient"
+   ],
+   "common_mistakes": [
+    "Assuming key noise means the instrument is broken; some mechanism noise is normal on any padded woodwind.",
+    "Placing a microphone directly over the keywork, which exaggerates clicks and pad slap.",
+    "Trying to remove all key noise with heavy gating or EQ, which also damages the natural tone."
+   ],
+   "scenario_contexts": [
+    "Close-miking a flute or clarinet in a quiet studio, where key clicks become obvious in the recording.",
+    "A classical solo or chamber session where the producer wants minimal mechanism noise.",
+    "Live orchestral pickup where a poorly adjusted key mechanism adds distracting clatter."
+   ]
+  }
+ ]
+}

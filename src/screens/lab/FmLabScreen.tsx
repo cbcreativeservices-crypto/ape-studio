@@ -364,7 +364,7 @@ function SidebandGraph({ fc, fm, index }: { fc: number; fm: number; index: numbe
         <Svg width={w} height={G_H}>
           <Rect x={0} y={0} width={w} height={G_H} fill="#0c0c0f" />
           {/* Baseline + carrier marker. */}
-          <Line x1={PAD} y1={G_H - 22} x2={w - PAD} y2={G_H - 22} stroke="#2c2c33" strokeWidth={1.5} />
+          <Line x1={PAD} y1={G_H - 22} x2={w - PAD} y2={G_H - 22} stroke="#3a3b46" strokeWidth={1.5} />
           {sticks.map((s, i) => {
             const x = PAD + (s.f / fMax) * (w - 2 * PAD);
             const h = s.a * (G_H - 50);

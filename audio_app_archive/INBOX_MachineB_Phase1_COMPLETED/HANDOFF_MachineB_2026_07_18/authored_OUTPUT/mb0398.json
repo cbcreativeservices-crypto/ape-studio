@@ -1,0 +1,111 @@
+{
+ "batch": 398,
+ "topic": "Audio Restoration & Archival",
+ "authored": [
+  {
+   "id": "8f70dee9-51de-4a33-9e1f-f5055060d441",
+   "term": "Submission information package",
+   "fields": {
+    "definition": "In the OAIS reference model (ISO 14721), a Submission Information Package (SIP) is an Information Package delivered by a Producer to an archive for use in constructing or updating one or more Archival Information Packages (AIPs) and their associated Descriptive Information. Its form and content are typically defined by a submission agreement negotiated between the Producer and the archive.",
+    "plain_english": "A SIP is the package of files and notes that a creator hands to an archive. The archive takes it in and turns it into the copy it will keep for the long term.",
+    "purpose_function": "It is the standard hand-off unit in the OAIS model, packaging content together with the metadata an archive needs so material can be ingested and transformed into preservation-ready AIPs in a consistent, documented way.",
+    "practical_application": "An audio archivist receives a SIP containing the preservation WAV files, checksums, and the technical and descriptive metadata agreed in the submission agreement, then validates it during ingest before building the AIP.",
+    "category": "Digital Preservation",
+    "related_terms": [
+     "Archival information package",
+     "Dissemination information package",
+     "OAIS reference model",
+     "Ingest",
+     "Submission agreement",
+     "Technical metadata"
+    ],
+    "common_mistakes": [
+     "Confusing the SIP with the AIP: the SIP is the delivered submission, while the AIP is the version the archive stores and preserves.",
+     "Assuming a SIP is only audio files, when a valid SIP must also carry the metadata and integrity information, such as checksums, required by the submission agreement.",
+     "Treating SIP structure as fixed for every archive, when its form and content are negotiated per submission agreement."
+    ],
+    "scenario_contexts": [
+     "A record label transfers digitized session masters to a national sound archive as SIPs for long-term preservation.",
+     "During ingest, an archivist runs fixity and format checks on an incoming SIP before generating the AIP.",
+     "A broadcaster negotiates a submission agreement specifying the SIP layout, file formats, and metadata for depositing program archives."
+    ]
+   },
+   "sources": [
+    "ISO 14721 (CCSDS 650.0) Reference Model for an Open Archival Information System (OAIS)",
+    "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects — The Open Archival Information System (OAIS)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3260cadd-793d-4277-8beb-47abaab3d3fa",
+   "term": "Technical metadata",
+   "fields": {
+    "definition": "Technical metadata is structured information describing the technical characteristics of a digital audio object and its source, such as file format, sample rate, bit depth, channel count, byte order, encoding, duration, checksums, and details of the capture chain and physical carrier. In audio preservation it is standardized by schemes such as AES57 (audio object structures for preservation and restoration) and is captured as part of administrative and preservation metadata.",
+    "plain_english": "Technical metadata is the set of facts about how an audio file was made and stored. It records things like the sample rate, bit depth, file type, and a checksum so people can play it and check it later.",
+    "purpose_function": "It documents the exact technical makeup of a file so an archive can verify integrity, choose the right playback and migration tools, and keep the audio usable as formats and hardware change.",
+    "practical_application": "When digitizing a tape, a technician records sample rate, bit depth, encoding, checksum, and source details as technical metadata, often stored in an AES57 or PREMIS-based record embedded in or held alongside the audio file.",
+    "category": "Metadata",
+    "related_terms": [
+     "Descriptive metadata",
+     "Preservation metadata",
+     "PREMIS",
+     "Checksum",
+     "Sample rate",
+     "Bit depth"
+    ],
+    "common_mistakes": [
+     "Confusing technical metadata with descriptive metadata: technical metadata records a file's technical properties, not its intellectual content such as title or performer.",
+     "Relying on the file extension alone to identify a format instead of recording and validating format details as technical metadata.",
+     "Omitting checksums and fixity information, which are part of technical and preservation metadata needed to prove a file has not changed."
+    ],
+    "scenario_contexts": [
+     "An engineer embeds technical metadata such as sample rate, bit depth, and coding history in the BWF or WAV header during an archival transfer.",
+     "An archive validates incoming files against their technical metadata to confirm format and integrity before ingest.",
+     "During format migration, staff consult technical metadata to select correct conversion settings and preserve the original specifications."
+    ]
+   },
+   "sources": [
+    "AES57-2011, AES standard for audio metadata — Audio object structures for preservation and restoration",
+    "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects — Administrative Metadata / Preservation Metadata; PREMIS Data Dictionary"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1a080d27-519a-447d-9fb8-ea30e95b4190",
+   "term": "Trusted digital repository",
+   "fields": {
+    "definition": "A trusted digital repository (TDR) is a repository whose mission is to provide reliable, long-term access to managed digital resources for its designated community, now and into the future. It is expected to conform to the OAIS reference model and to demonstrate trustworthiness across organizational, financial, technological, and security criteria, which can be formally audited and certified under ISO 16363.",
+    "plain_english": "A trusted digital repository is an archive that can prove it will keep files safe for many years. It follows set rules and passes outside checks to show people can trust it.",
+    "purpose_function": "It exists to give creators and users confidence that deposited digital content will stay authentic, intact, and accessible over the long term, backed by documented policies, funding, infrastructure, and external audit.",
+    "practical_application": "An institution seeking TDR status maps its workflows to the OAIS model and undergoes audit against a standard such as ISO 16363, evidencing succession planning, fixity checking, and secure storage to earn certification.",
+    "category": "Digital Preservation",
+    "related_terms": [
+     "OAIS reference model",
+     "Archival information package",
+     "Submission information package",
+     "Digital preservation",
+     "Fixity",
+     "Designated community"
+    ],
+    "common_mistakes": [
+     "Assuming any backed-up storage system is a trusted digital repository, when trust also requires documented policies, funding, and external audit, not just copies of files.",
+     "Believing certification is one-time, when trustworthiness requires ongoing monitoring and a regular cycle of audit and certification.",
+     "Equating OAIS compliance alone with being a TDR, when organizational viability, financial sustainability, and security must also be demonstrated."
+    ],
+    "scenario_contexts": [
+     "A national library pursues ISO 16363 certification to be recognized as a trusted digital repository.",
+     "A grant funder requires that master audio files be deposited only in a trusted digital repository.",
+     "An archive undergoes an external audit of its storage, security, and succession planning to demonstrate TDR status."
+    ]
+   },
+   "sources": [
+    "ISO 16363, Space data and information transfer systems — Audit and certification of trustworthy digital repositories",
+    "RLG-OCLC, Trusted Digital Repositories: Attributes and Responsibilities"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

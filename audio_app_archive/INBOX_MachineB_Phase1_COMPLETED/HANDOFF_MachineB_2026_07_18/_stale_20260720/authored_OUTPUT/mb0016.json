@@ -1,0 +1,45 @@
+{
+  "batch": 16,
+  "topic": "Instrument Recording — Drums & Percussion",
+  "authored": [
+    {
+      "id": "94ef41d5-b5f3-4f29-b342-82926c550e9e",
+      "term": "Percussion circuit",
+      "fields": {
+        "definition": "On an electronic (tonewheel) organ, the percussion circuit is a keyed transient generator that adds a short, exponentially decaying burst of a single selectable harmonic — the second or third — to the attack of a note, on top of the sustained drawbar tone. Introduced on Hammond consoles such as the B-3/C-3/A-100 and M-series, it is switchable for harmonic (2nd/3rd), volume (normal/soft) and decay (fast/slow), works on the upper (solo) manual only, and is single-triggering, so it re-sounds only after all keys are released.",
+        "plain_english": "It is a part of an electric organ. It adds a short, bright 'ping' at the start of each note. The ping fades fast. Then the note settles into its steady tone. It is a bit like the knock you hear when a mallet hits a vibraphone bar. You can set the ping high or low in pitch. You can also make it loud or soft. And you can make it fade fast or slow.",
+        "purpose_function": "It exists to give the organ's otherwise steady, sustained tone a percussive attack, imitating the struck or plucked onset of instruments like the vibraphone, marimba or harpsichord and adding articulation and 'bite'. Without it the drawbar registration starts and stops with no transient character.",
+        "practical_application": "A player or tech sets it at the console — picking second/third harmonic and fast/slow decay to shape a part — while a service technician traces dead or weak percussion to the keying tube/transistor, the matching transformer or the trigger capacitor, and remembers that legato playing suppresses the effect by design. When recording or sampling an organ they capture the chosen percussion setting deliberately, because the transient onset defines the attack and cannot be added convincingly afterward.",
+        "category": "Electronic organ",
+        "related_terms": [
+          "Drawbar",
+          "Tonewheel generator",
+          "Harmonic",
+          "Attack transient",
+          "Leslie speaker",
+          "Additive synthesis"
+        ],
+        "common_mistakes": [
+          "Expecting percussion to sound on every note when playing legato; it is single-triggering, so held or overlapping notes suppress it and it only re-fires once all keys are released.",
+          "Forgetting that switching percussion on disconnects one of the upper-manual drawbar harmonics, which slightly changes the sustained registration.",
+          "Treating percussion as an effect you can add later in the mix, when it is a per-note keyed transient that must be set before the take.",
+          "UNSAFE: servicing the percussion/keying stage on a live tube chassis — plate/B+ supplies exceed 100 V DC and the chassis is tied to the mains; de-energize, unplug and discharge filter capacitors before probing, per the service manual and NFPA 70E."
+        ],
+        "scenario_contexts": [
+          "Dialing 3rd-harmonic, fast-decay percussion on a B-3 (or a clonewheel) for a bright, articulate jazz or gospel comp, or 2nd-harmonic soft for a rounder attack.",
+          "A studio engineer recording a Hammond through a Leslie commits to the percussion setting on the way in, because the transient onset is part of the performance.",
+          "A service technician diagnosing 'no percussion' on a vintage console, checking the percussion tab switches, keying stage, matching transformer and trigger capacitor.",
+          "A sound designer recreating single-triggering percussion behavior in a virtual/clonewheel organ so phrasing responds authentically to legato playing."
+        ]
+      },
+      "sources": [
+        "Hammond Organ Company — Service Manual, Models M, M-2, M-3, M-100 (percussion circuit section, manufacturer technical documentation)",
+        "Hammond Organ Company — L-100 Series Service Manual (percussion circuit section, manufacturer technical documentation)"
+      ],
+      "confidence": "High",
+      "flags": [
+        "No field left blank. Note: term is filed under 'Drums & Percussion recording' but the canonical, source-documented sense of 'percussion circuit' is the electronic-organ harmonic-percussion feature; defined per brief rule 6."
+      ]
+    }
+  ]
+}

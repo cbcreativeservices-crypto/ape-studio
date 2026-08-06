@@ -34,6 +34,7 @@ import {
 } from '@shopify/react-native-skia';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
+import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 // Lab palette (house tokens — amber signal, blue energy, green good, red problem).
@@ -42,10 +43,10 @@ const WAVE = '#ffc64d';
 const ACCENT_BLUE = '#6fa8ff';
 const ACCENT_GREEN = '#5bff85';
 const ACCENT_RED = '#ff6b5e';
-const GRID = '#2c2c33';
-const GHOST = '#232329';
+const GRID = '#3a3b46';
+const GHOST = '#2e2f38';
 const LABEL = '#8a8f9a';
-const TICK = '#767a85';
+const TICK = '#9a9ca8';
 // Illustration tones (light source: upper-left).
 const METAL_HI = '#c6cad4';
 const METAL_MID = '#7c7f89';
@@ -312,6 +313,35 @@ export function AnalogChainView({
     return p;
   }, [mouthX, mouthHalf, midY, k]);
 
+  // Voice-coil former at the cone throat + its copper windings (owner
+  // 2026-08-05: show the voice coil actually moving back and forth). Rides the
+  // same coneShift as the cone.
+  const coilFormer = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.addRRect(Skia.RRectXY(Skia.XYWHRect(coneBaseX - 3 * k, midY - 9 * k, 12 * k, 18 * k), 1.5 * k, 1.5 * k));
+    return p;
+  }, [coneBaseX, midY, k]);
+  const coilTurns = useMemo(() => {
+    const p = Skia.Path.Make();
+    for (const t of [-6, -3, 0, 3, 6]) {
+      p.moveTo(coneBaseX - 2.5 * k, midY + t * k);
+      p.lineTo(coneBaseX + 8.5 * k, midY + t * k);
+    }
+    return p;
+  }, [coneBaseX, midY, k]);
+  // Flexible surround (membrane) rolls at the cone mouth — move with the cone
+  // against the fixed flange, so they visibly flex as the cone travels.
+  const surroundPath = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.addCircle(mouthX, midY - mouthHalf + 1 * k, 3 * k);
+    p.addCircle(mouthX, midY + mouthHalf - 1 * k, 3 * k);
+    return p;
+  }, [mouthX, mouthHalf, midY, k]);
+
+  // Amplitude → MIDI loudness color (blue quiet → red full scale), used to tint
+  // the speaker's dust cap + coil so the drive level reads at a glance.
+  const ampColor = levelColor(Math.max(0, Math.min(1, amp)));
+
   const grillePath = useMemo(() => {
     // Mic grille cap facing the speaker (rounded on the sound-facing side).
     const p = Skia.Path.Make();
@@ -407,6 +437,11 @@ export function AnalogChainView({
         </Path>
         <Path path={flangePath} color={METAL_LO} />
         <Group transform={coneShift}>
+          {/* Voice-coil former + copper windings at the throat. */}
+          <Path path={coilFormer}>
+            <LinearGradient start={vec(coneBaseX, midY - 9 * k)} end={vec(coneBaseX, midY + 9 * k)} colors={[METAL_MID, METAL_LO]} />
+          </Path>
+          <Path path={coilTurns} color="#c47722" style="stroke" strokeWidth={1.3 * k} opacity={0.9} />
           <Path path={conePath}>
             <LinearGradient
               start={vec(coneBaseX, midY - mouthHalf)}
@@ -415,7 +450,10 @@ export function AnalogChainView({
             />
           </Path>
           <Path path={conePath} color="#9aa0ac" style="stroke" strokeWidth={1.3 * k} />
-          <Circle cx={coneBaseX + 2 * k} cy={midY} r={5 * k} color="#aab0bc" />
+          {/* Flexible surround (membrane) rolls at the mouth. */}
+          <Path path={surroundPath} color="#6b6f7a" style="stroke" strokeWidth={2 * k} />
+          {/* Dust cap tinted by drive level (MIDI loudness color). */}
+          <Circle cx={coneBaseX + 2 * k} cy={midY} r={5 * k} color={ampColor} />
         </Group>
 
         {/* Traveling pressure: compression (amber) / rarefaction (blue) bands. */}
@@ -461,17 +499,33 @@ export function AnalogChainView({
         <SkLine p1={vec(gx0, midY - ampPx)} p2={vec(gx0 + gw, midY - ampPx)} color={GHOST} strokeWidth={1} />
         <SkLine p1={vec(gx0, midY + ampPx)} p2={vec(gx0 + gw, midY + ampPx)} color={GHOST} strokeWidth={1} />
         <SkLine p1={vec(gx0, midY)} p2={vec(gx0 + gw, midY)} color={GRID} strokeWidth={1.1} />
+        {/* Waveform painted by the MIDI loudness ramp (owner 2026-08-05): blue
+            at the zero line climbing to red at ±full scale. */}
         <Path path={traceFill}>
           <LinearGradient
             start={vec(gx0, midY - ampPx)}
             end={vec(gx0, midY + ampPx)}
-            colors={[withAlpha(WAVE, 0.24), withAlpha(WAVE, 0.03)]}
+            colors={WAVE_LEVEL_STOPS.map((s) => withAlpha(s.color, 0.22))}
+            positions={WAVE_LEVEL_STOPS.map((s) => s.offset)}
           />
         </Path>
-        <Path path={trace} color={WAVE} style="stroke" strokeWidth={4.6 * k} opacity={0.25}>
+        <Path path={trace} style="stroke" strokeWidth={4.6 * k} opacity={0.25}>
           <BlurMask blur={4} style="normal" />
+          <LinearGradient
+            start={vec(gx0, midY - ampPx)}
+            end={vec(gx0, midY + ampPx)}
+            colors={WAVE_LEVEL_STOPS.map((s) => s.color)}
+            positions={WAVE_LEVEL_STOPS.map((s) => s.offset)}
+          />
         </Path>
-        <Path path={trace} color={WAVE} style="stroke" strokeWidth={2 * k} />
+        <Path path={trace} style="stroke" strokeWidth={2 * k}>
+          <LinearGradient
+            start={vec(gx0, midY - ampPx)}
+            end={vec(gx0, midY + ampPx)}
+            colors={WAVE_LEVEL_STOPS.map((s) => s.color)}
+            positions={WAVE_LEVEL_STOPS.map((s) => s.offset)}
+          />
+        </Path>
       </Canvas>
 
       <RNText style={[lbl.tag, { left: magX, top: h - 24 }]}>SPEAKER</RNText>

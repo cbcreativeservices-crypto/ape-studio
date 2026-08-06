@@ -1,0 +1,1121 @@
+{
+  "generated": "2026-07-16T04:14:30.876578Z",
+  "bucket": "glossary-images",
+  "format": "webp",
+  "convention": "term-slug",
+  "count": 139,
+  "cards": [
+    {
+      "term": "3.5mm Connector",
+      "old_file": "TRS3mmConnector.PNG",
+      "old_url": "glossary-images/TRS3mmConnector.PNG",
+      "new_file": "3-5mm-connector.webp",
+      "new_url": "glossary-images/3-5mm-connector.webp",
+      "status": "ok"
+    },
+    {
+      "term": "5-Pin DIN (MIDI)",
+      "old_file": "MIDIcable.PNG",
+      "old_url": "glossary-images/MIDIcable.PNG",
+      "new_file": "5-pin-din.webp",
+      "new_url": "glossary-images/5-pin-din.webp",
+      "status": "ok"
+    },
+    {
+      "term": "AC Power",
+      "old_file": "ACOutle.PNG",
+      "old_url": "glossary-images/ACOutle.PNG",
+      "new_file": "ac-power.webp",
+      "new_url": "glossary-images/ac-power.webp",
+      "status": "ok"
+    },
+    {
+      "term": "AED",
+      "old_file": "AED.PNG",
+      "old_url": "glossary-images/AED.PNG",
+      "new_file": "aed.webp",
+      "new_url": "glossary-images/aed.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Arcing",
+      "old_file": "ElectircalArch.PNG",
+      "old_url": "glossary-images/ElectircalArch.PNG",
+      "new_file": "arcing.webp",
+      "new_url": "glossary-images/arcing.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Audio Interface",
+      "old_file": "AduioInterface.PNG",
+      "old_url": "glossary-images/AduioInterface.PNG",
+      "new_file": "audio-interface.webp",
+      "new_url": "glossary-images/audio-interface.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Banana Plug",
+      "old_file": "Banana.PNG",
+      "old_url": "glossary-images/Banana.PNG",
+      "new_file": "banana-plug.webp",
+      "new_url": "glossary-images/banana-plug.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Barricade",
+      "old_file": "Barricade.PNG",
+      "old_url": "glossary-images/Barricade.PNG",
+      "new_file": "barricade.webp",
+      "new_url": "glossary-images/barricade.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Binaural Mic",
+      "old_file": "BinauralMic (2).PNG",
+      "old_url": "glossary-images/BinauralMic (2).PNG",
+      "new_file": "binaural-mic.webp",
+      "new_url": "glossary-images/binaural-mic.webp",
+      "status": "ok"
+    },
+    {
+      "term": "BNC Connector (Bayonet Neill-Concelman)",
+      "old_file": "BNCconnector.PNG",
+      "old_url": "glossary-images/BNCconnector.PNG",
+      "new_file": "bnc-connector.webp",
+      "new_url": "glossary-images/bnc-connector.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Boundary Microphone (PZM)",
+      "old_file": "PZM.PNG",
+      "old_url": "glossary-images/PZM.PNG",
+      "new_file": "boundary-microphone.webp",
+      "new_url": "glossary-images/boundary-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Cable Ramp",
+      "old_file": "CableCover.PNG",
+      "old_url": "glossary-images/CableCover.PNG",
+      "new_file": "cable-ramp.webp",
+      "new_url": "glossary-images/cable-ramp.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Cable Tie",
+      "old_file": "ZipTies.PNG",
+      "old_url": "glossary-images/ZipTies.PNG",
+      "new_file": "cable-tie.webp",
+      "new_url": "glossary-images/cable-tie.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Camlock",
+      "old_file": "CAMLOK_ac_connector.PNG",
+      "old_url": "glossary-images/CAMLOK_ac_connector.PNG",
+      "new_file": "camlock.webp",
+      "new_url": "glossary-images/camlock.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Carbon Microphone",
+      "old_file": "CarbonMic.PNG",
+      "old_url": "glossary-images/CarbonMic.PNG",
+      "new_file": "carbon-microphone.webp",
+      "new_url": "glossary-images/carbon-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Circuit Breaker",
+      "old_file": "CircuitBreaker.PNG",
+      "old_url": "glossary-images/CircuitBreaker.PNG",
+      "new_file": "circuit-breaker.webp",
+      "new_url": "glossary-images/circuit-breaker.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Coaxial Cable",
+      "old_file": "CoaxialCable.PNG",
+      "old_url": "glossary-images/CoaxialCable.PNG",
+      "new_file": "coaxial-cable.webp",
+      "new_url": "glossary-images/coaxial-cable.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Coaxial Driver",
+      "old_file": "CoAxial_vehicleSPeaker.PNG",
+      "old_url": "glossary-images/CoAxial_vehicleSPeaker.PNG",
+      "new_file": "coaxial-driver.webp",
+      "new_url": "glossary-images/coaxial-driver.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Condenser Microphone",
+      "old_file": "CondenserMic.PNG",
+      "old_url": "glossary-images/CondenserMic.PNG",
+      "new_file": "condenser-microphone.webp",
+      "new_url": "glossary-images/condenser-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "constant directivity (CD) horn",
+      "old_file": "ConstantDirectivityHorn.PNG",
+      "old_url": "glossary-images/ConstantDirectivityHorn.PNG",
+      "new_file": "constant-directivity-horn.webp",
+      "new_url": "glossary-images/constant-directivity-horn.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Contact Microphone",
+      "old_file": "ContactMic.PNG",
+      "old_url": "glossary-images/ContactMic.PNG",
+      "new_file": "contact-microphone.webp",
+      "new_url": "glossary-images/contact-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Crimping Tool",
+      "old_file": "Crimper.PNG",
+      "old_url": "glossary-images/Crimper.PNG",
+      "new_file": "crimping-tool.webp",
+      "new_url": "glossary-images/crimping-tool.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Damaged Power Cord",
+      "old_file": "BadCable.PNG",
+      "old_url": "glossary-images/BadCable.PNG",
+      "new_file": "damaged-power-cord.webp",
+      "new_url": "glossary-images/damaged-power-cord.webp",
+      "status": "ok"
+    },
+    {
+      "term": "DB25 (D-sub)",
+      "old_file": "db25_connector.PNG",
+      "old_url": "glossary-images/db25_connector.PNG",
+      "new_file": "db25.webp",
+      "new_url": "glossary-images/db25.webp",
+      "status": "ok"
+    },
+    {
+      "term": "DI box (direct injection)",
+      "old_file": "DIbox.PNG",
+      "old_url": "glossary-images/DIbox.PNG",
+      "new_file": "di-box.webp",
+      "new_url": "glossary-images/di-box.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Diffuser",
+      "old_file": "SkylineDiffuser.PNG",
+      "old_url": "glossary-images/SkylineDiffuser.PNG",
+      "new_file": "diffuser.webp",
+      "new_url": "glossary-images/diffuser.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Dolly",
+      "old_file": "F0AF20D8-BA64-4397-9B9F-1A0C9177E352.PNG",
+      "old_url": "glossary-images/F0AF20D8-BA64-4397-9B9F-1A0C9177E352.PNG",
+      "new_file": "dolly.webp",
+      "new_url": "glossary-images/dolly.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Dosimeter",
+      "old_file": "Dosimiter.PNG",
+      "old_url": "glossary-images/Dosimiter.PNG",
+      "new_file": "dosimeter.webp",
+      "new_url": "glossary-images/dosimeter.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Drum Riser",
+      "old_file": "DrumRiser.PNG",
+      "old_url": "glossary-images/DrumRiser.PNG",
+      "new_file": "drum-riser.webp",
+      "new_url": "glossary-images/drum-riser.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Earplugs",
+      "old_file": "EarPlugs.PNG",
+      "old_url": "glossary-images/EarPlugs.PNG",
+      "new_file": "earplugs.webp",
+      "new_url": "glossary-images/earplugs.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Edison Plug",
+      "old_file": "EdisonConnector.PNG",
+      "old_url": "glossary-images/EdisonConnector.PNG",
+      "new_file": "edison-plug.webp",
+      "new_url": "glossary-images/edison-plug.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Electrical Arc",
+      "old_file": "ElectircalArch.PNG",
+      "old_url": "glossary-images/ElectircalArch.PNG",
+      "new_file": "electrical-arc.webp",
+      "new_url": "glossary-images/electrical-arc.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Electrical Shock",
+      "old_file": "ElectHazzard.PNG",
+      "old_url": "glossary-images/ElectHazzard.PNG",
+      "new_file": "electrical-shock.webp",
+      "new_url": "glossary-images/electrical-shock.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Electrocution",
+      "old_file": "ShockHazSign.PNG",
+      "old_url": "glossary-images/ShockHazSign.PNG",
+      "new_file": "electrocution.webp",
+      "new_url": "glossary-images/electrocution.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Emergency Exit",
+      "old_file": "EmergncyExit.PNG",
+      "old_url": "glossary-images/EmergncyExit.PNG",
+      "new_file": "emergency-exit.webp",
+      "new_url": "glossary-images/emergency-exit.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Equipment Ground",
+      "old_file": "GroundPoint.PNG",
+      "old_url": "glossary-images/GroundPoint.PNG",
+      "new_file": "equipment-ground.webp",
+      "new_url": "glossary-images/equipment-ground.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Evacuation Route",
+      "old_file": "Evac_Route.PNG",
+      "old_url": "glossary-images/Evac_Route.PNG",
+      "new_file": "evacuation-route.webp",
+      "new_url": "glossary-images/evacuation-route.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Fader",
+      "old_file": "Fader.PNG",
+      "old_url": "glossary-images/Fader.PNG",
+      "new_file": "fader.webp",
+      "new_url": "glossary-images/fader.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Fall Arrest System",
+      "old_file": "FallArrestSystm.PNG",
+      "old_url": "glossary-images/FallArrestSystm.PNG",
+      "new_file": "fall-arrest-system.webp",
+      "new_url": "glossary-images/fall-arrest-system.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Fall Hazard",
+      "old_file": "FallHazzard.PNG",
+      "old_url": "glossary-images/FallHazzard.PNG",
+      "new_file": "fall-hazard.webp",
+      "new_url": "glossary-images/fall-hazard.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Fire Alarm",
+      "old_file": "FireAlarm.PNG",
+      "old_url": "glossary-images/FireAlarm.PNG",
+      "new_file": "fire-alarm.webp",
+      "new_url": "glossary-images/fire-alarm.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Fire Extinguisher",
+      "old_file": "FireExtinguish.PNG",
+      "old_url": "glossary-images/FireExtinguish.PNG",
+      "new_file": "fire-extinguisher.webp",
+      "new_url": "glossary-images/fire-extinguisher.webp",
+      "status": "ok"
+    },
+    {
+      "term": "FireWire",
+      "old_file": "FirewireConnector.PNG",
+      "old_url": "glossary-images/FirewireConnector.PNG",
+      "new_file": "firewire.webp",
+      "new_url": "glossary-images/firewire.webp",
+      "status": "ok"
+    },
+    {
+      "term": "First Aid Kit",
+      "old_file": "FirstAidKit.PNG",
+      "old_url": "glossary-images/FirstAidKit.PNG",
+      "new_file": "first-aid-kit.webp",
+      "new_url": "glossary-images/first-aid-kit.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Folded Horn",
+      "old_file": "FoldedHorn.PNG",
+      "old_url": "glossary-images/FoldedHorn.PNG",
+      "new_file": "folded-horn.webp",
+      "new_url": "glossary-images/folded-horn.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Gaffer Tape",
+      "old_file": "GaffTape.PNG",
+      "old_url": "glossary-images/GaffTape.PNG",
+      "new_file": "gaffer-tape.webp",
+      "new_url": "glossary-images/gaffer-tape.webp",
+      "status": "ok"
+    },
+    {
+      "term": "GFCI",
+      "old_file": "GFCIoutlet.PNG",
+      "old_url": "glossary-images/GFCIoutlet.PNG",
+      "new_file": "gfci.webp",
+      "new_url": "glossary-images/gfci.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Gigabit Ethernet",
+      "old_file": "EthernetConnector.PNG",
+      "old_url": "glossary-images/EthernetConnector.PNG",
+      "new_file": "gigabit-ethernet.webp",
+      "new_url": "glossary-images/gigabit-ethernet.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Gooseneck Microphone",
+      "old_file": "GoosneckMic.PNG",
+      "old_url": "glossary-images/GoosneckMic.PNG",
+      "new_file": "gooseneck-microphone.webp",
+      "new_url": "glossary-images/gooseneck-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "graphic equalizer",
+      "old_file": "GraphicEQ.PNG",
+      "old_url": "glossary-images/GraphicEQ.PNG",
+      "new_file": "graphic-equalizer.webp",
+      "new_url": "glossary-images/graphic-equalizer.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Ground Bus Bar",
+      "old_file": "RackGroundBusBar.PNG",
+      "old_url": "glossary-images/RackGroundBusBar.PNG",
+      "new_file": "ground-bus-bar.webp",
+      "new_url": "glossary-images/ground-bus-bar.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Ground Rod",
+      "old_file": "GroundRod.PNG",
+      "old_url": "glossary-images/GroundRod.PNG",
+      "new_file": "ground-rod.webp",
+      "new_url": "glossary-images/ground-rod.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Hand Truck",
+      "old_file": "Handtruck.PNG",
+      "old_url": "glossary-images/Handtruck.PNG",
+      "new_file": "hand-truck.webp",
+      "new_url": "glossary-images/hand-truck.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Handheld Microphone",
+      "old_file": "HandheldMic.PNG",
+      "old_url": "glossary-images/HandheldMic.PNG",
+      "new_file": "handheld-microphone.webp",
+      "new_url": "glossary-images/handheld-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Hard Hat",
+      "old_file": "HardHat.PNG",
+      "old_url": "glossary-images/HardHat.PNG",
+      "new_file": "hard-hat.webp",
+      "new_url": "glossary-images/hard-hat.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Hazard",
+      "old_file": "HazzardAreaSigns.PNG",
+      "old_url": "glossary-images/HazzardAreaSigns.PNG",
+      "new_file": "hazard.webp",
+      "new_url": "glossary-images/hazard.webp",
+      "status": "ok"
+    },
+    {
+      "term": "HDMI",
+      "old_file": "HDMIconnector.PNG",
+      "old_url": "glossary-images/HDMIconnector.PNG",
+      "new_file": "hdmi.webp",
+      "new_url": "glossary-images/hdmi.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Headphone",
+      "old_file": "Headphones.PNG",
+      "old_url": "glossary-images/Headphones.PNG",
+      "new_file": "headphone.webp",
+      "new_url": "glossary-images/headphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Headphone Adapter",
+      "old_file": "HeadphoneAdapter.PNG",
+      "old_url": "glossary-images/HeadphoneAdapter.PNG",
+      "new_file": "headphone-adapter.webp",
+      "new_url": "glossary-images/headphone-adapter.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Headphone Amp",
+      "old_file": "HeadphoneAmplifier.PNG",
+      "old_url": "glossary-images/HeadphoneAmplifier.PNG",
+      "new_file": "headphone-amp.webp",
+      "new_url": "glossary-images/headphone-amp.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Headset microphone",
+      "old_file": "HeadsetMic.PNG",
+      "old_url": "glossary-images/HeadsetMic.PNG",
+      "new_file": "headset-microphone.webp",
+      "new_url": "glossary-images/headset-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Hearing Protection",
+      "old_file": "EarMuffs.PNG",
+      "old_url": "glossary-images/EarMuffs.PNG",
+      "new_file": "hearing-protection.webp",
+      "new_url": "glossary-images/hearing-protection.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Heat Gun",
+      "old_file": "HeatGun.PNG",
+      "old_url": "glossary-images/HeatGun.PNG",
+      "new_file": "heat-gun.webp",
+      "new_url": "glossary-images/heat-gun.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Heat Shrink Tubing",
+      "old_file": "ShrinkTubing.PNG",
+      "old_url": "glossary-images/ShrinkTubing.PNG",
+      "new_file": "heat-shrink-tubing.webp",
+      "new_url": "glossary-images/heat-shrink-tubing.webp",
+      "status": "ok"
+    },
+    {
+      "term": "High-Visibility Vest",
+      "old_file": "HighVizVest.PNG",
+      "old_url": "glossary-images/HighVizVest.PNG",
+      "new_file": "high-visibility-vest.webp",
+      "new_url": "glossary-images/high-visibility-vest.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Horn Tweeter",
+      "old_file": "HornTweeter.PNG",
+      "old_url": "glossary-images/HornTweeter.PNG",
+      "new_file": "horn-tweeter.webp",
+      "new_url": "glossary-images/horn-tweeter.webp",
+      "status": "ok"
+    },
+    {
+      "term": "IEC Connector",
+      "old_file": "IECconnector.PNG",
+      "old_url": "glossary-images/IECconnector.PNG",
+      "new_file": "iec-connector.webp",
+      "new_url": "glossary-images/iec-connector.webp",
+      "status": "ok"
+    },
+    {
+      "term": "IEM (In-Ear Monitor)",
+      "old_file": "InEarMonitor.PNG",
+      "old_url": "glossary-images/InEarMonitor.PNG",
+      "new_file": "iem.webp",
+      "new_url": "glossary-images/iem.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Insert Cable",
+      "old_file": "Insert_cable.PNG",
+      "old_url": "glossary-images/Insert_cable.PNG",
+      "new_file": "insert-cable.webp",
+      "new_url": "glossary-images/insert-cable.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Large-Diaphragm Microphone (LD Mic)",
+      "old_file": "U87mic.PNG",
+      "old_url": "glossary-images/U87mic.PNG",
+      "new_file": "large-diaphragm-microphone.webp",
+      "new_url": "glossary-images/large-diaphragm-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Lavalier Microphone (Lapel Mic / Lav)",
+      "old_file": "LavMic.PNG",
+      "old_url": "glossary-images/LavMic.PNG",
+      "new_file": "lavalier-microphone.webp",
+      "new_url": "glossary-images/lavalier-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Lightning Connector",
+      "old_file": "Lightning_connector.PNG",
+      "old_url": "glossary-images/Lightning_connector.PNG",
+      "new_file": "lightning-connector.webp",
+      "new_url": "glossary-images/lightning-connector.webp",
+      "status": "ok"
+    },
+    {
+      "term": "MADI (Multichannel Audio Digital Interface)",
+      "old_file": "MADIconnector.PNG",
+      "old_url": "glossary-images/MADIconnector.PNG",
+      "new_file": "madi.webp",
+      "new_url": "glossary-images/madi.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Measurement microphone",
+      "old_file": "MeasurementMic.PNG",
+      "old_url": "glossary-images/MeasurementMic.PNG",
+      "new_file": "measurement-microphone.webp",
+      "new_url": "glossary-images/measurement-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Mic Clip",
+      "old_file": "MicClip.PNG",
+      "old_url": "glossary-images/MicClip.PNG",
+      "new_file": "mic-clip.webp",
+      "new_url": "glossary-images/mic-clip.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Mic Stand",
+      "old_file": "MicStand.PNG",
+      "old_url": "glossary-images/MicStand.PNG",
+      "new_file": "mic-stand.webp",
+      "new_url": "glossary-images/mic-stand.webp",
+      "status": "ok"
+    },
+    {
+      "term": "MIDI DIN (5-Pin)",
+      "old_file": "MIDIport.PNG",
+      "old_url": "glossary-images/MIDIport.PNG",
+      "new_file": "midi-din.webp",
+      "new_url": "glossary-images/midi-din.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Multimeter",
+      "old_file": "ElectMeter.PNG",
+      "old_url": "glossary-images/ElectMeter.PNG",
+      "new_file": "multimeter.webp",
+      "new_url": "glossary-images/multimeter.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Near-Field Monitor",
+      "old_file": "NearfieldSpkrs.PNG",
+      "old_url": "glossary-images/NearfieldSpkrs.PNG",
+      "new_file": "near-field-monitor.webp",
+      "new_url": "glossary-images/near-field-monitor.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Oscilloscope",
+      "old_file": "Ocsilliscope.PNG",
+      "old_url": "glossary-images/Ocsilliscope.PNG",
+      "new_file": "oscilloscope.webp",
+      "new_url": "glossary-images/oscilloscope.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Outlet Tester",
+      "old_file": "ACoutletTester.PNG",
+      "old_url": "glossary-images/ACoutletTester.PNG",
+      "new_file": "outlet-tester.webp",
+      "new_url": "glossary-images/outlet-tester.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Parabolic Microphone",
+      "old_file": "ParabolicMic.PNG",
+      "old_url": "glossary-images/ParabolicMic.PNG",
+      "new_file": "parabolic-microphone.webp",
+      "new_url": "glossary-images/parabolic-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Patch bay",
+      "old_file": "Patchbay.PNG",
+      "old_url": "glossary-images/Patchbay.PNG",
+      "new_file": "patch-bay.webp",
+      "new_url": "glossary-images/patch-bay.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Personal Protective Equipment (PPE)",
+      "old_file": "PPE.PNG",
+      "old_url": "glossary-images/PPE.PNG",
+      "new_file": "personal-protective-equipment.webp",
+      "new_url": "glossary-images/personal-protective-equipment.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Phono Cartridge",
+      "old_file": "PhonoStyluCartridge.PNG",
+      "old_url": "glossary-images/PhonoStyluCartridge.PNG",
+      "new_file": "phono-cartridge.webp",
+      "new_url": "glossary-images/phono-cartridge.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Pinch Point",
+      "old_file": "PinchPoint.PNG",
+      "old_url": "glossary-images/PinchPoint.PNG",
+      "new_file": "pinch-point.webp",
+      "new_url": "glossary-images/pinch-point.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Pop filter",
+      "old_file": "PopFilter.PNG",
+      "old_url": "glossary-images/PopFilter.PNG",
+      "new_file": "pop-filter.webp",
+      "new_url": "glossary-images/pop-filter.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Pot (Potentiometer)",
+      "old_file": "Pot_wKnob.PNG",
+      "old_url": "glossary-images/Pot_wKnob.PNG",
+      "new_file": "pot.webp",
+      "new_url": "glossary-images/pot.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Power Conditioner",
+      "old_file": "PowerCOnditioner.PNG",
+      "old_url": "glossary-images/PowerCOnditioner.PNG",
+      "new_file": "power-conditioner.webp",
+      "new_url": "glossary-images/power-conditioner.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Rack Shelf",
+      "old_file": "RackShelf.PNG",
+      "old_url": "glossary-images/RackShelf.PNG",
+      "new_file": "rack-shelf.webp",
+      "new_url": "glossary-images/rack-shelf.webp",
+      "status": "ok"
+    },
+    {
+      "term": "RCA",
+      "old_file": "RCA.PNG",
+      "old_url": "glossary-images/RCA.PNG",
+      "new_file": "rca.webp",
+      "new_url": "glossary-images/rca.webp",
+      "status": "ok"
+    },
+    {
+      "term": "RG-59 Cable",
+      "old_file": "RG-59.PNG",
+      "old_url": "glossary-images/RG-59.PNG",
+      "new_file": "rg-59-cable.webp",
+      "new_url": "glossary-images/rg-59-cable.webp",
+      "status": "ok"
+    },
+    {
+      "term": "RG-6 Cable",
+      "old_file": "RG-6cable.PNG",
+      "old_url": "glossary-images/RG-6cable.PNG",
+      "new_file": "rg-6-cable.webp",
+      "new_url": "glossary-images/rg-6-cable.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Right-Angle Adapter",
+      "old_file": "right_angle_adapter.PNG",
+      "old_url": "glossary-images/right_angle_adapter.PNG",
+      "new_file": "right-angle-adapter.webp",
+      "new_url": "glossary-images/right-angle-adapter.webp",
+      "status": "ok"
+    },
+    {
+      "term": "S/PDIF (Sony/Philips Digital Interface)",
+      "old_file": "spdifCOnnector.PNG",
+      "old_url": "glossary-images/spdifCOnnector.PNG",
+      "new_file": "s-pdif.webp",
+      "new_url": "glossary-images/s-pdif.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Safety Glasses",
+      "old_file": "SafetyGlasses.PNG",
+      "old_url": "glossary-images/SafetyGlasses.PNG",
+      "new_file": "safety-glasses.webp",
+      "new_url": "glossary-images/safety-glasses.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Scissor Lift",
+      "old_file": "SicsorLift.PNG",
+      "old_url": "glossary-images/SicsorLift.PNG",
+      "new_file": "scissor-lift.webp",
+      "new_url": "glossary-images/scissor-lift.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Server Rack",
+      "old_file": "ServerRack.PNG",
+      "old_url": "glossary-images/ServerRack.PNG",
+      "new_file": "server-rack.webp",
+      "new_url": "glossary-images/server-rack.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Shock mount",
+      "old_file": "SHockMount.PNG",
+      "old_url": "glossary-images/SHockMount.PNG",
+      "new_file": "shock-mount.webp",
+      "new_url": "glossary-images/shock-mount.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Shotgun microphone",
+      "old_file": "ShotgunMic.PNG",
+      "old_url": "glossary-images/ShotgunMic.PNG",
+      "new_file": "shotgun-microphone.webp",
+      "new_url": "glossary-images/shotgun-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Side Fill",
+      "old_file": "SIdeFillSpkr.PNG",
+      "old_url": "glossary-images/SIdeFillSpkr.PNG",
+      "new_file": "side-fill.webp",
+      "new_url": "glossary-images/side-fill.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Slip Hazard",
+      "old_file": "slipHazzardSign.PNG",
+      "old_url": "glossary-images/slipHazzardSign.PNG",
+      "new_file": "slip-hazard.webp",
+      "new_url": "glossary-images/slip-hazard.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Solder Wick",
+      "old_file": "SolderWick.PNG",
+      "old_url": "glossary-images/SolderWick.PNG",
+      "new_file": "solder-wick.webp",
+      "new_url": "glossary-images/solder-wick.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Soldering Iron",
+      "old_file": "ColderingIronandSolder.PNG",
+      "old_url": "glossary-images/ColderingIronandSolder.PNG",
+      "new_file": "soldering-iron.webp",
+      "new_url": "glossary-images/soldering-iron.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Soldering Station",
+      "old_file": "SolderingStation.PNG",
+      "old_url": "glossary-images/SolderingStation.PNG",
+      "new_file": "soldering-station.webp",
+      "new_url": "glossary-images/soldering-station.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Speakon",
+      "old_file": "SpeakonConnector.PNG",
+      "old_url": "glossary-images/SpeakonConnector.PNG",
+      "new_file": "speakon.webp",
+      "new_url": "glossary-images/speakon.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Speakon Cable",
+      "old_file": "Speakon_cable.PNG",
+      "old_url": "glossary-images/Speakon_cable.PNG",
+      "new_file": "speakon-cable.webp",
+      "new_url": "glossary-images/speakon-cable.webp",
+      "status": "ok"
+    },
+    {
+      "term": "SPL Meter (Sound Level Meter)",
+      "old_file": "SPLmeter.PNG",
+      "old_url": "glossary-images/SPLmeter.PNG",
+      "new_file": "spl-meter.webp",
+      "new_url": "glossary-images/spl-meter.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Spotter",
+      "old_file": "SpotterSign.PNG",
+      "old_url": "glossary-images/SpotterSign.PNG",
+      "new_file": "spotter.webp",
+      "new_url": "glossary-images/spotter.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Stage Monitor",
+      "old_file": "StageMonitors.PNG",
+      "old_url": "glossary-images/StageMonitors.PNG",
+      "new_file": "stage-monitor.webp",
+      "new_url": "glossary-images/stage-monitor.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Steel-Toe Boots",
+      "old_file": "SteelToesdShoes.PNG",
+      "old_url": "glossary-images/SteelToesdShoes.PNG",
+      "new_file": "steel-toe-boots.webp",
+      "new_url": "glossary-images/steel-toe-boots.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Super Tweeter",
+      "old_file": "SuperTweeterSpkr.PNG",
+      "old_url": "glossary-images/SuperTweeterSpkr.PNG",
+      "new_file": "super-tweeter.webp",
+      "new_url": "glossary-images/super-tweeter.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Team Lift",
+      "old_file": "SharedLiftSign.PNG",
+      "old_url": "glossary-images/SharedLiftSign.PNG",
+      "new_file": "team-lift.webp",
+      "new_url": "glossary-images/team-lift.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Three Points of Contact",
+      "old_file": "3pointsContactSign.PNG",
+      "old_url": "glossary-images/3pointsContactSign.PNG",
+      "new_file": "three-points-of-contact.webp",
+      "new_url": "glossary-images/three-points-of-contact.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Three-Way Speaker",
+      "old_file": "3WayEncolsure.PNG",
+      "old_url": "glossary-images/3WayEncolsure.PNG",
+      "new_file": "three-way-speaker.webp",
+      "new_url": "glossary-images/three-way-speaker.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Thunderbolt",
+      "old_file": "ThunderboltCable.PNG",
+      "old_url": "glossary-images/ThunderboltCable.PNG",
+      "new_file": "thunderbolt.webp",
+      "new_url": "glossary-images/thunderbolt.webp",
+      "status": "ok"
+    },
+    {
+      "term": "TOSLINK (Optical)",
+      "old_file": "OpticalPlug.PNG",
+      "old_url": "glossary-images/OpticalPlug.PNG",
+      "new_file": "toslink.webp",
+      "new_url": "glossary-images/toslink.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Transport Controls",
+      "old_file": "Transport.PNG",
+      "old_url": "glossary-images/Transport.PNG",
+      "new_file": "transport-controls.webp",
+      "new_url": "glossary-images/transport-controls.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Trip Hazard",
+      "old_file": "TripHazzard.PNG",
+      "old_url": "glossary-images/TripHazzard.PNG",
+      "new_file": "trip-hazard.webp",
+      "new_url": "glossary-images/trip-hazard.webp",
+      "status": "ok"
+    },
+    {
+      "term": "TRRS Connector",
+      "old_file": "TRRS_3Mmm.PNG",
+      "old_url": "glossary-images/TRRS_3Mmm.PNG",
+      "new_file": "trrs-connector.webp",
+      "new_url": "glossary-images/trrs-connector.webp",
+      "status": "ok"
+    },
+    {
+      "term": "TRS Connector (Tip-Ring-Sleeve)",
+      "old_file": "TRSconnector.PNG",
+      "old_url": "glossary-images/TRSconnector.PNG",
+      "new_file": "trs-connector.webp",
+      "new_url": "glossary-images/trs-connector.webp",
+      "status": "ok"
+    },
+    {
+      "term": "TS Connector (Tip-Sleeve)",
+      "old_file": "TSconnector.PNG",
+      "old_url": "glossary-images/TSconnector.PNG",
+      "new_file": "ts-connector.webp",
+      "new_url": "glossary-images/ts-connector.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Turntable",
+      "old_file": "Turntable.PNG",
+      "old_url": "glossary-images/Turntable.PNG",
+      "new_file": "turntable.webp",
+      "new_url": "glossary-images/turntable.webp",
+      "status": "ok"
+    },
+    {
+      "term": "tweeter",
+      "old_file": "TweeterSpkr.PNG",
+      "old_url": "glossary-images/TweeterSpkr.PNG",
+      "new_file": "tweeter.webp",
+      "new_url": "glossary-images/tweeter.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Two-Way Speaker",
+      "old_file": "2wayEnclosure.PNG",
+      "old_url": "glossary-images/2wayEnclosure.PNG",
+      "new_file": "two-way-speaker.webp",
+      "new_url": "glossary-images/two-way-speaker.webp",
+      "status": "ok"
+    },
+    {
+      "term": "USB-B",
+      "old_file": "USBb.PNG",
+      "old_url": "glossary-images/USBb.PNG",
+      "new_file": "usb-b.webp",
+      "new_url": "glossary-images/usb-b.webp",
+      "status": "ok"
+    },
+    {
+      "term": "USB-C",
+      "old_file": "USBc.PNG",
+      "old_url": "glossary-images/USBc.PNG",
+      "new_file": "usb-c.webp",
+      "new_url": "glossary-images/usb-c.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Vacuum tube",
+      "old_file": "VacuumTube.PNG",
+      "old_url": "glossary-images/VacuumTube.PNG",
+      "new_file": "vacuum-tube.webp",
+      "new_url": "glossary-images/vacuum-tube.webp",
+      "status": "ok"
+    },
+    {
+      "term": "VU Meter (Volume Unit Meter)",
+      "old_file": "VUmeter.PNG",
+      "old_url": "glossary-images/VUmeter.PNG",
+      "new_file": "vu-meter.webp",
+      "new_url": "glossary-images/vu-meter.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Weight Distribution",
+      "old_file": "EvenLoadingSign.PNG",
+      "old_url": "glossary-images/EvenLoadingSign.PNG",
+      "new_file": "weight-distribution.webp",
+      "new_url": "glossary-images/weight-distribution.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Windscreen",
+      "old_file": "FoamWindScreen.PNG",
+      "old_url": "glossary-images/FoamWindScreen.PNG",
+      "new_file": "windscreen.webp",
+      "new_url": "glossary-images/windscreen.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Wire Stripper",
+      "old_file": "StrippingTool.PNG",
+      "old_url": "glossary-images/StrippingTool.PNG",
+      "new_file": "wire-stripper.webp",
+      "new_url": "glossary-images/wire-stripper.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Wire Strippers",
+      "old_file": "StrippingTool.PNG",
+      "old_url": "glossary-images/StrippingTool.PNG",
+      "new_file": "wire-strippers.webp",
+      "new_url": "glossary-images/wire-strippers.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Wireless microphone",
+      "old_file": "WirelessMic.PNG",
+      "old_url": "glossary-images/WirelessMic.PNG",
+      "new_file": "wireless-microphone.webp",
+      "new_url": "glossary-images/wireless-microphone.webp",
+      "status": "ok"
+    },
+    {
+      "term": "woofer",
+      "old_file": "WooferSpeaker.PNG",
+      "old_url": "glossary-images/WooferSpeaker.PNG",
+      "new_file": "woofer.webp",
+      "new_url": "glossary-images/woofer.webp",
+      "status": "ok"
+    },
+    {
+      "term": "Work Gloves",
+      "old_file": "WorkGloves.PNG",
+      "old_url": "glossary-images/WorkGloves.PNG",
+      "new_file": "work-gloves.webp",
+      "new_url": "glossary-images/work-gloves.webp",
+      "status": "ok"
+    },
+    {
+      "term": "XLR Cable",
+      "old_file": "XLRcable.PNG",
+      "old_url": "glossary-images/XLRcable.PNG",
+      "new_file": "xlr-cable.webp",
+      "new_url": "glossary-images/xlr-cable.webp",
+      "status": "NO ART (pre-wire only)"
+    },
+    {
+      "term": "XLRF",
+      "old_file": "XLRFconnector.PNG",
+      "old_url": "glossary-images/XLRFconnector.PNG",
+      "new_file": "xlrf.webp",
+      "new_url": "glossary-images/xlrf.webp",
+      "status": "NO ART (pre-wire only)"
+    },
+    {
+      "term": "XLRM",
+      "old_file": "XLRMconnector.PNG",
+      "old_url": "glossary-images/XLRMconnector.PNG",
+      "new_file": "xlrm.webp",
+      "new_url": "glossary-images/xlrm.webp",
+      "status": "NO ART (pre-wire only)"
+    }
+  ]
+}

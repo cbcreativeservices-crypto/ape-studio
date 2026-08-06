@@ -1,0 +1,216 @@
+{
+ "expert": "Language/Communications",
+ "group": 85,
+ "reviews": [
+  {
+   "id": "5b97cdfc-491c-4de7-815c-fb88162d009a",
+   "term": "Abanico",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ad0720e9-f1e8-4b3d-ac43-424921ccf133",
+   "term": "Agogô click",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d4374381-ee49-48a6-9f46-c133edf90fa5",
+   "term": "Bar resonance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2a1e5d92-f605-4141-92ec-9dfdf4c00a76",
+   "term": "Bass tone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8a7e7384-ad75-46e8-86e0-2f55786a10e0",
+   "term": "Bendir buzz",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "57f5e976-7e5e-47e6-95e5-d13279d074df",
+   "term": "Berimbau buzz",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7561d0c2-abab-4bb8-b262-f2c134c99e90",
+   "term": "Berimbau muted (dobrão)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cc198314-dad0-4c3a-b68f-e20777273b3e",
+   "term": "Berimbau open tone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "81e0a538-3000-44b4-a031-6e727681a454",
+   "term": "Bongo slap",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9dde47a2-4644-4722-bef4-c19260e205eb",
+   "term": "Cabasa rasp",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "403f69c1-6c7c-4ac2-8ebf-18a32478575a",
+   "term": "Cabasa scrape",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9aacb631-6057-4eda-b5d5-75fab5f1a011",
+   "term": "Cajón bass",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2e499604-095f-4f57-97a0-78ba6bb1ac99",
+   "term": "Cajón front plate",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "09bed24b-3ebe-4bf4-9f65-bba9d25ad868",
+   "term": "Cajón snare",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a38d1c6d-2907-4973-b543-d5a5c869d6e7",
+   "term": "Chapu (mridangam)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "772afcf9-0a95-46e9-9622-d020052bb99b",
+   "term": "Chime resonance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2aa7e728-5984-4bfd-8459-8a7e93d875e4",
+   "term": "Choked tom",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "95959cd5-a731-4be7-bfa9-a0650cb80322",
+   "term": "Clave attack",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "040b8c0f-47e1-42b9-881d-3fb35e50dd32",
+   "term": "Conga bass (heel)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5e570438-954b-4f55-bc15-d4e11dca7b15",
+   "term": "Conga muff (mute tone)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ad32da57-edc6-4c66-87d2-3cad8d86def6",
+   "term": "Conga open tone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6d7f19c9-21ba-42b1-ab02-2ddbca7c4642",
+   "term": "Conga slap (seco)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c68030e8-f44a-4448-91a9-2485863f2201",
+   "term": "Corner tone (cajón)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d893acdd-4544-4083-abd0-4269f1f31ffc",
+   "term": "Cowbell attack",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "13277150-6502-4291-944a-8325f0e71291",
+   "term": "Cuíca squeak (moan)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c2ff5775-6ceb-42ee-b798-0137f96c929f",
+   "term": "Cymbal roar",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "850b0b3d-0f26-45bc-970e-d1228088b60d",
+   "term": "Cymbal shimmer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cafdd815-5567-4b16-bafe-06ca21240abd",
+   "term": "Cymbal wash",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b9cf1c8d-ab08-4f8f-bd3f-5d962cb79fb2",
+   "term": "Cáscara",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "238a48bc-f345-4864-96c6-0e08ad369a4d",
+   "term": "Daf ring",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d9420167-7e48-4f1d-a7d8-5616cd2ad0d5",
+   "term": "Davul dum-tek",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e3d73b90-a5dd-4281-982e-703ff91376c5",
+   "term": "Dha (tabla)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ea4d7791-2227-4616-acc9-52df59151063",
+   "term": "Dhol thali/dagga",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bf5736e0-9854-42fc-819f-19eab027b332",
+   "term": "Ding (handpan)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f977c20a-baf3-4ea5-8cf5-875fb5f9a357",
+   "term": "Djembe bass (gun)",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

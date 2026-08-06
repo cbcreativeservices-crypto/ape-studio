@@ -1,0 +1,150 @@
+{
+ "batch": 4,
+ "topic": "Instrument Recording — Strings & Guitar",
+ "authored": [
+  {
+   "id": "79de6e06-44f4-4759-9068-acd303956e35",
+   "term": "Coil split",
+   "fields": {
+    "definition": "A humbucker wiring option that disconnects (typically shunts to ground) one of the pickup's two coils, leaving a single coil active. This produces a brighter, lower-output tone closer to a true single-coil, at the cost of the humbucker's hum cancellation.",
+    "plain_english": "A switch that turns off one half of a twin-coil (humbucking) pickup so it sounds thinner and brighter, like a single-coil pickup.",
+    "purpose_function": "Gives one guitar two voices — full humbucker or brighter single-coil-like tone — from a single pickup, widening tonal range without swapping pickups.",
+    "practical_application": "A tech wires a push-pull pot or mini-toggle so activating it shunts one coil to ground; when tracking, the engineer selects the split setting for a cleaner, glassier rhythm tone.",
+    "category": "Guitar electronics",
+    "related_terms": ["Coil tap", "Humbucker", "Single-coil pickup", "Push-pull potentiometer", "Series/parallel wiring"],
+    "common_mistakes": ["Confusing coil split with coil tap — splitting disables one whole coil of a humbucker, while tapping accesses a partial winding of a single coil.", "Expecting a split humbucker to sound identical to a genuine single-coil; it is lower output and no longer hum-cancelling.", "Forgetting to reconnect the coil-link/ground lead during the mod, leaving the pickup noisy or dead."],
+    "scenario_contexts": ["Wiring a push-pull tone pot on a Les Paul so each humbucker can be split for cleaner rhythm parts.", "Recording a rhythm layer where a brighter, thinner tone cuts through a dense mix.", "A player using split mode for clean/funk passages and full humbucker for lead."]
+   },
+   "sources": ["Seymour Duncan technical documentation — coil splitting/tapping", "DiMarzio technical wiring documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3ca2fbb6-85f3-480b-a3fb-e2a056c53707",
+   "term": "Coil tap",
+   "fields": {
+    "definition": "A pickup construction/wiring method in which an extra lead is connected to an intermediate point in a single coil's winding, allowing selection between the full number of turns (higher output, darker) and the tapped, partial winding (fewer turns, lower output, brighter). It is distinct from coil splitting, which disables one coil of a humbucker.",
+    "plain_english": "A pickup with a mid-way wire tap so you can switch between its full power and a lower-output, brighter setting.",
+    "purpose_function": "Lets one pickup offer two output levels and voicings — a hotter modern sound and a lower-output vintage-like sound — from a single coil.",
+    "practical_application": "A tech connects the pickup's tap lead to a switch (often a push-pull pot); an engineer chooses the tapped setting for cleaner headroom or a brighter, vintage-flavoured track.",
+    "category": "Guitar electronics",
+    "related_terms": ["Coil split", "Single-coil pickup", "Humbucker", "Push-pull potentiometer", "Pickup output"],
+    "common_mistakes": ["Using 'coil tap' and 'coil split' interchangeably — they are electrically different.", "Expecting a dramatic change; tapping mainly reduces output/turns, a subtler shift than splitting.", "Assuming any pickup can be tapped — only pickups wound with a tap lead support it."],
+    "scenario_contexts": ["Selecting a tapped setting to reduce a hot pickup's output for a cleaner amp tone.", "Wiring a switchable tap for two distinct output levels.", "Blending a tapped, brighter tone into a layered rhythm track."]
+   },
+   "sources": ["Seymour Duncan technical documentation — coil tapping", "DiMarzio technical wiring documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "beda4548-e14f-4558-ae5f-4f2faa238b82",
+   "term": "Col legno",
+   "fields": {
+    "definition": "A bowed-string playing technique in which the player uses the wooden stick of the bow on the strings instead of the hair. Two forms exist: col legno battuto (striking the string with the stick for a percussive, dry attack) and the rarer col legno tratto (drawing the wood across the string for a thin, glassy sustained sound).",
+    "plain_english": "Playing a violin, viola, cello, or bass by tapping or dragging the wooden stick of the bow on the strings instead of the hair, for a dry, clicky, eerie sound.",
+    "purpose_function": "Provides a distinctive percussive/colouristic string effect used for special orchestral and film-score textures.",
+    "practical_application": "When miking strings for a col legno passage, a technician uses a close mic to capture the quiet wood-on-string transient that a distant room mic would miss.",
+    "category": "Bowing technique",
+    "related_terms": ["Pizzicato", "Sul ponticello", "Spiccato", "Arco", "Con sordino"],
+    "common_mistakes": ["Assuming col legno always means striking (battuto); tratto (drawn wood) is a separate, sustained variant.", "Over-worrying bow damage — many players use a secondary bow, but light battuto on a normal bow is standard practice.", "Under-miking the effect; its low level and sharp transient need close, careful gain staging."],
+    "scenario_contexts": ["Recording a horror or suspense film cue calling for eerie col legno strings.", "A section playing col legno battuto for a rhythmic, percussive passage.", "Close-miking a solo cello to catch the subtle wood-on-string attack."]
+   },
+   "sources": ["Samuel Adler, The Study of Orchestration", "Walter Piston, Orchestration"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "043d3420-746e-4e65-8a4a-69ef9d45fdde",
+   "term": "Course imbalance",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": ["All fields left blank. 'Course imbalance' is not an established term in the professional literature. A 'course' (a group of strings tuned and played as one, as on a 12-string guitar, mandolin or lute) is standard, but 'course imbalance' as a named concept appears only in Wikipedia/forum/vendor/hobbyist material — none acceptable and none corroborating a fixed technical meaning. Reads as a coined phrase with no established sense; flagged for review rather than defined by guessing."]
+  },
+  {
+   "id": "89ad30e5-ee21-4749-9ed4-f98c573ec9e3",
+   "term": "Cup mute",
+   "fields": {
+    "definition": "A brass mute consisting of a straight-mute-like cone with an added cup that partly covers the bell of a trumpet, trombone, or similar instrument. It attenuates and rounds the tone, reducing upper harmonics to give a soft, muffled, mellow timbre darker than a straight mute.",
+    "plain_english": "A cup-shaped mute that fits over the bell of a trumpet or trombone to make it sound soft, muffled and mellow.",
+    "purpose_function": "Shapes brass timbre and lowers level for blended, subdued passages, common in jazz and big-band writing.",
+    "practical_application": "For a cup-muted horn, a technician may move the mic slightly off the bell axis and raise gain, since the mute both lowers output and darkens the tone.",
+    "category": "Brass mute",
+    "related_terms": ["Straight mute", "Harmon mute", "Plunger mute", "Con sordino", "Bell (brass)"],
+    "common_mistakes": ["Confusing a cup mute with a straight mute; the cup adds a covering that darkens the sound further.", "Miking a cup-muted horn as if it were open, then over-compensating for the lower, duller output.", "Assuming all cup mutes are fixed — some have adjustable cups for varying the muffling."],
+    "scenario_contexts": ["Recording a big-band trumpet section written for cup mutes on a soft ballad.", "A trombonist switching to cup mute for a mellow backing figure.", "Setting mic gain for the reduced output of cup-muted brass."]
+   },
+   "sources": ["Samuel Adler, The Study of Orchestration", "Walter Piston, Orchestration"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b9df23a3-f6e8-4b8f-aed8-c8e5f2b26618",
+   "term": "Drawbars",
+   "fields": {
+    "definition": "On a tonewheel (Hammond-type) organ, the set of sliding controls — typically nine per manual — that adjust the loudness of individual harmonic partials, labelled by organ-pipe footages (e.g., 16', 8', 4', 2 2/3'). Drawing bars out mixes these partials in an additive-synthesis fashion to build the instrument's timbre.",
+    "plain_english": "The sliders on a Hammond organ that mix in different harmonics to shape the sound, like faders that each add a specific overtone.",
+    "purpose_function": "Give the player real-time additive control of tone colour by setting the balance of harmonics, from a pure flute-like tone to a full, bright registration.",
+    "practical_application": "When recording organ, an engineer notes the drawbar registration (e.g., 888000000) for recall and may re-voice the drawbars to fit the track rather than EQ heavily.",
+    "category": "Organ controls",
+    "related_terms": ["Tonewheel", "Leslie speaker", "Additive synthesis", "Registration", "Hammond percussion"],
+    "common_mistakes": ["Thinking drawbars are overall volume/EQ rather than level controls for individual harmonics.", "Reading footage labels (16', 8', 4') as pure octaves while ignoring the 2 2/3' and 1 3/5' mutation ranks that add non-octave harmonics.", "Failing to log drawbar settings, then being unable to reproduce a registration on overdub."],
+    "scenario_contexts": ["Dialing an 888000000 setting for a classic jazz organ tone.", "Documenting a Hammond registration for later overdubs.", "Adjusting drawbars instead of channel EQ to change organ brightness at the source."]
+   },
+   "sources": ["Hammond-Suzuki technical/owner documentation", "Fletcher & Rossing, The Physics of Musical Instruments"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9634cf1e-ba20-4f70-ac1c-08c2168628ee",
+   "term": "Drop tuning",
+   "fields": {
+    "definition": "A guitar or bass tuning in which one or more strings are lowered below standard pitch, most commonly the lowest string. In Drop D the 6th string is lowered a whole tone from E to D, giving a low root and one-finger power chords on the bottom three strings; deeper variants (Drop C, Drop B) transpose the whole set down and then drop the 6th.",
+    "plain_english": "Tuning a guitar's lowest string (and sometimes all strings) down in pitch to get a heavier, deeper sound and easy power chords.",
+    "purpose_function": "Extends the instrument's low range and simplifies power-chord fingering, central to hard rock and metal styles.",
+    "practical_application": "A tech sets up a guitar for drop tuning with heavier-gauge strings plus truss-rod and intonation adjustment so the slackened strings stay stable and in tune.",
+    "category": "Guitar tuning",
+    "related_terms": ["Standard tuning", "Drop D", "String gauge", "Intonation", "Guitar setup"],
+    "common_mistakes": ["Dropping to low tunings on light strings, causing floppy tension, poor intonation and fret buzz.", "Skipping re-intonation and setup after a large tuning change.", "Confusing Drop D (only the 6th string lowered) with a full-step-down tuning (all strings lowered)."],
+    "scenario_contexts": ["Setting up a metal player's guitar in Drop C with heavier strings.", "Retuning to Drop D for a single song's low riff.", "Tracking a heavy rhythm part built on drop-tuned power chords."]
+   },
+   "sources": ["D'Addario technical string-tension documentation", "Ernie Ball technical string/tuning documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a2350ff2-5f22-46f0-a22d-7992442b1619",
+   "term": "Dry tuning",
+   "fields": {
+    "definition": "In accordion and related free-reed instruments, a tuning in which the multiple reeds sounding a given note are set in strict unison (and octaves) with no deliberate offset, producing a clean tone with little or no tremolo beating. It contrasts with wet (musette) tuning, where reeds are intentionally detuned to create a beating, shimmering tremolo.",
+    "plain_english": "An accordion tuning where the paired reeds are set to exactly the same pitch, so the sound is clean and steady rather than warbling.",
+    "purpose_function": "Gives a straight, focused tone favoured in jazz, classical and some folk styles, avoiding the wavering tremolo of wet tuning.",
+    "practical_application": "When recording a dry-tuned accordion, an engineer captures a stable, non-warbling tone that sits cleanly in a mix without the chorus-like movement of a wet instrument.",
+    "category": "Reed tuning",
+    "related_terms": ["Wet tuning", "Musette", "Free reed", "Beating (acoustics)", "Tremolo"],
+    "common_mistakes": ["Assuming every accordion has the wavery 'musette' sound; dry-tuned instruments are deliberately beat-free.", "Confusing dry/wet reed tuning with added studio effects such as chorus or detune.", "Trying to 'fix' the tremolo with EQ — it is built into the reed tuning, not the frequency balance."],
+    "scenario_contexts": ["Recording a jazz accordionist who prefers a clean, dry-tuned tone.", "Choosing a dry-tuned instrument to blend with a tightly tuned ensemble.", "A tuner setting reeds in unison for a dry registration."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments (free-reed instruments)"],
+   "confidence": "Medium",
+   "flags": ["Topic mismatch: term is filed under Strings & Guitar but its established sense is an accordion/free-reed reed-tuning term; defined in that canonical sense per brief rule 6. Cross-confirmation limited — the underlying acoustics (unison vs. offset reed tuning and resulting tremolo/beating) is covered in free-reed acoustics literature, but acceptable sources using the specific trade label 'dry tuning' were scarce, hence Medium confidence."]
+  },
+  {
+   "id": "58bcf038-87c9-4191-89a6-d707b1644b54",
+   "term": "Electric violin",
+   "fields": {
+    "definition": "A violin that produces its output primarily through electronic pickups (commonly piezoelectric transducers at the bridge, or magnetic systems) rather than an acoustic resonating body. Many are solid-body with minimal acoustic output, requiring amplification; some add extra strings (5-, 6-, or 7-string) to extend the range downward.",
+    "plain_english": "A violin that makes little sound on its own and instead sends its vibrations through a pickup to an amp or interface, like an electric-guitar version of a violin.",
+    "purpose_function": "Allows loud amplified performance without acoustic feedback and easy connection to effects, mixers and recording gear.",
+    "practical_application": "A technician takes the electric violin's output through a preamp/DI into a console or interface, and often adds reverb or effects since the raw solid-body signal is dry and direct.",
+    "category": "Electric strings",
+    "related_terms": ["Piezoelectric pickup", "Direct box (DI)", "Preamp", "Solid-body", "Five-string violin"],
+    "common_mistakes": ["Plugging a high-impedance piezo output straight into a low-impedance mic/line input, loading the pickup and thinning the tone — use a proper high-impedance preamp/DI.", "Expecting an acoustic violin tone from a bare solid-body signal, which is dry and needs reverb/EQ.", "Assuming electric (solid-body) and electro-acoustic (acoustic with a fitted pickup) violins are the same thing."],
+    "scenario_contexts": ["DI'ing a solid-body electric violin into an interface for a pop session.", "Amplifying a violinist on a loud stage without acoustic feedback.", "Adding effects to an electric violin for a film or electronic production."]
+   },
+   "sources": ["Yamaha electric/silent violin technical documentation (SV series)", "Ballou, Handbook for Sound Engineers (instrument pickups and direct boxes)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

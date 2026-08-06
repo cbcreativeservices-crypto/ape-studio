@@ -1,0 +1,1098 @@
+term,topic
+Sound as mechanical energy rather than an object,Foundations — Nature of Sound
+Sound as pressure variation,Foundations — Nature of Sound
+Sound as particle motion,Foundations — Nature of Sound
+Difference between particle motion and wave propagation,Foundations — Nature of Sound
+Compression and rarefaction,Foundations — Nature of Sound
+Longitudinal wave motion,Foundations — Nature of Sound
+Transverse-wave diagrams used to represent longitudinal sound,Foundations — Nature of Sound
+Equilibrium pressure,Foundations — Nature of Sound
+Atmospheric pressure versus acoustic pressure,Foundations — Nature of Sound
+Instantaneous acoustic pressure,Foundations — Nature of Sound
+Positive and negative pressure deviation,Foundations — Nature of Sound
+Acoustic pressure versus electrical voltage,Foundations — Nature of Sound
+Energy transfer without bulk transport of matter,Foundations — Nature of Sound
+Sound requiring a transmission medium,Foundations — Nature of Sound
+"Sound propagation in gases, liquids, and solids",Foundations — Nature of Sound
+Propagation speed versus particle velocity,Foundations — Nature of Sound
+Wavefronts,Foundations — Nature of Sound
+Rays as simplified models of propagation,Foundations — Nature of Sound
+Plane waves,Foundations — Nature of Sound
+Spherical waves,Foundations — Nature of Sound
+Cylindrical waves,Foundations — Nature of Sound
+Near-field versus far-field behavior,Foundations — Nature of Sound
+Free-field conditions,Foundations — Nature of Sound
+Diffuse-field conditions,Foundations — Nature of Sound
+Steady-state versus transient sound,Foundations — Nature of Sound
+Deterministic versus random signals,Foundations — Nature of Sound
+Periodic versus aperiodic signals,Foundations — Nature of Sound
+Coherent versus incoherent sound,Foundations — Nature of Sound
+Correlated versus uncorrelated signals,Foundations — Nature of Sound
+Linear versus nonlinear acoustic behavior,Foundations — Nature of Sound
+Polarity,Foundations — Waveform & Level
+Phase versus polarity,Foundations — Waveform & Level
+Instantaneous amplitude,Foundations — Waveform & Level
+Peak amplitude,Foundations — Waveform & Level
+Peak-to-peak amplitude,Foundations — Waveform & Level
+RMS amplitude,Foundations — Waveform & Level
+Average amplitude,Foundations — Waveform & Level
+Duty cycle,Foundations — Waveform & Level
+Waveform symmetry,Foundations — Waveform & Level
+Waveform offset,Foundations — Waveform & Level
+Direct-current offset,Foundations — Waveform & Level
+Time-domain representation,Foundations — Waveform & Level
+Frequency-domain representation,Foundations — Waveform & Level
+Phase-domain representation,Foundations — Waveform & Level
+Complex-number representation of waves,Foundations — Waveform & Level
+Real and imaginary signal components,Foundations — Waveform & Level
+Sinusoidal motion,Foundations — Waveform & Level
+Initial phase,Foundations — Waveform & Level
+Phase accumulation,Foundations — Waveform & Level
+Instantaneous phase,Foundations — Waveform & Level
+Phase delay,Foundations — Waveform & Level
+Carrier,Foundations — Waveform & Level
+Sidebands,Foundations — Waveform & Level
+Beats,Foundations — Waveform & Level
+Amplitude envelope versus waveform cycles,Foundations — Waveform & Level
+Frequency versus perceived pitch,"Frequency, Pitch & Hearing"
+Harmonic versus inharmonic partials,"Frequency, Pitch & Hearing"
+Missing fundamental perception,"Frequency, Pitch & Hearing"
+Pitch ambiguity,"Frequency, Pitch & Hearing"
+Pitch class,"Frequency, Pitch & Hearing"
+Octave equivalence,"Frequency, Pitch & Hearing"
+Octave frequency ratios,"Frequency, Pitch & Hearing"
+Semitone frequency ratios,"Frequency, Pitch & Hearing"
+Equal temperament,"Frequency, Pitch & Hearing"
+Just intonation,"Frequency, Pitch & Hearing"
+Musical intervals as ratios,"Frequency, Pitch & Hearing"
+Frequency-to-note conversion,"Frequency, Pitch & Hearing"
+Critical bands,"Frequency, Pitch & Hearing"
+Auditory filters,"Frequency, Pitch & Hearing"
+Place theory of pitch,"Frequency, Pitch & Hearing"
+Temporal theory of pitch,"Frequency, Pitch & Hearing"
+Phase locking in hearing,"Frequency, Pitch & Hearing"
+Pitch perception of complex tones,"Frequency, Pitch & Hearing"
+Pitch perception of noise,"Frequency, Pitch & Hearing"
+Linear amplitude versus logarithmic level,"Level, Decibels & Loudness"
+Why decibels are ratios,"Level, Decibels & Loudness"
+Power ratio versus amplitude ratio,"Level, Decibels & Loudness"
+10 log versus 20 log calculations,"Level, Decibels & Loudness"
+Reference quantities,"Level, Decibels & Loudness"
+Absolute versus relative decibels,"Level, Decibels & Loudness"
+dBW,"Level, Decibels & Loudness"
+dBA,"Level, Decibels & Loudness"
+dBC,"Level, Decibels & Loudness"
+dBZ,"Level, Decibels & Loudness"
+LKFS,"Level, Decibels & Loudness"
+Equivalent continuous level,"Level, Decibels & Loudness"
+Peak level versus RMS level,"Level, Decibels & Loudness"
+Average level versus perceived loudness,"Level, Decibels & Loudness"
+Addition of decibel values,"Level, Decibels & Loudness"
+Subtraction of decibel values,"Level, Decibels & Loudness"
+Doubling power versus doubling amplitude,"Level, Decibels & Loudness"
+Doubling distance versus level change,"Level, Decibels & Loudness"
+Doubling sources versus level change,"Level, Decibels & Loudness"
+Power gain,"Level, Decibels & Loudness"
+Acoustic gain,"Level, Decibels & Loudness"
+Nominal operating level,"Level, Decibels & Loudness"
+Maximum operating level,"Level, Decibels & Loudness"
+Signal-to-distortion ratio,"Level, Decibels & Loudness"
+Effective dynamic range,"Level, Decibels & Loudness"
+Meter integration time,"Level, Decibels & Loudness"
+Crest-factor implications,"Level, Decibels & Loudness"
+Loudness versus level,"Level, Decibels & Loudness"
+Loudness adaptation,"Level, Decibels & Loudness"
+Temporal integration of loudness,"Level, Decibels & Loudness"
+Phase as a relative measurement,"Phase, Timing & Interference"
+Phase shift versus time delay,"Phase, Timing & Interference"
+Frequency-dependent phase shift,"Phase, Timing & Interference"
+Constant time delay producing different phase shifts by frequency,"Phase, Timing & Interference"
+Partial interference,"Phase, Timing & Interference"
+Cancellation,"Phase, Timing & Interference"
+Why cancellation is rarely complete,"Phase, Timing & Interference"
+Comb-filter spacing,"Phase, Timing & Interference"
+First cancellation frequency,"Phase, Timing & Interference"
+Phase inversion,"Phase, Timing & Interference"
+All-pass behavior,"Phase, Timing & Interference"
+Minimum-phase systems,"Phase, Timing & Interference"
+Linear-phase systems,"Phase, Timing & Interference"
+Nonminimum-phase systems,"Phase, Timing & Interference"
+Excess phase,"Phase, Timing & Interference"
+Group-delay distortion,"Phase, Timing & Interference"
+Interchannel phase difference,"Phase, Timing & Interference"
+Delay versus latency,"Phase, Timing & Interference"
+Processing delay,"Phase, Timing & Interference"
+Buffering delay,"Phase, Timing & Interference"
+Alignment delay,"Phase, Timing & Interference"
+Localization dominance,"Phase, Timing & Interference"
+Fusion threshold,"Phase, Timing & Interference"
+"Relationship among frequency, wavelength, and sound speed",Wavelength & Physical Scale
+Why low frequencies have long wavelengths,Wavelength & Physical Scale
+Why wavelength affects room behavior,Wavelength & Physical Scale
+Quarter-wavelength relationships,Wavelength & Physical Scale
+Half-wavelength relationships,Wavelength & Physical Scale
+Boundary spacing and cancellation,Wavelength & Physical Scale
+Loudspeaker spacing and interference,Wavelength & Physical Scale
+Microphone spacing and phase interaction,Wavelength & Physical Scale
+Driver spacing and lobing,Wavelength & Physical Scale
+Acoustic path-length difference,Wavelength & Physical Scale
+Distance-to-phase conversion,Wavelength & Physical Scale
+Frequency-dependent directionality,Wavelength & Physical Scale
+Object size relative to wavelength,Wavelength & Physical Scale
+Diffraction around obstacles,Wavelength & Physical Scale
+Shadow zones,Wavelength & Physical Scale
+Acoustic aperture,Wavelength & Physical Scale
+Effective radiating size,Wavelength & Physical Scale
+Conservation of acoustic energy,"Reflection, Diffraction & Room Acoustics"
+Angle of incidence,"Reflection, Diffraction & Room Acoustics"
+Angle of reflection,"Reflection, Diffraction & Room Acoustics"
+Boundary impedance,"Reflection, Diffraction & Room Acoustics"
+Sound-speed gradients,"Reflection, Diffraction & Room Acoustics"
+Temperature-gradient refraction,"Reflection, Diffraction & Room Acoustics"
+Wind-gradient refraction,"Reflection, Diffraction & Room Acoustics"
+Atmospheric sound bending,"Reflection, Diffraction & Room Acoustics"
+Aperture diffraction,"Reflection, Diffraction & Room Acoustics"
+Scattering,"Reflection, Diffraction & Room Acoustics"
+Surface roughness relative to wavelength,"Reflection, Diffraction & Room Acoustics"
+Scattering coefficient,"Reflection, Diffraction & Room Acoustics"
+Diffusion coefficient,"Reflection, Diffraction & Room Acoustics"
+Slapback reflection,"Reflection, Diffraction & Room Acoustics"
+Early reflections,"Reflection, Diffraction & Room Acoustics"
+Reflection density,"Reflection, Diffraction & Room Acoustics"
+Reflection order,"Reflection, Diffraction & Room Acoustics"
+Wave-based acoustics,"Reflection, Diffraction & Room Acoustics"
+Transition between modal and geometric behavior,"Reflection, Diffraction & Room Acoustics"
+T20 and T30 extrapolation,"Reflection, Diffraction & Room Acoustics"
+Sabine equation,"Reflection, Diffraction & Room Acoustics"
+Eyring equation,"Reflection, Diffraction & Room Acoustics"
+Room constant,"Reflection, Diffraction & Room Acoustics"
+Reflection density growth,"Reflection, Diffraction & Room Acoustics"
+Diffuse-field assumptions,"Reflection, Diffraction & Room Acoustics"
+Room modes,"Reflection, Diffraction & Room Acoustics"
+Axial modes,"Reflection, Diffraction & Room Acoustics"
+Tangential modes,"Reflection, Diffraction & Room Acoustics"
+Oblique modes,"Reflection, Diffraction & Room Acoustics"
+Modal frequency calculation,"Reflection, Diffraction & Room Acoustics"
+Modal degeneracy,"Reflection, Diffraction & Room Acoustics"
+Mode clustering,"Reflection, Diffraction & Room Acoustics"
+Mode spacing,"Reflection, Diffraction & Room Acoustics"
+Modal ringing,"Reflection, Diffraction & Room Acoustics"
+Standing waves,"Reflection, Diffraction & Room Acoustics"
+Pressure nodes,"Reflection, Diffraction & Room Acoustics"
+Pressure antinodes,"Reflection, Diffraction & Room Acoustics"
+Particle-velocity nodes,"Reflection, Diffraction & Room Acoustics"
+Particle-velocity antinodes,"Reflection, Diffraction & Room Acoustics"
+Listener-boundary interference response,"Reflection, Diffraction & Room Acoustics"
+Floor-bounce cancellation,"Reflection, Diffraction & Room Acoustics"
+Ceiling-bounce cancellation,"Reflection, Diffraction & Room Acoustics"
+Desk reflection,"Reflection, Diffraction & Room Acoustics"
+Front-wall cancellation,"Reflection, Diffraction & Room Acoustics"
+Rear-wall interference,"Reflection, Diffraction & Room Acoustics"
+Room gain,"Reflection, Diffraction & Room Acoustics"
+Porous absorption,"Reflection, Diffraction & Room Acoustics"
+Membrane absorption,"Reflection, Diffraction & Room Acoustics"
+Diaphragmatic absorption,"Reflection, Diffraction & Room Acoustics"
+Panel absorbers,"Reflection, Diffraction & Room Acoustics"
+Slat and perforated absorbers,"Reflection, Diffraction & Room Acoustics"
+Pressure-based absorbers,"Reflection, Diffraction & Room Acoustics"
+Velocity-based absorbers,"Reflection, Diffraction & Room Acoustics"
+Air-gap effects behind absorbers,"Reflection, Diffraction & Room Acoustics"
+Absorber thickness versus frequency,"Reflection, Diffraction & Room Acoustics"
+Quarter-wavelength absorber placement,"Reflection, Diffraction & Room Acoustics"
+Diffuser design,"Reflection, Diffraction & Room Acoustics"
+Quadratic-residue diffusion,"Reflection, Diffraction & Room Acoustics"
+Primitive-root diffusion,"Reflection, Diffraction & Room Acoustics"
+Skyline diffusion,"Reflection, Diffraction & Room Acoustics"
+Temporal diffusion,"Reflection, Diffraction & Room Acoustics"
+Spatial diffusion,"Reflection, Diffraction & Room Acoustics"
+Room symmetry,"Reflection, Diffraction & Room Acoustics"
+Live-end/dead-end design,"Reflection, Diffraction & Room Acoustics"
+Initial time-delay gap,"Reflection, Diffraction & Room Acoustics"
+Clarity metrics,"Reflection, Diffraction & Room Acoustics"
+Definition metrics,"Reflection, Diffraction & Room Acoustics"
+Articulation loss of consonants,"Reflection, Diffraction & Room Acoustics"
+Intelligibility versus reverberation,"Reflection, Diffraction & Room Acoustics"
+Intelligibility versus noise,"Reflection, Diffraction & Room Acoustics"
+Intelligibility versus directivity,"Reflection, Diffraction & Room Acoustics"
+Forced resonance,Resonance & Damping
+Mechanical resonance,Resonance & Damping
+Acoustic resonance,Resonance & Damping
+Electrical resonance,Resonance & Damping
+Resonant modes,Resonance & Damping
+Resonance buildup,Resonance & Damping
+Resonance decay,Resonance & Damping
+Quality factor,Resonance & Damping
+Bandwidth versus Q,Resonance & Damping
+Resonant frequency versus center frequency,Resonance & Damping
+Coupled resonances,Resonance & Damping
+Open-pipe modes,Resonance & Damping
+Closed-pipe modes,Resonance & Damping
+Stored energy in resonant systems,Resonance & Damping
+Transient response of resonant systems,Resonance & Damping
+Filter cutoff frequency,Filters & Equalization
+Poles and zeros,Filters & Equalization
+Magnitude response,Filters & Equalization
+Band-reject filter,Filters & Equalization
+Parametric equalization,Filters & Equalization
+Semiparametric equalization,Filters & Equalization
+Graphic equalization,Filters & Equalization
+Constant-Q equalizers,Filters & Equalization
+Proportional-Q equalizers,Filters & Equalization
+Variable-Q equalizers,Filters & Equalization
+Minimum-phase equalization,Filters & Equalization
+Linear-phase equalization,Filters & Equalization
+Mixed-phase equalization,Filters & Equalization
+Finite impulse response filters,Filters & Equalization
+Infinite impulse response filters,Filters & Equalization
+Filter ringing,Filters & Equalization
+Post-ringing,Filters & Equalization
+Passband ripple,Filters & Equalization
+Stopband ripple,Filters & Equalization
+Stopband attenuation,Filters & Equalization
+Butterworth response,Filters & Equalization
+Bessel response,Filters & Equalization
+Linkwitz–Riley response,Filters & Equalization
+Chebyshev response,Filters & Equalization
+Elliptic response,Filters & Equalization
+Acoustic versus electrical crossover slopes,Filters & Equalization
+Driver offset and crossover phase,Filters & Equalization
+Filter interaction,Filters & Equalization
+Cascaded filters,Filters & Equalization
+Equivalent combined slope,Filters & Equalization
+Bilinear transformation,Filters & Equalization
+Equalizer interaction between adjacent bands,Filters & Equalization
+Graphic-EQ ripple between filters,Filters & Equalization
+Boost and cut asymmetry,Filters & Equalization
+Equalization versus resonance control,Filters & Equalization
+Corrective versus creative equalization,Filters & Equalization
+Dynamic range compression,Dynamics Processing (Concepts)
+Detector circuit,Dynamics Processing (Concepts)
+Averaging detection,Dynamics Processing (Concepts)
+Hard-knee versus soft-knee behavior,Dynamics Processing (Concepts)
+Time constants,Dynamics Processing (Concepts)
+Automatic release,Dynamics Processing (Concepts)
+Sidechain filtering,Dynamics Processing (Concepts)
+Frequency-conscious compression,Dynamics Processing (Concepts)
+De-essing,Dynamics Processing (Concepts)
+Dynamic equalization,Dynamics Processing (Concepts)
+Compression-induced distortion,Dynamics Processing (Concepts)
+Gain modulation,Dynamics Processing (Concepts)
+Loudness maximization,Dynamics Processing (Concepts)
+Inter-sample overload,Dynamics Processing (Concepts)
+Clipping versus limiting,Dynamics Processing (Concepts)
+Dynamic-range processing in logarithmic versus linear domains,Dynamics Processing (Concepts)
+Difference-frequency distortion,"Harmonics, Distortion & Nonlinearity"
+Sum-frequency distortion,"Harmonics, Distortion & Nonlinearity"
+Slew-induced distortion,"Harmonics, Distortion & Nonlinearity"
+Transient intermodulation distortion,"Harmonics, Distortion & Nonlinearity"
+Clipping distortion,"Harmonics, Distortion & Nonlinearity"
+Quantization distortion,"Harmonics, Distortion & Nonlinearity"
+Phase distortion,"Harmonics, Distortion & Nonlinearity"
+Frequency-response distortion,"Harmonics, Distortion & Nonlinearity"
+Nonlinear transfer functions,"Harmonics, Distortion & Nonlinearity"
+Even-order harmonics,"Harmonics, Distortion & Nonlinearity"
+Odd-order harmonics,"Harmonics, Distortion & Nonlinearity"
+Saturation curves,"Harmonics, Distortion & Nonlinearity"
+Soft saturation,"Harmonics, Distortion & Nonlinearity"
+Hard saturation,"Harmonics, Distortion & Nonlinearity"
+Tube nonlinearity,"Harmonics, Distortion & Nonlinearity"
+Semiconductor nonlinearity,"Harmonics, Distortion & Nonlinearity"
+Waveshaping,"Harmonics, Distortion & Nonlinearity"
+Foldback distortion,"Harmonics, Distortion & Nonlinearity"
+Aliasing from nonlinear processing,"Harmonics, Distortion & Nonlinearity"
+Oversampling in nonlinear processors,"Harmonics, Distortion & Nonlinearity"
+Memory effects in nonlinear systems,"Harmonics, Distortion & Nonlinearity"
+Dynamic nonlinearities,"Harmonics, Distortion & Nonlinearity"
+Static nonlinearities,"Harmonics, Distortion & Nonlinearity"
+Distortion audibility,"Harmonics, Distortion & Nonlinearity"
+Masking of distortion products,"Harmonics, Distortion & Nonlinearity"
+Distortion versus coloration,"Harmonics, Distortion & Nonlinearity"
+Random noise,Noise (Concepts)
+Brown noise,Noise (Concepts)
+Blue noise,Noise (Concepts)
+Violet noise,Noise (Concepts)
+Gray noise,Noise (Concepts)
+Gaussian noise,Noise (Concepts)
+Uniform noise,Noise (Concepts)
+Dither noise,Noise (Concepts)
+Clock noise,Noise (Concepts)
+Power-supply noise,Noise (Concepts)
+Ground noise,Noise (Concepts)
+Common-mode noise,Noise (Concepts)
+Differential-mode noise,Noise (Concepts)
+Noise spectrum,Noise (Concepts)
+Noise density,Noise (Concepts)
+Noise figure,Noise (Concepts)
+Noise correlation,Noise (Concepts)
+Correlated noise,Noise (Concepts)
+Uncorrelated noise,Noise (Concepts)
+Noise summation,Noise (Concepts)
+Noise gating artifacts,Noise (Concepts)
+Noise masking,Noise (Concepts)
+Denoising artifacts,Noise (Concepts)
+Musical noise,Noise (Concepts)
+Analog-to-digital conversion,Digital Sampling & Conversion
+Digital-to-analog conversion,Digital Sampling & Conversion
+Sample clock,Digital Sampling & Conversion
+Nyquist–Shannon sampling theorem,Digital Sampling & Conversion
+Band-limited signals,Digital Sampling & Conversion
+Foldover,Digital Sampling & Conversion
+Anti-aliasing filtering,Digital Sampling & Conversion
+Reconstruction filtering,Digital Sampling & Conversion
+Zero-order hold,Digital Sampling & Conversion
+Spectral images,Digital Sampling & Conversion
+Sinc interpolation,Digital Sampling & Conversion
+Band-limited interpolation,Digital Sampling & Conversion
+Why digital audio is not simply a staircase,Digital Sampling & Conversion
+Samples per cycle,Digital Sampling & Conversion
+Frequency ambiguity near Nyquist,Digital Sampling & Conversion
+Sample phase,Digital Sampling & Conversion
+Polyphase filtering,Digital Sampling & Conversion
+Integer-ratio conversion,Digital Sampling & Conversion
+Fractional-ratio conversion,Digital Sampling & Conversion
+Conversion filter quality,Digital Sampling & Conversion
+Sample-rate conversion artifacts,Digital Sampling & Conversion
+Periodic jitter,Digital Sampling & Conversion
+Random jitter,Digital Sampling & Conversion
+Jitter spectrum,Digital Sampling & Conversion
+Aperture uncertainty,Digital Sampling & Conversion
+Reclocking,Digital Sampling & Conversion
+Master and slave clocking,Digital Sampling & Conversion
+Sample slips,Digital Sampling & Conversion
+Buffer underflow,Digital Sampling & Conversion
+Buffer overflow,Digital Sampling & Conversion
+Asynchronous sample-rate conversion,Digital Sampling & Conversion
+Converter noise and distortion limits,Digital Sampling & Conversion
+Quantization levels,Quantization & Numerical Resolution
+Quantization step size,Quantization & Numerical Resolution
+Word length,Quantization & Numerical Resolution
+Least significant bit,Quantization & Numerical Resolution
+Most significant bit,Quantization & Numerical Resolution
+Quantization error,Quantization & Numerical Resolution
+Quantization noise model,Quantization & Numerical Resolution
+Correlated quantization distortion,Quantization & Numerical Resolution
+Rounding,Quantization & Numerical Resolution
+Truncation,Quantization & Numerical Resolution
+Requantization,Quantization & Numerical Resolution
+Rectangular dither,Quantization & Numerical Resolution
+Triangular dither,Quantization & Numerical Resolution
+Noise-shaped dither,Quantization & Numerical Resolution
+Subtractive dither,Quantization & Numerical Resolution
+Dither decorrelation,Quantization & Numerical Resolution
+Low-level signal preservation,Quantization & Numerical Resolution
+Theoretical dynamic range,Quantization & Numerical Resolution
+Integer PCM,Quantization & Numerical Resolution
+Signed PCM,Quantization & Numerical Resolution
+Unsigned PCM,Quantization & Numerical Resolution
+Two's-complement representation,Quantization & Numerical Resolution
+Fixed-point arithmetic,Quantization & Numerical Resolution
+Floating-point arithmetic,Quantization & Numerical Resolution
+Mantissa or significand,Quantization & Numerical Resolution
+Exponent,Quantization & Numerical Resolution
+Floating-point headroom,Quantization & Numerical Resolution
+Floating-point precision,Quantization & Numerical Resolution
+Denormal numbers,Quantization & Numerical Resolution
+Numerical overflow,Quantization & Numerical Resolution
+Numerical underflow,Quantization & Numerical Resolution
+Accumulator precision,Quantization & Numerical Resolution
+Rounding accumulation,Quantization & Numerical Resolution
+Internal processing precision,Quantization & Numerical Resolution
+Export bit depth versus processing bit depth,Quantization & Numerical Resolution
+Why 32-bit float does not repair ADC clipping,Quantization & Numerical Resolution
+Why nominal 24-bit recording does not provide 24 usable bits,Quantization & Numerical Resolution
+Discrete-time signals,DSP Concepts
+Discrete-valued signals,DSP Concepts
+Difference equations,DSP Concepts
+Linear convolution,DSP Concepts
+Circular convolution,DSP Concepts
+Unit impulse,DSP Concepts
+System response,DSP Concepts
+Time invariance,DSP Concepts
+Causality,DSP Concepts
+Stability,DSP Concepts
+Finite impulse response,DSP Concepts
+Infinite impulse response,DSP Concepts
+Recursive processing,DSP Concepts
+Feedback in digital filters,DSP Concepts
+Delay elements,DSP Concepts
+Z-plane,DSP Concepts
+Stability regions,DSP Concepts
+Inverse Fourier transform,DSP Concepts
+Time-frequency duality,DSP Concepts
+Frequency-bin spacing,DSP Concepts
+FFT resolution,DSP Concepts
+Time resolution versus frequency resolution,DSP Concepts
+Window functions,DSP Concepts
+Rectangular window,DSP Concepts
+Blackman window,DSP Concepts
+Side lobes,DSP Concepts
+Scalloping loss,DSP Concepts
+Coherent sampling,DSP Concepts
+Overlap processing,DSP Concepts
+Spectrogram interpretation,DSP Concepts
+Wavelet analysis,DSP Concepts
+Envelope extraction,DSP Concepts
+Cross-spectrum,DSP Concepts
+Auto-spectrum,DSP Concepts
+Transfer-function estimation,DSP Concepts
+System identification,DSP Concepts
+Finite precision effects,DSP Concepts
+Processing latency,DSP Concepts
+Block processing,DSP Concepts
+Real-time versus offline processing,DSP Concepts
+Audio codec versus container,Audio File Formats & Data
+Uncompressed PCM,Audio File Formats & Data
+Lossless compression,Audio File Formats & Data
+Constant bit rate,Audio File Formats & Data
+Variable bit rate,Audio File Formats & Data
+Sample rate versus bit rate,Audio File Formats & Data
+Bit depth versus bit rate,Audio File Formats & Data
+Channel count and data rate,Audio File Formats & Data
+Interleaved versus planar audio,Audio File Formats & Data
+Byte order,Audio File Formats & Data
+Big-endian versus little-endian storage,Audio File Formats & Data
+File headers,Audio File Formats & Data
+Embedded loudness metadata,Audio File Formats & Data
+Psychoacoustic coding,Audio File Formats & Data
+Perceptual masking in codecs,Audio File Formats & Data
+Transform coding,Audio File Formats & Data
+Temporal masking in codecs,Audio File Formats & Data
+Pre-echo artifacts,Audio File Formats & Data
+Tonal noise artifacts,Audio File Formats & Data
+Stereo coupling,Audio File Formats & Data
+Mid/side coding,Audio File Formats & Data
+Codec generation loss,Audio File Formats & Data
+Transcoding loss,Audio File Formats & Data
+Normalization metadata,Audio File Formats & Data
+Gapless playback,Audio File Formats & Data
+Sample-accurate file boundaries,Audio File Formats & Data
+Inter-sample peaks after encoding,Audio File Formats & Data
+Dither during format conversion,Audio File Formats & Data
+File-size calculations,Audio File Formats & Data
+Pressure microphones,Microphone Concepts
+Pressure-gradient microphones,Microphone Concepts
+Velocity-sensitive microphones,Microphone Concepts
+Omnidirectional behavior,Microphone Concepts
+Directional behavior,Microphone Concepts
+Polar patterns,Microphone Concepts
+Cardioid formation,Microphone Concepts
+Supercardioid pattern,Microphone Concepts
+Hypercardioid pattern,Microphone Concepts
+Figure-eight pattern,Microphone Concepts
+Frequency-dependent polar response,Microphone Concepts
+Pressure doubling at boundaries,Microphone Concepts
+Diaphragm size versus behavior,Microphone Concepts
+Transducer sensitivity,Microphone Concepts
+Acoustic labyrinths,Microphone Concepts
+Rear-port delay networks,Microphone Concepts
+Interference tubes,Microphone Concepts
+Condenser polarization,Microphone Concepts
+Dynamic-microphone induction,Microphone Concepts
+Ribbon-microphone operation,Microphone Concepts
+Ribbon loading,Microphone Concepts
+Transformer effects,Microphone Concepts
+Balanced microphone lines,Microphone Concepts
+Microphone preamplifier noise,Microphone Concepts
+Critical distance and microphone placement,Microphone Concepts
+Distance factor,Microphone Concepts
+Phase interaction between microphones,Microphone Concepts
+3:1 placement guideline,Microphone Concepts
+Coincident stereo arrays,Microphone Concepts
+Near-coincident arrays,Microphone Concepts
+Spaced arrays,Microphone Concepts
+Ambisonic microphones,Microphone Concepts
+Mid/side recording,Microphone Concepts
+Blumlein configuration,Microphone Concepts
+Boundary microphones,Microphone Concepts
+Moving-coil loudspeaker operation,Loudspeaker Concepts
+Electromagnetic force,Loudspeaker Concepts
+Cone motion,Loudspeaker Concepts
+Diaphragm breakup,Loudspeaker Concepts
+Piston-band operation,Loudspeaker Concepts
+Back electromotive force,Loudspeaker Concepts
+Loudspeaker impedance,Loudspeaker Concepts
+Nominal versus actual impedance,Loudspeaker Concepts
+Impedance curves,Loudspeaker Concepts
+Resonant impedance peak,Loudspeaker Concepts
+Sensitivity versus efficiency,Loudspeaker Concepts
+Excursion limits,Loudspeaker Concepts
+Linear excursion,Loudspeaker Concepts
+Mechanical excursion,Loudspeaker Concepts
+Cone displacement,Loudspeaker Concepts
+Beam narrowing,Loudspeaker Concepts
+Driver spacing,Loudspeaker Concepts
+Crossover interference,Loudspeaker Concepts
+Acoustic-center offset,Loudspeaker Concepts
+Coaxial loudspeakers,Loudspeaker Concepts
+Point-source approximation,Loudspeaker Concepts
+Line-source approximation,Loudspeaker Concepts
+Acoustic impedance transformation,Loudspeaker Concepts
+Horn directivity,Loudspeaker Concepts
+Constant-directivity horns,Loudspeaker Concepts
+Waveguides,Loudspeaker Concepts
+Compression drivers,Loudspeaker Concepts
+Phase plugs,Loudspeaker Concepts
+Ported enclosures,Loudspeaker Concepts
+Sealed enclosures,Loudspeaker Concepts
+Passive radiators,Loudspeaker Concepts
+Transmission lines,Loudspeaker Concepts
+Band-pass enclosures,Loudspeaker Concepts
+Port air velocity,Loudspeaker Concepts
+Group delay in loudspeaker systems,Loudspeaker Concepts
+Cardioid subwoofer arrays,Loudspeaker Concepts
+End-fire arrays,Loudspeaker Concepts
+Gradient arrays,Loudspeaker Concepts
+Broadside arrays,Loudspeaker Concepts
+Steering,Loudspeaker Concepts
+Electronic beamforming,Loudspeaker Concepts
+Line arrays,Loudspeaker Concepts
+Line-array curvature,Loudspeaker Concepts
+Cylindrical spreading assumptions,Loudspeaker Concepts
+Near-field and far-field transitions,Loudspeaker Concepts
+Splay angles,Loudspeaker Concepts
+Grating lobes,Loudspeaker Concepts
+Array coherence,Loudspeaker Concepts
+Acoustic crossover between array elements,Loudspeaker Concepts
+Capacitance,Amplifiers & Electrical Audio
+Inductance,Amplifiers & Electrical Audio
+Electrical power,Amplifiers & Electrical Audio
+Alternating current,Amplifiers & Electrical Audio
+Direct current,Amplifiers & Electrical Audio
+Peak voltage,Amplifiers & Electrical Audio
+Balanced signaling,Amplifiers & Electrical Audio
+Unbalanced signaling,Amplifiers & Electrical Audio
+Differential signaling,Amplifiers & Electrical Audio
+Grounding,Amplifiers & Electrical Audio
+Ground loops,Amplifiers & Electrical Audio
+Signal ground versus safety ground,Amplifiers & Electrical Audio
+Isolation transformers,Amplifiers & Electrical Audio
+Input impedance,Amplifiers & Electrical Audio
+Source-load interaction,Amplifiers & Electrical Audio
+Maximum power transfer,Amplifiers & Electrical Audio
+Voltage-divider effects,Amplifiers & Electrical Audio
+Cable inductance,Amplifiers & Electrical Audio
+Cable resistance,Amplifiers & Electrical Audio
+Transmission-line behavior,Amplifiers & Electrical Audio
+Reflections in digital cables,Amplifiers & Electrical Audio
+Amplifier gain,Amplifiers & Electrical Audio
+Voltage sensitivity,Amplifiers & Electrical Audio
+Amplifier clipping,Amplifiers & Electrical Audio
+Output-current limiting,Amplifiers & Electrical Audio
+Thermal limiting,Amplifiers & Electrical Audio
+Class A amplification,Amplifiers & Electrical Audio
+Class B amplification,Amplifiers & Electrical Audio
+Class AB amplification,Amplifiers & Electrical Audio
+Class D amplification,Amplifiers & Electrical Audio
+Feedback stability,Amplifiers & Electrical Audio
+Bridged amplifier operation,Amplifiers & Electrical Audio
+Parallel amplifier operation,Amplifiers & Electrical Audio
+Constant-voltage distributed systems,Amplifiers & Electrical Audio
+70-volt and 100-volt systems,Amplifiers & Electrical Audio
+Transformer taps,Amplifiers & Electrical Audio
+Loudspeaker load calculations,Amplifiers & Electrical Audio
+Series and parallel loads,Amplifiers & Electrical Audio
+Reactive loudspeaker loads,Amplifiers & Electrical Audio
+Serial digital audio,Audio Networking & Transport (Concepts)
+Parallel digital audio,Audio Networking & Transport (Concepts)
+Bit clock,Audio Networking & Transport (Concepts)
+Frame clock,Audio Networking & Transport (Concepts)
+Embedded clocking,Audio Networking & Transport (Concepts)
+Jitter accumulation,Audio Networking & Transport (Concepts)
+Synchronization,Audio Networking & Transport (Concepts)
+Sample-accurate synchronization,Audio Networking & Transport (Concepts)
+Linear timecode,Audio Networking & Transport (Concepts)
+MIDI timecode,Audio Networking & Transport (Concepts)
+Precision Time Protocol,Audio Networking & Transport (Concepts)
+Network clock domains,Audio Networking & Transport (Concepts)
+Packetized audio,Audio Networking & Transport (Concepts)
+Deterministic latency,Audio Networking & Transport (Concepts)
+Variable latency,Audio Networking & Transport (Concepts)
+Jitter buffers,Audio Networking & Transport (Concepts)
+Packet reordering,Audio Networking & Transport (Concepts)
+Error correction,Audio Networking & Transport (Concepts)
+Redundant networking,Audio Networking & Transport (Concepts)
+Multicast,Audio Networking & Transport (Concepts)
+Unicast,Audio Networking & Transport (Concepts)
+Quality of service,Audio Networking & Transport (Concepts)
+Channel count calculations,Audio Networking & Transport (Concepts)
+Sample-rate effects on network load,Audio Networking & Transport (Concepts)
+Bit-depth effects on network load,Audio Networking & Transport (Concepts)
+Discovery and subscription,Audio Networking & Transport (Concepts)
+Clock-master election,Audio Networking & Transport (Concepts)
+Boundary clocks,Audio Networking & Transport (Concepts)
+Transparent clocks,Audio Networking & Transport (Concepts)
+Network topology,Audio Networking & Transport (Concepts)
+Layer 2 versus Layer 3 transport,Audio Networking & Transport (Concepts)
+Virtual local area networks,Audio Networking & Transport (Concepts)
+Spanning tree,Audio Networking & Transport (Concepts)
+Link aggregation,Audio Networking & Transport (Concepts)
+Sample-rate mismatch across devices,Audio Networking & Transport (Concepts)
+Asynchronous endpoints,Audio Networking & Transport (Concepts)
+Buffering and end-to-end latency,Audio Networking & Transport (Concepts)
+Networked-audio troubleshooting,Audio Networking & Transport (Concepts)
+Hearing threshold,Psychoacoustics & Hearing
+Audible frequency range,Psychoacoustics & Hearing
+Age-related high-frequency loss,Psychoacoustics & Hearing
+Outer-ear filtering,Psychoacoustics & Hearing
+Middle-ear transfer,Psychoacoustics & Hearing
+Cochlear mechanics,Psychoacoustics & Hearing
+Basilar-membrane frequency mapping,Psychoacoustics & Hearing
+Hair-cell transduction,Psychoacoustics & Hearing
+Auditory nerve firing,Psychoacoustics & Hearing
+Binaural summation,Psychoacoustics & Hearing
+Localization,Psychoacoustics & Hearing
+Head-related transfer functions,Psychoacoustics & Hearing
+Pinna cues,Psychoacoustics & Hearing
+Front-back confusion,Psychoacoustics & Hearing
+Elevation perception,Psychoacoustics & Hearing
+Harmonic grouping,Psychoacoustics & Hearing
+Temporal grouping,Psychoacoustics & Hearing
+Selective attention,Psychoacoustics & Hearing
+Auditory adaptation,Psychoacoustics & Hearing
+Auditory fatigue,Psychoacoustics & Hearing
+Diplacusis,Psychoacoustics & Hearing
+Occlusion effect,Psychoacoustics & Hearing
+Bone conduction,Psychoacoustics & Hearing
+Air conduction,Psychoacoustics & Hearing
+Binaural beats,Psychoacoustics & Hearing
+Combination tones,Psychoacoustics & Hearing
+Auditory illusions,Psychoacoustics & Hearing
+Phantom fundamental,Psychoacoustics & Hearing
+Shepard tones,Psychoacoustics & Hearing
+Tritone paradox,Psychoacoustics & Hearing
+McGurk-style audiovisual influence on speech,Psychoacoustics & Hearing
+Expectation bias,Psychoacoustics & Hearing
+Loudness bias,Psychoacoustics & Hearing
+Sighted versus blind listening,Psychoacoustics & Hearing
+Listener training and perceptual learning,Psychoacoustics & Hearing
+Intensity stereophony,"Stereo, Binaural & Spatial Audio"
+Time-difference stereophony,"Stereo, Binaural & Spatial Audio"
+Phase-difference stereophony,"Stereo, Binaural & Spatial Audio"
+Coincident stereo,"Stereo, Binaural & Spatial Audio"
+Near-coincident stereo,"Stereo, Binaural & Spatial Audio"
+Spaced-pair stereo,"Stereo, Binaural & Spatial Audio"
+Mid/side stereo,"Stereo, Binaural & Spatial Audio"
+Sum-and-difference matrices,"Stereo, Binaural & Spatial Audio"
+Interchannel correlation,"Stereo, Binaural & Spatial Audio"
+Negative correlation,"Stereo, Binaural & Spatial Audio"
+Phase-scope interpretation,"Stereo, Binaural & Spatial Audio"
+Image shift with listener movement,"Stereo, Binaural & Spatial Audio"
+Individualized HRTFs,"Stereo, Binaural & Spatial Audio"
+Head tracking,"Stereo, Binaural & Spatial Audio"
+Spherical harmonics,"Stereo, Binaural & Spatial Audio"
+Ambisonic encoding,"Stereo, Binaural & Spatial Audio"
+Ambisonic decoding,"Stereo, Binaural & Spatial Audio"
+Sound-field rotation,"Stereo, Binaural & Spatial Audio"
+Sound-field translation,"Stereo, Binaural & Spatial Audio"
+Scene-based audio,"Stereo, Binaural & Spatial Audio"
+Bed channels,"Stereo, Binaural & Spatial Audio"
+Audio objects,"Stereo, Binaural & Spatial Audio"
+Metadata-driven rendering,"Stereo, Binaural & Spatial Audio"
+Distance-based amplitude panning,"Stereo, Binaural & Spatial Audio"
+Higher-order spatial aliasing,"Stereo, Binaural & Spatial Audio"
+Elevation channels,"Stereo, Binaural & Spatial Audio"
+Height localization,"Stereo, Binaural & Spatial Audio"
+Downmixing,"Stereo, Binaural & Spatial Audio"
+Fold-down compatibility,"Stereo, Binaural & Spatial Audio"
+Binaural rendering of immersive mixes,"Stereo, Binaural & Spatial Audio"
+Measurement signal versus program material,Measurement & Analysis (Concepts)
+Reference calibration,Measurement & Analysis (Concepts)
+Accuracy versus precision,Measurement & Analysis (Concepts)
+Repeatability,Measurement & Analysis (Concepts)
+Reproducibility,Measurement & Analysis (Concepts)
+Resolution,Measurement & Analysis (Concepts)
+Sensitivity,Measurement & Analysis (Concepts)
+Tolerance,Measurement & Analysis (Concepts)
+Measurement microphone calibration,Measurement & Analysis (Concepts)
+Random-incidence calibration,Measurement & Analysis (Concepts)
+Sound-level meter time weighting,Measurement & Analysis (Concepts)
+Fast weighting,Measurement & Analysis (Concepts)
+Slow weighting,Measurement & Analysis (Concepts)
+Impulse weighting,Measurement & Analysis (Concepts)
+Frequency weighting,Measurement & Analysis (Concepts)
+A weighting,Measurement & Analysis (Concepts)
+C weighting,Measurement & Analysis (Concepts)
+Peak sound pressure,Measurement & Analysis (Concepts)
+Sound exposure,Measurement & Analysis (Concepts)
+Dose,Measurement & Analysis (Concepts)
+Real-time analysis,Measurement & Analysis (Concepts)
+Fractional-octave analysis,Measurement & Analysis (Concepts)
+Constant-percentage bandwidth,Measurement & Analysis (Concepts)
+Constant-Hz bandwidth,Measurement & Analysis (Concepts)
+Fractional-octave smoothing,Measurement & Analysis (Concepts)
+Psychoacoustic smoothing,Measurement & Analysis (Concepts)
+Time averaging,Measurement & Analysis (Concepts)
+Frequency-response measurement,Measurement & Analysis (Concepts)
+Dual-channel measurement,Measurement & Analysis (Concepts)
+Reference-channel delay,Measurement & Analysis (Concepts)
+Spectrograph,Measurement & Analysis (Concepts)
+Cumulative spectral decay,Measurement & Analysis (Concepts)
+Wavelet spectrogram,Measurement & Analysis (Concepts)
+Group-delay plot,Measurement & Analysis (Concepts)
+Excess-phase plot,Measurement & Analysis (Concepts)
+Minimum-phase derivation,Measurement & Analysis (Concepts)
+Windowing an impulse response,Measurement & Analysis (Concepts)
+Gating reflections,Measurement & Analysis (Concepts)
+Near-field loudspeaker measurement,Measurement & Analysis (Concepts)
+Far-field measurement,Measurement & Analysis (Concepts)
+Merging near-field and far-field responses,Measurement & Analysis (Concepts)
+Polar measurement,Measurement & Analysis (Concepts)
+Directivity balloon,Measurement & Analysis (Concepts)
+Spinorama-style data,Measurement & Analysis (Concepts)
+Balloon interpolation,Measurement & Analysis (Concepts)
+Measurement noise floor,Measurement & Analysis (Concepts)
+Distortion measurement,Measurement & Analysis (Concepts)
+Multitone testing,Measurement & Analysis (Concepts)
+Maximum-length sequence measurement,Measurement & Analysis (Concepts)
+Logarithmic sine sweep,Measurement & Analysis (Concepts)
+Time-delay spectrometry,Measurement & Analysis (Concepts)
+Transfer-function averaging,Measurement & Analysis (Concepts)
+Vector averaging,Measurement & Analysis (Concepts)
+Calibration offsets,Measurement & Analysis (Concepts)
+Measurement latency,Measurement & Analysis (Concepts)
+Clock mismatch during measurement,Measurement & Analysis (Concepts)
+Ringing out a system,Live Sound & System Optimization
+Feedback loop gain,Live Sound & System Optimization
+Feedback stability margin,Live Sound & System Optimization
+Open-loop versus closed-loop behavior,Live Sound & System Optimization
+Microphone-loudspeaker geometry,Live Sound & System Optimization
+Uniformity,Live Sound & System Optimization
+Directivity control,Live Sound & System Optimization
+Loudspeaker aiming,Live Sound & System Optimization
+Acoustic overlap,Live Sound & System Optimization
+Acoustic crossover zones,Live Sound & System Optimization
+Delay speakers,Live Sound & System Optimization
+Under-balcony fills,Live Sound & System Optimization
+Out fills,Live Sound & System Optimization
+Distributed systems,Live Sound & System Optimization
+Magnitude summation,Live Sound & System Optimization
+Main-to-sub timing,Live Sound & System Optimization
+Boundary interaction,Live Sound & System Optimization
+Stage spill,Live Sound & System Optimization
+Monitor gain before feedback,Live Sound & System Optimization
+In-ear monitor isolation,Live Sound & System Optimization
+Latency in monitoring systems,Live Sound & System Optimization
+Comb filtering from multiple loudspeakers,Live Sound & System Optimization
+Subwoofer lobing,Live Sound & System Optimization
+Array steering,Live Sound & System Optimization
+Delay shading,Live Sound & System Optimization
+Frequency shading,Live Sound & System Optimization
+Coverage versus throw,Live Sound & System Optimization
+Temperature and humidity effects,Live Sound & System Optimization
+Wind effects,Live Sound & System Optimization
+Outdoor propagation,Live Sound & System Optimization
+Empty-room versus occupied-room response,Live Sound & System Optimization
+System equalization versus room correction,Live Sound & System Optimization
+Measurement-position dependency,Live Sound & System Optimization
+Spatial averaging for system tuning,Live Sound & System Optimization
+Target curves,Live Sound & System Optimization
+House curves,Live Sound & System Optimization
+Tonal balance versus flatness,Live Sound & System Optimization
+System optimization under time constraints,Live Sound & System Optimization
+Gain staging through a recording chain,Recording & Studio Concepts
+Microphone placement as spectral control,Recording & Studio Concepts
+Room-to-direct balance,Recording & Studio Concepts
+Early-reflection coloration,Recording & Studio Concepts
+Multi-microphone time alignment,Recording & Studio Concepts
+Polarity checking,Recording & Studio Concepts
+Comb filtering in layered recordings,Recording & Studio Concepts
+Transient capture,Recording & Studio Concepts
+Source dynamics,Recording & Studio Concepts
+Microphone overload,Recording & Studio Concepts
+Preamplifier overload,Recording & Studio Concepts
+Converter overload,Recording & Studio Concepts
+Analog headroom versus digital headroom,Recording & Studio Concepts
+Noise accumulation,Recording & Studio Concepts
+Ground loops in recording systems,Recording & Studio Concepts
+Cue-mix latency,Recording & Studio Concepts
+Round-trip latency,Recording & Studio Concepts
+Buffer-size tradeoffs,Recording & Studio Concepts
+Sample-rate effects on latency,Recording & Studio Concepts
+Editing at zero crossings,Recording & Studio Concepts
+Crossfades,Recording & Studio Concepts
+Phase-coherent editing,Recording & Studio Concepts
+Elastic audio artifacts,Recording & Studio Concepts
+Destructive versus nondestructive editing,Recording & Studio Concepts
+Session sample-rate management,Recording & Studio Concepts
+Clocking multiple digital devices,Recording & Studio Concepts
+Impedance conversion,Recording & Studio Concepts
+Direct injection,Recording & Studio Concepts
+Instrument-level versus line-level signals,Recording & Studio Concepts
+Ground lifting and electrical safety,Recording & Studio Concepts
+Perspective,Mixing Concepts
+Height perception,Mixing Concepts
+Level masking,Mixing Concepts
+Arrangement masking,Mixing Concepts
+Tonal hierarchy,Mixing Concepts
+Dynamic hierarchy,Mixing Concepts
+Transient hierarchy,Mixing Concepts
+Center-image management,Mixing Concepts
+Low-frequency mono compatibility,Mixing Concepts
+Stereo decorrelation,Mixing Concepts
+Phase-based widening,Mixing Concepts
+Haas-based widening,Mixing Concepts
+Artificial double tracking,Mixing Concepts
+Mid/side equalization,Mixing Concepts
+Mid/side compression,Mixing Concepts
+Serial processing,Mixing Concepts
+Processor-order interaction,Mixing Concepts
+Pre-emphasis and de-emphasis,Mixing Concepts
+Sidechain routing,Mixing Concepts
+Bus compression,Mixing Concepts
+Mix-bus headroom,Mixing Concepts
+Summing,Mixing Concepts
+Relative versus absolute level,Mixing Concepts
+Loudness matching for comparison,Mixing Concepts
+Ear fatigue,Mixing Concepts
+Reference tracks,Mixing Concepts
+Monitoring level,Mixing Concepts
+Translation across playback systems,Mixing Concepts
+Room influence on mix decisions,Mixing Concepts
+Frequency balance versus perceived balance,Mixing Concepts
+Transient density,Mixing Concepts
+Reverberant density,Mixing Concepts
+Cohesion,Mixing Concepts
+Weight,Mixing Concepts
+Perceptual descriptors versus measurable properties,Mixing Concepts
+Room size as a perceptual parameter,Reverb & Delay (Concepts)
+Algorithmic reverberation,Reverb & Delay (Concepts)
+Convolution reverberation,Reverb & Delay (Concepts)
+Impulse-response capture,Reverb & Delay (Concepts)
+Time variance in natural spaces,Reverb & Delay (Concepts)
+Static versus modulated reverb,Reverb & Delay (Concepts)
+Plate-reverb behavior,Reverb & Delay (Concepts)
+Spring-reverb behavior,Reverb & Delay (Concepts)
+Chamber-reverb behavior,Reverb & Delay (Concepts)
+Reverb predelay and source distance,Reverb & Delay (Concepts)
+Reverb masking,Reverb & Delay (Concepts)
+Reverb ducking,Reverb & Delay (Concepts)
+Delay filtering,Reverb & Delay (Concepts)
+Note-value delay,Reverb & Delay (Concepts)
+Dotted and triplet delays,Reverb & Delay (Concepts)
+Slap delay,Reverb & Delay (Concepts)
+Comb filtering in short delays,Reverb & Delay (Concepts)
+Delay-line interpolation,Reverb & Delay (Concepts)
+Doppler effects during delay modulation,Reverb & Delay (Concepts)
+Feedback stability in delay networks,Reverb & Delay (Concepts)
+Low-frequency oscillation,Modulation & Synthesis
+Sideband formation,Modulation & Synthesis
+Carrier suppression,Modulation & Synthesis
+Through-zero modulation,Modulation & Synthesis
+Frequency-modulation index,Modulation & Synthesis
+Bessel-function sideband behavior,Modulation & Synthesis
+Modal synthesis,Modulation & Synthesis
+Vector synthesis,Modulation & Synthesis
+Spectral synthesis,Modulation & Synthesis
+Formant synthesis,Modulation & Synthesis
+Convolution synthesis,Modulation & Synthesis
+Phase-distortion synthesis,Modulation & Synthesis
+Aliasing in digital oscillators,Modulation & Synthesis
+Band-limited oscillator generation,Modulation & Synthesis
+Oscillator synchronization,Modulation & Synthesis
+Soft sync,Modulation & Synthesis
+Envelope generators,Modulation & Synthesis
+Attack-decay-sustain-release behavior,Modulation & Synthesis
+Control-rate versus audio-rate modulation,Modulation & Synthesis
+Tuning systems,Modulation & Synthesis
+Microtuning,Modulation & Synthesis
+Control smoothing,Modulation & Synthesis
+Parameter zipper noise,Modulation & Synthesis
+Harmonic excitation,Musical Instrument Acoustics
+Resonating body,Musical Instrument Acoustics
+Standing waves on strings,Musical Instrument Acoustics
+Open-string and stopped-string behavior,Musical Instrument Acoustics
+String modes,Musical Instrument Acoustics
+String stiffness and inharmonicity,Musical Instrument Acoustics
+Pluck position and harmonic content,Musical Instrument Acoustics
+Bowing excitation,Musical Instrument Acoustics
+Air-column resonance,Musical Instrument Acoustics
+Open and closed pipes,Musical Instrument Acoustics
+End correction,Musical Instrument Acoustics
+Register changes,Musical Instrument Acoustics
+Reed oscillation,Musical Instrument Acoustics
+Lip-reed oscillation,Musical Instrument Acoustics
+Bore shape,Musical Instrument Acoustics
+Cylindrical versus conical bores,Musical Instrument Acoustics
+Tone holes,Musical Instrument Acoustics
+Bell radiation,Musical Instrument Acoustics
+Brass directivity,Musical Instrument Acoustics
+Woodwind directivity,Musical Instrument Acoustics
+Membrane modes,Musical Instrument Acoustics
+Drumhead overtones,Musical Instrument Acoustics
+Coupled drumheads,Musical Instrument Acoustics
+Snare-wire response,Musical Instrument Acoustics
+Cymbal modes,Musical Instrument Acoustics
+Inharmonic percussion spectra,Musical Instrument Acoustics
+Piano-string inharmonicity,Musical Instrument Acoustics
+Soundboard coupling,Musical Instrument Acoustics
+Sympathetic string resonance,Musical Instrument Acoustics
+Pickup placement,Musical Instrument Acoustics
+Magnetic pickup aperture,Musical Instrument Acoustics
+Instrument body modes,Musical Instrument Acoustics
+Wolf tones,Musical Instrument Acoustics
+Formants in musical instruments,Musical Instrument Acoustics
+Vocal-fold vibration,Speech & Voice
+Source-filter theory,Speech & Voice
+Fundamental frequency of voice,Speech & Voice
+Vocal harmonics,Speech & Voice
+Formants,Speech & Voice
+Vocal-tract resonances,Speech & Voice
+Vowel formation,Speech & Voice
+Consonant formation,Speech & Voice
+Voiced versus unvoiced speech,Speech & Voice
+Plosives,Speech & Voice
+Fricatives,Speech & Voice
+Glottal pulse,Speech & Voice
+Pitch versus formant,Speech & Voice
+Pitch shifting without formant correction,Speech & Voice
+Vocal proximity effect,Speech & Voice
+Consonant-to-vowel balance,Speech & Voice
+Articulation index,Speech & Voice
+Vocal dynamic range,Speech & Voice
+Voice onset,Speech & Voice
+Vocal fry,Speech & Voice
+Falsetto,Speech & Voice
+Chest and head registration,Speech & Voice
+Comb filtering from podium or desk reflections,Speech & Voice
+Plosive control,Speech & Voice
+Dialogue matching,Speech & Voice
+Room-tone continuity,Speech & Voice
+Frequency identification,Critical Listening & Perception
+Level-difference identification,Critical Listening & Perception
+Delay identification,Critical Listening & Perception
+Phase-change audibility,Critical Listening & Perception
+Distortion identification,Critical Listening & Perception
+Compression identification,Critical Listening & Perception
+Attack and release recognition,Critical Listening & Perception
+Reverb-time recognition,Critical Listening & Perception
+Predelay recognition,Critical Listening & Perception
+Early-reflection recognition,Critical Listening & Perception
+Noise-color identification,Critical Listening & Perception
+Clipping recognition,Critical Listening & Perception
+Aliasing recognition,Critical Listening & Perception
+Quantization-distortion recognition,Critical Listening & Perception
+Codec-artifact recognition,Critical Listening & Perception
+Resonance identification,Critical Listening & Perception
+Comb-filter identification,Critical Listening & Perception
+Polarity-error recognition,Critical Listening & Perception
+Spectral-tilt recognition,Critical Listening & Perception
+Bandwidth limitation,Critical Listening & Perception
+High-pass and low-pass recognition,Critical Listening & Perception
+Bell-filter frequency recognition,Critical Listening & Perception
+Q-factor recognition,Critical Listening & Perception
+Masking recognition,Critical Listening & Perception
+Stereo-width recognition,Critical Listening & Perception
+Image-position recognition,Critical Listening & Perception
+Depth recognition,Critical Listening & Perception
+Room-size perception,Critical Listening & Perception
+Direct-to-reverberant balance,Critical Listening & Perception
+Loudness matching,Critical Listening & Perception
+Anchoring bias,Critical Listening & Perception
+Order effects in listening tests,Critical Listening & Perception
+Memory limitations in audio comparison,Critical Listening & Perception
+Training transfer,Critical Listening & Perception
+Controlled listening-test design,Critical Listening & Perception
+ABX testing,Critical Listening & Perception
+Double-blind testing,Critical Listening & Perception
+Statistical significance,Critical Listening & Perception
+Practical significance,Critical Listening & Perception
+Preference versus detection,Critical Listening & Perception
+Sound-pressure exposure,Audio Safety (Concepts)
+Exposure duration,Audio Safety (Concepts)
+Exchange rate,Audio Safety (Concepts)
+Dose calculation,Audio Safety (Concepts)
+Peak versus continuous exposure,Audio Safety (Concepts)
+Hidden hearing damage,Audio Safety (Concepts)
+Ototoxic exposure,Audio Safety (Concepts)
+Individual susceptibility,Audio Safety (Concepts)
+Earplug attenuation,Audio Safety (Concepts)
+Real-world versus labeled attenuation,Audio Safety (Concepts)
+Fit testing,Audio Safety (Concepts)
+Bone-conduction limits of hearing protection,Audio Safety (Concepts)
+In-ear-monitor exposure,Audio Safety (Concepts)
+Headphone-output uncertainty,Audio Safety (Concepts)
+Equal-loudness effects on monitoring decisions,Audio Safety (Concepts)
+Feedback hazards,Audio Safety (Concepts)
+Impulse-noise hazards,Audio Safety (Concepts)
+Electrical shock risk,Audio Safety (Concepts)
+Phantom-power hazards,Audio Safety (Concepts)
+Grounding safety,Audio Safety (Concepts)
+Mains isolation,Audio Safety (Concepts)
+Rigging and suspended-load safety,Audio Safety (Concepts)
+Loudspeaker tip-over risk,Audio Safety (Concepts)
+Cable-trip hazards,Audio Safety (Concepts)
+Battery thermal hazards,Audio Safety (Concepts)
+Laser and optical-audio-system hazards,Audio Safety (Concepts)
+Safe test-tone levels,Audio Safety (Concepts)
+Ultrasonic exposure considerations,Audio Safety (Concepts)
+Symptom versus cause,Troubleshooting Concepts
+Signal-flow tracing,Troubleshooting Concepts
+Divide-and-conquer troubleshooting,Troubleshooting Concepts
+Substitution testing,Troubleshooting Concepts
+Known-good references,Troubleshooting Concepts
+Input versus output fault isolation,Troubleshooting Concepts
+Intermittent faults,Troubleshooting Concepts
+Thermal faults,Troubleshooting Concepts
+Mechanical faults,Troubleshooting Concepts
+Ground faults,Troubleshooting Concepts
+Clocking faults,Troubleshooting Concepts
+Polarity mismatch,Troubleshooting Concepts
+Phase misalignment,Troubleshooting Concepts
+Gain-structure faults,Troubleshooting Concepts
+Clipping-point identification,Troubleshooting Concepts
+Noise-source localization,Troubleshooting Concepts
+Hum-frequency diagnosis,Troubleshooting Concepts
+Buzz-harmonic diagnosis,Troubleshooting Concepts
+Capacitive coupling,Troubleshooting Concepts
+Inductive coupling,Troubleshooting Concepts
+Ground-loop diagnosis,Troubleshooting Concepts
+Shield-current problems,Troubleshooting Concepts
+Pin-1 problems,Troubleshooting Concepts
+Load instability,Troubleshooting Concepts
+Amplifier protection modes,Troubleshooting Concepts
+Loudspeaker polarity testing,Troubleshooting Concepts
+Driver failure detection,Troubleshooting Concepts
+Cable-continuity testing,Troubleshooting Concepts
+Balanced-line testing,Troubleshooting Concepts
+Network-audio packet loss,Troubleshooting Concepts
+Clock-master conflict,Troubleshooting Concepts
+Buffer and latency faults,Troubleshooting Concepts
+Firmware and configuration mismatch,Troubleshooting Concepts
+Measurement-tool misuse,Troubleshooting Concepts
+Confirmation bias in troubleshooting,Troubleshooting Concepts
+Logarithms,Math & Physics for Audio
+Exponents,Math & Physics for Audio
+Scientific notation,Math & Physics for Audio
+Ratios,Math & Physics for Audio
+Proportionality,Math & Physics for Audio
+Inverse-square relationships,Math & Physics for Audio
+Complex numbers,Math & Physics for Audio
+Phasors,Math & Physics for Audio
+Vectors,Math & Physics for Audio
+Scalar versus vector quantities,Math & Physics for Audio
+Dot products,Math & Physics for Audio
+Cross products,Math & Physics for Audio
+Coordinate systems,Math & Physics for Audio
+Polar coordinates,Math & Physics for Audio
+Spherical coordinates,Math & Physics for Audio
+Trigonometric functions,Math & Physics for Audio
+Sine and cosine relationships,Math & Physics for Audio
+Radians versus degrees,Math & Physics for Audio
+Differential equations,Math & Physics for Audio
+Differentiation,Math & Physics for Audio
+Fourier transforms,Math & Physics for Audio
+Laplace transforms,Math & Physics for Audio
+Z-transforms,Math & Physics for Audio
+Probability distributions,Math & Physics for Audio
+Statistical averages,Math & Physics for Audio
+Variance,Math & Physics for Audio
+Probability density,Math & Physics for Audio
+Regression,Math & Physics for Audio
+Confidence intervals,Math & Physics for Audio
+Matrix operations,Math & Physics for Audio
+Eigenvalues,Math & Physics for Audio
+Eigenvectors,Math & Physics for Audio
+Modal decomposition,Math & Physics for Audio
+Boundary conditions,Math & Physics for Audio
+Radiation resistance,Math & Physics for Audio
+Radiation reactance,Math & Physics for Audio

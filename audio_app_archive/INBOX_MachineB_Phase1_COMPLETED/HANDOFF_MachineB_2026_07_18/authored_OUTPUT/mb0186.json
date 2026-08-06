@@ -1,0 +1,159 @@
+{
+ "batch": 186,
+ "topic": "Podcast Production",
+ "authored": [
+  {
+   "id": "848fada5-4637-4fc7-bac6-4f8dd7eeb6bf",
+   "term": "Playout room",
+   "fields": {
+    "definition": "A playout room (or playout centre) is the technical space in a broadcast or streaming facility where finished programme content and its schedule are assembled and transmitted, 'played out', to air or to a distribution network. It houses playout servers, broadcast automation, and master-control switching that insert idents, graphics, and advertising at their scheduled times.",
+    "plain_english": "A playout room is where a TV or streaming channel sends its shows out to viewers. Computers here follow a schedule and play each program at the right time. They also drop in things like logos and ads. Think of it as the room that runs the channel's whole daily lineup.",
+    "purpose_function": "It exists to turn a programme schedule into a continuous, on-time broadcast signal, automatically switching between shows, breaks, and branding so the channel runs without gaps.",
+    "practical_application": "A technician in the playout room loads the day's schedule into the automation system, confirms that media files and graphics are ingested and ready, and monitors the outgoing signal, stepping in manually if a clip fails or the schedule changes.",
+    "category": "Broadcast Facility",
+    "related_terms": ["Master control", "Production control room", "Sound control room", "Broadcast automation", "Transmission control room", "Playout server"],
+    "common_mistakes": ["Confusing playout with live production; playout transmits finished, scheduled content rather than creating it live", "Assuming playout is fully hands-off; operators must still monitor the output and handle failures", "Forgetting to confirm that media and graphics are ingested and ready before the scheduled air time"],
+    "scenario_contexts": ["Automatically airing a channel's evening lineup of pre-recorded shows and ad breaks", "Switching to a live feed from a production control room at the scheduled time", "Recovering on air when a scheduled clip is missing or corrupted"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (AES presents) - broadcast facilities and transmission", "EBU technical documentation on broadcast playout and master control workflows"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1e0034ec-1601-4430-815a-d6638f4f4c56",
+   "term": "Podcast studio",
+   "fields": {
+    "definition": "A podcast studio is a room or facility set up for recording, and sometimes live-streaming, podcast episodes, typically equipped with microphones, headphones, a mixer or audio interface, and acoustic treatment to control room reflections. It can range from a small treated booth to a multi-seat room fitted with cameras for a video podcast.",
+    "plain_english": "A podcast studio is a room built for recording podcasts. It has microphones, headphones, and a mixer to capture clear voices. The walls often have soft panels that cut echo. Many studios also add cameras so the show can be filmed as well as heard.",
+    "purpose_function": "It exists to give hosts and guests a quiet, acoustically controlled space with the gear needed to capture clean, consistent speech for an episode.",
+    "practical_application": "A technician sets up and gain-stages each microphone, hands out headphones, checks levels on the mixer or interface, and records the session while watching for clipping, background noise, and room echo.",
+    "category": "Recording Facility",
+    "related_terms": ["Production control room", "Sound control room", "Acoustic treatment", "Audio interface", "Microphone technique", "Live streaming"],
+    "common_mistakes": ["Recording in an untreated, echoey room and expecting a clean broadcast sound", "Setting microphone gain too high, causing clipping that cannot be fixed later", "Ignoring steady background noise such as HVAC or computer fans", "Not giving guests headphones, which leads to speaker bleed and echo in the recording"],
+    "scenario_contexts": ["Recording a multi-host interview with each speaker on a separate microphone track", "Streaming a live video podcast to an audience while also recording", "Tracking a solo narration episode in a small treated booth"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (AES presents) - studio acoustics and recording rooms", "Sound On Sound technical features on studio acoustic treatment and speech recording"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "53b1356f-21de-41ca-bd2b-1fae7d50b1d1",
+   "term": "Production control room",
+   "fields": {
+    "definition": "A production control room (PCR), also called a gallery, is the room in a television or live-video facility from which a programme is directed and technically controlled in real time. It houses the vision mixer/switcher, monitor wall, and operating positions for the director, technical director, and others who select shots, cue sources, and assemble the live output.",
+    "plain_english": "A production control room is the room where a live TV show is put together as it happens. Staff here watch many screens and pick which camera goes on air. The director calls the shots, and an operator switches between cameras and clips. It is the control center of a live broadcast.",
+    "purpose_function": "It exists to bring every video source, graphic, and cue into one place so a team can direct, switch, and assemble a live or recorded programme in real time.",
+    "practical_application": "A technician in the PCR routes camera and playback sources to the switcher, builds graphics and effects, and follows the director's cues to cut the live show, coordinating with the sound control room over intercom.",
+    "category": "Broadcast Facility",
+    "related_terms": ["Sound control room", "Playout room", "Vision mixer", "Master control", "Intercom", "Remote-production hub"],
+    "common_mistakes": ["Confusing the production control room with master control; the PCR builds the show, while master control transmits it", "Assuming the PCR handles the audio mix; the sound is usually mixed in a separate audio or sound control room", "Overlooking clear intercom communication, which is essential for cueing a live show"],
+    "scenario_contexts": ["Directing a multi-camera live news broadcast", "Cutting between cameras and replays during a live sports show", "Switching a video podcast or webcast that uses several camera angles"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (AES presents) - television and broadcast control rooms", "EBU technical documentation on television production and control-room workflows"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6d55ce02-8de4-4d8b-8457-f3bde0f23aa4",
+   "term": "Remote-integration facility",
+   "fields": {
+    "definition": "A remote-integration facility is a central production site used in the remote-integration (REMI) model, where camera, audio, and data feeds from a distant venue are carried back over IP or dedicated links and the programme is switched, mixed, and produced by staff who do not travel to the event. It concentrates the switcher, audio, graphics, and production crew in one permanent location that can serve many remote sites.",
+    "plain_english": "A remote-integration facility is a home base that produces live events happening far away. Cameras and microphones at the venue send their signals back over a network. The crew then switches and mixes the show from this central building. This saves sending a big truck and full team to every event.",
+    "purpose_function": "It exists to let one fixed, well-equipped facility produce events at many distant venues, cutting the cost and logistics of sending full crews and mobile units to each site.",
+    "practical_application": "A technician at the facility receives the venue feeds, confirms signal timing and sync, and works the switcher or audio mix locally while staying in contact with a small on-site crew handling cameras and connections.",
+    "category": "Broadcast Facility",
+    "related_terms": ["Remote-production hub", "Production control room", "Sound control room", "SMPTE ST 2110", "Master control", "Latency"],
+    "common_mistakes": ["Underestimating network latency and jitter, which can break lip-sync and cueing between the venue and the facility", "Assuming no on-site crew is needed; local staff still set up and troubleshoot at the venue", "Overlooking backup connectivity, since a single link failure can take the whole show off air"],
+    "scenario_contexts": ["Producing a regional sports game from a central facility without sending a production truck", "Mixing audio for a distant concert while cameras are operated on site", "Switching several venues' feeds through one facility across the same day"]
+   },
+   "sources": ["SMPTE material on ST 2110 IP infrastructure and remote/centralized production", "EBU technical documentation on remote production (REMI) workflows"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "11be7f99-d075-4ba3-a2e7-590bd9e2630c",
+   "term": "Remote-production hub",
+   "fields": {
+    "definition": "A remote-production hub is the centralized location in a remote (REMI) or distributed production workflow where signals from one or more remote venues are aggregated, and where switching, audio mixing, graphics, and production decisions are made. It acts as the nerve center that links on-site capture with a production team working elsewhere.",
+    "plain_english": "A remote-production hub is the central spot that runs live shows filmed somewhere else. Signals from the event travel over a network to this hub. Here the team switches cameras, mixes sound, and adds graphics. It links the people at the venue with the crew making the show.",
+    "purpose_function": "It exists to gather feeds from remote sites into one place so a central team can produce multiple events efficiently without traveling to each location.",
+    "practical_application": "A technician at the hub monitors incoming venue feeds, manages routing and sync, and supports the switching and audio teams, coordinating with on-site operators by intercom or messaging.",
+    "category": "Broadcast Facility",
+    "related_terms": ["Remote-integration facility", "Production control room", "Sound control room", "SMPTE ST 2110", "Latency", "Master control"],
+    "common_mistakes": ["Treating the hub as identical to a traditional control room; it must also manage long-distance links, latency, and remote sync", "Ignoring redundancy on the connections between the venue and the hub", "Assuming bandwidth alone guarantees quality, while latency and packet loss still matter"],
+    "scenario_contexts": ["Centralizing production of several live streams from different cities in one facility", "Running a live sports broadcast from a hub while cameras stay at the stadium", "Coordinating a remote video podcast with guests and cameras in separate locations"]
+   },
+   "sources": ["SMPTE material on ST 2110 IP infrastructure and centralized/remote production", "EBU technical documentation on remote production (REMI) workflows"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5e7b3ecd-ecf2-451a-a9f9-704f2ee6608b",
+   "term": "Self-supervised learning (audio)",
+   "fields": {
+    "definition": "Self-supervised learning (audio) is a machine-learning approach in which a model learns useful audio or speech representations from large amounts of unlabeled sound by solving pretext tasks it generates from the data itself, such as predicting masked or future portions of the signal. The pretrained model is then fine-tuned on much smaller labeled datasets for tasks like speech recognition or speaker identification.",
+    "plain_english": "Self-supervised learning lets a computer learn from audio that no one has labeled. The model hides part of a sound clip, then trains itself to guess the missing part. Doing this over huge amounts of speech teaches it the patterns of audio. Later, only a little labeled data is needed to fine-tune it for a real job, like writing out speech.",
+    "purpose_function": "It exists to cut the need for large hand-labeled datasets, letting models learn strong general audio representations from cheap, plentiful unlabeled recordings before being adapted to specific tasks.",
+    "practical_application": "In podcast and speech tools, self-supervised models such as wav2vec 2.0 or HuBERT power transcription, speaker recognition, and audio search after being fine-tuned on a small labeled set for the target task.",
+    "category": "Audio AI",
+    "related_terms": ["Speech-to-text", "Speaker diarization", "Machine learning", "Transfer learning", "Neural network", "Automatic speech recognition"],
+    "common_mistakes": ["Confusing self-supervised with unsupervised learning; here the training signal is created automatically from the data itself", "Assuming a pretrained model works well with no fine-tuning or adaptation to the target task", "Expecting good results on audio very different from the pretraining data, such as noisy or non-speech sound"],
+    "scenario_contexts": ["Pretraining a speech model on thousands of unlabeled podcast hours before fine-tuning it to transcribe episodes", "Building a speaker-recognition feature with only a small labeled dataset", "Improving transcription accuracy for accents by adapting a pretrained model"]
+   },
+   "sources": ["Mohamed et al., 'Self-Supervised Speech Representation Learning: A Review', IEEE Journal of Selected Topics in Signal Processing (2022)", "Baevski et al., 'wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations' (2020)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8c14b25d-80e1-4dff-9aba-f5d5954ceff6",
+   "term": "Sound control room",
+   "fields": {
+    "definition": "A sound control room, also called an audio control room (ACR), is the room in a television or live-production facility, separate from the production/vision control room, where a programme's audio is mixed and monitored. It houses the audio mixing console, monitoring loudspeakers, and processing, and is where the audio engineer (A1) balances microphones, playback, and other sources to loudness standards.",
+    "plain_english": "A sound control room is the room where a show's audio is mixed. It sits apart from the room that handles the video. Inside are a mixing desk, speakers, and an engineer who balances all the microphones and sound sources. Its job is to make sure the sound going out is clear and at the right level.",
+    "purpose_function": "It exists to give the audio engineer a quiet, acoustically controlled space to mix and monitor a programme's sound separately from the busy video control room.",
+    "practical_application": "The A1 engineer in the sound control room sets microphone levels, mixes sources live, and monitors loudness on meters to meet standards such as EBU R 128, coordinating with the director in the production control room.",
+    "category": "Broadcast Facility",
+    "related_terms": ["Production control room", "Playout room", "Mixing console", "Loudness (LUFS)", "EBU R 128", "Monitoring"],
+    "common_mistakes": ["Confusing the sound control room with the production control room; audio and video are usually controlled in separate rooms", "Mixing in a room with poor acoustics or the wrong monitor level, which gives an inaccurate picture of the sound", "Ignoring loudness standards, leading to programmes that are too loud or too quiet on air"],
+    "scenario_contexts": ["Mixing microphones and playback for a live TV broadcast", "Balancing commentary, crowd, and effects for a live sports show", "Metering a programme to EBU R 128 loudness before it airs"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers (AES presents) - broadcast audio control rooms and monitoring", "EBU Tech 3276 / EBU R 128 (listening conditions and programme loudness)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "28ce6451-8917-4264-9f7f-c9c84b10ed63",
+   "term": "Speaker diarization",
+   "fields": {
+    "definition": "Speaker diarization is the process of partitioning an audio recording into segments according to who is speaking, answering the question 'who spoke when' without necessarily knowing the speakers' identities. It typically combines speech detection, segmentation, and clustering of voice features so each segment is labeled with a distinct speaker.",
+    "plain_english": "Speaker diarization figures out who is talking and when in a recording. It splits the audio into pieces and groups together the parts spoken by the same voice. It does not need to know people's names; it just labels them as Speaker 1, Speaker 2, and so on. This is how a transcript can show who said each line.",
+    "purpose_function": "It exists to add speaker structure to audio, so transcripts and analytics can attribute each spoken segment to the right person even when the identities are unknown.",
+    "practical_application": "In podcast production, diarization is run alongside transcription so the finished transcript separates each host and guest, making editing, show notes, and captions easier.",
+    "category": "Audio AI",
+    "related_terms": ["Speech-to-text", "Self-supervised learning (audio)", "Automatic speech recognition", "Voice activity detection", "Speaker recognition", "Transcription"],
+    "common_mistakes": ["Confusing diarization (who spoke when) with speaker recognition (identifying a specific known person)", "Expecting accurate results on heavily overlapping speech, which remains hard for diarization", "Assuming diarization transcribes words; it only segments speakers and is usually paired with a separate transcription step"],
+    "scenario_contexts": ["Labeling each speaker in a multi-guest podcast transcript", "Separating talkers in a recorded meeting for minutes and search", "Preparing captions that show who is speaking in an interview"]
+   },
+   "sources": ["Anguera et al., 'Speaker Diarization: A Review of Recent Research', IEEE Transactions on Audio, Speech, and Language Processing, Vol. 20, No. 2 (2012)", "Park et al., 'A Review of Speaker Diarization: Recent Advances with Deep Learning', Computer Speech & Language (2022)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2598a00d-5db9-4699-a5be-0f7e621f659a",
+   "term": "Speech-to-text",
+   "fields": {
+    "definition": "Speech-to-text (STT), also known as automatic speech recognition (ASR), is the technology that converts spoken audio into written text. Modern systems use trained neural-network models to map the acoustic features of speech to words, often combined with a language model to improve accuracy on natural phrasing.",
+    "plain_english": "Speech-to-text turns spoken words into written text. Software listens to the audio and writes down what it hears. It is the tech behind voice typing, captions, and podcast transcripts. Modern systems use trained models that have heard huge amounts of speech, so they can handle many voices and accents.",
+    "purpose_function": "It exists to make spoken content available as text, enabling transcripts, captions, search, and voice control from audio input.",
+    "practical_application": "Podcast producers run episodes through speech-to-text to create transcripts, captions, and show notes, then correct names and terms the model misheard before publishing.",
+    "category": "Audio AI",
+    "related_terms": ["Speaker diarization", "Self-supervised learning (audio)", "Automatic speech recognition", "Transcription", "Language model", "Captioning"],
+    "common_mistakes": ["Assuming transcripts are perfect; STT still errs on names, jargon, accents, and crosstalk and needs proofreading", "Feeding in noisy or overlapping audio and expecting clean text", "Confusing speech-to-text (audio to text) with text-to-speech (text to audio), which is the reverse"],
+    "scenario_contexts": ["Generating a rough transcript of a podcast episode for editing and show notes", "Creating captions or subtitles for a video version of a show", "Making an episode searchable by indexing its transcribed text"]
+   },
+   "sources": ["Hinton et al., 'Deep Neural Networks for Acoustic Modeling in Speech Recognition', IEEE Signal Processing Magazine (2012)", "Mohamed et al., 'Self-Supervised Speech Representation Learning: A Review', IEEE Journal of Selected Topics in Signal Processing (2022)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

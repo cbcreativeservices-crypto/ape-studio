@@ -1,0 +1,43 @@
+{
+ "expert": "Learning/Cognition",
+ "group": 23,
+ "reviews": [
+  {"id": "97a27e20-d75f-443a-bed6-e4e1a5158133", "term": "Club translation", "verdict": "OK", "suggestions": []},
+  {"id": "1f62dd53-f7e4-4560-89f8-d096345ea07d", "term": "Collect All and Save", "verdict": "OK", "suggestions": []},
+  {"id": "fc75b7c7-eab0-4f4b-af8c-5796d187225d", "term": "Combinator", "verdict": "OK", "suggestions": []},
+  {"id": "45febc3d-d3d7-4122-9657-f7ae33ac0239", "term": "Comments View", "verdict": "OK", "suggestions": []},
+  {"id": "fc74f6e8-6f05-4172-8a80-321ef73c309d", "term": "Commit Track", "verdict": "OK", "suggestions": []},
+  {"id": "cdd14021-a52a-433b-a1d4-7da479fe03bc", "term": "Commit up to Insert", "verdict": "OK", "suggestions": []},
+  {"id": "c817cc5a-6514-4553-ac86-c57fabd5a53d", "term": "Commit up to Sends", "verdict": "OK", "suggestions": []},
+  {"id": "ae011b1f-9fbe-4996-b857-424f742d5b30", "term": "Comp row", "verdict": "OK", "suggestions": []},
+  {"id": "af982305-22e2-433b-a45e-b86d372984b5", "term": "Compliance verification", "verdict": "OK", "suggestions": []},
+  {"id": "794bbe54-5edd-4a8a-9b1a-c2a38d4339e8", "term": "Conditional trigger", "verdict": "OK", "suggestions": []},
+  {"id": "f5af3caf-6b3a-432e-a947-9cfd9b79d1e0", "term": "Console view", "verdict": "OK", "suggestions": []},
+  {"id": "b041884e-cc1f-4684-93bb-7c5933a12e29", "term": "Consolidated Window", "verdict": "OK", "suggestions": []},
+  {"id": "687084d1-ade7-4492-9fb6-61a186844ad3", "term": "Consumer playback optimization", "verdict": "OK", "suggestions": []},
+  {"id": "3549d563-6dac-4473-bf64-dd44a523bce2", "term": "Control-voltage routing (Reason)", "verdict": "MINOR", "suggestions": [
+    {"field": "difficulty", "severity": "Medium", "issue": "Tagged 'beginner', but CV/Gate patch routing is conceptually intermediate: it presupposes an understanding of modulation, LFOs, envelopes, gate/trigger signals, and modular-synth signal flow. A true beginner meeting this early has to absorb several unfamiliar prerequisites at once, raising cognitive load.", "suggestion": "Re-tag as 'intermediate' to match the prerequisite load, or (if it must stay beginner) add one scaffolding sentence in plain_english defining a 'control signal' vs an audio signal before invoking the modular-synth analogy, since a beginner may not know what a modular synth is."}
+  ]},
+  {"id": "76aff3e6-7b5b-4225-af18-d22783168198", "term": "Coverage shadow", "verdict": "OK", "suggestions": []},
+  {"id": "d91ce5f4-8292-4fcd-b2a0-f06ff8b48bc4", "term": "Crash sample", "verdict": "OK", "suggestions": []},
+  {"id": "f90739ad-ab09-440d-acc9-59afe78fe8f5", "term": "Crest-factor preservation", "verdict": "OK", "suggestions": []},
+  {"id": "91609764-dd59-4b6a-b4c9-fcee6ca228a8", "term": "Crossfader assignment", "verdict": "OK", "suggestions": []},
+  {"id": "dcab0751-8e6e-4e38-82ee-0a570de998d2", "term": "Crossfader curve", "verdict": "OK", "suggestions": []},
+  {"id": "b32b373e-124d-46db-b90d-e0d11116cd9d", "term": "Crowd noise floor", "verdict": "OK", "suggestions": []},
+  {"id": "79c8ba71-a97a-4bbb-8076-f318ede35504", "term": "Cubase project", "verdict": "OK", "suggestions": []},
+  {"id": "6ec18ae0-593e-490f-bc6a-42035d98c1c8", "term": "Custom action", "verdict": "OK", "suggestions": []},
+  {"id": "ff52ca10-c540-45f6-90a9-a3ad9733402d", "term": "Cycle area", "verdict": "OK", "suggestions": []},
+  {"id": "62095a0b-5c06-4513-81d4-bf7b1e8de528", "term": "Delivery certification", "verdict": "OK", "suggestions": []},
+  {"id": "70b98a9f-8992-493c-ab63-96c8fc304c4c", "term": "Delivery master", "verdict": "OK", "suggestions": []},
+  {"id": "66964129-22d9-41a8-b624-7e4eb3aa9e1a", "term": "Device activator", "verdict": "OK", "suggestions": []},
+  {"id": "8c23b53a-2c18-45e8-8aa3-9ba6b0a5bd77", "term": "Device chain", "verdict": "OK", "suggestions": []},
+  {"id": "9f1b6dd2-cf2c-4e05-90e5-c71955a04891", "term": "Device hot-swap", "verdict": "OK", "suggestions": []},
+  {"id": "5ac84a2b-4243-4675-9cab-def4d8e994b9", "term": "Device preset", "verdict": "OK", "suggestions": []},
+  {"id": "7d356379-cad5-4adf-8015-d823a117ab0f", "term": "Device translation", "verdict": "OK", "suggestions": []},
+  {"id": "bc0788a1-50f7-4202-bc7d-06224afba0bb", "term": "Device View", "verdict": "OK", "suggestions": []},
+  {"id": "b9ba74f9-4ee7-4829-a27a-9da94b16857c", "term": "Dial in the mix", "verdict": "OK", "suggestions": []},
+  {"id": "398abddd-eb60-4c00-9d71-471bf78b7dcd", "term": "Dialogue mixer", "verdict": "OK", "suggestions": []},
+  {"id": "d3ffcdfe-d4de-4736-9481-47eed9d5680e", "term": "Dialogue-only stem", "verdict": "OK", "suggestions": []},
+  {"id": "5ec7c16b-716e-4e74-948a-928bce7470d3", "term": "Digital Performer project", "verdict": "OK", "suggestions": []}
+ ]
+}

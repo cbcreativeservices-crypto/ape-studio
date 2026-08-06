@@ -1,0 +1,56 @@
+{
+ "batch": 408,
+ "topic": "Audio Plugin & DSP Development",
+ "terms": [
+  {
+   "id": "fb691af5-0b4e-4781-abe0-cbe791032ce6",
+   "term": "State serialization",
+   "topic": "Audio Plugin & DSP Development",
+   "seq": 1830,
+   "difficulty": "intermediate",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "ea3c5434-52a9-432c-858f-2c9e96e5243a",
+   "term": "Virtual Studio Technology plugin",
+   "topic": "Audio Plugin & DSP Development",
+   "seq": 1830,
+   "difficulty": "intermediate",
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

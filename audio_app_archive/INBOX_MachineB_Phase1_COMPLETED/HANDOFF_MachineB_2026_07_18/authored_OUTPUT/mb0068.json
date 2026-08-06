@@ -1,0 +1,159 @@
+{
+ "batch": 68,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "5aea73f6-251b-43ab-9499-b0606e049278",
+   "term": "Synthetic texture",
+   "fields": {
+    "definition": "A layer of sound produced by synthesizers or other electronic sources rather than acoustic instruments, used to add atmosphere, color, or depth to an arrangement.",
+    "plain_english": "A background sound made by a synth instead of a real instrument. It fills out a song and adds mood, like a soft pad humming under the band.",
+    "purpose_function": "It adds sonic color and fills space in an arrangement without bringing in another acoustic instrument, shaping mood and depth.",
+    "practical_application": "A producer records or programs synth pads, drones, or effects and blends them under the band to thicken the track.",
+    "category": "Arrangement",
+    "related_terms": ["Texture layering", "Timbre layering", "Tonal texture", "Pad", "Synthesizer"],
+    "common_mistakes": ["Letting the synth texture compete with the lead parts instead of sitting underneath", "Choosing a patch that clashes with the song's key or mood", "Adding so many layers that the mix turns cluttered and muddy"],
+    "scenario_contexts": ["Adding a warm pad under a sparse verse to keep the energy up", "Layering a synth drone beneath acoustic guitar for depth", "Building an electronic atmosphere for an intro before the band enters"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "535e7565-0120-4f81-8284-56282f334d83",
+   "term": "Tenor section balance",
+   "fields": {
+    "definition": "The adjustment of relative loudness and blend among the tenor voices or parts within an ensemble section so they sit correctly against the other sections.",
+    "plain_english": "Setting how loud the tenor singers or parts are next to the rest. The aim is for the tenor line to be heard clearly but still blend with the group.",
+    "purpose_function": "It ensures the tenor line supports the harmony at the right level, neither buried nor sticking out.",
+    "practical_application": "A tracking or mix engineer rides faders or coaches placement so the tenor part balances with the soprano, alto, and bass lines.",
+    "category": "Sectional Balance",
+    "related_terms": ["Sectional balance", "Blend", "Vocal layering", "Level balancing", "Tonal texture"],
+    "common_mistakes": ["Pushing the tenors so loud they cover the melody", "Treating the tenor part as a solo line and ignoring blend", "Setting balance in solo instead of against the full section"],
+    "scenario_contexts": ["Mixing a backing-vocal stack where the tenor part must sit under the lead", "Balancing a vocal group so each section stays clear", "Adjusting the tenor voices of a horn or string section in a band arrangement"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e1131d3d-87ec-45be-a9be-4d3ceed114c2",
+   "term": "Texture layering",
+   "fields": {
+    "definition": "The technique of combining multiple sound sources or parts to build a fuller, more complex overall texture in an arrangement.",
+    "plain_english": "Stacking several sounds together to make the music feel bigger and richer. It is like layering clothes to build a fuller outfit.",
+    "purpose_function": "It adds depth, width, and interest to an arrangement by combining complementary layers.",
+    "practical_application": "A producer stacks rhythm parts, pads, and doubles, then balances them so the layers blend into one thick texture.",
+    "category": "Arrangement",
+    "related_terms": ["Timbre layering", "Synthetic texture", "Tonal texture", "Doubling", "Blend"],
+    "common_mistakes": ["Layering sounds that share the same frequency range and clash", "Adding layers without checking the mix stays clear", "Forgetting to balance levels so one layer dominates"],
+    "scenario_contexts": ["Building a big chorus by stacking guitars, keys, and vocals", "Adding subtle layers to fill a thin-sounding verse", "Blending acoustic and electronic parts into one texture"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e0a8b552-b41e-483f-85bc-b8165cf63c0a",
+   "term": "Timbre layering",
+   "fields": {
+    "definition": "Combining sounds of differing tonal color, or timbre, so they fuse into a single composite tone that carries characteristics of each source.",
+    "plain_english": "Mixing sounds with different tone colors so they blend into one new sound. It is like mixing paint colors to get a shade you cannot get from just one.",
+    "purpose_function": "It creates richer or unique tones by blending the tonal qualities of several sources into one.",
+    "practical_application": "A producer layers, for example, a smooth sub with a gritty synth, or doubles a vocal with a different take, to shape one blended timbre.",
+    "category": "Arrangement",
+    "related_terms": ["Texture layering", "Synthetic texture", "Tonal texture", "Doubling", "Timbre"],
+    "common_mistakes": ["Layering timbres that mask each other instead of blending", "Not phase-aligning the layers so the combined tone thins out", "Choosing colors that clash rather than complement"],
+    "scenario_contexts": ["Blending two synth patches to build one signature lead", "Layering a real snare with a sample for a fuller tone", "Doubling a vocal with a different mic or take for color"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9a1ccf06-96f3-4a38-8254-4a9e940b9c74",
+   "term": "Tom gating",
+   "fields": {
+    "definition": "Applying a noise gate to tom-tom drum tracks so a channel passes sound only when a tom is struck, removing bleed from other drums and cymbals and controlling ring.",
+    "plain_english": "Using a gate so the tom mic is only open when the tom is hit. This cuts bleed from the rest of the kit and cleans up the drum sound.",
+    "purpose_function": "It reduces spill from cymbals and other drums into open tom mics, tightening the drum mix.",
+    "practical_application": "An engineer sets the gate threshold and timing on each tom channel so it opens on the hit and closes on the decay.",
+    "category": "Drum Processing",
+    "related_terms": ["Noise gate", "Tom mixing", "Tom sustain control", "Threshold", "Drum bleed"],
+    "common_mistakes": ["Setting the threshold too high so soft tom hits are cut off", "Using a fast release that chops off the natural tom decay", "Forgetting that loud bleed can falsely retrigger the gate"],
+    "scenario_contexts": ["Cleaning up open tom mics in a rock drum recording", "Live sound: gating toms to reduce spill and feedback risk", "Tightening a drum mix before adding room reverb"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8474b933-3f7d-45a2-a0d6-7503b1e469fa",
+   "term": "Tom mixing",
+   "fields": {
+    "definition": "The process of balancing, equalizing, and processing tom-tom tracks within a drum mix so they sound clear and punchy and blend with the rest of the kit.",
+    "plain_english": "Getting the toms to sound good in the drum mix. This means setting their level, tone, and effects so they hit hard and fit with the other drums.",
+    "purpose_function": "It makes tom fills sit powerfully and clearly, without overpowering the kit or disappearing behind the other drums.",
+    "practical_application": "An engineer sets tom levels, EQs out boxiness, may compress or gate them, and pans them to match the kit layout.",
+    "category": "Drum Processing",
+    "related_terms": ["Tom gating", "Tom resonance control", "Tom sustain control", "Panning", "Equalization"],
+    "common_mistakes": ["Boosting low mids and leaving the toms boomy and boxy", "Panning toms opposite to how the kit is actually set up", "Setting tom level only during fills, so they jump out too loud"],
+    "scenario_contexts": ["Mixing a drum kit for a rock track with big tom fills", "Balancing toms against kick and snare in a busy mix", "Panning toms across the stereo field to match the drummer's layout"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d331349b-526c-42e5-9518-b6fbbdd7a183",
+   "term": "Tom resonance control",
+   "fields": {
+    "definition": "Managing the resonant ringing of tom-toms through tuning, dampening, EQ, or gating so the sustained overtones support the drum sound rather than muddy it.",
+    "plain_english": "Taming the long ring a tom makes after it is hit. You can tune it, add dampening, or use EQ so the ring helps the sound instead of making it muddy.",
+    "purpose_function": "It keeps tom overtones musical and controlled, avoiding unwanted boom or clashing ring in the mix.",
+    "practical_application": "A tech tunes the heads and adds dampening at the kit, then an engineer uses EQ or gating to further shape the resonance.",
+    "category": "Drum Processing",
+    "related_terms": ["Tom sustain control", "Tom gating", "Tom mixing", "Dampening", "Equalization"],
+    "common_mistakes": ["Over-dampening so the toms sound dead and lifeless", "Cutting resonance with harsh EQ and losing the tom's body", "Ignoring room ring that adds to the resonance"],
+    "scenario_contexts": ["Taming ringy toms at a drum tracking session", "Controlling boomy tom resonance in a live room", "Using dampening gel on tom heads before recording"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7ae9fd82-f52d-438d-b88c-b76cf781c61c",
+   "term": "Tom sustain control",
+   "fields": {
+    "definition": "Controlling how long a tom-tom rings on after it is struck, using dampening, gating, or envelope shaping to set the decay length.",
+    "plain_english": "Deciding how long a tom keeps ringing after the hit. You can shorten it with dampening or a gate, or let it ring longer for a bigger sound.",
+    "purpose_function": "It matches tom decay to the song, keeping fills tight or leaving them open as the arrangement needs.",
+    "practical_application": "An engineer shortens tom sustain with a gate or dampening for tight modern styles, or leaves it long for a roomy, open sound.",
+    "category": "Drum Processing",
+    "related_terms": ["Tom gating", "Tom resonance control", "Tom mixing", "Dampening", "Decay"],
+    "common_mistakes": ["Cutting sustain so short the toms lose punch and body", "Relying only on a gate and skipping physical dampening", "Leaving toms ringing so long they clash with the next hit"],
+    "scenario_contexts": ["Tightening tom decay for a fast, punchy rock fill", "Leaving long sustain for an open, ambient drum sound", "Using moongel to shorten tom sustain during tracking"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "The Mixing Engineer's Handbook (Owsinski)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0aa8bcb1-6852-4734-8cf7-651b4afbb3d7",
+   "term": "Tonal texture",
+   "fields": {
+    "definition": "The overall tonal character of a sound or arrangement, arising from its harmonic and timbral content, describing how bright, warm, thick, or thin the combined sound feels.",
+    "plain_english": "The overall tone color of a sound or a whole mix. It describes whether things feel warm, bright, thick, or thin when you listen.",
+    "purpose_function": "It gives engineers a way to describe and shape the tonal feel of an arrangement so parts fit a wanted mood.",
+    "practical_application": "An engineer adjusts EQ, part choices, and layering to steer the tonal texture warmer or brighter to match the song.",
+    "category": "Arrangement",
+    "related_terms": ["Timbre layering", "Texture layering", "Synthetic texture", "Timbre", "Equalization"],
+    "common_mistakes": ["Confusing tonal texture with loudness", "Making every part bright so the whole mix turns harsh", "Judging tone only in solo and ignoring how parts combine"],
+    "scenario_contexts": ["Shaping a warm tonal texture for a mellow ballad", "Brightening the tonal texture of a dull-sounding mix", "Matching the tonal texture of overdubs to the original band tracks"]
+   },
+   "sources": ["Modern Recording Techniques (Huber & Runstein)", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

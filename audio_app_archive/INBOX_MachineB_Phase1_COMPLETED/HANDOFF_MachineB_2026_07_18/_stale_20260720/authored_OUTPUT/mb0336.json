@@ -1,0 +1,321 @@
+{
+ "batch": 336,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "d7b4b08f-914d-4b05-8be1-ec726260f9e3",
+   "term": "Onset",
+   "fields": {
+    "definition": "The onset is the moment a note or sound begins, the instant its amplitude starts rising from silence, marking the leading edge of the attack. In signal analysis it is the detected start time of an acoustic event, distinct from the attack (the rise itself) and the transient (the brief energetic burst around it).",
+    "plain_english": "The onset is the exact moment a sound starts. It is like the first tick you hear when a drum is hit, before the note fully blooms.",
+    "purpose_function": "Marking the onset lets engineers and software line up the true start of each note for timing, editing, and rhythmic analysis.",
+    "practical_application": "A technician relies on onset points when quantizing drums, tightening edits, or setting a gate or transient shaper to trigger on a note's true start.",
+    "category": "Attack",
+    "related_terms": [
+     "Attack",
+     "Transient",
+     "Decay",
+     "Sustain",
+     "Envelope",
+     "Transient shaper"
+    ],
+    "common_mistakes": [
+     "Confusing the onset (when the sound starts) with the attack (how fast it rises to its peak).",
+     "Placing an edit or gate slightly after the onset, which cuts off the note's leading edge.",
+     "Assuming onset detection is exact on soft or slow-building sounds, where the true start is gradual and hard to pin down."
+    ],
+    "scenario_contexts": [
+     "Quantizing a multitracked drum kit by aligning each hit to its onset.",
+     "Setting a noise gate to open at a vocal's onset without clipping the first consonant.",
+     "Using onset detection in a DAW to slice a loop into individual hits."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "047e4d12-505c-449a-b443-f898e82c5bc8",
+   "term": "Open wash",
+   "fields": {
+    "definition": "Open wash is a broad, undamped blend of sustained, overlapping sound with no clear pitch or transient focus, such as the ringing spread of open cymbals or a diffuse reverb tail. It is heard as a continuous, blurry layer of energy rather than as distinct notes.",
+    "plain_english": "An open wash is a wide, blurry cloud of sound that keeps ringing. Think of crash cymbals or a big echo smearing together into one smooth haze.",
+    "purpose_function": "Naming it helps a technician spot when sustained, undamped sound is filling space and masking detail, so they can judge whether it adds atmosphere or clutters the mix.",
+    "practical_application": "An engineer hears an open wash when open cymbals or heavy reverb blur a mix, and may dampen the source or shorten the reverb to regain clarity.",
+    "category": "Resonance",
+    "related_terms": [
+     "Reverb tail",
+     "Cymbal wash",
+     "Sustain",
+     "Overtone ring",
+     "Decay",
+     "Masking"
+    ],
+    "common_mistakes": [
+     "Mistaking an open wash of reverb for a problem with the source instrument itself.",
+     "Letting cymbal wash build up unchecked until it masks vocals and bleeds into every drum mic.",
+     "Adding more reverb to fix a thin mix and turning it into an indistinct wash."
+    ],
+    "scenario_contexts": [
+     "A live drummer rides open cymbals, creating a wash that blurs the whole kit mix.",
+     "A long hall reverb on many tracks blends into a single open wash.",
+     "An ambient guitar part and reverb combine into a continuous wash of sound."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "133a07ea-1026-430c-b194-b920726789f8",
+   "term": "Overtone ring",
+   "fields": {
+    "definition": "Overtone ring is the audible, sustained resonance of one or more overtones (harmonic or inharmonic partials) that keep sounding after the fundamental attack, often as an unwanted ringing on drums, cymbals, or strings. It is heard as a pitched or metallic ringing tail sitting above the main note.",
+    "plain_english": "Overtone ring is a high, ringing tone that keeps buzzing after you hit something. A drum that goes 'boinnng' after the hit is ringing with overtones.",
+    "purpose_function": "Identifying overtone ring lets a technician decide whether the resonance is musical or an unwanted artifact that needs damping or retuning.",
+    "practical_application": "A technician damps a ringing tom with a muffling ring or gel, or retunes the heads, to control overtone ring before recording.",
+    "category": "Resonance",
+    "related_terms": [
+     "Resonance",
+     "Overtone",
+     "Sustain",
+     "Damping",
+     "Decay",
+     "Sympathetic resonance"
+    ],
+    "common_mistakes": [
+     "Confusing an instrument's natural overtones with an unwanted overtone ring that should be tamed.",
+     "Over-damping a drum to remove ring until it sounds dead and lifeless.",
+     "Trying to EQ out a ring that is really a tuning problem in the drum heads."
+    ],
+    "scenario_contexts": [
+     "A tom rings loudly after each hit and needs damping before tracking.",
+     "A snare produces a metallic overtone ring picked up by nearby mics.",
+     "A guitar string keeps ringing sympathetically and colors sustained chords."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "49c8fdcc-7ec1-40d9-a7e5-8b6713efb1c5",
+   "term": "Pad click",
+   "fields": {
+    "definition": "Pad click is a short click or transient heard at the onset of a sustained synth or sampler 'pad' sound, typically caused by an abrupt amplitude-envelope attack or a waveform discontinuity at the sample start or loop point. It is an unwanted artifact riding on the front of an otherwise smooth, slow-swelling sound.",
+    "plain_english": "A pad click is a tiny click at the very start of a smooth, floaty synth sound. It happens when the sound switches on too suddenly instead of easing in.",
+    "purpose_function": "Spotting a pad click tells the technician the sound is starting too abruptly, so they can soften the attack or fix the waveform start.",
+    "practical_application": "A producer lengthens the amplitude envelope's attack or adds a tiny fade at the sample start to remove a click from a pad patch.",
+    "category": "Noise artifact",
+    "related_terms": [
+     "Attack",
+     "Envelope",
+     "Transient",
+     "Zipper noise",
+     "Fade",
+     "Onset"
+    ],
+    "common_mistakes": [
+     "Blaming the click on the audio interface when it is really the patch's envelope.",
+     "Setting a pad's attack to zero, which reintroduces a click on every note.",
+     "Editing a sample loop without zero-crossing edits, leaving clicks at the seams."
+    ],
+    "scenario_contexts": [
+     "A slow synth pad clicks on every note because its attack is set too fast.",
+     "A looped sampler pad clicks at the loop point during sustained chords.",
+     "A bounced pad track shows clicks where fades were not applied at region edits."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Sound on Sound (technical articles)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ee553c50-dc7f-451f-80a9-861b1f94df81",
+   "term": "Palm mute",
+   "fields": {
+    "definition": "Palm mute is a guitar and bass articulation in which the side of the picking-hand palm rests lightly on the strings near the bridge while picking, damping the strings to shorten their decay and give a tight, muffled, percussive tone. The amount of muting varies with palm pressure and distance from the bridge.",
+    "plain_english": "A palm mute is when a guitarist rests the edge of their hand on the strings near the bridge while playing. This makes the notes short and chunky instead of ringing out.",
+    "purpose_function": "Palm muting controls sustain and adds a tight, percussive attack, letting a player create rhythmic 'chug' parts and dynamic contrast.",
+    "practical_application": "An engineer recognizes palm-muted guitar by its short, thick, low-sustain notes and may adjust gating, compression, or mic choice to capture the tight attack cleanly.",
+    "category": "Articulation",
+    "related_terms": [
+     "Damping",
+     "Attack",
+     "Decay",
+     "Sustain",
+     "Transient",
+     "Muting"
+    ],
+    "common_mistakes": [
+     "Confusing a palm mute (bridge-hand damping) with fretting-hand muting, which sounds different.",
+     "Pressing too hard and choking the note into a dead thud with no pitch.",
+     "Assuming heavy distortion alone gives the 'chug' when the tightness actually comes from the palm mute."
+    ],
+    "scenario_contexts": [
+     "Recording a metal rhythm guitar built on fast palm-muted chugs.",
+     "Adding palm-muted verses for dynamic contrast against ringing choruses.",
+     "Setting a gate that must not cut the short decay of palm-muted notes."
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Music and Musicians",
+    "Fletcher & Rossing, The Physics of Musical Instruments"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fc76b014-6a4f-403e-afe9-6252202bf20a",
+   "term": "Pedal click",
+   "fields": {
+    "definition": "Pedal click is a short, sharp mechanical click captured in a recording when a foot pedal engages or releases, for example a piano sustain pedal's trapwork, an organ pedal action, or an effects footswitch or relay. It is a brief transient artifact unrelated to the musical note.",
+    "plain_english": "A pedal click is a quick clicking sound made by a foot pedal's parts. It sneaks into the recording when someone presses or releases the pedal.",
+    "purpose_function": "Identifying a pedal click tells the technician a mechanical noise is entering the signal, so they can service, adjust, or re-mic to keep it out.",
+    "practical_application": "A technician traces a click on a piano track to the sustain pedal mechanism and repositions mics or services the pedal to reduce it.",
+    "category": "Mechanical artifact",
+    "related_terms": [
+     "Pedal noise",
+     "Pedal thump",
+     "Pedal squeak",
+     "Mechanical noise",
+     "Transient",
+     "Bleed"
+    ],
+    "common_mistakes": [
+     "Mistaking a mechanical pedal click for a digital glitch or a bad edit.",
+     "Placing a mic close to the pedal trapwork, which captures every click.",
+     "Trying to EQ out the click transient instead of fixing the mechanical source."
+    ],
+    "scenario_contexts": [
+     "A grand piano recording has a faint click each time the sustain pedal lifts.",
+     "A guitar DI track has a click whenever a true-bypass pedal is switched.",
+     "An organ recording picks up clicks from the pedalboard action."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5616ba38-5d1b-4c30-93e8-0247a3879cfb",
+   "term": "Pedal noise",
+   "fields": {
+    "definition": "Pedal noise is any unwanted mechanical noise produced by an instrument's foot pedal and captured in a recording, including clicks, squeaks, thumps, and rattles from the pedal's linkage, springs, or contact points. It is a broad category of pedal-related artifact rather than one specific sound.",
+    "plain_english": "Pedal noise is any unwanted sound made by a foot pedal's moving parts. It covers the clicks, squeaks, and thumps that leak into the recording.",
+    "purpose_function": "Grouping these sounds as pedal noise helps a technician diagnose that the problem is the pedal mechanism, not the instrument's tone or the electronics.",
+    "practical_application": "When a technician hears pedal noise on a track, they service or lubricate the pedal and adjust mic placement to keep it below the noise floor.",
+    "category": "Mechanical artifact",
+    "related_terms": [
+     "Pedal click",
+     "Pedal squeak",
+     "Pedal thump",
+     "Mechanical noise",
+     "Noise floor",
+     "Bleed"
+    ],
+    "common_mistakes": [
+     "Assuming pedal noise is an electrical fault rather than a mechanical one.",
+     "Ignoring pedal noise during tracking and only noticing it once the mix is quiet.",
+     "Boosting a track's level and raising the audible pedal noise along with it."
+    ],
+    "scenario_contexts": [
+     "A close-miked piano captures pedal noise during soft passages.",
+     "A pedal-harp recording reveals mechanical noise from the pedals.",
+     "A quiet ballad exposes pedal noise that was masked in louder sections."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "535b5ec1-a3aa-4b46-9cd8-51c6631f12fe",
+   "term": "Pedal squeak",
+   "fields": {
+    "definition": "Pedal squeak is a high-pitched squeal or creak from friction in a dry or worn foot-pedal pivot, hinge, or spring, commonly a piano sustain pedal or a drum kick pedal, captured as an unwanted artifact. It is heard as a thin, rising squeak tied to pedal movement.",
+    "plain_english": "A pedal squeak is a high, whiny squeal from a dry foot pedal. It is the same kind of squeak a rusty door hinge makes when it moves.",
+    "purpose_function": "Recognizing a pedal squeak points the technician straight to a friction point that needs lubrication or repair before recording.",
+    "practical_application": "A technician lubricates a squeaky kick-pedal spring or piano pedal hinge, or times pedal moves around the squeak, to keep it off the recording.",
+    "category": "Mechanical artifact",
+    "related_terms": [
+     "Pedal noise",
+     "Pedal click",
+     "Pedal thump",
+     "Mechanical noise",
+     "Bleed",
+     "Noise floor"
+    ],
+    "common_mistakes": [
+     "UNSAFE: spraying a flammable or conductive aerosol lubricant near electronics, pickups, or heat sources instead of using the correct dry lubricant.",
+     "Mistaking a kick-pedal squeak for a squeak in the drum head or the stand.",
+     "Only noticing the squeak after tracking, when it is already baked into the take."
+    ],
+    "scenario_contexts": [
+     "A kick drum track has a squeak on every beater stroke from a dry pedal.",
+     "A grand piano recording squeaks each time the sustain pedal is pressed.",
+     "A hi-hat pedal squeaks during quiet verses and is caught by nearby mics."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9ad52f26-cab4-4660-99ed-61bf4f2ced43",
+   "term": "Pedal thump",
+   "fields": {
+    "definition": "Pedal thump is a low-frequency thump or thud transmitted through the floor or instrument when a foot pedal is operated, such as a piano sustain pedal seating, a kick-pedal footboard, or a stomp on a stage riser, and picked up by microphones. It is a dull, low-end artifact rather than a pitched note.",
+    "plain_english": "A pedal thump is a low, dull thud you hear when a foot pedal is pressed hard. It is like the soft boom of a footstep picked up by the mics.",
+    "purpose_function": "Spotting pedal thump tells the technician that low-frequency mechanical energy is entering through the floor or instrument, so they can isolate or filter it.",
+    "practical_application": "A technician isolates the instrument on a riser or mat and applies a high-pass filter to reduce pedal thump without thinning the instrument.",
+    "category": "Mechanical artifact",
+    "related_terms": [
+     "Pedal noise",
+     "Pedal click",
+     "Pedal squeak",
+     "High-pass filter",
+     "Rumble",
+     "Isolation"
+    ],
+    "common_mistakes": [
+     "Trying to fix pedal thump only with EQ instead of isolating the source from the floor.",
+     "High-passing so aggressively that the instrument loses needed low end.",
+     "Placing mics or stands in direct mechanical contact with a resonant floor."
+    ],
+    "scenario_contexts": [
+     "A close-miked upright piano thumps each time the sustain pedal is seated.",
+     "A kick pedal's footboard sends a low thump into the floor tom mics.",
+     "A stage riser transmits a thump to vocal mics when a pedal is stomped."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

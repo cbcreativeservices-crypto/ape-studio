@@ -1,0 +1,237 @@
+{
+ "expert": "cognition",
+ "group": 51,
+ "reviews": [
+  {
+   "id": "0943d178-1f51-4e8f-b3bb-07909e154245",
+   "term": "Universal Design",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9bd1aa76-0366-4999-bac4-6c9d551ad9a3",
+   "term": "Upgrade Path",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f5788783-c0d6-4a24-9086-548de6e2873f",
+   "term": "Upstage",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Medium",
+     "issue": "The third listed mistake ('Reading the direction from the audience's view rather than the performer's facing-the-audience frame') imports a viewpoint-dependence that does not apply to the upstage/downstage axis. Upstage is universally the back wall for both audience and performer; only stage-left/right flips with viewpoint. As written it can teach a beginner a wrong mental model (that upstage flips with perspective).",
+     "suggestion": "Remove the third mistake, or reframe it to something true for this axis, e.g. 'Thinking upstage means physically higher/elevated, rather than simply farther from the audience.' Mistakes #1 (reversing up/down) and #2 (raked-stage origin) already cover the real misconceptions."
+    }
+   ]
+  },
+  {
+   "id": "a50e1029-27b2-4b0a-86f1-bb50093fad48",
+   "term": "Upward Compression",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4eb15528-4605-47ac-bc7b-b59fcbedad28",
+   "term": "USB audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a5d57802-17ad-4e6a-a48e-115ef7bd0344",
+   "term": "USB microphone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "67783d6c-0250-4961-8bcd-827b0af09a75",
+   "term": "USB-B",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "78264b72-ab53-4895-9b38-7c65fce9347b",
+   "term": "USB-C",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f2221e1f-639c-474f-9290-9052c4c0e916",
+   "term": "User Orientation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2e16e5d8-aa88-4da5-a3c8-d89ce49af372",
+   "term": "User Training",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "687b7510-a5fb-4bef-b058-ce3a3e651c12",
+   "term": "Vacuum tube",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b58eb984-4c5d-4733-a1e1-1b38b15e25e5",
+   "term": "Valve",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7dbe031b-0615-4080-bf38-0b5cd06a6a42",
+   "term": "Variable acoustics",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "related_terms lists 'Diffraction', but the entry's own purpose describes changing 'absorption or diffusion.' The natural knowledge-map counterpart to Absorption here is Diffusion (scattering), not Diffraction (bending of waves around edges). A learner exploring this term is pointed at the wrong neighboring concept.",
+     "suggestion": "Replace 'Diffraction' with 'Diffusion' to match the concept the entry actually teaches and pair correctly with 'Absorption'."
+    }
+   ]
+  },
+  {
+   "id": "ed6ea205-ac45-4579-8867-c5a1f047f723",
+   "term": "Variable-Mu Compressor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5b2423cc-9665-4acf-9159-975e3fcef3e8",
+   "term": "VCA (voltage-controlled amplifier)",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "related_terms",
+     "severity": "Low",
+     "issue": "related_terms includes 'Buffer Size', a digital-audio driver-latency concept with no conceptual link to a VCA (an analog voltage-controlled gain element). It reads as a non-sequitur in the knowledge map and could puzzle a learner.",
+     "suggestion": "Replace 'Buffer Size' with a genuinely related item such as 'VCA Group' or 'Automation'."
+    }
+   ]
+  },
+  {
+   "id": "3c2201d7-be53-4e49-8d21-eba9f385f87b",
+   "term": "VCA Compressor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "acece69f-7983-4c60-a310-217c7fca7aef",
+   "term": "VCA Group",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "983747ec-bf36-4760-897c-70fe4be8a4db",
+   "term": "VHF Band",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a6093f0b-2bb8-4ee7-a37a-030fabd34ed2",
+   "term": "Vibrato",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a1ad8159-744a-49c2-9a9e-0efc18a2728b",
+   "term": "Video Conference",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "79e289e0-bc0a-4491-b656-dbae87a10227",
+   "term": "Vocal Prioritization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7f212ebf-028c-4cce-8cbe-235fd7f779b1",
+   "term": "Voice coil",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f3526f37-91cd-4b09-b45d-213fd27e2234",
+   "term": "Voice Evacuation System",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0c1a7ff2-39ed-4c2e-b1de-b98cab7eefa5",
+   "term": "Voltage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "774ae2ec-f998-4e58-86bb-661d081382f5",
+   "term": "Voltage check",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5d980bfd-df04-4a31-b1b2-2074f9330d1c",
+   "term": "Voltage Drop",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5f288996-624f-48fb-b6f4-cbb08bfda35f",
+   "term": "Voltage Drop (Vehicle)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "31cb6d8c-7217-48c9-b0bf-632d1a32aae2",
+   "term": "Voltage Regulator",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "285e9a36-cbe9-4a78-824d-638dbe6ae8e7",
+   "term": "Voltage sag",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "66fba01a-5f93-47cf-9d55-c4f0ff8e4811",
+   "term": "Voltage surge",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e70edd39-8b0c-4f6e-a7fc-1b31e48778dc",
+   "term": "Volume",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d73125aa-0dd5-41e3-ab47-0f13c782ed42",
+   "term": "VU Meter (Volume Unit Meter)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "82b1728e-d824-45a3-8fe6-db501e55b485",
+   "term": "Walk test",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "730e0df0-cacb-4875-a4c8-c231d9ffba7c",
+   "term": "Walk-On Music",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "2ec2746c-14ae-4533-af63-f194a85d0df5",
+   "term": "Walk-up Music",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

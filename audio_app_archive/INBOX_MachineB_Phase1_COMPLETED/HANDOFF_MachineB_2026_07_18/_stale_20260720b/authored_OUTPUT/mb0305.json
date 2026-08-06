@@ -1,0 +1,159 @@
+{
+ "batch": 305,
+ "topic": "Psychoacoustics",
+ "authored": [
+  {
+   "id": "27b4b899-941d-494e-897c-ea1df168f864",
+   "term": "Loudness perception study",
+   "fields": {
+    "definition": "A controlled psychoacoustic investigation of how perceived loudness relates to the physical properties of a sound, such as sound-pressure level, frequency, bandwidth, and duration. Such studies yield equal-loudness contours and loudness scales (phon and sone) that link measured intensity to subjective loudness.",
+    "plain_english": "A test that measures how loud sounds seem to people, not just how strong a meter says they are. It shows that our ears hear some pitches as louder than others at the same level.",
+    "purpose_function": "It quantifies the gap between measured level and perceived loudness so that meters, weighting curves, and loudness-normalization standards can be built to reflect human hearing.",
+    "practical_application": "Technicians benefit from these results through A-weighting, equal-loudness compensation, and LUFS metering when setting mix levels or matching program loudness across content.",
+    "category": "Psychoacoustic testing",
+    "related_terms": ["Equal-loudness contour", "Phon", "Sone", "A-weighting", "LUFS", "Auditory masking"],
+    "common_mistakes": ["Assuming a level meter reading equals perceived loudness at every frequency", "Confusing loudness (a perception) with sound-pressure level (a physical measure)", "Treating equal-loudness contours as fixed for all listeners and playback levels"],
+    "scenario_contexts": ["Setting loudness-normalization (LUFS) targets for a streaming or broadcast mix", "Explaining why a mix sounds bass-light when played back quietly", "Choosing a weighting curve for a sound-level measurement"]
+   },
+   "sources": ["Zwicker & Fastl, Psychoacoustics: Facts and Models (Springer)", "ISO 226:2003 Normal equal-loudness-level contours", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f9000789-fa12-476b-83b8-6cc54e48c12f",
+   "term": "Masking experiment",
+   "fields": {
+    "definition": "A psychoacoustic test that measures how the presence of one sound (the masker) raises the threshold of audibility of another sound, either in the frequency domain (simultaneous masking) or the time domain (temporal masking). Results define masking curves and critical bands that describe the limits of what a listener can hear.",
+    "plain_english": "A test that shows how one sound can hide another so you cannot hear it. A loud tone can bury a soft tone near it in pitch, like a shout hiding a whisper.",
+    "purpose_function": "It reveals which sounds the ear cannot detect in the presence of others, providing the data that underpins critical-band models and perceptual audio coding.",
+    "practical_application": "Codec developers and mix engineers use masking data to predict when noise, artifacts, or quiet instruments will be hidden by louder material.",
+    "category": "Psychoacoustic testing",
+    "related_terms": ["Auditory masking", "Critical band", "Simultaneous masking", "Temporal masking", "Threshold of hearing", "Perceptual coding"],
+    "common_mistakes": ["Assuming a sound is inaudible just because it is lower in level than another", "Ignoring temporal masking and considering only same-time masking", "Confusing the critical band with a fixed-width filter at all frequencies"],
+    "scenario_contexts": ["Predicting whether a quiet reverb tail will be heard under a loud guitar", "Designing or evaluating an MP3/AAC encoder's masking model", "Deciding EQ moves to unmask a vocal buried by other instruments"]
+   },
+   "sources": ["Zwicker & Fastl, Psychoacoustics: Facts and Models (Springer)", "Moore, An Introduction to the Psychology of Hearing", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fb24d399-9147-44dc-bb65-57cf7292ffc6",
+   "term": "Perceptual coding evaluation",
+   "fields": {
+    "definition": "The subjective and objective assessment of how audible the artifacts of a lossy (perceptual) codec are, typically using standardized listening tests such as ITU-R BS.1116 for small impairments or BS.1534 (MUSHRA) for intermediate quality. It rates codec quality at a given bitrate by comparing coded audio against a hidden reference.",
+    "plain_english": "A listening test that checks how good a squeezed audio file, like an MP3, sounds to real people. It finds out whether the parts thrown away to shrink the file can be heard.",
+    "purpose_function": "It verifies that a codec removes only inaudible information and measures any remaining quality loss so bitrate and algorithm choices can be validated against human hearing.",
+    "practical_application": "Broadcast and streaming engineers use these evaluations to choose codecs and bitrates that stay transparent for their delivery format.",
+    "category": "Subjective evaluation",
+    "related_terms": ["Perceptual coding", "MUSHRA", "ABX test", "Auditory masking", "Bitrate", "Codec"],
+    "common_mistakes": ["Judging codec quality by bitrate alone instead of by controlled listening tests", "Running sighted, non-blind comparisons that bias the result", "Assuming transparency on one clip means transparency for all program material"],
+    "scenario_contexts": ["Choosing a streaming bitrate that stays transparent for music", "Comparing two codecs for a broadcast delivery chain", "Verifying that a new encoder build adds no audible artifacts"]
+   },
+   "sources": ["ITU-R BS.1116-3 Methods for the subjective assessment of small impairments", "ITU-R BS.1534-3 (MUSHRA)", "AES publications on perceptual audio coding"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0693ca2d-f09e-480e-b142-14ea41c69287",
+   "term": "Preference testing",
+   "fields": {
+    "definition": "A subjective listening method in which listeners indicate which of two or more presented stimuli they prefer, often by paired comparison, producing preference scores or rankings. It measures liking or perceived quality rather than the detectability of a specific impairment.",
+    "plain_english": "A test that asks listeners which of two sounds they like better. It helps pick the option most people enjoy, like a taste test for audio.",
+    "purpose_function": "It captures listener opinion where no single physical measure defines 'better', guiding product, tuning, and mix decisions with votes that can be analyzed statistically.",
+    "practical_application": "Loudspeaker and headphone makers, and mix engineers, run preference tests to choose voicings, tunings, or mix versions that most listeners favor.",
+    "category": "Subjective evaluation",
+    "related_terms": ["Paired comparison", "MUSHRA", "ABX test", "Double-blind test", "Subjective evaluation", "Listening test"],
+    "common_mistakes": ["Letting listeners see labels or brands, biasing their choices", "Not level-matching the options, so the louder one is simply preferred", "Using too few listeners to reach a statistically meaningful result"],
+    "scenario_contexts": ["Selecting a final headphone tuning from several candidates", "Choosing between two mix versions for release", "Voicing a loudspeaker for a target market"]
+   },
+   "sources": ["ITU-R BS.1534-3 (MUSHRA)", "Zwicker & Fastl, Psychoacoustics: Facts and Models (Springer)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d6556277-6753-46f1-a07c-6b10956d7a36",
+   "term": "Prototype converter design",
+   "fields": {
+    "definition": "An early, working design of an analog-to-digital or digital-to-analog converter built to validate its architecture and performance before production. It is tested for parameters such as resolution, sample rate, linearity, signal-to-noise ratio, and distortion, often including subjective listening evaluation.",
+    "plain_english": "The early, trial version of a chip or board that turns sound between analog and digital form. Engineers build and test it before making the final product.",
+    "purpose_function": "It lets engineers verify and refine a converter's real-world behavior, both measured specs and perceived sound, before committing to a final product.",
+    "practical_application": "Audio-interface and console developers audition prototype converters on the bench and in listening rooms to confirm they meet target specifications.",
+    "category": "Audio prototyping",
+    "related_terms": ["Analog-to-digital converter", "Digital-to-analog converter", "Sample rate", "Bit depth", "Signal-to-noise ratio", "Dithering"],
+    "common_mistakes": ["Trusting datasheet specs without bench-verifying and auditioning the actual prototype", "Assuming a higher sample rate or bit depth alone guarantees better sound", "UNSAFE: Reworking or probing powered prototype boards without proper ESD and electrical precautions"],
+    "scenario_contexts": ["Bench-testing a new audio interface's converter before production", "Comparing a prototype DAC against a reference converter in a listening room", "Validating the linearity and SNR of an early ADC board"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "AES17 Measurement of digital audio equipment", "AES publications on data converter design"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "19bedc23-36b0-4289-9210-0c13b76759df",
+   "term": "Prototype microphone array",
+   "fields": {
+    "definition": "An experimental assembly of multiple microphones arranged in a defined geometry, built to evaluate a capture or beamforming concept before final design. It is tested for directivity, phase relationships, and spatial-capture performance.",
+    "plain_english": "A first test build of several microphones set up in a fixed pattern. Engineers try it out to see how well it picks up sound before the real product is made.",
+    "purpose_function": "It allows engineers to validate array geometry and processing, such as beamforming or Ambisonic capture, against real acoustic conditions before productizing.",
+    "practical_application": "R&D teams use prototype arrays to trial new stereo, surround, or steerable-microphone designs in real rooms and outdoors.",
+    "category": "Audio prototyping",
+    "related_terms": ["Microphone array", "Beamforming", "Polar pattern", "Ambisonics", "Phase", "Comb filtering"],
+    "common_mistakes": ["Ignoring phase and spacing, causing comb filtering when array signals are summed", "Testing only in an ideal room and assuming the same results outdoors or on-site", "Confusing more microphones with automatically better spatial capture"],
+    "scenario_contexts": ["Trialing a new surround or Ambisonic capture rig in a concert hall", "Developing a steerable beamforming mic for conference rooms", "Testing array spacing for stereo imaging before a product launch"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Eargle, The Microphone Book", "AES publications on microphone arrays and spatial audio"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0712e71f-51ae-4045-834f-df4223fe5469",
+   "term": "Prototype signal chain",
+   "fields": {
+    "definition": "A trial configuration of the complete series of devices a signal passes through, such as microphone, preamplifier, converter, and processing, assembled to evaluate overall performance before a design is finalized. It is assessed end to end for gain structure, noise, headroom, and sound quality.",
+    "plain_english": "A trial setup of all the gear that sound passes through, from mic to recorder. Engineers build it to test how it sounds before locking in the final design.",
+    "purpose_function": "It lets engineers test how components interact as a whole, exposing noise, level, and coloration issues that individual specs may not reveal.",
+    "practical_application": "Developers and system integrators build a prototype signal chain to audition and measure a proposed recording or playback path before deployment.",
+    "category": "Audio prototyping",
+    "related_terms": ["Signal chain", "Gain staging", "Preamplifier", "Signal-to-noise ratio", "Headroom", "Analog-to-digital converter"],
+    "common_mistakes": ["Setting gain wrong so early stages add noise or later stages clip", "Judging the chain only by one component's specs, not the whole path", "UNSAFE: Making or breaking connections on powered, mains-connected gear instead of powering down first"],
+    "scenario_contexts": ["Auditioning a proposed mic-preamp-converter path for a new studio", "Measuring end-to-end noise and headroom of a trial recording rig", "Comparing two candidate signal paths before choosing gear"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook", "AES17 Measurement of digital audio equipment"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b834279a-80d6-4862-ac19-f9a3cbd17bd8",
+   "term": "Psychoacoustic experiment",
+   "fields": {
+    "definition": "A controlled scientific procedure that measures the relationship between physical sound stimuli and how human listeners perceive them, using methods such as thresholds, just-noticeable differences, and scaling under statistically designed conditions. It is the general experimental basis of psychoacoustics.",
+    "plain_english": "A careful test of how people actually hear sound. It measures things like the softest sound we can notice or how we tell two sounds apart.",
+    "purpose_function": "It provides the reliable, repeatable data on human hearing that underlies loudness models, masking curves, spatial-hearing theory, and audio coding.",
+    "practical_application": "Its findings reach technicians as established rules and standards, such as thresholds, weighting curves, and codec behavior, used in everyday audio work.",
+    "category": "Psychoacoustic testing",
+    "related_terms": ["Psychoacoustics", "Auditory masking", "Just-noticeable difference", "Threshold of hearing", "Double-blind test", "Equal-loudness contour"],
+    "common_mistakes": ["Running sighted tests, letting expectation bias the listener's response", "Failing to level-match stimuli, so loudness differences skew results", "Using too few trials or listeners to draw a reliable conclusion"],
+    "scenario_contexts": ["Measuring the threshold of hearing across frequency", "Finding the just-noticeable difference in level for a study", "Testing localization accuracy for a spatial-audio project"]
+   },
+   "sources": ["Zwicker & Fastl, Psychoacoustics: Facts and Models (Springer)", "Moore, An Introduction to the Psychology of Hearing", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "132f0f2b-5679-426a-8e9c-7f0f8c162935",
+   "term": "Reference comparison protocol",
+   "fields": {
+    "definition": "A structured listening-test method in which each stimulus is judged against a known reference, using a defined presentation and rating scheme such as a hidden reference and anchors (as in ABX, ABC/HR, or MUSHRA). It standardizes how listeners compare items so results are reliable and repeatable.",
+    "plain_english": "A set of steps for judging audio by comparing it to a known good sample. Listeners rate how close each version comes to the trusted reference.",
+    "purpose_function": "It controls bias and variability by fixing the reference, presentation order, and scoring, so quality differences can be measured and reproduced.",
+    "practical_application": "Engineers follow a reference comparison protocol when evaluating codecs, converters, or processing to keep listening-test results valid and comparable.",
+    "category": "Subjective evaluation",
+    "related_terms": ["ABX test", "MUSHRA", "Hidden reference", "Double-blind test", "Preference testing", "Anchor"],
+    "common_mistakes": ["Skipping the hidden reference and anchors, weakening the test's validity", "Not randomizing presentation order, allowing order bias", "Comparing items at different loudness levels instead of matching them"],
+    "scenario_contexts": ["Running a MUSHRA test on codec candidates", "Using ABX to confirm whether two files are distinguishable", "Standardizing a listening test so results can be reproduced"]
+   },
+   "sources": ["ITU-R BS.1116-3 Methods for the subjective assessment of small impairments", "ITU-R BS.1534-3 (MUSHRA)", "AES publications on subjective listening-test methods"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

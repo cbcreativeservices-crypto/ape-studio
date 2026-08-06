@@ -1,0 +1,56 @@
+{
+ "batch": 410,
+ "topic": "Cloud & Emerging Production",
+ "terms": [
+  {
+   "id": "d26e3419-5250-4c89-a4ef-9186d5f317b3",
+   "term": "Trusted media verification",
+   "topic": "Cloud & Emerging Production",
+   "seq": 1840,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "639dd17e-e358-4ba8-a912-05d9d4ac97f0",
+   "term": "Virtual recording studio",
+   "topic": "Cloud & Emerging Production",
+   "seq": 1840,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

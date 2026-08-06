@@ -1,0 +1,159 @@
+{
+ "batch": 82,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "217073b1-f7be-40a5-8948-9b73b19aaf26",
+   "term": "Audio Effect Rack",
+   "fields": {
+    "definition": "In Ableton Live, an Audio Effect Rack is a container device that holds one or more parallel signal chains of audio effects behind a single interface, with up to eight Macro controls that can be mapped to parameters of the enclosed devices. Because it processes audio, it hosts only audio effects, and the whole assembly appears, is saved, and is loaded as one device.",
+    "plain_english": "It is a single box in Ableton Live that holds a group of audio effects together. You can control the whole group with a few big knobs, and save it to use again later. Think of it like a folder that keeps several effects in one tidy place.",
+    "purpose_function": "It groups several effects into one manageable device and exposes their key controls as Macros, so complex processing can be recalled, tweaked, and performed from a simple interface. Parallel chains also let one input be processed several ways at once and then mixed back together.",
+    "practical_application": "A technician builds an Audio Effect Rack to store a go-to vocal or drum-bus chain, maps the most-used settings to Macros, and drops it onto tracks in later sessions for a consistent starting point.",
+    "category": "Effects Processing",
+    "related_terms": ["Macro control", "Device chain", "Parallel processing", "Audio effect", "Instrument Rack"],
+    "common_mistakes": ["Trying to load an instrument or MIDI effect into an Audio Effect Rack, which only accepts audio effects.", "Forgetting that parallel chains sum together, so stacking similar chains can build up level or cause phase issues.", "Not mapping key parameters to Macros, losing the main benefit of quick, consolidated control.", "Assuming the Rack itself changes the sound; an empty Rack passes audio through unaffected."],
+    "scenario_contexts": ["Saving a reusable vocal chain of EQ, compression, and reverb as one recallable device.", "Building a parallel drum setup with a clean chain and a heavily compressed chain mixed together.", "Creating a performance-ready effect with Macros mapped for live tweaking."]
+   },
+   "sources": ["Ableton Live 12 Reference Manual — Instrument, Drum and Effect Racks", "Ableton Live 11 Reference Manual — Working with Instruments and Effects", "Huber & Runstein, Modern Recording Techniques — signal processing and effects"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "af7d0007-86dc-4b2a-aad8-df0000b0343f",
+   "term": "Audio File Editor",
+   "fields": {
+    "definition": "An Audio File Editor is a tool or window for viewing and editing the waveform of an audio file at the sample level, performing operations such as trimming, normalizing, fading, reversing, and removing DC offset. These edits typically alter the underlying audio file itself (destructive editing), so hosts such as Logic Pro usually create a backup first.",
+    "plain_english": "This is a tool that lets you open one sound file and change the sound wave inside it directly. You can cut, boost, or fade the actual file, not just how it plays back. It is like editing a photo itself instead of only cropping how it shows on screen.",
+    "purpose_function": "It provides precise, sample-accurate editing of the audio file itself, which is needed for cleanup and repair tasks that region-level editing cannot do. Because it can change the source file, it is used when a permanent fix to the recording is wanted.",
+    "practical_application": "An engineer opens a noisy take in the Audio File Editor to trim silence, remove a DC offset, and normalize the clip before using it in the arrangement.",
+    "category": "Audio Editing",
+    "related_terms": ["Audio Track Editor", "Destructive editing", "Waveform", "Normalize", "DC offset"],
+    "common_mistakes": ["Confusing it with the Audio Track Editor, which edits regions non-destructively in the timeline.", "Forgetting edits change the source file, so every other region using that file is affected too.", "Not keeping a backup before destructive edits, making mistakes hard to undo later.", "Normalizing every file out of habit, which can raise noise and upset gain staging downstream."],
+    "scenario_contexts": ["Removing a DC offset from a recorded take.", "Trimming leading silence and clicks from a sample.", "Reversing a cymbal hit to create a swell effect."]
+   },
+   "sources": ["Apple Logic Pro User Guide — Audio File Editor overview", "Apple Logic Pro User Guide — Audio File Editor interface", "Huber & Runstein, Modern Recording Techniques — waveform/audio editing"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "79330ad1-0fd8-4511-8b19-b7e4ba4ae3cb",
+   "term": "Audio From routing",
+   "fields": {
+    "definition": "In Ableton Live, \"Audio From\" is the input-routing chooser in a track's In/Out section that selects the source of audio feeding the track — an external hardware input, resampling of the master, or the output of another track or device. A second chooser below it selects the specific input channel or tap point.",
+    "plain_english": "In Ableton Live, this setting picks where a track gets its sound from. You can choose a microphone input, the computer's own output, or another track. It is like choosing which cable is plugged into that track's input.",
+    "purpose_function": "It lets a track take audio from a chosen source rather than only its own clips, which is essential for recording external signals, resampling, and internal routing between tracks. This flexible input selection underpins Live's signal flow and bussing.",
+    "practical_application": "To record a guitar, a technician sets a track's Audio From to the interface input; to capture a processed synth, they set it to that synth track's output and arm the track.",
+    "category": "Signal Routing",
+    "related_terms": ["Audio To routing", "Input monitoring", "Resampling", "Bus", "Track arming"],
+    "common_mistakes": ["Confusing Audio From (input source) with Audio To (output destination).", "Setting monitoring incorrectly, so the incoming source is not heard or a feedback loop forms.", "Selecting the wrong input channel in the lower chooser and recording silence.", "Forgetting to arm the track, so nothing records even with the source set."],
+    "scenario_contexts": ["Setting a track to record from a specific interface input.", "Resampling the master output into a new audio track.", "Routing one track's output into another for internal processing."]
+   },
+   "sources": ["Ableton Live 12 Reference Manual — Routing and I/O", "Ableton Live 11 Reference Manual — Routing and I/O"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "32855191-8ad4-44da-ad77-81b4ff1f6e97",
+   "term": "Audio part",
+   "fields": {
+    "definition": "In Steinberg Cubase and Nuendo, an audio part is a container that groups one or more audio events so they can be moved, copied, and edited as a single object on an audio track. Parts are created by drawing on the track or by combining selected events, and can be broken back into events with Dissolve Part.",
+    "plain_english": "In Cubase, an audio part is a box that holds several audio clips together as one block. You can move or copy the whole block at once instead of each clip on its own. It is like putting several photos in one envelope so you can carry them together.",
+    "purpose_function": "It lets an editor organize many small audio events into one manageable block, which simplifies arranging, repeating, and moving grouped material. Grouping into parts keeps complex edits, such as comped or sliced takes, tidy on the track.",
+    "practical_application": "An engineer selects a set of sliced drum hits, combines them into one audio part, then copies that part across the timeline to repeat the pattern.",
+    "category": "Arrangement",
+    "related_terms": ["Audio event", "Audio Part Editor", "Region", "Comping", "Dissolve Part"],
+    "common_mistakes": ["Confusing an audio part (a container of events) with a single audio event.", "Editing inside a part and not realizing shared copies of the part change too.", "Forgetting to use Dissolve Part when individual events need separate handling.", "Assuming a part is a separate audio file; it only references events and the underlying clips."],
+    "scenario_contexts": ["Grouping sliced drum hits into one block to repeat across a song.", "Combining several vocal takes into a part for tidy arrangement.", "Dissolving a part back into events to edit one hit individually."]
+   },
+   "sources": ["Steinberg Cubase/Nuendo Operation Manual — Audio Parts", "Steinberg Cubase/Nuendo Operation Manual — Audio Part Editor"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2ffc18a2-c263-4bdb-9234-9234d636993f",
+   "term": "Audio pitch automation",
+   "fields": {
+    "definition": "Audio pitch automation is the use of automation to change the pitch or transposition applied to an audio signal over time, by recording moves on a clip's pitch/transpose control or on a pitch-shifting device's parameter. The stored automation then replays those pitch changes automatically during playback.",
+    "plain_english": "This means telling the software to change the pitch of a sound by itself as the song plays. You draw or record the pitch moves once, and they happen the same way every time. It is like programming a slider to move on its own to raise or lower the note.",
+    "purpose_function": "It lets pitch changes be planned, repeated exactly, and recalled, instead of being adjusted by hand on each pass, which suits both creative effects and corrective moves. Because it is stored as automation, the changes stay locked in time with the arrangement.",
+    "practical_application": "A producer automates the pitch of a vocal clip to dip down on one word, or ramps a sample's pitch upward to build tension into a drop.",
+    "category": "Automation",
+    "related_terms": ["Automation", "Pitch shifting", "Transpose", "Warping", "Automation envelope"],
+    "common_mistakes": ["Confusing pitch automation (changing pitch over time) with pitch correction (fixing tuning).", "Automating large pitch shifts that expose artifacts from the pitch-shifting algorithm.", "Forgetting that time-stretch or warp settings can interact with pitch changes and alter timing.", "Leaving stray automation points that cause unwanted pitch jumps on playback."],
+    "scenario_contexts": ["Dropping a vocal word down an octave for effect.", "Ramping a riser sample's pitch up into a chorus.", "Automating a subtle pitch fall on a synth tail."]
+   },
+   "sources": ["Ableton Live 12 Reference Manual — Automation and Editing Automation", "Apple Logic Pro User Guide — automation and Flex Pitch", "Huber & Runstein, Modern Recording Techniques — automation and pitch shifting"],
+   "confidence": "Medium",
+   "flags": ["Transparent compound descriptor: authored as the established combination of automation applied to a pitch/transpose parameter of an audio signal; not tied to a single vendor's exact feature name."]
+  },
+  {
+   "id": "032ea02e-15ff-4de5-b0b5-6d8d4f4591a4",
+   "term": "Audio To routing",
+   "fields": {
+    "definition": "In Ableton Live, \"Audio To\" is the output-routing chooser in a track's In/Out section that selects where the track's audio is sent — the Master, an external hardware output, \"Sends Only,\" or the input of another track. A second chooser sets the exact destination point, such as a track's input or a device.",
+    "plain_english": "In Ableton Live, this setting picks where a track's sound goes next. You can send it to the main output, out to your speakers or interface, or into another track. It is like choosing which output socket that track's cable plugs into.",
+    "purpose_function": "It routes a track's signal to a chosen destination instead of only the Master, which enables submixing, grouped processing, and internal sends between tracks. Output routing is the counterpart to Audio From and shapes the whole mix's signal flow.",
+    "practical_application": "A technician routes several drum tracks' Audio To a single audio track to create a drum bus, then processes them together with one compressor.",
+    "category": "Signal Routing",
+    "related_terms": ["Audio From routing", "Bus", "Submix", "Send", "Return track"],
+    "common_mistakes": ["Mixing up Audio To (destination) with Audio From (source).", "Routing a track into another and forgetting the receiving track must be monitored to hear it.", "Creating a routing loop by sending a track back into its own signal path.", "Leaving a track set to 'Sends Only' and wondering why it is missing from the main mix."],
+    "scenario_contexts": ["Building a drum bus by routing several tracks to one audio track.", "Sending a track to an external hardware output for outboard processing.", "Setting a track to Sends Only so it feeds effects but not the Master."]
+   },
+   "sources": ["Ableton Live 12 Reference Manual — Routing and I/O", "Ableton Live 11 Reference Manual — Routing and I/O"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bfa932e6-d5a7-4e54-b216-fd87063fb158",
+   "term": "Audio Track device",
+   "fields": {
+    "definition": "An Audio Track device is a processing device loaded into the device chain of an audio track in a device-based DAW such as Ableton Live or Bitwig Studio. On an audio track these devices are audio effects, and the track's signal passes through them in series from left to right.",
+    "plain_english": "This is an effect that you place on an audio track to change its sound. The track's sound flows through each device in order, one after another. It is like adding pedals to a guitar chain, where each one shapes the tone before the next.",
+    "purpose_function": "It lets a technician shape or process a track's audio right on that track, building a chain of effects such as EQ, compression, and reverb in a chosen order. The device chain is the core way per-track processing is applied in device-based DAWs.",
+    "practical_application": "On a vocal audio track, an engineer adds devices in order — a gate, an EQ, then a compressor — so each stage processes the signal before the next.",
+    "category": "DAW Devices",
+    "related_terms": ["Device chain", "Audio effect", "Audio Effect Rack", "Insert effect", "Signal chain"],
+    "common_mistakes": ["Placing devices in an order that hurts the sound, such as heavy reverb before a gate.", "Expecting an instrument to work on an audio track, which hosts audio effects only.", "Leaving a CPU-heavy device active on many tracks and overloading the system.", "Forgetting a device is bypassed, then troubleshooting a sound that never changes."],
+    "scenario_contexts": ["Adding an EQ then a compressor on a vocal track.", "Inserting a gate first in a drum track's chain to control bleed.", "Reordering devices to hear how the processing order changes the tone."]
+   },
+   "sources": ["Ableton Live 12 Reference Manual — Working with Instruments and Effects (device chains)", "Bitwig Studio User Guide — the device chain and audio tracks", "Huber & Runstein, Modern Recording Techniques — signal chain and insert processing"],
+   "confidence": "Medium",
+   "flags": ["Transparent compound descriptor: authored as a device (audio effect) hosted in an audio track's device chain in a device-based DAW; not a single vendor's proper feature name."]
+  },
+  {
+   "id": "5cbbe1c1-b54d-4fb6-b6ed-7e7590ee0114",
+   "term": "Audio Track Editor",
+   "fields": {
+    "definition": "In Logic Pro, the Audio Track Editor is a workspace for editing the audio regions of a single track non-destructively within the timeline, including trimming, splitting, and applying Flex Time and Flex Pitch. It changes how regions play back and are arranged without altering the underlying audio files.",
+    "plain_english": "In Logic Pro, this is a window for editing the audio on one track without changing the original file. You can trim clips, fix timing, and nudge pitch, and the source file stays safe. It is like using sticky notes on a recording instead of writing on the tape itself.",
+    "purpose_function": "It gives close-up, non-destructive control over one track's regions and their timing and pitch, which supports tightening performances and arranging without risk to the source audio. It complements the Audio File Editor, which changes the file itself.",
+    "practical_application": "A technician opens the Audio Track Editor to Flex-Time a slightly late snare hit onto the grid and nudge a flat vocal note up with Flex Pitch.",
+    "category": "Audio Editing",
+    "related_terms": ["Audio File Editor", "Flex Time", "Flex Pitch", "Region", "Non-destructive editing"],
+    "common_mistakes": ["Confusing it with the Audio File Editor, which edits the actual file destructively.", "Applying heavy Flex Time and expecting no audible artifacts.", "Thinking edits change the source file, when only playback instructions change.", "Choosing the wrong Flex mode for the material, which degrades the sound."],
+    "scenario_contexts": ["Nudging a late drum hit onto the beat with Flex Time.", "Correcting a flat sung note with Flex Pitch.", "Trimming and splitting a region tightly within one track."]
+   },
+   "sources": ["Apple Logic Pro User Guide — The Audio Track Editor", "Apple Logic Pro User Guide — Audio File Editor overview (comparison of editors)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7a951040-ff48-48ce-845e-b793822fb718",
+   "term": "Auto-ducking",
+   "fields": {
+    "definition": "Auto-ducking is a mixing technique in which the level of one audio signal, such as background music, is automatically reduced whenever another signal, such as dialogue or a voiceover, is present, then restored when that signal stops. It is driven by a detector that senses the triggering audio, applied either as real-time sidechain gain reduction or as automatically written volume automation.",
+    "plain_english": "Auto-ducking turns the music down by itself whenever someone is talking, then brings it back up when they stop. The software listens for the voice and lowers the music for you. It is like a radio DJ who dips the song under their voice, done automatically.",
+    "purpose_function": "It keeps a foreground element such as speech clear over a background bed without constant manual fader moves, saving time and giving consistent, repeatable results. It is central to podcast, broadcast, and video mixing where dialogue must stay intelligible.",
+    "practical_application": "A podcast editor uses auto-ducking so the intro music drops several dB under the host's voice and rises again in the gaps, with the software writing the volume changes automatically.",
+    "category": "Mixing Technique",
+    "related_terms": ["Sidechain compression", "Ducking", "Compression", "Volume automation", "Gain reduction"],
+    "common_mistakes": ["Confusing auto-ducking with plain sidechain compression, though the two overlap in method.", "Setting too much reduction, making the background pump or drop out awkwardly.", "Using fades that are too fast, causing an unnatural jump as the level snaps down and up.", "Triggering from a noisy source, so background noise falsely ducks the music."],
+    "scenario_contexts": ["Dipping music under a podcast host's voice.", "Lowering a music bed under voiceover in a video edit.", "Ducking ambience beneath radio DJ announcements."]
+   },
+   "sources": ["Adobe Audition User Guide — automatic ducking (Essential Sound panel)", "Ballou, Handbook for Sound Engineers — dynamics and sidechain control", "Huber & Runstein, Modern Recording Techniques — sidechain compression and ducking"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

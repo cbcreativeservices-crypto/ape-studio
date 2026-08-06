@@ -1,0 +1,166 @@
+{
+ "expert": "LANGUAGE / COMMUNICATIONS",
+ "group": 1,
+ "reviews": [
+  {
+   "id": "bb121575-2887-4738-b7c0-4a7b037d6383",
+   "term": "Class G",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "practical_application",
+     "severity": "Low",
+     "issue": "Redundant reference to current draw: '...draw less current than comparable Class AB units, meaning smaller heatsinks, less rack heat, and reduced current draw at idle.' The phrase 'draw less current' and the closing 'reduced current draw at idle' restate the same idea.",
+     "suggestion": "Trim to a single, non-repeating list, e.g. '...run cooler and draw less current than comparable Class AB units, so they need smaller heatsinks, add less rack heat, and pull less current at idle.'"
+    }
+   ]
+  },
+  {
+   "id": "cbbea526-411a-4597-b01f-0760a537a260",
+   "term": "Class H",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a5b4946e-ffe4-4096-bcaf-71f44ad230a3",
+   "term": "Crossover Distortion",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a8290d76-c665-4670-9b20-1f10f006367d",
+   "term": "Quiescent Current",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fe06ef1a-1cfe-4e05-83b6-69f0c32f7f9e",
+   "term": "Rail Voltage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "350edfe9-82d8-4201-b14f-7325fc5e9523",
+   "term": "Switch-Mode Power Supply (SMPS)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "76c06f85-266e-4dfd-87c5-c307b1bc879d",
+   "term": "Toroidal Transformer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "af3b82bf-d089-4fde-b6cb-2a7ad630897f",
+   "term": "Backline",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "82436f8b-520a-4f97-b546-6d86a5331df2",
+   "term": "Cable Management",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Low",
+     "issue": "Inconsistent list formatting: two items are prefixed 'UNSAFE:' and two are not, which breaks the parallel structure of the list. The safety signaling is useful, but the mixed prefixing reads as an oversight rather than a deliberate two-tier convention.",
+     "suggestion": "Make the convention consistent — either prefix every safety-critical item and leave the purely-quality items unprefixed as a clear two-tier scheme (fine as-is if intended), or drop the prefixes and fold the safety emphasis into the sentence wording so all four items are formatted the same way. If the two-tier scheme is intentional, no change is needed."
+    }
+   ]
+  },
+  {
+   "id": "6304386f-e7fb-454d-b746-3a77f4df8537",
+   "term": "Downstage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "06322674-a960-47ae-a085-2cb4b1f3a83b",
+   "term": "Load-In",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "scenario_contexts",
+     "severity": "Medium",
+     "issue": "Subject-verb agreement error: 'A festival stagger the load-in of multiple acts...' should be singular 'staggers'.",
+     "suggestion": "Change to 'A festival staggers the load-in of multiple acts to share limited dock and stage access.'"
+    },
+    {
+     "field": "common_mistakes",
+     "severity": "Low",
+     "issue": "'Ignoring the advanced load-in schedule and access details' uses 'advanced' where the intended meaning is the schedule agreed during the production advance. 'Advanced' reads as 'high-level/complex' and is ambiguous, and it is inconsistent with the noun 'advance' used elsewhere in this group.",
+     "suggestion": "Reword to 'Ignoring the advance (pre-agreed) load-in schedule and access details (dock, door sizes, union/house rules), causing delays.'"
+    }
+   ]
+  },
+  {
+   "id": "678d1904-9176-4211-bcd0-42a7a901bd90",
+   "term": "Load-Out",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a82d4d61-1298-4668-b930-ac09db089fde",
+   "term": "Monitor World",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "218820da-38c6-41ec-adf1-aee97c8c73c3",
+   "term": "Production Advance",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "50f64a99-aa14-4a04-a74f-56da3ebf61aa",
+   "term": "Spike Mark",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7588c2bf-7cb5-40a0-bfa1-f6c397ee4327",
+   "term": "Stage Left / Stage Right",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f702b12a-dfb8-471d-b0e1-6c66491a83b8",
+   "term": "Strike",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1cd1e29e-8dfd-458e-96cf-5799b8dc09d0",
+   "term": "Tech Rider",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f5788783-c0d6-4a24-9086-548de6e2873f",
+   "term": "Upstage",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0457cbbb-178c-456d-96e8-6202fb369425",
+   "term": "Auracast",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c9b2f81a-b99b-47d8-aec7-1c5db19ba8a9",
+   "term": "Closed Captioning",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Medium",
+     "issue": "The fourth item is ungrammatical: 'Neglecting synchronization and accuracy, which FCC quality rules require captions to be accurate, synchronous, complete, and properly placed.' The relative clause 'which... require captions to be' does not connect to the preceding phrase, producing a run-on/dangling construction.",
+     "suggestion": "Rewrite as two clean clauses, e.g. 'Neglecting synchronization and accuracy — FCC quality rules require captions to be accurate, synchronous, complete, and properly placed.'"
+    }
+   ]
+  }
+ ]
+}

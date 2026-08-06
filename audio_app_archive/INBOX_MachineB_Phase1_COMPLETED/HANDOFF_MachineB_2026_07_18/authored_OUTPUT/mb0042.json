@@ -1,0 +1,159 @@
+{
+ "batch": 42,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "43080907-333b-412a-9d4b-843db718da3d",
+   "term": "Cymbal brightness control",
+   "fields": {
+    "definition": "The practice of shaping the high-frequency content of cymbals—typically with high-shelf or high-band EQ in the roughly 8–16 kHz region—to set how bright, airy, or sparkling they sound in a mix. It balances cymbal shimmer against the rest of the kit and the overall program material.",
+    "plain_english": "This means changing how bright or sparkly the cymbals sound. You turn the very high tones up or down with an EQ so the cymbals shine just the right amount.",
+    "purpose_function": "It lets the engineer dial in the top-end sheen of the cymbals so they add air and excitement without becoming dull or too glassy. This keeps the kit sitting well with vocals, guitars, and the rest of the mix.",
+    "practical_application": "On overhead or cymbal channels, a technician uses a high-shelf boost to add sparkle or a cut to soften a bright kit, checking the choice against the whole mix on trusted monitors.",
+    "category": "Drum Mixing",
+    "related_terms": ["Overhead microphones", "Equalization", "High-shelf EQ", "Cymbal harshness control", "Cymbal subgroup"],
+    "common_mistakes": ["Boosting the high shelf too much, which turns natural shimmer into thin, glassy fatigue", "Judging cymbal brightness soloed instead of in the full mix, where guitars and vocals already add top end", "UNSAFE: Repeatedly cranking bright high frequencies loud on headphones or monitors while chasing sparkle, which speeds up hearing fatigue and risks noise exposure"],
+    "scenario_contexts": ["Adding air to dark-sounding overheads on a rock drum tracking session", "Taming an overly bright ride cymbal that is poking out of the mix", "Matching cymbal top end between different songs on an album"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "79af7896-dfd6-4184-b95d-fd7e2a45dd7e",
+   "term": "Cymbal harshness control",
+   "fields": {
+    "definition": "The reduction of unpleasant, fatiguing energy in cymbals—usually concentrated in the upper-midrange and low treble (roughly 2–8 kHz)—using narrow EQ cuts, dynamic EQ, or de-essing so the cymbals sound smooth rather than piercing.",
+    "plain_english": "Cymbals can sound sharp and hurt your ears. This means using an EQ to turn down the harsh tones so they sound smoother and easier to listen to.",
+    "purpose_function": "It removes the brittle, ear-piercing frequencies that make cymbals tiring to hear, so the kit stays clear and pleasant even at high levels. This protects the listener from fatigue and keeps the mix balanced.",
+    "practical_application": "A technician sweeps a narrow EQ band to find the harsh spot on the overheads and cuts it, or uses a dynamic EQ or de-esser that only reacts when the harsh peak gets loud.",
+    "category": "Drum Mixing",
+    "related_terms": ["Equalization", "Dynamic EQ", "De-essing", "Cymbal brightness control", "Overhead microphones"],
+    "common_mistakes": ["Cutting too wide a band, which dulls the whole cymbal instead of only removing the harsh spot", "Confusing genuine harshness with useful brightness and stripping out all the life", "UNSAFE: Turning the monitors up to hunt for harsh frequencies for long periods, raising the risk of hearing damage"],
+    "scenario_contexts": ["Smoothing a harsh, splashy hi-hat captured by close overheads", "Fixing brittle 3–5 kHz glare on cheap or thin cymbals", "Using dynamic EQ so cymbals only soften on the loudest crashes"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "abe3114f-7fb9-48ce-b0e7-b29ca96f1b18",
+   "term": "Cymbal subgroup",
+   "fields": {
+    "definition": "A subgroup (audio bus) to which all cymbal or overhead microphone channels are routed, so their combined level and processing—such as EQ or compression—can be controlled from a single fader.",
+    "plain_english": "This is one fader that controls all the cymbal microphones at once. Instead of moving many faders, you send them to one channel and change them together.",
+    "purpose_function": "It groups related cymbal signals so the engineer can balance them as a unit and apply shared processing, saving time and keeping the whole set of cymbals consistent. This simplifies mixing a busy drum kit.",
+    "practical_application": "A technician routes the overhead and cymbal channels to a stereo group bus, then rides one fader or adds bus EQ and compression to shape all the cymbals together.",
+    "category": "Mix Routing",
+    "related_terms": ["Subgroup", "Bus", "Overhead microphones", "Drum ambience bus", "Auxiliary send"],
+    "common_mistakes": ["Forgetting that other kit mics leak cymbals, so subgroup changes do not fully control cymbal level", "Adding heavy bus compression that pumps the whole kit instead of just gluing the cymbals", "Routing channels to the subgroup and the main mix at the same time, causing doubled signal and level errors"],
+    "scenario_contexts": ["Managing many overhead and spot cymbal mics from one fader in a live show", "Compressing all cymbals together for a cohesive drum overhead sound", "Muting all cymbals quickly during a soundcheck to isolate other kit pieces"]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0414d715-111d-4e70-b7a6-a5ab64130493",
+   "term": "Distorted-guitar mixing",
+   "fields": {
+    "definition": "The collection of techniques for placing overdriven or distorted electric guitars in a mix—EQ carving, stereo panning of double-tracked parts, and level and dynamics control—so the dense harmonic content sits with the drums and vocals without masking them.",
+    "plain_english": "This is how you fit loud, fuzzy electric guitars into a song. You use EQ, panning, and volume so the guitars sound big but do not cover up the singing.",
+    "purpose_function": "Distorted guitars are harmonically dense and can swamp a mix, so these techniques carve out space and spread the guitars wide to keep the mix clear and powerful. This lets guitars feel huge while vocals and cymbals still cut through.",
+    "practical_application": "A technician pans hard-left and hard-right double tracks, cuts competing mids, and manages low end so the guitars leave room for vocals, bass, and the kick.",
+    "category": "Guitar Mixing",
+    "related_terms": ["Double-tracking", "Equalization", "Panning", "Frequency masking", "Double-track alignment"],
+    "common_mistakes": ["Layering many distorted takes, which builds mud instead of size", "Leaving too much low-mid buildup so guitars fight the bass and kick", "Panning a single mono guitar to fake a wide double instead of recording two real takes"],
+    "scenario_contexts": ["Panning two rhythm-guitar takes wide for a big rock wall of sound", "Carving guitar mids so a lead vocal stays clear in a heavy chorus", "Fitting a distorted guitar with bass and drums without losing punch"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8191359a-1d8b-4109-be88-54b82299177c",
+   "term": "Double triggering",
+   "fields": {
+    "definition": "An error in drum triggering or electronic percussion in which a single strike generates two (or more) trigger events, producing a doubled or stuttered sound. It is caused by excessive trigger sensitivity, head vibration or retriggering, or crosstalk, and is corrected with threshold, retrigger-cancel/mask-time, and scan-time settings.",
+    "plain_english": "A drum trigger is a sensor that plays a sound when you hit a drum. Double triggering is when one hit wrongly plays the sound twice, like a stutter.",
+    "purpose_function": "Understanding it matters because a false second hit ruins the timing and realism of triggered or sampled drums. Fixing it keeps one strike equal to one clean sound.",
+    "practical_application": "A technician who hears drum samples firing twice raises the trigger threshold or retrigger-cancel time and checks sensitivity and crosstalk settings on the trigger module until each hit fires once.",
+    "category": "Drum Triggering",
+    "related_terms": ["Drum trigger", "Trigger threshold", "Crosstalk", "Drum replacement", "Transient detection"],
+    "common_mistakes": ["Setting trigger sensitivity too high, which makes the pad or trigger fire twice on one hit", "Blaming the sample or module when a loose trigger or vibrating head is the real cause", "Ignoring crosstalk so a nearby drum falsely triggers a second sound"],
+    "scenario_contexts": ["A kick trigger firing two samples per pedal stroke during tracking", "Tuning retrigger-cancel time on an electronic drum module", "Cleaning up drum replacement in a DAW where one hit produced two events"]
+   },
+   "sources": ["Roland V-Drums owner's/technical documentation", "Alesis/ddrum trigger module technical manuals", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "89707b2f-be1f-44c5-999e-f5960914ea3b",
+   "term": "Double-track alignment",
+   "fields": {
+    "definition": "The process of timing- (and sometimes phase-) matching two separately recorded takes of the same part so the doubled performance sounds tight, whether done by manual editing and time-warping or with dedicated alignment tools.",
+    "plain_english": "Sometimes a player records the same part twice to make it sound thicker. Alignment means lining up the two takes so they play in time and sound tight together.",
+    "purpose_function": "Two doubled takes never play perfectly together, so alignment tightens their timing to make the double sound solid and wide instead of sloppy and flammy. This gives a fuller sound without smearing.",
+    "practical_application": "A technician nudges or time-warps notes in the second take to match the first, or uses an alignment plug-in, so a doubled guitar or vocal locks tightly to the main take.",
+    "category": "Editing",
+    "related_terms": ["Double-tracking", "Time alignment", "Comping", "Quantization", "Phase"],
+    "common_mistakes": ["Over-tightening the takes until the natural width and thickness of a real double disappears", "Aligning only the starts of notes but leaving the note releases flamming", "Copying one take and detuning it instead of aligning two real performances"],
+    "scenario_contexts": ["Tightening two rhythm-guitar takes for a wide stereo double", "Lining up a doubled lead vocal so consonants land together", "Fixing loose timing between doubled backing vocals before mixing"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "9efccb06-c363-4621-9664-63b357534177",
+   "term": "Drum ambience bus",
+   "fields": {
+    "definition": "An aux or subgroup bus carrying room and ambient drum microphone signals, or reverb returns, blended with the close mics to add the natural space and size of the recording room to the drum sound; it is often heavily compressed for effect.",
+    "plain_english": "This is a channel that carries the room sound of the drums. You mix in some of this roomy sound to make the drums feel big and alive.",
+    "purpose_function": "Close mics can sound dry and small, so the ambience bus adds room tone and depth that makes drums sound bigger and more natural. Keeping it on its own bus lets the engineer blend and compress that space to taste.",
+    "practical_application": "A technician routes room mics to one bus, adds compression and EQ, and rides its level under the close mics to control how big and roomy the kit feels.",
+    "category": "Drum Mixing",
+    "related_terms": ["Room microphones", "Parallel compression", "Reverb", "Subgroup", "Auxiliary send"],
+    "common_mistakes": ["Adding so much room level that the drums lose punch and clarity", "Ignoring phase between the room mics and close mics, which thins the kit", "Compressing the room bus so hard it pumps and distracts instead of adding size"],
+    "scenario_contexts": ["Blending crushed room mics under close drum mics for a big rock sound", "Controlling how live or dry the drums feel from one fader", "Sending drums to a reverb bus to fake room ambience on a dry kit"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ed5334d6-ee4d-4992-9cd9-d44cd74bb8f0",
+   "term": "Drum attack enhancement",
+   "fields": {
+    "definition": "Techniques that emphasize the transient or attack portion of drum hits—transient shaping, compressor attack and release settings, or EQ boosts in the beater and stick 'click' regions—so the drums sound punchier and cut through the mix.",
+    "plain_english": "The attack is the first punchy hit of a drum. This means making that hit sharper and louder so the drums cut through the song.",
+    "purpose_function": "The initial snap of a drum is what makes it feel powerful and defined, so enhancing it helps the kick and snare punch through a dense mix. This adds impact without simply raising overall level.",
+    "practical_application": "A technician uses a transient shaper to add attack, sets a slower compressor attack to let the hit through, or boosts the click frequencies on kick and snare so they cut through loud guitars.",
+    "category": "Drum Processing",
+    "related_terms": ["Transient shaper", "Compression", "Attack (envelope)", "Equalization", "Parallel compression"],
+    "common_mistakes": ["Setting a fast compressor attack that squashes the transient and kills the punch", "Adding so much attack that drums sound clicky and unnatural", "Boosting click frequencies without checking they do not clash with cymbals and guitars"],
+    "scenario_contexts": ["Adding beater click to a kick so it cuts through heavy guitars", "Using a transient shaper to sharpen a dull snare", "Setting compressor attack to keep drum punch during heavy bus compression"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e6673c5b-7c38-43a3-a0f0-d47db364a890",
+   "term": "Drum clipping",
+   "fields": {
+    "definition": "Distortion that occurs when a drum signal exceeds the maximum level a device, converter, or bus can handle, flattening the waveform peaks. It may be unwanted overload or the deliberate use of a hard or soft clipper to tame sharp transients and raise perceived loudness.",
+    "plain_english": "Clipping is when a drum sound is too loud for the gear and the top of the wave gets cut off. This adds a crackly, distorted sound. It can be a mistake, or done on purpose to make drums louder.",
+    "purpose_function": "Knowing clipping matters because accidental clipping ruins a recording, while a controlled clipper can shave sharp drum peaks so the kit sits louder and tighter. Understanding both keeps drums clean or intentionally punchy.",
+    "practical_application": "A technician watches meters to avoid overloading inputs, and may place a clipper on the kick or drum bus to flatten peaks and get more level before a limiter reacts.",
+    "category": "Drum Processing",
+    "related_terms": ["Clipping", "Headroom", "Limiter", "Gain staging", "Transient"],
+    "common_mistakes": ["Recording drums so hot that the converter clips and adds harsh digital distortion", "Confusing accidental converter clipping with a musical clipper used on purpose", "Clipping too much off the transients, which flattens the punch of the drums"],
+    "scenario_contexts": ["Catching a snare peak that is overloading the input during tracking", "Using a clipper on the drum bus to gain loudness before a limiter", "Diagnosing crackly distortion caused by too little headroom on the drum group"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

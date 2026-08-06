@@ -1,0 +1,223 @@
+{
+ "expert": "Audio Technical",
+ "group": 59,
+ "reviews": [
+  {
+   "id": "3d263996-f5a3-49b6-9a0c-11f595cf6f86",
+   "term": "Playlist container",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "definition",
+     "severity": "Low",
+     "issue": "The definition lists 'sequence, random, step, or continuous' as four parallel logic types, but these are two orthogonal axes: order (sequence vs. random) and play mode (step vs. continuous). The term's own practical_application uses 'random-continuous' as a combination, which contradicts presenting the four as mutually exclusive alternatives.",
+     "suggestion": "Reword to reflect the two axes, e.g. 'defines both the order (sequence or random) and the play mode (step, i.e. one child per trigger, or continuous, i.e. children played back-to-back).'"
+    }
+   ]
+  },
+  {
+   "id": "97f28548-f92f-4e8c-912a-10668bd7686f",
+   "term": "Portal-based audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ca362dae-daef-49dd-be38-241de3a0ecc6",
+   "term": "Positional audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b71dd1e1-700f-47c4-be65-81966251172e",
+   "term": "Post-production facility",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5cc88b22-9cd9-4d1e-b043-aa681bda6d1c",
+   "term": "Post-production suite",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e1ee7e3c-a4ff-4bbc-9545-9c1cba618050",
+   "term": "Pre-roll click",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1dac7fee-e89a-40e9-8876-e90e32b410df",
+   "term": "Procedural ambience",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f6937775-08fb-45f6-bc38-4aa8a3622dde",
+   "term": "Procedural footsteps",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "75c64bae-844a-4677-b0e9-18f9b0e15269",
+   "term": "Procedural weapon sound",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4a6fd7c1-b699-4799-be53-71442d7c59f0",
+   "term": "Production-dialogue blend",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fca2d57f-1e4e-461b-af74-a7a04a86a93a",
+   "term": "Production-to-ADR match",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "47aa3a6c-ea1a-49fd-bd27-2561be5fa789",
+   "term": "Pronunciation supervision",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f20cdbf4-1bb6-4329-bf12-e46101747132",
+   "term": "Prop catch",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e29cf8a1-443b-4fc0-aa13-05f2abdd2b4c",
+   "term": "Prop damping",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "0a1820d1-39d0-4513-8b79-0d893a2ec080",
+   "term": "Prop synchronization",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "bbee0332-a904-400d-9332-8ce9d9e731a9",
+   "term": "Prop toss",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "99473c8c-26ed-4f95-b36e-e0d0d672f33e",
+   "term": "Public-address voice processing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "28b07fc8-fb5a-47a9-94d8-2d59e5c822ed",
+   "term": "Quality-control room",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d1b8e884-17b1-4fcf-9b40-f915f19cfbc1",
+   "term": "Quiet Foley",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7aaf9b7e-0008-482c-a26d-8fe045a2f270",
+   "term": "Radio voice processing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8b1e133b-f79f-4426-9b3e-97cfe05e4e1d",
+   "term": "Random container",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e05f3d16-356f-4421-aa53-d7438d4ed1da",
+   "term": "Randomized playback",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6500b382-ffb4-487c-8db3-ca65faa7a283",
+   "term": "Real-time audio rendering",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f4d29aa1-9279-4599-8210-3b339c342eb1",
+   "term": "Real-time reverberation",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "eee50eb2-4644-4923-b47d-dd155e90ae57",
+   "term": "Replacement dialogue",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6ae9edbe-5896-43a8-b2e0-130321f52627",
+   "term": "Resynthesis",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ba5cb220-3c4b-41d5-b2d4-4f10ae31effc",
+   "term": "Reverb zone",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "10e23563-ea94-495d-990c-b5db2bc27724",
+   "term": "Reverse cymbal",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "34bbf6c4-8bdd-4250-8949-43f068c55c4f",
+   "term": "Reverse piano",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9d3d4102-7a77-4a21-845c-0fc2024ca39f",
+   "term": "Reverse playback",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e137395e-6bac-415a-8220-9d6149104181",
+   "term": "Reverse processing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d17458dd-7699-4709-bb14-32e7661f6837",
+   "term": "Reverse swell",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "dc27d66e-f02c-4f82-8de6-3e07576cc74b",
+   "term": "Reverse vocal",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "618228b2-1afa-4e50-a5ad-e3549e023587",
+   "term": "Review room",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "88666424-c910-4efa-958c-7ecf7517e5d0",
+   "term": "Riser effect",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

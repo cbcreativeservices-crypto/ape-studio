@@ -1,0 +1,38 @@
+{
+ "batch": 387,
+ "topic": "Dialogue Editing",
+ "authored": [
+  {
+   "id": "63e6e0d0-6516-43f4-8ecc-67df3cc0f37d",
+   "term": "Dialogue-editing suite",
+   "fields": {
+    "definition": "The dedicated workroom and workstation environment equipped for dialogue editing, typically comprising a DAW such as Pro Tools, calibrated near-field monitoring, and synchronized picture playback, in which the dialogue editor conforms, cleans, and organizes production sound and ADR into edited tracks for the re-recording mix.",
+    "plain_english": "It is the workroom where an editor cleans up spoken lines in a film and lines them up to the picture.",
+    "purpose_function": "It gives the dialogue editor a controlled listening space and the editing tools to conform, clean, and split dialogue and ADR, so the re-recording mixer receives organized, intelligible, ready-to-mix tracks.",
+    "practical_application": "A dialogue editor works in the suite to sync ADR to picture, remove clicks and noises, smooth cuts with matching room tone, and split lines across tracks before handing the session to the dub stage.",
+    "category": "Dialogue Editing",
+    "related_terms": ["Dialogue mixing", "ADR", "Room tone", "Re-recording mixing", "Conform", "Edit decision list"],
+    "common_mistakes": [
+     "Assuming the final balance against music and effects is done in the dialogue-editing suite; that blending happens later on the dub stage during the re-recording mix.",
+     "Confusing the dialogue-editing suite with the picture-editorial cutting room; they are separate stages with different roles and deliverables.",
+     "Editing dialogue in an untreated, uncalibrated room, so noise and coloration in the space hide problems that only surface later on the dub stage.",
+     "UNSAFE: monitoring at excessive SPL through long editing sessions can cause noise-induced hearing loss; keep exposure within OSHA permissible limits and take breaks."
+    ],
+    "scenario_contexts": [
+     "A dialogue editor conforms production sound to the locked picture and prepares split, labeled tracks before the re-recording mix.",
+     "ADR takes are imported into the suite and edited so the recorded lines match the actor's on-screen lip movements and original performance.",
+     "The editor uses room tone captured on set to fill gaps between lines and smooth over audible cuts between takes.",
+     "Clicks, mouth noises, and camera or set noise are removed from the production dialogue before the tracks are handed off to the dub stage."
+    ]
+   },
+   "sources": [
+    "Holman, Sound for Film and Television",
+    "Yewdall, Practical Art of Motion Picture Sound",
+    "Ballou, Handbook for Sound Engineers",
+    "OSHA 29 CFR 1910.95"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

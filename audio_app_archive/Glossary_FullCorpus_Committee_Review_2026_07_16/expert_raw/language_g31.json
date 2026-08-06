@@ -1,0 +1,223 @@
+{
+ "expert": "language",
+ "group": 31,
+ "reviews": [
+  {
+   "id": "00838ef4-0ec6-4f25-8dd8-7590d909381e",
+   "term": "Multiband Compressor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "28687720-9b4b-494b-a003-13d9087d78c4",
+   "term": "Multichannel Amplifier",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "70e0b7c4-4b36-44e1-9dff-06dfbb850b1f",
+   "term": "Multicore",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5866c5d3-b1a0-4263-8d17-cf726894f7ec",
+   "term": "Multimeter",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "98efb9be-cb86-4050-bafc-e54edd798725",
+   "term": "Multipath",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fe5edc66-3a34-4576-9c24-f17c9a330dac",
+   "term": "Multipath Interference",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "purpose_function",
+     "severity": "Low",
+     "issue": "The opening sentence is garbled: \"Understanding multipath exists so technicians can explain and fix position-dependent dropouts\" conflates two constructions, so it reads as if the understanding itself 'exists' for that reason.",
+     "suggestion": "Reword to a clean sentence, e.g. \"Understanding multipath lets technicians explain and fix position-dependent dropouts. It guides antenna/emitter placement and the use of techniques like diversity reception to reduce nulls.\""
+    }
+   ]
+  },
+  {
+   "id": "322881a8-5058-444d-a595-28637ceda69d",
+   "term": "Multipin Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "c00c8acf-9a32-4162-b0a2-393e95514dc9",
+   "term": "Multipin tube mic cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ffd13302-240b-499b-87c9-95cc27686d9e",
+   "term": "Multiroom Audio",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "1d5d86ea-53db-46c5-a5d9-8062f5ad8f38",
+   "term": "Multitrack Recorder",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f2a0da71-6fb3-4508-812b-84fa23241227",
+   "term": "Multitrack Recording",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "6d766053-fce7-4f33-a014-23fa3301ab1a",
+   "term": "Music Bed",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e99afa51-b30c-4c19-8e6d-e4bb23906434",
+   "term": "Music Cue",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "35dfd660-c03a-4064-a49f-6c58b50b71ce",
+   "term": "Music-on-Hold (MOH)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "99685229-8c44-4b8d-a214-3a6cd5a3a6a0",
+   "term": "Musical Director",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8aebae1b-6053-42f3-ac27-321bd6f261b3",
+   "term": "Musical note",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "652697be-07c6-4e3a-8032-02d14adc4ea8",
+   "term": "Musical Theater",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "cb9fe193-848f-4a62-a744-228394fe895c",
+   "term": "mute",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "892e8e52-1149-452b-aac7-243e81777661",
+   "term": "Mute Group",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "e207078d-2f4a-482a-94fe-ed68fa7c5b2d",
+   "term": "Muting relay",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8129b0cc-dc7c-4f55-9a5d-1b7ae6f1bf0b",
+   "term": "National Electrical Code (NEC)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "5904fa51-668e-4c2d-8ab1-97500050b07a",
+   "term": "Near-field measurement",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d811c08c-88f5-41db-9d81-237fbc8aac56",
+   "term": "Near-Field Monitor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a1167206-7d11-4722-809c-58470dbf533d",
+   "term": "Neck Loop",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "76f10674-8eca-425c-b752-3033a679eb18",
+   "term": "Negative feedback",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "254ac649-d05d-4459-8c64-7035046cdf49",
+   "term": "NEMA Connector",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "f3c8eb62-4fc4-46ca-a8ed-8178251142ca",
+   "term": "Neodymium Magnet",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "13e507d9-c191-426e-9e04-2eccdcf57279",
+   "term": "Network Analyzer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "26b10c0f-5aa4-4ae4-a1c4-ddac8016d07c",
+   "term": "Network audio clock",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "aa182ff5-4e12-4c99-9a22-806e38a59bfd",
+   "term": "Network audio dropout",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b38d05d9-84ad-46e3-adad-664e5d911774",
+   "term": "Network Audio I-O",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "4305a61f-12a8-4f2f-b7a7-68c9b2be3b88",
+   "term": "Network Streamer",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "904a8125-98c0-4cb6-ac01-77f19df0c7b4",
+   "term": "Neutral",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "fbc1ad96-9542-47f8-9e4c-875b3b8f3b58",
+   "term": "Neutral Conductor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "8ba07ca9-ee87-40ba-9985-f235d767ed00",
+   "term": "Never Stand Beneath Suspended Loads",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

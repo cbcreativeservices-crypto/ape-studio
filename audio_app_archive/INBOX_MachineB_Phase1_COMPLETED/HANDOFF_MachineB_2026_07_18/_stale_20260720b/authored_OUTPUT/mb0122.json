@@ -1,0 +1,297 @@
+{
+ "batch": 122,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "917e9db2-7fca-4a03-8634-59084f6f9875",
+   "term": "Open-hi-hat sample",
+   "fields": {
+    "definition": "A recorded audio sample of a hi-hat struck while the two cymbals are held apart (foot pedal up), producing a sustained, ringing 'open' sound; it is used in samplers and drum machines as the open-hi-hat voice, contrasting with the short closed-hi-hat sample.",
+    "plain_english": "It is a recording of a hi-hat cymbal played with the two plates held open, so it rings out instead of making a short 'tick.' Producers drop it into beats when they want a longer, sizzly cymbal sound.",
+    "purpose_function": "It supplies the open, sustained hi-hat articulation in programmed drum parts, working against the short closed-hi-hat sample to build groove and accents.",
+    "practical_application": "A technician loads it onto a pad or MIDI note in a sampler and usually sets it to choke (cut off) when the closed hi-hat plays, mimicking a real drummer's foot on the pedal.",
+    "category": "Drum Samples",
+    "related_terms": [
+     "Closed hi-hat sample",
+     "Drum sampler",
+     "Choke group",
+     "Velocity layer",
+     "One-shot sample",
+     "Drum programming"
+    ],
+    "common_mistakes": [
+     "Letting the open hi-hat ring across the next closed hi-hat instead of using a choke/mute group, which sounds cluttered and unnatural",
+     "Treating it like a closed hi-hat and not accounting for its longer decay in the mix",
+     "Not tuning or time-aligning the sample so its length clashes with the track tempo and feel"
+    ],
+    "scenario_contexts": [
+     "Building a hip-hop or electronic beat and placing an open hi-hat on the offbeats",
+     "Setting up a choke group so the open hi-hat cuts off the instant the closed hi-hat triggers",
+     "Layering an open-hi-hat sample over live drums to add sizzle"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7ffd3ac7-ffb4-4374-b8c7-4aac6c759bd6",
+   "term": "Optional stem",
+   "fields": {
+    "definition": "In a stem delivery, a grouped submix (stem) supplied as a non-mandatory extra, such as an alternate vocal, an effects-only, or a spare instrument-group stem, provided in addition to the required stems to give more flexibility in later re-mixing, mastering, or media use.",
+    "plain_english": "A stem is one part of a song bounced out on its own, like all the drums together. An 'optional' stem is an extra one you include just in case someone needs it later, even though the job does not require it.",
+    "purpose_function": "It gives downstream users such as mastering engineers, film mixers, or remixers extra separated material to work with, without cluttering the required set of deliverables.",
+    "practical_application": "When exporting stems, an engineer may add optional stems (for example a clean lead vocal or a reverb-only bus) and label them clearly so the client can use them only if needed.",
+    "category": "Stems & Delivery",
+    "related_terms": [
+     "Stem",
+     "Submix",
+     "Bus",
+     "Stem mastering",
+     "Deliverables",
+     "Bounce/Export"
+    ],
+    "common_mistakes": [
+     "Labeling optional stems poorly so the client cannot tell them apart from the required set",
+     "Bouncing optional stems at a different level, length, or sample rate than the main stems, breaking alignment",
+     "Assuming a stem is optional when the delivery spec actually requires it"
+    ],
+    "scenario_contexts": [
+     "Delivering song stems to a mastering engineer and adding an optional instrumental stem",
+     "Providing optional effects-only stems for a film re-recording mixer",
+     "Supplying an optional a cappella stem for possible remix use"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "03979326-c4bd-458c-848f-63ecd2815fd7",
+   "term": "Orchestral score mix",
+   "fields": {
+    "definition": "The process of balancing, panning, and processing a recorded orchestra so the sections (strings, brass, woodwinds, percussion) sit in a natural, coherent stereo or surround image, typically preserving the acoustic depth and hall ambience of the recording rather than the close-mic separation of pop production.",
+    "plain_english": "It is mixing a recording of a full orchestra so every section can be heard in the right place and at the right volume. The goal is to keep it sounding natural, like sitting in a concert hall.",
+    "purpose_function": "It delivers a believable orchestral balance and sense of space for film, game, or album work, letting the composer's arrangement come through clearly.",
+    "practical_application": "An engineer blends spot (close) mics with the main and room mics, sets section levels, and adds subtle reverb to seat the orchestra in one consistent hall, often matching picture in scoring work.",
+    "category": "Orchestral Mixing",
+    "related_terms": [
+     "Spot microphone",
+     "Decca tree",
+     "Section balance",
+     "Reverb",
+     "Surround mix",
+     "Stem"
+    ],
+    "common_mistakes": [
+     "Over-panning sections so the orchestra sounds far wider than any real hall",
+     "Relying only on spot mics and losing the natural blend the main and room mics provide",
+     "Adding so much reverb that detail and clarity disappear"
+    ],
+    "scenario_contexts": [
+     "Mixing a recorded film score to picture",
+     "Balancing a live-recorded symphony for album release",
+     "Combining Decca-tree main mics with spot mics for a video-game orchestral cue"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Owsinski, The Mixing Engineer's Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5d4adf55-38eb-45c8-a9c7-173b847a2709",
+   "term": "Output validation",
+   "fields": {
+    "definition": "The quality-control step of checking that a mix's final rendered file meets the required delivery specification, including integrated loudness (LUFS), true-peak ceiling, sample rate, bit depth, file format, channel or track layout, and metadata, before it is exported or handed off.",
+    "plain_english": "It is the last check to make sure the finished audio file is correct before you send it. You confirm things like loudness, format, and that nothing is clipping or missing.",
+    "purpose_function": "It catches format and level errors before delivery, so the file is accepted and plays back correctly on the target platform.",
+    "practical_application": "Before delivering, a technician runs a loudness meter and file checker to confirm the render hits the spec's LUFS and true-peak targets and is in the correct format, then logs the result.",
+    "category": "Delivery & QC",
+    "related_terms": [
+     "Loudness normalization",
+     "True peak",
+     "LUFS",
+     "Deliverables",
+     "Bounce/Export",
+     "Metadata"
+    ],
+    "common_mistakes": [
+     "Validating only peak level and ignoring the integrated loudness (LUFS) target",
+     "Checking the session but not the actual exported file, so a bad render slips through",
+     "Skipping format checks such as sample rate, bit depth, and channel order that cause rejection"
+    ],
+    "scenario_contexts": [
+     "Checking a mastered track hits its streaming loudness and true-peak targets before upload",
+     "Verifying a broadcast mix meets EBU R128 before delivery",
+     "Confirming exported stems are all the same length, sample rate, and format"
+    ]
+   },
+   "sources": [
+    "EBU R128 (loudness normalization recommendation)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "99e6bd28-df3f-4311-a2ad-181677ca49d4",
+   "term": "Overdrive the system",
+   "fields": {
+    "definition": "To push a signal chain or sound-reinforcement system past its linear operating range, by raising gain or level beyond the equipment's headroom, so it clips or distorts; it is sometimes done deliberately for saturation, but on a PA it risks driving amplifiers into clipping and damaging loudspeakers.",
+    "plain_english": "It means turning a system up so hard that it can no longer handle the signal cleanly and starts to distort. A little can sound gritty on purpose, but too much sounds bad and can wreck speakers.",
+    "purpose_function": "The term describes exceeding a device's or system's clean headroom, either as an intentional distortion effect or as an unwanted fault that degrades sound and endangers gear.",
+    "practical_application": "A technician watches meters and clip lights to avoid overdriving amps and drivers during a loud show, and only overdrives a channel or plugin on purpose, at controlled levels, for tonal color.",
+    "category": "Gain Structure",
+    "related_terms": [
+     "Clipping",
+     "Headroom",
+     "Gain staging",
+     "Saturation",
+     "Distortion",
+     "Limiter"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Overdriving a power amplifier into clipping, whose flat-topped waveform sends excess energy to the drivers and can overheat and destroy loudspeakers",
+     "UNSAFE: Pushing system level past its clean limit to chase more volume instead of adding proper amplification and speakers, risking hearing damage and gear failure",
+     "Confusing pleasant analog-style saturation with hard clipping and overdoing the level"
+    ],
+    "scenario_contexts": [
+     "A PA sounds harsh and distorted because the amps are being overdriven at front-of-house",
+     "Deliberately overdriving a channel plugin for a gritty bass tone",
+     "The master bus clips on export because the mix overdrives the output"
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Ballou, Handbook for Sound Engineers",
+    "Rane technical notes (amplifier clipping and loudspeaker damage)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d238425c-0814-46f8-bf9d-257a05751da4",
+   "term": "Ozone",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank: the bare term 'Ozone' has no established meaning specific to mix fundamentals or workflow. It is ambiguous between the gas O3 (a safety/electrical topic, not a mixing term) and the iZotope Ozone mastering product (a commercial product not documented in the acceptable technical/standards/professional-text sources). No canonical mixing-workflow sense could be confirmed against >=2 acceptable sources, so authoring any definition would be a guess."
+   ]
+  },
+  {
+   "id": "b920ec62-20e4-4ad8-8f9b-b0c15843ace9",
+   "term": "Pan automation pass",
+   "fields": {
+    "definition": "A dedicated run through a song in which the engineer writes or refines panning automation, recording changes in a track's or bus's stereo (or surround) position over time, so panning moves dynamically with the arrangement instead of staying static.",
+    "plain_english": "It is a focused run through the song where you record how sounds move left and right over time. Instead of setting one fixed pan, you draw or perform pan changes so things can shift as the music changes.",
+    "purpose_function": "It lets stereo placement change with the music, such as following a solo, widening a chorus, or moving an effect, adding motion and clarity that a single static pan cannot provide.",
+    "practical_application": "The engineer arms pan automation (write, touch, or latch), performs or draws the moves for the chosen tracks, then plays back and edits the automation curve until the movement feels musical.",
+    "category": "Automation",
+    "related_terms": [
+     "Automation",
+     "Panning",
+     "Write/Touch/Latch modes",
+     "Automation lane",
+     "Fader automation pass",
+     "Stereo image"
+    ],
+    "common_mistakes": [
+     "Leaving the automation mode in Write, which erases existing moves on the next pass",
+     "Making pan moves so fast or wide that they distract the listener",
+     "Automating pan on a center-critical element like a lead vocal or kick and weakening the mix"
+    ],
+    "scenario_contexts": [
+     "Doing a pan automation pass to sweep a synth from left to right in a breakdown",
+     "Automating pan to follow a guitar solo slightly off-center during its feature",
+     "Adding subtle pan moves to widen background vocals in the chorus"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0565b4ee-a1f5-468b-b140-84219c82ba49",
+   "term": "Pan View",
+   "fields": {
+    "definition": "A display mode in a DAW or on a mixing console that shows the pan (stereo or surround position) settings of channels or tracks, letting the engineer see and adjust left-to-right placement across the whole mix in one place.",
+    "plain_english": "It is a screen or view that shows where each track sits from left to right. It lets you see and change all your panning in one spot instead of hunting channel by channel.",
+    "purpose_function": "It gives a single overview of stereo placement so the engineer can compare and balance the panning of many tracks quickly.",
+    "practical_application": "The engineer switches to the pan view to spot tracks stacked in the same position, then spreads them out for a wider, clearer stereo image.",
+    "category": "DAW Interface",
+    "related_terms": [
+     "Panning",
+     "Pan pot",
+     "Stereo image",
+     "Mixer view",
+     "Pan automation pass",
+     "Balance control"
+    ],
+    "common_mistakes": [
+     "Confusing a true pan control with a balance control on stereo tracks",
+     "Judging pan positions from the view alone instead of listening",
+     "Overlooking that some views display pan law or level compensation differently"
+    ],
+    "scenario_contexts": [
+     "Opening the pan view to check nothing is crowded in the center",
+     "Using a console's pan view to set up a wide drum-overhead image",
+     "Reviewing pan positions before printing a mix"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a329b6b8-c45c-45ed-b364-0153d2ebeb41",
+   "term": "Parallel device chain",
+   "fields": {
+    "definition": "A signal-processing configuration in which a set of devices (effects or processors) is fed a copy of the source and processed independently, then blended back with the unprocessed or differently processed signal, rather than being inserted in series; it is commonly used for parallel compression, saturation, or effect blends.",
+    "plain_english": "Instead of sending a sound through effects one after another, you split off a copy and treat it on its own. Then you mix that copy back in. This adds a heavily processed layer while keeping the original clean sound.",
+    "purpose_function": "It lets an engineer add strong processing, like heavy compression or distortion, while keeping the natural dynamics and tone of the untreated signal by blending the two together.",
+    "practical_application": "A technician sends a copy of a drum bus to a parallel chain of compression and EQ, through a return, aux, or a parallel rack, then blends it under the dry drums for extra punch.",
+    "category": "Signal Routing",
+    "related_terms": [
+     "Parallel compression",
+     "Aux/return bus",
+     "Dry/wet mix",
+     "Series processing",
+     "Send",
+     "Device rack"
+    ],
+    "common_mistakes": [
+     "Phase or timing problems when the parallel path has latency that is not compensated, which thins the combined sound",
+     "Blending in so much of the processed path that it defeats the point of keeping the dry signal",
+     "Confusing parallel (blended) routing with series (in-line) insert processing"
+    ],
+    "scenario_contexts": [
+     "Setting up parallel compression on drums through a return chain",
+     "Blending a distorted parallel bass chain under the clean bass",
+     "Using a parallel effect rack in a DAW for a heavily processed reverb layer"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Rane technical notes (parallel processing and latency compensation)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

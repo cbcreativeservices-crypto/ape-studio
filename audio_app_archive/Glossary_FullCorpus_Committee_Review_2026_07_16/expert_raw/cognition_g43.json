@@ -1,0 +1,45 @@
+{
+  "expert": "cognition",
+  "group": 43,
+  "reviews": [
+    {"id": "377d50f0-461d-46e6-aab6-e22b151d596b", "term": "Signage", "verdict": "OK", "suggestions": []},
+    {"id": "985f3b96-2654-4edc-b1be-4652ab4b1448", "term": "Signal Chain (Signal Path)", "verdict": "OK", "suggestions": []},
+    {"id": "1616b8b5-f1b7-49cc-965e-5ac5524c9a6e", "term": "Signal Generator", "verdict": "OK", "suggestions": []},
+    {"id": "70fea684-3629-42d6-a3bb-ce392db4667b", "term": "Signal Ground", "verdict": "OK", "suggestions": []},
+    {"id": "fd9d3cb1-ca09-42e5-aebb-8b8bd2bf8c51", "term": "Signal injection", "verdict": "MINOR", "suggestions": [
+      {"field": "related_terms", "severity": "Low", "issue": "\"Signal tracing\" appears twice in the related_terms list, so a learner sees the same map entry duplicated and gets one fewer useful cross-link.", "suggestion": "Remove the duplicate \"Signal tracing\" and use the freed slot for a distinct related term (e.g. \"Signal Present Indicator\" or \"Half-split method\" is already present, so add \"Test oscillator\")."}
+    ]},
+    {"id": "d6a6964e-0a66-4bb2-a176-4d235dcf526a", "term": "Signal Present Indicator", "verdict": "OK", "suggestions": []},
+    {"id": "cfb4e5e5-1eae-48d9-9474-f7ab5e54bc9a", "term": "Signal levels (nominal)", "verdict": "OK", "suggestions": []},
+    {"id": "420735c6-fd9d-4bf2-8ca0-2ea21f716a89", "term": "Signal Routing", "verdict": "OK", "suggestions": []},
+    {"id": "b12e772a-ca52-4db2-99bd-ac49f4ef42c7", "term": "Signal Strength", "verdict": "OK", "suggestions": []},
+    {"id": "4281bf98-6847-45af-868c-9b1498d2d2fe", "term": "Signal tracing", "verdict": "OK", "suggestions": []},
+    {"id": "7a977cfd-36e2-44ab-b197-8e2485e03cf7", "term": "Signal-Sensing Turn-On", "verdict": "OK", "suggestions": []},
+    {"id": "5a2a4eb9-ab55-456d-b7a1-bdc84a9bea72", "term": "Signal-to-noise ratio", "verdict": "OK", "suggestions": []},
+    {"id": "8907a940-476d-4e0b-a8ee-1dd1f2e73f2e", "term": "Signal-to-Noise Ratio (SNR)", "verdict": "OK", "suggestions": []},
+    {"id": "ba9ce4b1-b5b5-43ff-ad16-75df50f6b35d", "term": "sine wave", "verdict": "OK", "suggestions": []},
+    {"id": "981ecc0e-2cb9-47f8-b795-ab868c1c2e35", "term": "Single Phase", "verdict": "OK", "suggestions": []},
+    {"id": "c351f442-cae4-4750-a682-7f0840877cb4", "term": "Single-channel measurement", "verdict": "OK", "suggestions": []},
+    {"id": "f6154039-6d14-4ad2-86e3-4aacab7526c7", "term": "Single-diaphragm capsule", "verdict": "OK", "suggestions": []},
+    {"id": "7c136e76-5fdf-4721-871f-c82b8ba410c3", "term": "Single-DIN", "verdict": "MINOR", "suggestions": [
+      {"field": "difficulty", "severity": "Low", "issue": "Tagged \"advanced,\" but the entire entry teaches at a beginner level (a physical dash-opening size), and its plain_english is deliberately simple. Sibling Vehicle Audio terms of greater conceptual depth (e.g. Signal-Sensing Turn-On) are only \"intermediate,\" so \"advanced\" misplaces this in the learning sequence.", "suggestion": "Retag difficulty to \"beginner\" (or at most \"intermediate\") to match the simple content and align with sibling Vehicle Audio entries."}
+    ]},
+    {"id": "b20e2ad2-f9f0-4e11-a5b0-47570775dfa6", "term": "Site Survey", "verdict": "OK", "suggestions": []},
+    {"id": "6228b4d9-b8d0-4da4-a0c5-05440b754276", "term": "Slapback Delay", "verdict": "OK", "suggestions": []},
+    {"id": "da4d165e-4446-4adb-86eb-ad71a00fbba8", "term": "slew rate", "verdict": "OK", "suggestions": []},
+    {"id": "5fb130be-0023-461b-9f2f-32539c5c9ff6", "term": "Slide Advance", "verdict": "OK", "suggestions": []},
+    {"id": "c4e7e3d3-b761-42f7-bd3d-9c5bfd1c19c1", "term": "Slope (dB/octave)", "verdict": "OK", "suggestions": []},
+    {"id": "ab1c3c74-ad2c-4882-9d24-481387194e4e", "term": "SMA Connector", "verdict": "OK", "suggestions": []},
+    {"id": "ac44944f-2419-49e2-9e6d-c16438ef3dc8", "term": "SMAART", "verdict": "OK", "suggestions": []},
+    {"id": "0dfdaa6c-74ce-43d9-b06d-2254a26be333", "term": "Small-diaphragm capsule", "verdict": "OK", "suggestions": []},
+    {"id": "dfa559ce-de70-4117-9fc6-b4c4d52171ac", "term": "Small-Diaphragm Microphone (Pencil Mic)", "verdict": "OK", "suggestions": []},
+    {"id": "e2c2fafc-24f9-4281-8352-f23101a9717c", "term": "Smart Speaker", "verdict": "OK", "suggestions": []},
+    {"id": "ee677948-b084-4d9f-ac91-7ce86863e134", "term": "Smoke test", "verdict": "OK", "suggestions": []},
+    {"id": "e30bd918-e3c5-4056-9d24-283df80a7567", "term": "Smoothing", "verdict": "OK", "suggestions": []},
+    {"id": "c9d0d1cd-0823-4f74-97b5-17b54a811023", "term": "Snake", "verdict": "OK", "suggestions": []},
+    {"id": "cebf2826-bd01-4a49-95ab-bba8a6e37b26", "term": "Snapshot Automation", "verdict": "OK", "suggestions": []},
+    {"id": "9677569a-aac0-42cb-98d9-71f55a28bc81", "term": "Soft Clipping", "verdict": "OK", "suggestions": []},
+    {"id": "134bfa56-af73-4ab5-85da-577bfa9e2060", "term": "Soft Knee", "verdict": "OK", "suggestions": []},
+    {"id": "485a74fe-cbc9-4efb-abf1-9b224072674e", "term": "Solder Joint", "verdict": "OK", "suggestions": []}
+  ]
+}

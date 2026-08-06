@@ -1,0 +1,56 @@
+{
+ "batch": 388,
+ "topic": "ADR & Looping",
+ "terms": [
+  {
+   "id": "2b25a96b-07c5-45d3-b715-78c5e3e5ee34",
+   "term": "ADR booth",
+   "topic": "ADR & Looping",
+   "seq": 1710,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "f6ac616c-ab13-4aad-bdb4-72da57f73146",
+   "term": "ADR stage",
+   "topic": "ADR & Looping",
+   "seq": 1710,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

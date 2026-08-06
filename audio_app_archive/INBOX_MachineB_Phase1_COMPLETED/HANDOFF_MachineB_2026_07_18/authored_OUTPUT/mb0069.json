@@ -1,0 +1,312 @@
+{
+ "batch": 69,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "22ab3cc6-ec0a-4161-aa8c-3a31f28fea9a",
+   "term": "Transitional texture",
+   "fields": {
+    "definition": "A short passage of sound placed between two sections of an arrangement to bridge them, using changes in instrumentation, density, or effects rather than a fixed melody or groove. Common forms include filtered sweeps, drum fills, risers, cymbal swells, and drop-outs that carry the listener from one part into the next.",
+    "plain_english": "It is a short bit of sound that joins two parts of a song, like a bridge between rooms. It might be a drum fill or a rising sweep that leads you into the next section.",
+    "purpose_function": "It smooths the join between sections and builds or releases energy, so a change like verse to chorus feels natural instead of abrupt. It also cues the listener that something new is coming.",
+    "practical_application": "A technician adds a riser, reverse cymbal, filter sweep, or drum fill in the last bar or two before a new section, riding its level so it lifts into the downbeat.",
+    "category": "Arrangement Texture",
+    "related_terms": [
+     "Riser",
+     "Drum fill",
+     "Noise texture",
+     "Ambience layer",
+     "Automation"
+    ],
+    "common_mistakes": [
+     "Making the transition so loud or busy that it buries the downbeat it is supposed to lead into.",
+     "Using the same fill or sweep at every section change so the transitions become predictable and stale.",
+     "Forgetting a transition entirely, so section changes feel sudden and jarring."
+    ],
+    "scenario_contexts": [
+     "Adding a filtered white-noise riser in the bar before a chorus to build tension.",
+     "Dropping the arrangement to a single element for one bar to reset energy before a new section.",
+     "Placing a drum fill at the end of a verse to hand off into the chorus."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Sound on Sound technical articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8935b0c0-8b59-4ed5-98bf-1328515e8a54",
+   "term": "Trigger crosstalk",
+   "fields": {
+    "definition": "The false firing of a drum trigger caused by vibration or acoustic energy from a neighboring drum or cymbal reaching that trigger's pad or sensor. For example, a hard snare hit can shake the rack tom shell enough to fire the tom trigger, producing an unwanted note.",
+    "plain_english": "It is when hitting one drum accidentally sets off the trigger on another drum nearby. The shaking travels through the kit, like a slammed door making a picture on the wall rattle.",
+    "purpose_function": "Understanding crosstalk matters because triggers convert drum hits into MIDI or samples, and false hits from a neighboring drum ruin the replaced or reinforced sound. Managing it keeps the triggered part clean and true to what was played.",
+    "practical_application": "A technician raises the trigger threshold on sensitive channels, uses the module's crosstalk or cross-cancel setting, and mounts triggers firmly so a nearby drum does not fire the wrong pad.",
+    "category": "Drum Triggering",
+    "related_terms": [
+     "Trigger threshold",
+     "Trigger retrigger cancellation",
+     "Drum trigger",
+     "Sample replacement",
+     "Bleed"
+    ],
+    "common_mistakes": [
+     "Setting trigger thresholds too low, so vibration from adjacent drums easily fires false hits.",
+     "Blaming the drum module for stray notes when the real cause is loose trigger mounting picking up shell vibration.",
+     "Ignoring crosstalk during setup and only discovering ghost hits after the whole take is recorded."
+    ],
+    "scenario_contexts": [
+     "A tom trigger firing on its own every time the drummer plays a hard snare backbeat.",
+     "Setting cross-cancellation on a drum module so kick hits stop triggering the snare pad.",
+     "Replacing sloppy live drums with samples and cleaning up false trigger notes caused by kit vibration."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Roland V-Drums / trigger module technical documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "242b695d-73f6-43ac-8f36-aad9a0ec1e84",
+   "term": "Trigger retrigger cancellation",
+   "fields": {
+    "definition": "A drum-trigger setting that blocks a second false trigger from firing during the ringing or decay of a single hit, so one strike produces only one note. It works by holding off further triggering for a short masking time after the initial detection, preventing double hits from a drum head's secondary vibrations.",
+    "plain_english": "It stops one drum hit from being counted as two. After a hit fires, the trigger briefly ignores the drum's ringing, like a light switch that will not flicker back on right away.",
+    "purpose_function": "It exists because a struck drum head vibrates unevenly and can cross the trigger threshold more than once per hit, creating extra machine-gun notes. Cancellation guarantees one clean note per strike so triggered samples stay accurate.",
+    "practical_application": "A technician sets the retrigger or mask time on each pad long enough to ignore the head's ring-down but short enough to still catch fast, genuine repeated hits.",
+    "category": "Drum Triggering",
+    "related_terms": [
+     "Trigger threshold",
+     "Trigger crosstalk",
+     "Drum trigger",
+     "Mask time",
+     "Sample replacement"
+    ],
+    "common_mistakes": [
+     "Setting the mask time too long, which swallows fast genuine hits like drum rolls or double strokes.",
+     "Setting it too short, so single hits produce stuttering double notes from head vibration.",
+     "Confusing retrigger cancellation with crosstalk cancellation, which addresses a different problem between separate drums."
+    ],
+    "scenario_contexts": [
+     "Dialing in mask time so a single snare hit no longer fires two rapid samples.",
+     "Tuning retrigger settings on a floor tom so its long decay stops causing extra notes.",
+     "Balancing mask time on a fast kick pattern so real double-kick hits still register."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Roland V-Drums / trigger module technical documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5d8f8ef1-9797-4bd2-8f83-9b37d6297f59",
+   "term": "Trigger threshold",
+   "fields": {
+    "definition": "The minimum input level a signal from a drum trigger or gate must exceed before a note or event is fired. Signals below the threshold are ignored, so it sets the dividing line between hits that count and low-level noise, bleed, or vibration that should not.",
+    "plain_english": "It is the loudness a hit must reach before the trigger fires. Anything quieter is ignored, like a doorbell that only rings when you press it hard enough.",
+    "purpose_function": "It separates real hits from unwanted low-level energy such as bleed from other drums, hum, or head vibration, so only intended strikes produce a note. Setting it correctly keeps triggered drums clean and reliable.",
+    "practical_application": "A technician raises the threshold until stray bleed and crosstalk stop firing notes, then checks that the softest intended ghost notes still trigger dependably.",
+    "category": "Drum Triggering",
+    "related_terms": [
+     "Trigger crosstalk",
+     "Trigger retrigger cancellation",
+     "Drum trigger",
+     "Gate",
+     "Sample replacement"
+    ],
+    "common_mistakes": [
+     "Setting the threshold too high, so quiet ghost notes and soft hits are missed entirely.",
+     "Setting it too low, so bleed and crosstalk from other drums fire false notes.",
+     "Setting the threshold once and not rechecking it when the drummer changes playing dynamics."
+    ],
+    "scenario_contexts": [
+     "Raising the trigger threshold so snare bleed stops firing the kick sample.",
+     "Lowering the threshold so a drummer's soft ghost notes trigger reliably.",
+     "Setting a gate threshold on a tom so it only opens when the tom is actually struck."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Handbook for Sound Engineers (Ballou)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "6c13c92c-fd15-4ca7-8fce-e947b5b41ee4",
+   "term": "Triple tracking",
+   "fields": {
+    "definition": "A recording technique in which the same part is performed and recorded three separate times, then blended, to thicken and widen it. The natural timing and pitch differences between the three takes create a fuller, more powerful sound than a single take.",
+    "plain_english": "It means playing or singing the same part three times and stacking the takes together. The tiny differences between them make the sound bigger and wider, like three people singing the same line.",
+    "purpose_function": "It reinforces a part and adds width and weight because the small human variations between takes reduce phase cancellation and spread the sound across the stereo field. Producers use it to make guitars, vocals, or hooks sound larger than life.",
+    "practical_application": "A technician records three passes of a rhythm guitar or vocal, often panning two of them left and right and keeping one centered, then balances their levels so they fuse into one thick part.",
+    "category": "Arrangement Technique",
+    "related_terms": [
+     "Double tracking",
+     "Unison layering",
+     "Unison stack",
+     "Panning",
+     "Comping"
+    ],
+    "common_mistakes": [
+     "Copying and pasting one take three times instead of performing separate takes, which just raises level and causes phase issues rather than thickening.",
+     "Letting the three takes drift so far in timing that the part smears and loses definition.",
+     "Stacking three loud takes without balancing them, so the part overpowers the rest of the mix."
+    ],
+    "scenario_contexts": [
+     "Recording three passes of a distorted rhythm guitar to build a wide, heavy wall of sound.",
+     "Triple tracking a chorus vocal so the hook sounds bigger than the verses.",
+     "Layering three takes of a backing part and panning them for width in a dense mix."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Sound on Sound technical articles"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "90824c17-090b-4ee2-a603-e042682881f4",
+   "term": "Unison layering",
+   "fields": {
+    "definition": "The stacking of two or more parts that play the same notes at the same pitch to reinforce a line and thicken its tone. The layers may be separate performances of the same part or different sounds doubling the same pitch, blended so they sound like one bigger voice.",
+    "plain_english": "It means stacking parts that play the exact same notes at the same pitch. Blending them makes one fuller sound, like several people singing the same note together.",
+    "purpose_function": "It adds weight, richness, and power to a part without changing its notes, since combining sources at the same pitch reinforces the line. It is a core way to make leads, vocals, and hooks sound larger.",
+    "practical_application": "A technician doubles a vocal or synth part at the same pitch, or layers a second instrument onto the same line, then balances levels and checks tuning so the layers fuse cleanly.",
+    "category": "Arrangement Technique",
+    "related_terms": [
+     "Unison stack",
+     "Double tracking",
+     "Triple tracking",
+     "Octave layering",
+     "Voicing"
+    ],
+    "common_mistakes": [
+     "Layering identical digital copies that phase-cancel or just get louder instead of sounding fuller.",
+     "Ignoring small tuning differences between layers, which makes the combined part sound out of tune.",
+     "Stacking too many unison layers so the part becomes bloated and masks other elements."
+    ],
+    "scenario_contexts": [
+     "Doubling a lead vocal at the same pitch to give a chorus more body.",
+     "Layering two synths on the same melody so the hook sounds thicker.",
+     "Reinforcing a horn line with a second instrument playing the same notes."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Sound on Sound technical articles"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1d76799f-7d37-46eb-9a49-a74de5cea6fd",
+   "term": "Unison stack",
+   "fields": {
+    "definition": "A group of two or more sounds or voices playing the same note at the same pitch, combined into a single reinforced part. In synthesis it often refers to a unison mode that layers several slightly detuned copies of one oscillator to fatten the tone.",
+    "plain_english": "It is a set of sounds all playing the same note together to make one big sound. On a synth, a unison mode stacks slightly detuned copies so the tone sounds fat.",
+    "purpose_function": "It creates a thicker, more powerful voice from a single note by piling up energy at the same pitch, with slight detuning adding width and movement. It is a fast way to make leads, basses, and pads sound huge.",
+    "practical_application": "A technician engages a synth's unison mode and sets the number of voices and detune amount, or manually stacks several same-pitch takes, to build a fat lead or bass.",
+    "category": "Arrangement Technique",
+    "related_terms": [
+     "Unison layering",
+     "Octave stack",
+     "Detune",
+     "Oscillator",
+     "Voicing"
+    ],
+    "common_mistakes": [
+     "Adding too much detune so the unison stack drifts noticeably out of tune instead of sounding rich.",
+     "Piling on unison voices until the low end becomes muddy and the sound loses focus.",
+     "Confusing a unison stack with a chord, when a stack reinforces one pitch rather than adding harmony."
+    ],
+    "scenario_contexts": [
+     "Using a synth's unison mode with light detune to fatten a lead for a chorus.",
+     "Building a wide supersaw bass from a heavily stacked unison patch.",
+     "Stacking several same-pitch vocal takes into one powerful shout in a bridge."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Handbook for Sound Engineers (Ballou)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "5e99bb6f-f264-4c98-ba38-e8e1368c785f",
+   "term": "Upright-bass mixing",
+   "fields": {
+    "definition": "The techniques used to place a double bass (upright acoustic bass) into a mix by managing its level, low-end weight, note definition, and any finger or bow noise. Because the instrument produces strong low frequencies with a soft attack and often uses both a pickup and a microphone, mixing focuses on keeping notes clear and even without boom or mud.",
+    "plain_english": "It is how you set the level and tone of an upright bass in a song. The goal is a warm, even low end where each note is clear, not boomy or muddy.",
+    "purpose_function": "It integrates a big, resonant acoustic instrument into an arrangement so it supports the low end and locks with the drums while staying defined. Good mixing keeps every note audible and stops the bass from swamping the mix.",
+    "practical_application": "A technician blends the pickup and mic signals, high-passes out subsonic rumble, uses compression to even out note-to-note level, and adds gentle mid presence so the bass line stays clear against the kick.",
+    "category": "Instrument Mixing",
+    "related_terms": [
+     "Bass compression",
+     "Equalization",
+     "High-pass filter",
+     "Kick-bass balance",
+     "DI box"
+    ],
+    "common_mistakes": [
+     "Boosting the lows to sound big, which makes the upright boomy and blurs the pitch of each note.",
+     "Leaving note levels uneven, since an acoustic bass varies from note to note, so the line drops out on some notes and jumps out on others.",
+     "Ignoring finger and string noise, letting slaps and squeaks distract from the notes."
+    ],
+    "scenario_contexts": [
+     "Blending a pickup and a microphone on an upright bass to get both punch and body in a jazz mix.",
+     "Compressing an acoustic bass so each note sits at an even level under the drums.",
+     "High-passing an upright bass to remove floor rumble while keeping its warmth."
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Sound on Sound technical articles"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "89c5106e-9b1a-40c0-abca-a905582d4035",
+   "term": "Valve-noise control",
+   "fields": {
+    "definition": "The practices used to reduce unwanted noise from valve (vacuum-tube) audio equipment such as tube preamps, compressors, and guitar amplifiers, including hiss, hum, and microphonic ringing. It combines gain staging, quiet or matched tubes, proper grounding, and gating so the desirable valve tone is kept while the noise floor is managed.",
+    "plain_english": "It is how you keep the hiss and hum from tube gear low while keeping its warm sound. Tubes are like old glowing bulbs that can whistle or buzz, so you set levels and fix grounding to keep them quiet.",
+    "purpose_function": "It exists because valve equipment naturally adds hiss, hum, and microphonic noise, which can build up on quiet tracks and across many channels. Controlling it preserves the valve's warm character while keeping recordings clean.",
+    "practical_application": "A technician sets sensible gain staging, replaces noisy or microphonic tubes, ensures a solid ground to kill hum, and uses a noise gate on high-gain valve amp tracks between phrases.",
+    "category": "Signal Integrity",
+    "related_terms": [
+     "Noise floor",
+     "Gain staging",
+     "Ground loop",
+     "Noise gate",
+     "Hum"
+    ],
+    "common_mistakes": [
+     "Cranking valve gain far past what the part needs, which pushes the hiss and hum up with the signal.",
+     "Blaming cables for hum when the real cause is a ground loop or a worn, noisy tube.",
+     "UNSAFE: Opening a tube amplifier or preamp to swap valves without unplugging it and letting the high-voltage capacitors fully discharge, risking severe electric shock."
+    ],
+    "scenario_contexts": [
+     "Gating a high-gain valve guitar amp track so hiss disappears between riffs.",
+     "Tracing and fixing a ground loop that is adding hum to a tube preamp channel.",
+     "Swapping a microphonic tube in a valve compressor to stop it ringing during loud passages."
+    ]
+   },
+   "sources": [
+    "Handbook for Sound Engineers (Ballou)",
+    "Modern Recording Techniques (Huber & Runstein)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

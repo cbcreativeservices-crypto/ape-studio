@@ -1,0 +1,159 @@
+{
+ "batch": 325,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "7af3bfc1-844e-4120-bd8f-22d67ca83f62",
+   "term": "Bow chatter",
+   "fields": {
+    "definition": "An unintended, stuttering articulation on a bowed string instrument in which the bow bounces or repeatedly grips and slips against the string, producing a rapid rattling or clicking sound instead of a smooth, sustained tone. It typically results from an unbalanced bow-speed-to-pressure ratio or from loss of control in bounced strokes such as spiccato or sautille.",
+    "plain_english": "This is a rattly, stuttering sound a violin or cello makes when the bow bounces or grabs the string in fits and starts instead of gliding along. It sounds a bit like a stone skipping on water instead of one clean note.",
+    "purpose_function": "Identifying bow chatter lets a technician tell a performance or technique fault from an equipment fault, so effort goes toward a cleaner take rather than a hunt for a signal problem that does not exist.",
+    "practical_application": "During string-session editing, an engineer flags notes that chatter and comps them from alternate takes, since the rattling transients cannot be repaired with EQ or dynamics processing.",
+    "category": "Bowing artifact",
+    "related_terms": ["Bow noise", "Bow scrape", "Spiccato", "Attack transient", "Transient"],
+    "common_mistakes": ["Assuming the rattle is a loose connector or faulty mic when it is actually bow control in the performance.", "Trying to remove it with EQ or a de-noiser, which cannot restore the missing smooth tone.", "Confusing intentional bounced strokes such as spiccato with an accidental chatter."],
+    "scenario_contexts": ["Editing a string quartet session and comping out notes where the bow chattered.", "A student violinist's fast passage rattles from an uncontrolled bounced stroke.", "Reviewing a film-score string take to flag chattered notes for a re-record."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "46c9749e-8d9a-495d-a7e7-add44a174d8b",
+   "term": "Bow noise",
+   "fields": {
+    "definition": "The broadband friction noise produced by rosined bow hair dragging across a string, heard alongside the pitched tone and most prominent at bow changes, under heavy bow pressure, or when bowing near the bridge (sul ponticello). Close microphone placement emphasizes this scratchy component relative to the instrument's radiated tone.",
+    "plain_english": "This is the scratchy, hissy sound made by the bow hair rubbing on the string, on top of the actual note. Close microphones pick it up, much like you can hear the scrape of a pencil as well as the line it draws.",
+    "purpose_function": "Recognizing bow noise as a natural, expected part of a bowed-string signal helps a technician judge how much is musical realism and how much is excess from mic placement or technique.",
+    "practical_application": "When a close-miked violin sounds overly scratchy, an engineer moves the mic farther from the bridge or slightly off-axis to reduce captured bow noise while keeping the tone.",
+    "category": "Bowing artifact",
+    "related_terms": ["Bow chatter", "Bow scrape", "Sul ponticello", "Rosin", "Proximity effect"],
+    "common_mistakes": ["Treating all bow noise as a fault to be removed, when some is natural realism of a bowed string.", "Over-brightening a close string mic, which exaggerates bow noise.", "Blaming hiss on the preamp when the scratch is actually acoustic bow noise."],
+    "scenario_contexts": ["Close-miking a solo violin where bow noise becomes prominent.", "Choosing mic distance on a cello to balance tone against bow scratch.", "Identifying scratchy sound in a string sample library as natural bow noise."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9f491e65-d609-4d7a-b79e-c049822aa034",
+   "term": "Bow scrape",
+   "fields": {
+    "definition": "A harsh, crushed, noisy sound produced when excessive bow pressure relative to bow speed prevents the string from sustaining regular Helmholtz motion, breaking the tone into aperiodic noise. It may occur accidentally from poor technique or be used deliberately as an extended technique.",
+    "plain_english": "This is a harsh, crunchy scratch that happens when a player presses the bow too hard, so the string cannot ring cleanly. The note turns into a rough, noisy sound instead of a smooth tone.",
+    "purpose_function": "Identifying a bow scrape lets a technician tell a technique-driven noise from signal-chain distortion, so troubleshooting effort goes to the true source rather than the gear.",
+    "practical_application": "An engineer hearing a scrape on a cello take checks whether it is intentional, such as a marked effect, or an error, then either preserves it or comps around it.",
+    "category": "Bowing artifact",
+    "related_terms": ["Bow noise", "Bow chatter", "Sul ponticello", "Extended technique", "Attack transient"],
+    "common_mistakes": ["Mistaking a bow scrape for signal-chain distortion or clipping.", "Assuming every scrape is an error when it may be a marked extended technique.", "Trying to fix it with a limiter, which does not restore clean tone."],
+    "scenario_contexts": ["A contemporary piece calls for deliberate sul ponticello scrapes.", "A beginner cellist presses too hard and the tone breaks into a scrape.", "Deciding whether a scrape on a take is an effect to keep or an error to fix."]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Adler, The Study of Orchestration"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5a442eb6-2763-4b10-82ca-d32e8236f6fb",
+   "term": "Breath attack",
+   "fields": {
+    "definition": "A note onset initiated by air flow alone, giving a soft, aspirated 'h'-like beginning rather than a hard tongue (wind) or glottal (vocal) articulation, so the attack rises gently. It is often a deliberate articulation choice but can also appear as an unintended soft or late onset.",
+    "plain_english": "This is when a singer or wind player starts a note with a soft puff of air instead of a sharp tongue or throat kick. The note eases in gently, like the soft 'h' at the start of the word 'hello.'",
+    "purpose_function": "Telling a breath attack apart from a tongued or glottal onset helps an engineer read a note's transient shape when editing timing or applying transient processing.",
+    "practical_application": "When tightening a wind or vocal comp, an editor leaves extra room before breath-attacked notes because their soft onsets make the exact start point harder to place.",
+    "category": "Note onset",
+    "related_terms": ["Breath noise", "Breath release", "Attack transient", "Tonguing", "Glottal onset"],
+    "common_mistakes": ["Confusing a soft breath attack with a late or missed entrance.", "Setting a gate or transient designer that chops off the gentle onset.", "Placing an edit point too early and clipping the air onset."]
+    ,"scenario_contexts": ["A flute line starts each phrase with a soft breath attack.", "Editing a breathy vocal where onsets rise gently rather than snapping in.", "Setting transient processing on a sax track with air-based onsets."]
+   },
+   "sources": ["Adler, The Study of Orchestration", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0b9dd87c-d187-49f0-8080-e6b0d76acda7",
+   "term": "Breath intake",
+   "fields": {
+    "definition": "The audible sound of a performer inhaling before or between phrases, captured by the microphone as a short inrush of air that is distinct from the sung or played tone.",
+    "plain_english": "This is the sound of a singer or player breathing in before they sing or play. Close microphones often catch this quick gasp between phrases.",
+    "purpose_function": "Flagging breath intakes lets an editor decide which to keep for natural phrasing and which to reduce, since some breaths add realism while others distract.",
+    "practical_application": "A vocal editor rides down or trims loud breath intakes between lines using clip gain or a de-breath tool, leaving quieter ones for a natural feel.",
+    "category": "Breath artifact",
+    "related_terms": ["Breath noise", "Breath release", "Breath pop", "Clip gain", "Sibilance"],
+    "common_mistakes": ["Removing every breath, which makes vocals sound unnatural and robotic.", "Cutting a breath so abruptly that it leaves an obvious gap or click.", "Confusing a breath intake with room noise or HVAC rumble."],
+    "scenario_contexts": ["Trimming loud inhalations between lines of a lead vocal.", "A voiceover session where gasps before sentences must be reduced.", "Deciding which breaths to keep for natural phrasing in a ballad."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical editorial)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "f76768eb-fb18-4eb4-9160-d7cb37017fb4",
+   "term": "Breath noise",
+   "fields": {
+    "definition": "Audible breathing and air-turbulence sounds from a vocalist or wind player picked up by the microphone, including inhalations, exhalations, and the rush of air, which form part of the recorded signal and are often treated as artifacts.",
+    "plain_english": "This is the sound of air and breathing from a singer or wind player that the microphone picks up. It includes breaths in and out and the rush of air, mixed in with the music.",
+    "purpose_function": "Identifying breath noise helps a technician separate performer air sounds from electrical hiss or wind on the mic, so the right fix is applied.",
+    "practical_application": "On a close-miked flute or vocal, an engineer uses gentle automation or a dedicated de-breath process to tame breath noise without dulling the tone.",
+    "category": "Breath artifact",
+    "related_terms": ["Breath intake", "Breath release", "Breath pop", "Sibilance", "Plosive"],
+    "common_mistakes": ["Assuming breath noise is electrical hiss and chasing a gear fault.", "Aggressive de-breathing that dulls the tone or adds new artifacts.", "Forgetting that some breath noise adds intimacy and realism."],
+    "scenario_contexts": ["Taming air sounds on a close-miked flute recording.", "De-breathing a podcast vocal without dulling the voice.", "Diagnosing whether an airy sound is breath noise or preamp hiss."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "93c97342-9295-43d3-8779-eec7d47c9e12",
+   "term": "Breath pop",
+   "fields": {
+    "definition": "A low-frequency thump or brief overload caused by a burst of exhaled air striking the microphone diaphragm, similar to a plosive pop; the air blast momentarily displaces the capsule and produces a dull thud unrelated to the intended sound.",
+    "plain_english": "This is a low thump you hear when a burst of breath hits the microphone. It is like the puff of air on the letter 'p' that makes a mic thud.",
+    "purpose_function": "Recognizing a breath pop as an air-blast artifact rather than an electrical fault points the technician to windscreen, pop-filter, and placement fixes instead of the signal chain.",
+    "practical_application": "An engineer adds a pop filter and angles the mic slightly off-axis so exhaled breath no longer strikes the diaphragm head-on and causes pops.",
+    "category": "Breath artifact",
+    "related_terms": ["Plosive", "Pop filter", "Breath noise", "Windscreen", "Proximity effect"],
+    "common_mistakes": ["Confusing a breath pop with a consonant plosive or a DC thump.", "Relying only on EQ instead of a pop filter and a better mic angle.", "Assuming a low-cut fully fixes a pop when the capsule has already overloaded."],
+    "scenario_contexts": ["A singer exhales into the mic and creates a low thud.", "Adding a pop filter to stop breath pops on a rap vocal.", "Angling a wind player's mic so exhaled air misses the diaphragm."]
+   },
+   "sources": ["DPA Microphones, technical documentation (pop and wind protection)", "Shure, microphone technique application notes"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "dcb2de9d-4064-416a-9c72-d63bce9fe85e",
+   "term": "Breath release",
+   "fields": {
+    "definition": "The audible exhalation of air at the end of a note or phrase, heard as a singer or wind player releases the note and lets remaining breath out; a soft trailing air sound after the tone stops.",
+    "plain_english": "This is the soft puff of air heard at the end of a note or phrase, as the singer or player lets their breath out. It is the little sigh of air right after the sound stops.",
+    "purpose_function": "Identifying breath releases helps an editor shape phrase endings, keeping natural ones and trimming distracting ones.",
+    "practical_application": "When editing a lead vocal, an engineer trims or fades long breath releases at phrase ends so they do not clutter the mix.",
+    "category": "Breath artifact",
+    "related_terms": ["Breath intake", "Breath noise", "Breath attack", "Decay", "Fade"],
+    "common_mistakes": ["Cutting releases so hard that phrase endings sound clipped.", "Confusing a breath release with the note's natural decay.", "Leaving loud releases that clutter a dense mix."],
+    "scenario_contexts": ["Fading the exhaled air at the ends of vocal phrases.", "A clarinet phrase ends with an audible breath release.", "Cleaning up trailing breaths in a dense pop mix."]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical editorial)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3573173e-d3b2-4662-841d-a47a0e1eaef8",
+   "term": "breathy",
+   "fields": {
+    "definition": "A timbral descriptor for a voice or instrument tone that contains a prominent component of audible air and turbulence noise mixed with the pitched sound, giving a soft, airy, whispery quality; in the voice it arises from incomplete glottal closure that adds aspiration noise.",
+    "plain_english": "This word describes a soft, airy voice or tone that has a lot of audible air mixed in with the note. Think of the whispery sound of a gentle flute or a singer who sounds like they are almost sighing.",
+    "purpose_function": "The term gives technicians and musicians a shared word for an airy tonal quality, guiding mic, EQ, and processing choices to enhance or reduce it.",
+    "practical_application": "An engineer chasing a breathy vocal sound picks a condenser mic with an airy top end and close placement, or adds high-frequency lift, to emphasize the air.",
+    "category": "Timbral descriptor",
+    "related_terms": ["Breath noise", "Sibilance", "Aspiration", "Timbre", "Air band"],
+    "common_mistakes": ["Confusing 'breathy' (airy tone) with 'sibilant' (harsh S sounds).", "Assuming breathiness is always a fault rather than a desired style.", "Adding extreme high-frequency boost that turns air into harsh noise."],
+    "scenario_contexts": ["Producing an intimate, breathy lead vocal for a ballad.", "Choosing a condenser mic to capture a breathy flute tone.", "Describing a singer's airy timbre in session notes."]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Fletcher & Rossing, The Physics of Musical Instruments"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

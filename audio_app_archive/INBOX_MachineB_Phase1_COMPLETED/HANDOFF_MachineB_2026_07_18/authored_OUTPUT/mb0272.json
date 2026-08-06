@@ -1,0 +1,43 @@
+{
+ "batch": 272,
+ "topic": "DAW Fundamentals & Session Management",
+ "authored": [
+  {
+   "id": "0e1abf8b-9c96-4629-9e3c-a00b53f8af67",
+   "term": "Velocity scaling",
+   "fields": {
+    "definition": "A MIDI editing operation that multiplies the velocity values of selected note events by a factor or percentage, raising or lowering them proportionally together. A factor below 100% narrows the spread between soft and loud notes (compressing the dynamic range), while a factor above 100% widens it, in both cases preserving each note's relative dynamics rather than adding a fixed amount.",
+    "plain_english": "MIDI velocity is a number from 1 to 127 that says how hard each note was played. It usually controls how loud the note sounds. Velocity scaling multiplies all those numbers by the same percentage at once. This makes every note softer or louder together, while the loud notes still stay louder than the soft ones. It works like a dimmer for a whole part instead of setting each note by hand.",
+    "purpose_function": "It lets you adjust the overall dynamics of a MIDI performance in one step, either to match a part's intensity to the mix or to tighten or open up its dynamic range. It exists because editing every note's velocity by hand is slow and would not preserve the relative feel of the performance.",
+    "practical_application": "A technician selects the notes in a MIDI part and applies a scaling function (for example Cubase's Compress/Expand ratio or a Logic velocity Scale operation) to push a too-loud programmed drum part back in the mix, or to even out an unevenly played keyboard take without re-recording it.",
+    "category": "MIDI Editing",
+    "related_terms": [
+     "MIDI velocity",
+     "Velocity curve",
+     "Quantization",
+     "MIDI CC",
+     "Dynamic range",
+     "Logical Editor"
+    ],
+    "common_mistakes": [
+     "Treating velocity scaling as a volume/gain change: it edits velocity data, and how that maps to loudness depends on the instrument's velocity response, not a fixed dB amount.",
+     "Forgetting that velocity is capped at 1-127, so scaling too far clips notes to the min or max and flattens the dynamics instead of smoothly scaling them.",
+     "Scaling velocity to fix a loudness problem that is really the instrument's velocity-to-volume mapping or the track's mix gain.",
+     "Applying destructive scaling to the only take without keeping a copy, losing the original performance dynamics."
+    ],
+    "scenario_contexts": [
+     "Taming an overly aggressive programmed hi-hat or snare so it blends into the drum bus.",
+     "Evening out a keyboard overdub where some notes were struck much harder than others.",
+     "Compressing the velocity range of a MIDI string line so a sampled library's soft and loud layers stay in a usable range.",
+     "Raising the velocities of a timidly played MIDI bass part to trigger a brighter, louder sample layer."
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase/Nuendo Operation Manual - MIDI Functions: Velocity dialog (Add/Subtract, Compress/Expand ratio, Limit)",
+    "Sound on Sound - MIDI Dynamics (velocity compression and percentage/ratio scaling in the DAW)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

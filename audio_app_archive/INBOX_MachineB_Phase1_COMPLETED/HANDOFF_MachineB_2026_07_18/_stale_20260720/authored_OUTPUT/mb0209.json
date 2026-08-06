@@ -1,0 +1,216 @@
+{
+ "batch": 209,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "cf094062-2aea-48a7-b075-fd27f18f3017",
+   "term": "Accelerando map",
+   "fields": {
+    "definition": "A section of a tempo map that scripts a gradual accelerando, a steady rise in tempo across a span of bars, so a click track or sequenced score speeds up smoothly instead of jumping in abrupt steps. It defines the start tempo, end tempo, and the shape of the ramp used to drive a metronome click or MIDI playback in film scoring and music production.",
+    "plain_english": "A tempo map tells software the beats per minute. An accelerando map is the part that makes the beat speed up little by little instead of all at once. It works like a car easing onto the gas, so the music races ahead in a smooth, planned way.",
+    "purpose_function": "It lets a composer or editor plan a smooth speed-up so performers, click tracks, and synced picture all follow the same rising tempo. Without it, a tempo change would jump abruptly and break the feel or the sync to picture.",
+    "practical_application": "Scoring to picture, an engineer enters or draws an accelerando in the DAW tempo track so the click gradually quickens toward a hit point. Players record to that click and the recorded music lines up with the on-screen action.",
+    "category": "Scoring & Sync",
+    "related_terms": ["Tempo map", "Click track", "Accent click", "Hit point", "Ritardando", "MIDI sequencing"],
+    "common_mistakes": [
+     "Confusing an accelerando (gradual speed-up) with a single-step tempo change, which produces an abrupt jump instead of a smooth ramp.",
+     "Setting only start and end tempos without shaping the curve, so the acceleration feels uneven.",
+     "Forgetting that the click and the recorded parts must both follow the same map, causing sync drift against picture."
+    ],
+    "scenario_contexts": [
+     "Scoring a chase scene where the music must gradually build speed toward an impact.",
+     "Preparing a click track for an orchestra so players follow a planned tempo rise.",
+     "Editing a MIDI mockup so a sampled score accelerates smoothly into a downbeat."
+    ]
+   },
+   "sources": ["Avid Pro Tools Reference Guide — Tempo and Meter operations", "The New Grove Dictionary of Music and Musicians — 'Accelerando'"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2f0a19ae-a094-4eff-9f0f-f80e57305cec",
+   "term": "Accent click",
+   "fields": {
+    "definition": "In a click track, the accent click is the emphasized metronome sound placed on the first beat of each bar (the downbeat), usually higher in pitch or louder than the other beats. It lets a performer hear where each measure begins while playing to a fixed tempo.",
+    "plain_english": "A click track is a steady beep that keeps musicians in time. The accent click is a louder or higher beep on the first beat of each bar. It acts like a stressed syllable in a word, telling you where each measure starts.",
+    "purpose_function": "It marks the start of each bar so the player stays oriented within the measure and does not lose the count during long or syncopated passages. This keeps a performance locked to the grid and to picture.",
+    "practical_application": "A recording engineer sets the metronome so beat one is accented, then sends the click to the drummer through headphones. In film scoring, the accented click helps players find downbeats that must land on visual hits.",
+    "category": "Scoring & Sync",
+    "related_terms": ["Click track", "Tempo map", "Downbeat", "Metronome", "Accelerando map", "Cue"],
+    "common_mistakes": [
+     "Placing the accent on the wrong beat in odd time signatures, so bar one no longer lines up.",
+     "Making the accent click too loud, so it bleeds into microphones or fatigues the player.",
+     "Assuming every DAW accents beat one by default when it often must be enabled."
+    ],
+    "scenario_contexts": [
+     "Tracking drums to a click where the player needs to feel each bar's downbeat.",
+     "Recording an ensemble to picture so measures align with edit points.",
+     "Setting up a metronome in an odd meter like 7/8 where accent placement matters."
+    ]
+   },
+   "sources": ["Sound on Sound — 'The SOS Guide to Playing to a Click'", "Avid Pro Tools Reference Guide — Click / Metronome"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e44fa56e-af46-408a-beac-07c1a9f76b4c",
+   "term": "Accent supervision",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All fields left blank. 'Accent supervision' is not an established term in professional post-production, dubbing/localization, or audio-engineering literature. A search of acceptable sources (audiovisual-translation texts, film-sound references, standards bodies) returned no defined role, process, or deliverable by this name. Its meaning is ambiguous (dialect/accent coaching vs. localization QA vs. an unrelated musical-accent reading) and unattested even as a transparent compound, so it cannot be defined to a professional standard. Flagged for review."
+   ]
+  },
+  {
+   "id": "23ee0335-b765-4007-a96e-d9d7c95d50f6",
+   "term": "Acoustic occlusion",
+   "fields": {
+    "definition": "Acoustic occlusion is the attenuation and low-pass filtering of a sound because a solid barrier blocks every path — both direct and reflected — between the source and the listener. In game and interactive audio it is modeled so a sound heard through a wall becomes quieter and more muffled, and is distinguished from obstruction, where reflected sound can still reach the listener around the object.",
+    "plain_english": "Occlusion is what happens when a solid wall sits between you and a sound. The sound gets quieter and more muffled because it cannot reach you cleanly. It is like hearing music through a closed door: you catch the low rumble but lose the crisp high notes.",
+    "purpose_function": "It exists to make virtual or simulated spaces sound believable by dulling sounds that are hidden behind solid objects. This gives players or listeners accurate cues about what is blocking a sound and where it sits.",
+    "practical_application": "A game audio designer assigns occlusion so gunfire behind a concrete wall is filtered and lowered, then opens up as the player rounds the corner. In spatial mixes, engineers tune occlusion curves to match how much a given material blocks sound.",
+    "category": "Spatial Audio",
+    "related_terms": ["Obstruction", "Acoustic portal", "Acoustic room", "Diffraction", "Low-pass filter", "Reverb"],
+    "common_mistakes": [
+     "Confusing occlusion (all paths blocked) with obstruction (only the direct path blocked), which leads to wrong filtering.",
+     "Applying only volume loss with no low-pass filtering, so blocked sound stays unnaturally bright.",
+     "Ignoring the reflected or reverb path, so occluded sound cuts off too abruptly."
+    ],
+    "scenario_contexts": [
+     "Muffling an enemy's footsteps heard through a closed door in a game.",
+     "Simulating a voice behind a wall in VR so it sounds dull and distant.",
+     "Tuning how much a thick barrier blocks sound in an interactive spatial mix."
+    ]
+   },
+   "sources": ["Audiokinetic Wwise Spatial Audio documentation — Rooms, Portals, and Diffraction", "Microsoft Project Acoustics documentation — occlusion and portals"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d1af2863-cdac-4f6f-98c0-a4b8892a2d7b",
+   "term": "Acoustic portal",
+   "fields": {
+    "definition": "An acoustic portal is a defined opening, such as a doorway or window, that models how sound propagates between two adjacent acoustic spaces (rooms). Represented as an oriented bounding box, it carries and spatializes sound passing from one room's reverb and sources into the next, and governs how that sound diffracts and attenuates as the opening is approached or closed.",
+    "plain_english": "A portal is an opening, like a door or window, that lets sound pass from one room into another. In audio software it controls how much sound leaks through and from which direction. Think of standing in a hallway and hearing a party through an open door: the portal is that doorway.",
+    "purpose_function": "It exists so connected spaces sound linked rather than sealed, letting a sound in one room bleed realistically into the next through its opening. This gives listeners a sense of layout and direction as they move between spaces.",
+    "practical_application": "A game audio designer places a portal in each doorway so a room's reverb and sounds spill through the gap and shift as the player walks through. Closing the door narrows the portal, muffling and quieting the sound.",
+    "category": "Spatial Audio",
+    "related_terms": ["Acoustic room", "Acoustic occlusion", "Obstruction", "Diffraction", "Reverb", "Spatial audio"],
+    "common_mistakes": [
+     "Placing a portal where there is no real opening, so sound leaks through solid walls.",
+     "Mis-sizing or mis-orienting the portal box, so the sound seems to come from the wrong direction.",
+     "Forgetting to link the portal to both rooms, which breaks the propagation between them."
+    ],
+    "scenario_contexts": [
+     "Letting a boss room's music spill through a doorway into the hall as a player approaches.",
+     "Modeling a window so outdoor ambience leaks into an interior scene.",
+     "Muffling a room's sound as its door closes on the portal."
+    ]
+   },
+   "sources": ["Audiokinetic Wwise Spatial Audio documentation — Rooms and Portals", "Microsoft Project Acoustics documentation — portals and sound propagation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e1a72b08-f440-4e1a-a2b3-ffa8440553f6",
+   "term": "Acoustic room",
+   "fields": {
+    "definition": "In spatial audio, an acoustic room is a bounded volume representing a distinct acoustic environment, with its own reverb and attenuation properties, that connects to neighboring spaces through portals. Sounds inside share the room's reverb bus and are spatialized correctly whether the listener is inside or outside the space.",
+    "plain_english": "An acoustic room is a marked-off space in audio software that has its own echo and sound feel. Every sound inside it shares that same room sound. It is like how a tiled bathroom makes voices ring while a closet swallows them: each space has its own signature.",
+    "purpose_function": "It exists to group sounds that belong to the same space so they share one believable reverb and behave correctly as listeners move in and out. This builds a convincing sense of separate but connected environments.",
+    "practical_application": "A game audio designer defines a room for each area so its reverb and ambience switch as the player crosses a portal. Sounds emitted inside the room fold into its reverb and attenuate naturally when heard from outside.",
+    "category": "Spatial Audio",
+    "related_terms": ["Acoustic portal", "Acoustic occlusion", "Reverb", "Aux send", "Spatial audio", "Room tone"],
+    "common_mistakes": [
+     "Overlapping rooms without clear boundaries, so reverb switches unpredictably.",
+     "Assigning the same reverb to every room, which erases the sense of distinct spaces.",
+     "Forgetting to connect rooms with portals, sealing sound in unnaturally."
+    ],
+    "scenario_contexts": [
+     "Giving a cathedral level a long reverb that differs from a small side chapel.",
+     "Switching ambience as a player moves from a garage into a hallway.",
+     "Making a source inside a room sound muffled when heard from an adjoining space."
+    ]
+   },
+   "sources": ["Audiokinetic Wwise Spatial Audio documentation — Rooms and Portals", "Microsoft Project Acoustics documentation — acoustic environments"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b4c4a63e-5343-4058-b5e8-a79481f39199",
+   "term": "Adaptation writer",
+   "fields": {
+    "definition": "In dubbing, the adaptation writer (also called the dialogue writer or adapter) reworks a translated script into natural, performable target-language dialogue that matches the on-screen actors' lip movements, timing, and delivery. The role bridges the literal translation and the final recordable dubbing script.",
+    "plain_english": "When a show is dubbed into another language, the words must fit the actors' mouths and timing. The adaptation writer reshapes the translated lines to do that. They work like a lyricist fitting new words to an existing tune so everything still lines up.",
+    "purpose_function": "The role exists to turn a plain translation into believable dialogue that syncs with lip movements and screen action, so dubbed lines feel natural. Without it, translated lines would not match the actors' mouths or pacing.",
+    "practical_application": "Working from a translation and the picture, the adaptation writer rewrites lines to hit lip-sync points and hands the adapted script to the dub director and voice actors. They adjust word choices and length so each line fits the on-screen delivery.",
+    "category": "Dubbing & Localization",
+    "related_terms": ["Adapted script", "ADR blend", "Lip sync", "Dub director", "Voice-over", "Localization"],
+    "common_mistakes": [
+     "Confusing the adaptation writer with the literal translator; the adapter reshapes text for sync and performance.",
+     "Prioritizing exact translation over lip-sync, so lines fail to match the mouth.",
+     "Ignoring line length and rhythm, leaving actors unable to fit the words to picture."
+    ],
+    "scenario_contexts": [
+     "Rewriting a translated film script so lines match the actors' lip movements.",
+     "Adjusting dialogue length so a dubbed line ends when the character stops speaking.",
+     "Localizing an animated series into several languages for dubbing."
+    ]
+   },
+   "sources": ["Chaume, Audiovisual Translation: Dubbing (Routledge)", "Spiteri Miggiani, Dialogue Writing for Dubbing: An Insider's Perspective (Palgrave Macmillan)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "25793f70-76b7-4fa2-a74f-e6021b329bfd",
+   "term": "Adapted script",
+   "fields": {
+    "definition": "An adapted script (or dubbing script) is the target-language dialogue reworked from a translation so it matches the actors' lip movements, timing, and performance, ready for voice actors to record in the dubbing studio. It typically carries the synchronized lines along with timing cues and character notes.",
+    "plain_english": "An adapted script is the dubbing version of the words, rewritten so they fit the actors' mouths and timing on screen. It is what the voice actors read in the booth. Think of it as new lyrics written to match the beats of a song already recorded.",
+    "purpose_function": "It exists to give voice actors lines that both carry the original meaning and fit the on-screen lip movements and pacing. This lets a dubbed performance look and sound natural to the audience.",
+    "practical_application": "In the dubbing studio, voice actors record to picture from the adapted script while the director checks sync line by line. Engineers use its timing cues to line up each take with the original delivery.",
+    "category": "Dubbing & Localization",
+    "related_terms": ["Adaptation writer", "Lip sync", "ADR blend", "Dub director", "Localization", "Voice-over"],
+    "common_mistakes": [
+     "Treating the adapted script as a plain translation, so lines run too long or short for the mouth.",
+     "Leaving out timing or character cues that actors and engineers need for sync.",
+     "Editing lines in the booth without checking that changes still match lip movements."
+    ],
+    "scenario_contexts": [
+     "Voice actors recording a dubbed film from the adapted script.",
+     "A dub director checking each line's sync against the adapted script.",
+     "Localizing a streaming series where each language gets its own adapted script."
+    ]
+   },
+   "sources": ["Chaume, Audiovisual Translation: Dubbing (Routledge)", "Spiteri Miggiani, Dialogue Writing for Dubbing: An Insider's Perspective (Palgrave Macmillan)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d8068124-e307-4b3b-8ec8-45297bdf67e0",
+   "term": "ADR blend",
+   "fields": {
+    "definition": "ADR blend is the process of matching re-recorded dialogue (ADR) to the surrounding production sound so the replaced lines sit seamlessly in the scene. It involves matching level, perspective, equalization, room tone, and reverb, and often adding matching background ambience so the studio-recorded line does not stand out from the location dialogue.",
+    "plain_english": "ADR is dialogue an actor re-records in a studio to replace noisy location lines. Blending it means making that clean studio line match the real scene's sound. It is like patching a photo so the new piece matches the lighting and grain of the original.",
+    "purpose_function": "It exists so replaced lines feel like they were spoken on set, keeping dialogue consistent and the edit invisible to the audience. Without blending, a clean ADR line would jump out against the location recording.",
+    "practical_application": "A dialogue editor matches the ADR's EQ and reverb to nearby production lines, then layers in room tone so the swap is unnoticeable. On the stage, the re-recording mixer fine-tunes level and perspective to seat the ADR in the scene.",
+    "category": "Dialogue Editing",
+    "related_terms": ["ADR", "Room tone", "Production sound", "Reverb matching", "Dialogue editing", "Perspective"],
+    "common_mistakes": [
+     "Matching only level while ignoring room tone, so the ADR sounds too clean against the scene.",
+     "Skipping perspective and reverb matching, so the line's space does not fit the shot.",
+     "Recording ADR too dry or too dead, leaving nothing that matches the original acoustic."
+    ],
+    "scenario_contexts": [
+     "Replacing a line ruined by traffic noise and blending it into the location dialogue.",
+     "Seating a studio-recorded line into a reverberant room scene.",
+     "Adding matching room tone so an ADR insert disappears within a sequence."
+    ]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Rose, Producing Great Sound for Film and Video"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

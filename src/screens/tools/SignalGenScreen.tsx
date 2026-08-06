@@ -33,8 +33,11 @@ import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { EngineGate } from './EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { isGenCapUnlockedThisSession, markGenCapUnlockedThisSession } from '../../features/tools/genCapSession';
+import { useColorModePref } from '../../features/tools/colorModePref';
 import { colors, fonts } from '../../theme/tokens';
 import { toolByKey } from './toolsData';
+import { DragSlider } from '../lab/foundations/bits';
 import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -50,6 +53,17 @@ const FALLBACK_CAP_DB = -12; // Q4 hard cap
 
 const SEMITONE = 2 ** (1 / 12); // fine frequency step ×2^(1/12)
 const STATUS_POLL_MS = 500; // 2 Hz — status scalars only, far inside the ≤30 Hz bridge rule
+
+// Frequency slider (owner 2026-08-05): a continuous log sweep 63 Hz → 6 kHz.
+const FREQ_SLIDER_MIN = 63;
+const FREQ_SLIDER_MAX = 6000;
+const FREQ_SLIDER_RATIO = FREQ_SLIDER_MAX / FREQ_SLIDER_MIN;
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+/** Current frequency → slider position 0..1 (log), clamped to the slider span. */
+const freqToSlider = (hz: number) =>
+  clamp01(Math.log(hz / FREQ_SLIDER_MIN) / Math.log(FREQ_SLIDER_RATIO));
+/** Slider position 0..1 → frequency (log), rounded to whole Hz. */
+const sliderToFreq = (v: number) => Math.round(FREQ_SLIDER_MIN * Math.pow(FREQ_SLIDER_RATIO, clamp01(v)));
 
 /** Signal chips (spec Tool 6 required modes; keys must exist in GEN_MODES). */
 const SIGNALS: { key: GenModeName; label: string }[] = [
@@ -196,6 +210,8 @@ function unitShape(
   return out;
 }
 
+const SCOPE_OFF_COLOR = '#7fd4ff'; // COLORS-off: single calm cyan trace
+
 function GenScope({
   mode,
   freq,
@@ -203,6 +219,7 @@ function GenScope({
   bpm,
   sweepStart,
   sweepEnd,
+  midiColors,
 }: {
   mode: GenModeName;
   freq: number;
@@ -210,6 +227,8 @@ function GenScope({
   bpm: number;
   sweepStart: number;
   sweepEnd: number;
+  /** COLORS toggle (owner 2026-08-05): MIDI amplitude ramp vs a flat trace. */
+  midiColors: boolean;
 }) {
   const [w, setW] = useState(0);
   // Height tracks LEVEL along the dBFS window (−60…0 → 0…1) so louder = taller
@@ -247,12 +266,14 @@ function GenScope({
                 ))}
               </LinearGradient>
             </Defs>
-            {/* Zero line — always MIDI-0 blue (amplitude colour standard). */}
+            {/* Metric marks: zero line (MIDI-0 blue) + ±½ full-scale guides. */}
+            <Line x1={0} y1={mid - SCOPE_FS / 2} x2={w} y2={mid - SCOPE_FS / 2} stroke="#33343d" strokeWidth={1} strokeDasharray="3 5" />
+            <Line x1={0} y1={mid + SCOPE_FS / 2} x2={w} y2={mid + SCOPE_FS / 2} stroke="#33343d" strokeWidth={1} strokeDasharray="3 5" />
             <Line x1={0} y1={mid} x2={w} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={1} />
-            {/* Level-coloured trace: soft glow pass under the crisp core. */}
+            {/* Trace: MIDI amplitude ramp, or a flat cyan trace when COLORS off. */}
             <Path
               d={linePath}
-              stroke="url(#genWaveLevel)"
+              stroke={midiColors ? 'url(#genWaveLevel)' : SCOPE_OFF_COLOR}
               strokeWidth={5}
               fill="none"
               opacity={0.16}
@@ -261,7 +282,7 @@ function GenScope({
             />
             <Path
               d={linePath}
-              stroke="url(#genWaveLevel)"
+              stroke={midiColors ? 'url(#genWaveLevel)' : SCOPE_OFF_COLOR}
               strokeWidth={1.8}
               fill="none"
               strokeLinecap="round"
@@ -306,9 +327,14 @@ export function SignalGenScreen({ navigation }: Props) {
   const [running, setRunning] = useState(false);
   const [status, setStatus] = useState<GenStatus | null>(() => (ready ? ApeDsp.genStatus() : null));
   const [genError, setGenError] = useState('');
+  const [colorsOn, setColorsOn] = useColorModePref(); // waveform MIDI colours, persisted (items 6/7)
+  const [scrollEnabled, setScrollEnabled] = useState(true); // released while dragging the freq slider
 
   // Push the UI defaults to the native generator once, so the params the user
-  // sees are exactly the params the engine holds.
+  // sees are exactly the params the engine holds. If the Q4 cap was already
+  // unlocked earlier THIS SESSION, restore the native unlock silently (owner
+  // 2026-08-05: per-session, confirm once — no second prompt on re-entry). Level
+  // still starts at the safe default regardless.
   useEffect(() => {
     if (!ready) return;
     ApeDsp.genSet({
@@ -318,6 +344,7 @@ export function SignalGenScreen({ navigation }: Props) {
       clickBpm: 120,
       sweep: { startHz: 20, endHz: 20000, seconds: 10, repeat: false },
     });
+    if (isGenCapUnlockedThisSession()) ApeDsp.genUnlockCap();
     setStatus(ApeDsp.genStatus());
   }, [ready]);
 
@@ -397,6 +424,7 @@ export function SignalGenScreen({ navigation }: Props) {
             style: 'destructive',
             onPress: () => {
               ApeDsp.genUnlockCap();
+              markGenCapUnlockedThisSession(); // remembered for this session (owner 2026-08-05)
               applyLevel(next);
             },
           },
@@ -452,32 +480,14 @@ export function SignalGenScreen({ navigation }: Props) {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={scrollEnabled}>
         {!ready ? (
           // Honest not-ready card — never a dead control surface.
           <EngineGate state={gate} />
         ) : (
           <>
-            {/* SIGNAL selection (spec Tool 6 required controls). */}
-            <HelpHead title="SIGNAL" onHelp={() => help('signal')} style={styles.sectionHead} />
-            <View style={styles.chipRow}>
-              {SIGNALS.map((s) => (
-                <Chip key={s.key} label={s.label} selected={mode === s.key} onPress={() => pickMode(s.key)} />
-              ))}
-            </View>
-
-            {/* WAVEFORM — live preview of the signal the controls are building. */}
-            <HelpHead title="WAVEFORM" onHelp={() => help('signal')} style={styles.sectionHead} />
-            <GenScope
-              mode={mode}
-              freq={freq}
-              levelDb={levelDb}
-              bpm={bpm}
-              sweepStart={sweepStart}
-              sweepEnd={sweepEnd}
-            />
-
-            {/* FREQUENCY — applies to sine/burst. */}
+            {/* FREQUENCY — above the waveform (owner 2026-08-05). Applies to
+                sine/burst: stepper · sweep slider 63 Hz–6 kHz · ISO presets. */}
             {showFreq ? (
               <>
                 <HelpHead title="FREQUENCY" onHelp={() => help('frequency')} style={styles.sectionHead} />
@@ -501,15 +511,56 @@ export function SignalGenScreen({ navigation }: Props) {
                       <Text style={styles.stepBtnText}>+</Text>
                     </Pressable>
                   </View>
+                  <DragSlider
+                    value={freqToSlider(freq)}
+                    onChange={(v) => applyFrequency(sliderToFreq(v))}
+                    label="SWEEP 63 Hz – 6 kHz"
+                    readout={fmtHz(freq)}
+                    tint={colors.gold}
+                    onHelp={() => help('frequency')}
+                    onDragActive={(active) => setScrollEnabled(!active)}
+                  />
                   <View style={styles.chipRow}>
                     {ISO_PRESETS_HZ.map((hz) => (
                       <Chip key={hz} label={chipHz(hz)} selected={freq === hz} onPress={() => applyFrequency(hz)} />
                     ))}
                   </View>
-                  <Text style={styles.caption}>Fine steps ±1 semitone (×2^1/12) · range 20 Hz–20 kHz</Text>
+                  <Text style={styles.caption}>Slider 63 Hz–6 kHz · fine steps ±1 semitone (×2^1/12) · presets to 16 kHz</Text>
                 </View>
               </>
             ) : null}
+
+            {/* WAVEFORM — live preview of the signal the controls are building,
+                with the [COLORS] MIDI-amplitude toggle (owner 2026-08-05). */}
+            <View style={styles.waveHeadRow}>
+              <HelpHead title="WAVEFORM" onHelp={() => help('signal')} style={styles.sectionHead} />
+              <Pressable
+                style={[styles.colorsBtn, colorsOn && styles.colorsBtnOn]}
+                onPress={() => setColorsOn(!colorsOn)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: colorsOn }}
+                accessibilityLabel="Toggle MIDI amplitude colours on the waveform"
+              >
+                <Text style={[styles.colorsBtnText, colorsOn && styles.colorsBtnTextOn]}>COLORS</Text>
+              </Pressable>
+            </View>
+            <GenScope
+              mode={mode}
+              freq={freq}
+              levelDb={levelDb}
+              bpm={bpm}
+              sweepStart={sweepStart}
+              sweepEnd={sweepEnd}
+              midiColors={colorsOn}
+            />
+
+            {/* SIGNAL selection — below the display (owner 2026-08-05). */}
+            <HelpHead title="SIGNAL" onHelp={() => help('signal')} style={styles.sectionHead} />
+            <View style={styles.chipRow}>
+              {SIGNALS.map((s) => (
+                <Chip key={s.key} label={s.label} selected={mode === s.key} onPress={() => pickMode(s.key)} />
+              ))}
+            </View>
 
             {/* SWEEP controls (spec Tool 6: start · end · duration · repeat). */}
             {isSweep ? (
@@ -651,6 +702,21 @@ const styles = StyleSheet.create({
   },
   subHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub, marginTop: 4 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+
+  // WAVEFORM header row + [COLORS] toggle (owner 2026-08-05).
+  waveHeadRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  colorsBtn: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginTop: 6,
+  },
+  colorsBtnOn: { borderColor: colors.green, backgroundColor: '#0d1710' },
+  colorsBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSecondary },
+  colorsBtnTextOn: { color: colors.green },
 
   card: {
     borderRadius: 10,

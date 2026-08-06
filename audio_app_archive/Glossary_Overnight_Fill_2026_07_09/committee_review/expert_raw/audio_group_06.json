@@ -1,0 +1,167 @@
+{
+ "expert": "AUDIO TECHNICAL EXPERT",
+ "group": 6,
+ "reviews": [
+  {
+   "id": "9bd06f61-9ccf-4390-a1cc-8aff9ec91f45",
+   "term": "SC Connector",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "purpose_function",
+     "severity": "Low",
+     "issue": "SC retention is described as 'locking-tab retention.' SC uses a spring-loaded push-pull coupling housing that snaps/latches on insertion; the 'tab latch' descriptor is the hallmark of LC (RJ-style latch), not SC. Slightly imprecise for a term whose whole identity is 'push-pull.'",
+     "suggestion": "Reword to '...a square push-pull coupling housing that snaps into a latched position' and drop 'locking-tab,' which invites confusion with LC's latch tab."
+    }
+   ]
+  },
+  {
+   "id": "b0de99f1-5f52-4ca4-b35e-196bb6d062da",
+   "term": "SFP Module",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "67783d6c-0250-4961-8bcd-827b0af09a75",
+   "term": "USB-B",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Medium",
+     "issue": "The bullet 'Assuming USB-B is upstream/host-capable; it is the device-side port' misuses USB terminology and contradicts purpose_function, which correctly calls USB-B the 'upstream (device-side) port.' In the USB spec the Type-B connector mates to the Upstream-Facing Port (UFP) on a peripheral, so USB-B IS the upstream port. The real misconception being targeted is that USB-B is a host/downstream port.",
+     "suggestion": "Reword to 'Assuming USB-B is a host or downstream port; it is the upstream (device-side) port and always connects toward a host such as USB-A or USB-C.' Remove 'upstream' from the list of mistaken assumptions."
+    }
+   ]
+  },
+  {
+   "id": "8fb63147-108e-45e2-8b7f-c9bffdc6b46d",
+   "term": "Dual-Mono Processing",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "573a9efc-fc19-4ea8-b089-a9c3f732752d",
+   "term": "Feed-Forward Detection",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "practical_application",
+     "severity": "Medium",
+     "issue": "The SSL bus compressor is used as the canonical feed-forward example (also in scenario_contexts: 'Comparing an SSL-style bus compressor against a vintage feedback design'). The classic SSL 4000 G bus compressor is widely documented as a feedback/hybrid VCA design (sidechain derived after the gain VCA), not a clean feed-forward topology; SSL's own THE BUS+ is described as feedback with a switch to relocate the detector. Presenting SSL as THE feed-forward archetype is misleading given the definition (detector reads the uncompressed input).",
+     "suggestion": "Use an unambiguous feed-forward example instead, e.g. the dbx 160 series, or an API 2500 switched to feed-forward ('New'), or simply 'a modern VCA compressor.' If SSL is kept, flag it as a hybrid/feedback-derived design rather than a feed-forward reference."
+    }
+   ]
+  },
+  {
+   "id": "52635130-0fbe-49ee-b90c-ad4fd1891f09",
+   "term": "Feedback Detection",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d54cf03c-b245-4990-bc23-343535ae7d09",
+   "term": "Overshoot",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "b1183522-34d2-441d-9f04-284f55a0284a",
+   "term": "Program-Dependent Release",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "697660b2-4a60-41bb-a3b2-476354ae20cc",
+   "term": "Stereo Link",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "005c4924-c323-4e14-8953-42424bbaa23a",
+   "term": "Band Solo",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "ee7c98a4-dde5-44ee-aaeb-675259c9c9d1",
+   "term": "Cramped EQ (Frequency Cramping)",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Medium",
+     "issue": "The bullet 'Assuming oversampling also fixes the phase warping, when it primarily corrects the magnitude response' is technically backwards. Oversampling raises the internal Nyquist far above the audio band, so within the audio band it reduces BOTH magnitude and phase cramping toward the analog prototype. The 'corrects magnitude but not phase' behavior actually describes analog-matched/decramped (e.g., Orfanidis-corrected) minimum-phase designs, not oversampling.",
+     "suggestion": "Either move this caveat to describe analog-matched filters ('analog-matched EQs may correct the magnitude curve while their phase still differs from the analog original'), or replace with an accurate oversampling note ('oversampling reduces both magnitude and phase cramping in the audio band but costs CPU'). The plain_english claim that a bell is forced toward unity gain at Nyquist is fine (bilinear maps analog f->inf, where a bell is 0 dB, onto Nyquist)."
+    }
+   ]
+  },
+  {
+   "id": "5c0cfec1-31ca-486e-a00c-70421ab76bd3",
+   "term": "Fixed-Frequency EQ",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "54a0a15f-d878-43b2-889b-1c70c92b2ff3",
+   "term": "Resonance Suppressor",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "9130e995-1158-40f9-8f37-0d88b8f3911c",
+   "term": "Semi-Parametric EQ",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "7691c893-0c64-4078-9db2-a176736ef54b",
+   "term": "Ampacity",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "75100a90-ac82-48bd-9bed-7eece1da83db",
+   "term": "Breaker Panel (Service Panel)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "41837cd6-cee9-4b51-9a15-a9aafeee7566",
+   "term": "Camlock",
+   "verdict": "MINOR",
+   "suggestions": [
+    {
+     "field": "common_mistakes",
+     "severity": "Low",
+     "issue": "The color-code bullet says green ground, white neutral, and black/red/blue hots are 'an industry convention, not an NEC-guaranteed standard.' That over-generalizes: NEC 250.119 requires green (or green/yellow) for the equipment grounding conductor and 200.6 requires white/gray for the grounded (neutral) conductor, so those two colors are code-driven. Only the ungrounded (hot) leg colors are pure convention.",
+     "suggestion": "Split the claim: 'Green ground and white neutral colors are required by NEC (250.119, 200.6); the hot-leg colors (commonly black/red/blue for 120/208V) are an industry convention, so legs must still be verified before energizing.' The core safety point (verify legs, don't assume) is correct and should stay."
+    }
+   ]
+  },
+  {
+   "id": "6a5cdf3b-748e-42c1-99b2-ad732f9c8975",
+   "term": "Dedicated Circuit",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "a13b42d5-2ec1-41f4-a046-c7de3db2fcd0",
+   "term": "Direct Current (DC)",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "248d6fcf-9fd0-4652-ae06-c5d4dbc349fa",
+   "term": "Feeder Cable",
+   "verdict": "OK",
+   "suggestions": []
+  },
+  {
+   "id": "d6aa5196-e69a-4fb9-9212-d8048f8dc426",
+   "term": "Fuse",
+   "verdict": "OK",
+   "suggestions": []
+  }
+ ]
+}

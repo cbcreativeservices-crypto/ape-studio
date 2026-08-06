@@ -1,0 +1,56 @@
+{
+ "batch": 306,
+ "topic": "Psychoacoustics",
+ "terms": [
+  {
+   "id": "18f3d254-1178-49ea-893f-671e9b5b738a",
+   "term": "Spatial perception study",
+   "topic": "Psychoacoustics",
+   "seq": 1440,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "a9167fcc-0d41-48da-a8ac-2f74c905d6a5",
+   "term": "Temporal perception study",
+   "topic": "Psychoacoustics",
+   "seq": 1440,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

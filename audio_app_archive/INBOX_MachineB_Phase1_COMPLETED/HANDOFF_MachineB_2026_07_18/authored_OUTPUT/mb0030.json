@@ -1,0 +1,275 @@
+{
+ "batch": 30,
+ "topic": "Guitar, Bass & Amp Recording",
+ "authored": [
+  {
+   "id": "9f4374b9-bfea-4b15-a779-9adcd5289368",
+   "term": "Direct guitar track",
+   "fields": {
+    "definition": "A recording of an electric guitar or bass captured straight from the instrument through a direct box (DI), taken before any amplifier or speaker, so the track holds the raw, unamplified instrument signal.",
+    "plain_english": "It is the clean guitar sound recorded straight from the guitar, with no amp added. You can send it through an amp later to shape the tone.",
+    "purpose_function": "It captures a clean, uncolored version of the performance so tone decisions such as amp and effects can be made or changed later, and it provides a pristine signal for re-amping.",
+    "practical_application": "Engineers split the guitar signal and record the DI to its own track alongside the miked amp, so they can re-amp or blend it during mixing.",
+    "category": "Recording technique",
+    "related_terms": [
+     "Re-amping",
+     "Re-amp box",
+     "Passive bass",
+     "Off-axis pickup",
+     "Speaker cabinet isolation"
+    ],
+    "common_mistakes": [
+     "Recording only the DI and no amp, then having no usable tone if you cannot re-amp later",
+     "Plugging a high-impedance guitar into a low-impedance line input, which weakens and dulls the signal",
+     "Assuming the raw DI sound is a finished guitar tone rather than a starting point"
+    ],
+    "scenario_contexts": [
+     "Tracking a guitar part with both a miked amp and a DI so the producer can revisit the tone in the mix",
+     "Recording a bass DI for a clean, tight low end that sits well with the drums",
+     "Capturing a scratch guitar quietly at home for later re-amping in a studio"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Recording Engineer's Handbook",
+    "Radial Engineering technical documentation (DI and Reamp)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "fb0da409-3625-40dd-8493-527118996603",
+   "term": "Fretless bass",
+   "fields": {
+    "definition": "A bass guitar whose fingerboard has no metal frets, so the player's finger stops the string directly against the smooth board; this allows continuous pitch, slides, and vibrato but requires precise finger placement for accurate intonation.",
+    "plain_english": "It is a bass with a smooth neck and no metal frets. The player must place each finger in exactly the right spot to play in tune. Notes can slide smoothly, a bit like a singing voice.",
+    "purpose_function": "It gives a smooth, singing tone with expressive slides and vibrato (the characteristic 'mwah' sound) that a fretted bass cannot produce, at the cost of harder intonation.",
+    "practical_application": "An engineer records a fretless bass much like any bass but watches tuning closely, often using a clean DI and gentle compression to capture the finger-slide and 'mwah' character.",
+    "category": "Instrument",
+    "related_terms": [
+     "Passive bass",
+     "Direct guitar track",
+     "Re-amping"
+    ],
+    "common_mistakes": [
+     "Expecting perfect intonation without careful finger placement, since there are no frets to fix the pitch",
+     "Confusing a fretless bass with a lined fretless; the lines only mark positions and are not frets",
+     "Choosing bright, clanky processing that hides the smooth, vocal tone the instrument is known for"
+    ],
+    "scenario_contexts": [
+     "Recording a jazz or fusion bassline that needs smooth slides between notes",
+     "Tracking a ballad where the singing, expressive fretless tone supports the vocal",
+     "Editing a fretless take where slight tuning drift must be checked before comping"
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Musical Instruments",
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c4b35316-fff6-4ea5-b723-e4eec23fe0ab",
+   "term": "Gel damper",
+   "fields": {
+    "definition": "A small, reusable, self-adhesive gel pad applied to a vibrating surface, most often a drumhead, to absorb vibration and tame unwanted overtones, ring, and sustain. The best-known example is the Moongel-type damping pad.",
+    "plain_english": "A soft, sticky gel square you press onto a drum to calm down extra ringing. It works like putting a finger on a wine glass to stop it humming.",
+    "purpose_function": "It gives a quick, removable way to control overtones and shorten sustain without permanently altering the head, so a drum or surface sounds more focused on the recording.",
+    "practical_application": "An engineer sticks one or more gel dampers near the edge of a snare or tom head, moving or adding pads until the ring is controlled without deadening the tone.",
+    "category": "Damping & tone control",
+    "related_terms": [
+     "Kick click control",
+     "Kick beater definition",
+     "Palm muting",
+     "Body knock"
+    ],
+    "common_mistakes": [
+     "Using too many gel dampers and deadening the drum completely",
+     "Placing the gel in the center of the head instead of near the edge, killing tone and volume",
+     "Assuming a gel damper replaces proper drum tuning"
+    ],
+    "scenario_contexts": [
+     "Taming snare ring during a tracking session",
+     "Controlling tom overtones for a tighter recorded sound",
+     "Quickly adjusting damping between takes without changing heads"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques (drum damping/muffling)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "42b1138e-dc8e-4e7b-bf97-d9b783748898",
+   "term": "Off-axis pickup",
+   "fields": {
+    "definition": "Sound captured by a microphone from directions away from its central front axis (the on-axis line it points along); because most microphones are less sensitive and less bright off-axis, off-axis pickup sounds darker and quieter than on-axis pickup.",
+    "plain_english": "It is the sound a mic picks up from the side or at an angle instead of straight ahead. That angled sound is usually quieter and less bright than sound hitting the mic head-on.",
+    "purpose_function": "Understanding off-axis pickup lets an engineer shape tone and control bleed by aiming a mic toward or away from a source, since the off-axis level and frequency response differ from on-axis.",
+    "practical_application": "On a guitar cab, an engineer angles the mic off-axis to the speaker cone to tame harsh highs, and points mics away from other instruments to reduce their off-axis bleed.",
+    "category": "Microphone technique",
+    "related_terms": [
+     "Speaker cabinet isolation",
+     "Direct guitar track",
+     "Re-amping"
+    ],
+    "common_mistakes": [
+     "Assuming a mic hears all directions equally, when off-axis sound is quieter and often duller",
+     "Ignoring that off-axis pickup colors tone unevenly, so different frequencies drop by different amounts",
+     "Blaming the amp for a dull recording when the mic was simply aimed too far off-axis"
+    ],
+    "scenario_contexts": [
+     "Angling a dynamic mic off the center of a guitar speaker to soften harsh highs",
+     "Positioning a vocal mic so a nearby amp lands off-axis and bleeds in less",
+     "Choosing the mic angle on a cab to balance brightness against a boomy on-axis tone"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Recording Engineer's Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "20bcefaa-5ecb-4e7d-809a-12868d405d4c",
+   "term": "Passive bass",
+   "fields": {
+    "definition": "A bass guitar that uses passive pickups and passive tone and volume controls with no onboard powered preamp or battery; its high-impedance output relies entirely on the magnetic pickups and simple passive circuitry.",
+    "plain_english": "It is a bass with no battery and no powered circuit inside it. The pickups make the sound on their own. The signal is weaker, so it needs a good input to sound full.",
+    "purpose_function": "It delivers a natural, traditional bass tone and simple, reliable operation, but its weak high-impedance signal needs a proper high-impedance input to avoid tone loss.",
+    "practical_application": "When recording a passive bass, the engineer uses an instrument-level, high-impedance DI input so the pickups are not loaded down, keeping the low end and clarity intact.",
+    "category": "Instrument",
+    "related_terms": [
+     "Fretless bass",
+     "Direct guitar track",
+     "Re-amp box"
+    ],
+    "common_mistakes": [
+     "Plugging a passive bass into a low-impedance line input, which loads the pickups and dulls the tone",
+     "Expecting the loud, hot output of an active bass and setting the preamp gain too low",
+     "Thinking passive means lower quality, when many classic bass tones come from passive instruments"
+    ],
+    "scenario_contexts": [
+     "Recording a vintage-style passive bass through a high-impedance DI for a classic tone",
+     "Setting preamp gain higher to match the lower output of a passive bass",
+     "Troubleshooting a thin, dull bass DI caused by an input impedance that is too low"
+    ]
+   },
+   "sources": [
+    "Grove Dictionary of Musical Instruments",
+    "Radial Engineering technical documentation (DI and instrument impedance)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d892d2d9-79a0-4a26-8729-9e0e2fe3d7af",
+   "term": "Re-amp box",
+   "fields": {
+    "definition": "A device that converts a recorded line-level, low-impedance signal (from an interface or console output) back into an instrument-level, high-impedance signal, so a dry DI recording can be sent out to guitar pedals and amplifiers; it is essentially a reverse DI box, typically using a transformer, a level control, and a ground-lift switch.",
+    "plain_english": "It is a small box that turns a recorded guitar track back into a normal guitar-level signal. That lets you feed the recording into a real amp or pedals. It works as if the guitar were plugged in live.",
+    "purpose_function": "It matches the studio's line-level output to the instrument-level input an amp expects, avoiding the harsh, weak, or noisy result of plugging a line output straight into an amp.",
+    "practical_application": "The engineer patches the interface output through the re-amp box, then into a pedalboard and amp, adjusting the box's level so the amp sees a normal guitar signal.",
+    "category": "Studio hardware",
+    "related_terms": [
+     "Re-amping",
+     "Direct guitar track",
+     "Speaker cabinet isolation",
+     "Off-axis pickup"
+    ],
+    "common_mistakes": [
+     "Plugging a line output straight into an amp instead of using a re-amp box, which causes an impedance mismatch and poor tone",
+     "Confusing a re-amp box with a DI box, since they convert signals in opposite directions",
+     "Ignoring hum from a ground loop between the interface and amp instead of using the box's ground-lift switch"
+    ],
+    "scenario_contexts": [
+     "Sending a recorded DI guitar out to several amps to audition tones after tracking",
+     "Using the box's ground-lift to kill hum when connecting the studio to a guitar amp",
+     "Reshaping a bass DI through a real amp and cabinet during mixdown"
+    ]
+   },
+   "sources": [
+    "Radial Engineering Reamp Station user guide (manufacturer technical documentation)",
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Recording Engineer's Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b894ff78-613d-4cb3-b4e3-5b6ce17c16bc",
+   "term": "Re-amping",
+   "fields": {
+    "definition": "The process of playing a previously recorded dry signal (usually a DI guitar or bass) back out through a re-amp box into an amplifier, pedals, or effects, then miking and recording the result to a new track; it lets amp and tone choices be made or redone after the performance is captured.",
+    "plain_english": "It means running a clean guitar recording through a real amp later, then recording that amp sound. You can change or perfect the tone after the player has gone home.",
+    "purpose_function": "It separates the performance from the tone, so engineers can try different amps, mics, and settings without asking the musician to replay the part.",
+    "practical_application": "After tracking a DI, the engineer re-amps it through chosen amps and mic positions during mixing, dialing in the exact tone the song needs.",
+    "category": "Recording technique",
+    "related_terms": [
+     "Re-amp box",
+     "Direct guitar track",
+     "Off-axis pickup",
+     "Speaker cabinet isolation"
+    ],
+    "common_mistakes": [
+     "Trying to re-amp from a line output without a re-amp box, causing an impedance mismatch and a weak, harsh tone",
+     "Not recording a clean DI in the first place, leaving nothing to re-amp later",
+     "UNSAFE: Running a loud amp at high volume during long re-amping sessions without hearing protection; sustained high sound levels risk permanent hearing damage."
+    ],
+    "scenario_contexts": [
+     "Re-amping a scratch DI guitar through a boutique amp to upgrade the final tone",
+     "A producer re-amping bass through multiple cabs to blend a clean and a distorted tone",
+     "Fixing a good performance recorded with a bad amp sound by re-amping it later"
+    ]
+   },
+   "sources": [
+    "Radial Engineering technical documentation (Reamp)",
+    "Huber & Runstein, Modern Recording Techniques",
+    "OSHA 29 CFR 1910.95 (Occupational Noise Exposure)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0714eca9-1532-4e4f-b260-d4ea26649c7b",
+   "term": "Speaker cabinet isolation",
+   "fields": {
+    "definition": "Techniques and enclosures used to acoustically isolate a guitar or bass speaker cabinet so it can be miked at high volume without excessive bleed into the room or other microphones; methods range from isolation cabinets (iso boxes) to separate rooms, baffles, and acoustic enclosures.",
+    "plain_english": "It is any way to box off or separate a speaker cabinet. That keeps its loud sound from leaking into other mics or the room. You can crank the amp and still get a clean recording.",
+    "purpose_function": "It lets an engineer capture a driven amp tone at realistic volume while controlling bleed, room sound, and noise for the players and neighbors.",
+    "practical_application": "The engineer places the cab in an iso box or separate room, mics it inside, and monitors from the control room, keeping stage volume low during tracking.",
+    "category": "Acoustic isolation",
+    "related_terms": [
+     "Off-axis pickup",
+     "Re-amping",
+     "Re-amp box",
+     "Direct guitar track"
+    ],
+    "common_mistakes": [
+     "Cramming a cab into a small sealed box without treatment, creating boxy resonances that ruin the tone",
+     "Forgetting that isolation reduces the natural room sound many amp tones rely on",
+     "UNSAFE: Sealing an amp inside an unventilated enclosure for long periods, which lets it overheat and risks equipment damage or fire; keep manufacturer-specified ventilation clear."
+    ],
+    "scenario_contexts": [
+     "Using an isolation cabinet so a loud amp can be miked in a home studio at night",
+     "Placing the guitar cab in a separate room to stop it bleeding into the drum mics",
+     "Recording a full-volume tube amp tone in a small studio without disturbing neighbors"
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Owsinski, The Recording Engineer's Handbook",
+    "Guitar amplifier manufacturer safety documentation (ventilation and overheating warnings)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

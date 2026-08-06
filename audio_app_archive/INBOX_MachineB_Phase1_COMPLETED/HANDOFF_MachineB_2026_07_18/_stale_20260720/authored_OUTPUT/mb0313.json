@@ -1,0 +1,312 @@
+{
+ "batch": 313,
+ "topic": "Tonal & Timbre Descriptors",
+ "authored": [
+  {
+   "id": "01654852-4423-4c55-9a0f-0b8c5516bfc6",
+   "term": "Dark",
+   "fields": {
+    "definition": "A timbral descriptor for sound with reduced high-frequency energy and a relative emphasis on low and low-mid frequencies, giving a subdued, mellow, or closed tonal character.",
+    "plain_english": "A dark sound has few high notes and more low ones. It sounds soft and warm, a bit like music heard through a closed door.",
+    "purpose_function": "Provides a shared shorthand for tonal balance so engineers can quickly agree that a source or mix leans toward the low end and lacks treble.",
+    "practical_application": "An engineer may call a mic or mix dark and then add high-frequency EQ or choose a brighter mic to open it up.",
+    "category": "Tonal Balance",
+    "related_terms": [
+     "Bright",
+     "Warm",
+     "dull",
+     "Muddy",
+     "Boomy"
+    ],
+    "common_mistakes": [
+     "Confusing 'dark' with 'dull' — dark describes a mellow tonal balance while dull implies missing detail or clarity",
+     "Treating dark as a fault when many sources and mixes are meant to sound dark",
+     "Trying to fix darkness only by boosting treble instead of checking mic choice, placement, or the source itself"
+    ],
+    "scenario_contexts": [
+     "A ribbon mic on acoustic guitar sounds too dark, so the engineer tries a condenser or adds high-shelf EQ",
+     "A club system is described as dark, prompting a check of high-driver level and system tuning",
+     "A producer asks for a darker vocal to suit a moody ballad"
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Sound on Sound glossary"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "9d9a25f3-f25c-4012-8dda-2c2cd74bd134",
+   "term": "Diffuse",
+   "fields": {
+    "definition": "Describes sound that lacks a sharp, localizable point of origin and instead seems spread out in space, typically because reverberant or reflected energy dominates the direct sound.",
+    "plain_english": "A diffuse sound seems to come from all around, not one clear spot. It is like hearing rain, where you cannot point to a single place it comes from.",
+    "purpose_function": "Lets engineers describe how spread out or unlocalized a sound image is, which matters for imaging, reverb balance, and mic technique.",
+    "practical_application": "A technician noticing a diffuse, washed-out image may move mics closer to reduce room reflections or lower the reverb send.",
+    "category": "Spatial Descriptor",
+    "related_terms": [
+     "Dry",
+     "distant",
+     "Reverberant",
+     "Ambience",
+     "Stereo image"
+    ],
+    "common_mistakes": [
+     "Confusing diffuse (spread-out and unlocalized) with distant (far away but still placeable)",
+     "Adding more reverb to a source that is already too diffuse",
+     "Miking too far back and blaming the room instead of the distance"
+    ],
+    "scenario_contexts": [
+     "Room mics on drums sound too diffuse, so the engineer blends in close mics for focus",
+     "A choir recording is overly diffuse, prompting closer or tighter mic placement",
+     "A reverb setting makes a lead vocal too diffuse to sit forward in the mix"
+    ]
+   },
+   "sources": [
+    "Handbook for Sound Engineers (Ballou)",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "470e97b5-b187-4ec0-8a7f-afbedc7ee874",
+   "term": "dirty",
+   "fields": {
+    "definition": "A timbral descriptor for sound containing added distortion, harmonic grit, or noise, giving a rough, aggressive, or gritty character rather than a clean tone.",
+    "plain_english": "A dirty sound has extra grit or fuzz added to it. It is like a rough, scratchy voice instead of a smooth, clear one.",
+    "purpose_function": "Gives a quick way to describe intentional or unwanted distortion and added harmonics, guiding choices about gain, saturation, and tone.",
+    "practical_application": "An engineer may deliberately drive a preamp or amp sim to make a guitar or synth sound dirty, or track down an unwanted dirty tone caused by clipping.",
+    "category": "Distortion Character",
+    "related_terms": [
+     "Clean",
+     "Distortion",
+     "Saturation",
+     "edgy",
+     "Overdrive"
+    ],
+    "common_mistakes": [
+     "Confusing an intentional dirty tone with a fault such as accidental clipping or a bad cable",
+     "Adding dirt with distortion while ignoring the extra harmonics that can mask other tracks",
+     "UNSAFE: cranking amp or monitor gain to chase a dirty tone and reaching harmful listening levels"
+    ],
+    "scenario_contexts": [
+     "A producer wants a dirty, distorted bass and adds a saturation plugin",
+     "A guitarist's DI sounds too clean, so the engineer re-amps it for a dirtier tone",
+     "An engineer traces a dirty-sounding vocal to an overdriven mic preamp"
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Sound on Sound glossary"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3d4945f4-44e3-4b3f-8140-594a632bd7aa",
+   "term": "distant",
+   "fields": {
+    "definition": "Describes a sound that seems far from the listener, typically due to lower level, reduced high-frequency content, weaker transients, and a higher ratio of reverberant to direct sound.",
+    "plain_english": "A distant sound seems far away from you. Like someone talking from across a big room, it is quieter and less clear than a close sound.",
+    "purpose_function": "Describes perceived depth and distance, helping engineers manage the front-to-back placement of sources in a mix.",
+    "practical_application": "To push a backing vocal further back, an engineer adds reverb, rolls off highs, and lowers its level so it sounds more distant.",
+    "category": "Spatial Descriptor",
+    "related_terms": [
+     "Diffuse",
+     "Dry",
+     "Presence",
+     "Reverberant",
+     "Depth"
+    ],
+    "common_mistakes": [
+     "Confusing distant (far away) with diffuse (spread out and unlocalized)",
+     "Trying to fix an unwantedly distant sound with level alone while ignoring reverb and lost highs",
+     "Miking a source too far away, then boosting gain and raising the noise floor"
+    ],
+    "scenario_contexts": [
+     "A lead vocal sounds distant, so the engineer reduces reverb and adds presence EQ",
+     "A producer wants a distant, dreamy backing vocal and pushes it back with reverb",
+     "Overhead-only drum mics sound distant, prompting added close mics"
+    ]
+   },
+   "sources": [
+    "Handbook for Sound Engineers (Ballou)",
+    "Sound on Sound glossary"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8c988b0e-425f-4039-9439-80c9d3c80e1f",
+   "term": "Dry",
+   "fields": {
+    "definition": "Describes a signal with no added reverb, delay, or ambience — the source sound with no spatial effects, though a recording may still capture some of the room it was made in.",
+    "plain_english": "A dry sound has no echo or reverb added. It is the plain, raw sound by itself, like singing in a small closet full of clothes.",
+    "purpose_function": "Distinguishes the unprocessed source from a wet, effected signal, which is essential for effect balance, routing, and later re-processing.",
+    "practical_application": "Engineers often record dry so reverb and delay can be added and adjusted later during the mix.",
+    "category": "Effects Descriptor",
+    "related_terms": [
+     "Wet",
+     "Reverberant",
+     "distant",
+     "Ambience",
+     "Diffuse"
+    ],
+    "common_mistakes": [
+     "Confusing dry (no added effects) with a dead or dull tone",
+     "Printing reverb onto a recording instead of keeping a dry track for flexibility",
+     "Assuming a dry signal needs no room treatment, when recording still captures room sound"
+    ],
+    "scenario_contexts": [
+     "A vocal is recorded dry so the mix engineer can choose the reverb later",
+     "A guitarist records a dry DI for re-amping",
+     "A producer solos the dry signal to check tone before adding effects"
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Sound on Sound glossary"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "15f117e5-6744-47b7-85c5-fbc19864e06c",
+   "term": "dull",
+   "fields": {
+    "definition": "A timbral descriptor for sound lacking high-frequency detail, brightness, and clarity, so it seems lifeless, muffled, or short on definition and attack.",
+    "plain_english": "A dull sound is missing its bright, crisp detail. It sounds muffled and flat, like a cymbal hit with a soft cloth over it.",
+    "purpose_function": "Flags a lack of clarity and high-frequency detail so engineers know to check the source, mic, or high-frequency EQ.",
+    "practical_application": "A dull-sounding cymbal track may prompt a brighter mic, better placement, or a high-shelf boost.",
+    "category": "Tonal Balance",
+    "related_terms": [
+     "Bright",
+     "Dark",
+     "Muffled",
+     "Crisp",
+     "Presence"
+    ],
+    "common_mistakes": [
+     "Confusing dull (lacking clarity and detail) with dark (a mellow but still clear tonal balance)",
+     "Boosting treble to fix dullness when the real cause is a damaged cable, phase issue, or poor placement",
+     "Ignoring a dull monitor sound that is actually a blown tweeter or failing crossover"
+    ],
+    "scenario_contexts": [
+     "A dull vocal recording leads the engineer to swap to a brighter condenser mic",
+     "A PA sounds dull, so the tech checks for a blown high driver",
+     "A mastering engineer adds gentle high-shelf EQ to lift a dull mix"
+    ]
+   },
+   "sources": [
+    "Handbook for Sound Engineers (Ballou)",
+    "Sound on Sound glossary"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "89a66baf-6aa8-4470-917b-770ab2c90ca5",
+   "term": "edgy",
+   "fields": {
+    "definition": "A timbral descriptor for sound with harsh, aggressive emphasis in the upper-midrange and high frequencies, producing a hard, biting, or slightly irritating character.",
+    "plain_english": "An edgy sound is harsh and sharp on the ears. It has a biting, aggressive tone, a bit like a voice that is almost shouting.",
+    "purpose_function": "Describes unpleasant or aggressive upper-mid energy so engineers know where to tame it, or where to add bite when wanted.",
+    "practical_application": "An engineer may cut around 2 to 5 kHz to soften an edgy vocal or guitar, or add a little edge for aggression.",
+    "category": "Tonal Balance",
+    "related_terms": [
+     "Harsh",
+     "Bright",
+     "dirty",
+     "Presence",
+     "Sibilance"
+    ],
+    "common_mistakes": [
+     "Confusing edgy (aggressive upper-mid tone) with dirty (added distortion)",
+     "Cutting all the highs to fix edginess and ending up with a dull sound",
+     "Blaming the source when edginess actually comes from a bright room or harsh monitors"
+    ],
+    "scenario_contexts": [
+     "An edgy vocal gets a narrow cut around 3 kHz to soften it",
+     "A distorted guitar sounds edgy, so the engineer rolls off some presence",
+     "A producer adds a touch of edge to a synth to help it cut through"
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Sound on Sound glossary"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "bfade686-fec1-493f-811f-067e7cfad8a8",
+   "term": "farty",
+   "fields": {
+    "definition": "A colloquial timbral descriptor for a loose, buzzy, distorted low-frequency sound resembling flatulence, usually caused by driver over-excursion, clipping, or ill-defined bass distortion.",
+    "plain_english": "A farty sound is a loose, buzzy low note that flaps instead of staying tight. It often comes from a speaker pushed too hard, and sounds a bit like the rude noise its name suggests.",
+    "purpose_function": "Gives engineers a quick label for a specific loose low-end distortion so they can trace and fix overdriven or ill-defined bass.",
+    "practical_application": "A farty kick or bass usually signals an overdriven speaker, too much low boost, or clipping, prompting less level or a high-pass filter.",
+    "category": "Distortion Character",
+    "related_terms": [
+     "Distortion",
+     "Boomy",
+     "dirty",
+     "Clipping",
+     "fat"
+    ],
+    "common_mistakes": [
+     "Assuming farty always means a plugin problem when it is often a physical speaker being over-driven",
+     "Boosting low bass further and worsening the loose, farty distortion",
+     "UNSAFE: continuing to drive a farty, distorting subwoofer or amp, which can overheat voice coils and damage drivers"
+    ],
+    "scenario_contexts": [
+     "A subwoofer sounds farty at high level, so the tech engages a high-pass filter and lowers drive",
+     "A synth bass patch sounds farty, prompting less distortion or a cleaner sub layer",
+     "A bass amp goes farty when pushed, signaling the speaker is near its limit"
+    ]
+   },
+   "sources": [
+    "Sound on Sound glossary",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "fe041522-67f2-496a-ae5d-4e4afcdbd85a",
+   "term": "fat",
+   "fields": {
+    "definition": "A timbral descriptor for a full, rich, and weighty sound with strong low-mid content and often subtle harmonic saturation or width, giving a sense of size and body.",
+    "plain_english": "A fat sound is big, full, and warm. It fills out the low-middle of the sound, making it feel large and rich, like a thick chord instead of a thin one.",
+    "purpose_function": "Describes a sense of fullness and body so engineers can aim for or dial back weight in a source or mix.",
+    "practical_application": "To make a thin snare or synth fatter, an engineer may add low-mid EQ, saturation, layering, or slight detuning and doubling.",
+    "category": "Tonal Balance",
+    "related_terms": [
+     "Thin",
+     "Warm",
+     "Boomy",
+     "Body",
+     "Saturation"
+    ],
+    "common_mistakes": [
+     "Confusing fat (full and rich) with muddy (unclear and boomy)",
+     "Adding too much low-mid to fatten a sound and cluttering the mix",
+     "Assuming fat only means more bass rather than added body, saturation, and width"
+    ],
+    "scenario_contexts": [
+     "A thin-sounding synth bass is fattened with saturation and a sub layer",
+     "A producer wants a fatter snare and adds low-mid EQ and parallel compression",
+     "A vocal is doubled and slightly detuned to sound fatter"
+    ]
+   },
+   "sources": [
+    "Modern Recording Techniques (Huber & Runstein)",
+    "Sound on Sound glossary"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

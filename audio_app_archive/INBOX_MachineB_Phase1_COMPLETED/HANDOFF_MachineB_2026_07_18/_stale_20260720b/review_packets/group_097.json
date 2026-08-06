@@ -1,0 +1,1032 @@
+{
+ "group": 97,
+ "terms": [
+  {
+   "id": "e8f53125-b811-43a4-8380-8c872f6aa8ca",
+   "term": "Unmixing",
+   "topic": "AI Source Separation & Restoration",
+   "difficulty": null,
+   "definition": "Unmixing is the recovery of the individual sources or stems that were combined into a finished audio mixture, producing separate signals from a single mixdown. It is used synonymously with source separation and demixing, especially in the music context where a stereo master is split back into parts such as vocals, drums, bass and other.",
+   "plain_english": "It means undoing a mix. You take a finished song and get its parts back out as separate tracks, like the vocals and drums on their own.",
+   "purpose_function": "It exists to reverse the mixdown step so that the individual parts locked inside a stereo or mono mixture can be edited, remixed or reused, even when the original separate recordings no longer exist.",
+   "practical_application": "A technician uses an unmixing (demixing) tool to pull stems from a released track for a remix, live re-performance or upmix, or to isolate a single part for editing when only the final mix survives.",
+   "category": "Separation fundamentals",
+   "related_terms": [
+    "Source separation",
+    "Demixing",
+    "Music source separation (MSS)",
+    "Spectral masking",
+    "Signal separation"
+   ],
+   "common_mistakes": [
+    "Treating unmixing as a perfect inverse of mixing; it only estimates the parts, so recovered stems carry artifacts and bleed rather than matching the originals",
+    "Assuming effects baked into the mix, such as reverb, compression and EQ, come off with the stems; those processes stay embedded in the separated parts",
+    "Confusing unmixing with soloing or muting; unmixing works from a single finished mixture, not from an existing multitrack session"
+   ],
+   "scenario_contexts": [
+    "Extracting stems from a released stereo track to build a remix or mashup",
+    "Isolating a vocal for a live tribute performance when no multitrack exists",
+    "Splitting an archival mono recording into parts for restoration or re-balancing"
+   ]
+  },
+  {
+   "id": "d052f324-e9ca-43c2-926e-0996636e5845",
+   "term": "Wave-U-Net",
+   "topic": "AI Source Separation & Restoration",
+   "difficulty": null,
+   "definition": "Wave-U-Net is a neural network architecture for end-to-end audio source separation that operates directly on the raw time-domain waveform rather than on a spectrogram. It adapts the U-Net encoder-decoder design to one-dimensional audio, repeatedly downsampling and then upsampling feature maps with skip connections between matching levels, so it captures structure at multiple time scales, models phase directly, and avoids a fixed spectral transform.",
+   "plain_english": "It is a computer model that splits sounds apart by working on the raw audio wave itself, not a picture of it. It first zooms out to catch the big shape, then zooms back in to rebuild each part.",
+   "purpose_function": "It exists to perform source separation without first converting audio to a spectrogram, letting the network learn its own features and handle phase directly, which removes errors that come from fixed transforms and from reusing the mixture's phase.",
+   "practical_application": "A technician encounters Wave-U-Net as a time-domain separation model, or a baseline it inspired, used to split singing voice from accompaniment or to separate instruments, running on the raw audio with no STFT step.",
+   "category": "Separation models",
+   "related_terms": [
+    "Source separation",
+    "Music source separation (MSS)",
+    "Conv-TasNet",
+    "Spectral masking",
+    "Short-time Fourier transform (STFT)",
+    "Signal separation"
+   ],
+   "common_mistakes": [
+    "Assuming it works on a spectrogram like mask-based systems; Wave-U-Net processes the raw waveform in the time domain",
+    "Treating the U-Net skip connections as a minor detail; they carry fine time detail from the encoder to the decoder and are central to reconstructing the output",
+    "Confusing it with the original image-segmentation U-Net; Wave-U-Net is a one-dimensional adaptation built for audio"
+   ],
+   "scenario_contexts": [
+    "Separating singing voice from the instrumental backing in a music track",
+    "Serving as a time-domain baseline when comparing waveform models against spectrogram-masking separators",
+    "Building or evaluating an end-to-end separator that avoids the STFT and inverse-STFT stages"
+   ]
+  },
+  {
+   "id": "5357e904-024d-4b9e-9ccc-e6da679f67e3",
+   "term": "Key estimation",
+   "topic": "Music Information Retrieval",
+   "difficulty": "intermediate",
+   "definition": "Key estimation (also key finding or key detection) is the Music Information Retrieval task of automatically determining the musical key of an audio recording or segment, meaning its tonic pitch class and mode, such as C major or A minor. A common approach computes a chroma (pitch-class profile) feature from the audio and matches it against template key profiles, for example by correlating with Krumhansl-Schmuckler profiles, choosing the best-fitting of the 24 major and minor keys.",
+   "plain_english": "Key estimation lets a computer listen to a song and guess its musical key, such as C major or A minor. It looks at which notes show up most and picks the key that fits that pattern best.",
+   "purpose_function": "It produces a compact, harmonically meaningful label for a piece's tonal center, which supports downstream tasks such as chord recognition, harmonic mixing, recommendation, and organizing large libraries by key.",
+   "practical_application": "A technician or DJ uses automatic key estimation to tag tracks for harmonic mixing or to pre-sort a sample library, then confirms borderline results by ear because algorithms often confuse musically related keys.",
+   "category": "Tonal analysis",
+   "related_terms": [
+    "Chroma feature",
+    "Chromagram",
+    "Chord recognition",
+    "Pitch class",
+    "Melody extraction",
+    "Tonic"
+   ],
+   "common_mistakes": [
+    "Confusing a key with a chord, when a key describes the overall tonal center of a passage rather than a single simultaneous group of notes",
+    "Trusting an estimate blindly, since algorithms frequently swap a key for its relative major or minor, its parallel key, or a perfect-fifth neighbor",
+    "Assuming one global key holds for a whole track, when many pieces modulate and need segment-level estimation",
+    "Treating a correlation with fixed key profiles as ground truth without checking it against the actual audio"
+   ],
+   "scenario_contexts": [
+    "Auto-tagging a DJ library so tracks can be beat- and key-matched for harmonic mixing",
+    "Pre-labeling one-shot samples and loops in a sample manager by detected key",
+    "Providing a key prior to a chord-recognition system to constrain likely chords",
+    "Sorting a large catalog by key for a music recommendation or playlisting feature"
+   ]
+  },
+  {
+   "id": "a1a8cc58-bbb6-4777-90a2-5d777648e558",
+   "term": "Melody extraction",
+   "topic": "Music Information Retrieval",
+   "difficulty": "intermediate",
+   "definition": "Melody extraction is the Music Information Retrieval task of automatically estimating a sequence of fundamental-frequency (F0) values that represent the pitch of the predominant melody, typically a lead voice or instrument, from a polyphonic music recording. It combines predominant-F0 estimation with voicing detection, deciding for each short time frame whether the melody is present and, if so, its pitch.",
+   "plain_english": "Melody extraction has a computer pick out the main tune from a full song and track its pitch over time. It is like following the singer's voice through a busy mix and writing down each note.",
+   "purpose_function": "It reduces a dense polyphonic mixture to a single pitch contour for the lead line, which enables tasks such as query-by-humming search, cover-song identification, transcription, and separating or muting the lead voice.",
+   "practical_application": "A technician uses melody extraction to build query-by-humming or cover-detection features, to generate a pitch reference for transcription, or to help isolate a lead vocal, checking output where accompaniment or harmony pulls the estimate off.",
+   "category": "Melody analysis",
+   "related_terms": [
+    "Fundamental frequency",
+    "Pitch detection",
+    "Voicing detection",
+    "Query by humming",
+    "Automatic music transcription",
+    "Source separation"
+   ],
+   "common_mistakes": [
+    "Confusing melody extraction with full polyphonic transcription, when it estimates only the single predominant melodic line rather than every note played",
+    "Ignoring voicing detection and assuming a melody is present in every frame, which produces spurious pitches during instrumental or silent passages",
+    "Overlooking octave errors, since an estimate can be correct in pitch class yet an octave off, which raw chroma accuracy tolerates but raw pitch accuracy does not",
+    "Expecting reliable results on dense mixes with no clear lead, where the predominant melody is ambiguous"
+   ],
+   "scenario_contexts": [
+    "Powering a query-by-humming search that matches a user's hummed tune to recordings",
+    "Extracting melodic contours for cover-song or version identification",
+    "Producing an F0 reference to seed automatic transcription of a lead line",
+    "Assisting lead-vocal isolation or karaoke accompaniment generation"
+   ]
+  },
+  {
+   "id": "ce7cf0ab-e049-426c-ae8a-eeebde965ff0",
+   "term": "Acoustic scene classification",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A supervised audio classification task in which a model assigns an entire recording to one label from a predefined set of environments or contexts (for example park, metro station, or office) based on its overall acoustic character rather than individual sound events.",
+   "plain_english": "It teaches a computer to listen to a sound clip and name the place it was recorded, like a park or a train station. The computer learns the general sound of each place from many labeled examples.",
+   "purpose_function": "It exists to give machines an understanding of the surrounding environment or context from sound alone, supporting context-aware devices, soundscape monitoring, and automatic tagging of large audio archives.",
+   "practical_application": "Developers train and evaluate such models on benchmark datasets like those from the DCASE challenge to build systems that recognize recording environments, for example to auto-label field recordings or drive context-aware processing.",
+   "category": "Machine listening",
+   "related_terms": [
+    "Audio classification",
+    "Audio embedding",
+    "Sound event detection",
+    "Mel spectrogram",
+    "Convolutional neural network"
+   ],
+   "common_mistakes": [
+    "Confusing acoustic scene classification with sound event detection, which locates and labels individual sounds rather than the whole scene",
+    "Assuming a model trained on one set of recording devices or cities will generalize to audio from very different devices or locations",
+    "Judging a model only on overall accuracy while ignoring how it performs on each individual scene class"
+   ],
+   "scenario_contexts": [
+    "Automatically tagging the recording environment of clips in a large sound library",
+    "A phone or wearable adjusting its audio processing based on whether the user is indoors, on a street, or on transit",
+    "Benchmarking a model against a DCASE acoustic scene classification dataset"
+   ]
+  },
+  {
+   "id": "4566d378-a47d-4662-a0f8-ea977eae7979",
+   "term": "Adaptive beamforming",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A microphone-array spatial filtering technique whose combining weights are adjusted automatically and continuously from the incoming signals to enhance sound from a desired direction while suppressing interference and noise from other directions; data-dependent methods such as the MVDR (minimum variance distortionless response) beamformer are common examples.",
+   "plain_english": "It blends several microphones so they listen more to one direction and less to the noise around it. It keeps adjusting as sounds change, like aiming an invisible cone at the person talking.",
+   "purpose_function": "It exists to pull a wanted sound, such as a talker, out of noise and reverberation by exploiting the spatial layout of a microphone array, improving clarity for speech capture and hands-free communication.",
+   "practical_application": "Technicians encounter it in conferencing systems, hearing aids, and voice-controlled devices, where an array steers and reshapes its pickup pattern in real time to follow a talker and reject room noise.",
+   "category": "Array processing",
+   "related_terms": [
+    "Adaptive filter",
+    "Microphone array",
+    "Beamforming",
+    "Spatial filtering",
+    "Noise reduction"
+   ],
+   "common_mistakes": [
+    "Assuming more microphones always give better results, when array geometry, spacing, and calibration matter just as much",
+    "Confusing fixed (data-independent) beamforming with adaptive beamforming, which changes its weights based on the signals it receives",
+    "Overlooking that reverberation and steering errors can make an adaptive beamformer partly cancel the desired signal"
+   ],
+   "scenario_contexts": [
+    "A conference-room ceiling array tracking whoever is speaking",
+    "A hearing aid focusing on a talker in front while suppressing side and background noise",
+    "A smart speaker isolating a voice command from music and room noise"
+   ]
+  },
+  {
+   "id": "0eed8a3b-30ea-478a-8440-02c15fa40bbd",
+   "term": "Adaptive filter",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A digital filter whose coefficients are adjusted automatically over time by an adaptive algorithm (such as LMS or RLS) that minimizes an error signal, allowing the filter to track and model an unknown or time-varying system without manually set coefficients.",
+   "plain_english": "It is a filter that tunes itself, changing its own settings as it runs to match a signal or cancel unwanted sound. It works like noise-cancelling headphones that keep adjusting to the noise around you.",
+   "purpose_function": "It exists to solve problems where the ideal filter is unknown or keeps changing, such as canceling echoes or noise, by continuously learning the coefficients that reduce the error.",
+   "practical_application": "Technicians meet adaptive filters inside acoustic echo cancellers on conferencing gear and in active noise control, where the filter constantly retunes to match the room and the echo path.",
+   "category": "Adaptive signal processing",
+   "related_terms": [
+    "Adaptive beamforming",
+    "Acoustic echo cancellation",
+    "Least mean squares",
+    "Noise reduction",
+    "Finite impulse response filter"
+   ],
+   "common_mistakes": [
+    "Setting the adaptation step size (learning rate) too high, which makes the filter unstable, or too low, which makes it adapt too slowly",
+    "Assuming the filter converges instantly, when it needs time and a suitable reference signal to learn",
+    "Confusing an adaptive filter with a fixed filter whose coefficients never change after design"
+   ],
+   "scenario_contexts": [
+    "An acoustic echo canceller removing the far-end voice picked up by a conference microphone",
+    "Active noise cancellation adapting to changing headphone or cabin noise",
+    "Cancelling mains hum or interference that drifts over time"
+   ]
+  },
+  {
+   "id": "371226ce-739e-48ef-a655-f2e30c8e13da",
+   "term": "All-pass filter network",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "An interconnection of all-pass filter sections — filters that pass all frequencies with (ideally) unity magnitude response while imposing a frequency-dependent phase and group-delay shift — used to alter the phase or delay of a signal without changing its magnitude spectrum; such networks are a building block of artificial reverberators and phase-shifting effects.",
+   "plain_english": "It is a chain of filters that lets every frequency through at the same loudness but changes their timing. Engineers use these chains to build reverb and that swirling phaser sound without changing the tone.",
+   "purpose_function": "It exists to reshape phase and delay — spreading sound out in time — while leaving the overall frequency balance untouched, which is essential for building dense, natural-sounding artificial reverberation.",
+   "practical_application": "A plugin designer or technician encounters all-pass networks inside reverb algorithms such as Schroeder-style reverberators and inside phaser effects, where cascaded all-pass sections build echo density or create moving notches.",
+   "category": "Digital filtering",
+   "related_terms": [
+    "All-pass filter",
+    "Schroeder reverberator",
+    "Phaser",
+    "Group delay",
+    "Comb filter",
+    "Artificial reverberation"
+   ],
+   "common_mistakes": [
+    "Believing an all-pass filter does nothing because it does not change the magnitude response, when it changes phase and delay",
+    "Forgetting that cascaded all-pass sections still add latency and can audibly smear transients",
+    "Assuming an all-pass network can never color the sound, when feedback or mixing can create audible comb-filter effects"
+   ],
+   "scenario_contexts": [
+    "Building or tuning a digital reverb algorithm from cascaded all-pass and comb sections",
+    "Designing a phaser effect that sweeps notches through the spectrum",
+    "Using all-pass sections to manipulate phase without altering tonal balance"
+   ]
+  },
+  {
+   "id": "8f39f468-5fa3-4dd0-888c-46437266c93d",
+   "term": "Apple Stem Splitter",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A source-separation feature in Apple's Logic Pro that uses on-device machine learning to split a mixed audio recording into separate instrument and vocal stems — such as vocals, drums, bass, guitar, piano, and other parts — each extracted to its own audio region within the project; it requires Apple silicon (M1 or later).",
+   "plain_english": "It is a Logic Pro tool that takes a finished song and pulls it apart into separate tracks, like vocals, drums, and bass. It works a bit like un-baking a cake back into its ingredients, all on your own Mac.",
+   "purpose_function": "It exists to let users recover individual parts from a mix when the original multitrack is unavailable — for remixing, sampling, practice, or repair — using AI that runs locally on the computer.",
+   "practical_application": "An engineer or producer uses Stem Splitter to isolate a vocal from a mixed track for a remix or to mute a part for practice, then works with the extracted stems as ordinary regions in Logic Pro.",
+   "category": "Source separation",
+   "related_terms": [
+    "Source separation",
+    "Music source separation",
+    "Stem",
+    "Deep learning",
+    "Digital audio workstation"
+   ],
+   "common_mistakes": [
+    "Expecting perfectly clean stems, when separation can leave artifacts or bleed between parts",
+    "Assuming it runs on any Mac, when it requires Apple silicon (M1 or later)",
+    "Treating extracted stems as if they were the original studio multitracks, which they are not"
+   ],
+   "scenario_contexts": [
+    "Isolating a vocal from a stereo mix to build a remix",
+    "Removing a vocal or instrument to make a practice or karaoke backing",
+    "Extracting a drum part from an old recording for sampling"
+   ]
+  },
+  {
+   "id": "9f3f23eb-262a-4bd2-b4a6-8e3139a78d7c",
+   "term": "Attention mechanism",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A neural network component that computes a weighted combination of a set of value vectors, where the weights come from the compatibility between a query and a set of keys, letting the model dynamically focus on the most relevant parts of its input or context; scaled dot-product attention as used in the Transformer is the canonical formulation.",
+   "plain_english": "It lets a neural network decide which parts of the input matter most at each step, instead of treating everything the same. It is like skimming a page and reading only the words that answer your question.",
+   "purpose_function": "It exists to let models handle long or complex inputs by learning what to weight and connect, capturing relationships between distant elements far better than fixed, order-limited processing.",
+   "practical_application": "It underlies the Transformer models used for tasks like speech recognition, music tagging, and audio captioning, and it powers the audio spectrogram Transformers behind many modern audio AI tools.",
+   "category": "Neural architectures",
+   "related_terms": [
+    "Transformer",
+    "Self-attention",
+    "Audio foundation model",
+    "Recurrent neural network",
+    "Audio embedding"
+   ],
+   "common_mistakes": [
+    "Thinking attention is a single fixed formula, when there are many variants such as self-attention, cross-attention, and multi-head attention",
+    "Confusing the everyday meaning of attention with the specific query-key-value computation used in models",
+    "Assuming attention removes all limits on sequence length, when its cost grows quickly with input size"
+   ],
+   "scenario_contexts": [
+    "A Transformer transcribing speech by attending to the relevant parts of the audio",
+    "An audio captioning model attending to the sound events it describes",
+    "A music tagging model built on an audio spectrogram Transformer"
+   ]
+  },
+  {
+   "id": "83c318ec-1ca8-4fca-866d-59aacf17ff5f",
+   "term": "Audio classification",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "The machine learning task of assigning one or more categorical labels to an audio signal or segment (for example identifying an instrument, a genre, a spoken command, or a sound type), typically by extracting features such as a mel spectrogram and applying a trained classifier.",
+   "plain_english": "It teaches a computer to listen to a sound and put a label on it, such as guitar, applause, or dog bark. The computer learns the pattern of each label from many example sounds.",
+   "purpose_function": "It exists to let machines recognize and organize sound automatically, enabling search, tagging, monitoring, and triggering actions from audio without a human listening to everything.",
+   "practical_application": "Technicians and developers build audio classifiers to auto-tag sound libraries, detect specific sounds for monitoring, or recognize spoken keywords, usually by training a model on labeled audio.",
+   "category": "Machine listening",
+   "related_terms": [
+    "Acoustic scene classification",
+    "Audio embedding",
+    "Sound event detection",
+    "Mel spectrogram",
+    "Convolutional neural network"
+   ],
+   "common_mistakes": [
+    "Confusing single-label classification with multi-label tagging, where several labels can apply to one clip",
+    "Training on clean studio audio and expecting good results on noisy real-world recordings",
+    "Ignoring class imbalance, so the model favors common sounds and misses rare ones"
+   ],
+   "scenario_contexts": [
+    "Automatically tagging instruments or genres across a music catalog",
+    "Detecting alarms, breaking glass, or other events in a monitoring system",
+    "Recognizing spoken keywords to trigger a device"
+   ]
+  },
+  {
+   "id": "93576500-a2fb-4d91-9866-7e4e4b60b35e",
+   "term": "Audio embedding",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A fixed-dimensional vector representation of an audio signal or segment, produced by a (usually neural) model, that captures its salient content so that perceptually or semantically similar sounds map to nearby points in the vector space; VGGish and wav2vec representations are common examples.",
+   "plain_english": "It is a list of numbers that stands in for a sound, arranged so that similar sounds get similar numbers. It works like a spot on a map, where things that sound alike sit close together.",
+   "purpose_function": "It exists to turn raw audio into a compact, meaningful form that machine learning systems can compare, search, and classify far more easily than the raw waveform.",
+   "practical_application": "Technicians use audio embeddings for similarity search, clustering, and as input features for classifiers, for example finding sounds like a reference clip or feeding a small model instead of training from raw audio.",
+   "category": "Audio representations",
+   "related_terms": [
+    "Audio foundation model",
+    "Audio classification",
+    "Feature extraction",
+    "Mel spectrogram",
+    "Attention mechanism"
+   ],
+   "common_mistakes": [
+    "Assuming embeddings from different models are interchangeable, when each model has its own vector space",
+    "Treating an embedding as human-readable, when its individual dimensions usually have no simple meaning",
+    "Using embeddings from a model trained on unrelated data and expecting them to capture the features you need"
+   ],
+   "scenario_contexts": [
+    "Building a 'find similar sounds' search over a sample library",
+    "Clustering unlabeled recordings into groups by content",
+    "Using pretrained embeddings as features to train a small classifier with little data"
+   ]
+  },
+  {
+   "id": "47ccc170-3d62-4f10-bf98-ad1e89248f1b",
+   "term": "Audio foundation model",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A large neural network pretrained on broad, mostly unlabeled audio data (typically via self-supervised learning) to learn general-purpose representations that can then be adapted, through fine-tuning or prompting, to many downstream audio tasks; models such as wav2vec 2.0, HuBERT, and CLAP are representative examples.",
+   "plain_english": "It is a big AI model trained on huge amounts of audio so it learns general sound knowledge first. You can then adapt that one model to many jobs, the way a well-read person picks up new tasks fast.",
+   "purpose_function": "It exists to replace training a separate model from scratch for every task; one broadly pretrained model can be fine-tuned to many audio jobs with far less labeled data.",
+   "practical_application": "Developers fine-tune or extract features from an audio foundation model to build speech recognition, tagging, or captioning systems without collecting a massive labeled dataset for each one.",
+   "category": "Foundation models",
+   "related_terms": [
+    "Audio embedding",
+    "Attention mechanism",
+    "Transformer",
+    "Self-supervised learning",
+    "Transfer learning",
+    "Audio classification"
+   ],
+   "common_mistakes": [
+    "Assuming a foundation model works well on every task out of the box, when many tasks still need fine-tuning or adaptation",
+    "Overlooking that biases and gaps in the pretraining data carry over into downstream systems",
+    "Confusing a foundation model with a single-task model trained only for one purpose"
+   ],
+   "scenario_contexts": [
+    "Fine-tuning a pretrained speech model for a specialized transcription task",
+    "Using a foundation model's features to tag audio with limited labeled data",
+    "Adapting one pretrained audio model across several products or tasks"
+   ]
+  },
+  {
+   "id": "eae26d4b-fcb1-4e69-90e5-88bf68fcabcc",
+   "term": "Audio generation",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "In machine learning, audio generation is the task of using a trained generative model to synthesize new audio signals, either unconditionally or conditioned on inputs such as text, a musical score, a speaker identity, or a class label. Modern systems commonly generate audio by autoregressively predicting sequences of discrete audio tokens or by iteratively denoising a latent or spectral representation, which is then rendered to a waveform.",
+   "plain_english": "Audio generation means using a trained computer model to create new sound from nothing. It works like a program that can make speech or music that was never recorded before.",
+   "purpose_function": "It lets a system produce audio content on demand instead of only replaying existing recordings, which powers applications such as text-to-speech, music creation, and sound-effect synthesis.",
+   "practical_application": "A technician may use audio-generation tools to synthesize voiceovers from a script, create royalty-free backing music or effects, or reconstruct a short damaged region of a recording, then audition the output for artifacts before using it.",
+   "category": "Generative audio modeling",
+   "related_terms": [
+    "Audio language model",
+    "Audio tokens",
+    "Autoencoder",
+    "Bandwidth extension model",
+    "Text-to-speech",
+    "Generative model"
+   ],
+   "common_mistakes": [
+    "Confusing audio generation (creating new signals) with audio effects processing of an existing recording",
+    "Assuming generated audio is automatically free of artifacts, bias, or licensing and rights concerns",
+    "Expecting a model trained to generate speech to generate high-quality music without task-specific training",
+    "UNSAFE: Relying on AI-generated speech for safety announcements, evacuation cues, or show calls without human verification"
+   ],
+   "scenario_contexts": [
+    "Synthesizing a voiceover from a text script for a video edit",
+    "Producing royalty-free background music or ambient beds for a production",
+    "Creating sound effects that would be difficult or costly to record",
+    "Reconstructing a brief corrupted section of an otherwise usable recording"
+   ]
+  },
+  {
+   "id": "b22e27be-7030-48e1-9df8-68698067cc3b",
+   "term": "Audio language model",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "An audio language model is a model that represents audio as a sequence of discrete tokens and applies language-modeling techniques, typically autoregressive next-token prediction, over that token sequence. Following the AudioLM framework, such models often combine semantic tokens that capture long-term structure with acoustic tokens from a neural audio codec to enable coherent, high-fidelity audio generation and continuation.",
+   "plain_english": "An audio language model turns sound into small pieces called tokens, then learns to predict the next piece, the way a text model predicts the next word. This lets it continue or create audio one small step at a time.",
+   "purpose_function": "It reuses the powerful sequence-modeling methods developed for text so that audio can be generated, continued, or transformed by predicting tokens, giving long-range coherence without hand-crafted signal models.",
+   "practical_application": "A technician encounters audio language models inside tools that continue or generate speech and music, and should understand that output quality depends on the tokenizer and codec used to encode and decode the audio.",
+   "category": "Generative audio modeling",
+   "related_terms": [
+    "Audio tokens",
+    "Audio generation",
+    "Neural audio codec",
+    "Autoencoder",
+    "Text-to-speech",
+    "Transformer"
+   ],
+   "common_mistakes": [
+    "Assuming an audio language model works directly on raw samples rather than on discrete tokens produced by a codec or quantizer",
+    "Treating it as identical to a text language model, ignoring the separate semantic and acoustic token stages",
+    "Believing more tokens always means better audio, when token design and codec bitrate set the real quality ceiling",
+    "Confusing an audio language model with a speech recognition system that only outputs text"
+   ],
+   "scenario_contexts": [
+    "Continuing a short recorded phrase into a longer coherent passage",
+    "Generating speech in a given speaker's voice from prompt audio",
+    "Producing music continuations conditioned on an opening motif",
+    "Serving as the generative core inside a text-to-speech or music-generation product"
+   ]
+  },
+  {
+   "id": "a2357a7d-fc8c-43ac-8565-9fb191c95c7a",
+   "term": "Audio regression",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Audio regression is a supervised learning task in which a model maps audio, or features derived from audio, to one or more continuous-valued targets rather than to discrete class labels. It differs from classification only in the output type: the model predicts real numbers, and is typically trained by minimizing an error such as mean squared error.",
+   "plain_english": "This is when a model listens to audio and predicts a number, not a label. For example, it might guess the loudness or the tempo of a song as a value.",
+   "purpose_function": "It exists to estimate continuous quantities from sound, so systems can predict measurable properties such as tempo, loudness, pitch, or a quality score instead of just assigning categories.",
+   "practical_application": "A technician meets audio regression in tools that estimate values like tempo in beats per minute, perceived loudness, or a predicted audio-quality metric from a signal.",
+   "category": "Learning tasks",
+   "related_terms": [
+    "Audio tagging",
+    "Audio segmentation",
+    "Autoencoder",
+    "Feature extraction",
+    "Supervised learning",
+    "Loss function"
+   ],
+   "common_mistakes": [
+    "Confusing regression (continuous outputs) with classification (discrete labels)",
+    "Forcing an inherently categorical problem into regression, or vice versa",
+    "Ignoring that targets and features often need scaling or normalization for stable training",
+    "Judging a regression model only by one error number without checking behavior across the input range"
+   ],
+   "scenario_contexts": [
+    "Estimating a track's tempo in beats per minute from audio",
+    "Predicting perceived loudness or a subjective quality score of a clip",
+    "Estimating the fundamental frequency (pitch) of a monophonic recording",
+    "Predicting reverberation time or a room parameter from a recorded impulse or signal"
+   ]
+  },
+  {
+   "id": "a63a49e5-4fa0-4f19-8914-840d4bc8c555",
+   "term": "Audio segmentation",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Audio segmentation is the task of partitioning an audio stream in time into contiguous regions that are internally homogeneous or that correspond to meaningful units, by detecting the boundaries between them. Common variants include speech/non-speech and speaker segmentation, sound-event onset and offset detection, and music structure segmentation into sections such as intro, verse, and chorus.",
+   "plain_english": "Audio segmentation means splitting a recording into parts that belong together, like chapters in a book. Each part might be one speaker, one song section, or one type of sound.",
+   "purpose_function": "It exists to give downstream processing meaningful time boundaries, so later steps such as labeling, transcription, editing, or analysis can work on coherent regions instead of an undivided stream.",
+   "practical_application": "A technician relies on segmentation when tools auto-detect song sections, split a long recording at speaker changes, or mark where distinct sound events start and stop for editing or logging.",
+   "category": "Audio analysis tasks",
+   "related_terms": [
+    "Audio tagging",
+    "Audio regression",
+    "Feature extraction",
+    "Onset detection",
+    "Speaker diarization",
+    "Sound event detection"
+   ],
+   "common_mistakes": [
+    "Confusing segmentation (finding time boundaries) with classification (labeling what each region is)",
+    "Assuming fixed-length windows are the same as true, content-aware segment boundaries",
+    "Ignoring that boundary tolerance and the evaluation metric strongly affect reported accuracy",
+    "Expecting one segmentation model to fit every task, when speaker, event, and music-structure segmentation differ"
+   ],
+   "scenario_contexts": [
+    "Automatically detecting intro, verse, and chorus sections of a song",
+    "Splitting a long interview recording at points where the speaker changes",
+    "Marking the start and end of distinct sound events for editing or logging",
+    "Separating speech regions from silence or music before transcription"
+   ]
+  },
+  {
+   "id": "9c3f15ec-6e17-49da-956b-5faef8e61f59",
+   "term": "Audio tagging",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Audio tagging is the task of predicting the presence or absence of one or more sound classes (tags) in an audio clip, without necessarily localizing them in time. It is typically framed as multi-label classification, using a sigmoid output per class trained with binary cross-entropy, so that several tags can be assigned to the same clip.",
+   "plain_english": "Audio tagging means labeling a clip with the sounds it contains, like dog, rain, or guitar. One clip can get several tags at once because many sounds can happen together.",
+   "purpose_function": "It exists to describe the sound content of a clip so audio can be searched, indexed, filtered, or triggered by category, even when labels are weak and no exact timing is provided.",
+   "practical_application": "A technician meets audio tagging in tools that auto-label sound libraries, detect the presence of noise or specific events in recordings, or organize large clip collections by content.",
+   "category": "Audio classification",
+   "related_terms": [
+    "Audio segmentation",
+    "Audio regression",
+    "Sound event detection",
+    "Feature extraction",
+    "Supervised learning",
+    "Spectrogram"
+   ],
+   "common_mistakes": [
+    "Treating tagging as single-label classification when clips usually need several tags at once",
+    "Confusing clip-level tagging with sound event detection, which also outputs when each event occurs",
+    "Using softmax across classes instead of an independent sigmoid per class for multi-label output",
+    "Ignoring that weak, noisy web labels limit accuracy and require careful evaluation"
+   ],
+   "scenario_contexts": [
+    "Automatically labeling a sound-effects library by content for search",
+    "Flagging clips that contain a target sound such as applause, sirens, or noise",
+    "Organizing a large recording archive by the sound classes present",
+    "Pre-screening field recordings for the presence of specific events"
+   ]
+  },
+  {
+   "id": "a6fd4134-5a12-49f2-9591-19c597486f04",
+   "term": "Audio tokens",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Audio tokens are discrete symbols that represent short frames of audio, produced by quantizing the latent representation of a neural audio codec, for example through residual vector quantization. They let continuous audio be treated as a sequence of integer codes, so sequence models such as audio language models can operate on sound the way text models operate on words.",
+   "plain_english": "Audio tokens are small code numbers that stand for short pieces of sound. They let a model treat audio like a string of symbols, the way words make up a sentence.",
+   "purpose_function": "They exist to convert continuous waveforms into a compact discrete sequence, which makes audio compressible and lets token-based generative and language models predict and produce sound.",
+   "practical_application": "A technician encounters audio tokens as the internal representation inside neural codecs and generative audio tools, where token count and codec bitrate trade off against audio quality.",
+   "category": "Audio representations",
+   "related_terms": [
+    "Audio language model",
+    "Neural audio codec",
+    "Autoencoder",
+    "Audio generation",
+    "Vector quantization",
+    "Spectrogram"
+   ],
+   "common_mistakes": [
+    "Thinking audio tokens are raw samples rather than quantized codec codes",
+    "Confusing acoustic tokens (fidelity) with semantic tokens (long-term structure)",
+    "Assuming more tokens always improve quality, ignoring the codec's bitrate and design limits",
+    "Treating tokens from one codec as interchangeable with tokens from another"
+   ],
+   "scenario_contexts": [
+    "Encoding audio into discrete codes for a neural codec at a target bitrate",
+    "Feeding token sequences into an audio language model for generation",
+    "Debugging quality loss by inspecting how many tokens represent each second of audio",
+    "Comparing codecs by the number and structure of tokens they emit"
+   ]
+  },
+  {
+   "id": "8505a526-0436-4b26-9f61-657ca7955df0",
+   "term": "Autoencoder",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "An autoencoder is a neural network trained to reconstruct its own input, consisting of an encoder that maps the input to a lower-dimensional (or otherwise constrained) latent code and a decoder that reconstructs the input from that code. Because information is forced through a bottleneck, the network learns a compact representation that captures the most important structure of the data.",
+   "plain_english": "An autoencoder is a network that squeezes data down to a small summary and then rebuilds it. By learning to rebuild its input, it finds a compact way to describe the data.",
+   "purpose_function": "It exists to learn efficient representations without labels, supporting compression, denoising, feature learning, and, in variational or quantized forms, generation of new data.",
+   "practical_application": "A technician meets autoencoders inside audio tools for tasks such as denoising, dimensionality reduction, and the encoder-decoder cores of neural audio codecs that compress and reconstruct sound.",
+   "category": "Neural network architectures",
+   "related_terms": [
+    "Audio tokens",
+    "Neural audio codec",
+    "Audio generation",
+    "Latent space",
+    "Vector quantization",
+    "Feature extraction"
+   ],
+   "common_mistakes": [
+    "Believing an autoencoder just copies its input, when the bottleneck forces it to learn useful structure",
+    "Assuming a plain autoencoder is a generative model, when generation needs variational or quantized variants",
+    "Making the latent code too large, so the network memorizes instead of learning a compact representation",
+    "Confusing the learned latent code with a meaningful, human-interpretable feature set"
+   ],
+   "scenario_contexts": [
+    "Denoising a recording by reconstructing a clean signal from a noisy input",
+    "Compressing audio through the encoder-decoder core of a neural codec",
+    "Reducing feature dimensionality before another analysis stage",
+    "Learning latent representations for later generation or clustering"
+   ]
+  },
+  {
+   "id": "f4e1322c-6639-4bb1-b268-bc76e5f67667",
+   "term": "Bandwidth extension model",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A bandwidth extension model is a machine-learning model that estimates and adds high-frequency content missing from band-limited audio, reconstructing a wider-bandwidth signal from a narrowband or low-sample-rate input. Also called audio super-resolution, it is trained on paired low- and high-bandwidth examples to predict the plausible missing spectrum, typically from narrowband toward wideband or full-band audio.",
+   "plain_english": "This model adds back high frequencies that are missing from dull or low-quality audio. It is like guessing the sharp, bright detail that got lost, to make the sound fuller.",
+   "purpose_function": "It exists to improve the perceived quality and intelligibility of band-limited audio, such as telephone-grade speech or downsampled recordings, by restoring high-frequency detail that was never captured.",
+   "practical_application": "A technician may use bandwidth-extension tools to enhance narrowband speech, upsample legacy or low-rate recordings, or improve intelligibility, while checking that added detail sounds natural and does not introduce artifacts.",
+   "category": "Audio enhancement models",
+   "related_terms": [
+    "Audio generation",
+    "Autoencoder",
+    "Sample rate",
+    "Spectrogram",
+    "Nyquist frequency",
+    "Audio restoration"
+   ],
+   "common_mistakes": [
+    "Believing the model recovers the true original highs, when it estimates plausible content that may differ from the real signal",
+    "Confusing bandwidth extension with simple upsampling or resampling, which adds no new spectral content",
+    "Expecting good results on inputs far outside the model's training bandwidth or domain",
+    "Assuming more added high end always sounds better, ignoring the risk of harsh or unnatural artifacts"
+   ],
+   "scenario_contexts": [
+    "Improving the quality of telephone-grade or narrowband speech",
+    "Restoring high-frequency detail in legacy or low-sample-rate archive recordings",
+    "Enhancing intelligibility of degraded voice communications",
+    "Upgrading low-bitrate or downsampled audio before further processing"
+   ]
+  },
+  {
+   "id": "4b615563-ec42-4bd5-9c79-4e02dc05b4d2",
+   "term": "Bass separation model",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A bass separation model is a music source separation model whose target is the bass stem, isolating the bass instrument from a mixture into a separate track while suppressing other sources such as vocals, drums, and other instruments. It is a specific case of the four-stem separation convention (vocals, drums, bass, other) established by datasets such as MUSDB18.",
+   "plain_english": "A bass separation model pulls the bass part out of a full mix so you can hear or use it alone. It works like a filter that keeps the low instrument and removes the rest.",
+   "purpose_function": "It exists to recover an isolated bass track from a finished mix, enabling remixing, transcription, practice, and analysis when the original multitrack is unavailable.",
+   "practical_application": "A technician may run a bass separation model to extract a bass stem for a remix, a transcription reference, or a practice backing track, then check the result for bleed and artifacts from other instruments.",
+   "category": "Source separation",
+   "related_terms": [
+    "Audio segmentation",
+    "Audio tagging",
+    "Spectrogram",
+    "Feature extraction",
+    "Autoencoder",
+    "Music source separation"
+   ],
+   "common_mistakes": [
+    "Expecting perfect isolation, when separated stems usually contain residual bleed and artifacts",
+    "Confusing source separation (splitting a mix into stems) with equalization that only boosts or cuts bands",
+    "Assuming a low-pass filter can replace separation, when bass and other sources overlap in frequency",
+    "Applying a model trained on one genre or mix style and expecting equal quality on very different material"
+   ],
+   "scenario_contexts": [
+    "Extracting an isolated bass stem from a stereo mix for a remix",
+    "Producing a bass-only reference to aid transcription",
+    "Creating a minus-bass or bass-only backing track for practice",
+    "Analyzing the bass line of a finished recording when no multitrack exists"
+   ]
+  },
+  {
+   "id": "c7893120-e6b2-4f2a-8b91-45b327b95143",
+   "term": "Beamforming algorithm",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A signal-processing method that combines the outputs of a sensor or microphone array by applying per-element weights (gains, delays, or phase shifts) so signals arriving from a chosen direction add constructively while signals from other directions are attenuated, forming a directional response called a beam. Classic forms include delay-and-sum and adaptive designs such as the minimum-variance distortionless-response (MVDR) beamformer, and modern audio systems often estimate the weights or masks with machine learning.",
+   "plain_english": "It is a way to make several microphones act like one that listens in a chosen direction. By lining up and mixing their signals, it boosts the sound you want and lowers noise from other directions.",
+   "purpose_function": "It gives a microphone or sensor array spatial selectivity, so a system can capture a target source clearly while rejecting interference, noise, and echoes coming from other directions.",
+   "practical_application": "A technician meets it in conferencing mic arrays, smart speakers, hearing aids, and array microphones that steer pickup toward a talker; beamforming is also used as a front end to clean speech before a recognition or separation model.",
+   "category": "Array signal processing",
+   "related_terms": [
+    "Microphone array",
+    "Blind source separation",
+    "Beam steering",
+    "Spatial filtering",
+    "Adaptive filter",
+    "Speech enhancement"
+   ],
+   "common_mistakes": [
+    "Assuming more microphones always give a tighter beam; array geometry, element spacing, and frequency together set the achievable directivity",
+    "Confusing beamforming with simple panning or mixing; it exploits the phase and time relationships across the array, not just level",
+    "Ignoring spatial aliasing, which occurs when element spacing is too large for the wavelength and creates unwanted extra beams"
+   ],
+   "scenario_contexts": [
+    "Steering a ceiling microphone array toward whoever is speaking in a conference room",
+    "Using an array front end to suppress noise before automatic speech recognition",
+    "Focusing pickup on a soloist while rejecting stage spill during a live capture"
+   ]
+  },
+  {
+   "id": "1ec3d0e5-340d-44bd-8608-c380c37bc706",
+   "term": "Biquad coefficient",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "One of the constants that define a biquad, a second-order recursive (IIR) digital filter section whose transfer function is H(z) = (b0 + b1 z^-1 + b2 z^-2) / (a0 + a1 z^-1 + a2 z^-2). The feedforward coefficients b0, b1, b2 and the feedback coefficients a1, a2, with a0 normalized to 1, set the section's poles and zeros and therefore its frequency response.",
+   "plain_english": "These are the few numbers that tell a small digital filter exactly how to change a sound. Change the numbers and you change which frequencies get boosted or cut.",
+   "purpose_function": "They encode the filter's design in a compact form a processor can run, and adjusting them tunes the filter's shape, gain, and center or cutoff frequency.",
+   "practical_application": "A technician sets or loads biquad coefficients when programming a DSP crossover, a parametric EQ band, or a speaker-processor preset, often computing them from a cookbook formula for the wanted filter type.",
+   "category": "Digital filtering",
+   "related_terms": [
+    "Cascaded biquad filter",
+    "IIR filter",
+    "Transfer function",
+    "Parametric EQ",
+    "Filter coefficient",
+    "Digital signal processor"
+   ],
+   "common_mistakes": [
+    "Forgetting to normalize by a0, so the filter's gain and response come out wrong",
+    "Assuming the same coefficients work at any sample rate; they are computed for one sample rate and must be recalculated if it changes",
+    "Mixing up the feedforward (b) and feedback (a) coefficients when entering them into a DSP"
+   ],
+   "scenario_contexts": [
+    "Entering EQ biquad coefficients into a loudspeaker DSP preset",
+    "Recomputing coefficients when a project's sample rate changes",
+    "Debugging an unstable filter caused by bad feedback coefficients"
+   ]
+  },
+  {
+   "id": "46730394-9f57-4a36-8909-615a0487f173",
+   "term": "Blind source separation",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "The recovery of a set of unknown source signals from observed mixtures of them when the mixing process itself is unknown, relying on statistical assumptions about the sources, such as mutual independence, non-Gaussianity, or sparsity, rather than prior knowledge of them. Independent component analysis (ICA) is a canonical approach, and the classic audio case is the cocktail-party problem of separating simultaneous talkers.",
+   "plain_english": "It is a way to pull apart sounds that were recorded mixed together, without knowing how they were combined. It is like picking out single voices at a noisy party using only what the microphones heard.",
+   "purpose_function": "It isolates individual sources such as speakers, instruments, or noise from mixtures so each can be analyzed, enhanced, or processed on its own, even when nothing is known about the room or the mixing.",
+   "practical_application": "A technician meets it in speech-enhancement and un-mixing tools that separate overlapping talkers or pull an instrument out of a mix, often as a step before transcription or remastering.",
+   "category": "Source separation",
+   "related_terms": [
+    "Independent component analysis",
+    "Beamforming algorithm",
+    "Cocktail party problem",
+    "Spectrogram masking",
+    "Microphone array",
+    "Speech enhancement"
+   ],
+   "common_mistakes": [
+    "Expecting perfect separation; results depend on the assumptions, the number of microphones, and how much the sources overlap",
+    "Assuming the outputs come out in a fixed order and level; blind methods leave the order and scale of the recovered sources ambiguous",
+    "Confusing it with beamforming, which uses known array geometry and direction instead of blind statistical assumptions"
+   ],
+   "scenario_contexts": [
+    "Separating two overlapping speakers captured on the same recording",
+    "Extracting a vocal or instrument stem from a stereo mix",
+    "Removing an interfering source before automatic transcription"
+   ]
+  },
+  {
+   "id": "41cc9a02-acef-47c2-b53c-3a8abb5d13f5",
+   "term": "Boomy",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A subjective tonal descriptor for sound with excessive or poorly controlled low-frequency energy, typically an emphasis and resonance in the low bass and lower midrange (roughly the 100-300 Hz region) that makes the sound heavy, thick, and lacking definition. It commonly results from room modes, microphone proximity effect, or over-boosted low-end EQ.",
+   "plain_english": "Boomy sound has too much heavy, thumpy bass that covers up detail. It is the overpowering low end you hear when a room or a mix has far too much energy down low.",
+   "purpose_function": "As a listening term it lets engineers name a specific low-frequency problem, so they can locate its cause and fix it with EQ, placement, or room treatment.",
+   "practical_application": "A technician uses the word when critical listening reveals a bass buildup, then cuts around 100-300 Hz, moves a mic or loudspeaker, or treats room modes to tighten the low end.",
+   "category": "Tonal description",
+   "related_terms": [
+    "Muddy",
+    "Proximity effect",
+    "Room modes",
+    "Low frequency",
+    "Equalization",
+    "Parametric EQ"
+   ],
+   "common_mistakes": [
+    "Assuming boomy just means too much overall bass; it is usually a narrower buildup in the low bass and low mids rather than the deepest sub range",
+    "Trying to fix it only with EQ when the real cause is a room mode or poor speaker placement",
+    "Confusing boomy with muddy; muddy usually points a little higher, in the low mids where clarity is lost"
+   ],
+   "scenario_contexts": [
+    "Describing a vocal that sounds heavy because of close-mic proximity effect",
+    "Diagnosing a room where bass notes ring and overpower the mix",
+    "Noting a kick or bass guitar with too much low-mid buildup during a mix review"
+   ]
+  },
+  {
+   "id": "b1ec672f-9ed2-4b2c-8946-7b6fb3b22734",
+   "term": "Cascaded biquad filter",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A higher-order digital IIR filter built by connecting several second-order biquad sections in series (cascade), so the overall transfer function is the product of the individual section transfer functions. This second-order-section structure is preferred over a single high-order direct-form filter because it is far less sensitive to coefficient quantization and rounding, giving better numerical stability.",
+   "plain_english": "It is a big filter made by chaining several small two-part filters one after another. Splitting the job into small stages keeps the math stable and avoids errors a single large filter would cause.",
+   "purpose_function": "It realizes sharp or complex frequency responses reliably in finite-precision hardware, because breaking a high-order filter into stable second-order stages avoids the numerical problems of one large filter.",
+   "practical_application": "A technician encounters it inside DSP EQs, crossovers, and speaker processors, where multi-band or high-order responses are built as a chain of biquad stages, each with its own coefficients.",
+   "category": "Digital filtering",
+   "related_terms": [
+    "Biquad coefficient",
+    "IIR filter",
+    "Second-order section",
+    "Parametric EQ",
+    "Crossover",
+    "Transfer function"
+   ],
+   "common_mistakes": [
+    "Assuming the order of the sections does not matter; the scaling and ordering of stages affect headroom and noise in fixed-point systems",
+    "Forgetting that each stage needs its own correctly computed coefficients",
+    "Thinking more cascaded stages always sound better; each one adds phase shift and potential noise"
+   ],
+   "scenario_contexts": [
+    "Building a steep crossover from several biquad stages in a loudspeaker DSP",
+    "Implementing a multi-band parametric EQ as a chain of biquads",
+    "Debugging noise traced to poor stage scaling in a fixed-point filter"
+   ]
+  },
+  {
+   "id": "e0d08562-208e-4223-8216-c8271040475a",
+   "term": "Cepstral analysis",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A signal-analysis technique based on the cepstrum, obtained by taking the inverse Fourier transform of the logarithm of a signal's magnitude spectrum. By turning the multiplicative relationship between a source and a filter into an additive one (homomorphic deconvolution), it separates fine spectral detail from the slowly varying spectral envelope, and it underlies pitch estimation, formant analysis, and features such as MFCCs.",
+   "plain_english": "It studies the shape of a sound's spectrum to split it into a pitch part and an overall tone-color part. This makes it easier to find a voice's pitch or the shape of its vowels.",
+   "purpose_function": "It separates a source signal from the filtering it passed through, so systems can estimate pitch, model a vocal tract or instrument body, and build compact features for recognition.",
+   "practical_application": "A technician meets it in pitch detectors, speech and speaker analysis, and the MFCC front ends of recognition and music-analysis systems.",
+   "category": "Spectral analysis",
+   "related_terms": [
+    "Cepstrum",
+    "Mel-frequency cepstral coefficients",
+    "Spectral envelope",
+    "Fundamental frequency",
+    "Homomorphic filtering",
+    "Fourier transform"
+   ],
+   "common_mistakes": [
+    "Confusing the quefrency axis of the cepstrum with ordinary time or frequency",
+    "Forgetting to take the logarithm, which is exactly what makes the source and filter separable",
+    "Assuming the cepstrum always gives a reliable pitch; noisy or breathy signals can hide the pitch peak"
+   ],
+   "scenario_contexts": [
+    "Estimating the fundamental frequency of a voice for pitch tracking",
+    "Extracting MFCC features to feed a speech or music classifier",
+    "Separating vocal-tract shape from the glottal source in speech analysis"
+   ]
+  },
+  {
+   "id": "515bb1fd-3313-42af-8fad-e5d7d6fa62b5",
+   "term": "Checkpoint",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A saved snapshot of a machine-learning model's state taken during or after training, storing the learned parameters (weights and biases) and often the optimizer state, training step, and metadata needed to resume training or restore the model exactly. Checkpoints let long training runs be paused and continued, guard against crashes, and preserve specific versions for evaluation or deployment.",
+   "plain_english": "It is a saved copy of a model's progress while it learns. Like saving your place in a long game, it lets you stop and continue later, or go back to a good earlier version.",
+   "purpose_function": "It lets long, costly training runs survive interruptions and be resumed, and it keeps specific versions of a model available for testing, comparison, or release.",
+   "practical_application": "A technician working with audio models loads a checkpoint to run or fine-tune a pretrained system, and saves checkpoints periodically so a long training job can recover from a crash.",
+   "category": "Model training",
+   "related_terms": [
+    "Model weights",
+    "Fine-tuning",
+    "Pretrained model",
+    "Training",
+    "Inference",
+    "Epoch"
+   ],
+   "common_mistakes": [
+    "Assuming a checkpoint contains the code or architecture; it usually stores only parameters and state, so the matching model definition is still needed",
+    "Saving only the final model and losing the ability to roll back to an earlier, better checkpoint",
+    "Forgetting that the optimizer state must also be saved to resume training seamlessly"
+   ],
+   "scenario_contexts": [
+    "Loading a pretrained checkpoint to run a speech or music model",
+    "Resuming a long training run after a hardware failure",
+    "Keeping periodic checkpoints to pick the best-performing version later"
+   ]
+  },
+  {
+   "id": "3b464589-d8ca-4673-8d7f-8c3a96946589",
+   "term": "Codebook",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "In vector quantization, a finite set of representative vectors, called codewords or code vectors, used to approximate a signal: each input vector is replaced by its nearest codeword and stored or transmitted as that codeword's index. The same idea underlies neural discrete representations such as VQ-VAE, where a learned codebook maps encoder outputs to a set of discrete tokens.",
+   "plain_english": "It is a fixed list of example patterns, each with a number. Instead of sending a full signal, a system sends the number of the closest pattern, like picking the nearest color from a paint chart.",
+   "purpose_function": "It compresses or discretizes data by representing many possible inputs with a small set of prototypes, cutting size and turning continuous signals into compact indices or tokens.",
+   "practical_application": "A technician meets codebooks in speech and audio codecs and in neural audio codecs and tokenizers, where audio is encoded as indices into a learned codebook for storage, transmission, or use by generative models.",
+   "category": "Vector quantization",
+   "related_terms": [
+    "Vector quantization",
+    "VQ-VAE",
+    "Neural audio codec",
+    "Quantization",
+    "Tokenization",
+    "Codec"
+   ],
+   "common_mistakes": [
+    "Assuming a bigger codebook is always better; too many entries raise cost and can go unused, a failure known as codebook collapse in learned models",
+    "Confusing the codebook index with the codeword itself; the index is only a pointer to the stored vector",
+    "Thinking codebook quantization is lossless; replacing an input with its nearest codeword always introduces some error"
+   ],
+   "scenario_contexts": [
+    "Encoding speech with a codebook in a low-bitrate codec",
+    "Tokenizing audio into codebook indices for a generative model",
+    "Diagnosing codebook collapse while training a VQ-VAE on audio"
+   ]
+  },
+  {
+   "id": "094dd776-20ea-4631-b438-f2d372c8cb74",
+   "term": "Conditioning",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "In machine learning, the practice of giving a model additional input information (a conditioning signal) that constrains or guides its output, so it learns or samples from a conditional distribution p(x | c) rather than an unconditional one. The conditioning signal can be a class label, text, speaker identity, or acoustic features, and it is what lets a generative model produce a specific, controllable result.",
+   "plain_english": "It means giving a model an extra hint that tells it what to make. For a voice model the hint might be the words to say or whose voice to use, so the output matches the request.",
+   "purpose_function": "It makes model outputs controllable and specific, letting a single model produce different results on demand by changing the side information it is given.",
+   "practical_application": "A technician meets conditioning in text-to-speech and audio generators, where the model is conditioned on text, a target speaker, or a mel-spectrogram to produce the wanted voice or sound.",
+   "category": "Generative modeling",
+   "related_terms": [
+    "Conditional generation",
+    "Generative model",
+    "Text-to-speech",
+    "Latent variable",
+    "Embedding",
+    "Mel-spectrogram"
+   ],
+   "common_mistakes": [
+    "Confusing this sense with numerical conditioning (the condition number) or with electronic signal conditioning",
+    "Assuming the model must obey the conditioning exactly; weak conditioning can be partly ignored during sampling",
+    "Supplying conditioning at training time but forgetting to provide it at inference, so the output comes out uncontrolled"
+   ],
+   "scenario_contexts": [
+    "Conditioning a text-to-speech model on the text to be spoken",
+    "Conditioning a voice model on a target speaker's identity",
+    "Guiding an audio generator with a mel-spectrogram or style embedding"
+   ]
+  },
+  {
+   "id": "80e4d24c-59a3-434a-af7e-8b1315f99847",
+   "term": "Convolution engine",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A convolution engine is a software or hardware component that computes the convolution of an input signal with a fixed kernel or impulse response, most often implemented as fast, FFT-based block convolution using overlap-add or overlap-save. In audio it is the processing core of convolution reverb and cabinet or speaker emulation, and the same operation underlies the filtering performed inside convolutional neural network layers.",
+   "plain_english": "It is the part of a system that blends a sound with a recorded fingerprint of a room or filter. Feed in a dry sound and it plays back as if it happened in that space.",
+   "purpose_function": "It exists to apply a filter or an acoustic space to a signal efficiently, letting long impulse responses run in real time by working in the frequency domain instead of one sample at a time.",
+   "practical_application": "A technician loads an impulse response of a hall, plate, or guitar cabinet into a convolution reverb plugin, and the convolution engine renders the dry track as if it were played in that space or through that gear.",
+   "category": "Signal Processing",
+   "related_terms": [
+    "Impulse response",
+    "Convolution reverb",
+    "Convolutional neural network (CNN)",
+    "Fast Fourier transform (FFT)",
+    "Finite impulse response (FIR) filter"
+   ],
+   "common_mistakes": [
+    "Assuming a longer impulse response always sounds better, when it mainly increases CPU load and latency without adding realism.",
+    "Confusing the convolution engine, a fixed DSP process, with a convolutional neural network, which learns its kernels from data.",
+    "Forgetting that an impulse response captures the gear or room it was recorded through, so a bright or noisy capture is baked into every use."
+   ],
+   "scenario_contexts": [
+    "Applying a sampled concert-hall impulse response to a close-miked vocal in a mix.",
+    "Emulating a specific guitar speaker cabinet during a direct-input recording session.",
+    "Running real-time convolution reverb on a live console, where latency and CPU limits matter."
+   ]
+  },
+  {
+   "id": "2add02e9-6195-4762-a032-7593f3e8fb32",
+   "term": "Convolutional neural network (CNN)",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "A convolutional neural network is a deep neural network that applies learnable convolutional filters across local regions of its input, using weight sharing and spatial pooling to build translation-tolerant, hierarchical feature representations. It is designed for grid-like data such as images and time-frequency audio representations like spectrograms.",
+   "plain_english": "It slides small pattern finders across a picture or a sound image to pick out useful features. Early layers catch simple edges, and later ones join them into bigger shapes.",
+   "purpose_function": "It exists to learn features directly from grid data while reusing the same filters everywhere, which cuts the number of parameters and lets the model recognize patterns wherever they appear.",
+   "practical_application": "In audio work a CNN is trained on spectrogram images to tag instruments, detect events, or classify sounds, and it forms the front end of many source-separation and music-tagging systems.",
+   "category": "Neural Networks",
+   "related_terms": [
+    "Deep learning",
+    "Convolution engine",
+    "Spectrogram",
+    "Feature map",
+    "Pooling",
+    "Recurrent neural network (RNN)"
+   ],
+   "common_mistakes": [
+    "Thinking a CNN reads sound as a raw waveform, when it usually works on a spectrogram or another fixed input representation.",
+    "Assuming more layers always help; too many can overfit small audio datasets and hurt real-world accuracy.",
+    "Confusing fixed DSP convolution with a CNN, whose filter values are learned during training."
+   ],
+   "scenario_contexts": [
+    "Training a model to classify drums, vocals, and guitar from spectrogram slices.",
+    "Detecting a specific sound event, such as a snare hit, in a long recording.",
+    "Building the encoder stage of a neural source-separation tool."
+   ]
+  },
+  {
+   "id": "53974ab8-8337-4096-a91b-62682523cfdd",
+   "term": "Cubic interpolation",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "Cubic interpolation estimates values between known samples by fitting a third-degree polynomial to neighboring points, giving a smoother reconstruction than linear interpolation. In audio it is commonly used for sample-rate conversion, fractional-delay lines, and wavetable or pitch-shift read positions.",
+   "plain_english": "It guesses the values that sit between known samples by drawing a smooth curve through nearby points. The curve bends more naturally than a straight line, so the result sounds cleaner.",
+   "purpose_function": "It exists to rebuild a signal at points that fall between stored samples with less error and fewer artifacts than simpler methods, which matters when changing sample rate or reading a wavetable at a moving position.",
+   "practical_application": "A technician meets cubic interpolation inside resamplers, pitch shifters, and time-stretch tools, where it estimates sample values at fractional positions to avoid the harshness of linear interpolation.",
+   "category": "Signal Processing",
+   "related_terms": [
+    "Interpolation",
+    "Linear interpolation",
+    "Sample rate conversion",
+    "Resampling",
+    "Wavetable synthesis"
+   ],
+   "common_mistakes": [
+    "Assuming cubic interpolation removes aliasing; it reduces some artifacts but does not replace a proper anti-aliasing filter.",
+    "Thinking more interpolation points always sound better, ignoring the extra CPU cost and possible ringing.",
+    "Confusing cubic interpolation with cubic spline interpolation, which enforces smoothness across a whole set of points rather than a local fit."
+   ],
+   "scenario_contexts": [
+    "Converting a 44.1 kHz file to 48 kHz for video post.",
+    "Reading a wavetable oscillator at a pitch that lands between stored samples.",
+    "Implementing a fractional delay line for a modulation or chorus effect."
+   ]
+  },
+  {
+   "id": "a5f4fe54-9a97-4e96-bb2b-e6f1af00885d",
+   "term": "Dataset",
+   "topic": "AI/ML Foundations for Audio",
+   "difficulty": null,
+   "definition": "In machine learning, a dataset is a structured collection of examples, usually paired inputs and target labels, used to train, validate, and test a model. It is typically split into separate training, validation, and test subsets so that performance can be measured on data the model has not seen.",
+   "plain_english": "It is the collection of examples a model learns from, like a big pile of labeled sound clips. Part of it is kept aside to fairly check how well the model does.",
+   "purpose_function": "It exists to give a model the examples it needs to learn patterns and to provide held-out data for honestly measuring how well it generalizes to new inputs.",
+   "practical_application": "An engineer building an audio classifier gathers or licenses a labeled dataset of sounds, splits it into training and test sets, and uses it to train and score the model.",
+   "category": "ML Fundamentals",
+   "related_terms": [
+    "Deep learning",
+    "Training set",
+    "Validation set",
+    "Test set",
+    "Overfitting",
+    "Label"
+   ],
+   "common_mistakes": [
+    "Letting the same recording appear in both the training and test sets, which inflates accuracy and hides poor generalization.",
+    "Assuming a bigger dataset is always better, while ignoring label quality, balance, and bias.",
+    "Testing on the training data and reporting that score as real-world performance."
+   ],
+   "scenario_contexts": [
+    "Assembling labeled instrument clips to train a music tagger.",
+    "Splitting recordings into train, validation, and test sets before training.",
+    "Auditing a dataset for class imbalance before a project."
+   ]
+  }
+ ]
+}

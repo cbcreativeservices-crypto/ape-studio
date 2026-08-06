@@ -1,0 +1,159 @@
+{
+ "batch": 288,
+ "topic": "Sample Editing & Manipulation",
+ "authored": [
+  {
+   "id": "f4e0c346-0ed1-4e0c-a44c-95b794cb1317",
+   "term": "Grain density",
+   "fields": {
+    "definition": "In granular synthesis, grain density is the number of sound grains generated per unit of time, usually expressed in grains per second. Higher density packs more overlapping grains together for thick, continuous textures, while lower density produces sparse, pointillistic sounds.",
+    "plain_english": "Granular tools chop a sound into tiny slices called grains and play lots of them. Grain density is how many grains you hear each second. More grains make a thick, smooth wash; fewer grains sound like scattered dots.",
+    "purpose_function": "It controls how sparse or thick a granular texture is, so the sound can range from a few separate points to a dense, continuous cloud.",
+    "practical_application": "A producer raises grain density to turn a short sample into a lush ambient pad, or lowers it for a stuttering, rhythmic effect.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain duration", "Grain overlap", "Grain envelope", "Grain position", "Granular synthesis"],
+    "common_mistakes": ["Confusing density with grain duration — density is how many grains play per second, not how long each grain lasts", "Pushing density very high without watching levels, which lets grains stack up and clip the output"],
+    "scenario_contexts": ["Building an evolving ambient pad from a one-shot vocal sample", "Creating a granular drone for a film score", "Designing a sparse, pointillistic percussion texture"]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Ableton Live Reference Manual (Granulator II / Grain Delay)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ea4d42fa-87f7-4328-8059-2fe918031e19",
+   "term": "Grain duration",
+   "fields": {
+    "definition": "Grain duration is the length of each individual grain in granular synthesis, typically ranging from about 1 to 100 milliseconds. Very short grains blur the source into buzzy or pitched textures, while longer grains preserve more of the original sample's recognizable character.",
+    "plain_english": "A grain is a tiny slice of a sound. Grain duration is how long each slice lasts, often just a few thousandths of a second. Very short grains sound rough and buzzy; longer grains sound more like the real sample.",
+    "purpose_function": "It shapes the timbre and clarity of a granular sound, trading recognizable source material for smoother or grittier textures.",
+    "practical_application": "An engineer shortens grain duration to smear a sample into a pad, or lengthens it to keep words or notes recognizable.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain density", "Grain envelope", "Grain overlap", "Grain position", "Granular synthesis"],
+    "common_mistakes": ["Setting grains extremely short and still expecting the source to stay recognizable", "Confusing grain duration (the length of one grain) with grain density (how many grains play per second)"],
+    "scenario_contexts": ["Turning a spoken-word clip into a smooth textured drone", "Dialing in a metallic, buzzy grain sound for sound design", "Keeping a melody audible while time-stretching with grains"]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Curtis Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b72dea3e-dbcd-4fb0-a82b-a9041dbf013f",
+   "term": "Grain envelope",
+   "fields": {
+    "definition": "A grain envelope is the amplitude shape, or window, applied to each grain so it fades in and out smoothly. It prevents clicks at the grain's edges and strongly affects the smoothness and timbre of the texture; common shapes include Gaussian, Hann, and trapezoidal windows.",
+    "plain_english": "Each grain gets a volume shape that fades it in and out. This is the grain envelope. Without it, the sudden start and stop of every grain would make clicks and pops.",
+    "purpose_function": "It smooths the start and end of every grain to avoid clicks, and its shape controls how soft or sharp the texture sounds.",
+    "practical_application": "A sound designer picks a smooth bell-shaped envelope for pads, or a sharper one for percussive, gritty grains.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain duration", "Grain density", "Grain overlap", "Envelope", "Granular synthesis"],
+    "common_mistakes": ["Assuming grains can play with no envelope — without a fade, the hard edges click", "Confusing the per-grain envelope with the overall amplitude envelope of the whole sound"],
+    "scenario_contexts": ["Removing clicks from a granular pad by choosing a smoother window", "Shaping percussive grains with a sharper attack for rhythmic textures", "Comparing Gaussian and Hann windows to change how smooth a cloud sounds"]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Curtis Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "55ccad41-a136-48b0-9baa-52f75f0d69f7",
+   "term": "Grain freeze",
+   "fields": {
+    "definition": "Grain freeze is a granular technique that holds playback at a fixed point in the source sample and keeps generating grains from that spot, sustaining a single moment of the sound indefinitely. This turns a brief slice of audio into a steady drone or pad.",
+    "plain_english": "Grain freeze locks onto one spot in a sound and keeps making grains from that same spot. This stretches a single moment out, like holding one frame of a video. A short sound becomes a long, steady pad.",
+    "purpose_function": "It lets a fleeting moment of a sample be held as a continuous tone, which is useful for pads, drones, and ambient beds.",
+    "practical_application": "A producer freezes on a sustained vowel in a vocal to create an evolving background pad under a track.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain position", "Grain density", "Grain jitter", "Grain duration", "Granular synthesis"],
+    "common_mistakes": ["Expecting a frozen grain cloud to sound perfectly static — a little movement or jitter is usually needed to avoid a robotic, looping tone", "Freezing on a silent or very quiet part of the sample and getting almost no output"],
+    "scenario_contexts": ["Sustaining a single chord from a sample into an ambient drone", "Holding a reverb tail to build an evolving pad", "Freezing one moment of a field recording for a film soundscape"]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Ableton Live Reference Manual (Granulator II)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1aab5be7-4717-4413-8ba1-264d813d3901",
+   "term": "Grain jitter",
+   "fields": {
+    "definition": "Grain jitter is deliberate random variation applied to grain parameters such as start position, timing, pitch, or pan. Small amounts break up mechanical repetition and add natural movement, while larger amounts create chaotic, noisy textures.",
+    "plain_english": "Jitter adds a little randomness to the grains. Instead of every grain being exactly the same, each one shifts slightly. A small amount makes the sound feel alive; a lot makes it messy and noisy.",
+    "purpose_function": "It adds controlled randomness so grains do not repeat identically, making textures sound more natural and less robotic.",
+    "practical_application": "An engineer adds a touch of position and pitch jitter to a frozen grain cloud so it stops sounding like a static loop.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain position", "Grain pitch", "Grain pan", "Grain freeze", "Granular synthesis"],
+    "common_mistakes": ["Adding too much jitter and turning a musical texture into noise", "Assuming jitter changes pitch only — it can also randomize position, timing, and pan"],
+    "scenario_contexts": ["Humanizing a static granular pad so it feels less mechanical", "Spreading grains randomly for a wide stereo cloud", "Creating a chaotic, evolving sound-design texture"]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Curtis Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "12ecafb8-4f40-42d5-b666-59c5dfcd6be8",
+   "term": "Grain overlap",
+   "fields": {
+    "definition": "Grain overlap is the extent to which successive grains coincide in time, set by the relationship between grain duration and the spacing between grain onsets. Higher overlap fills the gaps between grains for smoother, denser textures, while low or no overlap leaves audible gaps or rhythmic separation.",
+    "plain_english": "Grains can start before the last one has finished, so they overlap. Grain overlap is how much they pile on top of each other. Lots of overlap makes a smooth, gapless sound; little overlap leaves gaps you can hear.",
+    "purpose_function": "It controls whether grains blend into a continuous sound or stay separate, shaping the smoothness and density of the texture.",
+    "practical_application": "A producer increases overlap to remove gaps and smooth a time-stretched sample into a seamless texture.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain density", "Grain duration", "Grain envelope", "Grain position", "Granular synthesis"],
+    "common_mistakes": ["Confusing overlap with density — overlap is how much grains share time, density is how many play per second", "Using very high overlap without watching levels, which lets grains build up and clip"],
+    "scenario_contexts": ["Smoothing a time-stretch so no gaps are heard", "Dialing back overlap for a stuttering, rhythmic effect", "Building a dense, continuous cloud from a single sample"]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Curtis Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1ea520e5-9a3c-484b-bc05-dc63181a8a69",
+   "term": "Grain pan",
+   "fields": {
+    "definition": "Grain pan is the stereo placement assigned to individual grains, often spread or randomized across the stereo field. Distributing grains to different pan positions widens the sound into an enveloping stereo cloud rather than a single point.",
+    "plain_english": "Grain pan sets where each grain sits from left to right. When grains are spread out or placed randomly, the sound feels wide and surrounds you. When they all sit in the center, it sounds narrow.",
+    "purpose_function": "It spreads grains across the stereo image to create width and a sense of space in a granular texture.",
+    "practical_application": "A sound designer randomizes grain pan to turn a mono sample into a wide, immersive stereo pad.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain jitter", "Grain density", "Grain position", "Grain pitch", "Stereo width"],
+    "common_mistakes": ["Spreading grains very wide without checking mono compatibility, which can cause phase problems when the mix is summed to mono", "Assuming heavy random panning always sounds good — it can make the stereo image feel unstable"],
+    "scenario_contexts": ["Widening a mono vocal into a stereo granular cloud", "Creating an immersive ambient bed for a mix", "Moving grains dynamically across the field for motion in a patch"]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Native Instruments Reaktor / Form documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "226695e2-47dc-4f46-9ebf-d3492409354b",
+   "term": "Grain pitch",
+   "fields": {
+    "definition": "Grain pitch is the playback pitch of individual grains, set independently of how the playhead moves through the sample. Adjusting it transposes the source without changing its length, and randomizing it across grains produces shimmering or chord-like clouds.",
+    "plain_english": "Grain pitch is how high or low each grain plays. You can raise or lower it without making the sample faster or slower. Spreading the pitch across many grains can create a shimmering, chord-like sound.",
+    "purpose_function": "It lets grains be transposed separately from position, so pitch can change without altering timing or length.",
+    "practical_application": "A producer shifts grain pitch up an octave for a sparkling texture, or randomizes it to build a chord from a single note.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain position", "Grain jitter", "Grain density", "Pitch shifting", "Granular synthesis"],
+    "common_mistakes": ["Confusing grain pitch with grain position — pitch is how high grains sound, position is where in the sample they come from", "Expecting a pitch change to also change length, as it would with simple tape-style speed changes"],
+    "scenario_contexts": ["Transposing a sample without the usual time-stretch artifacts", "Building shimmering octave-up textures", "Randomizing pitch to form chord clouds from one note"]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Curtis Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b7b32a06-3ccb-4ba1-919f-21b7dcbf637c",
+   "term": "Grain position",
+   "fields": {
+    "definition": "Grain position is the location within the source sample from which grains are read, effectively the playhead point for granular playback. Moving it scans through the sample, while holding it fixed sustains one moment as a texture.",
+    "plain_english": "Grain position is the spot in the sample where grains are taken from. Move it and you scan through the sound; hold it still and you stay on one moment. It is like choosing where to set the needle on a record.",
+    "purpose_function": "It selects and scans the point in the sample used for grains, controlling which part of the source is heard and how it evolves.",
+    "practical_application": "An engineer slowly sweeps grain position across a sample to morph smoothly from one sound into another.",
+    "category": "Granular Synthesis",
+    "related_terms": ["Grain freeze", "Grain jitter", "Grain density", "Grain pitch", "Granular synthesis"],
+    "common_mistakes": ["Confusing grain position with grain pitch — position is where in the sample, pitch is how high it plays", "Sweeping position too quickly and losing the smooth, sustained texture"],
+    "scenario_contexts": ["Scanning through a vocal sample to morph between vowels", "Holding position to freeze a moment into a pad", "Automating slow position sweeps for evolving soundscapes"]
+   },
+   "sources": ["Curtis Roads, Microsound (MIT Press)", "Ableton Live Reference Manual (Granulator II)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,329 @@
+{
+  "batch": 1,
+  "topic": "Instrument Recording — Strings & Guitar",
+  "authored": [
+    {
+      "id": "1b62ae02-6831-4aaa-8221-7a2aefa3dbde",
+      "term": "Acoustic spill",
+      "fields": {
+        "definition": "The unwanted capture by a microphone of sound from sources other than the one it is intended to record; also called bleed or leakage. It occurs whenever multiple sources are recorded together in one acoustic space and off-axis sound reaches each mic.",
+        "plain_english": "When a mic set up for one instrument also picks up the sound of others playing nearby. Like trying to record just the singer, but the drums leak into the vocal mic too.",
+        "purpose_function": "Spill is an unavoidable consequence of recording several sources acoustically at once; recognizing and managing it is what preserves separation between tracks and prevents phase and comb-filtering artifacts when the mics are combined.",
+        "practical_application": "On a live-tracking session a technician minimizes spill with close miking, directional (cardioid/figure-8) patterns, gobos and screens, and greater mic spacing, and checks phase whenever two mics hear the same source.",
+        "category": "Recording technique",
+        "related_terms": [
+          "Close miking",
+          "Isolation",
+          "Comb filtering",
+          "Phase",
+          "Gobo",
+          "Polar pattern"
+        ],
+        "common_mistakes": [
+          "Assuming spill is always bad; a controlled amount of natural bleed can help glue a live ensemble recording together.",
+          "Flipping polarity to 'fix' a spill/phase problem by guesswork instead of repositioning the mic and listening.",
+          "Gating hard to remove bleed and cutting off the intended source's natural decay and tails."
+        ],
+        "scenario_contexts": [
+          "Recording a live band in one room where the acoustic guitar mic also captures the drum kit.",
+          "Tracking a string quartet with spot mics that each pick up the neighboring players.",
+          "Overdubbing through open headphones where the click track bleeds into the vocal mic."
+        ]
+      },
+      "sources": [
+        "Ballou, Handbook for Sound Engineers (Focal Press)",
+        "Huber & Runstein, Modern Recording Techniques (Focal Press)",
+        "Sound on Sound, 'Working With Mic Bleed'"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "a18f95f9-102e-4207-b09f-f7826e0058d4",
+      "term": "Alternate tuning",
+      "fields": {
+        "definition": "Any tuning of a guitar or related fretted string instrument to a set of pitches other than the standard EADGBE, including drop tunings (e.g., Drop D), open tunings (e.g., Open G, Open D) and modal tunings such as DADGAD. Retuning changes the open-string pitches, available chord voicings and the instrument's resonances.",
+        "plain_english": "Tuning your strings to different notes than the usual standard tuning to get new chord shapes, droning open strings, or a deeper, richer ring. For example, dropping the low E to D for a heavier sound.",
+        "purpose_function": "It exists to give players open-string drones, easier fingerings for particular keys or chords, extended low range, and altered resonance that standard tuning cannot provide.",
+        "practical_application": "A technician tracking a guitarist in an alternate tuning notes the tuning on the take sheet, expects changed string tension and intonation, and re-checks tuning and mic placement as the instrument's low end and sustain shift.",
+        "category": "Tuning",
+        "related_terms": [
+          "Standard tuning",
+          "Drop D",
+          "Open tuning",
+          "Capo",
+          "Intonation",
+          "String gauge"
+        ],
+        "common_mistakes": [
+          "Assuming intonation stays perfect after retuning; raised or lowered string tension shifts intonation and often needs re-checking.",
+          "Detuning strings far below pitch, leaving them slack and prone to fret buzz and tuning instability.",
+          "Tuning strings well above standard pitch, over-stressing the string and neck and risking breakage."
+        ],
+        "scenario_contexts": [
+          "A singer-songwriter records fingerstyle pieces in DADGAD for its droning, modal ring.",
+          "A rock guitarist uses Drop D for heavier riffs and one-finger power chords.",
+          "A slide guitarist tunes to Open G for open-chord slide work."
+        ]
+      },
+      "sources": [
+        "Huber & Runstein, Modern Recording Techniques (Focal Press)",
+        "Sound on Sound, recording acoustic/electric guitar technique articles"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "f543625b-a52e-4056-a7fa-a703df484ee2",
+      "term": "Arco sound",
+      "fields": {
+        "definition": "The tone produced when a string instrument is played with the bow (arco, Italian for 'bow'), as opposed to plucked (pizzicato); it is a sustained, continuous tone arising from the bow's stick-slip (Helmholtz) excitation of the string. In a score, 'arco' instructs the player to resume bowing after a pizzicato passage.",
+        "plain_english": "The smooth, singing sound a violin or cello makes when played with the bow rather than plucked with the fingers. 'Arco' just means 'with the bow.'",
+        "purpose_function": "Bowing lets a string sustain a note and shape its dynamics and vibrato continuously, giving strings their long, expressive lines; in notation the arco marking exists to cancel a preceding pizzicato instruction.",
+        "practical_application": "When recording arco strings a technician places mics to capture bow detail and body resonance without harshness, expecting long sustained tones and a wider dynamic range than the short transients of pizzicato.",
+        "category": "Articulation",
+        "related_terms": [
+          "Pizzicato",
+          "Bowing",
+          "Sustain",
+          "Vibrato",
+          "String ensemble",
+          "Spot mic"
+        ],
+        "common_mistakes": [
+          "Confusing arco with a specific dynamic or vibrato; arco only specifies that the bow is used.",
+          "Close-miking arco strings too tightly, over-emphasizing bow scratch and losing the body and room bloom.",
+          "Forgetting that 'arco' in a part cancels a previous 'pizz.' instruction, so the passage is bowed again."
+        ],
+        "scenario_contexts": [
+          "Tracking a cello section playing sustained legato lines with the bow.",
+          "A part marked 'pizz.' then 'arco' where the player switches back to bowing.",
+          "Recording a solo violin's long bowed melody for a film cue."
+        ]
+      },
+      "sources": [
+        "Adler, The Study of Orchestration (W. W. Norton)",
+        "Piston, Orchestration (W. W. Norton)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "27d06236-5026-479b-97ef-b69414d66cac",
+      "term": "Banjo bridge",
+      "fields": {
+        "definition": "The small, floating (unglued) wooden bridge that rests on the banjo's tensioned head and supports the strings, coupling their vibration into the head where it is radiated as sound. Its mass and stiffness, together with the head, shape the timbre, including formant-like features in the upper midrange.",
+        "plain_english": "A little wooden piece that sits loose on the banjo's drum-like head and holds the strings up, passing their vibration into the head so you hear it. It isn't glued down; string tension holds it in place.",
+        "purpose_function": "It transfers the strings' energy into the head so the membrane can radiate it as sound, and its placement sets the vibrating string length that determines intonation.",
+        "practical_application": "A setup tech positions and holds the floating bridge at the correct spot for intonation, and when miking a banjo aims near the bridge/head area to capture its bright attack and punch.",
+        "category": "Instrument anatomy",
+        "related_terms": [
+          "Banjo head",
+          "Banjo bridge position",
+          "Banjo head tension",
+          "Floating bridge",
+          "Intonation",
+          "Tone ring"
+        ],
+        "common_mistakes": [
+          "Thinking the banjo bridge is glued or fixed; it is held only by string tension and can shift or fall when strings go slack.",
+          "Slackening all strings at once during a string change and losing the bridge's set position and intonation.",
+          "Fitting an overly heavy or mismatched bridge and dulling the banjo's characteristic bright tone."
+        ],
+        "scenario_contexts": [
+          "Setting up a banjo and locating the bridge for correct intonation before a session.",
+          "Changing strings and re-seating the floating bridge to its reference marks.",
+          "Close-miking near the bridge and head to capture the banjo's attack."
+        ]
+      },
+      "sources": [
+        "Politzer et al., 'Acoustics of the banjo: measurements and sound synthesis', Acta Acustica (2021)",
+        "Rossing (ed.), The Science of String Instruments (Springer) — banjo chapter",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "969624e6-676c-4c5c-94d6-2dde17dd74a3",
+      "term": "Banjo bridge position",
+      "fields": {
+        "definition": "The precise placement of the floating bridge on the banjo head, which sets the vibrating string length and therefore the intonation; it is located so the nut-to-bridge distance equals the nut-to-12th-fret distance doubled, with slight compensation for string action and gauge. Small shifts make fretted notes play sharp or flat relative to the open strings.",
+        "plain_english": "Where you place the loose bridge on the banjo head. Put it in the right spot and notes up the neck play in tune; move it and the instrument goes sharp or flat.",
+        "purpose_function": "Correct bridge position exists to make fretted notes match their intended pitches across the whole neck; because the bridge is not fixed, its position is the banjo's primary intonation adjustment.",
+        "practical_application": "A tech sets intonation by comparing the 12th-fret harmonic to the fretted 12th-fret note and sliding the bridge toward or away from the neck until they match, often lightly marking the position for future string changes.",
+        "category": "Setup & intonation",
+        "related_terms": [
+          "Banjo bridge",
+          "Intonation",
+          "Scale length",
+          "12th-fret harmonic",
+          "Compensation",
+          "Banjo head"
+        ],
+        "common_mistakes": [
+          "Measuring only to the near edge of the bridge instead of the actual string contact point, leaving intonation off.",
+          "Setting the bridge by eye and skipping the 12th-fret harmonic versus fretted-note check.",
+          "Ignoring compensation for heavier strings or high action, so fretted notes run sharp."
+        ],
+        "scenario_contexts": [
+          "Intonating a banjo before recording so fretted chords stay in tune up the neck.",
+          "Re-seating the bridge after a full string change using the 12th-fret check.",
+          "Correcting a banjo that is in tune open but sharp when fretted."
+        ]
+      },
+      "sources": [
+        "Erlewine, Guitar Player Repair Guide (Backbeat Books) — intonation/setup",
+        "Politzer et al., 'Acoustics of the banjo: measurements and sound synthesis', Acta Acustica (2021)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "ed40ed1a-a9c9-4c4a-834e-90c437dba0eb",
+      "term": "Banjo damping",
+      "fields": {
+        "definition": "The reduction of string or head vibration on a banjo to shorten sustain or control ringing, whether inherent (energy is lost rapidly into the tensioned head, giving the banjo its characteristically short decay) or applied by the player (palm/heel muting, fingertip damping, or internal mutes and foam).",
+        "plain_english": "Cutting short the banjo's ring. This can happen on its own, because the drum head soaks up the strings' energy fast, so notes fade quickly. Or the player does it on purpose by touching the strings or head to stop the sound.",
+        "purpose_function": "Damping controls note length and clarity; the head's natural damping gives the banjo its crisp, punchy, fast-decaying sound, while deliberate damping lets a player mute unwanted ring, tighten rhythm, or play staccato.",
+        "practical_application": "A player mutes strings with the picking-hand heel or fretting fingers for a tighter tone, and an engineer may add or remove head damping (foam, mutes) to manage sustain and reduce excessive ring reaching the mics.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Banjo head",
+          "Banjo head tension",
+          "Sustain",
+          "Palm muting",
+          "Decay",
+          "Attack"
+        ],
+        "common_mistakes": [
+          "Assuming a banjo should sustain like a guitar; its short decay is inherent to the head's damping, not a fault.",
+          "Over-damping the head with too much internal foam and killing the instrument's projection and tone.",
+          "Confusing damping (stopping vibration) with lowering head tension, which changes pitch and tone rather than simply muting."
+        ],
+        "scenario_contexts": [
+          "A player heel-mutes the strings for a tight, staccato bluegrass backup rhythm.",
+          "An engineer adds light internal damping to tame excessive ring on a bright banjo.",
+          "Muting strings by hand to cut sustain between phrases during a take."
+        ]
+      },
+      "sources": [
+        "Politzer et al., 'Acoustics of the banjo: measurements and sound synthesis', Acta Acustica (2021)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "Rossing (ed.), The Science of String Instruments (Springer) — banjo chapter"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "96985edb-407d-437d-a946-98f1a4acd907",
+      "term": "Banjo head",
+      "fields": {
+        "definition": "The circular membrane (historically animal skin, now usually Mylar/polyester, sometimes frosted or coated) stretched under tension over the banjo's rim, on which the bridge rests; it is the banjo's primary sound-radiating surface, functioning like a drumhead. Its material, tension and the rim/tone-ring assembly largely determine loudness and timbre.",
+        "plain_english": "The tight, drum-like skin stretched across the round part of a banjo. The bridge sits on it, and it is what actually pushes the sound out into the air, like the head of a drum.",
+        "purpose_function": "The head radiates the string energy delivered through the bridge as sound; being a light, tensioned membrane it makes the banjo loud and bright, and its tension sets much of the tone.",
+        "practical_application": "A tech sets head tension to taste, replaces worn or torn heads, and when miking aims at the head near or slightly off the bridge to capture the banjo's projection and attack.",
+        "category": "Instrument anatomy",
+        "related_terms": [
+          "Banjo bridge",
+          "Banjo head tension",
+          "Tone ring",
+          "Rim",
+          "Membrane",
+          "Banjo damping"
+        ],
+        "common_mistakes": [
+          "Assuming banjo heads are always skin; most modern heads are Mylar/synthetic and react differently to humidity.",
+          "Overtightening the head chasing brightness and risking cracking the head or distorting the rim and hardware.",
+          "Miking only dead-center on the head, missing the balance of attack and body a slightly off-bridge position gives."
+        ],
+        "scenario_contexts": [
+          "Replacing a torn banjo head before a session.",
+          "Miking the head to capture the banjo's bright projection.",
+          "Choosing a coated versus clear head to warm up or brighten the recorded tone."
+        ]
+      },
+      "sources": [
+        "Politzer et al., 'Acoustics of the banjo: measurements and sound synthesis', Acta Acustica (2021)",
+        "Rossing (ed.), The Science of String Instruments (Springer) — banjo chapter",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "32fedb67-ac41-4af3-857c-26512b6513b5",
+      "term": "Banjo head tension",
+      "fields": {
+        "definition": "The degree to which the banjo head is stretched over the rim, adjusted by tightening the tension hoop via the bracket nuts and often set with a drum/dial gauge or by tap-tuning the head to a pitch. Higher tension raises the head's mode frequencies and radiation efficiency for a brighter, louder, more cutting tone; lower tension gives a warmer, softer, less projecting sound.",
+        "plain_english": "How tightly the banjo's drum head is stretched. Tighter means brighter and louder with more snap; looser means warmer and mellower, just like tuning a drum.",
+        "purpose_function": "Head tension is the main way to tune a banjo's tone and volume, letting a player or tech dial brightness, sustain and projection to suit the music without changing the instrument.",
+        "practical_application": "A tech tightens the bracket nuts evenly to a target gauge reading or tap-tuned pitch, checks the head is even all the way around, and then re-checks bridge intonation, which shifts slightly with tension changes.",
+        "category": "Setup & intonation",
+        "related_terms": [
+          "Banjo head",
+          "Banjo bridge",
+          "Tone ring",
+          "Sustain",
+          "Bracket",
+          "Timbre"
+        ],
+        "common_mistakes": [
+          "Tightening bracket nuts unevenly, warping the head and rim and creating dead spots or buzzes.",
+          "Overtightening for maximum brightness and cracking the head or over-stressing the hardware and rim.",
+          "Changing head tension right before tracking and forgetting to re-check bridge intonation."
+        ],
+        "scenario_contexts": [
+          "Brightening a dull-sounding banjo by evenly raising head tension before a session.",
+          "Setting head tension to a consistent gauge reading for repeatable recorded tone.",
+          "Loosening a harsh head slightly to warm the recorded sound."
+        ]
+      },
+      "sources": [
+        "Politzer et al., 'Acoustics of the banjo: measurements and sound synthesis', Acta Acustica (2021)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "Rossing (ed.), The Science of String Instruments (Springer) — banjo chapter"
+      ],
+      "confidence": "High",
+      "flags": []
+    },
+    {
+      "id": "69bdddfd-2ca2-4057-95f6-fa3295291cda",
+      "term": "Banjo picking attack",
+      "fields": {
+        "definition": "The sharp initial transient of a banjo note, produced when the string is plucked with fingerpicks (metal or plastic) or bare fingertips; the banjo's rapid energy transfer to the head yields a fast, percussive attack with a broadband transient burst that is central to its characteristic sound. Pick material, angle and force shape the attack's brightness and hardness.",
+        "plain_english": "The bright, percussive 'pluck' you hear at the very start of each banjo note. Using metal fingerpicks makes it snappier and louder than bare fingers.",
+        "purpose_function": "The attack gives the banjo its punch, clarity and rhythmic drive; because notes decay quickly, the strong attack carries much of the instrument's presence and definition in a mix.",
+        "practical_application": "A technician controls the attack with pick choice and mic placement and tames harsh transients with gentle compression or by angling the mic slightly off the bridge rather than dulling the tone with heavy EQ.",
+        "category": "Playing technique",
+        "related_terms": [
+          "Attack",
+          "Transient",
+          "Fingerpick",
+          "Banjo damping",
+          "Banjo bridge",
+          "Compression"
+        ],
+        "common_mistakes": [
+          "Over-compressing to tame the banjo's attack and squashing the percussive life out of the track.",
+          "Miking too close to the bridge and exaggerating a harsh, clacky attack.",
+          "Blaming a harsh attack on the mic when pick material, angle or playing force is the real cause."
+        ],
+        "scenario_contexts": [
+          "Recording bluegrass rolls where the crisp attack drives the rhythm.",
+          "Using light compression to even out sharp banjo transients in a mix.",
+          "Adjusting mic distance to balance attack against body and ring."
+        ]
+      },
+      "sources": [
+        "Politzer et al., 'Acoustics of the banjo: measurements and sound synthesis', Acta Acustica (2021)",
+        "Fletcher & Rossing, The Physics of Musical Instruments (Springer)",
+        "Rossing (ed.), The Science of String Instruments (Springer) — banjo chapter"
+      ],
+      "confidence": "High",
+      "flags": []
+    }
+  ]
+}

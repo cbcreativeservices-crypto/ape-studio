@@ -33,12 +33,7 @@ export function MeterLabHomeScreen() {
         <Text style={styles.body}>
           Every professional display — waveform, peak, VU, LUFS, spectrum, spectrogram, waterfall,
           phase, scope — tells a story to the engineer who can read it. The Academy’s measurement
-          tools MEASURE; this lab teaches you to INTERPRET what they show, on synthesized teaching
-          signals you can study frame by frame.
-        </Text>
-        <Text style={styles.futureNote}>
-          All displays run on deterministic SYNTHESIZED teaching signals (badged) — pattern
-          recognition first; live-audio listening drills arrive with a future audio release.
+          tools MEASURE; this lab teaches you to INTERPRET what they show.
         </Text>
         {METER_MODULES.map((m) => (
           <Pressable key={m.id} style={styles.card} onPress={() => navigation.navigate('MeterModule', { id: m.id })}>

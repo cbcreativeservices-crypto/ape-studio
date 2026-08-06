@@ -1,0 +1,159 @@
+{
+ "batch": 46,
+ "topic": "Band Tracking Workflow & Arrangement",
+ "authored": [
+  {
+   "id": "a9b942b0-f44a-417a-b102-0bf2160f568b",
+   "term": "Drum-room subgroup",
+   "fields": {
+    "definition": "A mix bus (subgroup) that combines the room or ambient microphones of a drum kit onto one set of faders for shared level, dynamics, and effects processing.",
+    "plain_english": "It is one fader that controls all the room mics on a drum kit at once. Think of a power strip: flip one switch and every ambient drum mic moves together.",
+    "purpose_function": "It lets the engineer blend and process the kit's ambient room sound as a single element, controlling drum energy and depth without touching each close mic.",
+    "practical_application": "An engineer routes the room mics to this subgroup, then compresses or rides the fader to push kit ambience up in loud choruses and pull it back in quiet verses.",
+    "category": "Drum Processing",
+    "related_terms": ["Subgroup", "Room microphone", "Drum overheads", "Parallel compression", "Bus processing", "Aux send"],
+    "common_mistakes": ["Routing close mics and room mics to the same subgroup, which removes independent control of the direct drum sound", "Over-compressing the room subgroup so the kit sounds pumped and unnatural", "Ignoring phase between the room mics and close mics, which can make the kit sound hollow or thin"],
+    "scenario_contexts": ["Mixing a live-off-the-floor rock session where room mics add size to the kit", "Adding parallel room ambience under a tight, close-miked pop drum sound", "Automating kit ambience up in a big chorus and down in an intimate verse"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "da3a4385-ffe8-474b-bcc0-31a23470ab74",
+   "term": "Ear-candy element",
+   "fields": {
+    "definition": "A small, often incidental production detail, such as a reversed cymbal, subtle percussion hit, filtered vocal snippet, or momentary effect, added to a mix to catch the listener's attention and add interest at specific moments.",
+    "plain_english": "It is a tiny extra sound sprinkled into a song to grab your ear for a second. It works like a bit of sparkle, keeping the track fun to listen to again and again.",
+    "purpose_function": "It exists to add novelty, movement, and repeat-listen interest to an arrangement, often marking a transition or filling a gap without changing the core parts.",
+    "practical_application": "A producer drops a reverse cymbal, riser, or vinyl-crackle sample right before a chorus so the new section lands with a small surprise.",
+    "category": "Arrangement",
+    "related_terms": ["Arrangement", "Transition effect", "Automation", "Overdub", "Sound design", "Drum fill"],
+    "common_mistakes": ["Adding so many ear-candy sounds that they clutter the mix and distract from the song", "Placing them too loud so they pull focus from the lead vocal", "Scattering them at random instead of at meaningful moments like transitions"],
+    "scenario_contexts": ["Placing a reverse-reverb swell right before the first chorus drops", "Adding a subtle shaker detail only in the second verse for variety", "Dropping a filtered vocal ad-lib into an instrumental break"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio", "Sound on Sound (technical articles)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "248d97ea-99d3-4312-874a-dc8e8126dfae",
+   "term": "Electric-bass mixing",
+   "fields": {
+    "definition": "The techniques used to place an electric bass guitar in a mix, including level balancing, EQ, compression, and sometimes distortion or amp and DI blending, so it supports the low end and locks with the kick drum.",
+    "plain_english": "It is how you fit the electric bass into a song so it sounds full but not muddy. The goal is to make the bass and the kick drum work as a team, not fight each other.",
+    "purpose_function": "It ensures the bass provides a solid, consistent low-end foundation and rhythmic glue that ties the drums and the harmony together.",
+    "practical_application": "An engineer compresses the bass for steady level, carves EQ so it and the kick sit in different frequencies, and blends a DI track with a miked amp for clarity plus weight.",
+    "category": "Instrument Mixing",
+    "related_terms": ["Kick-bass relationship", "DI box", "Compression", "Low-end management", "Sidechain compression", "Amp miking"],
+    "common_mistakes": ["Boosting sub-bass so much the mix booms on big speakers but vanishes on small ones", "Letting the kick and bass mask each other because both sit in the same frequency range", "Skipping compression, so the bass level jumps from note to note"],
+    "scenario_contexts": ["Getting kick and bass to sit together in a dense rock or pop mix", "Blending a clean DI with a driven amp for a gritty rock bass tone", "Using EQ carving to keep the bass audible on phone and laptop speakers"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Izhaki, Mixing Audio"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "48739a73-5d10-4e1e-9b38-ffb0d1749160",
+   "term": "Electric-guitar mixing",
+   "fields": {
+    "definition": "The techniques used to place electric guitar parts in a mix, including level, EQ, panning, and effects, so rhythm and lead guitars sit clearly without masking vocals or crowding the midrange.",
+    "plain_english": "It is how you fit electric guitars into a song so they sound big but still leave room for the singer. Often you spread two guitars left and right so they do not pile up in the middle.",
+    "purpose_function": "It manages the guitars' strong midrange energy so they add drive and width while staying out of the way of the lead vocal and other mid-heavy instruments.",
+    "practical_application": "An engineer double-tracks a rhythm part, pans the two takes hard left and right for width, and dips guitar EQ around the vocal's core frequencies to keep words clear.",
+    "category": "Instrument Mixing",
+    "related_terms": ["Double-tracking", "Panning", "Midrange", "Amp miking", "EQ carving", "Reamping"],
+    "common_mistakes": ["Letting loud guitars mask the lead vocal because both live in the midrange", "Stacking many guitar layers until the mix turns into a wall of mush", "Panning a single mono guitar dead center where it competes with vocal and snare"],
+    "scenario_contexts": ["Double-tracking and hard-panning rhythm guitars for a wide rock sound", "Carving guitar EQ so the vocal stays clear in a dense chorus", "Placing a lead guitar in a stereo and frequency space that avoids the vocal"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "293df6b9-930a-4e80-a13f-f9ee15fbdeb1",
+   "term": "Electric-piano mixing",
+   "fields": {
+    "definition": "The techniques used to place an electric piano, such as a Rhodes or Wurlitzer, in a mix, including level, EQ, compression, stereo width, and modulation effects, so it fills harmonic space without clashing with guitars, keys, or vocals.",
+    "plain_english": "It is how you fit an electric piano, like a Rhodes, into a song. Because it covers a wide range, you shape it so it supports the track without crowding the singer or guitars.",
+    "purpose_function": "It controls the electric piano's broad midrange and sustain so it adds harmonic body and warmth while leaving room for other mid-range instruments.",
+    "practical_application": "An engineer compresses the part for even sustain, adds chorus or tremolo for character, and EQs out overlapping mids so it and the rhythm guitar do not fight.",
+    "category": "Instrument Mixing",
+    "related_terms": ["Rhodes", "Chorus effect", "Tremolo", "Compression", "Midrange", "Harmonic layering"],
+    "common_mistakes": ["Leaving the part too wide or too effect-heavy so it smears the center of the mix", "Letting it clash with rhythm guitar because both fill the same midrange", "Over-compressing until the natural bell-like dynamics disappear"],
+    "scenario_contexts": ["Fitting a Rhodes part under a vocal in a soul or R&B ballad", "Using EQ to separate electric piano from rhythm guitar in a full band mix", "Adding tremolo and light compression to shape a vintage keyboard tone"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0b0f478e-40dd-4cdc-9ead-14dbb43b5b1a",
+   "term": "Ensemble cohesion",
+   "fields": {
+    "definition": "The degree to which the separate instruments and voices in a mix blend and feel like a single, unified performance rather than a set of disconnected tracks.",
+    "plain_english": "It is how well all the parts of a song feel like one band playing together. When a mix has it, the instruments sound glued, not like separate pieces stuck side by side.",
+    "purpose_function": "It is a mixing goal that makes a multitrack recording sound like a believable, connected group, improving how natural and musical the final mix feels.",
+    "practical_application": "An engineer uses shared reverb, gentle bus compression, and consistent timing and tuning so drums, bass, guitars, and vocals feel like one performance in one space.",
+    "category": "Mix Quality",
+    "related_terms": ["Bus compression", "Glue compression", "Shared reverb", "Ensemble intelligibility", "Blend", "Arrangement"],
+    "common_mistakes": ["Soloing and perfecting each track alone, so the parts never blend as a group", "Using a different reverb on every element, which scatters the instruments into separate spaces", "Ignoring timing and tuning differences that stop the band from locking together"],
+    "scenario_contexts": ["Using a single room reverb to place drums, bass, and guitars in one space", "Applying gentle glue compression on the mix bus to bind a rhythm section", "Aligning timing and tuning so overdubbed parts feel like one live take"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Izhaki, Mixing Audio", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "276b7244-9ce6-4070-99c2-e289cb97c2f6",
+   "term": "Ensemble intelligibility",
+   "fields": {
+    "definition": "The degree to which each instrument and voice in a full-band mix can be clearly heard and distinguished, so individual parts remain audible within the group.",
+    "plain_english": "It is how easily you can pick out each instrument in a busy song. Good intelligibility means you still hear the vocal, bass, and guitars without them turning into mush.",
+    "purpose_function": "It is a mixing goal that keeps a dense arrangement clear, letting the listener follow the lead vocal and each key part.",
+    "practical_application": "An engineer uses EQ carving, panning, and level balance to give each instrument its own frequency and stereo space so nothing masks the others.",
+    "category": "Mix Quality",
+    "related_terms": ["EQ carving", "Frequency masking", "Panning", "Ensemble cohesion", "Level balancing", "Frequency slotting"],
+    "common_mistakes": ["Boosting every track to make it louder, which just increases masking and mud", "Piling instruments in the center instead of spreading them with panning", "Ignoring frequency overlap so instruments fight in the same range"],
+    "scenario_contexts": ["Carving EQ so vocal, guitar, and keys each own a frequency band", "Panning instruments across the stereo field to separate a busy arrangement", "Balancing levels so the lead vocal stays clear over a full band"]
+   },
+   "sources": ["Izhaki, Mixing Audio", "Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c704665a-ceac-4020-b96c-8c20455b1d41",
+   "term": "Finger-noise control",
+   "fields": {
+    "definition": "Techniques for reducing unwanted squeaks and scrapes made by a player's fingers moving on strings, especially wound guitar or bass strings, during recording, using playing technique, string choice, mic placement, and editing or de-noising.",
+    "plain_english": "It is how you cut down the squeaky sounds fingers make sliding on guitar or bass strings. You can fix it while playing, by moving the mic, or by editing the noises out later.",
+    "purpose_function": "It keeps distracting finger squeaks from cluttering an otherwise clean recording, so the instrument's intended tone stays front and center.",
+    "practical_application": "An engineer suggests flatwound or coated strings, angles the mic away from the fretting hand, and edits or automates down any remaining squeaks in the DAW.",
+    "category": "Recording Technique",
+    "related_terms": ["Mic placement", "Coated strings", "De-essing", "Editing", "Noise reduction", "DI recording"],
+    "common_mistakes": ["Trying to EQ squeaks out, which also dulls the instrument's natural high end", "Placing the mic right at the fretting hand where finger noise is loudest", "Ignoring string choice, when coated or flatwound strings would cut the noise at the source"],
+    "scenario_contexts": ["Recording a close-miked acoustic guitar where fret squeaks are obvious", "Editing finger slides out of an exposed fingerstyle bass take", "Choosing coated strings for a quiet, intimate acoustic session"]
+   },
+   "sources": ["Bartlett, Practical Recording Techniques", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound (technical articles)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d3c3f9c1-940c-472d-aab2-75f0d3475054",
+   "term": "Floor-tom processing",
+   "fields": {
+    "definition": "The signal processing applied to a drum kit's floor tom, typically EQ, gating or transient shaping, and compression, to control its low-frequency resonance and sustain and make it punch clearly through a mix.",
+    "plain_english": "It is the shaping you do to the big low tom in a drum kit. You tighten its long boom and add punch so it hits hard without muddying the song.",
+    "purpose_function": "It manages the floor tom's strong low end and long ring so its hits stay powerful and defined instead of booming over the rest of the kit.",
+    "practical_application": "An engineer gates or shortens the tom's ring, boosts low-end thump and attack with EQ, and compresses it so fills cut through the mix.",
+    "category": "Drum Processing",
+    "related_terms": ["Noise gate", "Transient shaper", "Tom resonance", "Drum tuning", "Compression", "Parametric EQ"],
+    "common_mistakes": ["Setting a gate too tight so the natural decay of the tom is chopped off unnaturally", "Boosting low end without cutting boxy mids, which leaves the tom muddy", "Ignoring cymbal and snare bleed in the tom mic while processing"],
+    "scenario_contexts": ["Gating a floor tom to remove cymbal bleed between hits", "Adding low-end punch to a floor tom for a big rock fill", "Shortening a boomy tom's ring so it fits a tight, modern mix"]
+   },
+   "sources": ["Owsinski, The Mixing Engineer's Handbook", "Huber & Runstein, Modern Recording Techniques", "Izhaki, Mixing Audio"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

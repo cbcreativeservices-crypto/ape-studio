@@ -1,0 +1,159 @@
+{
+ "batch": 199,
+ "topic": "Broadcast / Radio Production & Air Chain",
+ "authored": [
+  {
+   "id": "94b25fce-134a-4dfc-9e7d-2ea3b9281328",
+   "term": "Outside broadcast unit",
+   "fields": {
+    "definition": "A self-contained package of broadcast equipment—microphones, mixer, monitoring, communications and a transmission or return link—assembled to originate a radio or television program from a location away from the main studio. Commonly abbreviated OB unit; the North American equivalent is the remote broadcast kit or 'remote'.",
+    "plain_english": "It is a portable kit of radio gear that lets a station broadcast from somewhere other than its studio, such as a concert or a sports ground. Think of it as a small studio you can pack up and carry to the event.",
+    "purpose_function": "It lets a station cover live events at the actual location and feed that audio back to base and on to air. It exists so programming is not limited to what happens inside the building.",
+    "practical_application": "A technician sets up and tests the OB unit's mics, mixer and return link before an event, then keeps the feed clean and connected during the live broadcast.",
+    "category": "Remote Broadcasting",
+    "related_terms": ["Outside-broadcast vehicle", "Program source", "Program chain", "Radio control room", "Radio air studio"],
+    "common_mistakes": ["Confusing the outside broadcast unit (the equipment package) with the vehicle that carries it", "Failing to test the return or transmission link before the event, so the feed fails on air", "Assuming studio-grade acoustics on location and not controlling background noise at the mic"],
+    "scenario_contexts": ["Covering a live sports match from the stadium", "Broadcasting a music festival set back to the station", "Reporting live from a news scene or public event"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "2e5eea5f-b28a-42c4-a7f0-b906054663a1",
+   "term": "Outside-broadcast vehicle",
+   "fields": {
+    "definition": "A vehicle—van, truck or trailer—fitted out as a mobile control room with mixing, monitoring, power and transmission equipment for producing broadcasts on location. Commonly called an OB van; the closely related North American rig is termed a production or remote truck.",
+    "plain_english": "It is a van or truck built to work like a mobile studio, so a crew can make a broadcast right at an event. It carries the mixing desk, screens, power and links needed to send the show back.",
+    "purpose_function": "It provides a weatherproof, powered, fully equipped workspace so a crew can mix and send a program from the event site. It exists to bring studio capability to places that have none.",
+    "practical_application": "Engineers run cabling from the event into the van, mix the program inside, and manage the link that carries it back to base or the transmitter.",
+    "category": "Remote Broadcasting",
+    "related_terms": ["Outside broadcast unit", "Program source", "Radio control room", "Program chain"],
+    "common_mistakes": ["UNSAFE: Drawing site or generator power without proper grounding and bonding and residual-current (RCD/GFCI) protection, risking shock from a faulted vehicle or cabling", "Confusing the vehicle with the outside broadcast equipment package it houses", "Underestimating cable runs and power capacity for the event"],
+    "scenario_contexts": ["Parking the OB van outside a stadium for a match broadcast", "Producing a live festival broadcast from the vehicle", "Providing a mobile control room for election-night coverage"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d73cb706-4794-4459-bef0-653d7a13a38c",
+   "term": "Production library",
+   "fields": {
+    "definition": "A licensed collection of pre-recorded music beds, sound effects, jingles and stingers kept on hand for producing commercials, promos and station imaging. Also called a production music or sound-effects library.",
+    "plain_english": "It is a stored set of ready-made music clips and sound effects that producers drop into ads and station spots. It is like a pantry of audio ingredients you pull from instead of making each one fresh.",
+    "purpose_function": "It gives producers cleared, ready-to-use audio so spots can be built quickly without recording original music every time. It exists to speed production and keep usage rights clear.",
+    "practical_application": "A producer browses the library for a music bed and effects, drops them under the voice track in the DAW, and mixes the finished spot.",
+    "category": "Production",
+    "related_terms": ["Promo production", "Program source", "Radio air studio", "Radio control room"],
+    "common_mistakes": ["Using a track outside its license terms, creating a rights or clearance problem", "Overusing the same recognizable bed so spots sound repetitive", "Not logging which library cut was used, making later clearance or edits hard"],
+    "scenario_contexts": ["Choosing a music bed for a 30-second commercial", "Pulling a stinger for a station promo", "Adding sound effects to an imaging piece"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "NAB Engineering Handbook (National Association of Broadcasters)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "28e16b97-c8bd-4c3c-9636-56421d214fd6",
+   "term": "Program chain",
+   "fields": {
+    "definition": "The ordered series of equipment a broadcast program signal passes through from its source to the transmitter input—typically mixing, routing, distribution and audio-processing stages. Closely related to, and often used interchangeably with, the term air chain.",
+    "plain_english": "It is the line-up of gear a radio show's sound travels through on its way from the studio to the transmitter. Think of it as a relay race where each piece of equipment hands the audio to the next.",
+    "purpose_function": "It defines the path and order of processing that shapes and delivers the program to air. It exists so each stage—mixing, routing and processing—happens in a known, controlled sequence.",
+    "practical_application": "An engineer traces the program chain stage by stage to find where audio is lost or distorted, checking levels at each point from source to transmitter.",
+    "category": "Air Chain",
+    "related_terms": ["Program source", "Radio announcer chain", "Radio control room", "Outside broadcast unit"],
+    "common_mistakes": ["Confusing the program chain (the whole path to air) with a single processor inside it", "Placing the final loudness or peak processor in the wrong spot, so the transmitter is over- or under-driven", "Chasing a level problem at the desk when the fault is later in the chain"],
+    "scenario_contexts": ["Signal-flow troubleshooting from studio to transmitter", "Adding a new processor and re-checking gain staging along the chain", "Documenting the station's path to air for maintenance"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Orban Optimod technical documentation"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "65ebc907-3aca-4bad-8e39-cd5e797c3bf1",
+   "term": "Program source",
+   "fields": {
+    "definition": "Any origination point of program audio feeding a broadcast system—such as a live microphone, playout automation, a recorded item, a network or satellite feed, or a remote/OB link. Sources are selected and combined at the mixing console or router for air.",
+    "plain_english": "It is anywhere the sound for a show comes from, such as a mic, a computer playout, or a live feed from elsewhere. The studio picks and mixes these sources to build the program.",
+    "purpose_function": "It is the input material a station selects, mixes and sends to air. Naming and managing sources lets operators switch cleanly between what goes on the program bus.",
+    "practical_application": "An operator selects the right program source on the console or router—mic, automation or network feed—and fades between them during the show.",
+    "category": "Air Chain",
+    "related_terms": ["Program chain", "Radio control room", "Outside broadcast unit", "Radio air studio"],
+    "common_mistakes": ["Putting a source to air before confirming it is present and at correct level, causing dead air or a level jump", "Confusing a source with the bus or output it is routed to", "Forgetting a remote or network source carries delay, causing overlaps in handovers"],
+    "scenario_contexts": ["Switching from live mic to automation at the top of the hour", "Taking a network news feed as the program source", "Cueing a recorded item before airing it"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7d2646b7-38a5-4a1b-af55-675254a2b55e",
+   "term": "Promo production",
+   "fields": {
+    "definition": "The creation of short promotional announcements—'promos'—that advertise a station's own programs, events or brand, typically combining voice-over, music beds and effects. It is a form of station imaging, distinct from paid commercial (spot) production.",
+    "plain_english": "It is making the short adverts a station runs for its own shows and events. These promos mix a voice, music and effects to get listeners to tune in.",
+    "purpose_function": "It promotes the station's content and identity on its own air. It exists to build audience and reinforce the station's brand between programs.",
+    "practical_application": "A producer works from a script, records the voice-over, and mixes it with a bed and effects in the DAW to build the finished promo.",
+    "category": "Production",
+    "related_terms": ["Production library", "Program source", "Radio air studio", "Radio control room"],
+    "common_mistakes": ["Mixing the promo too quietly or too loudly relative to surrounding audio", "Cluttering a short promo with too much copy so the message is lost", "Confusing self-promos with paid commercial spots in scheduling"],
+    "scenario_contexts": ["Producing a promo for an upcoming morning-show contest", "Creating an imaging sweep between songs", "Cutting a promo for a station-sponsored live event"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "NAB Engineering Handbook (National Association of Broadcasters)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e658d28f-049d-44d7-ba94-9ac036209a6b",
+   "term": "Radio air studio",
+   "fields": {
+    "definition": "The studio from which live programming is presented and put to air, containing the on-air console, presenter microphone(s), playout and monitoring. Also called the on-air studio or air room.",
+    "plain_english": "It is the room where the presenter sits and talks live on the radio. It holds the mixing desk, mic and playout used to run the show as it goes out.",
+    "purpose_function": "It is the working space where live programming is presented and controlled in real time. It exists to give the presenter everything needed to run the show and put it to air.",
+    "practical_application": "A presenter or operator runs the show from the air studio—opening the mic, playing items and watching levels—while it broadcasts.",
+    "category": "Broadcast Facilities",
+    "related_terms": ["Radio control room", "Radio announcer chain", "Program source", "Program chain"],
+    "common_mistakes": ["Leaving the microphone open when it should be closed, putting off-air talk to air", "Confusing the air studio (on-air) with a production studio (offline)", "Poor acoustic treatment letting room reflections colour the presenter's mic"],
+    "scenario_contexts": ["Presenting a live morning show", "Reading a news bulletin on air", "Hosting a live phone-in from the air studio"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a52456ce-7c75-47b8-97f9-6f467fbfbf60",
+   "term": "Radio announcer chain",
+   "fields": {
+    "definition": "The signal-processing chain applied to a presenter or announcer microphone—typically preamp followed by de-esser, compressor, equalizer and gating—used to make the voice consistent and intelligible before it reaches the console or air. Also called the voice or mic-processing chain.",
+    "plain_english": "It is the set of processors a presenter's mic passes through to make the voice clear and even. Like tuning a voice, it smooths loud and quiet parts and cuts harsh sounds before it goes on air.",
+    "purpose_function": "It shapes and controls the announcer's voice so it stays clear, even and easy to hear over music and effects. It exists to keep spoken word consistent from presenter to presenter and moment to moment.",
+    "practical_application": "An engineer sets the compressor, EQ and de-esser on the announcer chain to suit a presenter's voice, then saves it as a recallable preset for that person.",
+    "category": "Air Chain",
+    "related_terms": ["Program chain", "Radio air studio", "Program source", "Radio control room"],
+    "common_mistakes": ["Over-compressing the voice so it sounds pumped and fatiguing", "Skipping the de-esser and letting sibilance become harsh on air", "Setting the chain for one voice and forgetting to recall the right preset for another presenter"],
+    "scenario_contexts": ["Dialing in mic processing for a new presenter", "Taming sibilance on a bright voice", "Saving per-presenter voice presets on the console"]
+   },
+   "sources": ["Orban Optimod technical documentation", "Telos Alliance / Omnia technical documentation"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e3fc3ce9-b949-4a69-ae22-b033680091b0",
+   "term": "Radio control room",
+   "fields": {
+    "definition": "The technical room in a radio station where program audio is mixed, routed, monitored and sent toward the transmitter, housing the console, routing, processing and monitoring equipment. In small stations it may be combined with the air studio; in larger ones it is a separate technical operations area.",
+    "plain_english": "It is the technical room where a station's sound is mixed, checked and sent on toward the transmitter. Think of it as the control center that keeps everything going out cleanly.",
+    "purpose_function": "It centralizes mixing, routing and monitoring so program audio can be controlled and sent to air from one place. It exists to give operators command of the station's signal flow.",
+    "practical_application": "An operator or engineer works from the control room to route sources, monitor levels and keep the program feeding correctly to the transmitter.",
+    "category": "Broadcast Facilities",
+    "related_terms": ["Radio air studio", "Program chain", "Program source", "Radio announcer chain"],
+    "common_mistakes": ["Confusing the control room with the on-air studio in stations where they are separate", "Not monitoring off-air (post-transmitter) audio, so a downstream fault goes unnoticed", "Mis-routing a source and putting the wrong feed to air"],
+    "scenario_contexts": ["Routing and monitoring program feeds to the transmitter", "Handling a source changeover during live programming", "Diagnosing an on-air audio fault from the control room"]
+   },
+   "sources": ["NAB Engineering Handbook (National Association of Broadcasters)", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

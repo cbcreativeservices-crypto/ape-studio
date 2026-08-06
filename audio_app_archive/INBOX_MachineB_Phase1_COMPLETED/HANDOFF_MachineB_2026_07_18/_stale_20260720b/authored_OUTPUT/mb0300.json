@@ -1,0 +1,112 @@
+{
+ "batch": 300,
+ "topic": "Synthesis Types, Modular & CV",
+ "authored": [
+  {
+   "id": "12f718e7-37d8-4f0f-9b07-0adc65f40651",
+   "term": "5U modular",
+   "fields": {
+    "definition": "A large-format modular synthesizer standard whose module front panels are five rack units tall (about 8.75 in / 222 mm), typically patched with 1/4-inch (6.35 mm) cables and following the 1 volt-per-octave control standard. It is the format of classic Moog modular systems and modern lines such as Synthesizers.com (Dotcom), MOTM, and Moog Unit (MU) modulars.",
+    "plain_english": "A large style of modular synth. Each part has a tall panel, about 8.75 inches high. The big size leaves room for large knobs and thick 1/4-inch cables, like classic studio gear from the 1960s and 70s.",
+    "purpose_function": "The tall panels give room for full-size knobs, switches, and widely spaced jacks, making complex patches easy to see and adjust, while the format preserves the look and workflow of classic 1960s-70s modular systems.",
+    "practical_application": "A technician builds or maintains 5U systems by matching panel formats and connection conventions (1/4-inch jacks, and S-trig versus V-trig gates on vintage Moog gear) so modules from different makers interconnect correctly.",
+    "category": "Modular format",
+    "related_terms": [
+     "Eurorack",
+     "Control voltage (CV)",
+     "Gate",
+     "Trigger",
+     "1V/octave",
+     "Patch cable"
+    ],
+    "common_mistakes": [
+     "Treating '5U' as a single interchangeable standard, when MU (Moog), Dotcom, and MOTM differ in jacks, triggers, and power headers.",
+     "Expecting vintage Moog S-trig gates to drive modern V-trig inputs without a converter.",
+     "Reversing a module's power connector; verify pin-out and polarity before applying power to avoid damaging the module."
+    ],
+    "scenario_contexts": [
+     "Restoring a vintage Moog modular and matching replacement modules to the original 5U panel and trigger format.",
+     "Building a new large-format studio synth from Synthesizers.com Dotcom modules with a matched power supply.",
+     "Interfacing a 5U system with a Eurorack case using a format-bridging or level-shifting adapter."
+    ]
+   },
+   "sources": [
+    "Mark Vail, The Synthesizer (Oxford University Press)",
+    "Moog modular synthesizer technical/service manuals"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "be673112-5587-436e-a265-46acc4689119",
+   "term": "Eurorack",
+   "fields": {
+    "definition": "A modular-synthesizer format introduced by Doepfer (A-100 series, mid-1990s) in which module panels are 3U (128.5 mm) tall and their width is measured in horizontal pitch (HP, where 1 HP = 5.08 mm). Modules are patched with 3.5 mm (1/8-inch) cables, follow the 1 volt-per-octave pitch standard, and draw power over a ribbon connector supplying plus/minus 12 V (and often +5 V).",
+    "plain_english": "A popular small format for modular synths. Each part is about 5 inches tall and uses thin 1/8-inch cables. Because the parts are small, you can fit many of them in one case.",
+    "purpose_function": "Its small module size and shared power and signal standards let a technician fit many modules from many makers into one case, which has made Eurorack the most widely used modular format today.",
+    "practical_application": "Technicians assemble Eurorack systems by budgeting HP width and power-rail current, aligning the ribbon cable's red stripe to the -12 V pins, and patching CV, gate, and audio between modules with 3.5 mm cables.",
+    "category": "Modular format",
+    "related_terms": [
+     "5U modular",
+     "Control voltage (CV)",
+     "Gate",
+     "Trigger",
+     "1V/octave",
+     "Patch cable"
+    ],
+    "common_mistakes": [
+     "Reversing the power ribbon: the red stripe must align with -12 V on both the module header and the bus board, or the module can be damaged.",
+     "Overloading a power rail by adding modules without totaling each rail's current draw against the supply's rating.",
+     "Confusing HP (panel width) with U (panel height) when planning a build.",
+     "Assuming Eurorack CV/gate levels and 3.5 mm cables interconnect directly with 5U systems."
+    ],
+    "scenario_contexts": [
+     "Planning a case build by summing +12 V and -12 V current draw for every module before choosing a power supply.",
+     "Troubleshooting a dead module after a ribbon cable was plugged in upside down.",
+     "Patching an external CV keyboard into a Eurorack oscillator's 1V/octave input."
+    ]
+   },
+   "sources": [
+    "Doepfer A-100 technical documentation",
+    "Mark Vail, The Synthesizer (Oxford University Press)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3eaab9fa-2e5a-4d6a-a9bb-8c0b3b4f3fd4",
+   "term": "Trigger",
+   "fields": {
+    "definition": "In modular and CV systems, a trigger is a brief voltage pulse that signals the instant an event should begin, such as starting an envelope, advancing a sequencer step, or firing a drum voice. Unlike a gate, which stays high for the full duration of a note, a trigger conveys only the moment of onset, not how long to hold.",
+    "plain_english": "A trigger is a quick pulse of voltage that tells a module to start something, like firing a drum or an envelope. Think of it as a tap on the shoulder: it marks the moment to go, but not how long to hold.",
+    "purpose_function": "A trigger tells modules exactly when to act, keeping envelopes, sequencers, and drum modules synced to a rhythmic event without carrying any duration information.",
+    "practical_application": "A technician routes a trigger from a clock, sequencer, or drum pad to a module's trigger input to fire it, and must match the trigger type (positive-going V-trig versus switch-to-ground S-trig on some vintage gear), using a converter when they differ.",
+    "category": "Control signal",
+    "related_terms": [
+     "Gate",
+     "Control voltage (CV)",
+     "Envelope generator",
+     "Clock",
+     "Sequencer"
+    ],
+    "common_mistakes": [
+     "Confusing a trigger with a gate: a trigger marks only the onset, while a gate also holds the note and controls sustain and release.",
+     "Expecting a trigger alone to sustain an ADSR envelope, when the sustain stage needs a held gate.",
+     "Mixing S-trig (switch/short-to-ground, e.g. vintage Moog) and V-trig (positive voltage) signals without a converter, so nothing fires.",
+     "Assuming all triggers share one voltage, when some modules need a minimum level (often around +2 to +5 V) to register."
+    ],
+    "scenario_contexts": [
+     "Clocking a drum module by sending a trigger pulse to each voice's trigger input.",
+     "Advancing an analog sequencer one step per incoming trigger.",
+     "Adapting a vintage Moog S-trig keyboard to fire a modern V-trig envelope through a converter."
+    ]
+   },
+   "sources": [
+    "Curtis Roads, The Computer Music Tutorial (MIT Press)",
+    "Mark Vail, The Synthesizer (Oxford University Press)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

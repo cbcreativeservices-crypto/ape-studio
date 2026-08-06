@@ -1,0 +1,159 @@
+{
+ "batch": 394,
+ "topic": "Audio Restoration & Archival",
+ "authored": [
+  {
+   "id": "9dab4ff6-adbe-4b8d-a1a3-4fc8b80e02f7",
+   "term": "Administrative metadata",
+   "fields": {
+    "definition": "Metadata that records the technical and management information needed to store, maintain, and preserve a digital object over time, including its technical characteristics (format, encoding, and file properties), rights and access conditions, and preservation history. In digital preservation it is commonly subdivided into technical, rights, and preservation (digital provenance) metadata, as distinct from descriptive and structural metadata.",
+    "plain_english": "Administrative metadata is the record-keeping data about a file, not about what the sound is. It notes things like the file format, who may use it, and every change made to it over time.",
+    "purpose_function": "It gives systems and staff the operational information needed to manage, protect, and preserve a file, tracking format, rights, and every preservation action so the object stays usable and trustworthy across its life.",
+    "practical_application": "An audio archivist captures administrative metadata (format, sample rate, bit depth, checksum, capture chain, and each processing step) at ingest so future staff know exactly how a file was made and handled.",
+    "category": "Metadata",
+    "related_terms": ["Descriptive metadata", "Structural metadata", "Preservation metadata", "Archival information package", "Chain of custody", "Fixity"],
+    "common_mistakes": ["Confusing administrative metadata (how a file is managed and preserved) with descriptive metadata (what the recording is about).", "Recording administrative metadata once at ingest and never updating it as preservation actions occur.", "Treating the checksum or technical format details as optional rather than core preservation information."],
+    "scenario_contexts": ["Documenting format, sample rate, bit depth, and capture chain when ingesting a digitized tape into a repository.", "Recording each normalization, migration, or re-checksum event in a file's preservation history.", "Storing rights and access restrictions alongside a broadcast recording so future users know usage conditions."]
+   },
+   "sources": ["IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 3.7 Administrative Metadata / Preservation Metadata", "OAIS Reference Model (ISO 14721) - Preservation Description Information", "Society of American Archivists, Dictionary of Archives Terminology"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "7e20fe06-97c6-469a-8983-48802ac23261",
+   "term": "Archival information package",
+   "fields": {
+    "definition": "In the OAIS reference model (ISO 14721), the Archival Information Package (AIP) is the information package that a repository actually stores and preserves for the long term. It consists of the Content Information (the target digital object plus its Representation Information) together with the complete Preservation Description Information (Reference, Provenance, Context, Fixity, and Access Rights information) needed to preserve and interpret that content.",
+    "plain_english": "An archival information package is the keeper version of a file that the archive holds for the long term. It bundles the audio with all the extra data needed to prove what it is, where it came from, and that it has not changed.",
+    "purpose_function": "It defines a complete, self-describing unit for long-term storage so that content and everything needed to preserve, authenticate, and interpret it stay together, independent of the systems that created it.",
+    "practical_application": "When ingesting a submission (SIP), an archivist turns it into an AIP by adding preservation metadata, fixity checksums, and identifiers before committing it to archival storage.",
+    "category": "OAIS Framework",
+    "related_terms": ["Submission information package", "Dissemination information package", "OAIS reference model", "Preservation metadata", "Administrative metadata", "Fixity"],
+    "common_mistakes": ["Confusing the AIP (the stored preservation version) with the SIP submitted at ingest or the DIP delivered to users.", "Thinking the AIP is only the audio file, when it must also carry its Preservation Description Information.", "Assuming an AIP never changes; its content is preserved, but its metadata (for example new fixity or provenance) may be updated."],
+    "scenario_contexts": ["Packaging a digitized field recording with its checksums, provenance, and identifiers for deposit in a preservation repository.", "Auditing a repository to confirm each AIP still contains complete Preservation Description Information.", "Generating a dissemination copy (DIP) from a stored AIP to give a researcher access."]
+   },
+   "sources": ["OAIS Reference Model (ISO 14721:2012), sec. 4.2.2.3 Archival Information Package", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 6.1.8 The Open Archival Information System (OAIS)", "DPC / DPConline, The Open Archival Information System (OAIS) Reference Model"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8eb52360-4c35-4226-935d-dcb8073e479a",
+   "term": "Archive accession number",
+   "fields": {
+    "definition": "A unique number or code assigned to a group of materials at the point it is acquired (accessioned) by a repository, used to identify that acquisition and to link the materials to their associated accession and management records. It is often structured as a year plus a running sequence.",
+    "plain_english": "An accession number is the unique ID an archive gives a batch of material when it first arrives. It works like a claim ticket that ties the items to their paperwork.",
+    "purpose_function": "It establishes intellectual and physical control at the moment of acquisition, giving each accession a persistent identifier so materials can be tracked, located, and tied to their documentation throughout their life in the repository.",
+    "practical_application": "When a collection of tapes arrives, the archivist assigns an accession number and records it on the containers and in the accession register so every later action references it.",
+    "category": "Archival Control",
+    "related_terms": ["Chain of custody", "Administrative metadata", "Archive lifecycle management", "Archival information package", "Provenance"],
+    "common_mistakes": ["Confusing the accession number (identifies an acquisition) with a catalog or call number used for description and retrieval.", "Reusing or reassigning accession numbers, which breaks the link between materials and their records.", "Assigning a single accession number to unrelated acquisitions received at different times."],
+    "scenario_contexts": ["Logging a donated reel-to-reel collection into the accession register with a new accession number.", "Tracing a specific tape back to its acquisition paperwork using its accession number.", "Cross-referencing digitized files to the original accession number so provenance is preserved."]
+   },
+   "sources": ["Society of American Archivists, Dictionary of Archives Terminology - 'accession number'", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects - metadata and unique identifiers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "b3828c65-8198-4584-a156-4bb277bc76cf",
+   "term": "Archive authenticity verification",
+   "fields": {
+    "definition": "The process of confirming that an archived object is what it purports to be and has not been altered in an undocumented way, established through fixity information (checksums), documented provenance and chain of custody, and other integrity evidence maintained over the object's life.",
+    "plain_english": "This is how you prove that a stored recording is genuine and has not been changed. You check that its checksum still matches and that there is a clear record of who handled it.",
+    "purpose_function": "It protects trust in the archive by demonstrating that content is genuine and unmodified, which is essential for the legal, historical, and evidentiary use of recordings.",
+    "practical_application": "Before releasing an archived recording as evidence or as a master, a technician verifies its checksum against the recorded value and reviews its provenance and chain-of-custody records.",
+    "category": "Authenticity & Integrity",
+    "related_terms": ["Fixity", "Chain of custody", "Archive integrity audit", "Administrative metadata", "Checksum", "Provenance"],
+    "common_mistakes": ["Treating a successful file open or playback as proof of authenticity, rather than verifying fixity and provenance.", "Relying on MD5 alone where tampering is a concern; it detects accidental errors but is cryptographically compromised.", "Assuming authenticity without an unbroken, documented chain of custody."],
+    "scenario_contexts": ["Confirming a forensic audio recording is unaltered before it is submitted as evidence.", "Validating a preservation master's checksum and provenance before creating derivative copies.", "Verifying the authenticity of files received from another institution during an exchange."]
+   },
+   "sources": ["OAIS Reference Model (ISO 14721) - Preservation Description Information: Fixity and Provenance", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 6.3.25 Integrity and Checksums", "Society of American Archivists, Dictionary of Archives Terminology - 'chain of custody' / authenticity"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bc08e0fb-4f66-4002-83de-aca9b89cc310",
+   "term": "Archive integrity audit",
+   "fields": {
+    "definition": "A systematic check of stored archival objects to confirm their bit-level integrity, typically by recalculating fixity values (checksums) across holdings and comparing them against the recorded values to detect data corruption, loss, or undocumented change.",
+    "plain_english": "An integrity audit is a regular checkup that scans stored files to make sure none have gone bad. It re-checks each file's checksum and flags any that no longer match.",
+    "purpose_function": "It detects bit rot, storage errors, and undocumented changes early so a damaged file can be restored from a verified copy before all copies are affected.",
+    "practical_application": "A repository runs scheduled integrity audits that recompute checksums across storage and report mismatches, letting staff replace corrupted files from verified backups.",
+    "category": "Authenticity & Integrity",
+    "related_terms": ["Fixity", "Checksum", "Archive authenticity verification", "Archive refresh cycle", "Administrative metadata"],
+    "common_mistakes": ["Assuming one copy passing a checksum check is enough; integrity auditing needs verified redundant copies to repair from.", "Running audits so rarely that corruption is found only after every copy is affected.", "Confusing an integrity audit (bit-level fixity) with authenticity verification (genuineness and provenance)."],
+    "scenario_contexts": ["Scheduling periodic fixity checks across a digital audio repository to catch silent data corruption.", "Investigating a checksum mismatch flagged during a routine audit and restoring from backup.", "Reporting audit results as evidence of ongoing integrity for a trusted-repository assessment."]
+   },
+   "sources": ["IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 6.3.25 Integrity and Checksums", "OAIS Reference Model (ISO 14721) - Fixity Information", "DPC Digital Preservation Handbook - Fixity and checksums"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a55b1b07-5563-41ad-8476-6d737082017a",
+   "term": "Archive lifecycle management",
+   "fields": {
+    "definition": "The coordinated management of archival materials through all stages of their existence, from acquisition and accession, ingest, and description, through storage and active preservation (fixity checking, refreshment, and migration), access, and eventual disposition or continued retention, governed by defined policies.",
+    "plain_english": "This means caring for stored material at every stage, from the day it arrives to its long-term storage. It is like servicing a car on a set schedule instead of waiting for it to break down.",
+    "purpose_function": "It ensures preservation actions happen at the right time under consistent policy, so materials stay authentic, accessible, and usable across changing formats and technologies rather than degrading through neglect.",
+    "practical_application": "An archive follows lifecycle policies that trigger ingest workflows, scheduled fixity audits, media refresh, and format migration so each object is actively maintained rather than left static.",
+    "category": "Archival Management",
+    "related_terms": ["Archive refresh cycle", "Archive integrity audit", "Archival information package", "Administrative metadata", "Archive accession number", "Chain of custody"],
+    "common_mistakes": ["Treating archiving as a one-time deposit rather than an ongoing cycle of active preservation.", "Deferring migration and refresh until media or formats are already obsolete.", "Managing storage in isolation from accession, description, and access policies."],
+    "scenario_contexts": ["Setting policy that schedules fixity audits, media refresh, and format migration at defined intervals.", "Planning a workflow from tape accession through digitization, storage, and researcher access.", "Reviewing at-risk formats to prioritize migration within the preservation lifecycle."]
+   },
+   "sources": ["OAIS Reference Model (ISO 14721) - preservation functions and Archival Storage", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 2 Key Digital Principles", "DPC Digital Preservation Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bca0e812-4e11-4d29-acad-ae70ac12467a",
+   "term": "Archive refresh cycle",
+   "fields": {
+    "definition": "The scheduled recurring process of copying archived data onto new storage media of the same type (media refreshment) without changing the bitstream, performed to counter physical media degradation and reach media before it fails; it is distinct from migration, which moves content to a new format or a different media type.",
+    "plain_english": "A refresh cycle means copying stored files onto new media on a regular schedule, before the old media wears out. The files stay exactly the same; only the thing they sit on is renewed.",
+    "purpose_function": "It counters the limited and uncertain lifespan of storage media by moving bit-for-bit copies onto new carriers on a planned schedule, so files are never left on aging or failing media.",
+    "practical_application": "A repository refreshes its LTO tape or disk holdings on a set cycle, copying data to new carriers and verifying checksums after each copy to confirm nothing changed.",
+    "category": "Storage & Media",
+    "related_terms": ["Archive integrity audit", "Fixity", "Data migration", "Archive lifecycle management", "Archival information package"],
+    "common_mistakes": ["Confusing refresh (a bit-identical copy to new media of the same type) with migration (a change of format or media type).", "Refreshing without verifying checksums, so a copy error goes undetected.", "Setting the cycle longer than the media's reliable life, so carriers fail before they are refreshed."],
+    "scenario_contexts": ["Copying an LTO tape library to new-generation tape before the old stock exceeds its rated life.", "Copying disk-based masters to fresh drives on a scheduled refresh and re-verifying fixity.", "Planning refresh intervals as part of a repository's storage maintenance policy."]
+   },
+   "sources": ["OAIS Reference Model (ISO 14721), sec. 5.1.3 Migration Types - Refreshment", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 13 Storage / Digital Mass Storage Systems", "DPC Digital Preservation Handbook - storage and preservation strategies"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "df9deca5-4be8-4d3d-8514-7e9e3a013505",
+   "term": "Archive restoration drill",
+   "fields": {
+    "definition": "A planned test in which archived data is actually restored from backup or preservation copies to confirm that recovery procedures work and that the restored content is complete and valid; it is a disaster-recovery exercise that verifies recoverability rather than assuming it.",
+    "plain_english": "A restoration drill is a practice run of recovering files from backup to prove it really works. It is like a fire drill: you test the plan before a real emergency, not during one.",
+    "purpose_function": "It verifies that backups are usable and that recovery steps are correct, catching failed or unreadable backups and procedural gaps before a real loss makes them critical.",
+    "practical_application": "An archive periodically restores a sample of AIPs from its backup system, checks their fixity against recorded values, and times the process to confirm recovery targets are met.",
+    "category": "Disaster Recovery",
+    "related_terms": ["Archive integrity audit", "Fixity", "Archival information package", "Archive lifecycle management", "Chain of custody"],
+    "common_mistakes": ["Assuming backups are good because the backup job completes, without ever test-restoring them.", "Restoring files but never verifying their fixity to confirm the copy is intact.", "Drilling only on small files and never on the large media files that matter most."],
+    "scenario_contexts": ["Test-restoring a set of preservation masters from off-site backup and verifying checksums.", "Timing a full recovery to confirm the archive meets its recovery-time objective.", "Discovering an unreadable backup tape during a drill and correcting the backup process."]
+   },
+   "sources": ["OAIS Reference Model (ISO 14721) - Archival Storage: disaster recovery and error checking", "IASA-TC 04, Guidelines on the Production and Preservation of Digital Audio Objects, sec. 6.3.24 Verification and Retrieval", "DPC Digital Preservation Handbook - backup and recovery"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6ae0ef0c-a9b6-49d6-a93c-43ca0f8bfd07",
+   "term": "Chain of custody",
+   "fields": {
+    "definition": "The documented, unbroken succession of the persons or offices that have held and controlled materials from the moment of their creation onward. In archives it is a key support for authenticity, because content whose custody is fully documented can be shown to have remained under continuous, accountable control.",
+    "plain_english": "Chain of custody is a complete record of everyone who has held an item, from the moment it was made. An unbroken record helps prove the recording is genuine and was not tampered with.",
+    "purpose_function": "It supports authenticity and trust by showing continuous, accountable control of an object, so any gap that could allow undetected alteration is visible and can be judged.",
+    "practical_application": "When accepting a recording as evidence or for preservation, a technician logs each transfer of custody, who handed it over, who received it, when, and any actions taken, to keep the chain unbroken.",
+    "category": "Authenticity & Integrity",
+    "related_terms": ["Provenance", "Archive authenticity verification", "Administrative metadata", "Archive accession number", "Fixity"],
+    "common_mistakes": ["Confusing chain of custody (who controlled the item) with provenance of the intellectual content or with descriptive metadata.", "Leaving gaps in the custody record and assuming authenticity anyway.", "Failing to log routine handling and transfers, so the chain cannot be reconstructed later."],
+    "scenario_contexts": ["Documenting every handoff of a recording intended for use as legal evidence.", "Recording custody transfers as tapes move from a donor through processing to storage.", "Reviewing custody records to assess the authenticity of a recording of uncertain origin."]
+   },
+   "sources": ["Society of American Archivists, Dictionary of Archives Terminology - 'chain of custody'", "OAIS Reference Model (ISO 14721) - Provenance Information (chain of custody)", "DPC / DPConline, OAIS Reference Model - Preservation Description Information"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

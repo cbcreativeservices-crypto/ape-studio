@@ -1,0 +1,216 @@
+{
+ "batch": 123,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "100b1516-7af8-4cad-926d-147a6283a366",
+   "term": "Parent send",
+   "fields": {
+    "definition": "The routing that carries a track's post-fader output to its parent - the folder or group channel that contains it, or the master bus when the track sits at the top level. In DAWs such as REAPER it appears as the 'Master/parent send' control, which enables or disables this upward signal flow so the track feeds the group mix.",
+    "plain_english": "A parent send is how a track passes its sound up to the group it belongs to, or to the main mix. Think of it like a small stream flowing into a bigger river. If you switch it off, that track no longer reaches the mix.",
+    "purpose_function": "It defines where a track's audio goes in a nested mixing structure, letting several tracks collapse into one group so they can be processed and level-controlled together. Turning it off lets you reroute a track elsewhere without it also leaking into the parent group.",
+    "practical_application": "A technician toggles or checks the parent send when a track is unexpectedly missing from, or doubling into, a group; disabling it is common when a track should feed only a submix or aux and must not also hit the master.",
+    "category": "Signal Routing",
+    "related_terms": ["Bus", "Subgroup", "Aux send", "Master bus", "Group channel"],
+    "common_mistakes": [
+     "Assuming a track is muted from the mix when its parent send is simply disabled, so the fader and solo seem to behave oddly.",
+     "Leaving the parent send on while also adding a manual send to the same bus, which double-routes the signal and causes level buildup or comb filtering.",
+     "Confusing an aux/effects send (a parallel tap) with the parent send (the track's main output path)."
+    ],
+    "scenario_contexts": [
+     "Building a drum submix by folding kick, snare and overheads into one parent group for shared compression.",
+     "Muting a stem from the master while still feeding it to a headphone or aux mix by disabling its parent send.",
+     "Troubleshooting a track that plays in solo but vanishes in the full mix because its parent send was turned off."
+    ]
+   },
+   "sources": ["REAPER User Guide (Cockos)", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "61d95060-b42b-47be-b94e-105bbea85820",
+   "term": "Park the fader",
+   "fields": {
+    "definition": "Console and mixing jargon for setting a channel or master fader to a chosen level and leaving it fixed for the duration, rather than continuously riding or automating it. A 'parked' fader holds a static gain so that source stays at one balance in the mix.",
+    "plain_english": "To park a fader means to set it to one level and then leave your hand off it. It is like setting cruise control on a car instead of pressing the pedal the whole time. The sound stays at the same volume until you choose to move it again.",
+    "purpose_function": "It gives a stable, repeatable balance for a source that does not need moment-to-moment level changes, freeing the operator's attention for parts of the mix that do need active riding.",
+    "practical_application": "An engineer parks steady sources like a click return or a backing pad, then spends live-mix effort riding vocals and solos; parked levels also form the static starting balance before automation is written.",
+    "category": "Console Operation",
+    "related_terms": ["Fader", "Gain riding", "Automation", "Static mix", "Unity gain"],
+    "common_mistakes": [
+     "Parking a fader well below or above unity out of habit and losing gain-structure headroom instead of fixing the level at the source.",
+     "Parking every fader and never riding dynamic sources like a lead vocal, so it gets buried or jumps out.",
+     "Forgetting a fader is parked while an automation write mode is armed, so the console overwrites intended moves with the static value."
+    ],
+    "scenario_contexts": [
+     "Live mixing where the engineer parks stable channels and rides only vocals and solos.",
+     "Setting a static starting balance before recording automation passes in a DAW.",
+     "Leaving a talkback or click return parked at a fixed monitor level throughout a session."
+    ]
+   },
+   "sources": ["Yamaha Sound Reinforcement Handbook", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3681c26b-860b-4a5a-ad2a-c85f73759ef2",
+   "term": "Pattern automation",
+   "fields": {
+    "definition": "Automation whose parameter moves are stored in and recalled with a sequencer pattern, so level, pan, filter or effect changes repeat every time that pattern plays. On step-based instruments it is often implemented as per-step parameter changes, such as Elektron's parameter locks.",
+    "plain_english": "Pattern automation means volume, tone or effect changes are saved inside a short repeating pattern. Every time the pattern loops, those same moves happen again on their own. It is like a wind-up music box that plays the exact same twists each turn.",
+    "purpose_function": "It lets a repeating musical block carry its own dynamic changes, adding movement and variation to loops without a musician performing the moves live each time.",
+    "practical_application": "A producer draws or step-locks filter sweeps, volume fades or pan moves inside a drum or synth pattern so the loop evolves; those moves travel with the pattern when it is copied or chained into an arrangement.",
+    "category": "Sequencing",
+    "related_terms": ["Automation", "Pattern sequencer", "Parameter lock", "Pattern chain", "Step sequencer"],
+    "common_mistakes": [
+     "Expecting pattern automation to keep running after the pattern ends, when the moves reset with each loop.",
+     "Writing automation into the wrong pattern, then not hearing it because a different pattern is playing.",
+     "Confusing pattern (loop-based) automation with linear timeline automation on an arrangement track."
+    ],
+    "scenario_contexts": [
+     "Adding a filter sweep inside a 16-step bass pattern on a groovebox.",
+     "Automating a reverb send per step so only certain hits are wet.",
+     "Copying a pattern to a new section and having its volume swells copy with it."
+    ]
+   },
+   "sources": ["Ableton Live Reference Manual", "Elektron Digitakt Reference Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "edf6cc08-169d-4da7-b472-77ff33f4bb22",
+   "term": "Pattern chain",
+   "fields": {
+    "definition": "A sequence of individual patterns linked to play back one after another in a set order, forming a longer passage or full song from short looped building blocks. Chaining is the step between single looping patterns and a full arrangement in pattern-based sequencers and drum machines.",
+    "plain_english": "A pattern chain is a list of short patterns set to play one after the other. Instead of looping one beat forever, you line up several so they play like verses and choruses. It is like a playlist, but made of short drum or music loops.",
+    "purpose_function": "It turns a collection of short loops into an arranged performance, letting an artist build song structure without recording one long take.",
+    "practical_application": "On a drum machine or groovebox the tech enters chain or song mode and lists pattern numbers in order, sometimes with repeat counts, so an intro, verse and chorus play back hands-free during a set.",
+    "category": "Sequencing",
+    "related_terms": ["Pattern sequencer", "Song mode", "Pattern length", "Pattern variation", "Arrangement"],
+    "common_mistakes": [
+     "Editing a pattern used several times in a chain and being surprised the change appears at every point it plays.",
+     "Forgetting to save the chain or song, so the order is lost when a new pattern is selected.",
+     "Mismatched pattern lengths in a chain causing unexpected timing or dropped beats at transitions."
+    ],
+    "scenario_contexts": [
+     "Building a full track from intro, verse and chorus patterns on a Roland or Elektron box.",
+     "Performing live by triggering a pre-built chain so the arrangement runs hands-free.",
+     "Sketching song structure quickly before exporting stems to a DAW."
+    ]
+   },
+   "sources": ["Elektron Digitakt Reference Manual", "Roland TR-8S Owner's Manual", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b8d4032a-d02e-4efb-9789-26a9933f4ba1",
+   "term": "Pattern fill",
+   "fields": {
+    "definition": "A short variation pattern - most often a drum fill - used to break up and lead between repetitions of a main pattern, typically triggered momentarily or inserted at the end of a phrase. Many drum machines provide a dedicated fill or variation function that plays this alternate pattern for a bar or beat before returning to the main groove.",
+    "plain_english": "A pattern fill is a short burst that breaks up a looping beat, like a quick drum roll before the next section. You usually trigger it for just a bar, then the main groove comes back. It keeps a repeating pattern from sounding boring.",
+    "purpose_function": "It adds momentum and signals transitions in an otherwise repetitive loop, imitating how a live drummer plays a fill to lead into a new section.",
+    "practical_application": "A performer holds or triggers the fill button near the end of a phrase so the machine plays a roll or variation, then drops back to the main pattern for the next section.",
+    "category": "Sequencing",
+    "related_terms": ["Pattern variation", "Pattern chain", "Pattern sequencer", "Drum fill", "Groove"],
+    "common_mistakes": [
+     "Triggering fills too often so they stop feeling like special transitions.",
+     "Confusing a momentary fill (temporary) with permanently switching to a different pattern.",
+     "Fills of a different length knocking the sequence off the bar so the next section starts late."
+    ],
+    "scenario_contexts": [
+     "Triggering a drum fill going into a chorus during a live set.",
+     "Using a machine's fill or variation button to add motion to a looped beat.",
+     "Programming an alternate fill pattern to play automatically every eighth bar."
+    ]
+   },
+   "sources": ["Roland TR-8S Owner's Manual", "Elektron Digitakt Reference Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "21cc42fd-7566-4230-84b4-996814604d40",
+   "term": "Pattern length",
+   "fields": {
+    "definition": "The number of steps or bars a sequencer pattern spans before it loops. Setting pattern length fixes how long the loop is - for example 16 steps of a sixteenth-note grid equals one bar - and some sequencers allow independent track lengths within one pattern to create polyrhythms.",
+    "plain_english": "Pattern length is how long a loop is before it repeats. For example, 16 short steps usually make one bar of music. Make it longer for a bigger loop, or shorter for a quicker repeat.",
+    "purpose_function": "It sets the size of the repeating musical block and, together with the step rate, determines the loop's duration and feel; independent track lengths let parts of different sizes cycle against each other.",
+    "practical_application": "A producer sets pattern length to control how many steps are programmable and how often the loop turns over, extending it for longer phrases or using odd lengths for evolving polyrhythmic patterns.",
+    "category": "Sequencing",
+    "related_terms": ["Pattern sequencer", "Step sequencer", "Pattern chain", "Time signature", "Polyrhythm"],
+    "common_mistakes": [
+     "Confusing pattern length (how many steps) with tempo (how fast the steps play).",
+     "Leaving the default 16 steps and cutting off phrases that need more.",
+     "Setting mismatched track lengths by accident and getting a drifting, unintended polyrhythm."
+    ],
+    "scenario_contexts": [
+     "Extending a pattern from 16 to 32 steps to fit a two-bar bassline.",
+     "Setting a hi-hat track to a different length than the kick for an evolving groove.",
+     "Matching pattern lengths across a chain so sections line up on the bar."
+    ]
+   },
+   "sources": ["Elektron Digitakt Reference Manual", "Steinberg Cubase Operation Manual", "Roland TR-8S Owner's Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "517e4395-5b7c-4226-8fdb-d2ab6ceffb07",
+   "term": "Pattern sequencer",
+   "fields": {
+    "definition": "A sequencer that stores and plays musical events as short, self-contained repeating patterns (loops) which are then selected, edited and chained, rather than recorded along one continuous linear timeline. Drum machines and grooveboxes are typical examples, commonly using a step grid to enter notes and triggers.",
+    "plain_english": "A pattern sequencer is a tool that plays music as short loops you build and then line up. Instead of recording one long take, you make small patterns and arrange them. Drum machines work this way, often using a row of step buttons.",
+    "purpose_function": "It makes it fast to build, edit and rearrange repeating musical parts, which suits beat-driven and electronic music where loops are the core building blocks.",
+    "practical_application": "A producer programs kicks, snares and notes onto a step grid to make a pattern, tweaks and copies it, then chains patterns into a full arrangement or triggers them live.",
+    "category": "Sequencing",
+    "related_terms": ["Step sequencer", "Pattern chain", "Pattern length", "Drum machine", "Groovebox"],
+    "common_mistakes": [
+     "Expecting linear timeline recording and getting confused by the loop-based pattern workflow.",
+     "Editing a shared pattern and unintentionally changing it everywhere it is used in a chain.",
+     "Not saving patterns before switching, losing programmed work."
+    ],
+    "scenario_contexts": [
+     "Programming a beat on a hardware groovebox or drum machine.",
+     "Using a DAW's pattern or clip view to build loops before arranging.",
+     "Chaining patterns to perform a track live without a laptop."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers", "Elektron Digitakt Reference Manual"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "20bef4f0-1cfe-46bd-b434-4303c23e7b3d",
+   "term": "Pattern variation",
+   "fields": {
+    "definition": "An alternate version of a pattern that keeps its overall identity while changing some notes, hits or parameters, used to relieve repetition - for example a B-variation of a drum pattern or a fill-style change. Many drum machines provide A/B or numbered variations that can be switched or chained with the main pattern.",
+    "plain_english": "A pattern variation is a slightly changed version of a loop. It keeps the same feel but adds or removes a few hits so the beat does not sound too repetitive. It is like singing a verse the second time with a small twist.",
+    "purpose_function": "It adds interest and marks sections by giving a repeating loop small changes, so a track feels less static without needing a whole new pattern.",
+    "practical_application": "A producer makes an A pattern and a B variation, then switches or chains between them for verse and chorus feel, or drops a variation in every few bars for movement.",
+    "category": "Sequencing",
+    "related_terms": ["Pattern fill", "Pattern chain", "Pattern sequencer", "Pattern length", "Groove"],
+    "common_mistakes": [
+     "Making variations so different they sound like an unrelated pattern and break the groove.",
+     "Forgetting which slot holds the variation and triggering the wrong one live.",
+     "Overusing variations so none of them feels special."
+    ],
+    "scenario_contexts": [
+     "Switching from an A groove to a busier B variation in the chorus.",
+     "Adding a variation with an extra snare every fourth bar for motion.",
+     "Chaining main and variation patterns to build a simple arrangement."
+    ]
+   },
+   "sources": ["Roland TR-8S Owner's Manual", "Elektron Digitakt Reference Manual"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "acf04dd8-ddb2-42e9-a160-87e44553322a",
+   "term": "Peak validation",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No established professional meaning found for 'Peak validation' and no >=2 acceptable sources (standards body, manufacturer technical doc, or recognised professional text) define it. It is not a recognised audio term and reads as an ambiguous coined phrase: plausible but conflicting readings include QC of true-peak levels against a delivery limit (e.g. EBU R128 / ATSC A/85 -1 dBTP checks) versus verifying peak-meter behaviour. All fields left blank pending clarification of the intended sense."
+   ]
+  }
+ ]
+}

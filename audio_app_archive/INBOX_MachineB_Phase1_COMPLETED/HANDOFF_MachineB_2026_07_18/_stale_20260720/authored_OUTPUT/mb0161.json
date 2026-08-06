@@ -1,0 +1,159 @@
+{
+ "batch": 161,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "a28d7a65-7445-4f10-b46a-0d747e5c7919",
+   "term": "Distribution master",
+   "fields": {
+    "definition": "The final, approved audio master prepared and formatted for a specific delivery channel or medium, such as a DDP image for CD replication, a high-resolution PCM file for streaming and download stores, or a dedicated cut master for vinyl. It is derived from the mastering session's production master and carries the exact program, track order, spacing, and metadata that will be reproduced.",
+    "plain_english": "The finished version of a record, saved in the exact form a shop or streaming service needs. There can be one for CDs, one for streaming, and another for vinyl. It is like exporting the same photo in the right size for a poster, a phone, and a website.",
+    "purpose_function": "It exists to hand distributors and pressing plants a ready-to-use, format-correct copy of the finished music so it is reproduced exactly as approved.",
+    "practical_application": "A mastering engineer exports a separate distribution master per outlet: a DDP for the CD plant, high-resolution WAVs for streaming, and a dedicated cut for vinyl, each meeting that outlet's spec.",
+    "category": "Mastering Deliverables",
+    "related_terms": ["Production master", "DDP", "Premaster", "Delivery specification", "Red Book standard", "Loudness normalization"],
+    "common_mistakes": ["Sending one generic file to every outlet instead of a format-correct master for each", "Confusing the distribution master with the production master it is derived from", "Ignoring an outlet's spec for sample rate, headroom, or metadata, so the file is rejected"],
+    "scenario_contexts": ["Exporting a DDP distribution master for a CD pressing plant", "Delivering high-resolution WAV masters to a streaming aggregator", "Preparing a separate cut master for vinyl alongside the digital masters"]
+   },
+   "sources": ["Katz, Mastering Audio", "Ballou, Handbook for Sound Engineers", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "64674906-ae30-43a5-ac88-4cffa57a6486",
+   "term": "DMG Audio Equilibrium",
+   "fields": {
+    "definition": "A software equalizer plug-in from DMG Audio offering up to 32 bands of shelving, filter, notch, and peaking EQ that can run in series or in parallel. It provides linear-phase, minimum-phase, analogue-modelled, and free-phase modes, per-band dynamic (level-dependent) EQ, plus mid-side and multichannel operation, aimed at mixing and mastering.",
+    "plain_english": "A very flexible tone-shaping plug-in for a computer. It can boost or cut many exact frequency ranges, copy the sound of classic hardware, and even react to how loud a sound is. It is like a huge set of tone dials with a lot of extra options.",
+    "purpose_function": "It exists to give engineers precise, adaptable control over tone and balance, from surgical fixes to gentle mastering shaping, all in one plug-in.",
+    "practical_application": "A mastering engineer might use a linear-phase band for a clean broad lift, a dynamic band to tame a resonance only when it peaks, and mid-side bands to widen or focus the stereo image.",
+    "category": "Mastering Software",
+    "related_terms": ["Parametric equalizer", "Linear-phase EQ", "Dynamic EQ", "Mid-side processing", "Mastering chain", "DMG Audio Limitless"],
+    "common_mistakes": ["Defaulting to linear-phase everywhere, ignoring its pre-ring and added latency trade-offs", "Adding many bands when a couple of well-placed moves would do", "Confusing minimum-phase and linear-phase modes and their differing effect on transients"],
+    "scenario_contexts": ["Broad tonal shaping across a master bus", "Notching a narrow resonance with a dynamic band", "Mid-side EQ to open the top end without widening the bass"]
+   },
+   "sources": ["DMG Audio, EQuilibrium user manual", "Sound on Sound (review)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d3f1fb24-d5f1-4d2c-a493-55202d777758",
+   "term": "DMG Audio Limitless",
+   "fields": {
+    "definition": "A mastering peak-limiter plug-in from DMG Audio that splits the signal into up to five user-editable frequency bands and separates transients from sustained material, processing each with dedicated limiting routines. It includes true-peak-aware limiting and a multi-algorithm clipping stage, aiming for loud, transparent masters.",
+    "plain_english": "A loudness tool for finishing a track. It gently holds back the loudest peaks so the whole song can be turned up without distorting. It splits the sound into separate frequency zones and treats sudden hits differently from steady sounds to stay clean.",
+    "purpose_function": "It exists to raise a master's overall loudness while controlling peaks, doing so with fewer audible artifacts than a single wide-band limiter.",
+    "practical_application": "At the end of the mastering chain, an engineer sets the output ceiling and gain, then tunes the bands and transient handling so the master hits its loudness target without pumping or distortion.",
+    "category": "Mastering Software",
+    "related_terms": ["Brickwall limiter", "True peak", "Loudness normalization", "Multiband processing", "Mastering chain", "DMG Audio Equilibrium"],
+    "common_mistakes": ["Pushing gain until the master pumps or distorts, chasing loudness over quality", "Setting a 0 dBFS ceiling and getting true-peak overs after lossy encoding", "Leaving it in the most complex mode without understanding each band's job"],
+    "scenario_contexts": ["Final limiting stage of a mastering chain", "Meeting a streaming loudness and true-peak target", "Controlling peaks on a dynamic mix without audible squashing"]
+   },
+   "sources": ["DMG Audio, Limitless product documentation", "Sound on Sound (review)", "Tape Op (review)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "554eff6d-8860-4ced-99e0-f1ff029f77b1",
+   "term": "Dolby Atmos master file",
+   "fields": {
+    "definition": "The primary Dolby Atmos deliverable that stores a complete immersive mix as channel-based beds plus individual audio objects together with their three-dimensional positional (spatial) metadata. It exists as the Dolby Atmos Master File set (an .atmos file with companion audio and metadata files) or as an interchange ADM BWF (.wav) file, from which the Dolby renderer produces speaker-array and binaural outputs.",
+    "plain_english": "One special file that holds a full surround-and-height mix. Instead of fixed speaker tracks, it stores the sounds plus notes on where each one should sit in the room. A playback system then places those sounds on whatever speakers or headphones the listener has.",
+    "purpose_function": "It exists to carry a finished Atmos mix in a device-independent way, so the same file can be rendered correctly to many different playback setups.",
+    "practical_application": "A mixer exports the Atmos master, often as an ADM BWF, from the Dolby renderer, then masters or delivers it to streaming platforms, which re-render it to formats like 5.1, 7.1, and binaural.",
+    "category": "Immersive Audio",
+    "related_terms": ["ADM BWF", "Audio object", "Dolby Atmos Renderer", "Bed (channel-based audio)", "Binaural rendering", "Downmix metadata"],
+    "common_mistakes": ["Thinking it is a fixed speaker mix rather than objects plus positional metadata", "Confusing the .atmos master file set with the single-file ADM BWF export", "Assuming the master already contains final 5.1 or stereo mixes instead of re-renders made from it"],
+    "scenario_contexts": ["Delivering an Atmos music master as ADM BWF to a streaming service", "Archiving a film or music Atmos mix as a master file set", "Re-rendering the master to 5.1 and binaural for other outlets"]
+   },
+   "sources": ["Dolby, Overview of Dolby Atmos Master File Formats", "Dolby Atmos Renderer documentation", "ITU-R BS.2076 (Audio Definition Model)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "2a832871-fd59-46b7-aeb4-5f8af5a523df",
+   "term": "Downmix metadata",
+   "fields": {
+    "definition": "Encoded parameters that tell a consumer decoder how to fold a multichannel program, such as 5.1, down to fewer channels, most commonly to stereo. It selects the downmix mode, Lt/Rt for matrix-surround compatibility or Lo/Ro for conventional stereo, and sets the centre and surround downmix levels that control how much those channels contribute to the two-channel result.",
+    "plain_english": "Instructions saved with surround audio that tell a TV or player how to fold it into stereo. They set how loud the centre and rear channels should be in that stereo mix. The centre channel is the one that carries voices. It is like a recipe for shrinking six speakers down to two without losing the important parts.",
+    "purpose_function": "It exists so a single surround delivery plays back correctly and predictably on stereo systems, keeping dialogue and balance right without needing a separate stereo mix.",
+    "practical_application": "A broadcast or mastering engineer sets the Lo/Ro and Lt/Rt levels in the Dolby metadata so the encoded stream folds down cleanly, then auditions the resulting stereo downmix on the encoder.",
+    "category": "Delivery Metadata",
+    "related_terms": ["Dialnorm", "Lt/Rt", "Lo/Ro", "Dolby E", "Broadcast metadata", "Downmix"],
+    "common_mistakes": ["Confusing downmix metadata with dialnorm; dialnorm sets a reference level, not the fold-down", "Never auditioning the stereo downmix, so it clips or buries dialogue", "Assuming default levels suit every program regardless of its surround balance"],
+    "scenario_contexts": ["Setting Dolby metadata for a 5.1 broadcast delivery", "Checking a surround master's stereo fold-down before encoding", "Ensuring dialogue stays clear when a home receiver downmixes to two speakers"]
+   },
+   "sources": ["Dolby Metadata Guide", "SMPTE ST 337 / Dolby E", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d63b4bea-b47b-4788-9a87-5bfea24afceb",
+   "term": "Dry score stem",
+   "fields": {
+    "definition": "A submix (stem) of a film or television musical score printed without added time-based effects such as reverb or delay, that is, the music in its dry form. It is delivered so the re-recording mixer can add or match ambience and place the score within the final soundtrack.",
+    "plain_english": "A version of the movie's music saved with no echo or reverb added, just the plain, close sound. The final mixer can then add their own room sound so the music fits the scene. It is like getting a clean vocal so you can add your own echo later.",
+    "purpose_function": "It exists to give the final dubbing stage full control over the music's space and blend, rather than baking in effects that cannot be undone later.",
+    "practical_application": "The score mixer delivers dry, and often separate wet, music stems; on the dub stage the re-recording mixer adds reverb to seat the score with dialogue and effects.",
+    "category": "Post-Production Mixing",
+    "related_terms": ["Stem mixing", "Wet/dry signal", "Re-recording mix", "Reverb", "Effects-friendly score mix", "Dialogue-friendly score mix"],
+    "common_mistakes": ["Printing the stem with reverb already added, removing the dub stage's control", "Confusing a dry stem with a rough or unfinished mix; dry only means no effects", "Delivering only a wet stem, leaving no clean version to reshape"],
+    "scenario_contexts": ["Delivering music stems to a film dub stage", "Matching score ambience to a scene at the final mix", "Repurposing a cue for a trailer that needs different reverb"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Huber & Runstein, Modern Recording Techniques", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8dff32e3-ce2b-47cc-8ea1-dcabe3e332ff",
+   "term": "Effects-friendly score mix",
+   "fields": {
+    "definition": "A film or television music mix arranged and balanced so the score leaves sonic room for sound effects in the final dub, controlling the music's density and frequency content so score and effects can coexist without masking each other.",
+    "plain_english": "A way of mixing a film's music so it does not fight with the sound effects, like explosions or footsteps. The music is shaped to leave gaps for those sounds. It is like a band leaving space so you can still hear the crowd and the action.",
+    "purpose_function": "It exists so the score and the sound-effects track both stay clear in the finished soundtrack, instead of clashing and cluttering the mix.",
+    "practical_application": "The score mixer thins busy arrangements and carves competing frequencies during effects-heavy scenes so the re-recording mixer can sit music and effects together easily.",
+    "category": "Post-Production Mixing",
+    "related_terms": ["Dialogue-friendly score mix", "Frequency masking", "Stem mixing", "Re-recording mix", "Sound effects (SFX)", "Dry score stem"],
+    "common_mistakes": ["Mixing the score dense and full-range, so it masks key effects", "Judging balance in isolation instead of against the effects track", "Assuming level automation alone fixes clashes, without carving competing frequencies"],
+    "scenario_contexts": ["Scoring an action scene with heavy sound effects", "Preparing music stems for a busy dub", "Leaving spectral room so effects and score both read clearly"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "17fb9cf7-49e4-4e70-938e-01a4dac31312",
+   "term": "Eight-to-fourteen modulation",
+   "fields": {
+    "definition": "The channel-coding scheme used to record data on Compact Disc, defined in IEC 60908 (the Red Book). Each 8-bit data byte is translated by a fixed lookup table into a 14-bit channel pattern, and 3 merging bits are inserted between patterns, so that ones are always separated by at least 2 and at most 10 zeros; this run-length constraint keeps pit and land lengths readable and limits low-frequency (DC) content.",
+    "plain_english": "A code used on CDs that turns each group of 8 data bits into a longer 14-bit pattern before it is burned as pits. The rule keeps the marks from being too short or too long, so the player's laser can read them reliably. It is like re-spelling words so a machine never trips over them.",
+    "purpose_function": "It exists to shape the recorded signal so the pits and lands are always a readable length and the data stream stays easy to clock and free of drifting DC, giving reliable CD playback.",
+    "practical_application": "A technician rarely sets EFM by hand but understands that it underlies CD encoding, and that trouble here, seen as a high block-error rate, points to an unreliable disc.",
+    "category": "Disc Encoding",
+    "related_terms": ["Red Book standard", "Cross-Interleaved Reed-Solomon Code (CIRC)", "Block error rate (BLER)", "Subcode (Q channel)", "Pit and land", "Run-length-limited coding"],
+    "common_mistakes": ["Thinking EFM stores audio directly, when it is a channel code applied after error-correction encoding", "Confusing EFM with error correction (CIRC); they do different jobs", "Assuming the 14-bit patterns add data, when they only reshape it for reliable reading"],
+    "scenario_contexts": ["Understanding how audio data is physically encoded on a CD", "Explaining why CD pits have limited minimum and maximum lengths", "Tracing a high-error disc back to its channel coding and readability"]
+   },
+   "sources": ["IEC 60908 (Compact Disc Digital Audio)", "Ballou, Handbook for Sound Engineers", "AES (Immink, EFM coding)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a7161568-eb67-41c3-bb26-4355106ef7f7",
+   "term": "Elliptical equalizer",
+   "fields": {
+    "definition": "A stereo processor used chiefly in disc (vinyl) cutting that progressively sums low-frequency content to mono below a chosen crossover frequency, reducing the out-of-phase (vertical) component of the groove modulation. This narrows the low end toward the centre so the cutter head and the playback stylus are not driven out of the groove by out-of-phase bass.",
+    "plain_english": "A tool used when making vinyl that makes the deep bass come from the centre instead of spreading it left and right. Out-of-phase bass makes the record needle jump, so this keeps the low end centred and steady. It is like tucking the heavy bass into the middle so the groove stays smooth.",
+    "purpose_function": "It exists to keep low-frequency energy in phase and centred so a record can be cut and played back without the stylus mistracking or skipping.",
+    "practical_application": "A cutting engineer sets the elliptical EQ's crossover, often around a couple of hundred hertz, so bass below it collapses to mono, allowing a louder, more stable groove.",
+    "category": "Disc Mastering",
+    "related_terms": ["Disc-cutting engineer", "Cutting lathe", "Vinyl mastering", "Mid-side processing", "Bass mono", "RIAA equalization"],
+    "common_mistakes": ["Confusing it with a tone EQ; it controls the stereo width of the bass, not overall tone", "Setting the crossover too high, collapsing musical stereo information to mono", "Assuming it is only for vinyl, when centred bass also helps club and streaming masters"],
+    "scenario_contexts": ["Preparing a stereo master for vinyl cutting", "Taming out-of-phase bass that would make a groove skip", "Focusing the low end to mono for a punchier, more stable master"]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Neumann disk-cutting technical documentation", "Sound on Sound"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

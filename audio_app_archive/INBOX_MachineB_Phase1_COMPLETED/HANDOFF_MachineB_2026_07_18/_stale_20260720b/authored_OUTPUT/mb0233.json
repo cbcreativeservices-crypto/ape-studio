@@ -1,0 +1,288 @@
+{
+ "batch": 233,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "7514b4f0-e1b7-41bf-8c31-1d0c9c6e13d6",
+   "term": "Jacket movement",
+   "fields": {
+    "definition": "A Foley 'moves' cue that recreates the cloth sounds of a jacket as a character moves, dresses, or gestures, performed in sync to picture and recorded to replace or reinforce the garment's rustle.",
+    "plain_english": "It is the sound of a jacket rustling as someone moves. A Foley artist makes this sound by hand in a studio while watching the film. It fills in noise the camera mic missed.",
+    "purpose_function": "It restores the natural clothing sounds a scene needs for realism, which are often thin or missing on the production dialogue tracks, and gives the mix a clean, controllable cloth element.",
+    "practical_application": "A Foley artist wears or handles a jacket and performs its movements in sync with the picture while the Foley mixer records the passes onto dedicated cloth tracks.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Cloth movement",
+     "Foley footsteps",
+     "Jewelry movement",
+     "M&E"
+    ],
+    "common_mistakes": [
+     "Assuming clothing sounds are captured well enough on the boom and do not need Foley.",
+     "Performing moves out of sync so the cloth rustle drifts from the picture.",
+     "Recording the jacket too loudly so it distracts from dialogue in the final mix."
+    ],
+    "scenario_contexts": [
+     "Replacing missing clothing rustle in a scene shot with a distant boom.",
+     "Adding cloth movement for an international M&E version where original incidental sounds are removed.",
+     "Reinforcing a character standing up and putting on a jacket before leaving a room."
+    ]
+   },
+   "sources": [
+    "Yewdall, Practical Art of Motion Picture Sound",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "465e84b5-4318-41c6-99c0-edb9fc3bbc7b",
+   "term": "Jewelry movement",
+   "fields": {
+    "definition": "A Foley moves/specifics cue that recreates the small metallic sounds of jewelry — such as bracelets, necklaces, rings, or earrings — jingling or clinking as a character moves, recorded in sync to picture.",
+    "plain_english": "It is the tiny clink and jingle of jewelry as a person moves. A Foley artist makes these sounds by handling real jewelry in time with the film. This adds detail the set microphone may not have caught.",
+    "purpose_function": "It adds fine, believable detail to a character's movement and wardrobe, and supplies those sounds as clean, separate elements the mixer can place and balance.",
+    "practical_application": "A Foley artist handles bracelets, chains, and similar jewelry props and performs the jingles in sync while the Foley mixer records them to dedicated tracks.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Specifics",
+     "Jacket movement",
+     "Key jingle",
+     "ADR"
+    ],
+    "common_mistakes": [
+     "Overplaying the jingle so it pulls focus from dialogue.",
+     "Using jewelry that sounds nothing like what is seen on screen.",
+     "Letting the sound drift out of sync with the actor's motion."
+    ],
+    "scenario_contexts": [
+     "A close-up of a character adjusting a bracelet or necklace.",
+     "Rebuilding jewelry sounds for an M&E track used in dubbing.",
+     "Adding jingle to a character wearing many bangles that were silent on the production track."
+    ]
+   },
+   "sources": [
+    "Yewdall, Practical Art of Motion Picture Sound",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "634619fc-c3c4-4284-a785-d97f91089798",
+   "term": "Key jingle",
+   "fields": {
+    "definition": "A Foley specifics cue that reproduces the metallic jingling and clinking of a set of keys as a character carries, handles, or drops them, performed and recorded in sync to picture.",
+    "plain_english": "It is the jingle of a bunch of keys, made by hand for a film. A Foley artist shakes or handles real keys in time with the picture. It gives the scene a sharp, clear sound the camera mic often misses.",
+    "purpose_function": "It provides a crisp, recognizable prop sound that supports action and character, delivered as a separate clean element the re-recording mixer can control.",
+    "practical_application": "A Foley artist jingles a suitable key set in sync with the actor's hand while the Foley mixer records takes onto a specifics track.",
+    "category": "Foley",
+    "related_terms": [
+     "Foley",
+     "Specifics",
+     "Jewelry movement",
+     "Jacket movement",
+     "ADR"
+    ],
+    "common_mistakes": [
+     "Recording the keys much louder than they would sound in the real space.",
+     "Choosing keys whose pitch or number does not match what is on screen.",
+     "Missing the exact frame where the keys are picked up or set down."
+    ],
+    "scenario_contexts": [
+     "A character unlocking a door as the keys jingle in hand.",
+     "Rebuilding the key sound for an international M&E deliverable.",
+     "A tense scene where dropped keys need a clear, well-timed jingle."
+    ]
+   },
+   "sources": [
+    "Yewdall, Practical Art of Motion Picture Sound",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4c0a28ca-e784-4dfa-8cf2-335f39ea926f",
+   "term": "Language supervision",
+   "fields": {
+    "definition": "The oversight of a localized (dubbed or voiced) version to ensure the target-language dialogue is accurate in translation, correctly pronounced, and well matched to lip-sync and performance, carried out by a language or dubbing supervisor.",
+    "plain_english": "It is checking that a film's new-language voices are correct and natural. A supervisor makes sure the translation is right and the words match the actors' lips. This keeps the dubbed version true to the original.",
+    "purpose_function": "It protects the meaning, tone, and technical fit of a foreign-language version so the localized release feels true to the original for its new audience.",
+    "practical_application": "During or after dubbing sessions, the language supervisor reviews takes for translation accuracy, pronunciation, and sync, and flags lines that must be re-recorded.",
+    "category": "Localization",
+    "related_terms": [
+     "Dubbing",
+     "Language-version recording",
+     "Language-specific ADR",
+     "Language-version quality control",
+     "M&E"
+    ],
+    "common_mistakes": [
+     "Assuming a good translation on paper will automatically fit the actor's lip movements.",
+     "Skipping pronunciation checks for names and technical words.",
+     "Confusing language supervision with simple subtitle proofreading."
+    ],
+    "scenario_contexts": [
+     "Overseeing a Spanish dub of a series for accuracy and sync.",
+     "Approving pronunciation of character names across all language versions.",
+     "Sending flagged lines back for re-recording during a dubbing session."
+    ]
+   },
+   "sources": [
+    "Purcell, Dialogue Editing for Motion Pictures",
+    "Yewdall, Practical Art of Motion Picture Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1d2eb416-54aa-4840-988d-22dc628ddb6e",
+   "term": "Language-specific ADR",
+   "fields": {
+    "definition": "Automated Dialogue Replacement performed for one specific language version of a production, where voice actors re-record dialogue in that language in sync to picture, producing clean, matched lines for that localized release.",
+    "plain_english": "It is re-recording a film's dialogue in one chosen language. Voice actors watch the picture and speak their lines in sync in a studio. This gives that language its own clean, matched dialogue.",
+    "purpose_function": "It supplies each target market with sync dialogue in its own language, kept separate from other versions so each can be mixed and delivered on its own.",
+    "practical_application": "A dubbing studio cues the picture, and voice actors perform lines in the target language to sync while the ADR mixer records them for that version's mix.",
+    "category": "Localization",
+    "related_terms": [
+     "ADR",
+     "Dubbing",
+     "Language-version recording",
+     "Language supervision",
+     "M&E"
+    ],
+    "common_mistakes": [
+     "Reusing one language's ADR timing for another without re-checking sync.",
+     "Forgetting that each language version needs its own clean recording, not the original mix.",
+     "Ignoring differences in line length between languages that break lip-sync."
+    ],
+    "scenario_contexts": [
+     "Recording French lines to picture for a French release.",
+     "Replacing an on-set foreign line with studio ADR for one market.",
+     "Building sync dialogue for a dub that will be mixed over the M&E."
+    ]
+   },
+   "sources": [
+    "Purcell, Dialogue Editing for Motion Pictures",
+    "Yewdall, Practical Art of Motion Picture Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d4346fe9-1883-4fb9-9b5d-31f8eb69eab2",
+   "term": "Language-version quality control",
+   "fields": {
+    "definition": "The quality-control review of a completed localized (dubbed or subtitled) version to confirm it meets translation, sync, performance, and technical delivery standards before the version is released.",
+    "plain_english": "It is the final check of a film made for a new language. Reviewers make sure the voices sync, the translation is right, and the file meets the required specs. Only then is that version approved.",
+    "purpose_function": "It catches sync, translation, and technical faults in a language version before delivery, protecting quality and preventing costly rejects from the distributor.",
+    "practical_application": "A QC operator watches the localized version against a checklist, logging any sync slips, wrong lines, level problems, or spec errors for fixing.",
+    "category": "Localization",
+    "related_terms": [
+     "Language-version recording",
+     "Language supervision",
+     "Dubbing",
+     "Deliverables",
+     "M&E"
+    ],
+    "common_mistakes": [
+     "Checking only the audio and missing subtitle or spec errors.",
+     "Passing a version without comparing sync against the original picture.",
+     "Assuming the source master's QC covers the localized version too."
+    ],
+    "scenario_contexts": [
+     "Reviewing a German dub before it ships to a broadcaster.",
+     "Logging a lip-sync drift found in one reel of a language version.",
+     "Confirming loudness and file specs on a localized deliverable."
+    ]
+   },
+   "sources": [
+    "Purcell, Dialogue Editing for Motion Pictures",
+    "EBU R 128 (loudness for delivery)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "291a054b-0e02-4ba3-a57d-7168f34d65b9",
+   "term": "Language-version recording",
+   "fields": {
+    "definition": "The recording session in which dialogue for a specific target-language version is captured to picture, producing the localized voice tracks that are later edited and mixed over the program's M&E.",
+    "plain_english": "It is the studio session where a film's dialogue is recorded in a new language. Voice actors speak their lines in sync with the picture. These new voices later replace the original ones in that version.",
+    "purpose_function": "It creates the target-language dialogue needed to build a dubbed version, keeping those voices as a clean, separate element for editing and mixing.",
+    "practical_application": "In a dubbing studio, actors watch the picture and perform lines in the target language while the mixer records takes for later editing over the M&E.",
+    "category": "Localization",
+    "related_terms": [
+     "Dubbing",
+     "Language-specific ADR",
+     "Language supervision",
+     "Language-version quality control",
+     "M&E"
+    ],
+    "common_mistakes": [
+     "Recording without a clean M&E to mix the new voices over.",
+     "Letting take levels or mic setup drift between actors in a session.",
+     "Not matching recorded line length to the on-screen mouth movements."
+    ],
+    "scenario_contexts": [
+     "Recording an Italian dub of a feature over several days.",
+     "Capturing target-language voices to sync for a streaming release.",
+     "Re-recording a few lines a supervisor flagged as off-sync."
+    ]
+   },
+   "sources": [
+    "Purcell, Dialogue Editing for Motion Pictures",
+    "Yewdall, Practical Art of Motion Picture Sound"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5306e670-3d6e-4eaf-a8d7-50bdad62aa4d",
+   "term": "Lavalier-track priority",
+   "fields": {
+    "definition": "A dialogue-editing or mixing choice to use the lavalier (body-worn) microphone track as the primary source for a line rather than the boom, usually because the lav gives cleaner, closer, or more usable dialogue in that moment.",
+    "plain_english": "It means picking the tiny clip-on mic as the main sound for a line, not the boom. Editors do this when the clip-on mic sounds cleaner or clearer. It helps get the best, most usable voice for each moment.",
+    "purpose_function": "It lets the editor choose the best-sounding microphone per line so the finished dialogue is clear and consistent, especially when the boom is blocked, distant, or noisy.",
+    "practical_application": "While cutting dialogue, the editor auditions the boom and lav for each line and cuts to the lav when it is cleaner, matching level and tone across the switch.",
+    "category": "Dialogue editing",
+    "related_terms": [
+     "Boom microphone",
+     "Lavalier microphone",
+     "Production sound",
+     "Dialogue editing",
+     "ADR"
+    ],
+    "common_mistakes": [
+     "Switching to the lav without matching its tone to the boom, so the sound jumps.",
+     "Forgetting that lavs pick up clothing rustle and mic bumps.",
+     "Always favoring one mic instead of choosing per line for the best result."
+    ],
+    "scenario_contexts": [
+     "A wide shot where the boom is too far but the lav is close and clean.",
+     "A noisy exterior where the lav rejects background better than the boom.",
+     "Cutting between boom and lav within a scene to keep dialogue clear."
+    ]
+   },
+   "sources": [
+    "Purcell, Dialogue Editing for Motion Pictures",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "933bb6a0-7810-491c-820d-2205668f3e86",
+   "term": "Layer container",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "No established meaning found for 'Layer container' in sound-for-picture post workflow or deliverables across acceptable professional sources; the phrase is a vague/coined combination (a 'container' holding 'layers') with no single attested industry sense in this domain (distinct from game-audio middleware 'containers', which do not fit this topic). All fields left blank pending review."
+   ]
+  }
+ ]
+}

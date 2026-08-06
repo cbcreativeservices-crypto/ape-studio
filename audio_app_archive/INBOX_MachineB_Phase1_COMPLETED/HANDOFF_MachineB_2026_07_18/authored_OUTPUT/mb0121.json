@@ -1,0 +1,294 @@
+{
+ "batch": 121,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "31b3a586-bdcd-4c9a-b74b-0add3dcfc2a9",
+   "term": "Mute discipline",
+   "fields": {
+    "definition": "The consistent practice of muting channels, buses, or outputs that are not actively contributing to a mix, and managing those mute states deliberately throughout a session or show. It keeps unused signal paths silent so they do not add noise, bleed, or the risk of feedback and unwanted audio at the main output.",
+    "plain_english": "It means turning off (muting) any channel you are not using right now, and being careful about what is on or off. This keeps stray noise and mistakes out of the mix, like closing doors to rooms you are not in so their noise stays out.",
+    "purpose_function": "It reduces built-up noise, crosstalk, and feedback by making sure only wanted sources reach the mix, and it stops accidental audio such as open mics or talkback from being heard.",
+    "practical_application": "An engineer mutes unused input channels, mutes a vocal between sections, and checks mute states before unmuting so no unwanted sound is sent to the PA or the recording.",
+    "category": "Mixing Practice",
+    "related_terms": [
+     "Channel mute",
+     "Solo",
+     "Gain before feedback",
+     "Bleed",
+     "Bus",
+     "Talkback"
+    ],
+    "common_mistakes": [
+     "Leaving unused channels open so their noise and bleed add to the mix",
+     "Forgetting to unmute a needed channel before a cue and missing the entrance",
+     "Pulling faders down instead of muting, so bleed and noise still pass through"
+    ],
+    "scenario_contexts": [
+     "A live engineer mutes a guitar channel during a spoken intro so amp hiss stays out of the PA",
+     "A studio engineer mutes tracks during silent passages to keep the mix clean",
+     "A broadcast operator mutes a mic between segments to avoid off-air chatter going live"
+    ]
+   },
+   "sources": [
+    "Yamaha Sound Reinforcement Handbook",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8cedf0de-8251-42ed-9a4c-da3f4c2ee87a",
+   "term": "Nanosampler",
+   "fields": {
+    "definition": "Nanosampler is the sample-playback instrument plug-in bundled with MOTU Digital Performer; samples are dragged into its waveform display and played from a MIDI keyboard, with modes for pitched playback across the keys, one-shot triggering, and automatic slicing, plus time-stretch/pitch-shift, filter, envelopes, and an LFO.",
+    "plain_english": "It is a built-in instrument in the Digital Performer program that lets you play sounds from your keyboard. You drop in an audio clip, and it turns that clip into a playable instrument or drum kit.",
+    "purpose_function": "It gives Digital Performer users a quick way to turn any audio sample into a playable, tunable instrument without leaving the DAW.",
+    "practical_application": "A DP user drags a vocal or loop into Nanosampler, chooses Classic, 1-Shot, or Slice mode, and plays or sequences it via MIDI, shaping it with the built-in filter and envelopes.",
+    "category": "Virtual Instruments",
+    "related_terms": [
+     "Digital Performer project",
+     "Drum multisample",
+     "Sampler",
+     "One-shot",
+     "Time-stretching"
+    ],
+    "common_mistakes": [
+     "Expecting it to work as a full REX loop player (the sliced-loop format from ReCycle), when it does not trigger individual REX slices or time-stretch independently of pitch",
+     "Loading long samples in Classic mode and getting unwanted pitch changes across the keyboard",
+     "Forgetting to set the right playback mode (Classic, 1-Shot, or Slice) for the material"
+    ],
+    "scenario_contexts": [
+     "Turning a one-shot vocal phrase into a playable keyboard instrument in Digital Performer",
+     "Slicing a drum loop across MIDI notes to re-sequence a beat",
+     "Building a quick drum kit from individual hit samples inside DP"
+    ]
+   },
+   "sources": [
+    "MOTU Digital Performer documentation / MOTU tech note (Nanosampler; Nanosampler and REX files)",
+    "Sound on Sound, 'Digital Performer: Exploring Nanosampler 2'"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d9c943d3-21a5-4945-89c9-3866f5cca0ea",
+   "term": "Narration stem",
+   "fields": {
+    "definition": "A stem, meaning a printed submix of related tracks, that contains only the narration or voiceover elements of a program, kept separate from the music, dialogue, and effects stems. It lets the narration be re-balanced, replaced, or re-versioned without remixing the whole soundtrack.",
+    "plain_english": "It is a separate mixed track that holds just the narration or voice-over from a video. Keeping it on its own lets you change the voice level, or swap it for another language, without redoing the whole mix.",
+    "purpose_function": "It isolates the spoken narration so it can be level-adjusted, translated into other languages, or removed for music-and-effects versions, which supports flexible delivery and re-versioning.",
+    "practical_application": "In post-production a mixer delivers the narration stem alongside the music and effects stems so a client can raise or lower the voice or make foreign-language versions.",
+    "category": "Mix Deliverables",
+    "related_terms": [
+     "Stem",
+     "Dialogue stem",
+     "Music and effects (M&E)",
+     "Voiceover",
+     "Submix",
+     "Bus"
+    ],
+    "common_mistakes": [
+     "Printing the narration stem with music or effects baked in, which defeats its purpose",
+     "Not matching the stem's level and processing to the final mix, so the summed stems do not recreate the master",
+     "Leaving other sources unmuted so the stem is not truly isolated"
+    ],
+    "scenario_contexts": [
+     "A documentary mix delivers a narration stem so the network can create a Spanish-language version",
+     "An editor lowers the narration stem under music without touching other elements",
+     "A re-recording mixer supplies narration, dialogue, music, and effects stems as deliverables"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "89d16e4d-45b2-4c8d-be3d-5186d5288274",
+   "term": "Navigation Memory",
+   "fields": {},
+   "sources": [],
+   "confidence": "FLAG-FOR-REVIEW",
+   "flags": [
+    "All 8 fields left blank: 'Navigation Memory' could not be confirmed as an established audio, DAW, or console term in standards, manufacturer technical documentation, or recognized professional texts. It is distinct from documented features with similar wording (e.g., Pro Tools 'Memory Locations' or console 'scene memory') and has no canonical definition, so authoring one would be a guess. Recommend the source confirm the intended term or feature."
+   ]
+  },
+  {
+   "id": "2e51b602-17df-470c-8fdb-effbe360a13a",
+   "term": "Nearfield printmaster",
+   "fields": {
+    "definition": "A printmaster, the final combined master mix of a program from which delivery copies are made, that is created or evaluated on near-field monitors for close-distance, non-theatrical playback such as television, streaming, or home viewing. It represents the finished soundtrack referenced at a short listening distance rather than in a large dubbing theatre.",
+    "plain_english": "It is the final full mix of a show, checked on small speakers placed close to you instead of in a big cinema room. It is done this way so it sounds right for home TV or streaming, where people sit near their speakers.",
+    "purpose_function": "It makes sure the final master translates to close-range, consumer playback, because a mix balanced for a large theatre can sound different on the near-field speakers used for TV and streaming.",
+    "practical_application": "A post mixer prints the final master while listening on near-field monitors to confirm dialogue clarity and balance for broadcast or streaming delivery.",
+    "category": "Mix Deliverables",
+    "related_terms": [
+     "Printmaster",
+     "Nearfield monitor",
+     "Stem",
+     "Re-recording mix",
+     "Master"
+    ],
+    "common_mistakes": [
+     "Assuming a theatrical printmaster will translate unchanged to near-field home playback",
+     "Judging final balance only on large main monitors and skipping near-field checks",
+     "Confusing the printmaster (the final combined master) with the individual stems"
+    ],
+    "scenario_contexts": [
+     "A TV mix is finalized on near-field monitors to match how viewers hear it at home",
+     "A streaming deliverable master is checked on nearfields for dialogue intelligibility",
+     "An engineer compares the theatrical and near-field masters before delivery"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a67931af-850b-4758-8059-7051257cd973",
+   "term": "Neutron",
+   "fields": {
+    "definition": "iZotope Neutron is a modular mixing plug-in that combines processing modules such as EQ, dynamics (compressor and gate), transient shaper, exciter, and sculptor in a single channel-strip interface, together with assistive features that analyze a track and suggest starting settings. It is used to shape individual tracks and to manage tonal balance and masking across a mix.",
+    "plain_english": "Neutron is a computer plug-in from iZotope that puts several mixing tools, like EQ and compression, in one window. It can also listen to your track and suggest settings to get you going, like a helper that hands you a first draft.",
+    "purpose_function": "It bundles common track-processing tools and analysis into one plug-in so engineers can shape tone and dynamics and spot balance or masking problems without loading many separate plug-ins.",
+    "practical_application": "A mixer inserts Neutron on a vocal or instrument track, uses its Assistant to get starting EQ and compression, then fine-tunes each module by hand.",
+    "category": "Mixing Tools",
+    "related_terms": [
+     "Channel strip",
+     "Equalizer (EQ)",
+     "Compressor",
+     "Transient shaper",
+     "Exciter",
+     "Plug-in"
+    ],
+    "common_mistakes": [
+     "Accepting the Assistant's suggested settings without listening and adjusting",
+     "Turning on every module when only one or two are needed, wasting CPU and over-processing",
+     "Confusing Neutron (mixing) with Ozone (mastering)"
+    ],
+    "scenario_contexts": [
+     "A beginner uses Neutron's Track Assistant to get a starting mix on a vocal",
+     "An engineer uses its masking meter to reduce clash between bass and kick",
+     "A mixer loads Neutron as a channel strip across several tracks in a session"
+    ]
+   },
+   "sources": [
+    "iZotope Neutron Help Documentation",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cac748d0-edd4-4dcc-b2d7-52b3bdd3baff",
+   "term": "Noise layer",
+   "fields": {
+    "definition": "A supplementary track or element made of noise, such as white, pink, vinyl, or tape noise or recorded ambience, layered quietly within a mix or a sound to add texture, warmth, cohesion, or to mask edits and gaps. It is added on purpose as a creative or gluing element, unlike unwanted residual noise that should be removed.",
+    "plain_english": "It is an extra track of noise, like hiss, static, or room sound, mixed quietly under the main sounds on purpose. It adds texture or hides small edits, a bit like a soft rain sound placed under a scene to fill the silence.",
+    "purpose_function": "It adds texture, perceived warmth, or continuity to a sound or mix, and can hide edit points, loop seams, or quiet gaps so they feel smooth and intentional.",
+    "practical_application": "A producer layers a low vinyl-crackle or tape-hiss track under a beat for character, or a sound designer adds a noise layer to mask the seam where a loop repeats.",
+    "category": "Sound Design",
+    "related_terms": [
+     "Layering",
+     "White noise",
+     "Pink noise",
+     "Texture",
+     "Sound design",
+     "Bus"
+    ],
+    "common_mistakes": [
+     "Setting the noise layer too loud so it raises the mix noise floor and muddies the sound",
+     "Confusing an intentional noise layer with unwanted hum or hiss that should be removed",
+     "Not band-limiting the noise, so it clutters the low end"
+    ],
+    "scenario_contexts": [
+     "A beatmaker adds a vinyl-crackle noise layer to give a track a lo-fi feel",
+     "A sound designer layers filtered noise under a whoosh to add body",
+     "An engineer uses a quiet noise layer to smooth over edits in an ambient background"
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "ee5b2c62-fb1e-4e16-9385-2659b81bcc4c",
+   "term": "Noise-floor validation",
+   "fields": {
+    "definition": "The process of measuring and confirming that the residual noise level, or noise floor, of a signal chain, recording, or system meets an expected specification or delivery requirement. It verifies that background noise is low enough relative to program level before a recording or system is accepted or delivered.",
+    "plain_english": "It means checking that the quiet background hiss of a system or recording is low enough to be acceptable. You measure the noise when nothing is playing, like making sure a room is quiet before you record.",
+    "purpose_function": "It confirms that self-noise from mics, preamps, converters, or a room is within spec, protecting audio quality and catching faults such as ground hum or bad gain staging before they spoil a job.",
+    "practical_application": "Before a session or at delivery, a technician meters or records silence and compares the noise-floor level to a target so problems can be fixed before program material is captured.",
+    "category": "Signal Quality",
+    "related_terms": [
+     "Noise floor",
+     "Signal-to-noise ratio",
+     "Gain staging",
+     "Dynamic range",
+     "Hum",
+     "Metering"
+    ],
+    "common_mistakes": [
+     "Measuring with the wrong meter or weighting, giving a misleading noise figure",
+     "Ignoring ground hum or interference that sits above the true self-noise",
+     "Setting input gain too high or too low, so gain staging rather than the gear dominates the reading"
+    ],
+    "scenario_contexts": [
+     "An engineer checks the noise floor of a mic preamp chain before a quiet acoustic session",
+     "A post facility validates that a delivered file's noise floor meets broadcast spec",
+     "A technician traces a raised noise floor to a ground loop after a rig change"
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "Yamaha Sound Reinforcement Handbook"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "00db1fde-b7aa-49b5-b354-68d8f19fed7c",
+   "term": "Nuendo project",
+   "fields": {
+    "definition": "A Nuendo project is the working document of Steinberg Nuendo, a digital audio workstation aimed at post-production for film, television, and game audio. The project file, with its linked media, stores the session's tracks, events, edits, mixer settings, automation, and references to audio and video media.",
+    "plain_english": "A Nuendo project is the save file for Steinberg's Nuendo program, which is used to mix sound for film and TV. It holds all your tracks, edits, and settings in one place, like a document that remembers your whole session.",
+    "purpose_function": "It keeps all parts of a post-production session, meaning audio, video reference, edits, routing, and automation, together so work can be saved, reopened, and shared while media files stay linked rather than duplicated.",
+    "practical_application": "A post engineer opens a Nuendo project to continue an edit, imports the video and audio, and saves the project so the session state and automation are kept between sessions.",
+    "category": "DAW / Software",
+    "related_terms": [
+     "Digital audio workstation (DAW)",
+     "Session",
+     "Automation",
+     "Stem",
+     "Post-production",
+     "Cubase"
+    ],
+    "common_mistakes": [
+     "Moving or deleting linked media files, so the project opens with missing audio",
+     "Confusing Nuendo with Cubase; the projects are similar but not identical in features",
+     "Not backing up or saving new versions, risking loss of session work"
+    ],
+    "scenario_contexts": [
+     "A dubbing mixer opens a Nuendo project to mix dialogue, music, and effects for a film",
+     "A game-audio designer manages a Nuendo project for interactive sound assets",
+     "An editor archives a Nuendo project with its media pool for later re-opening"
+    ]
+   },
+   "sources": [
+    "Steinberg Nuendo Operation Manual",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

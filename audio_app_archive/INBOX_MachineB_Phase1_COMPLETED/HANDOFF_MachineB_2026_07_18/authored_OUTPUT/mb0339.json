@@ -1,0 +1,231 @@
+{
+ "batch": 339,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "4ba7cba2-095a-439c-846c-6288aa46ae06",
+   "term": "Rim ring",
+   "fields": {
+    "definition": "The sustained, pitched metallic overtone that trails a drum's initial attack, arising chiefly from vibration of the metal counterhoop (rim), the shell, and an unmuffled head. On snares and toms it is heard as a high, bell-like sustain or ping after the stick strike.",
+    "plain_english": "The long, bell-like ping a drum makes after you hit it. It comes from the metal rim and shell still buzzing. Players often add tape or a gel pad to calm it down.",
+    "purpose_function": "Naming this overtone lets an engineer separate the wanted drum tone from the unwanted ringing sustain, guiding whether to tune, dampen, or EQ the drum.",
+    "practical_application": "Hearing rim ring on a snare or tom, a technician controls it by retuning the head, adding a dampening gel or ring, or notching the ringing frequency with EQ before it muddies the mix.",
+    "category": "Resonance artifact",
+    "related_terms": ["Ring", "ringy", "Rimshot", "Resonance", "Decay", "Sustain"],
+    "common_mistakes": [
+     "Confusing wanted drum sustain with unwanted rim ring and over-damping the drum.",
+     "Blaming the microphone when the ring is really the rim, shell, or head resonating.",
+     "Cutting too wide an EQ band and dulling the whole drum instead of notching the ringing frequency."
+    ],
+    "scenario_contexts": [
+     "Tracking a snare that pings for too long after each hit and needs a dampening gel.",
+     "Taming a ringing tom during a drum session with tuning and muffling.",
+     "Notching a specific ringing overtone on a close snare mic during mixdown."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "4ff4e290-122e-44df-9033-bd70a3b7b399",
+   "term": "Rimshot",
+   "fields": {
+    "definition": "A drumming technique in which the stick strikes the drumhead and the metal counterhoop (rim) at the same instant, producing a loud, sharp, accented crack with a strong transient and added overtones. On the snare it yields the characteristic cutting backbeat.",
+    "plain_english": "A drum hit where the stick smacks the head and the metal rim at the same time. It makes a loud, sharp crack, like the snare sound in a lot of rock and pop songs.",
+    "purpose_function": "It exists to give the snare or tom a louder, more cutting accent than a plain head-only stroke, so the backbeat carries over a loud band.",
+    "practical_application": "An engineer expects rimshots on the backbeat and sets gain and compression so the extra level and sharp crack do not clip the snare channel, choosing mic placement that captures the fast transient.",
+    "category": "Playing technique",
+    "related_terms": ["Rim ring", "Ring", "Attack", "Transient", "Sustain"],
+    "common_mistakes": [
+     "Confusing a rimshot with a cross-stick (rim click), which is a much softer, woodblock-like sound.",
+     "Assuming every loud snare hit is a rimshot; it specifically needs simultaneous head-and-rim contact.",
+     "Setting snare channel level from a soft stroke, then clipping the preamp when louder rimshots arrive."
+    ],
+    "scenario_contexts": [
+     "Tracking a rock backbeat where the drummer plays rimshots on beats 2 and 4.",
+     "Gain-staging a snare channel so consistent rimshots do not overload the preamp.",
+     "Reinforcing snare hits with samples and matching the rimshot's brighter, sharper tone."
+    ]
+   },
+   "sources": ["Huber & Runstein, Modern Recording Techniques", "The New Grove Dictionary of Music and Musicians"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3eb431e6-3f6e-45c4-8407-3f6551cf03bf",
+   "term": "Ring",
+   "fields": {
+    "definition": "A sustained, resonant tone at one or a few frequencies that continues audibly after the initiating attack, caused by a lightly damped resonance in an instrument, room, or signal chain. It is perceived as a pitched ringing tail rather than a quick decay.",
+    "plain_english": "A clear note that keeps humming after the sound that started it has stopped. It is like tapping a glass and hearing it sing for a moment.",
+    "purpose_function": "Identifying ring tells a technician where a resonance is storing energy and decaying slowly, which guides tuning, damping, or notch-EQ decisions.",
+    "practical_application": "An engineer rings out a monitor system by raising gain until a frequency starts to ring, then notches it, and dampens a drum or room mode that rings on after each hit.",
+    "category": "Resonance artifact",
+    "related_terms": ["ringy", "Rim ring", "Resonance", "Feedback", "Decay", "Sustain"],
+    "common_mistakes": [
+     "Confusing wanted musical sustain with unwanted ring or resonance.",
+     "Assuming ring is always in the source when it may be a room mode or feedback in the PA.",
+     "Cutting too wide an EQ band and dulling the source instead of notching the ringing frequency."
+    ],
+    "scenario_contexts": [
+     "Ringing out floor monitors before a show to find feedback frequencies.",
+     "Taming a snare or tom that rings after each hit during tracking.",
+     "Hearing a low-frequency room mode ring on in an untreated control room."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0eaeac98-07ce-442d-a424-055790e5672c",
+   "term": "ringy",
+   "fields": {
+    "definition": "A descriptive term for a sound dominated by prominent, sustained narrow-band resonance, giving it an audible pitched ringing quality and a slow, resonant decay rather than a clean, well-damped one.",
+    "plain_english": "A word for a sound that has too much of that humming, bell-like ring in it. A drum or room that keeps singing after each hit sounds ringy.",
+    "purpose_function": "The label lets engineers quickly flag a source or space whose resonances need tuning, damping, or EQ before it muddies a recording or mix.",
+    "practical_application": "On hearing a ringy tom or a ringy room, a technician tunes or dampens the drum, adds acoustic treatment, or notches the offending resonance with EQ.",
+    "category": "Tonal descriptor",
+    "related_terms": ["Ring", "Rim ring", "Resonance", "Boomy", "Boxy", "Decay"],
+    "common_mistakes": [
+     "Using ringy loosely for any bright sound; it specifically means resonant or ringing, not just trebly.",
+     "Over-damping to kill the ring and leaving the source dull and lifeless.",
+     "Blaming the mic when the ring is really the instrument or room resonating."
+    ],
+    "scenario_contexts": [
+     "Describing a snare that needs a dampening gel because it sounds ringy.",
+     "Noting a ringy conference room that needs acoustic panels.",
+     "Flagging a ringy resonance in a mix that a narrow notch filter can fix."
+    ]
+   },
+   "sources": ["Ballou, Handbook for Sound Engineers", "Yamaha Sound Reinforcement Handbook"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "7e3e6f74-c828-4dc2-9930-98a7118406dd",
+   "term": "Rosin noise",
+   "fields": {
+    "definition": "The fine, granular scraping or scratching sound produced as the rosin-coated bow grips and slips across a string, part of the bowed-string stick-slip mechanism. It is heard as a gritty texture layered on the note, most noticeable at the start of a stroke or under heavy bow pressure.",
+    "plain_english": "The soft, scratchy grit you hear when a violin or cello bow drags across a string. Players rub sticky rosin on the bow hair so it grips the string, and that grip makes tiny scrapes.",
+    "purpose_function": "A small amount is a natural part of bowed-string tone; recognizing excess rosin noise tells an engineer to adjust mic distance or the player to adjust bow pressure and speed.",
+    "practical_application": "Recording strings, an engineer who hears too much bow grit moves the mic off the bowing point or higher over the instrument, and may gently reduce the harsh band with EQ.",
+    "category": "Playing artifact",
+    "related_terms": ["Attack", "Transient", "Rustle", "Sustain", "Ring"],
+    "common_mistakes": [
+     "Confusing natural rosin noise with a microphone or preamp fault.",
+     "Close-miking right at the bow contact point, which exaggerates the grit.",
+     "Over-processing to remove all bow noise, making the strings sound artificial."
+    ],
+    "scenario_contexts": [
+     "Close-miking a solo violin and hearing rosin grit on each stroke.",
+     "A cellist using fresh, heavy rosin producing extra scrape at note onsets.",
+     "Editing a string-section take to reduce distracting bow noise."
+    ]
+   },
+   "sources": ["Fletcher & Rossing, The Physics of Musical Instruments", "Huber & Runstein, Modern Recording Techniques"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "19fad014-cd51-4bf6-8390-8e8bdce106ed",
+   "term": "Rotor acceleration",
+   "fields": {
+    "definition": "The transitional period in a rotary (Leslie-type) speaker when a rotor speeds up from a slower to a faster spin rate, such as from chorale (slow) to tremolo (fast). Because the horn and bass rotors have different inertia, they ramp up at different rates, producing a rising swirl of Doppler pitch and amplitude modulation.",
+    "plain_english": "The moment a spinning Leslie speaker speeds up, so its wobbling, swirling sound gets faster. The high horn and the low drum speed up at slightly different rates, which gives that rising whoosh.",
+    "purpose_function": "The speed change is a musical effect: switching a Hammond and Leslie from slow to fast makes an accelerating swirl that players use for expressive builds.",
+    "practical_application": "When emulating or miking a Leslie, an engineer sets the acceleration (ramp) time so the speed-up sounds natural, capturing both horn and bass rotor with the correct spin-up feel.",
+    "category": "Rotary modulation",
+    "related_terms": ["Rotor deceleration", "Rotor noise", "Tremolo", "Modulation", "Resonance"],
+    "common_mistakes": [
+     "Setting the acceleration time too fast and losing the natural gradual ramp.",
+     "Treating the horn and drum rotor speeds as identical when they differ.",
+     "Confusing the pitch swirl (Doppler) with vibrato added elsewhere in the chain."
+    ],
+    "scenario_contexts": [
+     "Miking a real Leslie while the organist kicks it from slow to fast.",
+     "Dialing ramp times in a rotary-speaker plugin or pedal.",
+     "Automating a slow-to-fast Leslie switch during an organ solo."
+    ]
+   },
+   "sources": ["Sound on Sound, Synthesizing the Rest of the Hammond Organ", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c312984d-62e8-42a6-a63a-19dde503fb41",
+   "term": "Rotor deceleration",
+   "fields": {
+    "definition": "The transitional period in a rotary (Leslie-type) speaker when a rotor slows from a faster to a slower spin rate, such as from tremolo (fast) to chorale (slow). The horn and bass rotors coast down at different rates due to differing inertia, giving a falling, settling swirl of Doppler pitch and amplitude modulation.",
+    "plain_english": "The moment a spinning Leslie speaker slows down, so its swirling sound gently winds down. Because the parts have different weight, they slow at different speeds, which gives that settling wind-down.",
+    "purpose_function": "The slow-down is used musically to relax the sound after a fast passage, the falling counterpart to rotor acceleration.",
+    "practical_application": "Emulating or recording a Leslie, an engineer sets the deceleration (ramp-down) time so the wind-down feels natural after switching from fast to slow.",
+    "category": "Rotary modulation",
+    "related_terms": ["Rotor acceleration", "Rotor noise", "Tremolo", "Modulation", "Decay"],
+    "common_mistakes": [
+     "Setting a deceleration time so short that the swirl stops abruptly.",
+     "Assuming both rotors coast down together when they settle at different rates.",
+     "Confusing the natural wind-down with a tempo or pitch problem."
+    ],
+    "scenario_contexts": [
+     "Capturing the wind-down as an organist switches a Leslie from fast to slow.",
+     "Setting ramp-down time in a rotary plugin to match a vintage cabinet.",
+     "Automating a fast-to-slow Leslie transition at the end of a phrase."
+    ]
+   },
+   "sources": ["Sound on Sound, Synthesizing the Rest of the Hammond Organ", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "22d1fed2-d098-47f5-bb2f-43e0a9444455",
+   "term": "Rotor noise",
+   "fields": {
+    "definition": "The mechanical and aerodynamic sound produced by a rotary (Leslie-type) speaker's spinning rotors and motors, including bearing whir, belt-drive noise, and the air turbulence of the moving horn and drum. It is a low-level artifact distinct from the intended Doppler and amplitude modulation of the program audio.",
+    "plain_english": "The whirring, mechanical sound a spinning Leslie cabinet makes on its own, from the motors, belts, and moving parts pushing air. It is the background noise of the machine, not the swirling organ tone itself.",
+    "purpose_function": "Recognizing rotor noise helps a technician tell normal mechanical sound from a fault and decide how closely to mic the cabinet without capturing too much whir.",
+    "practical_application": "Miking a real Leslie, an engineer balances mic distance to keep the intended swirl while limiting bearing and belt whir, and listens for new rattles or squeals that signal worn bearings or a loose belt.",
+    "category": "Mechanical noise",
+    "related_terms": ["Rotor acceleration", "Rotor deceleration", "Rustle", "Modulation", "Hiss"],
+    "common_mistakes": [
+     "Mistaking normal bearing whir for a defect, or ignoring a genuinely failing bearing.",
+     "Close-miking so tightly that mechanical noise overwhelms the musical swirl.",
+     "Confusing rotor noise with amp hum or hiss coming from the electronics."
+    ],
+    "scenario_contexts": [
+     "Recording a vintage Leslie and hearing belt or bearing whir between notes.",
+     "Diagnosing a squeal that signals a worn rotor bearing needing service.",
+     "Setting mic distance to keep the swirl but reduce mechanical noise."
+    ]
+   },
+   "sources": ["Sound on Sound, Synthesizing the Rest of the Hammond Organ", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "19074d3e-ebfa-4d3f-8fd0-95b97aec9710",
+   "term": "Rustle",
+   "fields": {
+    "definition": "A soft, irregular, broadband noise made of brief overlapping transients, resembling dry leaves, paper, or fabric in motion. In audio it commonly appears as an artifact, for example clothing rustle picked up by a concealed lavalier microphone, or handling noise on other sources.",
+    "plain_english": "A soft, crinkly, shuffling sound, like dry leaves or paper moving. In recordings it often shows up as clothing brushing against a hidden clip-on mic.",
+    "purpose_function": "Naming rustle helps a technician identify a low-level, random-texture noise so they can trace its source, such as clothing, handling, or wind, and reduce it.",
+    "practical_application": "On a lavalier mic, an engineer prevents clothing rustle by mounting the capsule in a proper clip or mount and taping cables so fabric cannot brush it, then reduces any rustle that remains in editing.",
+    "category": "Noise artifact",
+    "related_terms": ["Rosin noise", "Rotor noise", "Hiss", "Transient", "Sustain"],
+    "common_mistakes": [
+     "Blaming the mic capsule for rustle that is actually clothing contact.",
+     "Mounting a lavalier without a proper mount so fabric brushes the capsule.",
+     "Trying to fix heavy rustle only with EQ instead of remounting the mic."
+    ],
+    "scenario_contexts": [
+     "A concealed lavalier picking up shirt rustle when a presenter moves.",
+     "Handling noise as a cable brushes clothing or a bag during a take.",
+     "Leaves or paper rustle captured on a location recording."
+    ]
+   },
+   "sources": ["DPA Microphones, technical guide to concealing lavalier microphones", "Ballou, Handbook for Sound Engineers"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

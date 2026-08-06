@@ -1,0 +1,462 @@
+{
+ "course": "MUSI190",
+ "topic": "Grounding & Electrical",
+ "safety_critical": true,
+ "authored": [
+  {
+   "id": "7691c893-0c64-4078-9db2-a176736ef54b",
+   "term": "Ampacity",
+   "fields": {
+    "plain_english": "How much electric current a wire can carry continuously without overheating. Thicker wire and better insulation carry more; a hot environment or bundling many cables together carries less.",
+    "purpose_function": "Ampacity sets the safe continuous-current limit for a conductor so heat from its resistance never degrades insulation or starts a fire, and it is the basis for matching wire size to its overcurrent device.",
+    "practical_application": "A tech uses ampacity ratings to pick the correct gauge of extension or feeder cable for an amp rack or lighting run and to confirm a circuit's breaker or fuse matches the wire it protects.",
+    "category": "Electrical Fundamentals",
+    "related_terms": [
+     "Feeder Cable",
+     "Fuse",
+     "Breaker Panel (Service Panel)",
+     "Dedicated Circuit",
+     "Power Distro"
+    ],
+    "common_mistakes": [
+     "Assuming ampacity is fixed by wire gauge alone, ignoring derating for high ambient temperature or for bundling many current-carrying conductors together.",
+     "UNSAFE: Running a cable at or near its rated load while it is tightly coiled on a reel or covered by a rug, trapping heat so insulation overheats or ignites.",
+     "Confusing a conductor's insulation temperature rating (e.g., 90C wire) with usable ampacity, which per NEC 110.14(C) is limited by the lowest-rated termination, often 60C or 75C.",
+     "UNSAFE: Protecting an undersized conductor with an oversized breaker, so the wire can overheat before the device trips."
+    ],
+    "scenario_contexts": [
+     "Selecting 12 AWG versus 14 AWG for a 20 A stage-power drop.",
+     "Derating feeder ampacity when several sets run bundled through a hot cable trough outdoors in summer.",
+     "Verifying that a 4/0 feeder is adequate for a distro's rated service before a tie-in."
+    ]
+   },
+   "sources": [
+    "NFPA 70 (NEC) Article 310, Table 310.16 ampacity of insulated conductors",
+    "NFPA 70 (NEC) 110.14(C) termination temperature-limitation rule",
+    "Handbook for Sound Engineers (Ballou) — power and grounding chapter"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "75100a90-ac82-48bd-9bed-7eece1da83db",
+   "term": "Breaker Panel (Service Panel)",
+   "fields": {
+    "plain_english": "The metal box where the building's power comes in and gets split into individual circuits, each with its own breaker switch that shuts off if that circuit is overloaded or faults.",
+    "purpose_function": "It divides incoming service power into protected branch circuits and provides a single place to de-energize or reset each circuit, protecting the wiring from overcurrent.",
+    "practical_application": "A tech uses the panel to find and label the breaker feeding a stage or studio circuit, to reset a tripped breaker, and to confirm spare circuits are available before adding load.",
+    "category": "Power Distribution",
+    "related_terms": [
+     "Fuse",
+     "Dedicated Circuit",
+     "Ampacity",
+     "Power Distro",
+     "Ground Rod"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Opening or working inside a live panel without lockout/tagout, NFPA 70E-rated PPE, and de-energizing; the line side of the main stays energized even with the main breaker off.",
+     "Repeatedly resetting a breaker that keeps tripping instead of finding the overload or fault causing it.",
+     "UNSAFE: Replacing a nuisance-tripping breaker with a higher-amperage one, which defeats the overcurrent protection the branch wiring depends on.",
+     "Assuming that turning off one branch breaker makes the whole panel safe to touch."
+    ],
+    "scenario_contexts": [
+     "Finding and resetting the breaker after a stage circuit trips during a show.",
+     "Labeling panel circuits during a studio install so audio outlets are identifiable.",
+     "Confirming a spare 20 A circuit is available before plugging in a new amp rack."
+    ]
+   },
+   "sources": [
+    "NFPA 70 (NEC) Article 408 switchboards and panelboards; Article 240 overcurrent protection",
+    "NFPA 70E Standard for Electrical Safety in the Workplace (lockout/tagout, PPE, energized-work rules)",
+    "OSHA 29 CFR 1910.333 selection and use of work practices (de-energizing, LOTO)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "41837cd6-cee9-4b51-9a15-a9aafeee7566",
+   "term": "Camlock",
+   "fields": {
+    "plain_english": "A heavy-duty single-wire twist-lock connector used to hook up big touring power cables one conductor at a time, color-coded so ground, neutral, and each hot leg get matched correctly.",
+    "purpose_function": "Camlocks let high-amperage feeder conductors be connected individually and securely between a power source, company switch, and distro, using insulated locking contacts rated for hundreds of amps.",
+    "practical_application": "During a tie-in a tech makes and breaks camlocks dead and in a strict order, matching colors to legs, and energizes the distro only after every connection is seated and verified.",
+    "category": "Power Distribution",
+    "related_terms": [
+     "Feeder Cable",
+     "Power Distro",
+     "Phase Rotation",
+     "Ampacity",
+     "Portable Generator (Genset)"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Connecting or disconnecting camlocks under load or with the source live; make/break must be done dead, connecting ground first, then neutral, then hots, and disconnecting hots first.",
+     "UNSAFE: Intermixing connector series or brands (e.g., Series 15 with Series 16) or using worn/pitted contacts, which can arc, overheat, or separate under load.",
+     "Assuming the color code is legally mandated; green ground, white neutral, and black/red/blue hots are an industry convention, not an NEC-guaranteed standard, so legs must still be verified.",
+     "UNSAFE: Leaving connected contacts partially seated or exposed where they can be touched or shorted instead of fully engaging the insulated shrouds."
+    ],
+    "scenario_contexts": [
+     "Tying a touring distro into a venue's company switch.",
+     "Connecting 4/0 feeder from a generator to a distro at an outdoor festival.",
+     "Inspecting camlock ends for pitting or heat damage before a tour load-in."
+    ]
+   },
+   "sources": [
+    "Eaton Crouse-Hinds Cam-Lok single-pole connector catalog and application data",
+    "Larson Electronics / Lex Products entertainment feeder and single-pole connector documentation",
+    "UL 1691 (single-pole locking-type connectors); NEC Art. 400 & 520 (portable power / theatrical)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6a5cdf3b-748e-42c1-99b2-ad732f9c8975",
+   "term": "Dedicated Circuit",
+   "fields": {
+    "plain_english": "An outlet or set of outlets fed by its own breaker and used by only one system, so other equipment can't dump electrical noise onto it or trip its breaker.",
+    "purpose_function": "It isolates a sensitive load such as an audio rack on its own branch circuit so it receives clean, reliable power free of noise and nuisance trips from unrelated equipment.",
+    "practical_application": "A studio or FOH tech requests dedicated circuits for audio gear to avoid hum and to keep lighting, HVAC, or motors from tripping the audio power or coupling noise into it.",
+    "category": "Power Distribution",
+    "related_terms": [
+     "Breaker Panel (Service Panel)",
+     "Ampacity",
+     "Ground Rod",
+     "Power Distro",
+     "Outlet Tester"
+    ],
+    "common_mistakes": [
+     "Believing a dedicated circuit means a separate or isolated safety ground; it still bonds to the same system ground, and the equipment grounding conductor must never be lifted.",
+     "UNSAFE: Lifting the safety ground with a cheater adapter or clipped pin to kill hum instead of fixing the grounding scheme, creating a shock and hot-chassis hazard.",
+     "Overloading a single dedicated circuit with more gear than its ampacity allows.",
+     "Assuming several receptacles on one power strip are 'dedicated' when they actually share a single branch breaker."
+    ],
+    "scenario_contexts": [
+     "Speccing dedicated 20 A circuits for a control room's audio racks during a studio build.",
+     "Requesting a dedicated audio circuit at a venue so lighting dimmers don't inject noise.",
+     "Diagnosing a buzz that appears only when HVAC or lighting shares the audio circuit."
+    ]
+   },
+   "sources": [
+    "NFPA 70 (NEC) Article 210 branch circuits; 250.6 objectionable current; 406 receptacles",
+    "Rane technical note 'Sound System Interconnection' (grounding and noise)",
+    "Yamaha Sound Reinforcement Handbook — power and grounding"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a13b42d5-2ec1-41f4-a046-c7de3db2fcd0",
+   "term": "Direct Current (DC)",
+   "fields": {
+    "plain_english": "Electricity that flows steadily in one direction, like from a battery, as opposed to the back-and-forth alternating current from a wall outlet.",
+    "purpose_function": "DC provides the constant, stable low voltages that electronic circuits, phantom power, and portable or battery-powered gear need to operate.",
+    "practical_application": "Techs meet DC in pedal and wireless power supplies, 48V phantom power for condenser mics, battery-powered gear, and the internal supply rails of mixers and amplifiers.",
+    "category": "Electrical Fundamentals",
+    "related_terms": [
+     "Alternating Current (AC)",
+     "Phantom Power",
+     "Fuse",
+     "Relay",
+     "Ampacity"
+    ],
+    "common_mistakes": [
+     "Confusing a DC supply's voltage rating (e.g., 9V, 12V, 48V) with AC line voltage or assuming DC supplies are interchangeable by voltage alone.",
+     "Ignoring DC polarity; reversing plus and minus on a pedal or device (center-positive vs center-negative) can destroy it.",
+     "UNSAFE: Assuming DC is always harmless; high-current DC from large battery banks or amplifier rails can arc, burn, and cause dangerous shorts.",
+     "Thinking phantom power is AC when it is 48V DC delivered over the balanced mic line."
+    ],
+    "scenario_contexts": [
+     "Powering a stompbox with a center-negative 9V DC supply.",
+     "Supplying 48V DC phantom power to a condenser microphone.",
+     "Running a wireless rack or mixer from a DC battery system for remote recording."
+    ]
+   },
+   "sources": [
+    "Handbook for Sound Engineers (Ballou) — electrical fundamentals",
+    "IEC 61938 / AES phantom power (48V DC) specifications",
+    "Yamaha Sound Reinforcement Handbook — electricity basics"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "248d6fcf-9fd0-4652-ae06-c5d4dbc349fa",
+   "term": "Feeder Cable",
+   "fields": {
+    "plain_english": "The big, thick cables that carry a lot of power from the source or company switch to a distribution box, usually one heavy single-conductor cable per leg.",
+    "purpose_function": "Feeder carries full service current from the power source to the distro using conductors large enough to handle the load safely over distance with acceptable voltage drop.",
+    "practical_application": "Techs run and connect single-conductor feeder (commonly 2 AWG to 4/0 Type W or SC cable with camlock ends) between a company switch or generator and the distro, matching colors to legs.",
+    "category": "Power Distribution",
+    "related_terms": [
+     "Camlock",
+     "Power Distro",
+     "Ampacity",
+     "Portable Generator (Genset)",
+     "Phase Rotation"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Running or handling feeder while it is energized; connections must be made and broken dead.",
+     "UNSAFE: Leaving feeder coiled on a reel under heavy load, trapping heat and reducing ampacity until insulation is damaged.",
+     "Undersizing feeder for the load and run length, causing excessive voltage drop and overheating.",
+     "UNSAFE: Failing to protect feeder runs from foot and vehicle traffic and water with cable ramps and proper routing, risking crushed insulation and shock."
+    ],
+    "scenario_contexts": [
+     "Pulling 4/0 feeder from the company switch to FOH and stage distros at a concert.",
+     "Connecting generator output to a distro via banded feeder sets at an outdoor event.",
+     "Calculating conductor size for a long feeder run to keep voltage drop acceptable."
+    ]
+   },
+   "sources": [
+    "NFPA 70 (NEC) Article 400 flexible cords and cables (Type W, Type SC); Article 520 theatrical/portable power",
+    "Lex Products 'Specification of Feeder Cables' technical documentation",
+    "NFPA 70 (NEC) Table 310.16 / 400.5 ampacity for portable cable"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d6aa5196-e69a-4fb9-9212-d8048f8dc426",
+   "term": "Fuse",
+   "fields": {
+    "plain_english": "A small sacrificial link that melts and cuts the power when too much current flows, protecting the equipment and wiring from damage or fire.",
+    "purpose_function": "A fuse opens a circuit on overcurrent by melting its element, stopping current before excess heat can damage conductors or equipment.",
+    "practical_application": "Techs replace a blown fuse in a mains inlet, amplifier, or power supply with the exact same rating and type, and treat a repeatedly blowing fuse as a fault to investigate rather than defeat.",
+    "category": "Circuit Protection",
+    "related_terms": [
+     "Breaker Panel (Service Panel)",
+     "Ampacity",
+     "Relay",
+     "Direct Current (DC)",
+     "Power Distro"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Replacing a fuse with a higher-rated one or bridging it with foil or wire to stop it blowing, which removes overcurrent protection and risks fire.",
+     "Using the wrong type (fast-blo vs slow-blo/anti-surge, or wrong voltage rating) even when the amperage matches.",
+     "UNSAFE: Changing a fuse without first unplugging the equipment from mains.",
+     "Repeatedly replacing a blowing fuse instead of finding the underlying fault."
+    ],
+    "scenario_contexts": [
+     "Replacing the mains fuse in the IEC inlet of a powered speaker.",
+     "Troubleshooting an amplifier that blows its rail fuse on power-up.",
+     "Checking a tube amp's HT fuse rating against the manufacturer's schematic."
+    ]
+   },
+   "sources": [
+    "IEC 60127 miniature fuses / UL 248 low-voltage fuses standards",
+    "NFPA 70 (NEC) Article 240 overcurrent protection",
+    "Handbook for Sound Engineers (Ballou) — equipment power protection"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "617de673-d2be-4831-b5ae-52aa42718e6e",
+   "term": "Ground Rod",
+   "fields": {
+    "plain_english": "A metal rod driven deep into the earth and connected to the electrical system so the system shares earth's electrical reference, mainly for lightning and surge safety.",
+    "purpose_function": "It bonds the electrical system to earth to stabilize voltage relative to ground and give lightning and high-voltage surges a path to earth; it does not by itself clear ordinary circuit faults.",
+    "practical_application": "Techs may drive or connect a ground rod for a generator or temporary service per code, but they rely on the equipment grounding conductor, not the earth, to clear faults and trip breakers.",
+    "category": "Grounding & Bonding",
+    "related_terms": [
+     "Portable Generator (Genset)",
+     "Dedicated Circuit",
+     "Breaker Panel (Service Panel)",
+     "Outlet Tester",
+     "Phase Rotation"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Believing a ground rod alone clears faults or protects people; fault current returns through the bonded equipment grounding conductor, and earth is far too high in resistance to trip a breaker.",
+     "UNSAFE: Using a ground rod as a substitute for bonding the grounded (neutral) conductor, or lifting the safety ground because 'the rod grounds it.'",
+     "Assuming any rod meets code; NEC requires a minimum 8 ft in contact with earth, and a single rod must be supplemented by a second electrode unless its resistance to earth is 25 ohms or less.",
+     "Confusing earthing (the ground rod) with equipment bonding; they serve different safety purposes."
+    ],
+    "scenario_contexts": [
+     "Driving a ground rod for a portable generator supplying a separately derived system per NEC 250.",
+     "Grounding a temporary service or tent power distribution at an outdoor event.",
+     "Explaining why a ground rod does not fix audio hum or replace the equipment safety ground."
+    ]
+   },
+   "sources": [
+    "NFPA 70 (NEC) 250.52/250.53 grounding electrodes (8 ft in contact, 25-ohm single-rod supplement rule)",
+    "NFPA 70 (NEC) 250.4 general requirements (earthing vs bonding; fault-current path)",
+    "IEEE Std 142 (Green Book) Grounding of Industrial and Commercial Power Systems"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "994622a8-9140-41b6-b793-761fcb94bf2b",
+   "term": "Outlet Tester",
+   "fields": {
+    "plain_english": "A plug-in gadget with lights that quickly shows whether an outlet's hot, neutral, and ground wires are present and in the right places.",
+    "purpose_function": "It gives a fast go/no-go check of receptacle wiring (open ground, open neutral, reversed hot-neutral, etc.) before you plug gear in.",
+    "practical_application": "A tech plugs one into stage and studio outlets during setup to catch miswired or ungrounded receptacles before connecting expensive or safety-critical equipment.",
+    "category": "Test & Measurement",
+    "related_terms": [
+     "Dedicated Circuit",
+     "Ground Rod",
+     "Breaker Panel (Service Panel)",
+     "Fuse",
+     "Power Distro"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Trusting a three-light tester as proof an outlet is safe; it cannot detect a reverse-polarity bootleg ground, which reads 'correct' yet can energize equipment chassis with a lethal hot-skin voltage.",
+     "Assuming the tester confirms ground quality or impedance; it only checks presence and arrangement, not connection integrity or a true earth reference.",
+     "Believing the tester's GFCI test button replaces a receptacle's own GFCI protection or a proper trip test.",
+     "Reading only the single indicated fault when multiple wiring faults can exist but only one is displayed."
+    ],
+    "scenario_contexts": [
+     "Checking every stage receptacle at load-in before connecting a backline.",
+     "Verifying studio outlets after an electrician's work.",
+     "Catching an open ground on a venue outlet before plugging in a mixing console."
+    ]
+   },
+   "sources": [
+    "EC&M / IAEI technical articles on three-light receptacle tester limitations and reverse-polarity bootleg grounds",
+    "NFPA 70 (NEC) 406.4/210.7 receptacle grounding and wiring requirements",
+    "UL 1436 outlet circuit testers and GFCI test instruments"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "a2045c4c-e658-43f6-8ad1-be03be43844c",
+   "term": "Phase Rotation",
+   "fields": {
+    "plain_english": "The order in which the three hot legs of a three-phase supply reach their peaks (A-B-C or reversed). Getting it backwards makes three-phase motors spin the wrong way.",
+    "purpose_function": "Correct phase rotation ensures three-phase motorized equipment runs in the intended direction; verifying it before energizing prevents equipment damage and unsafe motor operation.",
+    "practical_application": "Before energizing loads after a three-phase tie-in, a tech checks rotation with a phase-sequence meter and, if reversed, de-energizes and swaps two legs to correct it.",
+    "category": "Power Distribution",
+    "related_terms": [
+     "Camlock",
+     "Feeder Cable",
+     "Power Distro",
+     "Portable Generator (Genset)",
+     "Ampacity"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Swapping phase legs to correct rotation while the system is energized; de-energize before changing any connection.",
+     "Never verifying rotation on a new tie-in or generator, then damaging motors, chain hoists, or HVAC that run backward.",
+     "Confusing phase rotation (the sequence of the three phases) with polarity or with single-phase hot/neutral orientation.",
+     "Assuming two sources or distros share the same rotation without checking before paralleling or cross-patching them."
+    ],
+    "scenario_contexts": [
+     "Checking rotation with a sequence meter after tying into a venue's three-phase company switch.",
+     "Verifying a generator's rotation before connecting motorized rigging or chain hoists.",
+     "Correcting reversed rotation that makes a three-phase HVAC unit or motor run backward."
+    ]
+   },
+   "sources": [
+    "NFPA 70 (NEC) 445.18 / 409 and Article 520 (order of connection and phase arrangement)",
+    "IEEE Std 141 (Red Book) Electric Power Distribution for Industrial Plants (phase sequence)",
+    "Amprobe/Megger phase-sequence indicator application and manufacturer documentation"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0f7540a0-4c6d-4eef-bce5-33e7a0732946",
+   "term": "Portable Generator (Genset)",
+   "fields": {
+    "plain_english": "An engine-driven machine that makes its own electricity for events where there's no building power, needing careful grounding, fueling, and exhaust handling.",
+    "purpose_function": "It supplies temporary AC power for events, requiring correct bonding/grounding, balanced loading, and safe fuel and exhaust management to power gear reliably and safely.",
+    "practical_application": "Techs size the genset to the load, connect feeder and distro via camlocks, ground and bond it per NEC 250.34, and keep it outdoors clear of intakes with refueling done only when off and cool.",
+    "category": "Power Distribution",
+    "related_terms": [
+     "Feeder Cable",
+     "Camlock",
+     "Power Distro",
+     "Ground Rod",
+     "Phase Rotation"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Running a generator indoors, in a tent, or near doors and air intakes; engine-exhaust carbon monoxide is a leading cause of non-fire CO deaths.",
+     "UNSAFE: Refueling while the generator is running or hot, risking fire from fuel spilled on hot surfaces.",
+     "Getting the neutral bonding wrong; a portable genset feeding cord-and-plug loads is typically neutral-bonded to its frame, but as a separately derived system feeding a distro/transfer the bonding and grounding must follow NEC 250.34/250.30 so GFCIs and breakers work.",
+     "Overloading the genset or leaving legs badly unbalanced, causing voltage sag, overheating, and dropouts."
+    ],
+    "scenario_contexts": [
+     "Powering an outdoor festival stage where no house power exists.",
+     "Providing backup or remote power for a location recording shoot.",
+     "Grounding and bonding a genset per NEC 250.34 before energizing a distro."
+    ]
+   },
+   "sources": [
+    "NFPA 70 (NEC) 250.34 portable and vehicle-mounted generators; 250.30 separately derived systems",
+    "OSHA 29 CFR 1926.404 / OSHA portable-generator grounding guidance and CPSC carbon-monoxide hazard data",
+    "Manufacturer safety documentation (e.g., Honda/Generac) — refueling, ventilation, and grounding"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "16c89c85-ac8d-46f8-81b3-9105dd116d08",
+   "term": "Power Distro",
+   "fields": {
+    "plain_english": "A portable box that takes in big feeder power and splits it into many normal breakered outlets for audio, lighting, and video at a show.",
+    "purpose_function": "A distro breaks incoming feeder or service power into individually protected branch circuits and the connector types a crew needs, centralizing overcurrent protection and metering for temporary power.",
+    "practical_application": "Techs feed the distro from a company switch or genset via camlocks, then patch audio and lighting circuits from its Edison, L21-30, or Socapex outputs while watching meters to balance the legs.",
+    "category": "Power Distribution",
+    "related_terms": [
+     "Feeder Cable",
+     "Camlock",
+     "Breaker Panel (Service Panel)",
+     "Phase Rotation",
+     "Dedicated Circuit"
+    ],
+    "common_mistakes": [
+     "UNSAFE: Making or breaking the feeder/camlock connection to the distro while it is energized instead of dead.",
+     "Badly unbalancing the three legs so one phase overloads while the others sit nearly idle.",
+     "UNSAFE: Operating a distro without verified grounding/bonding and correct phase rotation, or bypassing its breakers or GFCI protection.",
+     "Exceeding a branch circuit's or the distro's total ampacity by patching too much load onto one output."
+    ],
+    "scenario_contexts": [
+     "Distributing camlock feeder into Edison and Socapex circuits for a concert stage.",
+     "Balancing audio on one leg and lighting on the others to keep phases even.",
+     "Providing GFCI-protected outdoor circuits from a distro at a festival."
+    ]
+   },
+   "sources": [
+    "NFPA 70 (NEC) Article 520 theaters/portable stage power; Article 525 carnivals and events",
+    "Lex Products / Motion Labs portable power distribution technical documentation",
+    "NFPA 70 (NEC) Article 240 overcurrent protection; 210.8 GFCI requirements"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "45a34e97-0233-4289-b500-c4b4331c794f",
+   "term": "Relay",
+   "fields": {
+    "plain_english": "An electrically controlled switch: a small signal energizes a coil that flips a set of contacts to turn a bigger circuit on or off.",
+    "purpose_function": "A relay lets a low-power control signal safely switch a higher-power or electrically isolated circuit, providing isolation and remote or automatic switching.",
+    "practical_application": "Techs meet relays in amplifier output-mute and turn-on-delay circuits, power sequencers, standby switching, and control systems that power gear on and off.",
+    "category": "Electrical Fundamentals",
+    "related_terms": [
+     "Direct Current (DC)",
+     "Fuse",
+     "Power Distro",
+     "Dedicated Circuit",
+     "Ampacity"
+    ],
+    "common_mistakes": [
+     "Exceeding the relay contacts' voltage or current rating, causing the contacts to weld or arc.",
+     "Ignoring inductive kickback; switching coils or motors without a flyback diode or snubber can destroy contacts and driving electronics.",
+     "Confusing the low-voltage control (coil) side with the switched load side and their separate ratings.",
+     "UNSAFE: Assuming a de-energized relay isolates a load for servicing; a relay is a switch, not a lockout, and its contacts can weld closed."
+    ],
+    "scenario_contexts": [
+     "A power sequencer using relays to switch amp racks on in stages to limit inrush.",
+     "An amplifier's output relay muting the speakers during turn-on and turn-off transients.",
+     "An AV control-system relay switching a projector or motorized-screen circuit."
+    ]
+   },
+   "sources": [
+    "Handbook for Sound Engineers (Ballou) — switching, control, and amplifier protection circuits",
+    "The Art of Electronics (Horowitz & Hill) — relays, contact ratings, and inductive-load protection",
+    "UL 508 industrial control equipment / manufacturer relay datasheets (contact ratings, coil drive)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

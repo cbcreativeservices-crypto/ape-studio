@@ -1,0 +1,323 @@
+{
+ "batch": 162,
+ "topic": "Mastering Fundamentals & Chain",
+ "authored": [
+  {
+   "id": "0bfa5940-1e18-4525-b5ba-ed84dd772eb4",
+   "term": "Error-rate measurement",
+   "fields": {
+    "definition": "The quantitative measurement of how often data errors occur when digital media is read back, used to judge the physical quality of a disc, tape, or transfer. For a manufactured CD it is typically expressed as the Block Error Rate (BLER) — the number of data blocks per second flagged at the C1 stage of error correction — with an industry-recommended maximum average around 220 per second.",
+    "plain_english": "Every disc or tape has tiny flaws that cause read errors. Error-rate measurement counts how many of these errors show up each second when the media is played back. A lower count means a healthier copy that should last longer and play back more reliably.",
+    "purpose_function": "It verifies that a finished master or manufactured copy is physically sound and will read back reliably, catching pressing, burning, or media faults before a product is shipped.",
+    "practical_application": "A mastering or QC engineer runs a manufactured CD or DVD through a disc analyzer and confirms that BLER (for CD) or PI/PO errors (for DVD) stay within accepted limits before approving the run.",
+    "category": "Quality Control",
+    "related_terms": [
+     "Final replication package",
+     "DDP image",
+     "C1/C2 error correction",
+     "Red Book (CD-DA) standard",
+     "Jitter"
+    ],
+    "common_mistakes": [
+     "Assuming a disc that plays fine has a low error rate; clean playback can still hide high, correctable error counts that shorten disc life.",
+     "Confusing correctable errors (C1 / BLER) with uncorrectable errors (C2 / E22), which are the truly serious faults.",
+     "Judging quality from one fast read instead of a proper analyzer scan at a controlled speed."
+    ],
+    "scenario_contexts": [
+     "Approving a glass master or test pressing before a CD replication run.",
+     "Checking archival optical discs for rising error rates that signal disc rot.",
+     "Comparing burn quality across blank media brands and write speeds for short-run CD-R masters."
+    ]
+   },
+   "sources": [
+    "IEC 60908 (Compact Disc Digital Audio System)",
+    "IASA TC04 Guidelines on the Production and Preservation of Digital Audio Objects",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "83c7915f-7144-40dc-aa19-f551dd70725b",
+   "term": "FabFilter Pro-L",
+   "fields": {
+    "definition": "A software brickwall peak limiter plug-in made by FabFilter, used mainly on the mastering bus to raise perceived loudness while preventing the signal from exceeding a chosen output ceiling. The current version, Pro-L 2, offers several limiting algorithms, true peak (inter-sample) limiting, oversampling up to 32x, and integrated loudness metering to EBU R128 / ITU-R BS.1770 (LUFS).",
+    "plain_english": "FabFilter Pro-L is a computer plug-in that acts like a safety wall for volume. It makes a track sound louder but stops the sound from ever going past a level you set, so it does not clip or distort. Mastering engineers use it as the final loudness step.",
+    "purpose_function": "It maximizes loudness and guarantees a safe output ceiling, letting engineers hit streaming and broadcast loudness targets without clipping or inter-sample overshoots.",
+    "practical_application": "An engineer places Pro-L 2 last in the mastering chain, sets an output ceiling (commonly around -1 dBTP), enables true peak limiting, and adjusts gain and limiting style while watching the LUFS meters to reach a delivery target.",
+    "category": "Mastering Plug-in",
+    "related_terms": [
+     "Brickwall limiter",
+     "True peak (dBTP)",
+     "LUFS / integrated loudness",
+     "Oversampling",
+     "Inter-sample peak",
+     "FabFilter Pro-Q"
+    ],
+    "common_mistakes": [
+     "Pushing gain far into heavy limiting to chase loudness, which crushes transients and adds distortion and pumping.",
+     "Leaving the ceiling at 0 dBFS, allowing inter-sample true-peak overs that distort after lossy encoding; a ceiling near -1 dBTP is safer.",
+     "Disabling oversampling or true peak limiting and trusting the sample-peak meter to tell the whole story."
+    ],
+    "scenario_contexts": [
+     "Setting final loudness and ceiling on a master before export for streaming.",
+     "Comparing limiting algorithms to find the most transparent one for a delicate acoustic mix.",
+     "A/B testing loudness against a reference track while watching integrated LUFS."
+    ]
+   },
+   "sources": [
+    "FabFilter Pro-L 2 Help / user manual (fabfilter.com)",
+    "ITU-R BS.1770 / EBU R128 (loudness measurement)",
+    "AES recommended practice on loudness"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "046fbf78-ebe1-45a2-88b8-f325b40d640a",
+   "term": "FabFilter Pro-Q",
+   "fields": {
+    "definition": "A software parametric equalizer plug-in made by FabFilter, used to shape tone by boosting or cutting selected frequency bands. The current version, Pro-Q 4, provides many EQ bands, dynamic EQ, selectable zero-latency, natural-phase and linear-phase processing, mid/side operation, and a real-time spectrum analyzer for precise, frequency-specific control.",
+    "plain_english": "FabFilter Pro-Q is a computer plug-in that lets you turn different pitch ranges of a sound up or down. Think of it as a very precise set of tone controls, from deep bass to high treble. Engineers use it to fix problem frequencies and to polish the overall tone.",
+    "purpose_function": "It gives precise tonal control across the whole frequency range so engineers can correct imbalances, remove resonances, and match tonal targets while mixing and mastering.",
+    "practical_application": "A mastering engineer uses Pro-Q 4 for gentle, wide broadband moves and narrow surgical cuts, often in linear-phase mode on the master bus, and uses dynamic bands to tame resonances only when they spike.",
+    "category": "Mastering Plug-in",
+    "related_terms": [
+     "Parametric equalizer",
+     "Dynamic EQ",
+     "Linear phase",
+     "Mid/side processing",
+     "Q (bandwidth)",
+     "FabFilter Pro-L"
+    ],
+    "common_mistakes": [
+     "Making large boosts with a very narrow Q, which sounds unnatural and can ring; mastering EQ moves are usually small and wide.",
+     "Using linear-phase mode everywhere without accounting for its added latency and possible pre-ringing on transients.",
+     "Trusting the spectrum analyzer's shape over the ears and over-correcting toward a flat curve."
+    ],
+    "scenario_contexts": [
+     "Applying a broad high-shelf lift to add air to a finished master.",
+     "Using a dynamic band to control a harsh resonance that only appears in loud sections.",
+     "Matching the tonal balance of a mix to a reference using the EQ match feature."
+    ]
+   },
+   "sources": [
+    "FabFilter Pro-Q 4 Help / user manual (fabfilter.com)",
+    "Ballou, Handbook for Sound Engineers (equalization)",
+    "AES literature on parametric equalization"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "116f1f52-a188-45f1-91f9-a243fe251e2b",
+   "term": "Far binaural setting",
+   "fields": {
+    "definition": "In the Dolby Atmos binaural render mode, Far is the setting that renders an object or bed with the greatest amount of binaural (HRTF-based) processing, so it is perceived as the most distant from the listener when the mix is folded down to a binaural headphone stream.",
+    "plain_english": "The Far setting makes a sound feel far away from you when you listen on headphones. It adds the most space processing so the sound seems distant.",
+    "purpose_function": "It lets the mixer assign a distant spatial impression to specific objects in a binaural headphone render, adding depth and separation between near and far sounds.",
+    "practical_application": "In the Dolby Atmos Renderer, a mixer sets ambience, reverb returns, or background elements to Far so they sit back in the binaural image while close elements stay nearer.",
+    "category": "Binaural Render Mode",
+    "related_terms": [
+     "Near binaural setting",
+     "Mid binaural setting",
+     "Binaural render mode",
+     "HRTF",
+     "Dolby Atmos"
+    ],
+    "common_mistakes": [
+     "Assuming Far changes level or panning; it only sets the perceived binaural distance for the headphone folddown.",
+     "Expecting the setting to affect the loudspeaker (multichannel) render, when it applies to the binaural stream.",
+     "Forgetting that binaural render mode is set per object and is not automatable during the mix."
+    ],
+    "scenario_contexts": [
+     "Placing reverb and ambience beds far back in a binaural music mix.",
+     "Pushing crowd or room tone into the distance on a headphone render.",
+     "Contrasting a close lead vocal (Near) against distant instruments (Far)."
+    ]
+   },
+   "sources": [
+    "Dolby, Dolby Atmos Renderer Guide / Dolby Professional Support - 'What is Binaural Render Mode and how do the settings affect my mix?'",
+    "Apple, Logic Pro User Guide - 'Set up binaural render modes'"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0a012a67-197e-4b04-abb0-8087d16126c8",
+   "term": "Featured-score mix",
+   "fields": {
+    "definition": "A featured-score mix is a version of the score mix in which the music is brought forward as a featured, foreground element of the soundtrack, mixed to sit prominently rather than as subtle background underscore, for moments or deliverables where the score is meant to be the focus.",
+    "plain_english": "A featured-score mix is a version where the music is turned up front and center, not kept quietly in the background. It is used when the score is meant to stand out.",
+    "purpose_function": "It gives the dub or picture editor a version with the score foregrounded, so music-led moments land with full impact without rebalancing from scratch.",
+    "practical_application": "A scoring mixer supplies a featured-score mix for montage or music-driven sequences, where the re-recording mixer wants the score prominent over reduced dialogue and effects.",
+    "category": "Score Deliverable",
+    "related_terms": [
+     "Full score mix",
+     "Music stem",
+     "Underscore",
+     "Music-only master",
+     "Theatrical printmaster"
+    ],
+    "common_mistakes": [
+     "Confusing a featured-score mix (score foregrounded) with a full score mix (all elements combined at standard balance).",
+     "Pushing the score so far forward that it buries essential dialogue.",
+     "Assuming every scene wants a featured balance, when most underscore should sit under dialogue."
+    ],
+    "scenario_contexts": [
+     "Mixing a music-led montage where the score carries the scene.",
+     "Providing a score-forward version for a trailer or promo.",
+     "Featuring the main theme prominently during an emotional climax."
+    ]
+   },
+   "sources": [
+    "Richard Davis, Complete Guide to Film Scoring (Berklee Press)",
+    "Fred Karlin & Rayburn Wright, On the Track: A Guide to Contemporary Film Scoring (Routledge)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a70f147a-3b52-467b-bbbf-01416fe5ef3b",
+   "term": "Ferric oxide coating",
+   "fields": {
+    "definition": "The magnetic recording layer on analog tape (and early data media) formed from needle-shaped gamma ferric oxide (gamma-Fe2O3) particles suspended in a binder and coated onto a plastic base film. It was the original and most common magnetic pigment, giving standard 'ferric' (Type I) tapes their relatively low coercivity of roughly 300 to 360 oersteds.",
+    "plain_english": "Ferric oxide coating is the brown magnetic layer painted onto recording tape. It is basically a form of rust, made of tiny iron-oxide particles held in glue on a thin plastic ribbon. The recorder magnetizes these particles to store the sound.",
+    "purpose_function": "The coating stores audio (or data) as patterns of magnetization; the particles' magnetic properties set the tape's sensitivity, output level, and noise floor.",
+    "practical_application": "Technicians meet ferric oxide tape when transferring or restoring older reels and Type I cassettes, choosing the correct bias and playback EQ and watching for oxide shedding or level loss on aged stock.",
+    "category": "Recording Media",
+    "related_terms": [
+     "Magnetic tape",
+     "Coercivity",
+     "Bias (tape recording)",
+     "Chromium dioxide (Type II)",
+     "Print-through",
+     "Tape hiss"
+    ],
+    "common_mistakes": [
+     "Setting a deck to Type II (chrome) bias and EQ for a ferric tape, which mismatches bias current and skews the tone.",
+     "Assuming all tape hiss is a machine fault when ferric formulations naturally have a higher noise floor than chrome or metal.",
+     "Confusing the plain iron-oxide 'ferric' pigment with later cobalt-doped or metal-particle tapes, which need different settings and handling."
+    ],
+    "scenario_contexts": [
+     "Transferring a 1970s ferric reel-to-reel master to digital for a reissue.",
+     "Selecting Type I bias and EQ when dubbing an old ferric cassette.",
+     "Assessing an archival ferric tape for oxide shedding and level loss before playback."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (magnetic recording)",
+    "Camras, Magnetic Recording Handbook",
+    "IASA TC04 Guidelines (magnetic tape carriers)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8d0a707d-7846-4888-84c4-f502dd448901",
+   "term": "Final replication package",
+   "fields": {
+    "definition": "The complete, finalized set of master files and manufacturing instructions delivered to a disc replication plant to press a title. For a CD it typically centers on a verified DDP 2.0 image (with checksum) or a PMCD, together with the PQ/track log, ISRC and UPC/EAN codes, and any label and artwork files the plant needs to build the glass master and packaging.",
+    "plain_english": "The final replication package is everything a factory needs to mass-produce a disc. It bundles the finished audio master, the track and timing list, the ID codes, and the artwork into one delivery. Think of it as a complete recipe kit handed to the pressing plant.",
+    "purpose_function": "It gives the plant a single, unambiguous, verified source so every pressed copy matches the approved master exactly, with the correct track order, codes, and artwork.",
+    "practical_application": "After a master is approved, the engineer assembles and checksums the DDP image, confirms the ISRC/UPC and PQ data, sends this package to the plant, and keeps an identical verified copy for reference.",
+    "category": "Mastering Deliverable",
+    "related_terms": [
+     "DDP image",
+     "PMCD",
+     "ISRC",
+     "UPC/EAN barcode",
+     "PQ codes",
+     "Error-rate measurement"
+    ],
+    "common_mistakes": [
+     "Sending an audio-only file set with no ISRC/UPC or PQ sheet, forcing the plant to guess track IDs and gaps.",
+     "Delivering a DDP image without its checksum, so a corrupted transfer can go undetected.",
+     "Assuming a burned CD-R master is as reliable as a DDP image for replication, when CD-R can introduce read errors."
+    ],
+    "scenario_contexts": [
+     "Handing a finished album master to a CD pressing plant.",
+     "Preparing a DDP image plus metadata for a manufacturer's upload portal.",
+     "Archiving the exact approved package so a future repress matches the original."
+    ]
+   },
+   "sources": [
+    "IEC 60908 (Compact Disc Digital Audio System / Red Book)",
+    "DDP 2.00 specification (Doug Carson & Associates)",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "283e4ef7-4202-4a7a-bea6-9d98b4ffda2d",
+   "term": "Fold-down metadata",
+   "fields": {
+    "definition": "Data carried alongside a multichannel program that tells a decoder how to combine (fold down) surround or immersive channels into stereo or mono for listeners without full playback systems. In Dolby Digital (AC-3), this includes parameters such as the center and surround mix levels and the choice between Lo/Ro and Lt/Rt downmix coefficients, as defined in the ATSC A/52 standard.",
+    "plain_english": "Not everyone hears a film in full surround sound; many people listen in plain stereo. Fold-down metadata is a set of hidden instructions that tells the player how to squeeze the extra speaker channels down into two. It keeps the dialogue clear and the balance right on smaller systems.",
+    "purpose_function": "It ensures a surround or immersive mix still sounds correct and intelligible when it is automatically collapsed to stereo or mono, giving the creator control over the downmix instead of leaving it to chance.",
+    "practical_application": "A mastering or post engineer sets downmix parameters (for example Lt/Rt versus Lo/Ro and the center/surround levels) when encoding Dolby Digital or preparing streaming deliverables, then checks the folded-down result for level and dialogue balance.",
+    "category": "Metadata",
+    "related_terms": [
+     "Downmix (fold-down)",
+     "Dolby Digital (AC-3)",
+     "Lo/Ro and Lt/Rt",
+     "Dialnorm",
+     "LFE channel",
+     "Surround / immersive mixing"
+    ],
+    "common_mistakes": [
+     "Checking only the full surround mix and ignoring the stereo fold-down, so stereo listeners get buried dialogue or a phasey balance.",
+     "Confusing fold-down/downmix metadata with dialnorm (loudness) metadata; they control different things.",
+     "Assuming Lt/Rt and Lo/Ro give the same result, when Lt/Rt is matrix-surround compatible and Lo/Ro is a plain stereo sum."
+    ],
+    "scenario_contexts": [
+     "Encoding a 5.1 broadcast mix to Dolby Digital and setting its stereo downmix behavior.",
+     "Checking that a surround film mix still has clear dialogue on a stereo TV.",
+     "Preparing immersive masters so the required stereo fold-downs meet a platform's delivery spec."
+    ]
+   },
+   "sources": [
+    "ATSC A/52 Digital Audio Compression (AC-3, E-AC-3)",
+    "Dolby Digital encoding technical documentation",
+    "ETSI TS 102 366 (AC-3/E-AC-3)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c508a9da-73fc-4ac2-8b5b-7113941ef015",
+   "term": "Full score mix",
+   "fields": {
+    "definition": "A full score mix is the complete, balanced mix of a musical score or cue containing all of its instrument groups together (for example strings, brass, percussion, choir, and soloists), as opposed to individual stems or reduced alternate versions.",
+    "plain_english": "A full score mix is the whole piece of music mixed together with every instrument included. It is the complete version, not a stripped-down one.",
+    "purpose_function": "It serves as the primary, reference version of the music for the dub or final mix, giving editors and re-recording mixers the composer's intended balance in a single stereo or multichannel file.",
+    "practical_application": "A composer or scoring mixer delivers the full score mix alongside stems and alternate mixes, and the re-recording mixer places it under picture, adjusting level against dialogue and effects.",
+    "category": "Score Deliverable",
+    "related_terms": [
+     "Featured-score mix",
+     "Music stem",
+     "Music-only master",
+     "Theatrical printmaster",
+     "Stem"
+    ],
+    "common_mistakes": [
+     "Confusing the full score mix (everything combined) with individual score stems (separate element groups).",
+     "Delivering only the full mix when the dub also needs stems and alternates for flexibility.",
+     "Assuming the full-mix level is final, when it is still balanced against dialogue and effects at the dub."
+    ],
+    "scenario_contexts": [
+     "Delivering the composer's complete cue for the final dub.",
+     "Referencing the intended balance before rebalancing stems.",
+     "Supplying a full mix for a soundtrack album master."
+    ]
+   },
+   "sources": [
+    "Richard Davis, Complete Guide to Film Scoring (Berklee Press)",
+    "Fred Karlin & Rayburn Wright, On the Track: A Guide to Contemporary Film Scoring (Routledge)"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

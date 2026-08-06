@@ -1,0 +1,117 @@
+term,cluster
+Acoustic Reflex,CLUSTER_A_deep_anatomy
+Brainstem Auditory Pathway,CLUSTER_A_deep_anatomy
+Cochlear Nucleus,CLUSTER_A_deep_anatomy
+Endolymph,CLUSTER_A_deep_anatomy
+Eustachian tube,CLUSTER_A_deep_anatomy
+Incus (Anvil),CLUSTER_A_deep_anatomy
+Inferior Colliculus,CLUSTER_A_deep_anatomy
+Malleus (Hammer),CLUSTER_A_deep_anatomy
+Mechanoelectrical Transduction,CLUSTER_A_deep_anatomy
+Medial Geniculate Body,CLUSTER_A_deep_anatomy
+Middle Ear Muscles,CLUSTER_A_deep_anatomy
+Organ of Corti,CLUSTER_A_deep_anatomy
+Ossicular Chain,CLUSTER_A_deep_anatomy
+Oval Window,CLUSTER_A_deep_anatomy
+Perilymph,CLUSTER_A_deep_anatomy
+Phase Locking,CLUSTER_A_deep_anatomy
+Round Window,CLUSTER_A_deep_anatomy
+Stapedius reflex,CLUSTER_A_deep_anatomy
+Stapes (Stirrup),CLUSTER_A_deep_anatomy
+Stereocilia,CLUSTER_A_deep_anatomy
+Superior Olivary Complex,CLUSTER_A_deep_anatomy
+Tip Links,CLUSTER_A_deep_anatomy
+Vestibulocochlear Nerve,CLUSTER_A_deep_anatomy
+Caloric Testing,CLUSTER_B_vestibular
+Vestibular Evoked Myogenic Potential (VEMP),CLUSTER_B_vestibular
+Vestibular Testing,CLUSTER_B_vestibular
+Videonystagmography (VNG),CLUSTER_B_vestibular
+Acoustic Reflex Testing,CLUSTER_C_clinical_tests
+Acoustic Reflex Threshold,CLUSTER_C_clinical_tests
+Ambient Noise Criteria,CLUSTER_C_clinical_tests
+Audiological Record,CLUSTER_C_clinical_tests
+Audiometric Frequency,CLUSTER_C_clinical_tests
+Audiometric Monitoring,CLUSTER_C_clinical_tests
+Auditory Brainstem Response (ABR),CLUSTER_C_clinical_tests
+Auditory Neuropathy Spectrum Disorder (ANSD),CLUSTER_C_clinical_tests
+Auditory Processing Disorder (APD) Assessment,CLUSTER_C_clinical_tests
+Auditory Steady-State Response (ASSR),CLUSTER_C_clinical_tests
+Binaural Assessment,CLUSTER_C_clinical_tests
+Calibration of Audiometric Equipment,CLUSTER_C_clinical_tests
+Central Auditory Processing Assessment,CLUSTER_C_clinical_tests
+Cochlear Synaptopathy (“Hidden Hearing Loss”),CLUSTER_C_clinical_tests
+Diagnostic Audiology,CLUSTER_C_clinical_tests
+Distortion Product OAE (DPOAE),CLUSTER_C_clinical_tests
+Duration Discrimination,CLUSTER_C_clinical_tests
+Ear-Specific Testing,CLUSTER_C_clinical_tests
+Electrocochleography (ECoG),CLUSTER_C_clinical_tests
+Extended High-Frequency Audiometry,CLUSTER_C_clinical_tests
+False Negative Response,CLUSTER_C_clinical_tests
+False Positive Response,CLUSTER_C_clinical_tests
+Follow-Up Audiogram,CLUSTER_C_clinical_tests
+Hearing Assessment,CLUSTER_C_clinical_tests
+Hearing Assessment Report,CLUSTER_C_clinical_tests
+Hearing Asymmetry,CLUSTER_C_clinical_tests
+Hearing Conservation Audiometry,CLUSTER_C_clinical_tests
+Hearing Evaluation,CLUSTER_C_clinical_tests
+Hearing Monitoring Program,CLUSTER_C_clinical_tests
+High-Frequency Hearing Assessment,CLUSTER_C_clinical_tests
+HINT (Hearing in Noise Test),CLUSTER_C_clinical_tests
+Loudness Discrimination,CLUSTER_C_clinical_tests
+Loudness Scaling,CLUSTER_C_clinical_tests
+Low-Frequency Hearing Assessment,CLUSTER_C_clinical_tests
+Monaural Assessment,CLUSTER_C_clinical_tests
+Otolaryngology (ENT),CLUSTER_C_clinical_tests
+Otology,CLUSTER_C_clinical_tests
+QuickSIN,CLUSTER_C_clinical_tests
+Sound Booth,CLUSTER_C_clinical_tests
+Speech Detection Threshold (SDT),CLUSTER_C_clinical_tests
+Test Environment,CLUSTER_C_clinical_tests
+Test Instructions,CLUSTER_C_clinical_tests
+Test Reliability,CLUSTER_C_clinical_tests
+Test Validity,CLUSTER_C_clinical_tests
+Test-Retest Reliability,CLUSTER_C_clinical_tests
+Transient-Evoked OAE (TEOAE),CLUSTER_C_clinical_tests
+Tympanogram,CLUSTER_C_clinical_tests
+Tympanometry,CLUSTER_C_clinical_tests
+Aphonia,CLUSTER_D_clinical_voice
+Articulators,CLUSTER_D_clinical_voice
+Breathy Onset,CLUSTER_D_clinical_voice
+Cepstral Peak Prominence,CLUSTER_D_clinical_voice
+Coordinated Onset,CLUSTER_D_clinical_voice
+Dysphonia,CLUSTER_D_clinical_voice
+Glottal Cycle,CLUSTER_D_clinical_voice
+Glottal Pulse,CLUSTER_D_clinical_voice
+Glottis,CLUSTER_D_clinical_voice
+Hard Glottal Onset,CLUSTER_D_clinical_voice
+Harmonic-to-Noise Ratio,CLUSTER_D_clinical_voice
+Hydration,CLUSTER_D_clinical_voice
+Jitter,CLUSTER_D_clinical_voice
+Larynx,CLUSTER_D_clinical_voice
+Nasal Cavity,CLUSTER_D_clinical_voice
+Oral Cavity,CLUSTER_D_clinical_voice
+Persistent Voice Change,CLUSTER_D_clinical_voice
+Pharynx,CLUSTER_D_clinical_voice
+Phonation,CLUSTER_D_clinical_voice
+Phonation Threshold Pressure,CLUSTER_D_clinical_voice
+Phonotrauma,CLUSTER_D_clinical_voice
+Pressed Phonation,CLUSTER_D_clinical_voice
+Respiratory Support,CLUSTER_D_clinical_voice
+Shimmer,CLUSTER_D_clinical_voice
+Subglottal Pressure,CLUSTER_D_clinical_voice
+Surface Hydration,CLUSTER_D_clinical_voice
+Velum,CLUSTER_D_clinical_voice
+Vocal Cool-Down,CLUSTER_D_clinical_voice
+Vocal Dose,CLUSTER_D_clinical_voice
+Vocal Folds,CLUSTER_D_clinical_voice
+Vocal Health,CLUSTER_D_clinical_voice
+Vocal Load,CLUSTER_D_clinical_voice
+Vocal Onset,CLUSTER_D_clinical_voice
+Vocal Recovery,CLUSTER_D_clinical_voice
+Vocal Source,CLUSTER_D_clinical_voice
+Vocal Stability,CLUSTER_D_clinical_voice
+Vocal Strain,CLUSTER_D_clinical_voice
+Vocal Tract,CLUSTER_D_clinical_voice
+Vocal Warm-Up,CLUSTER_D_clinical_voice
+Vocal-Fold Vibration,CLUSTER_D_clinical_voice
+Voice-Specialist Referral,CLUSTER_D_clinical_voice

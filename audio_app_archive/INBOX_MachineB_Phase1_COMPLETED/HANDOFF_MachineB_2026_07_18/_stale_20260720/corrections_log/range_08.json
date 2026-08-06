@@ -1,0 +1,52 @@
+{
+ "range": 8,
+ "applied": [
+  {
+   "pkt": "mb0327",
+   "term": "Click",
+   "field": "definition",
+   "severity": "Low",
+   "summary": "Fixed garbled non-word 'ungrossfaded' to 'uncrossfaded' (an edit point with no crossfade); confirmed by three experts and consistent with the entry's later 'short crossfade' fix."
+  },
+  {
+   "pkt": "mb0340",
+   "term": "Shell hit",
+   "field": "related_terms",
+   "severity": "Low",
+   "summary": "Corrected broken cross-reference 'Rimclick' to 'Rim click' to match the real corpus entry (id c048f3d1, verified as two words in mb0338); replaced the single offending list item, list preserved."
+  },
+  {
+   "pkt": "mb0336",
+   "term": "Onset",
+   "field": "definition",
+   "severity": "Low",
+   "summary": "Replaced 'and marking' with a comma so 'marking the leading edge...' reads as a participial phrase describing the onset rather than parsing as 'amplitude starts marking'."
+  }
+ ],
+ "declined": [
+  {
+   "pkt": "mb0326",
+   "term": "Cabinet resonance",
+   "field": "related_terms",
+   "reason": "Preference, not an error. 'Bridge resonance' is a real corpus entry that resolves fine and is a directly analogous structural resonance; the two entries are intentionally cross-linked bidirectionally. Cross-domain 'see also' is defensible, so no factual error or broken link to fix."
+  },
+  {
+   "pkt": "mb0330",
+   "term": "Gear noise",
+   "field": "related_terms",
+   "reason": "Preference, not an error. 'Fret rattle' is a valid corpus entry (same batch) that cross-links back to 'Gear noise'; related_terms legitimately includes contrasting noise concepts (source vs equipment noise) for navigation. No broken link or factual error."
+  },
+  {
+   "pkt": "mb0324",
+   "term": "Bow bounce",
+   "field": "related_terms",
+   "reason": "Enrichment ('add Bow chatter'), not a correction of an existing item. Hard constraints forbid adding terms; the existing list is correct and contains no offending item to replace."
+  },
+  {
+   "pkt": "mb0337",
+   "term": "Ping",
+   "field": "plain_english",
+   "reason": "Enrichment ('add one clause' for the verb sense), not a fix. The plain_english is accurate and appropriately simple; the active 'pinging' sense already appears in definition/practical_application. No error or contradiction."
+  }
+ ]
+}

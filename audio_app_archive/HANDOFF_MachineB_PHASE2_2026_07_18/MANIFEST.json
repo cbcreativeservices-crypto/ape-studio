@@ -1,0 +1,5456 @@
+[
+ {
+  "packet": "a0001.json",
+  "topic": "Audio Equipment & Infrastructure",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0002.json",
+  "topic": "Audio System Design",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0003.json",
+  "topic": "Audio System Design",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0004.json",
+  "topic": "Audio System Design",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0005.json",
+  "topic": "Audio System Design",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0006.json",
+  "topic": "Audio System Design",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0007.json",
+  "topic": "Audio System Design",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0008.json",
+  "topic": "Audio System Design",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0009.json",
+  "topic": "Audio System Design",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0010.json",
+  "topic": "Audio System Design",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0011.json",
+  "topic": "Audio System Design",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "a0012.json",
+  "topic": "Dante Networking",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0013.json",
+  "topic": "Dante Networking",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0014.json",
+  "topic": "Dante Networking",
+  "terms": 9,
+  "fields": 69
+ },
+ {
+  "packet": "a0015.json",
+  "topic": "Dante Networking",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0016.json",
+  "topic": "Dante Networking",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0017.json",
+  "topic": "Dante Networking",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "a0018.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0019.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0020.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0021.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0022.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0023.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0024.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0025.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0026.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0027.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0028.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0029.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0030.json",
+  "topic": "Documentation & Diagrams",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "a0031.json",
+  "topic": "Soldering & Repair",
+  "terms": 7,
+  "fields": 49
+ },
+ {
+  "packet": "a0032.json",
+  "topic": "System Maintenance",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0033.json",
+  "topic": "System Maintenance",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0034.json",
+  "topic": "System Maintenance",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0035.json",
+  "topic": "System Maintenance",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0036.json",
+  "topic": "System Maintenance",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "a0037.json",
+  "topic": "Vacuum Tubes",
+  "terms": 9,
+  "fields": 67
+ },
+ {
+  "packet": "a0038.json",
+  "topic": "DAW Skills",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0039.json",
+  "topic": "DAW Skills",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0040.json",
+  "topic": "DAW Skills",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0041.json",
+  "topic": "DAW Skills",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0042.json",
+  "topic": "DAW Skills",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0043.json",
+  "topic": "DAW Skills",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0044.json",
+  "topic": "DAW Skills",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "a0045.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0046.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0047.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0048.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0049.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0050.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0051.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0052.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0053.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0054.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0055.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0056.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0057.json",
+  "topic": "MIDI",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0058.json",
+  "topic": "MIDI",
+  "terms": 8,
+  "fields": 63
+ },
+ {
+  "packet": "a0059.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0060.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0061.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0062.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0063.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0064.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0065.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0066.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0067.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0068.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0069.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0070.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0071.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0072.json",
+  "topic": "Plugins & Virtual Instruments",
+  "terms": 2,
+  "fields": 15
+ },
+ {
+  "packet": "a0073.json",
+  "topic": "Sampling",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0074.json",
+  "topic": "Sampling",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0075.json",
+  "topic": "Sampling",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0076.json",
+  "topic": "Sampling",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0077.json",
+  "topic": "Sampling",
+  "terms": 9,
+  "fields": 69
+ },
+ {
+  "packet": "a0078.json",
+  "topic": "Synthesis",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0079.json",
+  "topic": "Synthesis",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0080.json",
+  "topic": "Synthesis",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0081.json",
+  "topic": "Synthesis",
+  "terms": 8,
+  "fields": 62
+ },
+ {
+  "packet": "a0082.json",
+  "topic": "Project Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0083.json",
+  "topic": "Project Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0084.json",
+  "topic": "Project Management",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0085.json",
+  "topic": "Project Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0086.json",
+  "topic": "Project Management",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0087.json",
+  "topic": "Project Management",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0088.json",
+  "topic": "Project Management",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0089.json",
+  "topic": "Project Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0090.json",
+  "topic": "Project Management",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0091.json",
+  "topic": "Project Management",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0092.json",
+  "topic": "Project Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0093.json",
+  "topic": "Project Management",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "a0094.json",
+  "topic": "Podcasting & Broadcast Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0095.json",
+  "topic": "Podcasting & Broadcast Audio",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0096.json",
+  "topic": "Podcasting & Broadcast Audio",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0097.json",
+  "topic": "Podcasting & Broadcast Audio",
+  "terms": 9,
+  "fields": 69
+ },
+ {
+  "packet": "a0098.json",
+  "topic": "Podcasting & Broadcast Audio",
+  "terms": 4,
+  "fields": 31
+ },
+ {
+  "packet": "a0099.json",
+  "topic": "Band Recording and Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0100.json",
+  "topic": "Band Recording and Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0101.json",
+  "topic": "Band Recording and Production",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0102.json",
+  "topic": "Band Recording and Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0103.json",
+  "topic": "Band Recording and Production",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0104.json",
+  "topic": "Band Recording and Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0105.json",
+  "topic": "Band Recording and Production",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0106.json",
+  "topic": "Band Recording and Production",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0107.json",
+  "topic": "Band Recording and Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0108.json",
+  "topic": "Band Recording and Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0109.json",
+  "topic": "Band Recording and Production",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0110.json",
+  "topic": "Band Recording and Production",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0111.json",
+  "topic": "Film & Game Audio",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0112.json",
+  "topic": "Film & Game Audio",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0113.json",
+  "topic": "Film & Game Audio",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0114.json",
+  "topic": "Film & Game Audio",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0115.json",
+  "topic": "Film & Game Audio",
+  "terms": 6,
+  "fields": 47
+ },
+ {
+  "packet": "a0116.json",
+  "topic": "Portfolio Development",
+  "terms": 5,
+  "fields": 35
+ },
+ {
+  "packet": "a0117.json",
+  "topic": "Audio Career Exploration",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0118.json",
+  "topic": "Audio Career Exploration",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0119.json",
+  "topic": "Audio Career Exploration",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0120.json",
+  "topic": "Audio Career Exploration",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0121.json",
+  "topic": "Audio Career Exploration",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0122.json",
+  "topic": "Audio Career Exploration",
+  "terms": 9,
+  "fields": 71
+ },
+ {
+  "packet": "a0123.json",
+  "topic": "Audio Career Exploration",
+  "terms": 9,
+  "fields": 70
+ },
+ {
+  "packet": "a0124.json",
+  "topic": "Audio Career Exploration",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0125.json",
+  "topic": "Audio Career Exploration",
+  "terms": 5,
+  "fields": 38
+ },
+ {
+  "packet": "a0126.json",
+  "topic": "Workplace Skills",
+  "terms": 6,
+  "fields": 42
+ },
+ {
+  "packet": "a0127.json",
+  "topic": "Copyright, Publishing & Licensing",
+  "terms": 9,
+  "fields": 69
+ },
+ {
+  "packet": "a0128.json",
+  "topic": "Copyright, Publishing & Licensing",
+  "terms": 9,
+  "fields": 68
+ },
+ {
+  "packet": "a0129.json",
+  "topic": "Copyright, Publishing & Licensing",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "a0130.json",
+  "topic": "Music Entrepreneurship",
+  "terms": 7,
+  "fields": 49
+ },
+ {
+  "packet": "a0131.json",
+  "topic": "Industry Foundations",
+  "terms": 5,
+  "fields": 35
+ },
+ {
+  "packet": "a0132.json",
+  "topic": "Professional Audio Safety",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0133.json",
+  "topic": "Professional Audio Safety",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0134.json",
+  "topic": "Professional Audio Safety",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0135.json",
+  "topic": "Professional Audio Safety",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0136.json",
+  "topic": "Professional Audio Safety",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "a0137.json",
+  "topic": "Sound & Acoustics",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0138.json",
+  "topic": "Sound & Acoustics",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0139.json",
+  "topic": "Sound & Acoustics",
+  "terms": 6,
+  "fields": 48
+ },
+ {
+  "packet": "a0140.json",
+  "topic": "Grounding & Electrical",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0141.json",
+  "topic": "Grounding & Electrical",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0142.json",
+  "topic": "Grounding & Electrical",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "a0143.json",
+  "topic": "Power Fundamentals, Distribution & Quality",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0144.json",
+  "topic": "Power Fundamentals, Distribution & Quality",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0145.json",
+  "topic": "Power Fundamentals, Distribution & Quality",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0146.json",
+  "topic": "Power Fundamentals, Distribution & Quality",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0147.json",
+  "topic": "Power Fundamentals, Distribution & Quality",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "a0148.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0149.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0150.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0151.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0152.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0153.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0154.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0155.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0156.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0157.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0158.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0159.json",
+  "topic": "Connectors & Plugs",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0160.json",
+  "topic": "Connectors & Plugs",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0161.json",
+  "topic": "Cables & Wiring",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0162.json",
+  "topic": "Cables & Wiring",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "a0163.json",
+  "topic": "Microphone Types & Transducers",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "a0164.json",
+  "topic": "Microphone Specs & Characteristics",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0165.json",
+  "topic": "Microphone Specs & Characteristics",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0166.json",
+  "topic": "Microphone Specs & Characteristics",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0167.json",
+  "topic": "Microphone Specs & Characteristics",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0168.json",
+  "topic": "Microphone Specs & Characteristics",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0169.json",
+  "topic": "Microphone Specs & Characteristics",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "a0170.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0171.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0172.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0173.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0174.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0175.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0176.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0177.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0178.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0179.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0180.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0181.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0182.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0183.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0184.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0185.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0186.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0187.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0188.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0189.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0190.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0191.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0192.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0193.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0194.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0195.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0196.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0197.json",
+  "topic": "Stereo & Ensemble Miking Techniques",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "a0198.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0199.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0200.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0201.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0202.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0203.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0204.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0205.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0206.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0207.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0208.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0209.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0210.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0211.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0212.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0213.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0214.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0215.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0216.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0217.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0218.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0219.json",
+  "topic": "Instrument & Close Miking Techniques",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "a0220.json",
+  "topic": "Mic Controls, Power & Mounting",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0221.json",
+  "topic": "Mic Controls, Power & Mounting",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0222.json",
+  "topic": "Mic Controls, Power & Mounting",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0223.json",
+  "topic": "Mic Controls, Power & Mounting",
+  "terms": 6,
+  "fields": 48
+ },
+ {
+  "packet": "a0224.json",
+  "topic": "Specialized & Application Microphones",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0225.json",
+  "topic": "Loudspeaker Types & Drivers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0226.json",
+  "topic": "Loudspeaker Types & Drivers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0227.json",
+  "topic": "Loudspeaker Types & Drivers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0228.json",
+  "topic": "Loudspeaker Types & Drivers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0229.json",
+  "topic": "Loudspeaker Types & Drivers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0230.json",
+  "topic": "Loudspeaker Types & Drivers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0231.json",
+  "topic": "Loudspeaker Types & Drivers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0232.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0233.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0234.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0235.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0236.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0237.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0238.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0239.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0240.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0241.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0242.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0243.json",
+  "topic": "Amplifiers",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0244.json",
+  "topic": "Amplifiers",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "a0245.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0246.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0247.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0248.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0249.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0250.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0251.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0252.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0253.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0254.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0255.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0256.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0257.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0258.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0259.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0260.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0261.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0262.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0263.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0264.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0265.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0266.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0267.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0268.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0269.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0270.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0271.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0272.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0273.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0274.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0275.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0276.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0277.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0278.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0279.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0280.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0281.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0282.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0283.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0284.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0285.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0286.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0287.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0288.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0289.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0290.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0291.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0292.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0293.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0294.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0295.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0296.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0297.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0298.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0299.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0300.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0301.json",
+  "topic": "Console Architecture & Signal Flow",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "a0302.json",
+  "topic": "Channel Strip & Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0303.json",
+  "topic": "Channel Strip & Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0304.json",
+  "topic": "Buses, Routing & Matrix",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0305.json",
+  "topic": "Buses, Routing & Matrix",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "a0306.json",
+  "topic": "Digital Console Workflow & Recall",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0307.json",
+  "topic": "Digital Console Workflow & Recall",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "a0308.json",
+  "topic": "Recorder Types & Formats",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0309.json",
+  "topic": "Recorder Types & Formats",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0310.json",
+  "topic": "Recorder Types & Formats",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0311.json",
+  "topic": "Recorder Types & Formats",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0312.json",
+  "topic": "Recorder Types & Formats",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0313.json",
+  "topic": "Recorder Types & Formats",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0314.json",
+  "topic": "Recorder Types & Formats",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0315.json",
+  "topic": "Recorder Types & Formats",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0316.json",
+  "topic": "Recorder Types & Formats",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0317.json",
+  "topic": "Recorder Types & Formats",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0318.json",
+  "topic": "Recorder Types & Formats",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0319.json",
+  "topic": "Audio File Formats & Media",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0320.json",
+  "topic": "Audio File Formats & Media",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0321.json",
+  "topic": "Audio File Formats & Media",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0322.json",
+  "topic": "Audio File Formats & Media",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0323.json",
+  "topic": "Audio File Formats & Media",
+  "terms": 6,
+  "fields": 48
+ },
+ {
+  "packet": "a0324.json",
+  "topic": "Recording Transport & Controls",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "a0325.json",
+  "topic": "Storage, Backup & Archival",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "a0326.json",
+  "topic": "Racks, Patchbays & Wiring Infrastructure",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0327.json",
+  "topic": "Racks, Patchbays & Wiring Infrastructure",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0328.json",
+  "topic": "Racks, Patchbays & Wiring Infrastructure",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0329.json",
+  "topic": "Racks, Patchbays & Wiring Infrastructure",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0330.json",
+  "topic": "Racks, Patchbays & Wiring Infrastructure",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0331.json",
+  "topic": "Racks, Patchbays & Wiring Infrastructure",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0332.json",
+  "topic": "Racks, Patchbays & Wiring Infrastructure",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0333.json",
+  "topic": "Racks, Patchbays & Wiring Infrastructure",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "a0334.json",
+  "topic": "Studio/Stage Furniture & Mounting",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0335.json",
+  "topic": "Studio/Stage Furniture & Mounting",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "a0336.json",
+  "topic": "Physical Controls & Hardware",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "a0337.json",
+  "topic": "Power & Signal Distribution Hardware",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "a0338.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0339.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0340.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0341.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0342.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0343.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0344.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0345.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0346.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0347.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0348.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0349.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0350.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0351.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0352.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0353.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0354.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0355.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0356.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0357.json",
+  "topic": "Dante Fundamentals & Routing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0358.json",
+  "topic": "Dante Devices, Modules & Certification",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0359.json",
+  "topic": "Dante Devices, Modules & Certification",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "a0360.json",
+  "topic": "Clocking, Redundancy & Network Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0361.json",
+  "topic": "Clocking, Redundancy & Network Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0362.json",
+  "topic": "Clocking, Redundancy & Network Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0363.json",
+  "topic": "Clocking, Redundancy & Network Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0364.json",
+  "topic": "Clocking, Redundancy & Network Management",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0365.json",
+  "topic": "Clocking, Redundancy & Network Management",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "a0366.json",
+  "topic": "Control Surfaces & Machine Control",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0367.json",
+  "topic": "Control Surfaces & Machine Control",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0368.json",
+  "topic": "Control Surfaces & Machine Control",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0369.json",
+  "topic": "Control Surfaces & Machine Control",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0370.json",
+  "topic": "Control Surfaces & Machine Control",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "a0371.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0372.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0373.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0374.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0375.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0376.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0377.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0378.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0379.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0380.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0381.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0382.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0383.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0384.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0385.json",
+  "topic": "Equalization (EQ)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0386.json",
+  "topic": "Equalization (EQ)",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "a0387.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0388.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0389.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0390.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0391.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0392.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0393.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0394.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0395.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0396.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0397.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0398.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0399.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0400.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0401.json",
+  "topic": "Dynamics Processing",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0402.json",
+  "topic": "Dynamics Processing",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0403.json",
+  "topic": "Reverb",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0404.json",
+  "topic": "Reverb",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0405.json",
+  "topic": "Reverb",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0406.json",
+  "topic": "Reverb",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0407.json",
+  "topic": "Reverb",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0408.json",
+  "topic": "Delay & Time-Based Effects",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "a0409.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0410.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0411.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0412.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0413.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0414.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0415.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0416.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0417.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0418.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0419.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0420.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0421.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0422.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0423.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0424.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0425.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0426.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0427.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0428.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0429.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0430.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0431.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0432.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0433.json",
+  "topic": "Acoustic Principles & Room Behavior",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "a0434.json",
+  "topic": "Absorption & Bass Trapping",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0435.json",
+  "topic": "Absorption & Bass Trapping",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0436.json",
+  "topic": "Absorption & Bass Trapping",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0437.json",
+  "topic": "Absorption & Bass Trapping",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0438.json",
+  "topic": "Absorption & Bass Trapping",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0439.json",
+  "topic": "Absorption & Bass Trapping",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0440.json",
+  "topic": "Absorption & Bass Trapping",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0441.json",
+  "topic": "Absorption & Bass Trapping",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "a0442.json",
+  "topic": "Diffusion & Materials",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0443.json",
+  "topic": "Diffusion & Materials",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0444.json",
+  "topic": "Diffusion & Materials",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "a0445.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0446.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0447.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0448.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0449.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0450.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0451.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0452.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0453.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0454.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0455.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0456.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0457.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0458.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0459.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0460.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0461.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0462.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0463.json",
+  "topic": "Room Treatment Layout & Application",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "a0464.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0465.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0466.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0467.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0468.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0469.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0470.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0471.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0472.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0473.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0474.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0475.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0476.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0477.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0478.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0479.json",
+  "topic": "Measurement Fundamentals & Metering",
+  "terms": 6,
+  "fields": 48
+ },
+ {
+  "packet": "a0480.json",
+  "topic": "Acoustic & Room Measurement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0481.json",
+  "topic": "Acoustic & Room Measurement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0482.json",
+  "topic": "Acoustic & Room Measurement",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0483.json",
+  "topic": "Acoustic & Room Measurement",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0484.json",
+  "topic": "Signal Analysis & Test Equipment",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0485.json",
+  "topic": "Signal Analysis & Test Equipment",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0486.json",
+  "topic": "Signal Analysis & Test Equipment",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0487.json",
+  "topic": "Signal Analysis & Test Equipment",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0488.json",
+  "topic": "Signal Analysis & Test Equipment",
+  "terms": 6,
+  "fields": 48
+ },
+ {
+  "packet": "a0489.json",
+  "topic": "System Optimization",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0490.json",
+  "topic": "System Optimization",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0491.json",
+  "topic": "System Optimization",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0492.json",
+  "topic": "System Optimization",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0493.json",
+  "topic": "System Optimization",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0494.json",
+  "topic": "System Optimization",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0495.json",
+  "topic": "System Optimization",
+  "terms": 6,
+  "fields": 48
+ },
+ {
+  "packet": "a0496.json",
+  "topic": "Signal & Connection Troubleshooting",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "a0497.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0498.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0499.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0500.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0501.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0502.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0503.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0504.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0505.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0506.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0507.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0508.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0509.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0510.json",
+  "topic": "System & Live Troubleshooting Method",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0511.json",
+  "topic": "Patch & Routing Diagnostics",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0512.json",
+  "topic": "Analog Live Sound",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0513.json",
+  "topic": "Analog Live Sound",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0514.json",
+  "topic": "Digital Live Sound",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "a0515.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0516.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0517.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0518.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0519.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0520.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0521.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0522.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0523.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0524.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0525.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0526.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0527.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0528.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0529.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0530.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0531.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0532.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0533.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0534.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0535.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0536.json",
+  "topic": "System Deployment & Rigging",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0537.json",
+  "topic": "System Tuning & Alignment",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0538.json",
+  "topic": "System Tuning & Alignment",
+  "terms": 3,
+  "fields": 24
+ },
+ {
+  "packet": "a0539.json",
+  "topic": "RF Wireless Systems",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0540.json",
+  "topic": "RF Wireless Systems",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0541.json",
+  "topic": "RF Wireless Systems",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0542.json",
+  "topic": "RF Wireless Systems",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0543.json",
+  "topic": "RF Wireless Systems",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0544.json",
+  "topic": "RF Wireless Systems",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0545.json",
+  "topic": "RF Wireless Systems",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0546.json",
+  "topic": "RF Wireless Systems",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0547.json",
+  "topic": "RF Wireless Systems",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0548.json",
+  "topic": "RF Wireless Systems",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0549.json",
+  "topic": "RF Wireless Systems",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "a0550.json",
+  "topic": "DJ Performance & Turntablism",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0551.json",
+  "topic": "DJ Performance & Turntablism",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0552.json",
+  "topic": "DJ Performance & Turntablism",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0553.json",
+  "topic": "DJ Performance & Turntablism",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0554.json",
+  "topic": "DJ Performance & Turntablism",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "a0555.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0556.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0557.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0558.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0559.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0560.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0561.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0562.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0563.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0564.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0565.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0566.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0567.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0568.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0569.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0570.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0571.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0572.json",
+  "topic": "Beatmatching, Mixing & FX",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "a0573.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0574.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0575.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0576.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0577.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0578.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0579.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0580.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0581.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0582.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0583.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0584.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0585.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0586.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0587.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0588.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0589.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0590.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0591.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0592.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0593.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0594.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0595.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0596.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0597.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0598.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0599.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0600.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0601.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0602.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0603.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0604.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0605.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0606.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0607.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0608.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0609.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0610.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0611.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0612.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0613.json",
+  "topic": "Road Crew",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0614.json",
+  "topic": "Road Crew",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0615.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0616.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0617.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0618.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0619.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0620.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0621.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0622.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0623.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0624.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0625.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0626.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0627.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0628.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0629.json",
+  "topic": "Venue Architecture & Spaces",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "a0630.json",
+  "topic": "Stage Geography & Backstage",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0631.json",
+  "topic": "Stage Geography & Backstage",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0632.json",
+  "topic": "Stage Geography & Backstage",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0633.json",
+  "topic": "Stage Geography & Backstage",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0634.json",
+  "topic": "Stage Geography & Backstage",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0635.json",
+  "topic": "Stage Geography & Backstage",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0636.json",
+  "topic": "Stage Geography & Backstage",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0637.json",
+  "topic": "Stage Geography & Backstage",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0638.json",
+  "topic": "House & Audience Areas",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0639.json",
+  "topic": "House & Audience Areas",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0640.json",
+  "topic": "House & Audience Areas",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "a0641.json",
+  "topic": "Stage Platforms, Scenery & Soft Goods",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0642.json",
+  "topic": "Stage Platforms, Scenery & Soft Goods",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0643.json",
+  "topic": "Stage Platforms, Scenery & Soft Goods",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0644.json",
+  "topic": "Stage Platforms, Scenery & Soft Goods",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0645.json",
+  "topic": "Stage Platforms, Scenery & Soft Goods",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0646.json",
+  "topic": "Stage Platforms, Scenery & Soft Goods",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0647.json",
+  "topic": "Stage Platforms, Scenery & Soft Goods",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0648.json",
+  "topic": "Stage Platforms, Scenery & Soft Goods",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0649.json",
+  "topic": "Stage Platforms, Scenery & Soft Goods",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "a0650.json",
+  "topic": "Fly Systems & Overhead Access",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0651.json",
+  "topic": "Fly Systems & Overhead Access",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0652.json",
+  "topic": "Fly Systems & Overhead Access",
+  "terms": 7,
+  "fields": 56
+ },
+ {
+  "packet": "a0653.json",
+  "topic": "Rigging Hardware, Loads & Motorized Flying",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0654.json",
+  "topic": "Rigging Hardware, Loads & Motorized Flying",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0655.json",
+  "topic": "Rigging Hardware, Loads & Motorized Flying",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0656.json",
+  "topic": "Rigging Hardware, Loads & Motorized Flying",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0657.json",
+  "topic": "Rigging Hardware, Loads & Motorized Flying",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0658.json",
+  "topic": "Rigging Hardware, Loads & Motorized Flying",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0659.json",
+  "topic": "Rigging Hardware, Loads & Motorized Flying",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0660.json",
+  "topic": "Rigging Hardware, Loads & Motorized Flying",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0661.json",
+  "topic": "Rigging Hardware, Loads & Motorized Flying",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0662.json",
+  "topic": "Rigging Hardware, Loads & Motorized Flying",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0663.json",
+  "topic": "Rigging Hardware, Loads & Motorized Flying",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "a0664.json",
+  "topic": "Orchestra Pit & Ensemble Layout",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0665.json",
+  "topic": "Orchestra Pit & Ensemble Layout",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0666.json",
+  "topic": "Orchestra Pit & Ensemble Layout",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0667.json",
+  "topic": "Orchestra Pit & Ensemble Layout",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0668.json",
+  "topic": "Orchestra Pit & Ensemble Layout",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0669.json",
+  "topic": "Orchestra Pit & Ensemble Layout",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0670.json",
+  "topic": "Orchestra Pit & Ensemble Layout",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0671.json",
+  "topic": "Orchestra Pit & Ensemble Layout",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0672.json",
+  "topic": "Orchestra Pit & Ensemble Layout",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0673.json",
+  "topic": "Orchestra Pit & Ensemble Layout",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0674.json",
+  "topic": "Orchestra Pit & Ensemble Layout",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "a0675.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0676.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0677.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0678.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0679.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0680.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0681.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0682.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0683.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0684.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0685.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0686.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0687.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0688.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0689.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0690.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0691.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0692.json",
+  "topic": "Show Control, Cueing & Communications",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0693.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0694.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0695.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0696.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0697.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0698.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0699.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0700.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0701.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0702.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0703.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0704.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0705.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0706.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0707.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0708.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0709.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0710.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0711.json",
+  "topic": "Theatrical Sound (commercial card)",
+  "terms": 1,
+  "fields": 8
+ },
+ {
+  "packet": "a0712.json",
+  "topic": "Worship Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0713.json",
+  "topic": "Worship Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0714.json",
+  "topic": "Worship Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0715.json",
+  "topic": "Worship Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0716.json",
+  "topic": "Worship Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0717.json",
+  "topic": "Worship Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0718.json",
+  "topic": "Worship Sound (commercial card)",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0719.json",
+  "topic": "Worship Sound (commercial card)",
+  "terms": 6,
+  "fields": 48
+ },
+ {
+  "packet": "a0720.json",
+  "topic": "Assisted Listening Systems",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "a0721.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0722.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0723.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0724.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0725.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0726.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0727.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0728.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0729.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0730.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0731.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0732.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0733.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0734.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0735.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0736.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0737.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0738.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0739.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0740.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0741.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0742.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0743.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0744.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0745.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0746.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0747.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0748.json",
+  "topic": "Passive Components",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0749.json",
+  "topic": "Passive Components",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "a0750.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0751.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0752.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0753.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0754.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0755.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0756.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0757.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0758.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0759.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0760.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0761.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0762.json",
+  "topic": "Electromechanical Parts & Hardware",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0763.json",
+  "topic": "Active Devices & Semiconductors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0764.json",
+  "topic": "Active Devices & Semiconductors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0765.json",
+  "topic": "Active Devices & Semiconductors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0766.json",
+  "topic": "Active Devices & Semiconductors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0767.json",
+  "topic": "Active Devices & Semiconductors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0768.json",
+  "topic": "Active Devices & Semiconductors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0769.json",
+  "topic": "Active Devices & Semiconductors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0770.json",
+  "topic": "Active Devices & Semiconductors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0771.json",
+  "topic": "Active Devices & Semiconductors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0772.json",
+  "topic": "Active Devices & Semiconductors",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0773.json",
+  "topic": "Active Devices & Semiconductors",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "a0774.json",
+  "topic": "Circuits & Topologies",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0775.json",
+  "topic": "Circuits & Topologies",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0776.json",
+  "topic": "Circuits & Topologies",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0777.json",
+  "topic": "Circuits & Topologies",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0778.json",
+  "topic": "Circuits & Topologies",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0779.json",
+  "topic": "Circuits & Topologies",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0780.json",
+  "topic": "Circuits & Topologies",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0781.json",
+  "topic": "Circuits & Topologies",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0782.json",
+  "topic": "Circuits & Topologies",
+  "terms": 5,
+  "fields": 40
+ },
+ {
+  "packet": "a0783.json",
+  "topic": "PCB, Assembly & Soldering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0784.json",
+  "topic": "PCB, Assembly & Soldering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0785.json",
+  "topic": "PCB, Assembly & Soldering",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "a0786.json",
+  "topic": "Manufacturing & Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0787.json",
+  "topic": "Manufacturing & Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0788.json",
+  "topic": "Manufacturing & Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0789.json",
+  "topic": "Manufacturing & Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0790.json",
+  "topic": "Manufacturing & Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0791.json",
+  "topic": "Manufacturing & Production",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0792.json",
+  "topic": "Manufacturing & Production",
+  "terms": 4,
+  "fields": 32
+ },
+ {
+  "packet": "a0793.json",
+  "topic": "HiFi Consumer Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0794.json",
+  "topic": "HiFi Consumer Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0795.json",
+  "topic": "HiFi Consumer Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0796.json",
+  "topic": "HiFi Consumer Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0797.json",
+  "topic": "HiFi Consumer Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0798.json",
+  "topic": "HiFi Consumer Audio",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0799.json",
+  "topic": "HiFi Consumer Audio",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "a0800.json",
+  "topic": "Soldering",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0801.json",
+  "topic": "Soldering",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0802.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0803.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0804.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0805.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0806.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0807.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0808.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0809.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0810.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0811.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0812.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0813.json",
+  "topic": "Repair",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0814.json",
+  "topic": "Repair",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0815.json",
+  "topic": "Recording Fundamentals & Signal Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0816.json",
+  "topic": "Recording Fundamentals & Signal Chain",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0817.json",
+  "topic": "Recording Fundamentals & Signal Chain",
+  "terms": 2,
+  "fields": 16
+ },
+ {
+  "packet": "a0818.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0819.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0820.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0821.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0822.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0823.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0824.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0825.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0826.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0827.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0828.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0829.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0830.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0831.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0832.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0833.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0834.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0835.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0836.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0837.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0838.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0839.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0840.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0841.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0842.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0843.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0844.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0845.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0846.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0847.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0848.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0849.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0850.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0851.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0852.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0853.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0854.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0855.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0856.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0857.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0858.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0859.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0860.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0861.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0862.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0863.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0864.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0865.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0866.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0867.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0868.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0869.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0870.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0871.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0872.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0873.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0874.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0875.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0876.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0877.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0878.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0879.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0880.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0881.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0882.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0883.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0884.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0885.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0886.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0887.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0888.json",
+  "topic": "Session Setup & Signal Flow",
+  "terms": 8,
+  "fields": 64
+ },
+ {
+  "packet": "a0889.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0890.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0891.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0892.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0893.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0894.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0895.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0896.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0897.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0898.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0899.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0900.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0901.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0902.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0903.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0904.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0905.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0906.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0907.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0908.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 9,
+  "fields": 72
+ },
+ {
+  "packet": "a0909.json",
+  "topic": "Session Workflow, Takes & Documentation",
+  "terms": 6,
+  "fields": 48
+ }
+]

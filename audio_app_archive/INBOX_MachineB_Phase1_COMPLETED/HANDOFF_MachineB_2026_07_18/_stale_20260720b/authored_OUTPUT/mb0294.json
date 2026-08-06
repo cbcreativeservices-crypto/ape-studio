@@ -1,0 +1,312 @@
+{
+ "batch": 294,
+ "topic": "Synthesis Fundamentals & Oscillators",
+ "authored": [
+  {
+   "id": "34c0406d-7aff-46d6-be64-b274d9624f05",
+   "term": "Banana patch system",
+   "fields": {
+    "definition": "A modular-synthesizer patching format that uses single-conductor 4 mm banana plugs and jacks to route audio and control voltages between modules, with all modules sharing a common ground bus. Because the plugs are stackable, several can be stacked on one jack so a single output can feed many inputs, a scheme used notably in Serge and Buchla systems.",
+    "plain_english": "It is a way to wire up a modular synth using round metal banana plugs. The plugs stack on top of each other, so you can send one signal to many places at once, like splitting one hose into several.",
+    "purpose_function": "It carries the signal path in banana-format modular systems, letting a technician route audio and control voltages between modules while stackable plugs act as a built-in signal splitter without a separate multiple.",
+    "practical_application": "When patching a Serge or Buchla system a technician first connects a common ground lead, then stacks banana plugs to send one control voltage to several destinations at the same time.",
+    "category": "Modular Synthesis",
+    "related_terms": [
+     "Control voltage",
+     "Modular synthesizer",
+     "Patch cable",
+     "Clock",
+     "Glide"
+    ],
+    "common_mistakes": [
+     "Assuming banana cables carry a shield or ground like 1/4-inch or 3.5 mm cables; banana jacks are single-conductor and rely on a shared ground bus.",
+     "Believing banana and 3.5 mm (Eurorack) formats plug together directly without adapters and matched signal levels.",
+     "Stacking too many plugs on one output and loading it down instead of using a buffered multiple."
+    ],
+    "scenario_contexts": [
+     "Patching a Serge system where one control voltage must reach several modules at once.",
+     "Connecting the common ground before signal cables when setting up a Buchla-style patch.",
+     "Adapting a banana-format module into a mixed rig alongside 3.5 mm gear."
+    ]
+   },
+   "sources": [
+    "Serge / Buchla modular technical documentation (banana patching and common-ground wiring)",
+    "Curtis Roads, The Computer Music Tutorial (MIT Press) — modular synthesis and patching"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "3198b298-09b6-4cfa-8cda-d3d49b43d9a2",
+   "term": "Clock",
+   "fields": {
+    "definition": "A regular stream of timing pulses that sets the tempo and synchronizes time-based devices such as sequencers, arpeggiators, drum machines and clocked LFOs. In analog systems it is a train of gate or trigger pulses; in MIDI systems it is a defined message stream running at 24 pulses per quarter note.",
+    "plain_english": "A clock is a steady tick that keeps synth gear in time together. It works like a metronome that tells sequencers and drum machines when to take each step.",
+    "purpose_function": "It provides the shared timing reference that locks several devices to the same tempo, so sequenced and rhythmic events line up instead of drifting apart.",
+    "practical_application": "A technician picks one device as the clock master and sends its clock to the others, or patches an analog clock into a sequencer's clock input to set the step rate.",
+    "category": "Timing & Control",
+    "related_terms": [
+     "Trigger",
+     "Gate",
+     "Sequencer",
+     "Arpeggiator",
+     "LFO"
+    ],
+    "common_mistakes": [
+     "Confusing the tempo clock in sequencing with the word/sample clock of digital audio; here 'clock' means the musical timing pulse.",
+     "Setting two devices to both send clock, so they fight instead of one master driving the others.",
+     "Assuming every device uses the same pulses per quarter note; analog clocks and MIDI clock at 24 ppqn differ."
+    ],
+    "scenario_contexts": [
+     "Syncing a drum machine and a sequencer so they start and run in time.",
+     "Slaving a modular sequencer to MIDI clock coming from a DAW.",
+     "Clocking an LFO to divide the master tempo for rhythmic modulation."
+    ]
+   },
+   "sources": [
+    "Curtis Roads, The Computer Music Tutorial (MIT Press) — sequencing and timing",
+    "MIDI Association, MIDI 1.0 specification (System Real Time clock, 24 ppqn)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "0c4b9a6f-65b4-44dd-af88-219d46387718",
+   "term": "Differentiable digital signal processing (DDSP)",
+   "fields": {
+    "definition": "An approach that implements classic DSP elements such as oscillators, filters and reverberators as differentiable functions, so they can be embedded in a neural network and trained end-to-end with gradient descent. It lets a machine-learning model directly control interpretable synthesis modules instead of generating raw samples or spectrograms.",
+    "plain_english": "DDSP builds normal synth parts, like oscillators and filters, in a way a computer can learn to control. It joins old-school sound tools with modern AI, so a model can shape sound using controls it teaches itself to set.",
+    "purpose_function": "It exists to combine the clear controls and efficiency of traditional signal-processing modules with the flexibility of deep learning, giving high-quality, controllable audio from far less training data than raw-waveform models.",
+    "practical_application": "A developer or sound designer uses a DDSP model to resynthesize or transform audio, for example remapping a sung melody onto a violin timbre, while keeping pitch and loudness controls that map to real synthesis parameters.",
+    "category": "Neural Audio Synthesis",
+    "related_terms": [
+     "Differentiable oscillator",
+     "Filtered-noise synthesizer",
+     "Harmonic additive synthesizer",
+     "Generative music",
+     "Oscillator"
+    ],
+    "common_mistakes": [
+     "Thinking DDSP is a generic network that outputs raw samples; it instead drives explicit, differentiable DSP modules.",
+     "Assuming it needs huge datasets like waveform models when it can train on relatively little audio.",
+     "Reading 'differentiable' as 'different'; it means the math can be differentiated for gradient-based training."
+    ],
+    "scenario_contexts": [
+     "Timbre transfer, mapping one instrument's playing onto another's sound.",
+     "Building a low-data neural synthesizer for one specific instrument.",
+     "Research into interpretable, controllable audio synthesis."
+    ]
+   },
+   "sources": [
+    "Engel, Hantrakul, Gu, Roberts, 'DDSP: Differentiable Digital Signal Processing', ICLR 2020",
+    "Google Magenta DDSP technical documentation and reference implementation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d1444d33-412b-4244-ad39-dacaf2bba16d",
+   "term": "Differentiable oscillator",
+   "fields": {
+    "definition": "An oscillator whose sample-generating process is written as a differentiable function, so its parameters such as frequency and per-harmonic amplitudes can be optimized by gradient descent inside a neural network. In DDSP it is typically a harmonic (additive) oscillator that sums sinusoids under the control of a trained model.",
+    "plain_english": "It is a synth oscillator built so a computer can adjust it by learning. Because its math can be fine-tuned step by step, an AI model can teach itself the right pitch and tone.",
+    "purpose_function": "It gives neural-synthesis systems a sound source with real, readable controls that the training process can tune directly, rather than generating waveforms blindly.",
+    "practical_application": "In a DDSP model a developer feeds pitch and loudness features into a differentiable oscillator to resynthesize an instrument with controllable harmonics.",
+    "category": "Neural Audio Synthesis",
+    "related_terms": [
+     "Differentiable digital signal processing (DDSP)",
+     "Harmonic additive synthesizer",
+     "Filtered-noise synthesizer",
+     "Oscillator",
+     "Clock"
+    ],
+    "common_mistakes": [
+     "Assuming it is a special analog circuit; it is a mathematical oscillator implemented in software for training.",
+     "Thinking it is the whole model when it is one differentiable module among several.",
+     "Overlooking that its harmonic amplitudes are usually set by a neural network, not dialed in by hand."
+    ],
+    "scenario_contexts": [
+     "Resynthesizing a monophonic instrument inside a DDSP model.",
+     "Training a model to match a target timbre by tuning oscillator harmonics.",
+     "Timbre-transfer applications driven by pitch and loudness features."
+    ]
+   },
+   "sources": [
+    "Engel, Hantrakul, Gu, Roberts, 'DDSP: Differentiable Digital Signal Processing', ICLR 2020",
+    "Google Magenta DDSP technical documentation and reference implementation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "3bfdcda8-a0f0-4df0-afbc-26694b13ac96",
+   "term": "Filtered-noise synthesizer",
+   "fields": {
+    "definition": "A synthesis component that generates sound by passing white noise through a linear time-varying filter, shaping the noise spectrum over time to model the stochastic, non-harmonic parts of a sound such as breath, bow scrape or consonants. In DDSP it is the subtractive-noise branch that complements the harmonic oscillator.",
+    "plain_english": "It makes sound by filtering plain hiss into the right shape. This is how you get breathy or scratchy parts of a sound, like the air in a flute note, that pure tones cannot make.",
+    "purpose_function": "It supplies the noisy, inharmonic energy that harmonic oscillators cannot produce, so combined synthesis can reproduce realistic breath, friction and transient textures.",
+    "practical_application": "Inside a DDSP model a developer uses the filtered-noise branch to add breath and bow noise on top of the harmonic tone, with the filter shaped by the trained network.",
+    "category": "Neural Audio Synthesis",
+    "related_terms": [
+     "Differentiable digital signal processing (DDSP)",
+     "Harmonic additive synthesizer",
+     "Differentiable oscillator",
+     "Oscillator",
+     "Clock"
+    ],
+    "common_mistakes": [
+     "Thinking noise is useless in synthesis; filtered noise is essential for realistic breath and transients.",
+     "Confusing it with a plain noise generator when its filter changes over time under model control.",
+     "Expecting it to produce pitch; it produces broadband, inharmonic content, not clear notes."
+    ],
+    "scenario_contexts": [
+     "Adding breath noise to a resynthesized wind instrument.",
+     "Modeling bow-scrape or consonant sounds in neural synthesis.",
+     "Combining with a harmonic oscillator to build a full instrument model."
+    ]
+   },
+   "sources": [
+    "Engel, Hantrakul, Gu, Roberts, 'DDSP: Differentiable Digital Signal Processing', ICLR 2020",
+    "Google Magenta DDSP technical documentation and reference implementation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "c2ba09ba-c818-49ec-a99a-bf4d66639d76",
+   "term": "Generative foley",
+   "fields": {
+    "definition": "The use of generative or algorithmic systems, often machine-learning models, to create foley, the everyday sound effects such as footsteps, cloth movement, impacts and handling noise added to picture, instead of or alongside recording a foley artist. Such systems synthesize or select sounds, often conditioned on video or motion.",
+    "plain_english": "Foley is the small everyday sounds added to film, like footsteps and rustling clothes. Generative foley uses a computer program to make those sounds for you. Often it uses AI, so you do not have to record them by hand.",
+    "purpose_function": "It aims to speed up and scale sound-effects work by producing plausible foley automatically, which helps on large projects, previsualization, games and quick iteration.",
+    "practical_application": "A sound editor may use a generative-foley tool to rough in footsteps and handling sounds synced to picture, then refine or replace the key hits with recorded foley.",
+    "category": "Generative Audio",
+    "related_terms": [
+     "Generative music",
+     "Sound design",
+     "Differentiable digital signal processing (DDSP)",
+     "Sampler",
+     "Sound effects"
+    ],
+    "common_mistakes": [
+     "Expecting it to fully replace a skilled foley artist when results still usually need editing and quality control.",
+     "Assuming output is automatically in perfect sync, since timing to picture often needs correction.",
+     "Treating all generated sounds as license-clear without checking the model's training data and usage rights."
+    ],
+    "scenario_contexts": [
+     "Roughing in footsteps for an animatic or previs pass.",
+     "Generating large volumes of impact and handling sounds for a game.",
+     "Prototyping a scene's sound before a formal foley session."
+    ]
+   },
+   "sources": [
+    "David Sonnenschein, Sound Design: The Expressive Power of Music, Voice and Sound Effects in Cinema (foley and sound-effects practice)",
+    "Curtis Roads, The Computer Music Tutorial (MIT Press) — generative and algorithmic sound synthesis"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "df53cb3d-7921-42de-aa87-b79e1aca66b2",
+   "term": "Generative music",
+   "fields": {
+    "definition": "Music produced by a system or set of rules that runs to create the output, so the result is ever-changing rather than fixed note-for-note by a composer. It spans algorithmic composition, rule-based and probabilistic systems and self-generating installations, and was popularized as a term by Brian Eno for music that is ever-different and changing.",
+    "plain_english": "Generative music is made by a system that follows rules to keep making new sound. Instead of one fixed song, it can play for a long time without repeating. It is a bit like a wind chime that sounds different each time the wind blows.",
+    "purpose_function": "It lets a designer set up processes and limits rather than fix every note, producing music that evolves on its own for installations, games, ambient scores and interactive media.",
+    "practical_application": "A composer or technician builds rules, seeds and randomness in software or a modular patch so the system plays continuously, then tunes the parameters to keep the output musical.",
+    "category": "Generative Audio",
+    "related_terms": [
+     "Generative foley",
+     "Sequencer",
+     "Clock",
+     "Arpeggiator",
+     "LFO"
+    ],
+    "common_mistakes": [
+     "Thinking generative means fully random, when most generative music uses rules and limits to stay musical.",
+     "Confusing it with looping a finished track, since generative systems keep producing new variation.",
+     "Assuming it requires AI, when many generative systems are simple rule- or probability-based."
+    ],
+    "scenario_contexts": [
+     "Creating an endless ambient soundscape for an installation.",
+     "Building adaptive, non-repeating music for a game.",
+     "Patching a modular system to self-play evolving sequences."
+    ]
+   },
+   "sources": [
+    "Curtis Roads, The Computer Music Tutorial (MIT Press) — algorithmic and generative composition",
+    "Nick Collins, Introduction to Computer Music (Wiley) — generative and algorithmic music"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "d7807a7f-f728-47ea-a986-ab92cf333333",
+   "term": "Glide",
+   "fields": {
+    "definition": "A synthesizer control that makes the pitch slide smoothly from one note to the next instead of jumping instantly, by ramping the oscillator's control voltage or pitch value over a set time. It is functionally the same as portamento, with a glide-time control that sets how long the slide takes.",
+    "plain_english": "Glide makes a synth slide smoothly between notes instead of jumping straight to the new pitch. It is like sliding your finger along a guitar string from one fret to another.",
+    "purpose_function": "It provides expressive, connected pitch movement between notes for leads, basslines and effects, and the glide-time control sets how fast the pitch travels.",
+    "practical_application": "A player switches on glide and sets a glide time so a mono lead or bass slurs between notes; many synths glide only when notes overlap in a fingered or legato mode.",
+    "category": "Performance Control",
+    "related_terms": [
+     "Portamento",
+     "Oscillator",
+     "Control voltage",
+     "Pitch bend",
+     "Clock"
+    ],
+    "common_mistakes": [
+     "Thinking glide and pitch bend are the same; glide moves automatically between played notes, while pitch bend is a manual real-time control.",
+     "Setting a very long glide time and then finding fast passages sound out of tune between notes.",
+     "Expecting glide on a polyphonic patch to behave like a mono lead, when its behavior depends on the voice mode."
+    ],
+    "scenario_contexts": [
+     "Programming a sliding synth-bass line.",
+     "Adding expressive slurs to a monophonic lead.",
+     "Setting fingered or legato glide so slides only happen on overlapping notes."
+    ]
+   },
+   "sources": [
+    "Sound on Sound — Synth Secrets series (portamento and glide)",
+    "Curtis Roads, The Computer Music Tutorial (MIT Press) — pitch control and portamento"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "365f5f14-cb09-427b-964f-5b3a8a2e05ec",
+   "term": "Harmonic additive synthesizer",
+   "fields": {
+    "definition": "An additive synthesizer that builds sound by summing sine-wave partials tuned to whole-number (harmonic) multiples of a fundamental frequency, with each partial's amplitude controlled over time. Restricting the partials to the harmonic series produces clearly pitched, periodic tones.",
+    "plain_english": "It creates sound by stacking many simple sine tones that are all in tune with one base note. Because the tones are neat multiples of that note, the result has a clear pitch, like layering tuned whistles into one rich sound.",
+    "purpose_function": "It lets a designer build a timbre partial by partial, giving precise control over the harmonic content and how each harmonic changes across the note.",
+    "practical_application": "A sound designer sets the level and envelope of individual harmonics to sculpt an evolving tone; in a DDSP model a harmonic oscillator of this kind is driven by a trained network to match an instrument.",
+    "category": "Additive Synthesis",
+    "related_terms": [
+     "Differentiable oscillator",
+     "Differentiable digital signal processing (DDSP)",
+     "Filtered-noise synthesizer",
+     "Oscillator",
+     "Clock"
+    ],
+    "common_mistakes": [
+     "Confusing harmonic additive synthesis with inharmonic additive synthesis; keeping partials at whole-number multiples is what gives a clear pitch.",
+     "Assuming a few harmonics are enough for any timbre, when bright or complex tones need many partials.",
+     "Treating amplitudes as static, when each harmonic usually needs its own time-varying envelope for a lifelike sound."
+    ],
+    "scenario_contexts": [
+     "Recreating an organ- or bell-like tone by stacking tuned harmonics.",
+     "Analyzing and resynthesizing an instrument's harmonic spectrum.",
+     "Driving a harmonic oscillator from a DDSP model for timbre transfer."
+    ]
+   },
+   "sources": [
+    "Curtis Roads, The Computer Music Tutorial (MIT Press) — additive synthesis",
+    "Glen Ballou (ed.), Handbook for Sound Engineers — synthesis and additive methods"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

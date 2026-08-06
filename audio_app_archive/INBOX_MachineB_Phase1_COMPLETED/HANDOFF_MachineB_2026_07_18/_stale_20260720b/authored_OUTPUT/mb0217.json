@@ -1,0 +1,159 @@
+{
+ "batch": 217,
+ "topic": "Sound for Picture — Post Workflow & Deliverables",
+ "authored": [
+  {
+   "id": "bd1e98c4-980b-4392-b447-64e968413b82",
+   "term": "Count-in click",
+   "fields": {
+    "definition": "A short series of metronomic click-track beats sounded ahead of a music cue's downbeat, usually one or two bars, so the conductor and players lock to the cue's tempo before recording begins.",
+    "plain_english": "It is a set of steady clicks played just before the music starts. It counts the players in so they all begin together at the right speed.",
+    "purpose_function": "It sets the tempo and a shared starting point before the first note, so an ensemble enters cleanly and stays in sync with picture.",
+    "practical_application": "A scoring mixer or music editor sets a one- or two-bar count-in on the click track so the orchestra hears the beat and starts the cue in time.",
+    "category": "Scoring & Music Editing",
+    "related_terms": ["Click track", "Streamers and punches", "Cue countdown", "Tempo map", "Downbeat"],
+    "common_mistakes": ["Setting the count-in too short so players cannot lock to tempo before the downbeat", "Confusing the count-in click with a visual streamer countdown", "Forgetting to trim the count-in clicks out of the final recorded cue"],
+    "scenario_contexts": ["Recording an orchestral cue to a click at a scoring stage", "Overdubbing a soloist who needs a two-bar lead-in", "Programming a tempo map in the DAW before a scoring session"]
+   },
+   "sources": ["Handbook for Sound Engineers (Ballou)", "Yewdall, Practical Art of Motion Picture Sound"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "e38f9af3-9811-4e9e-8f23-3e62c7d516b5",
+   "term": "Creature sound",
+   "fields": {
+    "definition": "A designed vocalization or movement sound for a non-human character such as a monster, animal, or alien, built by layering and processing recorded animal, human, or synthesized sources.",
+    "plain_english": "It is a made-up sound for a creature like a monster or alien. Sound designers build it by mixing and changing real animal or human recordings.",
+    "purpose_function": "It gives a fictional creature a believable voice and presence, supporting character and emotion where no real-world recording exists.",
+    "practical_application": "A sound designer layers pitched-down animal growls with human vocals and processing to voice an on-screen monster, then syncs it to the performance.",
+    "category": "Sound Design & SFX",
+    "related_terms": ["Sound design", "Foley", "Layering", "Pitch shifting", "Sound effects (SFX)", "Vocalization"],
+    "common_mistakes": ["Using a single raw animal recording instead of layering for a richer, original sound", "Neglecting to sync the vocalization to the creature's mouth or movement", "Over-processing until the sound loses clarity and impact"],
+    "scenario_contexts": ["Designing a monster roar for a fantasy film", "Creating alien speech for a science-fiction scene", "Building animal vocalizations for an animated feature"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Sonnenschein, Sound Design"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "63cd5a8b-9531-4481-84fe-d4cfd2ee3317",
+   "term": "Cue countdown",
+   "fields": {
+    "definition": "A visual and/or audible countdown leading into the start of a music cue, giving the conductor and players a fixed preparation interval before the downbeat, often realized with streamers and punches or numeric countdown markers.",
+    "plain_english": "It is a short countdown that leads into a music cue. It warns the conductor and players so they are ready to start on the exact beat.",
+    "purpose_function": "It gives an ensemble a steady lead-in so it can prepare and enter precisely on the cue's start frame in sync with picture.",
+    "practical_application": "A music editor places a countdown ahead of the cue so the conductor sees streamers or numbers and brings the orchestra in on the hit point.",
+    "category": "Scoring & Music Editing",
+    "related_terms": ["Streamers and punches", "Count-in click", "Hit point", "Downbeat", "Click track"],
+    "common_mistakes": ["Confusing the cue countdown with a program leader countdown at the head of a reel", "Setting the countdown length inconsistently so the conductor cannot rely on it", "Placing the countdown against the wrong start frame"],
+    "scenario_contexts": ["Cuing an orchestra to a hit point on a scoring stage", "Preparing streamers and punches for a conductor", "Recording a cue where the ensemble must enter on an exact picture frame"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "8f9f3f6a-39a8-4aef-9d59-fd4d8638129f",
+   "term": "Cue edit",
+   "fields": {
+    "definition": "The reshaping of a music cue by a music editor, cutting, repeating, or rearranging recorded or library music, so it fits the picture's length, structure, and sync points.",
+    "plain_english": "It is changing a piece of film music so it fits the scene. The editor cuts, repeats, or moves parts so the music matches the picture.",
+    "purpose_function": "It makes a cue fit the exact timing and shape of a scene without re-recording, lining up musical events with on-screen action.",
+    "practical_application": "A music editor trims and reassembles a recorded cue in the DAW so its phrases land on the scene's key moments and its out-point matches the cut.",
+    "category": "Scoring & Music Editing",
+    "related_terms": ["Music editor", "Cue extension", "Cue shortening", "Hit point", "Cue reconform"],
+    "common_mistakes": ["Cutting on the wrong beat so the edit sounds musically abrupt", "Ignoring tempo and phrase boundaries when joining sections", "Editing without checking sync against the current picture cut"],
+    "scenario_contexts": ["Fitting a temp or library track to a scene", "Adjusting a scored cue after a picture change", "Assembling a source-music edit for on-screen playback"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "26cf4839-83a7-48a6-94e0-df27906a6bea",
+   "term": "Cue extension",
+   "fields": {
+    "definition": "Lengthening a music cue to cover more screen time by repeating sections, adding bars, or extending the tail, while preserving musical continuity to a new out-point.",
+    "plain_english": "It is making a piece of film music longer. The editor repeats or adds parts so the music keeps playing until a later point in the scene.",
+    "purpose_function": "It stretches a cue to fill a longer scene or a moved out-point without re-recording, keeping the music continuous and coherent.",
+    "practical_application": "A music editor loops a section or adds bars so the cue reaches a new picture out-point after the scene is recut longer.",
+    "category": "Scoring & Music Editing",
+    "related_terms": ["Cue shortening", "Cue edit", "Music editor", "Cue reconform", "Hit point"],
+    "common_mistakes": ["Looping a section audibly so the repeat is obvious to the audience", "Extending past a phrase so the added bars clash harmonically", "Breaking sync at hit points while adding length"],
+    "scenario_contexts": ["Covering a scene that was recut longer", "Filling a gap left when an adjacent cue was removed", "Extending an end-title cue to match a longer crawl"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "1b8c3567-25ce-4ef0-8612-795218c030c8",
+   "term": "Cue reconform",
+   "fields": {
+    "definition": "Re-editing a music cue and its edit decisions to match a revised picture cut, restoring sync of musical events to on-screen action after editorial changes shift or remove frames.",
+    "plain_english": "It is fixing a music cue after the picture edit changes. The editor moves and trims the music so it lines up with the new cut again.",
+    "purpose_function": "It keeps music in sync when picture is recut, so hit points and phrasing stay aligned without rebuilding the cue from scratch.",
+    "practical_application": "After receiving a change list, a music editor reconforms cues by inserting or removing the same frames so the score realigns to the new edit.",
+    "category": "Scoring & Music Editing",
+    "related_terms": ["Reconform", "Change list", "Cue edit", "EDL", "Hit point"],
+    "common_mistakes": ["Applying the wrong change list version and shifting cues incorrectly", "Reconforming to the new cut but forgetting hit-point resync within the music", "Not verifying sync against the updated picture after the reconform"],
+    "scenario_contexts": ["Adapting the score after a new picture cut arrives", "Applying an editorial change list to the music session", "Resyncing cues before a re-record mix"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "SMPTE post-production and timecode standards"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f19d6f0d-3de9-46ad-aa79-bc13836cd81e",
+   "term": "Cue shortening",
+   "fields": {
+    "definition": "Reducing a music cue's length to fit a shorter picture section by removing bars or sections while preserving musical structure and sync to the remaining hit points.",
+    "plain_english": "It is making a piece of film music shorter. The editor takes out parts so the music fits a shorter scene but still sounds whole.",
+    "purpose_function": "It fits a cue to a trimmed scene or an earlier out-point without re-recording, keeping the music musically intact.",
+    "practical_application": "A music editor removes internal bars or a section so a recorded cue ends at an earlier picture out-point after the scene is cut shorter.",
+    "category": "Scoring & Music Editing",
+    "related_terms": ["Cue extension", "Cue edit", "Music editor", "Hit point", "Cue reconform"],
+    "common_mistakes": ["Cutting mid-phrase so the shortened cue sounds truncated", "Removing bars that carry a needed hit point", "Ignoring tempo so the join between sections stutters"],
+    "scenario_contexts": ["Fitting a cue to a scene that was trimmed", "Tightening a cue that overruns its out-point", "Shortening a source cue for a brief on-screen appearance"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6c2467c9-9064-4548-a3bc-1f0c7221cca8",
+   "term": "Cue timing adjustment",
+   "fields": {
+    "definition": "Shifting or time-scaling a music cue so its musical events and hit points align with picture, by moving the cue's start, nudging sections, or applying tempo and time changes.",
+    "plain_english": "It is moving or stretching a music cue so it lines up with the action. The editor nudges the music until key moments hit the picture.",
+    "purpose_function": "It aligns musical accents with on-screen events, correcting drift or misalignment between the cue and the picture.",
+    "practical_application": "A music editor slips the cue or adjusts tempo so an accent lands exactly on a cut or a character's move.",
+    "category": "Scoring & Music Editing",
+    "related_terms": ["Hit point", "Cue edit", "Tempo map", "Cue reconform", "Sync"],
+    "common_mistakes": ["Time-stretching so far that audible artifacts appear", "Fixing one hit point while knocking others out of sync", "Adjusting timing without confirming against the locked picture"],
+    "scenario_contexts": ["Landing a musical accent on a specific frame", "Correcting sync drift after a session change", "Aligning a temp cue to the scene before scoring"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "Handbook for Sound Engineers (Ballou)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5fbabf08-6d96-4dc3-9443-d782b84742d0",
+   "term": "Cue-sheet update",
+   "fields": {
+    "definition": "Revising the cue sheet, the document listing each music cue with its title, timecode start and end, duration, and composer or publisher, to reflect current edits for scoring, dubbing, or music-rights reporting.",
+    "plain_english": "It is updating the list of all music cues in a project. The list shows each cue's name, timing, and length so everyone works from correct info.",
+    "purpose_function": "It keeps an accurate record of every cue's placement and length so the mix, delivery, and music-rights royalty reporting stay correct.",
+    "practical_application": "A music editor updates the cue sheet after edits so timecodes, durations, and cue names match the current session before delivery.",
+    "category": "Scoring & Music Editing",
+    "related_terms": ["Cue sheet", "Music editor", "Timecode", "Deliverables", "Cue reconform"],
+    "common_mistakes": ["Leaving old timecodes on the sheet after cues are re-edited", "Confusing the scoring cue sheet with the performance-rights cue sheet", "Omitting composer or publisher data needed for royalty reporting"],
+    "scenario_contexts": ["Preparing music-rights documentation for a broadcast", "Updating cue timings after a reconform", "Delivering a final cue sheet with the mix"]
+   },
+   "sources": ["Yewdall, Practical Art of Motion Picture Sound", "SMPTE post-production and delivery standards"],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}

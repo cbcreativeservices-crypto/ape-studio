@@ -17,9 +17,9 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
-import { Badge, ListeningSoonCard, MythReality, PanelCard, ReadoutGrid, dstyles } from '../bits';
+import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../bits';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
-import { LabChip } from '../../LabShell';
+import { LabChip, CollapsibleSection } from '../../LabShell';
 import { requireVizQuant } from '../skiaGate';
 import type { DitherMode } from '../vizQuant';
 
@@ -192,8 +192,7 @@ export function QuantModule(p: DigitalModuleProps) {
         ) : null}
       </PanelCard>
 
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>REAL CONVERTERS — THEORY VS PRACTICE</Text>
+      <CollapsibleSection title="REAL CONVERTERS — THEORY VS PRACTICE">
         <Text style={dstyles.body}>
           6.02·N + 1.76 dB is the FORMULA, not the product. Analog input noise, clock jitter and converter linearity set the
           real limit: the industry measure is ENOB (effective number of bits), and even excellent 24-bit converters deliver
@@ -203,7 +202,7 @@ export function QuantModule(p: DigitalModuleProps) {
           myth="Higher bit depth means better frequency response — 24-bit sounds brighter and more detailed on top."
           reality="Bit depth sets AMPLITUDE resolution and dynamic range only: more bits = a lower quantization-noise floor. Frequency response is set by sample rate. Nothing about bit depth touches treble."
         />
-      </PanelCard>
+      </CollapsibleSection>
 
       <PanelCard>
         <SectionHead title="DITHER — THE FIX FOR CORRELATED ERROR" onHelp={() => p.help('dither')} />
@@ -229,7 +228,6 @@ export function QuantModule(p: DigitalModuleProps) {
                 ? 'TPDF (two uniforms summed, ±1 step): the standard. Error value AND power decorrelate — a steady, benign noise floor.'
                 : 'NOISE-SHAPED: TPDF plus first-order error feedback pushes the noise toward the top of the band, where hearing is least sensitive. Same honest trade, spent more cleverly.'}
         </Text>
-        <ListeningSoonCard what="Hearing truncation vs RPDF vs TPDF vs noise-shaped dither on a fading tone" />
       </PanelCard>
 
       <CheckQuestion spec={CHECK_BITDEPTH} />

@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
-import { InteractionZone, LabChip } from '../LabShell';
+import { InteractionZone, LabChip, CollapsibleSection } from '../LabShell';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { requireMsViz, skiaAvailable, type MsVizModule } from './skiaGate';
@@ -82,15 +82,55 @@ function TopSection({ viz, width, help, onLock }: SectionProps) {
   const [dispIdx, setDispIdx] = useState(1);
   const [twoOn, setTwoOn] = useState(false);
   const [fills, setFills] = useState(false);
-  const [active, setActive] = useState<0 | 1>(0);
   const [s1, setS1] = useState({ x: 0.3, aim: 0 });
   const [s2, setS2] = useState({ x: 0.7, aim: 0 });
   const disp = DISPERSIONS[dispIdx];
-  const cur = active === 0 ? s1 : s2;
-  const setCur = (p: { x: number; aim: number }) => (active === 0 ? setS1(p) : setS2(p));
+
+  // Speaker 1's position + aim sliders — a column so it can sit beside
+  // speaker 2's column when the second speaker is added (owner 2026-08-05).
+  const spk1Controls = (
+    <View style={styles.col}>
+      <Text style={styles.colHead}>SPEAKER 1</Text>
+      <DragSlider
+        value={s1.x}
+        onChange={(v) => setS1({ ...s1, x: v })}
+        label="POSITION"
+        readout={s1.x < 0.35 ? 'stage left' : s1.x > 0.65 ? 'stage right' : 'center'}
+        onHelp={() => help('position')}
+      />
+      <DragSlider
+        value={(s1.aim + 60) / 120}
+        onChange={(v) => setS1({ ...s1, aim: Math.round(v * 120 - 60) })}
+        label="AIM"
+        readout={`${s1.aim}°`}
+        onHelp={() => help('aim')}
+      />
+    </View>
+  );
+  const spk2Controls = (
+    <View style={styles.col}>
+      <Text style={styles.colHead}>SPEAKER 2</Text>
+      <DragSlider
+        value={s2.x}
+        onChange={(v) => setS2({ ...s2, x: v })}
+        label="POSITION"
+        readout={s2.x < 0.35 ? 'stage left' : s2.x > 0.65 ? 'stage right' : 'center'}
+        onHelp={() => help('position')}
+      />
+      <DragSlider
+        value={(s2.aim + 60) / 120}
+        onChange={(v) => setS2({ ...s2, aim: Math.round(v * 120 - 60) })}
+        label="AIM"
+        readout={`${s2.aim}°`}
+        onHelp={() => help('aim')}
+      />
+    </View>
+  );
 
   return (
     <View style={styles.panelCard}>
+      {/* Color key ABOVE the display, below the title/explanation (owner 2026-08-05). */}
+      <Legend />
       {/* InteractionZone: touches on the canvas win over the page scroll (owner 2026-07-29). */}
       <InteractionZone onLock={onLock}>
         {viz ? (
@@ -110,51 +150,39 @@ function TopSection({ viz, width, help, onLock }: SectionProps) {
       </InteractionZone>
       <IllustrationBadge />
       <DisplayGuideButton onPress={() => help('top_view')} />
-      <Legend />
+      {/* Feature toggles. */}
+      <View style={styles.chipRow}>
+        <LabChip
+          label={twoOn ? 'SPEAKER 2 ●' : 'ADD SPEAKER 2'}
+          selected={twoOn}
+          onPress={() => setTwoOn((v) => !v)}
+          onLongPress={() => help('second_speaker')}
+        />
+        <LabChip label={fills ? 'FRONT FILLS ●' : 'FRONT FILLS'} selected={fills} onPress={() => setFills((v) => !v)} onLongPress={() => help('front_fills')} />
+      </View>
+      {/* Speaker sliders: one full-width column until a second speaker is added,
+          then two columns side by side (owner 2026-08-05). */}
+      {twoOn ? (
+        <View style={styles.twoCol}>
+          {spk1Controls}
+          {spk2Controls}
+        </View>
+      ) : (
+        spk1Controls
+      )}
+      {/* Coverage-angle buttons BELOW all sliders (owner 2026-08-05). */}
       <View style={styles.chipRow}>
         {DISPERSIONS.map((d, i) => (
           <LabChip key={d.key} label={d.label} selected={dispIdx === i} onPress={() => setDispIdx(i)} onLongPress={() => help('dispersion')} />
         ))}
       </View>
-      <View style={styles.chipRow}>
-        <LabChip label="SPEAKER 1" selected={active === 0} onPress={() => setActive(0)} onLongPress={() => help('position')} />
-        <LabChip
-          label={twoOn ? 'SPEAKER 2 ●' : 'ADD SPEAKER 2'}
-          selected={active === 1 && twoOn}
-          onPress={() => {
-            if (!twoOn) {
-              setTwoOn(true);
-              setActive(1);
-            } else if (active === 1) {
-              setTwoOn(false);
-              setActive(0);
-            } else {
-              setActive(1);
-            }
-          }}
-          onLongPress={() => help('second_speaker')}
-        />
-        <LabChip label={fills ? 'FRONT FILLS ●' : 'FRONT FILLS'} selected={fills} onPress={() => setFills((v) => !v)} onLongPress={() => help('front_fills')} />
-      </View>
-      <DragSlider
-        value={cur.x}
-        onChange={(v) => setCur({ ...cur, x: v })}
-        label={`SPEAKER ${active + 1} POSITION`}
-        readout={cur.x < 0.35 ? 'stage left' : cur.x > 0.65 ? 'stage right' : 'center'}
-        onHelp={() => help('position')}
-      />
-      <DragSlider
-        value={(cur.aim + 60) / 120}
-        onChange={(v) => setCur({ ...cur, aim: Math.round(v * 120 - 60) })}
-        label={`SPEAKER ${active + 1} AIM`}
-        readout={`${cur.aim}°`}
-        onHelp={() => help('aim')}
-      />
-      <Text style={styles.caption}>
-        Narrow boxes (60°) throw far but need careful aim; wide boxes (120°) cover close and wide
-        but fall off fast. Two overlapping speakers turn the shared zone RED — energy piles up
-        (and, in the real world, combs). Front fills rescue the first rows the mains fly over.
-      </Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('top_view')}>
+        <Text style={styles.caption}>
+          Narrow boxes (60°) throw far but need careful aim; wide boxes (120°) cover close and wide
+          but fall off fast. Two overlapping speakers turn the shared zone RED — energy piles up
+          (and, in the real world, combs). Front fills rescue the first rows the mains fly over.
+        </Text>
+      </CollapsibleSection>
     </View>
   );
 }
@@ -162,16 +190,17 @@ function TopSection({ viz, width, help, onLock }: SectionProps) {
 // ── 2 · SIDE VIEW — height, tilt, vertical pattern, the room ────────────────
 
 const SIDE_CHECK: CheckSpec = {
-  question: 'The rear seats are GRAY (no coverage) and the front row is RED (blasted). The classic fix is…',
+  question:
+    'When the rear seats have low coverage level while the front seats are at their full level, the classic fix is…',
   options: [
     'Turn the whole system up',
-    'Raise the speaker and tilt it down toward the back rows',
+    'Raise the speaker and aim the speaker to cover both the front and back more evenly.',
     'Move the speaker closer to the front row',
   ],
   correctIdx: 1,
   reveal:
-    'Height + down-tilt aims the LOUD center of the vertical pattern at the DISTANT seats while the nearby front rows sit at the quieter pattern edge — distance and pattern cancel out, so front and back hear similar levels. Turning it up makes the front row louder too; that is why speakers fly above the audience.',
-  wrongHint: 'Raise the HEIGHT slider and add TILT — watch which seats turn green.',
+    'Raising the box and aiming it so the loud CENTER of its vertical pattern reaches the DISTANT rows — while the near rows sit at the quieter EDGE of the pattern — lets extra distance and the pattern’s shape offset each other, so front and back hear similar levels. Turning the whole system up just makes the already-loud front rows louder; moving the box closer to the front makes the front-to-back imbalance worse.',
+  wrongHint: 'Raise the HEIGHT slider and add DOWN-TILT so the pattern’s center reaches the back rows, not just the front.',
 };
 
 function SideSection({ viz, width, help, onLock }: SectionProps) {
@@ -226,13 +255,19 @@ function SideSection({ viz, width, help, onLock }: SectionProps) {
         </Text>
       ) : null}
       <DisplayGuideButton onPress={() => help('side_view')} />
+      {/* Sliders first, then the toggle buttons (owner 2026-08-05 wave-style order). */}
+      <DragSlider value={h01} onChange={setH01} label="SPEAKER HEIGHT" readout={h01 < 0.3 ? 'low' : h01 > 0.7 ? 'flown high' : 'mid'} onHelp={() => help('height_tilt')} />
+      <DragSlider value={(tilt + 5) / 40} onChange={(v) => setTilt(Math.round(v * 40 - 5))} label="DOWN-TILT" readout={`${tilt}°`} onHelp={() => help('height_tilt')} />
+      <DragSlider value={stage01} onChange={setStage01} label="STAGE HEIGHT" readout={stage01 < 0.33 ? 'low' : stage01 > 0.66 ? 'high' : 'mid'} onHelp={() => help('room_shape')} />
+      <DragSlider value={ceil01} onChange={setCeil01} label="CEILING HEIGHT" readout={ceil01 < 0.33 ? 'low' : ceil01 > 0.66 ? 'high' : 'mid'} onHelp={() => help('room_shape')} />
+      {/* Moves the whole audience block closer to / farther from the stage —
+          the audience keeps its size and spacing (owner 2026-08-05). */}
+      <DragSlider value={depth01} onChange={setDepth01} label="AUDIENCE DISTANCE" readout={depth01 < 0.35 ? 'near the stage' : depth01 > 0.7 ? 'far from stage' : 'mid'} onHelp={() => help('room_shape')} />
       <View style={styles.chipRow}>
         {DISPERSIONS.map((d, i) => (
           <LabChip key={d.key} label={`V ${d.vDeg}°`} selected={dispIdx === i} onPress={() => setDispIdx(i)} onLongPress={() => help('dispersion')} />
         ))}
       </View>
-      <DragSlider value={h01} onChange={setH01} label="SPEAKER HEIGHT" readout={h01 < 0.3 ? 'low' : h01 > 0.7 ? 'flown high' : 'mid'} onHelp={() => help('height_tilt')} />
-      <DragSlider value={(tilt + 5) / 40} onChange={(v) => setTilt(Math.round(v * 40 - 5))} label="DOWN-TILT" readout={`${tilt}°`} onHelp={() => help('height_tilt')} />
       <View style={styles.chipRow}>
         <LabChip label={sloped ? 'SLOPED SEATING ●' : 'FLAT SEATING'} selected={sloped} onPress={() => setSloped((v) => !v)} onLongPress={() => help('room_shape')} />
         <LabChip label={delayOn ? 'DELAY SPEAKER ●' : 'ADD DELAY SPEAKER'} selected={delayOn} onPress={() => setDelayOn((v) => !v)} onLongPress={() => help('delay_speaker')} />
@@ -244,15 +279,14 @@ function SideSection({ viz, width, help, onLock }: SectionProps) {
           <LabChip label={timeAligned ? 'TIME-ALIGNED ●' : 'MISALIGNED'} selected={timeAligned} onPress={() => setTimeAligned((v) => !v)} onLongPress={() => help('delay_speaker')} />
         ) : null}
       </View>
-      <DragSlider value={stage01} onChange={setStage01} label="STAGE HEIGHT" readout={stage01 < 0.33 ? 'low' : stage01 > 0.66 ? 'high' : 'mid'} onHelp={() => help('room_shape')} />
-      <DragSlider value={ceil01} onChange={setCeil01} label="CEILING HEIGHT" readout={ceil01 < 0.33 ? 'low' : ceil01 > 0.66 ? 'high' : 'mid'} onHelp={() => help('room_shape')} />
-      <DragSlider value={depth01} onChange={setDepth01} label="AUDIENCE DEPTH" readout={depth01 < 0.4 ? 'shallow' : depth01 > 0.75 ? 'deep' : 'medium'} onHelp={() => help('room_shape')} />
-      <Text style={styles.caption}>
-        The vertical pattern is a wedge: aim its CENTER at the far seats and let its EDGE graze the
-        near ones. Deep rooms outrun any single box — a LINE ARRAY splays several boxes so the whole
-        depth hears an even level, and a REAR DELAY speaker (fired late, so its sound arrives in step
-        with the mains) rescues the back rows. Both are conceptual illustrations, not SPL predictions.
-      </Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('side_view')}>
+        <Text style={styles.caption}>
+          The vertical pattern is a wedge: aim its CENTER at the far seats and let its EDGE graze the
+          near ones. Deep rooms outrun any single box — a LINE ARRAY splays several boxes so the whole
+          depth hears an even level, and a REAR DELAY speaker (fired late, so its sound arrives in step
+          with the mains) rescues the back rows. Both are conceptual illustrations, not SPL predictions.
+        </Text>
+      </CollapsibleSection>
       <CheckQuestion spec={SIDE_CHECK} />
     </View>
   );
@@ -280,10 +314,12 @@ function ConceptsSection({ help }: SectionProps) {
           <Text style={styles.caption}>{r.d}</Text>
         </Pressable>
       ))}
-      <Text style={styles.caption}>
-        One idea unifies all of it: a loudspeaker is a flashlight for sound. Placement, aim,
-        height, and pattern choice decide who stands in the beam.
-      </Text>
+      <CollapsibleSection title="THE BIG IDEA" onHelp={() => help('coverage_legend')}>
+        <Text style={styles.caption}>
+          One idea unifies all of it: a loudspeaker is a flashlight for sound. Placement, aim,
+          height, and pattern choice decide who stands in the beam.
+        </Text>
+      </CollapsibleSection>
     </View>
   );
 }
@@ -378,6 +414,9 @@ const styles = StyleSheet.create({
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   panelCard: { gap: 10, borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  twoCol: { flexDirection: 'row', gap: 12 },
+  col: { flex: 1, gap: 10 },
+  colHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
   conceptT: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber, marginTop: 4 },

@@ -1,0 +1,312 @@
+{
+ "batch": 324,
+ "topic": "Attack, Decay, Resonance & Artifact Identification",
+ "authored": [
+  {
+   "id": "2b6a1e76-79b8-4981-89e9-9b7e6ae1464c",
+   "term": "Bell resonance",
+   "fields": {
+    "definition": "The set of long-sustaining vibrational modes of a bell or bell-like body, whose partials (hum, prime, tierce, quint, nominal) are inharmonically related and ring on well after the initial strike. These modes give the bell its characteristic pitched, slowly decaying tone.",
+    "plain_english": "It is the long ringing sound a bell keeps making after it is hit. The metal shakes at several pitches at once, which is why a bell sounds rich and rings for so long.",
+    "purpose_function": "It is the acoustic mechanism that gives a bell its sustained, identifiable pitch and long ring-out. Recognising it lets a technician tell bell-type resonances apart from short percussive hits.",
+    "practical_application": "An engineer identifies bell resonance when isolating the long ringing partials of chimes, cymbals, or metallic percussion in order to EQ, gate, or de-ring them in a mix.",
+    "category": "Resonance",
+    "related_terms": [
+     "Bell strike",
+     "Bell tone",
+     "Body resonance",
+     "Decay",
+     "Sustain"
+    ],
+    "common_mistakes": [
+     "Confusing the brief metallic strike transient with the long resonant ring that follows it.",
+     "Assuming a bell has one clear pitch, when its inharmonic partials (hum, prime, nominal) can imply several.",
+     "Over-gating metallic percussion so the natural resonant decay is cut off and the sound feels unnatural."
+    ],
+    "scenario_contexts": [
+     "Gating or EQing orchestral tubular bells or a ride cymbal so the ring supports rather than clutters a mix.",
+     "Identifying a ringing metallic resonance on a drum kit or in a room during a live soundcheck.",
+     "Analysing a struck-metal sample to decide where to trim its long decaying tail."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Rossing, Science of Percussion Instruments"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "b61615a2-ebbc-4a4f-b074-5221a011484d",
+   "term": "Bell strike",
+   "fields": {
+    "definition": "The sharp, broadband attack transient created at the moment a bell is struck by its clapper or a hammer, before its sustained partials fully develop. This brief, fast-rising onset dominates the sound's attack and contributes to the bell's perceived strike pitch.",
+    "plain_english": "It is the sharp ping you hear the instant a bell is hit, before it settles into its long ring. That first split second is loud and bright and tells your ear a bell was struck.",
+    "purpose_function": "The strike transient gives the bell its clear sense of attack and timing. Identifying it helps a technician judge onset and rhythmic placement apart from the long ring.",
+    "practical_application": "A technician watches the bell strike transient on a meter or waveform to set a gate threshold or a transient shaper without clipping the fast peak.",
+    "category": "Attack",
+    "related_terms": [
+     "Bell resonance",
+     "Bell tone",
+     "Attack",
+     "Transient",
+     "Onset"
+    ],
+    "common_mistakes": [
+     "Setting compressor or limiter attack so fast that the bright strike is flattened and the hit loses definition.",
+     "Confusing the physical strike transient with the strike note pitch it produces.",
+     "Gating with too high a threshold so quieter strikes are cut off entirely."
+    ],
+    "scenario_contexts": [
+     "Dialling in transient shaping on tubular bells or glockenspiel so each hit cuts through.",
+     "Setting a noise gate on metallic percussion using the strike peak as the trigger.",
+     "Editing a sampled bell so the attack lines up tightly with the beat."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Rossing, Science of Percussion Instruments"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "1a3475e0-bc39-4df4-a146-dd7b6f0d4f73",
+   "term": "Bell tone",
+   "fields": {
+    "definition": "A clear, ringing, sustained pitched sound resembling that of a struck bell: a strong, focused fundamental with a smooth, gradually decaying tail and relatively pure harmonic content. In wind and brass playing the term also names an effect in which a note is sounded and allowed to ring and decay freely rather than being held.",
+    "plain_english": "It means a clean, ringing note that fades away smoothly, like a bell. It sounds pure and round rather than harsh or buzzy.",
+    "purpose_function": "The term gives technicians and musicians a shared word for a clean, ringing, well-focused tone. That is useful when describing a target sound or spotting when a tone has that quality.",
+    "practical_application": "An engineer might aim for a bell tone when EQing a vibraphone or lead synth, lifting a clear fundamental while controlling harsh upper partials.",
+    "category": "Timbre",
+    "related_terms": [
+     "Bell resonance",
+     "Bell strike",
+     "Sustain",
+     "Decay",
+     "Fundamental"
+    ],
+    "common_mistakes": [
+     "Thinking any metallic sound is a bell tone, when the term implies a clean, focused, ringing quality.",
+     "Confusing bell tone (a timbre or ring-and-decay effect) with a bell's strike note pitch.",
+     "Adding heavy distortion or clipping that destroys the clean ringing character."
+    ],
+    "scenario_contexts": [
+     "Describing the desired clean, ringing sound of a vibraphone, celeste, or clean electric guitar.",
+     "EQing a synth patch so it sits in a clear, bell-like register in a mix.",
+     "A wind ensemble sounding bell tones so the engineer captures the natural ring-out."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Adler, The Study of Orchestration"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "a6d6af76-0db8-4c80-bf09-667d3f3fafbd",
+   "term": "Bench noise",
+   "fields": {
+    "definition": "Unwanted mechanical creak, squeak, or movement noise produced by a performer's bench, stool, or seat and captured in a recording. It is a low-level artifact that intrudes on quiet passages and is unrelated to the instrument's own sound.",
+    "plain_english": "It is the creak or squeak a piano bench or stool makes when a player shifts, and the mic picks it up. It has nothing to do with the music, but it can spoil a quiet part.",
+    "purpose_function": "Naming bench noise helps a technician separate seat or furniture creaks from the actual instrument sound. That makes the artifact easier to prevent, edit out, or gate.",
+    "practical_application": "When recording solo piano, an engineer who hears bench noise will tighten loose bolts, pad the bench, or ask the player to stay still, then edit any remaining creaks out of quiet sections.",
+    "category": "Noise artifact",
+    "related_terms": [
+     "Gear noise",
+     "Fret rattle",
+     "Cabinet rattle",
+     "Noise floor",
+     "Room tone"
+    ],
+    "common_mistakes": [
+     "Blaming a creak on the instrument or the mic stand when it is actually the player's bench or stool.",
+     "Trying to EQ out bench noise instead of fixing the source or editing the affected section.",
+     "Ignoring quiet bench creaks during tracking, then finding them exposed in the final mix."
+    ],
+    "scenario_contexts": [
+     "A squeaking piano bench captured during a soft solo passage.",
+     "An organ or drummer's stool creaking as the player shifts weight.",
+     "Editing out seat creaks from an exposed acoustic take."
+    ]
+   },
+   "sources": [
+    "Huber & Runstein, Modern Recording Techniques",
+    "Ballou, Handbook for Sound Engineers"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "584a25d7-07c5-46ad-9a71-38fe6faa4cd3",
+   "term": "Body resonance",
+   "fields": {
+    "definition": "The natural resonant response of an instrument's body, its top and back plates and the enclosed air cavity, which amplifies and colours certain frequencies of the vibrating strings or reed. Key modes include the Helmholtz air-cavity resonance and the main top-plate resonance, which together shape the instrument's low-end response and overall timbre.",
+    "plain_english": "It is the way an instrument's hollow body rings and boosts certain notes. Like blowing across a bottle top, the air and wood inside have favourite pitches that make the sound fuller.",
+    "purpose_function": "Body resonance turns small string or reed vibrations into a louder, richer sound and gives each instrument its recognisable voice. Knowing it helps a technician predict and manage boomy or thin notes.",
+    "practical_application": "When close-miking an acoustic guitar, an engineer moves the mic or applies EQ around the body's Helmholtz resonance (often roughly 90 to 110 Hz) to tame boom or add body.",
+    "category": "Resonance",
+    "related_terms": [
+     "Bell resonance",
+     "Helmholtz resonance",
+     "Resonant frequency",
+     "Sympathetic resonance",
+     "Boom"
+    ],
+    "common_mistakes": [
+     "Miking directly over the soundhole and capturing an overpowering, boomy body resonance.",
+     "Assuming body resonance is the same for all instruments rather than tuned to each body's size and shape.",
+     "EQing out a boomy note without realising it is the body's Helmholtz resonance, and thinning the whole tone."
+    ],
+    "scenario_contexts": [
+     "Positioning a mic on an acoustic guitar or double bass to balance body resonance against string detail.",
+     "Cutting a narrow EQ band to control a boomy body resonance on a cello in a live mix.",
+     "Diagnosing why one note on an instrument sounds much louder, when a body resonance coincides with that pitch."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Journal of the Acoustical Society of America, Physics of the guitar at the Helmholtz and first top-plate resonances"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "be5770f4-74f3-400f-9848-ca14c62f0c83",
+   "term": "Boom",
+   "fields": {
+    "definition": "An excessive or prominent low-frequency emphasis, typically in the roughly 60 to 200 Hz range, caused by resonance in a room, enclosure, or instrument that makes the low end sound loud, thick, and poorly defined. It is heard as a lingering, resonant heaviness rather than tight, controlled bass.",
+    "plain_english": "Boom is when the low sounds are too strong and blurry, so the bass feels heavy and muddy. It is like the deep rumble you hear in a room where bass notes pile up.",
+    "purpose_function": "Naming boom lets technicians identify and fix unwanted low-frequency buildup so the bass stays clear and even across a room or mix.",
+    "practical_application": "During soundcheck an engineer sweeps a narrow EQ cut through the low frequencies to find and reduce a boom caused by a room mode or a resonant stage riser.",
+    "category": "Resonance",
+    "related_terms": [
+     "Body resonance",
+     "Room mode",
+     "Resonant frequency",
+     "Rumble",
+     "Muddiness"
+    ],
+    "common_mistakes": [
+     "Blaming the subwoofer for boom that is actually caused by a room mode.",
+     "Cutting broad low end and leaving the mix thin instead of notching the specific boom frequency.",
+     "Confusing boom (low-frequency resonance) with rumble (very low, often mechanical, subsonic noise)."
+    ],
+    "scenario_contexts": [
+     "Taming boomy bass in a small, untreated room while mixing.",
+     "Finding and notching a boom frequency caused by a hollow stage or a room mode at a live gig.",
+     "Repositioning a subwoofer away from a corner to reduce boom."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers",
+    "McCarthy, Sound Systems: Design and Optimization"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "094ed2ed-918a-43ed-a075-ab28986e1679",
+   "term": "Bow attack",
+   "fields": {
+    "definition": "The onset transient of a bowed-string note: the way the bow sets the string into steady Helmholtz (slip-stick) motion at the start of a stroke. Its character depends on bow speed, force, and placement, ranging from a clean, prompt attack to a slower or noisy start with audible pre-Helmholtz slipping.",
+    "plain_english": "It is how a note starts when a player draws the bow across the string. A good bow attack starts the note cleanly and quickly, while a rough one begins with a scratchy or slow sound.",
+    "purpose_function": "The bow attack defines the clarity and timing of each note's start. Recognising it helps a technician judge articulation and capture or preserve the natural onset.",
+    "practical_application": "An engineer avoids over-fast compressor attack times on strings so the natural bow attack, including its slight initial noise, stays intact and expressive.",
+    "category": "Attack",
+    "related_terms": [
+     "Bow change",
+     "Bow bounce",
+     "Attack",
+     "Transient",
+     "Articulation"
+    ],
+    "common_mistakes": [
+     "Compressing strings with a very fast attack and squashing the natural onset.",
+     "Treating all bowed onsets as identical, ignoring how bow force and speed change the attack.",
+     "Gating string tracks so tightly that soft bow attacks are chopped off."
+    ],
+    "scenario_contexts": [
+     "Recording a solo violin and choosing mic distance so the bow attack sounds natural, not scratchy.",
+     "Editing sampled strings to align the bow attack transients to the grid.",
+     "Judging a player's clean versus rough attacks while balancing a string section live."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Guettler & Askenfelt, Journal of the Acoustical Society of America, Acceptance limits for the duration of pre-Helmholtz transients in bowed string attacks"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "63a39dac-fd4a-415f-996a-068910354bbe",
+   "term": "Bow bounce",
+   "fields": {
+    "definition": "A bowing behaviour in which the bow leaves and returns to the string, producing separated, articulated notes. When controlled it is the spiccato and sautille family of off-string strokes; when involuntary it appears as unwanted chatter or uneven articulation, especially at certain bow speeds and contact points.",
+    "plain_english": "It is when the bow hops on and off the string instead of staying glued to it. Done on purpose it gives short, bouncy notes, but by accident it makes an uneven, chattering sound.",
+    "purpose_function": "As a technique it creates crisp, detached articulation; as an artifact it signals a loss of bow control. Identifying it helps a technician or player tell intended bounce from unwanted chatter.",
+    "practical_application": "An engineer hears controlled spiccato as tight, rhythmic transients and may adjust gating or transient shaping to keep each bounced note distinct.",
+    "category": "Attack",
+    "related_terms": [
+     "Bow attack",
+     "Bow change",
+     "Spiccato",
+     "Articulation",
+     "Transient"
+    ],
+    "common_mistakes": [
+     "Mistaking intentional spiccato for a fault, or unwanted bounce for a deliberate effect.",
+     "Applying heavy compression that blurs the gaps between bounced notes.",
+     "Assuming bow bounce is always an error, when much of it is deliberate off-string bowing."
+    ],
+    "scenario_contexts": [
+     "Capturing a fast spiccato passage cleanly so each note stays separate.",
+     "Identifying unwanted bow chatter on a sustained note during a session.",
+     "Setting transient shaping on a string sample library's spiccato articulation."
+    ]
+   },
+   "sources": [
+    "Fletcher & Rossing, The Physics of Musical Instruments",
+    "Adler, The Study of Orchestration"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "f664c3b3-1311-4d96-b04a-7e1211259401",
+   "term": "Bow change",
+   "fields": {
+    "definition": "The moment a player reverses bow direction, from down-bow to up-bow or vice versa. A smooth, seamless bow change keeps the note sounding continuously, while an audible one produces a brief dip in level or a small articulation as the string's steady motion is re-established.",
+    "plain_english": "It is the point where the player switches the bow from pushing to pulling, or back. Done well you barely hear it, but done poorly it makes a little bump or gap in the note.",
+    "purpose_function": "Bow changes are unavoidable on long phrases. Spotting them helps a technician tell a natural articulation from an unwanted level dip or noise in a sustained line.",
+    "practical_application": "When editing or comping strings, an engineer looks for the small level dips at bow changes and may cross-fade or ride the fader to smooth a phrase.",
+    "category": "Artifact",
+    "related_terms": [
+     "Bow attack",
+     "Bow bounce",
+     "Articulation",
+     "Sustain",
+     "Legato"
+    ],
+    "common_mistakes": [
+     "Mistaking the natural dip at a bow change for a recording drop-out or edit error.",
+     "Editing out every bow change so a line sounds unnaturally seamless.",
+     "Applying heavy expansion that exaggerates the level dip at each change."
+    ],
+    "scenario_contexts": [
+     "Smoothing an exposed sustained violin note where bow changes cause small dips.",
+     "Comping a string take and using bow changes as clean edit points.",
+     "Deciding whether a fluctuation in a sustained cello note is a bow change or a mic or cable fault."
+    ]
+   },
+   "sources": [
+    "Galamian, Principles of Violin Playing and Teaching",
+    "Adler, The Study of Orchestration"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

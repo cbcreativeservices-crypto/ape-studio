@@ -1,0 +1,159 @@
+{
+ "batch": 289,
+ "topic": "Sample Editing & Manipulation",
+ "authored": [
+  {
+   "id": "86f788a9-d99b-4019-a0d6-b620859d058e",
+   "term": "Grain randomization",
+   "fields": {
+    "definition": "In granular synthesis, the deliberate introduction of random variation into grain parameters such as start position, size, pitch, amplitude, and pan, so that successive grains differ instead of repeating identically. It replaces mechanical regularity with a more natural, evolving texture.",
+    "plain_english": "Granular synthesis builds sound from tiny slices called grains. Grain randomization changes each slice a little at random, so the sound feels alive instead of buzzy and robotic. It is like tossing confetti instead of stacking it in a neat line.",
+    "purpose_function": "It exists to avoid the static, buzzy tone that comes from playing identical grains in a fixed pattern, adding movement and organic variation to a granular texture.",
+    "practical_application": "A technician dials in small amounts of position and pitch randomization on a granular plugin to turn a short looping sample into an evolving pad or ambience.",
+    "category": "Granular synthesis",
+    "related_terms": ["Grain spray", "Grain spread", "Grain size", "Grain synchronization", "Grain transposition"],
+    "common_mistakes": ["Adding so much randomization that pitch and timing become unstable and the sound loses its intended character", "Assuming randomization alone makes a good texture, when grain size and grain shape matter just as much", "Confusing randomizing grain parameters with simply lowering the grain rate"],
+    "scenario_contexts": ["Turning a short vocal sample into a shifting ambient pad", "Designing evolving sci-fi textures for film sound", "Loosening up a stiff, mechanical granular loop"]
+   },
+   "sources": ["Roads, Microsound (MIT Press)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8c0a6db5-917d-4a95-9615-fef13c373e5d",
+   "term": "Grain rate",
+   "fields": {
+    "definition": "The number of grains generated per unit of time in granular synthesis, usually stated in grains per second; it sets how densely grains are packed and strongly affects perceived texture and pitch. Higher rates fuse grains into continuous tones, while lower rates yield distinct, separated events.",
+    "plain_english": "Granular synthesis makes sound from tiny slices called grains. Grain rate is how many of those slices play each second. A high rate blurs them into a smooth tone, while a low rate lets you hear each little tick.",
+    "purpose_function": "It controls the density of the grain stream, letting a sound range from a smooth continuous texture to a sparse, rhythmic stutter.",
+    "practical_application": "A technician raises the grain rate to fuse grains into a solid pad, or lowers it to create a granular stutter or click texture.",
+    "category": "Granular synthesis",
+    "related_terms": ["Grain spacing", "Grain size", "Grain synchronization", "Grain randomization", "Grain shape"],
+    "common_mistakes": ["Confusing grain rate with grain size; rate is how often grains play, size is how long each one lasts", "Setting the rate very low and expecting a smooth, continuous tone", "Not realizing that very high synchronous rates can introduce an audible pitch"],
+    "scenario_contexts": ["Building a dense granular pad from a single note", "Creating a rhythmic stutter effect from a drum loop", "Tuning texture density in a sound-design patch"]
+   },
+   "sources": ["Roads, Microsound (MIT Press)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c8e40bfb-f9ca-4692-b1ed-f2c1ef935484",
+   "term": "Grain shape",
+   "fields": {
+    "definition": "The amplitude envelope applied to each individual grain, controlling how it fades in and out over its short duration; common shapes include Gaussian, Hann (raised-cosine), triangular, and trapezoidal. The envelope smooths grain edges to prevent clicks and shapes the grain's tonal character.",
+    "plain_english": "Each grain is a tiny slice of sound, and grain shape is the fade put on its start and end. A smooth, rounded fade stops clicks, while a sharper shape sounds more percussive. It is like the fade-in and fade-out on a very short clip.",
+    "purpose_function": "It exists to prevent clicks at grain boundaries and to control the smoothness and tone of the resulting texture.",
+    "practical_application": "A technician chooses a smooth Gaussian-style shape for pads and a sharper shape for percussive or gritty granular textures.",
+    "category": "Granular synthesis",
+    "related_terms": ["Grain size", "Grain rate", "Grain randomization", "Grain spacing", "Grain synchronization"],
+    "common_mistakes": ["Using a hard-edged grain shape and then wondering where the clicking comes from", "Thinking grain shape changes pitch rather than smoothness and tone", "Ignoring how a very short grain combined with a wide fade leaves little usable sustain"],
+    "scenario_contexts": ["Removing clicks from a granular pad", "Making a granular texture more percussive", "Shaping the tone of a time-stretched sample"]
+   },
+   "sources": ["Roads, Microsound (MIT Press)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "e3bd256e-3499-4bcc-844a-11f8298c0a9a",
+   "term": "Grain size",
+   "fields": {
+    "definition": "The duration of a single grain in granular synthesis, typically ranging from roughly 1 to 100 milliseconds; it determines whether individual grains are heard as separate events or fuse into a continuous tone. Very short grains sound like clicks or noise, while longer grains preserve more of the source sound's character.",
+    "plain_english": "A grain is a tiny slice of sound, and grain size is how long each slice lasts, usually just a few thousandths of a second. Short grains sound like clicks or noise, while longer grains keep more of the original sound. It is like choosing how thick to cut each slice.",
+    "purpose_function": "It sets the basic character of the texture, trading off between recognizable source material with longer grains and abstract, cloud-like tone with shorter grains.",
+    "practical_application": "A technician shortens grain size to smear a sample into a smooth cloud, or lengthens it to keep the sample recognizable while time-stretching.",
+    "category": "Granular synthesis",
+    "related_terms": ["Grain rate", "Grain shape", "Grain spacing", "Grain randomization", "Grain transposition"],
+    "common_mistakes": ["Confusing grain size, the length of each grain, with grain rate, how many play per second", "Setting grains extremely short and expecting the source to stay recognizable", "Forgetting that very short grains emphasize noise and lose low-frequency content"],
+    "scenario_contexts": ["Time-stretching a vocal without changing its pitch", "Turning a sustained note into a shimmering cloud", "Designing textured drones from a field recording"]
+   },
+   "sources": ["Roads, Microsound (MIT Press)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "4d906325-7d92-4c8e-9685-9077dfce472c",
+   "term": "Grain spacing",
+   "fields": {
+    "definition": "The time interval between the onsets of successive grains in granular synthesis; it is the inverse of grain rate and, together with grain size, determines whether grains overlap, abut, or leave gaps. Regular spacing yields synchronous streams, while varied spacing yields scattered, asynchronous textures.",
+    "plain_english": "Grain spacing is the gap in time between one grain starting and the next. Small gaps pack grains tightly into a smooth sound, while big gaps leave space so you hear separate ticks. It is like how close together beads sit on a string.",
+    "purpose_function": "It controls how tightly grains are packed in time, shaping density, overlap, and the rhythmic feel of a granular texture.",
+    "practical_application": "A technician tightens grain spacing so grains overlap into a solid pad, or widens it to open gaps for a sparse, rhythmic effect.",
+    "category": "Granular synthesis",
+    "related_terms": ["Grain rate", "Grain size", "Grain synchronization", "Grain randomization", "Grain shape"],
+    "common_mistakes": ["Confusing spacing with grain size; spacing is the gap between grains, size is each grain's length", "Assuming grains always overlap, when wide spacing leaves audible gaps", "Overlooking that spacing and rate describe the same thing from opposite directions"],
+    "scenario_contexts": ["Creating overlapping grains for a seamless pad", "Opening gaps for a sputtering granular rhythm", "Balancing density in a sound-design patch"]
+   },
+   "sources": ["Roads, Microsound (MIT Press)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "778ac4c7-43e6-47ec-886b-a6c987fd90a1",
+   "term": "Grain spray",
+   "fields": {
+    "definition": "A control in many granular instruments that randomizes the read position, and sometimes the timing, of grains within the source sample, scattering their start points instead of reading strictly in order. Small amounts add subtle motion, while larger amounts smear the sample into a diffuse cloud.",
+    "plain_english": "Grain spray scatters where each grain is picked from inside the sample, instead of reading it in a straight line. A little spray adds gentle movement, and a lot turns the sample into a blurry cloud. It is like spraying droplets instead of pouring a steady stream.",
+    "purpose_function": "It exists to add randomness and motion to a granular texture by jittering grain positions, reducing mechanical repetition.",
+    "practical_application": "A technician adds a little spray to keep a held granular note from sounding static, or a lot to blur a sample into ambience.",
+    "category": "Granular synthesis",
+    "related_terms": ["Grain randomization", "Grain spread", "Grain size", "Grain rate", "Grain spacing"],
+    "common_mistakes": ["Confusing spray, random read position, with spread, the stereo placement of grains", "Using extreme spray and losing all sense of the original sample", "Assuming spray changes pitch, when it mainly changes where grains are read"],
+    "scenario_contexts": ["Adding subtle motion to a sustained granular pad", "Blurring a loop into an ambient wash", "Preventing a frozen sample from sounding static"]
+   },
+   "sources": ["Roads, Microsound (MIT Press)", "Ableton Live Reference Manual (Granulator)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "bf33fb65-7aa2-4926-9c13-80f3e2973152",
+   "term": "Grain spread",
+   "fields": {
+    "definition": "A control that distributes grains across the stereo field, typically by randomizing each grain's pan position, so that a granular texture widens from a narrow point source into a broad stereo image. Larger settings place successive grains further apart across the left-right panorama.",
+    "plain_english": "Grain spread places grains at different points from left to right across the stereo picture. A wide spread makes the sound big and surrounding, while none keeps it in the center. It is like scattering grains across the room instead of stacking them in one spot.",
+    "purpose_function": "It exists to widen and add spatial depth to a granular texture by placing individual grains at different stereo positions.",
+    "practical_application": "A technician increases grain spread to turn a mono sample into a wide, immersive stereo pad.",
+    "category": "Granular synthesis",
+    "related_terms": ["Grain spray", "Grain randomization", "Grain size", "Grain rate", "Grain synchronization"],
+    "common_mistakes": ["Confusing spread, stereo placement, with spray, the random read position in the sample", "Setting extreme spread and creating mono-compatibility or phase problems", "Expecting spread to add movement in time rather than across the stereo field"],
+    "scenario_contexts": ["Widening a mono sample into a stereo pad", "Creating an immersive ambient bed", "Adding spaciousness to a granular texture"]
+   },
+   "sources": ["Roads, Microsound (MIT Press)", "Ableton Live Reference Manual (Granulator)"],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "0ad487f9-f308-43ef-9dca-4bd1ad5a6eef",
+   "term": "Grain synchronization",
+   "fields": {
+    "definition": "In granular synthesis, the temporal alignment of grain emission, meaning whether grains are output at regular, evenly-timed intervals (synchronous granular synthesis) or at irregular, randomized intervals (asynchronous granular synthesis). Synchronous streams tend to produce pitched, tonal results, while asynchronous streams produce cloud-like textures.",
+    "plain_english": "Grain synchronization is about whether grains play on a steady, even beat or at random times. Even timing gives a clear, pitched tone, while random timing makes a cloudy texture. It is like a steady drip versus scattered raindrops.",
+    "purpose_function": "It determines the basic character of a granular stream, letting a sound be tonal and regular or diffuse and cloud-like.",
+    "practical_application": "A technician uses synchronous grains to build a pitched pad, and switches to asynchronous timing for evolving clouds and atmospheres.",
+    "category": "Granular synthesis",
+    "related_terms": ["Grain spacing", "Grain rate", "Grain randomization", "Grain size", "Grain shape"],
+    "common_mistakes": ["Assuming randomized, asynchronous grains will still hold a clear pitch", "Confusing grain synchronization with locking grains to the song tempo", "Overlooking that steady synchronous timing can add an unwanted pitched buzz"],
+    "scenario_contexts": ["Building a pitched pad from evenly-timed grains", "Creating cloud textures with randomized timing", "Choosing between tonal and atmospheric granular results"]
+   },
+   "sources": ["Roads, Microsound (MIT Press)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "daf78046-d8c5-4c91-acb8-a625aace233d",
+   "term": "Grain transposition",
+   "fields": {
+    "definition": "The pitch-shifting of grains by altering their internal playback rate independently of the grain stream's timing, so a sample can be moved up or down in pitch without changing its duration or read speed. It is the mechanism behind granular pitch-shifting and harmony effects.",
+    "plain_english": "Grain transposition changes the pitch of each grain without changing how fast the sound moves through the sample. That means you can raise or lower the pitch while the timing stays the same. It is like speeding up a tiny slice to make it higher without rushing the whole song.",
+    "purpose_function": "It exists to decouple pitch from time, allowing pitch-shifting, transposition, and layered harmonies within a granular texture.",
+    "practical_application": "A technician transposes grains to shift a sample up an octave, or layers several transpositions to build granular harmonies.",
+    "category": "Granular synthesis",
+    "related_terms": ["Grain size", "Grain rate", "Grain randomization", "Grain shape", "Grain spacing"],
+    "common_mistakes": ["Confusing grain transposition, which is pitch, with grain rate, which is density in time", "Expecting large transpositions to sound natural, when extreme shifts add artifacts", "Forgetting that grain size affects how clean a transposition sounds"],
+    "scenario_contexts": ["Pitch-shifting a sample without changing its length", "Building granular harmonies from one source", "Transposing a texture to fit a song's key"]
+   },
+   "sources": ["Roads, Microsound (MIT Press)", "Roads, The Computer Music Tutorial (MIT Press)"],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

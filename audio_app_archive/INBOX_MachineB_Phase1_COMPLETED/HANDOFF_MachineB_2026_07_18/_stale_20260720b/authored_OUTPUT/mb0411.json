@@ -1,0 +1,329 @@
+{
+ "batch": 411,
+ "topic": "AI Source Separation & Restoration",
+ "authored": [
+  {
+   "id": "5e4ca0a1-0121-4e8e-96c3-98150be1db20",
+   "term": "Audio enhancement model",
+   "fields": {
+    "definition": "A machine-learning model trained to improve the perceived quality or intelligibility of a degraded audio signal by suppressing unwanted components and reconstructing the wanted signal. Depending on the task it performs operations such as denoising, dereverberation, declipping or bandwidth extension, mapping a degraded input to a cleaner estimate of the target signal.",
+    "plain_english": "It is a smart program that cleans up bad-sounding audio. It learns from many examples how to remove noise and other problems so a recording sounds clearer.",
+    "purpose_function": "It exists to recover usable audio from recordings that are noisy, distorted or otherwise degraded, so material that would be unusable can be salvaged for release, broadcast or archiving.",
+    "practical_application": "A technician runs one in restoration software such as iZotope RX to clean up dialogue, reduce background noise or repair clipping before a mix is delivered.",
+    "category": "Audio restoration",
+    "related_terms": [
+     "Dereverberation model",
+     "Signal separation",
+     "Speech enhancement",
+     "Denoising",
+     "Bandwidth extension",
+     "Short-time Fourier transform (STFT)"
+    ],
+    "common_mistakes": [
+     "Assuming enhancement restores detail that was never captured; a model can only estimate missing content and may invent artifacts",
+     "Pushing the processing too hard, which introduces musical noise or a watery, over-processed sound",
+     "Confusing enhancement, which improves a single signal, with source separation, which splits a mixture into separate sources"
+    ],
+    "scenario_contexts": [
+     "Cleaning up noisy location dialogue for a film mix",
+     "Reducing hum and hiss on an archival tape transfer",
+     "Improving the clarity of a voice recording made in a noisy room"
+    ]
+   },
+   "sources": [
+    "iZotope, RX Help Documentation (izotope.com) — Voice De-noise, De-reverb, De-clip modules",
+    "Vincent, Virtanen & Gannot, Audio Source Separation and Speech Enhancement (Wiley)",
+    "Loizou, Speech Enhancement: Theory and Practice"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "6a430669-52a9-4e19-8ef4-6e572e8cc5bf",
+   "term": "Computational auditory scene analysis (CASA)",
+   "fields": {
+    "definition": "A field of computational modelling that separates and organises a mixture of sounds into perceptual streams the way human hearing does, based on Bregman's auditory scene analysis. CASA systems typically operate on a time-frequency representation and use grouping cues such as common onset, harmonicity, pitch continuity and spatial location to assign energy to distinct sound sources.",
+    "plain_english": "It is a way to make a computer sort out a mix of sounds the way your ears do. It uses clues like pitch and timing to tell one voice or instrument from another.",
+    "purpose_function": "It exists to give machines the human ability to focus on one sound source in a busy scene, supporting tasks such as source separation, speech recognition in noise and hearing aids.",
+    "practical_application": "It underlies separation and noise-reduction tools built on perceptual grouping cues; a technician meets its ideas when isolating a target voice from background sound rather than training a system end to end.",
+    "category": "Auditory scene analysis",
+    "related_terms": [
+     "Signal separation",
+     "Music source separation (MSS)",
+     "Ideal binary mask",
+     "Time-frequency masking",
+     "Short-time Fourier transform (STFT)",
+     "Pitch tracking"
+    ],
+    "common_mistakes": [
+     "Treating CASA as one algorithm rather than a broad framework of perceptually motivated methods",
+     "Assuming CASA requires deep learning; classic CASA uses hand-designed grouping cues, though modern systems may combine both",
+     "Confusing CASA with blind source separation, which relies on statistical assumptions rather than auditory cues"
+    ],
+    "scenario_contexts": [
+     "Designing a hearing aid that follows one talker in a crowd",
+     "Separating overlapping speakers for a transcription system",
+     "Isolating a melody line from a polyphonic recording using pitch cues"
+    ]
+   },
+   "sources": [
+    "Wang & Brown (eds.), Computational Auditory Scene Analysis: Principles, Algorithms, and Applications (IEEE Press / Wiley)",
+    "Bregman, Auditory Scene Analysis: The Perceptual Organization of Sound (MIT Press)",
+    "Wang & Chen, Supervised Speech Separation Based on Deep Learning (IEEE/ACM Transactions on Audio, Speech, and Language Processing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "70c1a787-893b-460a-95fb-d6df1c15659e",
+   "term": "Conv-TasNet",
+   "fields": {
+    "definition": "A fully convolutional, time-domain deep neural network for single-channel audio source separation. It replaces the short-time Fourier transform with a learned convolutional encoder, estimates a separation mask for each source with a temporal convolutional network, and reconstructs each source with a learned decoder, avoiding the fixed time-frequency representation and phase-reconstruction limits of earlier mask-based methods.",
+    "plain_english": "It is a neural network that splits a recording into separate sounds, such as different voices. It works right on the sound wave instead of turning it into a picture first.",
+    "purpose_function": "It exists to separate mixed sources with high quality and low delay by learning its own signal representation, outperforming earlier methods that separated in the fixed frequency domain.",
+    "practical_application": "It serves as a building block in speech-separation and stem-separation tools; a technician may encounter it inside software that isolates individual speakers or instruments from a single mixed track.",
+    "category": "Separation model",
+    "related_terms": [
+     "Signal separation",
+     "Music source separation (MSS)",
+     "Demixing",
+     "Time-frequency masking",
+     "Short-time Fourier transform (STFT)",
+     "Temporal convolutional network"
+    ],
+    "common_mistakes": [
+     "Assuming it works in the frequency domain; its encoder and decoder are learned and operate in the time domain",
+     "Expecting it to separate any number of arbitrary sources; the basic model is trained for a fixed number of source types",
+     "Confusing its learned encoder with an STFT; it is a trainable convolution, not a fixed Fourier basis"
+    ],
+    "scenario_contexts": [
+     "Separating two overlapping speakers from a single-microphone recording",
+     "Serving as a baseline model in speech-separation research",
+     "Powering a plug-in that isolates sources from a mono mix"
+    ]
+   },
+   "sources": [
+    "Luo & Mesgarani, Conv-TasNet: Surpassing Ideal Time-Frequency Magnitude Masking for Speech Separation (IEEE/ACM Transactions on Audio, Speech, and Language Processing)",
+    "Wang & Chen, Supervised Speech Separation Based on Deep Learning (IEEE/ACM Transactions on Audio, Speech, and Language Processing)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "35414954-42b1-47e7-9dbf-155fc245b997",
+   "term": "Demixing",
+   "fields": {
+    "definition": "The process of recovering the individual constituent signals, sources or stems from a mixed recording, effectively the inverse of the mixing that combined them. In music the term commonly refers to separating a finished stereo master into stems such as vocals, drums, bass and other.",
+    "plain_english": "It means pulling a finished song apart into its separate pieces, like the vocals and drums. It is the opposite of mixing them together into one track.",
+    "purpose_function": "It exists to regain access to separate sources that survive only as a mix, enabling remixing, upmixing, karaoke, sampling and repair when the original multitrack is lost.",
+    "practical_application": "A technician uses a demixing tool to extract stems from a stereo master for a remix or live sampler, or to fix one element when the original session files are unavailable.",
+    "category": "Source separation",
+    "related_terms": [
+     "Music source separation (MSS)",
+     "Signal separation",
+     "Conv-TasNet",
+     "Time-frequency masking",
+     "Stem",
+     "Remixing"
+    ],
+    "common_mistakes": [
+     "Expecting demixed stems to be as clean as the original multitrack; separation leaves artifacts and bleed between stems",
+     "Assuming any mix can be perfectly undone; sources that overlap in the same time-frequency regions cannot always be fully separated",
+     "Confusing demixing with EQ or mid-side processing, which cannot truly isolate an individual source"
+    ],
+    "scenario_contexts": [
+     "Extracting an a cappella vocal from a released track for a remix",
+     "Recovering usable stems when the original session files are lost",
+     "Isolating a drum break from a record for sampling"
+    ]
+   },
+   "sources": [
+    "Mitsufuji et al., Music Demixing Challenge 2021 (Frontiers in Signal Processing) / ISMIR MDX",
+    "Stoter, Liutkus & Ito, The 2018 Signal Separation Evaluation Campaign (SiSEC), LNCS/Springer",
+    "Muller, Fundamentals of Music Processing (Springer)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "ca48bbcf-2eb5-4c6f-b0ea-121f2c35f5c6",
+   "term": "Dereverberation model",
+   "fields": {
+    "definition": "A model that estimates and removes the reverberation a room adds to a recording, producing an estimate of the drier, direct-path signal. Approaches range from statistical linear-prediction methods such as weighted prediction error to deep neural networks trained on paired reverberant and clean signals.",
+    "plain_english": "It is a tool that takes the echo of a room out of a recording. It makes a voice recorded in a boomy space sound closer and drier, as if it were captured up close.",
+    "purpose_function": "It exists to reduce the smearing and coloration that room reflections add, improving clarity, intelligibility and the performance of later processing or recognition systems.",
+    "practical_application": "A technician uses one in restoration software to tighten up dialogue or vocals recorded in a live-sounding room, or as a front end before speech recognition.",
+    "category": "Audio restoration",
+    "related_terms": [
+     "Audio enhancement model",
+     "Reverberation",
+     "Weighted prediction error (WPE)",
+     "Speech enhancement",
+     "Room impulse response",
+     "Signal separation"
+    ],
+    "common_mistakes": [
+     "Expecting a model to fully remove heavy reverberation cleanly; strong reverb removal often adds distortion or a hollow, unnatural sound",
+     "Confusing dereverberation with noise reduction; reverberation is delayed copies of the signal itself, not added noise",
+     "Applying it to a recording that needs its natural ambience, leaving the result sounding unnaturally dead"
+    ],
+    "scenario_contexts": [
+     "Drying out dialogue recorded in an echoey location",
+     "Preprocessing far-field voice commands before speech recognition",
+     "Reducing room ring on a vocal captured in an untreated room"
+    ]
+   },
+   "sources": [
+    "Nakatani et al., Speech Dereverberation Based on Variance-Normalized Delayed Linear Prediction (WPE) (IEEE Transactions on Audio, Speech, and Language Processing)",
+    "Naylor & Gaubitch (eds.), Speech Dereverberation (Springer)",
+    "iZotope, RX Help Documentation (izotope.com) — De-reverb module"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8443d03a-37a0-4800-939e-58a6352e7f8f",
+   "term": "Music source separation (MSS)",
+   "fields": {
+    "definition": "The task of decomposing a music recording into its constituent sources or stems, most commonly vocals, drums, bass and other/accompaniment. Modern systems are deep neural networks trained on multitrack datasets and evaluated with measures such as the signal-to-distortion ratio.",
+    "plain_english": "It means splitting a song into separate parts, like the singing, drums and bass. A computer learns to pull each part out of the full mix.",
+    "purpose_function": "It exists to recover individual musical parts from a finished mix so they can be remixed, studied, transcribed or used for karaoke and teaching when the original tracks are unavailable.",
+    "practical_application": "A technician uses an MSS tool such as Demucs or Spleeter to pull stems from a stereo master for a remix, a live show or teaching material.",
+    "category": "Source separation",
+    "related_terms": [
+     "Demixing",
+     "Signal separation",
+     "Conv-TasNet",
+     "Stem",
+     "Time-frequency masking",
+     "Short-time Fourier transform (STFT)"
+    ],
+    "common_mistakes": [
+     "Assuming separated stems are studio-clean; they carry bleed and artifacts from the separation process",
+     "Expecting perfect isolation of instruments that share the same frequency range, which cannot be fully separated",
+     "Judging separation quality only by signal-to-distortion numbers instead of also listening for artifacts"
+    ],
+    "scenario_contexts": [
+     "Making a karaoke track by removing vocals from a song",
+     "Extracting stems for a live remix or mashup",
+     "Isolating instruments for music transcription or study"
+    ]
+   },
+   "sources": [
+    "Stoter, Uhlich, Liutkus & Mitsufuji, Open-Unmix - A Reference Implementation for Music Source Separation (Journal of Open Source Software)",
+    "Rafii et al., The MUSDB18 Corpus for Music Separation / SiSEC (LNCS, Springer)",
+    "Muller, Fundamentals of Music Processing (Springer)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "cc3b293e-723b-4f15-bf02-7e6bb406beb3",
+   "term": "Non-negative matrix factorization (NMF)",
+   "fields": {
+    "definition": "A matrix-decomposition technique that approximates a non-negative matrix as the product of two lower-rank non-negative matrices, written V approximately equal to W times H. Applied to audio, V is usually a magnitude or power spectrogram, W holds a dictionary of spectral templates and H holds their time-varying activations, giving a parts-based representation useful for source separation and transcription.",
+    "plain_english": "It is a math method that breaks a sound into a few basic patterns and a record of when each one plays. The pieces only add up, never subtract, so they line up well with real notes.",
+    "purpose_function": "It exists to find a compact, parts-based description of audio in which components add together rather than cancel, so the learned parts tend to correspond to meaningful sound events such as individual notes or sources.",
+    "practical_application": "A technician meets it inside older or lightweight separation and transcription tools that split a spectrogram into note or instrument templates without needing a trained neural network.",
+    "category": "Separation method",
+    "related_terms": [
+     "Short-time Fourier transform (STFT)",
+     "Spectrogram",
+     "Signal separation",
+     "Music source separation (MSS)",
+     "Spectral template",
+     "Dictionary learning"
+    ],
+    "common_mistakes": [
+     "Forgetting that NMF works on magnitude and discards phase, so phase must be reused or estimated to resynthesize audio",
+     "Choosing the wrong number of components, giving templates that mix several sources or split one source apart",
+     "Assuming NMF is a deep-learning method; it is a linear factorization, not a neural network"
+    ],
+    "scenario_contexts": [
+     "Separating a small number of instruments from a mono recording",
+     "Automatic transcription of individual notes from a spectrogram",
+     "Learning spectral templates for one instrument to remove or isolate it"
+    ]
+   },
+   "sources": [
+    "Lee & Seung, Learning the Parts of Objects by Non-negative Matrix Factorization (Nature) and Algorithms for Non-negative Matrix Factorization (NIPS)",
+    "Smaragdis & Brown, Non-negative Matrix Factorization for Polyphonic Music Transcription (WASPAA, IEEE)",
+    "Muller, Fundamentals of Music Processing (Springer)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "c76fb5b3-cec2-4405-9df2-f383de6df5cd",
+   "term": "Short-time Fourier transform (STFT)",
+   "fields": {
+    "definition": "A time-frequency analysis that computes the Fourier transform of successive short, windowed segments of a signal, showing how its frequency content evolves over time. The result is a complex-valued spectrogram indexed by time frame and frequency bin, governed by the choice of window function, window length and hop size.",
+    "plain_english": "It chops a sound into short slices and finds the pitches in each slice. Stacking the slices shows how the sound changes over time, like a moving picture of the sound.",
+    "purpose_function": "It exists to reveal how a signal's frequencies change over time, because a single Fourier transform of the whole signal loses all timing; this time-frequency view is the input to most audio analysis and separation systems.",
+    "practical_application": "A technician relies on it whenever using a spectrogram display or a frequency-domain tool, where the window and hop settings trade off time detail against frequency detail.",
+    "category": "Time-frequency analysis",
+    "related_terms": [
+     "Spectrogram",
+     "Fourier transform",
+     "Window function",
+     "Non-negative matrix factorization (NMF)",
+     "Time-frequency masking",
+     "Overlap-add"
+    ],
+    "common_mistakes": [
+     "Ignoring the time-frequency trade-off; a long window gives fine frequency but coarse timing, and a short window does the reverse",
+     "Forgetting phase; the spectrogram magnitude alone is not enough to reconstruct the signal cleanly",
+     "Choosing a window and hop that fail the overlap-add condition, causing artifacts when resynthesizing"
+    ],
+    "scenario_contexts": [
+     "Reading a spectrogram to find noise or clicks in a recording",
+     "Setting window and hop size for a frequency-domain noise reduction",
+     "Providing the input representation for a source-separation model"
+    ]
+   },
+   "sources": [
+    "Oppenheim & Schafer, Discrete-Time Signal Processing (Pearson)",
+    "Muller, Fundamentals of Music Processing (Springer)",
+    "Allen & Rabiner, A Unified Approach to Short-Time Fourier Analysis and Synthesis (Proceedings of the IEEE)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8fe88425-e42e-452e-a4ac-e070ef6717ef",
+   "term": "Signal separation",
+   "fields": {
+    "definition": "The general problem of recovering two or more source signals from one or more observed mixtures of them. When little is known about the sources or the mixing process it is called blind source separation, which relies on assumptions such as statistical independence, non-negativity or sparsity to make the problem solvable.",
+    "plain_english": "It means taking a recording that has several sounds mixed together and pulling them back into separate signals. It is like listening to a crowd and picking out each person's voice on its own.",
+    "purpose_function": "It exists to regain access to individual sources that are only observed as a mixture, which is needed for enhancement, analysis and any task that must handle one source at a time.",
+    "practical_application": "A technician meets it whenever isolating one voice or instrument from a mix, whether with classic blind methods or modern trained separation tools.",
+    "category": "Source separation",
+    "related_terms": [
+     "Blind source separation (BSS)",
+     "Music source separation (MSS)",
+     "Demixing",
+     "Independent component analysis (ICA)",
+     "Non-negative matrix factorization (NMF)",
+     "Computational auditory scene analysis (CASA)"
+    ],
+    "common_mistakes": [
+     "Assuming more sources can be separated than there are microphones without extra assumptions; the underdetermined case needs priors such as sparsity",
+     "Confusing signal separation with simple filtering, which cannot pull apart sources that overlap in frequency",
+     "Expecting perfect separation; real results contain residual crosstalk and artifacts"
+    ],
+    "scenario_contexts": [
+     "Separating overlapping speakers from a conference recording",
+     "Isolating instruments from a music mix",
+     "Removing an interfering source from a measurement or sensor signal"
+    ]
+   },
+   "sources": [
+    "Comon & Jutten (eds.), Handbook of Blind Source Separation: Independent Component Analysis and Applications (Academic Press)",
+    "Vincent, Virtanen & Gannot, Audio Source Separation and Speech Enhancement (Wiley)",
+    "Muller, Fundamentals of Music Processing (Springer)"
+   ],
+   "confidence": "High",
+   "flags": []
+  }
+ ]
+}

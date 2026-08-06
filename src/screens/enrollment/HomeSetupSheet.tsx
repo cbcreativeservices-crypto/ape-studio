@@ -49,9 +49,22 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
   const [defaultDraft, setDefaultDraft] = useState<number | null>(null);
   const [warn, setWarn] = useState(false);
   const [payOpen, setPayOpen] = useState(false);
+  // Membership-upsell timing (owner 2026-08-05): for non-members the prompt
+  // appears as soon as they tap ANYWHERE in this popup — but not on their very
+  // first tap (a free look); the SECOND tap raises it. A root-level onTouchStart
+  // owns this (touch events bubble to it from every child). Writes stay blocked
+  // on every tap regardless of the count.
+  const tapCount = useRef(0);
+  useEffect(() => {
+    if (visible) tapCount.current = 0; // fresh count each time the sheet opens
+  }, [visible]);
+  const onAnyTap = () => {
+    if (paid) return;
+    tapCount.current += 1;
+    if (tapCount.current >= 2) setPayOpen(true);
+  };
   const guard = (fn: () => void) => {
-    if (paid) fn();
-    else setPayOpen(true);
+    if (paid) fn(); // non-members: write blocked; the tap counter shows the upsell
   };
 
   const topicIndex = useMemo(() => {
@@ -217,7 +230,7 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
 
   return (
     <Modal visible={visible} transparent animationType="slide" statusBarTranslucent onRequestClose={onClose}>
-      <View style={[styles.root, { paddingTop: insets.top }]}>
+      <View style={[styles.root, { paddingTop: insets.top }]} onTouchStart={onAnyTap}>
         <View style={styles.head}>
           <View style={{ flex: 1 }}>
             <Text style={styles.title}>HOME SCREEN SETUP</Text>
@@ -332,10 +345,15 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
         lines={[`You can place up to ${HOME_MAX} cards on your Home screen.`, 'Remove one first to add another.']}
       />
 
-      {/* Unpaid users can browse this setup but not change it (owner 2026-07-31). */}
+      {/* Unpaid users can browse this setup but not change it (owner 2026-07-31).
+          Raised on the 2nd tap anywhere (owner 2026-08-05) — reset on dismiss so
+          the "one free tap, then prompt" cycle repeats. */}
       <PrePaywallPrompt
         visible={payOpen}
-        onClose={() => setPayOpen(false)}
+        onClose={() => {
+          setPayOpen(false);
+          tapCount.current = 0;
+        }}
         title="Membership required"
         lines={[
           'Customizing your Home screen is an Academy membership feature.',

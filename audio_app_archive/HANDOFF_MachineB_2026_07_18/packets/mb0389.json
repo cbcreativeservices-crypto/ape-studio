@@ -1,0 +1,81 @@
+{
+ "batch": 389,
+ "topic": "Dubbing & Localization",
+ "terms": [
+  {
+   "id": "8a135eb7-c0f7-4ad2-b63a-55ed2a087d7b",
+   "term": "Dubbing stage",
+   "topic": "Dubbing & Localization",
+   "seq": 1720,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "048f7884-2391-4c15-8d22-309e478c0e1b",
+   "term": "Localization booth",
+   "topic": "Dubbing & Localization",
+   "seq": 1720,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  },
+  {
+   "id": "d6f9eadc-987d-4207-8308-882eb5a4bd09",
+   "term": "Localization studio",
+   "topic": "Dubbing & Localization",
+   "seq": 1720,
+   "difficulty": null,
+   "definition": "(pending)",
+   "plain_english": null,
+   "purpose_function": null,
+   "practical_application": null,
+   "category": null,
+   "related_terms": null,
+   "common_mistakes": null,
+   "scenario_contexts": null,
+   "empty_fields": [
+    "definition",
+    "plain_english",
+    "purpose_function",
+    "practical_application",
+    "category",
+    "related_terms",
+    "common_mistakes",
+    "scenario_contexts"
+   ]
+  }
+ ]
+}

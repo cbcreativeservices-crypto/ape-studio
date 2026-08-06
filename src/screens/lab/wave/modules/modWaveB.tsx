@@ -24,6 +24,7 @@ import { DecayCurveGraph } from '../../../../features/lab/fxViz';
 import { LabChip } from '../../LabShell';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
+import { WaveLayout } from './waveLayout';
 import { requireWaveViz, type WaveVizModule } from '../skiaGate';
 import type { WaveLayers } from '../vizWave';
 import {
@@ -147,7 +148,7 @@ function ArrivalTimeline({ arrivals, thresholdMs = 50 }: { arrivals: Arrival[]; 
   return (
     <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
       <SvgRect x={0} y={0} width={W} height={base} fill="#0f0f13" />
-      <SvgLine x1={0} y1={base} x2={W} y2={base} stroke="#232329" strokeWidth={1} />
+      <SvgLine x1={0} y1={base} x2={W} y2={base} stroke="#2e2f38" strokeWidth={1} />
       <SvgLine x1={xAt(thresholdMs)} y1={6} x2={xAt(thresholdMs)} y2={base} stroke="rgba(255,198,77,.4)" strokeWidth={1} strokeDasharray="4 3" />
       {arrivals.map((a, i) => {
         const ms = a.t * 1000 - t0;
@@ -210,64 +211,74 @@ export function CoverageModule(p: WaveModuleProps) {
   const lambda = speedOfSound(TEMP_C) / freq;
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint →
-            setting chips → sliders → readouts (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('coverage_pattern')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
-        {viz ? (
-          <SceneHero
-            viz={viz}
-            scene={scene}
-            width={p.width}
-            focused={p.focused}
-            freq={freq}
-            layers={layers}
-            onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+    <WaveLayout
+      readouts={
+        <>
+          <ReadoutGrid
+            help={p.help}
+            helpKey="coverage_pattern"
+            items={[
+              { k: 'NOMINAL COVERAGE', v: `${cov}°` },
+              { k: `EFFECTIVE @ ${fmtHz(freq)}`, v: eff >= 360 ? '≈360° (omni)' : `${eff}°` },
+              { k: 'WAVELENGTH', v: `${lambda.toFixed(2)} m` },
+              { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
+            ]}
           />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={MODEL_BADGE} />
-        <Text style={dstyles.caption}>
-          Drag the listener off-axis and sweep the frequency: on-axis it barely changes, off-axis the highs fall away first. Aim the HF pattern, not the cabinet.
-        </Text>
-        <View style={dstyles.chipRow}>
-          {COVERAGE_CHIPS.map((c) => (
-            <LabChip key={c} label={`${c}°`} selected={cov === c} onPress={() => setCov(c)} onLongPress={() => p.help('coverage_pattern')} />
-          ))}
-        </View>
-        <DragSlider value={aimV} onChange={setAimV} label="AIM" readout={`${aim}°`} onHelp={() => p.help('coverage_pattern')} />
-        <DragSlider
-          value={freqV}
-          onChange={setFreqV}
-          label="OUTPUT FREQUENCY — WATCH THE PATTERN WIDTH"
-          readout={fmtHz(freq)}
-          onHelp={() => p.help('coverage_pattern')}
-        />
-        <ReadoutGrid
-          help={p.help}
-          helpKey="coverage_pattern"
+          <Badge text="EFFECTIVE COVERAGE = −6 dB POINTS PROBED FROM THE ENGINE'S DIRECTIVITY MODEL (NOMINAL AT 1 kHz — WIDER LOW, NARROWER HIGH)" />
+        </>
+      }
+      layers={<LayerChips layers={layers} onLayers={setLayers} help={p.help} />}
+      display={
+        <>
+          {viz ? (
+            <SceneHero
+              viz={viz}
+              scene={scene}
+              width={p.width}
+              focused={p.focused}
+              freq={freq}
+              layers={layers}
+              onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={MODEL_BADGE} />
+          <Text style={dstyles.caption}>
+            Drag the listener off-axis and sweep the frequency: on-axis it barely changes, off-axis the highs fall away first. Aim the HF pattern, not the cabinet.
+          </Text>
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('coverage_pattern')} />}
+      controls={
+        <>
+          <DragSlider value={aimV} onChange={setAimV} label="AIM" readout={`${aim}°`} onHelp={() => p.help('coverage_pattern')} />
+          <DragSlider
+            value={freqV}
+            onChange={setFreqV}
+            label="OUTPUT FREQUENCY — WATCH THE PATTERN WIDTH"
+            readout={fmtHz(freq)}
+            onHelp={() => p.help('coverage_pattern')}
+          />
+          <View style={dstyles.chipRow}>
+            {COVERAGE_CHIPS.map((c) => (
+              <LabChip key={c} label={`${c}°`} selected={cov === c} onPress={() => setCov(c)} onLongPress={() => p.help('coverage_pattern')} />
+            ))}
+          </View>
+        </>
+      }
+      mistakes={
+        <Mistakes
           items={[
-            { k: 'NOMINAL COVERAGE', v: `${cov}°` },
-            { k: `EFFECTIVE @ ${fmtHz(freq)}`, v: eff >= 360 ? '≈360° (omni)' : `${eff}°` },
-            { k: 'WAVELENGTH', v: `${lambda.toFixed(2)} m` },
-            { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
+            'Thinking a speaker radiates evenly — directivity NARROWS with frequency.',
+            'Confusing on-axis response with off-axis (coverage) response.',
+            'Ignoring that lows are nearly omnidirectional.',
+            'Aiming by the cabinet rather than the HF pattern.',
           ]}
         />
-        <Badge text="EFFECTIVE COVERAGE = −6 dB POINTS PROBED FROM THE ENGINE'S DIRECTIVITY MODEL (NOMINAL AT 1 kHz — WIDER LOW, NARROWER HIGH)" />
-      </PanelCard>
-      <Mistakes
-        items={[
-          'Thinking a speaker radiates evenly — directivity NARROWS with frequency.',
-          'Confusing on-axis response with off-axis (coverage) response.',
-          'Ignoring that lows are nearly omnidirectional.',
-          'Aiming by the cabinet rather than the HF pattern.',
-        ]}
-      />
-      <CheckQuestion spec={COVERAGE_CHECK} />
-    </View>
+      }
+      check={<CheckQuestion spec={COVERAGE_CHECK} />}
+    />
   );
 }
 
@@ -337,62 +348,72 @@ export function LineArrayModule(p: WaveModuleProps) {
   const lvl = responseAt(scene, listener.x, listener.y, freq);
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint →
-            sliders → readouts (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('line_array')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
-        {viz ? (
-          <SceneHero
-            viz={viz}
-            scene={scene}
-            width={p.width}
-            focused={p.focused}
-            freq={freq}
-            layers={layers}
-            onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+    <WaveLayout
+      readouts={
+        <>
+          <ReadoutGrid
+            help={p.help}
+            helpKey="line_array"
+            items={[
+              { k: 'BOXES', v: `${n}` },
+              { k: 'ARRAY LENGTH', v: `${arrayLen.toFixed(2)} m` },
+              { k: 'WAVELENGTH', v: `${lambda.toFixed(2)} m` },
+              { k: 'LF CONTROL', v: arrayLen >= lambda ? 'YES (len ≥ λ)' : 'NO (len < λ)' },
+              { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
+            ]}
           />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={MODEL_BADGE} />
-        <Text style={dstyles.caption}>
-          SECTION VIEW — x is distance into the venue, y is height (audience floor along the bottom). Drag the listener to a seat.
-        </Text>
-        <DragSlider value={nV} onChange={setNV} label="BOXES" readout={`${n}`} onHelp={() => p.help('line_array')} />
-        <DragSlider value={splayV} onChange={setSplayV} label="SPLAY (PER BOX)" readout={`${splay.toFixed(1)}°`} onHelp={() => p.help('line_array')} />
-        <DragSlider value={hangV} onChange={setHangV} label="HEIGHT (HANG DEPTH)" readout={`${yTop.toFixed(2)} m`} onHelp={() => p.help('line_array')} />
-        <DragSlider
-          value={freqV}
-          onChange={setFreqV}
-          label="OUTPUT FREQUENCY — LF COUPLES · HF BEAMS"
-          readout={fmtHz(freq)}
-          onHelp={() => p.help('line_array')}
-        />
-        <ReadoutGrid
-          help={p.help}
-          helpKey="line_array"
+          <Badge text="EACH BOX = ONE 30°-NOMINAL SOURCE FROM arrayPositions — HEAT SHOWS THE BOXES COUPLING AT LF AND BEAMING AT HF" />
+        </>
+      }
+      layers={<LayerChips layers={layers} onLayers={setLayers} help={p.help} />}
+      display={
+        <>
+          {viz ? (
+            <SceneHero
+              viz={viz}
+              scene={scene}
+              width={p.width}
+              focused={p.focused}
+              freq={freq}
+              layers={layers}
+              onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={MODEL_BADGE} />
+          <Text style={dstyles.caption}>
+            SECTION VIEW — x is distance into the venue, y is height (audience floor along the bottom). Drag the listener to a seat.
+          </Text>
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('line_array')} />}
+      controls={
+        <>
+          <DragSlider value={nV} onChange={setNV} label="BOXES" readout={`${n}`} onHelp={() => p.help('line_array')} />
+          <DragSlider value={splayV} onChange={setSplayV} label="SPLAY (PER BOX)" readout={`${splay.toFixed(1)}°`} onHelp={() => p.help('line_array')} />
+          <DragSlider value={hangV} onChange={setHangV} label="HEIGHT (HANG DEPTH)" readout={`${yTop.toFixed(2)} m`} onHelp={() => p.help('line_array')} />
+          <DragSlider
+            value={freqV}
+            onChange={setFreqV}
+            label="OUTPUT FREQUENCY — LF COUPLES · HF BEAMS"
+            readout={fmtHz(freq)}
+            onHelp={() => p.help('line_array')}
+          />
+        </>
+      }
+      mistakes={
+        <Mistakes
           items={[
-            { k: 'BOXES', v: `${n}` },
-            { k: 'ARRAY LENGTH', v: `${arrayLen.toFixed(2)} m` },
-            { k: 'WAVELENGTH', v: `${lambda.toFixed(2)} m` },
-            { k: 'LF CONTROL', v: arrayLen >= lambda ? 'YES (len ≥ λ)' : 'NO (len < λ)' },
-            { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
+            'Thinking stacking just makes it louder — splay/geometry SHAPES coverage; wrong splay = gaps or lobes.',
+            'Ignoring frequency dependence: the array couples at LF and beams at HF.',
+            'Expecting a short array to control lows — it needs length ≥ wavelength.',
+            'Over- or under-splaying → coverage holes.',
           ]}
         />
-        <Badge text="EACH BOX = ONE 30°-NOMINAL SOURCE FROM arrayPositions — HEAT SHOWS THE BOXES COUPLING AT LF AND BEAMING AT HF" />
-      </PanelCard>
-      <Mistakes
-        items={[
-          'Thinking stacking just makes it louder — splay/geometry SHAPES coverage; wrong splay = gaps or lobes.',
-          'Ignoring frequency dependence: the array couples at LF and beams at HF.',
-          'Expecting a short array to control lows — it needs length ≥ wavelength.',
-          'Over- or under-splaying → coverage holes.',
-        ]}
-      />
-      <CheckQuestion spec={LINEARRAY_CHECK} />
-    </View>
+      }
+      check={<CheckQuestion spec={LINEARRAY_CHECK} />}
+    />
   );
 }
 
@@ -452,60 +473,8 @@ export function DelayAlignModule(p: WaveModuleProps) {
   const lvl = responseAt(scene, listener.x, listener.y, freq);
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → controls
-            below (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('delay_align')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
-        {viz ? (
-          <SceneHero
-            viz={viz}
-            scene={scene}
-            width={p.width}
-            focused={p.focused}
-            freq={freq}
-            layers={layers}
-            onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={MODEL_BADGE} />
-        <DragSlider
-          value={freqV}
-          onChange={setFreqV}
-          label="CROSSOVER REGION"
-          readout={`${freq} Hz`}
-          onHelp={() => p.help('interference')}
-        />
-        <DragSlider
-          value={delayV}
-          onChange={setDelayV}
-          label="MAIN DELAY"
-          readout={`${delayMs.toFixed(2)} ms`}
-          onHelp={() => p.help('delay_align')}
-        />
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="MAIN POLARITY Ø (THE WRONG TOOL)"
-            selected={mainInv}
-            onPress={() => setMainInv(!mainInv)}
-            onLongPress={() => p.help('delay_align')}
-          />
-        </View>
-        <GlassButton
-          label={`AUTO-ALIGN — SET ${Math.max(0, Math.min(20, reqDelay)).toFixed(2)} ms`}
-          tint="gold"
-          height={46}
-          fontSize={13.5}
-          onPress={() => setDelayV(clamp(reqDelay, 0, 20) / 20)}
-        />
-        {reqDelay < 0 ? (
-          <Text style={dstyles.caption}>
-            Here the listener is closer to the SUB than the main — the sub would need the delay. Drag the listener down-field (or AUTO-ALIGN sets 0).
-          </Text>
-        ) : null}
+    <WaveLayout
+      readouts={
         <ReadoutGrid
           help={p.help}
           helpKey="delay_align"
@@ -519,20 +488,80 @@ export function DelayAlignModule(p: WaveModuleProps) {
             { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
           ]}
         />
-        <Text style={dstyles.caption}>
-          Watch the null through the room close in HEAT as the mismatch approaches 0 — then DRAG THE LISTENER: an alignment that only works at one seat is not an alignment.
-        </Text>
-      </PanelCard>
-      <Mistakes
-        items={[
-          'Aligning by tape-measure distance only — it ignores processing/acoustic delay.',
-          'Flipping polarity instead of time-aligning (or vice versa).',
-          'Aligning at one point/frequency and assuming it holds everywhere.',
-          'Aligning for the mic at the console instead of the audience.',
-        ]}
-      />
-      <CheckQuestion spec={ALIGN_CHECK} />
-    </View>
+      }
+      layers={<LayerChips layers={layers} onLayers={setLayers} help={p.help} />}
+      display={
+        <>
+          {viz ? (
+            <SceneHero
+              viz={viz}
+              scene={scene}
+              width={p.width}
+              focused={p.focused}
+              freq={freq}
+              layers={layers}
+              onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={MODEL_BADGE} />
+          <Text style={dstyles.caption}>
+            Watch the null through the room close in HEAT as the mismatch approaches 0 — then DRAG THE LISTENER: an alignment that only works at one seat is not an alignment.
+          </Text>
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('delay_align')} />}
+      controls={
+        <>
+          <DragSlider
+            value={freqV}
+            onChange={setFreqV}
+            label="CROSSOVER REGION"
+            readout={`${freq} Hz`}
+            onHelp={() => p.help('interference')}
+          />
+          <DragSlider
+            value={delayV}
+            onChange={setDelayV}
+            label="MAIN DELAY"
+            readout={`${delayMs.toFixed(2)} ms`}
+            onHelp={() => p.help('delay_align')}
+          />
+          <View style={dstyles.chipRow}>
+            <LabChip
+              label="MAIN POLARITY Ø (THE WRONG TOOL)"
+              selected={mainInv}
+              onPress={() => setMainInv(!mainInv)}
+              onLongPress={() => p.help('delay_align')}
+            />
+          </View>
+          <GlassButton
+            label={`AUTO-ALIGN — SET ${Math.max(0, Math.min(20, reqDelay)).toFixed(2)} ms`}
+            tint="gold"
+            height={46}
+            fontSize={13.5}
+            onPress={() => setDelayV(clamp(reqDelay, 0, 20) / 20)}
+          />
+          {reqDelay < 0 ? (
+            <Text style={dstyles.caption}>
+              Here the listener is closer to the SUB than the main — the sub would need the delay. Drag the listener down-field (or AUTO-ALIGN sets 0).
+            </Text>
+          ) : null}
+        </>
+      }
+      mistakes={
+        <Mistakes
+          items={[
+            'Aligning by tape-measure distance only — it ignores processing/acoustic delay.',
+            'Flipping polarity instead of time-aligning (or vice versa).',
+            'Aligning at one point/frequency and assuming it holds everywhere.',
+            'Aligning for the mic at the console instead of the audience.',
+          ]}
+        />
+      }
+      check={<CheckQuestion spec={ALIGN_CHECK} />}
+    />
   );
 }
 
@@ -600,50 +629,8 @@ export function CardioidSubModule(p: WaveModuleProps) {
   const isWrongWay = Math.abs(rearDelayMs - correctDelayMs) < 0.05 && !rearInv;
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → hint →
-            presets/sliders → readouts (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('cardioid_sub')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
-        {viz ? (
-          <SceneHero
-            viz={viz}
-            scene={scene}
-            width={p.width}
-            focused={p.focused}
-            freq={freq}
-            layers={layers}
-            onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={MODEL_BADGE} />
-        <Text style={dstyles.caption}>
-          Two subs 1.2 m apart, audience toward the bottom. The listener is the FRONT probe (drag it); the REAR probe sits fixed 3 m behind the stack.
-        </Text>
-        <View style={dstyles.chipRow}>
-          <LabChip label="CARDIOID" selected={isCardioid} onPress={() => setPreset(true)} onLongPress={() => p.help('cardioid_sub')} />
-          <LabChip label="WRONG WAY" selected={isWrongWay} onPress={() => setPreset(false)} onLongPress={() => p.help('cardioid_sub')} />
-        </View>
-        <Badge text="CARDIOID = REAR DELAYED BY SPACING/c AND POLARITY-INVERTED → BROADBAND REAR CANCEL · WRONG WAY = SAME DELAY, POLARITY NORMAL → THE NULL FLIPS TOWARD THE AUDIENCE (DEEPEST NEAR c/4d ≈ 71 Hz)" />
-        <DragSlider value={freqV} onChange={setFreqV} label="OUTPUT FREQUENCY" readout={`${freq} Hz`} onHelp={() => p.help('cardioid_sub')} />
-        <DragSlider
-          value={delayV}
-          onChange={setDelayV}
-          label="REAR DELAY"
-          readout={`${rearDelayMs.toFixed(2)} ms`}
-          onHelp={() => p.help('cardioid_sub')}
-        />
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="REAR POLARITY Ø INVERT"
-            selected={rearInv}
-            onPress={() => setRearInv(!rearInv)}
-            onLongPress={() => p.help('cardioid_sub')}
-          />
-        </View>
+    <WaveLayout
+      readouts={
         <ReadoutGrid
           help={p.help}
           helpKey="cardioid_sub"
@@ -657,20 +644,70 @@ export function CardioidSubModule(p: WaveModuleProps) {
             { k: 'FRONT − REAR', v: `${(frontDb - rearDb).toFixed(1)} dB` },
           ]}
         />
-        <Text style={dstyles.caption}>
-          Set CARDIOID and sweep the frequency: the rear stays cancelled across the band while the front rides up and down a little — spacing sets those limits. Set WRONG WAY near 71 Hz and watch the null land on the audience.
-        </Text>
-      </PanelCard>
-      <Mistakes
-        items={[
-          'Wrong delay/polarity/spacing cancels in the WRONG direction — a front null instead of a rear null.',
-          'Thinking one sub can be cardioid — it needs ≥2 sources with a time/polarity offset.',
-          'Ignoring the frequency limits set by the spacing.',
-          'Expecting perfect rear rejection everywhere — it is band- and geometry-limited.',
-        ]}
-      />
-      <CheckQuestion spec={CSUB_CHECK} />
-    </View>
+      }
+      layers={<LayerChips layers={layers} onLayers={setLayers} help={p.help} />}
+      display={
+        <>
+          {viz ? (
+            <SceneHero
+              viz={viz}
+              scene={scene}
+              width={p.width}
+              focused={p.focused}
+              freq={freq}
+              layers={layers}
+              onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={MODEL_BADGE} />
+          <Text style={dstyles.caption}>
+            Two subs 1.2 m apart, audience toward the bottom. The listener is the FRONT probe (drag it); the REAR probe sits fixed 3 m behind the stack.
+          </Text>
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('cardioid_sub')} />}
+      controls={
+        <>
+          <DragSlider value={freqV} onChange={setFreqV} label="OUTPUT FREQUENCY" readout={`${freq} Hz`} onHelp={() => p.help('cardioid_sub')} />
+          <DragSlider
+            value={delayV}
+            onChange={setDelayV}
+            label="REAR DELAY"
+            readout={`${rearDelayMs.toFixed(2)} ms`}
+            onHelp={() => p.help('cardioid_sub')}
+          />
+          <View style={dstyles.chipRow}>
+            <LabChip label="CARDIOID" selected={isCardioid} onPress={() => setPreset(true)} onLongPress={() => p.help('cardioid_sub')} />
+            <LabChip label="WRONG WAY" selected={isWrongWay} onPress={() => setPreset(false)} onLongPress={() => p.help('cardioid_sub')} />
+          </View>
+          <Badge text="CARDIOID = REAR DELAYED BY SPACING/c AND POLARITY-INVERTED → BROADBAND REAR CANCEL · WRONG WAY = SAME DELAY, POLARITY NORMAL → THE NULL FLIPS TOWARD THE AUDIENCE (DEEPEST NEAR c/4d ≈ 71 Hz)" />
+          <View style={dstyles.chipRow}>
+            <LabChip
+              label="REAR POLARITY Ø INVERT"
+              selected={rearInv}
+              onPress={() => setRearInv(!rearInv)}
+              onLongPress={() => p.help('cardioid_sub')}
+            />
+          </View>
+          <Text style={dstyles.caption}>
+            Set CARDIOID and sweep the frequency: the rear stays cancelled across the band while the front rides up and down a little — spacing sets those limits. Set WRONG WAY near 71 Hz and watch the null land on the audience.
+          </Text>
+        </>
+      }
+      mistakes={
+        <Mistakes
+          items={[
+            'Wrong delay/polarity/spacing cancels in the WRONG direction — a front null instead of a rear null.',
+            'Thinking one sub can be cardioid — it needs ≥2 sources with a time/polarity offset.',
+            'Ignoring the frequency limits set by the spacing.',
+            'Expecting perfect rear rejection everywhere — it is band- and geometry-limited.',
+          ]}
+        />
+      }
+      check={<CheckQuestion spec={CSUB_CHECK} />}
+    />
   );
 }
 
@@ -737,63 +774,73 @@ export function BeamSteerModule(p: WaveModuleProps) {
   const lvl = responseAt(scene, listener.x, listener.y, freq);
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → settings
-            below (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('beam_steer')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
-        {viz ? (
-          <SceneHero
-            viz={viz}
-            scene={scene}
-            width={p.width}
-            focused={p.focused}
-            freq={freq}
-            layers={layers}
-            onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+    <WaveLayout
+      readouts={
+        <>
+          <ReadoutGrid
+            help={p.help}
+            helpKey="beam_steer"
+            items={[
+              { k: 'STEER ANGLE', v: `${steer}°` },
+              { k: 'PER-BOX Δt', v: `${Math.round(Math.abs(dtPerBoxMs) * 1000)} µs` },
+              { k: 'TOTAL Δt', v: `${(Math.abs(dtPerBoxMs) * (n - 1)).toFixed(2)} ms` },
+              { k: 'ARRAY LENGTH', v: `${((n - 1) * STEER_SPACING).toFixed(1)} m` },
+              { k: 'WAVELENGTH', v: `${lambda.toFixed(2)} m` },
+              { k: 'GRATING LOBE', v: grating ? 'IN THE FIELD' : 'NONE' },
+              { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
+            ]}
           />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={MODEL_BADGE} />
-        <View style={dstyles.chipRow}>
-          {STEER_N_CHIPS.map((k) => (
-            <LabChip key={k} label={`${k} BOXES`} selected={n === k} onPress={() => setN(k)} onLongPress={() => p.help('beam_steer')} />
-          ))}
-        </View>
-        <DragSlider value={steerV} onChange={setSteerV} label="STEER" readout={`${steer}°`} onHelp={() => p.help('beam_steer')} />
-        <DragSlider value={freqV} onChange={setFreqV} label="OUTPUT FREQUENCY" readout={`${freq} Hz`} onHelp={() => p.help('beam_steer')} />
-        <ReadoutGrid
-          help={p.help}
-          helpKey="beam_steer"
+          <Badge text="Δt = d·sin θ / c PER BOX — A LINEAR DELAY GRADIENT TILTS THE WAVEFRONT; THE CABINETS NEVER MOVE" />
+          {Math.abs(steer) > 40 ? (
+            <Text style={dstyles.caption}>
+              OVER-STEERED (|θ| &gt; ~40°): the delay gradient outruns the array’s geometry — at higher frequencies grating lobes appear in the HEAT map, spraying energy off-beam.
+            </Text>
+          ) : null}
+        </>
+      }
+      layers={<LayerChips layers={layers} onLayers={setLayers} help={p.help} />}
+      display={
+        <>
+          {viz ? (
+            <SceneHero
+              viz={viz}
+              scene={scene}
+              width={p.width}
+              focused={p.focused}
+              freq={freq}
+              layers={layers}
+              onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={MODEL_BADGE} />
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('beam_steer')} />}
+      controls={
+        <>
+          <DragSlider value={steerV} onChange={setSteerV} label="STEER" readout={`${steer}°`} onHelp={() => p.help('beam_steer')} />
+          <DragSlider value={freqV} onChange={setFreqV} label="OUTPUT FREQUENCY" readout={`${freq} Hz`} onHelp={() => p.help('beam_steer')} />
+          <View style={dstyles.chipRow}>
+            {STEER_N_CHIPS.map((k) => (
+              <LabChip key={k} label={`${k} BOXES`} selected={n === k} onPress={() => setN(k)} onLongPress={() => p.help('beam_steer')} />
+            ))}
+          </View>
+        </>
+      }
+      mistakes={
+        <Mistakes
           items={[
-            { k: 'STEER ANGLE', v: `${steer}°` },
-            { k: 'PER-BOX Δt', v: `${Math.round(Math.abs(dtPerBoxMs) * 1000)} µs` },
-            { k: 'TOTAL Δt', v: `${(Math.abs(dtPerBoxMs) * (n - 1)).toFixed(2)} ms` },
-            { k: 'ARRAY LENGTH', v: `${((n - 1) * STEER_SPACING).toFixed(1)} m` },
-            { k: 'WAVELENGTH', v: `${lambda.toFixed(2)} m` },
-            { k: 'GRATING LOBE', v: grating ? 'IN THE FIELD' : 'NONE' },
-            { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
+            'Thinking you must physically tilt the box — DSP delays steer it.',
+            'Over-steering beyond the array’s capability — grating lobes.',
+            'Confusing steering (redirect) with widening.',
+            'Ignoring the frequency dependence of steering.',
           ]}
         />
-        <Badge text="Δt = d·sin θ / c PER BOX — A LINEAR DELAY GRADIENT TILTS THE WAVEFRONT; THE CABINETS NEVER MOVE" />
-        {Math.abs(steer) > 40 ? (
-          <Text style={dstyles.caption}>
-            OVER-STEERED (|θ| &gt; ~40°): the delay gradient outruns the array’s geometry — at higher frequencies grating lobes appear in the HEAT map, spraying energy off-beam.
-          </Text>
-        ) : null}
-      </PanelCard>
-      <Mistakes
-        items={[
-          'Thinking you must physically tilt the box — DSP delays steer it.',
-          'Over-steering beyond the array’s capability — grating lobes.',
-          'Confusing steering (redirect) with widening.',
-          'Ignoring the frequency dependence of steering.',
-        ]}
-      />
-      <CheckQuestion spec={STEER_CHECK} />
-    </View>
+      }
+      check={<CheckQuestion spec={STEER_CHECK} />}
+    />
   );
 }
 
@@ -866,34 +913,8 @@ export function EchoModule(p: WaveModuleProps) {
   const lvl = responseAt(scene, scene.listener.x, scene.listener.y, ECHO_FREQ);
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → presets
-            below (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('echo')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
-        {viz ? (
-          <SceneHero
-            viz={viz}
-            scene={scene}
-            width={p.width}
-            focused={p.focused}
-            freq={ECHO_FREQ}
-            layers={layers}
-            onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={MODEL_BADGE} />
-        <View style={dstyles.chipRow}>
-          {ECHO_PRESETS.map((e) => (
-            <LabChip key={e.key} label={e.label} selected={presetKey === e.key} onPress={() => pick(e)} onLongPress={() => p.help('echo')} />
-          ))}
-        </View>
-        <Text style={dstyles.eyebrow}>ECHO TIMELINE — ARRIVALS AT THE LISTENER</Text>
-        <ArrivalTimeline arrivals={arrivals} thresholdMs={50} />
-        <Badge text="STEMS = arrivalsAt (DIRECT + 1st/2nd-ORDER IMAGE-SOURCE REFLECTIONS) · AMBER FUSES WITH THE DIRECT (<50 ms) · RED READS AS A DISCRETE ECHO" />
+    <WaveLayout
+      readouts={
         <ReadoutGrid
           help={p.help}
           helpKey="echo"
@@ -907,19 +928,57 @@ export function EchoModule(p: WaveModuleProps) {
             { k: 'LEVEL @ LISTENER', v: `${lvl.toFixed(1)} dB` },
           ]}
         />
-        <Text style={dstyles.caption}>
-          Drag the listener toward and away from the source: the gap to the first reflection crosses ~50 ms and the verdict flips. Big hard rooms make echoes; the same reflections packed tight make reverberation (Module 15).
-        </Text>
-      </PanelCard>
-      <Mistakes
-        items={[
-          'Confusing a discrete echo (>~50 ms, heard separately) with reverberation (dense, continuous).',
-          'Thinking any reflection is an echo — it needs enough delay AND level.',
-          'Ignoring the ~50 ms Haas integration threshold below which reflections fuse with the direct sound.',
-        ]}
-      />
-      <CheckQuestion spec={ECHO_CHECK} />
-    </View>
+      }
+      layers={<LayerChips layers={layers} onLayers={setLayers} help={p.help} />}
+      display={
+        <>
+          {viz ? (
+            <SceneHero
+              viz={viz}
+              scene={scene}
+              width={p.width}
+              focused={p.focused}
+              freq={ECHO_FREQ}
+              layers={layers}
+              onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={MODEL_BADGE} />
+        </>
+      }
+      secondary={
+        <>
+          <Text style={dstyles.eyebrow}>ECHO TIMELINE — ARRIVALS AT THE LISTENER</Text>
+          <ArrivalTimeline arrivals={arrivals} thresholdMs={50} />
+          <Badge text="STEMS = arrivalsAt (DIRECT + 1st/2nd-ORDER IMAGE-SOURCE REFLECTIONS) · AMBER FUSES WITH THE DIRECT (<50 ms) · RED READS AS A DISCRETE ECHO" />
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('echo')} />}
+      controls={
+        <>
+          <View style={dstyles.chipRow}>
+            {ECHO_PRESETS.map((e) => (
+              <LabChip key={e.key} label={e.label} selected={presetKey === e.key} onPress={() => pick(e)} onLongPress={() => p.help('echo')} />
+            ))}
+          </View>
+          <Text style={dstyles.caption}>
+            Drag the listener toward and away from the source: the gap to the first reflection crosses ~50 ms and the verdict flips. Big hard rooms make echoes; the same reflections packed tight make reverberation (Module 15).
+          </Text>
+        </>
+      }
+      mistakes={
+        <Mistakes
+          items={[
+            'Confusing a discrete echo (>~50 ms, heard separately) with reverberation (dense, continuous).',
+            'Thinking any reflection is an echo — it needs enough delay AND level.',
+            'Ignoring the ~50 ms Haas integration threshold below which reflections fuse with the direct sound.',
+          ]}
+        />
+      }
+      check={<CheckQuestion spec={ECHO_CHECK} />}
+    />
   );
 }
 
@@ -978,39 +1037,8 @@ export function ReverbModule(p: WaveModuleProps) {
   const early = arrivals.length > 0 ? arrivals.filter((a) => (a.t - arrivals[0].t) * 1000 < 80).length - 1 : 0;
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → controls
-            below (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('reverb_field')} />
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
-        {viz ? (
-          <SceneHero
-            viz={viz}
-            scene={scene}
-            width={p.width}
-            focused={p.focused}
-            freq={REVERB_FREQ}
-            layers={layers}
-            onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={MODEL_BADGE} />
-        <DragSlider
-          value={absV}
-          onChange={setAbsV}
-          label="ABSORPTION — TREAT THE WALLS"
-          readout={`${treated}/4 walls fiberglass`}
-          onHelp={() => p.help('reverb_field')}
-        />
-        <Badge text="ABSORPTION SLIDER = HOW MANY WALLS SWAP CONCRETE → FIBERGLASS · SABINE MODEL WITH A DISCLOSED 3 m CEILING" />
-        <Text style={dstyles.eyebrow}>DECAY — LEVEL VS TIME</Text>
-        <DecayCurveGraph rt60={rt500} preDelayMs={gapMs} refRt60={hardRt500} />
-        <Badge text="AMBER = CURRENT ROOM (SABINE RT60 @ 500 Hz) · DIM = THE UNTREATED ALL-CONCRETE ROOM · GAP = DIRECT→FIRST-REFLECTION TIME" />
-        <Text style={dstyles.eyebrow}>THE BUILDUP — DIRECT → EARLY → LATE</Text>
-        <ArrivalTimeline arrivals={arrivals} thresholdMs={80} />
+    <WaveLayout
+      readouts={
         <ReadoutGrid
           help={p.help}
           helpKey="reverb_field"
@@ -1022,20 +1050,63 @@ export function ReverbModule(p: WaveModuleProps) {
             { k: '1ST REFL GAP', v: `${gapMs.toFixed(1)} ms` },
           ]}
         />
-        <Text style={dstyles.caption}>
-          Reverberation is not one thing — it is the buildup: the direct sound, then discrete early reflections (spatial cues), thickening into the dense late field the model’s image sources only begin to sketch. Note how fiberglass shortens 2 kHz far more than 125 Hz: porous absorption barely touches the lows.
-        </Text>
-      </PanelCard>
-      <Mistakes
-        items={[
-          'Thinking reverb is “one thing” rather than the BUILDUP from discrete reflections into a diffuse field.',
-          'Confusing early reflections (directional spatial cues) with the late diffuse tail.',
-          'Believing more reflective surfaces always = better ambience — it can go muddy or harsh.',
-          'Expecting RT60 to describe everything — tail shape and early energy also matter.',
-        ]}
-      />
-      <CheckQuestion spec={REVERB_CHECK} />
-    </View>
+      }
+      layers={<LayerChips layers={layers} onLayers={setLayers} help={p.help} />}
+      display={
+        <>
+          {viz ? (
+            <SceneHero
+              viz={viz}
+              scene={scene}
+              width={p.width}
+              focused={p.focused}
+              freq={REVERB_FREQ}
+              layers={layers}
+              onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <Badge text={MODEL_BADGE} />
+        </>
+      }
+      secondary={
+        <>
+          <Text style={dstyles.eyebrow}>DECAY — LEVEL VS TIME</Text>
+          <DecayCurveGraph rt60={rt500} preDelayMs={gapMs} refRt60={hardRt500} />
+          <Badge text="AMBER = CURRENT ROOM (SABINE RT60 @ 500 Hz) · DIM = THE UNTREATED ALL-CONCRETE ROOM · GAP = DIRECT→FIRST-REFLECTION TIME" />
+          <Text style={dstyles.eyebrow}>THE BUILDUP — DIRECT → EARLY → LATE</Text>
+          <ArrivalTimeline arrivals={arrivals} thresholdMs={80} />
+        </>
+      }
+      guide={<DisplayGuideButton onPress={() => p.help('reverb_field')} />}
+      controls={
+        <>
+          <DragSlider
+            value={absV}
+            onChange={setAbsV}
+            label="ABSORPTION — TREAT THE WALLS"
+            readout={`${treated}/4 walls fiberglass`}
+            onHelp={() => p.help('reverb_field')}
+          />
+          <Badge text="ABSORPTION SLIDER = HOW MANY WALLS SWAP CONCRETE → FIBERGLASS · SABINE MODEL WITH A DISCLOSED 3 m CEILING" />
+          <Text style={dstyles.caption}>
+            Reverberation is not one thing — it is the buildup: the direct sound, then discrete early reflections (spatial cues), thickening into the dense late field the model’s image sources only begin to sketch. Note how fiberglass shortens 2 kHz far more than 125 Hz: porous absorption barely touches the lows.
+          </Text>
+        </>
+      }
+      mistakes={
+        <Mistakes
+          items={[
+            'Thinking reverb is “one thing” rather than the BUILDUP from discrete reflections into a diffuse field.',
+            'Confusing early reflections (directional spatial cues) with the late diffuse tail.',
+            'Believing more reflective surfaces always = better ambience — it can go muddy or harsh.',
+            'Expecting RT60 to describe everything — tail shape and early energy also matter.',
+          ]}
+        />
+      }
+      check={<CheckQuestion spec={REVERB_CHECK} />}
+    />
   );
 }
 
@@ -1124,10 +1195,40 @@ export function RoomBuilderModule(p: WaveModuleProps) {
 
   return (
     <View style={{ gap: 12 }}>
+      {/* Standard wave layout order (owner 2026-08-05): explanations → readouts
+          → layers/display/guide/controls → mistakes → check. The sandbox keeps
+          its multi-card grouping because it has several control groups. */}
       <PanelCard>
-        {/* Owner 2026-08-01 layout: guide → layer buttons → display → controls
-            below (reflection-visualizer treatment). */}
-        <DisplayGuideButton onPress={() => p.help('room_builder')} />
+        <Text style={dstyles.eyebrow}>WHAT TO TRY</Text>
+        <Text style={dstyles.body}>
+          • Build a cardioid: two SUBs 1.2 m apart, rear one delayed ~3.5 ms with polarity inverted — HEAT shows energy forward, silence behind.
+        </Text>
+        <Text style={dstyles.body}>
+          • Find a comb: one SPEAKER near a GLASS wall, view ~2 kHz, then drag the listener slowly across the room and watch ARRIVALS and the level readout ripple.
+        </Text>
+        <Text style={dstyles.body}>
+          • Meet your room modes: shrink the room to ~4 × 3 m, view 40–120 Hz, and watch hot/cold bands snap in — then treat two walls with FIBERGLASS and watch RT60 fall.
+        </Text>
+      </PanelCard>
+
+      <PanelCard>
+        <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
+        <ReadoutGrid
+          help={p.help}
+          helpKey="room_builder"
+          items={[
+            { k: 'ROOM', v: `${roomW.toFixed(1)} × ${roomH.toFixed(1)} m` },
+            { k: `LEVEL @ ${fmtHz(viewFreq)}`, v: lvl == null ? '—' : `${lvl.toFixed(1)} dB` },
+            { k: '1ST ARRIVAL', v: arrivals.length > 0 ? `${(arrivals[0].t * 1000).toFixed(1)} ms` : '—' },
+            { k: 'EARLY (<80 ms)', v: arrivals.length > 0 ? `${Math.max(0, early)} arrivals` : '—' },
+            { k: 'RT60 @ 500 Hz', v: `${rt500.toFixed(2)} s` },
+            { k: 'SOURCES', v: `${sources.length}/${BUILDER_MAX_SOURCES}` },
+          ]}
+        />
+        <Badge text={MODEL_BADGE} />
+      </PanelCard>
+
+      <PanelCard>
         <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
         {viz ? (
           <SceneHero
@@ -1149,6 +1250,8 @@ export function RoomBuilderModule(p: WaveModuleProps) {
           <VizUnavailableCard />
         )}
         <Badge text={MODEL_BADGE} />
+        {/* "What the display shows" sits BELOW the display. */}
+        <DisplayGuideButton onPress={() => p.help('room_builder')} />
         <DragSlider value={wV} onChange={setWV} label="ROOM WIDTH" readout={`${roomW.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
         <DragSlider value={hV} onChange={setHV} label="ROOM DEPTH" readout={`${roomH.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
         <DragSlider
@@ -1225,6 +1328,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
               label="LEVEL"
               readout={`${sel.levelDb >= 0 ? '+' : ''}${sel.levelDb.toFixed(1)} dB`}
               onHelp={() => p.help('room_builder')}
+              levelTint
             />
             <DragSlider
               value={sel.delayMs / 20}
@@ -1268,36 +1372,6 @@ export function RoomBuilderModule(p: WaveModuleProps) {
         ) : (
           <Text style={dstyles.caption}>Tap a source (chip or in the room) to edit its frequency, level, delay, polarity and aim.</Text>
         )}
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
-        <ReadoutGrid
-          help={p.help}
-          helpKey="room_builder"
-          items={[
-            { k: 'ROOM', v: `${roomW.toFixed(1)} × ${roomH.toFixed(1)} m` },
-            { k: `LEVEL @ ${fmtHz(viewFreq)}`, v: lvl == null ? '—' : `${lvl.toFixed(1)} dB` },
-            { k: '1ST ARRIVAL', v: arrivals.length > 0 ? `${(arrivals[0].t * 1000).toFixed(1)} ms` : '—' },
-            { k: 'EARLY (<80 ms)', v: arrivals.length > 0 ? `${Math.max(0, early)} arrivals` : '—' },
-            { k: 'RT60 @ 500 Hz', v: `${rt500.toFixed(2)} s` },
-            { k: 'SOURCES', v: `${sources.length}/${BUILDER_MAX_SOURCES}` },
-          ]}
-        />
-        <Badge text={MODEL_BADGE} />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>WHAT TO TRY</Text>
-        <Text style={dstyles.body}>
-          • Build a cardioid: two SUBs 1.2 m apart, rear one delayed ~3.5 ms with polarity inverted — HEAT shows energy forward, silence behind.
-        </Text>
-        <Text style={dstyles.body}>
-          • Find a comb: one SPEAKER near a GLASS wall, view ~2 kHz, then drag the listener slowly across the room and watch ARRIVALS and the level readout ripple.
-        </Text>
-        <Text style={dstyles.body}>
-          • Meet your room modes: shrink the room to ~4 × 3 m, view 40–120 Hz, and watch hot/cold bands snap in — then treat two walls with FIBERGLASS and watch RT60 fall.
-        </Text>
       </PanelCard>
 
       <Mistakes

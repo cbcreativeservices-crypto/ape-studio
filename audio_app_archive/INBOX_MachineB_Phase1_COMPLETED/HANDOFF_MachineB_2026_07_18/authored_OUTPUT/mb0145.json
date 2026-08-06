@@ -1,0 +1,313 @@
+{
+ "batch": 145,
+ "topic": "Mix Fundamentals & Workflow",
+ "authored": [
+  {
+   "id": "f59ca61e-c6c6-43aa-9730-5f0ae5680641",
+   "term": "Tempo set",
+   "fields": {
+    "definition": "The action of establishing a session's master tempo, in beats per minute, which governs the metronome click, the bars-and-beats grid, and any tempo-locked (tick-based) material in a DAW project.",
+    "plain_english": "Tempo set means telling your music software how fast the song plays, in beats per minute. After that, the click and the grid lines all match that speed.",
+    "purpose_function": "It fixes the timing reference for the whole session so the click, MIDI, loops, quantize grid, and edits all line up to one shared beat.",
+    "practical_application": "Before recording to a click, an engineer sets the session tempo to match the song so overdubs, imported loops, and quantize snap to the right beats.",
+    "category": "Tempo & Timing",
+    "related_terms": [
+     "Tempo track (Logic)",
+     "Tick-based Track",
+     "Click track",
+     "Quantize",
+     "Timing humanization"
+    ],
+    "common_mistakes": [
+     "Recording a whole take before setting the correct tempo, so the grid never lines up with the performance.",
+     "Assuming one fixed tempo when the song actually speeds up or slows down, instead of building a tempo map.",
+     "Confusing the displayed session tempo with the real tempo of imported audio, so loops fight the grid."
+    ],
+    "scenario_contexts": [
+     "Starting a new pop session by entering the target BPM before tracking.",
+     "Matching session tempo to a rough demo so stems import in time.",
+     "Setting tempo so a drummer can record to a steady click."
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual (manufacturer technical documentation)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "73094ada-a96c-4bc8-8026-95247c477b07",
+   "term": "Tempo track (Logic)",
+   "fields": {
+    "definition": "In Apple Logic Pro, the Tempo track is a global track that stores and edits tempo events over time, letting a project hold a single fixed tempo or follow a curve of tempo changes.",
+    "plain_english": "In Logic Pro, the Tempo track is a lane where you set how fast the song plays. You can keep one steady speed or make it speed up and slow down through the song.",
+    "purpose_function": "It centralizes all tempo information so the whole project's grid, click, and tempo-locked regions follow one editable map instead of scattered settings.",
+    "practical_application": "An editor opens the Tempo track to add a slow-down at the end of a song or to beat-map the click to a live, drifting performance.",
+    "category": "Tempo & Timing",
+    "related_terms": [
+     "Tempo set",
+     "Tick-based Track",
+     "Click track",
+     "Quantize",
+     "Timing humanization"
+    ],
+    "common_mistakes": [
+     "Trying to change tempo on individual regions instead of the global Tempo track, causing conflicts.",
+     "Forgetting a hidden tempo curve is active, then wondering why the grid drifts away from the beat.",
+     "Deleting tempo events and losing the map that tick-based tracks rely on."
+    ],
+    "scenario_contexts": [
+     "Adding a gradual slow-down to the final bars of a ballad in Logic Pro.",
+     "Beat-mapping a freely played piano take so the grid follows it.",
+     "Programming tempo changes for a film or game cue."
+    ]
+   },
+   "sources": [
+    "Apple Logic Pro User Guide (manufacturer technical documentation)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "920d744f-541a-4a3a-9b31-5ff0da3c7a65",
+   "term": "Tempophone mode",
+   "fields": {
+    "definition": "In Logic Pro's Flex Time, the Tempophone algorithm time-stretches audio using grain-based (granular) processing that emulates the Springer Tempophone, a historical tape machine with a rotating head drum; it holds pitch while changing timing but adds pronounced mechanical, grainy artifacts.",
+    "plain_english": "Tempophone mode stretches audio into tiny grains, like chopping it into small pieces and spacing them out. It keeps the pitch but adds a rough, choppy, robot-like sound on purpose.",
+    "purpose_function": "It recreates the artifact-rich character of the mechanical Tempophone/Springer time-stretcher, giving mixers a deliberately lo-fi, granular time-stretch as a creative effect rather than a transparent one.",
+    "practical_application": "A technician selects the Tempophone algorithm on a Flex region, then adjusts the grain-size and crossfade parameters, when they want a gritty, granular stretch on vocals, pads, or sound design.",
+    "category": "Time-Stretch Algorithm",
+    "related_terms": [
+     "Speed mode",
+     "Flex Time",
+     "Granular synthesis",
+     "Time stretching",
+     "Tempo set"
+    ],
+    "common_mistakes": [
+     "Expecting clean, transparent stretching; Tempophone is designed to add granular artifacts.",
+     "Ignoring the grain-size and crossfade controls, which strongly shape the resulting sound.",
+     "Choosing it for routine tempo matching instead of the Rhythmic, Monophonic, or Polyphonic modes."
+    ],
+    "scenario_contexts": [
+     "Designing a gritty, mechanical texture from a sustained vocal note.",
+     "Stretching a pad far beyond its length for an ambient sound-design bed.",
+     "Adding vintage granular character to a sample as a creative effect."
+    ]
+   },
+   "sources": [
+    "Apple, Logic Pro User Guide - 'Flex Time algorithms and parameters'",
+    "Curtis Roads, Microsound (MIT Press) - granular time-stretching and the Springer Tempophone",
+    "Sound and Science: Digital Histories - 'Anton Springer and the Time and Pitch Regulator'"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "8107e261-29a4-4846-a120-13ee23545e58",
+   "term": "Tension layer",
+   "fields": {
+    "definition": "A supplementary arrangement element, such as a sustained pad, drone, rising noise sweep, or dissonant texture, layered beneath or between the main parts to build unease and anticipation across a section.",
+    "plain_english": "A tension layer is an extra background sound added to make part of a song feel tense or on edge. It is like the low hum in a scary movie that warns something is coming.",
+    "purpose_function": "It shapes the emotional arc of an arrangement, adding drama and pull toward a chorus, drop, or scene change without carrying the main melody.",
+    "practical_application": "A producer runs a slowly rising noise sweep and a dissonant pad through the last bars before a chorus to raise the tension before the payoff.",
+    "category": "Arrangement",
+    "related_terms": [
+     "Riser",
+     "Pad",
+     "Automation",
+     "Arrangement",
+     "Build-up"
+    ],
+    "common_mistakes": [
+     "Making the tension layer so loud it masks the lead parts instead of supporting them.",
+     "Leaving a rising tension layer running past the payoff, so the release never lands.",
+     "Confusing a background tension layer with the main melodic hook of the section."
+    ],
+    "scenario_contexts": [
+     "Adding a drone under a film scene to signal that danger is near.",
+     "Building energy into an EDM drop with a noise sweep and dissonant pad.",
+     "Filling a quiet pre-chorus with a subtle tense texture."
+    ]
+   },
+   "sources": [
+    "Owsinski, The Mixing Engineer's Handbook",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "5be87a82-5809-4bf7-9563-8c0277439ba6",
+   "term": "Theatrical printmaster",
+   "fields": {
+    "definition": "The final, approved multichannel mixdown of a film's soundtrack formatted for cinema exhibition (for example 5.1 or 7.1 surround), created from the re-recording mix stems and used as the master from which release prints and digital cinema audio derive.",
+    "plain_english": "The theatrical printmaster is the finished movie soundtrack, made to play in cinemas. It is the final surround mix. That mix is copied onto the cinema release.",
+    "purpose_function": "It is the master deliverable that carries the fully mixed, level-calibrated cinema soundtrack, so every theater plays the film at the intended balance and loudness.",
+    "practical_application": "After the re-recording mix is signed off, the team creates the theatrical printmaster in the cinema surround format and checks it at reference level before delivery.",
+    "category": "Post-Production",
+    "related_terms": [
+     "Stems",
+     "Re-recording mix",
+     "Dialog stem",
+     "5.1 surround",
+     "Reference level"
+    ],
+    "common_mistakes": [
+     "Mixing or checking the printmaster at the wrong monitoring reference level, so it plays too loud or too quiet in cinemas.",
+     "Delivering a near-field or home version in place of the true theatrical printmaster.",
+     "Failing to keep the matching stems alongside the printmaster for later re-versioning."
+    ],
+    "scenario_contexts": [
+     "Creating the final 5.1 cinema master after the last dub is approved.",
+     "Delivering the printmaster audio for a Digital Cinema Package.",
+     "Checking the printmaster on a calibrated dub stage at reference level."
+    ]
+   },
+   "sources": [
+    "Ballou, Handbook for Sound Engineers (film/broadcast sound)",
+    "Dolby theatrical mixing/technical documentation"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  },
+  {
+   "id": "13dc5329-b5d4-41c0-8923-0382df82f73d",
+   "term": "Tick-based Track",
+   "fields": {
+    "definition": "A track whose timing is measured in musical ticks (subdivisions of beats) rather than absolute clock time, so its material repositions to stay locked to the bars-and-beats grid when the session tempo changes.",
+    "plain_english": "A tick-based track counts time in beats, not in seconds. So when you change the song's speed, its notes move to stay on the beat.",
+    "purpose_function": "It keeps MIDI and rhythmic parts aligned to the musical grid, so tempo edits automatically move events instead of leaving them stranded at fixed clock times.",
+    "practical_application": "An engineer sets MIDI and virtual-instrument tracks to tick-based so they follow tempo changes, while leaving recorded dialog or vocals on sample-based tracks.",
+    "category": "Tempo & Timing",
+    "related_terms": [
+     "Sample-based track",
+     "Tempo track (Logic)",
+     "Tempo set",
+     "Quantize",
+     "Timeline Selection"
+    ],
+    "common_mistakes": [
+     "Leaving recorded audio on a tick-based track, so a tempo change shifts and stretches it unexpectedly.",
+     "Assuming every track follows tempo, when audio tracks often default to sample-based.",
+     "Mixing tick- and sample-based tracks without noticing why some parts move and others do not on a tempo edit."
+    ],
+    "scenario_contexts": [
+     "Keeping a programmed drum part on the grid after slowing the session tempo.",
+     "Setting virtual instruments to tick-based in Pro Tools before drawing a tempo map.",
+     "Locking loop regions to beats so they follow tempo changes."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (manufacturer technical documentation)",
+    "Apple Logic Pro User Guide (manufacturer technical documentation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "692c502e-063e-4e1e-844b-d889631e569b",
+   "term": "Timeline Insertion Point",
+   "fields": {
+    "definition": "In Pro Tools, the position in the Timebase rulers from which transport playback and recording begin, shown by the insertion marker; with 'Insertion Follows Playback' enabled it relocates to wherever playback stops.",
+    "plain_english": "The Timeline Insertion Point is the spot on the timeline where playback will start. It is like putting your finger on a page to mark where to begin reading.",
+    "purpose_function": "It tells the DAW where transport playback and new recordings start, kept separate from the material you have selected to edit.",
+    "practical_application": "A technician clicks in the timeline ruler to set the insertion point, then presses play to audition from exactly that spot.",
+    "category": "DAW Workflow",
+    "related_terms": [
+     "Timeline Selection",
+     "Edit Selection",
+     "Playhead",
+     "Transport",
+     "Tick-based Track"
+    ],
+    "common_mistakes": [
+     "Confusing the Timeline Insertion Point with the Edit selection, so playback starts somewhere unexpected.",
+     "Leaving 'Insertion Follows Playback' on and losing the original start point after stopping.",
+     "Setting the insertion point in the wrong timebase ruler."
+    ],
+    "scenario_contexts": [
+     "Clicking in the ruler to start playback from the chorus.",
+     "Setting a record start point before a punch-in.",
+     "Auditioning an edit from one fixed position."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (manufacturer technical documentation)",
+    "Avid Pro Tools Fundamentals official courseware (manufacturer technical documentation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "48dc2b0a-2a73-43b7-8c08-535b2c90c655",
+   "term": "Timeline Selection",
+   "fields": {
+    "definition": "In Pro Tools, the range marked in the Timebase rulers that sets the transport's play and record range and loop boundaries, distinct from the Edit selection; the two can be linked or unlinked.",
+    "plain_english": "The Timeline Selection is the stretch of time you highlight on the ruler to set where playback or recording will run or loop. It marks a start and an end on the timeline.",
+    "purpose_function": "It defines the play/record range and loop boundaries, letting you control what plays back independently of what you have selected to edit.",
+    "practical_application": "An engineer drags a Timeline Selection over a verse to loop it during playback while editing a different clip.",
+    "category": "DAW Workflow",
+    "related_terms": [
+     "Timeline Insertion Point",
+     "Edit Selection",
+     "Loop playback",
+     "Transport",
+     "Pre-roll"
+    ],
+    "common_mistakes": [
+     "Unlinking the Timeline and Edit selections without realizing it, so the play range no longer matches the edit range.",
+     "Setting a Timeline Selection in the wrong ruler timebase.",
+     "Expecting edits to apply to the Timeline Selection when they actually apply to the Edit selection."
+    ],
+    "scenario_contexts": [
+     "Looping a chorus for playback by setting a timeline range.",
+     "Defining a record range for a punch-in.",
+     "Setting pre- and post-roll around a selected section."
+    ]
+   },
+   "sources": [
+    "Avid Pro Tools Reference Guide (manufacturer technical documentation)",
+    "Avid Pro Tools Fundamentals official courseware (manufacturer technical documentation)"
+   ],
+   "confidence": "High",
+   "flags": []
+  },
+  {
+   "id": "d5ce56a8-c16b-42c8-a963-865fbf34fdeb",
+   "term": "Timing humanization",
+   "fields": {
+    "definition": "The deliberate introduction of small, often randomized deviations to the start times of quantized or programmed notes, so a rigidly gridded performance sounds more natural and human-played.",
+    "plain_english": "Timing humanization adds tiny, slightly random shifts to notes that sit perfectly on the beat. This makes a computer part sound more like a real person playing.",
+    "purpose_function": "It counteracts the mechanical stiffness of hard quantization, restoring the small timing variations that make rhythmic parts feel alive and groove.",
+    "practical_application": "After quantizing a MIDI drum pattern, a producer applies a small humanize amount to nudge hits slightly off the exact grid so they feel less robotic.",
+    "category": "Tempo & Timing",
+    "related_terms": [
+     "Quantize",
+     "Groove template",
+     "Swing",
+     "MIDI velocity",
+     "Tempo set"
+    ],
+    "common_mistakes": [
+     "Applying too much humanization, so timing drifts and the part sounds sloppy rather than natural.",
+     "Humanizing before quantizing, which compounds errors instead of loosening a tight grid.",
+     "Using random timing on parts that need to stay tight, like a machine-tight electronic kick."
+    ],
+    "scenario_contexts": [
+     "Loosening a stiff, hard-quantized hi-hat pattern.",
+     "Making a programmed string section feel like an ensemble.",
+     "Adding subtle timing spread to layered percussion."
+    ]
+   },
+   "sources": [
+    "Steinberg Cubase Operation Manual (manufacturer technical documentation)",
+    "Huber & Runstein, Modern Recording Techniques"
+   ],
+   "confidence": "Medium",
+   "flags": []
+  }
+ ]
+}
